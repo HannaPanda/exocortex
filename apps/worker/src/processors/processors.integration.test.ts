@@ -1,5 +1,14 @@
+import { Readable } from 'node:stream';
+
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import {
+  type AiGenerateRequest,
+  type AiProvider,
+  type AiProviderCapabilities,
+  type AiStreamEvent,
+  type VisionPreprocessor,
+} from '@exocortex/ai';
 import { loadWorkerEnv } from '@exocortex/config';
 import { type QUEUE_NAMES } from '@exocortex/contracts';
 import {
@@ -11,7 +20,9 @@ import {
 import { markdownToYjsState } from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { type JobContext, QueueRegistry, RedisEventBus } from '@exocortex/queue';
+import { type ObjectStorage } from '@exocortex/storage';
 
+import { createAiRunProcessor } from './ai-run';
 import { createIndexDocumentProcessor } from './index-document';
 import { createMaintenanceProcessor } from './maintenance';
 import { createMaterializeDocumentProcessor } from './materialize-document';
@@ -353,5 +364,184 @@ describe('maintenance', () => {
     );
 
     expect(await prisma.documentSnapshot.count({ where: { documentId } })).toBe(2);
+  }, 60_000);
+});
+
+/** Captures the request it was given instead of calling a real provider. */
+class CapturingAiProvider implements AiProvider {
+  public readonly id = 'capturing-test-provider';
+  public readonly capabilities: AiProviderCapabilities = {
+    textGeneration: true,
+    vision: false,
+    toolCalling: false,
+    structuredOutput: false,
+    streaming: true,
+    contextWindowTokens: 32_000,
+    usageReporting: true,
+    costReporting: true,
+    models: [],
+  };
+
+  public lastRequest: AiGenerateRequest | null = null;
+
+  async generate(request: AiGenerateRequest) {
+    this.lastRequest = request;
+    return {
+      text: 'ok',
+      finishReason: 'stop' as const,
+      usage: {
+        inputTokens: 1,
+        outputTokens: 1,
+        cachedInputTokens: 0,
+        provider: this.id,
+        model: request.model ?? 'test-model',
+        providerCostMicroUsd: null,
+        durationMs: 1,
+      },
+    };
+  }
+
+  async *stream(request: AiGenerateRequest): AsyncIterable<AiStreamEvent> {
+    this.lastRequest = request;
+    yield { type: 'start', model: request.model ?? 'test-model', provider: this.id };
+    yield { type: 'delta', text: 'ok', sequence: 1 };
+    yield { type: 'done', text: 'ok', finishReason: 'stop' };
+  }
+}
+
+function fakeStorage(bytes: Buffer): ObjectStorage {
+  return {
+    putObject: () => {
+      throw new Error('not used in this test');
+    },
+    getObject: async () => Readable.from([bytes]),
+    deleteObject: async () => {
+      /* not used in this test */
+    },
+    createDownloadUrl: async () => 'unused',
+    healthCheck: async () => true,
+  };
+}
+
+function fakeVisionPreprocessor(description: string): VisionPreprocessor {
+  return { describeImage: async () => description } as unknown as VisionPreprocessor;
+}
+
+describe('ai runs', () => {
+  async function createRun(documentId: string): Promise<string> {
+    const run = await prisma.aiRun.create({
+      data: {
+        workspaceId,
+        documentId,
+        createdById: userId,
+        status: 'PENDING',
+        provider: 'capturing-test-provider',
+        model: 'test-model',
+        messages: [{ role: 'user', content: 'Was zeigt das Bild?' }],
+      },
+    });
+    return run.id;
+  }
+
+  it('describes a document image and prepends it as context for the main model', async () => {
+    const documentId = await createDocument();
+    const attachment = await prisma.attachment.create({
+      data: {
+        workspaceId,
+        documentId,
+        filename: 'katze.png',
+        mimeType: 'image/png',
+        byteSize: 3,
+        storageKey: `test/${Date.now().toString(36)}.png`,
+        createdById: userId,
+      },
+    });
+    await prisma.documentContent.update({
+      where: { documentId },
+      data: {
+        proseMirrorJson: {
+          type: 'doc',
+          content: [
+            { type: 'image', attrs: { src: `/api/attachments/${attachment.id}/download` } },
+          ],
+        },
+      },
+    });
+    const runId = await createRun(documentId);
+    const provider = new CapturingAiProvider();
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider,
+      bus,
+      visionPreprocessor: fakeVisionPreprocessor('Eine Katze mit Hut.'),
+      storage: fakeStorage(Buffer.from('fake-image-bytes')),
+    });
+    await processor(
+      contextFor({ correlationId: 'test-ai-1', runId, workspaceId, userId }).context,
+    );
+
+    const messages = provider.lastRequest?.messages ?? [];
+    expect(messages[0]?.role).toBe('system');
+    expect(messages[0]?.content).toContain('katze.png');
+    expect(messages[0]?.content).toContain('Eine Katze mit Hut.');
+    expect(messages[1]?.content).toBe('Was zeigt das Bild?');
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('COMPLETED');
+    expect(run.resultText).toBe('ok');
+  }, 60_000);
+
+  it('does not inject a system message when the page has no images', async () => {
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+    const provider = new CapturingAiProvider();
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider,
+      bus,
+      visionPreprocessor: fakeVisionPreprocessor('unused'),
+      storage: fakeStorage(Buffer.from('unused')),
+    });
+    await processor(
+      contextFor({ correlationId: 'test-ai-2', runId, workspaceId, userId }).context,
+    );
+
+    expect(provider.lastRequest?.messages).toEqual([
+      { role: 'user', content: 'Was zeigt das Bild?' },
+    ]);
+  }, 60_000);
+
+  it('completes the run even when a referenced attachment cannot be resolved', async () => {
+    const documentId = await createDocument();
+    await prisma.documentContent.update({
+      where: { documentId },
+      data: {
+        proseMirrorJson: {
+          type: 'doc',
+          content: [{ type: 'image', attrs: { src: '/api/attachments/does-not-exist/download' } }],
+        },
+      },
+    });
+    const runId = await createRun(documentId);
+    const provider = new CapturingAiProvider();
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider,
+      bus,
+      visionPreprocessor: fakeVisionPreprocessor('unused'),
+      storage: fakeStorage(Buffer.from('unused')),
+    });
+    await processor(
+      contextFor({ correlationId: 'test-ai-3', runId, workspaceId, userId }).context,
+    );
+
+    expect(provider.lastRequest?.messages).toEqual([
+      { role: 'user', content: 'Was zeigt das Bild?' },
+    ]);
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('COMPLETED');
   }, 60_000);
 });

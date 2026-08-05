@@ -1,9 +1,10 @@
-import { createAiProvider } from '@exocortex/ai';
+import { createAiProvider, createVisionPreprocessor } from '@exocortex/ai';
 import { loadWorkerEnv } from '@exocortex/config';
 import { QUEUE_NAMES } from '@exocortex/contracts';
 import { createPrismaClient, PostgresSearchAdapter } from '@exocortex/database';
 import { createCorrelationId, createLogger } from '@exocortex/logger';
 import { createTypedWorker, QueueRegistry, RedisEventBus } from '@exocortex/queue';
+import { S3ObjectStorage } from '@exocortex/storage';
 
 import { createAiRunProcessor } from './processors/ai-run';
 import { createIndexDocumentProcessor } from './processors/index-document';
@@ -38,6 +39,22 @@ async function bootstrap(): Promise<void> {
       baseUrl: env.OPENROUTER_BASE_URL,
       defaultModel: env.OPENROUTER_DEFAULT_MODEL,
     },
+  });
+  const visionPreprocessor = createVisionPreprocessor({
+    logger,
+    appUrl: env.APP_URL,
+    apiKey: env.OPENROUTER_API_KEY ?? '',
+    baseUrl: env.OPENROUTER_BASE_URL,
+    model: env.OPENROUTER_VISION_MODEL,
+  });
+  const storage = new S3ObjectStorage({
+    endpoint: env.S3_ENDPOINT,
+    region: env.S3_REGION,
+    bucket: env.S3_BUCKET,
+    accessKeyId: env.S3_ACCESS_KEY_ID,
+    secretAccessKey: env.S3_SECRET_ACCESS_KEY,
+    forcePathStyle: env.S3_FORCE_PATH_STYLE,
+    logger,
   });
 
   /** Publishes a `job.progress` event so the UI can show live progress. */
@@ -126,7 +143,7 @@ async function bootstrap(): Promise<void> {
     redisUrl: env.REDIS_URL,
     logger,
     concurrency: 2,
-    handler: createAiRunProcessor({ prisma, provider, bus }),
+    handler: createAiRunProcessor({ prisma, provider, bus, visionPreprocessor, storage }),
     onFailed: async (payload, job, error) => {
       if (payload === null) return;
       logger.error('AI job failed', error, { runId: payload.runId, jobId: job?.id });
