@@ -23,10 +23,11 @@ export interface AiPanelProps {
 /**
  * AI side panel.
  *
- * The answer is produced by the mock provider in the worker process and streamed
- * to the browser through the application WebSocket, so the full streaming path
- * (worker -> Redis -> API -> socket -> UI) is exercised. No document content is
- * sent to any external service in this version.
+ * The answer is produced by the configured provider in the worker process and
+ * streamed to the browser through the application WebSocket (worker -> Redis
+ * -> API -> socket -> UI). When a real provider is active, the messages typed
+ * here and, for the current page's images, a vision-generated description
+ * (ADR-012) leave the system.
  */
 export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   const [messages, setMessages] = React.useState<ChatMessage[]>([]);
@@ -112,8 +113,8 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
             <SparklesIcon className="size-5 text-muted-foreground" aria-hidden />
             <p className="text-sm font-medium">KI-Assistenz</p>
             <p className="text-xs text-muted-foreground">
-              Stelle eine Frage. In dieser Version antwortet ein lokaler Mock-Anbieter, damit keine
-              Inhalte den Server verlassen.
+              Stelle eine Frage. Deine Nachrichten werden über OpenRouter an das konfigurierte
+              KI-Modell geschickt.
             </p>
           </div>
         ) : null}

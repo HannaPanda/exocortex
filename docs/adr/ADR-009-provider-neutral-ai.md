@@ -28,6 +28,9 @@ serving HTTP or WebSocket traffic.
 * The OpenRouter adapter exists but refuses to run without an API key, so it cannot
   silently start making paid calls.
 * No document content is sent to an external provider at this stage; only the
-  messages a user typed are part of a run.
+  messages a user typed are part of a run. **Superseded for document images**
+  by [ADR-012](ADR-012-vision-preprocessing.md): a configured vision model
+  describes them as text, which is sent externally. Everything else in this
+  ADR is unaffected.
 * Capabilities are data, so the UI can adapt (for example hide vision features) once
   more providers exist.

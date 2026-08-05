@@ -24,9 +24,10 @@ export type AiMessage = z.infer<typeof aiMessageSchema>;
 export const createAiRunRequestSchema = z.object({
   workspaceId: idSchema,
   /**
-   * Optional document context reference. Only the identifier is transmitted:
-   * document contents are never forwarded to an external provider in this
-   * version (see docs/ai-architecture.md).
+   * Optional document context reference. Only the identifier is transmitted
+   * over this API: the worker resolves it server-side. Its images may be sent
+   * to a configured vision model as a result (ADR-012); its text is not sent
+   * anywhere (see docs/ai-architecture.md).
    */
   documentId: idSchema.nullable().optional(),
   messages: z.array(aiMessageSchema).min(1).max(40),

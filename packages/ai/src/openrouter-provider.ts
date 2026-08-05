@@ -33,13 +33,14 @@ const OPENROUTER_CAPABILITIES: AiProviderCapabilities = {
 };
 
 /**
- * OpenRouter adapter skeleton.
+ * OpenRouter adapter.
  *
- * The request/response shaping and the streaming parser are implemented, but the
- * adapter is intentionally **not activated** in this version: `AI_PROVIDER=mock`
- * is the default and no document content is sent to any external service
- * (see docs/ai-architecture.md). Every method refuses to run unless an API key is
- * configured, so the skeleton can never silently start making paid calls.
+ * `AI_PROVIDER=mock` is still the default; this only runs when explicitly
+ * selected. Every method refuses to run unless an API key is configured, so it
+ * can never silently start making paid calls. The messages a user typed are
+ * the only per-request content; document images may additionally reach a
+ * configured vision model as a separate preprocessing step (ADR-012), never
+ * through this class (see docs/ai-architecture.md).
  */
 export class OpenRouterProvider implements AiProvider {
   public readonly id = 'openrouter';

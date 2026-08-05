@@ -490,8 +490,9 @@ model AiRun {
   status      AiRunStatus @default(PENDING)
   provider    String
   model       String
-  /// Prompt messages as submitted by the user. Document contents are not
-  /// injected in this version.
+  /// Prompt messages as submitted by the user. Never includes document
+  /// content: image descriptions generated for this run (ADR-012) are
+  /// prepended in memory before the provider call and are not persisted here.
   messages    Json
   resultText  String?
   usage       Json?

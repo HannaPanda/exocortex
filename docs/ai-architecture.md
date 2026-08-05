@@ -27,10 +27,37 @@ Stream events are typed: `start`, `delta`, `usage`, `done`, `error`.
 * `MockAiProvider` — deterministic, streams word by word, echoes the question and
   reports usage. It is the default (`AI_PROVIDER=mock`).
 * `OpenRouterProvider` — request shaping, SSE parsing and usage mapping are
-  implemented, but the adapter refuses to run without `OPENROUTER_API_KEY` so it can
-  never silently start making paid calls. **No document content is sent to any
-  external provider at this stage**: only the messages the user typed are part of a
-  run, and the default provider is local.
+  implemented; the adapter refuses to run without `OPENROUTER_API_KEY` so it can
+  never silently start making paid calls. `OPENROUTER_DEFAULT_MODEL` is the main
+  driver (currently `z-ai/glm-5.2`, text-only, no vision).
+
+## Vision preprocessing
+
+`z-ai/glm-5.2` cannot see images, so the worker turns them into text first
+(`docs/adr/ADR-012-vision-preprocessing.md`, which supersedes ADR-009's "no
+document content leaves the system" for images specifically):
+
+1. When an `AiRun` has a `documentId` and `OPENROUTER_VISION_MODEL` is
+   configured, the worker reads that document's materialized
+   `proseMirrorJson` and collects every `image` node's `src`
+   (`apps/worker/src/processors/ai-run.ts`, `collectImageSources`).
+2. Each `src` (`/api/attachments/:id/download`) resolves to an `Attachment`
+   row, scoped to the run's own workspace and document.
+3. The bytes are fetched from object storage, base64-encoded (object storage
+   is not reachable from the public internet on this deployment, so a plain
+   image URL is not an option) and sent to `OPENROUTER_VISION_MODEL` via
+   `packages/ai/src/vision-preprocessor.ts`, deliberately outside the
+   `AiProvider` contract — see its doc comment for why.
+4. The resulting descriptions are prepended as a single `system` message
+   ahead of the messages the user typed, for that one call only. They are
+   never persisted into `AiRun.messages`.
+
+Bounds and known limitations: capped at 4 images per run
+(`MAX_IMAGES_PER_RUN`); no caching, so a multi-turn conversation about the
+same page re-describes its images on every turn; best-effort throughout — a
+document that fails to load, an unresolvable attachment or one failed
+description is logged and skipped, never fails the run. Unset
+`OPENROUTER_VISION_MODEL` to turn this off entirely.
 
 ## Execution boundary (hard rule)
 
@@ -99,6 +126,15 @@ run. Every provider must refuse to exceed the budget it is given.
 `packages/ai/src/mock-provider.test.ts` (8 tests): capabilities, event order,
 monotonic sequence numbers, streamed text equals generated text, usage reporting,
 cancellation mid-stream, question echo, registry default.
+
+`packages/ai/src/vision-preprocessor.test.ts`: request shaping (base64 data URI
+in an `image_url` content part), error handling, and the registry's
+configured/unconfigured gate.
+
+`apps/worker/src/processors/processors.integration.test.ts` ("ai runs", real
+Postgres/Redis, a capturing fake `AiProvider`): describes a document image and
+prepends it as context, leaves messages untouched when a page has no images,
+and completes the run even when a referenced attachment cannot be resolved.
 
 The end-to-end path is covered by `e2e/tests/ai.spec.ts` → "streams a response from
 the mock provider through the realtime channel".
