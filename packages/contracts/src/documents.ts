@@ -23,14 +23,25 @@ export const createDocumentRequestSchema = z.object({
 });
 export type CreateDocumentRequest = z.infer<typeof createDocumentRequestSchema>;
 
-export const updateDocumentRequestSchema = z
-  .object({
-    title: documentTitleSchema.optional(),
-    icon: documentIconSchema,
-  })
-  .refine((value) => value.title !== undefined || value.icon !== undefined, {
-    message: 'At least one of "title" or "icon" must be provided',
-  });
+export const aiRuleModeSchema = z.enum(['off', 'always', 'on_demand']);
+export type AiRuleMode = z.infer<typeof aiRuleModeSchema>;
+
+const updateDocumentFieldsSchema = z.object({
+  title: documentTitleSchema.optional(),
+  icon: documentIconSchema,
+  aiRuleMode: aiRuleModeSchema.optional(),
+  aiRuleTrigger: z.string().trim().max(300).nullable().optional(),
+  aiRulePriority: z.number().int().optional(),
+});
+export const updateDocumentRequestSchema = updateDocumentFieldsSchema.refine(
+  (value) =>
+    value.title !== undefined ||
+    value.icon !== undefined ||
+    value.aiRuleMode !== undefined ||
+    value.aiRuleTrigger !== undefined ||
+    value.aiRulePriority !== undefined,
+  { message: 'At least one field must be provided' },
+);
 export type UpdateDocumentRequest = z.infer<typeof updateDocumentRequestSchema>;
 
 export const moveDocumentRequestSchema = z.object({
@@ -78,6 +89,9 @@ export const documentDetailSchema = documentSummarySchema.extend({
   breadcrumb: z.array(z.object({ id: idSchema, title: z.string(), icon: z.string().nullable() })),
   materializedAt: isoDateTimeSchema.nullable(),
   schemaVersion: z.number().int().nonnegative(),
+  aiRuleMode: aiRuleModeSchema,
+  aiRuleTrigger: z.string().nullable(),
+  aiRulePriority: z.number().int(),
 });
 export type DocumentDetail = z.infer<typeof documentDetailSchema>;
 
@@ -117,7 +131,7 @@ export const documentSnapshotSchema = z.object({
   documentId: idSchema,
   schemaVersion: z.number().int().nonnegative(),
   createdById: idSchema.nullable(),
-  reason: z.enum(['manual', 'scheduled', 'pre_restore', 'import', 'restore']),
+  reason: z.enum(['manual', 'scheduled', 'pre_restore', 'import', 'restore', 'api_write']),
   createdAt: isoDateTimeSchema,
   byteSize: z.number().int().nonnegative(),
 });
@@ -132,3 +146,44 @@ export const createSnapshotRequestSchema = z.object({
   reason: z.enum(['manual']).default('manual'),
 });
 export type CreateSnapshotRequest = z.infer<typeof createSnapshotRequestSchema>;
+
+/**
+ * Writes Markdown into an existing document's canonical Yjs state (D8). The
+ * only new write path outside the collaboration server; used by humans through
+ * the REST API and by the built-in AI / MCP tools.
+ */
+export const documentContentWriteRequestSchema = z.object({
+  markdown: z.string().max(2_000_000),
+  mode: z.enum(['replace', 'append', 'prepend']).default('replace'),
+  /**
+   * Optimistic concurrency: the `yjsUpdatedAt` the caller last read. The write
+   * is rejected with `document_content_conflict` when the document changed in
+   * the meantime. Omit to write unconditionally.
+   */
+  expectedYjsUpdatedAt: isoDateTimeSchema.optional(),
+});
+export type DocumentContentWriteRequest = z.infer<typeof documentContentWriteRequestSchema>;
+
+export const documentContentWriteResponseSchema = z.object({
+  documentId: idSchema,
+  /** Snapshot of the state *before* this write. Restore it to undo. */
+  snapshotId: idSchema,
+  yjsUpdatedAt: isoDateTimeSchema,
+  schemaVersion: z.number().int().nonnegative(),
+  byteSize: z.number().int().nonnegative(),
+  /** German warnings, e.g. about content the Markdown round-trip simplified. */
+  warnings: z.array(z.string()),
+});
+export type DocumentContentWriteResponse = z.infer<typeof documentContentWriteResponseSchema>;
+
+export const aiRuleSummarySchema = z.object({
+  documentId: idSchema,
+  title: z.string(),
+  mode: aiRuleModeSchema,
+  trigger: z.string().nullable(),
+  priority: z.number().int(),
+});
+export type AiRuleSummary = z.infer<typeof aiRuleSummarySchema>;
+
+export const aiRuleListResponseSchema = z.object({ rules: z.array(aiRuleSummarySchema) });
+export type AiRuleListResponse = z.infer<typeof aiRuleListResponseSchema>;

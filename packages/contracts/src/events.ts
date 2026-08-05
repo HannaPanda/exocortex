@@ -29,6 +29,9 @@ export const APPLICATION_EVENT_TYPES = [
   'database.property.changed',
   'database.view.changed',
   'database.row.updated',
+  'ai.conversation.compacted',
+  'ai.run.tool_call',
+  'document.content.replaced',
 ] as const;
 
 export const applicationEventTypeSchema = z.enum(APPLICATION_EVENT_TYPES);
@@ -113,6 +116,26 @@ export const aiRunFailedPayloadSchema = z.object({
   reason: z.string(),
 });
 
+export const aiConversationCompactedPayloadSchema = z.object({
+  conversationId: idSchema,
+  summarizedMessages: z.number().int().nonnegative(),
+  estimatedTokensBefore: z.number().int().nonnegative(),
+  estimatedTokensAfter: z.number().int().nonnegative(),
+});
+
+export const aiRunToolCallPayloadSchema = z.object({
+  runId: idSchema,
+  iteration: z.number().int().nonnegative(),
+  toolName: z.string(),
+  status: z.enum(['started', 'succeeded', 'failed']),
+});
+
+export const documentContentReplacedPayloadSchema = z.object({
+  documentId: idSchema,
+  snapshotId: idSchema,
+  source: z.enum(['api', 'ai', 'import']),
+});
+
 export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('workspace.updated', z.object({ workspace: workspaceSchema.partial() })),
   envelope('document.created', z.object({ document: documentSummarySchema })),
@@ -130,6 +153,9 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('database.property.changed', databaseChangedPayloadSchema),
   envelope('database.view.changed', databaseChangedPayloadSchema),
   envelope('database.row.updated', databaseChangedPayloadSchema),
+  envelope('ai.conversation.compacted', aiConversationCompactedPayloadSchema),
+  envelope('ai.run.tool_call', aiRunToolCallPayloadSchema),
+  envelope('document.content.replaced', documentContentReplacedPayloadSchema),
 ]);
 export type ApplicationEvent = z.infer<typeof applicationEventSchema>;
 

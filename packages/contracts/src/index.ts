@@ -1,4 +1,7 @@
+export * from './admin';
 export * from './ai';
+export * from './ai-conversations';
+export * from './ai-models';
 export * from './attachments';
 export * from './auth';
 export * from './database-views';
@@ -8,4 +11,5 @@ export * from './events';
 export * from './jobs';
 export * from './primitives';
 export * from './search';
+export * from './settings';
 export * from './workspaces';

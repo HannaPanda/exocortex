@@ -11,6 +11,7 @@ export const QUEUE_NAMES = {
   searchIndexing: 'search-indexing',
   ai: 'ai',
   maintenance: 'maintenance',
+  attachmentText: 'attachment-text',
 } as const;
 
 export const queueNameSchema = z.enum([
@@ -18,6 +19,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.searchIndexing,
   QUEUE_NAMES.ai,
   QUEUE_NAMES.maintenance,
+  QUEUE_NAMES.attachmentText,
 ]);
 export type QueueName = z.infer<typeof queueNameSchema>;
 
@@ -60,11 +62,19 @@ export const maintenanceJobSchema = jobBase.extend({
 });
 export type MaintenanceJob = z.infer<typeof maintenanceJobSchema>;
 
+export const attachmentTextJobSchema = jobBase.extend({
+  attachmentId: idSchema,
+  workspaceId: idSchema,
+  reason: z.enum(['upload', 'requested', 'retry']),
+});
+export type AttachmentTextJob = z.infer<typeof attachmentTextJobSchema>;
+
 export const JOB_SCHEMAS = {
   [QUEUE_NAMES.documentMaterialization]: materializeDocumentJobSchema,
   [QUEUE_NAMES.searchIndexing]: indexDocumentJobSchema,
   [QUEUE_NAMES.ai]: aiRunJobSchema,
   [QUEUE_NAMES.maintenance]: maintenanceJobSchema,
+  [QUEUE_NAMES.attachmentText]: attachmentTextJobSchema,
 } as const;
 
 export type JobPayloadMap = {
@@ -72,4 +82,5 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.searchIndexing]: IndexDocumentJob;
   [QUEUE_NAMES.ai]: AiRunJob;
   [QUEUE_NAMES.maintenance]: MaintenanceJob;
+  [QUEUE_NAMES.attachmentText]: AttachmentTextJob;
 };

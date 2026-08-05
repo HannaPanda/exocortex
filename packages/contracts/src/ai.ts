@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { aiReasoningLevelSchema } from './ai-models';
 import { idSchema, isoDateTimeSchema } from './primitives';
 
 export const aiRunStatusSchema = z.enum([
@@ -12,12 +13,18 @@ export const aiRunStatusSchema = z.enum([
 ]);
 export type AiRunStatus = z.infer<typeof aiRunStatusSchema>;
 
-export const aiMessageRoleSchema = z.enum(['system', 'user', 'assistant']);
+/** Widened from `['system', 'user', 'assistant']` to support the tool loop. */
+export const aiMessageRoleSchema = z.enum(['system', 'user', 'assistant', 'tool']);
 export type AiMessageRole = z.infer<typeof aiMessageRoleSchema>;
 
 export const aiMessageSchema = z.object({
   role: aiMessageRoleSchema,
-  content: z.string().min(1).max(20_000),
+  // Empty string is allowed: an assistant turn that only calls tools has no text.
+  content: z.string().max(20_000),
+  toolCallId: z.string().optional(),
+  toolName: z.string().optional(),
+  /** Assistant tool-call requests, provider-shaped and only passed through. */
+  toolCalls: z.unknown().optional(),
 });
 export type AiMessage = z.infer<typeof aiMessageSchema>;
 
@@ -30,8 +37,14 @@ export const createAiRunRequestSchema = z.object({
    * anywhere (see docs/ai-architecture.md).
    */
   documentId: idSchema.nullable().optional(),
-  messages: z.array(aiMessageSchema).min(1).max(40),
+  // Raised from 40 to 200: tool turns multiply the message count.
+  messages: z.array(aiMessageSchema).min(1).max(200),
   model: z.string().trim().min(1).max(120).optional(),
+  conversationId: idSchema.nullable().optional(),
+  reasoningLevel: aiReasoningLevelSchema.optional(),
+  /** 'off' disables the vision companion for this run. */
+  visionCompanionSlug: z.string().trim().min(1).max(120).optional(),
+  toolsEnabled: z.boolean().optional(),
 });
 export type CreateAiRunRequest = z.infer<typeof createAiRunRequestSchema>;
 
@@ -59,6 +72,9 @@ export const aiRunSchema = z.object({
   finishedAt: isoDateTimeSchema.nullable(),
   usage: aiUsageSchema.nullable(),
   errorCode: z.string().nullable(),
+  conversationId: idSchema.nullable(),
+  reasoningLevel: aiReasoningLevelSchema,
+  toolIterations: z.number().int().nonnegative(),
 });
 export type AiRun = z.infer<typeof aiRunSchema>;
 

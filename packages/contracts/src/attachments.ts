@@ -56,3 +56,23 @@ export const uploadAttachmentFieldsSchema = z.object({
   documentId: idSchema.optional(),
 });
 export type UploadAttachmentFields = z.infer<typeof uploadAttachmentFieldsSchema>;
+
+/** State machine for the cached text extraction of an attachment (D6). */
+export const attachmentTextStatusSchema = z.enum([
+  'not_applicable',
+  'pending',
+  'ready',
+  'failed',
+]);
+export type AttachmentTextStatus = z.infer<typeof attachmentTextStatusSchema>;
+
+export const attachmentTextResponseSchema = z.object({
+  attachmentId: idSchema,
+  filename: z.string(),
+  mimeType: z.string(),
+  status: attachmentTextStatusSchema,
+  text: z.string().nullable(),
+  extractedAt: isoDateTimeSchema.nullable(),
+  error: z.string().nullable(),
+});
+export type AttachmentTextResponse = z.infer<typeof attachmentTextResponseSchema>;
