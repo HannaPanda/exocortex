@@ -20,11 +20,20 @@ function textOf(node: ProseMirrorNode): string {
 
 /** Escapes characters that would otherwise start Markdown syntax. */
 export function escapeInlineText(value: string): string {
-  return value
-    .replace(/([\\`*_[\]])/g, '\\$1')
-    .replace(/^(\s*)([#>])/gm, '$1\\$2')
-    .replace(/^(\s*)([-+])(\s)/gm, '$1\\$2$3')
-    .replace(/^(\s*)(\d+)\.(\s)/gm, '$1$2\\.$3');
+  return (
+    value
+      .replace(/([\\`*_[\]])/g, '\\$1')
+      // Exocortex inline syntax: superscript and subscript use single
+      // characters, highlight and underline a pair. Escaping the first character
+      // of a pair is enough, because the rule then no longer sees a delimiter.
+      .replace(/([~^])/g, '\\$1')
+      .replace(/(==|\+\+)/g, '\\$1')
+      // A mention opens with `@[` or `@(`; a bare `@` in prose is left alone.
+      .replace(/@(?=[[(])/g, '\\@')
+      .replace(/^(\s*)([#>])/gm, '$1\\$2')
+      .replace(/^(\s*)([-+])(\s)/gm, '$1\\$2$3')
+      .replace(/^(\s*)(\d+)\.(\s)/gm, '$1$2\\.$3')
+  );
 }
 
 function paragraph(node: ProseMirrorNode, context: MarkdownSerializerContext): string {

@@ -30,6 +30,7 @@ import {
   Textarea,
 } from '@exocortex/ui';
 
+import { DatabaseShell } from '@/components/database/database-shell';
 import { CollaborativeEditor } from '@/components/editor/collaborative-editor';
 import {
   useArchiveDocument,
@@ -40,6 +41,8 @@ import {
   useSessionQuery,
   useUpdateDocument,
 } from '@/lib/api/queries';
+
+import { SaveIndicator } from './save-indicator';
 
 interface DocumentViewProps {
   workspaceId: string;
@@ -119,7 +122,9 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
           <span className="max-w-40 truncate text-foreground">{detail.title}</span>
         </nav>
 
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-3">
+          {!archived && detail.access === 'write' ? <SaveIndicator /> : null}
+
           {archived ? (
             <Button
               variant="outline"
@@ -179,30 +184,60 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
         </p>
       ) : null}
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-3xl px-6 py-6">
-          <DocumentTitleInput
-            // Remounting on document change resets the field without an effect.
-            key={`${detail.id}:${detail.title}`}
-            initialTitle={detail.title}
-            readOnly={archived || detail.access === 'read'}
-            onCommit={(nextTitle) => {
-              void updateDocument.mutateAsync({ documentId, request: { title: nextTitle } });
-            }}
-          />
-
-          {user === undefined || user === null ? (
-            <LoadingState label="Sitzung wird geprüft …" />
-          ) : (
-            <CollaborativeEditor
-              documentId={documentId}
-              documentTitle={detail.title}
-              currentUser={{ id: user.id, name: user.name }}
-              access={archived ? 'read' : detail.access}
+      {detail.type === 'COLLECTION' ? (
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+          <div className="px-6 pt-8 pb-2">
+            <DocumentTitleInput
+              key={`${detail.id}:${detail.title}`}
+              initialTitle={detail.title}
+              readOnly={archived || detail.access === 'read'}
+              onCommit={(nextTitle) => {
+                void updateDocument.mutateAsync({ documentId, request: { title: nextTitle } });
+              }}
             />
-          )}
+          </div>
+          <DatabaseShell
+            workspaceId={workspaceId}
+            documentId={documentId}
+            readOnly={archived || detail.access === 'read'}
+          />
         </div>
-      </div>
+      ) : (
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          {/* 68ch is the reading measure from DESIGN.md; max-w-3xl ran ~85ch. */}
+          <div className="mx-auto w-full max-w-[68ch] px-6 py-8">
+            <DocumentTitleInput
+              // Remounting on document change resets the field without an effect.
+              key={`${detail.id}:${detail.title}`}
+              initialTitle={detail.title}
+              readOnly={archived || detail.access === 'read'}
+              onCommit={(nextTitle) => {
+                void updateDocument.mutateAsync({ documentId, request: { title: nextTitle } });
+              }}
+            />
+
+            {user === undefined || user === null ? (
+              <LoadingState label="Sitzung wird geprüft …" />
+            ) : (
+              <CollaborativeEditor
+                workspaceId={workspaceId}
+                documentId={documentId}
+                documentTitle={detail.title}
+                currentUser={{ id: user.id, name: user.name }}
+                access={archived ? 'read' : detail.access}
+                /* The breadcrumb block renders the ancestor path. The editor package
+                   has no access to the page hierarchy, so the path it already
+                   loaded is handed over as data. */
+                breadcrumb={detail.breadcrumb.map((entry) => ({
+                  id: entry.id,
+                  title: entry.title,
+                  href: `/arbeitsbereich/${workspaceId}/seite/${entry.id}`,
+                }))}
+              />
+            )}
+          </div>
+        </div>
+      )}
 
       <Dialog open={importOpen} onOpenChange={setImportOpen}>
         <DialogContent className="max-w-2xl">
@@ -276,7 +311,9 @@ function DocumentTitleInput({ initialTitle, readOnly, onCommit }: DocumentTitleI
         }
       }}
       className={cn(
-        'mb-4 w-full bg-transparent text-2xl font-semibold tracking-tight outline-none',
+        // The page title is the top of the ladder and must clear the editor's own
+        // h1 (1.375rem); at the old text-2xl the two were identical.
+        'mb-5 w-full bg-transparent text-[1.75rem] leading-tight font-semibold tracking-[-0.02em] outline-none',
         'placeholder:text-muted-foreground',
       )}
       placeholder="Unbenannte Seite"

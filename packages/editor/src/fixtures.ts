@@ -89,6 +89,72 @@ export const TASK_LIST_MARKDOWN = `- [x] Fertig
 - [ ] Noch offen
 `;
 
+export const INLINE_STYLING_MARKDOWN = `Ein Absatz mit ==Hervorhebung==, ++Unterstreichung++,
+H~2~O und E=mc^2^.
+
+Kombiniert: **fett und ==hervorgehoben==** sowie *kursiv und ++unterstrichen++*.
+`;
+
+export const TOGGLE_MARKDOWN = `:::toggle Mehr erfahren
+Der Inhalt der Klappbox.
+
+Auch mehrere Absätze.
+:::
+`;
+
+export const COLUMNS_MARKDOWN = `::::columns
+:::column
+Linke Spalte.
+:::
+:::column
+Rechte Spalte.
+:::
+::::
+`;
+
+export const MATH_MARKDOWN = `Die Masse-Energie-Beziehung lautet $E = mc^2$.
+
+$$
+\\sum_{i=1}^{n} x_i = X
+$$
+`;
+
+export const DERIVED_BLOCKS_MARKDOWN = `:::toc
+:::
+
+:::breadcrumb
+:::
+
+:::page Andere Seite
+:::
+
+:::database-embed Aufgaben
+:::
+`;
+
+export const MEDIA_MARKDOWN = `:::file /api/attachments/abc/download Handbuch.pdf
+:::
+
+:::video /api/attachments/def/download Aufzeichnung.mp4
+:::
+
+:::audio /api/attachments/ghi/download Sprachnotiz.mp3
+:::
+
+:::pdf /api/attachments/jkl/download Vertrag.pdf
+:::
+
+:::embed https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ
+:::
+
+:::bookmark https://exocortex.app Exocortex
+:::
+`;
+
+export const MENTION_MARKDOWN = `Besprochen mit @[Anna Beispiel] am @(2026-08-04),
+Details siehe @[[Projektplan]].
+`;
+
 export const BLOCK_ID_MARKDOWN = `# Titel mit Id ^aaaaaaaaaaaa
 
 Absatz mit Id ^bbbbbbbbbbbb
@@ -104,6 +170,13 @@ export const MARKDOWN_FIXTURES = {
   callout: CALLOUT_MARKDOWN,
   table: TABLE_MARKDOWN,
   taskList: TASK_LIST_MARKDOWN,
+  inlineStyling: INLINE_STYLING_MARKDOWN,
+  toggle: TOGGLE_MARKDOWN,
+  columns: COLUMNS_MARKDOWN,
+  math: MATH_MARKDOWN,
+  derivedBlocks: DERIVED_BLOCKS_MARKDOWN,
+  media: MEDIA_MARKDOWN,
+  mention: MENTION_MARKDOWN,
   blockIds: BLOCK_ID_MARKDOWN,
 } as const;
 

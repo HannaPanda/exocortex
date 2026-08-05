@@ -1,4 +1,7 @@
 @import '@exocortex/ui/styles.css';
+/* KaTeX ships the typography for rendered formulas. Bundled, never fetched: an
+   artifact must not depend on a CDN at runtime (docs/ui-system.md). */
+@import 'katex/dist/katex.min.css';
 
 /*
  * Tailwind 4 needs to know which files to scan for class names. The shared UI
@@ -22,16 +25,29 @@
     @apply mt-3;
   }
 
-  .exocortex-editor h1 {
-    @apply mt-8 text-2xl font-semibold tracking-tight;
+  /* Heading ladder: 1.375 / 1.125 / 0.9375 rem against a 0.9375 rem body. The
+     ratio tightens on the way down and the last step is carried by weight alone,
+     so a h3 never competes with the page title (1.75 rem) above it.
+     Space before a heading is several times the space after it: the gap is what
+     groups a section, not a rule or a box. The `.ProseMirror` ancestor is load
+     bearing — without it these rules lose the cascade to the `> * + *` rule
+     above and every heading falls back to the paragraph gap. */
+  .exocortex-editor .ProseMirror h1 {
+    @apply mt-10 mb-1 text-[1.375rem] leading-snug font-semibold tracking-[-0.015em];
   }
 
-  .exocortex-editor h2 {
-    @apply mt-7 text-xl font-semibold tracking-tight;
+  .exocortex-editor .ProseMirror h2 {
+    @apply mt-8 mb-1 text-lg leading-snug font-semibold tracking-[-0.01em];
   }
 
-  .exocortex-editor h3 {
-    @apply mt-6 text-base font-semibold;
+  .exocortex-editor .ProseMirror h3 {
+    @apply mt-6 mb-0.5 text-[0.9375rem] font-semibold;
+  }
+
+  .exocortex-editor .ProseMirror > h1:first-child,
+  .exocortex-editor .ProseMirror > h2:first-child,
+  .exocortex-editor .ProseMirror > h3:first-child {
+    @apply mt-0;
   }
 
   .exocortex-editor a {
@@ -48,6 +64,77 @@
 
   .exocortex-editor pre code {
     @apply bg-transparent p-0;
+  }
+
+  /*
+   * Syntax highlighting theme for highlight.js, built from the content colour
+   * tokens rather than from a downloaded theme file. Two reasons: a stock theme
+   * ships hexadecimal values, which rule 9 of CLAUDE.md forbids, and its palette
+   * was not designed against this surface.
+   *
+   * The mapping is deliberately coarse — six roles, not thirty. Code is read for
+   * structure, and a rainbow makes structure harder to see, not easier.
+   */
+  .exocortex-editor .hljs-comment,
+  .exocortex-editor .hljs-quote {
+    color: var(--content-gray);
+    font-style: italic;
+  }
+
+  .exocortex-editor .hljs-keyword,
+  .exocortex-editor .hljs-selector-tag,
+  .exocortex-editor .hljs-literal,
+  .exocortex-editor .hljs-doctag {
+    color: var(--content-purple);
+  }
+
+  .exocortex-editor .hljs-string,
+  .exocortex-editor .hljs-regexp,
+  .exocortex-editor .hljs-addition,
+  .exocortex-editor .hljs-attribute {
+    color: var(--content-green);
+  }
+
+  .exocortex-editor .hljs-number,
+  .exocortex-editor .hljs-symbol,
+  .exocortex-editor .hljs-bullet,
+  .exocortex-editor .hljs-meta {
+    color: var(--content-orange);
+  }
+
+  .exocortex-editor .hljs-title,
+  .exocortex-editor .hljs-section,
+  .exocortex-editor .hljs-name,
+  .exocortex-editor .hljs-selector-id,
+  .exocortex-editor .hljs-selector-class {
+    color: var(--content-blue);
+  }
+
+  .exocortex-editor .hljs-type,
+  .exocortex-editor .hljs-built_in,
+  .exocortex-editor .hljs-class .hljs-title,
+  .exocortex-editor .hljs-variable,
+  .exocortex-editor .hljs-template-variable {
+    color: var(--content-yellow);
+  }
+
+  .exocortex-editor .hljs-deletion {
+    color: var(--content-red);
+  }
+
+  .exocortex-editor .hljs-emphasis {
+    font-style: italic;
+  }
+
+  .exocortex-editor .hljs-strong {
+    font-weight: 600;
+  }
+
+  /* Inline mention chip. Reads as one object, so it cannot be split visually by a
+     line break in the middle. */
+  .exocortex-editor .exocortex-mention {
+    @apply rounded-sm bg-accent-strong px-1 py-px font-medium;
+    white-space: nowrap;
   }
 
   .exocortex-editor blockquote {
@@ -74,8 +161,10 @@
     @apply mt-1 shrink-0;
   }
 
-  .exocortex-editor hr {
-    @apply my-6 border-t border-border;
+  /* Same cascade caveat as the headings: `.ProseMirror` is needed for `my-8` to
+     beat the generic sibling gap. */
+  .exocortex-editor .ProseMirror hr {
+    @apply my-8 border-t border-border;
   }
 
   .exocortex-editor table {
@@ -116,7 +205,217 @@
     @apply mb-1 block text-xs font-semibold tracking-wide uppercase text-muted-foreground;
   }
 
-  .exocortex-editor .ProseMirror p.is-editor-empty:first-child::before {
+  /* Toggle list.
+     Styled against the *node view* DOM, which is what the editor actually
+     renders: a `div[data-type='details']` holding the disclosure button and a
+     content wrapper. The native `details`/`summary` markup exists only in the HTML
+     export. `is-open` is the class the extension toggles. */
+  .exocortex-editor [data-type='details'] {
+    @apply flex items-start gap-1.5 rounded-md;
+  }
+
+  .exocortex-editor .exocortex-toggle-button {
+    @apply mt-0.5 shrink-0 cursor-pointer text-sm text-muted-foreground hover:text-foreground;
+  }
+
+  .exocortex-editor [data-type='details'] > div {
+    @apply min-w-0 flex-1;
+  }
+
+  .exocortex-editor [data-type='detailsSummary'] {
+    @apply font-medium;
+  }
+
+  /* Collapsed is the default; the extension adds `is-open` when expanded. */
+  .exocortex-editor [data-type='details']:not(.is-open) [data-type='detailsContent'] {
+    display: none;
+  }
+
+  .exocortex-editor [data-type='detailsContent'] {
+    @apply mt-2 border-l border-border pl-4;
+  }
+
+  /* Collapsible headings. The disclosure button lives in the left gutter so the
+     heading text itself keeps the measure it has everywhere else. */
+  .exocortex-editor .exocortex-heading-toggle {
+    @apply -ml-5 mr-1 w-4 cursor-pointer text-sm text-muted-foreground hover:text-foreground;
+    float: left;
+  }
+
+  .exocortex-editor .exocortex-collapsed {
+    display: none;
+  }
+
+  /* Columns. Stacks below the narrow breakpoint: two 34ch columns do not fit the
+     68ch measure on a phone, and a horizontal scroll would break reading. */
+  .exocortex-editor .exocortex-columns {
+    @apply flex flex-col gap-4 sm:flex-row;
+  }
+
+  .exocortex-editor .exocortex-column {
+    @apply min-w-0 flex-1;
+  }
+
+  /* Table of contents and breadcrumb: derived content, so they read as chrome
+     inside the document rather than as prose. */
+  .exocortex-editor .exocortex-toc {
+    @apply rounded-md border border-border bg-card px-4 py-3 text-sm;
+  }
+
+  .exocortex-editor .exocortex-toc ol {
+    @apply list-none pl-0;
+  }
+
+  .exocortex-editor .exocortex-toc li[data-level='2'] {
+    @apply pl-4;
+  }
+
+  .exocortex-editor .exocortex-toc li[data-level='3'] {
+    @apply pl-8;
+  }
+
+  .exocortex-editor .exocortex-toc li[data-level='4'],
+  .exocortex-editor .exocortex-toc li[data-level='5'],
+  .exocortex-editor .exocortex-toc li[data-level='6'] {
+    @apply pl-12;
+  }
+
+  .exocortex-editor .exocortex-toc-empty,
+  .exocortex-editor .exocortex-breadcrumb-empty {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .exocortex-editor .exocortex-breadcrumb {
+    @apply flex flex-wrap items-center gap-1 text-xs text-muted-foreground;
+  }
+
+  /* Page link: a block-level target needs a target-sized hit area. */
+  .exocortex-editor .exocortex-page-link {
+    @apply flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 font-medium no-underline;
+  }
+
+  .exocortex-editor .exocortex-page-link:hover {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  /* Media blocks. The video and audio players are the browser's own controls:
+     they are keyboard accessible and localised, which a custom player would have
+     to re-earn. */
+  .exocortex-editor .exocortex-media {
+    @apply my-4;
+  }
+
+  .exocortex-editor .exocortex-media video,
+  .exocortex-editor .exocortex-media audio {
+    @apply w-full rounded-md;
+  }
+
+  /* The PDF preview carries its own header: the browser viewer's toolbar is
+     switched off, so "open" and "download" have to live somewhere real. */
+  .exocortex-editor .exocortex-pdf {
+    @apply overflow-hidden rounded-md border border-border;
+  }
+
+  .exocortex-editor .exocortex-pdf-header {
+    @apply flex items-center gap-3 border-b border-border bg-muted px-3 py-1.5 text-xs;
+  }
+
+  .exocortex-editor .exocortex-pdf-name {
+    @apply min-w-0 flex-1 truncate font-medium;
+  }
+
+  .exocortex-editor .exocortex-pdf-header a {
+    @apply shrink-0 text-muted-foreground no-underline hover:text-foreground hover:underline;
+  }
+
+  .exocortex-editor .exocortex-media-pdf object {
+    @apply block h-[32rem] w-full;
+  }
+
+  .exocortex-editor .exocortex-media-fileAttachment a {
+    @apply flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 no-underline;
+  }
+
+  .exocortex-editor .exocortex-media-fileAttachment a:hover {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  /* Database embed: a live view (Table/Board/Gallery/Calendar), not a static
+     block, so it gets a full frame instead of the thin inline rules above. */
+  .exocortex-database-embed {
+    @apply my-4 flex max-h-[32rem] flex-col overflow-hidden rounded-md border border-border;
+  }
+
+  .exocortex-database-embed .embed-header {
+    @apply flex shrink-0 items-center justify-between gap-3 border-b border-border bg-muted px-3 py-1.5;
+  }
+
+  .exocortex-database-embed .embed-title {
+    @apply min-w-0 flex-1 truncate text-sm font-medium;
+  }
+
+  .exocortex-database-embed .embed-actions {
+    @apply flex shrink-0 items-center gap-1;
+  }
+
+  .exocortex-database-embed .embed-action {
+    @apply flex items-center gap-1 text-xs text-muted-foreground no-underline hover:text-foreground;
+  }
+
+  .exocortex-database-embed .embed-action svg {
+    @apply size-3.5;
+  }
+
+  /* Embeds keep a 16:9 box so the page does not reflow when the iframe loads. */
+  .exocortex-editor .exocortex-embed {
+    @apply my-4 overflow-hidden rounded-md border border-border;
+    aspect-ratio: 16 / 9;
+  }
+
+  .exocortex-editor .exocortex-embed iframe {
+    @apply h-full w-full;
+    border: 0;
+  }
+
+  .exocortex-editor .exocortex-bookmark {
+    @apply my-3 flex flex-col gap-0.5 rounded-md border border-border bg-card px-3 py-2 no-underline;
+  }
+
+  .exocortex-editor .exocortex-bookmark:hover {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  .exocortex-editor .exocortex-bookmark-title {
+    @apply font-medium;
+  }
+
+  .exocortex-editor .exocortex-bookmark-description,
+  .exocortex-editor .exocortex-bookmark-url {
+    @apply text-xs text-muted-foreground;
+  }
+
+  .exocortex-editor .exocortex-bookmark-description:empty {
+    display: none;
+  }
+
+  /* Mathematics. KaTeX brings its own typography; only the block spacing and the
+     selected state belong to us. */
+  .exocortex-editor [data-type='block-math'] {
+    @apply my-4 overflow-x-auto text-center;
+  }
+
+  .exocortex-editor [data-type='inline-math'] {
+    @apply rounded-sm px-0.5;
+  }
+
+  .exocortex-editor [data-type='inline-math'].ProseMirror-selectednode,
+  .exocortex-editor [data-type='block-math'].ProseMirror-selectednode {
+    @apply bg-accent-strong;
+  }
+
+  /* Placeholder on every empty block, not only on an empty document: the hint is
+     what tells a new user that „/“ exists. */
+  .exocortex-editor .ProseMirror .is-empty::before {
     content: attr(data-placeholder);
     @apply pointer-events-none float-left h-0 text-muted-foreground;
   }
@@ -129,7 +428,7 @@
   }
 
   .exocortex-editor .collaboration-carets__label {
-    @apply absolute -top-[1.4em] -left-px rounded-t-sm px-1 text-[0.6875rem] leading-none font-medium whitespace-nowrap text-black;
+    @apply absolute -top-[1.4em] -left-px rounded-t-sm px-1 text-[0.6875rem] leading-none font-medium whitespace-nowrap text-presence-foreground;
     user-select: none;
   }
 }

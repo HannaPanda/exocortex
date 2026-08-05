@@ -18,6 +18,7 @@ export const AUDIT_ACTIONS = [
   'workspace.member_role_changed',
   'workspace.member_removed',
   'workspace.deleted',
+  'database.property.deleted',
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -26,7 +27,13 @@ export interface WriteAuditInput {
   workspaceId: string;
   actorId: string | null;
   action: AuditAction;
-  targetType: 'document' | 'attachment' | 'workspace' | 'workspace_member' | 'document_snapshot';
+  targetType:
+    | 'document'
+    | 'attachment'
+    | 'workspace'
+    | 'workspace_member'
+    | 'document_snapshot'
+    | 'database_property';
   targetId: string;
   correlationId: string;
   /**

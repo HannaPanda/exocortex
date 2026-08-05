@@ -54,7 +54,7 @@ file is the contract for automated sessions. Read it before changing code.
 | `packages/contracts`    | zod schemas for REST DTOs, WebSocket events, job payloads. |
 | `packages/database`     | Prisma schema, migrations, order keys, tree helpers, search adapter. |
 | `packages/auth`         | Better Auth setup, session verification, authorization policies, collaboration tickets. |
-| `packages/editor`       | Canonical Tiptap schema, block IDs, Markdown, Yjs materialization. |
+| `packages/editor`       | Canonical Tiptap schema, block IDs, block catalog, Markdown, Yjs materialization. |
 | `packages/queue`        | Typed BullMQ queues, workers, Redis event bus. |
 | `packages/storage`      | S3-compatible object storage, MIME sniffing. |
 | `packages/ai`           | Provider-neutral AI contracts, mock provider, runner contracts. |
@@ -84,6 +84,8 @@ pnpm test:e2e          # Playwright (needs a running deployment)
 * ADR-008: application events and Yjs updates travel over **separate** sockets.
 * ADR-010: domain events that need reliable follow-up work go through the
   transactional outbox, not through fire-and-forget calls.
+* ADR-011: a database is a `Document` with `type: 'COLLECTION'`; its rows are
+  ordinary `Document`s (`type: 'PAGE'`) underneath it, not a separate model.
 
 Full list: `docs/adr/`.
 
@@ -94,11 +96,12 @@ Each of these has a step-by-step recipe:
 | Task | Document |
 | ---- | -------- |
 | new shadcn component, custom primitive | `docs/ui-system.md` |
-| new editor node, document migration | `docs/editor-extensions.md` |
+| new editor node, block catalog entry, document migration | `docs/editor-extensions.md` |
 | new WebSocket event | `docs/architecture.md` |
 | new background job | `docs/background-jobs.md` |
 | new AI provider, agent runner | `docs/ai-architecture.md` |
 | new storage backend | `docs/architecture.md` |
+| new database property type, view type | `docs/database-views.md` |
 
 ## Deployment on this machine
 

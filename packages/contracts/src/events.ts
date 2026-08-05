@@ -26,6 +26,9 @@ export const APPLICATION_EVENT_TYPES = [
   'ai.run.progress',
   'ai.run.completed',
   'ai.run.failed',
+  'database.property.changed',
+  'database.view.changed',
+  'database.row.updated',
 ] as const;
 
 export const applicationEventTypeSchema = z.enum(APPLICATION_EVENT_TYPES);
@@ -77,6 +80,16 @@ export const documentMovedPayloadSchema = z.object({
   previousParentId: idSchema.nullable(),
 });
 
+/**
+ * Minimal payload for all three database events: just the collection
+ * document id, never row content. Clients invalidate their React Query keys
+ * for that collection and refetch, matching how `document.moved` stays
+ * intentionally thin.
+ */
+export const databaseChangedPayloadSchema = z.object({
+  documentId: idSchema,
+});
+
 export const aiRunProgressPayloadSchema = z.object({
   runId: idSchema,
   status: aiRunStatusSchema,
@@ -114,6 +127,9 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('ai.run.progress', aiRunProgressPayloadSchema),
   envelope('ai.run.completed', aiRunCompletedPayloadSchema),
   envelope('ai.run.failed', aiRunFailedPayloadSchema),
+  envelope('database.property.changed', databaseChangedPayloadSchema),
+  envelope('database.view.changed', databaseChangedPayloadSchema),
+  envelope('database.row.updated', databaseChangedPayloadSchema),
 ]);
 export type ApplicationEvent = z.infer<typeof applicationEventSchema>;
 

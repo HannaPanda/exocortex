@@ -2,7 +2,6 @@ import { type Extensions } from '@tiptap/core';
 import { Blockquote } from '@tiptap/extension-blockquote';
 import { Bold } from '@tiptap/extension-bold';
 import { Code } from '@tiptap/extension-code';
-import { CodeBlock } from '@tiptap/extension-code-block';
 import { Document } from '@tiptap/extension-document';
 import { HardBreak } from '@tiptap/extension-hard-break';
 import { Heading } from '@tiptap/extension-heading';
@@ -16,21 +15,90 @@ import { Strike } from '@tiptap/extension-strike';
 import { Table, TableCell, TableHeader, TableRow } from '@tiptap/extension-table';
 import { Text } from '@tiptap/extension-text';
 
+import {
+  type BlockCatalogEntry,
+  calloutBlocks,
+  coreStructureBlocks,
+  imageBlocks,
+  listBlocks,
+  tableBlocks,
+} from './block-catalog';
 import { ADDRESSABLE_BLOCK_TYPES, BlockId } from './block-id';
+import {
+  Breadcrumb,
+  breadcrumbBlocks,
+  breadcrumbMarkdownAdapter,
+  breadcrumbPlainTextAdapter,
+} from './breadcrumb';
 import { Callout, calloutMarkdownAdapter } from './callout';
+import { ExocortexCodeBlock } from './code-block';
+import { CollapsibleHeading } from './collapsible-heading';
+import {
+  COLUMN_EXTENSIONS,
+  columnBlocks,
+  columnsMarkdownAdapter,
+  columnsPlainTextAdapter,
+} from './columns';
 import {
   type DocumentMigration,
   EXOCORTEX_SCHEMA_VERSION,
   type ExocortexEditorExtension,
   type MarkdownBlockSerializer,
+  type MarkdownContainerOpener,
   type MarkdownExtensionAdapter,
   type MarkdownMarkSerializer,
   type MarkdownToken,
   type MarkdownTokenHandlerContext,
   type PlainTextAdapter,
 } from './contract';
+import {
+  DatabaseEmbed,
+  databaseEmbedBlocks,
+  databaseEmbedMarkdownAdapter,
+  databaseEmbedPlainTextAdapter,
+} from './database-embed';
+import {
+  EMBED_EXTENSIONS,
+  embedBlocks,
+  embedMarkdownAdapter,
+  embedPlainTextAdapter,
+} from './embed';
+import { INLINE_STYLING_EXTENSIONS, inlineStylingMarkdownAdapter } from './inline-styling';
 import { coreMarkdownAdapter } from './markdown/core-adapter';
+import {
+  MATHEMATICS_EXTENSIONS,
+  mathematicsBlocks,
+  mathematicsMarkdownAdapter,
+  mathematicsPlainTextAdapter,
+} from './mathematics';
+import {
+  MEDIA_EXTENSIONS,
+  mediaBlocks,
+  mediaMarkdownAdapter,
+  mediaPlainTextAdapter,
+} from './media';
+import { Mention, mentionMarkdownAdapter, mentionPlainTextAdapter } from './mention';
+import {
+  PageLink,
+  pageLinkBlocks,
+  pageLinkMarkdownAdapter,
+  pageLinkPlainTextAdapter,
+} from './page-link';
 import { corePlainTextAdapter } from './plain-text-adapter';
+import { SCHEMA_V2_MIGRATION } from './schema-v2';
+import { SCHEMA_V3_MIGRATION } from './schema-v3';
+import {
+  TableOfContents,
+  tableOfContentsBlocks,
+  tableOfContentsMarkdownAdapter,
+  tableOfContentsPlainTextAdapter,
+} from './table-of-contents';
+import {
+  TOGGLE_EXTENSIONS,
+  toggleBlocks,
+  toggleMarkdownAdapter,
+  togglePlainTextAdapter,
+} from './toggle';
 
 /**
  * The canonical extension registry.
@@ -51,10 +119,12 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
       HardBreak,
       HorizontalRule,
       Blockquote,
-      CodeBlock.configure({ languageClassPrefix: 'language-' }),
+      ExocortexCodeBlock,
     ],
     markdown: coreMarkdownAdapter,
     plainText: corePlainTextAdapter,
+    migrations: [SCHEMA_V2_MIGRATION, SCHEMA_V3_MIGRATION],
+    blocks: coreStructureBlocks,
   },
   {
     name: 'core-marks',
@@ -74,25 +144,119 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
     ],
   },
   {
+    name: 'inline-styling',
+    schemaVersion: 2,
+    extensions: INLINE_STYLING_EXTENSIONS,
+    markdown: inlineStylingMarkdownAdapter,
+  },
+  {
+    name: 'mention',
+    schemaVersion: 2,
+    extensions: [Mention],
+    markdown: mentionMarkdownAdapter,
+    plainText: mentionPlainTextAdapter,
+  },
+  {
     name: 'lists',
     schemaVersion: 1,
     extensions: [BulletList, OrderedList, ListItem, TaskList, TaskItem.configure({ nested: true })],
+    blocks: listBlocks,
+  },
+  {
+    name: 'toggle',
+    schemaVersion: 2,
+    extensions: TOGGLE_EXTENSIONS,
+    markdown: toggleMarkdownAdapter,
+    plainText: togglePlainTextAdapter,
+    blocks: toggleBlocks,
+  },
+  {
+    name: 'collapsible-heading',
+    schemaVersion: 2,
+    extensions: [CollapsibleHeading],
+  },
+  {
+    name: 'columns',
+    schemaVersion: 2,
+    extensions: COLUMN_EXTENSIONS,
+    markdown: columnsMarkdownAdapter,
+    plainText: columnsPlainTextAdapter,
+    blocks: columnBlocks,
+  },
+  {
+    name: 'mathematics',
+    schemaVersion: 2,
+    extensions: MATHEMATICS_EXTENSIONS,
+    markdown: mathematicsMarkdownAdapter,
+    plainText: mathematicsPlainTextAdapter,
+    blocks: mathematicsBlocks,
+  },
+  {
+    name: 'table-of-contents',
+    schemaVersion: 2,
+    extensions: [TableOfContents],
+    markdown: tableOfContentsMarkdownAdapter,
+    plainText: tableOfContentsPlainTextAdapter,
+    blocks: tableOfContentsBlocks,
+  },
+  {
+    name: 'page-link',
+    schemaVersion: 2,
+    extensions: [PageLink],
+    markdown: pageLinkMarkdownAdapter,
+    plainText: pageLinkPlainTextAdapter,
+    blocks: pageLinkBlocks,
+  },
+  {
+    name: 'breadcrumb',
+    schemaVersion: 2,
+    extensions: [Breadcrumb],
+    markdown: breadcrumbMarkdownAdapter,
+    plainText: breadcrumbPlainTextAdapter,
+    blocks: breadcrumbBlocks,
+  },
+  {
+    name: 'database-embed',
+    schemaVersion: 3,
+    extensions: [DatabaseEmbed],
+    markdown: databaseEmbedMarkdownAdapter,
+    plainText: databaseEmbedPlainTextAdapter,
+    blocks: databaseEmbedBlocks,
   },
   {
     name: 'tables',
     schemaVersion: 1,
     extensions: [Table.configure({ resizable: false }), TableRow, TableHeader, TableCell],
+    blocks: tableBlocks,
   },
   {
     name: 'media',
     schemaVersion: 1,
     extensions: [Image.configure({ inline: false, allowBase64: false })],
+    blocks: imageBlocks,
+  },
+  {
+    name: 'media-blocks',
+    schemaVersion: 2,
+    extensions: MEDIA_EXTENSIONS,
+    markdown: mediaMarkdownAdapter,
+    plainText: mediaPlainTextAdapter,
+    blocks: mediaBlocks,
+  },
+  {
+    name: 'embed',
+    schemaVersion: 2,
+    extensions: EMBED_EXTENSIONS,
+    markdown: embedMarkdownAdapter,
+    plainText: embedPlainTextAdapter,
+    blocks: embedBlocks,
   },
   {
     name: 'callout',
     schemaVersion: 1,
     extensions: [Callout],
     markdown: calloutMarkdownAdapter,
+    blocks: calloutBlocks,
   },
   {
     name: 'block-id',
@@ -124,19 +288,21 @@ export interface MarkdownRegistry {
     string,
     (token: MarkdownToken, context: MarkdownTokenHandlerContext) => boolean | void
   >;
+  containers: Record<string, MarkdownContainerOpener>;
 }
 
 /** Merges the Markdown adapters of every registered extension. */
 export function buildMarkdownRegistry(
   extensions: readonly ExocortexEditorExtension[] = EXOCORTEX_EDITOR_EXTENSIONS,
 ): MarkdownRegistry {
-  const registry: MarkdownRegistry = { blocks: {}, marks: {}, tokens: {} };
+  const registry: MarkdownRegistry = { blocks: {}, marks: {}, tokens: {}, containers: {} };
   for (const entry of extensions) {
     const adapter: MarkdownExtensionAdapter | undefined = entry.markdown;
     if (adapter === undefined) continue;
     Object.assign(registry.blocks, adapter.blocks ?? {});
     Object.assign(registry.marks, adapter.marks ?? {});
     Object.assign(registry.tokens, adapter.tokens ?? {});
+    Object.assign(registry.containers, adapter.containers ?? {});
   }
   return registry;
 }
@@ -159,6 +325,18 @@ export function collectMigrations(
   return extensions
     .flatMap((entry) => entry.migrations ?? [])
     .sort((a, b) => a.toVersion - b.toVersion);
+}
+
+/**
+ * The block catalog of every registered extension, in registry order.
+ *
+ * One list, three consumers: the slash menu, the "turn into" menu and the block
+ * action menu. A new block appears in all of them by adding a catalog entry.
+ */
+export function buildBlockCatalog(
+  extensions: readonly ExocortexEditorExtension[] = EXOCORTEX_EDITOR_EXTENSIONS,
+): BlockCatalogEntry[] {
+  return extensions.flatMap((entry) => entry.blocks ?? []);
 }
 
 /** Highest schema version any registered extension declares. */

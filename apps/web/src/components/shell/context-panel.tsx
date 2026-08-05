@@ -70,11 +70,18 @@ export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
             </div>
             <div>
               <dt className="text-xs text-muted-foreground">Zuletzt geändert</dt>
-              <dd>{new Date(document.data.updatedAt).toLocaleString('de-DE')}</dd>
+              {/* Timestamps, versions and IDs are values, so they get the
+                  instrument face (packages/ui/src/styles.css). */}
+              <dd className="exocortex-numeric">
+                {new Date(document.data.updatedAt).toLocaleString('de-DE')}
+              </dd>
             </div>
             <div>
               <dt className="text-xs text-muted-foreground">Zuletzt verarbeitet</dt>
-              <dd data-testid="materialized-at">
+              <dd
+                className={document.data.materializedAt === null ? undefined : 'exocortex-numeric'}
+                data-testid="materialized-at"
+              >
                 {document.data.materializedAt === null
                   ? 'noch nicht'
                   : new Date(document.data.materializedAt).toLocaleString('de-DE')}
@@ -82,7 +89,7 @@ export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
             </div>
             <div>
               <dt className="text-xs text-muted-foreground">Schema-Version</dt>
-              <dd>{document.data.schemaVersion}</dd>
+              <dd className="exocortex-numeric">{document.data.schemaVersion}</dd>
             </div>
             <div>
               <dt className="text-xs text-muted-foreground">Zugriff</dt>

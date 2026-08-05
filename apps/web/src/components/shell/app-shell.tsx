@@ -19,10 +19,14 @@ import {
   cn,
   ExocortexWordmark,
   ResizablePanel,
+  Sheet,
+  SheetContent,
+  SheetTitle,
   SkipToContentLink,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
+  useIsMobile,
 } from '@exocortex/ui';
 
 import { SearchCommand } from '@/components/search/search-command';
@@ -81,15 +85,28 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
   const workspaceId = params.workspaceId ?? null;
   const documentId = params.documentId ?? null;
 
+  // Below the mobile breakpoint, panels overlay the canvas instead of sharing
+  // it, so a first-time visitor should not land with one already covering the
+  // screen. Returning visitors keep whatever they last chose, on any device.
+  const isMobile = useIsMobile();
+  const sidebarFallback = React.useMemo<PanelPreference>(
+    () => (isMobile ? { ...SIDEBAR_DEFAULT, open: false } : SIDEBAR_DEFAULT),
+    [isMobile],
+  );
+  const contextFallback = React.useMemo<PanelPreference>(
+    () => (isMobile ? { ...CONTEXT_DEFAULT, open: false } : CONTEXT_DEFAULT),
+    [isMobile],
+  );
+
   // Layout preferences are the only persisted client state.
   const [sidebar, setSidebar] = usePersistentState(
     SIDEBAR_STORAGE_KEY,
-    SIDEBAR_DEFAULT,
+    sidebarFallback,
     parsePanelPreference,
   );
   const [context, setContext] = usePersistentState(
     CONTEXT_STORAGE_KEY,
-    CONTEXT_DEFAULT,
+    contextFallback,
     parsePanelPreference,
   );
   const [searchOpen, setSearchOpen] = React.useState(false);
@@ -189,7 +206,9 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
         >
           <SearchIcon />
           <span className="flex-1 text-left">Suchen …</span>
-          <kbd className="rounded border border-border px-1 text-[0.625rem]">Strg K</kbd>
+          <kbd className="exocortex-numeric rounded border border-border px-1 text-[0.625rem]">
+            Strg K
+          </kbd>
         </Button>
 
         <div className="ml-auto flex items-center gap-2">
@@ -238,26 +257,46 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       </AppHeader>
 
       <AppBody>
-        {sidebarOpen && workspaceId !== null ? (
-          <ResizablePanel
-            width={sidebar.width}
-            onWidthChange={(width) => setSidebar({ ...sidebar, width })}
-            handle="right"
-            minWidth={200}
-            maxWidth={420}
-            label="Breite der Navigation"
-            className="border-r border-border"
-            data-testid="sidebar"
-          >
-            <nav aria-label="Seitennavigation" className="flex min-h-0 flex-1 flex-col">
-              <PageTree workspaceId={workspaceId} />
-            </nav>
-          </ResizablePanel>
+        {workspaceId !== null ? (
+          isMobile ? (
+            <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+              <SheetContent side="left" data-testid="sidebar">
+                <SheetTitle className="exocortex-sr-only">Navigation</SheetTitle>
+                <nav aria-label="Seitennavigation" className="flex min-h-0 flex-1 flex-col">
+                  <PageTree workspaceId={workspaceId} />
+                </nav>
+              </SheetContent>
+            </Sheet>
+          ) : sidebarOpen ? (
+            <ResizablePanel
+              width={sidebar.width}
+              onWidthChange={(width) => setSidebar({ ...sidebar, width })}
+              handle="right"
+              minWidth={200}
+              maxWidth={420}
+              label="Breite der Navigation"
+              className="border-r border-border bg-surface"
+              data-testid="sidebar"
+            >
+              <nav aria-label="Seitennavigation" className="flex min-h-0 flex-1 flex-col">
+                <PageTree workspaceId={workspaceId} />
+              </nav>
+            </ResizablePanel>
+          ) : null
         ) : null}
 
         <AppMain>{children}</AppMain>
 
-        {contextOpen ? (
+        {isMobile ? (
+          <Sheet open={contextOpen} onOpenChange={setContextOpen}>
+            <SheetContent side="right" data-testid="context-panel">
+              <SheetTitle className="exocortex-sr-only">Kontextbereich</SheetTitle>
+              <aside aria-label="Kontextbereich" className="flex min-h-0 flex-1 flex-col">
+                <ContextPanel workspaceId={workspaceId} documentId={documentId} />
+              </aside>
+            </SheetContent>
+          </Sheet>
+        ) : contextOpen ? (
           <ResizablePanel
             width={context.width}
             onWidthChange={(width) => setContext({ ...context, width })}
@@ -265,7 +304,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
             minWidth={260}
             maxWidth={520}
             label="Breite des Kontextbereichs"
-            className={cn('border-l border-border')}
+            className={cn('border-l border-border bg-surface')}
             data-testid="context-panel"
           >
             <aside aria-label="Kontextbereich" className="flex min-h-0 flex-1 flex-col">

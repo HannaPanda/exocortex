@@ -184,6 +184,18 @@ export function canRestoreDocument(
   return ALLOW;
 }
 
+/**
+ * Adding, renaming or deleting a database property or view. Deliberately the
+ * same bar as `canEditDocument` — Notion does not require a higher role to
+ * change a database's schema than to edit one of its rows.
+ */
+export function canManageDatabaseSchema(
+  role: WorkspaceRole | null,
+  collection: DocumentPolicySubject,
+): PolicyDecision {
+  return canEditDocument(role, collection);
+}
+
 export function canRestoreSnapshot(
   role: WorkspaceRole | null,
   document: DocumentPolicySubject,

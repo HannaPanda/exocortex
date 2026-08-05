@@ -147,6 +147,36 @@ enum DocumentType {
   COLLECTION
 }
 
+enum DatabasePropertyType {
+  TEXT
+  NUMBER
+  SELECT
+  MULTI_SELECT
+  DATE
+  CHECKBOX
+  URL
+  EMAIL
+  PHONE
+  PERSON
+  FILES
+  CREATED_TIME
+  UPDATED_TIME
+  CREATED_BY
+  UPDATED_BY
+  // Reserved for a later round: the enum values exist now so implementing
+  // relations/rollups/formulas will not require another destructive migration.
+  RELATION
+  ROLLUP
+  FORMULA
+}
+
+enum DatabaseViewType {
+  TABLE
+  BOARD
+  GALLERY
+  CALENDAR
+}
+
 model Document {
   id          String       @id @default(cuid(2))
   workspaceId String
@@ -178,6 +208,13 @@ model Document {
   embeddings  DocumentEmbedding[]
   attachments Attachment[]
   aiRuns      AiRun[]
+
+  /// Present when `type` is COLLECTION: the property and view definitions of
+  /// this database.
+  databaseProperties DatabaseProperty[] @relation("CollectionProperties")
+  databaseViews      DatabaseView[]     @relation("CollectionViews")
+  /// Present when this document is a row (a PAGE child of a COLLECTION).
+  propertyValues     DocumentPropertyValue[] @relation("RowPropertyValues")
 
   @@index([workspaceId, parentId, orderKey])
   @@index([workspaceId, archivedAt])
@@ -256,6 +293,108 @@ model DocumentEmbedding {
 
   @@index([documentId])
   @@map("document_embedding")
+}
+
+// ---------------------------------------------------------------------------
+// Databases (Notion-style typed collections)
+//
+// A database is a Document with type COLLECTION. Its rows are ordinary
+// Document children (type PAGE) — a row is a fully editable page, and reuses
+// the tree, orderKey, search index, trash and workspace authorization the
+// Document model already has. See ADR-011.
+// ---------------------------------------------------------------------------
+
+model DatabaseProperty {
+  id         String               @id @default(cuid(2))
+  documentId String
+  document   Document             @relation("CollectionProperties", fields: [documentId], references: [id], onDelete: Cascade)
+  type       DatabasePropertyType
+  name       String
+  orderKey   String
+  /// Type-specific, non-filterable configuration (number display format,
+  /// whether a DATE property includes time-of-day). Never used for
+  /// SELECT/MULTI_SELECT options — those are DatabasePropertyOption rows so
+  /// renaming an option never rewrites every row's value.
+  config     Json?
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  options DatabasePropertyOption[]
+  values  DocumentPropertyValue[]
+
+  @@unique([documentId, name])
+  @@index([documentId, orderKey])
+  @@map("database_property")
+}
+
+model DatabasePropertyOption {
+  id         String           @id @default(cuid(2))
+  propertyId String
+  property   DatabaseProperty @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  label      String
+  /// One of the nine content-colour token names in packages/ui/src/tokens.css
+  /// (gray/brown/orange/yellow/green/blue/purple/pink/red), never a hex value.
+  color      String
+  orderKey   String
+  createdAt  DateTime         @default(now())
+
+  @@unique([propertyId, label])
+  @@index([propertyId, orderKey])
+  @@map("database_property_option")
+}
+
+model DatabaseView {
+  id                String           @id @default(cuid(2))
+  documentId        String
+  document          Document         @relation("CollectionViews", fields: [documentId], references: [id], onDelete: Cascade)
+  type              DatabaseViewType
+  name              String
+  orderKey          String
+  /// Structured filter tree, validated against databaseFilterGroupSchema
+  /// before it ever reaches the query engine. Never free-form SQL or JS.
+  filters           Json             @default("[]")
+  sorts             Json             @default("[]")
+  /// Board's columns / optional Gallery grouping. Null means ungrouped.
+  groupByPropertyId String?
+  /// Visible/ordered property list plus view-specific settings (Calendar's
+  /// date property id, Gallery's cover property id).
+  config            Json             @default("{}")
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@unique([documentId, name])
+  @@index([documentId, orderKey])
+  @@map("database_view")
+}
+
+/// One row per (row document, property) pair. Typed columns rather than a
+/// JSONB blob so Table/Board/Calendar/Gallery views can filter and sort with
+/// indexed SQL instead of scanning and parsing a blob per row.
+model DocumentPropertyValue {
+  id         String           @id @default(cuid(2))
+  documentId String
+  document   Document         @relation("RowPropertyValues", fields: [documentId], references: [id], onDelete: Cascade)
+  propertyId String
+  property   DatabaseProperty @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  /// TEXT, URL, EMAIL, PHONE, and the selected option id for SELECT.
+  textValue   String?
+  numberValue Decimal?  @db.Decimal(20, 6)
+  boolValue   Boolean?
+  dateValue   DateTime?
+  /// Arrays only: MULTI_SELECT (option ids), PERSON (user ids), FILES
+  /// (attachment ids). Never used for the scalar types above.
+  jsonValue   Json?
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([documentId, propertyId])
+  @@index([documentId])
+  @@index([propertyId, textValue])
+  @@index([propertyId, numberValue])
+  @@index([propertyId, dateValue])
+  @@index([propertyId, boolValue])
+  @@map("document_property_value")
 }
 
 // ---------------------------------------------------------------------------

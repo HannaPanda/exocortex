@@ -28,7 +28,11 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
         'inline-flex flex-1 items-center justify-center gap-1.5 rounded-sm px-2 py-1 text-xs font-medium',
         'text-muted-foreground transition-colors select-none',
         'hover:text-foreground',
-        'data-selected:bg-card data-selected:text-foreground',
+        // The selected tab has to sit *above* the track, not below it: `bg-card`
+        // is darker than `bg-muted` and read as a hole punched into the list.
+        // No weight change here: the triggers share the row with `flex-1`, and a
+        // heavier label would reflow the neighbours on every tab switch.
+        'data-selected:bg-accent-strong data-selected:text-foreground',
         "[&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-3.5",
         className,
       )}

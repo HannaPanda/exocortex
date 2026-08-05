@@ -1,5 +1,7 @@
 import { type Extensions } from '@tiptap/core';
 
+import { type BlockCatalogEntry } from './block-catalog';
+
 /**
  * Version of the canonical Exocortex document schema.
  *
@@ -7,7 +9,7 @@ import { type Extensions } from '@tiptap/core';
  * documents must be migrated for. Every `DocumentContent` and
  * `DocumentSnapshot` row stores the version it was written with.
  */
-export const EXOCORTEX_SCHEMA_VERSION = 1;
+export const EXOCORTEX_SCHEMA_VERSION = 3;
 
 /** Minimal structural view of a ProseMirror JSON node. */
 export interface ProseMirrorMark {
@@ -76,13 +78,27 @@ export interface MarkdownTokenHandlerContext {
   openNode(type: string, attrs?: Record<string, unknown>): void;
   /** Closes the most recently opened node. */
   closeNode(): void;
-  /** Adds a leaf node to the current parent. */
+  /** Adds a node with optional pre-built content to the current parent. */
   addNode(type: string, attrs?: Record<string, unknown>, content?: ProseMirrorNode[]): void;
+  /** Adds a node whose only content is a single unformatted text run. */
+  addTextNode(type: string, text: string, attrs?: Record<string, unknown>): void;
   /** Adds text with the currently active marks. */
   addText(text: string): void;
   openMark(type: string, attrs?: Record<string, unknown>): void;
   closeMark(type: string): void;
 }
+
+/**
+ * Opens the nodes for one `:::name` container during Markdown import.
+ *
+ * Returns how many nodes were opened; the importer closes exactly that many when
+ * it reaches the closing `:::`, so a handler never has to track nesting itself.
+ * A leaf container (`:::toc`) adds its node and returns `0`.
+ */
+export type MarkdownContainerOpener = (
+  params: string,
+  context: MarkdownTokenHandlerContext,
+) => number;
 
 export interface MarkdownExtensionAdapter {
   /** Block serializers keyed by ProseMirror node type name. */
@@ -97,6 +113,11 @@ export interface MarkdownExtensionAdapter {
     string,
     (token: MarkdownToken, context: MarkdownTokenHandlerContext) => boolean | void
   >;
+  /**
+   * Handlers for the Exocortex container syntax, keyed by container name
+   * (`toggle`, `columns`, `toc`, …). See `markdown/container-rule.ts`.
+   */
+  containers?: Record<string, MarkdownContainerOpener>;
 }
 
 /** Subset of the markdown-it token shape that adapters may rely on. */
@@ -108,9 +129,10 @@ export interface MarkdownToken {
   markup: string;
   level: number;
   nesting: number;
-  attrs: [string, string][] | null;
+  /** markdown-it allows numeric attribute values, so the union is not optional. */
+  attrs: [string, string | number][] | null;
   children: MarkdownToken[] | null;
-  attrGet(name: string): string | null;
+  attrGet(name: string): string | number | null;
 }
 
 // --------------------------------------------------------------------------
@@ -164,4 +186,9 @@ export interface ExocortexEditorExtension {
   markdown?: MarkdownExtensionAdapter;
   plainText?: PlainTextAdapter;
   migrations?: DocumentMigration[];
+  /**
+   * Entries for the block catalog, which feeds the slash menu, the "turn into"
+   * menu and the block action menu. See `block-catalog.ts`.
+   */
+  blocks?: readonly BlockCatalogEntry[];
 }

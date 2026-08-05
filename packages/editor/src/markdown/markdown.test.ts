@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { BLOCK_ID_ATTRIBUTE } from '../block-id';
-import { type ProseMirrorDocument, type ProseMirrorNode } from '../contract';
+import { EXOCORTEX_SCHEMA_VERSION, type ProseMirrorDocument, type ProseMirrorNode } from '../contract';
 import {
   BLOCK_ID_MARKDOWN,
   CALLOUT_MARKDOWN,
@@ -147,7 +147,7 @@ describe('markdown export', () => {
     expect(markdown.startsWith('---\n')).toBe(true);
     expect(markdown).toContain('title: Vollständiges Beispiel');
     expect(markdown).toContain('customProperty: bleibt erhalten');
-    expect(markdown).toContain('exocortexSchemaVersion: 1');
+    expect(markdown).toContain(`exocortexSchemaVersion: ${EXOCORTEX_SCHEMA_VERSION}`);
   });
 
   it('re-emits callouts using the Exocortex syntax', () => {

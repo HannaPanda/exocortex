@@ -15,7 +15,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#191a19',
+  /* Must stay in sync with `--background` in packages/ui/src/tokens.css.
+     The browser chrome cannot read a CSS custom property, so this is the one
+     place where the value is duplicated. */
+  themeColor: '#0e0f14',
   width: 'device-width',
   initialScale: 1,
 };

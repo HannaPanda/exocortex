@@ -1,6 +1,15 @@
 @import 'tailwindcss';
 @import './tokens.css';
 
+/* Self-hosted, bundled at build time: the same "never fetched at runtime"
+   rule that already applies to KaTeX (apps/web/src/app/globals.css). Both
+   are SIL OFL 1.1, free to embed. Regular + italic cover every weight the
+   type ladder in DESIGN.md uses; JetBrains Mono only ever appears upright. */
+@import '@fontsource-variable/inter/wght.css';
+@import '@fontsource-variable/inter/wght-italic.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+
 /*
  * Tailwind 4 theme mapping.
  *
@@ -21,6 +30,8 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
 
+  --color-overlay: var(--overlay);
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-text: var(--primary-text);
@@ -30,12 +41,15 @@
 
   --color-accent: var(--accent-solid);
   --color-accent-foreground: var(--accent-foreground);
+  /* The selected state: current page, highlighted command, active tab. */
+  --color-accent-strong: var(--accent-strong);
 
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
 
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-text: var(--destructive-text);
 
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
@@ -51,16 +65,50 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
+  /* Label text on a collaboration cursor. The cursor itself is one of the six
+     presence colours, all of which are light enough to carry this. */
+  --color-presence-foreground: var(--presence-foreground);
+
+  /* Author-chosen content colours, so the editor colour picker can render its
+     swatches with the same tokens the document text uses. */
+  --color-content-gray: var(--content-gray);
+  --color-content-brown: var(--content-brown);
+  --color-content-orange: var(--content-orange);
+  --color-content-yellow: var(--content-yellow);
+  --color-content-green: var(--content-green);
+  --color-content-blue: var(--content-blue);
+  --color-content-purple: var(--content-purple);
+  --color-content-pink: var(--content-pink);
+  --color-content-red: var(--content-red);
+
+  --color-content-bg-gray: var(--content-bg-gray);
+  --color-content-bg-brown: var(--content-bg-brown);
+  --color-content-bg-orange: var(--content-bg-orange);
+  --color-content-bg-yellow: var(--content-bg-yellow);
+  --color-content-bg-green: var(--content-bg-green);
+  --color-content-bg-blue: var(--content-bg-blue);
+  --color-content-bg-purple: var(--content-bg-purple);
+  --color-content-bg-pink: var(--content-bg-pink);
+  --color-content-bg-red: var(--content-bg-red);
+
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius);
   --radius-lg: var(--radius-lg);
 
+  /* Motion vocabulary from tokens.css. Overriding Tailwind's two `--default-*`
+     variables gives every `transition-*` utility in the repository the curve and
+     the duration without a single component having to opt in. `ease-quint` is
+     available as a utility for the rare case that needs it explicitly. */
+  --ease-quint: var(--ease-out-quint);
+  --default-transition-timing-function: var(--ease-out-quint);
+  --default-transition-duration: var(--duration-fast);
+
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-    'Noto Sans', sans-serif;
+    'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
   --font-mono:
-    ui-monospace, 'JetBrains Mono', 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono',
-    monospace;
+    'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas,
+    'Liberation Mono', monospace;
 }
 
 @layer base {
@@ -79,6 +127,16 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+  }
+
+  /* The caret is where the user's attention actually is, so it carries the
+     signal colour. This is the one place amber appears without being asked for,
+     and it is the reason the editor feels like the product rather than like a
+     text area that happens to be dark. */
+  input,
+  textarea,
+  [contenteditable] {
+    caret-color: var(--primary);
   }
 
   /* Focus must always be visible: focus states are part of the contract, not a
@@ -122,7 +180,117 @@
   }
 }
 
+/*
+ * The save heartbeat. Fires at full signal and decays into the resting dot, so
+ * the end state is identical to the unanimated element. That is what makes
+ * `prefers-reduced-motion` (which collapses the duration in the base layer) a
+ * complete experience rather than a broken one: the beat is lost, nothing else.
+ */
+@keyframes exocortex-beat {
+  from {
+    background-color: var(--primary);
+    transform: scale(1.6);
+  }
+  to {
+    background-color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
+    transform: scale(1);
+  }
+}
+
 @layer components {
+  .exocortex-beat {
+    animation: exocortex-beat var(--duration-settle) var(--ease-out-quint) forwards;
+  }
+
+  /*
+   * Instrument typography for values: monospace with tabular figures, so a
+   * count or a clock keeps its width while it changes and nothing jitters.
+   *
+   * Strictly for numbers and identifiers: timestamps, counts, keyboard keys,
+   * IDs, versions. Never for labels, never for prose. That boundary is what
+   * separates this from a terminal costume, which PRODUCT.md rules out.
+   */
+  .exocortex-numeric {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /*
+   * Author-chosen text and background colour (the `textColor` mark).
+   *
+   * The document stores a colour *name*; the mapping from name to value lives
+   * here alone. Two custom properties instead of nineteen `color:` rules keep the
+   * indirection to one place, and mean a run with only a background inherits the
+   * normal foreground instead of resetting it.
+   */
+  .exocortex-text-color {
+    color: var(--exocortex-content-color, inherit);
+    background-color: var(--exocortex-content-background, transparent);
+  }
+
+  .exocortex-text-color[data-text-background] {
+    border-radius: var(--radius-sm);
+    padding: 0.0625rem 0.1875rem;
+    margin: 0 -0.0625rem;
+  }
+
+  [data-text-color='gray'] {
+    --exocortex-content-color: var(--content-gray);
+  }
+  [data-text-color='brown'] {
+    --exocortex-content-color: var(--content-brown);
+  }
+  [data-text-color='orange'] {
+    --exocortex-content-color: var(--content-orange);
+  }
+  [data-text-color='yellow'] {
+    --exocortex-content-color: var(--content-yellow);
+  }
+  [data-text-color='green'] {
+    --exocortex-content-color: var(--content-green);
+  }
+  [data-text-color='blue'] {
+    --exocortex-content-color: var(--content-blue);
+  }
+  [data-text-color='purple'] {
+    --exocortex-content-color: var(--content-purple);
+  }
+  [data-text-color='pink'] {
+    --exocortex-content-color: var(--content-pink);
+  }
+  [data-text-color='red'] {
+    --exocortex-content-color: var(--content-red);
+  }
+
+  [data-text-background='gray'] {
+    --exocortex-content-background: var(--content-bg-gray);
+  }
+  [data-text-background='brown'] {
+    --exocortex-content-background: var(--content-bg-brown);
+  }
+  [data-text-background='orange'] {
+    --exocortex-content-background: var(--content-bg-orange);
+  }
+  [data-text-background='yellow'] {
+    --exocortex-content-background: var(--content-bg-yellow);
+  }
+  [data-text-background='green'] {
+    --exocortex-content-background: var(--content-bg-green);
+  }
+  [data-text-background='blue'] {
+    --exocortex-content-background: var(--content-bg-blue);
+  }
+  [data-text-background='purple'] {
+    --exocortex-content-background: var(--content-bg-purple);
+  }
+  [data-text-background='pink'] {
+    --exocortex-content-background: var(--content-bg-pink);
+  }
+  [data-text-background='red'] {
+    --exocortex-content-background: var(--content-bg-red);
+  }
+
   /* Screen-reader-only helper, used by skip links and icon-only buttons. */
   .exocortex-sr-only {
     position: absolute;

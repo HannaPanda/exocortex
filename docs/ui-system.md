@@ -7,33 +7,93 @@ semantic CSS variable; `packages/ui/src/styles.css` maps them onto Tailwind 4's
 `@theme`. Components use utilities such as `bg-card`, `text-muted-foreground` and
 `border-border` — **never** a hexadecimal value.
 
-Base palette:
+Base palette — **"Amber Instrument"**, authored in OKLCH. Cool violet-tinted
+graphite surfaces, a warm off-white foreground, and a single amber signal.
+`DESIGN.md` at the repository root explains the system; this table is the
+lookup.
 
 | Token | Value | Use |
 | ----- | ----- | --- |
-| `--background` | `#191A19` | app background |
-| `--foreground` | `#E4EFCE` | body text (13.6:1) |
-| `--card` / `--popover` | `#1D201D` / `#20241F` | raised surfaces |
-| `--primary` | `#4E9F3D` | primary actions, filled |
-| `--primary-text` | `#6FBF5C` | primary green as *text* (6.5:1) |
-| `--secondary` | `#1E5128` | secondary actions |
-| `--accent-foreground` | `#D8E9A8` | accent text |
-| `--muted-foreground` | `#A8B994` | secondary text (8.1:1) |
-| `--border` / `--border-strong` | `#304332` / `#3D5540` | separators |
-| `--ring` | `#4E9F3D` | focus ring |
+| `--background` | `oklch(0.17 0.010 275)` | app background |
+| `--foreground` | `oklch(0.93 0.008 85)` | body text (15.6:1) |
+| `--card` / `--popover` | `oklch(0.21 0.012 275)` / `oklch(0.235 0.013 275)` | raised surfaces |
+| `--overlay` | `oklch(0.11 0.008 275 / 0.72)` | modal scrim |
+| `--primary` | `oklch(0.78 0.150 62)` | primary actions, filled |
+| `--primary-text` | `oklch(0.78 0.150 62)` | amber as *text* and icons (9.2:1) |
+| `--secondary` | `oklch(0.26 0.013 275)` | secondary actions, deliberately neutral |
+| `--accent-solid` | `oklch(0.26 0.025 62)` | hover surfaces, faintly warm |
+| `--accent-strong` | `oklch(0.33 0.055 62)` | the selected surface (10.1:1) |
+| `--muted-foreground` | `oklch(0.72 0.012 275)` | secondary text (7.7:1) |
+| `--border` | `oklch(0.32 0.014 275)` | separation only (1.5:1) |
+| `--border-strong` / `--input` | `oklch(0.53 0.016 275)` | perceivable boundaries (3.4:1) |
+| `--ring` | `oklch(0.78 0.150 62)` | focus ring (9.2:1) |
 
-Contrast notes:
+Rules that fall out of the system:
 
-* the brief's `--foreground: #d8e9a8` was lightened to `#E4EFCE` so long-form text
-  clears AAA rather than sitting just above AA
-* `--primary` is never used for body text; `--primary-text` exists for links and
-  icons and is the only green used on text
-* `--presence-1…6` are the collaboration cursor colours, chosen to stay legible on
-  the dark background and to remain distinguishable for common colour vision
-  deficiencies
+* **Amber means "interactive or happening".** Focus, the active page, the primary
+  action and your own cursor. Nothing decorative is amber. Keep it under roughly
+  10% of any screen or it stops meaning anything.
+* **Selected is not a stronger hover.** Hover is `--accent-solid`, selection is
+  `--accent-strong`, and selection always changes something besides the surface
+  as well (weight, or an amber icon). The page tree, the command palette and the
+  context tabs use the same treatment, so "this one" looks the same everywhere.
+* **The chrome sits above the canvas.** Header, sidebar and context panel are
+  `--surface`; the document area stays `--background`. The darkest plane in the
+  app is the one you write on.
+* **Fill colours are not text colours.** `--primary` and `--destructive` are
+  sized for dark text on top of them. Use `--primary-text` and
+  `--destructive-text` when the colour is the text or the icon.
+* **`--border` does not delimit a control.** It separates. Anything the user must
+  perceive as a boundary (form fields, scrollbar thumbs, structural rules) uses
+  `--input` or `--border-strong`, which clear WCAG 1.4.11 at 3:1.
+* **Warning is not the signal.** `--warning` sits 38 degrees of hue away from
+  `--primary` so a caution never reads as a primary action.
+* **Content colours are not interface colours.** `--content-*` and `--content-bg-*`
+  are the ten colours a *writer* can apply to text (`packages/editor`'s `textColor`
+  mark). They sit outside the amber signal system because the author chooses them,
+  and a document only ever stores the colour *name*, never a value, so it stays
+  theme-independent. The syntax highlighting theme is built from the same tokens.
+* `--presence-1…6` are the collaboration cursor colours, spread across both hue
+  *and* lightness (0.66…0.86) so they stay distinguishable under deuteranopia and
+  protanopia, where hue alone collapses. `--presence-foreground` is the label
+  text on all six, at 5.7:1 or better.
+* **Amber also marks events, not only places.** The caret carries `--primary`,
+  and the save heartbeat (`apps/web/src/components/shell/save-indicator.tsx`)
+  fires amber for `--duration-settle` when an edit reaches the server. Everything
+  else that is amber means "you can act here".
+* Status is never carried by colour alone; every status also has an icon and
+  text.
 
-The app is dark by design. The tokens are scoped so a light theme can be added by
-overriding them under `:root[data-theme='light']` without touching components.
+## Motion
+
+One curve and two durations live in `tokens.css`: `--ease-out-quint`,
+`--duration-fast` (120ms) and `--duration-settle` (480ms). `styles.css` maps the
+curve and the fast duration onto Tailwind's `--default-transition-timing-function`
+and `--default-transition-duration`, so **every `transition-*` utility in the
+repository already has them**. Only reach for an explicit `duration-*` when a
+transition genuinely needs a different length, and never introduce a second
+easing curve.
+
+Motion always reports a state change. No entrance choreography, no scroll
+effects, no decorative movement. Reduced motion is handled globally in the base
+layer, so anything that animates must also be readable while standing still.
+
+## Values versus labels
+
+`.exocortex-numeric` (mono, `tabular-nums`) is for **values**: timestamps,
+counts, versions, IDs, keyboard keys, the search readout. Labels, headings and
+prose stay in the sans stack. Holding that line is what makes the mono read as
+instrument precision rather than as a terminal theme, which PRODUCT.md rules out
+as an anti-reference.
+
+`apps/web/src/app/layout.tsx` duplicates `--background` as the `themeColor`
+viewport value. Browser chrome cannot read a custom property, so that is the one
+place the value exists twice. Keep them in sync.
+
+The app is dark by design: it is built for long writing sessions, and the cool
+surface is what lets the warm foreground and the amber signal carry the
+hierarchy. The tokens are scoped so a light theme can be added by overriding them
+under `:root[data-theme='light']` without touching components.
 
 ## Component workflow (mandatory)
 
@@ -77,6 +137,7 @@ owns the code and nothing is fetched at runtime.
 | `src/tokens.css` | semantic tokens |
 | `src/styles.css` | Tailwind theme mapping, base layer, focus and scrollbar styles |
 | `src/components/ui/*` | installed and adapted shadcn components |
+| `src/components/ui/toolbar.tsx` | custom primitive: `role="toolbar"` with a roving tabindex, on Base UI |
 | `src/components/layout.tsx` | `AppShell`, `AppHeader`, `AppBody`, `AppMain`, `ResizablePanel`, `SkipToContentLink` |
 | `src/components/states.tsx` | `LoadingState`, `EmptyState`, `ErrorState` |
 | `src/components/logo.tsx` | **LOGO PLACEHOLDER** — `ExocortexLogo`, `ExocortexWordmark` |
@@ -116,6 +177,21 @@ indicator.
 
 Keyboard shortcuts: `Ctrl/⌘ K` command menu, `Ctrl/⌘ B` sidebar,
 `Ctrl/⌘ .` context panel.
+
+## Editor chrome
+
+The editor's own surfaces live in `apps/web/src/components/editor` and are listed in
+`docs/editor-extensions.md`. Three rules hold there:
+
+* **the block catalog is the single source.** The slash menu, the "Umwandeln in"
+  menu and the block action menu all read `buildBlockCatalog()`; none of them keeps
+  its own list.
+* **floating chrome is React, in-document rendering is not.** Menus and toolbars are
+  React components here; node views that render inside the document are plain DOM in
+  `packages/editor`, so the schema stays usable without a DOM on the server.
+* **`useEditor` does not re-render on every transaction** in Tiptap 3. Anything that
+  shows editor state (a pressed formatting button, the current block type) subscribes
+  with `useEditorState` and one selector for the whole surface, not one per control.
 
 ## Accessibility rules
 

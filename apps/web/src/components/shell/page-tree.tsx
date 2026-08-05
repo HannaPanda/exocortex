@@ -6,13 +6,14 @@ import {
   FileTextIcon,
   PlusIcon,
   RotateCcwIcon,
+  TableIcon,
   Trash2Icon,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
-import { type DocumentTreeNode } from '@exocortex/contracts';
+import { type DocumentTreeNode, type DocumentType } from '@exocortex/contracts';
 import {
   Button,
   cn,
@@ -21,6 +22,10 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   EmptyState,
   ErrorState,
   LoadingState,
@@ -61,10 +66,10 @@ export function PageTree({ workspaceId }: PageTreeProps) {
     setExpanded((current) => ({ ...current, [documentId]: current[documentId] !== true }));
   };
 
-  const createChild = async (parentId: string | null): Promise<void> => {
+  const createChild = async (parentId: string | null, type: DocumentType = 'PAGE'): Promise<void> => {
     const document = await createDocument.mutateAsync({
-      title: 'Unbenannte Seite',
-      type: 'PAGE',
+      title: type === 'COLLECTION' ? 'Unbenannte Datenbank' : 'Unbenannte Seite',
+      type,
       parentId,
     });
     if (parentId !== null) setExpanded((current) => ({ ...current, [parentId]: true }));
@@ -88,8 +93,13 @@ export function PageTree({ workspaceId }: PageTreeProps) {
             render={
               <div
                 className={cn(
-                  'group flex items-center gap-1 rounded-md pr-1 text-sm',
-                  isActive ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/60',
+                  'group flex items-center gap-1 rounded-md pr-1 text-sm transition-colors',
+                  // Where you are is the most important state in the tree, so it
+                  // is carried three times over: surface, weight and an amber
+                  // icon. Hover stays a hint and never comes close to it.
+                  isActive
+                    ? 'bg-accent-strong font-medium text-foreground'
+                    : 'text-muted-foreground hover:bg-accent hover:text-foreground',
                 )}
                 style={{ paddingLeft: `${depth * 0.75 + 0.25}rem` }}
                 data-testid={`tree-item-${node.id}`}
@@ -114,7 +124,16 @@ export function PageTree({ workspaceId }: PageTreeProps) {
                   data-testid={`tree-link-${node.id}`}
                 >
                   <span aria-hidden className="w-4 shrink-0 text-center text-xs">
-                    {node.icon ?? <FileTextIcon className="size-3.5 text-muted-foreground" />}
+                    {node.icon ??
+                      (node.type === 'COLLECTION' ? (
+                        <TableIcon
+                          className={cn('size-3.5', isActive ? 'text-primary-text' : 'text-muted-foreground')}
+                        />
+                      ) : (
+                        <FileTextIcon
+                          className={cn('size-3.5', isActive ? 'text-primary-text' : 'text-muted-foreground')}
+                        />
+                      ))}
                   </span>
                   <span className="truncate">{node.title}</span>
                 </Link>
@@ -133,6 +152,9 @@ export function PageTree({ workspaceId }: PageTreeProps) {
           <ContextMenuContent>
             <ContextMenuItem onClick={() => void createChild(node.id)}>
               <PlusIcon /> Unterseite anlegen
+            </ContextMenuItem>
+            <ContextMenuItem onClick={() => void createChild(node.id, 'COLLECTION')}>
+              <TableIcon /> Datenbank anlegen
             </ContextMenuItem>
             <ContextMenuSeparator />
             <ContextMenuItem
@@ -157,15 +179,23 @@ export function PageTree({ workspaceId }: PageTreeProps) {
         <p className="text-[0.6875rem] font-medium tracking-wide text-muted-foreground uppercase">
           Seiten
         </p>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          aria-label="Neue Seite anlegen"
-          data-testid="create-root-page"
-          onClick={() => void createChild(null)}
-        >
-          <PlusIcon />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button variant="ghost" size="icon-sm" aria-label="Anlegen" data-testid="create-root-page">
+                <PlusIcon />
+              </Button>
+            }
+          />
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem data-testid="create-root-page-item" onClick={() => void createChild(null)}>
+              <PlusIcon /> Seite anlegen
+            </DropdownMenuItem>
+            <DropdownMenuItem data-testid="create-root-database" onClick={() => void createChild(null, 'COLLECTION')}>
+              <TableIcon /> Datenbank anlegen
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <ScrollArea className="min-h-0 flex-1" viewportClassName="px-1 pb-2">
@@ -189,7 +219,7 @@ export function PageTree({ workspaceId }: PageTreeProps) {
           >
             <Trash2Icon className="size-3.5" />
             Papierkorb
-            <span className="ml-auto">{tree.data.archived.length}</span>
+            <span className="exocortex-numeric ml-auto">{tree.data.archived.length}</span>
           </button>
 
           {showTrash ? (

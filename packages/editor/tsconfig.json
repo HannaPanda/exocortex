@@ -1,6 +1,9 @@
 {
   "extends": "../../tsconfig.node.json",
   "compilerOptions": {
+    // Node views run in the browser, so this package needs the DOM types even
+    // though its Markdown and Yjs paths are used headlessly on the server.
+    "lib": ["ES2023", "DOM"],
     "rootDir": "src",
     "outDir": "dist",
     "tsBuildInfoFile": "dist/.tsbuildinfo"

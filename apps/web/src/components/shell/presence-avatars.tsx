@@ -32,7 +32,7 @@ export function PresenceAvatars() {
                 style={{ backgroundColor: user.color }}
                 data-self={user.self ? 'true' : 'false'}
               >
-                <AvatarFallback className="bg-transparent text-[0.625rem] text-black">
+                <AvatarFallback className="bg-transparent text-[0.625rem] text-presence-foreground">
                   {initialsOf(user.name)}
                 </AvatarFallback>
               </Avatar>

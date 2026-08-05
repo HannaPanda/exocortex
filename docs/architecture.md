@@ -104,6 +104,25 @@ tested (26 tests in `packages/auth/src/policies.test.ts`).
 * Moves, archives, restores, snapshot restores, attachment deletions and permission
   changes write an `AuditLog` entry. Audit metadata never contains document content.
 
+## Databases
+
+A database is a `Document` with `type: 'COLLECTION'`; its rows are ordinary
+`Document`s (`type: 'PAGE'`) parented under it, so a row gets the tree,
+search indexing, trash, Yjs content and authorization above for free
+(ADR-011). Full recipe and file map: `docs/database-views.md`.
+
+The one piece worth calling out here is the query engine
+(`packages/database/src/database-query.ts`): filters and sorts arrive as a
+structured, zod-validated tree, never as SQL or an expression string. Before
+compiling it, the service loads the real `DatabaseProperty` rows for the
+collection being queried and rejects any `propertyId` that is not one of
+them — closing off the possibility of referencing a property from a
+different collection (or workspace) to probe its data. Which
+`document_property_value` column a condition compares against is chosen in
+code from that property's type, never taken from the request, so the one
+place this code touches `Prisma.raw` only ever receives one of five
+hardcoded column-name literals.
+
 ## Search
 
 `SearchAdapter` (`packages/database/src/search.ts`) is the only interface the

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import * as Y from 'yjs';
 
+import { EXOCORTEX_SCHEMA_VERSION } from './contract';
 import { KITCHEN_SINK_MARKDOWN, TASK_LIST_MARKDOWN } from './fixtures';
 import { parseMarkdown } from './markdown/parse';
 import { serializeMarkdown } from './markdown/serialize';
@@ -58,7 +59,7 @@ describe('Yjs state conversion', () => {
     expect(second).toEqual(first);
     expect(first.plainText).toContain('Vollständiges Beispiel');
     expect(first.markdown).toContain('## Listen');
-    expect(first.schemaVersion).toBe(1);
+    expect(first.schemaVersion).toBe(EXOCORTEX_SCHEMA_VERSION);
   });
 
   it('exports Markdown straight from binary state', () => {

@@ -9,6 +9,7 @@ import {
 
 import {
   type AiRun,
+  type ApiErrorResponse,
   type CollaborationTicketResponse,
   type CreateDocumentRequest,
   type CurrentSessionResponse,
@@ -20,11 +21,12 @@ import {
   type MoveDocumentRequest,
   type SearchResponse,
   type UpdateDocumentRequest,
+  type UploadAttachmentResponse,
   type Workspace,
   type WorkspaceListResponse,
 } from '@exocortex/contracts';
 
-import { apiRequest } from './client';
+import { ApiError, apiRequest } from './client';
 
 /** Query keys are centralised so invalidation stays consistent. */
 export const queryKeys = {
@@ -213,4 +215,41 @@ export function useCreateAiRun() {
       messages: { role: 'user' | 'assistant' | 'system'; content: string }[];
     }) => apiRequest<{ run: AiRun }>('/api/ai/runs', { method: 'POST', body: input }),
   });
+}
+
+/**
+ * Uploads a file and returns the **stable** URL to reference it from a document.
+ *
+ * Not the `downloadUrl` the endpoint also returns: that is a presigned storage URL
+ * that expires after five minutes, and a document lives longer than that. The API
+ * route below checks the session on every request, so an attachment stays as
+ * private as the page it sits on.
+ */
+export async function uploadAttachment(input: {
+  workspaceId: string;
+  documentId: string;
+  file: File;
+}): Promise<{ src: string; name: string }> {
+  const form = new FormData();
+  form.append('documentId', input.documentId);
+  form.append('file', input.file, input.file.name);
+
+  const response = await fetch(`/api/workspaces/${input.workspaceId}/attachments`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { accept: 'application/json' },
+    body: form,
+  });
+
+  const text = await response.text();
+  const payload: unknown = text.length > 0 ? JSON.parse(text) : null;
+  if (!response.ok) {
+    throw new ApiError(response.status, payload as Partial<ApiErrorResponse> | null);
+  }
+
+  const { attachment } = payload as UploadAttachmentResponse;
+  return {
+    src: `/api/attachments/${attachment.id}/download`,
+    name: attachment.filename,
+  };
 }

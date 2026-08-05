@@ -28,6 +28,20 @@ export const ADDRESSABLE_BLOCK_TYPES = [
   'table',
   'tableRow',
   'callout',
+  'details',
+  'columnList',
+  'column',
+  'blockMath',
+  'tableOfContents',
+  'pageLink',
+  'breadcrumb',
+  'databaseEmbed',
+  'fileAttachment',
+  'video',
+  'audio',
+  'pdf',
+  'embed',
+  'bookmark',
 ] as const;
 
 const BLOCK_ID_ALPHABET = 'abcdefghijklmnopqrstuvwxyz0123456789';

@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
+import {
+  databaseFilterGroupSchema,
+  databaseFilterOperatorSchema,
+  databasePropertyTypeSchema,
+  databaseViewSchema,
+} from './database-views';
 import { createDocumentRequestSchema, moveDocumentRequestSchema } from './documents';
 import { API_ERROR_CODES,API_ERROR_STATUS } from './errors';
 import { applicationEventSchema, workspaceRoom } from './events';
@@ -89,5 +95,62 @@ describe('workspace roles', () => {
     expect(WORKSPACE_ROLE_RANK.GUEST).toBeLessThan(WORKSPACE_ROLE_RANK.MEMBER);
     expect(WORKSPACE_ROLE_RANK.MEMBER).toBeLessThan(WORKSPACE_ROLE_RANK.ADMIN);
     expect(WORKSPACE_ROLE_RANK.ADMIN).toBeLessThan(WORKSPACE_ROLE_RANK.OWNER);
+  });
+});
+
+describe('database contracts', () => {
+  it('accepts every declared property type, including the reserved ones', () => {
+    for (const type of ['TEXT', 'RELATION', 'ROLLUP', 'FORMULA']) {
+      expect(databasePropertyTypeSchema.parse(type)).toBe(type);
+    }
+  });
+
+  it('rejects an unknown property type', () => {
+    expect(() => databasePropertyTypeSchema.parse('DATABASE')).toThrow();
+  });
+
+  it('rejects an unknown filter operator', () => {
+    expect(() => databaseFilterOperatorSchema.parse('starts_with')).toThrow();
+  });
+
+  it('round-trips a nested AND/OR filter group', () => {
+    const group = {
+      combinator: 'or',
+      conditions: [
+        { propertyId: 'property_abcdefgh', operator: 'equals', value: 'Erledigt' },
+        {
+          combinator: 'and',
+          conditions: [
+            { propertyId: 'property_ijklmnop', operator: 'is_not_empty' },
+            { propertyId: 'property_qrstuvwx', operator: 'on_or_before', value: '2026-12-31' },
+          ],
+        },
+      ],
+    };
+    const parsed = databaseFilterGroupSchema.parse(group);
+    expect(parsed).toEqual(group);
+  });
+
+  it('rejects a filter group deeper than the combinator/condition shape allows', () => {
+    expect(() =>
+      databaseFilterGroupSchema.parse({ combinator: 'xor', conditions: [] }),
+    ).toThrow();
+  });
+
+  it('parses a full TABLE view with defaults applied to config', () => {
+    const view = databaseViewSchema.parse({
+      id: 'view_abcdefgh',
+      documentId: 'document_abcdefgh',
+      type: 'TABLE',
+      name: 'Alle Einträge',
+      orderKey: 'V',
+      filters: { combinator: 'and', conditions: [] },
+      sorts: [],
+      groupByPropertyId: null,
+      config: {},
+      createdAt: '2026-08-05T00:00:00.000Z',
+      updatedAt: '2026-08-05T00:00:00.000Z',
+    });
+    expect(view.config.visibleProperties).toEqual([]);
   });
 });

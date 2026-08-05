@@ -71,11 +71,15 @@ export function SearchCommand({ workspaceId, open, onOpenChange }: SearchCommand
         query.trim().length <= 1 ? 'Mindestens zwei Zeichen eingeben' : 'Keine Seiten gefunden'
       }
       footer={
-        <span>
-          {search.data !== undefined
-            ? `${search.data.results.length} Treffer · ${search.data.tookMs} ms · ${search.data.adapter}`
-            : 'Volltextsuche über alle Seiten dieses Arbeitsbereichs'}
-        </span>
+        // A count, a duration and an engine name: a readout, so it gets the
+        // instrument face. The fallback sentence is prose and stays sans.
+        search.data !== undefined ? (
+          <span className="exocortex-numeric">
+            {`${search.data.results.length} Treffer · ${search.data.tookMs} ms · ${search.data.adapter}`}
+          </span>
+        ) : (
+          <span>Volltextsuche über alle Seiten dieses Arbeitsbereichs</span>
+        )
       }
     />
   );

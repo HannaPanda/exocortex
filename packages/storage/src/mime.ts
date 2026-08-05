@@ -45,6 +45,51 @@ const SIGNATURES: Signature[] = [
   },
   { mimeType: 'application/pdf', extension: 'pdf', offset: 0, bytes: [0x25, 0x50, 0x44, 0x46, 0x2d] },
   { mimeType: 'application/zip', extension: 'zip', offset: 0, bytes: [0x50, 0x4b, 0x03, 0x04] },
+
+  // Media for the video and audio blocks. The ISO base media container (`ftyp`)
+  // is shared by MP4 and M4A, so the brand at offset 8 decides which it is; the
+  // audio brands are checked first because `M4A ` also passes an `isom` test on
+  // some encoders.
+  {
+    mimeType: 'audio/mp4',
+    extension: 'm4a',
+    offset: 4,
+    bytes: [0x66, 0x74, 0x79, 0x70],
+    verify: (buffer) => matches(buffer, 8, [0x4d, 0x34, 0x41, 0x20]),
+  },
+  {
+    mimeType: 'video/mp4',
+    extension: 'mp4',
+    offset: 4,
+    bytes: [0x66, 0x74, 0x79, 0x70],
+    // `isom`, `iso2`, `mp41`, `mp42` and `avc1` are all MP4 video brands.
+    verify: (buffer) =>
+      ['isom', 'iso2', 'mp41', 'mp42', 'avc1', 'M4V '].some((brand) =>
+        matches(buffer, 8, [...brand].map((character) => character.charCodeAt(0))),
+      ),
+  },
+  {
+    // Matroska and WebM share the EBML header; the DocType decides.
+    mimeType: 'video/webm',
+    extension: 'webm',
+    offset: 0,
+    bytes: [0x1a, 0x45, 0xdf, 0xa3],
+  },
+  { mimeType: 'audio/mpeg', extension: 'mp3', offset: 0, bytes: [0x49, 0x44, 0x33] },
+  { mimeType: 'audio/mpeg', extension: 'mp3', offset: 0, bytes: [0xff, 0xfb] },
+  {
+    mimeType: 'audio/wav',
+    extension: 'wav',
+    offset: 0,
+    bytes: [0x52, 0x49, 0x46, 0x46],
+    verify: (buffer) => matches(buffer, 8, [0x57, 0x41, 0x56, 0x45]),
+  },
+  {
+    mimeType: 'audio/ogg',
+    extension: 'ogg',
+    offset: 0,
+    bytes: [0x4f, 0x67, 0x67, 0x53],
+  },
 ];
 
 function matches(buffer: Uint8Array, offset: number, bytes: readonly number[]): boolean {

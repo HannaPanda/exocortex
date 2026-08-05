@@ -1,8 +1,5 @@
 import MarkdownIt from 'markdown-it';
 
-/** markdown-it ships a class merged with a namespace; derive the instance type. */
-type MarkdownItInstance = InstanceType<typeof MarkdownIt>;
-
 import {
   ADDRESSABLE_BLOCK_TYPES,
   BLOCK_ID_ATTRIBUTE,
@@ -11,13 +8,38 @@ import {
 } from '../block-id';
 import { CALLOUT_VARIANTS, DEFAULT_CALLOUT_VARIANT } from '../callout';
 import {
+  type MarkdownTokenHandlerContext,
   type ProseMirrorDocument,
   type ProseMirrorMark,
   type ProseMirrorNode,
 } from '../contract';
+import { buildMarkdownRegistry } from '../extensions';
+import { MARKDOWN_HIGHLIGHT_BACKGROUND } from '../inline-styling';
 
+import {
+  applyExocortexBlockRules,
+  CONTAINER_TOKEN,
+  readContainerToken,
+} from './container-rule';
 import { type Frontmatter, parseFrontmatter } from './frontmatter';
+import {
+  applyExocortexInlineRules,
+  EXOCORTEX_INLINE_MARK_TOKENS,
+  type MarkdownItInstance,
+} from './inline-rules';
 import { WIKI_LINK_SCHEME } from './serialize';
+
+/**
+ * markdown-it token prefixes that map onto an Exocortex mark, including the
+ * built-in ones. Every entry is handled by the generic `<prefix>_open` /
+ * `<prefix>_close` branch below.
+ */
+const INLINE_MARK_TOKENS: Readonly<Record<string, string>> = {
+  strong: 'bold',
+  em: 'italic',
+  s: 'strike',
+  ...EXOCORTEX_INLINE_MARK_TOKENS,
+};
 
 /** Block types that carry a stable identifier. */
 const ADDRESSABLE_BLOCK_TYPES_SET = new Set<string>(ADDRESSABLE_BLOCK_TYPES);
@@ -50,7 +72,7 @@ const TASK_MARKER_PATTERN = /^\[([ xX])\][ \t]+/;
 const WIKI_LINK_PATTERN = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
 
 function createMarkdownIt(): MarkdownItInstance {
-  return new MarkdownIt('default', {
+  const md = new MarkdownIt('default', {
     // Raw HTML is intentionally not supported: HTML is never canonical in
     // Exocortex (ADR-007) and accepting it would create an XSS surface.
     html: false,
@@ -58,6 +80,18 @@ function createMarkdownIt(): MarkdownItInstance {
     breaks: false,
     typographer: false,
   });
+  applyExocortexInlineRules(md);
+  applyExocortexBlockRules(md);
+  return md;
+}
+
+/** Attributes a mark carries when it originates from a markdown-it token. */
+function markAttributes(tokenPrefix: string): Record<string, unknown> | undefined {
+  // Markdown only knows one highlight; it maps to the default background token.
+  if (tokenPrefix === 'highlight') {
+    return { color: null, background: MARKDOWN_HIGHLIGHT_BACKGROUND };
+  }
+  return undefined;
 }
 
 /**
@@ -75,6 +109,7 @@ export function parseMarkdown(
   const assignBlockIds = options.assignBlockIds ?? true;
   const { frontmatter, body } = parseFrontmatter(markdown);
   const tokens = createMarkdownIt().parse(body, {});
+  const registry = buildMarkdownRegistry();
 
   const root: StackEntry = { type: 'doc', attrs: {}, content: [] };
   const stack: StackEntry[] = [root];
@@ -111,9 +146,14 @@ export function parseMarkdown(
     }
   };
 
-  const addNode = (type: string, attrs: Record<string, unknown> = {}): void => {
+  const addNode = (
+    type: string,
+    attrs: Record<string, unknown> = {},
+    content?: ProseMirrorNode[],
+  ): void => {
     const node: ProseMirrorNode = { type };
     if (Object.keys(attrs).length > 0) node.attrs = attrs;
+    if (content !== undefined && content.length > 0) node.content = content;
     top().content.push(node);
   };
 
@@ -159,9 +199,47 @@ export function parseMarkdown(
     entry.attrs[BLOCK_ID_ATTRIBUTE] = match[1] as string;
   };
 
+  const tokenContext: MarkdownTokenHandlerContext = {
+    openNode,
+    closeNode,
+    addNode,
+    addTextNode: (type, text, attrs = {}) =>
+      addNode(type, attrs, text.length > 0 ? [{ type: 'text', text }] : undefined),
+    addText,
+    openMark: (type, attrs) => {
+      activeMarks = [...activeMarks, attrs === undefined ? { type } : { type, attrs }];
+    },
+    closeMark: (type) => {
+      activeMarks = activeMarks.filter((mark) => mark.type !== type);
+    },
+  };
+
+  /**
+   * How many nodes each open container pushed, so the closing `:::` closes
+   * exactly those. See `MarkdownContainerOpener`.
+   */
+  const containerDepths: number[] = [];
+
   for (let index = 0; index < tokens.length; index += 1) {
     const token = tokens[index];
     if (token === undefined) continue;
+
+    // Extensions contribute their own token handlers; the built-in cases below
+    // only cover what markdown-it produces for the CommonMark and GFM syntax.
+    const handler = registry.tokens[token.type];
+    if (handler !== undefined && handler(token, tokenContext) === true) continue;
+
+    if (token.type === `${CONTAINER_TOKEN}_open`) {
+      const { name, params } = readContainerToken(token.info);
+      const opener = registry.containers[name];
+      containerDepths.push(opener === undefined ? 0 : opener(params, tokenContext));
+      continue;
+    }
+    if (token.type === `${CONTAINER_TOKEN}_close`) {
+      const depth = containerDepths.pop() ?? 0;
+      for (let closed = 0; closed < depth; closed += 1) closeNode();
+      continue;
+    }
 
     switch (token.type) {
       case 'heading_open': {
@@ -287,6 +365,10 @@ export function parseMarkdown(
       case 'inline': {
         const children = token.children ?? [];
         for (const child of children) {
+          // Inline nodes contributed by extensions (for example inline maths).
+          const childHandler = registry.tokens[child.type];
+          if (childHandler !== undefined && childHandler(child, tokenContext) === true) continue;
+
           switch (child.type) {
             case 'text':
               addText(child.content);
@@ -299,24 +381,6 @@ export function parseMarkdown(
               break;
             case 'code_inline':
               pushText(child.content, [...activeMarks, { type: 'code' }]);
-              break;
-            case 'strong_open':
-              activeMarks = [...activeMarks, { type: 'bold' }];
-              break;
-            case 'strong_close':
-              activeMarks = activeMarks.filter((mark) => mark.type !== 'bold');
-              break;
-            case 'em_open':
-              activeMarks = [...activeMarks, { type: 'italic' }];
-              break;
-            case 'em_close':
-              activeMarks = activeMarks.filter((mark) => mark.type !== 'italic');
-              break;
-            case 's_open':
-              activeMarks = [...activeMarks, { type: 'strike' }];
-              break;
-            case 's_close':
-              activeMarks = activeMarks.filter((mark) => mark.type !== 'strike');
               break;
             case 'link_open':
               activeMarks = [
@@ -344,9 +408,27 @@ export function parseMarkdown(
                 },
               });
               break;
-            default:
-              // Unsupported inline tokens (raw HTML) are dropped, never crashed on.
+            default: {
+              // Emphasis-style marks (`strong`, `em`, `s` and the Exocortex
+              // additions) all follow the same `<prefix>_open` / `_close` shape.
+              const opening = child.type.endsWith('_open');
+              const prefix = child.type.replace(/_(open|close)$/, '');
+              const markType = INLINE_MARK_TOKENS[prefix];
+              if (markType === undefined) {
+                // Unsupported inline tokens (raw HTML) are dropped, never crashed on.
+                break;
+              }
+              if (opening) {
+                const attrs = markAttributes(prefix);
+                activeMarks = [
+                  ...activeMarks,
+                  attrs === undefined ? { type: markType } : { type: markType, attrs },
+                ];
+              } else {
+                activeMarks = activeMarks.filter((mark) => mark.type !== markType);
+              }
               break;
+            }
           }
         }
         activeMarks = [];
@@ -524,6 +606,16 @@ export function normalizeTextRuns(node: ProseMirrorNode): void {
   const merged: ProseMirrorNode[] = [];
   for (const child of children) {
     normalizeTextRuns(child);
+    // Marks are a set, not a sequence. Sorting them canonically means the same
+    // formatting always produces the same JSON, no matter in which order the
+    // Markdown delimiters happened to be nested.
+    if (child.marks !== undefined && child.marks.length > 1) {
+      child.marks = [...child.marks].sort((a, b) =>
+        a.type === b.type
+          ? JSON.stringify(a.attrs ?? {}).localeCompare(JSON.stringify(b.attrs ?? {}))
+          : a.type.localeCompare(b.type),
+      );
+    }
     const previous = merged[merged.length - 1];
     if (
       previous !== undefined &&

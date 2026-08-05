@@ -142,7 +142,11 @@ export function CommandPalette({
                         onClick={() => item.onSelect()}
                         className={cn(
                           'flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm',
-                          active && 'bg-accent text-accent-foreground',
+                          // The palette is driven by arrow keys, so the active row
+                          // has to be findable at a glance, not merely tinted.
+                          active
+                            ? 'bg-accent-strong font-medium text-foreground'
+                            : 'text-muted-foreground',
                         )}
                       >
                         {item.icon}

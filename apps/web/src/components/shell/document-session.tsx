@@ -22,6 +22,12 @@ export interface PresenceUser {
 
 export type CollaborationStatus = 'connecting' | 'connected' | 'disconnected' | 'read-only';
 
+/**
+ * Whether the user's own edits have reached the collaboration server.
+ * `saving` covers a burst of typing; `saved` is the moment it settled.
+ */
+export type SaveState = 'idle' | 'saving' | 'saved';
+
 export interface DocumentSessionState {
   documentId: string | null;
   documentTitle: string | null;
@@ -31,6 +37,9 @@ export interface DocumentSessionState {
   offline: boolean;
   /** `true` when local edits are waiting to be synchronized. */
   pendingSync: boolean;
+  saveState: SaveState;
+  /** Epoch milliseconds of the last settled edit; `null` before the first one. */
+  savedAt: number | null;
 }
 
 const INITIAL_STATE: DocumentSessionState = {
@@ -40,6 +49,8 @@ const INITIAL_STATE: DocumentSessionState = {
   collaboration: 'connecting',
   offline: false,
   pendingSync: false,
+  saveState: 'idle',
+  savedAt: null,
 };
 
 interface DocumentSessionContextValue {

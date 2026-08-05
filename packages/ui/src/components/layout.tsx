@@ -25,7 +25,9 @@ export function AppHeader({ className, ...props }: React.ComponentPropsWithoutRe
   return (
     <header
       className={cn(
-        'flex h-[var(--header-height)] shrink-0 items-center gap-2 border-b border-border px-3',
+        // The chrome sits one surface step above the canvas: the darkest plane in
+        // the app is the one you write on (docs/ui-system.md, surface ladder).
+        'flex h-[var(--header-height)] shrink-0 items-center gap-2 border-b border-border bg-surface px-3',
         className,
       )}
       {...props}

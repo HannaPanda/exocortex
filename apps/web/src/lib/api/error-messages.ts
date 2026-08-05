@@ -21,6 +21,7 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   document_archived: 'Archivierte Seiten können nicht bearbeitet werden.',
   document_move_cycle: 'Eine Seite kann nicht in sich selbst verschoben werden.',
   document_cross_workspace: 'Seiten können nicht in einen anderen Arbeitsbereich verschoben werden.',
+  database_property_reserved: 'Dieser Eigenschaftstyp ist noch nicht verfügbar.',
   collaboration_ticket_invalid: 'Die Verbindung zur Live-Bearbeitung wurde abgelehnt.',
   collaboration_ticket_expired: 'Die Verbindung zur Live-Bearbeitung ist abgelaufen.',
   collaboration_read_only: 'Diese Seite ist nur lesbar.',

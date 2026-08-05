@@ -74,12 +74,42 @@ export async function expectTreeContains(page: Page, title: string): Promise<voi
   });
 }
 
-/** Creates a page from the sidebar and returns its document id. */
+/**
+ * Creates a page from the sidebar's "Anlegen" menu and returns its document id.
+ *
+ * The trigger (`create-root-page`) opens a menu with "Seite anlegen" and
+ * "Datenbank anlegen" — see `createDatabase` below for the latter.
+ */
 export async function createPage(page: Page, title: string): Promise<string> {
   await page.getByTestId('create-root-page').click();
+  await page.getByTestId('create-root-page-item').click();
   await page.waitForURL(/\/seite\/[a-z0-9]+/, { timeout: 30_000 });
   const documentId = new URL(page.url()).pathname.split('/').pop() as string;
   const titleInput = page.getByTestId('document-title');
+  // The URL changes before Next finishes swapping in the new route's content
+  // (it keeps the previous page's DOM, including its title input, visible
+  // during the transition). Racing straight into `.fill()` here can land on
+  // the *previous* document's still-mounted input and rename that one
+  // instead. Waiting for the known default title makes sure this is really
+  // the new, empty document.
+  await expect(titleInput).toHaveValue('Unbenannte Seite', { timeout: 15_000 });
+  await titleInput.fill(title);
+  await titleInput.blur();
+  await expectTreeContains(page, title);
+  return documentId;
+}
+
+/** Creates a database (a COLLECTION document) from the sidebar and returns its document id. */
+export async function createDatabase(page: Page, title: string): Promise<string> {
+  await page.getByTestId('create-root-page').click();
+  await page.getByTestId('create-root-database').click();
+  await page.waitForURL(/\/seite\/[a-z0-9]+/, { timeout: 30_000 });
+  const documentId = new URL(page.url()).pathname.split('/').pop() as string;
+  const titleInput = page.getByTestId('document-title');
+  // See the comment in `createPage`: wait for the new document's own default
+  // title before touching the input, so a fast second creation never renames
+  // whatever document was open before this one.
+  await expect(titleInput).toHaveValue('Unbenannte Datenbank', { timeout: 15_000 });
   await titleInput.fill(title);
   await titleInput.blur();
   await expectTreeContains(page, title);

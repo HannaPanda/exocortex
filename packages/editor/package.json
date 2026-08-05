@@ -22,6 +22,8 @@
     "@tiptap/extension-bold": "3.29.2",
     "@tiptap/extension-code": "3.29.2",
     "@tiptap/extension-code-block": "3.29.2",
+    "@tiptap/extension-code-block-lowlight": "3.29.2",
+    "@tiptap/extension-details": "3.29.2",
     "@tiptap/extension-document": "3.29.2",
     "@tiptap/extension-hard-break": "3.29.2",
     "@tiptap/extension-heading": "3.29.2",
@@ -30,11 +32,21 @@
     "@tiptap/extension-italic": "3.29.2",
     "@tiptap/extension-link": "3.29.2",
     "@tiptap/extension-list": "3.29.2",
+    "@tiptap/extension-mathematics": "3.29.2",
+    "@tiptap/extension-mention": "3.29.2",
     "@tiptap/extension-paragraph": "3.29.2",
     "@tiptap/extension-strike": "3.29.2",
+    "@tiptap/extension-subscript": "3.29.2",
+    "@tiptap/extension-superscript": "3.29.2",
     "@tiptap/extension-table": "3.29.2",
     "@tiptap/extension-text": "3.29.2",
+    "@tiptap/extension-text-align": "3.29.2",
+    "@tiptap/extension-underline": "3.29.2",
     "@tiptap/pm": "3.29.2",
+    "@tiptap/suggestion": "3.29.2",
+    "highlight.js": "11.11.1",
+    "katex": "0.18.1",
+    "lowlight": "3.3.0",
     "markdown-it": "15.0.0",
     "prosemirror-model": "1.25.11",
     "prosemirror-state": "1.4.4",
@@ -45,11 +57,12 @@
     "yjs": "13.6.31"
   },
   "devDependencies": {
+    "@types/katex": "^0.16.8",
     "@types/markdown-it": "14.1.2",
     "@types/node": "24.10.4",
+    "jsdom": "30.0.1",
     "typescript": "5.9.3",
-    "vitest": "4.1.10",
-    "jsdom": "30.0.1"
+    "vitest": "4.1.10"
   },
   "exports": {
     ".": {

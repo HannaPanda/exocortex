@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { SessionGuard } from './auth/session.guard';
 import { ApiExceptionFilter } from './common/exception.filter';
 import { API_ENV } from './common/logger.provider';
+import { DatabasesModule } from './databases/databases.module';
 import { DocumentsModule } from './documents/documents.module';
 import { HealthModule } from './health/health.module';
 import { PlatformModule } from './platform/platform.module';
@@ -36,6 +37,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     RealtimeModule,
     WorkspacesModule,
     DocumentsModule,
+    DatabasesModule,
     SearchModule,
     AttachmentsModule,
     AiModule,

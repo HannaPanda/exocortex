@@ -56,7 +56,7 @@ function DropdownMenuItem({
         'data-disabled:pointer-events-none data-disabled:opacity-50',
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         variant === 'destructive' &&
-          'text-destructive data-highlighted:bg-destructive/15 data-highlighted:text-destructive',
+          'text-destructive-text data-highlighted:bg-destructive/15 data-highlighted:text-destructive-text',
         className,
       )}
       {...props}
@@ -113,7 +113,7 @@ function DropdownMenuShortcut({ className, ...props }: React.ComponentPropsWitho
   return (
     <span
       data-slot="dropdown-menu-shortcut"
-      className={cn('ml-auto text-xs tracking-widest text-muted-foreground', className)}
+      className={cn('exocortex-numeric ml-auto text-xs text-muted-foreground', className)}
       {...props}
     />
   );

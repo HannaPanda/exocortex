@@ -10,6 +10,7 @@ import {
   canDownloadAttachment,
   canEditDocument,
   canIssueCollaborationTicket,
+  canManageDatabaseSchema,
   canManageWorkspaceMembers,
   canMoveDocument,
   canPerformDestructiveWorkspaceOperation,
@@ -112,6 +113,24 @@ describe('document policies', () => {
   it('restricts snapshot restore to ADMIN and OWNER', () => {
     expect(canRestoreSnapshot('MEMBER', activeDocument).allowed).toBe(false);
     expect(canRestoreSnapshot('ADMIN', activeDocument).allowed).toBe(true);
+  });
+});
+
+describe('database schema policy', () => {
+  it('behaves exactly like canEditDocument', () => {
+    for (const role of allRoles) {
+      expect(canManageDatabaseSchema(role, activeDocument)).toEqual(canEditDocument(role, activeDocument));
+      expect(canManageDatabaseSchema(role, archivedDocument)).toEqual(
+        canEditDocument(role, archivedDocument),
+      );
+    }
+    expect(canManageDatabaseSchema(null, activeDocument)).toEqual(canEditDocument(null, activeDocument));
+  });
+
+  it('denies changing an archived collection schema', () => {
+    const decision = canManageDatabaseSchema('OWNER', archivedDocument);
+    expect(decision.allowed).toBe(false);
+    expect(decision.allowed === false && decision.code).toBe('document_archived');
   });
 });
 

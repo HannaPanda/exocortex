@@ -1,84 +1,187 @@
 /*
- * Exocortex semantic design tokens.
+ * Exocortex semantic design tokens — "Amber Instrument".
  *
- * Components must never hardcode hexadecimal colours. Every surface, border and
- * text colour is one of the semantic variables below, so the palette can be
- * changed in one place.
+ * Components must never hardcode colours. Every surface, border and text colour
+ * is one of the semantic variables below, so the palette can be changed in one
+ * place. See DESIGN.md for the reasoning behind the system.
  *
- * Base palette:
- *   background   #191A19
- *   dark green   #1E5128
- *   primary      #4E9F3D
- *   light accent #D8E9A8
+ * Colour model: OKLCH throughout. Lightness is perceptually uniform, which is
+ * what makes the surface ramp below (0.17 -> 0.32) read as evenly spaced steps.
+ * Chroma stays low at the extremes; high chroma near black or white is garish.
  *
- * Contrast notes (WCAG 2.1 AA, checked against the surface they appear on):
- *   --foreground        #E4EFCE on #191A19  -> 13.6:1
- *   --muted-foreground  #A8B994 on #191A19  -> 8.1:1
- *   --primary-foreground #10130F on #4E9F3D -> 8.0:1
- *   --primary as text   #6FBF5C on #191A19  -> 6.5:1 (link/accent text only)
- * The primary green is intentionally never used for long body text.
+ * The system:
+ *   Neutrals    cool graphite, tinted toward violet (hue 275) at chroma <= 0.016.
+ *               Never a pure grey, never #000. The tint is what keeps large dark
+ *               surfaces from looking dead.
+ *   Foreground  warm off-white (hue 85). The temperature contrast against the
+ *               cool surfaces is the whole trick: it reads as light falling on
+ *               metal rather than as grey-on-grey.
+ *   Signal      one amber (hue 62) and nothing else. It marks focus, the active
+ *               page, the primary action and your own cursor. If amber appears,
+ *               something is interactive or is happening. Keeping it under
+ *               roughly 10% of any screen is what makes it mean something.
+ *
+ * Status colours are deliberately a separate concern from the brand signal and
+ * are never the only carrier of meaning; every status also has an icon and text
+ * (PRODUCT.md, Accessibility & Inclusion).
+ *
+ * Contrast (WCAG 2.1, computed against the surface each colour appears on):
+ *   --foreground on --background              15.6:1
+ *   --foreground on --card                    14.4:1
+ *   --muted-foreground on --background         7.7:1
+ *   --muted-foreground on --muted              6.4:1
+ *   --primary-text on --background             9.2:1
+ *   --primary-foreground on --primary          8.8:1
+ *   --destructive-foreground on --destructive  5.3:1
+ *   --destructive-text on --background         7.2:1
+ *   --warning-foreground on --warning         10.1:1
+ *   --success-foreground on --success          7.7:1
+ *   --info-foreground on --info                8.1:1
+ *   --input / --border-strong on --card        3.4:1  (WCAG 1.4.11, boundaries)
+ *   --ring on --background                     9.2:1
+ *   --foreground on --accent-strong           10.1:1
+ *   --primary-text on --accent-strong          6.0:1
+ * `--border` sits at 1.5:1 on purpose: it separates, it does not delimit a
+ * control. Anything a user must perceive as a boundary uses `--input` or
+ * `--border-strong`.
+ *
+ * Fill vs. text: `--primary` and `--destructive` are fill colours, sized for
+ * dark text on top of them. `--primary-text` and `--destructive-text` are their
+ * text and icon counterparts for use directly on dark surfaces. Never use a
+ * fill colour as a text colour; that is what the split exists for.
  */
 
 :root {
   color-scheme: dark;
 
-  --background: #191a19;
-  --foreground: #e4efce;
+  /* Surface ramp. Each step is a perceptual +0.02..0.05 in lightness, which is
+     enough to read as a layer without needing a shadow. */
+  --background: oklch(0.17 0.01 275);
+  --foreground: oklch(0.93 0.008 85);
 
-  --surface: #1d201d;
-  --surface-foreground: #e4efce;
+  --surface: oklch(0.2 0.011 275);
+  --surface-foreground: oklch(0.93 0.008 85);
 
-  --card: #1d201d;
-  --card-foreground: #e4efce;
+  --card: oklch(0.21 0.012 275);
+  --card-foreground: oklch(0.93 0.008 85);
 
-  --popover: #20241f;
-  --popover-foreground: #e4efce;
+  --popover: oklch(0.235 0.013 275);
+  --popover-foreground: oklch(0.93 0.008 85);
 
-  --primary: #4e9f3d;
-  --primary-foreground: #10130f;
-  /* Accessible variant of the primary green for text and icons. */
-  --primary-text: #6fbf5c;
+  /* Scrim behind modal surfaces. Darker than --background and carrying the same
+     violet tint, so the dimmed page reads as pushed back rather than as covered
+     by a black sheet. */
+  --overlay: oklch(0.11 0.008 275 / 0.72);
 
-  --secondary: #1e5128;
-  --secondary-foreground: #d8e9a8;
+  /* The single signal colour. */
+  --primary: oklch(0.78 0.15 62);
+  --primary-foreground: oklch(0.2 0.035 62);
+  /* Same amber, used as text and icon colour on dark surfaces. */
+  --primary-text: oklch(0.78 0.15 62);
 
-  --accent: #2432220;
-  --accent-solid: #253a24;
-  --accent-foreground: #d8e9a8;
+  /* Neutral chip / secondary control. Deliberately colourless: a second tinted
+     control would compete with the amber signal. */
+  --secondary: oklch(0.26 0.013 275);
+  --secondary-foreground: oklch(0.9 0.008 85);
 
-  --muted: #252925;
-  --muted-foreground: #a8b994;
+  /* Hover surfaces carry a faint warm tint, so that "warm" reads as
+     "interactive" everywhere in the product, not only on the primary action. */
+  --accent-solid: oklch(0.26 0.025 62);
+  --accent-foreground: oklch(0.94 0.01 75);
 
-  --destructive: #c0453a;
-  --destructive-foreground: #fdeceb;
+  /* Selection is a state of its own, not a stronger hover. Where you are (the
+     open page, the highlighted command, the active tab) has to be readable from
+     across the room, so this sits a clear step above both the panel surface and
+     the hover tint, and carries more chroma with it. Selected elements always
+     add weight or an amber icon as well; the surface is never the only signal. */
+  --accent-strong: oklch(0.33 0.055 62);
 
-  --warning: #c68a2e;
-  --warning-foreground: #1a1405;
+  --muted: oklch(0.255 0.012 275);
+  --muted-foreground: oklch(0.72 0.012 275);
 
-  --success: #4e9f3d;
-  --success-foreground: #10130f;
+  --destructive: oklch(0.53 0.19 25);
+  --destructive-foreground: oklch(0.97 0.012 25);
+  --destructive-text: oklch(0.72 0.15 25);
 
-  --info: #4a8fb8;
-  --info-foreground: #0b1419;
+  /* Yellow-gold, held 38 degrees of hue away from the amber signal so a caution
+     never reads as a primary action. */
+  --warning: oklch(0.84 0.14 100);
+  --warning-foreground: oklch(0.24 0.05 100);
 
-  --border: #304332;
-  --border-strong: #3d5540;
-  --input: #304332;
-  --ring: #4e9f3d;
+  --success: oklch(0.72 0.14 152);
+  --success-foreground: oklch(0.2 0.04 152);
+
+  --info: oklch(0.74 0.11 235);
+  --info-foreground: oklch(0.19 0.03 235);
+
+  /* Separation only, not a control boundary. */
+  --border: oklch(0.32 0.014 275);
+  /* Perceivable boundaries: form fields, scrollbar thumbs, structural rules. */
+  --border-strong: oklch(0.53 0.016 275);
+  --input: oklch(0.53 0.016 275);
+  --ring: oklch(0.78 0.15 62);
 
   --radius: 0.5rem;
   --radius-sm: 0.3125rem;
   --radius-lg: 0.75rem;
 
-  /* Presence colours for collaboration cursors. Chosen to stay legible on the
-     dark background and to be distinguishable for the most common forms of
-     colour vision deficiency. */
-  --presence-1: #6fbf5c;
-  --presence-2: #6fb2d8;
-  --presence-3: #d8b45c;
-  --presence-4: #c98fd0;
-  --presence-5: #d87f6f;
-  --presence-6: #8fd0c4;
+  /* Motion. One curve and two durations are the whole vocabulary.
+     The curve is an exponential ease-out: movement leaves fast and settles long,
+     which reads as "arrived" rather than "slid". No bounce, no elastic.
+     `--duration-fast` is the default for every transition in the application
+     (see styles.css); it is short on purpose, because "fast" is a claim the
+     product makes about itself and the interface has to keep it.
+     `--duration-settle` is the decay of a signal that has fired: long enough to
+     be noticed in peripheral vision, short enough not to linger. */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 120ms;
+  --duration-settle: 480ms;
+
+  /* Presence colours for collaboration cursors. Six hues spread across the
+     wheel *and* across lightness (0.66..0.86), so they stay distinguishable
+     under deuteranopia and protanopia, where hue alone collapses. Presence 1 is
+     the amber signal: your own cursor is the one you should find fastest.
+     All six carry --presence-foreground as label text at 5.7:1 or better. */
+  --presence-1: oklch(0.82 0.125 62);
+  --presence-2: oklch(0.75 0.12 245);
+  --presence-3: oklch(0.78 0.15 340);
+  --presence-4: oklch(0.86 0.09 200);
+  --presence-5: oklch(0.7 0.15 295);
+  --presence-6: oklch(0.66 0.12 30);
+  --presence-foreground: oklch(0.18 0.02 275);
+
+  /* Editor content colours.
+     Ten named colours the writer can apply to a text run, plus ten background
+     counterparts. These are *content* colours, not interface colours: they are
+     chosen by the author, so they live outside the amber signal system. Two rules
+     keep them from turning a page into confetti:
+       * the text ramp sits at lightness 0.78 (grey 0.72) and chroma <= 0.14, so
+         every one of them clears 4.5:1 on --background and none of them shouts
+         louder than the amber signal;
+       * the background ramp sits at lightness 0.30, dark enough that the normal
+         --foreground stays readable on top without changing the text colour.
+     A stored document only ever references these names, never a CSS value
+     (packages/editor/src/inline-styling.ts), which is what keeps documents
+     theme-independent. */
+  --content-gray: oklch(0.72 0.008 275);
+  --content-brown: oklch(0.74 0.055 55);
+  --content-orange: oklch(0.78 0.13 45);
+  --content-yellow: oklch(0.82 0.13 95);
+  --content-green: oklch(0.78 0.12 152);
+  --content-blue: oklch(0.76 0.11 235);
+  --content-purple: oklch(0.75 0.13 295);
+  --content-pink: oklch(0.78 0.13 340);
+  --content-red: oklch(0.74 0.14 25);
+
+  --content-bg-gray: oklch(0.3 0.01 275);
+  --content-bg-brown: oklch(0.3 0.03 55);
+  --content-bg-orange: oklch(0.31 0.055 45);
+  --content-bg-yellow: oklch(0.32 0.055 95);
+  --content-bg-green: oklch(0.31 0.05 152);
+  --content-bg-blue: oklch(0.31 0.05 235);
+  --content-bg-purple: oklch(0.31 0.055 295);
+  --content-bg-pink: oklch(0.31 0.055 340);
+  --content-bg-red: oklch(0.3 0.06 25);
 
   /* Layout metrics used by the application shell. */
   --header-height: 3rem;
@@ -87,7 +190,9 @@
 }
 
 /*
- * The application is dark by design. A light theme is not part of this version,
- * but the tokens are already scoped so one can be added by overriding them under
+ * The application is dark by design: it is built for long writing sessions, and
+ * the cool graphite surface is what lets the warm foreground and the amber
+ * signal carry the hierarchy. A light theme is not part of this version, but the
+ * tokens are already scoped so one can be added by overriding them under
  * `:root[data-theme='light']` without touching component code.
  */

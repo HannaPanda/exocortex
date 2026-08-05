@@ -141,7 +141,7 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
         ) : null}
 
         {error !== null ? (
-          <p className="rounded-md border border-destructive/40 px-3 py-2 text-xs text-destructive">
+          <p className="rounded-md border border-destructive-text/40 px-3 py-2 text-xs text-destructive-text">
             {error}
           </p>
         ) : null}

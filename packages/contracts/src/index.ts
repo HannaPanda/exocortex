@@ -1,6 +1,7 @@
 export * from './ai';
 export * from './attachments';
 export * from './auth';
+export * from './database-views';
 export * from './documents';
 export * from './errors';
 export * from './events';

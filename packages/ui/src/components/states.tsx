@@ -118,7 +118,7 @@ export function ErrorState({
       role="alert"
       {...props}
     >
-      <AlertTriangleIcon className="size-6 text-destructive" aria-hidden />
+      <AlertTriangleIcon className="size-6 text-destructive-text" aria-hidden />
       <p className="text-sm font-medium">{title}</p>
       <p className="max-w-sm text-xs text-muted-foreground">{description}</p>
       {onRetry !== undefined ? (

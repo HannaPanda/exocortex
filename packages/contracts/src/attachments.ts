@@ -18,6 +18,13 @@ export const ALLOWED_ATTACHMENT_MIME_TYPES = [
   'text/markdown',
   'application/json',
   'application/zip',
+  // Media for the video and audio blocks of the editor.
+  'video/mp4',
+  'video/webm',
+  'audio/mpeg',
+  'audio/mp4',
+  'audio/wav',
+  'audio/ogg',
 ] as const;
 
 export const attachmentMimeTypeSchema = z.enum(ALLOWED_ATTACHMENT_MIME_TYPES);
