@@ -33,7 +33,11 @@ async function bootstrap(): Promise<void> {
     providerId: env.AI_PROVIDER,
     logger,
     appUrl: env.APP_URL,
-    openRouter: { apiKey: env.OPENROUTER_API_KEY ?? '', baseUrl: env.OPENROUTER_BASE_URL },
+    openRouter: {
+      apiKey: env.OPENROUTER_API_KEY ?? '',
+      baseUrl: env.OPENROUTER_BASE_URL,
+      defaultModel: env.OPENROUTER_DEFAULT_MODEL,
+    },
   });
 
   /** Publishes a `job.progress` event so the UI can show live progress. */

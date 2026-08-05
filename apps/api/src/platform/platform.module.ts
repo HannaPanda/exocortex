@@ -14,6 +14,7 @@ export const PRISMA = Symbol('EXOCORTEX_PRISMA');
 export const QUEUES = Symbol('EXOCORTEX_QUEUES');
 export const OBJECT_STORAGE = Symbol('EXOCORTEX_OBJECT_STORAGE');
 export const AI_PROVIDER = Symbol('EXOCORTEX_AI_PROVIDER');
+export const AI_DEFAULT_MODEL = Symbol('EXOCORTEX_AI_DEFAULT_MODEL');
 
 /**
  * Owns every long-lived infrastructure connection and closes them again on
@@ -80,8 +81,16 @@ export class PlatformLifecycle implements OnApplicationShutdown {
           openRouter: {
             apiKey: env.OPENROUTER_API_KEY ?? '',
             baseUrl: env.OPENROUTER_BASE_URL,
+            defaultModel: env.OPENROUTER_DEFAULT_MODEL,
           },
         }),
+    },
+    {
+      provide: AI_DEFAULT_MODEL,
+      inject: [API_ENV],
+      // Same resolution the provider itself falls back to (registry.ts), so the
+      // model persisted on an AiRun row matches what actually gets called.
+      useFactory: (env: ApiEnv): string => env.OPENROUTER_DEFAULT_MODEL ?? 'anthropic/claude-sonnet-4.5',
     },
     {
       provide: WorkspaceAccessService,

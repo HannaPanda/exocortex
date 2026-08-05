@@ -13,7 +13,7 @@ import { QueueRegistry } from '@exocortex/queue';
 
 import { AppError } from '../common/app-error';
 import { LOGGER } from '../common/logger.provider';
-import { AI_PROVIDER, PRISMA, QUEUES } from '../platform/platform.module';
+import { AI_DEFAULT_MODEL, AI_PROVIDER, PRISMA, QUEUES } from '../platform/platform.module';
 
 const STATUS_MAP = {
   PENDING: 'pending',
@@ -37,6 +37,7 @@ export class AiService {
     @Inject(PRISMA) private readonly prisma: PrismaClient,
     @Inject(QUEUES) private readonly queues: QueueRegistry,
     @Inject(AI_PROVIDER) private readonly provider: AiProvider,
+    @Inject(AI_DEFAULT_MODEL) private readonly defaultModel: string,
     @Inject(LOGGER) private readonly logger: Logger,
     private readonly access: WorkspaceAccessService,
   ) {}
@@ -56,7 +57,10 @@ export class AiService {
       }
     }
 
-    const model = input.request.model ?? this.provider.capabilities.models[0] ?? 'default';
+    // `capabilities.models` is empty for OpenRouter ("provider decides"), so the
+    // literal string 'default' used to be persisted and sent as the model id
+    // verbatim -- this now falls through to the actually configured default.
+    const model = input.request.model ?? this.provider.capabilities.models[0] ?? this.defaultModel;
 
     const run = await this.prisma.aiRun.create({
       data: {

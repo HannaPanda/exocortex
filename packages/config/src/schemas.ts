@@ -64,6 +64,14 @@ export const aiSchema = z.object({
   AI_PROVIDER: z.enum(['mock', 'openrouter']).default('mock'),
   OPENROUTER_API_KEY: z.string().trim().optional(),
   OPENROUTER_BASE_URL: z.url().default('https://openrouter.ai/api/v1'),
+  /** Main driver model. Falls back to the provider's own default when unset. */
+  OPENROUTER_DEFAULT_MODEL: z.string().trim().optional(),
+  /**
+   * Cheap vision-capable model used only to describe document images as text
+   * before the main model (which may not support vision, e.g. GLM) sees them.
+   * Vision preprocessing is skipped entirely when unset.
+   */
+  OPENROUTER_VISION_MODEL: z.string().trim().optional(),
 });
 
 export const apiProcessSchema = z.object({
