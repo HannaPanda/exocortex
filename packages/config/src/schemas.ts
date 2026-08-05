@@ -84,6 +84,22 @@ export const apiProcessSchema = z.object({
     .default(26_214_400),
 });
 
+/**
+ * Shared secret the worker uses to mint short-lived service tokens the API
+ * accepts as bearer credentials. Optional on purpose: when unset the built-in
+ * AI simply runs without tools, so a missing line in `.env` can never stop a
+ * process from booting.
+ */
+export const serviceTokenSchema = z.object({
+  SERVICE_TOKEN_SECRET: z.string().trim().min(32).optional(),
+  SERVICE_TOKEN_TTL_SECONDS: z.coerce.number().int().min(30).max(3_600).default(300),
+});
+
+export const internalApiSchema = z.object({
+  /** Internal base URL of the REST API, used by the worker's tool loop. */
+  API_URL: z.url().default('http://127.0.0.1:3211'),
+});
+
 export const collaborationProcessSchema = z.object({
   COLLABORATION_PORT: port.default(3212),
 });
@@ -113,13 +129,16 @@ export const apiEnvSchema = baseSchema
   .extend(mailSchema.shape)
   .extend(aiSchema.shape)
   .extend(apiProcessSchema.shape)
-  .extend(publicSchema.shape);
+  .extend(publicSchema.shape)
+  .extend(serviceTokenSchema.shape);
 
 export const workerEnvSchema = baseSchema
   .extend(databaseSchema.shape)
   .extend(redisSchema.shape)
   .extend(storageSchema.shape)
-  .extend(aiSchema.shape);
+  .extend(aiSchema.shape)
+  .extend(serviceTokenSchema.shape)
+  .extend(internalApiSchema.shape);
 
 export const collaborationEnvSchema = baseSchema
   .extend(databaseSchema.shape)
