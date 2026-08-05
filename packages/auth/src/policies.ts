@@ -4,6 +4,7 @@ import {
   WORKSPACE_ROLE_RANK,
   type WorkspaceRole,
 } from '@exocortex/contracts';
+import { type UserRole } from '@exocortex/database';
 
 /**
  * Pure authorization policies.
@@ -282,4 +283,15 @@ export function canDeleteAttachment(
 
 export function canSubscribeToWorkspaceRoom(role: WorkspaceRole | null): PolicyDecision {
   return canReadWorkspace(role);
+}
+
+// --------------------------------------------------------------------------
+// Global administration
+// --------------------------------------------------------------------------
+
+/** Global administration of the deployment, independent of any workspace. */
+export function canAdministerDeployment(role: UserRole | null): PolicyDecision {
+  return role === 'ADMIN'
+    ? ALLOW
+    : { allowed: false, code: 'admin_required', reason: 'Global admin role required' };
 }

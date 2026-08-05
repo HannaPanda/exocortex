@@ -1,8 +1,9 @@
 import { type ApiErrorCode, type WorkspaceRole } from '@exocortex/contracts';
-import { type PrismaClient } from '@exocortex/database';
+import { type PrismaClient, type UserRole } from '@exocortex/database';
 
 import {
   type AttachmentPolicySubject,
+  canAdministerDeployment,
   canReadWorkspace,
   type DocumentPolicySubject,
   type PolicyDecision,
@@ -135,5 +136,17 @@ export class WorkspaceAccessService {
 
   async countOwners(workspaceId: string): Promise<number> {
     return this.prisma.workspaceMember.count({ where: { workspaceId, role: 'OWNER' } });
+  }
+
+  /** Global role of a user, or null when the user does not exist. */
+  async findGlobalRole(userId: string): Promise<UserRole | null> {
+    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+    return user?.role ?? null;
+  }
+
+  /** Throws AuthorizationError when the user is not a global admin. */
+  async requireGlobalAdmin(userId: string): Promise<void> {
+    const role = await this.findGlobalRole(userId);
+    assertPolicy(canAdministerDeployment(role));
   }
 }
