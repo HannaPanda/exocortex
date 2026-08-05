@@ -1,0 +1,42 @@
+{
+  "name": "@exocortex/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Exocortex Next.js frontend",
+  "scripts": {
+    "dev": "next dev --port ${WEB_PORT:-3210}",
+    "build": "next build",
+    "start": "next start --port ${WEB_PORT:-3210}",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "echo \"apps/web is covered by the Playwright suite in e2e/\""
+  },
+  "dependencies": {
+    "@exocortex/contracts": "workspace:*",
+    "@exocortex/editor": "workspace:*",
+    "@exocortex/ui": "workspace:*",
+    "@hocuspocus/provider": "4.4.0",
+    "@tanstack/react-query": "5.101.4",
+    "@tiptap/extension-collaboration": "3.29.2",
+    "@tiptap/extension-collaboration-caret": "3.29.2",
+    "@tiptap/extension-placeholder": "3.29.2",
+    "@tiptap/react": "3.29.2",
+    "better-auth": "1.6.25",
+    "lucide-react": "1.28.0",
+    "next": "16.3.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "socket.io-client": "4.8.3",
+    "y-indexeddb": "9.0.12",
+    "yjs": "13.6.31",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "24.10.4",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.4",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3"
+  }
+}

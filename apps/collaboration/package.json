@@ -1,0 +1,36 @@
+{
+  "name": "@exocortex/collaboration",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Hocuspocus collaboration server with binary Yjs persistence",
+  "main": "./dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/main.ts",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@exocortex/auth": "workspace:*",
+    "@exocortex/config": "workspace:*",
+    "@exocortex/contracts": "workspace:*",
+    "@exocortex/database": "workspace:*",
+    "@exocortex/editor": "workspace:*",
+    "@exocortex/logger": "workspace:*",
+    "@exocortex/queue": "workspace:*",
+    "@hocuspocus/extension-database": "4.4.0",
+    "@hocuspocus/server": "4.4.0",
+    "yjs": "13.6.31",
+    "@hocuspocus/provider": "4.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.4",
+    "tsx": "4.23.5",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10",
+    "ws": "8.21.2",
+    "@types/ws": "8.18.1"
+  }
+}

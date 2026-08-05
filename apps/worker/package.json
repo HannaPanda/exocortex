@@ -1,0 +1,31 @@
+{
+  "name": "@exocortex/worker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BullMQ worker process: materialization, search indexing, AI runs and maintenance",
+  "main": "./dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/main.ts",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@exocortex/ai": "workspace:*",
+    "@exocortex/config": "workspace:*",
+    "@exocortex/contracts": "workspace:*",
+    "@exocortex/database": "workspace:*",
+    "@exocortex/editor": "workspace:*",
+    "@exocortex/logger": "workspace:*",
+    "@exocortex/queue": "workspace:*",
+    "@exocortex/storage": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.4",
+    "tsx": "4.23.5",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}

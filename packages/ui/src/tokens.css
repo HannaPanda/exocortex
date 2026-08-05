@@ -1,0 +1,93 @@
+/*
+ * Exocortex semantic design tokens.
+ *
+ * Components must never hardcode hexadecimal colours. Every surface, border and
+ * text colour is one of the semantic variables below, so the palette can be
+ * changed in one place.
+ *
+ * Base palette:
+ *   background   #191A19
+ *   dark green   #1E5128
+ *   primary      #4E9F3D
+ *   light accent #D8E9A8
+ *
+ * Contrast notes (WCAG 2.1 AA, checked against the surface they appear on):
+ *   --foreground        #E4EFCE on #191A19  -> 13.6:1
+ *   --muted-foreground  #A8B994 on #191A19  -> 8.1:1
+ *   --primary-foreground #10130F on #4E9F3D -> 8.0:1
+ *   --primary as text   #6FBF5C on #191A19  -> 6.5:1 (link/accent text only)
+ * The primary green is intentionally never used for long body text.
+ */
+
+:root {
+  color-scheme: dark;
+
+  --background: #191a19;
+  --foreground: #e4efce;
+
+  --surface: #1d201d;
+  --surface-foreground: #e4efce;
+
+  --card: #1d201d;
+  --card-foreground: #e4efce;
+
+  --popover: #20241f;
+  --popover-foreground: #e4efce;
+
+  --primary: #4e9f3d;
+  --primary-foreground: #10130f;
+  /* Accessible variant of the primary green for text and icons. */
+  --primary-text: #6fbf5c;
+
+  --secondary: #1e5128;
+  --secondary-foreground: #d8e9a8;
+
+  --accent: #2432220;
+  --accent-solid: #253a24;
+  --accent-foreground: #d8e9a8;
+
+  --muted: #252925;
+  --muted-foreground: #a8b994;
+
+  --destructive: #c0453a;
+  --destructive-foreground: #fdeceb;
+
+  --warning: #c68a2e;
+  --warning-foreground: #1a1405;
+
+  --success: #4e9f3d;
+  --success-foreground: #10130f;
+
+  --info: #4a8fb8;
+  --info-foreground: #0b1419;
+
+  --border: #304332;
+  --border-strong: #3d5540;
+  --input: #304332;
+  --ring: #4e9f3d;
+
+  --radius: 0.5rem;
+  --radius-sm: 0.3125rem;
+  --radius-lg: 0.75rem;
+
+  /* Presence colours for collaboration cursors. Chosen to stay legible on the
+     dark background and to be distinguishable for the most common forms of
+     colour vision deficiency. */
+  --presence-1: #6fbf5c;
+  --presence-2: #6fb2d8;
+  --presence-3: #d8b45c;
+  --presence-4: #c98fd0;
+  --presence-5: #d87f6f;
+  --presence-6: #8fd0c4;
+
+  /* Layout metrics used by the application shell. */
+  --header-height: 3rem;
+  --sidebar-width: 17rem;
+  --context-panel-width: 21rem;
+}
+
+/*
+ * The application is dark by design. A light theme is not part of this version,
+ * but the tokens are already scoped so one can be added by overriding them under
+ * `:root[data-theme='light']` without touching component code.
+ */

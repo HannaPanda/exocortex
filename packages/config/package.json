@@ -1,0 +1,25 @@
+{
+  "name": "@exocortex/config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Runtime-validated environment configuration shared by all Exocortex processes",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "dotenv": "17.4.2",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.4",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}

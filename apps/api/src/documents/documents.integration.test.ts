@@ -1,0 +1,363 @@
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+
+import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
+import { loadDotEnv } from '@exocortex/config';
+import { createPrismaClient, type PrismaClient } from '@exocortex/database';
+import { createLogger, type Logger } from '@exocortex/logger';
+import { QueueRegistry } from '@exocortex/queue';
+
+import { AppError } from '../common/app-error';
+import { OutboxService } from '../common/outbox.service';
+import { type RealtimeService } from '../realtime/realtime.service';
+
+import { DocumentsService } from './documents.service';
+
+/**
+ * Document domain tests against the real database.
+ *
+ * The service is constructed directly rather than through the Nest container: the
+ * rules under test are hierarchy and authorization rules, and this keeps the test
+ * free of HTTP and DI concerns. The HTTP surface is covered by
+ * `e2e/tests/security.spec.ts`.
+ */
+loadDotEnv();
+
+const logger: Logger = createLogger({ name: 'api-test', level: 'silent' });
+
+let prisma: PrismaClient;
+let queues: QueueRegistry;
+let service: DocumentsService;
+let workspaceId: string;
+let otherWorkspaceId: string;
+let ownerId: string;
+let guestId: string;
+let outsiderId: string;
+
+/** Realtime delivery is best-effort, so a recording stub is enough here. */
+const emitted: { type: string; workspaceId: string }[] = [];
+const realtime = {
+  emit: async (type: string, workspace: string) => {
+    emitted.push({ type, workspaceId: workspace });
+  },
+} as unknown as RealtimeService;
+
+const correlationId = 'test-correlation';
+
+beforeAll(async () => {
+  prisma = createPrismaClient({ databaseUrl: process.env.DATABASE_URL });
+  queues = new QueueRegistry({
+    redisUrl: process.env.REDIS_URL ?? 'redis://127.0.0.1:6380',
+    logger,
+  });
+  const access = new WorkspaceAccessService(prisma);
+  const outbox = new OutboxService(prisma, logger);
+  service = new DocumentsService(prisma, queues, logger, access, outbox, realtime);
+
+  const suffix = Date.now().toString(36);
+  const [owner, guest, outsider] = await Promise.all([
+    prisma.user.create({
+      data: { email: `owner-${suffix}@exocortex.test`, name: 'Owner', emailVerified: true },
+    }),
+    prisma.user.create({
+      data: { email: `guest-${suffix}@exocortex.test`, name: 'Guest', emailVerified: true },
+    }),
+    prisma.user.create({
+      data: { email: `out-${suffix}@exocortex.test`, name: 'Outsider', emailVerified: true },
+    }),
+  ]);
+  ownerId = owner.id;
+  guestId = guest.id;
+  outsiderId = outsider.id;
+
+  const workspace = await prisma.workspace.create({
+    data: {
+      name: `Docs ${suffix}`,
+      slug: `docs-${suffix}`,
+      members: {
+        create: [
+          { userId: ownerId, role: 'OWNER' },
+          { userId: guestId, role: 'GUEST' },
+        ],
+      },
+    },
+  });
+  workspaceId = workspace.id;
+
+  const other = await prisma.workspace.create({
+    data: {
+      name: `Other ${suffix}`,
+      slug: `other-${suffix}`,
+      members: { create: { userId: ownerId, role: 'OWNER' } },
+    },
+  });
+  otherWorkspaceId = other.id;
+});
+
+afterAll(async () => {
+  await prisma.workspace.deleteMany({ where: { id: { in: [workspaceId, otherWorkspaceId] } } });
+  await prisma.user.deleteMany({ where: { id: { in: [ownerId, guestId, outsiderId] } } });
+  await queues.close();
+  await prisma.$disconnect();
+});
+
+async function createPage(title: string, parentId: string | null = null): Promise<string> {
+  const document = await service.create({
+    workspaceId,
+    userId: ownerId,
+    request: { title, type: 'PAGE', parentId },
+    correlationId,
+  });
+  return document.id;
+}
+
+describe('document creation', () => {
+  it('creates a page with content and emits an event', async () => {
+    emitted.length = 0;
+    const documentId = await createPage('Erste Seite');
+
+    const content = await prisma.documentContent.findUnique({ where: { documentId } });
+    // Every document owns canonical Yjs state from the start.
+    expect(content).not.toBeNull();
+    expect(content?.yjsState.byteLength).toBeGreaterThan(0);
+    expect(emitted.some((event) => event.type === 'document.created')).toBe(true);
+  });
+
+  it('nests pages arbitrarily deep', async () => {
+    const level1 = await createPage('Ebene 1');
+    const level2 = await createPage('Ebene 2', level1);
+    const level3 = await createPage('Ebene 3', level2);
+
+    const detail = await service.getDetail(level3, ownerId);
+    expect(detail.breadcrumb.map((entry) => entry.id)).toEqual([level1, level2]);
+  });
+
+  it('orders siblings without renumbering when inserting between them', async () => {
+    const parent = await createPage('Sortierung');
+    const first = await createPage('A', parent);
+    const last = await createPage('B', parent);
+
+    const before = await prisma.document.findMany({
+      where: { parentId: parent },
+      select: { id: true, orderKey: true },
+      orderBy: { orderKey: 'asc' },
+    });
+
+    const middle = await service.create({
+      workspaceId,
+      userId: ownerId,
+      request: { title: 'Mitte', type: 'PAGE', parentId: parent, afterSiblingId: first },
+      correlationId,
+    });
+
+    const after = await prisma.document.findMany({
+      where: { parentId: parent },
+      select: { id: true, orderKey: true },
+      orderBy: { orderKey: 'asc' },
+    });
+
+    expect(after.map((row) => row.id)).toEqual([first, middle.id, last]);
+    // The existing rows keep their keys: no renumbering happened.
+    for (const row of before) {
+      const still = after.find((candidate) => candidate.id === row.id);
+      expect(still?.orderKey).toBe(row.orderKey);
+    }
+  });
+
+  it('rejects a parent from another workspace', async () => {
+    const foreign = await service.create({
+      workspaceId: otherWorkspaceId,
+      userId: ownerId,
+      request: { title: 'Fremd', type: 'PAGE', parentId: null },
+      correlationId,
+    });
+
+    await expect(
+      service.create({
+        workspaceId,
+        userId: ownerId,
+        request: { title: 'Kind', type: 'PAGE', parentId: foreign.id },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'document_cross_workspace' });
+  });
+
+  it('refuses creation for a guest', async () => {
+    await expect(
+      service.create({
+        workspaceId,
+        userId: guestId,
+        request: { title: 'Von Gast', type: 'PAGE', parentId: null },
+        correlationId,
+      }),
+    ).rejects.toBeInstanceOf(AuthorizationError);
+  });
+
+  it('refuses creation for a non-member', async () => {
+    await expect(
+      service.create({
+        workspaceId,
+        userId: outsiderId,
+        request: { title: 'Von Fremd', type: 'PAGE', parentId: null },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'workspace_access_denied' });
+  });
+});
+
+describe('document tree', () => {
+  it('is not readable for a non-member', async () => {
+    await expect(service.getTree(workspaceId, outsiderId)).rejects.toMatchObject({
+      code: 'workspace_access_denied',
+    });
+  });
+
+  it('is readable for a guest', async () => {
+    const tree = await service.getTree(workspaceId, guestId);
+    expect(Array.isArray(tree.nodes)).toBe(true);
+  });
+
+  it('reports read-only access for guests', async () => {
+    const documentId = await createPage('Gast liest');
+    const detail = await service.getDetail(documentId, guestId);
+    expect(detail.access).toBe('read');
+  });
+});
+
+describe('moving documents', () => {
+  it('rejects moving a document into itself', async () => {
+    const documentId = await createPage('Selbstbezug');
+    await expect(
+      service.move({ documentId, userId: ownerId, request: { parentId: documentId }, correlationId }),
+    ).rejects.toMatchObject({ code: 'document_move_cycle' });
+  });
+
+  it('rejects moving a document into its own descendant', async () => {
+    const parent = await createPage('Zyklus-Eltern');
+    const child = await createPage('Zyklus-Kind', parent);
+    const grandchild = await createPage('Zyklus-Enkel', child);
+
+    await expect(
+      service.move({
+        documentId: parent,
+        userId: ownerId,
+        request: { parentId: grandchild },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'document_move_cycle' });
+  });
+
+  it('moves to the workspace root and writes an audit entry', async () => {
+    const parent = await createPage('Verschieben-Eltern');
+    const child = await createPage('Verschieben-Kind', parent);
+
+    const moved = await service.move({
+      documentId: child,
+      userId: ownerId,
+      request: { parentId: null },
+      correlationId,
+    });
+    expect(moved.parentId).toBeNull();
+
+    const audit = await prisma.auditLog.findFirst({
+      where: { workspaceId, action: 'document.moved', targetId: child },
+    });
+    expect(audit).not.toBeNull();
+    // Audit metadata must never contain document content.
+    expect(JSON.stringify(audit?.metadata)).not.toContain('Verschieben-Kind');
+  });
+});
+
+describe('archiving and restoring', () => {
+  it('archives the whole subtree', async () => {
+    const parent = await createPage('Archiv-Eltern');
+    const child = await createPage('Archiv-Kind', parent);
+    const grandchild = await createPage('Archiv-Enkel', child);
+
+    await service.archive({ documentId: parent, userId: ownerId, correlationId });
+
+    const rows = await prisma.document.findMany({
+      where: { id: { in: [parent, child, grandchild] } },
+      select: { id: true, archivedAt: true },
+    });
+    expect(rows.every((row) => row.archivedAt !== null)).toBe(true);
+  });
+
+  it('refuses to edit an archived document', async () => {
+    const documentId = await createPage('Archiviert');
+    await service.archive({ documentId, userId: ownerId, correlationId });
+
+    await expect(
+      service.update({
+        documentId,
+        userId: ownerId,
+        request: { title: 'Neuer Titel' },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'document_archived' });
+  });
+
+  it('detaches a restored page from an archived parent', async () => {
+    const parent = await createPage('Bleibt archiviert');
+    const child = await createPage('Wird wiederhergestellt', parent);
+    await service.archive({ documentId: parent, userId: ownerId, correlationId });
+
+    const restored = await service.restore({ documentId: child, userId: ownerId, correlationId });
+    expect(restored.archivedAt).toBeNull();
+    // It must not hang under a still-archived parent.
+    expect(restored.parentId).toBeNull();
+  });
+
+  it('refuses to restore a document that is not archived', async () => {
+    const documentId = await createPage('Nicht archiviert');
+    await expect(
+      service.restore({ documentId, userId: ownerId, correlationId }),
+    ).rejects.toMatchObject({ code: 'conflict' });
+  });
+
+  it('writes an audit entry for archive and restore', async () => {
+    const documentId = await createPage('Auditiert');
+    await service.archive({ documentId, userId: ownerId, correlationId });
+    await service.restore({ documentId, userId: ownerId, correlationId });
+
+    const actions = await prisma.auditLog.findMany({
+      where: { targetId: documentId },
+      select: { action: true },
+    });
+    expect(actions.map((entry) => entry.action).sort()).toEqual([
+      'document.archived',
+      'document.restored',
+    ]);
+  });
+
+  it('writes an outbox row for every state change', async () => {
+    const documentId = await createPage('Outbox');
+    await service.archive({ documentId, userId: ownerId, correlationId });
+
+    const events = await prisma.outboxEvent.findMany({
+      where: { workspaceId, correlationId },
+      select: { type: true },
+    });
+    expect(events.map((event) => event.type)).toContain('document.archived');
+  });
+});
+
+describe('error contract', () => {
+  it('maps a missing document to a document-scoped error', async () => {
+    await expect(service.getDetail('missing-document-id', ownerId)).rejects.toMatchObject({
+      code: 'document_access_denied',
+    });
+  });
+
+  it('reports a conflict when restoring twice', async () => {
+    const documentId = await createPage('Konflikt');
+    await service.archive({ documentId, userId: ownerId, correlationId });
+    await service.restore({ documentId, userId: ownerId, correlationId });
+
+    const error = await service
+      .restore({ documentId, userId: ownerId, correlationId })
+      .then(() => null)
+      .catch((caught: unknown) => caught);
+    expect(error instanceof AppError || error instanceof AuthorizationError).toBe(true);
+    expect(error).toMatchObject({ code: 'conflict' });
+  });
+});

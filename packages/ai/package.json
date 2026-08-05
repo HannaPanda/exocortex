@@ -1,0 +1,27 @@
+{
+  "name": "@exocortex/ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Provider-neutral AI abstraction, mock streaming provider and CLI agent runner contracts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@exocortex/config": "workspace:*",
+    "@exocortex/contracts": "workspace:*",
+    "@exocortex/logger": "workspace:*",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.4",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}

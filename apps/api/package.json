@@ -1,0 +1,49 @@
+{
+  "name": "@exocortex/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "NestJS REST API, application WebSocket gateway and domain services",
+  "main": "./dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/main.ts",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@exocortex/ai": "workspace:*",
+    "@exocortex/auth": "workspace:*",
+    "@exocortex/config": "workspace:*",
+    "@exocortex/contracts": "workspace:*",
+    "@exocortex/database": "workspace:*",
+    "@exocortex/editor": "workspace:*",
+    "@exocortex/logger": "workspace:*",
+    "@exocortex/queue": "workspace:*",
+    "@exocortex/storage": "workspace:*",
+    "@fastify/cookie": "11.1.2",
+    "@fastify/helmet": "13.1.0",
+    "@fastify/multipart": "10.1.0",
+    "@nestjs/common": "11.1.28",
+    "@nestjs/core": "11.1.28",
+    "@nestjs/platform-fastify": "11.1.28",
+    "@nestjs/platform-socket.io": "11.1.28",
+    "@nestjs/swagger": "11.4.6",
+    "@nestjs/throttler": "6.5.0",
+    "@nestjs/websockets": "11.1.28",
+    "fastify": "5.11.2",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2",
+    "socket.io": "4.8.3",
+    "zod": "4.4.3",
+    "@fastify/static": "10.1.2"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "11.1.28",
+    "@types/node": "24.10.4",
+    "tsx": "4.23.5",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}

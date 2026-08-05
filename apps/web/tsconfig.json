@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.react.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": { "@/*": ["./src/*"] },
+    "plugins": [{ "name": "next" }],
+    "incremental": true,
+    "tsBuildInfoFile": ".next/tsconfig.tsbuildinfo"
+  },
+  "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", ".next"]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "@exocortex/e2e",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Playwright end-to-end and API security tests",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test": "echo \"run pnpm test:e2e for the browser suite\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint tests"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "@types/node": "24.10.4",
+    "typescript": "5.9.3"
+  }
+}

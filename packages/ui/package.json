@@ -1,0 +1,36 @@
+{
+  "name": "@exocortex/ui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Exocortex design system: theme tokens, shadcn/ui components on Base UI primitives, layout primitives and reusable states",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles.css",
+    "./tokens.css": "./src/tokens.css"
+  },
+  "scripts": {
+    "build": "echo \"@exocortex/ui is consumed as source via Next transpilePackages\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "echo \"no unit tests: UI is covered by Playwright\""
+  },
+  "dependencies": {
+    "@base-ui-components/react": "1.0.0-rc.0",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "lucide-react": "1.28.0",
+    "tailwind-merge": "3.6.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "typescript": "5.9.3"
+  }
+}

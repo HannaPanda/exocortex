@@ -1,0 +1,78 @@
+import { expect, test } from '@playwright/test';
+
+import {
+  createPage,
+  expectTreeContains,
+  requireSeedCredentials,
+  workspaceIdFrom,
+} from '../support/fixtures';
+import { storageStatePath } from '../support/global-setup';
+
+// Reuse the session created by the global setup instead of logging in again:
+// sign-in is rate limited by design.
+test.use({ storageState: storageStatePath('johanna') });
+
+test.beforeAll(() => {
+  requireSeedCredentials();
+});
+
+test.describe('documents', () => {
+  test('creates nested pages and renames them', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const parentTitle = `Eltern ${Date.now().toString(36)}`;
+    const parentId = await createPage(page, parentTitle);
+
+    // Create a child through the tree's inline action. The browser is already on
+    // a `/seite/...` URL, so the wait has to be for a *different* document.
+    const parentUrl = page.url();
+    await page.getByTestId(`tree-item-${parentId}`).hover();
+    await page.getByTestId(`tree-item-${parentId}`).getByRole('button', { name: /Unterseite/ }).click();
+    await page.waitForURL((url) => url.toString() !== parentUrl && /\/seite\/[a-z0-9]+/.test(url.pathname));
+
+    const childTitle = `Kind ${Date.now().toString(36)}`;
+    await page.getByTestId('document-title').fill(childTitle);
+    await page.getByTestId('document-title').blur();
+    await expectTreeContains(page, childTitle);
+
+    // The child is nested: its breadcrumb contains the parent.
+    await expect(page.getByRole('navigation', { name: 'Pfad' })).toContainText(parentTitle);
+  });
+
+  test('archives and restores a page', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const title = `Archiv ${Date.now().toString(36)}`;
+    const documentId = await createPage(page, title);
+    const workspaceId = workspaceIdFrom(page);
+
+    await page.getByTestId('document-actions').click();
+    await page.getByTestId('archive-document').click();
+    await page.waitForURL(new RegExp(`/arbeitsbereich/${workspaceId}$`));
+
+    await page.getByTestId('toggle-trash').click();
+    await expect(page.getByTestId('trash-list')).toContainText(title);
+
+    // An archived page is read-only.
+    await page.goto(`/arbeitsbereich/${workspaceId}/seite/${documentId}`);
+    await expect(page.getByTestId('archived-banner')).toBeVisible();
+
+    await page.getByTestId('restore-document').click();
+    await expect(page.getByTestId('archived-banner')).toBeHidden({ timeout: 30_000 });
+    await expectTreeContains(page, title);
+  });
+
+  test('keeps sidebar and context panel toggles working', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    await expect(page.getByTestId('sidebar')).toBeVisible();
+    await page.getByTestId('toggle-sidebar').click();
+    await expect(page.getByTestId('sidebar')).toBeHidden();
+    await page.getByTestId('toggle-sidebar').click();
+    await expect(page.getByTestId('sidebar')).toBeVisible();
+
+    await expect(page.getByTestId('context-panel')).toBeVisible();
+    await page.getByTestId('toggle-context').click();
+    await expect(page.getByTestId('context-panel')).toBeHidden();
+  });
+});

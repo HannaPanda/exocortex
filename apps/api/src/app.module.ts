@@ -1,0 +1,52 @@
+import { Module } from '@nestjs/common';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+
+import { type ApiEnv } from '@exocortex/config';
+
+import { AiModule } from './ai/ai.module';
+import { AttachmentsModule } from './attachments/attachments.module';
+import { AuthModule } from './auth/auth.module';
+import { SessionGuard } from './auth/session.guard';
+import { ApiExceptionFilter } from './common/exception.filter';
+import { API_ENV } from './common/logger.provider';
+import { DocumentsModule } from './documents/documents.module';
+import { HealthModule } from './health/health.module';
+import { PlatformModule } from './platform/platform.module';
+import { RealtimeModule } from './realtime/realtime.module';
+import { SearchModule } from './search/search.module';
+import { WorkspacesModule } from './workspaces/workspaces.module';
+
+@Module({
+  imports: [
+    PlatformModule,
+    ThrottlerModule.forRootAsync({
+      inject: [API_ENV],
+      useFactory: (env: ApiEnv) => ({
+        throttlers: [
+          {
+            // Generous enough for normal use, tight enough to blunt brute force.
+            ttl: 60_000,
+            limit: env.NODE_ENV === 'test' ? 10_000 : 300,
+          },
+        ],
+      }),
+    }),
+    AuthModule,
+    RealtimeModule,
+    WorkspacesModule,
+    DocumentsModule,
+    SearchModule,
+    AttachmentsModule,
+    AiModule,
+    HealthModule,
+  ],
+  providers: [
+    { provide: APP_FILTER, useClass: ApiExceptionFilter },
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    // Authentication runs after rate limiting so unauthenticated floods are
+    // rejected before any database access.
+    { provide: APP_GUARD, useClass: SessionGuard },
+  ],
+})
+export class AppModule {}

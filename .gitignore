@@ -1,0 +1,42 @@
+node_modules/
+dist/
+build/
+.next/
+out/
+coverage/
+.turbo/
+*.tsbuildinfo
+
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Playwright
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+
+# Local runtime artefacts
+logs/
+*.log
+.DS_Store
+
+# Generated Prisma client output
+packages/database/generated/
+
+# Local secrets that must never be committed
+secrets/
+
+# Prisma CLI convenience symlink to the root .env (target is ignored above)
+packages/database/.env
+
+# Next.js reads env files from its own directory; this symlink points at the
+# repository root .env (which is ignored above).
+apps/web/.env
+
+# Playwright global-setup writes real session cookies here for reuse across
+# the suite. The old unanchored pattern (`support/.auth/`) never matched this
+# nested path, so these were tracked with live tokens until 2026-08-05.
+e2e/support/.auth/

@@ -1,0 +1,36 @@
+[Unit]
+Description=Exocortex collaboration server (Hocuspocus)
+Documentation=file:///var/www/exocortex/docs/local-development.md
+After=network-online.target docker.service exocortex-api.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=johanna
+Group=johanna
+WorkingDirectory=/var/www/exocortex/apps/collaboration
+# Configuration is read from /var/www/exocortex/.env by @exocortex/config.
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node dist/main.js
+Restart=always
+RestartSec=3
+# Graceful shutdown: every process closes queues, sockets and the database pool
+# on SIGTERM (see docs/background-jobs.md).
+KillSignal=SIGTERM
+TimeoutStopSec=30
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=exocortex-collaboration
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/var/www/exocortex
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+
+[Install]
+WantedBy=multi-user.target

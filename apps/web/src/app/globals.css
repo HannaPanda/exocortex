@@ -1,0 +1,135 @@
+@import '@exocortex/ui/styles.css';
+
+/*
+ * Tailwind 4 needs to know which files to scan for class names. The shared UI
+ * package is source-only, so it is listed explicitly.
+ */
+@source '../../src';
+@source '../../../../packages/ui/src';
+
+/* Editor-specific styles. The Tiptap content area is the only place where
+   element selectors are used, because ProseMirror owns that DOM. */
+@layer components {
+  .exocortex-editor {
+    @apply text-[0.9375rem] leading-relaxed;
+  }
+
+  .exocortex-editor .ProseMirror {
+    @apply min-h-[60vh] outline-none;
+  }
+
+  .exocortex-editor .ProseMirror > * + * {
+    @apply mt-3;
+  }
+
+  .exocortex-editor h1 {
+    @apply mt-8 text-2xl font-semibold tracking-tight;
+  }
+
+  .exocortex-editor h2 {
+    @apply mt-7 text-xl font-semibold tracking-tight;
+  }
+
+  .exocortex-editor h3 {
+    @apply mt-6 text-base font-semibold;
+  }
+
+  .exocortex-editor a {
+    @apply text-primary-text underline underline-offset-2;
+  }
+
+  .exocortex-editor code {
+    @apply rounded bg-muted px-1 py-0.5 font-mono text-[0.85em];
+  }
+
+  .exocortex-editor pre {
+    @apply overflow-x-auto rounded-md border border-border bg-muted p-3 font-mono text-sm;
+  }
+
+  .exocortex-editor pre code {
+    @apply bg-transparent p-0;
+  }
+
+  .exocortex-editor blockquote {
+    @apply border-l-2 border-border-strong pl-4 text-muted-foreground;
+  }
+
+  .exocortex-editor ul {
+    @apply list-disc pl-5;
+  }
+
+  .exocortex-editor ol {
+    @apply list-decimal pl-5;
+  }
+
+  .exocortex-editor ul[data-type='taskList'] {
+    @apply list-none pl-0;
+  }
+
+  .exocortex-editor ul[data-type='taskList'] li {
+    @apply flex items-start gap-2;
+  }
+
+  .exocortex-editor ul[data-type='taskList'] li > label {
+    @apply mt-1 shrink-0;
+  }
+
+  .exocortex-editor hr {
+    @apply my-6 border-t border-border;
+  }
+
+  .exocortex-editor table {
+    @apply w-full table-fixed border-collapse text-sm;
+  }
+
+  .exocortex-editor th,
+  .exocortex-editor td {
+    @apply border border-border px-2 py-1 align-top;
+  }
+
+  .exocortex-editor th {
+    @apply bg-muted text-left font-medium;
+  }
+
+  .exocortex-editor .exocortex-callout {
+    @apply rounded-md border border-border bg-card p-3;
+  }
+
+  .exocortex-editor .exocortex-callout[data-variant='warning'] {
+    @apply border-warning/50;
+  }
+
+  .exocortex-editor .exocortex-callout[data-variant='danger'] {
+    @apply border-destructive/50;
+  }
+
+  .exocortex-editor .exocortex-callout[data-variant='success'] {
+    @apply border-success/50;
+  }
+
+  .exocortex-editor .exocortex-callout[data-variant='info'] {
+    @apply border-info/50;
+  }
+
+  .exocortex-editor .exocortex-callout::before {
+    content: attr(data-title);
+    @apply mb-1 block text-xs font-semibold tracking-wide uppercase text-muted-foreground;
+  }
+
+  .exocortex-editor .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    @apply pointer-events-none float-left h-0 text-muted-foreground;
+  }
+
+  /* Remote collaboration cursors (Tiptap CollaborationCaret). */
+  .exocortex-editor .collaboration-carets__caret {
+    @apply relative -mx-px border-r border-l border-current;
+    word-break: normal;
+    pointer-events: none;
+  }
+
+  .exocortex-editor .collaboration-carets__label {
+    @apply absolute -top-[1.4em] -left-px rounded-t-sm px-1 text-[0.6875rem] leading-none font-medium whitespace-nowrap text-black;
+    user-select: none;
+  }
+}

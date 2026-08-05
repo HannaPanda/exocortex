@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "shadcn": {
+      "command": "pnpm",
+      "args": ["dlx", "shadcn@4.16.1", "mcp", "-c", "packages/ui"],
+      "env": {}
+    }
+  }
+}

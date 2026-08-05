@@ -1,0 +1,129 @@
+# Local development
+
+## Requirements
+
+* Node.js 24 LTS (`nvm use` reads `.nvmrc`)
+* Corepack (`corepack enable`) — pnpm 11 is pinned in `packageManager`
+* Docker with the Compose plugin, and a user in the `docker` group
+
+## Setup
+
+```bash
+pnpm install
+cp .env.example .env
+```
+
+Generate the two secrets:
+
+```bash
+openssl rand -hex 32   # BETTER_AUTH_SECRET
+openssl rand -hex 32   # COLLABORATION_TICKET_SECRET
+```
+
+`@exocortex/config` validates the environment at startup. A missing or malformed
+variable aborts the process with an English message that lists every offending
+variable at once.
+
+## Infrastructure
+
+```bash
+pnpm infra:up     # waits for all health checks
+pnpm infra:down
+pnpm infra:logs
+```
+
+Host ports are non-default so the stack can coexist with other services:
+
+| Service | Host port | Notes |
+| ------- | --------- | ----- |
+| PostgreSQL | `5433` | `pgvector/pgvector:pg17` |
+| Redis | `6380` | append-only, `noeviction` |
+| MinIO API | `9110` | bucket `exocortex` is created automatically |
+| MinIO console | `9111` | |
+| Mailpit SMTP | `1026` | |
+| Mailpit UI | `8026` | verification and reset mails land here |
+
+Application ports: web `3210`, api `3211`, collaboration `3212`.
+
+All data lives in named volumes (`exocortex-postgres-data`, `exocortex-redis-data`,
+`exocortex-minio-data`, `exocortex-mailpit-data`).
+
+## Database
+
+```bash
+pnpm db:migrate            # apply migrations (prisma migrate deploy)
+pnpm db:seed               # users, workspace, nested example pages
+pnpm db:reset              # drop, re-migrate, re-seed
+pnpm --filter @exocortex/database db:studio
+```
+
+`packages/database/.env` is a symlink to the repository root `.env` so the Prisma
+CLI finds `DATABASE_URL`.
+
+### Seed data and credentials
+
+`pnpm db:seed` creates the users **Johanna** (`OWNER`) and **Stefan** (`MEMBER`),
+the shared workspace *Exocortex Team* and six nested example pages whose content is
+real Yjs state.
+
+Passwords are never hardcoded. Either set them yourself:
+
+```env
+SEED_JOHANNA_PASSWORD=…
+SEED_STEFAN_PASSWORD=…
+```
+
+or leave them empty and the script generates one-time passwords and prints them:
+
+```text
+  One-time development credentials (not stored anywhere else):
+    johanna@exocortex.app  <generated>
+    stefan@exocortex.app   <generated>
+```
+
+The seed is idempotent: re-running it rebuilds the example pages and resets the
+credentials.
+
+## Running
+
+```bash
+pnpm dev      # web + api + collaboration + worker in watch mode
+```
+
+The browser always talks to its own origin. In development Next.js rewrites
+`/api/*` to the API process, so session cookies stay first-party exactly as they do
+behind nginx in production.
+
+## Checks
+
+```bash
+pnpm lint         # dependency boundaries, then ESLint per package
+pnpm typecheck
+pnpm test         # unit + integration (requires pnpm infra:up)
+pnpm test:e2e     # Playwright against a running deployment
+```
+
+The Playwright suite needs:
+
+```bash
+export SEED_JOHANNA_PASSWORD=…
+export SEED_STEFAN_PASSWORD=…
+export E2E_BASE_URL=https://exocortex.app      # default
+export E2E_BASIC_USER=…  E2E_BASIC_PASSWORD=…  # nginx basic auth
+pnpm test:e2e
+```
+
+Browsers are installed once with
+`pnpm --filter @exocortex/e2e exec playwright install chromium --with-deps`.
+
+## Troubleshooting
+
+| Symptom | Cause and fix |
+| ------- | ------------- |
+| `EnvironmentValidationError` on startup | a variable is missing; the message lists them. Compare with `.env.example`. |
+| `permission denied … docker.sock` | add your user to the `docker` group and start a new login session. |
+| `Environment variable not found: DATABASE_URL` from the Prisma CLI | the `packages/database/.env` symlink is missing: `ln -s ../../.env packages/database/.env`. |
+| Editor shows "Editor nicht verfügbar" | the collaboration server is not running, or `PUBLIC_COLLABORATION_URL` does not match the deployment. |
+| Search finds nothing right after typing | persistence and materialization are debounced (about 2 s each). Watch the job progress indicator. |
+| `Too many requests` while logging in | the deliberate sign-in rate limit (10/minute per IP). Wait a minute. |
+| Browser bundle points at `localhost` in production | `next build` needs the env file: check the `apps/web/.env` symlink and rebuild. |
