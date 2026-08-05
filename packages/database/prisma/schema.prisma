@@ -24,25 +24,38 @@ datasource db {
 // ---------------------------------------------------------------------------
 
 model User {
-  id            String    @id @default(cuid(2))
+  id            String   @id @default(cuid(2))
   name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
+  email         String   @unique
+  emailVerified Boolean  @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  /// Global (cross-workspace) role. Distinct from WorkspaceRole: a global admin
+  /// administers the deployment, a workspace ADMIN administers one workspace.
+  role          UserRole @default(USER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   sessions           Session[]
   accounts           Account[]
   memberships        WorkspaceMember[]
-  createdDocuments   Document[]          @relation("DocumentCreatedBy")
-  updatedDocuments   Document[]          @relation("DocumentUpdatedBy")
+  createdDocuments   Document[]         @relation("DocumentCreatedBy")
+  updatedDocuments   Document[]         @relation("DocumentUpdatedBy")
   createdSnapshots   DocumentSnapshot[]
   createdAttachments Attachment[]
   auditEntries       AuditLog[]
   aiRuns             AiRun[]
+  apiTokens          ApiToken[]
+  updatedSettings    Setting[]          @relation("SettingUpdatedBy")
+  aiConversations    AiConversation[]   @relation("AiConversationCreatedBy")
 
   @@map("user")
+}
+
+/// Global (cross-workspace) role. Distinct from WorkspaceRole: a global admin
+/// administers the deployment, a workspace ADMIN administers one workspace.
+enum UserRole {
+  USER
+  ADMIN
 }
 
 model Session {
@@ -95,6 +108,48 @@ model Verification {
 }
 
 // ---------------------------------------------------------------------------
+// Global roles and runtime settings
+// ---------------------------------------------------------------------------
+
+/// DB-backed runtime settings. The environment stays the bootstrap fallback:
+/// a key absent here resolves to its env value, then to its zod default, so
+/// every process still boots with an empty table (see resolveSettings()).
+model Setting {
+  key         String   @id
+  /// Raw JSON value. Validated against settingsSchema in @exocortex/contracts
+  /// on read and on write, so a hand-edited row can never crash a process.
+  value       Json
+  updatedAt   DateTime @updatedAt
+  updatedById String?
+  updatedBy   User?    @relation("SettingUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@map("setting")
+}
+
+/// Long-lived bearer credential for external clients (MCP servers, scripts).
+/// Carries the full permissions of its user; scoping beyond that is reserved.
+model ApiToken {
+  id         String    @id @default(cuid(2))
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  /// SHA-256 of the raw token. The raw value is returned exactly once, at
+  /// creation, and is never stored or logged.
+  tokenHash  String    @unique
+  /// First 12 characters of the raw token, so a token is recognisable in a list.
+  prefix     String
+  /// Reserved for finer scoping. An empty array means "everything this user may do".
+  scopes     String[]  @default([])
+  lastUsedAt DateTime?
+  expiresAt  DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@map("api_token")
+}
+
+// ---------------------------------------------------------------------------
 // Workspaces
 // ---------------------------------------------------------------------------
 
@@ -106,19 +161,20 @@ enum WorkspaceRole {
 }
 
 model Workspace {
-  id        String    @id @default(cuid(2))
-  name      String
-  slug      String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id         String    @id @default(cuid(2))
+  name       String
+  slug       String    @unique
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
   archivedAt DateTime?
 
-  members     WorkspaceMember[]
-  documents   Document[]
-  attachments Attachment[]
-  outbox      OutboxEvent[]
-  auditLog    AuditLog[]
-  aiRuns      AiRun[]
+  members         WorkspaceMember[]
+  documents       Document[]
+  attachments     Attachment[]
+  outbox          OutboxEvent[]
+  auditLog        AuditLog[]
+  aiRuns          AiRun[]
+  aiConversations AiConversation[]
 
   @@map("workspace")
 }
@@ -177,6 +233,19 @@ enum DatabaseViewType {
   CALENDAR
 }
 
+/// AI rule pages (D5): a rule is a Document, not a parallel model, so it keeps
+/// the tree, order key, search index, trash and workspace authorization the
+/// Document model already provides.
+enum AiRuleMode {
+  /// Not a rules page.
+  OFF
+  /// The page body is appended to the system prompt of every run in this workspace.
+  ALWAYS
+  /// Only `aiRuleTrigger` reaches the system prompt; the model must call
+  /// `exo_rules_load` to read the body (instruction redirect).
+  ON_DEMAND
+}
+
 model Document {
   id          String       @id @default(cuid(2))
   workspaceId String
@@ -202,6 +271,15 @@ model Document {
   updatedAt   DateTime     @updatedAt
   archivedAt  DateTime?
 
+  /// AI rule flags (D5). `OFF` is the default so no existing page becomes a
+  /// rule by accident.
+  aiRuleMode     AiRuleMode @default(OFF)
+  /// One-line German description of when this page applies. Required for
+  /// ON_DEMAND: it is the only thing the model sees until it loads the page.
+  aiRuleTrigger  String?
+  /// Lower runs first when several ALWAYS rule pages exist.
+  aiRulePriority Int        @default(100)
+
   content     DocumentContent?
   snapshots   DocumentSnapshot[]
   searchIndex DocumentSearchIndex?
@@ -211,13 +289,16 @@ model Document {
 
   /// Present when `type` is COLLECTION: the property and view definitions of
   /// this database.
-  databaseProperties DatabaseProperty[] @relation("CollectionProperties")
-  databaseViews      DatabaseView[]     @relation("CollectionViews")
+  databaseProperties DatabaseProperty[]      @relation("CollectionProperties")
+  databaseViews      DatabaseView[]          @relation("CollectionViews")
   /// Present when this document is a row (a PAGE child of a COLLECTION).
   propertyValues     DocumentPropertyValue[] @relation("RowPropertyValues")
+  /// Page a conversation was opened from. Context only.
+  aiConversations    AiConversation[]        @relation("AiConversationDocument")
 
   @@index([workspaceId, parentId, orderKey])
   @@index([workspaceId, archivedAt])
+  @@index([workspaceId, aiRuleMode])
   @@map("document")
 }
 
@@ -227,15 +308,15 @@ model DocumentContent {
 
   /// Canonical collaborative state. Never rebuilt from derived data.
   yjsState        Bytes
-  schemaVersion   Int      @default(1)
+  schemaVersion   Int       @default(1)
   /// Timestamp of the last binary Yjs write. Used for job idempotency.
-  yjsUpdatedAt    DateTime @default(now())
+  yjsUpdatedAt    DateTime  @default(now())
   /// Derived representations. All of them are rebuilt by materialization.
   proseMirrorJson Json?
   plainText       String?
   markdown        String?
   materializedAt  DateTime?
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime  @updatedAt
 
   @@map("document_content")
 }
@@ -246,6 +327,9 @@ enum SnapshotReason {
   PRE_RESTORE
   IMPORT
   RESTORE
+  /// Taken before any programmatic content overwrite (D8), e.g.
+  /// POST /api/documents/:id/content.
+  API_WRITE
 }
 
 model DocumentSnapshot {
@@ -283,13 +367,13 @@ model DocumentSearchIndex {
 /// Prepared for future semantic search. No embeddings are generated yet
 /// (see docs/architecture.md, "Deferred work").
 model DocumentEmbedding {
-  id         String                     @id @default(cuid(2))
+  id         String                       @id @default(cuid(2))
   documentId String
-  document   Document                   @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  document   Document                     @relation(fields: [documentId], references: [id], onDelete: Cascade)
   blockId    String?
   model      String
   embedding  Unsupported("vector(1536)")?
-  createdAt  DateTime                   @default(now())
+  createdAt  DateTime                     @default(now())
 
   @@index([documentId])
   @@map("document_embedding")
@@ -401,6 +485,16 @@ model DocumentPropertyValue {
 // Attachments
 // ---------------------------------------------------------------------------
 
+/// Text extraction state machine (D6). Extraction runs in the worker and
+/// caches its result here so a repeat read of the same attachment is free.
+enum AttachmentTextStatus {
+  /// The MIME type has no text layer we extract (images, video, audio).
+  NOT_APPLICABLE
+  PENDING
+  READY
+  FAILED
+}
+
 model Attachment {
   id          String    @id @default(cuid(2))
   workspaceId String
@@ -418,6 +512,12 @@ model Attachment {
   createdBy   User      @relation(fields: [createdById], references: [id])
   createdAt   DateTime  @default(now())
   deletedAt   DateTime?
+
+  /// Extracted text cache (D6). Populated by the `attachment-text` queue.
+  extractedText       String?
+  textStatus          AttachmentTextStatus @default(NOT_APPLICABLE)
+  textExtractedAt     DateTime?
+  textExtractionError String?
 
   @@index([workspaceId, createdAt])
   @@index([documentId])
@@ -467,6 +567,131 @@ model AuditLog {
 }
 
 // ---------------------------------------------------------------------------
+// AI model registry
+// ---------------------------------------------------------------------------
+
+/// Thinking/effort levels a model accepts for OpenRouter's `reasoning`
+/// parameter. NONE means the parameter is omitted entirely.
+enum AiReasoningLevel {
+  NONE
+  MINIMAL
+  LOW
+  MEDIUM
+  HIGH
+}
+
+/// Admin-editable catalogue of selectable models. Seeded from the live
+/// OpenRouter model endpoint and refreshable from it.
+model AiModel {
+  id                    String             @id @default(cuid(2))
+  /// Provider-native identifier, e.g. `anthropic/claude-sonnet-5`.
+  slug                  String             @unique
+  /// `id` of the AiProvider that serves it ('openrouter', 'mock').
+  provider              String             @default("openrouter")
+  displayName           String
+  /// Short German one-liner shown under the name in the picker.
+  description           String?
+  contextWindowTokens   Int
+  maxOutputTokens       Int?
+  supportsVision        Boolean            @default(false)
+  supportsTools         Boolean            @default(false)
+  /// Selectable thinking levels. Always contains NONE. A single-element array
+  /// means the level is not user-selectable for this model.
+  reasoningLevels       AiReasoningLevel[] @default([])
+  /// Price in micro-USD per million tokens. Integer, so no float drift.
+  inputMicroUsdPerMTok  Int
+  outputMicroUsdPerMTok Int
+  /// Vision companion used when `supportsVision` is false (ADR-012). This is
+  /// the admin default; a user may override it per conversation.
+  visionCompanionId     String?
+  visionCompanion       AiModel?           @relation("VisionCompanion", fields: [visionCompanionId], references: [id], onDelete: SetNull)
+  companionFor          AiModel[]          @relation("VisionCompanion")
+  /// A disabled model stays resolvable for old conversations but leaves the picker.
+  enabled               Boolean            @default(true)
+  /// Ascending sort position in the picker. Plain integer: the list is ~20 rows.
+  sortOrder             Int                @default(100)
+  /// Raw OpenRouter metadata from the last sync. Never read at runtime.
+  metadata              Json?
+  syncedAt              DateTime?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+
+  conversations AiConversation[]
+
+  @@index([enabled, sortOrder])
+  @@map("ai_model")
+}
+
+// ---------------------------------------------------------------------------
+// Persistent AI conversations
+// ---------------------------------------------------------------------------
+
+enum AiConversationRole {
+  SYSTEM
+  USER
+  ASSISTANT
+  TOOL
+}
+
+model AiConversation {
+  id                  String           @id @default(cuid(2))
+  workspaceId         String
+  workspace           Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdById         String
+  createdBy           User             @relation("AiConversationCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  /// German title, derived from the first user message. Renameable.
+  title               String
+  /// Page the conversation was opened from. Context only.
+  documentId          String?
+  document            Document?        @relation("AiConversationDocument", fields: [documentId], references: [id], onDelete: SetNull)
+  modelId             String?
+  model               AiModel?         @relation(fields: [modelId], references: [id], onDelete: SetNull)
+  reasoningLevel      AiReasoningLevel @default(NONE)
+  /// User override of the model's admin-configured vision companion.
+  /// `null` means "use the admin default", the literal string 'off' disables it.
+  visionCompanionSlug String?
+  /// Running estimate of the tokens the active messages occupy. Drives
+  /// auto-compaction against the selected model's context window.
+  estimatedTokens     Int              @default(0)
+  lastMessageAt       DateTime         @default(now())
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  archivedAt          DateTime?
+
+  messages AiConversationMessage[]
+  runs     AiRun[]
+
+  @@index([workspaceId, createdById, lastMessageAt])
+  @@map("ai_conversation")
+}
+
+model AiConversationMessage {
+  id              String             @id @default(cuid(2))
+  conversationId  String
+  conversation    AiConversation     @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role            AiConversationRole
+  content         String
+  /// Assistant tool-call requests, verbatim as the provider returned them.
+  /// Null for plain text turns.
+  toolCalls       Json?
+  /// Set on TOOL messages: which call this is the result of.
+  toolCallId      String?
+  toolName        String?
+  /// True when a compaction produced this message instead of a user or model.
+  isSummary       Boolean            @default(false)
+  /// Set when a compaction or `/clear` retired this message. Retired messages
+  /// stay readable in the UI but never reach the provider again.
+  supersededAt    DateTime?
+  runId           String?
+  estimatedTokens Int                @default(0)
+  createdAt       DateTime           @default(now())
+
+  @@index([conversationId, createdAt])
+  @@index([conversationId, supersededAt])
+  @@map("ai_conversation_message")
+}
+
+// ---------------------------------------------------------------------------
 // AI runs
 // ---------------------------------------------------------------------------
 
@@ -502,6 +727,17 @@ model AiRun {
   finishedAt  DateTime?
   cancelledAt DateTime?
 
+  /// Conversation this run belongs to, when it was started from one (D7).
+  /// No `@map`: every other column on this model keeps Prisma's default
+  /// camelCase-to-camelCase mapping (see e.g. `workspaceId`), so this one does
+  /// too -- verified against the generated migration SQL.
+  conversationId String?
+  conversation   AiConversation?  @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  reasoningLevel AiReasoningLevel @default(NONE)
+  /// Number of tool round-trips this run performed.
+  toolIterations Int              @default(0)
+
   @@index([workspaceId, createdAt])
+  @@index([conversationId, createdAt])
   @@map("ai_run")
 }

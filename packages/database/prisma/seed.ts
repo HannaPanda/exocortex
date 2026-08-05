@@ -118,11 +118,30 @@ async function createPageTree(
   return created;
 }
 
+/**
+ * The production administrator. Promoting her to the global ADMIN role must be
+ * reproducible from the seed script, but the seed script must never create her:
+ * she already exists in production and seeding must stay safe to run there.
+ */
+const PRODUCTION_ADMIN_EMAIL = 'johanna@hannapanda.de';
+
+async function promoteProductionAdmin(prisma: PrismaClient): Promise<void> {
+  const result = await prisma.user.updateMany({
+    where: { email: PRODUCTION_ADMIN_EMAIL, role: { not: 'ADMIN' } },
+    data: { role: 'ADMIN' },
+  });
+  if (result.count > 0) {
+    console.log(`  promoted ${PRODUCTION_ADMIN_EMAIL} to ADMIN`);
+  }
+}
+
 async function main(): Promise<void> {
   const prisma = createPrismaClient();
   const printedCredentials: { email: string; password: string }[] = [];
 
   try {
+    await promoteProductionAdmin(prisma);
+
     const users = [];
     for (const seedUser of SEED_USERS) {
       const fromEnvironment = process.env[seedUser.passwordEnvVariable];
