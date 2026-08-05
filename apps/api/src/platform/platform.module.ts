@@ -100,6 +100,15 @@ export class PlatformLifecycle implements OnApplicationShutdown {
     },
     PlatformLifecycle,
   ],
-  exports: [API_ENV, LOGGER, PRISMA, QUEUES, OBJECT_STORAGE, AI_PROVIDER, WorkspaceAccessService],
+  exports: [
+    API_ENV,
+    LOGGER,
+    PRISMA,
+    QUEUES,
+    OBJECT_STORAGE,
+    AI_PROVIDER,
+    AI_DEFAULT_MODEL,
+    WorkspaceAccessService,
+  ],
 })
 export class PlatformModule {}
