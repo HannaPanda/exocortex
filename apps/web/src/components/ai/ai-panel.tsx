@@ -44,6 +44,20 @@ interface ToolActivityEntry {
   status: 'started' | 'succeeded' | 'failed';
 }
 
+/**
+ * Reasons a run can fail that the user can actually do something about. Codes
+ * outside this map keep the generic message.
+ */
+const RUN_ERROR_MESSAGES: Record<string, string> = {
+  ai_response_truncated:
+    'Die Antwort wurde am Ausgabelimit abgeschnitten. Frage nach einem kleineren Schritt, ' +
+    'oder erhöhe „Maximale Antwortlänge (Tokens)“ in der Verwaltung.',
+  ai_tool_limit_exceeded: 'Die KI hat zu viele Werkzeugaufrufe gebraucht.',
+  ai_tool_call_invalid: 'Ein Werkzeugaufruf kam unvollständig an und wurde nicht ausgeführt.',
+  ai_budget_exceeded: 'Die Antwort hätte das Kostenlimit dieses Laufs überschritten.',
+  ai_timeout: 'Die KI hat zu lange gebraucht.',
+};
+
 function parseConversationId(raw: string): string | null {
   const parsed: unknown = JSON.parse(raw);
   return typeof parsed === 'string' ? parsed : null;
@@ -147,7 +161,9 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
     setActiveRunId(null);
     setStreamText('');
     setToolActivity([]);
-    setError('Die KI-Antwort konnte nicht erzeugt werden.');
+    setError(
+      RUN_ERROR_MESSAGES[event.payload.errorCode] ?? 'Die KI-Antwort konnte nicht erzeugt werden.',
+    );
   });
 
   useRealtimeEvent('ai.conversation.compacted', (event) => {

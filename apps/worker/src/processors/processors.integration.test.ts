@@ -4,9 +4,11 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import {
   type AiGenerateRequest,
+  type AiGenerateResult,
   type AiProvider,
   type AiProviderCapabilities,
   type AiStreamEvent,
+  type AiToolCall,
   MockAiProvider,
   type PdfDocumentInfoReader,
   type VisionPreprocessor,
@@ -455,6 +457,49 @@ class CapturingAiProvider implements AiProvider {
   }
 }
 
+interface ScriptedTurn {
+  text: string;
+  finishReason: AiGenerateResult['finishReason'];
+  toolCalls?: readonly AiToolCall[];
+}
+
+/** Replays a fixed list of turns; the last entry answers every further turn. */
+class ScriptedAiProvider implements AiProvider {
+  public readonly id = 'scripted-test-provider';
+  public readonly capabilities: AiProviderCapabilities = {
+    textGeneration: true,
+    vision: false,
+    toolCalling: true,
+    structuredOutput: false,
+    streaming: true,
+    contextWindowTokens: 32_000,
+    usageReporting: true,
+    costReporting: true,
+    models: [],
+  };
+
+  public readonly requests: AiGenerateRequest[] = [];
+
+  private readonly turns: readonly ScriptedTurn[];
+
+  constructor(turns: readonly ScriptedTurn[]) {
+    this.turns = turns;
+  }
+
+  async generate(): Promise<AiGenerateResult> {
+    throw new Error('The scripted provider is only used for streaming');
+  }
+
+  async *stream(request: AiGenerateRequest): AsyncIterable<AiStreamEvent> {
+    const turn = this.turns[Math.min(this.requests.length, this.turns.length - 1)]!;
+    this.requests.push(request);
+    yield { type: 'start', model: request.model ?? 'test-model', provider: this.id };
+    if (turn.text.length > 0) yield { type: 'delta', text: turn.text, sequence: 1 };
+    if (turn.toolCalls !== undefined) yield { type: 'tool_calls', toolCalls: turn.toolCalls };
+    yield { type: 'done', text: turn.text, finishReason: turn.finishReason };
+  }
+}
+
 function fakeStorage(bytes: Buffer): ObjectStorage {
   return {
     putObject: () => {
@@ -598,6 +643,132 @@ describe('ai runs', () => {
     ]);
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('COMPLETED');
+  }, 60_000);
+
+  it('sends the configured output limit with the request', async () => {
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+    const provider = new CapturingAiProvider();
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider,
+      bus,
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings({ 'ai.maxOutputTokens': 12_288 }),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => null,
+      modelRegistry: async () => null,
+    });
+    await processor(contextFor({ correlationId: 'test-ai-limit-1', runId, workspaceId, userId }).context);
+
+    expect(provider.lastRequest?.maxOutputTokens).toBe(12_288);
+  }, 60_000);
+
+  it("caps the output limit at the model's own maximum", async () => {
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+    const provider = new CapturingAiProvider();
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider,
+      bus,
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings({ 'ai.maxOutputTokens': 100_000 }),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => null,
+      modelRegistry: async () => ({ ...toolCapableModelRow('test-model'), maxOutputTokens: 8_000 }),
+    });
+    await processor(contextFor({ correlationId: 'test-ai-limit-2', runId, workspaceId, userId }).context);
+
+    expect(provider.lastRequest?.maxOutputTokens).toBe(8_000);
+  }, 60_000);
+
+  it('picks a truncated answer up instead of delivering the fragment as the result', async () => {
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+    const provider = new ScriptedAiProvider([
+      { text: 'Teil eins ', finishReason: 'length' },
+      { text: 'und Teil zwei.', finishReason: 'stop' },
+    ]);
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider,
+      bus,
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => null,
+      modelRegistry: async () => null,
+    });
+    await processor(contextFor({ correlationId: 'test-ai-truncation-1', runId, workspaceId, userId }).context);
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('COMPLETED');
+    expect(run.resultText).toBe('Teil eins und Teil zwei.');
+
+    expect(provider.requests).toHaveLength(2);
+    const secondTurnMessages = provider.requests[1]?.messages ?? [];
+    expect(secondTurnMessages.at(-2)).toEqual({ role: 'assistant', content: 'Teil eins ' });
+    expect(secondTurnMessages.at(-1)?.content).toContain('abgeschnitten');
+  }, 60_000);
+
+  it('fails with ai_response_truncated when a tool call is cut off mid-arguments', async () => {
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+    const provider = new ScriptedAiProvider([
+      {
+        text: 'Ich schreibe jetzt den strukturierten Inhalt auf die Seite:',
+        finishReason: 'length',
+        toolCalls: [
+          { id: 'call-1', name: 'exo_page_write', argumentsJson: '{"documentId":"abc","markdown":"# Gami' },
+        ],
+      },
+    ]);
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider,
+      bus,
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => null,
+      modelRegistry: async () => null,
+    });
+    await processor(contextFor({ correlationId: 'test-ai-truncation-2', runId, workspaceId, userId }).context);
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('FAILED');
+    expect(run.errorCode).toBe('ai_response_truncated');
+    // One first attempt plus the bounded number of retries, and not one more.
+    expect(provider.requests).toHaveLength(4);
+  }, 60_000);
+
+  it('fails instead of dropping a tool call the provider never assembled', async () => {
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+    const provider = new ScriptedAiProvider([
+      { text: '', finishReason: 'tool_calls', toolCalls: [{ id: '', name: '', argumentsJson: '{}' }] },
+    ]);
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider,
+      bus,
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => null,
+      modelRegistry: async () => null,
+    });
+    await processor(contextFor({ correlationId: 'test-ai-tool-call-1', runId, workspaceId, userId }).context);
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('FAILED');
+    expect(run.errorCode).toBe('ai_tool_call_invalid');
   }, 60_000);
 });
 

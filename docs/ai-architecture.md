@@ -117,6 +117,20 @@ same `exo_*` tool catalogue the external MCP server serves
   (summed from every turn's reported usage) stop a runaway loop with
   `ai_tool_limit_exceeded` / `ai_budget_exceeded`. `ai.mutatingToolsEnabled`
   gates whether write tools are offered at all.
+* **A truncated turn is never a finished turn.** The `done` event's
+  `finishReason` reaches `TurnResult`, and `'length'` (the output cap ended the
+  turn) is handled explicitly: a cut-off text answer is picked up with a
+  continuation prompt and the pieces are joined into one result, a cut-off tool
+  call is reported as `ai.run.tool_call` `failed` and retried with the
+  instruction to write long content in several `append` calls. After
+  `MAX_TRUNCATION_RETRIES` (3) the run fails with `ai_response_truncated`.
+  Without this a run could announce a write, get cut off mid-arguments, write
+  nothing and still be stored as `COMPLETED`.
+* **A tool call that never arrived completely fails loudly.** A call without an
+  id or a name cannot be executed and would produce an assistant message the
+  adapter has to drop on the next request; it is published as
+  `ai.run.tool_call` `failed`, and a turn left with no runnable call fails with
+  `ai_tool_call_invalid`.
 * **A tool error is never a thrown exception.** `ToolRunner.run` always
   returns `{ text, isError }` — an unknown tool, invalid JSON arguments, an
   `ExocortexApiError` or a zod validation failure all become a `tool` message
@@ -363,8 +377,15 @@ worker's `AbortSignal` stops the stream.
 
 ## Cost and limits
 
-`AI_DEFAULT_LIMITS`: 60 s timeout, 2048 output tokens, 50 000 micro-USD (5 cent) per
+`AI_DEFAULT_LIMITS`: 60 s timeout, 4096 output tokens, 50 000 micro-USD (5 cent) per
 run. Every provider must refuse to exceed the budget it is given.
+
+A run does not use that default: `createAiRunProcessor` passes
+`min(ai.maxOutputTokens, ai_model.maxOutputTokens)` with every turn, so the
+admin setting is the effective ceiling and a model that caps its own output
+lower still gets a request it can answer. The default only applies to callers
+that pass nothing (and the compaction summary and image descriptions pass their
+own, smaller limits).
 
 ## Tests
 

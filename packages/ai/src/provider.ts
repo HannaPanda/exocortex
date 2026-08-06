@@ -120,9 +120,17 @@ export class AiBudgetExceededError extends AiProviderError {
   }
 }
 
-/** Default limits applied when a caller does not specify them. */
+/**
+ * Default limits applied when a caller does not specify them.
+ *
+ * `maxOutputTokens` matches the default of the `ai.maxOutputTokens` setting on
+ * purpose: an agent that writes a page through a tool call needs the arguments
+ * of that call to fit in one answer, and 2048 tokens truncated real writes
+ * mid-argument. Callers that know they need less (the compaction summary, an
+ * image description) still pass their own, smaller limit.
+ */
 export const AI_DEFAULT_LIMITS = {
   timeoutMs: 60_000,
-  maxOutputTokens: 2_048,
+  maxOutputTokens: 4_096,
   budgetMicroUsd: 50_000,
 } as const;

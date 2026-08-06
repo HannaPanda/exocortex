@@ -281,7 +281,14 @@ export class OpenRouterProvider implements AiProvider {
     }
 
     if (usage !== null) yield { type: 'usage', usage };
-    yield { type: 'done', text, finishReason: toolCalls.length > 0 ? 'tool_calls' : lastFinishReason };
+    // 'length' must survive: a run that hit the output cap mid-arguments also
+    // carries half-assembled tool calls, and reporting those as a clean
+    // 'tool_calls' finish is exactly what made truncation invisible before.
+    yield {
+      type: 'done',
+      text,
+      finishReason: toolCalls.length > 0 && lastFinishReason !== 'length' ? 'tool_calls' : lastFinishReason,
+    };
   }
 
   private mapUsage(

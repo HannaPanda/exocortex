@@ -1,4 +1,11 @@
-import { type AiProvider, type AiToolCall, estimateMessageTokens, estimateTokens, type VisionPreprocessor } from '@exocortex/ai';
+import {
+  type AiGenerateResult,
+  type AiProvider,
+  type AiToolCall,
+  estimateMessageTokens,
+  estimateTokens,
+  type VisionPreprocessor,
+} from '@exocortex/ai';
 import { type AiMessage, aiMessageSchema, type AiUsage, type QUEUE_NAMES, type Settings } from '@exocortex/contracts';
 import {
   type AiConversationRole as AiConversationRolePrisma,
@@ -56,6 +63,26 @@ const MAX_IMAGES_PER_RUN = 4;
 const MAX_RULE_CHARS = 20_000;
 
 const ATTACHMENT_DOWNLOAD_PATH = /^\/api\/attachments\/([^/]+)\/download$/;
+
+/**
+ * How often one run may pick up an answer that hit the output cap.
+ *
+ * Bounded on purpose: a model that keeps running into the limit is producing
+ * something the limit is not the right fix for, and every retry costs a full
+ * prompt again.
+ */
+const MAX_TRUNCATION_RETRIES = 3;
+
+/** Sent after a text answer was cut off, to pick it up without repeating anything. */
+const TRUNCATION_CONTINUE_PROMPT =
+  'Deine vorige Antwort wurde am Ausgabelimit abgeschnitten. Setze genau an der Abbruchstelle fort: ' +
+  'keine Einleitung, keine Wiederholung, kein Neuanfang.';
+
+/** Sent after a tool call was cut off mid-arguments, so the retry stays inside the limit. */
+const TRUNCATION_TOOL_RETRY_PROMPT =
+  'Dein letzter Werkzeugaufruf wurde am Ausgabelimit abgeschnitten und deshalb nicht ausgeführt. ' +
+  'Wiederhole ihn mit deutlich weniger Inhalt pro Aufruf: schreibe lange Inhalte in mehreren Schritten, ' +
+  'den ersten mit mode "replace", die weiteren mit mode "append".';
 
 const CONVERSATION_ROLE_TO_LOWER: Record<AiConversationRolePrisma, AiMessage['role']> = {
   SYSTEM: 'system',
@@ -198,6 +225,12 @@ interface TurnResult {
   toolCalls: AiToolCall[];
   usage: AiUsage | null;
   failure: { code: string; message: string } | null;
+  /**
+   * Why the provider stopped. `'length'` means the output cap ended the turn,
+   * which is the one case a finished-looking turn must never be mistaken for:
+   * the text stops mid-sentence and a tool call stops mid-JSON.
+   */
+  finishReason: AiGenerateResult['finishReason'];
 }
 
 /**
@@ -386,6 +419,15 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       ? dependencies.toolRunnerFactory!({ userId: run.createdById, includeMutating: settings['ai.mutatingToolsEnabled'] })
       : null;
 
+    // The admin setting is the ceiling for one answer; a model that caps its own
+    // output lower wins, because asking a provider for more than the model can
+    // return is a request error. Without this the adapter fell back to its own
+    // default and `ai.maxOutputTokens` changed nothing about a run.
+    const maxOutputTokens = Math.min(
+      settings['ai.maxOutputTokens'],
+      modelRow.maxOutputTokens ?? Number.POSITIVE_INFINITY,
+    );
+
     await prisma.aiRun.update({
       where: { id: run.id },
       data: { status: 'RUNNING', startedAt: new Date() },
@@ -405,6 +447,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       let toolCalls: AiToolCall[] = [];
       let usage: AiUsage | null = null;
       let failure: { code: string; message: string } | null = null;
+      let finishReason: AiGenerateResult['finishReason'] = 'stop';
 
       for await (const event of provider.stream({
         messages,
@@ -412,6 +455,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         correlationId: payload.correlationId,
         signal: controller.signal,
         timeoutMs,
+        maxOutputTokens,
         tools: runner?.definitions,
         toolChoice: toolsEnabled ? 'auto' : undefined,
         reasoning: { effort: REASONING_LEVEL_TO_LOWER[run.reasoningLevel] },
@@ -438,14 +482,16 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           case 'error':
             failure = { code: event.code, message: event.message };
             break;
-          case 'start':
           case 'done':
+            finishReason = event.finishReason;
+            break;
+          case 'start':
           default:
             break;
         }
       }
 
-      return { text, toolCalls, usage, failure };
+      return { text, toolCalls, usage, failure, finishReason };
     };
 
     let text = '';
@@ -453,6 +499,9 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     let failure: { code: string; message: string } | null = null;
     let toolIterations = 0;
     let spentMicroUsd = 0;
+    /** Text of earlier turns that were cut off at the output cap and picked up again. */
+    let carriedText = '';
+    let truncationRetries = 0;
     const maxIterations = toolsEnabled ? settings['ai.maxToolIterations'] : 0;
     const budgetMicroUsd = settings['ai.budgetMicroUsdPerRun'];
 
@@ -481,12 +530,109 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
 
         if (turn.failure !== null) {
           failure = turn.failure;
-          text = turn.text.length > 0 ? turn.text : text;
+          text = turn.text.length > 0 ? carriedText + turn.text : text;
           break;
         }
 
-        text = turn.text;
+        if (turn.finishReason === 'length') {
+          // The output cap ended this turn, not the model. Nothing here is a
+          // finished answer: the text stops mid-sentence, and a tool call stops
+          // mid-JSON and can never be executed. Treating this like a normal
+          // turn is what let a run announce a write, write nothing and still
+          // count as completed.
+          const truncatedToolCall = turn.toolCalls.length > 0;
+          for (const call of turn.toolCalls) {
+            await bus.publish({
+              type: 'ai.run.tool_call',
+              workspaceId: run.workspaceId,
+              correlationId: payload.correlationId,
+              emittedAt: new Date().toISOString(),
+              payload: {
+                runId: run.id,
+                iteration: toolIterations,
+                toolName: call.name.length > 0 ? call.name : 'unbekannt',
+                status: 'failed',
+              },
+            });
+          }
+
+          truncationRetries += 1;
+          if (truncationRetries > MAX_TRUNCATION_RETRIES) {
+            failure = {
+              code: 'ai_response_truncated',
+              message: `The answer hit the output limit of ${maxOutputTokens} tokens more than ${MAX_TRUNCATION_RETRIES} times`,
+            };
+            text = carriedText + turn.text;
+            break;
+          }
+          if (spentMicroUsd >= budgetMicroUsd) {
+            failure = {
+              code: 'ai_budget_exceeded',
+              message: `AI run would exceed its budget of ${budgetMicroUsd} micro-USD`,
+            };
+            text = carriedText + turn.text;
+            break;
+          }
+
+          logger.info('Picking up an answer that hit the output limit', {
+            runId: run.id,
+            attempt: truncationRetries,
+            maxOutputTokens,
+            truncatedToolCall,
+          });
+
+          // The partial turn goes back into the context either way, so the
+          // model can see where it stopped. Only a truncated *text* answer is
+          // carried into the result, though: a retried tool call writes its
+          // preamble again, and keeping both would duplicate it in the answer.
+          providerMessages = [
+            ...providerMessages,
+            ...(turn.text.length > 0 ? [{ role: 'assistant' as const, content: turn.text }] : []),
+            {
+              role: 'user' as const,
+              content: truncatedToolCall ? TRUNCATION_TOOL_RETRY_PROMPT : TRUNCATION_CONTINUE_PROMPT,
+            },
+          ];
+          if (!truncatedToolCall) carriedText += turn.text;
+          continue;
+        }
+
+        text = carriedText + turn.text;
         if (turn.toolCalls.length === 0) break;
+
+        // A call the provider never finished assembling (no id, no name) cannot
+        // be executed, and persisting it would produce an assistant message the
+        // adapter has to drop again on the next request. Report it instead of
+        // dropping it in silence.
+        const runnableToolCalls = turn.toolCalls.filter(
+          (call) => call.id.length > 0 && call.name.length > 0,
+        );
+        for (const call of turn.toolCalls) {
+          if (runnableToolCalls.includes(call)) continue;
+          await bus.publish({
+            type: 'ai.run.tool_call',
+            workspaceId: run.workspaceId,
+            correlationId: payload.correlationId,
+            emittedAt: new Date().toISOString(),
+            payload: {
+              runId: run.id,
+              iteration: toolIterations,
+              toolName: call.name.length > 0 ? call.name : 'unbekannt',
+              status: 'failed',
+            },
+          });
+          logger.warn('Discarding a tool call the provider did not deliver completely', {
+            runId: run.id,
+            toolName: call.name,
+          });
+        }
+        if (runnableToolCalls.length === 0) {
+          failure = {
+            code: 'ai_tool_call_invalid',
+            message: 'The model requested a tool call the provider did not deliver completely',
+          };
+          break;
+        }
 
         toolIterations += 1;
         if (toolIterations > maxIterations) {
@@ -507,23 +653,27 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         // Tool calls run sequentially, never in parallel: two mutating calls to
         // the same document in flight at once is exactly the race we do not
         // want, and the ordering also keeps the transcript readable.
-        const wireToolCalls = toWireToolCalls(turn.toolCalls);
+        const wireToolCalls = toWireToolCalls(runnableToolCalls);
+        // The transcript keeps the whole assistant turn including anything
+        // carried over from a continued answer; the wire message repeats only
+        // this turn's text, because the earlier part is already in the context.
         await prisma.aiConversationMessage.create({
           data: {
             conversationId: run.conversationId!,
             role: 'ASSISTANT',
-            content: turn.text,
+            content: text,
             toolCalls: wireToolCalls as unknown as Prisma.InputJsonValue,
             runId: run.id,
-            estimatedTokens: estimateMessageTokens({ role: 'assistant', content: turn.text }),
+            estimatedTokens: estimateMessageTokens({ role: 'assistant', content: text }),
           },
         });
+        carriedText = '';
         let nextMessages: AiMessage[] = [
           ...providerMessages,
           { role: 'assistant', content: turn.text, toolCalls: wireToolCalls },
         ];
 
-        for (const call of turn.toolCalls) {
+        for (const call of runnableToolCalls) {
           await bus.publish({
             type: 'ai.run.tool_call',
             workspaceId: run.workspaceId,
