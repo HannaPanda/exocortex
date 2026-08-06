@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { type AiUsage } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 
@@ -9,6 +11,7 @@ import {
   type AiProviderCapabilities,
   AiProviderError,
   type AiStreamEvent,
+  type AiToolCall,
 } from './provider';
 
 export interface OpenRouterProviderOptions {
@@ -30,7 +33,24 @@ const OPENROUTER_CAPABILITIES: AiProviderCapabilities = {
   usageReporting: true,
   costReporting: true,
   models: [],
+  reasoningControl: true,
 };
+
+/** Shape of an assistant `toolCalls` field once it round-trips through the contract's `unknown`. */
+const openRouterToolCallsSchema = z.array(
+  z.object({
+    id: z.string(),
+    type: z.literal('function'),
+    function: z.object({ name: z.string(), arguments: z.string() }),
+  }),
+);
+
+function mapFinishReason(raw: string | undefined): AiGenerateResult['finishReason'] {
+  if (raw === 'tool_calls' || raw === 'stop' || raw === 'length' || raw === 'content_filter') {
+    return raw;
+  }
+  return 'stop';
+}
 
 /**
  * OpenRouter adapter.
@@ -61,17 +81,56 @@ export class OpenRouterProvider implements AiProvider {
     }
   }
 
+  /**
+   * Maps contract messages onto the OpenAI-shaped wire format. Tool turns need
+   * extra fields the base `{ role, content }` shape does not carry.
+   * `toolCalls` arrives as `unknown` (it is provider-shaped and only passed
+   * through by the contract), so it is parsed defensively: a malformed value
+   * is dropped with a warning rather than sent upstream or cast away.
+   */
+  private mapMessages(request: AiGenerateRequest): unknown[] {
+    return request.messages.map((message) => {
+      if (message.role === 'tool') {
+        return { role: 'tool', tool_call_id: message.toolCallId, content: message.content };
+      }
+      if (message.role === 'assistant' && message.toolCalls !== undefined) {
+        const parsed = openRouterToolCallsSchema.safeParse(message.toolCalls);
+        if (parsed.success) {
+          return { role: 'assistant', content: message.content, tool_calls: parsed.data };
+        }
+        this.options.logger.warn('Dropping malformed assistant tool_calls', {
+          correlationId: request.correlationId,
+          issues: parsed.error.issues.map((issue) => issue.path.join('.')),
+        });
+      }
+      return { role: message.role, content: message.content };
+    });
+  }
+
   private buildBody(request: AiGenerateRequest, stream: boolean): string {
     return JSON.stringify({
       model: request.model ?? this.options.defaultModel ?? 'anthropic/claude-sonnet-4.5',
-      messages: request.messages.map((message) => ({
-        role: message.role,
-        content: message.content,
-      })),
+      messages: this.mapMessages(request),
       max_tokens: request.maxOutputTokens ?? AI_DEFAULT_LIMITS.maxOutputTokens,
       temperature: request.temperature ?? 0.3,
       stream,
       usage: { include: true },
+      ...(request.tools === undefined || request.tools.length === 0
+        ? {}
+        : {
+            tools: request.tools.map((tool) => ({
+              type: 'function' as const,
+              function: {
+                name: tool.name,
+                description: tool.description,
+                parameters: tool.parameters,
+              },
+            })),
+            tool_choice: request.toolChoice ?? 'auto',
+          }),
+      ...(request.reasoning === undefined || request.reasoning.effort === 'none'
+        ? {}
+        : { reasoning: { effort: request.reasoning.effort } }),
     });
   }
 
@@ -107,11 +166,20 @@ export class OpenRouterProvider implements AiProvider {
     }
 
     const payload = (await response.json()) as OpenRouterCompletion;
-    const text = payload.choices?.[0]?.message?.content ?? '';
+    const message = payload.choices?.[0]?.message;
+    const text = message?.content ?? '';
+    const toolCalls: AiToolCall[] = (message?.tool_calls ?? [])
+      .filter(
+        (call): call is OpenRouterToolCallResponse & { function: { name: string; arguments: string } } =>
+          call.function?.name !== undefined && call.function.arguments !== undefined,
+      )
+      .map((call) => ({ id: call.id, name: call.function.name, argumentsJson: call.function.arguments }));
+
     return {
       text,
-      finishReason: 'stop',
+      finishReason: mapFinishReason(payload.choices?.[0]?.finish_reason),
       usage: this.mapUsage(payload, request, Date.now() - startedAt),
+      toolCalls,
     };
   }
 
@@ -143,6 +211,13 @@ export class OpenRouterProvider implements AiProvider {
     let text = '';
     let sequence = 0;
     let usage: AiUsage | null = null;
+    let lastFinishReason: AiGenerateResult['finishReason'] = 'stop';
+    /**
+     * Tool calls arrive as fragments: the first chunk for an index carries `id`
+     * and `function.name`, later chunks append to `function.arguments`.
+     * Accumulating by index is the only correct way to reassemble them.
+     */
+    const partialToolCalls = new Map<number, { id: string; name: string; args: string }>();
 
     while (true) {
       const { done, value } = await reader.read();
@@ -164,11 +239,32 @@ export class OpenRouterProvider implements AiProvider {
           });
           continue;
         }
-        const delta = chunk.choices?.[0]?.delta?.content;
-        if (typeof delta === 'string' && delta.length > 0) {
-          text += delta;
+        const choice = chunk.choices?.[0];
+        const delta = choice?.delta;
+        // Reasoning deltas are deliberately dropped: they are not the answer
+        // and would corrupt `resultText`. Surfacing thinking is a later feature.
+        if (typeof delta?.content === 'string' && delta.content.length > 0) {
+          text += delta.content;
           sequence += 1;
-          yield { type: 'delta', text: delta, sequence };
+          yield { type: 'delta', text: delta.content, sequence };
+        }
+        if (delta?.tool_calls !== undefined) {
+          for (const toolCallDelta of delta.tool_calls) {
+            const existing = partialToolCalls.get(toolCallDelta.index) ?? {
+              id: '',
+              name: '',
+              args: '',
+            };
+            if (toolCallDelta.id !== undefined) existing.id = toolCallDelta.id;
+            if (toolCallDelta.function?.name !== undefined) existing.name = toolCallDelta.function.name;
+            if (toolCallDelta.function?.arguments !== undefined) {
+              existing.args += toolCallDelta.function.arguments;
+            }
+            partialToolCalls.set(toolCallDelta.index, existing);
+          }
+        }
+        if (choice?.finish_reason !== undefined) {
+          lastFinishReason = mapFinishReason(choice.finish_reason);
         }
         if (chunk.usage !== undefined) {
           usage = this.mapUsage({ usage: chunk.usage, model: chunk.model }, request, Date.now() - startedAt);
@@ -176,8 +272,16 @@ export class OpenRouterProvider implements AiProvider {
       }
     }
 
+    let toolCalls: AiToolCall[] = [];
+    if (partialToolCalls.size > 0) {
+      toolCalls = [...partialToolCalls.entries()]
+        .sort(([indexA], [indexB]) => indexA - indexB)
+        .map(([, call]) => ({ id: call.id, name: call.name, argumentsJson: call.args }));
+      yield { type: 'tool_calls', toolCalls };
+    }
+
     if (usage !== null) yield { type: 'usage', usage };
-    yield { type: 'done', text, finishReason: 'stop' };
+    yield { type: 'done', text, finishReason: toolCalls.length > 0 ? 'tool_calls' : lastFinishReason };
   }
 
   private mapUsage(
@@ -205,14 +309,35 @@ interface OpenRouterUsage {
   prompt_tokens_details?: { cached_tokens?: number };
 }
 
+interface OpenRouterToolCallResponse {
+  id: string;
+  type: string;
+  function?: { name?: string; arguments?: string };
+}
+
 interface OpenRouterCompletion {
   model?: string;
   usage?: OpenRouterUsage;
-  choices?: { message?: { content?: string } }[];
+  choices?: {
+    message?: { content?: string; tool_calls?: OpenRouterToolCallResponse[] };
+    finish_reason?: string;
+  }[];
 }
 
 interface OpenRouterStreamChunk {
   model?: string;
   usage?: OpenRouterUsage;
-  choices?: { delta?: { content?: string } }[];
+  choices?: {
+    delta?: {
+      content?: string;
+      reasoning?: string;
+      tool_calls?: {
+        index: number;
+        id?: string;
+        type?: string;
+        function?: { name?: string; arguments?: string };
+      }[];
+    };
+    finish_reason?: string;
+  }[];
 }

@@ -1,17 +1,20 @@
 import { describe, expect, it } from 'vitest';
 
 import { MockAiProvider } from './mock-provider';
-import { type AiStreamEvent } from './provider';
+import { type AiGenerateRequest, type AiStreamEvent } from './provider';
 import { createAiProvider } from './registry';
 
-const request = {
+const request: AiGenerateRequest = {
   messages: [{ role: 'user' as const, content: 'Was ist Exocortex?' }],
   correlationId: 'corr-test',
 };
 
-async function collect(provider: MockAiProvider): Promise<AiStreamEvent[]> {
+async function collect(
+  provider: MockAiProvider,
+  overrideRequest: AiGenerateRequest = request,
+): Promise<AiStreamEvent[]> {
   const events: AiStreamEvent[] = [];
-  for await (const event of provider.stream(request)) events.push(event);
+  for await (const event of provider.stream(overrideRequest)) events.push(event);
   return events;
 }
 
@@ -81,6 +84,50 @@ describe('MockAiProvider', () => {
   it('echoes the user question in the answer', async () => {
     const result = await new MockAiProvider().generate(request);
     expect(result.text).toContain('Was ist Exocortex?');
+  });
+
+  it('requests a tool call when the marker is present and tools were offered', async () => {
+    const toolRequest: AiGenerateRequest = {
+      messages: [{ role: 'user' as const, content: 'Bitte [[call:exo_page_get]] aufrufen' }],
+      correlationId: 'corr-test-tool',
+      tools: [{ name: 'exo_page_get', description: 'Liest eine Seite', parameters: {} }],
+    };
+    const result = await new MockAiProvider().generate(toolRequest);
+    expect(result.finishReason).toBe('tool_calls');
+    expect(result.toolCalls).toEqual([
+      { id: 'mock-tool-call-1', name: 'exo_page_get', argumentsJson: '{}' },
+    ]);
+    expect(result.text).toBe('');
+  });
+
+  it('answers with plain text once a tool result message is present', async () => {
+    const followUp: AiGenerateRequest = {
+      messages: [
+        { role: 'user' as const, content: 'Bitte [[call:exo_page_get]] aufrufen' },
+        {
+          role: 'assistant' as const,
+          content: '',
+          toolCalls: [{ id: 'mock-tool-call-1', type: 'function', function: { name: 'exo_page_get', arguments: '{}' } }],
+        },
+        { role: 'tool' as const, content: 'Seiteninhalt', toolCallId: 'mock-tool-call-1', toolName: 'exo_page_get' },
+      ],
+      correlationId: 'corr-test-tool-2',
+      tools: [{ name: 'exo_page_get', description: 'Liest eine Seite', parameters: {} }],
+    };
+    const result = await new MockAiProvider().generate(followUp);
+    expect(result.finishReason).toBe('stop');
+    expect(result.toolCalls).toEqual([]);
+  });
+
+  it('yields a tool_calls stream event before done when the marker matches', async () => {
+    const toolRequest: AiGenerateRequest = {
+      messages: [{ role: 'user' as const, content: '[[call:exo_search]]' }],
+      correlationId: 'corr-test-tool-3',
+      tools: [{ name: 'exo_search', description: 'Sucht', parameters: {} }],
+    };
+    const events = await collect(new MockAiProvider({ chunkDelayMs: 0 }), toolRequest);
+    expect(events.some((event) => event.type === 'tool_calls')).toBe(true);
+    expect(events.at(-1)).toEqual({ type: 'done', text: '', finishReason: 'tool_calls' });
   });
 });
 

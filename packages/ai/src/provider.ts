@@ -21,6 +21,31 @@ export interface AiProviderCapabilities {
   costReporting: boolean;
   /** Models the provider exposes. Empty means "provider decides". */
   models: readonly string[];
+  /** Provider accepts an explicit `reasoning.effort` control. */
+  reasoningControl: boolean;
+}
+
+/** One tool the model may call, in provider-neutral form. */
+export interface AiToolDefinition {
+  name: string;
+  description: string;
+  /** JSON Schema (draft 2020-12) of the tool's arguments. */
+  parameters: unknown;
+}
+
+/** A tool call the model asked for. */
+export interface AiToolCall {
+  id: string;
+  name: string;
+  /** Raw JSON argument string as the model produced it. Parsed by the caller,
+   *  because a model can emit invalid JSON and the caller must report that back
+   *  as a tool result rather than crashing the run. */
+  argumentsJson: string;
+}
+
+export interface AiReasoningOptions {
+  /** OpenRouter `reasoning.effort`. Omitted entirely for 'none'. */
+  effort: 'none' | 'minimal' | 'low' | 'medium' | 'high';
 }
 
 export interface AiGenerateRequest {
@@ -35,17 +60,24 @@ export interface AiGenerateRequest {
   /** Cost ceiling in micro-USD. A provider must refuse to exceed it. */
   budgetMicroUsd?: number;
   correlationId: string;
+  tools?: readonly AiToolDefinition[];
+  /** 'auto' lets the model decide, 'none' forbids calls. Default 'auto' when
+   *  tools are present. */
+  toolChoice?: 'auto' | 'none';
+  reasoning?: AiReasoningOptions;
 }
 
 export interface AiGenerateResult {
   text: string;
   usage: AiUsage;
   finishReason: 'stop' | 'length' | 'content_filter' | 'tool_calls' | 'cancelled' | 'error';
+  toolCalls: readonly AiToolCall[];
 }
 
 export type AiStreamEvent =
   | { type: 'start'; model: string; provider: string }
   | { type: 'delta'; text: string; sequence: number }
+  | { type: 'tool_calls'; toolCalls: readonly AiToolCall[] }
   | { type: 'usage'; usage: AiUsage }
   | { type: 'done'; text: string; finishReason: AiGenerateResult['finishReason'] }
   | { type: 'error'; code: string; message: string };

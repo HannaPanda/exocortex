@@ -3,4 +3,5 @@ export * from './mock-provider';
 export * from './openrouter-provider';
 export * from './provider';
 export * from './registry';
+export * from './token-estimate';
 export * from './vision-preprocessor';

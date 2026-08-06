@@ -8,6 +8,7 @@ import {
   type AiProvider,
   type AiProviderCapabilities,
   type AiStreamEvent,
+  type AiToolCall,
 } from './provider';
 
 export interface MockProviderOptions {
@@ -21,14 +22,18 @@ export interface MockProviderOptions {
 const MOCK_CAPABILITIES: AiProviderCapabilities = {
   textGeneration: true,
   vision: false,
-  toolCalling: false,
+  toolCalling: true,
   structuredOutput: false,
   streaming: true,
   contextWindowTokens: 32_000,
   usageReporting: true,
   costReporting: true,
   models: ['exocortex-mock-1'],
+  reasoningControl: false,
 };
+
+/** Marker a test message can embed to make the mock provider request a tool call. */
+const CALL_MARKER = /\[\[call:([a-zA-Z0-9_]+)\]\]/;
 
 function estimateTokens(text: string): number {
   // Rough but deterministic: four characters per token.
@@ -73,17 +78,36 @@ export class MockAiProvider implements AiProvider {
 
   async generate(request: AiGenerateRequest): Promise<AiGenerateResult> {
     const startedAt = Date.now();
+    const toolCall = this.detectToolCall(request);
+    if (toolCall !== null) {
+      return {
+        text: '',
+        finishReason: 'tool_calls',
+        usage: this.buildUsage(request, '', Date.now() - startedAt),
+        toolCalls: [toolCall],
+      };
+    }
+
     const text = this.buildResponse(request);
     return {
       text,
       finishReason: 'stop',
       usage: this.buildUsage(request, text, Date.now() - startedAt),
+      toolCalls: [],
     };
   }
 
   async *stream(request: AiGenerateRequest): AsyncIterable<AiStreamEvent> {
     const startedAt = Date.now();
     yield { type: 'start', model: this.model, provider: this.id };
+
+    const toolCall = this.detectToolCall(request);
+    if (toolCall !== null) {
+      yield { type: 'tool_calls', toolCalls: [toolCall] };
+      yield { type: 'usage', usage: this.buildUsage(request, '', Date.now() - startedAt) };
+      yield { type: 'done', text: '', finishReason: 'tool_calls' };
+      return;
+    }
 
     const text = this.buildResponse(request);
     const chunks = text.match(/\S+\s*/g) ?? [text];
@@ -108,6 +132,23 @@ export class MockAiProvider implements AiProvider {
 
     yield { type: 'usage', usage: this.buildUsage(request, emitted, Date.now() - startedAt) };
     yield { type: 'done', text: emitted, finishReason: 'stop' };
+  }
+
+  /**
+   * Detects the `[[call:<toolName>]]` marker so tests can exercise the tool
+   * loop without a real provider. Only fires when tools were offered and no
+   * `tool` message is present yet -- once a tool result comes back, the mock
+   * answers with plain text like any other turn.
+   */
+  private detectToolCall(request: AiGenerateRequest): AiToolCall | null {
+    if (request.tools === undefined || request.tools.length === 0) return null;
+    if (request.messages.some((message) => message.role === 'tool')) return null;
+
+    const lastUserMessage = [...request.messages].reverse().find((message) => message.role === 'user');
+    const match = lastUserMessage === undefined ? null : CALL_MARKER.exec(lastUserMessage.content);
+    if (match === null) return null;
+
+    return { id: 'mock-tool-call-1', name: match[1] ?? '', argumentsJson: '{}' };
   }
 
   private buildResponse(request: AiGenerateRequest): string {
