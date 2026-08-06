@@ -74,6 +74,26 @@ pnpm --filter @exocortex/database db:studio
 `packages/database/.env` is a symlink to the repository root `.env` so the Prisma
 CLI finds `DATABASE_URL`.
 
+#### Never apply a `prisma migrate dev` diff unread
+
+The schema contains objects Prisma cannot express: the generated column
+`document_search_index.searchVector` and four raw-SQL indexes
+(`document_title_trgm_idx`, `document_property_value_json_gin`,
+`document_search_index_searchVector_idx`, `document_search_index_title_trgm_idx`).
+Prisma reads them as drift, so *every* generated migration tries to drop them,
+and the migration then fails halfway on the generated column:
+
+```
+ERROR: column "searchVector" of relation "document_search_index" is a generated column
+```
+
+Write the migration by hand instead: run `prisma migrate dev` to get a starting
+diff, delete everything that is not your change, and apply it with
+`prisma migrate deploy`. If a run already failed, clear the bookkeeping row with
+`prisma migrate resolve --rolled-back <migration_name>` first. Prisma wraps each
+migration in a transaction, so a failed one leaves the database untouched --
+check with `\d document_search_index` before assuming otherwise.
+
 ### Seed data and credentials
 
 `pnpm db:seed` creates the users **Johanna** (`OWNER`) and **Stefan** (`MEMBER`),

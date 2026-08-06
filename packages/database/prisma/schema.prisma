@@ -518,6 +518,11 @@ model Attachment {
   textStatus          AttachmentTextStatus @default(NOT_APPLICABLE)
   textExtractedAt     DateTime?
   textExtractionError String?
+  /// What the extraction engines could tell about the document: the PDF's own
+  /// title, author and dates plus page, table and picture counts. Shaped by
+  /// `pdfMetadataSchema`; a Json column because the fields are engine-reported
+  /// and open-ended, and none of them is ever queried or filtered on.
+  textMetadata        Json?
 
   @@index([workspaceId, createdAt])
   @@index([documentId])

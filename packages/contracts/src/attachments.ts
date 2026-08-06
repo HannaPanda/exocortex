@@ -66,12 +66,43 @@ export const attachmentTextStatusSchema = z.enum([
 ]);
 export type AttachmentTextStatus = z.infer<typeof attachmentTextStatusSchema>;
 
+/**
+ * What an extraction engine could tell about the document.
+ *
+ * Every field but `extractor` is nullable because the engines see different
+ * things: the hosted `pdf-text` plugin reports the PDF's own metadata
+ * dictionary (title, author, dates) and nothing about layout, while Docling
+ * reports layout (pages, tables, pictures, whether OCR ran) and nothing from
+ * the metadata dictionary. When the chain tries both, the result is the union.
+ * A null therefore means "no engine could tell", never "zero".
+ */
+export const pdfMetadataSchema = z.object({
+  /** Engine whose text was kept, e.g. `openrouter` or `docling`. */
+  extractor: z.string(),
+  title: z.string().nullable().default(null),
+  author: z.string().nullable().default(null),
+  creator: z.string().nullable().default(null),
+  producer: z.string().nullable().default(null),
+  createdAt: isoDateTimeSchema.nullable().default(null),
+  modifiedAt: isoDateTimeSchema.nullable().default(null),
+  pageCount: z.number().int().nonnegative().nullable().default(null),
+  tableCount: z.number().int().nonnegative().nullable().default(null),
+  pictureCount: z.number().int().nonnegative().nullable().default(null),
+  /** The engine's own confidence in the conversion, 0 to 1. */
+  confidence: z.number().min(0).max(1).nullable().default(null),
+  /** Whether OCR contributed text, i.e. the document had bitmap content. */
+  ocrUsed: z.boolean().nullable().default(null),
+});
+export type PdfMetadata = z.infer<typeof pdfMetadataSchema>;
+
 export const attachmentTextResponseSchema = z.object({
   attachmentId: idSchema,
   filename: z.string(),
   mimeType: z.string(),
   status: attachmentTextStatusSchema,
   text: z.string().nullable(),
+  /** Null until an extraction succeeded, and for engines that report nothing. */
+  metadata: pdfMetadataSchema.nullable(),
   extractedAt: isoDateTimeSchema.nullable(),
   error: z.string().nullable(),
 });

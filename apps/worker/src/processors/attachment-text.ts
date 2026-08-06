@@ -1,6 +1,6 @@
-import { type PdfTextExtractor } from '@exocortex/ai';
-import { type QUEUE_NAMES, type Settings } from '@exocortex/contracts';
-import { type PrismaClient } from '@exocortex/database';
+import { mergePdfMetadata, type PdfTextExtractor } from '@exocortex/ai';
+import { type PdfMetadata, type QUEUE_NAMES, type Settings } from '@exocortex/contracts';
+import { Prisma, type PrismaClient } from '@exocortex/database';
 import { type JobContext } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
@@ -99,25 +99,62 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
     }
     const data = Buffer.concat(chunks);
 
-    // Each engine gets the whole document. A `null` means "this engine found
-    // nothing", which is a routine outcome for a scan hitting a text-only
+    // Each engine gets the whole document. A null `text` means "this engine
+    // found nothing", which is a routine outcome for a scan hitting a text-only
     // engine, so the next one in the chain is tried before giving up. A thrown
     // error still bubbles: an unreachable Docling container must be retried,
     // not silently downgraded to a worse result.
-    let extraction = null as Awaited<ReturnType<PdfTextExtractor['extract']>>;
+    //
+    // Metadata is collected from every attempt, not only the winning one. The
+    // engines see different things -- the hosted plugin reads the PDF's own
+    // title and dates, Docling reads the layout -- so an attempt that produced
+    // no text can still be the only source of half the answer.
+    let text: string | null = null;
+    let winner: PdfMetadata | null = null;
+    const attempted: (PdfMetadata | null)[] = [];
+    let firstError: unknown = null;
+
     for (const candidate of extractors) {
-      extraction = await candidate.extract({
-        data,
-        filename: attachment.filename,
-        correlationId: payload.correlationId,
-      });
-      if (extraction !== null) break;
+      let result;
+      try {
+        result = await candidate.extract({
+          data,
+          filename: attachment.filename,
+          correlationId: payload.correlationId,
+        });
+      } catch (error) {
+        // A broken engine must not take the chain down with it: a hosted call
+        // that times out on a long document is exactly when the local one
+        // should get its turn. The error is kept so that a run in which every
+        // engine failed still ends as a retry rather than as "no text layer".
+        firstError ??= error;
+        logger.warn('PDF extraction engine failed, trying the next one', {
+          attachmentId: attachment.id,
+          error: error instanceof Error ? error.message : String(error),
+        });
+        continue;
+      }
+      if (result.text !== null) {
+        text = result.text;
+        winner = result.metadata;
+        break;
+      }
+      attempted.push(result.metadata);
     }
 
-    if (extraction === null) {
+    // Every engine threw: nothing was learned, so this is a transient problem
+    // and BullMQ should try again rather than the attachment being written off.
+    if (text === null && firstError !== null) throw firstError;
+
+    if (text === null) {
       await prisma.attachment.update({
         where: { id: attachment.id },
-        data: { textStatus: 'FAILED', textExtractionError: 'No extractable text layer' },
+        data: {
+          textStatus: 'FAILED',
+          textExtractionError: 'No extractable text layer',
+          // Even a total failure usually knows the page count and the title.
+          textMetadata: toJsonColumn(mergeAttempts(null, attempted)),
+        },
       });
       logger.info('PDF has no extractable text layer', {
         attachmentId: attachment.id,
@@ -126,20 +163,44 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
       return;
     }
 
+    const metadata = mergeAttempts(winner, attempted);
     await prisma.attachment.update({
       where: { id: attachment.id },
       data: {
         textStatus: 'READY',
-        extractedText: extraction.text.slice(0, MAX_EXTRACTED_TEXT_CHARS),
+        extractedText: text.slice(0, MAX_EXTRACTED_TEXT_CHARS),
         textExtractedAt: new Date(),
         textExtractionError: null,
+        textMetadata: toJsonColumn(metadata),
       },
     });
     logger.info('Attachment text extracted', {
       attachmentId: attachment.id,
-      length: extraction.text.length,
-      extractor: extraction.metadata.extractor,
-      ocrUsed: extraction.metadata.ocrUsed,
+      length: text.length,
+      extractor: metadata?.extractor,
+      ocrUsed: metadata?.ocrUsed,
+      pageCount: metadata?.pageCount,
     });
   };
+}
+
+/**
+ * Prisma needs a sentinel rather than `null` for a Json column. `DbNull` is the
+ * one that writes SQL NULL, i.e. "nothing was reported", as opposed to
+ * `JsonNull`, which would store the JSON value `null`.
+ */
+function toJsonColumn(
+  metadata: PdfMetadata | null,
+): Prisma.InputJsonObject | typeof Prisma.DbNull {
+  return metadata === null ? Prisma.DbNull : (metadata as unknown as Prisma.InputJsonObject);
+}
+
+/** First non-null attempt wins; the rest fill its gaps. */
+function mergeAttempts(
+  winner: PdfMetadata | null,
+  attempted: readonly (PdfMetadata | null)[],
+): PdfMetadata | null {
+  if (winner !== null) return mergePdfMetadata(winner, attempted);
+  const [first, ...rest] = attempted.filter((entry): entry is PdfMetadata => entry !== null);
+  return first === undefined ? null : mergePdfMetadata(first, rest);
 }

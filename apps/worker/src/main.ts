@@ -312,6 +312,23 @@ async function bootstrap(): Promise<void> {
         attachmentId: payload.attachmentId,
         jobId: job?.id,
       });
+
+      // Once BullMQ is out of retries the row would otherwise stay PENDING for
+      // good, and `GET /attachments/:id/text` only re-enqueues a FAILED or
+      // NOT_APPLICABLE one -- so the attachment would report "extraction is
+      // still running" forever with nothing left to run it.
+      const attempts = job?.opts.attempts ?? 0;
+      if (job !== undefined && job.attemptsMade >= attempts) {
+        await prisma.attachment.updateMany({
+          where: { id: payload.attachmentId, textStatus: 'PENDING' },
+          data: {
+            textStatus: 'FAILED',
+            textExtractionError: `Extraction failed after ${job.attemptsMade} attempts: ${
+              error instanceof Error ? error.message : String(error)
+            }`.slice(0, 500),
+          },
+        });
+      }
     },
   });
 

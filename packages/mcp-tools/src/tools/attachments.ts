@@ -1,6 +1,11 @@
 import { z } from 'zod';
 
-import { attachmentTextResponseSchema, idSchema, uploadAttachmentResponseSchema } from '@exocortex/contracts';
+import {
+  attachmentTextResponseSchema,
+  idSchema,
+  type PdfMetadata,
+  uploadAttachmentResponseSchema,
+} from '@exocortex/contracts';
 
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
@@ -52,6 +57,28 @@ export const attachmentUploadTool: AnyToolDefinition = defineTool({
   },
 });
 
+/**
+ * One-line German header describing the document, or the empty string when no
+ * engine reported anything. Only fields that are actually known are listed, so
+ * an engine that reports little produces a short line instead of a row of
+ * "unbekannt".
+ */
+function describeMetadata(metadata: PdfMetadata | null): string {
+  if (metadata === null) return '';
+
+  const parts: string[] = [];
+  if (metadata.title !== null) parts.push(`Titel: ${metadata.title}`);
+  if (metadata.author !== null) parts.push(`Autor: ${metadata.author}`);
+  if (metadata.pageCount !== null) parts.push(`${metadata.pageCount} Seiten`);
+  if (metadata.tableCount !== null && metadata.tableCount > 0) {
+    parts.push(`${metadata.tableCount} Tabellen`);
+  }
+  if (metadata.createdAt !== null) parts.push(`erstellt ${metadata.createdAt.slice(0, 10)}`);
+  if (metadata.ocrUsed === true) parts.push('per Texterkennung gelesen');
+
+  return parts.length === 0 ? '' : `[${parts.join(' | ')}]\n\n`;
+}
+
 export const attachmentReadTextTool: AnyToolDefinition = defineTool({
   name: 'exo_attachment_read_text',
   description:
@@ -75,7 +102,10 @@ export const attachmentReadTextTool: AnyToolDefinition = defineTool({
     if (result.status === 'not_applicable') {
       return { text: `${result.filename} hat keine extrahierbare Textebene.`, data: result };
     }
-    return { text: result.text ?? '', data: result };
+    // The metadata is prepended as a short header rather than left in `data`
+    // alone: a model reading a PDF wants to know that it is looking at page 33
+    // of a scan before it starts quoting from it.
+    return { text: `${describeMetadata(result.metadata)}${result.text ?? ''}`, data: result };
   },
 });
 

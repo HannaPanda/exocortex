@@ -121,6 +121,8 @@ export class WorkspaceAccessService {
       extractedText: string | null;
       textExtractedAt: Date | null;
       textExtractionError: string | null;
+      /** Engine-reported facts, shaped by `pdfMetadataSchema`. Parsed by the caller. */
+      textMetadata: unknown;
     };
     role: WorkspaceRole;
   } | null> {
@@ -140,6 +142,7 @@ export class WorkspaceAccessService {
         extractedText: true,
         textExtractedAt: true,
         textExtractionError: true,
+        textMetadata: true,
       },
     });
     if (attachment === null) return null;

@@ -50,7 +50,8 @@ const SCAN_RESPONSE =
   '- CreationDate=D:20260806090613Z\n\n\n\n## Contents\n### Page 1\n\n\n\n\n### Page 2\n\n\n\n\n### Page 3';
 
 const TEXT_LAYER_RESPONSE =
-  '# document.pdf\n## Metadata\n- PDFFormatVersion=1.5\n- Creator=LaTeX with hyperref\n\n\n\n' +
+  '# document.pdf\n## Metadata\n- PDFFormatVersion=1.5\n- Creator=LaTeX with hyperref\n' +
+  "- CreationDate=D:20260426115610-00'00'\n\n\n\n" +
   '## Contents\n### Page 1\nHermes Kanban\nA durable, profile-aware work-queue architecture.';
 
 afterEach(() => {
@@ -64,7 +65,12 @@ describe('createOpenRouterPdfExtractor', () => {
     // stop the OCR-capable engine behind it from ever being tried.
     respondWith(SCAN_RESPONSE);
 
-    expect(await extractor().extract(input)).toBeNull();
+    const result = await extractor().extract(input);
+
+    expect(result.text).toBeNull();
+    // The metadata dictionary is the one thing the scan did yield, and the OCR
+    // engine that reads it next cannot see it, so it has to survive.
+    expect(result.metadata).toMatchObject({ title: 'scan', pageCount: 3 });
   });
 
   it('returns the text of a PDF that has a text layer', async () => {
@@ -72,9 +78,9 @@ describe('createOpenRouterPdfExtractor', () => {
 
     const result = await extractor().extract(input);
 
-    expect(result?.text).toContain('Hermes Kanban');
-    expect(result?.metadata.extractor).toBe('openrouter');
-    expect(result?.metadata.ocrUsed).toBe(false);
+    expect(result.text).toContain('Hermes Kanban');
+    expect(result.metadata?.extractor).toBe('openrouter');
+    expect(result.metadata?.ocrUsed).toBe(false);
   });
 
   it('passes through a response that does not follow the plugin skeleton', async () => {
@@ -84,7 +90,7 @@ describe('createOpenRouterPdfExtractor', () => {
 
     const result = await extractor().extract(input);
 
-    expect(result?.text).toBe('Just the plain text of the document, no headings at all.');
+    expect(result.text).toBe('Just the plain text of the document, no headings at all.');
   });
 
   it('reports a scan as no result when the plugin wraps its output in a file element', async () => {
@@ -93,12 +99,39 @@ describe('createOpenRouterPdfExtractor', () => {
     // closing tag counts as page content.
     respondWith(`<file name="scan.pdf">\n${SCAN_RESPONSE}\n</file>`);
 
-    expect(await extractor().extract(input)).toBeNull();
+    expect((await extractor().extract(input)).text).toBeNull();
   });
 
   it('returns null for an empty response', async () => {
     respondWith('   \n  ');
 
-    expect(await extractor().extract(input)).toBeNull();
+    const result = await extractor().extract(input);
+
+    expect(result.text).toBeNull();
+    expect(result.metadata).toBeNull();
+  });
+
+  it('reads the PDF metadata dictionary, converting PDF dates to ISO', async () => {
+    respondWith(TEXT_LAYER_RESPONSE);
+
+    const { metadata } = await extractor().extract(input);
+
+    expect(metadata).toMatchObject({
+      creator: 'LaTeX with hyperref',
+      // `D:20260426115610-00'00'` in the PDF's own date format.
+      createdAt: '2026-04-26T11:56:10.000Z',
+      pageCount: 1,
+    });
+  });
+
+  it('keeps a zone offset that is not UTC', async () => {
+    respondWith(
+      '# document.pdf\n## Metadata\n- CreationDate=D:20260426115610+02\'00\'\n\n' +
+        '## Contents\n### Page 1\nGenug Text, damit die Seite als Inhalt zählt.',
+    );
+
+    const { metadata } = await extractor().extract(input);
+
+    expect(metadata?.createdAt).toBe('2026-04-26T09:56:10.000Z');
   });
 });

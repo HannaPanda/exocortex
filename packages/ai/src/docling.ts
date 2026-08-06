@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { type Logger } from '@exocortex/logger';
 
-import { type PdfExtraction, type PdfTextExtractor } from './pdf-text';
+import { EMPTY_METADATA, type PdfExtraction, type PdfTextExtractor } from './pdf-text';
 import { AiProviderError } from './provider';
 
 /**
@@ -90,7 +90,7 @@ export function createDoclingPdfExtractor(options: DoclingPdfExtractorOptions): 
   const baseUrl = options.baseUrl.replace(/\/+$/, '');
 
   return {
-    async extract(input): Promise<PdfExtraction | null> {
+    async extract(input): Promise<PdfExtraction> {
       const controller = new AbortController();
       // Generous by default because the work is per-page, not per-request.
       const timeoutMs = input.timeoutMs ?? 900_000;
@@ -149,26 +149,26 @@ export function createDoclingPdfExtractor(options: DoclingPdfExtractorOptions): 
             status: payload.status,
             reason: payload.errors[0]?.error_message ?? 'unknown',
           });
-          return null;
+          return { text: null, metadata: null };
         }
 
-        const text = payload.document.md_content ?? '';
-        if (text.trim().length === 0) return null;
-
         const document = payload.document.json_content;
-        return {
-          text,
-          metadata: {
-            extractor: 'docling',
-            pageCount: document?.pages === null ? null : Object.keys(document?.pages ?? {}).length,
-            tableCount: document?.tables?.length ?? null,
-            pictureCount: document?.pictures?.length ?? null,
-            confidence: payload.confidence?.mean_score ?? null,
-            // `ocr_score` stays null when the pipeline never ran OCR, which is
-            // exactly the signal for "this document had a usable text layer".
-            ocrUsed: payload.confidence === null ? null : payload.confidence.ocr_score !== null,
-          },
+        const metadata = {
+          ...EMPTY_METADATA,
+          extractor: 'docling',
+          pageCount: document?.pages === null ? null : Object.keys(document?.pages ?? {}).length,
+          tableCount: document?.tables?.length ?? null,
+          pictureCount: document?.pictures?.length ?? null,
+          confidence: payload.confidence?.mean_score ?? null,
+          // `ocr_score` stays null when the pipeline never ran OCR, which is
+          // exactly the signal for "this document had a usable text layer".
+          ocrUsed: payload.confidence === null ? null : payload.confidence.ocr_score !== null,
         };
+
+        const text = payload.document.md_content ?? '';
+        // Layout facts are worth keeping even for a document that yielded no
+        // text: "three pages, no content" is a real answer.
+        return { text: text.trim().length === 0 ? null : text, metadata };
       } finally {
         clearTimeout(timeout);
       }

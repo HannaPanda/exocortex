@@ -14,6 +14,7 @@ import {
   ALLOWED_ATTACHMENT_MIME_TYPES,
   type Attachment,
   type AttachmentTextResponse,
+  pdfMetadataSchema,
   QUEUE_NAMES,
   type UploadAttachmentResponse,
 } from '@exocortex/contracts';
@@ -276,10 +277,15 @@ export class AttachmentsService {
     );
 
     const { attachment } = context;
+    // A row written before `pdfMetadataSchema` existed, or by a future engine
+    // reporting an extra field, must not turn a read into a 500: an unparsable
+    // blob is reported as "no metadata".
+    const parsedMetadata = pdfMetadataSchema.safeParse(attachment.textMetadata);
     const base = {
       attachmentId,
       filename: attachment.filename,
       mimeType: attachment.mimeType,
+      metadata: parsedMetadata.success ? parsedMetadata.data : null,
     };
 
     if (attachment.mimeType !== 'application/pdf' && attachment.textStatus === 'NOT_APPLICABLE') {

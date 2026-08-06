@@ -208,6 +208,30 @@ about 18 seconds, and forcing OCR measurably *loses* text on a document that
 already has a text layer (7 549 vs 9 278 characters over three pages). Verified
 against docling-serve 1.29.0 on 2026-08-06.
 
+### Metadata
+
+`Attachment.textMetadata` caches what the engines could tell about the
+document, shaped by `pdfMetadataSchema` in `@exocortex/contracts` and returned
+by `GET /api/attachments/:id/text` alongside the text. The two engines see
+disjoint halves of it, which is why the processor merges the metadata of
+*every* attempt rather than only the winning one:
+
+| | title, author, creator, producer, dates | pages | tables, pictures | confidence | OCR used |
+| --- | --- | --- | --- | --- | --- |
+| `openrouter` | yes, from the PDF's own metadata dictionary | yes | no | no | always false |
+| `docling` | no | yes | yes | yes | yes |
+
+So the usual chain on a scan gives the union: the title and creation date the
+OpenRouter attempt read before reporting no text, plus the page and table
+counts and the OCR flag from the Docling attempt that produced it. The engine
+whose text was kept wins every field it can answer; earlier attempts fill the
+gaps (`mergePdfMetadata`). Metadata is stored even when extraction fails
+outright, because "three pages, no readable content" is a useful answer.
+
+`exo_attachment_read_text` prepends a one-line German summary of these fields
+to the text it returns, so a model knows it is looking at a 33-page scan before
+it starts quoting.
+
 `textStatus` states: `NOT_APPLICABLE` (not a PDF), `PENDING` (queued, not yet
 attempted), `READY` (`extractedText` populated, capped at 400 000
 characters), `FAILED` (`textExtractionError` explains why: unconfigured,

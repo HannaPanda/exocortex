@@ -11,7 +11,12 @@ import {
   type VisionPreprocessor,
 } from '@exocortex/ai';
 import { loadWorkerEnv } from '@exocortex/config';
-import { type QUEUE_NAMES, type Settings, settingsSchema } from '@exocortex/contracts';
+import {
+  type PdfMetadata,
+  type QUEUE_NAMES,
+  type Settings,
+  settingsSchema,
+} from '@exocortex/contracts';
 import {
   createPrismaClient,
   generateOrderKey,
@@ -773,8 +778,14 @@ describe('compactIfNeeded', () => {
 });
 
 describe('attachment text extraction', () => {
-  const stubMetadata = {
+  const stubMetadata: PdfMetadata = {
     extractor: 'stub',
+    title: null,
+    author: null,
+    creator: null,
+    producer: null,
+    createdAt: null,
+    modifiedAt: null,
     pageCount: null,
     tableCount: null,
     pictureCount: null,
@@ -843,13 +854,17 @@ describe('attachment text extraction', () => {
         {
           extract: async () => {
             calls.push('text-only');
-            return null;
+            // No text, but the metadata dictionary it did read must survive.
+            return { text: null, metadata: { ...stubMetadata, title: 'Kontoauszug' } };
           },
         },
         {
           extract: async () => {
             calls.push('ocr');
-            return { text: 'text from the scan', metadata: { ...stubMetadata, ocrUsed: true } };
+            return {
+              text: 'text from the scan',
+              metadata: { ...stubMetadata, extractor: 'ocr', ocrUsed: true, pageCount: 3 },
+            };
           },
         },
       ],
@@ -864,6 +879,68 @@ describe('attachment text extraction', () => {
     const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
     expect(attachment.textStatus).toBe('READY');
     expect(attachment.extractedText).toBe('text from the scan');
+    // The union of both attempts: the title only the first engine saw, the
+    // layout and OCR flag only the second one knew.
+    expect(attachment.textMetadata).toMatchObject({
+      extractor: 'ocr',
+      title: 'Kontoauszug',
+      pageCount: 3,
+      ocrUsed: true,
+    });
+  }, 30_000);
+
+  it('tries the next engine when one throws', async () => {
+    // The hosted engine timing out on a long document is exactly when the local
+    // one should get its turn, so a throw must not end the chain.
+    const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
+    const processor = createAttachmentTextProcessor({
+      prisma,
+      storage: fakeStorage(Buffer.from('%PDF-1.7')),
+      extractors: () => [
+        {
+          extract: async () => {
+            throw new Error('This operation was aborted');
+          },
+        },
+        { extract: async () => ({ text: 'read by the second engine', metadata: stubMetadata }) },
+      ],
+      settings: stubSettings(),
+    });
+
+    await processor(
+      contextFor({ correlationId: 'test-attach-5', attachmentId, workspaceId, reason: 'upload' }).context,
+    );
+
+    const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+    expect(attachment.textStatus).toBe('READY');
+    expect(attachment.extractedText).toBe('read by the second engine');
+  }, 30_000);
+
+  it('rethrows when every engine throws, so BullMQ retries', async () => {
+    const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
+    const processor = createAttachmentTextProcessor({
+      prisma,
+      storage: fakeStorage(Buffer.from('%PDF-1.7')),
+      extractors: () => [
+        {
+          extract: async () => {
+            throw new Error('docling unreachable');
+          },
+        },
+      ],
+      settings: stubSettings(),
+    });
+
+    await expect(
+      processor(
+        contextFor({ correlationId: 'test-attach-6', attachmentId, workspaceId, reason: 'upload' }).context,
+      ),
+    ).rejects.toThrow('docling unreachable');
+
+    // Nothing was learned, so the attachment must not be written off as
+    // "no text layer" -- the retry has to find it still open.
+    const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+    expect(attachment.textStatus).not.toBe('FAILED');
   }, 30_000);
 
   it('stops at the first engine that returns text', async () => {
@@ -877,7 +954,7 @@ describe('attachment text extraction', () => {
         {
           extract: async () => {
             secondCalled = true;
-            return null;
+            return { text: null, metadata: null };
           },
         },
       ],

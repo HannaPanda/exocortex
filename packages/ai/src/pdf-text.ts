@@ -1,46 +1,34 @@
+import { type PdfMetadata } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 
 import { AiProviderError } from './provider';
 
-/**
- * Structural facts an extractor can report about a converted PDF.
- *
- * Every field except `extractor` is nullable because the two implementations
- * see very different amounts of the document: the OpenRouter `file-parser`
- * plugin returns text and nothing else, while Docling returns a full layout
- * model. A null therefore means "this engine cannot tell", never "zero".
- */
-export interface PdfMetadata {
-  /** Engine that produced the text, e.g. `openrouter` or `docling`. */
-  extractor: string;
-  pageCount: number | null;
-  tableCount: number | null;
-  pictureCount: number | null;
-  /** The engine's own confidence in the conversion, 0 to 1. */
-  confidence: number | null;
-  /** Whether OCR contributed text, i.e. the document had bitmap content. */
-  ocrUsed: boolean | null;
-}
+export { type PdfMetadata };
 
 export interface PdfExtraction {
-  text: string;
-  metadata: PdfMetadata;
+  /**
+   * Null when this engine found no usable text. For the OpenRouter engine that
+   * includes every scan, which is why the caller tries the next engine in the
+   * chain before giving up.
+   */
+  text: string | null;
+  /**
+   * What this engine could tell about the document, independently of whether
+   * it produced text. A scan has no readable text for the OpenRouter engine but
+   * still carries a metadata dictionary that Docling cannot see, so the caller
+   * merges metadata across every engine it tried.
+   */
+  metadata: PdfMetadata | null;
 }
 
 export interface PdfTextExtractor {
-  /**
-   * Extracts the text of a PDF.
-   *
-   * Returns null when the document has no extractable content. For the
-   * OpenRouter engine that includes every scan, which is precisely why the
-   * caller tries the next extractor in the chain before giving up.
-   */
+  /** Extracts the text of a PDF. Never rejects for "found nothing"; see `text`. */
   extract(input: {
     data: Uint8Array;
     filename: string;
     correlationId: string;
     timeoutMs?: number;
-  }): Promise<PdfExtraction | null>;
+  }): Promise<PdfExtraction>;
 }
 
 export interface OpenRouterPdfExtractorOptions {
@@ -100,6 +88,113 @@ function splitPdfTextOutput(raw: string): { metadataBlock: string; pageText: str
 }
 
 /**
+ * PDF date strings, e.g. `D:20260806090613Z` or `D:20260426115610-00'00'`
+ * (PDF 32000-1, 7.9.4). Everything after the year is optional in the spec, so
+ * the missing parts default the way the spec says they do.
+ */
+const PDF_DATE =
+  /^D:(\d{4})(\d{2})?(\d{2})?(\d{2})?(\d{2})?(\d{2})?(?:(Z)|([+-])(\d{2})'?(\d{2})?)?/;
+
+function parsePdfDate(value: string): string | null {
+  const match = PDF_DATE.exec(value.trim());
+  if (match === null) return null;
+  const [, year, month, day, hour, minute, second, zulu, sign, offsetHours, offsetMinutes] = match;
+
+  // No zone marker means local time to an unknown reader, so it is read as UTC
+  // rather than as the server's accidental timezone.
+  const zone =
+    zulu !== undefined || sign === undefined
+      ? 'Z'
+      : `${sign}${offsetHours ?? '00'}:${offsetMinutes ?? '00'}`;
+  const iso =
+    `${year}-${month ?? '01'}-${day ?? '01'}` +
+    `T${hour ?? '00'}:${minute ?? '00'}:${second ?? '00'}${zone}`;
+
+  const parsed = new Date(iso);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
+/**
+ * Reads the `- Key=Value` lines of the plugin's metadata block.
+ *
+ * These are the PDF's own metadata dictionary entries, which is the one thing
+ * this engine reports that Docling does not, so they are worth keeping even
+ * when the page text turns out to be empty and another engine wins.
+ */
+function parsePdfTextMetadata(metadataBlock: string, pageText: string): Omit<PdfMetadata, 'extractor'> {
+  const fields = new Map<string, string>();
+  for (const line of metadataBlock.split('\n')) {
+    const match = /^-\s*([A-Za-z]+)=(.*)$/.exec(line.trim());
+    if (match === null) continue;
+    const value = (match[2] ?? '').trim();
+    if (value.length > 0) fields.set(match[1] ?? '', value);
+  }
+
+  const date = (key: string): string | null => {
+    const raw = fields.get(key);
+    return raw === undefined ? null : parsePdfDate(raw);
+  };
+
+  // The plugin emits one `### Page n` heading per page even for empty pages,
+  // which makes counting them a reliable page count.
+  const pageCount = (pageText.match(/^### Page \d+$/gm) ?? []).length;
+
+  return {
+    title: fields.get('Title') ?? null,
+    author: fields.get('Author') ?? null,
+    creator: fields.get('Creator') ?? null,
+    producer: fields.get('Producer') ?? null,
+    createdAt: date('CreationDate'),
+    modifiedAt: date('ModDate'),
+    pageCount: pageCount === 0 ? null : pageCount,
+    tableCount: null,
+    pictureCount: null,
+    confidence: null,
+    ocrUsed: false,
+  };
+}
+
+/** Every reportable field unset; spread over an `extractor` to build a metadata object. */
+export const EMPTY_METADATA: Omit<PdfMetadata, 'extractor'> = {
+  title: null,
+  author: null,
+  creator: null,
+  producer: null,
+  createdAt: null,
+  modifiedAt: null,
+  pageCount: null,
+  tableCount: null,
+  pictureCount: null,
+  confidence: null,
+  ocrUsed: null,
+};
+
+/**
+ * Merges what several engines reported into one record.
+ *
+ * The engine whose text was kept wins every field it can answer; the engines
+ * tried before it fill the gaps. That is what turns "OpenRouter saw the title
+ * and the dates, Docling saw the pages and ran OCR" into a single answer.
+ */
+export function mergePdfMetadata(
+  winner: PdfMetadata,
+  earlier: readonly (PdfMetadata | null)[],
+): PdfMetadata {
+  const merged: PdfMetadata = { ...winner };
+  for (const candidate of earlier) {
+    if (candidate === null) continue;
+    for (const key of Object.keys(EMPTY_METADATA) as (keyof Omit<PdfMetadata, 'extractor'>)[]) {
+      if (merged[key] === null) {
+        // Index-signature-free assignment: each key's type is identical on both
+        // sides, but TypeScript cannot prove that through a union of keys.
+        Object.assign(merged, { [key]: candidate[key] });
+      }
+    }
+  }
+  return merged;
+}
+
+/**
  * PDF text extraction through OpenRouter's `file-parser` plugin.
  *
  * The `pdf-text` engine is free and runs on OpenRouter's side, which keeps this
@@ -118,9 +213,12 @@ export function createOpenRouterPdfExtractor(
   options: OpenRouterPdfExtractorOptions,
 ): PdfTextExtractor {
   return {
-    async extract(input): Promise<PdfExtraction | null> {
+    async extract(input): Promise<PdfExtraction> {
       const controller = new AbortController();
-      const timeoutMs = input.timeoutMs ?? 60_000;
+      // 60 s was too tight: a 33-page document aborted on all five BullMQ
+      // attempts, and because an abort throws, the OCR engine behind this one
+      // never got a turn either.
+      const timeoutMs = input.timeoutMs ?? 240_000;
       const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
       try {
@@ -169,30 +267,30 @@ export function createOpenRouterPdfExtractor(
           choices?: { message?: { content?: string } }[];
         };
         const text = payload.choices?.[0]?.message?.content ?? '';
-        if (text.trim().length === 0) return null;
+        if (text.trim().length === 0) return { text: null, metadata: null };
 
         // An unrecognised shape is passed through untouched; only the known
-        // skeleton is judged on its page text.
+        // skeleton is judged on its page text and mined for metadata.
         const split = splitPdfTextOutput(text);
-        if (split !== null && split.pageText.trim().length < MIN_CONTENT_CHARS) {
+        if (split === null) {
+          return { text, metadata: { extractor: 'openrouter', ...EMPTY_METADATA, ocrUsed: false } };
+        }
+
+        const metadata: PdfMetadata = {
+          extractor: 'openrouter',
+          ...parsePdfTextMetadata(split.metadataBlock, text),
+        };
+
+        if (split.pageText.trim().length < MIN_CONTENT_CHARS) {
           options.logger.info('PDF text plugin returned no page content', {
             correlationId: input.correlationId,
           });
-          return null;
+          // The metadata dictionary survives even though the text did not, so
+          // the OCR engine behind this one does not have to rediscover it.
+          return { text: null, metadata };
         }
 
-        return {
-          text,
-          // The plugin reports nothing beyond the text itself.
-          metadata: {
-            extractor: 'openrouter',
-            pageCount: null,
-            tableCount: null,
-            pictureCount: null,
-            confidence: null,
-            ocrUsed: false,
-          },
-        };
+        return { text, metadata };
       } finally {
         clearTimeout(timeout);
       }
