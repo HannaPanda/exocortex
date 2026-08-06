@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { createPage, requireSeedCredentials, waitForCollaboration } from '../support/fixtures';
+import { createPage, requireSeedCredentials } from '../support/fixtures';
 import { storageStatePath } from '../support/global-setup';
 
 // Reuse the session created by the global setup instead of logging in again:
@@ -56,10 +56,10 @@ test.describe('AI side panel', () => {
   test('shows background job progress while a page is materialized', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    // `createPage` returns only once the collaboration socket is connected;
+    // without that the keystrokes below would land before the Yjs provider is
+    // there, nothing would be persisted and no job would ever be enqueued.
     await createPage(page, `Fortschritt ${Date.now().toString(36)}`);
-    // Without this the keystrokes below can land before the Yjs provider is
-    // connected, in which case nothing is persisted and no job is ever enqueued.
-    await waitForCollaboration(page);
     await page.getByTestId('editor-surface').click();
     await page.keyboard.type('Diese Änderung löst einen Hintergrundjob aus.');
 

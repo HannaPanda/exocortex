@@ -97,6 +97,10 @@ export async function expectTreeContains(page: Page, title: string): Promise<voi
  *
  * The trigger (`create-root-page`) opens a menu with "Seite anlegen" and
  * "Datenbank anlegen" — see `createDatabase` below for the latter.
+ *
+ * Returns only once the page is genuinely usable, collaboration socket
+ * included: a caller that types straight away would otherwise lose the
+ * keystrokes to a provider that has not connected yet.
  */
 export async function createPage(page: Page, title: string): Promise<string> {
   await page.getByTestId('create-root-page').click();
@@ -114,6 +118,7 @@ export async function createPage(page: Page, title: string): Promise<string> {
   await titleInput.fill(title);
   await titleInput.blur();
   await expectTreeContains(page, title);
+  await waitForCollaboration(page);
   return documentId;
 }
 
@@ -131,6 +136,7 @@ export async function createDatabase(page: Page, title: string): Promise<string>
   await titleInput.fill(title);
   await titleInput.blur();
   await expectTreeContains(page, title);
+  await waitForCollaboration(page);
   return documentId;
 }
 
