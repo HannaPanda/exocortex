@@ -28,6 +28,18 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   attachment_access_denied: 'Du hast keinen Zugriff auf diese Datei.',
   ai_provider_unavailable: 'Der KI-Anbieter ist gerade nicht erreichbar.',
   internal_error: 'Unerwarteter Fehler. Bitte versuche es erneut.',
+  admin_required: 'Dafür brauchst du Administratorrechte.',
+  api_token_invalid: 'Das API-Token ist ungültig.',
+  api_token_expired: 'Das API-Token ist abgelaufen.',
+  ai_model_unknown: 'Dieses KI-Modell ist nicht bekannt.',
+  ai_model_disabled: 'Dieses KI-Modell ist derzeit deaktiviert.',
+  ai_tools_unavailable: 'Werkzeuge stehen für die KI gerade nicht bereit.',
+  ai_tool_limit_exceeded: 'Die KI hat zu viele Werkzeugaufrufe gebraucht.',
+  ai_conversation_locked: 'In dieser Unterhaltung läuft noch eine Antwort.',
+  document_content_conflict: 'Die Seite wurde zwischenzeitlich geändert.',
+  document_content_lossy: 'Anhängen würde eingebettete Datenbanken auf dieser Seite verlieren.',
+  attachment_text_unavailable: 'Der Text dieser Datei liegt noch nicht vor.',
+  setting_unknown: 'Diese Einstellung gibt es nicht.',
 };
 
 export function messageForCode(code: string | undefined): string {
