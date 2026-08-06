@@ -5,6 +5,7 @@ import {
   databaseFilterOperatorSchema,
   databasePropertyTypeSchema,
   databaseViewSchema,
+  updateDatabaseViewRequestSchema,
 } from './database-views';
 import { createDocumentRequestSchema, moveDocumentRequestSchema } from './documents';
 import { API_ERROR_CODES,API_ERROR_STATUS } from './errors';
@@ -152,5 +153,22 @@ describe('database contracts', () => {
       updatedAt: '2026-08-05T00:00:00.000Z',
     });
     expect(view.config.visibleProperties).toEqual([]);
+  });
+
+  it('leaves a config field the caller did not mention absent', () => {
+    // The update endpoint merges `config` shallowly onto the stored one, so a
+    // default filled in here would reset `rowHeight` instead of keeping it.
+    const parsed = updateDatabaseViewRequestSchema.parse({
+      config: { columnWidths: { title: 320 } },
+    });
+    expect(parsed.config).toEqual({ columnWidths: { title: 320 } });
+    expect(parsed.config).not.toHaveProperty('rowHeight');
+    expect(parsed.config).not.toHaveProperty('visibleProperties');
+  });
+
+  it('rejects a column width outside the allowed bounds', () => {
+    expect(() =>
+      updateDatabaseViewRequestSchema.parse({ config: { columnWidths: { title: 4000 } } }),
+    ).toThrow();
   });
 });

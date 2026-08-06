@@ -237,27 +237,51 @@ export const DATABASE_COLUMN_DEFAULT_WIDTH = 180;
  */
 export const DATABASE_TITLE_COLUMN_KEY = 'title';
 
-export const databaseViewConfigSchema = z.object({
-  visibleProperties: z.array(databaseViewVisiblePropertySchema).default([]),
+const databaseViewConfigFields = {
+  visibleProperties: z.array(databaseViewVisiblePropertySchema),
   /** CALENDAR only: which DATE property to plot rows on. */
-  datePropertyId: idSchema.nullable().optional(),
+  datePropertyId: idSchema.nullable(),
   /** GALLERY only: which FILES property supplies the card cover. */
-  coverPropertyId: idSchema.nullable().optional(),
+  coverPropertyId: idSchema.nullable(),
   /**
    * TABLE only: column widths in CSS pixels, keyed by property id plus the
    * reserved `title` key. A column that is missing here uses
    * `DATABASE_COLUMN_DEFAULT_WIDTH`, so an untouched view needs no entries.
    */
-  columnWidths: z
-    .record(
-      z.string().min(1).max(64),
-      z.number().int().min(DATABASE_COLUMN_MIN_WIDTH).max(DATABASE_COLUMN_MAX_WIDTH),
-    )
-    .default({}),
+  columnWidths: z.record(
+    z.string().min(1).max(64),
+    z.number().int().min(DATABASE_COLUMN_MIN_WIDTH).max(DATABASE_COLUMN_MAX_WIDTH),
+  ),
   /** TABLE only: row density. */
-  rowHeight: databaseRowHeightSchema.default('short'),
+  rowHeight: databaseRowHeightSchema,
+} as const;
+
+/** Read shape: defaults fill in what a view stored before a field existed. */
+export const databaseViewConfigSchema = z.object({
+  ...databaseViewConfigFields,
+  visibleProperties: databaseViewConfigFields.visibleProperties.default([]),
+  datePropertyId: databaseViewConfigFields.datePropertyId.optional(),
+  coverPropertyId: databaseViewConfigFields.coverPropertyId.optional(),
+  columnWidths: databaseViewConfigFields.columnWidths.default({}),
+  rowHeight: databaseViewConfigFields.rowHeight.default('short'),
 });
 export type DatabaseViewConfig = z.infer<typeof databaseViewConfigSchema>;
+
+/**
+ * Write shape: every field optional and **no defaults**.
+ *
+ * The update endpoint merges `config` shallowly onto the stored one, so a
+ * default here would not mean "unchanged", it would mean "reset": a request
+ * that only sets `columnWidths` would silently push `rowHeight` back to
+ * `short`. Optional-without-default keeps an unmentioned field unmentioned.
+ */
+export const databaseViewConfigUpdateSchema = z.object({
+  visibleProperties: databaseViewConfigFields.visibleProperties.optional(),
+  datePropertyId: databaseViewConfigFields.datePropertyId.optional(),
+  coverPropertyId: databaseViewConfigFields.coverPropertyId.optional(),
+  columnWidths: databaseViewConfigFields.columnWidths.optional(),
+  rowHeight: databaseViewConfigFields.rowHeight.optional(),
+});
 
 export const databaseViewSchema = z.object({
   id: idSchema,
@@ -286,7 +310,7 @@ export const updateDatabaseViewRequestSchema = z
     filters: databaseFilterGroupSchema.optional(),
     sorts: z.array(databaseSortSchema).optional(),
     groupByPropertyId: idSchema.nullable().optional(),
-    config: databaseViewConfigSchema.partial().optional(),
+    config: databaseViewConfigUpdateSchema.optional(),
   })
   .refine(
     (value) =>
