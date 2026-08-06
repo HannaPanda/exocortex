@@ -4,6 +4,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import { type ApiEnv } from '@exocortex/config';
 
+import { AdminModule } from './admin/admin.module';
 import { AiModule } from './ai/ai.module';
 import { AttachmentsModule } from './attachments/attachments.module';
 import { AdminGuard } from './auth/admin.guard';
@@ -42,6 +43,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     SearchModule,
     AttachmentsModule,
     AiModule,
+    AdminModule,
     HealthModule,
   ],
   providers: [
