@@ -72,6 +72,7 @@ const MEDIA_KINDS: readonly MediaKind[] = [
 export interface MediaDocumentMetadata {
   title: string | null;
   author: string | null;
+  creator: string | null;
   createdAt: string | null;
   pageCount: number | null;
   tableCount: number | null;
@@ -93,6 +94,16 @@ export interface MediaDocumentInfo {
    * from the resolved answer rather than only at insertion time.
    */
   filename: string | null;
+  /**
+   * Whether this file has a text layer worth chasing at all.
+   *
+   * `not_applicable` means two different things depending on it. For an image
+   * or a zip it is the final answer and the block stays silent. For a PDF it
+   * means nobody ever asked -- true of every PDF uploaded before extraction
+   * existed -- and staying silent there would leave the reader with a block
+   * that shows nothing and offers nothing.
+   */
+  extractable: boolean;
 }
 
 /**
@@ -307,6 +318,13 @@ function describeDocument(metadata: MediaDocumentMetadata | null): string[] {
   const chips: string[] = [];
   if (metadata.title !== null) chips.push(metadata.title);
   if (metadata.author !== null) chips.push(metadata.author);
+  // A scan usually carries neither a title nor an author, and then the software
+  // that produced it ("PFU ScanSnap Home 3.6.1") is the only thing identifying
+  // where the document came from. Next to a real title it would just be noise,
+  // so it fills in rather than adding on.
+  if (metadata.title === null && metadata.author === null && metadata.creator !== null) {
+    chips.push(metadata.creator);
+  }
   if (metadata.pageCount !== null) {
     chips.push(metadata.pageCount === 1 ? '1 Seite' : `${metadata.pageCount} Seiten`);
   }
@@ -324,8 +342,12 @@ function describeDocument(metadata: MediaDocumentMetadata | null): string[] {
   return chips;
 }
 
+/**
+ * `not_applicable` only ever reaches this point for a file that *could* be
+ * read, because the silent case returns earlier: it means nobody has asked yet.
+ */
 const STATUS_NOTES: Record<MediaDocumentInfo['status'], string | null> = {
-  not_applicable: null,
+  not_applicable: 'Noch nicht ausgelesen',
   pending: 'Text wird ausgelesen …',
   ready: null,
   failed: 'Kein Text lesbar',
@@ -401,9 +423,9 @@ function attachDocumentDetails(
     // showing its download URL until this arrives.
     if (name.length === 0 && info.filename !== null) applyLabel(kind, element, info.filename);
 
-    // `not_applicable` is the ordinary answer for every non-PDF file, so the
-    // line stays away rather than saying "no text".
-    if (info.status === 'not_applicable') {
+    // For an image or a zip this is the final answer, so the line stays away
+    // rather than announcing that a picture has no text.
+    if (info.status === 'not_applicable' && !info.extractable) {
       bar.hidden = true;
       return;
     }
@@ -420,18 +442,28 @@ function attachDocumentDetails(
       bar.append(noteChip);
     }
 
-    if (info.status === 'failed' && resolver.request !== undefined) bar.append(buildRetry());
+    // Both offer the same action, but they are not the same situation: one
+    // failed, the other was never asked.
+    const action =
+      info.status === 'failed'
+        ? buildAction('Erneut versuchen')
+        : info.status === 'not_applicable'
+          ? buildAction('Text auslesen')
+          : null;
+    if (action !== null) bar.append(action);
     bar.hidden = bar.childElementCount === 0;
 
     // Keep watching only while something is actually running.
     if (info.status === 'pending') schedulePoll();
   };
 
-  const buildRetry = (): HTMLElement => {
+  /** Null when the reader may not start an extraction. */
+  const buildAction = (label: string): HTMLElement | null => {
+    if (resolver.request === undefined) return null;
     const button = window.document.createElement('button');
     button.type = 'button';
     button.className = 'exocortex-media-retry';
-    button.textContent = 'Erneut versuchen';
+    button.textContent = label;
     button.addEventListener('click', () => {
       polls = 0;
       button.disabled = true;

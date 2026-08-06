@@ -27,6 +27,9 @@ function toInfo(response: AttachmentTextInfoResponse | AttachmentTextResponse): 
     metadata: response.metadata,
     error: response.error,
     filename: response.filename,
+    // What separates "an image has no text" from "nobody has read this PDF
+    // yet", which the API reports with the same status.
+    extractable: response.mimeType === 'application/pdf',
   };
 }
 

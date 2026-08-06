@@ -73,6 +73,7 @@ describe('media block details', () => {
     metadata: {
       title: 'Quartalsbericht Q3',
       author: 'Johanna Panda',
+      creator: 'LaTeX with hyperref',
       createdAt: '2026-04-01T12:00:00.000Z',
       pageCount: 3,
       tableCount: 2,
@@ -81,6 +82,7 @@ describe('media block details', () => {
     },
     error: null,
     filename: 'Kontoauszug-Q3.pdf',
+    extractable: true,
   };
 
   /** Lets an assertion run after the resolver's promise has settled. */
@@ -126,7 +128,7 @@ describe('media block details', () => {
 
   it('stays quiet about a file that has no text layer to begin with', async () => {
     const container = await insertPdfWith({
-      read: async () => ({ status: 'not_applicable', metadata: null, error: null, filename: 'notiz.txt' }),
+      read: async () => ({ status: 'not_applicable', metadata: null, error: null, filename: 'notiz.txt', extractable: false }),
     });
 
     // Every image, video and zip file answers this way. A line saying "no text"
@@ -144,10 +146,11 @@ describe('media block details', () => {
         metadata: { ...READY.metadata!, ocrUsed: null },
         error: 'No extractable text layer',
         filename: 'Scan.pdf',
+        extractable: true,
       }),
       request: async () => {
         requested += 1;
-        return { status: 'pending', metadata: null, error: null, filename: 'Scan.pdf' };
+        return { status: 'pending', metadata: null, error: null, filename: 'Scan.pdf', extractable: true };
       },
     });
 
@@ -160,6 +163,59 @@ describe('media block details', () => {
     if (!(retry instanceof window.HTMLButtonElement)) throw new Error('no retry button');
     retry.click();
     expect(requested).toBe(1);
+  });
+
+  it('offers to read a PDF nobody has asked about yet', async () => {
+    // Every PDF uploaded before extraction existed sits in this state. It is
+    // the same status an image reports, so without `extractable` the block
+    // would show nothing and offer nothing.
+    let requested = 0;
+    const container = await insertPdfWith({
+      read: async () => ({
+        status: 'not_applicable',
+        metadata: null,
+        error: null,
+        filename: 'Altbestand.pdf',
+        extractable: true,
+      }),
+      request: async () => {
+        requested += 1;
+        return {
+          status: 'pending',
+          metadata: null,
+          error: null,
+          filename: 'Altbestand.pdf',
+          extractable: true,
+        };
+      },
+    });
+
+    expect(chipsOf(container)).toEqual(['Noch nicht ausgelesen']);
+    const action = container.querySelector('.exocortex-media-retry');
+    if (!(action instanceof window.HTMLButtonElement)) throw new Error('no action button');
+    expect(action.textContent).toBe('Text auslesen');
+    action.click();
+    expect(requested).toBe(1);
+  });
+
+  it('names the producing software when nothing else identifies the document', async () => {
+    // A scan carries no title and no author, so "PFU ScanSnap Home" is the only
+    // thing saying where it came from. Next to a real title it would be noise,
+    // which is why it fills in rather than adding on.
+    const container = await insertPdfWith({
+      read: async () => ({
+        ...READY,
+        metadata: { ...READY.metadata!, title: null, author: null, creator: 'PFU ScanSnap Home' },
+      }),
+    });
+
+    expect(chipsOf(container)).toEqual([
+      'PFU ScanSnap Home',
+      '3 Seiten',
+      '2 Tabellen',
+      '01.04.2026',
+      'per Texterkennung gelesen',
+    ]);
   });
 
   it('names a block that was inserted with a URL and nothing else', async () => {
@@ -188,7 +244,13 @@ describe('media block details', () => {
 
   it('does not offer a retry a reader is not allowed to trigger', async () => {
     const container = await insertPdfWith({
-      read: async () => ({ status: 'failed', metadata: null, error: null, filename: 'Scan.pdf' }),
+      read: async () => ({
+        status: 'failed',
+        metadata: null,
+        error: null,
+        filename: 'Scan.pdf',
+        extractable: true,
+      }),
     });
 
     expect(container.querySelector('.exocortex-media-retry')).toBeNull();
