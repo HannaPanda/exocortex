@@ -11,7 +11,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint src",
     "test": "vitest run",
-    "token:create": "tsx scripts/create-api-token.ts"
+    "token:create": "tsx scripts/create-api-token.ts",
+    "import:obsidian": "tsx scripts/import-obsidian.ts"
   },
   "dependencies": {
     "@exocortex/ai": "workspace:*",
