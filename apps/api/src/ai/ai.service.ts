@@ -7,7 +7,7 @@ import {
   type CreateAiRunRequest,
   QUEUE_NAMES,
 } from '@exocortex/contracts';
-import { type PrismaClient } from '@exocortex/database';
+import { type Prisma, type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 
@@ -22,6 +22,16 @@ const STATUS_MAP = {
   FAILED: 'failed',
   CANCELLED: 'cancelled',
   TIMED_OUT: 'timed_out',
+} as const;
+
+// Widened in plan-01 (conversations/tool loop, briefs 02/04 build on this):
+// every existing run resolves to NONE/0 through these columns' defaults.
+const REASONING_LEVEL_MAP = {
+  NONE: 'none',
+  MINIMAL: 'minimal',
+  LOW: 'low',
+  MEDIUM: 'medium',
+  HIGH: 'high',
 } as const;
 
 /**
@@ -70,7 +80,7 @@ export class AiService {
         status: 'PENDING',
         provider: this.provider.id,
         model,
-        messages: input.request.messages,
+        messages: input.request.messages as unknown as Prisma.InputJsonValue,
       },
     });
 
@@ -125,6 +135,9 @@ export class AiService {
     finishedAt: Date | null;
     usage: unknown;
     errorCode: string | null;
+    conversationId: string | null;
+    reasoningLevel: keyof typeof REASONING_LEVEL_MAP;
+    toolIterations: number;
   }): AiRun {
     return {
       id: run.id,
@@ -138,6 +151,9 @@ export class AiService {
       finishedAt: run.finishedAt === null ? null : run.finishedAt.toISOString(),
       usage: run.usage === null ? null : (run.usage as AiRun['usage']),
       errorCode: run.errorCode,
+      conversationId: run.conversationId,
+      reasoningLevel: REASONING_LEVEL_MAP[run.reasoningLevel],
+      toolIterations: run.toolIterations,
     };
   }
 }
