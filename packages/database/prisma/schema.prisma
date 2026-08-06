@@ -553,6 +553,14 @@ model Attachment {
   isCover     Boolean   @default(false)
   coverOf     Document[] @relation("DocumentCover")
 
+  /// Downscaled copy of an image, stored next to the original so a page view
+  /// does not have to pull a 12-megapixel photo to draw a cover. Derived data:
+  /// null simply means "serve the original", and the three columns are always
+  /// written and cleared together.
+  previewKey       String? @unique
+  previewMimeType  String?
+  previewByteSize  Int?
+
   /// Extracted text cache (D6). Populated by the `attachment-text` queue.
   extractedText       String?
   textStatus          AttachmentTextStatus @default(NOT_APPLICABLE)

@@ -70,6 +70,20 @@ export const settingsSchema = z.object({
   /** Model with a PDF file-parser. Null reuses `ai.defaultModelSlug`. */
   'ai.pdfExtractionModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
   'ai.pdfMaxBytes': z.number().int().min(1_024).max(50 * 1_024 * 1_024).default(10 * 1_024 * 1_024),
+  /**
+   * Generating a page cover from a prompt.
+   *
+   * Off by default, unlike the read-only AI features: drawing an image is a
+   * paid call a deployment should opt into knowingly, and it needs a second,
+   * image-capable model that most deployments will not have configured.
+   */
+  'ai.imageGenerationEnabled': z.boolean().default(false),
+  /**
+   * Image-capable model, e.g. `google/gemini-2.5-flash-image`. Null means the
+   * feature is unavailable however the flag above is set: there is no sensible
+   * default here, because the main driver model cannot draw.
+   */
+  'ai.imageModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
   'mcp.enabled': z.boolean().default(true),
   'mcp.maxSearchResults': z.number().int().min(1).max(100).default(20),
   /** Two-step confirmation for mutating MCP tools (destination-keyed). */

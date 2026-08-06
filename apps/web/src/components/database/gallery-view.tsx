@@ -53,7 +53,9 @@ export function GalleryView({ workspaceId, documentId, view, properties, readOnl
                 {coverAttachmentId !== undefined ? (
                   // eslint-disable-next-line @next/next/no-img-element -- attachment ids are arbitrary user uploads, not build-time-known assets next/image can optimize.
                   <img
-                    src={`/api/attachments/${coverAttachmentId}/download`}
+                    // A grid of thumbnails is where the full-size originals hurt
+                    // most; the route serves the original when no preview exists.
+                    src={`/api/attachments/${coverAttachmentId}/download?variant=preview`}
                     alt=""
                     className="size-full object-cover"
                   />

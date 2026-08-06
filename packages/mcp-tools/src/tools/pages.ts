@@ -13,6 +13,7 @@ import {
   documentTitleSchema,
   documentTreeResponseSchema,
   documentTypeSchema,
+  generateDocumentCoverResponseSchema,
   idSchema,
   markdownExportResponseSchema,
   type markdownImportRequestSchema,
@@ -352,6 +353,36 @@ export const pageSetCoverTool: AnyToolDefinition = defineTool({
   },
 });
 
+const pageGenerateCoverInputSchema = z.object({
+  documentId: idSchema,
+  /** What to draw, in the user's own words. Any language. */
+  prompt: z.string().trim().min(3).max(1_000),
+});
+
+export const pageGenerateCoverTool: AnyToolDefinition = defineTool({
+  name: 'exo_page_generate_cover',
+  description:
+    'Lässt die KI ein Titelbild für eine Seite malen und setzt es. Das Bild entsteht im ' +
+    'Hintergrund und ist nicht sofort fertig: der Aufruf bestätigt nur den Auftrag. ' +
+    'Braucht ein eingerichtetes Bildmodell, sonst antwortet die API mit ai_image_unavailable.',
+  inputSchema: pageGenerateCoverInputSchema,
+  surfaces: ['mcp', 'ai'],
+  mutating: true,
+  target: (input) => `document:${input.documentId}`,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'POST',
+      path: `/api/documents/${input.documentId}/cover/generate`,
+      body: { prompt: input.prompt },
+      responseSchema: generateDocumentCoverResponseSchema,
+    });
+    return {
+      text: `Titelbild wird erzeugt für Seite ${result.documentId}. Es erscheint, sobald es fertig ist.`,
+      data: result,
+    };
+  },
+});
+
 export const PAGE_TOOLS: readonly AnyToolDefinition[] = [
   pageTreeTool,
   pageReadTool,
@@ -366,4 +397,5 @@ export const PAGE_TOOLS: readonly AnyToolDefinition[] = [
   pageSetAiRuleTool,
   pageSetLayoutTool,
   pageSetCoverTool,
+  pageGenerateCoverTool,
 ];

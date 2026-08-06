@@ -46,6 +46,24 @@ export type AiRuleMode = z.infer<typeof aiRuleModeSchema>;
  */
 export const coverPositionSchema = z.number().min(0).max(100);
 
+/**
+ * Asking the AI to draw a cover.
+ *
+ * Answered before the picture exists: drawing takes tens of seconds, so the
+ * request only enqueues the work and the page learns the outcome from the
+ * `document.cover.generated` event.
+ */
+export const generateDocumentCoverRequestSchema = z.object({
+  prompt: z.string().trim().min(3).max(1_000),
+});
+export type GenerateDocumentCoverRequest = z.infer<typeof generateDocumentCoverRequestSchema>;
+
+export const generateDocumentCoverResponseSchema = z.object({
+  status: z.literal('pending'),
+  documentId: idSchema,
+});
+export type GenerateDocumentCoverResponse = z.infer<typeof generateDocumentCoverResponseSchema>;
+
 const updateDocumentFieldsSchema = z.object({
   title: documentTitleSchema.optional(),
   icon: documentIconSchema,

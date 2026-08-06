@@ -1,4 +1,15 @@
-import { Controller, Delete, Get, HttpCode, Inject, Param, Post, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Inject,
+  Param,
+  Post,
+  Query,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { type FastifyReply, type FastifyRequest } from 'fastify';
 
@@ -55,13 +66,23 @@ export class AttachmentsController {
     });
   }
 
+  /**
+   * `?variant=preview` asks for the downscaled copy of an image and falls back
+   * to the original when there is none, so a renderer can ask for it
+   * unconditionally and never has to know whether one was made.
+   */
   @Get('attachments/:attachmentId/download')
   async download(
     @CurrentSession() session: VerifiedSession,
     @Param('attachmentId') attachmentId: string,
+    @Query('variant') variant: string | undefined,
     @Res() reply: FastifyReply,
   ): Promise<void> {
-    const result = await this.attachments.download(attachmentId, session.userId);
+    const result = await this.attachments.download(
+      attachmentId,
+      session.userId,
+      variant === 'preview' ? 'preview' : 'original',
+    );
     void reply
       .header('content-type', result.mimeType)
       .header('content-length', String(result.byteSize))

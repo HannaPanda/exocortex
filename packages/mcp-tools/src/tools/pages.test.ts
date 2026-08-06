@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import { type ExocortexApiClient } from '../client.js';
 
-import { pageArchiveTool, pageReadTool, pageSetCoverTool, pageWriteTool } from './pages.js';
+import {
+  pageArchiveTool,
+  pageGenerateCoverTool,
+  pageReadTool,
+  pageSetCoverTool,
+  pageWriteTool,
+} from './pages.js';
 
 interface RecordedCall {
   kind: 'request' | 'upload';
@@ -161,5 +167,35 @@ describe('pageSetCoverTool', () => {
       },
     ]);
     expect(result.text).toContain('Titelbild entfernt');
+  });
+});
+
+describe('pageGenerateCoverTool', () => {
+  it('asks the API to draw one and reports that it is not finished yet', async () => {
+    const { client, calls } = createFakeClient({ status: 'pending', documentId: 'doc123456' });
+
+    const result = await pageGenerateCoverTool.run(client, {
+      documentId: 'doc123456',
+      prompt: 'Berge im Morgennebel',
+    });
+
+    expect(calls).toEqual([
+      {
+        kind: 'request',
+        method: 'POST',
+        path: '/api/documents/doc123456/cover/generate',
+        body: { prompt: 'Berge im Morgennebel' },
+      },
+    ]);
+    expect(result.text).toContain('wird erzeugt');
+  });
+
+  it('refuses a prompt too short to mean anything', async () => {
+    const { client, calls } = createFakeClient({ status: 'pending', documentId: 'doc123456' });
+
+    await expect(
+      pageGenerateCoverTool.run(client, { documentId: 'doc123456', prompt: 'x' }),
+    ).rejects.toThrow();
+    expect(calls).toEqual([]);
   });
 });

@@ -1,11 +1,34 @@
 'use client';
 
-import { CheckIcon, ImageIcon, MoveVerticalIcon, Trash2Icon, XIcon } from 'lucide-react';
+import {
+  CheckIcon,
+  ImageIcon,
+  MoveVerticalIcon,
+  SparklesIcon,
+  Trash2Icon,
+  XIcon,
+} from 'lucide-react';
 import * as React from 'react';
 
-import { Button, cn } from '@exocortex/ui';
+import {
+  Button,
+  cn,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Label,
+  Textarea,
+} from '@exocortex/ui';
 
-import { useUpdateDocument, useUploadDocumentCover } from '@/lib/api/queries';
+import {
+  useGenerateDocumentCover,
+  useUpdateDocument,
+  useUploadDocumentCover,
+} from '@/lib/api/queries';
+import { useRealtimeEvent } from '@/lib/realtime/realtime-provider';
 
 /**
  * The `accept` filter is the image half of `ALLOWED_ATTACHMENT_MIME_TYPES`. It
@@ -56,6 +79,91 @@ function useCoverPicker(workspaceId: string, documentId: string) {
   return { input, choose: () => inputRef.current?.click(), upload };
 }
 
+/**
+ * The AI half: send a prompt, then wait for the worker to say it is over.
+ *
+ * The request only queues the work, so "pending" cannot come from the mutation
+ * — it ends immediately. It ends when `document.cover.generated` arrives for
+ * this page, which also carries the German reason when the drawing failed.
+ */
+function useCoverGeneration(documentId: string) {
+  const generate = useGenerateDocumentCover();
+  const [pending, setPending] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  useRealtimeEvent('document.cover.generated', (event) => {
+    if (event.payload.documentId !== documentId) return;
+    setPending(false);
+    setError(event.payload.error);
+  });
+
+  const start = async (prompt: string): Promise<void> => {
+    setError(null);
+    setPending(true);
+    try {
+      await generate.mutateAsync({ documentId, prompt });
+    } catch (cause) {
+      setPending(false);
+      setError(cause instanceof Error ? cause.message : 'Die Anfrage ist fehlgeschlagen.');
+    }
+  };
+
+  return { pending, error, start };
+}
+
+interface CoverPromptDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (prompt: string) => void;
+}
+
+/** Asks what the picture should show. One field, because there is one input. */
+function CoverPromptDialog({ open, onOpenChange, onSubmit }: CoverPromptDialogProps) {
+  const [prompt, setPrompt] = React.useState('');
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Titelbild erzeugen</DialogTitle>
+          <DialogDescription>
+            Beschreibe, was zu sehen sein soll. Das Bild entsteht im Hintergrund und erscheint,
+            sobald es fertig ist.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="cover-prompt">Beschreibung</Label>
+          <Textarea
+            id="cover-prompt"
+            rows={4}
+            maxLength={1_000}
+            data-testid="cover-prompt-input"
+            placeholder="Zum Beispiel: ruhige Berglandschaft im Morgennebel, gedeckte Farben"
+            value={prompt}
+            onChange={(event) => setPrompt(event.target.value)}
+          />
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Abbrechen
+          </Button>
+          <Button
+            disabled={prompt.trim().length < 3}
+            data-testid="cover-prompt-submit"
+            onClick={() => {
+              onSubmit(prompt.trim());
+              setPrompt('');
+              onOpenChange(false);
+            }}
+          >
+            <SparklesIcon /> Erzeugen
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export interface PageCoverAddButtonProps {
   workspaceId: string;
   documentId: string;
@@ -69,6 +177,17 @@ export interface PageCoverAddButtonProps {
  */
 export function PageCoverAddButton({ workspaceId, documentId, className }: PageCoverAddButtonProps) {
   const { input, choose, upload } = useCoverPicker(workspaceId, documentId);
+  const generation = useCoverGeneration(documentId);
+  const [promptOpen, setPromptOpen] = React.useState(false);
+
+  // Hidden until the page is hovered, so an empty page carries no control for
+  // something it does not have. A touch device has no hover to give, so there
+  // the buttons simply stay visible — and while a picture is being drawn they
+  // stay visible for everyone, because that is the state being reported.
+  const revealed = generation.pending
+    ? ''
+    : 'opacity-0 group-hover/page:opacity-100 pointer-coarse:opacity-100 focus-visible:opacity-100';
+  const busy = upload.isPending || generation.pending;
 
   return (
     <div className={cn('flex h-8 items-center gap-2', className)}>
@@ -76,19 +195,31 @@ export function PageCoverAddButton({ workspaceId, documentId, className }: PageC
       <Button
         variant="ghost"
         size="sm"
-        disabled={upload.isPending}
+        disabled={busy}
         data-testid="add-cover"
-        // Hidden until the page is hovered, so an empty page carries no control
-        // for something it does not have. A touch device has no hover to give,
-        // so there the button simply stays visible.
-        className="text-muted-foreground opacity-0 transition-opacity group-hover/page:opacity-100 pointer-coarse:opacity-100 focus-visible:opacity-100"
+        className={cn('text-muted-foreground transition-opacity', revealed)}
         onClick={choose}
       >
         <ImageIcon /> {upload.isPending ? 'Wird hochgeladen …' : 'Titelbild hinzufügen'}
       </Button>
-      {upload.isError ? (
+      <Button
+        variant="ghost"
+        size="sm"
+        disabled={busy}
+        data-testid="generate-cover"
+        className={cn('text-muted-foreground transition-opacity', revealed)}
+        onClick={() => setPromptOpen(true)}
+      >
+        <SparklesIcon /> {generation.pending ? 'Wird erzeugt …' : 'Mit KI erzeugen'}
+      </Button>
+      <CoverPromptDialog
+        open={promptOpen}
+        onOpenChange={setPromptOpen}
+        onSubmit={(prompt) => void generation.start(prompt)}
+      />
+      {upload.isError || generation.error !== null ? (
         <span role="status" className="text-xs text-destructive-text">
-          {upload.error.message}
+          {generation.error ?? upload.error?.message}
         </span>
       ) : null}
     </div>
@@ -127,6 +258,8 @@ export function PageCover({
 }: PageCoverProps) {
   const { input, choose, upload } = useCoverPicker(workspaceId, documentId);
   const updateDocument = useUpdateDocument(workspaceId);
+  const generation = useCoverGeneration(documentId);
+  const [promptOpen, setPromptOpen] = React.useState(false);
 
   // Non-null means "repositioning": the draft is what the page shows, and the
   // stored position is what it falls back to on cancel.
@@ -203,7 +336,7 @@ export function PageCover({
     }
   };
 
-  const busy = upload.isPending || updateDocument.isPending;
+  const busy = upload.isPending || updateDocument.isPending || generation.pending;
 
   return (
     <div className="group/cover relative w-full" data-testid="page-cover">
@@ -236,7 +369,10 @@ export function PageCover({
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- attachment ids are arbitrary user uploads, not build-time-known assets next/image can optimize. */}
         <img
-          src={`/api/attachments/${attachmentId}/download`}
+          // The downscaled copy, which the route falls back to the original for
+          // when there is none. A cover is never drawn larger than a wide
+          // screen, so the full-size upload is only ever wasted bandwidth here.
+          src={`/api/attachments/${attachmentId}/download?variant=preview`}
           alt=""
           draggable={false}
           data-testid="page-cover-image"
@@ -285,6 +421,15 @@ export function PageCover({
                 variant="ghost"
                 size="sm"
                 disabled={busy}
+                data-testid="generate-cover"
+                onClick={() => setPromptOpen(true)}
+              >
+                <SparklesIcon /> {generation.pending ? 'Wird erzeugt …' : 'Neu erzeugen'}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={busy}
                 data-testid="remove-cover"
                 onClick={() => void remove()}
               >
@@ -295,9 +440,15 @@ export function PageCover({
         </div>
       )}
 
-      {upload.isError ? (
+      <CoverPromptDialog
+        open={promptOpen}
+        onOpenChange={setPromptOpen}
+        onSubmit={(prompt) => void generation.start(prompt)}
+      />
+
+      {upload.isError || generation.error !== null ? (
         <p role="status" className="px-6 pt-2 text-xs text-destructive-text">
-          {upload.error.message}
+          {generation.error ?? upload.error?.message}
         </p>
       ) : null}
     </div>

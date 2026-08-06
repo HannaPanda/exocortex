@@ -61,6 +61,38 @@ run. `ai.visionEnabled: false` turns this off entirely; see "Vision
 companions" below for how the companion *model* is now chosen per run rather
 than fixed to `OPENROUTER_VISION_MODEL`.
 
+## Image generation (page covers)
+
+Drawing a picture sits outside the `AiProvider` contract for the same reason
+vision preprocessing does (ADR-012): the general chat path stays
+provider-neutral and text-only, and a capability one provider and one model can
+serve does not belong in the interface every provider must implement.
+
+`packages/ai/src/image-generator.ts` defines `ImageGenerator` with two
+implementations: `OpenRouterImageGenerator` (an ordinary chat completion asked
+for the `image` modality, which answers with the picture inline as a data URI)
+and `MockImageGenerator` (a solid-colour PNG built in memory, deterministic per
+prompt, so a deployment without an account can still be developed and tested
+against). `createImageGenerator` returns `null` unless both an API key and
+`ai.imageModelSlug` are present — the same safety gate as
+`createVisionPreprocessor`, so nothing paid can start by accident. `null` means
+"the feature is off", never "something broke".
+
+The prompt reaches the model as the user wrote it, followed by a fixed framing
+hint (wide banner, no text, nothing important near the edges) because that is
+what a cover is. Nothing about the page's content is sent: the user's words are
+the whole prompt.
+
+The flow: `POST /api/documents/:id/cover/generate` checks the edit permission
+and both settings, then queues a `document-cover` job and answers `pending`.
+`createDocumentCoverProcessor` draws the picture and installs it by posting it
+to `POST /api/documents/:id/cover` with a service token minted for the
+requesting user, so the generated file passes the ordinary permission and
+magic-byte checks and gets the ordinary downscaling. The finished cover reaches
+the browser as `document.updated`; `document.cover.generated` carries the
+outcome, with a German reason when it failed. One attempt only — a retry would
+be a second paid image.
+
 ## Conversations and messages
 
 `AiConversation` / `AiConversationMessage` (Prisma) are the persistent side

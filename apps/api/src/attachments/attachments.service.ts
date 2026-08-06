@@ -24,6 +24,8 @@ import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 import {
   buildAttachmentKey,
+  buildAttachmentPreviewKey,
+  createImagePreview,
   detectMimeType,
   type ObjectStorage,
   sanitizeFilename,
@@ -154,9 +156,20 @@ export class AttachmentsService {
       throw error;
     }
 
+    const preview = await this.storePreview({
+      attachmentId: attachment.id,
+      workspaceId: input.workspaceId,
+      userId: input.userId,
+      storageKey,
+      filename,
+      mimeType: detected.mimeType,
+      body: input.body,
+      correlationId: input.correlationId,
+    });
+
     const stored = await this.prisma.attachment.update({
       where: { id: attachment.id },
-      data: { storageKey },
+      data: { storageKey, ...preview },
     });
 
     // Only now, after the row points at a real object. Enqueuing right after
@@ -190,10 +203,81 @@ export class AttachmentsService {
     };
   }
 
-  /** Returns a stream plus metadata after checking workspace permission. */
+  /**
+   * Downscales an image and stores the copy next to the original.
+   *
+   * Deliberately inside the request rather than in a job: the preview exists to
+   * make the *first* render cheap, and a page whose cover was just set is
+   * rendered immediately. A job would serve the full-size original exactly
+   * once, which is the one time it matters. The work itself is a libvips call
+   * that runs on libuv's thread pool, so it never blocks the event loop, and it
+   * is bounded by `MAX_UPLOAD_BYTES`.
+   *
+   * Best effort throughout: a failed preview leaves the upload intact and
+   * returns empty columns, which every reader already interprets as "serve the
+   * original".
+   */
+  private async storePreview(input: {
+    attachmentId: string;
+    workspaceId: string;
+    userId: string;
+    storageKey: string;
+    filename: string;
+    mimeType: string;
+    body: Buffer;
+    correlationId: string;
+  }): Promise<{ previewKey?: string; previewMimeType?: string; previewByteSize?: number }> {
+    const preview = await createImagePreview(input.body, input.mimeType, {
+      onError: (error) => {
+        this.logger.warn('Could not downscale image, serving the original', {
+          attachmentId: input.attachmentId,
+          mimeType: input.mimeType,
+          correlationId: input.correlationId,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      },
+    });
+    if (preview === null) return {};
+
+    const previewKey = buildAttachmentPreviewKey({
+      storageKey: input.storageKey,
+      extension: preview.extension,
+    });
+
+    try {
+      await this.storage.putObject({
+        key: previewKey,
+        body: preview.body,
+        contentType: preview.mimeType,
+        filename: input.filename,
+        metadata: { workspaceId: input.workspaceId, uploadedBy: input.userId },
+      });
+    } catch (error) {
+      this.logger.error('Could not store image preview, serving the original', error, {
+        attachmentId: input.attachmentId,
+        correlationId: input.correlationId,
+      });
+      return {};
+    }
+
+    return {
+      previewKey,
+      previewMimeType: preview.mimeType,
+      previewByteSize: preview.body.byteLength,
+    };
+  }
+
+  /**
+   * Returns a stream plus metadata after checking workspace permission.
+   *
+   * `variant: 'preview'` asks for the downscaled copy and silently falls back
+   * to the original when there is none, so a caller that only ever wants to
+   * *show* the image can request it unconditionally.
+   */
   async download(
     attachmentId: string,
     userId: string,
+    variant: 'original' | 'preview' = 'original',
   ): Promise<{ stream: Readable; filename: string; mimeType: string; byteSize: number }> {
     const context = await this.access.findAttachmentContext(attachmentId, userId);
     if (context === null) {
@@ -206,11 +290,27 @@ export class AttachmentsService {
       canDownloadAttachment(context.role, context.attachment, context.attachment.workspaceId),
     );
 
+    const { attachment } = context;
+    const { previewKey, previewMimeType, previewByteSize } = attachment;
+    if (
+      variant === 'preview' &&
+      previewKey !== null &&
+      previewMimeType !== null &&
+      previewByteSize !== null
+    ) {
+      return {
+        stream: await this.storage.getObject({ key: previewKey }),
+        filename: attachment.filename,
+        mimeType: previewMimeType,
+        byteSize: previewByteSize,
+      };
+    }
+
     return {
-      stream: await this.storage.getObject({ key: context.attachment.storageKey }),
-      filename: context.attachment.filename,
-      mimeType: context.attachment.mimeType,
-      byteSize: context.attachment.byteSize,
+      stream: await this.storage.getObject({ key: attachment.storageKey }),
+      filename: attachment.filename,
+      mimeType: attachment.mimeType,
+      byteSize: attachment.byteSize,
     };
   }
 
@@ -245,14 +345,21 @@ export class AttachmentsService {
       });
     });
 
-    try {
-      await this.storage.deleteObject({ key: context.attachment.storageKey });
-    } catch (error) {
-      // The row is already marked deleted; log and let maintenance retry.
-      this.logger.error('Failed to delete stored object', error, {
-        attachmentId: input.attachmentId,
-        correlationId: input.correlationId,
-      });
+    // Both objects, or the downscaled copy outlives the file it was made from.
+    const keys = [context.attachment.storageKey, context.attachment.previewKey].filter(
+      (key): key is string => key !== null,
+    );
+    for (const key of keys) {
+      try {
+        await this.storage.deleteObject({ key });
+      } catch (error) {
+        // The row is already marked deleted; log and let maintenance retry.
+        this.logger.error('Failed to delete stored object', error, {
+          attachmentId: input.attachmentId,
+          storageKey: key,
+          correlationId: input.correlationId,
+        });
+      }
     }
   }
 

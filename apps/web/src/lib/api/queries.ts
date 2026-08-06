@@ -16,6 +16,7 @@ import {
   type DocumentDetail,
   type DocumentSummary,
   type DocumentTreeResponse,
+  type GenerateDocumentCoverResponse,
   type MarkdownExportResponse,
   type MarkdownImportResponse,
   type MoveDocumentRequest,
@@ -164,6 +165,23 @@ export function useUploadDocumentCover(workspaceId: string | undefined) {
         void client.invalidateQueries({ queryKey: queryKeys.documentTree(workspaceId) });
       }
     },
+  });
+}
+
+/**
+ * Asks the AI to draw the page's cover.
+ *
+ * Resolves as soon as the job is queued, not when the picture exists. Nothing
+ * is invalidated here on purpose: the finished cover arrives as a
+ * `document.updated` event, and the outcome as `document.cover.generated`.
+ */
+export function useGenerateDocumentCover() {
+  return useMutation({
+    mutationFn: (input: { documentId: string; prompt: string }) =>
+      apiRequest<GenerateDocumentCoverResponse>(
+        `/api/documents/${input.documentId}/cover/generate`,
+        { method: 'POST', body: { prompt: input.prompt } },
+      ),
   });
 }
 

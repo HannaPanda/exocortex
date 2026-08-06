@@ -83,6 +83,7 @@ servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 | `exo_page_set_ai_rule` | yes | `PATCH /api/documents/:documentId` (aiRuleMode/Trigger/Priority) |
 | `exo_page_set_layout` | yes | `PATCH /api/documents/:documentId` (layout: narrow/wide/full) |
 | `exo_page_set_cover` | yes | `PATCH /api/documents/:documentId` (coverAttachmentId/coverPosition) |
+| `exo_page_generate_cover` | yes | `POST /api/documents/:documentId/cover/generate` |
 | `exo_search` | no | `GET /api/workspaces/:workspaceId/search?q=&limit=&includeArchived=` |
 | `exo_database_create` | yes | `POST /api/workspaces/:workspaceId/documents` (`type: 'COLLECTION'`) + one `POST .../properties` per requested column |
 | `exo_database_schema` | no | `GET /api/documents/:documentId/properties` + `GET .../views` |

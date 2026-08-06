@@ -123,6 +123,10 @@ export class WorkspaceAccessService {
       textExtractionError: string | null;
       /** Engine-reported facts, shaped by `pdfMetadataSchema`. Parsed by the caller. */
       textMetadata: unknown;
+      /** Downscaled copy, or null when there is none and the original is it. */
+      previewKey: string | null;
+      previewMimeType: string | null;
+      previewByteSize: number | null;
     };
     role: WorkspaceRole;
   } | null> {
@@ -143,6 +147,9 @@ export class WorkspaceAccessService {
         textExtractedAt: true,
         textExtractionError: true,
         textMetadata: true,
+        previewKey: true,
+        previewMimeType: true,
+        previewByteSize: true,
       },
     });
     if (attachment === null) return null;

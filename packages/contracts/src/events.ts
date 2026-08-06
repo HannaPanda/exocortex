@@ -32,6 +32,7 @@ export const APPLICATION_EVENT_TYPES = [
   'ai.conversation.compacted',
   'ai.run.tool_call',
   'document.content.replaced',
+  'document.cover.generated',
 ] as const;
 
 export const applicationEventTypeSchema = z.enum(APPLICATION_EVENT_TYPES);
@@ -136,6 +137,21 @@ export const documentContentReplacedPayloadSchema = z.object({
   source: z.enum(['api', 'ai', 'import']),
 });
 
+/**
+ * The end of a cover generation, either way.
+ *
+ * The picture itself arrives as an ordinary `document.updated`, because the
+ * worker sets it through the same route a human upload takes. This event
+ * exists for the other half: the page that has been showing "wird erzeugt …"
+ * has to learn that it is over, and *why* when it failed.
+ */
+export const documentCoverGeneratedPayloadSchema = z.object({
+  documentId: idSchema,
+  status: z.enum(['ready', 'failed']),
+  /** German, user-facing. Null on success. */
+  error: z.string().nullable().default(null),
+});
+
 export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('workspace.updated', z.object({ workspace: workspaceSchema.partial() })),
   envelope('document.created', z.object({ document: documentSummarySchema })),
@@ -156,6 +172,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('ai.conversation.compacted', aiConversationCompactedPayloadSchema),
   envelope('ai.run.tool_call', aiRunToolCallPayloadSchema),
   envelope('document.content.replaced', documentContentReplacedPayloadSchema),
+  envelope('document.cover.generated', documentCoverGeneratedPayloadSchema),
 ]);
 export type ApplicationEvent = z.infer<typeof applicationEventSchema>;
 

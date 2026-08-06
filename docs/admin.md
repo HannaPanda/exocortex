@@ -68,6 +68,8 @@ first; the admin form and this table follow.
 | `ai.pdfExtractorFallbackEnabled` | boolean | `true` | Try the other engine when the one above finds nothing or fails. No effect when only one of the two is configured. |
 | `ai.pdfExtractionModelSlug` | string \| null | `null` | Model with a file parser. Null reuses `ai.defaultModelSlug`. |
 | `ai.pdfMaxBytes` | int 1024–52428800 | `10485760` | Largest PDF that is extracted. |
+| `ai.imageGenerationEnabled` | bool | `false` | Lets a page cover be drawn from a prompt. Off by default: every picture is a paid call. |
+| `ai.imageModelSlug` | string \| null | `null` | Image-capable model, e.g. `google/gemini-2.5-flash-image`. Null leaves the feature unavailable however the flag above is set. |
 | `mcp.enabled` | boolean | `true` | Master switch for the MCP tool surface. |
 | `mcp.maxSearchResults` | int 1–100 | `20` | Result cap for `exo_search`. |
 | `mcp.writeConfirmationRequired` | boolean | `true` | Two-step, destination-keyed confirmation for mutating MCP tools. |

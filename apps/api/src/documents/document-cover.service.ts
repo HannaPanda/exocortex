@@ -1,12 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import { assertPolicy, canEditDocument, WorkspaceAccessService } from '@exocortex/auth';
-import { type DocumentSummary } from '@exocortex/contracts';
+import {
+  type DocumentSummary,
+  type GenerateDocumentCoverResponse,
+  QUEUE_NAMES,
+} from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
+import { QueueRegistry } from '@exocortex/queue';
 
 import { AttachmentsService } from '../attachments/attachments.service';
 import { AppError } from '../common/app-error';
-import { PRISMA } from '../platform/platform.module';
+import { PRISMA, QUEUES } from '../platform/platform.module';
+import { SettingsService } from '../platform/settings.service';
 
 import { DocumentsService } from './documents.service';
 
@@ -26,9 +32,11 @@ import { DocumentsService } from './documents.service';
 export class DocumentCoverService {
   constructor(
     @Inject(PRISMA) private readonly prisma: PrismaClient,
+    @Inject(QUEUES) private readonly queues: QueueRegistry,
     private readonly access: WorkspaceAccessService,
     private readonly attachments: AttachmentsService,
     private readonly documents: DocumentsService,
+    private readonly settings: SettingsService,
   ) {}
 
   async uploadAndSet(input: {
@@ -77,5 +85,57 @@ export class DocumentCoverService {
       request: { coverAttachmentId: uploaded.attachment.id, coverPosition: 50 },
       correlationId: input.correlationId,
     });
+  }
+
+  /**
+   * Queues a cover the AI draws from a prompt.
+   *
+   * Answers as soon as the job is enqueued. Drawing an image is a slow external
+   * call, so it belongs in the worker like every other AI run; the finished
+   * picture comes back through the ordinary upload route above, and the page
+   * hears about the outcome over `document.cover.generated`.
+   *
+   * Both gates are checked here rather than in the worker, so a request that
+   * cannot succeed is refused while someone is still looking at it.
+   */
+  async requestGeneration(input: {
+    documentId: string;
+    userId: string;
+    prompt: string;
+    correlationId: string;
+  }): Promise<GenerateDocumentCoverResponse> {
+    const context = await this.access.requireDocumentContext(input.documentId, input.userId);
+    assertPolicy(canEditDocument(context.role, context.document));
+
+    const settings = await this.settings.get();
+    if (!settings['ai.enabled'] || !settings['ai.imageGenerationEnabled']) {
+      throw new AppError(
+        'ai_image_unavailable',
+        'Image generation is switched off for this deployment',
+      );
+    }
+    if (settings['ai.imageModelSlug'] === null) {
+      throw new AppError(
+        'ai_image_unavailable',
+        'No image model is configured for this deployment',
+      );
+    }
+
+    await this.queues.enqueue(
+      QUEUE_NAMES.documentCover,
+      {
+        correlationId: input.correlationId,
+        documentId: input.documentId,
+        workspaceId: context.workspaceId,
+        userId: input.userId,
+        prompt: input.prompt,
+      },
+      // One attempt: every retry is a second paid image, and the processor
+      // reports its own failures rather than throwing, so a retry would only
+      // ever repeat an infrastructure problem.
+      { attempts: 1 },
+    );
+
+    return { status: 'pending', documentId: input.documentId };
   }
 }

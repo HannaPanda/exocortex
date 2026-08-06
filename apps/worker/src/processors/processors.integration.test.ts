@@ -10,6 +10,7 @@ import {
   type AiStreamEvent,
   type AiToolCall,
   MockAiProvider,
+  MockImageGenerator,
   type PdfDocumentInfoReader,
   type VisionPreprocessor,
 } from '@exocortex/ai';
@@ -28,6 +29,7 @@ import {
 } from '@exocortex/database';
 import { markdownToYjsState } from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
+import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type JobContext, QueueRegistry, RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
@@ -36,6 +38,7 @@ import { type ToolRunner } from '../tool-runner';
 
 import { createAiRunProcessor, type ResolvedModelRow } from './ai-run';
 import { createAttachmentTextProcessor } from './attachment-text';
+import { createDocumentCoverProcessor } from './document-cover';
 import { createIndexDocumentProcessor } from './index-document';
 import { createMaintenanceProcessor } from './maintenance';
 import { createMaterializeDocumentProcessor } from './materialize-document';
@@ -431,6 +434,11 @@ describe('maintenance', () => {
           storageKey: `test/${name}`,
           createdById: userId,
           isCover: true,
+          // Every image upload also stores a downscaled copy, and it has to go
+          // with the original rather than outlive the file it was made from.
+          previewKey: `test/${name}.preview.webp`,
+          previewMimeType: 'image/webp',
+          previewByteSize: 2,
           // Older than the grace period, which exists for the seconds between
           // an upload and the page pointing at it.
           createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
@@ -469,7 +477,7 @@ describe('maintenance', () => {
         .context,
     );
 
-    expect(deleted).toEqual(['test/alt.png']);
+    expect(deleted).toEqual(['test/alt.png', 'test/alt.png.preview.webp']);
     expect((await prisma.attachment.findUniqueOrThrow({ where: { id: replaced.id } })).deletedAt)
       .not.toBeNull();
     expect((await prisma.attachment.findUniqueOrThrow({ where: { id: current.id } })).deletedAt)
@@ -477,6 +485,115 @@ describe('maintenance', () => {
     expect((await prisma.attachment.findUniqueOrThrow({ where: { id: inBody.id } })).deletedAt)
       .toBeNull();
   }, 60_000);
+});
+
+describe('cover generation', () => {
+  interface Published {
+    type: string;
+    payload: { documentId: string; status: string; error: string | null };
+  }
+
+  /** Records what the processor announced instead of reaching Redis. */
+  function recordingBus(published: Published[]): RedisEventBus {
+    return {
+      publish: async (event: Published) => {
+        published.push(event);
+      },
+    } as unknown as RedisEventBus;
+  }
+
+  function uploadingClient(uploads: { path: string; bytes: number }[]): ExocortexApiClient {
+    return {
+      request: () => {
+        throw new Error('not used in this test');
+      },
+      upload: async (input) => {
+        uploads.push({ path: input.path, bytes: input.bytes.byteLength });
+        return input.responseSchema.parse({
+          id: 'doc123456',
+          workspaceId: 'ws1234567',
+          parentId: null,
+          type: 'PAGE',
+          title: 'Seite',
+          icon: null,
+          layout: 'narrow',
+          coverAttachmentId: 'att1234567',
+          coverPosition: 50,
+          orderKey: 'a0',
+          createdById: 'user1234',
+          updatedById: 'user1234',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          archivedAt: null,
+        });
+      },
+    };
+  }
+
+  const payload = {
+    correlationId: 'test-cover',
+    documentId: 'doc123456',
+    workspaceId: 'ws1234567',
+    userId: 'user1234',
+    prompt: 'Berge im Morgennebel',
+  };
+
+  it('draws a picture and installs it through the cover route', async () => {
+    const published: Published[] = [];
+    const uploads: { path: string; bytes: number }[] = [];
+
+    await createDocumentCoverProcessor({
+      imageGeneratorFor: () => new MockImageGenerator(),
+      apiClientFor: () => uploadingClient(uploads),
+      bus: recordingBus(published),
+      settings: stubSettings({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': 'a/b' }),
+    })(contextFor(payload).context);
+
+    // The upload goes through the REST route, not the database (ADR-014).
+    expect(uploads).toHaveLength(1);
+    expect(uploads[0]?.path).toBe('/api/documents/doc123456/cover');
+    expect(uploads[0]?.bytes).toBeGreaterThan(0);
+    expect(published).toEqual([
+      expect.objectContaining({
+        type: 'document.cover.generated',
+        payload: { documentId: 'doc123456', status: 'ready', error: null },
+      }),
+    ]);
+  });
+
+  it('reports an unconfigured deployment instead of uploading anything', async () => {
+    const published: Published[] = [];
+    const uploads: { path: string; bytes: number }[] = [];
+
+    await createDocumentCoverProcessor({
+      imageGeneratorFor: () => null,
+      apiClientFor: () => uploadingClient(uploads),
+      bus: recordingBus(published),
+      settings: stubSettings({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': null }),
+    })(contextFor(payload).context);
+
+    expect(uploads).toEqual([]);
+    expect(published[0]?.payload.status).toBe('failed');
+    expect(published[0]?.payload.error).toContain('nicht eingerichtet');
+  });
+
+  it('never lets a failure escape, so a paid call is not retried', async () => {
+    const published: Published[] = [];
+    const failing = {
+      model: 'broken',
+      generate: () => Promise.reject(new Error('provider is down')),
+    };
+
+    // No rejection: the job ends successfully and the browser is told why.
+    await createDocumentCoverProcessor({
+      imageGeneratorFor: () => failing,
+      apiClientFor: () => uploadingClient([]),
+      bus: recordingBus(published),
+      settings: stubSettings({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': 'a/b' }),
+    })(contextFor(payload).context);
+
+    expect(published[0]?.payload.status).toBe('failed');
+  });
 });
 
 /** Captures the request it was given instead of calling a real provider. */

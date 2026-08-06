@@ -27,6 +27,10 @@ import {
   documentSummarySchema,
   type DocumentTreeResponse,
   documentTreeResponseSchema,
+  type GenerateDocumentCoverRequest,
+  generateDocumentCoverRequestSchema,
+  type GenerateDocumentCoverResponse,
+  generateDocumentCoverResponseSchema,
   type MarkdownExportResponse,
   markdownExportResponseSchema,
   type MarkdownImportRequest,
@@ -146,6 +150,27 @@ export class DocumentsController {
       filename: file.filename,
       declaredMimeType: file.declaredMimeType,
       body: file.body,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  /**
+   * Asks the AI to draw this page's cover. Answers as soon as the job is
+   * queued; the picture arrives later as a `document.updated` event and the
+   * outcome as `document.cover.generated`.
+   */
+  @Post(':documentId/cover/generate')
+  @ApiBody({ schema: openApiSchema(generateDocumentCoverRequestSchema) })
+  @ApiCreatedResponse({ schema: openApiResponseSchema(generateDocumentCoverResponseSchema) })
+  async generateCover(
+    @CurrentSession() session: VerifiedSession,
+    @Param('documentId') documentId: string,
+    @Body(zodPipe(generateDocumentCoverRequestSchema)) body: GenerateDocumentCoverRequest,
+  ): Promise<GenerateDocumentCoverResponse> {
+    return this.cover.requestGeneration({
+      documentId,
+      userId: session.userId,
+      prompt: body.prompt,
       correlationId: currentCorrelationId(),
     });
   }

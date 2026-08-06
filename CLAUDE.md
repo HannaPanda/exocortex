@@ -66,7 +66,7 @@ file is the contract for automated sessions. Read it before changing code.
 | `packages/auth`         | Better Auth setup, session verification, authorization policies, collaboration tickets. |
 | `packages/editor`       | Canonical Tiptap schema, block IDs, block catalog, Markdown, Yjs materialization. |
 | `packages/queue`        | Typed BullMQ queues, workers, Redis event bus. |
-| `packages/storage`      | S3-compatible object storage, MIME sniffing. |
+| `packages/storage`      | S3-compatible object storage, MIME sniffing, image downscaling. |
 | `packages/ai`           | Provider-neutral AI contracts, mock provider, runner contracts. |
 | `packages/ui`           | Design tokens, shadcn components on Base UI, layout primitives, states. |
 | `e2e`                   | Playwright browser and API tests. |

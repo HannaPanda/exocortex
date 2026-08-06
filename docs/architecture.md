@@ -122,6 +122,31 @@ tested (26 tests in `packages/auth/src/policies.test.ts`).
   `POST /api/documents/:id/cover` uploads and sets in one call and marks the
   file cover-only; the `collect-orphaned-covers` maintenance task deletes such
   a file once nothing points at it any more.
+  `POST /api/documents/:id/cover/generate` is the other way to get one: it
+  queues a `document-cover` job that draws the picture from a prompt and then
+  installs it through the upload route above, so the generated file is subject
+  to the same checks. See `docs/ai-architecture.md` for the generator.
+
+## Image attachments have two objects
+
+Every uploaded image whose original is over 400 KB also gets a downscaled WebP
+copy, fitted inside 2048 px and stored beside the original at
+`<key>.preview.webp` (`previewKey` / `previewMimeType` / `previewByteSize` on
+`Attachment`, built by `createImagePreview` in `packages/storage`). The
+downscaling happens inside the upload request rather than in a job, because the
+preview exists to make the *first* render cheap and a cover that was just set is
+rendered immediately; libvips runs it off the event loop and the input is
+bounded by `MAX_UPLOAD_BYTES`.
+
+`GET /api/attachments/:id/download?variant=preview` serves that copy and falls
+back to the original when there is none, so a renderer can ask for it
+unconditionally. Page covers and database gallery thumbnails do; the image block
+in the editor keeps the plain URL, because that URL is stored in the document
+content and the display decision does not belong there. Deleting an attachment
+deletes both objects, and so does the orphaned-cover sweep. Vector and animated
+formats (SVG, GIF, multi-frame WebP) are never re-encoded; re-encoding also
+strips EXIF, so a photo's GPS coordinates never reach the browser through the
+preview.
 
 ## Databases
 

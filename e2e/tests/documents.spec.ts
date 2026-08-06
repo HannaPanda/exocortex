@@ -94,6 +94,13 @@ test.describe('documents', () => {
       'style',
       /object-position:\s*50% 50%/,
     );
+    // The cover asks for the downscaled copy. This 1×1 PNG is far too small for
+    // one to have been made, so what comes back is the original — which is the
+    // fallback the route promises.
+    await expect(page.getByTestId('page-cover-image')).toHaveAttribute(
+      'src',
+      /\/download\?variant=preview$/,
+    );
 
     // Repositioning is keyboard-reachable: the image itself is the slider.
     await page.getByTestId('reposition-cover').click();

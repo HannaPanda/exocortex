@@ -123,7 +123,7 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
             createdAt: { lt: new Date(Date.now() - orphanedCoverGraceMs) },
             ...(payload.workspaceId === null ? {} : { workspaceId: payload.workspaceId }),
           },
-          select: { id: true, storageKey: true },
+          select: { id: true, storageKey: true, previewKey: true },
         });
 
         let removed = 0;
@@ -135,14 +135,24 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
             where: { id: orphan.id },
             data: { deletedAt: new Date() },
           });
-          try {
-            await storage.deleteObject({ key: orphan.storageKey });
-            removed += 1;
-          } catch (error) {
-            logger.error('Failed to delete an orphaned cover object', error, {
-              attachmentId: orphan.id,
-            });
+          // The downscaled copy goes with it; it is derived from a file that is
+          // about to stop existing.
+          const keys = [orphan.storageKey, orphan.previewKey].filter(
+            (key): key is string => key !== null,
+          );
+          let failed = false;
+          for (const key of keys) {
+            try {
+              await storage.deleteObject({ key });
+            } catch (error) {
+              failed = true;
+              logger.error('Failed to delete an orphaned cover object', error, {
+                attachmentId: orphan.id,
+                storageKey: key,
+              });
+            }
           }
+          if (!failed) removed += 1;
         }
         await reportProgress(100, 'Titelbilder aufgeräumt');
         logger.info('Orphaned covers collected', { removed, candidates: orphans.length });

@@ -2,13 +2,16 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
 import { loadDotEnv } from '@exocortex/config';
+import { QUEUE_NAMES, resolveSettings, type Settings } from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { type ProseMirrorDocument, serializePlainText } from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 
+import { type AttachmentsService } from '../attachments/attachments.service';
 import { AppError } from '../common/app-error';
 import { OutboxService } from '../common/outbox.service';
+import { type SettingsService } from '../platform/settings.service';
 import { type RealtimeService } from '../realtime/realtime.service';
 
 import {
@@ -16,6 +19,7 @@ import {
   type CollaborationBridgeService,
 } from './collaboration-bridge.service';
 import { DocumentContentService } from './document-content.service';
+import { DocumentCoverService } from './document-cover.service';
 import { DocumentsService } from './documents.service';
 
 /**
@@ -349,6 +353,94 @@ describe('page covers', () => {
 
     expect(updated.coverAttachmentId).toBeNull();
     expect(updated.coverPosition).toBe(80);
+  });
+});
+
+describe('generating a cover', () => {
+  /**
+   * Only `requestGeneration` is exercised here, and it touches neither
+   * attachments nor the upload path — those belong to `uploadAndSet`, which the
+   * browser suite covers end to end. The two collaborators it never calls are
+   * therefore left empty rather than half-built.
+   */
+  function coverService(settings: Partial<Settings>): DocumentCoverService {
+    const resolved = resolveSettings({ rows: [], env: {} }).settings;
+    const settingsStub = {
+      get: async (): Promise<Settings> => ({ ...resolved, ...settings }),
+    } as unknown as SettingsService;
+
+    return new DocumentCoverService(
+      prisma,
+      queues,
+      new WorkspaceAccessService(prisma),
+      {} as unknown as AttachmentsService,
+      service,
+      settingsStub,
+    );
+  }
+
+  it('refuses when image generation is switched off', async () => {
+    const documentId = await createPage('Kein KI-Bild');
+
+    await expect(
+      coverService({ 'ai.imageGenerationEnabled': false, 'ai.imageModelSlug': 'a/b' }).requestGeneration({
+        documentId,
+        userId: ownerId,
+        prompt: 'Berge im Morgennebel',
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'ai_image_unavailable' });
+  });
+
+  it('refuses when no image model is configured, however the switch is set', async () => {
+    const documentId = await createPage('Kein Bildmodell');
+
+    await expect(
+      coverService({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': null }).requestGeneration({
+        documentId,
+        userId: ownerId,
+        prompt: 'Berge im Morgennebel',
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'ai_image_unavailable' });
+  });
+
+  it('refuses a caller who may not edit the page', async () => {
+    const documentId = await createPage('Gast will malen lassen');
+
+    await expect(
+      coverService({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': 'a/b' }).requestGeneration({
+        documentId,
+        userId: guestId,
+        prompt: 'Berge im Morgennebel',
+        correlationId,
+      }),
+    ).rejects.toBeInstanceOf(AuthorizationError);
+  });
+
+  it('queues the work and answers before the picture exists', async () => {
+    const documentId = await createPage('Bild wird gemalt');
+
+    const result = await coverService({
+      'ai.imageGenerationEnabled': true,
+      'ai.imageModelSlug': 'a/b',
+    }).requestGeneration({
+      documentId,
+      userId: ownerId,
+      prompt: 'Berge im Morgennebel',
+      correlationId,
+    });
+
+    expect(result).toEqual({ status: 'pending', documentId });
+
+    const queue = queues.getQueue(QUEUE_NAMES.documentCover);
+    const jobs = await queue.getJobs(['waiting', 'delayed', 'active', 'completed', 'failed']);
+    const job = jobs.find((entry) => entry.data.documentId === documentId);
+    expect(job?.data.prompt).toBe('Berge im Morgennebel');
+    expect(job?.data.userId).toBe(ownerId);
+    // One attempt on purpose: a retry would be a second paid image.
+    expect(job?.opts.attempts).toBe(1);
+    await job?.remove();
   });
 });
 

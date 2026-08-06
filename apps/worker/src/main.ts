@@ -1,21 +1,26 @@
 import {
   createAiProvider,
+  createImageGenerator,
   createOptionalDoclingPdfExtractor,
   createPdfDocumentInfoReader,
   createPdfTextExtractor,
   createVisionPreprocessor,
+  type ImageGenerator,
   type PdfTextExtractor,
   type VisionPreprocessor,
 } from '@exocortex/ai';
+import { issueServiceToken } from '@exocortex/auth';
 import { loadWorkerEnv } from '@exocortex/config';
 import { QUEUE_NAMES, resolveSettings, type Settings } from '@exocortex/contracts';
 import { createPrismaClient, PostgresSearchAdapter } from '@exocortex/database';
 import { createCorrelationId, createLogger } from '@exocortex/logger';
+import { createFetchApiClient } from '@exocortex/mcp-tools';
 import { createTypedWorker, QueueRegistry, RedisEventBus } from '@exocortex/queue';
 import { S3ObjectStorage } from '@exocortex/storage';
 
 import { createAiRunProcessor, type ResolvedModelRow } from './processors/ai-run';
 import { createAttachmentTextProcessor } from './processors/attachment-text';
+import { createDocumentCoverProcessor } from './processors/document-cover';
 import { createIndexDocumentProcessor } from './processors/index-document';
 import { createMaintenanceProcessor } from './processors/maintenance';
 import { createMaterializeDocumentProcessor } from './processors/materialize-document';
@@ -94,6 +99,51 @@ async function bootstrap(): Promise<void> {
             includeMutating: input.includeMutating,
             logger,
           });
+
+  /**
+   * An API client acting as one particular human, for a processor that has to
+   * write through the REST API rather than the database (ADR-014).
+   *
+   * Same seam as the tool loop above: no secret means no client, and the
+   * processor reports the feature as unavailable instead of failing per job. A
+   * token is minted per call because a job is rare and short, unlike the tool
+   * loop's many calls inside one run.
+   */
+  const apiClientFor =
+    env.SERVICE_TOKEN_SECRET === undefined
+      ? null
+      : (userId: string) =>
+          createFetchApiClient({
+            baseUrl: env.API_URL,
+            token: issueServiceToken({
+              secret: env.SERVICE_TOKEN_SECRET!,
+              userId,
+              purpose: 'ai-tools',
+              ttlSeconds: env.SERVICE_TOKEN_TTL_SECONDS,
+            }).token,
+          });
+
+  // Image generation: the model comes from the settings, so an admin can point
+  // it at a different one without a restart; the generators are cached per slug
+  // exactly like the vision companions below.
+  const imageGeneratorCache = new Map<string, ImageGenerator | null>();
+  const imageGeneratorFor = (modelSlug: string | null): ImageGenerator | null => {
+    const cacheKey = modelSlug ?? '';
+    if (!imageGeneratorCache.has(cacheKey)) {
+      imageGeneratorCache.set(
+        cacheKey,
+        createImageGenerator({
+          providerId: env.AI_PROVIDER,
+          logger,
+          appUrl: env.APP_URL,
+          apiKey: env.OPENROUTER_API_KEY ?? '',
+          baseUrl: env.OPENROUTER_BASE_URL,
+          model: modelSlug,
+        }),
+      );
+    }
+    return imageGeneratorCache.get(cacheKey) ?? null;
+  };
 
   // Vision companions (ADR-012): a per-model factory, cached, so a run can pass
   // its own companion slug (conversation override, or the model row's admin
@@ -189,12 +239,17 @@ async function bootstrap(): Promise<void> {
   /**
    * Publishes a `job.progress` event so the UI can show live progress.
    *
-   * `attachment-text` is deliberately excluded: `jobProgressPayloadSchema.queue`
-   * (frozen in `packages/contracts`) only ever accepted the four original
-   * queues, and this helper is in fact only ever called for materialization.
+   * `attachment-text` and `document-cover` are deliberately excluded:
+   * `jobProgressPayloadSchema.queue` (frozen in `packages/contracts`) only ever
+   * accepted the four original queues, and this helper is in fact only ever
+   * called for materialization. Cover generation reports its own outcome
+   * through `document.cover.generated` instead.
    */
   const publishProgress = async (
-    queue: Exclude<(typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES], typeof QUEUE_NAMES.attachmentText>,
+    queue: Exclude<
+      (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES],
+      typeof QUEUE_NAMES.attachmentText | typeof QUEUE_NAMES.documentCover
+    >,
     workspaceId: string,
     correlationId: string,
     jobId: string,
@@ -342,6 +397,22 @@ async function bootstrap(): Promise<void> {
     },
   });
 
+  // Concurrency 1: an image model is slow, expensive and rate limited, and a
+  // page has exactly one cover -- there is nothing to gain from drawing two at
+  // once, and a burst would only hit the provider's limit.
+  const documentCover = createTypedWorker({
+    name: QUEUE_NAMES.documentCover,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 1,
+    handler: createDocumentCoverProcessor({
+      imageGeneratorFor,
+      apiClientFor,
+      bus,
+      settings: readSettings,
+    }),
+  });
+
   await queues.scheduleMaintenance(createCorrelationId());
 
   logger.info('Worker started', {
@@ -364,6 +435,7 @@ async function bootstrap(): Promise<void> {
         ai.worker.close(),
         maintenance.worker.close(),
         attachmentText.worker.close(),
+        documentCover.worker.close(),
       ]);
       await Promise.all([
         materialization.connection.quit(),
@@ -371,6 +443,7 @@ async function bootstrap(): Promise<void> {
         ai.connection.quit(),
         maintenance.connection.quit(),
         attachmentText.connection.quit(),
+        documentCover.connection.quit(),
       ]);
       await bus.close();
       await queues.close();

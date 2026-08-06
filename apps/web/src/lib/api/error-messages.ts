@@ -34,6 +34,8 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   ai_model_unknown: 'Dieses KI-Modell ist nicht bekannt.',
   ai_model_disabled: 'Dieses KI-Modell ist derzeit deaktiviert.',
   ai_tools_unavailable: 'Werkzeuge stehen für die KI gerade nicht bereit.',
+  ai_image_unavailable:
+    'Bilder erzeugen ist für diese Instanz nicht eingerichtet. Im Administrationsbereich lässt sich ein Bildmodell hinterlegen.',
   ai_tool_limit_exceeded: 'Die KI hat zu viele Werkzeugaufrufe gebraucht.',
   ai_conversation_locked: 'In dieser Unterhaltung läuft noch eine Antwort.',
   document_content_conflict: 'Die Seite wurde zwischenzeitlich geändert.',

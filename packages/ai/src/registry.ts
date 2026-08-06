@@ -1,5 +1,10 @@
 import { type Logger } from '@exocortex/logger';
 
+import {
+  type ImageGenerator,
+  MockImageGenerator,
+  OpenRouterImageGenerator,
+} from './image-generator';
 import { MockAiProvider } from './mock-provider';
 import { OpenRouterProvider } from './openrouter-provider';
 import { type AiProvider } from './provider';
@@ -55,6 +60,46 @@ export function createVisionPreprocessor(
     return null;
   }
   return new VisionPreprocessor({
+    apiKey: options.apiKey,
+    baseUrl: options.baseUrl,
+    model: options.model,
+    appUrl: options.appUrl,
+    logger: options.logger,
+  });
+}
+
+export interface CreateImageGeneratorOptions {
+  providerId: AiProviderId;
+  logger: Logger;
+  appUrl: string;
+  apiKey: string;
+  baseUrl: string;
+  /** Image-capable model. No model configured means "no image generation". */
+  model?: string | null;
+}
+
+/**
+ * Resolves the configured image generator, or `null` when unconfigured.
+ *
+ * Same safety gate as `createVisionPreprocessor`: without both a model and an
+ * API key this can never silently start making paid calls, and `null` means
+ * "the feature is off", not "something broke". A deployment on the mock
+ * provider always gets the offline generator, so covers can be generated
+ * without an account.
+ */
+export function createImageGenerator(
+  options: CreateImageGeneratorOptions,
+): ImageGenerator | null {
+  if (options.providerId === 'mock') return new MockImageGenerator();
+  if (
+    options.apiKey.length === 0 ||
+    options.model === undefined ||
+    options.model === null ||
+    options.model.length === 0
+  ) {
+    return null;
+  }
+  return new OpenRouterImageGenerator({
     apiKey: options.apiKey,
     baseUrl: options.baseUrl,
     model: options.model,

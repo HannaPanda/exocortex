@@ -111,6 +111,14 @@ const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
     label: 'Maximale PDF-Größe (Bytes)',
     help: 'PDFs über dieser Größe werden nicht für die Textextraktion angenommen.',
   },
+  'ai.imageGenerationEnabled': {
+    label: 'Titelbilder erzeugen',
+    help: 'Erlaubt es, das Titelbild einer Seite von der KI malen zu lassen. Jedes Bild ist ein kostenpflichtiger Aufruf.',
+  },
+  'ai.imageModelSlug': {
+    label: 'Modell für Bilder',
+    help: 'Ein Modell, das Bilder ausgeben kann, zum Beispiel google/gemini-2.5-flash-image. Ohne Eintrag bleibt die Bilderzeugung aus, auch wenn der Schalter darüber an ist.',
+  },
   'mcp.enabled': {
     label: 'MCP-Server aktiviert',
     help: 'Erlaubt externen Programmen wie dem MCP-Server den Zugriff auf diese Installation.',

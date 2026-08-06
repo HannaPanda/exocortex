@@ -11,6 +11,7 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `ai` | `AiService.createRun`, `ConversationsService.postMessage` | `createAiRunProcessor` | real, mock provider |
 | `maintenance` | repeatable schedulers | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`), documented placeholder (`vacuum-search-index`) |
 | `attachment-text` | attachment upload, `GET /api/attachments/:id/text` (on demand) | `createAttachmentTextProcessor` | real |
+| `document-cover` | `POST /api/documents/:id/cover/generate` | `createDocumentCoverProcessor` | real |
 
 Queue names and payload schemas live in `packages/contracts/src/jobs.ts`, so
 producers and consumers cannot drift apart.
@@ -23,6 +24,18 @@ or soft-deleted attachment, a non-PDF MIME type, an unconfigured extractor and
 an oversized file (`ai.pdfMaxBytes`) as deterministic outcomes and sets
 `textStatus` accordingly without retrying; anything else (a storage or
 network error) is left to bubble so BullMQ applies the normal retry policy.
+
+`documentCoverJobSchema`: `{ correlationId, documentId, workspaceId, userId,
+prompt }`. `createDocumentCoverProcessor`
+(`apps/worker/src/processors/document-cover.ts`, concurrency 1 — an image model
+is slow and rate limited, and a page has one cover) is the one processor that
+writes through the REST API instead of Prisma: it mints a service token for
+`userId` and posts the finished picture to `POST /api/documents/:id/cover`, so a
+generated cover passes exactly the permission checks, the magic-byte check and
+the downscaling an uploaded one does (ADR-014). It is also the one job enqueued
+with `attempts: 1`, because every retry would be a second paid image; failures
+are reported to the browser as `document.cover.generated` with a German reason
+and the job then ends successfully.
 
 `AiRunJob` gained no new fields for the tool loop or conversations: it still
 carries only `{ correlationId, runId, workspaceId, userId }`. The worker reads

@@ -12,6 +12,7 @@ export const QUEUE_NAMES = {
   ai: 'ai',
   maintenance: 'maintenance',
   attachmentText: 'attachment-text',
+  documentCover: 'document-cover',
 } as const;
 
 export const queueNameSchema = z.enum([
@@ -20,6 +21,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.ai,
   QUEUE_NAMES.maintenance,
   QUEUE_NAMES.attachmentText,
+  QUEUE_NAMES.documentCover,
 ]);
 export type QueueName = z.infer<typeof queueNameSchema>;
 
@@ -74,12 +76,29 @@ export const attachmentTextJobSchema = jobBase.extend({
 });
 export type AttachmentTextJob = z.infer<typeof attachmentTextJobSchema>;
 
+/**
+ * Drawing a page cover from a prompt.
+ *
+ * Carries the requesting user because the worker acts strictly as that human:
+ * it mints a service token for them and uploads the finished image through the
+ * ordinary cover route, so a generated cover passes exactly the permission
+ * checks an uploaded one does (ADR-014).
+ */
+export const documentCoverJobSchema = jobBase.extend({
+  documentId: idSchema,
+  workspaceId: idSchema,
+  userId: idSchema,
+  prompt: z.string().trim().min(1).max(1_000),
+});
+export type DocumentCoverJob = z.infer<typeof documentCoverJobSchema>;
+
 export const JOB_SCHEMAS = {
   [QUEUE_NAMES.documentMaterialization]: materializeDocumentJobSchema,
   [QUEUE_NAMES.searchIndexing]: indexDocumentJobSchema,
   [QUEUE_NAMES.ai]: aiRunJobSchema,
   [QUEUE_NAMES.maintenance]: maintenanceJobSchema,
   [QUEUE_NAMES.attachmentText]: attachmentTextJobSchema,
+  [QUEUE_NAMES.documentCover]: documentCoverJobSchema,
 } as const;
 
 export type JobPayloadMap = {
@@ -88,4 +107,5 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.ai]: AiRunJob;
   [QUEUE_NAMES.maintenance]: MaintenanceJob;
   [QUEUE_NAMES.attachmentText]: AttachmentTextJob;
+  [QUEUE_NAMES.documentCover]: DocumentCoverJob;
 };

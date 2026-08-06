@@ -74,3 +74,19 @@ export function buildAttachmentKey(input: {
   const safeExtension = /^[a-z0-9]{1,10}$/.test(input.extension) ? input.extension : 'bin';
   return `workspaces/${input.workspaceId}/${year}/${month}/${input.attachmentId}.${safeExtension}`;
 }
+
+/**
+ * Key of the downscaled copy that belongs to an attachment.
+ *
+ * Derived from the original's key rather than built from scratch, so the two
+ * objects always share a prefix: a workspace's storage stays browsable, and a
+ * bucket lifecycle rule written for one of them cannot miss the other.
+ */
+export function buildAttachmentPreviewKey(input: {
+  storageKey: string;
+  extension: string;
+}): string {
+  const safeExtension = /^[a-z0-9]{1,10}$/.test(input.extension) ? input.extension : 'bin';
+  const withoutExtension = input.storageKey.replace(/\.[^./]*$/, '');
+  return `${withoutExtension}.preview.${safeExtension}`;
+}

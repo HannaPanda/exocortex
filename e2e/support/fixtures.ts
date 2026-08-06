@@ -41,7 +41,11 @@ export async function signIn(page: Page, user: SeedUserKey = 'johanna'): Promise
   await page.getByLabel('E-Mail-Adresse').fill(credentials.email);
   await page.getByLabel('Passwort').fill(credentials.password);
   await page.getByTestId('signin-submit').click();
-  await page.waitForURL(/\/arbeitsbereich/, { timeout: 30_000 });
+  // Not a bare `/arbeitsbereich`: that URL matches the moment the form
+  // redirects, but it is only a landing page that resolves the workspace and
+  // replaces itself client-side (`workspace-landing.tsx`). A caller reading the
+  // workspace id right after this would race that replacement and find no id.
+  await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 30_000 });
 }
 
 /**
@@ -65,6 +69,20 @@ export async function createSignedInContext(
   await page.goto('/arbeitsbereich');
   await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
   return { context, page };
+}
+
+/**
+ * Waits until the collaboration socket for the open document is connected.
+ *
+ * Typing before that point is silently lost for the pipeline: the editor takes
+ * the keystrokes, but nothing is sent, nothing is persisted and no
+ * materialization job is ever enqueued. A test that types and then waits for a
+ * background job has to wait for this first.
+ */
+export async function waitForCollaboration(page: Page): Promise<void> {
+  await expect(page.getByTestId('connection-status')).toContainText('Verbunden', {
+    timeout: 60_000,
+  });
 }
 
 /** Waits until the page tree contains a node with the given title. */

@@ -1,5 +1,6 @@
 export * from './agent-runners';
 export * from './docling';
+export * from './image-generator';
 export * from './mock-provider';
 export * from './openrouter-provider';
 export * from './pdf-info';
