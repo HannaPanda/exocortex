@@ -34,6 +34,19 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
     '@exocortex/contracts',
     '@exocortex/database',
   ],
+  // MCP tool *definitions* are a leaf package that only depends on the shared
+  // zod contracts; `execute` talks to the REST API through an injected
+  // `ExocortexApiClient`, never by importing @exocortex/database or
+  // @exocortex/auth directly (D2). This keeps business logic and
+  // authorization in apps/api, so the same tool catalogue safely serves
+  // external MCP clients and the built-in AI's tool loop.
+  '@exocortex/mcp-tools': ['@exocortex/contracts'],
+  '@exocortex/mcp': [
+    '@exocortex/config',
+    '@exocortex/logger',
+    '@exocortex/contracts',
+    '@exocortex/mcp-tools',
+  ],
 
   '@exocortex/api': [
     '@exocortex/config',
@@ -45,6 +58,7 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
     '@exocortex/storage',
     '@exocortex/ai',
     '@exocortex/editor',
+    '@exocortex/mcp-tools',
   ],
   '@exocortex/collaboration': [
     '@exocortex/config',
@@ -64,6 +78,9 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
     '@exocortex/storage',
     '@exocortex/ai',
     '@exocortex/editor',
+    // Only to mint the short-lived service tokens the API accepts (D3).
+    '@exocortex/auth',
+    '@exocortex/mcp-tools',
   ],
   // The web frontend must never reach infrastructure packages directly.
   // The web bundle must never reach server-side packages. Authentication is
