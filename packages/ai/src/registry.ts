@@ -62,3 +62,11 @@ export function createVisionPreprocessor(
     logger: options.logger,
   });
 }
+
+// PDF text extraction (D6) is wired directly from `createPdfTextExtractor` in
+// `pdf-text.ts` -- it already has the exact "null when apiKey/model are
+// unconfigured" seam this file gives `createVisionPreprocessor`, so wrapping it
+// again here would only duplicate the function. `createVisionPreprocessor`
+// above already takes `model` per call (not closed over the env value), which
+// is what lets the worker pass a per-run companion model; the same is true of
+// `createPdfTextExtractor`.
