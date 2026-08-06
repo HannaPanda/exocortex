@@ -7,10 +7,12 @@ import {
   canEditDocument,
   canMoveDocument,
   canReadDocument,
+  canReadWorkspace,
   canRestoreDocument,
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import {
+  type AiRuleListResponse,
   type CreateDocumentRequest,
   type DocumentDetail,
   type DocumentSummary,
@@ -67,6 +69,18 @@ const DOCUMENT_SELECT = {
   createdAt: true,
   updatedAt: true,
   archivedAt: true,
+} as const;
+
+const AI_RULE_MODE_TO_CONTRACT = {
+  OFF: 'off',
+  ALWAYS: 'always',
+  ON_DEMAND: 'on_demand',
+} as const;
+
+const AI_RULE_MODE_TO_DB = {
+  off: 'OFF',
+  always: 'ALWAYS',
+  on_demand: 'ON_DEMAND',
 } as const;
 
 export function toSummary(row: DocumentRow): DocumentSummary {
@@ -145,7 +159,7 @@ export class DocumentsService {
     const [row, content, siblings] = await Promise.all([
       this.prisma.document.findUniqueOrThrow({
         where: { id: documentId },
-        select: DOCUMENT_SELECT,
+        select: { ...DOCUMENT_SELECT, aiRuleMode: true, aiRuleTrigger: true, aiRulePriority: true },
       }),
       this.prisma.documentContent.findUnique({
         where: { documentId },
@@ -169,6 +183,9 @@ export class DocumentsService {
       })),
       materializedAt: content?.materializedAt?.toISOString() ?? null,
       schemaVersion: content?.schemaVersion ?? EXOCORTEX_SCHEMA_VERSION,
+      aiRuleMode: AI_RULE_MODE_TO_CONTRACT[row.aiRuleMode],
+      aiRuleTrigger: row.aiRuleTrigger,
+      aiRulePriority: row.aiRulePriority,
     };
   }
 
@@ -260,11 +277,37 @@ export class DocumentsService {
     const context = await this.access.requireDocumentContext(input.documentId, input.userId);
     assertPolicy(canEditDocument(context.role, context.document));
 
+    if (input.request.aiRuleMode === 'on_demand') {
+      const effectiveTrigger =
+        input.request.aiRuleTrigger !== undefined
+          ? input.request.aiRuleTrigger
+          : (
+              await this.prisma.document.findUnique({
+                where: { id: input.documentId },
+                select: { aiRuleTrigger: true },
+              })
+            )?.aiRuleTrigger ?? null;
+      if (effectiveTrigger === null || effectiveTrigger.trim().length === 0) {
+        throw AppError.validation(
+          'An ON_DEMAND rule page requires a non-empty aiRuleTrigger',
+        );
+      }
+    }
+
     const updated = await this.prisma.document.update({
       where: { id: input.documentId },
       data: {
         ...(input.request.title === undefined ? {} : { title: input.request.title }),
         ...(input.request.icon === undefined ? {} : { icon: input.request.icon }),
+        ...(input.request.aiRuleMode === undefined
+          ? {}
+          : { aiRuleMode: AI_RULE_MODE_TO_DB[input.request.aiRuleMode] }),
+        ...(input.request.aiRuleTrigger === undefined
+          ? {}
+          : { aiRuleTrigger: input.request.aiRuleTrigger }),
+        ...(input.request.aiRulePriority === undefined
+          ? {}
+          : { aiRulePriority: input.request.aiRulePriority }),
         updatedById: input.userId,
       },
       select: DOCUMENT_SELECT,
@@ -545,6 +588,31 @@ export class DocumentsService {
       workspaceId,
       reason,
     });
+  }
+
+  /**
+   * Active AI rule pages of a workspace (D5), ordered so the system prompt
+   * concatenation is deterministic across runs.
+   */
+  async listAiRules(workspaceId: string, userId: string): Promise<AiRuleListResponse> {
+    const role = await this.access.findRole(workspaceId, userId);
+    assertPolicy(canReadWorkspace(role));
+
+    const rows = await this.prisma.document.findMany({
+      where: { workspaceId, archivedAt: null, aiRuleMode: { not: 'OFF' } },
+      select: { id: true, title: true, aiRuleMode: true, aiRuleTrigger: true, aiRulePriority: true },
+      orderBy: [{ aiRulePriority: 'asc' }, { title: 'asc' }],
+    });
+
+    return {
+      rules: rows.map((row) => ({
+        documentId: row.id,
+        title: row.title,
+        mode: AI_RULE_MODE_TO_CONTRACT[row.aiRuleMode],
+        trigger: row.aiRuleTrigger,
+        priority: row.aiRulePriority,
+      })),
+    };
   }
 }
 

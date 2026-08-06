@@ -10,6 +10,7 @@ import { AppError } from '../common/app-error';
 import { OutboxService } from '../common/outbox.service';
 import { type RealtimeService } from '../realtime/realtime.service';
 
+import { DocumentContentService } from './document-content.service';
 import { DocumentsService } from './documents.service';
 
 /**
@@ -27,6 +28,7 @@ const logger: Logger = createLogger({ name: 'api-test', level: 'silent' });
 let prisma: PrismaClient;
 let queues: QueueRegistry;
 let service: DocumentsService;
+let contentService: DocumentContentService;
 let workspaceId: string;
 let otherWorkspaceId: string;
 let ownerId: string;
@@ -52,6 +54,7 @@ beforeAll(async () => {
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
   service = new DocumentsService(prisma, queues, logger, access, outbox, realtime);
+  contentService = new DocumentContentService(prisma, queues, logger, access, outbox, realtime);
 
   const suffix = Date.now().toString(36);
   const [owner, guest, outsider] = await Promise.all([
@@ -359,5 +362,61 @@ describe('error contract', () => {
       .catch((caught: unknown) => caught);
     expect(error instanceof AppError || error instanceof AuthorizationError).toBe(true);
     expect(error).toMatchObject({ code: 'conflict' });
+  });
+});
+
+describe('writing document content', () => {
+  it('replaces the content, changes the yjsState and creates a snapshot', async () => {
+    const documentId = await createPage('Inhalt ersetzen');
+    const before = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+
+    const result = await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: '# Neuer Inhalt\n\nEin Absatz.', mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+
+    const after = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+    expect(Buffer.from(after.yjsState).equals(Buffer.from(before.yjsState))).toBe(false);
+    expect(after.plainText).toContain('Neuer Inhalt');
+
+    const snapshot = await prisma.documentSnapshot.findUnique({
+      where: { id: result.snapshotId },
+    });
+    expect(snapshot).not.toBeNull();
+    expect(snapshot?.reason).toBe('API_WRITE');
+    // The snapshot is the state *before* the write, i.e. the original content.
+    expect(Buffer.from(snapshot?.yjsState ?? []).equals(Buffer.from(before.yjsState))).toBe(true);
+  });
+
+  it('rejects a stale expectedYjsUpdatedAt with a conflict', async () => {
+    const documentId = await createPage('Konflikt beim Schreiben');
+    const stale = new Date(0).toISOString();
+
+    await expect(
+      contentService.write({
+        documentId,
+        userId: ownerId,
+        request: { markdown: 'Text', mode: 'replace', expectedYjsUpdatedAt: stale },
+        correlationId,
+        source: 'api',
+      }),
+    ).rejects.toMatchObject({ code: 'document_content_conflict' });
+  });
+
+  it('rejects a write from a GUEST', async () => {
+    const documentId = await createPage('Gast darf nicht schreiben');
+
+    await expect(
+      contentService.write({
+        documentId,
+        userId: guestId,
+        request: { markdown: 'Text', mode: 'replace' },
+        correlationId,
+        source: 'api',
+      }),
+    ).rejects.toBeInstanceOf(AuthorizationError);
   });
 });

@@ -4,6 +4,7 @@ import { OutboxService } from '../common/outbox.service';
 import { RealtimeModule } from '../realtime/realtime.module';
 
 import { CollaborationTicketService } from './collaboration-ticket.service';
+import { DocumentContentService } from './document-content.service';
 import { DocumentMarkdownService } from './document-markdown.service';
 import { DocumentSnapshotService } from './document-snapshot.service';
 import { DocumentsController, WorkspaceDocumentsController } from './documents.controller';
@@ -16,9 +17,15 @@ import { DocumentsService } from './documents.service';
     DocumentsService,
     DocumentMarkdownService,
     DocumentSnapshotService,
+    DocumentContentService,
     CollaborationTicketService,
     OutboxService,
   ],
-  exports: [DocumentsService, DocumentMarkdownService, DocumentSnapshotService],
+  exports: [
+    DocumentsService,
+    DocumentMarkdownService,
+    DocumentSnapshotService,
+    DocumentContentService,
+  ],
 })
 export class DocumentsModule {}

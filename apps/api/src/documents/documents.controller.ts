@@ -3,12 +3,18 @@ import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swa
 
 import { type VerifiedSession } from '@exocortex/auth';
 import {
+  type AiRuleListResponse,
+  aiRuleListResponseSchema,
   type CollaborationTicketResponse,
   collaborationTicketResponseSchema,
   type CreateDocumentRequest,
   createDocumentRequestSchema,
   type CreateSnapshotRequest,
   createSnapshotRequestSchema,
+  type DocumentContentWriteRequest,
+  documentContentWriteRequestSchema,
+  type DocumentContentWriteResponse,
+  documentContentWriteResponseSchema,
   type DocumentDetail,
   documentDetailSchema,
   type DocumentSnapshot,
@@ -36,6 +42,7 @@ import { currentCorrelationId } from '../common/correlation';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
 import { CollaborationTicketService } from './collaboration-ticket.service';
+import { DocumentContentService } from './document-content.service';
 import { DocumentMarkdownService } from './document-markdown.service';
 import { DocumentSnapshotService } from './document-snapshot.service';
 import { DocumentsService } from './documents.service';
@@ -56,6 +63,15 @@ export class WorkspaceDocumentsController {
     @Param('workspaceId') workspaceId: string,
   ): Promise<DocumentTreeResponse> {
     return this.documents.getTree(workspaceId, session.userId);
+  }
+
+  @Get('ai-rules')
+  @ApiOkResponse({ schema: openApiResponseSchema(aiRuleListResponseSchema) })
+  async aiRules(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+  ): Promise<AiRuleListResponse> {
+    return this.documents.listAiRules(workspaceId, session.userId);
   }
 
   @Post('documents')
@@ -101,7 +117,25 @@ export class DocumentsController {
     private readonly markdown: DocumentMarkdownService,
     private readonly snapshots: DocumentSnapshotService,
     private readonly tickets: CollaborationTicketService,
+    private readonly content: DocumentContentService,
   ) {}
+
+  @Post(':documentId/content')
+  @ApiBody({ schema: openApiSchema(documentContentWriteRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(documentContentWriteResponseSchema) })
+  async writeContent(
+    @CurrentSession() session: VerifiedSession,
+    @Param('documentId') documentId: string,
+    @Body(zodPipe(documentContentWriteRequestSchema)) body: DocumentContentWriteRequest,
+  ): Promise<DocumentContentWriteResponse> {
+    return this.content.write({
+      documentId,
+      userId: session.userId,
+      request: body,
+      correlationId: currentCorrelationId(),
+      source: 'api',
+    });
+  }
 
   @Get(':documentId')
   @ApiOkResponse({ schema: openApiResponseSchema(documentDetailSchema) })

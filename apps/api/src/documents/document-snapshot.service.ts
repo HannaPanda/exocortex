@@ -26,6 +26,7 @@ const REASON_MAP = {
   PRE_RESTORE: 'pre_restore',
   IMPORT: 'import',
   RESTORE: 'restore',
+  API_WRITE: 'api_write',
 } as const;
 
 /**
