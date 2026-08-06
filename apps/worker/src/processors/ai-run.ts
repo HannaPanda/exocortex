@@ -335,6 +335,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         basePrompt: settings['ai.systemPrompt'],
         maxRuleChars: MAX_RULE_CHARS,
         documentId: run.documentId,
+        databaseViewId: run.databaseViewId,
         toolsAvailable: toolsEnabled,
         logger,
       });

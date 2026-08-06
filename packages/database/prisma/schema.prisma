@@ -446,6 +446,8 @@ model DatabaseView {
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 
+  aiRuns AiRun[]
+
   @@unique([documentId, name])
   @@index([documentId, orderKey])
   @@map("database_view")
@@ -721,6 +723,12 @@ model AiRun {
   workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   documentId  String?
   document    Document?   @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  /// The view that was open when `documentId` points at a COLLECTION. A
+  /// database's rows only mean something through a view's filters and sorts, so
+  /// describing the page without it would describe a different table than the
+  /// one on screen. Null for ordinary pages.
+  databaseViewId String?
+  databaseView   DatabaseView? @relation(fields: [databaseViewId], references: [id], onDelete: SetNull)
   createdById String
   createdBy   User        @relation(fields: [createdById], references: [id], onDelete: Cascade)
   status      AiRunStatus @default(PENDING)
@@ -750,5 +758,8 @@ model AiRun {
 
   @@index([workspaceId, createdAt])
   @@index([conversationId, createdAt])
+  /// Not for querying runs by view -- so deleting a view does not have to scan
+  /// every run to apply the SET NULL.
+  @@index([databaseViewId])
   @@map("ai_run")
 }

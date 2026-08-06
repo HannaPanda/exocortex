@@ -92,6 +92,8 @@ export type MessageSelection = z.infer<typeof messageSelectionSchema>;
 export const postConversationMessageRequestSchema = z.object({
   content: z.string().trim().min(1).max(20_000),
   documentId: idSchema.nullable().optional(),
+  /** The open view, when `documentId` is a collection. Ignored for ordinary pages. */
+  databaseViewId: idSchema.nullable().optional(),
   selection: messageSelectionSchema.nullable().optional(),
   /** Overrides the conversation setting for this turn only. */
   reasoningLevel: aiReasoningLevelSchema.optional(),

@@ -142,6 +142,22 @@ system prompt.
   recording where the user is even while the context is off, so `/context on`
   has something to turn back on and the panel does not forget its place. Only
   `AiRun.documentId` is emptied.
+* **A database page is described, not pointed at.** A collection is a shape, not
+  a text: `exo_page_read` on one returns nothing useful. So `describeCollection`
+  (`apps/worker/src/collection-context.ts`) renders its columns with their types
+  and selectable options, the open view's filters and sorts in German with ids
+  resolved to names, and the first 10 rows that view actually produces —
+  through `queryDatabaseRows`, the same engine the table on screen uses, so the
+  description and the screen cannot drift apart. Everything past those rows is
+  `exo_database_query`'s job, and the block says so.
+* **The open view travels with the run.** `AiRun.databaseViewId` exists because
+  rows only mean something through a view's filters: describing the page without
+  the view would describe a different table than the one on screen, and "how
+  many are still open" would answer about the wrong set. The full-page database
+  publishes its resolved view into `DocumentSessionProvider`
+  (`onActiveViewResolved`), the panel sends it, and the API verifies it belongs
+  to the disclosed page before storing it. An embedded database does not
+  publish: it is a block inside a page, not the page.
 * **A selection is handed over, not sent.** The editor's bubble menu has "An KI
   schicken": it puts the selected text and the block ids the range touches
   (`collectBlockIdsInRange`, `packages/editor/src/block-id.ts`) into a small
@@ -388,8 +404,6 @@ limitations").
   in memory in `apps/collaboration`; a programmatic content write snapshots
   first (revertable) but can still be overwritten by the next debounced
   store. Documented, not fixed, tonight.
-* **A collection is announced but not described.** A database page is named as
-  a collection, but its schema, active view and rows are not. Issue #1, point 4.
 * **`ai.pdfExtractionModelSlug` is not wired into the worker's PDF extractor
   yet.** The extractor is a single boot-time instance built from
   `OPENROUTER_DEFAULT_MODEL`; making the DB setting effective would mean

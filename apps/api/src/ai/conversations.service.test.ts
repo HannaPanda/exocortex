@@ -502,6 +502,84 @@ describe('ConversationsService.postMessage', () => {
     });
   });
 
+  describe('open database view', () => {
+    async function createCollectionWithView(
+      title: string,
+    ): Promise<{ documentId: string; viewId: string }> {
+      documentCounter += 1;
+      const collection = await prisma.document.create({
+        data: {
+          workspaceId,
+          title,
+          type: 'COLLECTION',
+          orderKey: `c${documentCounter.toString().padStart(4, '0')}`,
+          createdById: ownerId,
+          updatedById: ownerId,
+        },
+      });
+      const view = await prisma.databaseView.create({
+        data: { documentId: collection.id, type: 'TABLE', name: 'Tabelle', orderKey: 'a0' },
+      });
+      return { documentId: collection.id, viewId: view.id };
+    }
+
+    it('records the view that was open', async () => {
+      const conversationId = await createConversation();
+      const { documentId, viewId } = await createCollectionWithView('Datenbank mit Ansicht');
+
+      const response = await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Wie viele sind offen?', documentId, databaseViewId: viewId },
+        correlationId: 'test-view-1',
+      });
+
+      const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: response.run?.id } });
+      expect(run.databaseViewId).toBe(viewId);
+    });
+
+    it('drops a view that belongs to a different database', async () => {
+      const conversationId = await createConversation();
+      const own = await createCollectionWithView('Eigene Datenbank');
+      const other = await createCollectionWithView('Andere Datenbank');
+
+      const response = await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Und hier?', documentId: own.documentId, databaseViewId: other.viewId },
+        correlationId: 'test-view-2',
+      });
+
+      // Silently dropped rather than rejected: the worker falls back to the
+      // first view, which is what the UI shows anyway. Keeping it would have put
+      // another database's columns and rows into the prompt.
+      const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: response.run?.id } });
+      expect(run.databaseViewId).toBeNull();
+    });
+
+    it('drops the view when the page context is off', async () => {
+      const conversationId = await createConversation();
+      const { documentId, viewId } = await createCollectionWithView('Datenbank ohne Kontext');
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: '/context off', documentId },
+        correlationId: 'test-view-3a',
+      });
+
+      const response = await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Und?', documentId, databaseViewId: viewId },
+        correlationId: 'test-view-3b',
+      });
+
+      const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: response.run?.id } });
+      expect(run.documentId).toBeNull();
+      expect(run.databaseViewId).toBeNull();
+    });
+  });
+
   describe('handed-over selection', () => {
     it('lands in the transcript before the question, with its source and block ids', async () => {
       const conversationId = await createConversation();

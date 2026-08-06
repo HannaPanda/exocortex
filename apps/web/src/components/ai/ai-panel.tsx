@@ -15,6 +15,7 @@ import {
   TooltipTrigger,
 } from '@exocortex/ui';
 
+import { useDocumentSession } from '@/components/shell/document-session';
 import {
   aiQueryKeys,
   useAiConversation,
@@ -230,6 +231,14 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   // A passage handed over from the editor belongs to the page it was taken
   // from. After navigating away it would be an unlabelled quote from somewhere
   // else, so it is treated as gone rather than silently carried along.
+  // Only trusted while it names the page the route is on: a database view id
+  // left over from the previous page would describe the wrong table.
+  const { state: documentSession } = useDocumentSession();
+  const databaseViewId =
+    documentSession.activeDatabaseView?.documentId === documentId
+      ? documentSession.activeDatabaseView.viewId
+      : null;
+
   const { selection: handedOverSelection, clear: clearSelection } = useAiSelection();
   const selection =
     handedOverSelection !== null && handedOverSelection.documentId === documentId
@@ -314,6 +323,7 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
         request: {
           content,
           documentId,
+          databaseViewId,
           selection:
             selection === null ? null : { blockIds: selection.blockIds, text: selection.text },
         },

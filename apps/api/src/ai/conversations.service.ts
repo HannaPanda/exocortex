@@ -374,6 +374,19 @@ export class ConversationsService {
     // page it is on -- it must only stop telling the model.
     const disclosedDocumentId = conversation.pageContextEnabled ? boundDocumentId : null;
 
+    // Which view was open. Verified against the disclosed page rather than
+    // trusted: a view id belonging to some other database would otherwise put
+    // that database's column names and rows into the prompt.
+    const databaseViewId =
+      disclosedDocumentId === null || (input.request.databaseViewId ?? null) === null
+        ? null
+        : ((
+            await this.prisma.databaseView.findFirst({
+              where: { id: input.request.databaseViewId ?? '', documentId: disclosedDocumentId },
+              select: { id: true },
+            })
+          )?.id ?? null);
+
     // A conversation outlives the page it started on: the panel keeps the active
     // conversation per workspace, so walking to another page keeps typing into
     // the same transcript. Without a marker in that transcript, everything above
@@ -453,6 +466,7 @@ export class ConversationsService {
       data: {
         workspaceId: conversation.workspaceId,
         documentId: disclosedDocumentId,
+        databaseViewId,
         createdById: input.userId,
         status: 'PENDING',
         provider: resolvedModel.provider,

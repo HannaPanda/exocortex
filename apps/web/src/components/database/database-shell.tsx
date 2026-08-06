@@ -25,6 +25,13 @@ interface DatabaseShellProps {
    */
   activeViewId?: string;
   onActiveViewChange?: (viewId: string) => void;
+  /**
+   * Called with the view that is actually being shown, including the fallback
+   * this component applies when the selected one is missing. Only the full-page
+   * database view passes this: an embedded database is a block inside a page,
+   * not the page itself, and must not claim to be the page's context.
+   */
+  onActiveViewResolved?: (viewId: string) => void;
 }
 
 /**
@@ -39,6 +46,7 @@ export function DatabaseShell({
   readOnly,
   activeViewId: controlledActiveViewId,
   onActiveViewChange,
+  onActiveViewResolved,
 }: DatabaseShellProps) {
   const properties = useDatabaseProperties(documentId);
   const views = useDatabaseViews(documentId);
@@ -58,6 +66,15 @@ export function DatabaseShell({
     ensuredDefaultView.current = true;
     createView.mutate({ type: 'TABLE', name: 'Tabelle' });
   }, [readOnly, views.data, createView]);
+
+  // Derived the same way as `activeView` below, but readable before the early
+  // returns so the effect that publishes it is not conditional.
+  const resolvedViewId =
+    ((views.data ?? []).find((view) => view.id === activeViewId) ?? views.data?.[0])?.id ?? null;
+  React.useEffect(() => {
+    if (resolvedViewId === null) return;
+    onActiveViewResolved?.(resolvedViewId);
+  }, [resolvedViewId, onActiveViewResolved]);
 
   if (properties.isPending || views.isPending) {
     return <LoadingState variant="skeleton" rows={5} label="Datenbank wird geladen" />;

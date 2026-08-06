@@ -1,6 +1,8 @@
 import { type DocumentType, type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 
+import { describeCollection } from './collection-context';
+
 export interface BuildSystemPromptInput {
   prisma: PrismaClient;
   workspaceId: string;
@@ -9,6 +11,8 @@ export interface BuildSystemPromptInput {
   maxRuleChars: number;
   /** The page the user has open, or `null` when the run has no page context. */
   documentId: string | null;
+  /** The open view when `documentId` is a collection. `null` falls back to the first one. */
+  databaseViewId: string | null;
   /** Whether this run may call tools. Decides whether the pointer to the open page is actionable. */
   toolsAvailable: boolean;
   logger: Logger;
@@ -58,7 +62,12 @@ function displayTitle(title: string): string {
  *
  * Exported for tests: everything here is pure formatting.
  */
-export function formatOpenPageSection(page: OpenPage, toolsAvailable: boolean): string {
+export function formatOpenPageSection(
+  page: OpenPage,
+  toolsAvailable: boolean,
+  /** Columns, open view and first rows, for a collection. `null` for an ordinary page. */
+  collectionDescription: string | null = null,
+): string {
   const title = displayTitle(page.title);
   const pathParts = [...page.ancestorTitles.map(displayTitle), title];
   const path = (page.pathElided ? ['…', ...pathParts] : pathParts).join(' / ');
@@ -74,6 +83,19 @@ export function formatOpenPageSection(page: OpenPage, toolsAvailable: boolean): 
     `Typ: ${DOCUMENT_TYPE_LABEL[page.type]}${page.archived ? ' (archiviert)' : ''}`,
     '',
   ];
+
+  // A collection is a shape, not a text: its columns and the open view's
+  // filters say more than any amount of prose, and reading the page's body
+  // would return nothing useful. So it gets described instead of pointed at.
+  if (collectionDescription !== null) {
+    lines.push(collectionDescription, '');
+    lines.push(
+      toolsAvailable
+        ? 'Für alles jenseits der gezeigten Zeilen nutze `exo_database_query` mit dieser documentId. Zähle oder rechne nichts aus dem Kopf.'
+        : 'Weitere Zeilen kannst du in diesem Lauf nicht laden (Werkzeuge sind aus). Sage das, statt zu schätzen.',
+    );
+    return lines.join('\n');
+  }
 
   if (toolsAvailable) {
     lines.push(
@@ -151,7 +173,16 @@ async function loadOpenPage(input: {
  * user is standing.
  */
 export async function buildSystemPrompt(input: BuildSystemPromptInput): Promise<SystemPromptResult> {
-  const { prisma, workspaceId, basePrompt, maxRuleChars, documentId, toolsAvailable, logger } = input;
+  const {
+    prisma,
+    workspaceId,
+    basePrompt,
+    maxRuleChars,
+    documentId,
+    databaseViewId,
+    toolsAvailable,
+    logger,
+  } = input;
 
   const [alwaysRules, onDemandRules] = await Promise.all([
     prisma.document.findMany({
@@ -223,7 +254,24 @@ export async function buildSystemPrompt(input: BuildSystemPromptInput): Promise<
         workspaceId,
       });
     } else {
-      sections.push(formatOpenPageSection(openPage, toolsAvailable));
+      const collectionDescription =
+        openPage.type === 'COLLECTION'
+          ? await describeCollection({
+              prisma,
+              workspaceId,
+              documentId: openPage.id,
+              viewId: databaseViewId,
+              logger,
+            }).catch((error: unknown) => {
+              logger.info('Skipping the collection description for this run', {
+                documentId: openPage.id,
+                workspaceId,
+                reason: error instanceof Error ? error.message : String(error),
+              });
+              return null;
+            })
+          : null;
+      sections.push(formatOpenPageSection(openPage, toolsAvailable, collectionDescription));
       openPageIncluded = true;
     }
   }

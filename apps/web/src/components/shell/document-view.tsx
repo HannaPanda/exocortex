@@ -45,6 +45,7 @@ import {
   useUpdateDocument,
 } from '@/lib/api/queries';
 
+import { useDocumentSession } from './document-session';
 import { SaveIndicator } from './save-indicator';
 
 const AI_RULE_BADGE_LABEL: Record<'always' | 'on_demand', string> = {
@@ -74,6 +75,19 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
   const [importOpen, setImportOpen] = React.useState(false);
   const [importText, setImportText] = React.useState('');
   const [aiRuleDialogOpen, setAiRuleDialogOpen] = React.useState(false);
+
+  // Published for the AI panel: a database page means nothing without the view
+  // its rows are being read through. Only the full-page database does this; an
+  // embedded one is a block, not the page.
+  const { update: updateSession } = useDocumentSession();
+  const publishActiveDatabaseView = React.useCallback(
+    (viewId: string) => updateSession({ activeDatabaseView: { documentId, viewId } }),
+    [documentId, updateSession],
+  );
+  React.useEffect(
+    () => () => updateSession({ activeDatabaseView: null }),
+    [documentId, updateSession],
+  );
 
   if (document.isPending || session.isPending) {
     return <LoadingState label="Seite wird geladen …" />;
@@ -222,6 +236,7 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
             workspaceId={workspaceId}
             documentId={documentId}
             readOnly={archived || detail.access === 'read'}
+            onActiveViewResolved={publishActiveDatabaseView}
           />
         </div>
       ) : (

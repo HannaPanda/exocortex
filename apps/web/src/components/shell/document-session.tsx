@@ -40,6 +40,17 @@ export interface DocumentSessionState {
   saveState: SaveState;
   /** Epoch milliseconds of the last settled edit; `null` before the first one. */
   savedAt: number | null;
+  /**
+   * The view a database page currently shows, together with the page it belongs
+   * to. `null` for an ordinary page.
+   *
+   * The AI panel needs it: a collection's rows only mean something through a
+   * view's filters and sorts, so telling the model about the page without the
+   * view would describe a different table than the one on screen. The
+   * `documentId` travels along so a stale value from a previous page is
+   * recognisable as stale rather than silently applied to the current one.
+   */
+  activeDatabaseView: { documentId: string; viewId: string } | null;
 }
 
 const INITIAL_STATE: DocumentSessionState = {
@@ -51,6 +62,7 @@ const INITIAL_STATE: DocumentSessionState = {
   pendingSync: false,
   saveState: 'idle',
   savedAt: null,
+  activeDatabaseView: null,
 };
 
 interface DocumentSessionContextValue {
