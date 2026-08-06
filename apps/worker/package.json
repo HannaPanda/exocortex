@@ -14,11 +14,13 @@
   },
   "dependencies": {
     "@exocortex/ai": "workspace:*",
+    "@exocortex/auth": "workspace:*",
     "@exocortex/config": "workspace:*",
     "@exocortex/contracts": "workspace:*",
     "@exocortex/database": "workspace:*",
     "@exocortex/editor": "workspace:*",
     "@exocortex/logger": "workspace:*",
+    "@exocortex/mcp-tools": "workspace:*",
     "@exocortex/queue": "workspace:*",
     "@exocortex/storage": "workspace:*"
   },

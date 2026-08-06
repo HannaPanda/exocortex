@@ -7,10 +7,11 @@ import {
   type AiProvider,
   type AiProviderCapabilities,
   type AiStreamEvent,
+  MockAiProvider,
   type VisionPreprocessor,
 } from '@exocortex/ai';
 import { loadWorkerEnv } from '@exocortex/config';
-import { type QUEUE_NAMES } from '@exocortex/contracts';
+import { type QUEUE_NAMES, type Settings, settingsSchema } from '@exocortex/contracts';
 import {
   createPrismaClient,
   generateOrderKey,
@@ -22,10 +23,48 @@ import { createLogger, type Logger } from '@exocortex/logger';
 import { type JobContext, QueueRegistry, RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
-import { createAiRunProcessor } from './ai-run';
+import { compactIfNeeded } from '../compaction';
+import { type ToolRunner } from '../tool-runner';
+
+import { createAiRunProcessor, type ResolvedModelRow } from './ai-run';
+import { createAttachmentTextProcessor } from './attachment-text';
 import { createIndexDocumentProcessor } from './index-document';
 import { createMaintenanceProcessor } from './maintenance';
 import { createMaterializeDocumentProcessor } from './materialize-document';
+
+/** A fully-defaulted `Settings` object with just the given keys overridden. */
+function stubSettings(overrides: Partial<Settings> = {}): () => Promise<Settings> {
+  const settings = settingsSchema.parse(overrides);
+  return async () => settings;
+}
+
+/** A model row that supports tools, for the tool-loop tests below. */
+function toolCapableModelRow(slug: string): ResolvedModelRow {
+  return {
+    id: 'test-model-row',
+    slug,
+    provider: 'mock',
+    contextWindowTokens: 32_000,
+    maxOutputTokens: null,
+    supportsVision: false,
+    supportsTools: true,
+    reasoningLevels: ['NONE'],
+    visionCompanionSlug: null,
+  };
+}
+
+/** Returns one canned response per call, in order; extra calls get an error result. */
+function stubToolRunner(responses: readonly { text: string; isError: boolean }[]): ToolRunner {
+  let callIndex = 0;
+  return {
+    definitions: [{ name: 'exo_test_tool', description: 'Ein Testwerkzeug', parameters: {} }],
+    async run() {
+      const response = responses[callIndex] ?? { text: 'Keine weitere Antwort konfiguriert', isError: true };
+      callIndex += 1;
+      return response;
+    },
+  };
+}
 
 /**
  * Worker integration tests against real PostgreSQL and Redis.
@@ -389,6 +428,7 @@ class CapturingAiProvider implements AiProvider {
     return {
       text: 'ok',
       finishReason: 'stop' as const,
+      toolCalls: [],
       usage: {
         inputTokens: 1,
         outputTokens: 1,
@@ -474,8 +514,11 @@ describe('ai runs', () => {
       prisma,
       provider,
       bus,
-      visionPreprocessor: fakeVisionPreprocessor('Eine Katze mit Hut.'),
       storage: fakeStorage(Buffer.from('fake-image-bytes')),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => fakeVisionPreprocessor('Eine Katze mit Hut.'),
+      modelRegistry: async () => null,
     });
     await processor(
       contextFor({ correlationId: 'test-ai-1', runId, workspaceId, userId }).context,
@@ -501,8 +544,11 @@ describe('ai runs', () => {
       prisma,
       provider,
       bus,
-      visionPreprocessor: fakeVisionPreprocessor('unused'),
       storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => fakeVisionPreprocessor('unused'),
+      modelRegistry: async () => null,
     });
     await processor(
       contextFor({ correlationId: 'test-ai-2', runId, workspaceId, userId }).context,
@@ -531,8 +577,11 @@ describe('ai runs', () => {
       prisma,
       provider,
       bus,
-      visionPreprocessor: fakeVisionPreprocessor('unused'),
       storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => fakeVisionPreprocessor('unused'),
+      modelRegistry: async () => null,
     });
     await processor(
       contextFor({ correlationId: 'test-ai-3', runId, workspaceId, userId }).context,
@@ -544,4 +593,232 @@ describe('ai runs', () => {
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('COMPLETED');
   }, 60_000);
+});
+
+async function createConversation(): Promise<string> {
+  const conversation = await prisma.aiConversation.create({
+    data: { workspaceId, createdById: userId, title: 'Testkonversation' },
+  });
+  return conversation.id;
+}
+
+async function createConversationRun(input: { conversationId: string; content: string; model?: string }): Promise<string> {
+  await prisma.aiConversationMessage.create({
+    data: {
+      conversationId: input.conversationId,
+      role: 'USER',
+      content: input.content,
+      estimatedTokens: 10,
+    },
+  });
+  const run = await prisma.aiRun.create({
+    data: {
+      workspaceId,
+      createdById: userId,
+      status: 'PENDING',
+      provider: 'mock',
+      model: input.model ?? 'test-tool-model',
+      messages: [{ role: 'user', content: input.content }],
+      conversationId: input.conversationId,
+    },
+  });
+  return run.id;
+}
+
+describe('conversation-backed tool loop', () => {
+  it('executes a tool call through a stub ToolRunner and completes with the follow-up text', async () => {
+    const conversationId = await createConversation();
+    const runId = await createConversationRun({
+      conversationId,
+      content: 'Bitte [[call:exo_test_tool]] ausführen',
+    });
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider: new MockAiProvider({ chunkDelayMs: 0 }),
+      bus,
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings({ 'ai.maxToolIterations': 4 }),
+      toolRunnerFactory: () => stubToolRunner([{ text: 'Werkzeugergebnis', isError: false }]),
+      visionPreprocessorFor: () => null,
+      modelRegistry: async () => toolCapableModelRow('test-tool-model'),
+    });
+
+    await processor(contextFor({ correlationId: 'test-tool-loop-1', runId, workspaceId, userId }).context);
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('COMPLETED');
+    expect(run.toolIterations).toBe(1);
+    expect(run.resultText).not.toBeNull();
+
+    const messages = await prisma.aiConversationMessage.findMany({
+      where: { conversationId },
+      orderBy: { createdAt: 'asc' },
+    });
+    const assistantWithToolCalls = messages.find((message) => message.role === 'ASSISTANT' && message.toolCalls !== null);
+    expect(assistantWithToolCalls).toBeDefined();
+
+    const toolMessage = messages.find((message) => message.role === 'TOOL');
+    expect(toolMessage?.content).toBe('Werkzeugergebnis');
+    expect(toolMessage?.toolCallId).toBe('mock-tool-call-1');
+    expect(toolMessage?.toolName).toBe('exo_test_tool');
+
+    const finalAssistantMessage = messages.find(
+      (message) => message.role === 'ASSISTANT' && message.toolCalls === null,
+    );
+    expect(finalAssistantMessage).toBeDefined();
+    expect(finalAssistantMessage?.content).toBe(run.resultText);
+  }, 60_000);
+
+  it('fails with ai_tool_limit_exceeded once the iteration cap is reached', async () => {
+    const conversationId = await createConversation();
+    const runId = await createConversationRun({
+      conversationId,
+      content: 'Bitte [[call:exo_test_tool]] ausführen',
+    });
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider: new MockAiProvider({ chunkDelayMs: 0 }),
+      bus,
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings({ 'ai.maxToolIterations': 0 }),
+      toolRunnerFactory: () => stubToolRunner([{ text: 'unused', isError: false }]),
+      visionPreprocessorFor: () => null,
+      modelRegistry: async () => toolCapableModelRow('test-tool-model'),
+    });
+
+    await processor(contextFor({ correlationId: 'test-tool-limit-1', runId, workspaceId, userId }).context);
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('FAILED');
+    expect(run.errorCode).toBe('ai_tool_limit_exceeded');
+  }, 60_000);
+});
+
+describe('compactIfNeeded', () => {
+  it('summarizes older messages, keeps the recent tail active and inserts one summary message', async () => {
+    const conversationId = await createConversation();
+    const now = Date.now();
+    for (let index = 0; index < 6; index += 1) {
+      await prisma.aiConversationMessage.create({
+        data: {
+          conversationId,
+          role: index % 2 === 0 ? 'USER' : 'ASSISTANT',
+          content: `Nachricht Nummer ${index}, `.repeat(50),
+          estimatedTokens: 500,
+          createdAt: new Date(now + index * 1_000),
+        },
+      });
+    }
+
+    const provider = new MockAiProvider({ chunkDelayMs: 0, fixedResponse: 'Kurze Zusammenfassung.' });
+    const result = await compactIfNeeded({
+      prisma,
+      provider,
+      bus,
+      conversationId,
+      workspaceId,
+      contextWindowTokens: 1_000,
+      reservedOutputTokens: 100,
+      systemPromptTokens: 0,
+      thresholdPercent: 50,
+      keepRecentMessages: 2,
+      summaryModel: 'exocortex-mock-1',
+      correlationId: 'test-compact-1',
+      logger,
+    });
+
+    expect(result.compacted).toBe(true);
+    expect(result.summarizedMessages).toBe(4);
+
+    const messages = await prisma.aiConversationMessage.findMany({
+      where: { conversationId },
+      orderBy: { createdAt: 'asc' },
+    });
+    const active = messages.filter((message) => message.supersededAt === null);
+    const superseded = messages.filter((message) => message.supersededAt !== null);
+    expect(superseded.length).toBe(4);
+    // The 2 kept recent messages plus 1 new summary message.
+    expect(active.length).toBe(3);
+    expect(active.some((message) => message.isSummary)).toBe(true);
+    expect(active.find((message) => message.isSummary)?.content).toContain('Kurze Zusammenfassung.');
+  }, 60_000);
+
+  it('does nothing when the active messages are already within budget', async () => {
+    const conversationId = await createConversation();
+    await prisma.aiConversationMessage.create({
+      data: { conversationId, role: 'USER', content: 'Kurze Frage', estimatedTokens: 5 },
+    });
+
+    const provider = new MockAiProvider({ chunkDelayMs: 0 });
+    const result = await compactIfNeeded({
+      prisma,
+      provider,
+      bus,
+      conversationId,
+      workspaceId,
+      contextWindowTokens: 100_000,
+      reservedOutputTokens: 1_000,
+      systemPromptTokens: 0,
+      thresholdPercent: 70,
+      keepRecentMessages: 8,
+      summaryModel: 'exocortex-mock-1',
+      correlationId: 'test-compact-2',
+      logger,
+    });
+
+    expect(result).toEqual({ compacted: false, summarizedMessages: 0 });
+  }, 30_000);
+});
+
+describe('attachment text extraction', () => {
+  async function createAttachment(input: { mimeType: string; byteSize?: number }): Promise<string> {
+    const attachment = await prisma.attachment.create({
+      data: {
+        workspaceId,
+        filename: 'test-file',
+        mimeType: input.mimeType,
+        byteSize: input.byteSize ?? 10,
+        storageKey: `test/attachment-text-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`,
+        createdById: userId,
+      },
+    });
+    return attachment.id;
+  }
+
+  it('marks a non-PDF attachment as NOT_APPLICABLE', async () => {
+    const attachmentId = await createAttachment({ mimeType: 'image/png' });
+    const processor = createAttachmentTextProcessor({
+      prisma,
+      storage: fakeStorage(Buffer.from('unused')),
+      extractor: { extract: async () => 'unused' },
+      settings: stubSettings(),
+    });
+
+    await processor(
+      contextFor({ correlationId: 'test-attach-1', attachmentId, workspaceId, reason: 'upload' }).context,
+    );
+
+    const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+    expect(attachment.textStatus).toBe('NOT_APPLICABLE');
+  }, 30_000);
+
+  it('fails with a clear reason when no extractor is configured', async () => {
+    const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
+    const processor = createAttachmentTextProcessor({
+      prisma,
+      storage: fakeStorage(Buffer.from('unused')),
+      extractor: null,
+      settings: stubSettings(),
+    });
+
+    await processor(
+      contextFor({ correlationId: 'test-attach-2', attachmentId, workspaceId, reason: 'upload' }).context,
+    );
+
+    const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+    expect(attachment.textStatus).toBe('FAILED');
+    expect(attachment.textExtractionError).toBe('PDF extraction is not configured');
+  }, 30_000);
 });

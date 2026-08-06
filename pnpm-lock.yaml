@@ -339,6 +339,9 @@ importers:
       '@exocortex/ai':
         specifier: workspace:*
         version: link:../../packages/ai
+      '@exocortex/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@exocortex/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -354,6 +357,9 @@ importers:
       '@exocortex/logger':
         specifier: workspace:*
         version: link:../../packages/logger
+      '@exocortex/mcp-tools':
+        specifier: workspace:*
+        version: link:../../packages/mcp-tools
       '@exocortex/queue':
         specifier: workspace:*
         version: link:../../packages/queue

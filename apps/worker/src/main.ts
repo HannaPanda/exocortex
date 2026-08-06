@@ -1,15 +1,17 @@
-import { createAiProvider, createVisionPreprocessor } from '@exocortex/ai';
+import { createAiProvider, createPdfTextExtractor, createVisionPreprocessor, type VisionPreprocessor } from '@exocortex/ai';
 import { loadWorkerEnv } from '@exocortex/config';
-import { QUEUE_NAMES } from '@exocortex/contracts';
+import { QUEUE_NAMES, resolveSettings, type Settings } from '@exocortex/contracts';
 import { createPrismaClient, PostgresSearchAdapter } from '@exocortex/database';
 import { createCorrelationId, createLogger } from '@exocortex/logger';
 import { createTypedWorker, QueueRegistry, RedisEventBus } from '@exocortex/queue';
 import { S3ObjectStorage } from '@exocortex/storage';
 
-import { createAiRunProcessor } from './processors/ai-run';
+import { createAiRunProcessor, type ResolvedModelRow } from './processors/ai-run';
+import { createAttachmentTextProcessor } from './processors/attachment-text';
 import { createIndexDocumentProcessor } from './processors/index-document';
 import { createMaintenanceProcessor } from './processors/maintenance';
 import { createMaterializeDocumentProcessor } from './processors/materialize-document';
+import { createToolRunner } from './tool-runner';
 
 /**
  * Worker process.
@@ -40,13 +42,6 @@ async function bootstrap(): Promise<void> {
       defaultModel: env.OPENROUTER_DEFAULT_MODEL,
     },
   });
-  const visionPreprocessor = createVisionPreprocessor({
-    logger,
-    appUrl: env.APP_URL,
-    apiKey: env.OPENROUTER_API_KEY ?? '',
-    baseUrl: env.OPENROUTER_BASE_URL,
-    model: env.OPENROUTER_VISION_MODEL,
-  });
   const storage = new S3ObjectStorage({
     endpoint: env.S3_ENDPOINT,
     region: env.S3_REGION,
@@ -57,9 +52,105 @@ async function bootstrap(): Promise<void> {
     logger,
   });
 
-  /** Publishes a `job.progress` event so the UI can show live progress. */
+  // Settings: DB rows override env, env stays the bootstrap fallback (D4). The
+  // worker reads the `setting` table directly through Prisma with the same
+  // `resolveSettings()` helper the API's `SettingsService` uses, cached for the
+  // same 15s so the tool loop does not re-query per turn.
+  const SETTINGS_CACHE_TTL_MS = 15_000;
+  let settingsCache: { settings: Settings; expiresAt: number } | null = null;
+  const readSettings = async (): Promise<Settings> => {
+    const now = Date.now();
+    if (settingsCache !== null && settingsCache.expiresAt > now) {
+      return settingsCache.settings;
+    }
+    const rows = await prisma.setting.findMany({ select: { key: true, value: true } });
+    const { settings, invalidKeys } = resolveSettings({ rows, env: process.env });
+    if (invalidKeys.length > 0) {
+      logger.warn('Dropped invalid setting rows while resolving settings', { invalidKeys });
+    }
+    settingsCache = { settings, expiresAt: now + SETTINGS_CACHE_TTL_MS };
+    return settings;
+  };
+
+  // Tool loop authentication (D3): `SERVICE_TOKEN_SECRET` is optional, so an
+  // unset secret disables tools without ever crashing boot (R2).
+  const toolRunnerFactory =
+    env.SERVICE_TOKEN_SECRET === undefined
+      ? null
+      : (input: { userId: string; includeMutating: boolean }) =>
+          createToolRunner({
+            apiUrl: env.API_URL,
+            serviceTokenSecret: env.SERVICE_TOKEN_SECRET!,
+            serviceTokenTtlSeconds: env.SERVICE_TOKEN_TTL_SECONDS,
+            userId: input.userId,
+            includeMutating: input.includeMutating,
+            logger,
+          });
+
+  // Vision companions (ADR-012): a per-model factory, cached, so a run can pass
+  // its own companion slug (conversation override, or the model row's admin
+  // default) instead of only ever the one env-configured model.
+  const visionPreprocessorCache = new Map<string, VisionPreprocessor | null>();
+  const visionPreprocessorFor = (modelSlug: string | null): VisionPreprocessor | null => {
+    const effectiveModel = modelSlug ?? env.OPENROUTER_VISION_MODEL;
+    const cacheKey = effectiveModel ?? '';
+    if (!visionPreprocessorCache.has(cacheKey)) {
+      visionPreprocessorCache.set(
+        cacheKey,
+        createVisionPreprocessor({
+          logger,
+          appUrl: env.APP_URL,
+          apiKey: env.OPENROUTER_API_KEY ?? '',
+          baseUrl: env.OPENROUTER_BASE_URL,
+          model: effectiveModel,
+        }),
+      );
+    }
+    return visionPreprocessorCache.get(cacheKey) ?? null;
+  };
+
+  // PDF text extraction (D6): built once at boot from the main driver model --
+  // the OpenRouter file-parser plugin works with any model, so the deployment
+  // does not need a dedicated env var for it. `ai.pdfExtractionModelSlug`
+  // (DB-configurable) is not yet wired here: doing so would mean rebuilding the
+  // extractor per job the way `visionPreprocessorFor` does, which is a
+  // reasonable follow-up but out of scope for tonight (see docs/ai-architecture.md).
+  const pdfTextExtractor = createPdfTextExtractor({
+    apiKey: env.OPENROUTER_API_KEY ?? '',
+    baseUrl: env.OPENROUTER_BASE_URL,
+    model: env.OPENROUTER_DEFAULT_MODEL,
+    appUrl: env.APP_URL,
+    logger,
+  });
+
+  const modelRegistry = async (slug: string): Promise<ResolvedModelRow | null> => {
+    const row = await prisma.aiModel.findUnique({
+      where: { slug },
+      include: { visionCompanion: { select: { slug: true } } },
+    });
+    if (row === null) return null;
+    return {
+      id: row.id,
+      slug: row.slug,
+      provider: row.provider,
+      contextWindowTokens: row.contextWindowTokens,
+      maxOutputTokens: row.maxOutputTokens,
+      supportsVision: row.supportsVision,
+      supportsTools: row.supportsTools,
+      reasoningLevels: row.reasoningLevels,
+      visionCompanionSlug: row.visionCompanion?.slug ?? null,
+    };
+  };
+
+  /**
+   * Publishes a `job.progress` event so the UI can show live progress.
+   *
+   * `attachment-text` is deliberately excluded: `jobProgressPayloadSchema.queue`
+   * (frozen in `packages/contracts`) only ever accepted the four original
+   * queues, and this helper is in fact only ever called for materialization.
+   */
   const publishProgress = async (
-    queue: (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES],
+    queue: Exclude<(typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES], typeof QUEUE_NAMES.attachmentText>,
     workspaceId: string,
     correlationId: string,
     jobId: string,
@@ -143,7 +234,16 @@ async function bootstrap(): Promise<void> {
     redisUrl: env.REDIS_URL,
     logger,
     concurrency: 2,
-    handler: createAiRunProcessor({ prisma, provider, bus, visionPreprocessor, storage }),
+    handler: createAiRunProcessor({
+      prisma,
+      provider,
+      bus,
+      storage,
+      settings: readSettings,
+      toolRunnerFactory,
+      visionPreprocessorFor,
+      modelRegistry,
+    }),
     onFailed: async (payload, job, error) => {
       if (payload === null) return;
       logger.error('AI job failed', error, { runId: payload.runId, jobId: job?.id });
@@ -158,12 +258,35 @@ async function bootstrap(): Promise<void> {
     handler: createMaintenanceProcessor({ prisma, queues }),
   });
 
+  // Concurrency 1: PDF extraction is an external call and must not crowd out
+  // document materialization.
+  const attachmentText = createTypedWorker({
+    name: QUEUE_NAMES.attachmentText,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 1,
+    handler: createAttachmentTextProcessor({
+      prisma,
+      storage,
+      extractor: pdfTextExtractor,
+      settings: readSettings,
+    }),
+    onFailed: async (payload, job, error) => {
+      if (payload === null) return;
+      logger.error('Attachment text extraction job failed', error, {
+        attachmentId: payload.attachmentId,
+        jobId: job?.id,
+      });
+    },
+  });
+
   await queues.scheduleMaintenance(createCorrelationId());
 
   logger.info('Worker started', {
     environment: env.NODE_ENV,
     queues: Object.values(QUEUE_NAMES),
     aiProvider: provider.id,
+    tools: toolRunnerFactory !== null,
   });
 
   let shuttingDown = false;
@@ -178,12 +301,14 @@ async function bootstrap(): Promise<void> {
         indexing.worker.close(),
         ai.worker.close(),
         maintenance.worker.close(),
+        attachmentText.worker.close(),
       ]);
       await Promise.all([
         materialization.connection.quit(),
         indexing.connection.quit(),
         ai.connection.quit(),
         maintenance.connection.quit(),
+        attachmentText.connection.quit(),
       ]);
       await bus.close();
       await queues.close();
