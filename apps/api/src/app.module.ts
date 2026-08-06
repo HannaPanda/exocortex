@@ -15,6 +15,7 @@ import { API_ENV } from './common/logger.provider';
 import { DatabasesModule } from './databases/databases.module';
 import { DocumentsModule } from './documents/documents.module';
 import { HealthModule } from './health/health.module';
+import { MeModule } from './me/me.module';
 import { PlatformModule } from './platform/platform.module';
 import { RealtimeModule } from './realtime/realtime.module';
 import { SearchModule } from './search/search.module';
@@ -45,6 +46,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     AiModule,
     AdminModule,
     HealthModule,
+    MeModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: ApiExceptionFilter },
