@@ -5,6 +5,7 @@ import { assertPolicy, canCreateDocument, WorkspaceAccessService } from '@exocor
 import {
   type AiRun,
   type CreateAiRunRequest,
+  type PostConversationMessageResponse,
   QUEUE_NAMES,
 } from '@exocortex/contracts';
 import { type Prisma, type PrismaClient } from '@exocortex/database';
@@ -15,21 +16,9 @@ import { AppError } from '../common/app-error';
 import { LOGGER } from '../common/logger.provider';
 import { AI_PROVIDER, PRISMA, QUEUES } from '../platform/platform.module';
 
-import {
-  AiModelResolverService,
-  REASONING_LEVEL_TO_CONTRACT,
-  REASONING_LEVEL_TO_PRISMA,
-  type ResolvedAiModel,
-} from './ai-model-resolver.service';
-
-const STATUS_MAP = {
-  PENDING: 'pending',
-  RUNNING: 'running',
-  COMPLETED: 'completed',
-  FAILED: 'failed',
-  CANCELLED: 'cancelled',
-  TIMED_OUT: 'timed_out',
-} as const;
+import { AiModelResolverService, REASONING_LEVEL_TO_PRISMA, type ResolvedAiModel } from './ai-model-resolver.service';
+import { ConversationsService } from './conversations.service';
+import { mapAiRunRow } from './run-mapper';
 
 /**
  * AI run lifecycle.
@@ -47,13 +36,52 @@ export class AiService {
     @Inject(LOGGER) private readonly logger: Logger,
     private readonly access: WorkspaceAccessService,
     private readonly modelResolver: AiModelResolverService,
+    private readonly conversations: ConversationsService,
   ) {}
 
+  /**
+   * Compatibility path for `POST /api/ai/runs`, which the current production
+   * web panel calls directly.
+   *
+   * When `conversationId` is absent this keeps its pre-conversations
+   * behaviour byte-for-byte: the submitted messages are persisted on the run
+   * as-is, no conversation is touched, and tools stay off by default so the
+   * legacy panel can never start mutating pages just because the tool loop
+   * exists now. When `conversationId` **is** present, `messages` is ignored
+   * and the call behaves exactly like `POST .../conversations/:id/messages`
+   * (the last message's content, re-parsed for slash commands), so a client
+   * mid-migration to the conversation API does not need two code paths.
+   */
   async createRun(input: {
     userId: string;
     request: CreateAiRunRequest;
     correlationId: string;
   }): Promise<AiRun> {
+    if (input.request.conversationId != null) {
+      const lastMessage = [...input.request.messages].reverse().find((message) => message.role === 'user');
+      if (lastMessage === undefined || lastMessage.content.trim().length === 0) {
+        throw AppError.validation('At least one non-empty user message is required');
+      }
+      const response: PostConversationMessageResponse = await this.conversations.postMessage({
+        conversationId: input.request.conversationId,
+        userId: input.userId,
+        request: {
+          content: lastMessage.content,
+          documentId: input.request.documentId ?? undefined,
+          reasoningLevel: input.request.reasoningLevel,
+          toolsEnabled: input.request.toolsEnabled,
+        },
+        correlationId: input.correlationId,
+      });
+      if (response.run !== null) return response.run;
+      // A slash command was submitted through the legacy endpoint: there is no
+      // run to report back, so a synthetic completed one carries the command's
+      // German message instead of silently returning nothing.
+      throw AppError.validation(
+        'Slash commands are not supported through the legacy /api/ai/runs endpoint; use the conversation message endpoint instead',
+      );
+    }
+
     const role = await this.access.findRole(input.request.workspaceId, input.userId);
     assertPolicy(canCreateDocument(role));
 
@@ -98,8 +126,9 @@ export class AiService {
         provider: this.provider.id,
         model: modelSlug,
         messages: input.request.messages as unknown as Prisma.InputJsonValue,
-        conversationId: input.request.conversationId ?? null,
         reasoningLevel: REASONING_LEVEL_TO_PRISMA[clampedReasoningLevel],
+        // No tool loop for the legacy path: `toolsEnabled` is honoured only
+        // through the conversation endpoint above, never here.
       },
     });
 
@@ -117,14 +146,14 @@ export class AiService {
       correlationId: input.correlationId,
     });
 
-    return this.toContract(run);
+    return mapAiRunRow(run);
   }
 
   async getRun(runId: string, userId: string): Promise<AiRun> {
     const run = await this.prisma.aiRun.findUnique({ where: { id: runId } });
     if (run === null) throw AppError.notFound('AI run');
     await this.access.requireRole(run.workspaceId, userId);
-    return this.toContract(run);
+    return mapAiRunRow(run);
   }
 
   /** Cancels a pending or running AI run. */
@@ -139,40 +168,6 @@ export class AiService {
       where: { id: runId },
       data: { status: 'CANCELLED', cancelledAt: new Date(), finishedAt: new Date() },
     });
-    return this.toContract(updated);
-  }
-
-  private toContract(run: {
-    id: string;
-    workspaceId: string;
-    documentId: string | null;
-    status: keyof typeof STATUS_MAP;
-    provider: string;
-    model: string;
-    createdById: string;
-    createdAt: Date;
-    finishedAt: Date | null;
-    usage: unknown;
-    errorCode: string | null;
-    conversationId: string | null;
-    reasoningLevel: keyof typeof REASONING_LEVEL_TO_CONTRACT;
-    toolIterations: number;
-  }): AiRun {
-    return {
-      id: run.id,
-      workspaceId: run.workspaceId,
-      documentId: run.documentId,
-      status: STATUS_MAP[run.status],
-      provider: run.provider,
-      model: run.model,
-      createdById: run.createdById,
-      createdAt: run.createdAt.toISOString(),
-      finishedAt: run.finishedAt === null ? null : run.finishedAt.toISOString(),
-      usage: run.usage === null ? null : (run.usage as AiRun['usage']),
-      errorCode: run.errorCode,
-      conversationId: run.conversationId,
-      reasoningLevel: REASONING_LEVEL_TO_CONTRACT[run.reasoningLevel],
-      toolIterations: run.toolIterations,
-    };
+    return mapAiRunRow(updated);
   }
 }

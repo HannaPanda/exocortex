@@ -21,6 +21,7 @@
     "@exocortex/database": "workspace:*",
     "@exocortex/editor": "workspace:*",
     "@exocortex/logger": "workspace:*",
+    "@exocortex/mcp-tools": "workspace:*",
     "@exocortex/queue": "workspace:*",
     "@exocortex/storage": "workspace:*",
     "@fastify/cookie": "11.1.2",
