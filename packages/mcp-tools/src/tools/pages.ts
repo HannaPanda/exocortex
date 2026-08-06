@@ -116,7 +116,10 @@ export const pageWriteTool: AnyToolDefinition = defineTool({
   description:
     'Schreibt Markdown in eine bestehende Seite (ersetzen, anhängen oder voranstellen). ' +
     'Der bisherige Zustand wird vorher als Snapshot gesichert und kann mit exo_page_snapshots ' +
-    'und exo_page_restore_snapshot wiederhergestellt werden.',
+    'und exo_page_restore_snapshot wiederhergestellt werden. ' +
+    'Lange Inhalte in mehreren Aufrufen schreiben: den ersten mit mode "replace", die weiteren ' +
+    'mit mode "append". Ein einzelner Aufruf mit sehr viel Markdown kann am Ausgabelimit ' +
+    'abgeschnitten werden und wird dann gar nicht ausgeführt.',
   inputSchema: z.object({ documentId: idSchema }).extend(documentContentWriteRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
   mutating: true,
