@@ -87,7 +87,7 @@ summaries — is its own `AiConversationMessage` row.
   own creator (see the class comment on `ConversationsService`) — a
   deliberate widening of "ownership required for writes", documented there.
 * **Slash commands** (`/clear`, `/new`, `/model`, `/think`, `/vision`,
-  `/compact`, `/rules`, `/tools`, `/help`) are parsed server-side
+  `/compact`, `/context`, `/rules`, `/tools`, `/help`) are parsed server-side
   (`apps/api/src/ai/chat-commands.ts`) so the side panel, MCP and any future
   client behave identically without reimplementing the command set.
 
@@ -131,6 +131,17 @@ system prompt.
   pages" and inherits the conversation's binding (MCP, scripts); an explicit
   `null` means "the user is somewhere without a page" and clears it. Treating
   both alike would make leaving a page impossible.
+* **Visible and revocable.** A chip above the composer names the open page, and
+  removing it is not cosmetic: it flips `AiConversation.pageContextEnabled`, and
+  the run then carries no `documentId` at all. `/context` reports the same state
+  and `/context on|off` sets it. The rule the panel promises is "what stands in
+  the chip row goes out, what does not stand there does not" — which is why the
+  switch marker below is suppressed along with everything else while the context
+  is off: the marker names the page and is itself a disclosure.
+* **Standing on a page and disclosing it are separate.** `documentId` keeps
+  recording where the user is even while the context is off, so `/context on`
+  has something to turn back on and the panel does not forget its place. Only
+  `AiRun.documentId` is emptied.
 * **The id is checked.** Because the title and path now reach the prompt, a
   `documentId` named by the caller is verified through
   `WorkspaceAccessService.findDocumentContext` and must belong to the
@@ -361,11 +372,10 @@ limitations").
   in memory in `apps/collaboration`; a programmatic content write snapshots
   first (revertable) but can still be overwritten by the next debounced
   store. Documented, not fixed, tonight.
-* **The page context has no UI and no selection.** Nothing in the panel shows
-  which page the assistant is looking at, there is no way to remove or add one
-  by hand, and a block selection in the editor still goes nowhere. A database
-  page is announced as a collection but its schema, active view and rows are
-  not described. Issue #1, points 3, 4 and 6.
+* **No selection context.** A block selection in the editor still goes nowhere;
+  "erklär mir das hier" has no *hier*. Issue #1, point 3.
+* **A collection is announced but not described.** A database page is named as
+  a collection, but its schema, active view and rows are not. Issue #1, point 4.
 * **`ai.pdfExtractionModelSlug` is not wired into the worker's PDF extractor
   yet.** The extractor is a single boot-time instance built from
   `OPENROUTER_DEFAULT_MODEL`; making the DB setting effective would mean

@@ -13,6 +13,8 @@ export const aiConversationSchema = z.object({
   createdById: idSchema,
   title: z.string(),
   documentId: idSchema.nullable(),
+  /** Whether the open page is disclosed to the model. `documentId` tracks it either way. */
+  pageContextEnabled: z.boolean(),
   modelSlug: z.string().nullable(),
   reasoningLevel: aiReasoningLevelSchema,
   visionCompanionSlug: z.string().nullable(),
@@ -57,6 +59,7 @@ export const createAiConversationRequestSchema = z.object({
   title: z.string().trim().min(1).max(160).optional(),
   modelSlug: z.string().trim().min(1).max(120).optional(),
   reasoningLevel: aiReasoningLevelSchema.optional(),
+  pageContextEnabled: z.boolean().optional(),
 });
 export type CreateAiConversationRequest = z.infer<typeof createAiConversationRequestSchema>;
 
@@ -66,6 +69,7 @@ export const updateAiConversationRequestSchema = z.object({
   reasoningLevel: aiReasoningLevelSchema.optional(),
   /** 'off' disables the companion for this conversation; null restores the admin default. */
   visionCompanionSlug: z.string().trim().min(1).max(120).nullable().optional(),
+  pageContextEnabled: z.boolean().optional(),
   archived: z.boolean().optional(),
 });
 export type UpdateAiConversationRequest = z.infer<typeof updateAiConversationRequestSchema>;
@@ -94,6 +98,11 @@ export const CHAT_COMMANDS = [
   },
   { name: 'vision', argument: 'slug|off', description: 'Vision-Begleitmodell überschreiben' },
   { name: 'compact', argument: null, description: 'Kontext jetzt zusammenfassen' },
+  {
+    name: 'context',
+    argument: 'on|off',
+    description: 'Seitenkontext anzeigen oder umschalten',
+  },
   { name: 'rules', argument: null, description: 'Aktive Regelseiten anzeigen' },
   { name: 'tools', argument: null, description: 'Verfügbare Werkzeuge anzeigen' },
   { name: 'help', argument: null, description: 'Diese Liste anzeigen' },

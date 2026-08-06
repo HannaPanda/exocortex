@@ -374,6 +374,119 @@ describe('ConversationsService.postMessage', () => {
       expect(systemMessages).toBe(0);
     });
 
+    it('/context reports the open page and that it is disclosed', async () => {
+      const conversationId = await createConversation();
+      const documentId = await createDocument('Gemeldete Seite');
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Erste Frage', documentId },
+        correlationId: 'test-context-7a',
+      });
+      await prisma.aiRun.updateMany({ where: { conversationId }, data: { status: 'COMPLETED', finishedAt: new Date() } });
+
+      const response = await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: '/context', documentId },
+        correlationId: 'test-context-7b',
+      });
+
+      expect(response.run).toBeNull();
+      expect(response.command?.message).toContain('Gemeldete Seite');
+      expect(response.command?.message).toContain('/context off');
+    });
+
+    it('/context off keeps tracking the page but stops disclosing it', async () => {
+      const conversationId = await createConversation();
+      const documentId = await createDocument('Nicht mehr mitschicken');
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Erste Frage', documentId },
+        correlationId: 'test-context-8a',
+      });
+      await prisma.aiRun.updateMany({ where: { conversationId }, data: { status: 'COMPLETED', finishedAt: new Date() } });
+
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: '/context off', documentId },
+        correlationId: 'test-context-8b',
+      });
+      const response = await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Frage ohne Seitenkontext', documentId },
+        correlationId: 'test-context-8c',
+      });
+
+      const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: response.run?.id } });
+      expect(run.documentId).toBeNull();
+      // The binding survives, otherwise `/context on` would have nothing to
+      // turn back on and the panel would have forgotten where it is.
+      const conversation = await prisma.aiConversation.findUniqueOrThrow({ where: { id: conversationId } });
+      expect(conversation.documentId).toBe(documentId);
+      expect(conversation.pageContextEnabled).toBe(false);
+    });
+
+    it('/context on discloses the page again', async () => {
+      const conversationId = await createConversation();
+      const documentId = await createDocument('Wieder mitschicken');
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: '/context off', documentId },
+        correlationId: 'test-context-9a',
+      });
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: '/context on', documentId },
+        correlationId: 'test-context-9b',
+      });
+
+      const response = await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Und jetzt?', documentId },
+        correlationId: 'test-context-9c',
+      });
+      const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: response.run?.id } });
+      expect(run.documentId).toBe(documentId);
+    });
+
+    it('does not announce a page switch while the context is off', async () => {
+      const conversationId = await createConversation();
+      const first = await createDocument('Stille erste Seite');
+      const second = await createDocument('Stille zweite Seite');
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Erste Frage', documentId: first },
+        correlationId: 'test-context-10a',
+      });
+      await prisma.aiRun.updateMany({ where: { conversationId }, data: { status: 'COMPLETED', finishedAt: new Date() } });
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: '/context off', documentId: first },
+        correlationId: 'test-context-10b',
+      });
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Frage auf der zweiten Seite', documentId: second },
+        correlationId: 'test-context-10c',
+      });
+
+      // The marker names the page, so it is a disclosure like any other.
+      const markers = await prisma.aiConversationMessage.count({
+        where: { conversationId, role: 'SYSTEM' },
+      });
+      expect(markers).toBe(0);
+    });
+
     it('refuses a documentId the caller cannot see, instead of putting its title in the prompt', async () => {
       const conversationId = await createConversation();
       const foreignDocumentId = await createForeignDocument();

@@ -240,6 +240,14 @@ that nginx rule is added.
   web app.
 * **No comments or share-links API yet.** Nothing to wrap in a tool until
   those REST endpoints exist.
+* **AI conversations are not in the catalogue at all**, by design rather than
+  by omission: the catalogue is what an assistant may do *to a workspace*, and
+  a conversation is the assistant's own session. An MCP client has its own
+  transcript and its own context; handing it tools to steer Exocortex's side
+  panel would be steering a second, unrelated chat. This is why the panel's
+  slash commands (`/model`, `/think`, `/context`, …) have no tool counterparts.
+  If a conversation-management API is ever wanted, it needs its own decision,
+  not an incremental tool.
 * **`exo_page_write` and a live Hocuspocus session (D8/R5 in the overnight
   build plan).** If a document has an open collaborative editing session,
   that session's next debounced autosave can overwrite an MCP write shortly

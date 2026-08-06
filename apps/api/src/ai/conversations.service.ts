@@ -41,6 +41,7 @@ const CONVERSATION_SELECT = {
   createdById: true,
   title: true,
   documentId: true,
+  pageContextEnabled: true,
   modelId: true,
   reasoningLevel: true,
   visionCompanionSlug: true,
@@ -58,6 +59,7 @@ interface ConversationRow {
   createdById: string;
   title: string;
   documentId: string | null;
+  pageContextEnabled: boolean;
   modelId: string | null;
   reasoningLevel: AiReasoningLevelPrisma;
   visionCompanionSlug: string | null;
@@ -198,6 +200,9 @@ export class ConversationsService {
         createdById: input.userId,
         title: input.request.title ?? PLACEHOLDER_TITLE,
         documentId: input.request.documentId,
+        ...(input.request.pageContextEnabled === undefined
+          ? {}
+          : { pageContextEnabled: input.request.pageContextEnabled }),
         modelId,
         reasoningLevel,
       },
@@ -229,6 +234,9 @@ export class ConversationsService {
         await this.modelResolver.resolve({ slug: input.request.visionCompanionSlug });
       }
       data.visionCompanionSlug = input.request.visionCompanionSlug;
+    }
+    if (input.request.pageContextEnabled !== undefined) {
+      data.pageContextEnabled = input.request.pageContextEnabled;
     }
     if (input.request.archived !== undefined) {
       data.archivedAt = input.request.archived ? new Date() : null;
@@ -316,19 +324,29 @@ export class ConversationsService {
       return this.executeCommand({ conversation, command: parsedCommand });
     }
 
-    const { documentId, documentTitle } = await this.resolvePageContext({
+    const { documentId: boundDocumentId, documentTitle } = await this.resolvePageContext({
       conversation,
       requested: input.request.documentId,
       userId: input.userId,
     });
+
+    // Two different questions, deliberately kept apart: `documentId` records
+    // where the user is standing, `pageContextEnabled` decides whether that is
+    // disclosed. Removing the context chip must not make the panel forget which
+    // page it is on -- it must only stop telling the model.
+    const disclosedDocumentId = conversation.pageContextEnabled ? boundDocumentId : null;
 
     // A conversation outlives the page it started on: the panel keeps the active
     // conversation per workspace, so walking to another page keeps typing into
     // the same transcript. Without a marker in that transcript, everything above
     // the switch silently refers to a different page than everything below --
     // and "summarize this page" would resolve against the wrong one.
-    const contextSwitched = documentId !== conversation.documentId;
-    const announceSwitch = contextSwitched && conversation._count.messages > 0;
+    //
+    // The marker names the page, so it is itself a disclosure and is suppressed
+    // along with everything else when the context is off.
+    const contextSwitched = boundDocumentId !== conversation.documentId;
+    const announceSwitch =
+      contextSwitched && conversation._count.messages > 0 && conversation.pageContextEnabled;
 
     // Explicit timestamps: the marker must sort before the message it explains,
     // and two consecutive `now()` defaults are not guaranteed to differ.
@@ -375,7 +393,7 @@ export class ConversationsService {
     const run = await this.prisma.aiRun.create({
       data: {
         workspaceId: conversation.workspaceId,
-        documentId,
+        documentId: disclosedDocumentId,
         createdById: input.userId,
         status: 'PENDING',
         provider: resolvedModel.provider,
@@ -400,7 +418,7 @@ export class ConversationsService {
         lastMessageAt: new Date(),
         estimatedTokens: { increment: userMessage.estimatedTokens + (switchMessage?.estimatedTokens ?? 0) },
         ...(isPlaceholderTitle ? { title: deriveTitle(content) } : {}),
-        ...(contextSwitched ? { documentId } : {}),
+        ...(contextSwitched ? { documentId: boundDocumentId } : {}),
       },
     });
 
@@ -563,6 +581,49 @@ export class ConversationsService {
         };
       }
 
+      case 'context': {
+        const argument = command.argument?.toLowerCase() ?? null;
+        if (argument !== null && argument !== 'on' && argument !== 'off') {
+          throw AppError.validation('The /context command accepts "on" or "off"');
+        }
+        if (argument !== null) {
+          await this.prisma.aiConversation.update({
+            where: { id: conversation.id },
+            data: { pageContextEnabled: argument === 'on' },
+          });
+        }
+        const enabled = argument === null ? conversation.pageContextEnabled : argument === 'on';
+
+        // Reported from `documentId`, which keeps tracking the page even while
+        // the context is off -- that is what makes `/context on` meaningful
+        // without having to navigate somewhere first.
+        const page =
+          conversation.documentId === null
+            ? null
+            : await this.prisma.document.findFirst({
+                where: { id: conversation.documentId, workspaceId: conversation.workspaceId },
+                select: { title: true },
+              });
+
+        const where =
+          page === null
+            ? 'Es ist gerade keine Seite geöffnet.'
+            : `Geöffnet ist „${page.title}“.`;
+        const what = enabled
+          ? page === null
+            ? 'Sobald du eine Seite öffnest, erfährt die KI Titel und Pfad und kann den Inhalt bei Bedarf selbst laden.'
+            : 'Die KI erfährt Titel und Pfad und kann den Inhalt bei Bedarf selbst laden.'
+          : 'Der Seitenkontext ist aus: die KI erfährt nichts davon.';
+        const how = enabled ? 'Mit /context off schaltest du ihn ab.' : 'Mit /context on schaltest du ihn an.';
+
+        return {
+          command: 'context',
+          message: [where, what, how].join(' '),
+          conversationId: conversation.id,
+          conversationChanged: false,
+        };
+      }
+
       case 'rules': {
         const rules = await this.prisma.document.findMany({
           where: { workspaceId: conversation.workspaceId, archivedAt: null, aiRuleMode: { not: 'OFF' } },
@@ -649,6 +710,7 @@ export class ConversationsService {
       createdById: conversation.createdById,
       title: conversation.title,
       documentId: conversation.documentId,
+      pageContextEnabled: conversation.pageContextEnabled,
       modelSlug: conversation.model?.slug ?? null,
       reasoningLevel: REASONING_LEVEL_TO_CONTRACT[conversation.reasoningLevel],
       visionCompanionSlug: conversation.visionCompanionSlug,

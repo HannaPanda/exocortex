@@ -60,7 +60,9 @@ export function ChatComposer({ disabled, onSubmit }: ChatComposerProps) {
   };
 
   return (
-    <div className="relative border-t border-border p-2">
+    // The top border lives on the wrapper in `ai-panel`, so the context chips
+    // above sit inside the same bordered block instead of behind a second rule.
+    <div className="relative p-2">
       <label htmlFor="ai-composer-input" className="sr-only">
         Nachricht an die KI
       </label>

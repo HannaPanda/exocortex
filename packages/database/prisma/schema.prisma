@@ -646,9 +646,15 @@ model AiConversation {
   createdBy           User             @relation("AiConversationCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
   /// German title, derived from the first user message. Renameable.
   title               String
-  /// Page the conversation was opened from. Context only.
+  /// Page the conversation is currently standing on. Rebound whenever a turn
+  /// arrives from a different page, which also writes a marker into the
+  /// transcript (see `ConversationsService.postMessage`).
   documentId          String?
   document            Document?        @relation("AiConversationDocument", fields: [documentId], references: [id], onDelete: SetNull)
+  /// Whether the open page is disclosed to the model at all. `documentId` keeps
+  /// tracking where the user is either way: this only decides what leaves.
+  /// Toggled by the context chip and by `/context`.
+  pageContextEnabled  Boolean          @default(true)
   modelId             String?
   model               AiModel?         @relation(fields: [modelId], references: [id], onDelete: SetNull)
   reasoningLevel      AiReasoningLevel @default(NONE)

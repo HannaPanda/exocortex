@@ -24,11 +24,13 @@ import {
   useUpdateAiConversation,
 } from '@/lib/api/ai-queries';
 import { ApiError } from '@/lib/api/client';
+import { useDocument } from '@/lib/api/queries';
 import { useRealtimeEvent } from '@/lib/realtime/realtime-provider';
 import { usePersistentState } from '@/lib/use-persistent-state';
 
 import { ChatComposer } from './chat-composer';
 import { ChatMessage } from './chat-message';
+import { ContextChips } from './context-chips';
 import { ContextMeter } from './context-meter';
 import { ConversationSwitcher } from './conversation-switcher';
 import { ModelPicker } from './model-picker';
@@ -99,6 +101,12 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
 
   const [pendingModelSlug, setPendingModelSlug] = React.useState<string | null>(null);
   const [pendingReasoningLevel, setPendingReasoningLevel] = React.useState<AiReasoningLevel | null>(
+    null,
+  );
+  // Mirrors `pendingModelSlug`: the chip is operable before the first message,
+  // when there is no conversation row to write the choice to yet. It travels
+  // along in the create request.
+  const [pendingPageContextEnabled, setPendingPageContextEnabled] = React.useState<boolean | null>(
     null,
   );
   const [activeRunId, setActiveRunId] = React.useState<string | null>(null);
@@ -214,6 +222,10 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   const effectiveVisionCompanionSlug = conversation?.visionCompanionSlug ?? null;
   const selectedModel = models.find((model) => model.slug === effectiveModelSlug) ?? null;
 
+  const openDocumentQuery = useDocument(documentId ?? undefined);
+  const openDocument = openDocumentQuery.data ?? null;
+  const pageContextEnabled = conversation?.pageContextEnabled ?? pendingPageContextEnabled ?? true;
+
   const startNewConversation = React.useCallback(async (): Promise<string> => {
     if (workspaceId === null) throw new Error('A workspace is required to start a conversation');
     const response = await createConversation.mutateAsync({
@@ -221,16 +233,19 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
       documentId,
       modelSlug: pendingModelSlug ?? undefined,
       reasoningLevel: pendingReasoningLevel ?? undefined,
+      pageContextEnabled: pendingPageContextEnabled ?? undefined,
     });
     setActiveConversationId(response.conversation.id);
     setPendingModelSlug(null);
     setPendingReasoningLevel(null);
+    setPendingPageContextEnabled(null);
     return response.conversation.id;
   }, [
     workspaceId,
     documentId,
     pendingModelSlug,
     pendingReasoningLevel,
+    pendingPageContextEnabled,
     createConversation,
     setActiveConversationId,
   ]);
@@ -255,6 +270,17 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
     } else {
       setPendingReasoningLevel(level);
     }
+  };
+
+  const handlePageContextChange = (enabled: boolean): void => {
+    if (activeConversationId === null) {
+      setPendingPageContextEnabled(enabled);
+      return;
+    }
+    void updateConversation.mutateAsync({
+      conversationId: activeConversationId,
+      request: { pageContextEnabled: enabled },
+    });
   };
 
   const handleVisionCompanionChange = (value: string | null): void => {
@@ -429,7 +455,16 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
         ) : null}
       </div>
 
-      <ChatComposer disabled={activeRunId !== null} onSubmit={handleSubmit} />
+      <div className="border-t border-border">
+        <ContextChips
+          documentTitle={openDocument?.title ?? null}
+          isCollection={openDocument?.type === 'COLLECTION'}
+          enabled={pageContextEnabled}
+          onEnabledChange={handlePageContextChange}
+          disabled={activeRunId !== null}
+        />
+        <ChatComposer disabled={activeRunId !== null} onSubmit={handleSubmit} />
+      </div>
     </div>
   );
 }
