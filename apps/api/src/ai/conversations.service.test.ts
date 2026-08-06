@@ -28,8 +28,11 @@ let prisma: PrismaClient;
 let queues: QueueRegistry;
 let service: ConversationsService;
 let workspaceId: string;
+/** A workspace `ownerId` is deliberately not a member of, for the access tests. */
+let foreignWorkspaceId: string;
 let ownerId: string;
 let otherMemberId: string;
+let outsiderId: string;
 let noThinkingModelSlug: string;
 
 beforeAll(async () => {
@@ -52,35 +55,49 @@ beforeAll(async () => {
   noThinkingModelSlug = noThinkingModel.slug;
 
   const suffix = Date.now().toString(36);
-  const [owner, otherMember] = await Promise.all([
+  const [owner, otherMember, outsider] = await Promise.all([
     prisma.user.create({
       data: { email: `conv-owner-${suffix}@exocortex.test`, name: 'Owner', emailVerified: true },
     }),
     prisma.user.create({
       data: { email: `conv-other-${suffix}@exocortex.test`, name: 'Other', emailVerified: true },
     }),
+    prisma.user.create({
+      data: { email: `conv-outsider-${suffix}@exocortex.test`, name: 'Outsider', emailVerified: true },
+    }),
   ]);
   ownerId = owner.id;
   otherMemberId = otherMember.id;
+  outsiderId = outsider.id;
 
-  const workspace = await prisma.workspace.create({
-    data: {
-      name: `Conversations ${suffix}`,
-      slug: `conversations-${suffix}`,
-      members: {
-        create: [
-          { userId: ownerId, role: 'OWNER' },
-          { userId: otherMemberId, role: 'MEMBER' },
-        ],
+  const [workspace, foreignWorkspace] = await Promise.all([
+    prisma.workspace.create({
+      data: {
+        name: `Conversations ${suffix}`,
+        slug: `conversations-${suffix}`,
+        members: {
+          create: [
+            { userId: ownerId, role: 'OWNER' },
+            { userId: otherMemberId, role: 'MEMBER' },
+          ],
+        },
       },
-    },
-  });
+    }),
+    prisma.workspace.create({
+      data: {
+        name: `Conversations foreign ${suffix}`,
+        slug: `conversations-foreign-${suffix}`,
+        members: { create: [{ userId: outsiderId, role: 'OWNER' }] },
+      },
+    }),
+  ]);
   workspaceId = workspace.id;
+  foreignWorkspaceId = foreignWorkspace.id;
 }, 60_000);
 
 afterAll(async () => {
-  await prisma.workspace.deleteMany({ where: { id: workspaceId } });
-  await prisma.user.deleteMany({ where: { id: { in: [ownerId, otherMemberId] } } });
+  await prisma.workspace.deleteMany({ where: { id: { in: [workspaceId, foreignWorkspaceId] } } });
+  await prisma.user.deleteMany({ where: { id: { in: [ownerId, otherMemberId, outsiderId] } } });
   await queues.close();
   await prisma.$disconnect();
 });
@@ -91,6 +108,40 @@ async function createConversation(userId: string = ownerId): Promise<string> {
     request: { workspaceId, documentId: null },
   });
   return conversation.id;
+}
+
+let documentCounter = 0;
+
+/** A page in the test workspace. Created directly: the document service is not what is under test here. */
+async function createDocument(title: string): Promise<string> {
+  documentCounter += 1;
+  const document = await prisma.document.create({
+    data: {
+      workspaceId,
+      title,
+      type: 'PAGE',
+      orderKey: `a${documentCounter.toString().padStart(4, '0')}`,
+      createdById: ownerId,
+      updatedById: ownerId,
+    },
+  });
+  return document.id;
+}
+
+/** A page in a workspace the conversation owner is not a member of. */
+async function createForeignDocument(): Promise<string> {
+  documentCounter += 1;
+  const document = await prisma.document.create({
+    data: {
+      workspaceId: foreignWorkspaceId,
+      title: 'Fremde Seite',
+      type: 'PAGE',
+      orderKey: `b${documentCounter.toString().padStart(4, '0')}`,
+      createdById: outsiderId,
+      updatedById: outsiderId,
+    },
+  });
+  return document.id;
 }
 
 describe('ConversationsService.create / get / list', () => {
@@ -201,6 +252,141 @@ describe('ConversationsService.postMessage', () => {
         correlationId: 'test-owner-1',
       }),
     ).rejects.toMatchObject({ code: 'forbidden' });
+  });
+
+  describe('page context', () => {
+    it('binds the run to the page the caller is on and remembers it on the conversation', async () => {
+      const conversationId = await createConversation();
+      const documentId = await createDocument('Steuern 2026');
+
+      const response = await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Fasse das mal zusammen', documentId },
+        correlationId: 'test-context-1',
+      });
+
+      const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: response.run?.id } });
+      expect(run.documentId).toBe(documentId);
+      const conversation = await prisma.aiConversation.findUniqueOrThrow({ where: { id: conversationId } });
+      expect(conversation.documentId).toBe(documentId);
+    });
+
+    it('records a switch in the transcript, before the message that caused it', async () => {
+      const conversationId = await createConversation();
+      const first = await createDocument('Erste Seite');
+      const second = await createDocument('Zweite Seite');
+
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Frage auf der ersten Seite', documentId: first },
+        correlationId: 'test-context-2a',
+      });
+      await prisma.aiRun.updateMany({ where: { conversationId }, data: { status: 'COMPLETED', finishedAt: new Date() } });
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Frage auf der zweiten Seite', documentId: second },
+        correlationId: 'test-context-2b',
+      });
+
+      const messages = await prisma.aiConversationMessage.findMany({
+        where: { conversationId },
+        orderBy: { createdAt: 'asc' },
+      });
+      const switchIndex = messages.findIndex((message) => message.content.startsWith('↳ Kontextwechsel'));
+      expect(switchIndex).toBeGreaterThanOrEqual(0);
+      expect(messages[switchIndex]?.role).toBe('SYSTEM');
+      expect(messages[switchIndex]?.content).toContain('Zweite Seite');
+      expect(messages[switchIndex + 1]?.content).toBe('Frage auf der zweiten Seite');
+    });
+
+    it('stays quiet when the page does not change', async () => {
+      const conversationId = await createConversation();
+      const documentId = await createDocument('Dieselbe Seite');
+
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Erste Frage', documentId },
+        correlationId: 'test-context-3a',
+      });
+      await prisma.aiRun.updateMany({ where: { conversationId }, data: { status: 'COMPLETED', finishedAt: new Date() } });
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Zweite Frage', documentId },
+        correlationId: 'test-context-3b',
+      });
+
+      const systemMessages = await prisma.aiConversationMessage.count({
+        where: { conversationId, role: 'SYSTEM' },
+      });
+      expect(systemMessages).toBe(0);
+    });
+
+    it('says so when the user leaves the page, and does not silently keep the old one', async () => {
+      const conversationId = await createConversation();
+      const documentId = await createDocument('Verlassene Seite');
+
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Frage mit Seite', documentId },
+        correlationId: 'test-context-4a',
+      });
+      await prisma.aiRun.updateMany({ where: { conversationId }, data: { status: 'COMPLETED', finishedAt: new Date() } });
+      const response = await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Frage ohne Seite', documentId: null },
+        correlationId: 'test-context-4b',
+      });
+
+      const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: response.run?.id } });
+      expect(run.documentId).toBeNull();
+      const marker = await prisma.aiConversationMessage.findFirst({
+        where: { conversationId, role: 'SYSTEM' },
+      });
+      expect(marker?.content).toContain('keine Seite mehr geöffnet');
+    });
+
+    it('inherits the conversation page when the client omits the field entirely', async () => {
+      const documentId = await createDocument('Von Anfang an gebunden');
+      const { conversation } = await service.create({
+        userId: ownerId,
+        request: { workspaceId, documentId },
+      });
+
+      const response = await service.postMessage({
+        conversationId: conversation.id,
+        userId: ownerId,
+        request: { content: 'Frage ohne documentId im Request' },
+        correlationId: 'test-context-5',
+      });
+
+      const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: response.run?.id } });
+      expect(run.documentId).toBe(documentId);
+      const systemMessages = await prisma.aiConversationMessage.count({
+        where: { conversationId: conversation.id, role: 'SYSTEM' },
+      });
+      expect(systemMessages).toBe(0);
+    });
+
+    it('refuses a documentId the caller cannot see, instead of putting its title in the prompt', async () => {
+      const conversationId = await createConversation();
+      const foreignDocumentId = await createForeignDocument();
+
+      await expect(
+        service.postMessage({
+          conversationId,
+          userId: ownerId,
+          request: { content: 'Was steht da drin?', documentId: foreignDocumentId },
+          correlationId: 'test-context-6',
+        }),
+      ).rejects.toMatchObject({ code: 'document_access_denied' });
+    });
   });
 
   describe('/clear', () => {

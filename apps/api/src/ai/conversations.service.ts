@@ -92,6 +92,13 @@ const CONVERSATION_ROLE_TO_CONTRACT: Record<AiConversationRolePrisma, AiConversa
 const PLACEHOLDER_TITLE = 'Neue Unterhaltung';
 const TITLE_MAX_CHARS = 60;
 
+/** The transcript line that records a page switch. Rendered as a muted system line in the panel. */
+function formatContextSwitch(documentTitle: string | null): string {
+  return documentTitle === null
+    ? '↳ Kontextwechsel: es ist keine Seite mehr geöffnet.'
+    : `↳ Kontextwechsel: geöffnet ist jetzt „${documentTitle}“.`;
+}
+
 /** Derives a conversation title from the first user message: whitespace-collapsed, capped at 60 characters. */
 function deriveTitle(content: string): string {
   const collapsed = content.replace(/\s+/g, ' ').trim();
@@ -247,6 +254,47 @@ export class ConversationsService {
     return { archived: true };
   }
 
+  /**
+   * Decides which page this turn runs against, and proves the caller may see it.
+   *
+   * The distinction between an absent `documentId` and an explicit `null` is the
+   * whole point: a client that does not track pages (MCP, scripts) omits the
+   * field and inherits whatever the conversation is bound to, while the panel
+   * always sends the route's page and therefore sends `null` when the user is
+   * somewhere without one. Treating both the same would make leaving a page
+   * impossible.
+   *
+   * The check itself is not decoration: since the worker puts the page's title
+   * and path into the system prompt, an unchecked id would hand a caller the
+   * title of any document by guessing its id.
+   */
+  private async resolvePageContext(input: {
+    conversation: ConversationRow;
+    requested: string | null | undefined;
+    userId: string;
+  }): Promise<{ documentId: string | null; documentTitle: string | null }> {
+    const { conversation, requested, userId } = input;
+    const documentId = requested === undefined ? conversation.documentId : requested;
+    if (documentId === null) return { documentId: null, documentTitle: null };
+
+    const context = await this.access.findDocumentContext(documentId, userId);
+    if (context !== null && context.workspaceId === conversation.workspaceId) {
+      return { documentId, documentTitle: context.document.title };
+    }
+
+    // A page the caller named explicitly must fail loudly. A page the
+    // conversation was bound to earlier may simply have been deleted since, and
+    // that must not lock the user out of their own transcript.
+    if (requested !== undefined) {
+      throw new AppError('document_access_denied', 'The referenced document is not accessible');
+    }
+    this.logger.info('Conversation is bound to a document that is gone; continuing without page context', {
+      conversationId: conversation.id,
+      documentId,
+    });
+    return { documentId: null, documentTitle: null };
+  }
+
   async postMessage(input: {
     conversationId: string;
     userId: string;
@@ -268,13 +316,47 @@ export class ConversationsService {
       return this.executeCommand({ conversation, command: parsedCommand });
     }
 
+    const { documentId, documentTitle } = await this.resolvePageContext({
+      conversation,
+      requested: input.request.documentId,
+      userId: input.userId,
+    });
+
+    // A conversation outlives the page it started on: the panel keeps the active
+    // conversation per workspace, so walking to another page keeps typing into
+    // the same transcript. Without a marker in that transcript, everything above
+    // the switch silently refers to a different page than everything below --
+    // and "summarize this page" would resolve against the wrong one.
+    const contextSwitched = documentId !== conversation.documentId;
+    const announceSwitch = contextSwitched && conversation._count.messages > 0;
+
+    // Explicit timestamps: the marker must sort before the message it explains,
+    // and two consecutive `now()` defaults are not guaranteed to differ.
+    const switchedAt = new Date();
     const content = input.request.content;
+
+    const switchMessage = announceSwitch
+      ? await this.prisma.aiConversationMessage.create({
+          data: {
+            conversationId: conversation.id,
+            role: 'SYSTEM',
+            content: formatContextSwitch(documentTitle),
+            estimatedTokens: estimateMessageTokens({
+              role: 'system',
+              content: formatContextSwitch(documentTitle),
+            }),
+            createdAt: switchedAt,
+          },
+        })
+      : null;
+
     const userMessage = await this.prisma.aiConversationMessage.create({
       data: {
         conversationId: conversation.id,
         role: 'USER',
         content,
         estimatedTokens: estimateMessageTokens({ role: 'user', content }),
+        ...(switchMessage === null ? {} : { createdAt: new Date(switchedAt.getTime() + 1) }),
       },
     });
 
@@ -293,7 +375,7 @@ export class ConversationsService {
     const run = await this.prisma.aiRun.create({
       data: {
         workspaceId: conversation.workspaceId,
-        documentId: input.request.documentId ?? conversation.documentId ?? null,
+        documentId,
         createdById: input.userId,
         status: 'PENDING',
         provider: resolvedModel.provider,
@@ -316,8 +398,9 @@ export class ConversationsService {
       where: { id: conversation.id },
       data: {
         lastMessageAt: new Date(),
-        estimatedTokens: { increment: userMessage.estimatedTokens },
+        estimatedTokens: { increment: userMessage.estimatedTokens + (switchMessage?.estimatedTokens ?? 0) },
         ...(isPlaceholderTitle ? { title: deriveTitle(content) } : {}),
+        ...(contextSwitched ? { documentId } : {}),
       },
     });
 
