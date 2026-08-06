@@ -1,0 +1,30 @@
+{
+  "name": "@exocortex/mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Exocortex MCP server (stdio JSON-RPC) for external clients",
+  "type": "module",
+  "main": "./dist/main.js",
+  "bin": { "exocortex-mcp": "./dist/main.js" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/postbuild.mjs",
+    "dev": "tsx src/main.ts",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@exocortex/contracts": "workspace:*",
+    "@exocortex/logger": "workspace:*",
+    "@exocortex/mcp-tools": "workspace:*",
+    "pino": "10.3.1",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.4",
+    "tsx": "4.23.5",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}
