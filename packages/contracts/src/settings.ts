@@ -29,6 +29,18 @@ export const settingsSchema = z.object({
   /** Model used to write the summary. Null reuses the conversation's model. */
   'ai.compactionModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
   'ai.pdfExtractionEnabled': z.boolean().default(true),
+  /**
+   * Engine used first. `openrouter` is a hosted call with no OCR; `docling` is
+   * a local container that reads scans too but costs CPU time. Selecting an
+   * engine the deployment has not configured leaves extraction unavailable
+   * rather than silently using the other one.
+   */
+  'ai.pdfExtractor': z.enum(['openrouter', 'docling']).default('openrouter'),
+  /**
+   * When the engine above returns nothing (the signature of a scanned PDF),
+   * try Docling before recording a failure. No effect without DOCLING_BASE_URL.
+   */
+  'ai.pdfOcrFallbackEnabled': z.boolean().default(true),
   /** Model with a PDF file-parser. Null reuses `ai.defaultModelSlug`. */
   'ai.pdfExtractionModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
   'ai.pdfMaxBytes': z.number().int().min(1_024).max(50 * 1_024 * 1_024).default(10 * 1_024 * 1_024),

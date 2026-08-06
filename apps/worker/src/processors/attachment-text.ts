@@ -10,8 +10,15 @@ const MAX_EXTRACTED_TEXT_CHARS = 400_000;
 export interface AttachmentTextDependencies {
   prisma: PrismaClient;
   storage: ObjectStorage;
-  /** `null` when no PDF text model is configured (D6's "unconfigured" seam). */
-  extractor: PdfTextExtractor | null;
+  /**
+   * Engines to try in order, derived from the current settings. Empty when
+   * nothing is configured (D6's "unconfigured" seam).
+   *
+   * The order is what turns a scanned PDF from a dead end into a result: the
+   * OpenRouter engine returns nothing for a scan, and Docling behind it reads
+   * the same file through OCR.
+   */
+  extractors: (settings: Settings) => readonly PdfTextExtractor[];
   settings: () => Promise<Settings>;
 }
 
@@ -25,7 +32,7 @@ export interface AttachmentTextDependencies {
  * Redis-free.
  */
 export function createAttachmentTextProcessor(dependencies: AttachmentTextDependencies) {
-  const { prisma, storage, extractor } = dependencies;
+  const { prisma, storage } = dependencies;
 
   return async ({
     payload,
@@ -47,7 +54,9 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
 
     const settings = await dependencies.settings();
 
-    if (extractor === null || !settings['ai.pdfExtractionEnabled']) {
+    const extractors = dependencies.extractors(settings);
+
+    if (extractors.length === 0 || !settings['ai.pdfExtractionEnabled']) {
       await prisma.attachment.update({
         where: { id: attachment.id },
         data: { textStatus: 'FAILED', textExtractionError: 'PDF extraction is not configured' },
@@ -90,18 +99,30 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
     }
     const data = Buffer.concat(chunks);
 
-    const text = await extractor.extract({
-      data,
-      filename: attachment.filename,
-      correlationId: payload.correlationId,
-    });
+    // Each engine gets the whole document. A `null` means "this engine found
+    // nothing", which is a routine outcome for a scan hitting a text-only
+    // engine, so the next one in the chain is tried before giving up. A thrown
+    // error still bubbles: an unreachable Docling container must be retried,
+    // not silently downgraded to a worse result.
+    let extraction = null as Awaited<ReturnType<PdfTextExtractor['extract']>>;
+    for (const candidate of extractors) {
+      extraction = await candidate.extract({
+        data,
+        filename: attachment.filename,
+        correlationId: payload.correlationId,
+      });
+      if (extraction !== null) break;
+    }
 
-    if (text === null) {
+    if (extraction === null) {
       await prisma.attachment.update({
         where: { id: attachment.id },
         data: { textStatus: 'FAILED', textExtractionError: 'No extractable text layer' },
       });
-      logger.info('PDF has no extractable text layer', { attachmentId: attachment.id });
+      logger.info('PDF has no extractable text layer', {
+        attachmentId: attachment.id,
+        enginesTried: extractors.length,
+      });
       return;
     }
 
@@ -109,11 +130,16 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
       where: { id: attachment.id },
       data: {
         textStatus: 'READY',
-        extractedText: text.slice(0, MAX_EXTRACTED_TEXT_CHARS),
+        extractedText: extraction.text.slice(0, MAX_EXTRACTED_TEXT_CHARS),
         textExtractedAt: new Date(),
         textExtractionError: null,
       },
     });
-    logger.info('Attachment text extracted', { attachmentId: attachment.id, length: text.length });
+    logger.info('Attachment text extracted', {
+      attachmentId: attachment.id,
+      length: extraction.text.length,
+      extractor: extraction.metadata.extractor,
+      ocrUsed: extraction.metadata.ocrUsed,
+    });
   };
 }

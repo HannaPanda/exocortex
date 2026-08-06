@@ -180,26 +180,44 @@ driver to a vision-capable model stops paying for a second call per image.
 
 ## PDF text
 
-`Attachment.extractedText` / `textStatus` cache the text layer of a PDF
+`Attachment.extractedText` / `textStatus` cache the text of a PDF
 (D6), populated by the `attachment-text` queue
 (`apps/worker/src/processors/attachment-text.ts`) and read — never
-extracted — by `exo_attachment_read_text`. Extraction uses OpenRouter's
-`file-parser` plugin with the free `pdf-text` engine
-(`packages/ai/src/pdf-text.ts`): the PDF is sent as a base64 `file` content
-part, verified against the live API with a real 148 KB PDF on 2026-08-06, so
-no PDF-parsing npm dependency was needed. `PdfTextExtractor` returns `null`
-both when unconfigured (missing API key or model) and when a document
-genuinely has no extractable text (a pure scan) — the caller tells the two
-apart via `textStatus` / `textExtractionError`, never by retrying.
+extracted — by `exo_attachment_read_text`.
+
+Two engines implement the same `PdfTextExtractor` interface, and the processor
+is handed an ordered *chain* of them rather than a single one:
+
+| Engine | Where | Reads scans | Cost |
+| ------ | ----- | ----------- | ---- |
+| `openrouter` (`packages/ai/src/pdf-text.ts`) | hosted, `file-parser` plugin with the free `pdf-text` engine | no | one cheap API call |
+| `docling` (`packages/ai/src/docling.ts`) | local `docling-serve` container | yes, via RapidOCR | ~1.5 s CPU per page |
+
+`ai.pdfExtractor` picks the first engine; `ai.pdfOcrFallbackEnabled` (default
+on) appends Docling behind it. That chain is the point of the design: a `null`
+from an engine means "found nothing", which for a scan meeting the OpenRouter
+engine is routine, so the next engine gets the same document before the
+attachment is written off. Measured on the same three-page scan: 0 characters
+without OCR, 8 378 with it. A *thrown* error still bubbles, so an unreachable
+Docling container is retried by BullMQ instead of being silently downgraded.
+
+Docling runs with a fixed option set (`do_ocr: true`, `force_ocr: false`,
+markdown plus JSON output). Two reasons it is a constant and not a setting:
+docling-serve caches one pipeline per distinct option set and building one costs
+about 18 seconds, and forcing OCR measurably *loses* text on a document that
+already has a text layer (7 549 vs 9 278 characters over three pages). Verified
+against docling-serve 1.29.0 on 2026-08-06.
 
 `textStatus` states: `NOT_APPLICABLE` (not a PDF), `PENDING` (queued, not yet
 attempted), `READY` (`extractedText` populated, capped at 400 000
 characters), `FAILED` (`textExtractionError` explains why: unconfigured,
-oversized per `ai.pdfMaxBytes`, or no text layer). The extractor is built
-once at boot from `OPENROUTER_DEFAULT_MODEL` (the file-parser plugin works
-with any model, so no dedicated env var was needed); `ai.pdfExtractionModelSlug`
-exists in the settings schema for a future per-job model choice but is not
-wired in yet (see "Known limitations").
+oversized per `ai.pdfMaxBytes`, or no engine in the chain found text). The
+OpenRouter engine is built once at boot from `OPENROUTER_DEFAULT_MODEL` (the
+file-parser plugin works with any model, so no dedicated env var was needed);
+Docling is built only when `DOCLING_BASE_URL` is set, which keeps its ~7.7 GB
+container optional. `ai.pdfExtractionModelSlug` exists in the settings schema
+for a future per-job model choice but is not wired in yet (see "Known
+limitations").
 
 ## Known limitations
 

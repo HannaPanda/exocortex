@@ -72,6 +72,12 @@ export const aiSchema = z.object({
    * Vision preprocessing is skipped entirely when unset.
    */
   OPENROUTER_VISION_MODEL: z.string().trim().optional(),
+  /**
+   * Base URL of a docling-serve instance, e.g. `http://127.0.0.1:5010`. Unset
+   * means the Docling extractor is never built, so `ai.pdfExtractor: 'docling'`
+   * degrades to "not configured" instead of failing at request time.
+   */
+  DOCLING_BASE_URL: z.url().optional(),
 });
 
 export const apiProcessSchema = z.object({

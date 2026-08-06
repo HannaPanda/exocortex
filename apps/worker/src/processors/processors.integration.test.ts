@@ -773,6 +773,15 @@ describe('compactIfNeeded', () => {
 });
 
 describe('attachment text extraction', () => {
+  const stubMetadata = {
+    extractor: 'stub',
+    pageCount: null,
+    tableCount: null,
+    pictureCount: null,
+    confidence: null,
+    ocrUsed: null,
+  };
+
   async function createAttachment(input: { mimeType: string; byteSize?: number }): Promise<string> {
     const attachment = await prisma.attachment.create({
       data: {
@@ -792,7 +801,7 @@ describe('attachment text extraction', () => {
     const processor = createAttachmentTextProcessor({
       prisma,
       storage: fakeStorage(Buffer.from('unused')),
-      extractor: { extract: async () => 'unused' },
+      extractors: () => [{ extract: async () => ({ text: 'unused', metadata: stubMetadata }) }],
       settings: stubSettings(),
     });
 
@@ -809,7 +818,7 @@ describe('attachment text extraction', () => {
     const processor = createAttachmentTextProcessor({
       prisma,
       storage: fakeStorage(Buffer.from('unused')),
-      extractor: null,
+      extractors: () => [],
       settings: stubSettings(),
     });
 
@@ -820,5 +829,67 @@ describe('attachment text extraction', () => {
     const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
     expect(attachment.textStatus).toBe('FAILED');
     expect(attachment.textExtractionError).toBe('PDF extraction is not configured');
+  }, 30_000);
+
+  it('falls through to the next engine when the first finds no text', async () => {
+    const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
+    const calls: string[] = [];
+    const processor = createAttachmentTextProcessor({
+      prisma,
+      storage: fakeStorage(Buffer.from('%PDF-1.7 scanned')),
+      // Mirrors a scan meeting the text-only engine first: it reports nothing,
+      // and the OCR-capable engine behind it reads the document.
+      extractors: () => [
+        {
+          extract: async () => {
+            calls.push('text-only');
+            return null;
+          },
+        },
+        {
+          extract: async () => {
+            calls.push('ocr');
+            return { text: 'text from the scan', metadata: { ...stubMetadata, ocrUsed: true } };
+          },
+        },
+      ],
+      settings: stubSettings(),
+    });
+
+    await processor(
+      contextFor({ correlationId: 'test-attach-3', attachmentId, workspaceId, reason: 'upload' }).context,
+    );
+
+    expect(calls).toEqual(['text-only', 'ocr']);
+    const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+    expect(attachment.textStatus).toBe('READY');
+    expect(attachment.extractedText).toBe('text from the scan');
+  }, 30_000);
+
+  it('stops at the first engine that returns text', async () => {
+    const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
+    let secondCalled = false;
+    const processor = createAttachmentTextProcessor({
+      prisma,
+      storage: fakeStorage(Buffer.from('%PDF-1.7 with a text layer')),
+      extractors: () => [
+        { extract: async () => ({ text: 'from the text layer', metadata: stubMetadata }) },
+        {
+          extract: async () => {
+            secondCalled = true;
+            return null;
+          },
+        },
+      ],
+      settings: stubSettings(),
+    });
+
+    await processor(
+      contextFor({ correlationId: 'test-attach-4', attachmentId, workspaceId, reason: 'upload' }).context,
+    );
+
+    expect(secondCalled).toBe(false);
+    const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+    expect(attachment.extractedText).toBe('from the text layer');
   }, 30_000);
 });

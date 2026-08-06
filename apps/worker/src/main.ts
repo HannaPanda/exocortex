@@ -1,4 +1,11 @@
-import { createAiProvider, createPdfTextExtractor, createVisionPreprocessor, type VisionPreprocessor } from '@exocortex/ai';
+import {
+  createAiProvider,
+  createOptionalDoclingPdfExtractor,
+  createPdfTextExtractor,
+  createVisionPreprocessor,
+  type PdfTextExtractor,
+  type VisionPreprocessor,
+} from '@exocortex/ai';
 import { loadWorkerEnv } from '@exocortex/config';
 import { QUEUE_NAMES, resolveSettings, type Settings } from '@exocortex/contracts';
 import { createPrismaClient, PostgresSearchAdapter } from '@exocortex/database';
@@ -115,13 +122,41 @@ async function bootstrap(): Promise<void> {
   // (DB-configurable) is not yet wired here: doing so would mean rebuilding the
   // extractor per job the way `visionPreprocessorFor` does, which is a
   // reasonable follow-up but out of scope for tonight (see docs/ai-architecture.md).
-  const pdfTextExtractor = createPdfTextExtractor({
+  const openRouterPdfExtractor = createPdfTextExtractor({
     apiKey: env.OPENROUTER_API_KEY ?? '',
     baseUrl: env.OPENROUTER_BASE_URL,
     model: env.OPENROUTER_DEFAULT_MODEL,
     appUrl: env.APP_URL,
     logger,
   });
+
+  // Local Docling instance. Null unless DOCLING_BASE_URL is set, which is what
+  // keeps the ~7.7 GB container optional for a deployment that does not need OCR.
+  const doclingPdfExtractor = createOptionalDoclingPdfExtractor({
+    baseUrl: env.DOCLING_BASE_URL,
+    logger,
+  });
+
+  /**
+   * Engines to try, in order, for one PDF.
+   *
+   * Both are unconfigured-safe: an empty chain is how the processor learns that
+   * PDF extraction is unavailable, so choosing `docling` without a container
+   * reports that plainly instead of quietly falling back to a worse engine.
+   */
+  const pdfExtractorChain = (settings: Settings): readonly PdfTextExtractor[] => {
+    const primary =
+      settings['ai.pdfExtractor'] === 'docling' ? doclingPdfExtractor : openRouterPdfExtractor;
+    const chain = primary === null ? [] : [primary];
+    if (
+      settings['ai.pdfOcrFallbackEnabled'] &&
+      doclingPdfExtractor !== null &&
+      !chain.includes(doclingPdfExtractor)
+    ) {
+      chain.push(doclingPdfExtractor);
+    }
+    return chain;
+  };
 
   const modelRegistry = async (slug: string): Promise<ResolvedModelRow | null> => {
     const row = await prisma.aiModel.findUnique({
@@ -268,7 +303,7 @@ async function bootstrap(): Promise<void> {
     handler: createAttachmentTextProcessor({
       prisma,
       storage,
-      extractor: pdfTextExtractor,
+      extractors: pdfExtractorChain,
       settings: readSettings,
     }),
     onFailed: async (payload, job, error) => {

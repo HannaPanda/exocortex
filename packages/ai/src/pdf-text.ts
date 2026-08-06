@@ -2,19 +2,45 @@ import { type Logger } from '@exocortex/logger';
 
 import { AiProviderError } from './provider';
 
+/**
+ * Structural facts an extractor can report about a converted PDF.
+ *
+ * Every field except `extractor` is nullable because the two implementations
+ * see very different amounts of the document: the OpenRouter `file-parser`
+ * plugin returns text and nothing else, while Docling returns a full layout
+ * model. A null therefore means "this engine cannot tell", never "zero".
+ */
+export interface PdfMetadata {
+  /** Engine that produced the text, e.g. `openrouter` or `docling`. */
+  extractor: string;
+  pageCount: number | null;
+  tableCount: number | null;
+  pictureCount: number | null;
+  /** The engine's own confidence in the conversion, 0 to 1. */
+  confidence: number | null;
+  /** Whether OCR contributed text, i.e. the document had bitmap content. */
+  ocrUsed: boolean | null;
+}
+
+export interface PdfExtraction {
+  text: string;
+  metadata: PdfMetadata;
+}
+
 export interface PdfTextExtractor {
   /**
-   * Extracts the text layer of a PDF.
+   * Extracts the text of a PDF.
    *
-   * Returns null when the document has no extractable text (a pure scan). The
-   * caller records that as FAILED with a clear reason rather than retrying.
+   * Returns null when the document has no extractable content. For the
+   * OpenRouter engine that includes every scan, which is precisely why the
+   * caller tries the next extractor in the chain before giving up.
    */
   extract(input: {
     data: Uint8Array;
     filename: string;
     correlationId: string;
     timeoutMs?: number;
-  }): Promise<string | null>;
+  }): Promise<PdfExtraction | null>;
 }
 
 export interface OpenRouterPdfExtractorOptions {
@@ -39,12 +65,15 @@ const EXTRACTION_PROMPT =
  * Verified against the live API on 2026-08-06 (a 148 KB real-world PDF): the
  * plugin returns the document's text through the ordinary chat-completions
  * response shape, so no fallback (`unpdf`) is needed.
+ *
+ * The engine has no OCR: a scanned PDF comes back empty. `createDoclingPdfExtractor`
+ * is the answer to that, chained behind this one.
  */
 export function createOpenRouterPdfExtractor(
   options: OpenRouterPdfExtractorOptions,
 ): PdfTextExtractor {
   return {
-    async extract(input): Promise<string | null> {
+    async extract(input): Promise<PdfExtraction | null> {
       const controller = new AbortController();
       const timeoutMs = input.timeoutMs ?? 60_000;
       const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -95,7 +124,19 @@ export function createOpenRouterPdfExtractor(
           choices?: { message?: { content?: string } }[];
         };
         const text = payload.choices?.[0]?.message?.content ?? '';
-        return text.trim().length === 0 ? null : text;
+        if (text.trim().length === 0) return null;
+        return {
+          text,
+          // The plugin reports nothing beyond the text itself.
+          metadata: {
+            extractor: 'openrouter',
+            pageCount: null,
+            tableCount: null,
+            pictureCount: null,
+            confidence: null,
+            ocrUsed: false,
+          },
+        };
       } finally {
         clearTimeout(timeout);
       }

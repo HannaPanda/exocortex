@@ -87,6 +87,14 @@ const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
     label: 'PDF-Text extrahieren',
     help: 'Extrahiert den Text aus hochgeladenen PDF-Dateien, damit die KI ihn lesen kann.',
   },
+  'ai.pdfExtractor': {
+    label: 'PDF-Verfahren',
+    help: 'OpenRouter ist schnell und braucht keinen eigenen Dienst, kann aber keine Scans lesen. Docling läuft lokal, erkennt auch Scans per Texterkennung und braucht dafür Rechenzeit.',
+  },
+  'ai.pdfOcrFallbackEnabled': {
+    label: 'Texterkennung als Rückfallebene',
+    help: 'Findet das gewählte Verfahren keinen Text, versucht Docling es noch einmal mit Texterkennung. Ohne eingerichteten Docling-Dienst wirkungslos.',
+  },
   'ai.pdfExtractionModelSlug': {
     label: 'Modell für PDF-Text',
     help: 'Automatisch verwendet das Standardmodell.',
@@ -112,6 +120,18 @@ const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
 /** Sentinel for "no model chosen"; distinct from every real slug. */
 const AUTO_VALUE = '__automatic__';
 
+/**
+ * Choices for settings whose schema is a `z.enum`. Only listed keys render as a
+ * dropdown; everything else still derives its control from the runtime value
+ * type, so an ordinary string setting added later needs no entry here.
+ */
+const SETTING_CHOICES: Partial<Record<SettingKey, readonly { value: string; label: string }[]>> = {
+  'ai.pdfExtractor': [
+    { value: 'openrouter', label: 'OpenRouter (schnell, ohne Texterkennung)' },
+    { value: 'docling', label: 'Docling (lokal, mit Texterkennung)' },
+  ],
+};
+
 function groupOf(key: SettingKey): string {
   return key.split('.')[0] ?? key;
 }
@@ -136,8 +156,25 @@ function SettingRow({ settingKey, value, onChange, models }: SettingRowProps) {
   const copy = SETTING_COPY[settingKey];
   const id = inputId(settingKey);
 
+  const choices = SETTING_CHOICES[settingKey];
+
   let control: React.ReactNode;
-  if (typeof value === 'boolean') {
+  if (choices !== undefined) {
+    control = (
+      <Select value={typeof value === 'string' ? value : ''} onValueChange={onChange}>
+        <SelectTrigger id={id} className="w-full">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {choices.map((choice) => (
+            <SelectItem key={choice.value} value={choice.value}>
+              {choice.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
+  } else if (typeof value === 'boolean') {
     control = <Switch id={id} checked={value} onCheckedChange={onChange} />;
   } else if (typeof value === 'number') {
     control = (

@@ -75,6 +75,30 @@ services:
       "
     restart: 'no'
 
+  docling:
+    # Local PDF understanding: layout model, TableFormer and RapidOCR. The
+    # OCR path is what makes scanned PDFs readable at all -- the OpenRouter
+    # `pdf-text` engine returns nothing for them (verified 2026-08-06).
+    #
+    # The image ships its own model weights (DOCLING_SERVE_ARTIFACTS_PATH), so
+    # there is no runtime download and no model volume to keep warm. It is also
+    # ~7.7 GB on disk, which is why it stays optional: without DOCLING_BASE_URL
+    # the worker simply never builds the extractor.
+    image: ghcr.io/docling-project/docling-serve-cpu:v1.29.0
+    container_name: exocortex-docling
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:${DOCLING_HOST_PORT:-5010}:5001'
+    # Steady state is ~2 GB resident; the limit stops a pathological document
+    # from pushing the shared host into swap.
+    mem_limit: 4g
+    healthcheck:
+      test: ['CMD', 'python3', '-c', "import urllib.request; urllib.request.urlopen('http://localhost:5001/health').read()"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
   mailpit:
     image: axllent/mailpit:v1.27
     container_name: exocortex-mailpit

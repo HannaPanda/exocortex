@@ -42,8 +42,22 @@ Host ports are non-default so the stack can coexist with other services:
 | MinIO console | `9111` | |
 | Mailpit SMTP | `1026` | |
 | Mailpit UI | `8026` | verification and reset mails land here |
+| Docling | `5010` | optional, see below |
 
 Application ports: web `3210`, api `3211`, collaboration `3212`.
+
+`docling` is the only service `pnpm infra:up` does not need. It is a ~7.7 GB
+image that reads scanned PDFs through OCR, and nothing breaks without it: leave
+`DOCLING_BASE_URL` empty and PDF extraction stays on the hosted OpenRouter
+engine. To turn it on:
+
+```bash
+docker compose up -d docling
+# then set DOCLING_BASE_URL=http://127.0.0.1:5010 in .env and restart the worker
+```
+
+Model weights are baked into the image, so the first conversion needs no
+download. Conversion is CPU-bound at roughly 1.5 seconds per page.
 
 All data lives in named volumes (`exocortex-postgres-data`, `exocortex-redis-data`,
 `exocortex-minio-data`, `exocortex-mailpit-data`).

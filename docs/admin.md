@@ -62,6 +62,8 @@ first; the admin form and this table follow.
 | `ai.compactionKeepRecentMessages` | int 2–40 | `8` | Messages left untouched by a compaction. |
 | `ai.compactionModelSlug` | string \| null | `null` | Model that writes the summary. Null reuses the conversation's model. |
 | `ai.pdfExtractionEnabled` | boolean | `true` | Whether the `attachment-text` queue extracts PDF text. |
+| `ai.pdfExtractor` | `openrouter` \| `docling` | `openrouter` | Engine tried first. `docling` reads scans but needs the local container. |
+| `ai.pdfOcrFallbackEnabled` | boolean | `true` | Retry with Docling OCR when the engine above finds no text. No effect without `DOCLING_BASE_URL`. |
 | `ai.pdfExtractionModelSlug` | string \| null | `null` | Model with a file parser. Null reuses `ai.defaultModelSlug`. |
 | `ai.pdfMaxBytes` | int 1024–52428800 | `10485760` | Largest PDF that is extracted. |
 | `mcp.enabled` | boolean | `true` | Master switch for the MCP tool surface. |
