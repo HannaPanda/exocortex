@@ -110,6 +110,16 @@ export const collaborationProcessSchema = z.object({
   COLLABORATION_PORT: port.default(3212),
 });
 
+/**
+ * Internal base URL of the collaboration server, used by the API to push a
+ * non-editor write into an open editing session (ADR-016). Loopback by default
+ * because the endpoint behind it is private: it must never be published through
+ * the reverse proxy.
+ */
+export const internalCollaborationSchema = z.object({
+  COLLABORATION_INTERNAL_URL: z.url().default('http://127.0.0.1:3212'),
+});
+
 export const webProcessSchema = z.object({
   WEB_PORT: port.default(3210),
 });
@@ -136,7 +146,8 @@ export const apiEnvSchema = baseSchema
   .extend(aiSchema.shape)
   .extend(apiProcessSchema.shape)
   .extend(publicSchema.shape)
-  .extend(serviceTokenSchema.shape);
+  .extend(serviceTokenSchema.shape)
+  .extend(internalCollaborationSchema.shape);
 
 export const workerEnvSchema = baseSchema
   .extend(databaseSchema.shape)

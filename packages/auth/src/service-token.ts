@@ -11,11 +11,25 @@ import { SERVICE_TOKEN_PREFIX } from './api-token';
  * credential and no database row per run. Modelled directly on
  * `collaboration-ticket.ts`: base64url payload, `.`-separated HMAC-SHA256
  * signature, constant-time comparison, discriminated verification result.
+ *
+ * The same format carries the API's calls into the collaboration server
+ * (`collaboration-write`, ADR-016). The purpose is part of the signed payload
+ * and every verifier states which one it accepts, so a token minted for one
+ * service can never be replayed against the other.
  */
+
+/**
+ * What a service token may be used for. Each purpose is signed with the secret
+ * shared by exactly the two processes that speak to each other:
+ * `ai-tools` with `SERVICE_TOKEN_SECRET` (worker -> API),
+ * `collaboration-write` with `COLLABORATION_TICKET_SECRET` (API -> Hocuspocus).
+ */
+export const SERVICE_TOKEN_PURPOSES = ['ai-tools', 'collaboration-write'] as const;
+export type ServiceTokenPurpose = (typeof SERVICE_TOKEN_PURPOSES)[number];
 
 export interface ServiceTokenClaims {
   userId: string;
-  purpose: 'ai-tools';
+  purpose: ServiceTokenPurpose;
   /** Unix timestamp in milliseconds. */
   expiresAt: number;
 }
@@ -38,7 +52,7 @@ function sign(secret: string, data: string): string {
 export interface IssueServiceTokenOptions {
   secret: string;
   userId: string;
-  purpose: 'ai-tools';
+  purpose: ServiceTokenPurpose;
   ttlSeconds: number;
   now?: number;
 }
@@ -66,16 +80,23 @@ export function issueServiceToken(options: IssueServiceTokenOptions): IssuedServ
 
 export type ServiceTokenVerificationResult =
   | { valid: true; claims: ServiceTokenClaims }
-  | { valid: false; reason: 'malformed' | 'bad_signature' | 'expired' };
+  | { valid: false; reason: 'malformed' | 'bad_signature' | 'expired' | 'wrong_purpose' };
 
 export interface VerifyServiceTokenOptions {
   secret: string;
   token: string;
+  /**
+   * The purpose this verifier accepts. A token signed for a different purpose
+   * is rejected even when the signature is valid, which keeps the two service
+   * paths separate should they ever share a secret.
+   */
+  expectedPurpose: ServiceTokenPurpose;
   now?: number;
 }
 
 /**
- * Verifies a service token against the secret and its expiry.
+ * Verifies a service token against the secret, the expected purpose and its
+ * expiry.
  *
  * Returns a discriminated result instead of throwing so the caller can log the
  * precise reason while returning a generic error to the client.
@@ -111,10 +132,14 @@ export function verifyServiceToken(
   if (
     payload.v !== 1 ||
     typeof payload.userId !== 'string' ||
-    payload.purpose !== 'ai-tools' ||
+    !SERVICE_TOKEN_PURPOSES.includes(payload.purpose) ||
     typeof payload.expiresAt !== 'number'
   ) {
     return { valid: false, reason: 'malformed' };
+  }
+
+  if (payload.purpose !== options.expectedPurpose) {
+    return { valid: false, reason: 'wrong_purpose' };
   }
 
   const now = options.now ?? Date.now();

@@ -89,6 +89,65 @@ export function createEmptyYjsState(): Uint8Array {
   return proseMirrorJsonToYjsState(createEmptyDocument());
 }
 
+/** Where content lands when it is applied to a document that already exists. */
+export type YjsApplyMode = 'replace' | 'append' | 'prepend';
+
+/**
+ * Applies a ProseMirror document into an *existing, live* `Y.Doc`.
+ *
+ * This is the counterpart to `proseMirrorJsonToYjsState`: that one builds a
+ * brand-new state and is only correct while nobody is editing, this one is a
+ * regular Yjs edit on a document that may have readers and writers attached
+ * right now. It is how a write that did not come from the editor (the REST
+ * content endpoint, MCP, the built-in AI, a snapshot restore) reaches an open
+ * collaborative session instead of racing it (ADR-016).
+ *
+ * `append` and `prepend` deliberately insert *only* the new nodes rather than
+ * rewriting the whole fragment: everything the humans in the session typed in
+ * the meantime survives, because it is never deleted in the first place.
+ * `replace` is the only mode that removes existing content, which is exactly
+ * what the caller asked for.
+ */
+export function applyProseMirrorDocumentToYDoc(
+  target: Y.Doc,
+  document: ProseMirrorDocument,
+  mode: YjsApplyMode = 'replace',
+): void {
+  const validation = validateProseMirrorDocument(document);
+  if (!validation.valid) {
+    throw new YjsMaterializationError(
+      `Refusing to apply an invalid document: ${validation.error ?? 'unknown reason'}`,
+    );
+  }
+
+  const source = prosemirrorJSONToYDoc(getExocortexSchema(), document, YJS_DOCUMENT_FIELD);
+  try {
+    // Detached copies: `clone()` deep-copies element attributes, children and
+    // text formatting, which is what makes them insertable into another
+    // document. `Y.XmlHook` cannot occur here (the Exocortex schema has no hook
+    // nodes and y-prosemirror never emits one), but the type says it can, so it
+    // is filtered instead of cast away.
+    const nodes = source
+      .getXmlFragment(YJS_DOCUMENT_FIELD)
+      .toArray()
+      .filter(
+        (node): node is Y.XmlElement | Y.XmlText =>
+          node instanceof Y.XmlElement || node instanceof Y.XmlText,
+      )
+      .map((node) => node.clone());
+
+    // One transaction, so connected clients receive a single update and the
+    // document is never briefly empty for anyone.
+    target.transact(() => {
+      const fragment = target.getXmlFragment(YJS_DOCUMENT_FIELD);
+      if (mode === 'replace') fragment.delete(0, fragment.length);
+      fragment.insert(mode === 'prepend' ? 0 : fragment.length, nodes);
+    });
+  } finally {
+    source.destroy();
+  }
+}
+
 export interface MaterializedContent {
   proseMirrorJson: ProseMirrorDocument;
   plainText: string;

@@ -117,7 +117,13 @@ export class SessionGuard implements CanActivate {
       throw new AppError('api_token_invalid', 'Service tokens are not configured');
     }
 
-    const result = verifyServiceToken({ secret: this.env.SERVICE_TOKEN_SECRET, token });
+    const result = verifyServiceToken({
+      secret: this.env.SERVICE_TOKEN_SECRET,
+      token,
+      // The API only ever accepts the worker's tool-loop tokens here; a
+      // `collaboration-write` token is for the Hocuspocus process alone.
+      expectedPurpose: 'ai-tools',
+    });
     if (!result.valid) {
       if (result.reason === 'expired') {
         throw new AppError('api_token_expired', 'The service token has expired');

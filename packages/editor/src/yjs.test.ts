@@ -8,6 +8,7 @@ import { serializeMarkdown } from './markdown/serialize';
 import { collectBlockIds, serializePlainText } from './plain-text';
 import { createEmptyDocument } from './schema';
 import {
+  applyProseMirrorDocumentToYDoc,
   createEmptyYjsState,
   markdownToYjsState,
   materializeYjsState,
@@ -72,6 +73,94 @@ describe('Yjs state conversion', () => {
     const result = markdownToYjsState(KITCHEN_SINK_MARKDOWN);
     expect(result.title).toBe('Vollständiges Beispiel');
     expect(result.frontmatter.unknown.customProperty).toBe('bleibt erhalten');
+  });
+});
+
+describe('applying content to a live document', () => {
+  /** The state a loaded Hocuspocus document would be in. */
+  function liveDocument(markdown: string): Y.Doc {
+    const doc = new Y.Doc();
+    Y.applyUpdate(doc, markdownToYjsState(markdown).yjsState);
+    return doc;
+  }
+
+  function markdownOf(doc: Y.Doc): string {
+    return serializeMarkdown(yjsStateToProseMirrorJson(Y.encodeStateAsUpdate(doc)));
+  }
+
+  it('replaces the whole content', () => {
+    const doc = liveDocument('# Alt\n\nAlter Absatz.\n');
+    applyProseMirrorDocumentToYDoc(doc, parseMarkdown('# Neu\n\nNeuer Absatz.\n').document);
+
+    const markdown = markdownOf(doc);
+    expect(markdown).toContain('Neuer Absatz.');
+    expect(markdown).not.toContain('Alter Absatz.');
+    doc.destroy();
+  });
+
+  it('appends and prepends without touching what is already there', () => {
+    const doc = liveDocument('Mitte.\n');
+    applyProseMirrorDocumentToYDoc(doc, parseMarkdown('Ende.\n').document, 'append');
+    applyProseMirrorDocumentToYDoc(doc, parseMarkdown('Anfang.\n').document, 'prepend');
+
+    expect(serializePlainText(yjsStateToProseMirrorJson(Y.encodeStateAsUpdate(doc)))).toBe(
+      'Anfang.\nMitte.\nEnde.',
+    );
+    doc.destroy();
+  });
+
+  it('emits exactly one update, so clients never see an empty document', () => {
+    const doc = liveDocument('# Alt\n');
+    const updates: Uint8Array[] = [];
+    doc.on('update', (update: Uint8Array) => updates.push(update));
+
+    applyProseMirrorDocumentToYDoc(doc, parseMarkdown(KITCHEN_SINK_MARKDOWN).document);
+
+    expect(updates).toHaveLength(1);
+    doc.destroy();
+  });
+
+  /**
+   * The reason `append` inserts instead of rewriting: an agent writing to a page
+   * somebody has open must not undo what that person just typed.
+   */
+  it('keeps a concurrent edit that arrives while the content is appended', () => {
+    const editor = liveDocument('Bestehender Absatz.\n');
+    const server = new Y.Doc();
+    Y.applyUpdate(server, Y.encodeStateAsUpdate(editor));
+
+    // The human types locally; the update has not reached the server yet.
+    const typed = new Y.XmlElement('paragraph');
+    typed.insert(0, [new Y.XmlText('Gerade getippt.')]);
+    editor.get(YJS_DOCUMENT_FIELD, Y.XmlFragment).insert(1, [typed]);
+
+    applyProseMirrorDocumentToYDoc(server, parseMarkdown('Vom Agenten.\n').document, 'append');
+
+    // Now both sides sync, as Hocuspocus would.
+    const fromEditor = Y.encodeStateAsUpdate(editor, Y.encodeStateVector(server));
+    const fromServer = Y.encodeStateAsUpdate(server, Y.encodeStateVector(editor));
+    Y.applyUpdate(server, fromEditor);
+    Y.applyUpdate(editor, fromServer);
+
+    const merged = serializePlainText(yjsStateToProseMirrorJson(Y.encodeStateAsUpdate(editor)));
+    expect(merged).toContain('Bestehender Absatz.');
+    expect(merged).toContain('Gerade getippt.');
+    expect(merged).toContain('Vom Agenten.');
+    expect(merged).toBe(
+      serializePlainText(yjsStateToProseMirrorJson(Y.encodeStateAsUpdate(server))),
+    );
+
+    editor.destroy();
+    server.destroy();
+  });
+
+  it('refuses an invalid document instead of clearing the live one', () => {
+    const doc = liveDocument('# Bleibt stehen\n');
+    expect(() =>
+      applyProseMirrorDocumentToYDoc(doc, { type: 'doc', content: [{ type: 'notARealNode' }] }),
+    ).toThrowError(YjsMaterializationError);
+    expect(markdownOf(doc)).toContain('Bleibt stehen');
+    doc.destroy();
   });
 });
 

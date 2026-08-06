@@ -1,3 +1,5 @@
+import { type IncomingMessage, type ServerResponse } from 'node:http';
+
 import { Database } from '@hocuspocus/extension-database';
 import { Server } from '@hocuspocus/server';
 
@@ -11,6 +13,7 @@ import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 import { type QueueRegistry } from '@exocortex/queue';
 
+import { createInternalContentHandler } from './internal-content';
 import { DocumentPersistence } from './persistence';
 
 /** Context attached to every authenticated collaboration connection. */
@@ -31,17 +34,6 @@ export interface CreateCollaborationServerOptions {
   /** Debounce for persisting the binary state, in milliseconds. */
   storeDebounceMs?: number;
   storeMaxDebounceMs?: number;
-}
-
-/**
- * Signals to Hocuspocus that a plain HTTP request was fully handled by our own
- * hook. Hocuspocus stops processing a request when an `onRequest` hook rejects.
- */
-class RequestHandledSignal extends Error {
-  constructor() {
-    super('Request handled by the health endpoint');
-    this.name = 'RequestHandledSignal';
-  }
 }
 
 export class CollaborationAuthenticationError extends Error {
@@ -73,8 +65,14 @@ export function createCollaborationServer(options: CreateCollaborationServerOpti
     queues: options.queues,
     logger: options.logger,
   });
+  const handleInternalContent = createInternalContentHandler({
+    prisma: options.prisma,
+    access,
+    logger: options.logger,
+    secret: options.ticketSecret,
+  });
 
-  return new Server<CollaborationContext>({
+  const server = new Server<CollaborationContext>({
     name: 'exocortex-collaboration',
     port: options.port,
     address: options.address ?? '127.0.0.1',
@@ -161,32 +159,56 @@ export function createCollaborationServer(options: CreateCollaborationServerOpti
         clientsCount: data.clientsCount,
       });
     },
-
-    /**
-     * Plain HTTP requests are only used for health probes. Awareness data is
-     * never persisted and never exposed here.
-     */
-    async onRequest(data) {
-      const url = data.request.url ?? '/';
-      if (url.startsWith('/health/live')) {
-        data.response.writeHead(200, { 'content-type': 'application/json' });
-        data.response.end(JSON.stringify({ status: 'ok' }));
-        throw new RequestHandledSignal();
-      }
-      if (url.startsWith('/health/ready')) {
-        let databaseReady = false;
-        try {
-          await options.prisma.$queryRaw`SELECT 1`;
-          databaseReady = true;
-        } catch (error) {
-          logger.error('Collaboration readiness check failed', error);
-        }
-        data.response.writeHead(databaseReady ? 200 : 503, {
-          'content-type': 'application/json',
-        });
-        data.response.end(JSON.stringify({ status: databaseReady ? 'ok' : 'unavailable' }));
-        throw new RequestHandledSignal();
-      }
-    },
   });
+
+  /**
+   * Plain HTTP requests: the health probes and the private write endpoint the
+   * API uses to reach an open session (`internal-content.ts`). Awareness data is
+   * never persisted and never exposed here.
+   *
+   * These are served ahead of Hocuspocus rather than through its `onRequest`
+   * hook. That hook has no way to say "handled" other than throwing, and the
+   * throw escapes Hocuspocus's own request handler as an unhandled rejection —
+   * one log line of noise for every health probe and every write. Taking the
+   * request first avoids the signalling problem entirely and leaves Hocuspocus
+   * in charge of everything we do not claim.
+   */
+  const hocuspocusRequestHandler = server.requestHandler;
+  server.httpServer.removeListener('request', hocuspocusRequestHandler);
+  server.httpServer.on('request', (request: IncomingMessage, response: ServerResponse) => {
+    void (async () => {
+      try {
+        const url = request.url ?? '/';
+
+        if (url.startsWith('/internal/')) {
+          if (await handleInternalContent(request, response, server.hocuspocus)) return;
+        } else if (url.startsWith('/health/live')) {
+          response.writeHead(200, { 'content-type': 'application/json' });
+          response.end(JSON.stringify({ status: 'ok' }));
+          return;
+        } else if (url.startsWith('/health/ready')) {
+          let databaseReady = false;
+          try {
+            await options.prisma.$queryRaw`SELECT 1`;
+            databaseReady = true;
+          } catch (error) {
+            logger.error('Collaboration readiness check failed', error);
+          }
+          response.writeHead(databaseReady ? 200 : 503, { 'content-type': 'application/json' });
+          response.end(JSON.stringify({ status: databaseReady ? 'ok' : 'unavailable' }));
+          return;
+        }
+
+        await hocuspocusRequestHandler(request, response);
+      } catch (error) {
+        logger.error('HTTP request failed', error, { url: request.url });
+        if (!response.headersSent) {
+          response.writeHead(500, { 'content-type': 'application/json' });
+        }
+        response.end(JSON.stringify({ error: 'internal_error' }));
+      }
+    })();
+  });
+
+  return server;
 }

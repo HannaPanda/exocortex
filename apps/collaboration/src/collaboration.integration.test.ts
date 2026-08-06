@@ -4,10 +4,18 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import WebSocket from 'ws';
 import * as Y from 'yjs';
 
-import { issueCollaborationTicket } from '@exocortex/auth';
+import { issueCollaborationTicket, issueServiceToken } from '@exocortex/auth';
 import { loadCollaborationEnv } from '@exocortex/config';
+import { collaborationApplyPath, type CollaborationApplyRequest } from '@exocortex/contracts';
 import { createPrismaClient, generateOrderKey, type PrismaClient } from '@exocortex/database';
-import { createEmptyYjsState, YJS_DOCUMENT_FIELD, yjsStateToProseMirrorJson } from '@exocortex/editor';
+import {
+  createEmptyYjsState,
+  markdownToYjsState,
+  parseMarkdown,
+  serializePlainText,
+  YJS_DOCUMENT_FIELD,
+  yjsStateToProseMirrorJson,
+} from '@exocortex/editor';
 import { createLogger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 
@@ -70,6 +78,33 @@ function connect(input: { ticket: string; name: string; document: Y.Doc }): Hocu
     // Node has no global WebSocket in the version range we support explicitly.
     WebSocketPolyfill: WebSocket as unknown as typeof globalThis.WebSocket,
     connect: true,
+  });
+}
+
+/** Calls the private endpoint the REST API uses to reach an open session. */
+async function applyContent(input: {
+  documentId: string;
+  markdown: string;
+  mode: CollaborationApplyRequest['mode'];
+  token?: string;
+}): Promise<Response> {
+  const token =
+    input.token ??
+    issueServiceToken({
+      secret: TICKET_SECRET,
+      userId,
+      purpose: 'collaboration-write',
+      ttlSeconds: 60,
+    }).token;
+
+  return fetch(`http://127.0.0.1:${TEST_PORT}${collaborationApplyPath(input.documentId)}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      proseMirrorJson: parseMarkdown(input.markdown).document,
+      mode: input.mode,
+      correlationId: 'test-correlation',
+    } satisfies CollaborationApplyRequest),
   });
 }
 
@@ -313,6 +348,189 @@ describe('collaboration server', () => {
     });
     expect(JSON.stringify(yjsStateToProseMirrorJson(content.yjsState))).not.toContain(
       'archivierte Änderung',
+    );
+
+    provider.destroy();
+    ydoc.destroy();
+    await server.destroy();
+  }, 60_000);
+});
+
+describe('health probes', () => {
+  it('answers both probes without disturbing the process', async () => {
+    const server = startServer();
+    await server.listen();
+
+    const live = await fetch(`http://127.0.0.1:${TEST_PORT}/health/live`);
+    expect(live.status).toBe(200);
+    expect(await live.json()).toEqual({ status: 'ok' });
+
+    const ready = await fetch(`http://127.0.0.1:${TEST_PORT}/health/ready`);
+    expect(ready.status).toBe(200);
+    expect(await ready.json()).toEqual({ status: 'ok' });
+
+    await server.destroy();
+  }, 60_000);
+});
+
+/**
+ * The private endpoint the REST API uses so a write that did not come from an
+ * editor reaches an open session instead of racing its next autosave (ADR-016).
+ */
+describe('internal content endpoint', () => {
+  /** A page with content of its own, so a replace has something to remove. */
+  async function createPage(title: string, markdown: string, archived = false): Promise<string> {
+    const document = await prisma.document.create({
+      data: {
+        workspaceId,
+        title,
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+        ...(archived ? { archivedAt: new Date() } : {}),
+        content: { create: { yjsState: Buffer.from(markdownToYjsState(markdown).yjsState) } },
+      },
+    });
+    return document.id;
+  }
+
+  async function storedText(target: string): Promise<string> {
+    const content = await prisma.documentContent.findUniqueOrThrow({
+      where: { documentId: target },
+      select: { yjsState: true },
+    });
+    return serializePlainText(yjsStateToProseMirrorJson(content.yjsState));
+  }
+
+  it('applies a replace to the open session and persists it right away', async () => {
+    const server = startServer();
+    await server.listen();
+    const page = await createPage('Offen beim Schreiben', 'Alter Inhalt.\n');
+
+    const ydoc = new Y.Doc();
+    const provider = connect({ ticket: ticketFor(page, 'write'), name: page, document: ydoc });
+    await waitFor(() => provider.isSynced);
+
+    const response = await applyContent({
+      documentId: page,
+      markdown: 'Vom Agenten geschrieben.\n',
+      mode: 'replace',
+    });
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as { applied: boolean; clientsCount: number };
+    expect(body.applied).toBe(true);
+    expect(body.clientsCount).toBe(1);
+
+    // The editor sees it without reconnecting …
+    await waitFor(() =>
+      ydoc.get(YJS_DOCUMENT_FIELD, Y.XmlFragment).toJSON().includes('Vom Agenten geschrieben.'),
+    );
+    // … and the database already has it, not only after the next debounce.
+    const persisted = await storedText(page);
+    expect(persisted).toContain('Vom Agenten geschrieben.');
+    expect(persisted).not.toContain('Alter Inhalt.');
+
+    provider.destroy();
+    ydoc.destroy();
+    await server.destroy();
+  }, 60_000);
+
+  /** The reason the mode is carried through instead of always replacing. */
+  it('keeps what a human is typing when content is appended', async () => {
+    const server = startServer();
+    await server.listen();
+    const page = await createPage('Gleichzeitig', 'Erster Absatz.\n');
+
+    const ydoc = new Y.Doc();
+    const provider = connect({ ticket: ticketFor(page, 'write'), name: page, document: ydoc });
+    await waitFor(() => provider.isSynced);
+
+    const typed = new Y.XmlElement('paragraph');
+    typed.insert(0, [new Y.XmlText('Gerade getippt.')]);
+    const fragment = ydoc.get(YJS_DOCUMENT_FIELD, Y.XmlFragment);
+    fragment.insert(fragment.length, [typed]);
+
+    const response = await applyContent({
+      documentId: page,
+      markdown: 'Vom Agenten angehängt.\n',
+      mode: 'append',
+    });
+    expect(response.status).toBe(200);
+
+    await waitFor(() => fragment.toJSON().includes('Vom Agenten angehängt.'));
+    expect(fragment.toJSON()).toContain('Gerade getippt.');
+
+    const persisted = await storedText(page);
+    expect(persisted).toContain('Erster Absatz.');
+    expect(persisted).toContain('Gerade getippt.');
+    expect(persisted).toContain('Vom Agenten angehängt.');
+
+    provider.destroy();
+    ydoc.destroy();
+    await server.destroy();
+  }, 60_000);
+
+  it('reports that nothing was applied when the page is not open here', async () => {
+    const server = startServer();
+    await server.listen();
+    const page = await createPage('Niemand da', 'Unberührt.\n');
+
+    const response = await applyContent({
+      documentId: page,
+      markdown: 'Darf hier nichts tun.\n',
+      mode: 'replace',
+    });
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ applied: false, clientsCount: 0 });
+
+    // The caller's own database write is the whole truth in this case, so the
+    // stored state must be exactly what it was.
+    expect(await storedText(page)).toBe('Unberührt.');
+
+    await server.destroy();
+  }, 60_000);
+
+  it('rejects a token that was not minted for this purpose', async () => {
+    const server = startServer();
+    await server.listen();
+    const page = await createPage('Falscher Zweck', 'Bleibt.\n');
+
+    const wrongPurpose = issueServiceToken({
+      secret: TICKET_SECRET,
+      userId,
+      purpose: 'ai-tools',
+      ttlSeconds: 60,
+    }).token;
+
+    const response = await applyContent({
+      documentId: page,
+      markdown: 'Darf nicht durchkommen.\n',
+      mode: 'replace',
+      token: wrongPurpose,
+    });
+    expect(response.status).toBe(401);
+    expect(await storedText(page)).toBe('Bleibt.');
+
+    await server.destroy();
+  }, 60_000);
+
+  it('refuses to write to an archived page even with a valid token', async () => {
+    const server = startServer();
+    await server.listen();
+    const page = await createPage('Archiviert', 'Unveränderlich.\n', true);
+
+    const ydoc = new Y.Doc();
+    const provider = connect({ ticket: ticketFor(page, 'write'), name: page, document: ydoc });
+    await waitFor(() => provider.isSynced);
+
+    const response = await applyContent({
+      documentId: page,
+      markdown: 'Darf nicht landen.\n',
+      mode: 'replace',
+    });
+    expect(response.status).toBe(403);
+    expect(ydoc.get(YJS_DOCUMENT_FIELD, Y.XmlFragment).toJSON()).not.toContain(
+      'Darf nicht landen.',
     );
 
     provider.destroy();
