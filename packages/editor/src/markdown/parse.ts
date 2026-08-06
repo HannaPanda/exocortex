@@ -15,6 +15,7 @@ import {
 } from '../contract';
 import { buildMarkdownRegistry } from '../extensions';
 import { MARKDOWN_HIGHLIGHT_BACKGROUND } from '../inline-styling';
+import { getExocortexSchema } from '../schema';
 
 import {
   applyExocortexBlockRules,
@@ -40,6 +41,31 @@ const INLINE_MARK_TOKENS: Readonly<Record<string, string>> = {
   s: 'strike',
   ...EXOCORTEX_INLINE_MARK_TOKENS,
 };
+
+/**
+ * Applies one more mark to an active mark set the way ProseMirror's
+ * `Mark.addToSet` would, so the parser can never emit a set the canonical
+ * schema rejects.
+ *
+ * Only the all-excluding case (`excludes: '_'` in a mark spec, which inline
+ * `code` uses) is handled, because that is the only exclusion the Exocortex
+ * schema declares. markdown-it reports ``**`x`**`` as a strong token wrapped
+ * around a code token, and concatenating those marks produced `bold,code` --
+ * a set `Node.check()` refuses. That made `markdownToYjsState` reject an entire
+ * document over one inline snippet, which is how seven vault notes ended up as
+ * import-failure placeholders.
+ */
+function addMarkToSet(
+  active: readonly ProseMirrorMark[],
+  mark: ProseMirrorMark,
+): ProseMirrorMark[] {
+  const excludesEverything = (name: string): boolean =>
+    getExocortexSchema().marks[name]?.spec.excludes === '_';
+
+  if (excludesEverything(mark.type)) return [mark];
+  if (active.some((existing) => excludesEverything(existing.type))) return [...active];
+  return [...active, mark];
+}
 
 /** Block types that carry a stable identifier. */
 const ADDRESSABLE_BLOCK_TYPES_SET = new Set<string>(ADDRESSABLE_BLOCK_TYPES);
@@ -380,20 +406,17 @@ export function parseMarkdown(
               addNode('hardBreak');
               break;
             case 'code_inline':
-              pushText(child.content, [...activeMarks, { type: 'code' }]);
+              pushText(child.content, addMarkToSet(activeMarks, { type: 'code' }));
               break;
             case 'link_open':
-              activeMarks = [
-                ...activeMarks,
-                {
-                  type: 'link',
-                  attrs: {
-                    href: String(child.attrGet('href') ?? ''),
-                    title: asOptionalString(child.attrGet('title')),
-                    target: null,
-                  },
+              activeMarks = addMarkToSet(activeMarks, {
+                type: 'link',
+                attrs: {
+                  href: String(child.attrGet('href') ?? ''),
+                  title: asOptionalString(child.attrGet('title')),
+                  target: null,
                 },
-              ];
+              });
               break;
             case 'link_close':
               activeMarks = activeMarks.filter((mark) => mark.type !== 'link');
@@ -420,10 +443,10 @@ export function parseMarkdown(
               }
               if (opening) {
                 const attrs = markAttributes(prefix);
-                activeMarks = [
-                  ...activeMarks,
+                activeMarks = addMarkToSet(
+                  activeMarks,
                   attrs === undefined ? { type: markType } : { type: markType, attrs },
-                ];
+                );
               } else {
                 activeMarks = activeMarks.filter((mark) => mark.type !== markType);
               }

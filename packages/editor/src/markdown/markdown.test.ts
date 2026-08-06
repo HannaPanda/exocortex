@@ -76,6 +76,39 @@ describe('markdown import', () => {
     }
   });
 
+  it('keeps inline code exclusive instead of emitting a set the schema rejects', () => {
+    // markdown-it reports these as an emphasis token wrapped around a code
+    // token. Concatenating the marks produced `bold,code`, which `Node.check()`
+    // refuses -- and since `markdownToYjsState` validates before building, one
+    // such snippet used to make a whole imported note fail.
+    const cases = [
+      'Ein **`fetter Code`** Test.\n',
+      'Ein *`kursiver Code`* Test.\n',
+      'Ein [**`x`**](https://example.de) Test.\n',
+    ];
+
+    for (const markdown of cases) {
+      const { document } = parseMarkdown(markdown);
+      const validation = validateProseMirrorDocument(document);
+      expect(validation.error ?? `${markdown.trim()}: ok`).toBe(`${markdown.trim()}: ok`);
+
+      const paragraph = document.content?.[0];
+      const codeNode = paragraph?.content?.find((child) =>
+        (child.marks ?? []).some((mark) => mark.type === 'code'),
+      );
+      expect(codeNode?.marks).toEqual([{ type: 'code' }]);
+    }
+  });
+
+  it('still combines marks that do not exclude each other', () => {
+    const { document } = parseMarkdown('Ein [**fetter Link**](https://example.de).\n');
+    const linked = document.content?.[0]?.content?.find((child) =>
+      (child.marks ?? []).some((mark) => mark.type === 'link'),
+    );
+
+    expect((linked?.marks ?? []).map((mark) => mark.type).sort()).toEqual(['bold', 'link']);
+  });
+
   it('assigns a unique block id to every addressable block', () => {
     const { document } = parseMarkdown(KITCHEN_SINK_MARKDOWN);
     const ids = collectBlockIds(document);
