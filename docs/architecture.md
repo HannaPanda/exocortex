@@ -166,6 +166,54 @@ server-derived (`buildAttachmentKey`); clients never choose keys.
 3. add a thin controller method with `zodPipe(schema)` and
    `openApiSchema(schema)` so validation and OpenAPI come from the same source.
 
+### Obsidian import
+
+`apps/api/scripts/import-obsidian.ts` (`pnpm --filter @exocortex/api
+import:obsidian`) imports a folder tree of Markdown notes into a workspace:
+folders become root-and-nested `PAGE` documents, notes become `PAGE` documents
+underneath them, and `[[wikilinks]]` become internal links. It is an operator
+task, not a user action, so it writes through `@exocortex/database` and
+`@exocortex/queue` directly instead of the REST API (609 documents over HTTP,
+one request each, is neither fast nor deterministic) — the same exemption the
+recipe above would otherwise require for a bulk operation.
+
+* **Transaction shape.** Mirrors
+  `apps/api/src/documents/document-markdown.service.ts`: `markdownToYjsState`
+  produces the canonical Yjs state once, and every derived representation
+  (ProseMirror JSON, plain text, re-serialized Markdown) is written alongside
+  it. Markdown is never treated as canonical (rule 5, ADR-007); the enqueued
+  `document-materialization` job re-derives everything from the Yjs state
+  exactly as it would for any other document.
+* **Identity without an import-id column.** The schema is frozen, so a
+  document's identity for idempotency purposes is
+  `(workspaceId, parentId, title)`. Every create goes through a find-first on
+  that triple, which is what makes the script safely re-runnable — at the cost
+  that renaming a note or folder in the vault and re-running creates a second
+  page rather than moving the first one.
+* **Wikilinks resolve by title**, exactly like Obsidian: a `[[Target]]` is
+  looked up by filename (case-insensitively) against every other note in the
+  vault, then rewritten to the *native* `[[Titel]]` / `[[Titel|Label]]` wiki
+  syntax carrying the resolved note's title — not the
+  `[Label](wiki:Titel)` Markdown-link form, because `packages/editor`'s
+  Markdown parser only allows a fixed built-in list of link protocols and
+  rejects `wiki:` there; the double-bracket form is a dedicated parsing path
+  that already emits a `wiki:` href and round-trips losslessly. Fenced code
+  blocks and inline code spans are never rewritten. An unresolved target
+  becomes plain text, never a broken link.
+* **Known limitation.** The two frontmatter shapes the vault uses (bookmarks,
+  recipes) are rendered as a leading callout so their content is visible on
+  the page, but only the fields the callout renders
+  (source/`quelle`, `saved_at`, `portionen`, `tags`) survive past the first
+  materialization run — the rest of the frontmatter (`domain`, `folder`,
+  `review_due`, `notiert`) is preserved in the imported Markdown only until
+  materialization re-derives it purely from the Yjs state. Turning these 14
+  notes into a `COLLECTION` with real properties would fix this; that is a
+  bigger decision than an import script should make on its own.
+* Batches the materialization enqueue (50 jobs, 100 ms pause) so an 8 GB host
+  serving live traffic is not asked to process 600+ jobs at once, and prints a
+  verification pass/fail report (`--verify-only`) covering document counts,
+  wikilink resolution rate, spot-checked round trips and full-text search.
+
 ## Observability
 
 * structured JSON logs via `packages/logger` (pino) with a redaction list that
