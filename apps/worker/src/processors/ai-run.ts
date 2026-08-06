@@ -337,6 +337,8 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         documentId: run.documentId,
         databaseViewId: run.databaseViewId,
         toolsAvailable: toolsEnabled,
+        includePageContent: settings['ai.pageContextEnabled'],
+        pageContentMaxChars: settings['ai.pageContextMaxChars'],
         logger,
       });
 

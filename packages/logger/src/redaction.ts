@@ -31,6 +31,14 @@ export const REDACTED_PATHS: readonly string[] = [
   'markdown',
   'plainText',
   'content',
+  // Assembled prompts. Since `ai.pageContextEnabled` these can carry a page's
+  // full text, and a selection handed over in the editor lands in a message
+  // either way, so a prompt logged for debugging would be a document leak into
+  // the log files. Nothing logs these today; the entries exist so that adding
+  // such a log later cannot quietly become one.
+  'prompt',
+  'systemPrompt',
+  'messages',
   '*.password',
   '*.token',
   '*.secret',

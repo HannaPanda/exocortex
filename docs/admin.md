@@ -58,6 +58,8 @@ first; the admin form and this table follow.
 | `ai.maxToolIterations` | int 0–25 | `8` | Tool round-trips per run before the loop stops. |
 | `ai.visionEnabled` | boolean | `true` | Master switch for vision preprocessing (ADR-012). |
 | `ai.visionMaxImagesPerRun` | int 0–16 | `4` | Images described per run. |
+| `ai.pageContextEnabled` | boolean | `false` | Puts the open page's text into the system prompt (ADR-015). Off by default: it is the one switch here that sends document content the user did not ask for in that turn. Off, the model gets the page's title and path and fetches the text with `exo_page_read` when a question needs it — enough for a tool-capable model. Turn it on for models without tool support. |
+| `ai.pageContextMaxChars` | int 500–100000 | `12000` | Cap on that text. What is cut is stated in the prompt, so the model knows it has an excerpt. |
 | `ai.compactionThresholdPercent` | int 30–95 | `70` | Share of the context window at which compaction starts. |
 | `ai.compactionKeepRecentMessages` | int 2–40 | `8` | Messages left untouched by a compaction. |
 | `ai.compactionModelSlug` | string \| null | `null` | Model that writes the summary. Null reuses the conversation's model. |

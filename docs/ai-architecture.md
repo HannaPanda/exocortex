@@ -104,9 +104,17 @@ system prompt.
   tells the model to fetch the body with `exo_page_read` when the question is
   about "this page". The page's text stays out of the prompt of every
   unrelated turn, and fetching it stays under the user's `ai.toolsEnabled`
-  control. **Injecting the content directly is deliberately not implemented**
-  — that would need its own setting and its own ADR (issue #1, points 2 and
-  5).
+  control.
+* **…unless `ai.pageContextEnabled` is on**, which puts the page's materialized
+  Markdown into the block as `### Inhalt`. **Default off**, and the only switch
+  here that sends document content the user did not ask for in that turn — see
+  [ADR-015](adr/ADR-015-page-content-in-the-prompt.md) for why it exists anyway
+  (a tool-less model has a pointer it cannot follow). Capped by
+  `ai.pageContextMaxChars`, and a cut says so *in the prompt text*, worded
+  differently depending on whether the run can fetch the rest: a model that
+  cannot tell an excerpt from a whole page answers "the page does not mention
+  X" about a page that does. Collections are excluded — their body is empty by
+  construction and the view description is the richer answer.
 * **Honest when it cannot follow the pointer.** Tool availability is resolved
   *before* the prompt is built, so a run without tools (setting off, model
   without tool support, or a legacy run with no `conversationId`) gets a block

@@ -23,6 +23,20 @@ export const settingsSchema = z.object({
   'ai.maxToolIterations': z.number().int().min(0).max(25).default(8),
   'ai.visionEnabled': z.boolean().default(true),
   'ai.visionMaxImagesPerRun': z.number().int().min(0).max(16).default(4),
+  /**
+   * Whether the open page's text is put into the system prompt directly.
+   *
+   * Default `false`, unlike every other AI switch here: this is the one that
+   * sends document content to the provider without the user asking for it in
+   * that turn. Off, the model is told which page is open and fetches it with
+   * `exo_page_read` when the question needs it -- which is enough for a
+   * tool-capable model and keeps the fetch per-question. On, it also gets the
+   * text, which is what makes a tool-less model useful at all.
+   * See docs/adr/ADR-015-page-content-in-the-prompt.md.
+   */
+  'ai.pageContextEnabled': z.boolean().default(false),
+  /** Hard cap on the characters the open page's text may contribute. */
+  'ai.pageContextMaxChars': z.number().int().min(500).max(100_000).default(12_000),
   /** Compaction starts once the prompt passes this share of the context window. */
   'ai.compactionThresholdPercent': z.number().int().min(30).max(95).default(70),
   'ai.compactionKeepRecentMessages': z.number().int().min(2).max(40).default(8),

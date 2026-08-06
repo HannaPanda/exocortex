@@ -15,6 +15,10 @@ export interface BuildSystemPromptInput {
   databaseViewId: string | null;
   /** Whether this run may call tools. Decides whether the pointer to the open page is actionable. */
   toolsAvailable: boolean;
+  /** `ai.pageContextEnabled`. Off by default; see ADR-015. */
+  includePageContent: boolean;
+  /** `ai.pageContextMaxChars`. Only consulted when `includePageContent` is set. */
+  pageContentMaxChars: number;
   logger: Logger;
 }
 
@@ -52,22 +56,40 @@ function displayTitle(title: string): string {
 }
 
 /**
+/** The open page's own text, when `ai.pageContextEnabled` put it into the prompt. */
+export interface OpenPageContent {
+  text: string;
+  /** `true` when `ai.pageContextMaxChars` cut it. Always stated in the output. */
+  truncated: boolean;
+}
+
+export interface OpenPageSectionOptions {
+  toolsAvailable: boolean;
+  /** Columns, open view and first rows, for a collection. `null` for an ordinary page. */
+  collectionDescription?: string | null;
+  /** `null` (the default) leaves the block a pointer instead of a copy. */
+  content?: OpenPageContent | null;
+}
+
+/**
  * Renders the "you are standing here" block.
  *
- * This is deliberately a pointer, not the content: the model is told which page
+ * By default this is a pointer, not the content: the model is told which page
  * is open and asked to fetch it with `exo_page_read` when the question is about
  * it. That keeps the page's text out of the prompt of every unrelated turn, and
  * it keeps the fetch under the user's `ai.toolsEnabled` control
  * (docs/adr/ADR-009-provider-neutral-ai.md).
  *
+ * `content` overrides that, and only `ai.pageContextEnabled` sets it -- off by
+ * default, because it sends the page whether or not the question is about it
+ * (docs/adr/ADR-015-page-content-in-the-prompt.md).
+ *
  * Exported for tests: everything here is pure formatting.
  */
-export function formatOpenPageSection(
-  page: OpenPage,
-  toolsAvailable: boolean,
-  /** Columns, open view and first rows, for a collection. `null` for an ordinary page. */
-  collectionDescription: string | null = null,
-): string {
+export function formatOpenPageSection(page: OpenPage, options: OpenPageSectionOptions): string {
+  const { toolsAvailable } = options;
+  const collectionDescription = options.collectionDescription ?? null;
+  const content = options.content ?? null;
   const title = displayTitle(page.title);
   const pathParts = [...page.ancestorTitles.map(displayTitle), title];
   const path = (page.pathElided ? ['…', ...pathParts] : pathParts).join(' / ');
@@ -97,6 +119,25 @@ export function formatOpenPageSection(
     return lines.join('\n');
   }
 
+  // The text itself, when the admin switched that on. The cut has to be visible
+  // in the text: a model that cannot tell an excerpt from a whole page will
+  // confidently answer "the page does not mention X" about a page that does.
+  if (content !== null) {
+    lines.push('### Inhalt', content.text, '');
+    if (content.truncated) {
+      lines.push(
+        toolsAvailable
+          ? 'Das ist nur der Anfang der Seite, sie wurde gekürzt. Den Rest holst du mit `exo_page_read`.'
+          : 'Das ist nur der Anfang der Seite, sie wurde gekürzt. Mehr kannst du in diesem Lauf nicht laden; sage das, statt den Rest zu erraten.',
+      );
+    } else {
+      lines.push(
+        'Das ist der vollständige Text der Seite, Stand der letzten Materialisierung.',
+      );
+    }
+    return lines.join('\n');
+  }
+
   if (toolsAvailable) {
     lines.push(
       'Der Inhalt steht hier nicht. Lade ihn mit `exo_page_read` und dieser documentId,',
@@ -111,6 +152,31 @@ export function formatOpenPageSection(
   }
 
   return lines.join('\n');
+}
+
+/**
+ * Loads the open page's derived text, cut to the configured budget.
+ *
+ * Reads the same materialized `markdown` / `plainText` the ALWAYS rule pages
+ * read, so there is no second serialization path that could disagree with them
+ * (ADR-007: Markdown is derived, never canonical). A page that has never been
+ * materialized yields nothing, and the block falls back to being a pointer.
+ */
+async function loadPageContent(input: {
+  prisma: PrismaClient;
+  documentId: string;
+  maxChars: number;
+}): Promise<OpenPageContent | null> {
+  const row = await input.prisma.documentContent.findUnique({
+    where: { documentId: input.documentId },
+    select: { markdown: true, plainText: true },
+  });
+  const body = row?.markdown ?? row?.plainText ?? null;
+  if (body === null || body.trim().length === 0) return null;
+
+  return body.length > input.maxChars
+    ? { text: body.slice(0, input.maxChars), truncated: true }
+    : { text: body, truncated: false };
 }
 
 /**
@@ -181,6 +247,8 @@ export async function buildSystemPrompt(input: BuildSystemPromptInput): Promise<
     documentId,
     databaseViewId,
     toolsAvailable,
+    includePageContent,
+    pageContentMaxChars,
     logger,
   } = input;
 
@@ -254,6 +322,14 @@ export async function buildSystemPrompt(input: BuildSystemPromptInput): Promise<
         workspaceId,
       });
     } else {
+      // A collection's own body is empty by construction (its rows are separate
+      // documents), so the content switch does not apply to one: the view
+      // description above is already the richer answer.
+      const content =
+        includePageContent && openPage.type === 'PAGE'
+          ? await loadPageContent({ prisma, documentId: openPage.id, maxChars: pageContentMaxChars })
+          : null;
+
       const collectionDescription =
         openPage.type === 'COLLECTION'
           ? await describeCollection({
@@ -271,7 +347,9 @@ export async function buildSystemPrompt(input: BuildSystemPromptInput): Promise<
               return null;
             })
           : null;
-      sections.push(formatOpenPageSection(openPage, toolsAvailable, collectionDescription));
+      sections.push(
+        formatOpenPageSection(openPage, { toolsAvailable, collectionDescription, content }),
+      );
       openPageIncluded = true;
     }
   }

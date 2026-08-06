@@ -71,6 +71,14 @@ const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
     label: 'Bilder pro Anfrage',
     help: 'Obergrenze für die Anzahl beschriebener Bilder je Lauf.',
   },
+  'ai.pageContextEnabled': {
+    label: 'Text der geöffneten Seite mitschicken',
+    help: 'Aus: Die KI erfährt nur Titel und Pfad der offenen Seite und lädt den Text selbst, wenn eine Frage ihn braucht. An: Der Text geht bei jeder Frage mit, auch wenn sie nichts damit zu tun hat. Nötig für Modelle ohne Werkzeuge, sonst zusätzlicher Datenabfluss zum Anbieter.',
+  },
+  'ai.pageContextMaxChars': {
+    label: 'Zeichen der geöffneten Seite',
+    help: 'Obergrenze für den mitgeschickten Seitentext. Was darüber liegt, wird gekürzt, und die Kürzung steht sichtbar im Text.',
+  },
   'ai.compactionThresholdPercent': {
     label: 'Zusammenfassen ab (% des Kontextfensters)',
     help: 'Ab diesem Füllstand werden ältere Nachrichten zu einer Zusammenfassung verdichtet.',

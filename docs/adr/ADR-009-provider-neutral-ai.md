@@ -40,8 +40,12 @@ serving HTTP or WebSocket traffic.
   2. **The open page is named in the system prompt** (title, breadcrumb,
      `documentId`, type — see "Page context" in `docs/ai-architecture.md`).
      That is metadata, not content, and it exists precisely so the model can
-     use the tool above instead of being fed the page unasked. Putting the page
-     *body* into the prompt would be a real exception and needs its own ADR and
-     its own setting; it is deliberately not implemented.
+     use the tool above instead of being fed the page unasked.
+* **Superseded for the open page's text, when switched on**, by
+  [ADR-015](ADR-015-page-content-in-the-prompt.md): `ai.pageContextEnabled`
+  (default **off**) puts the page's derived Markdown into the system prompt, for
+  deployments whose model cannot call tools. With the default left alone this
+  ADR's promise is unchanged. A selection the user hands over from the editor is
+  not covered by it either way: that is content the user picked and sent.
 * Capabilities are data, so the UI can adapt (for example hide vision features) once
   more providers exist.
