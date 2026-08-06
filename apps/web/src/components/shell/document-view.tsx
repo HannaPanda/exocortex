@@ -5,6 +5,7 @@ import {
   DownloadIcon,
   MoreHorizontalIcon,
   RotateCcwIcon,
+  SparklesIcon,
   UploadIcon,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -12,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
 import {
+  Badge,
   Button,
   cn,
   Dialog,
@@ -31,6 +33,7 @@ import {
 } from '@exocortex/ui';
 
 import { DatabaseShell } from '@/components/database/database-shell';
+import { AiRuleDialog } from '@/components/document/ai-rule-dialog';
 import { CollaborativeEditor } from '@/components/editor/collaborative-editor';
 import {
   useArchiveDocument,
@@ -43,6 +46,11 @@ import {
 } from '@/lib/api/queries';
 
 import { SaveIndicator } from './save-indicator';
+
+const AI_RULE_BADGE_LABEL: Record<'always' | 'on_demand', string> = {
+  always: 'KI-Regel',
+  on_demand: 'KI-Regel (auf Anfrage)',
+};
 
 interface DocumentViewProps {
   workspaceId: string;
@@ -65,6 +73,7 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
 
   const [importOpen, setImportOpen] = React.useState(false);
   const [importText, setImportText] = React.useState('');
+  const [aiRuleDialogOpen, setAiRuleDialogOpen] = React.useState(false);
 
   if (document.isPending || session.isPending) {
     return <LoadingState label="Seite wird geladen …" />;
@@ -122,6 +131,12 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
           <span className="max-w-40 truncate text-foreground">{detail.title}</span>
         </nav>
 
+        {detail.aiRuleMode !== 'off' ? (
+          <Badge variant="muted" data-testid="ai-rule-badge">
+            {AI_RULE_BADGE_LABEL[detail.aiRuleMode]}
+          </Badge>
+        ) : null}
+
         <div className="ml-auto flex items-center gap-3">
           {!archived && detail.access === 'write' ? <SaveIndicator /> : null}
 
@@ -156,6 +171,13 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
                 onClick={() => setImportOpen(true)}
               >
                 <UploadIcon /> Markdown importieren
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                data-testid="open-ai-rule-dialog"
+                onClick={() => setAiRuleDialogOpen(true)}
+              >
+                <SparklesIcon /> Als KI-Regel verwenden …
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -238,6 +260,15 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
           </div>
         </div>
       )}
+
+      <AiRuleDialog
+        documentId={documentId}
+        open={aiRuleDialogOpen}
+        onOpenChange={setAiRuleDialogOpen}
+        initialMode={detail.aiRuleMode}
+        initialTrigger={detail.aiRuleTrigger}
+        initialPriority={detail.aiRulePriority}
+      />
 
       <Dialog open={importOpen} onOpenChange={setImportOpen}>
         <DialogContent className="max-w-2xl">
