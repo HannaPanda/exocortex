@@ -110,10 +110,20 @@ export class WorkspaceAccessService {
     return context;
   }
 
-  async findAttachmentContext(
-    attachmentId: string,
-    userId: string,
-  ): Promise<{ attachment: AttachmentPolicySubject & { storageKey: string; filename: string; mimeType: string; byteSize: number; documentId: string | null }; role: WorkspaceRole } | null> {
+  async findAttachmentContext(attachmentId: string, userId: string): Promise<{
+    attachment: AttachmentPolicySubject & {
+      storageKey: string;
+      filename: string;
+      mimeType: string;
+      byteSize: number;
+      documentId: string | null;
+      textStatus: 'NOT_APPLICABLE' | 'PENDING' | 'READY' | 'FAILED';
+      extractedText: string | null;
+      textExtractedAt: Date | null;
+      textExtractionError: string | null;
+    };
+    role: WorkspaceRole;
+  } | null> {
     const attachment = await this.prisma.attachment.findUnique({
       where: { id: attachmentId },
       select: {
@@ -126,6 +136,10 @@ export class WorkspaceAccessService {
         filename: true,
         mimeType: true,
         byteSize: true,
+        textStatus: true,
+        extractedText: true,
+        textExtractedAt: true,
+        textExtractionError: true,
       },
     });
     if (attachment === null) return null;

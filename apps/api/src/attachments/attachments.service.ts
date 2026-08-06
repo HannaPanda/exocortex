@@ -13,10 +13,13 @@ import { type ApiEnv } from '@exocortex/config';
 import {
   ALLOWED_ATTACHMENT_MIME_TYPES,
   type Attachment,
+  type AttachmentTextResponse,
+  QUEUE_NAMES,
   type UploadAttachmentResponse,
 } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
+import { QueueRegistry } from '@exocortex/queue';
 import {
   buildAttachmentKey,
   detectMimeType,
@@ -27,7 +30,8 @@ import {
 import { AppError } from '../common/app-error';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { OutboxService } from '../common/outbox.service';
-import { OBJECT_STORAGE, PRISMA } from '../platform/platform.module';
+import { OBJECT_STORAGE, PRISMA, QUEUES } from '../platform/platform.module';
+import { SettingsService } from '../platform/settings.service';
 
 export interface UploadInput {
   workspaceId: string;
@@ -56,8 +60,10 @@ export class AttachmentsService {
     @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
     @Inject(API_ENV) private readonly env: ApiEnv,
     @Inject(LOGGER) private readonly logger: Logger,
+    @Inject(QUEUES) private readonly queues: QueueRegistry,
     private readonly access: WorkspaceAccessService,
     private readonly outbox: OutboxService,
+    private readonly settings: SettingsService,
   ) {}
 
   async upload(input: UploadInput): Promise<UploadAttachmentResponse> {
@@ -105,6 +111,9 @@ export class AttachmentsService {
 
     const filename = sanitizeFilename(input.filename, detected.extension);
 
+    const pdfExtractionEnabled =
+      detected.mimeType === 'application/pdf' && (await this.settings.getKey('ai.pdfExtractionEnabled'));
+
     // The row is created first so the object key can embed its identifier.
     const attachment = await this.prisma.attachment.create({
       data: {
@@ -115,8 +124,18 @@ export class AttachmentsService {
         byteSize: input.body.byteLength,
         storageKey: 'pending',
         createdById: input.userId,
+        ...(pdfExtractionEnabled ? { textStatus: 'PENDING' } : {}),
       },
     });
+
+    if (pdfExtractionEnabled) {
+      await this.queues.enqueue(QUEUE_NAMES.attachmentText, {
+        correlationId: input.correlationId,
+        attachmentId: attachment.id,
+        workspaceId: input.workspaceId,
+        reason: 'upload',
+      });
+    }
 
     const storageKey = buildAttachmentKey({
       workspaceId: input.workspaceId,
@@ -229,6 +248,67 @@ export class AttachmentsService {
         correlationId: input.correlationId,
       });
     }
+  }
+
+  /**
+   * Returns cached extracted text, or enqueues extraction and returns
+   * `pending` (D6). The MCP request path never extracts synchronously: a
+   * stdio server has no Redis access and must answer fast.
+   */
+  async getText(
+    attachmentId: string,
+    userId: string,
+    correlationId: string,
+  ): Promise<AttachmentTextResponse> {
+    const context = await this.access.findAttachmentContext(attachmentId, userId);
+    if (context === null) {
+      throw new AppError(
+        'attachment_access_denied',
+        'Attachment does not exist or is not visible to this user',
+      );
+    }
+    assertPolicy(
+      canDownloadAttachment(context.role, context.attachment, context.attachment.workspaceId),
+    );
+
+    const { attachment } = context;
+    const base = {
+      attachmentId,
+      filename: attachment.filename,
+      mimeType: attachment.mimeType,
+    };
+
+    if (attachment.mimeType !== 'application/pdf' && attachment.textStatus === 'NOT_APPLICABLE') {
+      return { ...base, status: 'not_applicable', text: null, extractedAt: null, error: null };
+    }
+
+    if (attachment.textStatus === 'READY') {
+      return {
+        ...base,
+        status: 'ready',
+        text: attachment.extractedText,
+        extractedAt: attachment.textExtractedAt?.toISOString() ?? null,
+        error: null,
+      };
+    }
+
+    if (attachment.textStatus === 'PENDING') {
+      return { ...base, status: 'pending', text: null, extractedAt: null, error: null };
+    }
+
+    // NOT_APPLICABLE but a PDF (extraction was never requested), or FAILED: (re-)enqueue.
+    await this.prisma.attachment.update({
+      where: { id: attachmentId },
+      data: { textStatus: 'PENDING', textExtractionError: null },
+    });
+    await this.queues.enqueue(QUEUE_NAMES.attachmentText, {
+      correlationId,
+      attachmentId,
+      workspaceId: attachment.workspaceId,
+      reason: 'requested',
+    });
+
+    return { ...base, status: 'pending', text: null, extractedAt: null, error: null };
   }
 
   private toContract(row: {

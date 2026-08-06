@@ -4,7 +4,12 @@ import { type FastifyReply, type FastifyRequest } from 'fastify';
 
 import { type VerifiedSession } from '@exocortex/auth';
 import { type ApiEnv } from '@exocortex/config';
-import { type UploadAttachmentResponse, uploadAttachmentResponseSchema } from '@exocortex/contracts';
+import {
+  type AttachmentTextResponse,
+  attachmentTextResponseSchema,
+  type UploadAttachmentResponse,
+  uploadAttachmentResponseSchema,
+} from '@exocortex/contracts';
 
 import { CurrentSession } from '../auth/session.guard';
 import { AppError } from '../common/app-error';
@@ -100,5 +105,14 @@ export class AttachmentsController {
       userId: session.userId,
       correlationId: currentCorrelationId(),
     });
+  }
+
+  @Get('attachments/:attachmentId/text')
+  @ApiOkResponse({ schema: openApiResponseSchema(attachmentTextResponseSchema) })
+  async text(
+    @CurrentSession() session: VerifiedSession,
+    @Param('attachmentId') attachmentId: string,
+  ): Promise<AttachmentTextResponse> {
+    return this.attachments.getText(attachmentId, session.userId, currentCorrelationId());
   }
 }
