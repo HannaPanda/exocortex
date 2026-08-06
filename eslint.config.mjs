@@ -175,10 +175,12 @@ export default tseslint.config(
   // -------------------------------------------------- command line utilities
   {
     // Seeding and maintenance scripts are CLIs: printing to stdout is their
-    // interface, not a forgotten debug statement. `**/scripts/**` (rather than
-    // just the root-level `scripts/**`) also covers per-app operator scripts
-    // such as `apps/api/scripts/import-obsidian.ts`.
-    files: ['**/prisma/seed.ts', '**/scripts/**/*.{mjs,ts}'],
+    // interface, not a forgotten debug statement. `seed*.ts` covers the
+    // additional registry seeds next to the main seed (`seed-ai-models.ts`),
+    // and `**/scripts/**` (rather than just the root-level `scripts/**`) also
+    // covers per-app operator scripts such as
+    // `apps/api/scripts/import-obsidian.ts`.
+    files: ['**/prisma/seed*.ts', '**/scripts/**/*.{mjs,ts}'],
     rules: { 'no-console': 'off' },
   },
 
