@@ -8,6 +8,7 @@ import {
   Button,
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -50,18 +51,20 @@ export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: st
         }
       />
       <DropdownMenuContent className="min-w-60">
-        <DropdownMenuLabel>Arbeitsbereiche</DropdownMenuLabel>
-        {(workspaces.data ?? []).map((workspace) => (
-          <DropdownMenuItem
-            key={workspace.id}
-            onClick={() => router.push(`/arbeitsbereich/${workspace.id}`)}
-            data-testid={`workspace-option-${workspace.id}`}
-          >
-            <span className="min-w-0 flex-1 truncate">{workspace.name}</span>
-            <span className="text-xs text-muted-foreground">{workspace.role}</span>
-            {workspace.id === activeWorkspaceId ? <CheckIcon /> : null}
-          </DropdownMenuItem>
-        ))}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Arbeitsbereiche</DropdownMenuLabel>
+          {(workspaces.data ?? []).map((workspace) => (
+            <DropdownMenuItem
+              key={workspace.id}
+              onClick={() => router.push(`/arbeitsbereich/${workspace.id}`)}
+              data-testid={`workspace-option-${workspace.id}`}
+            >
+              <span className="min-w-0 flex-1 truncate">{workspace.name}</span>
+              <span className="text-xs text-muted-foreground">{workspace.role}</span>
+              {workspace.id === activeWorkspaceId ? <CheckIcon /> : null}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         {creating ? (
           <div className="flex flex-col gap-2 p-2">

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { requireSeedCredentials, signIn } from '../support/fixtures';
+import { requireSeedCredentials, signIn, workspaceIdFrom } from '../support/fixtures';
 
 test.beforeAll(() => {
   requireSeedCredentials();
@@ -28,6 +28,29 @@ test.describe('authentication', () => {
     // Protected routes bounce back to the login form.
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/anmelden/, { timeout: 30_000 });
+  });
+
+  test('opens the workspace switcher and switches to another workspace', async ({ page }) => {
+    await signIn(page, 'johanna');
+    const current = workspaceIdFrom(page);
+
+    // Opening the menu must render its group label without throwing; a bare
+    // `Menu.GroupLabel` outside `Menu.Group` used to take the whole route down.
+    await page.getByTestId('workspace-switcher').click();
+    await expect(page.getByText('Arbeitsbereiche')).toBeVisible();
+    await expect(page.getByTestId(`workspace-option-${current}`)).toBeVisible();
+
+    // Create a second workspace from the menu and switch into it.
+    await page.getByTestId('workspace-create').click();
+    const name = `Wechsel ${Date.now().toString(36)}`;
+    await page.getByTestId('workspace-name-input').fill(name);
+    await page.getByTestId('workspace-create-submit').click();
+    await page.waitForURL(/\/arbeitsbereich\/(?!$)/, { timeout: 30_000 });
+    await expect(page.getByTestId('workspace-switcher')).toContainText(name);
+
+    await page.getByTestId('workspace-switcher').click();
+    await page.getByTestId(`workspace-option-${current}`).click();
+    await page.waitForURL(new RegExp(`/arbeitsbereich/${current}`), { timeout: 30_000 });
   });
 
   test('registers a new account and lands in the application', async ({ page }) => {
