@@ -55,6 +55,51 @@ const EXTRACTION_PROMPT =
   'Gib den vollständigen Text dieses Dokuments unverändert zurück. Keine Zusammenfassung, keine Kommentare.';
 
 /**
+ * The `pdf-text` plugin always answers with the same skeleton, verified live on
+ * 2026-08-06 against both a text-layer PDF and a scan:
+ *
+ * ```
+ * # document.pdf
+ * ## Metadata
+ * - Title=…
+ * - CreationDate=…
+ *
+ * ## Contents
+ * ### Page 1
+ * …page text…
+ * ```
+ *
+ * A scan yields that skeleton with every page empty: roughly 300 characters of
+ * PDF header fields and not one word of the document. That is a non-empty
+ * string, so a plain length check accepts it and caches the header as if it
+ * were the content -- and the OCR-capable engine behind it never gets a turn.
+ * Emptiness therefore has to be decided on the page text, not on the response.
+ *
+ * The model sometimes wraps the whole skeleton in a `<file name="…">` element
+ * and sometimes does not (both observed against the same document), so markup
+ * is stripped before the page text is judged. Otherwise a lone `</file>` counts
+ * as content and the scan is accepted again.
+ */
+const CONTENTS_MARKER = '\n## Contents\n';
+const PAGE_HEADING = /^### Page \d+$/gm;
+const MARKUP_TAG = /<\/?[a-z][^>]*>/gi;
+/** Below this, a document carries nothing worth caching or handing to a model. */
+const MIN_CONTENT_CHARS = 16;
+
+/** Null when the response does not follow the skeleton above. */
+function splitPdfTextOutput(raw: string): { metadataBlock: string; pageText: string } | null {
+  const index = raw.indexOf(CONTENTS_MARKER);
+  if (index === -1) return null;
+  return {
+    metadataBlock: raw.slice(0, index),
+    pageText: raw
+      .slice(index + CONTENTS_MARKER.length)
+      .replace(PAGE_HEADING, '')
+      .replace(MARKUP_TAG, ''),
+  };
+}
+
+/**
  * PDF text extraction through OpenRouter's `file-parser` plugin.
  *
  * The `pdf-text` engine is free and runs on OpenRouter's side, which keeps this
@@ -125,6 +170,17 @@ export function createOpenRouterPdfExtractor(
         };
         const text = payload.choices?.[0]?.message?.content ?? '';
         if (text.trim().length === 0) return null;
+
+        // An unrecognised shape is passed through untouched; only the known
+        // skeleton is judged on its page text.
+        const split = splitPdfTextOutput(text);
+        if (split !== null && split.pageText.trim().length < MIN_CONTENT_CHARS) {
+          options.logger.info('PDF text plugin returned no page content', {
+            correlationId: input.correlationId,
+          });
+          return null;
+        }
+
         return {
           text,
           // The plugin reports nothing beyond the text itself.

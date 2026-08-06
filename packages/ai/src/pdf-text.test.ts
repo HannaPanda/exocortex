@@ -1,0 +1,104 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+import { type Logger } from '@exocortex/logger';
+
+import { createOpenRouterPdfExtractor } from './pdf-text';
+
+function fakeLogger(): Logger {
+  const noop = (): void => {
+    /* no output in tests */
+  };
+  const logger: Logger = {
+    trace: noop,
+    debug: noop,
+    info: noop,
+    warn: noop,
+    error: noop,
+    fatal: noop,
+    child: () => logger,
+  };
+  return logger;
+}
+
+function extractor() {
+  return createOpenRouterPdfExtractor({
+    apiKey: 'test-key',
+    baseUrl: 'https://openrouter.test/api/v1',
+    model: 'test/model',
+    appUrl: 'https://exocortex.test',
+    logger: fakeLogger(),
+  });
+}
+
+function respondWith(content: string): void {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ choices: [{ message: { content } }] }), { status: 200 }),
+    ),
+  );
+}
+
+const input = { data: new Uint8Array([1, 2, 3]), filename: 'x.pdf', correlationId: 'corr-test' };
+
+/**
+ * The literal responses below were captured from the live `pdf-text` plugin on
+ * 2026-08-06, one from a three-page scan and one from a PDF with a text layer.
+ */
+const SCAN_RESPONSE =
+  '# document.pdf\n## Metadata\n- PDFFormatVersion=1.4\n- Title=scan\n' +
+  '- CreationDate=D:20260806090613Z\n\n\n\n## Contents\n### Page 1\n\n\n\n\n### Page 2\n\n\n\n\n### Page 3';
+
+const TEXT_LAYER_RESPONSE =
+  '# document.pdf\n## Metadata\n- PDFFormatVersion=1.5\n- Creator=LaTeX with hyperref\n\n\n\n' +
+  '## Contents\n### Page 1\nHermes Kanban\nA durable, profile-aware work-queue architecture.';
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+describe('createOpenRouterPdfExtractor', () => {
+  it('reports a scan as no result even though the response is not empty', async () => {
+    // The plugin answers a scan with its skeleton and empty pages. Accepting
+    // that would cache PDF header fields as the document text and, worse, would
+    // stop the OCR-capable engine behind it from ever being tried.
+    respondWith(SCAN_RESPONSE);
+
+    expect(await extractor().extract(input)).toBeNull();
+  });
+
+  it('returns the text of a PDF that has a text layer', async () => {
+    respondWith(TEXT_LAYER_RESPONSE);
+
+    const result = await extractor().extract(input);
+
+    expect(result?.text).toContain('Hermes Kanban');
+    expect(result?.metadata.extractor).toBe('openrouter');
+    expect(result?.metadata.ocrUsed).toBe(false);
+  });
+
+  it('passes through a response that does not follow the plugin skeleton', async () => {
+    // A model that answers in prose instead of the plugin format must not be
+    // judged by a marker it never emitted.
+    respondWith('Just the plain text of the document, no headings at all.');
+
+    const result = await extractor().extract(input);
+
+    expect(result?.text).toBe('Just the plain text of the document, no headings at all.');
+  });
+
+  it('reports a scan as no result when the plugin wraps its output in a file element', async () => {
+    // Observed against the same document as SCAN_RESPONSE: the model sometimes
+    // echoes the plugin's `<file>` wrapper. Without stripping markup the lone
+    // closing tag counts as page content.
+    respondWith(`<file name="scan.pdf">\n${SCAN_RESPONSE}\n</file>`);
+
+    expect(await extractor().extract(input)).toBeNull();
+  });
+
+  it('returns null for an empty response', async () => {
+    respondWith('   \n  ');
+
+    expect(await extractor().extract(input)).toBeNull();
+  });
+});

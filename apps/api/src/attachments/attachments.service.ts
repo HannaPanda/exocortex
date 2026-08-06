@@ -128,15 +128,6 @@ export class AttachmentsService {
       },
     });
 
-    if (pdfExtractionEnabled) {
-      await this.queues.enqueue(QUEUE_NAMES.attachmentText, {
-        correlationId: input.correlationId,
-        attachmentId: attachment.id,
-        workspaceId: input.workspaceId,
-        reason: 'upload',
-      });
-    }
-
     const storageKey = buildAttachmentKey({
       workspaceId: input.workspaceId,
       attachmentId: attachment.id,
@@ -165,6 +156,19 @@ export class AttachmentsService {
       where: { id: attachment.id },
       data: { storageKey },
     });
+
+    // Only now, after the row points at a real object. Enqueuing right after
+    // the create raced the upload: the worker reliably won and failed on the
+    // placeholder key `pending`, burning a retry and logging an error on every
+    // single PDF upload before the retry succeeded.
+    if (pdfExtractionEnabled) {
+      await this.queues.enqueue(QUEUE_NAMES.attachmentText, {
+        correlationId: input.correlationId,
+        attachmentId: attachment.id,
+        workspaceId: input.workspaceId,
+        reason: 'upload',
+      });
+    }
 
     this.logger.info('Attachment stored', {
       attachmentId: stored.id,
