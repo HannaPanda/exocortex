@@ -332,6 +332,29 @@
     @apply block h-[32rem] w-full;
   }
 
+  /* What was read out of the file: page count, title, whether OCR ran. Wraps
+     rather than truncates, because a long title must not push the page count
+     out of sight. */
+  .exocortex-editor .exocortex-media-meta {
+    @apply flex flex-wrap items-center gap-1.5 border-b border-border bg-card px-3 py-1.5 text-xs;
+  }
+
+  .exocortex-editor .exocortex-media-fileAttachment .exocortex-media-meta {
+    @apply rounded-b-md border-x border-b border-t-0 -mt-1 pt-2;
+  }
+
+  .exocortex-editor .exocortex-media-chip {
+    @apply rounded-sm bg-muted px-1.5 py-0.5 text-muted-foreground;
+  }
+
+  .exocortex-editor .exocortex-media-chip-failed {
+    @apply text-destructive-text;
+  }
+
+  .exocortex-editor .exocortex-media-retry {
+    @apply cursor-pointer rounded-sm px-1.5 py-0.5 text-muted-foreground underline hover:text-foreground disabled:cursor-default disabled:no-underline;
+  }
+
   .exocortex-editor .exocortex-media-fileAttachment a {
     @apply flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 no-underline;
   }

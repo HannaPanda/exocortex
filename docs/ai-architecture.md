@@ -190,16 +190,26 @@ is handed an ordered *chain* of them rather than a single one:
 
 | Engine | Where | Reads scans | Cost |
 | ------ | ----- | ----------- | ---- |
-| `openrouter` (`packages/ai/src/pdf-text.ts`) | hosted, `file-parser` plugin with the free `pdf-text` engine | no | one cheap API call |
-| `docling` (`packages/ai/src/docling.ts`) | local `docling-serve` container | yes, via RapidOCR | ~1.5 s CPU per page |
+| `docling` (`packages/ai/src/docling.ts`) | local `docling-serve` container | yes, via RapidOCR | nothing per document, ~1.5 s CPU per page |
+| `openrouter` (`packages/ai/src/pdf-text.ts`) | hosted, `file-parser` plugin with the free `pdf-text` engine | no | billed per page: the whole document comes back as *output* tokens |
 
-`ai.pdfExtractor` picks the first engine; `ai.pdfOcrFallbackEnabled` (default
-on) appends Docling behind it. That chain is the point of the design: a `null`
-from an engine means "found nothing", which for a scan meeting the OpenRouter
-engine is routine, so the next engine gets the same document before the
-attachment is written off. Measured on the same three-page scan: 0 characters
-without OCR, 8 378 with it. A *thrown* error still bubbles, so an unreachable
-Docling container is retried by BullMQ instead of being silently downgraded.
+**Docling is the default** (`ai.pdfExtractor`). The `pdf-text` parser itself is
+free, but it runs inside a chat completion, so the transcribed document is
+charged as output tokens — about 4 to 5 cents for a 33-page PDF at
+`z-ai/glm-5.2` rates, growing with document length. The local engine costs
+nothing per document *and* reads scans, so the hosted one is the fallback, not
+the first choice. It stays selectable because a deployment without the
+container needs some way to read a PDF at all.
+
+`ai.pdfExtractorFallbackEnabled` (default on) appends the other engine behind
+the chosen one, in either direction. That chain is the point of the design: a
+`null` from an engine means "found nothing", which for a scan meeting the
+OpenRouter engine is routine, so the next engine gets the same document before
+the attachment is written off. Measured on the same three-page scan: 0
+characters without OCR, 8 378 with it. A *thrown* error no longer ends the
+chain either — a hosted call timing out is exactly when the local engine should
+get its turn — but a run in which *every* engine threw rethrows, so BullMQ
+retries instead of recording "no text layer".
 
 Docling runs with a fixed option set (`do_ocr: true`, `force_ocr: false`,
 markdown plus JSON output). Two reasons it is a constant and not a setting:
@@ -210,27 +220,58 @@ against docling-serve 1.29.0 on 2026-08-06.
 
 ### Metadata
 
-`Attachment.textMetadata` caches what the engines could tell about the
-document, shaped by `pdfMetadataSchema` in `@exocortex/contracts` and returned
-by `GET /api/attachments/:id/text` alongside the text. The two engines see
-disjoint halves of it, which is why the processor merges the metadata of
-*every* attempt rather than only the winning one:
+`Attachment.textMetadata` caches what is known about the document, shaped by
+`pdfMetadataSchema` in `@exocortex/contracts`. Three sources see disjoint parts
+of it, which is why the processor merges *every* attempt rather than only the
+winning one:
 
 | | title, author, creator, producer, dates | pages | tables, pictures | confidence | OCR used |
 | --- | --- | --- | --- | --- | --- |
-| `openrouter` | yes, from the PDF's own metadata dictionary | yes | no | no | always false |
+| `pdf-info` (`packages/ai/src/pdf-info.ts`) | yes, from the PDF's own `/Info` dictionary | yes | no | no | no |
 | `docling` | no | yes | yes | yes | yes |
+| `openrouter` | yes, as transcribed by the plugin | yes | no | no | always false |
 
-So the usual chain on a scan gives the union: the title and creation date the
-OpenRouter attempt read before reporting no text, plus the page and table
-counts and the OCR flag from the Docling attempt that produced it. The engine
-whose text was kept wins every field it can answer; earlier attempts fill the
-gaps (`mergePdfMetadata`). Metadata is stored even when extraction fails
-outright, because "three pages, no readable content" is a useful answer.
+**`pdf-info` is not an engine.** It reads the `/Info` dictionary out of the
+file with `pdf-lib`, locally and for free, before any engine runs, and it never
+produces text — so it deliberately does not implement `PdfTextExtractor` and
+does not count towards the processor's "is any engine configured" check.
 
-`exo_attachment_read_text` prepends a one-line German summary of these fields
-to the text it returns, so a model knows it is looking at a 33-page scan before
-it starts quoting.
+It exists because the dictionary used to be reachable *only* through the paid
+engine. Docling returns none of it: verified on 2026-08-06 against the live
+container with a PDF carrying all five entries, where its `origin` is limited
+to `{mimetype, binary_hash, filename}` and not one value appears anywhere in
+the response. Making the free engine the default would therefore have silently
+cost the title, the author and the dates. Reading the dictionary separately
+decouples the two.
+
+So a scan yields the union: title and creation date from the file, page and
+table counts and the OCR flag from the Docling attempt that produced the text.
+The engine whose text was kept wins every field it can answer; the local
+dictionary and any earlier attempts fill the gaps (`mergePdfMetadata`).
+Metadata is stored even when extraction fails outright, because "twelve pages,
+no readable content" is a useful answer.
+
+Two read routes:
+
+* `GET /api/attachments/:id/text` returns the text and the metadata, and a read
+  *is* the request to extract — a PDF that was never attempted, or whose last
+  attempt failed, is (re-)enqueued.
+* `GET /api/attachments/:id/text/info` returns everything except the text and
+  never enqueues. This is what the editor's PDF block reads on render: pulling
+  up to 400 000 characters to draw a one-line header would be wasteful, and an
+  enqueue on render would mean a page full of failed PDFs re-runs extraction
+  every time someone opens it.
+
+`exo_attachment_read_text` covers both: it prepends a one-line German summary
+of these fields to the text it returns, so a model knows it is looking at a
+33-page scan before it starts quoting, and `includeText: false` routes it to
+the side-effect-free variant.
+
+The editor's `pdf` and `fileAttachment` blocks show the same facts as a line of
+chips under the header, plus the extraction status and a "retry" action when it
+failed. `packages/editor` knows no routes, so the host injects the reader via
+`buildEditorExtensions({ mediaInfo })`; see
+`apps/web/src/lib/api/attachment-info.ts`.
 
 `textStatus` states: `NOT_APPLICABLE` (not a PDF), `PENDING` (queued, not yet
 attempted), `READY` (`extractedText` populated, capped at 400 000

@@ -74,6 +74,7 @@ import {
 import {
   MEDIA_EXTENSIONS,
   mediaBlocks,
+  type MediaInfoResolver,
   mediaMarkdownAdapter,
   mediaPlainTextAdapter,
 } from './media';
@@ -271,12 +272,32 @@ export interface BuildEditorExtensionsOptions {
    * a live provider. They are never part of the canonical schema registry.
    */
   additionalExtensions?: Extensions;
+  /**
+   * Lets the media blocks describe what is inside a file (page count, title,
+   * whether OCR ran). Injected for the same reason as the collaboration
+   * provider: it needs the API, and this package must not know the API.
+   *
+   * An option, not a requirement. Without it the blocks render as they always
+   * have, which is what keeps the canonical schema in `schema.ts` and the
+   * extension tests free of a network seam.
+   */
+  mediaInfo?: MediaInfoResolver;
 }
+
+/** Names of the nodes built from `MEDIA_KINDS`; see `media.ts`. */
+const MEDIA_NODE_NAMES = new Set(['fileAttachment', 'video', 'audio', 'pdf']);
 
 /** Flattens the registry into the array Tiptap expects. */
 export function buildEditorExtensions(options: BuildEditorExtensionsOptions = {}): Extensions {
+  const mediaInfo = options.mediaInfo;
   return [
-    ...EXOCORTEX_EDITOR_EXTENSIONS.flatMap((entry) => entry.extensions),
+    ...EXOCORTEX_EDITOR_EXTENSIONS.flatMap((entry) => entry.extensions).map((extension) =>
+      // `configure` changes options only, never the schema, so the document
+      // model stays identical whether or not a resolver was supplied.
+      mediaInfo !== undefined && MEDIA_NODE_NAMES.has(extension.name)
+        ? extension.configure({ mediaInfo })
+        : extension,
+    ),
     ...(options.additionalExtensions ?? []),
   ];
 }

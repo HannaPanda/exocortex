@@ -55,6 +55,7 @@ import {
   type PresenceUser,
   useDocumentSession,
 } from '@/components/shell/document-session';
+import { attachmentMediaInfoResolver } from '@/lib/api/attachment-info';
 import { fetchCollaborationTicket, uploadAttachment, useDocumentTree } from '@/lib/api/queries';
 
 interface CollaborativeEditorProps {
@@ -390,6 +391,9 @@ function EditorSurface({
       immediatelyRender: false,
       editable: access === 'write',
       extensions: buildEditorExtensions({
+        // Lets the file and PDF blocks show what is inside them. The editor
+        // package knows no routes, so the API side is injected here.
+        mediaInfo: attachmentMediaInfoResolver,
         additionalExtensions: [
           // The schema for `databaseEmbed` lives in `packages/editor`; only the
           // React node view can live here (see `docs/editor-extensions.md`).
