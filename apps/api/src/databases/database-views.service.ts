@@ -75,7 +75,7 @@ export class DatabaseViewsService {
 
     const rows = await this.prisma.databaseView.findMany({
       where: { documentId: collectionDocumentId },
-      orderBy: { orderKey: 'asc' },
+      orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
     });
     return rows.map(toResponse);
   }
@@ -159,7 +159,7 @@ export class DatabaseViewsService {
     const siblings = await this.prisma.databaseView.findMany({
       where: { documentId: view.documentId, id: { not: input.viewId } },
       select: { id: true, orderKey: true },
-      orderBy: { orderKey: 'asc' },
+      orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
     });
 
     let orderKey: string;

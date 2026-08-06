@@ -84,7 +84,7 @@ export class DatabasePropertiesService {
     const rows = await this.prisma.databaseProperty.findMany({
       where: { documentId: collectionDocumentId },
       include: PROPERTY_INCLUDE,
-      orderBy: { orderKey: 'asc' },
+      orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
     });
     return rows.map(toResponse);
   }
@@ -105,10 +105,11 @@ export class DatabasePropertiesService {
       );
     }
 
-    const orderKey = await this.resolveOrderKey(
-      input.collectionDocumentId,
-      input.request.afterPropertyId ?? null,
-    );
+    const orderKey = await this.resolveOrderKey({
+      documentId: input.collectionDocumentId,
+      afterPropertyId: input.request.afterPropertyId ?? null,
+      nullMeans: 'end',
+    });
 
     const created = await this.prisma.databaseProperty.create({
       data: {
@@ -163,11 +164,12 @@ export class DatabasePropertiesService {
     const context = await this.requireCollection(property.documentId, input.userId);
     assertPolicy(canManageDatabaseSchema(context.role, context.document));
 
-    const orderKey = await this.resolveOrderKey(
-      property.documentId,
-      input.request.afterPropertyId,
-      input.propertyId,
-    );
+    const orderKey = await this.resolveOrderKey({
+      documentId: property.documentId,
+      afterPropertyId: input.request.afterPropertyId,
+      nullMeans: 'start',
+      excludePropertyId: input.propertyId,
+    });
 
     const updated = await this.prisma.databaseProperty.update({
       where: { id: input.propertyId },
@@ -309,25 +311,34 @@ export class DatabasePropertiesService {
     return context;
   }
 
-  private async resolveOrderKey(
-    documentId: string,
-    afterPropertyId: string | null,
-    excludePropertyId?: string,
-  ): Promise<string> {
+  private async resolveOrderKey(input: {
+    documentId: string;
+    afterPropertyId: string | null;
+    /**
+     * What `afterPropertyId: null` means, because the two callers disagree: a
+     * new property is appended at the `end`, while reordering to "after
+     * nothing" moves the property to the `start` (the same reading
+     * `DatabaseViewsService.resolveOrderKey` uses for views).
+     */
+    nullMeans: 'end' | 'start';
+    excludePropertyId?: string;
+  }): Promise<string> {
     const siblings = await this.prisma.databaseProperty.findMany({
       where: {
-        documentId,
-        ...(excludePropertyId === undefined ? {} : { id: { not: excludePropertyId } }),
+        documentId: input.documentId,
+        ...(input.excludePropertyId === undefined ? {} : { id: { not: input.excludePropertyId } }),
       },
       select: { id: true, orderKey: true },
-      orderBy: { orderKey: 'asc' },
+      orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
     });
     if (siblings.length === 0) return generateOrderKey(null, null);
 
-    if (afterPropertyId === null) {
-      return generateOrderKey(siblings[siblings.length - 1]?.orderKey ?? null, null);
+    if (input.afterPropertyId === null) {
+      return input.nullMeans === 'end'
+        ? generateOrderKey(siblings[siblings.length - 1]?.orderKey ?? null, null)
+        : generateOrderKey(null, siblings[0]?.orderKey ?? null);
     }
-    const index = siblings.findIndex((sibling) => sibling.id === afterPropertyId);
+    const index = siblings.findIndex((sibling) => sibling.id === input.afterPropertyId);
     if (index < 0) throw AppError.notFound('Sibling property');
     return generateOrderKey(siblings[index]?.orderKey ?? null, siblings[index + 1]?.orderKey ?? null);
   }

@@ -407,6 +407,8 @@ model DatabaseProperty {
   document   Document             @relation("CollectionProperties", fields: [documentId], references: [id], onDelete: Cascade)
   type       DatabasePropertyType
   name       String
+  /// Fractional index, byte-ordered like `Document.orderKey` (the column uses
+  /// the `C` collation, see migration 20260806190000_database_order_key_c_collation).
   orderKey   String
   /// Type-specific, non-filterable configuration (number display format,
   /// whether a DATE property includes time-of-day). Never used for
@@ -432,6 +434,8 @@ model DatabasePropertyOption {
   /// One of the nine content-colour token names in packages/ui/src/tokens.css
   /// (gray/brown/orange/yellow/green/blue/purple/pink/red), never a hex value.
   color      String
+  /// Fractional index, byte-ordered like `Document.orderKey` (the column uses
+  /// the `C` collation, see migration 20260806190000_database_order_key_c_collation).
   orderKey   String
   createdAt  DateTime         @default(now())
 
@@ -446,6 +450,8 @@ model DatabaseView {
   document          Document         @relation("CollectionViews", fields: [documentId], references: [id], onDelete: Cascade)
   type              DatabaseViewType
   name              String
+  /// Fractional index, byte-ordered like `Document.orderKey` (the column uses
+  /// the `C` collation, see migration 20260806190000_database_order_key_c_collation).
   orderKey          String
   /// Structured filter tree, validated against databaseFilterGroupSchema
   /// before it ever reaches the query engine. Never free-form SQL or JS.
