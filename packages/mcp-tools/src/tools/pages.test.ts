@@ -84,6 +84,7 @@ describe('pageArchiveTool', () => {
       type: 'PAGE',
       title: 'Archivierte Seite',
       icon: null,
+      layout: 'narrow',
       orderKey: 'a0',
       createdById: 'user1234',
       updatedById: 'user1234',

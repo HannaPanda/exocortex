@@ -48,6 +48,7 @@ interface DocumentRow {
   type: 'PAGE' | 'COLLECTION';
   title: string;
   icon: string | null;
+  layout: 'NARROW' | 'WIDE' | 'FULL';
   orderKey: string;
   createdById: string;
   updatedById: string;
@@ -56,13 +57,15 @@ interface DocumentRow {
   archivedAt: Date | null;
 }
 
-const DOCUMENT_SELECT = {
+/** Exported so every service that hands a row to `toSummary` selects the same columns. */
+export const DOCUMENT_SELECT = {
   id: true,
   workspaceId: true,
   parentId: true,
   type: true,
   title: true,
   icon: true,
+  layout: true,
   orderKey: true,
   createdById: true,
   updatedById: true,
@@ -83,6 +86,18 @@ const AI_RULE_MODE_TO_DB = {
   on_demand: 'ON_DEMAND',
 } as const;
 
+const LAYOUT_TO_CONTRACT = {
+  NARROW: 'narrow',
+  WIDE: 'wide',
+  FULL: 'full',
+} as const;
+
+const LAYOUT_TO_DB = {
+  narrow: 'NARROW',
+  wide: 'WIDE',
+  full: 'FULL',
+} as const;
+
 export function toSummary(row: DocumentRow): DocumentSummary {
   return {
     id: row.id,
@@ -91,6 +106,7 @@ export function toSummary(row: DocumentRow): DocumentSummary {
     type: row.type,
     title: row.title,
     icon: row.icon,
+    layout: LAYOUT_TO_CONTRACT[row.layout],
     orderKey: row.orderKey,
     createdById: row.createdById,
     updatedById: row.updatedById,
@@ -227,6 +243,14 @@ export class DocumentsService {
           type: input.request.type,
           title: input.request.title,
           icon: input.request.icon ?? null,
+          // A database is unusable in the reading measure, so it defaults to
+          // the full width while a page defaults to the measure.
+          layout:
+            input.request.layout !== undefined
+              ? LAYOUT_TO_DB[input.request.layout]
+              : input.request.type === 'COLLECTION'
+                ? 'FULL'
+                : 'NARROW',
           orderKey,
           createdById: input.userId,
           updatedById: input.userId,
@@ -299,6 +323,9 @@ export class DocumentsService {
       data: {
         ...(input.request.title === undefined ? {} : { title: input.request.title }),
         ...(input.request.icon === undefined ? {} : { icon: input.request.icon }),
+        ...(input.request.layout === undefined
+          ? {}
+          : { layout: LAYOUT_TO_DB[input.request.layout] }),
         ...(input.request.aiRuleMode === undefined
           ? {}
           : { aiRuleMode: AI_RULE_MODE_TO_DB[input.request.aiRuleMode] }),

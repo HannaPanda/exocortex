@@ -5,7 +5,7 @@ import {
   DownloadIcon,
   MoreHorizontalIcon,
   RotateCcwIcon,
-  SparklesIcon,
+  SlidersHorizontalIcon,
   UploadIcon,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -33,7 +33,7 @@ import {
 } from '@exocortex/ui';
 
 import { DatabaseShell } from '@/components/database/database-shell';
-import { AiRuleDialog } from '@/components/document/ai-rule-dialog';
+import { PagePropertiesDialog } from '@/components/document/page-properties-dialog';
 import { CollaborativeEditor } from '@/components/editor/collaborative-editor';
 import {
   useArchiveDocument,
@@ -74,7 +74,7 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
 
   const [importOpen, setImportOpen] = React.useState(false);
   const [importText, setImportText] = React.useState('');
-  const [aiRuleDialogOpen, setAiRuleDialogOpen] = React.useState(false);
+  const [propertiesOpen, setPropertiesOpen] = React.useState(false);
 
   // Published for the AI panel: a database page means nothing without the view
   // its rows are being read through. Only the full-page database does this; an
@@ -175,6 +175,13 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
             />
             <DropdownMenuContent align="end">
               <DropdownMenuItem
+                data-testid="open-page-properties"
+                onClick={() => setPropertiesOpen(true)}
+              >
+                <SlidersHorizontalIcon /> Seiteneigenschaften …
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
                 data-testid="export-markdown"
                 onClick={() => void downloadMarkdown()}
               >
@@ -185,13 +192,6 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
                 onClick={() => setImportOpen(true)}
               >
                 <UploadIcon /> Markdown importieren
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                data-testid="open-ai-rule-dialog"
-                onClick={() => setAiRuleDialogOpen(true)}
-              >
-                <SparklesIcon /> Als KI-Regel verwenden …
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -221,8 +221,11 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
       ) : null}
 
       {detail.type === 'COLLECTION' ? (
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-          <div className="px-6 pt-8 pb-2">
+        <div className="exocortex-page-scroll flex min-h-0 flex-1 flex-col overflow-y-auto">
+          <div
+            className="exocortex-page flex min-h-0 flex-1 flex-col px-6 pt-8"
+            data-layout={detail.layout}
+          >
             <DocumentTitleInput
               key={`${detail.id}:${detail.title}`}
               initialTitle={detail.title}
@@ -231,18 +234,19 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
                 void updateDocument.mutateAsync({ documentId, request: { title: nextTitle } });
               }}
             />
+            <DatabaseShell
+              workspaceId={workspaceId}
+              documentId={documentId}
+              readOnly={archived || detail.access === 'read'}
+              onActiveViewResolved={publishActiveDatabaseView}
+            />
           </div>
-          <DatabaseShell
-            workspaceId={workspaceId}
-            documentId={documentId}
-            readOnly={archived || detail.access === 'read'}
-            onActiveViewResolved={publishActiveDatabaseView}
-          />
         </div>
       ) : (
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          {/* 68ch is the reading measure from DESIGN.md; max-w-3xl ran ~85ch. */}
-          <div className="mx-auto w-full max-w-[68ch] px-6 py-8">
+        <div className="exocortex-page-scroll min-h-0 flex-1 overflow-y-auto">
+          {/* Width comes from `Document.layout`; the `px-6` here is the 3rem the
+              wide-block rule in globals.css subtracts. */}
+          <div className="exocortex-page px-6 py-8" data-layout={detail.layout}>
             <DocumentTitleInput
               // Remounting on document change resets the field without an effect.
               key={`${detail.id}:${detail.title}`}
@@ -276,13 +280,11 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
         </div>
       )}
 
-      <AiRuleDialog
-        documentId={documentId}
-        open={aiRuleDialogOpen}
-        onOpenChange={setAiRuleDialogOpen}
-        initialMode={detail.aiRuleMode}
-        initialTrigger={detail.aiRuleTrigger}
-        initialPriority={detail.aiRulePriority}
+      <PagePropertiesDialog
+        workspaceId={workspaceId}
+        detail={detail}
+        open={propertiesOpen}
+        onOpenChange={setPropertiesOpen}
       />
 
       <Dialog open={importOpen} onOpenChange={setImportOpen}>

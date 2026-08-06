@@ -203,6 +203,17 @@ enum DocumentType {
   COLLECTION
 }
 
+/// How wide the page body is rendered. Presentation, not content: it changes no
+/// canonical state, so it lives on the document row and not in the Yjs state.
+enum DocumentLayout {
+  /// 68ch reading measure.
+  NARROW
+  /// Roughly double the measure, for pages carrying tables.
+  WIDE
+  /// The whole available width. Default for databases.
+  FULL
+}
+
 enum DatabasePropertyType {
   TEXT
   NUMBER
@@ -256,6 +267,8 @@ model Document {
   type        DocumentType @default(PAGE)
   title       String
   icon        String?
+  /// Body width of the page. See `DocumentLayout`.
+  layout      DocumentLayout @default(NARROW)
   /// Fractional index (base62). Lets a document be inserted between two
   /// siblings without renumbering the rest of the tree.
   ///

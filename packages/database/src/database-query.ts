@@ -201,6 +201,7 @@ export interface DatabaseQueryRowRecord {
   type: 'PAGE' | 'COLLECTION';
   title: string;
   icon: string | null;
+  layout: 'NARROW' | 'WIDE' | 'FULL';
   orderKey: string;
   createdById: string;
   updatedById: string;
@@ -236,7 +237,8 @@ export async function queryDatabaseRows(
   return prisma.$queryRaw<DatabaseQueryRowRecord[]>(Prisma.sql`
     SELECT
       document.id, document."workspaceId", document."parentId", document."type"::text AS "type",
-      document.title, document.icon, document."orderKey", document."createdById", document."updatedById",
+      document.title, document.icon, document."layout"::text AS "layout",
+      document."orderKey", document."createdById", document."updatedById",
       document."createdAt", document."updatedAt", document."archivedAt"
     FROM "document" AS document
     WHERE document."workspaceId" = ${input.workspaceId}

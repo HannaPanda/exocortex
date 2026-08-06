@@ -5,6 +5,7 @@ import {
   documentContentWriteRequestSchema,
   documentContentWriteResponseSchema,
   documentIconSchema,
+  documentLayoutSchema,
   documentSnapshotListResponseSchema,
   type DocumentSummary,
   documentSummarySchema,
@@ -288,6 +289,25 @@ export const pageSetAiRuleTool: AnyToolDefinition = defineTool({
   },
 });
 
+export const pageSetLayoutTool: AnyToolDefinition = defineTool({
+  name: 'exo_page_set_layout',
+  description:
+    'Setzt die Breite des Seitenkörpers: "narrow" (Lesebreite), "wide" (Text mit Tabellen) oder "full" (volle Breite, sinnvoll für Datenbanken).',
+  inputSchema: z.object({ documentId: idSchema, layout: documentLayoutSchema }),
+  surfaces: ['mcp', 'ai'],
+  mutating: true,
+  target: (input) => `document:${input.documentId}`,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'PATCH',
+      path: `/api/documents/${input.documentId}`,
+      body: { layout: input.layout },
+      responseSchema: documentSummarySchema,
+    });
+    return { text: `Layout auf ${input.layout} gesetzt: ${formatDocumentSummary(result)}`, data: result };
+  },
+});
+
 export const PAGE_TOOLS: readonly AnyToolDefinition[] = [
   pageTreeTool,
   pageReadTool,
@@ -300,4 +320,5 @@ export const PAGE_TOOLS: readonly AnyToolDefinition[] = [
   pageSnapshotsTool,
   pageRestoreSnapshotTool,
   pageSetAiRuleTool,
+  pageSetLayoutTool,
 ];

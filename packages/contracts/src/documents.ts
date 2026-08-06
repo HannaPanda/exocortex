@@ -9,11 +9,24 @@ import {
   isoDateTimeSchema,
 } from './primitives';
 
+/**
+ * How wide the page body is rendered. `narrow` is the 68ch reading measure,
+ * `wide` roughly doubles it for pages that carry tables, and `full` uses the
+ * whole available width (the default for databases).
+ */
+export const documentLayoutSchema = z.enum(['narrow', 'wide', 'full']);
+export type DocumentLayout = z.infer<typeof documentLayoutSchema>;
+
 export const createDocumentRequestSchema = z.object({
   title: documentTitleSchema.default('Unbenannte Seite'),
   parentId: idSchema.nullable().optional(),
   type: documentTypeSchema.default('PAGE'),
   icon: documentIconSchema,
+  /**
+   * Omitted means the server picks the default for the type: `full` for a
+   * database, `narrow` for a page.
+   */
+  layout: documentLayoutSchema.optional(),
   /**
    * Optional sibling anchors. The server derives the fractional `orderKey`
    * itself; clients never send an order key.
@@ -29,6 +42,7 @@ export type AiRuleMode = z.infer<typeof aiRuleModeSchema>;
 const updateDocumentFieldsSchema = z.object({
   title: documentTitleSchema.optional(),
   icon: documentIconSchema,
+  layout: documentLayoutSchema.optional(),
   aiRuleMode: aiRuleModeSchema.optional(),
   aiRuleTrigger: z.string().trim().max(300).nullable().optional(),
   aiRulePriority: z.number().int().optional(),
@@ -37,6 +51,7 @@ export const updateDocumentRequestSchema = updateDocumentFieldsSchema.refine(
   (value) =>
     value.title !== undefined ||
     value.icon !== undefined ||
+    value.layout !== undefined ||
     value.aiRuleMode !== undefined ||
     value.aiRuleTrigger !== undefined ||
     value.aiRulePriority !== undefined,
@@ -58,6 +73,7 @@ export const documentSummarySchema = z.object({
   type: documentTypeSchema,
   title: z.string(),
   icon: z.string().nullable(),
+  layout: documentLayoutSchema,
   orderKey: z.string(),
   createdById: idSchema,
   updatedById: idSchema,

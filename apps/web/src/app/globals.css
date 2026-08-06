@@ -13,6 +13,48 @@
 /* Editor-specific styles. The Tiptap content area is the only place where
    element selectors are used, because ProseMirror owns that DOM. */
 @layer components {
+  /*
+   * Page body width (`Document.layout`).
+   *
+   * The scroll container is a query container so blocks inside the reading
+   * measure can still ask how wide the *page* is. `--page-measure` is the only
+   * thing the three layouts change; everything else reads it.
+   */
+  .exocortex-page-scroll {
+    container-type: inline-size;
+  }
+
+  .exocortex-page {
+    /* 68ch is the reading measure from DESIGN.md; max-w-3xl ran ~85ch. */
+    --page-measure: 68ch;
+    @apply mx-auto w-full;
+    max-width: var(--page-measure);
+  }
+
+  /* Twice the measure: still a column, but a table has room to be a table. */
+  .exocortex-page[data-layout='wide'] {
+    --page-measure: 136ch;
+  }
+
+  .exocortex-page[data-layout='full'] {
+    --page-measure: 100%;
+  }
+
+  /*
+   * Blocks that carry a layout of their own break out of the reading measure,
+   * on every page width. A database is unreadable at 68ch, and forcing the
+   * whole page to `full` just to see a table would punish the prose around it.
+   *
+   * `100cqi` is the scroll container's width; the 3rem subtracted from it is
+   * the `px-6` the page body carries. `max(100%, …)` keeps the margins at zero
+   * once the measure is already wider than the block wants to be.
+   */
+  .exocortex-page :is(.exocortex-database-embed) {
+    --wide-block: min(100cqi - 3rem, 90rem);
+    width: max(100%, var(--wide-block));
+    margin-inline: calc((100% - max(100%, var(--wide-block))) / 2);
+  }
+
   .exocortex-editor {
     @apply text-[0.9375rem] leading-relaxed;
   }
@@ -167,16 +209,20 @@
     @apply my-8 border-t border-border;
   }
 
-  .exocortex-editor table {
+  /* Editor tables only, never the design system's. A database embed renders a
+     `<Table>` (every part carries a `data-slot`) inside the editor and brings
+     its own grid, sticky header and column widths; without the `:not`, these
+     rules would put a full border grid back on top of it. */
+  .exocortex-editor table:not([data-slot]) {
     @apply w-full table-fixed border-collapse text-sm;
   }
 
-  .exocortex-editor th,
-  .exocortex-editor td {
+  .exocortex-editor th:not([data-slot]),
+  .exocortex-editor td:not([data-slot]) {
     @apply border border-border px-2 py-1 align-top;
   }
 
-  .exocortex-editor th {
+  .exocortex-editor th:not([data-slot]) {
     @apply bg-muted text-left font-medium;
   }
 
@@ -365,8 +411,12 @@
 
   /* Database embed: a live view (Table/Board/Gallery/Calendar), not a static
      block, so it gets a full frame instead of the thin inline rules above. */
+  /* The embed scrolls its rows internally (TableView owns a scrollport), so the
+     cap is about how much of the page a database may claim, not about hiding
+     rows: 32rem was under three visible rows once the header and filter bar
+     were subtracted. */
   .exocortex-database-embed {
-    @apply my-4 flex max-h-[32rem] flex-col overflow-hidden rounded-md border border-border;
+    @apply my-4 flex max-h-[min(75vh,44rem)] flex-col overflow-hidden rounded-md border border-border;
   }
 
   .exocortex-database-embed .embed-header {

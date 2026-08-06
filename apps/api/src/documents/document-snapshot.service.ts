@@ -19,7 +19,7 @@ import { PRISMA, QUEUES } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
 import { CollaborationBridgeService } from './collaboration-bridge.service';
-import { toSummary } from './documents.service';
+import { DOCUMENT_SELECT, toSummary } from './documents.service';
 
 const REASON_MAP = {
   MANUAL: 'manual',
@@ -205,20 +205,7 @@ export class DocumentSnapshotService {
 
     const document = await this.prisma.document.findUniqueOrThrow({
       where: { id: snapshot.documentId },
-      select: {
-        id: true,
-        workspaceId: true,
-        parentId: true,
-        type: true,
-        title: true,
-        icon: true,
-        orderKey: true,
-        createdById: true,
-        updatedById: true,
-        createdAt: true,
-        updatedAt: true,
-        archivedAt: true,
-      },
+      select: DOCUMENT_SELECT,
     });
     await this.realtime.emit('document.updated', context.workspaceId, input.correlationId, {
       document: toSummary(document),

@@ -28,7 +28,7 @@ import { OutboxService } from '../common/outbox.service';
 import { PRISMA, QUEUES } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
-import { toSummary } from './documents.service';
+import { DOCUMENT_SELECT, toSummary } from './documents.service';
 
 function filenameFor(title: string): string {
   const base = title
@@ -156,20 +156,7 @@ export class DocumentMarkdownService {
           createdById: input.userId,
           updatedById: input.userId,
         },
-        select: {
-          id: true,
-          workspaceId: true,
-          parentId: true,
-          type: true,
-          title: true,
-          icon: true,
-          orderKey: true,
-          createdById: true,
-          updatedById: true,
-          createdAt: true,
-          updatedAt: true,
-          archivedAt: true,
-        },
+        select: DOCUMENT_SELECT,
       });
 
       await tx.documentContent.create({

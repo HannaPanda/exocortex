@@ -103,6 +103,14 @@ tested (26 tests in `packages/auth/src/policies.test.ts`).
   archived parent.
 * Moves, archives, restores, snapshot restores, attachment deletions and permission
   changes write an `AuditLog` entry. Audit metadata never contains document content.
+* `layout` (`NARROW` / `WIDE` / `FULL`) is the width of the page body: the 68ch
+  reading measure, roughly twice that, or the whole available width. It is
+  presentation, so it lives on the document row and not in the Yjs state, and it
+  is edited in the page properties dialog
+  (`apps/web/src/components/document/page-properties-dialog.tsx`) or through
+  `exo_page_set_layout`. New databases default to `FULL`, new pages to `NARROW`.
+  The three values only set `--page-measure` in `globals.css`; blocks that carry
+  a layout of their own (a database embed) break out of the measure regardless.
 
 ## Databases
 
