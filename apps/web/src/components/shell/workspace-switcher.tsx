@@ -21,6 +21,7 @@ export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: st
   const router = useRouter();
   const workspaces = useWorkspaces();
   const createWorkspace = useCreateWorkspace();
+  const [open, setOpen] = React.useState(false);
   const [creating, setCreating] = React.useState(false);
   const [name, setName] = React.useState('');
 
@@ -32,11 +33,23 @@ export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: st
     const workspace = await createWorkspace.mutateAsync(trimmed);
     setCreating(false);
     setName('');
+    setOpen(false);
     router.push(`/arbeitsbereich/${workspace.id}`);
   };
 
   return (
-    <DropdownMenu>
+    // Controlled, so creating a workspace can close the menu itself and so a
+    // half-typed name never survives into the next time it is opened.
+    <DropdownMenu
+      open={open}
+      onOpenChange={(next: boolean) => {
+        setOpen(next);
+        if (!next) {
+          setCreating(false);
+          setName('');
+        }
+      }}
+    >
       <DropdownMenuTrigger
         render={
           <Button
@@ -50,8 +63,14 @@ export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: st
           </Button>
         }
       />
-      <DropdownMenuContent className="min-w-60">
-        <DropdownMenuGroup>
+      <DropdownMenuContent className="flex min-w-60 flex-col overflow-hidden">
+        {/*
+          Only the list scrolls. "Neuer Arbeitsbereich" below it has to stay
+          reachable no matter how many workspaces someone is a member of — with
+          a hundred of them, a menu that scrolls as a whole hides the one entry
+          that is not a workspace.
+        */}
+        <DropdownMenuGroup className="min-h-0 flex-1 overflow-y-auto">
           <DropdownMenuLabel>Arbeitsbereiche</DropdownMenuLabel>
           {(workspaces.data ?? []).map((workspace) => (
             <DropdownMenuItem
@@ -86,10 +105,11 @@ export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: st
           </div>
         ) : (
           <DropdownMenuItem
-            onClick={(event) => {
-              event.preventDefault();
-              setCreating(true);
-            }}
+            // Without this the menu closes on the click, taking the form this
+            // very item opens down with it: `preventDefault` does not stop it,
+            // because Base UI closes on activation and not on the DOM default.
+            closeOnClick={false}
+            onClick={() => setCreating(true)}
             data-testid="workspace-create"
           >
             <PlusIcon /> Neuer Arbeitsbereich

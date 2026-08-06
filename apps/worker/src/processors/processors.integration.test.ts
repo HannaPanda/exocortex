@@ -7,6 +7,7 @@ import {
   type AiGenerateResult,
   type AiProvider,
   type AiProviderCapabilities,
+  AiProviderError,
   type AiStreamEvent,
   type AiToolCall,
   MockAiProvider,
@@ -575,6 +576,26 @@ describe('cover generation', () => {
     expect(uploads).toEqual([]);
     expect(published[0]?.payload.status).toBe('failed');
     expect(published[0]?.payload.error).toContain('nicht eingerichtet');
+  });
+
+  it('names the model when it answered without a picture', async () => {
+    const published: Published[] = [];
+    const textOnly = {
+      model: 'openai/text-only',
+      generate: () =>
+        Promise.reject(new AiProviderError('ai_image_empty', 'no image in the answer')),
+    };
+
+    await createDocumentCoverProcessor({
+      imageGeneratorFor: () => textOnly,
+      apiClientFor: () => uploadingClient([]),
+      bus: recordingBus(published),
+      settings: stubSettings({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': 'a/b' }),
+    })(contextFor(payload).context);
+
+    // "Try again" would be the wrong advice: the model has to change.
+    expect(published[0]?.payload.error).toContain('openai/text-only');
+    expect(published[0]?.payload.error).toContain('bildfähiges Modell');
   });
 
   it('never lets a failure escape, so a paid call is not retried', async () => {

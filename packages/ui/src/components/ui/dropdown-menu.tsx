@@ -27,7 +27,11 @@ function DropdownMenuContent({
         <Menu.Popup
           data-slot="dropdown-menu-content"
           className={cn(
-            'min-w-[10rem] overflow-hidden rounded-md border border-border bg-popover p-1',
+            // Never taller than the space the positioner found: a menu whose
+            // content outgrows the viewport must scroll, not clip. Without this
+            // the last entries of a long menu are unreachable, and the
+            // positioner keeps re-measuring a popup that cannot fit.
+            'max-h-[var(--available-height)] min-w-[10rem] overflow-y-auto rounded-md border border-border bg-popover p-1',
             'text-popover-foreground shadow-lg outline-none',
             'transition-[transform,opacity] duration-100',
             'data-[starting-style]:scale-98 data-[starting-style]:opacity-0',

@@ -1,4 +1,4 @@
-import { type ImageGenerator } from '@exocortex/ai';
+import { AiProviderError, type ImageGenerator } from '@exocortex/ai';
 import {
   documentSummarySchema,
   type QUEUE_NAMES,
@@ -95,9 +95,20 @@ export function createDocumentCoverProcessor(dependencies: DocumentCoverDependen
     } catch (error) {
       logger.error('Cover generation failed', error, {
         documentId: payload.documentId,
+        model: generator.model,
         correlationId: payload.correlationId,
       });
-      await publish('failed', 'Das Titelbild konnte nicht erzeugt werden. Bitte erneut versuchen.');
+      // The most likely mistake by far is a model that cannot draw: the admin
+      // setting takes any slug, and most of them are text-only. Saying so beats
+      // "please try again", which would be exactly the wrong advice.
+      const answeredWithoutPicture =
+        error instanceof AiProviderError && error.code === 'ai_image_empty';
+      await publish(
+        'failed',
+        answeredWithoutPicture
+          ? `Das Modell „${generator.model}" hat kein Bild geliefert. Es kann vermutlich keine Bilder erzeugen; im Administrationsbereich lässt sich ein bildfähiges Modell eintragen.`
+          : 'Das Titelbild konnte nicht erzeugt werden. Bitte erneut versuchen.',
+      );
     }
   };
 }
