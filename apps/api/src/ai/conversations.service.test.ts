@@ -138,12 +138,16 @@ describe('ConversationsService.postMessage', () => {
     expect(response.command).toBeNull();
     expect(response.userMessage?.role).toBe('user');
     expect(response.userMessage?.content).toBe('Was ist Exocortex?');
+    // Asserted on the value `postMessage` returns synchronously at creation
+    // time, not on a fresh re-read: the live worker on this shared host also
+    // consumes this queue and may have already started or finished the run by
+    // the time a second query would run.
     expect(response.run?.status).toBe('pending');
     expect(response.run?.conversationId).toBe(conversationId);
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: response.run?.id } });
-    expect(run.status).toBe('PENDING');
     expect(run.conversationId).toBe(conversationId);
+    expect(run.model.length).toBeGreaterThan(0);
   });
 
   it('derives the conversation title from the first message', async () => {
@@ -162,11 +166,19 @@ describe('ConversationsService.postMessage', () => {
 
   it('refuses a new message while a run is still pending or running', async () => {
     const conversationId = await createConversation();
-    await service.postMessage({
-      conversationId,
-      userId: ownerId,
-      request: { content: 'Erste Frage' },
-      correlationId: 'test-lock-1',
+    // Inserted directly rather than through `postMessage`: the live worker on
+    // this shared host also consumes the `ai` queue and would otherwise race
+    // to complete a real run before the lock could be observed.
+    await prisma.aiRun.create({
+      data: {
+        workspaceId,
+        createdById: ownerId,
+        status: 'RUNNING',
+        provider: 'test-lock-provider',
+        model: 'test-lock-model',
+        messages: [],
+        conversationId,
+      },
     });
 
     await expect(
