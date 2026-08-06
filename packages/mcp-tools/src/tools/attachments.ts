@@ -70,9 +70,11 @@ function describeMetadata(metadata: PdfMetadata | null): string {
   const parts: string[] = [];
   if (metadata.title !== null) parts.push(`Titel: ${metadata.title}`);
   if (metadata.author !== null) parts.push(`Autor: ${metadata.author}`);
-  if (metadata.pageCount !== null) parts.push(`${metadata.pageCount} Seiten`);
+  if (metadata.pageCount !== null) {
+    parts.push(metadata.pageCount === 1 ? '1 Seite' : `${metadata.pageCount} Seiten`);
+  }
   if (metadata.tableCount !== null && metadata.tableCount > 0) {
-    parts.push(`${metadata.tableCount} Tabellen`);
+    parts.push(metadata.tableCount === 1 ? '1 Tabelle' : `${metadata.tableCount} Tabellen`);
   }
   if (metadata.createdAt !== null) parts.push(`erstellt ${metadata.createdAt.slice(0, 10)}`);
   if (metadata.ocrUsed === true) parts.push('per Texterkennung gelesen');
