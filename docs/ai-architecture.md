@@ -91,6 +91,54 @@ summaries — is its own `AiConversationMessage` row.
   (`apps/api/src/ai/chat-commands.ts`) so the side panel, MCP and any future
   client behave identically without reimplementing the command set.
 
+## Page context
+
+The chat knows which page it is standing on. `AiRun.documentId` used to reach
+only the vision preprocessor, so a page's images were described to the model
+while its title was not even mentioned; now the run's page is named in the
+system prompt.
+
+* **A pointer, not the content.** `buildSystemPrompt`
+  (`apps/worker/src/system-prompt.ts`) appends a `## Geöffnete Seite` block
+  with the title, breadcrumb, `documentId` and type (page or collection), and
+  tells the model to fetch the body with `exo_page_read` when the question is
+  about "this page". The page's text stays out of the prompt of every
+  unrelated turn, and fetching it stays under the user's `ai.toolsEnabled`
+  control. **Injecting the content directly is deliberately not implemented**
+  — that would need its own setting and its own ADR (issue #1, points 2 and
+  5).
+* **Honest when it cannot follow the pointer.** Tool availability is resolved
+  *before* the prompt is built, so a run without tools (setting off, model
+  without tool support, or a legacy run with no `conversationId`) gets a block
+  that tells the model to say it cannot read the page instead of inventing its
+  content.
+* **Scoped to the run's workspace.** The lookup is `findFirst` on
+  `{ id, workspaceId }`: a stale or guessed `documentId` contributes nothing
+  and is logged, rather than leaking a title from elsewhere.
+* **The breadcrumb is bounded.** Ancestors are walked up at most
+  `MAX_PATH_DEPTH` (8) levels; a deeper path is rendered with a leading `…`
+  so an elided path is not mistaken for a root-level one.
+* **Page switches are recorded in the transcript.** The panel keeps the active
+  conversation per *workspace*, so walking to another page keeps typing into
+  the same transcript. `ConversationsService.postMessage` compares the turn's
+  page against `AiConversation.documentId` and, if the conversation already
+  has messages, writes a `SYSTEM` message (`↳ Kontextwechsel: …`) immediately
+  before the user message that caused it, then rebinds the conversation.
+  Without it, everything above the switch would silently refer to a different
+  page than everything below.
+* **Absent and `null` mean different things.** An omitted `documentId` in
+  `postConversationMessageRequestSchema` means "this client does not track
+  pages" and inherits the conversation's binding (MCP, scripts); an explicit
+  `null` means "the user is somewhere without a page" and clears it. Treating
+  both alike would make leaving a page impossible.
+* **The id is checked.** Because the title and path now reach the prompt, a
+  `documentId` named by the caller is verified through
+  `WorkspaceAccessService.findDocumentContext` and must belong to the
+  conversation's workspace; otherwise the request fails with
+  `document_access_denied`. A page the conversation was merely *bound to*
+  earlier and that has since been deleted degrades to "no page" instead,
+  so a dead binding cannot lock a user out of their own transcript.
+
 ## Tool calling
 
 Conversation-backed runs (never the legacy `messages`-only path) can call the
@@ -313,6 +361,11 @@ limitations").
   in memory in `apps/collaboration`; a programmatic content write snapshots
   first (revertable) but can still be overwritten by the next debounced
   store. Documented, not fixed, tonight.
+* **The page context has no UI and no selection.** Nothing in the panel shows
+  which page the assistant is looking at, there is no way to remove or add one
+  by hand, and a block selection in the editor still goes nowhere. A database
+  page is announced as a collection but its schema, active view and rows are
+  not described. Issue #1, points 3, 4 and 6.
 * **`ai.pdfExtractionModelSlug` is not wired into the worker's PDF extractor
   yet.** The extractor is a single boot-time instance built from
   `OPENROUTER_DEFAULT_MODEL`; making the DB setting effective would mean
