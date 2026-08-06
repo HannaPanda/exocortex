@@ -8,11 +8,26 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | ----- | -------- | -------- | ------ |
 | `document-materialization` | collaboration server (debounced), API (import, snapshot restore) | `createMaterializeDocumentProcessor` | real |
 | `search-indexing` | materialization, document mutations, outbox dispatch | `createIndexDocumentProcessor` | real |
-| `ai` | `AiService.createRun` | `createAiRunProcessor` | real, mock provider |
+| `ai` | `AiService.createRun`, `ConversationsService.postMessage` | `createAiRunProcessor` | real, mock provider |
 | `maintenance` | repeatable schedulers | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`), documented placeholder (`vacuum-search-index`) |
+| `attachment-text` | attachment upload, `GET /api/attachments/:id/text` (on demand) | `createAttachmentTextProcessor` | real |
 
 Queue names and payload schemas live in `packages/contracts/src/jobs.ts`, so
 producers and consumers cannot drift apart.
+
+`attachmentTextJobSchema`: `{ correlationId, attachmentId, workspaceId, reason }`
+with `reason: 'upload' | 'requested' | 'retry'`. `createAttachmentTextProcessor`
+(`apps/worker/src/processors/attachment-text.ts`, concurrency 1 — extraction
+is an external call and must not crowd out materialization) treats a missing
+or soft-deleted attachment, a non-PDF MIME type, an unconfigured extractor and
+an oversized file (`ai.pdfMaxBytes`) as deterministic outcomes and sets
+`textStatus` accordingly without retrying; anything else (a storage or
+network error) is left to bubble so BullMQ applies the normal retry policy.
+
+`AiRunJob` gained no new fields for the tool loop or conversations: it still
+carries only `{ correlationId, runId, workspaceId, userId }`. The worker reads
+everything else — the model, the conversation, its live message list — from
+the `AiRun` and `AiConversation` rows themselves.
 
 ## Guarantees
 
@@ -27,12 +42,15 @@ producers and consumers cannot drift apart.
   * search indexing is a full upsert of the current state
   * AI runs only process a record in `PENDING` state
   * outbox dispatch sets `processedAt` and increments `attempts`
+  * attachment text extraction returns immediately once `textStatus` is
+    `READY`, so a retried job never re-extracts
 * **Progress reporting.** `reportProgress(percent, germanLabel)` updates the BullMQ
   job and publishes a `job.progress` event, which the UI renders.
 * **Correlation ids.** Every payload carries one; it flows from the HTTP request
   through the queue into the worker log lines.
-* **Graceful shutdown.** `SIGTERM` closes all four workers (waiting for in-flight
-  jobs), then the Redis connections, the event bus, the queues and Prisma.
+* **Graceful shutdown.** `SIGTERM` closes all five workers (waiting for
+  in-flight jobs), then the Redis connections, the event bus, the queues and
+  Prisma.
 * **No silently ignored failures.** Every handler either succeeds or throws;
   `worker.on('failed')` logs with the attempt count and publishes `job.failed`.
 * **Failed-job inspection.** `removeOnFail: { age: 7 days, count: 5000 }` keeps
@@ -67,7 +85,7 @@ producers and consumers cannot drift apart.
 
 ## Tests
 
-`apps/worker/src/processors/processors.integration.test.ts` (9 tests) runs the
+`apps/worker/src/processors/processors.integration.test.ts` runs the
 processors against the real PostgreSQL and Redis:
 
 * materialization derives JSON, plain text and Markdown
@@ -79,3 +97,13 @@ processors against the real PostgreSQL and Redis:
 * excludes archived documents by default
 * "dispatches outbox events exactly once"
 * prunes snapshots down to the configured number
+* AI runs: describes a document image and prepends it as context, leaves
+  messages untouched without images, completes even when an attachment
+  cannot be resolved
+* a conversation-backed run executes a tool call through a stub `ToolRunner`
+  and completes with the follow-up turn's text; `ai.maxToolIterations: 0`
+  fails with `ai_tool_limit_exceeded`
+* `compactIfNeeded` summarizes older messages and leaves the recent tail
+  active; does nothing when already within budget
+* attachment text extraction: `NOT_APPLICABLE` for a non-PDF, `FAILED` with a
+  clear reason when no extractor is configured

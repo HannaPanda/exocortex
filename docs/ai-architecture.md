@@ -52,12 +52,174 @@ document content leaves the system" for images specifically):
    ahead of the messages the user typed, for that one call only. They are
    never persisted into `AiRun.messages`.
 
-Bounds and known limitations: capped at 4 images per run
-(`MAX_IMAGES_PER_RUN`); no caching, so a multi-turn conversation about the
-same page re-describes its images on every turn; best-effort throughout — a
-document that fails to load, an unresolvable attachment or one failed
-description is logged and skipped, never fails the run. Unset
-`OPENROUTER_VISION_MODEL` to turn this off entirely.
+Bounds and known limitations: capped at `ai.visionMaxImagesPerRun` per run
+(default 4, `MAX_IMAGES_PER_RUN` in code); no caching, so a multi-turn
+conversation about the same page re-describes its images on every turn;
+best-effort throughout — a document that fails to load, an unresolvable
+attachment or one failed description is logged and skipped, never fails the
+run. `ai.visionEnabled: false` turns this off entirely; see "Vision
+companions" below for how the companion *model* is now chosen per run rather
+than fixed to `OPENROUTER_VISION_MODEL`.
+
+## Conversations and messages
+
+`AiConversation` / `AiConversationMessage` (Prisma) are the persistent side
+panel chat history that replaces re-submitting the whole transcript on every
+request. The model, title, reasoning level and vision companion override
+live on the conversation; every turn — user, assistant, tool, and compaction
+summaries — is its own `AiConversationMessage` row.
+
+* **`supersededAt`.** Set by `/clear` and by auto-compaction. A superseded
+  message stays in the table and in the UI's history (it is still "what
+  actually happened"), but the worker never sends it to the provider again —
+  only `supersededAt: null` rows enter the message list a run builds
+  (`apps/worker/src/processors/ai-run.ts`).
+* **Why the transcript lives in the database, not on `AiRun.messages`.** A run
+  is one turn; a conversation is many. Keeping the transcript on the
+  conversation means the worker always reads the current, possibly-compacted
+  state instead of trusting a copy the API embedded at enqueue time —
+  `ConversationsService.postMessage` (`apps/api/src/ai/conversations.service.ts`)
+  stores only the just-submitted user message on the `AiRun` row, for
+  traceability, and the worker rebuilds the real message list from
+  `AiConversationMessage` every time.
+* **Ownership.** A conversation is personal, not shared, even inside a shared
+  workspace: every route on it, reads included, requires the caller to be its
+  own creator (see the class comment on `ConversationsService`) — a
+  deliberate widening of "ownership required for writes", documented there.
+* **Slash commands** (`/clear`, `/new`, `/model`, `/think`, `/vision`,
+  `/compact`, `/rules`, `/tools`, `/help`) are parsed server-side
+  (`apps/api/src/ai/chat-commands.ts`) so the side panel, MCP and any future
+  client behave identically without reimplementing the command set.
+
+## Tool calling
+
+Conversation-backed runs (never the legacy `messages`-only path) can call the
+same `exo_*` tool catalogue the external MCP server serves
+(`@exocortex/mcp-tools`, see `docs/mcp.md`).
+
+* **Authorization stays in `apps/api`.** The worker mints a short-lived
+  `exos_`-prefixed service token for the run's own user
+  (`packages/auth/src/service-token.ts`, D3) and calls the REST API through it
+  (`apps/worker/src/tool-runner.ts`). There is no privileged path: a tool call
+  can do exactly what that human could do through the API, nothing more.
+* **The loop.** `createAiRunProcessor` streams a turn, and if the model
+  requested tool calls, persists the assistant turn (with `toolCalls`,
+  verbatim as the provider returned them) and runs each call **sequentially**
+  — never in parallel, so two mutating calls to the same document cannot
+  race — publishing `ai.run.tool_call` (`started` / `succeeded` / `failed`)
+  around each one and persisting its result as a `TOOL` message before
+  looping again. Only the final, tool-call-free turn's text becomes
+  `run.resultText` and the `ai.run.completed` payload; it is also persisted
+  as the conversation's closing `ASSISTANT` message, since otherwise the next
+  user message would build its context from a transcript silently missing
+  the assistant's own reply.
+* **Caps.** `ai.maxToolIterations` (default 8) and `ai.budgetMicroUsdPerRun`
+  (summed from every turn's reported usage) stop a runaway loop with
+  `ai_tool_limit_exceeded` / `ai_budget_exceeded`. `ai.mutatingToolsEnabled`
+  gates whether write tools are offered at all.
+* **A tool error is never a thrown exception.** `ToolRunner.run` always
+  returns `{ text, isError }` — an unknown tool, invalid JSON arguments, an
+  `ExocortexApiError` or a zod validation failure all become a `tool` message
+  the model can see and react to, instead of crashing the run.
+* **Unavailable without a service token.** `SERVICE_TOKEN_SECRET` is optional
+  (R2); when unset, tools are simply off and the worker logs one warning per
+  process instead of per run.
+
+## Reasoning levels
+
+`AiReasoningLevel` (`NONE`/`MINIMAL`/`LOW`/`MEDIUM`/`HIGH`) is resolved and
+clamped server-side against the selected `AiModel` row's `reasoningLevels`
+(`AiModelResolverService.clampReasoningLevel`,
+`apps/api/src/ai/ai-model-resolver.service.ts`) — a client can request a
+level the model does not support (or does not have selectable at all, e.g.
+Haiku 4.5's single-element `[NONE]`) and gets the closest supported level
+back instead of an error. `/think` reports in German when this happened. The
+clamped level becomes `OpenRouterProvider`'s `reasoning.effort` parameter
+(omitted entirely for `NONE`).
+
+## Auto-compaction
+
+`compactIfNeeded` (`apps/worker/src/compaction.ts`) runs before every
+provider call on a conversation-backed run:
+
+1. Estimate the active transcript's tokens (`estimateConversationTokens`,
+   `packages/ai/src/token-estimate.ts` — 3.6 characters/token, deliberately
+   conservative so it triggers slightly early rather than late) plus the
+   system prompt's tokens.
+2. Compare against `ai.compactionThresholdPercent` of the model's context
+   window, minus `ai.maxOutputTokens` reserved for the answer.
+3. Past the threshold, everything except the most recent
+   `ai.compactionKeepRecentMessages` is summarized by the provider (German,
+   bullet points, max 400 words) into one new `isSummary: true` message, and
+   the summarized originals are superseded (not deleted).
+
+Fewer than two messages left to summarize means the recent tail alone already
+exceeds the budget — compaction is skipped and the run proceeds; the
+provider will complain if the context is actually too large, which is better
+than silently discarding the user's latest question. A failed compaction (a
+provider error) is caught, logged at `warn`, and never fails the run.
+`ai.conversation.compacted` is published with the before/after token
+estimate. `/compact` is advisory only — see "Known limitations".
+
+## Vision companions
+
+A companion model is chosen per run, not fixed at the deployment level
+(`apps/worker/src/processors/ai-run.ts`, `resolveVisionCompanionSlug`):
+
+1. The conversation's `visionCompanionSlug` override, if set (`'off'`
+   disables the companion for that conversation entirely; `/vision` sets
+   this).
+2. Otherwise the selected `AiModel`'s admin-configured `visionCompanion`
+   (e.g. GLM 5.2 and DeepSeek default to `qwen/qwen3.7-flash`).
+3. Otherwise the deployment's `OPENROUTER_VISION_MODEL` default.
+
+**A model with `supportsVision: true` skips the companion call entirely** and
+logs that it did — this is the registry's actual payoff: switching the
+driver to a vision-capable model stops paying for a second call per image.
+`ai.visionEnabled` gates the whole mechanism.
+
+## PDF text
+
+`Attachment.extractedText` / `textStatus` cache the text layer of a PDF
+(D6), populated by the `attachment-text` queue
+(`apps/worker/src/processors/attachment-text.ts`) and read — never
+extracted — by `exo_attachment_read_text`. Extraction uses OpenRouter's
+`file-parser` plugin with the free `pdf-text` engine
+(`packages/ai/src/pdf-text.ts`): the PDF is sent as a base64 `file` content
+part, verified against the live API with a real 148 KB PDF on 2026-08-06, so
+no PDF-parsing npm dependency was needed. `PdfTextExtractor` returns `null`
+both when unconfigured (missing API key or model) and when a document
+genuinely has no extractable text (a pure scan) — the caller tells the two
+apart via `textStatus` / `textExtractionError`, never by retrying.
+
+`textStatus` states: `NOT_APPLICABLE` (not a PDF), `PENDING` (queued, not yet
+attempted), `READY` (`extractedText` populated, capped at 400 000
+characters), `FAILED` (`textExtractionError` explains why: unconfigured,
+oversized per `ai.pdfMaxBytes`, or no text layer). The extractor is built
+once at boot from `OPENROUTER_DEFAULT_MODEL` (the file-parser plugin works
+with any model, so no dedicated env var was needed); `ai.pdfExtractionModelSlug`
+exists in the settings schema for a future per-job model choice but is not
+wired in yet (see "Known limitations").
+
+## Known limitations
+
+* **`/compact` is advisory only.** Running it from the API process would
+  call a provider from inside `apps/api`, which the execution boundary above
+  forbids. It reports that auto-compaction happens automatically instead;
+  `/clear` covers the case where the user wants the context gone
+  immediately.
+* **Reasoning deltas are dropped.** `OpenRouterProvider.stream` deliberately
+  discards `delta.reasoning` chunks rather than folding them into
+  `resultText` — surfacing model "thinking" is a later feature.
+* **`POST /api/documents/:id/content` can lose against a live Hocuspocus
+  session.** A document being edited collaboratively has its canonical state
+  in memory in `apps/collaboration`; a programmatic content write snapshots
+  first (revertable) but can still be overwritten by the next debounced
+  store. Documented, not fixed, tonight.
+* **`ai.pdfExtractionModelSlug` is not wired into the worker's PDF extractor
+  yet.** The extractor is a single boot-time instance built from
+  `OPENROUTER_DEFAULT_MODEL`; making the DB setting effective would mean
+  rebuilding it per job the way `visionPreprocessorFor` already does.
 
 ## Execution boundary (hard rule)
 
@@ -123,18 +285,44 @@ run. Every provider must refuse to exceed the budget it is given.
 
 ## Tests
 
-`packages/ai/src/mock-provider.test.ts` (8 tests): capabilities, event order,
-monotonic sequence numbers, streamed text equals generated text, usage reporting,
-cancellation mid-stream, question echo, registry default.
+`packages/ai/src/mock-provider.test.ts`: capabilities, event order, monotonic
+sequence numbers, streamed text equals generated text, usage reporting,
+cancellation mid-stream, question echo, registry default, and the
+`[[call:<toolName>]]` marker (requests a tool call, then answers in plain
+text once a `tool` message is present).
+
+`packages/ai/src/token-estimate.test.ts`: zero for an empty string, monotonic
+in length, per-message overhead counted once per message.
 
 `packages/ai/src/vision-preprocessor.test.ts`: request shaping (base64 data URI
 in an `image_url` content part), error handling, and the registry's
 configured/unconfigured gate.
 
+`apps/api/src/ai/chat-commands.test.ts`: known commands with and without an
+argument, an unknown command and a path-like message both fall through to
+prose, a message without a leading `/` is prose.
+
+`apps/api/src/ai/conversations.service.test.ts` (real Postgres/Redis):
+create/get/list scoped to the caller, ownership enforced on every route
+(including reads), `postMessage` persisting the user message and enqueuing a
+run, the `ai_conversation_locked` guard, and every slash command including
+the `/think` clamp message. Two of these post an ordinary (non-command)
+message, which really does enqueue an `ai` job the live worker on this shared
+host will pick up and run for real (a cheap model, a short message) — the
+assertions only check what `postMessage` returns synchronously or fields
+unrelated to run status, specifically to stay correct despite that race.
+
 `apps/worker/src/processors/processors.integration.test.ts` ("ai runs", real
-Postgres/Redis, a capturing fake `AiProvider`): describes a document image and
-prepends it as context, leaves messages untouched when a page has no images,
-and completes the run even when a referenced attachment cannot be resolved.
+Postgres/Redis): describes a document image and prepends it as context,
+leaves messages untouched when a page has no images, completes the run even
+when a referenced attachment cannot be resolved; a conversation-backed run
+executes a tool call through a stub `ToolRunner`, persists the `ASSISTANT` +
+`TOOL` messages and completes with the follow-up turn's text;
+`ai.maxToolIterations: 0` fails with `ai_tool_limit_exceeded`; `compactIfNeeded`
+summarizes older messages into one summary message and leaves the recent
+tail active, and does nothing when already within budget; the
+attachment-text processor marks a PNG `NOT_APPLICABLE` and fails clearly when
+no extractor is configured.
 
 The end-to-end path is covered by `e2e/tests/ai.spec.ts` → "streams a response from
 the mock provider through the realtime channel".
