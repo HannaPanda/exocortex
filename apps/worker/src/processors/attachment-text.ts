@@ -1,4 +1,8 @@
-import { mergePdfMetadata, type PdfTextExtractor } from '@exocortex/ai';
+import {
+  mergePdfMetadata,
+  type PdfDocumentInfoReader,
+  type PdfTextExtractor,
+} from '@exocortex/ai';
 import { type PdfMetadata, type QUEUE_NAMES, type Settings } from '@exocortex/contracts';
 import { Prisma, type PrismaClient } from '@exocortex/database';
 import { type JobContext } from '@exocortex/queue';
@@ -19,6 +23,15 @@ export interface AttachmentTextDependencies {
    * the same file through OCR.
    */
   extractors: (settings: Settings) => readonly PdfTextExtractor[];
+  /**
+   * Reads the PDF's own metadata dictionary locally, before any engine runs.
+   *
+   * Separate from the chain on purpose. It produces no text, so it must not
+   * make an unconfigured deployment look configured; and it must not depend on
+   * which engine wins, because only one of the two engines ever reported the
+   * dictionary, which used to make the free local engine the expensive choice.
+   */
+  documentInfo: PdfDocumentInfoReader;
   settings: () => Promise<Settings>;
 }
 
@@ -99,16 +112,24 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
     }
     const data = Buffer.concat(chunks);
 
+    // Read from the file itself, so it is known whatever the engines do -- and
+    // known even when all of them fail.
+    const localInfo = await dependencies.documentInfo.read({
+      data,
+      correlationId: payload.correlationId,
+    });
+
     // Each engine gets the whole document. A null `text` means "this engine
     // found nothing", which is a routine outcome for a scan hitting a text-only
     // engine, so the next one in the chain is tried before giving up. A thrown
     // error still bubbles: an unreachable Docling container must be retried,
     // not silently downgraded to a worse result.
     //
-    // Metadata is collected from every attempt, not only the winning one. The
-    // engines see different things -- the hosted plugin reads the PDF's own
-    // title and dates, Docling reads the layout -- so an attempt that produced
-    // no text can still be the only source of half the answer.
+    // Metadata is collected from every attempt, not only the winning one, and
+    // joined with the locally read dictionary. The three sources see different
+    // things -- the file carries the title and the dates, Docling reports the
+    // layout and whether OCR ran -- so an attempt that produced no text can
+    // still be the only source of part of the answer.
     let text: string | null = null;
     let winner: PdfMetadata | null = null;
     const attempted: (PdfMetadata | null)[] = [];
@@ -152,8 +173,9 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
         data: {
           textStatus: 'FAILED',
           textExtractionError: 'No extractable text layer',
-          // Even a total failure usually knows the page count and the title.
-          textMetadata: toJsonColumn(mergeAttempts(null, attempted)),
+          // Even a total failure knows the page count and the title: they come
+          // from the file, not from an engine.
+          textMetadata: toJsonColumn(mergeAttempts(null, [localInfo, ...attempted])),
         },
       });
       logger.info('PDF has no extractable text layer', {
@@ -163,7 +185,7 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
       return;
     }
 
-    const metadata = mergeAttempts(winner, attempted);
+    const metadata = mergeAttempts(winner, [localInfo, ...attempted]);
     await prisma.attachment.update({
       where: { id: attachment.id },
       data: {

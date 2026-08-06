@@ -8,6 +8,7 @@ import {
   type AiProviderCapabilities,
   type AiStreamEvent,
   MockAiProvider,
+  type PdfDocumentInfoReader,
   type VisionPreprocessor,
 } from '@exocortex/ai';
 import { loadWorkerEnv } from '@exocortex/config';
@@ -778,6 +779,9 @@ describe('compactIfNeeded', () => {
 });
 
 describe('attachment text extraction', () => {
+  /** The default for tests that are about the engine chain, not the file. */
+  const noDocumentInfo: PdfDocumentInfoReader = { read: async () => null };
+
   const stubMetadata: PdfMetadata = {
     extractor: 'stub',
     title: null,
@@ -813,6 +817,7 @@ describe('attachment text extraction', () => {
       prisma,
       storage: fakeStorage(Buffer.from('unused')),
       extractors: () => [{ extract: async () => ({ text: 'unused', metadata: stubMetadata }) }],
+      documentInfo: noDocumentInfo,
       settings: stubSettings(),
     });
 
@@ -830,6 +835,7 @@ describe('attachment text extraction', () => {
       prisma,
       storage: fakeStorage(Buffer.from('unused')),
       extractors: () => [],
+      documentInfo: noDocumentInfo,
       settings: stubSettings(),
     });
 
@@ -868,6 +874,7 @@ describe('attachment text extraction', () => {
           },
         },
       ],
+      documentInfo: noDocumentInfo,
       settings: stubSettings(),
     });
 
@@ -904,6 +911,7 @@ describe('attachment text extraction', () => {
         },
         { extract: async () => ({ text: 'read by the second engine', metadata: stubMetadata }) },
       ],
+      documentInfo: noDocumentInfo,
       settings: stubSettings(),
     });
 
@@ -928,6 +936,7 @@ describe('attachment text extraction', () => {
           },
         },
       ],
+      documentInfo: noDocumentInfo,
       settings: stubSettings(),
     });
 
@@ -958,6 +967,7 @@ describe('attachment text extraction', () => {
           },
         },
       ],
+      documentInfo: noDocumentInfo,
       settings: stubSettings(),
     });
 
@@ -968,5 +978,86 @@ describe('attachment text extraction', () => {
     expect(secondCalled).toBe(false);
     const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
     expect(attachment.extractedText).toBe('from the text layer');
+  }, 30_000);
+
+  it('joins the locally read dictionary with what the engine reported', async () => {
+    // The point of reading the dictionary locally: the engine that wins on text
+    // reports layout and nothing else, and must not have to be the expensive
+    // one just because it is the only one that knows the title.
+    const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
+    const processor = createAttachmentTextProcessor({
+      prisma,
+      storage: fakeStorage(Buffer.from('%PDF-1.7 scanned')),
+      extractors: () => [
+        {
+          extract: async () => ({
+            text: 'text from the scan',
+            metadata: {
+              ...stubMetadata,
+              extractor: 'docling',
+              pageCount: 3,
+              tableCount: 2,
+              ocrUsed: true,
+            },
+          }),
+        },
+      ],
+      documentInfo: {
+        read: async () => ({
+          ...stubMetadata,
+          extractor: 'pdf-info',
+          title: 'Quartalsbericht Q3',
+          author: 'Johanna Panda',
+          createdAt: '2026-04-01T12:00:00.000Z',
+          pageCount: 3,
+        }),
+      },
+      settings: stubSettings(),
+    });
+
+    await processor(
+      contextFor({ correlationId: 'test-attach-7', attachmentId, workspaceId, reason: 'upload' }).context,
+    );
+
+    const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+    expect(attachment.textMetadata).toMatchObject({
+      extractor: 'docling',
+      title: 'Quartalsbericht Q3',
+      author: 'Johanna Panda',
+      createdAt: '2026-04-01T12:00:00.000Z',
+      tableCount: 2,
+      ocrUsed: true,
+    });
+  }, 30_000);
+
+  it('keeps the dictionary when no engine finds any text', async () => {
+    const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
+    const processor = createAttachmentTextProcessor({
+      prisma,
+      storage: fakeStorage(Buffer.from('%PDF-1.7 empty')),
+      extractors: () => [{ extract: async () => ({ text: null, metadata: null }) }],
+      documentInfo: {
+        read: async () => ({
+          ...stubMetadata,
+          extractor: 'pdf-info',
+          title: 'Leeres Formular',
+          pageCount: 12,
+        }),
+      },
+      settings: stubSettings(),
+    });
+
+    await processor(
+      contextFor({ correlationId: 'test-attach-8', attachmentId, workspaceId, reason: 'upload' }).context,
+    );
+
+    const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+    expect(attachment.textStatus).toBe('FAILED');
+    // A reader still learns what the document is, even though nobody read it.
+    expect(attachment.textMetadata).toMatchObject({
+      extractor: 'pdf-info',
+      title: 'Leeres Formular',
+      pageCount: 12,
+    });
   }, 30_000);
 });

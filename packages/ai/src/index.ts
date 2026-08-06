@@ -2,6 +2,7 @@ export * from './agent-runners';
 export * from './docling';
 export * from './mock-provider';
 export * from './openrouter-provider';
+export * from './pdf-info';
 export * from './pdf-text';
 export * from './provider';
 export * from './registry';

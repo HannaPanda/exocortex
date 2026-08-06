@@ -5,7 +5,9 @@
   "description": "Provider-neutral AI abstraction, mock streaming provider and CLI agent runner contracts",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
@@ -17,6 +19,7 @@
     "@exocortex/config": "workspace:*",
     "@exocortex/contracts": "workspace:*",
     "@exocortex/logger": "workspace:*",
+    "pdf-lib": "1.17.1",
     "zod": "4.4.3"
   },
   "devDependencies": {

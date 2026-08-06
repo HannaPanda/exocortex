@@ -1,6 +1,7 @@
 import {
   createAiProvider,
   createOptionalDoclingPdfExtractor,
+  createPdfDocumentInfoReader,
   createPdfTextExtractor,
   createVisionPreprocessor,
   type PdfTextExtractor,
@@ -116,6 +117,12 @@ async function bootstrap(): Promise<void> {
     return visionPreprocessorCache.get(cacheKey) ?? null;
   };
 
+  // The PDF's own metadata dictionary, read locally from the file. Not an
+  // engine and not part of the chain below: it produces no text, and it must
+  // stay independent of which engine does, so that choosing the free local
+  // engine does not cost the title, the author and the dates.
+  const pdfDocumentInfo = createPdfDocumentInfoReader({ logger });
+
   // PDF text extraction (D6): built once at boot from the main driver model --
   // the OpenRouter file-parser plugin works with any model, so the deployment
   // does not need a dedicated env var for it. `ai.pdfExtractionModelSlug`
@@ -140,21 +147,23 @@ async function bootstrap(): Promise<void> {
   /**
    * Engines to try, in order, for one PDF.
    *
-   * Both are unconfigured-safe: an empty chain is how the processor learns that
-   * PDF extraction is unavailable, so choosing `docling` without a container
-   * reports that plainly instead of quietly falling back to a worse engine.
+   * The setting names the primary; the other engine backs it up, in either
+   * direction. The symmetry matters both ways: Docling first needs the hosted
+   * engine for the day the container is down, and OpenRouter first needs
+   * Docling for every scan.
+   *
+   * Both factories return null when their side is unconfigured, and an empty
+   * chain is how the processor learns that PDF extraction is unavailable -- so
+   * a deployment with neither says so plainly instead of failing per document.
    */
   const pdfExtractorChain = (settings: Settings): readonly PdfTextExtractor[] => {
-    const primary =
-      settings['ai.pdfExtractor'] === 'docling' ? doclingPdfExtractor : openRouterPdfExtractor;
-    const chain = primary === null ? [] : [primary];
-    if (
-      settings['ai.pdfOcrFallbackEnabled'] &&
-      doclingPdfExtractor !== null &&
-      !chain.includes(doclingPdfExtractor)
-    ) {
-      chain.push(doclingPdfExtractor);
-    }
+    const [primary, fallback] =
+      settings['ai.pdfExtractor'] === 'openrouter'
+        ? [openRouterPdfExtractor, doclingPdfExtractor]
+        : [doclingPdfExtractor, openRouterPdfExtractor];
+    const chain: PdfTextExtractor[] = [];
+    if (primary !== null) chain.push(primary);
+    if (settings['ai.pdfExtractorFallbackEnabled'] && fallback !== null) chain.push(fallback);
     return chain;
   };
 
@@ -304,6 +313,7 @@ async function bootstrap(): Promise<void> {
       prisma,
       storage,
       extractors: pdfExtractorChain,
+      documentInfo: pdfDocumentInfo,
       settings: readSettings,
     }),
     onFailed: async (payload, job, error) => {
