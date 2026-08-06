@@ -41,6 +41,14 @@ file is the contract for automated sessions. Read it before changing code.
    codes are English.**
 9. **No hardcoded colours.** Use the semantic tokens from
    `packages/ui/src/tokens.css` through Tailwind utilities.
+10. **Every feature change must be reflected in the MCP surface.**
+    `packages/mcp-tools` is the single tool catalogue: it serves both the external
+    stdio MCP server (`apps/mcp`) and the built-in AI's tool loop in
+    `apps/worker`. If a change adds, alters or removes something a human can do
+    in the application, the same capability must be added, altered or removed in
+    the catalogue in the same commit series — with a REST endpoint behind it,
+    because the catalogue only ever calls the API. A pull request that extends the
+    UI without extending the catalogue is incomplete. Recipe: `docs/mcp.md`.
 
 ## Repository map
 
@@ -50,6 +58,8 @@ file is the contract for automated sessions. Read it before changing code.
 | `apps/api`              | NestJS + Fastify REST API, Better Auth handler, Socket.IO gateway. Owns business logic. |
 | `apps/collaboration`    | Hocuspocus server, binary Yjs persistence, ticket verification. |
 | `apps/worker`           | BullMQ worker: materialization, search indexing, AI runs, maintenance. |
+| `apps/mcp`              | stdio JSON-RPC MCP server for external clients (Hermes, Claude Code). |
+| `packages/mcp-tools`    | The one tool catalogue: shared by `apps/mcp` and the worker's AI tool loop. |
 | `packages/config`       | Runtime-validated environment schemas. |
 | `packages/contracts`    | zod schemas for REST DTOs, WebSocket events, job payloads. |
 | `packages/database`     | Prisma schema, migrations, order keys, tree helpers, search adapter. |
@@ -86,6 +96,10 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   transactional outbox, not through fire-and-forget calls.
 * ADR-011: a database is a `Document` with `type: 'COLLECTION'`; its rows are
   ordinary `Document`s (`type: 'PAGE'`) underneath it, not a separate model.
+* ADR-013: runtime configuration lives in the `setting` table; the environment is
+  the bootstrap fallback, never the runtime authority.
+* ADR-014: one tool catalogue (`packages/mcp-tools`) serves external MCP clients
+  and the built-in AI, and it reaches the domain only through the REST API.
 
 Full list: `docs/adr/`.
 
@@ -102,6 +116,8 @@ Each of these has a step-by-step recipe:
 | new AI provider, agent runner | `docs/ai-architecture.md` |
 | new storage backend | `docs/architecture.md` |
 | new database property type, view type | `docs/database-views.md` |
+| new MCP tool, new AI tool | `docs/mcp.md` |
+| new admin setting, admin page | `docs/admin.md` |
 
 ## Deployment on this machine
 
