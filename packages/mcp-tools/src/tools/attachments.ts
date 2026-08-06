@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  attachmentTextInfoResponseSchema,
   attachmentTextResponseSchema,
   idSchema,
   type PdfMetadata,
@@ -83,11 +84,33 @@ export const attachmentReadTextTool: AnyToolDefinition = defineTool({
   name: 'exo_attachment_read_text',
   description:
     'Liest den extrahierten Text eines Anhangs (z. B. eines PDFs). Die Extraktion läuft im Hintergrund; ' +
-    'status: "pending" bedeutet, dass das Werkzeug in Kürze erneut aufgerufen werden sollte.',
-  inputSchema: z.object({ attachmentId: idSchema }),
+    'status: "pending" bedeutet, dass das Werkzeug in Kürze erneut aufgerufen werden sollte. ' +
+    'Mit includeText: false kommen nur Status und Metadaten (Titel, Autor, Seitenzahl, Tabellen, ' +
+    'Texterkennung) zurück, und eine noch nicht gelaufene Extraktion wird dadurch auch nicht gestartet.',
+  inputSchema: z.object({
+    attachmentId: idSchema,
+    /**
+     * The same distinction the editor's PDF block makes: drawing a header needs
+     * the metadata, not 400,000 characters, and drawing must not start work.
+     */
+    includeText: z.boolean().default(true),
+  }),
   surfaces: ['mcp', 'ai'],
   mutating: false,
   async execute(client, input) {
+    if (!input.includeText) {
+      const info = await client.request({
+        method: 'GET',
+        path: `/api/attachments/${input.attachmentId}/text/info`,
+        responseSchema: attachmentTextInfoResponseSchema,
+      });
+      const described = describeMetadata(info.metadata).trim();
+      return {
+        text: `${info.filename} (Status: ${info.status})${described.length === 0 ? '' : ` ${described}`}`,
+        data: info,
+      };
+    }
+
     const result = await client.request({
       method: 'GET',
       path: `/api/attachments/${input.attachmentId}/text`,

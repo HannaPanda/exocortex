@@ -5,6 +5,8 @@ import { type FastifyReply, type FastifyRequest } from 'fastify';
 import { type VerifiedSession } from '@exocortex/auth';
 import { type ApiEnv } from '@exocortex/config';
 import {
+  type AttachmentTextInfoResponse,
+  attachmentTextInfoResponseSchema,
   type AttachmentTextResponse,
   attachmentTextResponseSchema,
   type UploadAttachmentResponse,
@@ -114,5 +116,18 @@ export class AttachmentsController {
     @Param('attachmentId') attachmentId: string,
   ): Promise<AttachmentTextResponse> {
     return this.attachments.getText(attachmentId, session.userId, currentCorrelationId());
+  }
+
+  /**
+   * Everything the route above returns except the text, and without starting an
+   * extraction. This is the read a rendered PDF block performs.
+   */
+  @Get('attachments/:attachmentId/text/info')
+  @ApiOkResponse({ schema: openApiResponseSchema(attachmentTextInfoResponseSchema) })
+  async textInfo(
+    @CurrentSession() session: VerifiedSession,
+    @Param('attachmentId') attachmentId: string,
+  ): Promise<AttachmentTextInfoResponse> {
+    return this.attachments.getTextInfo(attachmentId, session.userId);
   }
 }

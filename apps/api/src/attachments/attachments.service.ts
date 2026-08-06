@@ -13,6 +13,7 @@ import { type ApiEnv } from '@exocortex/config';
 import {
   ALLOWED_ATTACHMENT_MIME_TYPES,
   type Attachment,
+  type AttachmentTextInfoResponse,
   type AttachmentTextResponse,
   pdfMetadataSchema,
   QUEUE_NAMES,
@@ -265,6 +266,56 @@ export class AttachmentsService {
     userId: string,
     correlationId: string,
   ): Promise<AttachmentTextResponse> {
+    const { attachment, projected } = await this.readTextState(attachmentId, userId);
+
+    // Ready or already running: nothing to start.
+    if (projected.status === 'ready' || projected.status === 'pending') return projected;
+    // Only a PDF has a text layer worth chasing; anything else is settled.
+    if (attachment.mimeType !== 'application/pdf') return projected;
+
+    // A PDF that was never asked for, or one whose last attempt failed. Reading
+    // it is the request to try (again).
+    await this.prisma.attachment.update({
+      where: { id: attachmentId },
+      data: { textStatus: 'PENDING', textExtractionError: null },
+    });
+    await this.queues.enqueue(QUEUE_NAMES.attachmentText, {
+      correlationId,
+      attachmentId,
+      workspaceId: attachment.workspaceId,
+      reason: 'requested',
+    });
+
+    return { ...projected, status: 'pending', text: null, extractedAt: null, error: null };
+  }
+
+  /**
+   * Status and metadata without the text, and without starting anything.
+   *
+   * This is what a rendered PDF block reads. Both halves matter: pulling up to
+   * 400,000 characters to draw a one-line header would be wasteful, and an
+   * enqueue on render would mean a page full of failed PDFs re-runs extraction
+   * every time someone opens it. Starting an extraction stays an explicit act,
+   * which is `getText`.
+   */
+  async getTextInfo(attachmentId: string, userId: string): Promise<AttachmentTextInfoResponse> {
+    const { projected } = await this.readTextState(attachmentId, userId);
+    const { text: _text, ...info } = projected;
+    return info;
+  }
+
+  /**
+   * Authorizes the read and projects the stored row, truthfully and without
+   * side effects. `getText` layers the "reading it starts it" behaviour on top;
+   * this reports `failed` as failed.
+   */
+  private async readTextState(
+    attachmentId: string,
+    userId: string,
+  ): Promise<{
+    attachment: { workspaceId: string; mimeType: string };
+    projected: AttachmentTextResponse;
+  }> {
     const context = await this.access.findAttachmentContext(attachmentId, userId);
     if (context === null) {
       throw new AppError(
@@ -286,39 +337,35 @@ export class AttachmentsService {
       filename: attachment.filename,
       mimeType: attachment.mimeType,
       metadata: parsedMetadata.success ? parsedMetadata.data : null,
+      text: null,
+      extractedAt: null,
+      error: null,
     };
-
-    if (attachment.mimeType !== 'application/pdf' && attachment.textStatus === 'NOT_APPLICABLE') {
-      return { ...base, status: 'not_applicable', text: null, extractedAt: null, error: null };
-    }
 
     if (attachment.textStatus === 'READY') {
       return {
-        ...base,
-        status: 'ready',
-        text: attachment.extractedText,
-        extractedAt: attachment.textExtractedAt?.toISOString() ?? null,
-        error: null,
+        attachment,
+        projected: {
+          ...base,
+          status: 'ready',
+          text: attachment.extractedText,
+          extractedAt: attachment.textExtractedAt?.toISOString() ?? null,
+        },
       };
     }
 
     if (attachment.textStatus === 'PENDING') {
-      return { ...base, status: 'pending', text: null, extractedAt: null, error: null };
+      return { attachment, projected: { ...base, status: 'pending' } };
     }
 
-    // NOT_APPLICABLE but a PDF (extraction was never requested), or FAILED: (re-)enqueue.
-    await this.prisma.attachment.update({
-      where: { id: attachmentId },
-      data: { textStatus: 'PENDING', textExtractionError: null },
-    });
-    await this.queues.enqueue(QUEUE_NAMES.attachmentText, {
-      correlationId,
-      attachmentId,
-      workspaceId: attachment.workspaceId,
-      reason: 'requested',
-    });
+    if (attachment.textStatus === 'FAILED') {
+      return {
+        attachment,
+        projected: { ...base, status: 'failed', error: attachment.textExtractionError },
+      };
+    }
 
-    return { ...base, status: 'pending', text: null, extractedAt: null, error: null };
+    return { attachment, projected: { ...base, status: 'not_applicable' } };
   }
 
   private toContract(row: {

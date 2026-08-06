@@ -107,3 +107,15 @@ export const attachmentTextResponseSchema = z.object({
   error: z.string().nullable(),
 });
 export type AttachmentTextResponse = z.infer<typeof attachmentTextResponseSchema>;
+
+/**
+ * The same answer without the text.
+ *
+ * A rendered PDF block wants the page count and the title, which are a few
+ * dozen bytes; the text next to them can be 400,000 characters. Every PDF on a
+ * page would pull all of it just to draw a one-line header, so the two reads
+ * are separate. This one is also side-effect free: reading it never starts an
+ * extraction, because a render must not enqueue work.
+ */
+export const attachmentTextInfoResponseSchema = attachmentTextResponseSchema.omit({ text: true });
+export type AttachmentTextInfoResponse = z.infer<typeof attachmentTextInfoResponseSchema>;
