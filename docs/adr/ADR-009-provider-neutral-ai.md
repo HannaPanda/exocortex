@@ -32,5 +32,16 @@ serving HTTP or WebSocket traffic.
   by [ADR-012](ADR-012-vision-preprocessing.md): a configured vision model
   describes them as text, which is sent externally. Everything else in this
   ADR is unaffected.
+* Two later clarifications, neither of them a reversal:
+  1. **The tool loop is the way content leaves.** Once `ai.toolsEnabled` is on,
+     the model can call `exo_page_read` and the page's text is part of the next
+     request. That is a user-controlled action per turn, not a standing export
+     of the workspace, which is why it is not treated as a second exception.
+  2. **The open page is named in the system prompt** (title, breadcrumb,
+     `documentId`, type — see "Page context" in `docs/ai-architecture.md`).
+     That is metadata, not content, and it exists precisely so the model can
+     use the tool above instead of being fed the page unasked. Putting the page
+     *body* into the prompt would be a real exception and needs its own ADR and
+     its own setting; it is deliberately not implemented.
 * Capabilities are data, so the UI can adapt (for example hide vision features) once
   more providers exist.

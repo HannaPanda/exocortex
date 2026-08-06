@@ -315,6 +315,16 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         ? null
         : await prisma.aiConversation.findUnique({ where: { id: run.conversationId } });
 
+    // --- Tool availability ---------------------------------------------------
+    // Decided before the message list because the system prompt has to tell the
+    // model whether it can fetch the open page itself or has to say it cannot.
+    const wantsTools = settings['ai.toolsEnabled'] && modelRow.supportsTools && run.conversationId !== null;
+    if (wantsTools && dependencies.toolRunnerFactory === null && !loggedMissingServiceTokenWarning) {
+      logger.warn('Tool calling is unavailable: SERVICE_TOKEN_SECRET is not configured');
+      loggedMissingServiceTokenWarning = true;
+    }
+    const toolsEnabled = wantsTools && dependencies.toolRunnerFactory !== null;
+
     // --- Message list -------------------------------------------------------
     let baseMessages: AiMessage[];
     let restMessages: AiMessage[];
@@ -324,7 +334,20 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         workspaceId: run.workspaceId,
         basePrompt: settings['ai.systemPrompt'],
         maxRuleChars: MAX_RULE_CHARS,
+        documentId: run.documentId,
+        toolsAvailable: toolsEnabled,
         logger,
+      });
+
+      // Counts only, never the prompt itself: "the AI does not know my page" is
+      // otherwise impossible to tell apart from "the model ignored the pointer".
+      logger.info('System prompt built for run', {
+        runId: run.id,
+        alwaysRuleCount: systemPromptResult.alwaysRuleCount,
+        onDemandRuleCount: systemPromptResult.onDemandRuleCount,
+        ruleBudgetTruncated: systemPromptResult.truncated,
+        openPageIncluded: systemPromptResult.openPageIncluded,
+        toolsEnabled,
       });
 
       await compactIfNeeded({
@@ -409,12 +432,6 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       imageContext === null ? [...baseMessages, ...restMessages] : [...baseMessages, imageContext, ...restMessages];
 
     // --- Tools ---------------------------------------------------------------
-    const wantsTools = settings['ai.toolsEnabled'] && modelRow.supportsTools && run.conversationId !== null;
-    if (wantsTools && dependencies.toolRunnerFactory === null && !loggedMissingServiceTokenWarning) {
-      logger.warn('Tool calling is unavailable: SERVICE_TOKEN_SECRET is not configured');
-      loggedMissingServiceTokenWarning = true;
-    }
-    const toolsEnabled = wantsTools && dependencies.toolRunnerFactory !== null;
     const runner: ToolRunner | null = toolsEnabled
       ? dependencies.toolRunnerFactory!({ userId: run.createdById, includeMutating: settings['ai.mutatingToolsEnabled'] })
       : null;
