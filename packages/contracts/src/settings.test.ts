@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { resolveSettings, settingsSchema } from './settings';
+import { resolveSettings, settingsSchema, updateSettingsRequestSchema } from './settings';
 
 describe('resolveSettings', () => {
   it('returns the full default configuration for empty input', () => {
@@ -45,5 +45,35 @@ describe('resolveSettings', () => {
     });
     expect(settings).toEqual(settingsSchema.parse({}));
     expect(invalidKeys).toEqual([]);
+  });
+});
+
+describe('updateSettingsRequestSchema', () => {
+  it('returns only the keys the caller sent, without filling in defaults', () => {
+    const parsed = updateSettingsRequestSchema.parse({ 'ai.maxToolIterations': 6 });
+
+    // The whole point: a patch that materialized every default would write
+    // twenty `setting` rows and shadow the environment fallback for good.
+    expect(Object.keys(parsed)).toEqual(['ai.maxToolIterations']);
+    expect(parsed['ai.maxToolIterations']).toBe(6);
+    expect(parsed['ai.defaultModelSlug']).toBeUndefined();
+  });
+
+  it('accepts an explicit null for a nullable setting', () => {
+    const parsed = updateSettingsRequestSchema.parse({ 'ai.defaultModelSlug': null });
+
+    expect(Object.keys(parsed)).toEqual(['ai.defaultModelSlug']);
+    expect(parsed['ai.defaultModelSlug']).toBeNull();
+  });
+
+  it('still validates the values that are present', () => {
+    expect(updateSettingsRequestSchema.safeParse({ 'ai.maxToolIterations': 99 }).success).toBe(
+      false,
+    );
+    expect(updateSettingsRequestSchema.safeParse({ 'ai.enabled': 'yes' }).success).toBe(false);
+  });
+
+  it('parses an empty patch to an empty object', () => {
+    expect(updateSettingsRequestSchema.parse({})).toEqual({});
   });
 });

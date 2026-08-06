@@ -104,5 +104,32 @@ export function resolveSettings(input: {
 export const settingsResponseSchema = z.object({ settings: settingsSchema });
 export type SettingsResponse = z.infer<typeof settingsResponseSchema>;
 
-export const updateSettingsRequestSchema = settingsSchema.partial();
+/**
+ * A genuine partial: keys the caller did not send stay absent.
+ *
+ * `settingsSchema.partial()` cannot be used here. Zod keeps each field's
+ * `.default()` inside the resulting optional, so parsing
+ * `{ 'ai.maxToolIterations': 6 }` returns all twenty keys filled with their
+ * defaults. `SettingsService.update` writes one row per key it receives, so a
+ * single edit would materialize every default as an explicit `setting` row and
+ * pin `ai.defaultModelSlug` to `null`, silently shadowing
+ * `OPENROUTER_DEFAULT_MODEL` -- destroying exactly the defaults < env < database
+ * order ADR-013 promises. Unwrapping the default before making the field
+ * optional keeps absent keys absent while still validating present values.
+ */
+type UpdateSettingsShape = {
+  [K in SettingKey]: z.ZodOptional<ReturnType<(typeof settingsSchema.shape)[K]['unwrap']>>;
+};
+
+// `Object.fromEntries` widens the keys to `string` and collapses the values into
+// a union, so the per-key mapping has to be restated for the type system. The
+// double assertion is the narrowing TypeScript asks for; `UpdateSettingsShape`
+// is derived from `settingsSchema.shape` itself, so it cannot drift from the
+// runtime shape built directly above it, and the tests in `settings.test.ts`
+// pin the resulting parse behaviour.
+const updateSettingsShape = Object.fromEntries(
+  SETTING_KEYS.map((key) => [key, settingsSchema.shape[key].unwrap().optional()]),
+) as unknown as UpdateSettingsShape;
+
+export const updateSettingsRequestSchema = z.object(updateSettingsShape);
 export type UpdateSettingsRequest = z.infer<typeof updateSettingsRequestSchema>;
