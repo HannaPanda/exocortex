@@ -5,6 +5,7 @@ import * as React from 'react';
 
 import {
   type DatabaseProperty,
+  type DatabaseRowHeight,
   type DatabaseRowPropertyValue,
 } from '@exocortex/contracts';
 import {
@@ -15,6 +16,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Textarea,
 } from '@exocortex/ui';
 
 import {
@@ -23,6 +25,7 @@ import {
   OPTION_COLOR_BG_CLASS,
   OPTION_COLOR_TEXT_CLASS,
 } from './property-types';
+import { ROW_HEIGHT_BOX_CLAMP, ROW_HEIGHT_LINE_CLAMP } from './table-columns';
 
 type CellValue = DatabaseRowPropertyValue['value'];
 
@@ -31,6 +34,8 @@ export interface PropertyCellProps {
   value: CellValue;
   onChange: (value: CellValue) => void;
   readOnly: boolean;
+  /** Row density of the table view showing this cell. Defaults to one line. */
+  rowHeight?: DatabaseRowHeight;
 }
 
 /**
@@ -42,29 +47,34 @@ export interface PropertyCellProps {
  * pattern `DocumentTitleInput` uses, so local draft state (in `TextCell`
  * etc.) never needs a `useEffect` to resync with props.
  */
-export function PropertyCell({ property, value, onChange, readOnly }: PropertyCellProps) {
+export function PropertyCell({
+  property,
+  value,
+  onChange,
+  readOnly,
+  rowHeight = 'short',
+}: PropertyCellProps) {
   const cellKey = JSON.stringify(value);
+  const shared = { property, value, onChange, readOnly, rowHeight };
   if (COMPUTED_PROPERTY_TYPES.has(property.type)) {
-    return <ReadonlyCell property={property} value={value} />;
+    return <ReadonlyCell property={property} value={value} rowHeight={rowHeight} />;
   }
   switch (property.type) {
     case 'CHECKBOX':
-      return <CheckboxCell key={cellKey} property={property} value={value} onChange={onChange} readOnly={readOnly} />;
+      return <CheckboxCell key={cellKey} {...shared} />;
     case 'NUMBER':
-      return <NumberCell key={cellKey} property={property} value={value} onChange={onChange} readOnly={readOnly} />;
+      return <NumberCell key={cellKey} {...shared} />;
     case 'DATE':
-      return <DateCell key={cellKey} property={property} value={value} onChange={onChange} readOnly={readOnly} />;
+      return <DateCell key={cellKey} {...shared} />;
     case 'SELECT':
-      return <SelectCell key={cellKey} property={property} value={value} onChange={onChange} readOnly={readOnly} />;
+      return <SelectCell key={cellKey} {...shared} />;
     case 'MULTI_SELECT':
-      return (
-        <MultiSelectCell key={cellKey} property={property} value={value} onChange={onChange} readOnly={readOnly} />
-      );
+      return <MultiSelectCell key={cellKey} {...shared} />;
     case 'PERSON':
     case 'FILES':
-      return <IdListCell key={cellKey} property={property} value={value} onChange={onChange} readOnly={readOnly} />;
+      return <IdListCell key={cellKey} {...shared} />;
     default:
-      return <TextCell key={cellKey} property={property} value={value} onChange={onChange} readOnly={readOnly} />;
+      return <TextCell key={cellKey} {...shared} />;
   }
 }
 
@@ -78,27 +88,143 @@ function commitOnEnterOrBlur(onCommit: () => void) {
   };
 }
 
-function TextCell({ property, value, onChange, readOnly }: PropertyCellProps) {
-  // No effect to resync `draft` when `value` changes: `PropertyCell` keys
-  // every cell on its committed value, so a server-driven change (this
-  // mutation's own success, another user's edit) remounts the cell instead
-  // (same pattern as `DocumentTitleInput` in document-view.tsx).
-  const [draft, setDraft] = React.useState(typeof value === 'string' ? value : '');
+const CELL_BOX = 'flex min-h-8 w-full items-start px-1.5 py-1.5 text-left text-sm';
+const CELL_INTERACTIVE = 'rounded-md hover:bg-accent-solid focus-visible:ring-1 focus-visible:ring-ring outline-none';
 
-  const inputType = property.type === 'EMAIL' ? 'email' : property.type === 'URL' ? 'url' : 'text';
+/**
+ * A text value that can be longer than its column, in two states.
+ *
+ * Collapsed it is a button showing the value clamped to the row height, so a
+ * long value neither breaks the grid nor silently disappears behind
+ * `overflow: hidden`. Expanded it is an overlay anchored to the cell, at least
+ * as wide as the column and as tall as it needs, holding the complete value.
+ *
+ * The overlay, rather than a growing cell, is what keeps the table still: rows
+ * below do not shift while typing, and the editor may be far larger than the
+ * column. Closing it commits, which is the same contract as the single-line
+ * cells' commit-on-blur.
+ */
+function ExpandableTextCell({
+  value,
+  onChange,
+  readOnly,
+  rowHeight = 'short',
+  multiline,
+  inputType = 'text',
+  format,
+  parse = (raw) => (raw.trim().length === 0 ? null : raw.trim()),
+  monospace = false,
+  placeholder = 'Leer',
+}: PropertyCellProps & {
+  multiline: boolean;
+  inputType?: 'text' | 'email' | 'url';
+  /** Committed value to editable text. */
+  format: (value: CellValue) => string;
+  /** Editable text back to a committed value. */
+  parse?: (raw: string) => CellValue;
+  monospace?: boolean;
+  placeholder?: string;
+}) {
+  // No effect to resync `draft` when `value` changes: `PropertyCell` keys every
+  // cell on its committed value, so a server-driven change (this mutation's own
+  // success, another user's edit) remounts the cell instead (same pattern as
+  // `DocumentTitleInput` in document-view.tsx).
+  const committed = format(value);
+  const [draft, setDraft] = React.useState(committed);
+  const [open, setOpen] = React.useState(false);
+
+  const commit = (): void => {
+    if (draft === committed) return;
+    onChange(parse(draft));
+  };
+
+  const preview =
+    committed.length > 0 ? (
+      <span
+        title={committed}
+        className={cn(
+          'w-full break-words whitespace-pre-wrap',
+          monospace && 'font-mono text-xs',
+          ROW_HEIGHT_LINE_CLAMP[rowHeight],
+        )}
+      >
+        {committed}
+      </span>
+    ) : (
+      <span className="text-muted-foreground">{placeholder}</span>
+    );
+
+  if (readOnly) {
+    return <div className={CELL_BOX}>{preview}</div>;
+  }
 
   return (
-    <Input
-      type={inputType}
-      value={draft}
-      readOnly={readOnly}
-      placeholder="Leer"
-      className="h-8 border-transparent bg-transparent px-1.5 shadow-none hover:border-input focus-visible:ring-1"
-      onChange={(event) => setDraft(event.target.value)}
-      {...commitOnEnterOrBlur(() => {
-        const next = draft.trim();
-        if (next !== (typeof value === 'string' ? value : '')) onChange(next.length === 0 ? null : next);
-      })}
+    <Popover
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        // Escape, a click outside and the keyboard shortcut all end up here,
+        // so there is exactly one commit path.
+        if (!next) commit();
+      }}
+    >
+      <PopoverTrigger
+        render={
+          <button type="button" className={cn(CELL_BOX, CELL_INTERACTIVE)} data-testid="cell-expand">
+            {preview}
+          </button>
+        }
+      />
+      <PopoverContent
+        align="start"
+        className="w-[max(var(--anchor-width),20rem)] max-w-[min(90vw,36rem)] p-1.5"
+      >
+        {multiline ? (
+          <Textarea
+            autoFocus
+            value={draft}
+            rows={4}
+            placeholder={placeholder}
+            className={cn('max-h-[40vh] resize-none text-sm', monospace && 'font-mono text-xs')}
+            onChange={(event) => setDraft(event.target.value)}
+            onKeyDown={(event) => {
+              // Enter belongs to the text here, so committing needs a modifier.
+              if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) setOpen(false);
+            }}
+          />
+        ) : (
+          <Input
+            autoFocus
+            type={inputType}
+            value={draft}
+            placeholder={placeholder}
+            className={cn('text-sm', monospace && 'font-mono text-xs')}
+            onChange={(event) => setDraft(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') setOpen(false);
+            }}
+          />
+        )}
+        <p className="px-1 pt-1 text-[0.6875rem] text-muted-foreground">
+          {multiline ? 'Strg/Cmd + Enter oder Esc übernimmt' : 'Enter oder Esc übernimmt'}
+        </p>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function TextCell(props: PropertyCellProps) {
+  // URL, E-Mail and phone numbers are single-line by nature; only TEXT gets a
+  // textarea, so a newline never sneaks into a mailto: link.
+  const isFreeText = props.property.type === 'TEXT';
+  return (
+    <ExpandableTextCell
+      {...props}
+      multiline={isFreeText}
+      inputType={
+        props.property.type === 'EMAIL' ? 'email' : props.property.type === 'URL' ? 'url' : 'text'
+      }
+      format={(value) => (typeof value === 'string' ? value : '')}
     />
   );
 }
@@ -128,7 +254,7 @@ function NumberCell({ value, onChange, readOnly }: PropertyCellProps) {
 
 function CheckboxCell({ value, onChange, readOnly }: PropertyCellProps) {
   return (
-    <div className="flex h-8 items-center px-1.5">
+    <div className="flex min-h-8 items-center px-1.5">
       <Checkbox
         checked={value === true}
         disabled={readOnly}
@@ -177,7 +303,7 @@ function SelectCell({ property, value, onChange, readOnly }: PropertyCellProps) 
   const selected = typeof value === 'string' ? value : null;
 
   if (readOnly) {
-    return <div className="flex h-8 items-center px-1.5">{selected !== null ? <OptionBadge optionId={selected} property={property} /> : null}</div>;
+    return <div className="flex min-h-8 items-center px-1.5">{selected !== null ? <OptionBadge optionId={selected} property={property} /> : null}</div>;
   }
 
   return (
@@ -186,7 +312,7 @@ function SelectCell({ property, value, onChange, readOnly }: PropertyCellProps) 
         render={
           <button
             type="button"
-            className="flex h-8 w-full items-center gap-1 rounded-md px-1.5 text-left hover:bg-accent-solid"
+            className="flex min-h-8 w-full items-center gap-1 rounded-md px-1.5 text-left hover:bg-accent-solid"
           >
             {selected !== null ? <OptionBadge optionId={selected} property={property} /> : <span className="text-sm text-muted-foreground">Leer</span>}
           </button>
@@ -227,7 +353,13 @@ function SelectCell({ property, value, onChange, readOnly }: PropertyCellProps) 
   );
 }
 
-function MultiSelectCell({ property, value, onChange, readOnly }: PropertyCellProps) {
+function MultiSelectCell({
+  property,
+  value,
+  onChange,
+  readOnly,
+  rowHeight = 'short',
+}: PropertyCellProps) {
   const [open, setOpen] = React.useState(false);
   const selected = Array.isArray(value) ? value : [];
 
@@ -237,8 +369,11 @@ function MultiSelectCell({ property, value, onChange, readOnly }: PropertyCellPr
     );
   };
 
+  // Badges wrap as boxes, not as lines, so the row height caps them by height
+  // instead of by `line-clamp`. Whatever does not fit stays reachable in the
+  // option list this cell opens.
   const badges = (
-    <div className="flex flex-wrap gap-1">
+    <div className={cn('flex flex-wrap gap-1 overflow-hidden', ROW_HEIGHT_BOX_CLAMP[rowHeight])}>
       {selected.map((optionId) => (
         <OptionBadge key={optionId} optionId={optionId} property={property} />
       ))}
@@ -246,14 +381,17 @@ function MultiSelectCell({ property, value, onChange, readOnly }: PropertyCellPr
   );
 
   if (readOnly) {
-    return <div className="flex h-8 items-center px-1.5">{badges}</div>;
+    return <div className="flex min-h-8 items-center px-1.5 py-1">{badges}</div>;
   }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         render={
-          <button type="button" className="flex h-8 w-full items-center px-1.5 text-left hover:bg-accent-solid">
+          <button
+            type="button"
+            className="flex min-h-8 w-full items-center rounded-md px-1.5 py-1 text-left hover:bg-accent-solid"
+          >
             {selected.length > 0 ? badges : <span className="text-sm text-muted-foreground">Leer</span>}
           </button>
         }
@@ -286,24 +424,21 @@ function MultiSelectCell({ property, value, onChange, readOnly }: PropertyCellPr
  * honest minimal editor for the array itself, entered as a comma-separated
  * list, so the property round-trips completely through the API.
  */
-function IdListCell({ value, onChange, readOnly }: PropertyCellProps) {
-  const current = Array.isArray(value) ? value : [];
-  const [draft, setDraft] = React.useState(current.join(', '));
-
+function IdListCell(props: PropertyCellProps) {
   return (
-    <Input
-      value={draft}
-      readOnly={readOnly}
+    <ExpandableTextCell
+      {...props}
+      multiline={false}
+      monospace
       placeholder="IDs, durch Komma getrennt"
-      className="h-8 border-transparent bg-transparent px-1.5 font-mono text-xs shadow-none hover:border-input focus-visible:ring-1"
-      onChange={(event) => setDraft(event.target.value)}
-      {...commitOnEnterOrBlur(() => {
-        const next = draft
+      format={(value) => (Array.isArray(value) ? value.join(', ') : '')}
+      parse={(raw) => {
+        const next = raw
           .split(',')
           .map((entry) => entry.trim())
           .filter((entry) => entry.length > 0);
-        onChange(next.length === 0 ? null : next);
-      })}
+        return next.length === 0 ? null : next;
+      }}
     />
   );
 }
@@ -316,10 +451,21 @@ function formatComputed(property: DatabaseProperty, value: CellValue): string {
   return String(value);
 }
 
-function ReadonlyCell({ property, value }: { property: DatabaseProperty; value: CellValue }) {
+function ReadonlyCell({
+  property,
+  value,
+  rowHeight = 'short',
+}: {
+  property: DatabaseProperty;
+  value: CellValue;
+  rowHeight?: DatabaseRowHeight;
+}) {
+  const text = formatComputed(property, value);
   return (
-    <div className="flex h-8 items-center px-1.5 text-sm text-muted-foreground" data-testid="readonly-cell">
-      {formatComputed(property, value)}
+    <div className="flex min-h-8 items-start px-1.5 py-1.5 text-sm text-muted-foreground" data-testid="readonly-cell">
+      <span title={text} className={cn('break-words whitespace-normal', ROW_HEIGHT_LINE_CLAMP[rowHeight])}>
+        {text}
+      </span>
     </div>
   );
 }

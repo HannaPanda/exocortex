@@ -66,6 +66,30 @@ All four view types share one query path (`POST /api/documents/:id/rows/query`
    `DatabaseView`, validated at the contract boundary, no migration needed
    for a new config field.
 
+## Table density and column layout
+
+Three fields in `view.config` describe how a TABLE view lays itself out, all
+edited through the "Ansicht" popover (`view-options-menu.tsx`) or the resize
+handles in the header, all read through
+`apps/web/src/components/database/table-columns.ts`:
+
+| Field | Meaning |
+| --- | --- |
+| `columnWidths` | Width per property id in CSS pixels, plus the reserved key `title` for the row-title column (a row's title lives on the `Document`, so it has no property id). Missing key means `DATABASE_COLUMN_DEFAULT_WIDTH`. |
+| `rowHeight` | `short`/`medium`/`tall` = 1/3/6 lines per cell. A clamp, never a data limit: the full value is always reachable in the cell overlay and in the row sheet. |
+| `visibleProperties` | Which columns are shown, and in which order. A property **missing** from the list counts as visible, so a newly created property appears without the view having to be updated. |
+
+Two related rules follow from `rowHeight` being a clamp:
+
+* A cell never truncates without a way out. Text-ish cells
+  (`ExpandableTextCell` in `cells.tsx`) are a button that opens the complete
+  value in an overlay anchored to the cell, and the row sheet
+  (`row-peek-sheet.tsx`) stacks every property of one row at full sheet width.
+* The table's own scrollport is the `div` in `table-view.tsx`, not the `Table`
+  primitive's container (which is switched to `overflow-visible` through
+  `containerClassName`). A sticky `thead` only sticks against the box that
+  actually scrolls.
+
 ## Inline embed
 
 A database can also appear as a live view inside another page (Notion's
@@ -77,6 +101,14 @@ the pinned `viewId` node attribute, persisted in the page's Yjs state. See
 `docs/editor-extensions.md` for why this is the one node whose interactive
 rendering lives in `apps/web` (`database-embed-node-view.tsx`) instead of as
 plain DOM in `packages/editor`.
+
+An embedded database breaks out of the page's reading measure: the rule for
+`.exocortex-page :is(.exocortex-database-embed)` in `globals.css` widens it to
+the scroll container's width (`100cqi`, a container query on
+`.exocortex-page-scroll`) on every page layout. A table at 68ch is unusable,
+and forcing the whole page to `full` just for one embed would stretch the prose
+around it. See `Document.layout` in `docs/architecture.md` for the page widths
+themselves.
 
 ## Known limitations (deliberate, not bugs)
 

@@ -8,9 +8,25 @@ import { cn } from '../../lib/utils';
  * Installed with the official shadcn CLI (`shadcn add table`). Plain semantic
  * HTML, no Radix dependency, so nothing needed adapting to Base UI.
  */
-function Table({ className, ...props }: React.ComponentProps<'table'>) {
+function Table({
+  className,
+  containerClassName,
+  ...props
+}: React.ComponentProps<'table'> & {
+  /**
+   * Styles the scroll container. Added to the installed source because a
+   * sticky `thead` only sticks against the element that actually scrolls: a
+   * caller that scrolls a parent (the database table view) has to switch this
+   * container to `overflow-visible`, or the header would stick to a scrollport
+   * that never moves.
+   */
+  containerClassName?: string;
+}) {
   return (
-    <div data-slot="table-container" className="relative w-full overflow-x-auto">
+    <div
+      data-slot="table-container"
+      className={cn('relative w-full overflow-x-auto', containerClassName)}
+    >
       <table data-slot="table" className={cn('w-full caption-bottom text-sm', className)} {...props} />
     </div>
   );

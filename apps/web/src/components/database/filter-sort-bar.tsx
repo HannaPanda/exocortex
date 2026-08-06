@@ -27,6 +27,7 @@ import {
 import { useUpdateDatabaseView } from '@/lib/api/database-queries';
 
 import { FILTER_OPERATOR_LABELS, operatorsForType } from './property-types';
+import { ViewOptionsMenu } from './view-options-menu';
 
 interface FilterSortBarProps {
   documentId: string;
@@ -102,6 +103,10 @@ export function FilterSortBar({ documentId, view, properties, readOnly }: Filter
         <>
           <AddFilterPopover properties={properties} onAdd={addCondition} />
           <AddSortPopover properties={properties} onAdd={addSort} />
+          {/* Row height and column visibility only describe a table. */}
+          {view.type === 'TABLE' ? (
+            <ViewOptionsMenu documentId={documentId} view={view} properties={properties} />
+          ) : null}
         </>
       )}
     </div>

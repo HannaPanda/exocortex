@@ -215,12 +215,47 @@ export const databaseViewVisiblePropertySchema = z.object({
   orderKey: z.string(),
 });
 
+/**
+ * TABLE only: how many lines a cell may show before its content is clamped.
+ * The full value always stays reachable through the cell editor, so this is a
+ * density choice, not a data limit.
+ */
+export const databaseRowHeightSchema = z.enum(['short', 'medium', 'tall']);
+export type DatabaseRowHeight = z.infer<typeof databaseRowHeightSchema>;
+
+/**
+ * Column-width bounds in CSS pixels. The lower bound keeps a column wide
+ * enough for its header menu, the upper one keeps a single column from
+ * pushing every other one off screen.
+ */
+export const DATABASE_COLUMN_MIN_WIDTH = 80;
+export const DATABASE_COLUMN_MAX_WIDTH = 720;
+export const DATABASE_COLUMN_DEFAULT_WIDTH = 180;
+/**
+ * Width key of the row-title column in `columnWidths`. Not a property id: the
+ * title lives on the row `Document` itself (ADR-011), so it has none.
+ */
+export const DATABASE_TITLE_COLUMN_KEY = 'title';
+
 export const databaseViewConfigSchema = z.object({
   visibleProperties: z.array(databaseViewVisiblePropertySchema).default([]),
   /** CALENDAR only: which DATE property to plot rows on. */
   datePropertyId: idSchema.nullable().optional(),
   /** GALLERY only: which FILES property supplies the card cover. */
   coverPropertyId: idSchema.nullable().optional(),
+  /**
+   * TABLE only: column widths in CSS pixels, keyed by property id plus the
+   * reserved `title` key. A column that is missing here uses
+   * `DATABASE_COLUMN_DEFAULT_WIDTH`, so an untouched view needs no entries.
+   */
+  columnWidths: z
+    .record(
+      z.string().min(1).max(64),
+      z.number().int().min(DATABASE_COLUMN_MIN_WIDTH).max(DATABASE_COLUMN_MAX_WIDTH),
+    )
+    .default({}),
+  /** TABLE only: row density. */
+  rowHeight: databaseRowHeightSchema.default('short'),
 });
 export type DatabaseViewConfig = z.infer<typeof databaseViewConfigSchema>;
 
