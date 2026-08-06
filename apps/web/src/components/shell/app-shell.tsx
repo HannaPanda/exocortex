@@ -2,11 +2,14 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import {
+  KeyIcon,
   LogOutIcon,
   PanelLeftIcon,
   PanelRightIcon,
   SearchIcon,
+  ShieldIcon,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
@@ -19,6 +22,7 @@ import {
   cn,
   ExocortexWordmark,
   ResizablePanel,
+  Separator,
   Sheet,
   SheetContent,
   SheetTitle,
@@ -232,6 +236,47 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
             />
             <TooltipContent>Kontextbereich (Strg + .)</TooltipContent>
           </Tooltip>
+
+          {/*
+            The role is not yet part of `CurrentSessionResponse` (see
+            AdminGuard's TODO), so these entries render for every signed-in
+            user; `/admin` gates itself against the API's admin check.
+          */}
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label="Verwaltung"
+                  data-testid="open-admin"
+                  render={<Link href="/admin" />}
+                >
+                  <ShieldIcon />
+                </Button>
+              }
+            />
+            <TooltipContent>Verwaltung</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label="API-Token"
+                  data-testid="open-api-tokens"
+                  render={<Link href="/einstellungen/tokens" />}
+                >
+                  <KeyIcon />
+                </Button>
+              }
+            />
+            <TooltipContent>API-Token</TooltipContent>
+          </Tooltip>
+
+          <Separator orientation="vertical" className="h-5" />
 
           <Tooltip>
             <TooltipTrigger
