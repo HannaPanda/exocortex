@@ -170,6 +170,14 @@ export class QueueRegistry {
         data: { correlationId, task: 'prune-snapshots', workspaceId: null },
       },
     );
+    await queue.upsertJobScheduler(
+      'collect-orphaned-covers',
+      { pattern: '30 4 * * *' },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: { correlationId, task: 'collect-orphaned-covers', workspaceId: null },
+      },
+    );
     this.logger.info('Maintenance schedulers registered');
   }
 

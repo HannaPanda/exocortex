@@ -64,7 +64,15 @@ export class DocumentMarkdownService {
     const [document, content] = await Promise.all([
       this.prisma.document.findUniqueOrThrow({
         where: { id: documentId },
-        select: { title: true, icon: true, type: true, createdAt: true, updatedAt: true },
+        select: {
+          title: true,
+          icon: true,
+          type: true,
+          coverAttachmentId: true,
+          coverPosition: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       }),
       this.prisma.documentContent.findUnique({
         where: { documentId },
@@ -81,6 +89,11 @@ export class DocumentMarkdownService {
       frontmatter: {
         title: document.title,
         icon: document.icon,
+        // The cover is page metadata, not a block, so it travels in the
+        // frontmatter (ADR-007). The crop only means something with an image
+        // to crop, so it is written alongside it or not at all.
+        cover: document.coverAttachmentId,
+        coverPosition: document.coverAttachmentId === null ? undefined : document.coverPosition,
         exocortexId: documentId,
         exocortexSchemaVersion: content.schemaVersion,
         type: document.type,
@@ -137,6 +150,7 @@ export class DocumentMarkdownService {
 
     const title = input.request.title ?? imported.title ?? 'Importierte Seite';
     const icon = typeof imported.frontmatter.icon === 'string' ? imported.frontmatter.icon : null;
+    const cover = await this.resolveImportedCover(imported.frontmatter, input.workspaceId);
 
     const lastSibling = await this.prisma.document.findFirst({
       where: { workspaceId: input.workspaceId, parentId },
@@ -152,6 +166,7 @@ export class DocumentMarkdownService {
           type: 'PAGE',
           title,
           icon,
+          ...cover,
           orderKey: generateOrderKey(lastSibling?.orderKey ?? null, null),
           createdById: input.userId,
           updatedById: input.userId,
@@ -214,5 +229,39 @@ export class DocumentMarkdownService {
     });
 
     return summary;
+  }
+
+  /**
+   * Turns the `cover` frontmatter key back into a cover, when it can.
+   *
+   * A file exported here and imported somewhere else names an attachment that
+   * deployment never had. That is not an error worth failing an import over:
+   * an id that does not resolve to an image of this workspace is dropped and
+   * the page arrives without a cover.
+   */
+  private async resolveImportedCover(
+    frontmatter: { cover?: string | null; coverPosition?: number },
+    workspaceId: string,
+  ): Promise<{ coverAttachmentId: string; coverPosition: number } | Record<string, never>> {
+    const cover = frontmatter.cover;
+    if (typeof cover !== 'string' || cover.length === 0) return {};
+
+    const attachment = await this.prisma.attachment.findUnique({
+      where: { id: cover },
+      select: { workspaceId: true, mimeType: true, deletedAt: true },
+    });
+    if (
+      attachment === null ||
+      attachment.deletedAt !== null ||
+      attachment.workspaceId !== workspaceId ||
+      !attachment.mimeType.startsWith('image/')
+    ) {
+      return {};
+    }
+
+    return {
+      coverAttachmentId: cover,
+      coverPosition: frontmatter.coverPosition ?? 50,
+    };
   }
 }

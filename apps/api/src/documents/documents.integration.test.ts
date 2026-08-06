@@ -248,6 +248,110 @@ describe('document creation', () => {
   });
 });
 
+describe('page covers', () => {
+  async function createAttachment(input: {
+    workspace: string;
+    mimeType: string;
+    deleted?: boolean;
+  }): Promise<string> {
+    const attachment = await prisma.attachment.create({
+      data: {
+        workspaceId: input.workspace,
+        filename: 'bild.png',
+        mimeType: input.mimeType,
+        byteSize: 3,
+        storageKey: `test/${Math.random().toString(36).slice(2)}`,
+        createdById: ownerId,
+        ...(input.deleted === true ? { deletedAt: new Date() } : {}),
+      },
+    });
+    return attachment.id;
+  }
+
+  it('sets an image of the same workspace and keeps the crop', async () => {
+    const documentId = await createPage('Mit Titelbild');
+    const attachmentId = await createAttachment({ workspace: workspaceId, mimeType: 'image/png' });
+
+    const updated = await service.update({
+      documentId,
+      userId: ownerId,
+      request: { coverAttachmentId: attachmentId, coverPosition: 12.5 },
+      correlationId,
+    });
+
+    expect(updated.coverAttachmentId).toBe(attachmentId);
+    expect(updated.coverPosition).toBe(12.5);
+  });
+
+  it('refuses an attachment from another workspace', async () => {
+    const documentId = await createPage('Fremdes Bild');
+    const attachmentId = await createAttachment({
+      workspace: otherWorkspaceId,
+      mimeType: 'image/png',
+    });
+
+    // Reported as "not found", not as "forbidden": the reference must not
+    // confirm that another workspace's attachment exists.
+    await expect(
+      service.update({
+        documentId,
+        userId: ownerId,
+        request: { coverAttachmentId: attachmentId },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'not_found' });
+  });
+
+  it('refuses a file that is not an image, and one that is already deleted', async () => {
+    const documentId = await createPage('Kein Bild');
+    const pdfId = await createAttachment({ workspace: workspaceId, mimeType: 'application/pdf' });
+    const goneId = await createAttachment({
+      workspace: workspaceId,
+      mimeType: 'image/png',
+      deleted: true,
+    });
+
+    await expect(
+      service.update({
+        documentId,
+        userId: ownerId,
+        request: { coverAttachmentId: pdfId },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'validation_failed' });
+
+    await expect(
+      service.update({
+        documentId,
+        userId: ownerId,
+        request: { coverAttachmentId: goneId },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'not_found' });
+  });
+
+  it('removes the cover without touching the crop', async () => {
+    const documentId = await createPage('Bild wieder weg');
+    const attachmentId = await createAttachment({ workspace: workspaceId, mimeType: 'image/webp' });
+    await service.update({
+      documentId,
+      userId: ownerId,
+      request: { coverAttachmentId: attachmentId, coverPosition: 80 },
+      correlationId,
+    });
+
+    const updated = await service.update({
+      documentId,
+      userId: ownerId,
+      request: { coverAttachmentId: null },
+      correlationId,
+    });
+
+    expect(updated.coverAttachmentId).toBeNull();
+    expect(updated.coverPosition).toBe(80);
+  });
+});
+
 describe('document tree', () => {
   it('is not readable for a non-member', async () => {
     await expect(service.getTree(workspaceId, outsiderId)).rejects.toMatchObject({

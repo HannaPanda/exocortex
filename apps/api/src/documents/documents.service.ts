@@ -49,6 +49,8 @@ interface DocumentRow {
   title: string;
   icon: string | null;
   layout: 'NARROW' | 'WIDE' | 'FULL';
+  coverAttachmentId: string | null;
+  coverPosition: number;
   orderKey: string;
   createdById: string;
   updatedById: string;
@@ -66,6 +68,8 @@ export const DOCUMENT_SELECT = {
   title: true,
   icon: true,
   layout: true,
+  coverAttachmentId: true,
+  coverPosition: true,
   orderKey: true,
   createdById: true,
   updatedById: true,
@@ -107,6 +111,8 @@ export function toSummary(row: DocumentRow): DocumentSummary {
     title: row.title,
     icon: row.icon,
     layout: LAYOUT_TO_CONTRACT[row.layout],
+    coverAttachmentId: row.coverAttachmentId,
+    coverPosition: row.coverPosition,
     orderKey: row.orderKey,
     createdById: row.createdById,
     updatedById: row.updatedById,
@@ -318,6 +324,10 @@ export class DocumentsService {
       }
     }
 
+    if (input.request.coverAttachmentId !== undefined && input.request.coverAttachmentId !== null) {
+      await this.assertUsableCover(input.request.coverAttachmentId, context.workspaceId);
+    }
+
     const updated = await this.prisma.document.update({
       where: { id: input.documentId },
       data: {
@@ -326,6 +336,12 @@ export class DocumentsService {
         ...(input.request.layout === undefined
           ? {}
           : { layout: LAYOUT_TO_DB[input.request.layout] }),
+        ...(input.request.coverAttachmentId === undefined
+          ? {}
+          : { coverAttachmentId: input.request.coverAttachmentId }),
+        ...(input.request.coverPosition === undefined
+          ? {}
+          : { coverPosition: input.request.coverPosition }),
         ...(input.request.aiRuleMode === undefined
           ? {}
           : { aiRuleMode: AI_RULE_MODE_TO_DB[input.request.aiRuleMode] }),
@@ -545,6 +561,24 @@ export class DocumentsService {
       input.correlationId,
     );
     return summary;
+  }
+
+  /**
+   * A cover has to be an image the workspace actually owns. Without this check
+   * the reference alone would leak the existence of another workspace's
+   * attachment, and a PDF set as a cover would render as a broken image.
+   */
+  private async assertUsableCover(attachmentId: string, workspaceId: string): Promise<void> {
+    const attachment = await this.prisma.attachment.findUnique({
+      where: { id: attachmentId },
+      select: { workspaceId: true, mimeType: true, deletedAt: true },
+    });
+    if (attachment === null || attachment.deletedAt !== null || attachment.workspaceId !== workspaceId) {
+      throw AppError.notFound('Attachment');
+    }
+    if (!attachment.mimeType.startsWith('image/')) {
+      throw AppError.validation('The cover attachment must be an image');
+    }
   }
 
   async loadDocumentOrThrow(documentId: string): Promise<DocumentRow> {

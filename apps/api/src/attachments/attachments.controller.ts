@@ -14,9 +14,9 @@ import {
 } from '@exocortex/contracts';
 
 import { CurrentSession } from '../auth/session.guard';
-import { AppError } from '../common/app-error';
 import { currentCorrelationId } from '../common/correlation';
 import { API_ENV } from '../common/logger.provider';
+import { readUploadedFile } from '../common/multipart';
 import { openApiResponseSchema } from '../common/zod';
 
 import { AttachmentsService } from './attachments.service';
@@ -41,40 +41,16 @@ export class AttachmentsController {
     @Param('workspaceId') workspaceId: string,
     @Req() request: FastifyRequest,
   ): Promise<UploadAttachmentResponse> {
-    if (!request.isMultipart()) {
-      throw new AppError('unsupported_media_type', 'Expected a multipart/form-data request');
-    }
-
-    const file = await request.file({ limits: { fileSize: this.env.MAX_UPLOAD_BYTES } });
-    if (file === undefined) {
-      throw AppError.validation('No file part was provided');
-    }
-
-    let body: Buffer;
-    try {
-      body = await file.toBuffer();
-    } catch (error) {
-      // @fastify/multipart throws when the configured limit is exceeded.
-      throw new AppError(
-        'payload_too_large',
-        `The file exceeds the maximum upload size of ${this.env.MAX_UPLOAD_BYTES} bytes`,
-        { reason: error instanceof Error ? error.message : String(error) },
-      );
-    }
-
-    const documentField = file.fields.documentId;
-    const documentId =
-      documentField !== undefined && !Array.isArray(documentField) && documentField.type === 'field'
-        ? String(documentField.value)
-        : null;
+    const file = await readUploadedFile(request, this.env.MAX_UPLOAD_BYTES);
+    const documentId = file.fields.documentId ?? '';
 
     return this.attachments.upload({
       workspaceId,
       userId: session.userId,
-      documentId: documentId !== null && documentId.length > 0 ? documentId : null,
+      documentId: documentId.length > 0 ? documentId : null,
       filename: file.filename,
-      declaredMimeType: file.mimetype,
-      body,
+      declaredMimeType: file.declaredMimeType,
+      body: file.body,
       correlationId: currentCorrelationId(),
     });
   }

@@ -33,6 +33,7 @@ import {
 } from '@exocortex/ui';
 
 import { DatabaseShell } from '@/components/database/database-shell';
+import { PageCover, PageCoverAddButton } from '@/components/document/page-cover';
 import { PagePropertiesDialog } from '@/components/document/page-properties-dialog';
 import { CollaborativeEditor } from '@/components/editor/collaborative-editor';
 import {
@@ -105,6 +106,24 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
   const detail = document.data;
   const user = session.data?.user;
   const archived = detail.archivedAt !== null;
+  const readOnly = archived || detail.access === 'read';
+
+  // Above the measure, so the image spans the whole surface no matter how
+  // narrow the page body is; the add button sits inside it, where the title is.
+  const cover =
+    detail.coverAttachmentId === null ? null : (
+      <PageCover
+        workspaceId={workspaceId}
+        documentId={documentId}
+        attachmentId={detail.coverAttachmentId}
+        position={detail.coverPosition}
+        readOnly={readOnly}
+      />
+    );
+  const addCover =
+    detail.coverAttachmentId !== null || readOnly ? null : (
+      <PageCoverAddButton workspaceId={workspaceId} documentId={documentId} className="-ml-3 mb-1" />
+    );
 
   const downloadMarkdown = async (): Promise<void> => {
     const result = await exportMarkdown.mutateAsync(documentId);
@@ -221,15 +240,20 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
       ) : null}
 
       {detail.type === 'COLLECTION' ? (
-        <div className="exocortex-page-scroll flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <div className="exocortex-page-scroll group/page flex min-h-0 flex-1 flex-col overflow-y-auto">
+          {cover}
           <div
-            className="exocortex-page flex min-h-0 flex-1 flex-col px-6 pt-8"
+            className={cn(
+              'exocortex-page flex min-h-0 flex-1 flex-col px-6',
+              cover === null ? 'pt-8' : 'pt-5',
+            )}
             data-layout={detail.layout}
           >
+            {addCover}
             <DocumentTitleInput
               key={`${detail.id}:${detail.title}`}
               initialTitle={detail.title}
-              readOnly={archived || detail.access === 'read'}
+              readOnly={readOnly}
               onCommit={(nextTitle) => {
                 void updateDocument.mutateAsync({ documentId, request: { title: nextTitle } });
               }}
@@ -237,21 +261,26 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
             <DatabaseShell
               workspaceId={workspaceId}
               documentId={documentId}
-              readOnly={archived || detail.access === 'read'}
+              readOnly={readOnly}
               onActiveViewResolved={publishActiveDatabaseView}
             />
           </div>
         </div>
       ) : (
-        <div className="exocortex-page-scroll min-h-0 flex-1 overflow-y-auto">
+        <div className="exocortex-page-scroll group/page min-h-0 flex-1 overflow-y-auto">
+          {cover}
           {/* Width comes from `Document.layout`; the `px-6` here is the 3rem the
               wide-block rule in globals.css subtracts. */}
-          <div className="exocortex-page px-6 py-8" data-layout={detail.layout}>
+          <div
+            className={cn('exocortex-page px-6 pb-8', cover === null ? 'pt-8' : 'pt-5')}
+            data-layout={detail.layout}
+          >
+            {addCover}
             <DocumentTitleInput
               // Remounting on document change resets the field without an effect.
               key={`${detail.id}:${detail.title}`}
               initialTitle={detail.title}
-              readOnly={archived || detail.access === 'read'}
+              readOnly={readOnly}
               onCommit={(nextTitle) => {
                 void updateDocument.mutateAsync({ documentId, request: { title: nextTitle } });
               }}

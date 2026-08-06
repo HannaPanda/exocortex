@@ -9,7 +9,7 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `document-materialization` | collaboration server (debounced), API (import, snapshot restore) | `createMaterializeDocumentProcessor` | real |
 | `search-indexing` | materialization, document mutations, outbox dispatch | `createIndexDocumentProcessor` | real |
 | `ai` | `AiService.createRun`, `ConversationsService.postMessage` | `createAiRunProcessor` | real, mock provider |
-| `maintenance` | repeatable schedulers | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`), documented placeholder (`vacuum-search-index`) |
+| `maintenance` | repeatable schedulers | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`), documented placeholder (`vacuum-search-index`) |
 | `attachment-text` | attachment upload, `GET /api/attachments/:id/text` (on demand) | `createAttachmentTextProcessor` | real |
 
 Queue names and payload schemas live in `packages/contracts/src/jobs.ts`, so
@@ -64,6 +64,7 @@ the `AiRun` and `AiConversation` rows themselves.
 | completed jobs | 1 hour / 1000 jobs |
 | failed jobs | 7 days / 5000 jobs |
 | snapshots per document | 20 (`prune-snapshots`, daily at 04:00) |
+| replaced page covers | deleted 1 hour after they stop being a cover (`collect-orphaned-covers`, daily at 04:30) |
 | outbox dispatch interval | 5 seconds, 100 rows per run |
 
 ## Adding a background job

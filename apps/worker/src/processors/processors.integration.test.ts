@@ -369,7 +369,7 @@ describe('maintenance', () => {
       },
     });
 
-    const processor = createMaintenanceProcessor({ prisma, queues });
+    const processor = createMaintenanceProcessor({ prisma, queues, storage: recordingStorage() });
     await processor(
       contextFor({ correlationId: 'test-outbox', task: 'dispatch-outbox', workspaceId: null })
         .context,
@@ -405,12 +405,77 @@ describe('maintenance', () => {
       });
     }
 
-    const processor = createMaintenanceProcessor({ prisma, queues, snapshotsToKeep: 2 });
+    const processor = createMaintenanceProcessor({
+      prisma,
+      queues,
+      storage: recordingStorage(),
+      snapshotsToKeep: 2,
+    });
     await processor(
       contextFor({ correlationId: 'test-prune', task: 'prune-snapshots', workspaceId }).context,
     );
 
     expect(await prisma.documentSnapshot.count({ where: { documentId } })).toBe(2);
+  }, 60_000);
+
+  it('collects a replaced cover and leaves the current one alone', async () => {
+    const documentId = await createDocument();
+    const cover = async (name: string) =>
+      prisma.attachment.create({
+        data: {
+          workspaceId,
+          documentId,
+          filename: name,
+          mimeType: 'image/png',
+          byteSize: 3,
+          storageKey: `test/${name}`,
+          createdById: userId,
+          isCover: true,
+          // Older than the grace period, which exists for the seconds between
+          // an upload and the page pointing at it.
+          createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        },
+      });
+
+    const replaced = await cover('alt.png');
+    const current = await cover('neu.png');
+    // An image a user placed in the body carries no cover mark and is never a
+    // candidate, however long it sits there unreferenced.
+    const inBody = await prisma.attachment.create({
+      data: {
+        workspaceId,
+        documentId,
+        filename: 'im-text.png',
+        mimeType: 'image/png',
+        byteSize: 3,
+        storageKey: 'test/im-text.png',
+        createdById: userId,
+        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      },
+    });
+    await prisma.document.update({
+      where: { id: documentId },
+      data: { coverAttachmentId: current.id },
+    });
+
+    const deleted: string[] = [];
+    const processor = createMaintenanceProcessor({
+      prisma,
+      queues,
+      storage: recordingStorage(deleted),
+    });
+    await processor(
+      contextFor({ correlationId: 'test-covers', task: 'collect-orphaned-covers', workspaceId })
+        .context,
+    );
+
+    expect(deleted).toEqual(['test/alt.png']);
+    expect((await prisma.attachment.findUniqueOrThrow({ where: { id: replaced.id } })).deletedAt)
+      .not.toBeNull();
+    expect((await prisma.attachment.findUniqueOrThrow({ where: { id: current.id } })).deletedAt)
+      .toBeNull();
+    expect((await prisma.attachment.findUniqueOrThrow({ where: { id: inBody.id } })).deletedAt)
+      .toBeNull();
   }, 60_000);
 });
 
@@ -498,6 +563,23 @@ class ScriptedAiProvider implements AiProvider {
     if (turn.toolCalls !== undefined) yield { type: 'tool_calls', toolCalls: turn.toolCalls };
     yield { type: 'done', text: turn.text, finishReason: turn.finishReason };
   }
+}
+
+/** Storage that only remembers which objects were deleted. */
+function recordingStorage(deleted: string[] = []): ObjectStorage {
+  return {
+    putObject: () => {
+      throw new Error('not used in this test');
+    },
+    getObject: () => {
+      throw new Error('not used in this test');
+    },
+    deleteObject: async ({ key }) => {
+      deleted.push(key);
+    },
+    createDownloadUrl: async () => 'unused',
+    healthCheck: async () => true,
+  };
 }
 
 function fakeStorage(bytes: Buffer): ObjectStorage {

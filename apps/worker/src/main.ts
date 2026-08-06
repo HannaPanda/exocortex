@@ -299,7 +299,7 @@ async function bootstrap(): Promise<void> {
     redisUrl: env.REDIS_URL,
     logger,
     concurrency: 1,
-    handler: createMaintenanceProcessor({ prisma, queues }),
+    handler: createMaintenanceProcessor({ prisma, queues, storage }),
   });
 
   // Concurrency 1: PDF extraction is an external call and must not crowd out

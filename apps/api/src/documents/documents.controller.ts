@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
-import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Inject, Param, Patch, Post, Req } from '@nestjs/common';
+import { ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { type FastifyRequest } from 'fastify';
 
 import { type VerifiedSession } from '@exocortex/auth';
+import { type ApiEnv } from '@exocortex/config';
 import {
   type AiRuleListResponse,
   aiRuleListResponseSchema,
@@ -39,10 +41,13 @@ import {
 
 import { CurrentSession } from '../auth/session.guard';
 import { currentCorrelationId } from '../common/correlation';
+import { API_ENV } from '../common/logger.provider';
+import { readUploadedFile } from '../common/multipart';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
 import { CollaborationTicketService } from './collaboration-ticket.service';
 import { DocumentContentService } from './document-content.service';
+import { DocumentCoverService } from './document-cover.service';
 import { DocumentMarkdownService } from './document-markdown.service';
 import { DocumentSnapshotService } from './document-snapshot.service';
 import { DocumentsService } from './documents.service';
@@ -118,7 +123,32 @@ export class DocumentsController {
     private readonly snapshots: DocumentSnapshotService,
     private readonly tickets: CollaborationTicketService,
     private readonly content: DocumentContentService,
+    private readonly cover: DocumentCoverService,
+    @Inject(API_ENV) private readonly env: ApiEnv,
   ) {}
+
+  /**
+   * Uploads an image and makes it this page's cover in one call. Setting an
+   * attachment that already exists is a `PATCH` on the page instead.
+   */
+  @Post(':documentId/cover')
+  @ApiConsumes('multipart/form-data')
+  @ApiCreatedResponse({ schema: openApiResponseSchema(documentSummarySchema) })
+  async uploadCover(
+    @CurrentSession() session: VerifiedSession,
+    @Param('documentId') documentId: string,
+    @Req() request: FastifyRequest,
+  ): Promise<DocumentSummary> {
+    const file = await readUploadedFile(request, this.env.MAX_UPLOAD_BYTES);
+    return this.cover.uploadAndSet({
+      documentId,
+      userId: session.userId,
+      filename: file.filename,
+      declaredMimeType: file.declaredMimeType,
+      body: file.body,
+      correlationId: currentCorrelationId(),
+    });
+  }
 
   @Post(':documentId/content')
   @ApiBody({ schema: openApiSchema(documentContentWriteRequestSchema) })

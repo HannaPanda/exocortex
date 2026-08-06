@@ -111,6 +111,17 @@ tested (26 tests in `packages/auth/src/policies.test.ts`).
   `exo_page_set_layout`. New databases default to `FULL`, new pages to `NARROW`.
   The three values only set `--page-measure` in `globals.css`; blocks that carry
   a layout of their own (a database embed) break out of the measure regardless.
+* `coverAttachmentId` / `coverPosition` are the page's cover image: an ordinary
+  image `Attachment` shown full width above the title at a fixed height, cropped
+  with `object-fit: cover`, plus the vertical offset in percent that decides
+  which slice of it that is. Presentation again, so it sits on the document row;
+  it is edited on the page itself
+  (`apps/web/src/components/document/page-cover.tsx`) or through
+  `exo_page_set_cover`, and it travels in the Markdown frontmatter (`cover`,
+  `coverPosition`) because it is page metadata and not a block (ADR-007).
+  `POST /api/documents/:id/cover` uploads and sets in one call and marks the
+  file cover-only; the `collect-orphaned-covers` maintenance task deletes such
+  a file once nothing points at it any more.
 
 ## Databases
 

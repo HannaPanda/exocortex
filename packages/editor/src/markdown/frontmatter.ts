@@ -10,6 +10,8 @@ import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
 export const EXOCORTEX_FRONTMATTER_KEYS = [
   'title',
   'icon',
+  'cover',
+  'coverPosition',
   'exocortexId',
   'exocortexSchemaVersion',
   'type',
@@ -20,6 +22,13 @@ export const EXOCORTEX_FRONTMATTER_KEYS = [
 export interface Frontmatter {
   title?: string;
   icon?: string | null;
+  /**
+   * Attachment id of the page's cover image. A cover is page metadata, not a
+   * block, so it belongs here and not in the body (ADR-007).
+   */
+  cover?: string | null;
+  /** Vertical crop of the cover, in percent of its height. */
+  coverPosition?: number;
   exocortexId?: string;
   exocortexSchemaVersion?: number;
   type?: string;
@@ -68,6 +77,14 @@ export function parseFrontmatter(markdown: string): ParsedMarkdown {
         break;
       case 'icon':
         if (typeof value === 'string' || value === null) frontmatter.icon = value;
+        break;
+      case 'cover':
+        if (typeof value === 'string' || value === null) frontmatter.cover = value;
+        break;
+      case 'coverPosition':
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          frontmatter.coverPosition = Math.min(100, Math.max(0, value));
+        }
         break;
       case 'exocortexId':
         if (typeof value === 'string') frontmatter.exocortexId = value;

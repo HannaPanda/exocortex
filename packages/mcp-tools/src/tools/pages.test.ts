@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { type ExocortexApiClient } from '../client.js';
 
-import { pageArchiveTool, pageReadTool, pageWriteTool } from './pages.js';
+import { pageArchiveTool, pageReadTool, pageSetCoverTool, pageWriteTool } from './pages.js';
 
 interface RecordedCall {
   kind: 'request' | 'upload';
@@ -85,6 +85,8 @@ describe('pageArchiveTool', () => {
       title: 'Archivierte Seite',
       icon: null,
       layout: 'narrow',
+      coverAttachmentId: null,
+      coverPosition: 50,
       orderKey: 'a0',
       createdById: 'user1234',
       updatedById: 'user1234',
@@ -99,5 +101,65 @@ describe('pageArchiveTool', () => {
       { kind: 'request', method: 'POST', path: '/api/documents/doc123456/archive', body: undefined },
     ]);
     expect(result.text).toContain('Archivierte Seite');
+  });
+});
+
+describe('pageSetCoverTool', () => {
+  const summary = {
+    id: 'doc123456',
+    workspaceId: 'ws1234567',
+    parentId: null,
+    type: 'PAGE' as const,
+    title: 'Seite mit Bild',
+    icon: null,
+    layout: 'narrow' as const,
+    coverAttachmentId: 'att1234567',
+    coverPosition: 20,
+    orderKey: 'a0',
+    createdById: 'user1234',
+    updatedById: 'user1234',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    archivedAt: null,
+  };
+
+  it('patches the page with the attachment and the crop', async () => {
+    const { client, calls } = createFakeClient(summary);
+
+    const result = await pageSetCoverTool.run(client, {
+      documentId: 'doc123456',
+      attachmentId: 'att1234567',
+      position: 20,
+    });
+
+    expect(calls).toEqual([
+      {
+        kind: 'request',
+        method: 'PATCH',
+        path: '/api/documents/doc123456',
+        body: { coverAttachmentId: 'att1234567', coverPosition: 20 },
+      },
+    ]);
+    expect(result.text).toContain('Titelbild gesetzt');
+  });
+
+  it('removes the cover without touching the crop', async () => {
+    const { client, calls } = createFakeClient({ ...summary, coverAttachmentId: null, coverPosition: 50 });
+
+    const result = await pageSetCoverTool.run(client, {
+      documentId: 'doc123456',
+      attachmentId: null,
+      position: 20,
+    });
+
+    expect(calls).toEqual([
+      {
+        kind: 'request',
+        method: 'PATCH',
+        path: '/api/documents/doc123456',
+        body: { coverAttachmentId: null },
+      },
+    ]);
+    expect(result.text).toContain('Titelbild entfernt');
   });
 });

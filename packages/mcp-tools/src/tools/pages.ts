@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import {
   aiRuleModeSchema,
+  coverPositionSchema,
   documentContentWriteRequestSchema,
   documentContentWriteResponseSchema,
   documentIconSchema,
@@ -308,6 +309,49 @@ export const pageSetLayoutTool: AnyToolDefinition = defineTool({
   },
 });
 
+const pageSetCoverInputSchema = z.object({
+  documentId: idSchema,
+  /**
+   * An image attachment of the same workspace — upload one with
+   * `exo_attachment_upload` first — or `null` to remove the cover.
+   */
+  attachmentId: idSchema.nullable(),
+  position: coverPositionSchema.optional(),
+});
+
+export const pageSetCoverTool: AnyToolDefinition = defineTool({
+  name: 'exo_page_set_cover',
+  description:
+    'Setzt das Titelbild einer Seite oder entfernt es (attachmentId null). Das Bild muss ein ' +
+    'Bild-Anhang desselben Workspace sein, hochzuladen mit exo_attachment_upload. ' +
+    'position ist der senkrechte Bildausschnitt in Prozent: 0 zeigt die Oberkante, 100 die ' +
+    'Unterkante, 50 die Mitte.',
+  inputSchema: pageSetCoverInputSchema,
+  surfaces: ['mcp', 'ai'],
+  mutating: true,
+  target: (input) => `document:${input.documentId}`,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'PATCH',
+      path: `/api/documents/${input.documentId}`,
+      body: {
+        coverAttachmentId: input.attachmentId,
+        // Removing the cover leaves the crop alone: it means nothing without an
+        // image, and the next one starts in the middle anyway.
+        ...(input.attachmentId === null || input.position === undefined
+          ? {}
+          : { coverPosition: input.position }),
+      },
+      responseSchema: documentSummarySchema,
+    });
+    const text =
+      input.attachmentId === null
+        ? `Titelbild entfernt: ${formatDocumentSummary(result)}`
+        : `Titelbild gesetzt: ${formatDocumentSummary(result)}`;
+    return { text, data: result };
+  },
+});
+
 export const PAGE_TOOLS: readonly AnyToolDefinition[] = [
   pageTreeTool,
   pageReadTool,
@@ -321,4 +365,5 @@ export const PAGE_TOOLS: readonly AnyToolDefinition[] = [
   pageRestoreSnapshotTool,
   pageSetAiRuleTool,
   pageSetLayoutTool,
+  pageSetCoverTool,
 ];

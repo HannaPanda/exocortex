@@ -39,10 +39,20 @@ export type CreateDocumentRequest = z.infer<typeof createDocumentRequestSchema>;
 export const aiRuleModeSchema = z.enum(['off', 'always', 'on_demand']);
 export type AiRuleMode = z.infer<typeof aiRuleModeSchema>;
 
+/**
+ * Vertical crop of the cover image, in percent of its height: 0 shows the top
+ * edge, 100 the bottom, 50 the middle. The cover is always full width at a
+ * fixed height, so this is the only framing decision a page offers.
+ */
+export const coverPositionSchema = z.number().min(0).max(100);
+
 const updateDocumentFieldsSchema = z.object({
   title: documentTitleSchema.optional(),
   icon: documentIconSchema,
   layout: documentLayoutSchema.optional(),
+  /** An image attachment of the same workspace, or `null` to remove the cover. */
+  coverAttachmentId: idSchema.nullable().optional(),
+  coverPosition: coverPositionSchema.optional(),
   aiRuleMode: aiRuleModeSchema.optional(),
   aiRuleTrigger: z.string().trim().max(300).nullable().optional(),
   aiRulePriority: z.number().int().optional(),
@@ -52,6 +62,8 @@ export const updateDocumentRequestSchema = updateDocumentFieldsSchema.refine(
     value.title !== undefined ||
     value.icon !== undefined ||
     value.layout !== undefined ||
+    value.coverAttachmentId !== undefined ||
+    value.coverPosition !== undefined ||
     value.aiRuleMode !== undefined ||
     value.aiRuleTrigger !== undefined ||
     value.aiRulePriority !== undefined,
@@ -74,6 +86,8 @@ export const documentSummarySchema = z.object({
   title: z.string(),
   icon: z.string().nullable(),
   layout: documentLayoutSchema,
+  coverAttachmentId: idSchema.nullable(),
+  coverPosition: coverPositionSchema,
   orderKey: z.string(),
   createdById: idSchema,
   updatedById: idSchema,

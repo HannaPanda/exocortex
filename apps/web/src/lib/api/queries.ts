@@ -130,6 +130,43 @@ export function useUpdateDocument(workspaceId: string | undefined) {
   });
 }
 
+/**
+ * Uploads a cover image and makes it the page's cover in one request.
+ *
+ * `fetch` rather than `apiRequest`, for the same reason `uploadAttachment` uses
+ * it: the body is `FormData` and the browser has to set the multipart boundary
+ * itself, which it only does when no content type is given.
+ */
+export function useUploadDocumentCover(workspaceId: string | undefined) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { documentId: string; file: File }) => {
+      const form = new FormData();
+      form.append('file', input.file, input.file.name);
+
+      const response = await fetch(`/api/documents/${input.documentId}/cover`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { accept: 'application/json' },
+        body: form,
+      });
+
+      const text = await response.text();
+      const payload: unknown = text.length > 0 ? JSON.parse(text) : null;
+      if (!response.ok) {
+        throw new ApiError(response.status, payload as Partial<ApiErrorResponse> | null);
+      }
+      return payload as DocumentSummary;
+    },
+    onSuccess: (document) => {
+      void client.invalidateQueries({ queryKey: queryKeys.document(document.id) });
+      if (workspaceId !== undefined) {
+        void client.invalidateQueries({ queryKey: queryKeys.documentTree(workspaceId) });
+      }
+    },
+  });
+}
+
 export function useMoveDocument(workspaceId: string | undefined) {
   const client = useQueryClient();
   return useMutation({

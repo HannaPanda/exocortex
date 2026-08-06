@@ -64,6 +64,21 @@ describe('frontmatter', () => {
     const { frontmatter } = parseFrontmatter(KITCHEN_SINK_MARKDOWN);
     expect(serializeFrontmatter(frontmatter)).toBe(serializeFrontmatter(frontmatter));
   });
+
+  it('carries the page cover, which is metadata and not a block', () => {
+    const source = '---\ntitle: Mit Bild\ncover: att1234567\ncoverPosition: 12.5\n---\n\nText.\n';
+    const { frontmatter } = parseFrontmatter(source);
+
+    expect(frontmatter.cover).toBe('att1234567');
+    expect(frontmatter.coverPosition).toBe(12.5);
+    // No stray `cover:` line in the body: it never reaches it.
+    expect(serializeFrontmatter(frontmatter)).toContain('cover: att1234567');
+  });
+
+  it('clamps a crop that claims to be outside the image', () => {
+    const { frontmatter } = parseFrontmatter('---\ncoverPosition: 420\n---\n\nText.\n');
+    expect(frontmatter.coverPosition).toBe(100);
+  });
 });
 
 describe('markdown import', () => {

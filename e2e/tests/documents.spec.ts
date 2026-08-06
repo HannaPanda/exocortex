@@ -1,3 +1,7 @@
+import { mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
 import { expect, test } from '@playwright/test';
 
 import {
@@ -60,6 +64,58 @@ test.describe('documents', () => {
     await page.getByTestId('restore-document').click();
     await expect(page.getByTestId('archived-banner')).toBeHidden({ timeout: 30_000 });
     await expectTreeContains(page, title);
+  });
+
+  /**
+   * A 1×1 PNG, small enough to live here rather than as a checked-in binary.
+   * The bytes matter: the API sniffs the type from them and rejects anything
+   * that is not really an image.
+   */
+  const ONE_PIXEL_PNG = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+    'base64',
+  );
+
+  test('adds a cover, moves its crop and removes it again', async ({ page }) => {
+    const path = join(mkdtempSync(join(tmpdir(), 'exo-cover-')), 'titelbild.png');
+    writeFileSync(path, ONE_PIXEL_PNG);
+
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    await createPage(page, `Titelbild ${Date.now().toString(36)}`);
+
+    // A page without a cover offers the button and nothing else.
+    await expect(page.getByTestId('add-cover')).toBeAttached();
+    await expect(page.getByTestId('page-cover')).toHaveCount(0);
+
+    await page.setInputFiles('[data-testid="cover-file-input"]', path);
+    await expect(page.getByTestId('page-cover-image')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('page-cover-image')).toHaveAttribute(
+      'style',
+      /object-position:\s*50% 50%/,
+    );
+
+    // Repositioning is keyboard-reachable: the image itself is the slider.
+    await page.getByTestId('reposition-cover').click();
+    await page.getByRole('slider', { name: /Bildausschnitt/ }).focus();
+    await page.keyboard.press('End');
+    await page.getByTestId('save-cover-position').click();
+    await expect(page.getByTestId('reposition-cover')).toBeAttached();
+    await expect(page.getByTestId('page-cover-image')).toHaveAttribute(
+      'style',
+      /object-position:\s*50% 100%/,
+    );
+
+    // The crop survives a reload, so it was stored and not just drawn.
+    await page.reload();
+    await expect(page.getByTestId('page-cover-image')).toHaveAttribute(
+      'style',
+      /object-position:\s*50% 100%/,
+    );
+
+    await page.getByTestId('remove-cover').click();
+    await expect(page.getByTestId('page-cover')).toHaveCount(0);
+    await expect(page.getByTestId('add-cover')).toBeAttached();
   });
 
   test('keeps sidebar and context panel toggles working', async ({ page }) => {

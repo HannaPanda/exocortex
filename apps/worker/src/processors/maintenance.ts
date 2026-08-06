@@ -1,14 +1,22 @@
 import { type QUEUE_NAMES, QUEUE_NAMES as QUEUES } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 import { type JobContext, type QueueRegistry } from '@exocortex/queue';
+import { type ObjectStorage } from '@exocortex/storage';
 
 export interface MaintenanceDependencies {
   prisma: PrismaClient;
   queues: QueueRegistry;
+  storage: ObjectStorage;
   /** Snapshots kept per document by `prune-snapshots`. */
   snapshotsToKeep?: number;
   /** Outbox rows dispatched per run. */
   outboxBatchSize?: number;
+  /**
+   * How long a cover-only upload is kept after it stops being a cover. The
+   * grace period is what makes the sweep safe against a client that uploads
+   * first and points the page at the file a moment later.
+   */
+  orphanedCoverGraceMs?: number;
 }
 
 /**
@@ -19,9 +27,10 @@ export interface MaintenanceDependencies {
  * them into follow-up work. Realtime delivery is the fast, best-effort half.
  */
 export function createMaintenanceProcessor(dependencies: MaintenanceDependencies) {
-  const { prisma, queues } = dependencies;
+  const { prisma, queues, storage } = dependencies;
   const snapshotsToKeep = dependencies.snapshotsToKeep ?? 20;
   const outboxBatchSize = dependencies.outboxBatchSize ?? 100;
+  const orphanedCoverGraceMs = dependencies.orphanedCoverGraceMs ?? 60 * 60 * 1000;
 
   return async ({
     payload,
@@ -98,6 +107,45 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
         }
         await reportProgress(100, 'Versionen aufgeräumt');
         logger.info('Snapshots pruned', { removed, documents: documents.length });
+        return;
+      }
+
+      case 'collect-orphaned-covers': {
+        await reportProgress(10, 'Ersetzte Titelbilder werden aufgeräumt');
+        // Only files uploaded *as* a cover are collected. Replacing a cover
+        // leaves the previous image behind with nothing pointing at it, and
+        // nothing else ever will: the cover upload route stores its own copy.
+        const orphans = await prisma.attachment.findMany({
+          where: {
+            isCover: true,
+            deletedAt: null,
+            coverOf: { none: {} },
+            createdAt: { lt: new Date(Date.now() - orphanedCoverGraceMs) },
+            ...(payload.workspaceId === null ? {} : { workspaceId: payload.workspaceId }),
+          },
+          select: { id: true, storageKey: true },
+        });
+
+        let removed = 0;
+        for (const orphan of orphans) {
+          // Same order as the attachment delete route: mark the row first, then
+          // the object. A failed object delete leaves a row already marked
+          // deleted, which is the harmless direction.
+          await prisma.attachment.update({
+            where: { id: orphan.id },
+            data: { deletedAt: new Date() },
+          });
+          try {
+            await storage.deleteObject({ key: orphan.storageKey });
+            removed += 1;
+          } catch (error) {
+            logger.error('Failed to delete an orphaned cover object', error, {
+              attachmentId: orphan.id,
+            });
+          }
+        }
+        await reportProgress(100, 'Titelbilder aufgeräumt');
+        logger.info('Orphaned covers collected', { removed, candidates: orphans.length });
         return;
       }
 

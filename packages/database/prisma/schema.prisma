@@ -269,6 +269,17 @@ model Document {
   icon        String?
   /// Body width of the page. See `DocumentLayout`.
   layout      DocumentLayout @default(NARROW)
+
+  /// Cover image shown above the title. An ordinary image attachment, so the
+  /// upload, the magic-byte check and the access control are the ones the
+  /// attachment module already owns. Hard-deleting the attachment clears the
+  /// reference instead of leaving a broken image behind.
+  coverAttachmentId String?
+  coverAttachment   Attachment? @relation("DocumentCover", fields: [coverAttachmentId], references: [id], onDelete: SetNull)
+  /// Vertical crop of the cover, in percent of the image height: 0 shows the
+  /// top edge, 100 the bottom, 50 the middle. The cover is always full width
+  /// at a fixed height, so this is the only framing decision there is.
+  coverPosition     Float       @default(50)
   /// Fractional index (base62). Lets a document be inserted between two
   /// siblings without renumbering the rest of the tree.
   ///
@@ -312,6 +323,7 @@ model Document {
   @@index([workspaceId, parentId, orderKey])
   @@index([workspaceId, archivedAt])
   @@index([workspaceId, aiRuleMode])
+  @@index([coverAttachmentId])
   @@map("document")
 }
 
@@ -534,6 +546,13 @@ model Attachment {
   createdAt   DateTime  @default(now())
   deletedAt   DateTime?
 
+  /// Set by the cover upload route: this file was uploaded to be a page cover
+  /// and nothing else points at it. That is what lets maintenance delete it
+  /// once it stops being one; an image a user placed in the body is never
+  /// marked and is never collected.
+  isCover     Boolean   @default(false)
+  coverOf     Document[] @relation("DocumentCover")
+
   /// Extracted text cache (D6). Populated by the `attachment-text` queue.
   extractedText       String?
   textStatus          AttachmentTextStatus @default(NOT_APPLICABLE)
@@ -547,6 +566,9 @@ model Attachment {
 
   @@index([workspaceId, createdAt])
   @@index([documentId])
+  /// Covers are a small minority of all attachments, and the maintenance sweep
+  /// asks for exactly them.
+  @@index([isCover])
   @@map("attachment")
 }
 

@@ -56,7 +56,12 @@ export const aiRunJobSchema = jobBase.extend({
 export type AiRunJob = z.infer<typeof aiRunJobSchema>;
 
 export const maintenanceJobSchema = jobBase.extend({
-  task: z.enum(['prune-snapshots', 'dispatch-outbox', 'vacuum-search-index']),
+  task: z.enum([
+    'prune-snapshots',
+    'dispatch-outbox',
+    'vacuum-search-index',
+    'collect-orphaned-covers',
+  ]),
   /** Optional scope; `null` means all workspaces. */
   workspaceId: idSchema.nullable().default(null),
 });

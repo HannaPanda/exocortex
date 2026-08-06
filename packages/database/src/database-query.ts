@@ -202,6 +202,8 @@ export interface DatabaseQueryRowRecord {
   title: string;
   icon: string | null;
   layout: 'NARROW' | 'WIDE' | 'FULL';
+  coverAttachmentId: string | null;
+  coverPosition: number;
   orderKey: string;
   createdById: string;
   updatedById: string;
@@ -238,6 +240,7 @@ export async function queryDatabaseRows(
     SELECT
       document.id, document."workspaceId", document."parentId", document."type"::text AS "type",
       document.title, document.icon, document."layout"::text AS "layout",
+      document."coverAttachmentId", document."coverPosition",
       document."orderKey", document."createdById", document."updatedById",
       document."createdAt", document."updatedAt", document."archivedAt"
     FROM "document" AS document
