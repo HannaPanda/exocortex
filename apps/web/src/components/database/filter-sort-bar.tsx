@@ -170,7 +170,7 @@ function AddFilterPopover({
               setOperator(operatorsForType(nextProperty?.type ?? 'TEXT')[0] ?? 'equals');
             }}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full" data-testid="filter-property">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -182,7 +182,7 @@ function AddFilterPopover({
             </SelectContent>
           </Select>
           <Select value={operator} onValueChange={(next) => setOperator(next as DatabaseFilterOperator)}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full" data-testid="filter-operator">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -233,7 +233,7 @@ function AddSortPopover({
       <PopoverContent align="start" className="w-64">
         <div className="flex flex-col gap-2">
           <Select value={propertyId} onValueChange={(next) => setPropertyId(next ?? '')}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full" data-testid="sort-property">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

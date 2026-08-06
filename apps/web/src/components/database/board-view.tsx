@@ -73,7 +73,7 @@ export function BoardView({ workspaceId, documentId, view, properties, readOnly 
                 updateView.mutate({ viewId: view.id, request: { groupByPropertyId: propertyId } });
               }}
             >
-              <SelectTrigger className="w-56">
+              <SelectTrigger className="w-56" data-testid="board-group-by">
                 <SelectValue>
                   {(value: string | null) =>
                     value === null ? 'Eigenschaft wählen' : selectProperties.find((p) => p.id === value)?.name

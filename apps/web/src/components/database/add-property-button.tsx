@@ -58,7 +58,7 @@ export function AddPropertyButton({ documentId }: { documentId: string }) {
         >
           <Input autoFocus placeholder="Name der Eigenschaft" value={name} onChange={(event) => setName(event.target.value)} />
           <Select value={type} onValueChange={(next) => setType(next as DatabasePropertyType)}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full" data-testid="property-type-select">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

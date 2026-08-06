@@ -43,9 +43,9 @@ test.describe('databases', () => {
     await page.locator('[data-slot="popover-content"]').getByRole('button', { name: 'Erledigt' }).click();
 
     await page.getByTestId('add-filter').click();
-    await page.getByRole('combobox').first().click();
+    await page.getByTestId('filter-property').click();
     await page.getByRole('option', { name: 'Priorität' }).click();
-    await page.getByRole('combobox').nth(1).click();
+    await page.getByTestId('filter-operator').click();
     await page.getByRole('option', { name: 'größer als' }).click();
     await page.getByPlaceholder('Wert').fill('1');
     await page.getByRole('button', { name: 'Filter hinzufügen' }).click();
@@ -76,22 +76,27 @@ test.describe('databases', () => {
     // Board: pick the grouping property, then the row shows up as a card.
     await page.getByTestId('add-view').click();
     await page.getByTestId('add-view-board').click();
-    await page.getByRole('combobox').click();
+    await page.getByTestId('board-group-by').click();
     await page.getByRole('option', { name: 'Status' }).click();
     await expect(page.getByText('Offen')).toBeVisible({ timeout: 15_000 });
 
     // Gallery: same row, as a card grid.
     await page.getByTestId('add-view').click();
     await page.getByTestId('add-view-gallery').click();
-    await expect(page.getByText('Unbenannt')).toBeVisible({ timeout: 15_000 });
+    // Scoped to the database: the sidebar tree also contains pages called
+    // "Unbenannte Seite", which `getByText` would match too.
+    await expect(
+      page.getByTestId('database-shell').getByRole('link', { name: 'Unbenannt', exact: true }),
+    ).toBeVisible({ timeout: 15_000 });
 
     // Calendar: no DATE property yet, so it asks for one instead of erroring.
     await page.getByTestId('add-view').click();
     await page.getByTestId('add-view-calendar').click();
     await expect(page.getByText('Wähle eine Datums-Eigenschaft')).toBeVisible({ timeout: 15_000 });
 
-    // Back to Table: the same row is still there.
-    await page.getByTestId(/^view-tab-/).first().click();
+    // Back to Table: the same row is still there. By name, not by position --
+    // the tab order follows the views' order keys.
+    await page.getByRole('tab', { name: 'Tabelle' }).click();
     await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, { timeout: 15_000 });
   });
 
@@ -111,6 +116,84 @@ test.describe('databases', () => {
     // The row is a real page: it has its own editable title and collaborative editor.
     await expect(page.getByTestId('document-title')).toBeVisible({ timeout: 15_000 });
     await expect(page.locator('[data-testid="database-shell"]')).toHaveCount(0);
+  });
+
+  test('keeps a value longer than its column reachable', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+
+    const title = `Langtext ${Date.now().toString(36)}`;
+    await createDatabase(page, title);
+    await expect(page.getByTestId('add-property')).toBeVisible({ timeout: 15_000 });
+    await addProperty(page, 'Notiz', 'Text');
+    await page.getByTestId('add-row').click();
+
+    const row = page.locator('[data-testid^="database-row-"]').first();
+    await expect(row).toBeVisible({ timeout: 15_000 });
+
+    // A value far longer than any column: it has to survive the round trip and
+    // stay readable, which is the whole point of the cell overlay.
+    const long = `Zeile eins mit sehr viel Text. ${'Nachtrag '.repeat(30)}Ende.`;
+    await row.getByTestId('cell-expand').click();
+    await page.locator('[data-slot="popover-content"]').getByRole('textbox').fill(long);
+    await page.keyboard.press('Escape');
+
+    await expect(row.getByTestId('cell-expand')).toHaveText(long, { timeout: 15_000 });
+
+    // Row height is a clamp, not a limit: switching to "Hoch" shows more of the
+    // same value without changing it.
+    await page.getByTestId('view-options').click();
+    await page.getByTestId('row-height-tall').click();
+    await page.keyboard.press('Escape');
+    await expect(row.getByTestId('cell-expand')).toHaveText(long, { timeout: 15_000 });
+
+    // The row sheet is the second way to the same value.
+    await row.getByTestId('open-row-peek').click();
+    const peek = page.getByTestId('row-peek');
+    await expect(peek).toBeVisible({ timeout: 15_000 });
+    await expect(peek.getByText('Notiz', { exact: true })).toBeVisible();
+    await expect(peek.getByTestId('cell-expand')).toHaveText(long);
+    await page.keyboard.press('Escape');
+
+    // Hiding the column hides it from the table, not from the data.
+    await page.getByTestId('view-options').click();
+    await page.locator('[data-slot="popover-content"]').getByText('Notiz', { exact: true }).click();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('th', { hasText: 'Notiz' })).toHaveCount(0, { timeout: 15_000 });
+
+    await page.reload();
+    await expect(page.locator('th', { hasText: 'Notiz' })).toHaveCount(0, { timeout: 15_000 });
+  });
+
+  test('changes the width of a page and remembers it', async ({ page }) => {
+    // Wide enough that the reading measure is actually narrower than the
+    // available space: with both panels open at 1280, it is not, and every
+    // layout would measure the same.
+    await page.setViewportSize({ width: 1600, height: 900 });
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+
+    await createPage(page, `Breite ${Date.now().toString(36)}`);
+    await expect(page.getByTestId('document-title')).toBeVisible({ timeout: 15_000 });
+
+    const body = page.locator('.exocortex-page');
+    await expect(body).toHaveAttribute('data-layout', 'narrow', { timeout: 15_000 });
+    const narrowWidth = (await body.boundingBox())?.width ?? 0;
+
+    await page.getByTestId('document-actions').click();
+    await page.getByTestId('open-page-properties').click();
+    await page.getByTestId('layout-full').click();
+    await page.getByTestId('save-page-properties').click();
+
+    await expect(body).toHaveAttribute('data-layout', 'full', { timeout: 15_000 });
+    const fullWidth = (await body.boundingBox())?.width ?? 0;
+    expect(fullWidth).toBeGreaterThan(narrowWidth);
+
+    // The width is a page property, so it survives a reload.
+    await page.reload();
+    await expect(page.locator('.exocortex-page')).toHaveAttribute('data-layout', 'full', {
+      timeout: 15_000,
+    });
   });
 
   test('embeds a database live inside a normal page', async ({ page }) => {
@@ -151,7 +234,9 @@ test.describe('databases', () => {
 async function addProperty(page: Page, name: string, typeLabel: string): Promise<void> {
   await page.getByTestId('add-property').click();
   await page.getByPlaceholder('Name der Eigenschaft').fill(name);
-  await page.getByRole('combobox').click();
+  // By test id, not by role: the AI panel contributes three comboboxes of its
+  // own, so `getByRole('combobox')` is ambiguous on this screen.
+  await page.getByTestId('property-type-select').click();
   await page.getByRole('option', { name: typeLabel, exact: true }).click();
   await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
   await expect(page.locator('th', { hasText: name })).toBeVisible({ timeout: 15_000 });
