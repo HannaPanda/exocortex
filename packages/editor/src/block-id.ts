@@ -65,6 +65,33 @@ export function isValidBlockId(value: unknown): value is string {
   return typeof value === 'string' && /^[a-z0-9]{8,32}$/.test(value);
 }
 
+/**
+ * Collects the identifiers of the addressable blocks a range touches, in
+ * document order and without duplicates.
+ *
+ * Used when a selection is handed to the AI: the text alone says what was
+ * picked, the identifiers say where it lives, so the assistant can address the
+ * same blocks later (`exo_page_read` returns these identifiers too) instead of
+ * matching on prose.
+ *
+ * A block that has not been assigned an identifier yet -- the plugin above runs
+ * on the next transaction, so a freshly created block can briefly have none --
+ * is skipped rather than guessed at.
+ */
+export function collectBlockIdsInRange(doc: PmNode, from: number, to: number): string[] {
+  const ids: string[] = [];
+  const seen = new Set<string>();
+  doc.nodesBetween(from, to, (node) => {
+    const id: unknown = node.attrs[BLOCK_ID_ATTRIBUTE];
+    if (isValidBlockId(id) && !seen.has(id)) {
+      seen.add(id);
+      ids.push(id);
+    }
+    return true;
+  });
+  return ids;
+}
+
 export interface BlockIdOptions {
   /** Node type names that receive a stable identifier. */
   types: string[];

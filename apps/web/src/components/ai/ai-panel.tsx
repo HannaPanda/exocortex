@@ -28,6 +28,7 @@ import { useDocument } from '@/lib/api/queries';
 import { useRealtimeEvent } from '@/lib/realtime/realtime-provider';
 import { usePersistentState } from '@/lib/use-persistent-state';
 
+import { useAiSelection } from './ai-selection';
 import { ChatComposer } from './chat-composer';
 import { ChatMessage } from './chat-message';
 import { ContextChips } from './context-chips';
@@ -226,6 +227,15 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   const openDocument = openDocumentQuery.data ?? null;
   const pageContextEnabled = conversation?.pageContextEnabled ?? pendingPageContextEnabled ?? true;
 
+  // A passage handed over from the editor belongs to the page it was taken
+  // from. After navigating away it would be an unlabelled quote from somewhere
+  // else, so it is treated as gone rather than silently carried along.
+  const { selection: handedOverSelection, clear: clearSelection } = useAiSelection();
+  const selection =
+    handedOverSelection !== null && handedOverSelection.documentId === documentId
+      ? handedOverSelection
+      : null;
+
   const startNewConversation = React.useCallback(async (): Promise<string> => {
     if (workspaceId === null) throw new Error('A workspace is required to start a conversation');
     const response = await createConversation.mutateAsync({
@@ -301,8 +311,16 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
       const conversationId = activeConversationId ?? (await startNewConversation());
       const response = await postMessage.mutateAsync({
         conversationId,
-        request: { content, documentId },
+        request: {
+          content,
+          documentId,
+          selection:
+            selection === null ? null : { blockIds: selection.blockIds, text: selection.text },
+        },
       });
+      // One hand-over, one message. Leaving it in the chip row would silently
+      // attach the same passage to every following question.
+      clearSelection();
 
       if (response.command !== null) {
         const command = response.command;
@@ -461,6 +479,8 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
           isCollection={openDocument?.type === 'COLLECTION'}
           enabled={pageContextEnabled}
           onEnabledChange={handlePageContextChange}
+          selectionBlockCount={selection === null ? null : Math.max(1, selection.blockIds.length)}
+          onSelectionRemove={clearSelection}
           disabled={activeRunId !== null}
         />
         <ChatComposer disabled={activeRunId !== null} onSubmit={handleSubmit} />

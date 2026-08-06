@@ -142,6 +142,22 @@ system prompt.
   recording where the user is even while the context is off, so `/context on`
   has something to turn back on and the panel does not forget its place. Only
   `AiRun.documentId` is emptied.
+* **A selection is handed over, not sent.** The editor's bubble menu has "An KI
+  schicken": it puts the selected text and the block ids the range touches
+  (`collectBlockIdsInRange`, `packages/editor/src/block-id.ts`) into a small
+  React context (`apps/web/src/components/ai/ai-selection.tsx`), opens the
+  panel, and shows a chip. Nothing leaves until the next message is submitted,
+  and the chip is cleared afterwards so the passage is not silently attached to
+  every following question. A selection taken from another page is dropped
+  rather than carried along, because out of context it is an unlabelled quote.
+* **The selection lands in the transcript, not in one run's prompt.** It becomes
+  a `SYSTEM` message (`↳ Ausgewählter Abschnitt …`) right before the question it
+  belongs to, so the user can see exactly what was sent, later turns can refer
+  back to it, and `/clear` and auto-compaction treat it like any other message.
+  It is capped at `MAX_SELECTION_CHARS` (4 000) and the cut is stated *in the
+  text*, so the model can tell an excerpt from the whole thing. This is document
+  content leaving the system — but content the user picked, saw in a chip and
+  sent on purpose, which is why it goes even when the page context is off.
 * **The id is checked.** Because the title and path now reach the prompt, a
   `documentId` named by the caller is verified through
   `WorkspaceAccessService.findDocumentContext` and must belong to the
@@ -372,8 +388,6 @@ limitations").
   in memory in `apps/collaboration`; a programmatic content write snapshots
   first (revertable) but can still be overwritten by the next debounced
   store. Documented, not fixed, tonight.
-* **No selection context.** A block selection in the editor still goes nowhere;
-  "erklär mir das hier" has no *hier*. Issue #1, point 3.
 * **A collection is announced but not described.** A database page is named as
   a collection, but its schema, active view and rows are not. Issue #1, point 4.
 * **`ai.pdfExtractionModelSlug` is not wired into the worker's PDF extractor

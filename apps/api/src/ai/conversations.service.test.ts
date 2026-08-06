@@ -502,6 +502,106 @@ describe('ConversationsService.postMessage', () => {
     });
   });
 
+  describe('handed-over selection', () => {
+    it('lands in the transcript before the question, with its source and block ids', async () => {
+      const conversationId = await createConversation();
+      const documentId = await createDocument('Seite mit Auswahl');
+
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: {
+          content: 'Erklär mir das hier',
+          documentId,
+          selection: { blockIds: ['abcdefgh1234', 'ijklmnop5678'], text: 'Der ausgewählte Absatz.' },
+        },
+        correlationId: 'test-selection-1',
+      });
+
+      const messages = await prisma.aiConversationMessage.findMany({
+        where: { conversationId },
+        orderBy: { createdAt: 'asc' },
+      });
+      const index = messages.findIndex((message) => message.content.startsWith('↳ Ausgewählter Abschnitt'));
+      expect(index).toBeGreaterThanOrEqual(0);
+      expect(messages[index]?.role).toBe('SYSTEM');
+      expect(messages[index]?.content).toContain('Seite mit Auswahl');
+      expect(messages[index]?.content).toContain('2 Blöcke');
+      expect(messages[index]?.content).toContain('abcdefgh1234');
+      expect(messages[index]?.content).toContain('Der ausgewählte Absatz.');
+      expect(messages[index + 1]?.content).toBe('Erklär mir das hier');
+    });
+
+    it('cuts an oversized selection and says in the text that it was cut', async () => {
+      const conversationId = await createConversation();
+      const documentId = await createDocument('Sehr lange Seite');
+
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: {
+          content: 'Fasse das zusammen',
+          documentId,
+          selection: { blockIds: ['abcdefgh1234'], text: 'x'.repeat(9_000) },
+        },
+        correlationId: 'test-selection-2',
+      });
+
+      const marker = await prisma.aiConversationMessage.findFirstOrThrow({
+        where: { conversationId, role: 'SYSTEM' },
+      });
+      expect(marker.content).toContain('gekürzt');
+      // The model must be able to tell an excerpt from the whole thing.
+      expect(marker.content.length).toBeLessThan(5_000);
+    });
+
+    it('goes along even when the page context is switched off, because the user picked it', async () => {
+      const conversationId = await createConversation();
+      const documentId = await createDocument('Seite ohne Kontext');
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: '/context off', documentId },
+        correlationId: 'test-selection-3a',
+      });
+
+      const response = await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: {
+          content: 'Und das hier?',
+          documentId,
+          selection: { blockIds: ['abcdefgh1234'], text: 'Nur dieser Satz.' },
+        },
+        correlationId: 'test-selection-3b',
+      });
+
+      const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: response.run?.id } });
+      expect(run.documentId).toBeNull();
+      const marker = await prisma.aiConversationMessage.findFirstOrThrow({
+        where: { conversationId, role: 'SYSTEM' },
+      });
+      expect(marker.content).toContain('Nur dieser Satz.');
+    });
+
+    it('adds nothing to the transcript when no selection was handed over', async () => {
+      const conversationId = await createConversation();
+      const documentId = await createDocument('Seite ohne Auswahl');
+
+      await service.postMessage({
+        conversationId,
+        userId: ownerId,
+        request: { content: 'Einfach nur eine Frage', documentId },
+        correlationId: 'test-selection-4',
+      });
+
+      const systemMessages = await prisma.aiConversationMessage.count({
+        where: { conversationId, role: 'SYSTEM' },
+      });
+      expect(systemMessages).toBe(0);
+    });
+  });
+
   describe('/clear', () => {
     it('supersedes active messages and resets estimatedTokens without deleting rows', async () => {
       const conversationId = await createConversation();

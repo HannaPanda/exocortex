@@ -101,6 +101,44 @@ function formatContextSwitch(documentTitle: string | null): string {
     : `↳ Kontextwechsel: geöffnet ist jetzt „${documentTitle}“.`;
 }
 
+/**
+ * Hard cap on a handed-over selection.
+ *
+ * A selection is meant to be "this bit here", not a way to smuggle a whole page
+ * past the page-context switch. Beyond the cap it is cut and the cut is stated
+ * in the text itself, so the model knows it is looking at an excerpt -- the same
+ * rule the ALWAYS rule budget follows in `buildSystemPrompt`.
+ */
+const MAX_SELECTION_CHARS = 4_000;
+
+/**
+ * The transcript entry that carries a handed-over selection.
+ *
+ * It goes into the transcript rather than into one run's prompt on purpose: the
+ * user can see exactly what was sent, later turns can still refer back to it,
+ * and `/clear` and auto-compaction handle it like any other message.
+ */
+function formatSelection(input: {
+  text: string;
+  blockIds: readonly string[];
+  documentTitle: string | null;
+}): string {
+  const cut = input.text.length > MAX_SELECTION_CHARS;
+  const body = cut ? input.text.slice(0, MAX_SELECTION_CHARS) : input.text;
+
+  const source = input.documentTitle === null ? '' : ` aus „${input.documentTitle}“`;
+  const count =
+    input.blockIds.length === 0
+      ? ''
+      : ` (${input.blockIds.length} ${input.blockIds.length === 1 ? 'Block' : 'Blöcke'}: ${input.blockIds.join(', ')})`;
+
+  const lines = [`↳ Ausgewählter Abschnitt${source}${count}:`, body];
+  if (cut) {
+    lines.push(`_Die Auswahl wurde nach ${MAX_SELECTION_CHARS} Zeichen gekürzt._`);
+  }
+  return lines.join('\n');
+}
+
 /** Derives a conversation title from the first user message: whitespace-collapsed, capped at 60 characters. */
 function deriveTitle(content: string): string {
   const collapsed = content.replace(/\s+/g, ' ').trim();
@@ -348,25 +386,44 @@ export class ConversationsService {
     const announceSwitch =
       contextSwitched && conversation._count.messages > 0 && conversation.pageContextEnabled;
 
-    // Explicit timestamps: the marker must sort before the message it explains,
-    // and two consecutive `now()` defaults are not guaranteed to differ.
-    const switchedAt = new Date();
     const content = input.request.content;
 
-    const switchMessage = announceSwitch
-      ? await this.prisma.aiConversationMessage.create({
+    // Prelude entries explain the message that follows them, so they have to
+    // sort before it. Explicit timestamps rather than `now()` defaults: two
+    // consecutive statements are not guaranteed to land on different
+    // milliseconds, and `orderBy createdAt` would then be free to invert them.
+    const preludeContents: string[] = [];
+    if (announceSwitch) preludeContents.push(formatContextSwitch(documentTitle));
+
+    const selection = input.request.selection ?? null;
+    if (selection !== null) {
+      preludeContents.push(
+        formatSelection({
+          text: selection.text,
+          blockIds: selection.blockIds,
+          // Named from the bound page even when the page context is off: the
+          // user picked this passage by hand and can see it in the chip row, so
+          // saying where it came from discloses nothing they did not send.
+          documentTitle,
+        }),
+      );
+    }
+
+    const startedAt = new Date();
+    const preludeMessages = [];
+    for (const [index, preludeContent] of preludeContents.entries()) {
+      preludeMessages.push(
+        await this.prisma.aiConversationMessage.create({
           data: {
             conversationId: conversation.id,
             role: 'SYSTEM',
-            content: formatContextSwitch(documentTitle),
-            estimatedTokens: estimateMessageTokens({
-              role: 'system',
-              content: formatContextSwitch(documentTitle),
-            }),
-            createdAt: switchedAt,
+            content: preludeContent,
+            estimatedTokens: estimateMessageTokens({ role: 'system', content: preludeContent }),
+            createdAt: new Date(startedAt.getTime() + index),
           },
-        })
-      : null;
+        }),
+      );
+    }
 
     const userMessage = await this.prisma.aiConversationMessage.create({
       data: {
@@ -374,9 +431,11 @@ export class ConversationsService {
         role: 'USER',
         content,
         estimatedTokens: estimateMessageTokens({ role: 'user', content }),
-        ...(switchMessage === null ? {} : { createdAt: new Date(switchedAt.getTime() + 1) }),
+        createdAt: new Date(startedAt.getTime() + preludeMessages.length),
       },
     });
+
+    const preludeTokens = preludeMessages.reduce((sum, message) => sum + message.estimatedTokens, 0);
 
     const resolvedModel =
       conversation.model === null
@@ -416,7 +475,7 @@ export class ConversationsService {
       where: { id: conversation.id },
       data: {
         lastMessageAt: new Date(),
-        estimatedTokens: { increment: userMessage.estimatedTokens + (switchMessage?.estimatedTokens ?? 0) },
+        estimatedTokens: { increment: userMessage.estimatedTokens + preludeTokens },
         ...(isPlaceholderTitle ? { title: deriveTitle(content) } : {}),
         ...(contextSwitched ? { documentId: boundDocumentId } : {}),
       },

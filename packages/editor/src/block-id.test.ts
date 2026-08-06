@@ -2,7 +2,12 @@
 import { Editor } from '@tiptap/core';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { BLOCK_ID_ATTRIBUTE, createBlockId, isValidBlockId } from './block-id';
+import {
+  BLOCK_ID_ATTRIBUTE,
+  collectBlockIdsInRange,
+  createBlockId,
+  isValidBlockId,
+} from './block-id';
 import { type ProseMirrorDocument } from './contract';
 import { buildEditorExtensions } from './extensions';
 import { collectBlockIds, findDuplicateBlockIds } from './plain-text';
@@ -114,5 +119,42 @@ describe('BlockId extension', () => {
 
     instance.commands.setContent(html);
     expect(documentOf(instance).content?.[0]?.attrs?.[BLOCK_ID_ATTRIBUTE]).toBe(id);
+  });
+});
+
+describe('collectBlockIdsInRange', () => {
+  it('returns the identifiers a range touches, in document order', () => {
+    const instance = createEditor();
+    instance.commands.setContent('<p>Absatz eins</p><p>Absatz zwei</p><p>Absatz drei</p>');
+    const allIds = collectBlockIds(documentOf(instance));
+    expect(allIds.length).toBe(3);
+
+    // Exactly the first two paragraphs: the third starts at `to`, and
+    // `nodesBetween` excludes a node that only begins where the range ends.
+    const doc = instance.state.doc;
+    const to = doc.child(0).nodeSize + doc.child(1).nodeSize;
+
+    expect(collectBlockIdsInRange(doc, 0, to)).toEqual(allIds.slice(0, 2));
+  });
+
+  it('does not repeat an identifier when a range covers nested blocks', () => {
+    const instance = createEditor();
+    instance.commands.setContent('<ul><li><p>Eins</p></li><li><p>Zwei</p></li></ul>');
+    const ids = collectBlockIdsInRange(instance.state.doc, 0, instance.state.doc.content.size);
+
+    expect(new Set(ids).size).toBe(ids.length);
+    // The list, its items and their paragraphs are all addressable.
+    expect(ids.length).toBeGreaterThan(2);
+  });
+
+  it('skips a block that has not been assigned an identifier yet', () => {
+    // The assignment plugin runs on the next transaction, so a paragraph that
+    // has never been edited can still carry `blockId: null`. Guessing one here
+    // would hand the assistant an address that points nowhere.
+    const instance = createEditor('<p></p>');
+    expect(documentOf(instance).content?.[0]?.attrs?.[BLOCK_ID_ATTRIBUTE]).toBeNull();
+
+    const doc = instance.state.doc;
+    expect(collectBlockIdsInRange(doc, 0, doc.content.size)).toEqual([]);
   });
 });

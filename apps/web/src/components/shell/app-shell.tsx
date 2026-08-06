@@ -33,6 +33,7 @@ import {
   useIsMobile,
 } from '@exocortex/ui';
 
+import { AiSelectionProvider, useAiSelection } from '@/components/ai/ai-selection';
 import { SearchCommand } from '@/components/search/search-command';
 import { queryKeys, useSessionQuery } from '@/lib/api/queries';
 import { signOut } from '@/lib/auth/client';
@@ -74,7 +75,9 @@ function parsePanelPreference(raw: string): PanelPreference {
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <DocumentSessionProvider>
-      <AppShellInner>{children}</AppShellInner>
+      <AiSelectionProvider>
+        <AppShellInner>{children}</AppShellInner>
+      </AiSelectionProvider>
     </DocumentSessionProvider>
   );
 }
@@ -117,6 +120,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
 
   const sidebarOpen = sidebar.open;
   const contextOpen = context.open;
+  const { selection: pendingAiSelection } = useAiSelection();
   const setSidebarOpen = React.useCallback(
     (open: boolean) => setSidebar({ ...sidebar, open }),
     [setSidebar, sidebar],
@@ -125,6 +129,19 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     (open: boolean) => setContext({ ...context, open }),
     [context, setContext],
   );
+
+  // Handing a selection to the AI is pointless while the panel is closed: the
+  // chip that says what will be sent would be invisible. The ref keys on the
+  // hand-over, not on the selection's content, so re-sending the same passage
+  // opens the panel again, and a re-render (setContextOpen is not stable) does
+  // not re-open a panel the user has since closed.
+  const handledSelectionRequest = React.useRef<number | null>(null);
+  React.useEffect(() => {
+    const requestId = pendingAiSelection?.requestId ?? null;
+    if (requestId === null || handledSelectionRequest.current === requestId) return;
+    handledSelectionRequest.current = requestId;
+    if (!contextOpen) setContextOpen(true);
+  }, [pendingAiSelection, contextOpen, setContextOpen]);
 
   // Redirect unauthenticated visitors. The API is the source of truth.
   React.useEffect(() => {

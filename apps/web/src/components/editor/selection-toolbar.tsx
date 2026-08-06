@@ -10,6 +10,7 @@ import {
   LinkIcon,
   MoreHorizontalIcon,
   SmileIcon,
+  SparklesIcon,
   StrikethroughIcon,
   SubscriptIcon,
   SuperscriptIcon,
@@ -17,7 +18,7 @@ import {
 } from 'lucide-react';
 import * as React from 'react';
 
-import { type BlockCatalogEntry } from '@exocortex/editor';
+import { type BlockCatalogEntry, collectBlockIdsInRange } from '@exocortex/editor';
 import {
   Button,
   DropdownMenu,
@@ -26,6 +27,8 @@ import {
   Toolbar,
   ToolbarSeparator,
 } from '@exocortex/ui';
+
+import { useAiSelection } from '@/components/ai/ai-selection';
 
 import { BlockActionItems } from './block-actions';
 import { ColorMenu } from './color-menu';
@@ -36,6 +39,7 @@ import { currentBlockLabel, TurnIntoMenu, TurnIntoTriggerLabel } from './turn-in
 interface SelectionToolbarProps {
   editor: Editor;
   catalog: readonly BlockCatalogEntry[];
+  documentId: string;
 }
 
 interface MarkButton {
@@ -119,7 +123,20 @@ const MARK_BUTTONS: readonly MarkButton[] = [
  * an empty selection (nothing to format), inside a code block (no marks apply) or
  * while the document is read-only.
  */
-export function SelectionToolbar({ editor, catalog }: SelectionToolbarProps) {
+export function SelectionToolbar({ editor, catalog, documentId }: SelectionToolbarProps) {
+  const { handOver } = useAiSelection();
+
+  /**
+   * Hands the selected passage to the AI panel. It is not sent here: it becomes
+   * a chip above the composer, and only the next submitted message carries it.
+   */
+  const sendSelectionToAi = (): void => {
+    const { from, to } = editor.state.selection;
+    const text = editor.state.doc.textBetween(from, to, '\n', ' ').trim();
+    if (text.length === 0) return;
+    handOver({ documentId, blockIds: collectBlockIdsInRange(editor.state.doc, from, to), text });
+  };
+
   /*
    * `useEditor` does not re-render on every transaction in Tiptap 3, so the
    * pressed states are subscribed explicitly. One selector for the whole bar keeps
@@ -245,6 +262,22 @@ export function SelectionToolbar({ editor, catalog }: SelectionToolbarProps) {
             </Button>
           }
         />
+
+        <ToolbarSeparator />
+
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label="An KI schicken"
+          title="An KI schicken"
+          data-testid="selection-to-ai"
+          // Same reason as the mark buttons: focus on mousedown would drop the
+          // ProseMirror selection, and there would be nothing left to hand over.
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={sendSelectionToAi}
+        >
+          <SparklesIcon />
+        </Button>
 
         <ToolbarSeparator />
 

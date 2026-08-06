@@ -74,9 +74,25 @@ export const updateAiConversationRequestSchema = z.object({
 });
 export type UpdateAiConversationRequest = z.infer<typeof updateAiConversationRequestSchema>;
 
+/**
+ * A passage the user picked in the editor and explicitly handed to the chat.
+ *
+ * Unlike the page context, this *is* document content leaving the system -- but
+ * content the user selected, saw named in a chip, and sent on purpose, which is
+ * no different from pasting it into the message. `blockIds` lets the assistant
+ * address the passage later (`exo_page_read` returns the same identifiers)
+ * instead of guessing where in the page it came from.
+ */
+export const messageSelectionSchema = z.object({
+  blockIds: z.array(z.string().trim().min(1).max(64)).max(500).default([]),
+  text: z.string().trim().min(1).max(20_000),
+});
+export type MessageSelection = z.infer<typeof messageSelectionSchema>;
+
 export const postConversationMessageRequestSchema = z.object({
   content: z.string().trim().min(1).max(20_000),
   documentId: idSchema.nullable().optional(),
+  selection: messageSelectionSchema.nullable().optional(),
   /** Overrides the conversation setting for this turn only. */
   reasoningLevel: aiReasoningLevelSchema.optional(),
   toolsEnabled: z.boolean().optional(),

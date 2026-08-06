@@ -1,6 +1,6 @@
 'use client';
 
-import { FileTextIcon, PlusIcon, TableIcon, XIcon } from 'lucide-react';
+import { FileTextIcon, PlusIcon, TableIcon, TextQuoteIcon, XIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { Badge, Button, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
@@ -12,6 +12,9 @@ export interface ContextChipsProps {
   /** Whether the page is disclosed to the model. */
   enabled: boolean;
   onEnabledChange: (enabled: boolean) => void;
+  /** Number of blocks in the passage handed over from the editor; `null` when there is none. */
+  selectionBlockCount: number | null;
+  onSelectionRemove: () => void;
   disabled: boolean;
 }
 
@@ -31,16 +34,46 @@ export function ContextChips({
   isCollection,
   enabled,
   onEnabledChange,
+  selectionBlockCount,
+  onSelectionRemove,
   disabled,
 }: ContextChipsProps) {
-  if (documentTitle === null) return null;
+  if (documentTitle === null && selectionBlockCount === null) return null;
 
   const Icon = isCollection ? TableIcon : FileTextIcon;
   const kind = isCollection ? 'Diese Datenbank' : 'Diese Seite';
 
   return (
     <div className="flex min-w-0 flex-wrap items-center gap-1.5 px-2 pt-2" data-testid="ai-context-chips">
-      {enabled ? (
+      {selectionBlockCount === null ? null : (
+        <Badge variant="outline" className="max-w-full gap-1 py-1 pr-1 pl-1.5">
+          <TextQuoteIcon aria-hidden />
+          <span className="min-w-0 truncate">
+            Auswahl ({selectionBlockCount}{' '}
+            {selectionBlockCount === 1 ? 'Block' : 'Blöcke'})
+          </span>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  className="size-4 shrink-0 rounded-sm"
+                  aria-label="Auswahl nicht mitschicken"
+                  data-testid="ai-selection-remove"
+                  disabled={disabled}
+                  onClick={onSelectionRemove}
+                >
+                  <XIcon />
+                </Button>
+              }
+            />
+            <TooltipContent>Nicht mitschicken</TooltipContent>
+          </Tooltip>
+        </Badge>
+      )}
+
+      {documentTitle === null ? null : enabled ? (
         <Badge variant="outline" className="max-w-full gap-1 py-1 pr-1 pl-1.5">
           <Icon aria-hidden />
           <span className="min-w-0 truncate" title={documentTitle}>

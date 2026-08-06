@@ -563,7 +563,7 @@ function EditorChrome({
     <>
       {editable ? (
         <>
-          <SelectionToolbar editor={editor} catalog={catalog} />
+          <SelectionToolbar editor={editor} catalog={catalog} documentId={documentId} />
           <CodeBlockToolbar editor={editor} />
           <TableToolbar editor={editor} />
           <BlockHandle editor={editor} catalog={catalog} />
