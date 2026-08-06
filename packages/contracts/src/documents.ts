@@ -171,6 +171,13 @@ export const documentContentWriteResponseSchema = z.object({
   yjsUpdatedAt: isoDateTimeSchema,
   schemaVersion: z.number().int().nonnegative(),
   byteSize: z.number().int().nonnegative(),
+  /**
+   * `true` when the page was open in at least one editor and that live session
+   * was updated with this write, so the change is on screen already and cannot
+   * be overwritten by the session's next autosave (ADR-016). `false` simply
+   * means nobody had the page open.
+   */
+  appliedToLiveSession: z.boolean(),
   /** German warnings, e.g. about content the Markdown round-trip simplified. */
   warnings: z.array(z.string()),
 });

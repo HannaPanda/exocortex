@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { OutboxService } from '../common/outbox.service';
 import { RealtimeModule } from '../realtime/realtime.module';
 
+import { CollaborationBridgeService } from './collaboration-bridge.service';
 import { CollaborationTicketService } from './collaboration-ticket.service';
 import { DocumentContentService } from './document-content.service';
 import { DocumentMarkdownService } from './document-markdown.service';
@@ -19,6 +20,7 @@ import { DocumentsService } from './documents.service';
     DocumentSnapshotService,
     DocumentContentService,
     CollaborationTicketService,
+    CollaborationBridgeService,
     OutboxService,
   ],
   exports: [

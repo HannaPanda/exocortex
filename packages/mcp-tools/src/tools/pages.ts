@@ -119,7 +119,8 @@ export const pageWriteTool: AnyToolDefinition = defineTool({
     'und exo_page_restore_snapshot wiederhergestellt werden. ' +
     'Lange Inhalte in mehreren Aufrufen schreiben: den ersten mit mode "replace", die weiteren ' +
     'mit mode "append". Ein einzelner Aufruf mit sehr viel Markdown kann am Ausgabelimit ' +
-    'abgeschnitten werden und wird dann gar nicht ausgeführt.',
+    'abgeschnitten werden und wird dann gar nicht ausgeführt. ' +
+    'Hat jemand die Seite gerade geöffnet, erscheint die Änderung dort sofort.',
   inputSchema: z.object({ documentId: idSchema }).extend(documentContentWriteRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
   mutating: true,
@@ -133,8 +134,11 @@ export const pageWriteTool: AnyToolDefinition = defineTool({
       responseSchema: documentContentWriteResponseSchema,
     });
     const warningsText = result.warnings.length > 0 ? ` Warnungen: ${result.warnings.join('; ')}` : '';
+    const liveText = result.appliedToLiveSession
+      ? ' Die Seite war geöffnet; die Änderung ist dort sofort sichtbar.'
+      : '';
     return {
-      text: `Seite ${documentId} geschrieben (Snapshot ${result.snapshotId} zum Zurückrollen).${warningsText}`,
+      text: `Seite ${documentId} geschrieben (Snapshot ${result.snapshotId} zum Zurückrollen).${liveText}${warningsText}`,
       data: result,
     };
   },

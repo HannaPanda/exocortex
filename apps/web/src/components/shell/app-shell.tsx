@@ -170,6 +170,15 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       queryKey: queryKeys.document(event.payload.documentId),
     });
   });
+  // A write from outside the editor (MCP, the built-in AI, the REST endpoint).
+  // The text itself arrives through the collaboration socket (ADR-016); what
+  // the cache still holds is everything around it, from the version list to the
+  // Markdown the context panel reads.
+  useRealtimeEvent('document.content.replaced', (event) => {
+    void queryClient.invalidateQueries({
+      queryKey: queryKeys.document(event.payload.documentId),
+    });
+  });
 
   // Global keyboard shortcuts.
   React.useEffect(() => {

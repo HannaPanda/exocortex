@@ -8,7 +8,7 @@ import {
 } from '@exocortex/auth';
 import { type DocumentSnapshot, QUEUE_NAMES } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
-import { EXOCORTEX_SCHEMA_VERSION } from '@exocortex/editor';
+import { EXOCORTEX_SCHEMA_VERSION, yjsStateToProseMirrorJson } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 
@@ -18,6 +18,7 @@ import { OutboxService } from '../common/outbox.service';
 import { PRISMA, QUEUES } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
+import { CollaborationBridgeService } from './collaboration-bridge.service';
 import { toSummary } from './documents.service';
 
 const REASON_MAP = {
@@ -45,6 +46,7 @@ export class DocumentSnapshotService {
     private readonly access: WorkspaceAccessService,
     private readonly outbox: OutboxService,
     private readonly realtime: RealtimeService,
+    private readonly collaboration: CollaborationBridgeService,
   ) {}
 
   async create(input: {
@@ -118,9 +120,14 @@ export class DocumentSnapshotService {
    *  1. verify permission
    *  2. snapshot the current state (safety net)
    *  3. write back the binary Yjs state
-   *  4. trigger materialization
-   *  5. notify connected clients
-   *  6. write an audit entry
+   *  4. push the restored content into an open editing session (ADR-016)
+   *  5. trigger materialization
+   *  6. notify connected clients
+   *  7. write an audit entry
+   *
+   * Step 4 is what makes a restore hold: a session that has the page open keeps
+   * the version it is showing in memory and would autosave it back over the
+   * restored one.
    */
   async restore(input: {
     snapshotId: string;
@@ -180,6 +187,14 @@ export class DocumentSnapshotService {
       });
     });
 
+    const live = await this.collaboration.applyToLiveSession({
+      documentId: snapshot.documentId,
+      userId: input.userId,
+      mode: 'replace',
+      proseMirrorJson: yjsStateToProseMirrorJson(snapshot.yjsState),
+      correlationId: input.correlationId,
+    });
+
     await this.queues.enqueue(QUEUE_NAMES.documentMaterialization, {
       correlationId: input.correlationId,
       documentId: snapshot.documentId,
@@ -213,6 +228,7 @@ export class DocumentSnapshotService {
       documentId: snapshot.documentId,
       snapshotId: snapshot.id,
       correlationId: input.correlationId,
+      appliedToLiveSession: live.applied,
       schemaVersion: snapshot.schemaVersion === EXOCORTEX_SCHEMA_VERSION ? 'current' : 'legacy',
     });
 

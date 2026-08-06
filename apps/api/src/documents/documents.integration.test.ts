@@ -3,6 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
 import { loadDotEnv } from '@exocortex/config';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
+import { type ProseMirrorDocument, serializePlainText } from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 
@@ -10,6 +11,10 @@ import { AppError } from '../common/app-error';
 import { OutboxService } from '../common/outbox.service';
 import { type RealtimeService } from '../realtime/realtime.service';
 
+import {
+  type ApplyToLiveSessionResult,
+  type CollaborationBridgeService,
+} from './collaboration-bridge.service';
 import { DocumentContentService } from './document-content.service';
 import { DocumentsService } from './documents.service';
 
@@ -43,6 +48,34 @@ const realtime = {
   },
 } as unknown as RealtimeService;
 
+/**
+ * The collaboration server runs in its own process, so what is asserted here is
+ * the API's half of the bridge: what it hands over, and what it does with the
+ * answer. The applying itself is covered by
+ * `apps/collaboration/src/collaboration.integration.test.ts`.
+ */
+const liveApplications: { documentId: string; mode: string; plainText: string }[] = [];
+let liveResult: ApplyToLiveSessionResult = {
+  applied: false,
+  clientsCount: 0,
+  yjsUpdatedAt: null,
+  reachable: true,
+};
+const collaboration = {
+  applyToLiveSession: async (input: {
+    documentId: string;
+    mode: string;
+    proseMirrorJson: ProseMirrorDocument;
+  }) => {
+    liveApplications.push({
+      documentId: input.documentId,
+      mode: input.mode,
+      plainText: serializePlainText(input.proseMirrorJson),
+    });
+    return liveResult;
+  },
+} as unknown as CollaborationBridgeService;
+
 const correlationId = 'test-correlation';
 
 beforeAll(async () => {
@@ -54,7 +87,15 @@ beforeAll(async () => {
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
   service = new DocumentsService(prisma, queues, logger, access, outbox, realtime);
-  contentService = new DocumentContentService(prisma, queues, logger, access, outbox, realtime);
+  contentService = new DocumentContentService(
+    prisma,
+    queues,
+    logger,
+    access,
+    outbox,
+    realtime,
+    collaboration,
+  );
 
   const suffix = Date.now().toString(36);
   const [owner, guest, outsider] = await Promise.all([
@@ -418,5 +459,99 @@ describe('writing document content', () => {
         source: 'api',
       }),
     ).rejects.toBeInstanceOf(AuthorizationError);
+  });
+});
+
+describe('reaching an open editing session', () => {
+  it('hands the finished document over for a replace', async () => {
+    const documentId = await createPage('Ersetzen live');
+    liveApplications.length = 0;
+
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: 'Alles neu.', mode: 'replace' },
+      correlationId,
+      source: 'ai',
+    });
+
+    expect(liveApplications).toEqual([
+      { documentId, mode: 'replace', plainText: 'Alles neu.' },
+    ]);
+  });
+
+  /**
+   * The point of the mode travelling along: an append must insert, not rewrite,
+   * or it would undo whatever the person in the session just typed.
+   */
+  it('hands over only the new nodes for an append', async () => {
+    const documentId = await createPage('Anhängen live');
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: 'Bestehender Text.', mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+    liveApplications.length = 0;
+
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: 'Angehängter Text.', mode: 'append' },
+      correlationId,
+      source: 'ai',
+    });
+
+    expect(liveApplications).toEqual([
+      { documentId, mode: 'append', plainText: 'Angehängter Text.' },
+    ]);
+    // The database still receives the merged document, as before.
+    const stored = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+    expect(stored.plainText).toContain('Bestehender Text.');
+    expect(stored.plainText).toContain('Angehängter Text.');
+  });
+
+  it('reports the timestamp the live session persisted, not its own', async () => {
+    const documentId = await createPage('Zeitstempel aus der Sitzung');
+    const fromSession = new Date(Date.now() + 5_000).toISOString();
+    liveResult = { applied: true, clientsCount: 2, yjsUpdatedAt: fromSession, reachable: true };
+
+    const result = await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: 'Offen beim Schreiben.', mode: 'replace' },
+      correlationId,
+      source: 'ai',
+    });
+
+    // Sending anything else back as `expectedYjsUpdatedAt` would make the very
+    // next write of the same caller fail with a phantom conflict.
+    expect(result.yjsUpdatedAt).toBe(fromSession);
+    expect(result.appliedToLiveSession).toBe(true);
+    expect(result.warnings).toEqual([]);
+
+    liveResult = { applied: false, clientsCount: 0, yjsUpdatedAt: null, reachable: true };
+  });
+
+  it('warns when the collaboration server could not be reached', async () => {
+    const documentId = await createPage('Brücke unterbrochen');
+    liveResult = { applied: false, clientsCount: 0, yjsUpdatedAt: null, reachable: false };
+
+    const result = await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: 'Trotzdem geschrieben.', mode: 'replace' },
+      correlationId,
+      source: 'ai',
+    });
+
+    // The write itself must still stand; only the live update was lost.
+    const stored = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+    expect(stored.plainText).toContain('Trotzdem geschrieben.');
+    expect(result.appliedToLiveSession).toBe(false);
+    expect(result.warnings.join(' ')).toContain('neu laden');
+
+    liveResult = { applied: false, clientsCount: 0, yjsUpdatedAt: null, reachable: true };
   });
 });

@@ -99,6 +99,14 @@ servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 | `exo_rules_list` | no | `GET /api/workspaces/:workspaceId/ai-rules` |
 | `exo_rules_load` | no | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars) |
 
+`exo_page_write` reaches a page that somebody has open at that moment: the API
+hands the change to the collaboration server, which applies it to the live
+document, so it appears in the editor immediately and the session's autosave
+carries it instead of overwriting it ([ADR-016](adr/ADR-016-writes-reach-the-live-session.md)).
+The response says so in `appliedToLiveSession`. `append` and `prepend` insert
+only the new content there, so a person typing in that session keeps what they
+wrote; `replace` replaces, as asked.
+
 Database property tools only accept `IMPLEMENTED_PROPERTY_TYPES` from
 `@exocortex/contracts` (`RELATION`/`ROLLUP`/`FORMULA` are reserved and
 rejected by the query engine), so a model is never told it can create a
@@ -248,15 +256,5 @@ that nginx rule is added.
   slash commands (`/model`, `/think`, `/context`, …) have no tool counterparts.
   If a conversation-management API is ever wanted, it needs its own decision,
   not an incremental tool.
-* **`exo_page_write` and a live Hocuspocus session (D8/R5 in the overnight
-  build plan).** If a document has an open collaborative editing session,
-  that session's next debounced autosave can overwrite an MCP write shortly
-  after it lands. The write is always snapshotted first
-  (`exo_page_snapshots` / `exo_page_restore_snapshot` make it revertable),
-  but there is no locking between the two write paths. This is a known,
-  accepted limitation of `POST /api/documents/:documentId/content` itself
-  (not specific to MCP); the same caveat applies to the built-in AI's tool
-  loop once it lands and should be written up in `docs/ai-architecture.md`
-  at that point.
 * **Two response shapes are defined locally, not in `@exocortex/contracts`.**
   See "Tool reference" above; `packages/contracts` was frozen for this wave.

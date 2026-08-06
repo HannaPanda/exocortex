@@ -10,6 +10,8 @@ import { type Prisma, type PrismaClient } from '@exocortex/database';
 import {
   EXOCORTEX_SCHEMA_VERSION,
   markdownToYjsState,
+  parseMarkdown,
+  type ProseMirrorDocument,
   type ProseMirrorNode,
   yjsStateToMarkdown,
 } from '@exocortex/editor';
@@ -22,6 +24,8 @@ import { OutboxService } from '../common/outbox.service';
 import { PRISMA, QUEUES } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
+import { CollaborationBridgeService } from './collaboration-bridge.service';
+
 /** Depth-first search for a `databaseEmbed` node (D8, mirrors collectImageSources). */
 function containsDatabaseEmbed(node: ProseMirrorNode | null | undefined): boolean {
   if (node === null || node === undefined) return false;
@@ -32,11 +36,17 @@ function containsDatabaseEmbed(node: ProseMirrorNode | null | undefined): boolea
 /**
  * Writes Markdown into an existing document's canonical Yjs state (D8).
  *
- * This is the only write path into an existing document outside the
- * collaboration server. Used by humans through `POST /api/documents/:id/content`
- * and by the built-in AI / MCP tools (`source: 'ai'`). Every write snapshots the
- * previous state first, so it is always revertable, and refuses to lose a
- * `databaseEmbed` reference silently (R6).
+ * Used by humans through `POST /api/documents/:id/content` and by the built-in
+ * AI / MCP tools (`source: 'ai'`). Every write snapshots the previous state
+ * first, so it is always revertable, and refuses to lose a `databaseEmbed`
+ * reference silently (R6).
+ *
+ * The write lands in the database, and then — because a page somebody has open
+ * is served from the collaboration server's memory, not from the database — the
+ * same change is handed to that server so the open session carries it too
+ * (ADR-016). Without that second step the change would be invisible until a
+ * reload, and the session's next autosave would write its stale copy back over
+ * it.
  */
 @Injectable()
 export class DocumentContentService {
@@ -47,6 +57,7 @@ export class DocumentContentService {
     private readonly access: WorkspaceAccessService,
     private readonly outbox: OutboxService,
     private readonly realtime: RealtimeService,
+    private readonly collaboration: CollaborationBridgeService,
   ) {}
 
   async write(input: {
@@ -98,8 +109,19 @@ export class DocumentContentService {
           : `${input.request.markdown}\n\n${currentMarkdown}`;
 
     let imported: ReturnType<typeof markdownToYjsState>;
+    /**
+     * What an open session has to be told. For `replace` that is the finished
+     * document; for `append` and `prepend` it is only the incoming Markdown, so
+     * the session inserts those nodes instead of rewriting a fragment somebody
+     * may be typing in right now.
+     */
+    let liveUpdate: ProseMirrorDocument;
     try {
       imported = markdownToYjsState(effectiveMarkdown);
+      liveUpdate =
+        input.request.mode === 'replace'
+          ? imported.proseMirrorJson
+          : parseMarkdown(input.request.markdown).document;
     } catch (error) {
       this.logger.warn('Document content write rejected: markdown could not be parsed', {
         documentId: input.documentId,
@@ -149,6 +171,23 @@ export class DocumentContentService {
       return { snapshotId: snapshot.id };
     });
 
+    // Only now, with the snapshot safely committed, is the change handed to the
+    // open session: if the transaction had failed, nothing may have reached the
+    // editors either.
+    const live = await this.collaboration.applyToLiveSession({
+      documentId: input.documentId,
+      userId: input.userId,
+      mode: input.request.mode,
+      proseMirrorJson: liveUpdate,
+      correlationId: input.correlationId,
+    });
+    if (!live.reachable) {
+      warnings.push(
+        'Der Live-Editor konnte nicht benachrichtigt werden. Wer die Seite gerade offen hat, ' +
+          'muss sie neu laden, sonst überschreibt die offene Sitzung diese Änderung.',
+      );
+    }
+
     await this.realtime.emit(
       'document.content.replaced',
       context.workspaceId,
@@ -170,15 +209,20 @@ export class DocumentContentService {
       mode: input.request.mode,
       byteSize: imported.yjsState.byteLength,
       snapshotId,
+      appliedToLiveSession: live.applied,
       correlationId: input.correlationId,
     });
 
     return {
       documentId: input.documentId,
       snapshotId,
-      yjsUpdatedAt: now.toISOString(),
+      // When a live session took the change, that session's own store is the
+      // last write, so its timestamp is the one a caller must send back as
+      // `expectedYjsUpdatedAt` on the next write.
+      yjsUpdatedAt: live.yjsUpdatedAt ?? now.toISOString(),
       schemaVersion: EXOCORTEX_SCHEMA_VERSION,
       byteSize: imported.yjsState.byteLength,
+      appliedToLiveSession: live.applied,
       warnings,
     };
   }

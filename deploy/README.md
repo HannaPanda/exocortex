@@ -69,6 +69,13 @@ PUBLIC_COLLABORATION_URL=wss://exocortex.app/collab
 # on purpose -- this never leaves the loopback interface.
 API_URL=http://127.0.0.1:3211
 
+# The API's address for the collaboration server's private write endpoint
+# (ADR-016): a write that did not come from the editor is pushed into the open
+# editing session through it, so the change appears live and the session cannot
+# autosave over it. `/internal/` is deliberately absent from the nginx
+# configuration and the process binds 127.0.0.1 only; never publish it.
+COLLABORATION_INTERNAL_URL=http://127.0.0.1:3212
+
 # Shared secret the worker uses to mint short-lived `exos_` service tokens that
 # the API accepts as bearer credentials, resolving to the run's own user.
 # Optional: without it the built-in AI still runs, just without tools, and logs

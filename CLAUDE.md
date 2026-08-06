@@ -100,6 +100,8 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   the bootstrap fallback, never the runtime authority.
 * ADR-014: one tool catalogue (`packages/mcp-tools`) serves external MCP clients
   and the built-in AI, and it reaches the domain only through the REST API.
+* ADR-016: a write that does not come from the editor must reach the open
+  editing session through the collaboration server, never only the database.
 * ADR-015: the open page's *text* reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

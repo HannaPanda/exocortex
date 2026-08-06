@@ -55,6 +55,7 @@ describe('pageWriteTool', () => {
       yjsUpdatedAt: new Date().toISOString(),
       schemaVersion: 1,
       byteSize: 42,
+      appliedToLiveSession: false,
       warnings: [],
     });
 

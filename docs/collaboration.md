@@ -46,6 +46,36 @@ at most one pending job per document. (BullMQ rejects custom job ids containing
 `:`; `QueueRegistry.enqueueDebounced` fails fast on that to keep the mistake from
 hiding inside a persistence hook.)
 
+## Writes that do not come from an editor
+
+`POST /api/documents/:documentId/content` (humans, MCP, the built-in AI) and a
+snapshot restore write the database directly. That is only the whole story while
+nobody has the page open — an open session holds its own copy in memory and
+would autosave it back over the change. So the API hands the same change to this
+process afterwards, over a private route (ADR-016):
+
+```
+POST http://127.0.0.1:3212/internal/documents/:documentId/content
+Authorization: Bearer exos_…            # purpose: collaboration-write
+{ "proseMirrorJson": { … }, "mode": "replace|append|prepend", "correlationId": "…" }
+```
+
+* Loopback only, never proxied. `COLLABORATION_INTERNAL_URL` is the API's side.
+* The token says *who* writes; write access is re-checked here exactly as it is
+  for a WebSocket connection, archived pages included.
+* Not loaded here → `applied: false`, and nothing happens: there is no live
+  state to correct.
+* Loaded → the content is applied to the living document in one transaction
+  (`applyProseMirrorDocumentToYDoc`), broadcast to every client, and persisted
+  immediately instead of at the end of the next debounce window.
+* `append` and `prepend` insert only the incoming nodes, so concurrent typing
+  survives. `replace` replaces.
+
+The plain HTTP routes (these and the health probes) are served ahead of
+Hocuspocus on `server.httpServer`, not through its `onRequest` hook: that hook
+can only signal "handled" by throwing, and the throw leaves Hocuspocus's request
+handler as an unhandled rejection.
+
 ## Presence and awareness
 
 Awareness carries `{ user: { name, color } }` and is **never persisted**. Colours
