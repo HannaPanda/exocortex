@@ -6,6 +6,7 @@ import { type ApiEnv } from '@exocortex/config';
 
 import { AiModule } from './ai/ai.module';
 import { AttachmentsModule } from './attachments/attachments.module';
+import { AdminGuard } from './auth/admin.guard';
 import { AuthModule } from './auth/auth.module';
 import { SessionGuard } from './auth/session.guard';
 import { ApiExceptionFilter } from './common/exception.filter';
@@ -49,6 +50,9 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     // Authentication runs after rate limiting so unauthenticated floods are
     // rejected before any database access.
     { provide: APP_GUARD, useClass: SessionGuard },
+    // Runs after SessionGuard, so `request.exocortexSession` already exists;
+    // only routes marked `@AdminOnly()` are affected.
+    { provide: APP_GUARD, useClass: AdminGuard },
   ],
 })
 export class AppModule {}

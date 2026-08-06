@@ -2,16 +2,29 @@ import {
   type CanActivate,
   createParamDecorator,
   type ExecutionContext,
+  Inject,
   Injectable,
   SetMetadata,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { type FastifyRequest } from 'fastify';
 
-import { type VerifiedSession } from '@exocortex/auth';
+import {
+  API_TOKEN_PREFIX,
+  hashApiToken,
+  readBearerToken,
+  SERVICE_TOKEN_PREFIX,
+  type VerifiedSession,
+  verifyServiceToken,
+} from '@exocortex/auth';
+import { type ApiEnv } from '@exocortex/config';
+import { type PrismaClient } from '@exocortex/database';
+import { type Logger } from '@exocortex/logger';
 
 import { AppError } from '../common/app-error';
 import { setRequestUser } from '../common/correlation';
+import { API_ENV, LOGGER } from '../common/logger.provider';
+import { PRISMA } from '../platform/platform.module';
 
 import { AuthService } from './auth.service';
 
@@ -20,20 +33,36 @@ export const IS_PUBLIC_ROUTE = 'exocortex:isPublicRoute';
 /** Marks a route as reachable without a session (health checks, auth routes). */
 export const Public = (): MethodDecorator & ClassDecorator => SetMetadata(IS_PUBLIC_ROUTE, true);
 
+/** Which credential kind authenticated the current request. */
+export type ExocortexCredential = 'session' | 'api_token' | 'service_token';
+
 export interface AuthenticatedRequest extends FastifyRequest {
   exocortexSession?: VerifiedSession;
+  /** The built-in AI service uses this to know whether tools are allowed. */
+  exocortexCredential?: ExocortexCredential;
 }
+
+/** A far-future expiry for tokens that never expire (`ApiToken.expiresAt === null`). */
+const NEVER_EXPIRES = new Date('2999-01-01T00:00:00.000Z');
 
 /**
  * Global guard: every route requires a valid session unless explicitly marked
  * `@Public()`. Authorization (workspace membership, roles) is a separate layer
  * handled by the policies in `@exocortex/auth`.
+ *
+ * Accepts three credential kinds, resolved in this order:
+ *  1. a Better Auth session cookie (humans, the web app)
+ *  2. an `exos_`-prefixed HMAC service token (the worker's tool loop, D3)
+ *  3. an `exo_`-prefixed persistent API token (external clients, MCP, D1)
  */
 @Injectable()
 export class SessionGuard implements CanActivate {
   constructor(
     private readonly authService: AuthService,
     private readonly reflector: Reflector,
+    @Inject(PRISMA) private readonly prisma: PrismaClient,
+    @Inject(API_ENV) private readonly env: ApiEnv,
+    @Inject(LOGGER) private readonly logger: Logger,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -44,20 +73,123 @@ export class SessionGuard implements CanActivate {
     if (isPublic === true) return true;
 
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
-    const session = await this.authService.verifySession(
-      request.headers as Record<string, string | string[] | undefined>,
-    );
+    const headers = request.headers as Record<string, string | string[] | undefined>;
 
-    if (session === null) {
+    const cookieSession = await this.authService.verifySession(headers);
+    if (cookieSession !== null) {
+      if (cookieSession.expiresAt.getTime() <= Date.now()) {
+        throw new AppError('session_expired', 'The session has expired');
+      }
+      request.exocortexSession = cookieSession;
+      request.exocortexCredential = 'session';
+      setRequestUser(cookieSession.userId);
+      return true;
+    }
+
+    const bearer = readBearerToken(headers);
+    if (bearer === null) {
       throw AppError.unauthenticated('No valid session cookie was provided');
     }
-    if (session.expiresAt.getTime() <= Date.now()) {
-      throw new AppError('session_expired', 'The session has expired');
-    }
 
+    const { session, credential } = await this.verifyBearerToken(bearer);
     request.exocortexSession = session;
+    request.exocortexCredential = credential;
     setRequestUser(session.userId);
     return true;
+  }
+
+  private async verifyBearerToken(
+    token: string,
+  ): Promise<{ session: VerifiedSession; credential: ExocortexCredential }> {
+    if (token.startsWith(SERVICE_TOKEN_PREFIX)) {
+      return this.verifyServiceBearerToken(token);
+    }
+    if (token.startsWith(API_TOKEN_PREFIX)) {
+      return this.verifyApiBearerToken(token);
+    }
+    throw new AppError('api_token_invalid', 'Unrecognized bearer token format');
+  }
+
+  private async verifyServiceBearerToken(
+    token: string,
+  ): Promise<{ session: VerifiedSession; credential: ExocortexCredential }> {
+    if (this.env.SERVICE_TOKEN_SECRET === undefined) {
+      throw new AppError('api_token_invalid', 'Service tokens are not configured');
+    }
+
+    const result = verifyServiceToken({ secret: this.env.SERVICE_TOKEN_SECRET, token });
+    if (!result.valid) {
+      if (result.reason === 'expired') {
+        throw new AppError('api_token_expired', 'The service token has expired');
+      }
+      throw new AppError('api_token_invalid', 'The service token is invalid');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: result.claims.userId },
+      select: { id: true, email: true, name: true, emailVerified: true },
+    });
+    if (user === null) {
+      throw new AppError('api_token_invalid', 'The service token references an unknown user');
+    }
+
+    return {
+      session: {
+        userId: user.id,
+        sessionId: `service:${result.claims.purpose}`,
+        email: user.email,
+        name: user.name,
+        emailVerified: user.emailVerified,
+        expiresAt: new Date(result.claims.expiresAt),
+      },
+      credential: 'service_token',
+    };
+  }
+
+  private async verifyApiBearerToken(
+    token: string,
+  ): Promise<{ session: VerifiedSession; credential: ExocortexCredential }> {
+    const apiToken = await this.prisma.apiToken.findUnique({
+      where: { tokenHash: hashApiToken(token) },
+      select: {
+        id: true,
+        expiresAt: true,
+        revokedAt: true,
+        user: { select: { id: true, email: true, name: true, emailVerified: true } },
+      },
+    });
+    if (apiToken === null) {
+      throw new AppError('api_token_invalid', 'Unknown API token');
+    }
+    if (apiToken.revokedAt !== null) {
+      throw new AppError('api_token_invalid', 'The API token has been revoked');
+    }
+    if (apiToken.expiresAt !== null && apiToken.expiresAt.getTime() <= Date.now()) {
+      throw new AppError('api_token_expired', 'The API token has expired');
+    }
+
+    // Token auth stays a single indexed read on the hot path: the timestamp
+    // update happens in the background and a failure here never fails the request.
+    void this.prisma.apiToken
+      .update({ where: { id: apiToken.id }, data: { lastUsedAt: new Date() } })
+      .catch((error: unknown) => {
+        this.logger.warn('Failed to update API token lastUsedAt', {
+          apiTokenId: apiToken.id,
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      });
+
+    return {
+      session: {
+        userId: apiToken.user.id,
+        sessionId: `token:${apiToken.id}`,
+        email: apiToken.user.email,
+        name: apiToken.user.name,
+        emailVerified: apiToken.user.emailVerified,
+        expiresAt: apiToken.expiresAt ?? NEVER_EXPIRES,
+      },
+      credential: 'api_token',
+    };
   }
 }
 
