@@ -13,7 +13,14 @@ import { QueueRegistry } from '@exocortex/queue';
 
 import { AppError } from '../common/app-error';
 import { LOGGER } from '../common/logger.provider';
-import { AI_DEFAULT_MODEL, AI_PROVIDER, PRISMA, QUEUES } from '../platform/platform.module';
+import { AI_PROVIDER, PRISMA, QUEUES } from '../platform/platform.module';
+
+import {
+  AiModelResolverService,
+  REASONING_LEVEL_TO_CONTRACT,
+  REASONING_LEVEL_TO_PRISMA,
+  type ResolvedAiModel,
+} from './ai-model-resolver.service';
 
 const STATUS_MAP = {
   PENDING: 'pending',
@@ -22,16 +29,6 @@ const STATUS_MAP = {
   FAILED: 'failed',
   CANCELLED: 'cancelled',
   TIMED_OUT: 'timed_out',
-} as const;
-
-// Widened in plan-01 (conversations/tool loop, briefs 02/04 build on this):
-// every existing run resolves to NONE/0 through these columns' defaults.
-const REASONING_LEVEL_MAP = {
-  NONE: 'none',
-  MINIMAL: 'minimal',
-  LOW: 'low',
-  MEDIUM: 'medium',
-  HIGH: 'high',
 } as const;
 
 /**
@@ -47,9 +44,9 @@ export class AiService {
     @Inject(PRISMA) private readonly prisma: PrismaClient,
     @Inject(QUEUES) private readonly queues: QueueRegistry,
     @Inject(AI_PROVIDER) private readonly provider: AiProvider,
-    @Inject(AI_DEFAULT_MODEL) private readonly defaultModel: string,
     @Inject(LOGGER) private readonly logger: Logger,
     private readonly access: WorkspaceAccessService,
+    private readonly modelResolver: AiModelResolverService,
   ) {}
 
   async createRun(input: {
@@ -67,10 +64,30 @@ export class AiService {
       }
     }
 
-    // `capabilities.models` is empty for OpenRouter ("provider decides"), so the
-    // literal string 'default' used to be persisted and sent as the model id
-    // verbatim -- this now falls through to the actually configured default.
-    const model = input.request.model ?? this.provider.capabilities.models[0] ?? this.defaultModel;
+    // Resolves through the shared registry so `ai_model_unknown` /
+    // `ai_model_disabled` are reported consistently everywhere a model slug is
+    // accepted. The one exception is a provider that dictates its own fixed
+    // model (`capabilities.models`, e.g. the mock provider used in development
+    // and tests) -- that model deliberately has no registry row, exactly as
+    // before this change, so it is used verbatim instead of failing a lookup.
+    const fixedProviderModel = this.provider.capabilities.models[0];
+    let resolvedModel: ResolvedAiModel | null = null;
+    let modelSlug: string;
+    if (input.request.model !== undefined) {
+      resolvedModel = await this.modelResolver.resolve({ slug: input.request.model });
+      modelSlug = resolvedModel.slug;
+    } else if (fixedProviderModel !== undefined) {
+      modelSlug = fixedProviderModel;
+    } else {
+      resolvedModel = await this.modelResolver.resolveDefault();
+      modelSlug = resolvedModel.slug;
+    }
+
+    const requestedReasoningLevel = input.request.reasoningLevel ?? 'none';
+    const clampedReasoningLevel =
+      resolvedModel === null
+        ? 'none'
+        : this.modelResolver.clampReasoningLevel(resolvedModel, requestedReasoningLevel);
 
     const run = await this.prisma.aiRun.create({
       data: {
@@ -79,8 +96,10 @@ export class AiService {
         createdById: input.userId,
         status: 'PENDING',
         provider: this.provider.id,
-        model,
+        model: modelSlug,
         messages: input.request.messages as unknown as Prisma.InputJsonValue,
+        conversationId: input.request.conversationId ?? null,
+        reasoningLevel: REASONING_LEVEL_TO_PRISMA[clampedReasoningLevel],
       },
     });
 
@@ -136,7 +155,7 @@ export class AiService {
     usage: unknown;
     errorCode: string | null;
     conversationId: string | null;
-    reasoningLevel: keyof typeof REASONING_LEVEL_MAP;
+    reasoningLevel: keyof typeof REASONING_LEVEL_TO_CONTRACT;
     toolIterations: number;
   }): AiRun {
     return {
@@ -152,7 +171,7 @@ export class AiService {
       usage: run.usage === null ? null : (run.usage as AiRun['usage']),
       errorCode: run.errorCode,
       conversationId: run.conversationId,
-      reasoningLevel: REASONING_LEVEL_MAP[run.reasoningLevel],
+      reasoningLevel: REASONING_LEVEL_TO_CONTRACT[run.reasoningLevel],
       toolIterations: run.toolIterations,
     };
   }
