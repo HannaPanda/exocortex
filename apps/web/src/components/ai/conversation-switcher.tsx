@@ -1,0 +1,189 @@
+'use client';
+
+import {
+  ArchiveIcon,
+  ChevronDownIcon,
+  PencilIcon,
+  PlusIcon,
+} from 'lucide-react';
+import * as React from 'react';
+
+import { type AiConversation } from '@exocortex/contracts';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  Input,
+} from '@exocortex/ui';
+
+import { useAiConversations, useArchiveAiConversation, useUpdateAiConversation } from '@/lib/api/ai-queries';
+
+const RELATIVE_TIME = new Intl.RelativeTimeFormat('de-DE', { numeric: 'auto' });
+
+function formatRelative(iso: string): string {
+  const deltaMs = new Date(iso).getTime() - Date.now();
+  const deltaMinutes = Math.round(deltaMs / 60_000);
+  if (Math.abs(deltaMinutes) < 60) return RELATIVE_TIME.format(deltaMinutes, 'minute');
+  const deltaHours = Math.round(deltaMinutes / 60);
+  if (Math.abs(deltaHours) < 24) return RELATIVE_TIME.format(deltaHours, 'hour');
+  const deltaDays = Math.round(deltaHours / 24);
+  return RELATIVE_TIME.format(deltaDays, 'day');
+}
+
+export interface ConversationSwitcherProps {
+  workspaceId: string;
+  activeConversationId: string | null;
+  onSelect: (conversationId: string | null) => void;
+  onCreateNew: () => void;
+}
+
+/**
+ * Dropdown to switch between, rename and archive recent conversations, plus
+ * start a new one.
+ */
+export function ConversationSwitcher({
+  workspaceId,
+  activeConversationId,
+  onSelect,
+  onCreateNew,
+}: ConversationSwitcherProps) {
+  const conversations = useAiConversations(workspaceId);
+  const updateConversation = useUpdateAiConversation();
+  const archiveConversation = useArchiveAiConversation();
+
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [renaming, setRenaming] = React.useState<AiConversation | null>(null);
+  const [renameValue, setRenameValue] = React.useState('');
+
+  const list = conversations.data ?? [];
+  const visible = list.slice(0, 20);
+  const active = list.find((conversation) => conversation.id === activeConversationId) ?? null;
+
+  const archive = async (conversation: AiConversation): Promise<void> => {
+    await archiveConversation.mutateAsync({ conversationId: conversation.id, workspaceId });
+    if (conversation.id !== activeConversationId) return;
+
+    const remaining = list
+      .filter((entry) => entry.id !== conversation.id)
+      .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
+    onSelect(remaining[0]?.id ?? null);
+  };
+
+  const submitRename = async (): Promise<void> => {
+    if (renaming === null) return;
+    const title = renameValue.trim();
+    if (title.length === 0) {
+      setRenaming(null);
+      return;
+    }
+    await updateConversation.mutateAsync({ conversationId: renaming.id, request: { title } });
+    setRenaming(null);
+  };
+
+  return (
+    <>
+      <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+        <DropdownMenuTrigger
+          render={
+            <Button variant="ghost" size="sm" className="min-w-0 gap-1" data-testid="ai-conversation-switcher">
+              <span className="max-w-[14rem] truncate">
+                {active?.title ?? 'Neuer Chat'}
+              </span>
+              <ChevronDownIcon className="size-3.5 shrink-0 text-muted-foreground" />
+            </Button>
+          }
+        />
+        <DropdownMenuContent align="start" className="w-72">
+          <DropdownMenuItem
+            data-testid="ai-new-conversation"
+            onClick={() => {
+              setMenuOpen(false);
+              onCreateNew();
+            }}
+          >
+            <PlusIcon /> Neuer Chat
+          </DropdownMenuItem>
+          {visible.length > 0 ? <DropdownMenuSeparator /> : null}
+          {visible.map((conversation) => (
+            <div key={conversation.id} className="flex items-center gap-0.5">
+              <DropdownMenuItem
+                className="min-w-0 flex-1"
+                onClick={() => {
+                  setMenuOpen(false);
+                  onSelect(conversation.id);
+                }}
+              >
+                <span className="min-w-0 flex-1 truncate">{conversation.title}</span>
+                <span className="shrink-0 text-xs text-muted-foreground">
+                  {formatRelative(conversation.lastMessageAt)}
+                </span>
+              </DropdownMenuItem>
+              <button
+                type="button"
+                aria-label="Umbenennen"
+                className="shrink-0 rounded-sm p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setRenaming(conversation);
+                  setRenameValue(conversation.title);
+                }}
+              >
+                <PencilIcon className="size-3.5" />
+              </button>
+              <button
+                type="button"
+                aria-label="Archivieren"
+                className="shrink-0 rounded-sm p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  void archive(conversation);
+                }}
+              >
+                <ArchiveIcon className="size-3.5" />
+              </button>
+            </div>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Dialog open={renaming !== null} onOpenChange={(open) => !open && setRenaming(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Unterhaltung umbenennen</DialogTitle>
+          </DialogHeader>
+          <label htmlFor="ai-conversation-rename" className="sr-only">
+            Neuer Titel
+          </label>
+          <Input
+            id="ai-conversation-rename"
+            value={renameValue}
+            onChange={(event) => setRenameValue(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                void submitRename();
+              }
+            }}
+            autoFocus
+          />
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setRenaming(null)}>
+              Abbrechen
+            </Button>
+            <Button onClick={() => void submitRename()} disabled={renameValue.trim().length === 0}>
+              Speichern
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
