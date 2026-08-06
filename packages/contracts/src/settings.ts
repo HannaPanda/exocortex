@@ -30,17 +30,29 @@ export const settingsSchema = z.object({
   'ai.compactionModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
   'ai.pdfExtractionEnabled': z.boolean().default(true),
   /**
-   * Engine used first. `openrouter` is a hosted call with no OCR; `docling` is
-   * a local container that reads scans too but costs CPU time. Selecting an
-   * engine the deployment has not configured leaves extraction unavailable
-   * rather than silently using the other one.
+   * Engine used first.
+   *
+   * `docling` is the default because it is the cheaper and the more capable of
+   * the two: it runs in a local container, costs nothing per document, and is
+   * the only one that reads scans. `openrouter` is a hosted chat completion
+   * that returns the whole document as output tokens, so it costs real money
+   * per page and still cannot read a scan. It stays selectable because a
+   * deployment without the container needs some way to read a PDF at all.
+   *
+   * Neither engine reads the PDF's own metadata dictionary as a precondition
+   * any more; `createPdfDocumentInfoReader` does that locally either way.
+   *
+   * Selecting an engine the deployment has not configured leaves extraction
+   * unavailable rather than silently using the other one, unless the fallback
+   * below is on.
    */
-  'ai.pdfExtractor': z.enum(['openrouter', 'docling']).default('openrouter'),
+  'ai.pdfExtractor': z.enum(['docling', 'openrouter']).default('docling'),
   /**
-   * When the engine above returns nothing (the signature of a scanned PDF),
-   * try Docling before recording a failure. No effect without DOCLING_BASE_URL.
+   * When the engine above returns nothing (the signature of a scan meeting a
+   * text-only engine) or fails, try the other engine before recording a
+   * failure. No effect when only one of the two is configured.
    */
-  'ai.pdfOcrFallbackEnabled': z.boolean().default(true),
+  'ai.pdfExtractorFallbackEnabled': z.boolean().default(true),
   /** Model with a PDF file-parser. Null reuses `ai.defaultModelSlug`. */
   'ai.pdfExtractionModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
   'ai.pdfMaxBytes': z.number().int().min(1_024).max(50 * 1_024 * 1_024).default(10 * 1_024 * 1_024),

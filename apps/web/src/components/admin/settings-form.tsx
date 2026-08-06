@@ -89,11 +89,11 @@ const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
   },
   'ai.pdfExtractor': {
     label: 'PDF-Verfahren',
-    help: 'OpenRouter ist schnell und braucht keinen eigenen Dienst, kann aber keine Scans lesen. Docling läuft lokal, erkennt auch Scans per Texterkennung und braucht dafür Rechenzeit.',
+    help: 'Docling läuft lokal, kostet nichts pro Dokument und liest auch Scans per Texterkennung. OpenRouter braucht keinen eigenen Dienst, wird aber pro Seite abgerechnet und kann keine Scans lesen. Titel, Autor und Datum werden in beiden Fällen direkt aus der Datei gelesen.',
   },
-  'ai.pdfOcrFallbackEnabled': {
-    label: 'Texterkennung als Rückfallebene',
-    help: 'Findet das gewählte Verfahren keinen Text, versucht Docling es noch einmal mit Texterkennung. Ohne eingerichteten Docling-Dienst wirkungslos.',
+  'ai.pdfExtractorFallbackEnabled': {
+    label: 'Zweites Verfahren als Rückfallebene',
+    help: 'Findet oder erreicht das gewählte Verfahren nichts, versucht es das jeweils andere. Wirkungslos, wenn nur eines von beiden eingerichtet ist.',
   },
   'ai.pdfExtractionModelSlug': {
     label: 'Modell für PDF-Text',
@@ -127,8 +127,8 @@ const AUTO_VALUE = '__automatic__';
  */
 const SETTING_CHOICES: Partial<Record<SettingKey, readonly { value: string; label: string }[]>> = {
   'ai.pdfExtractor': [
-    { value: 'openrouter', label: 'OpenRouter (schnell, ohne Texterkennung)' },
-    { value: 'docling', label: 'Docling (lokal, mit Texterkennung)' },
+    { value: 'docling', label: 'Docling (lokal, kostenlos, mit Texterkennung)' },
+    { value: 'openrouter', label: 'OpenRouter (gehostet, kostenpflichtig, ohne Texterkennung)' },
   ],
 };
 
