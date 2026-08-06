@@ -9,12 +9,18 @@ import { QueueRegistry } from '@exocortex/queue';
 import { type ObjectStorage, S3ObjectStorage } from '@exocortex/storage';
 
 import { API_ENV, apiEnvProvider, LOGGER, loggerProvider } from '../common/logger.provider';
+import { OutboxService } from '../common/outbox.service';
 
-export const PRISMA = Symbol('EXOCORTEX_PRISMA');
-export const QUEUES = Symbol('EXOCORTEX_QUEUES');
-export const OBJECT_STORAGE = Symbol('EXOCORTEX_OBJECT_STORAGE');
-export const AI_PROVIDER = Symbol('EXOCORTEX_AI_PROVIDER');
-export const AI_DEFAULT_MODEL = Symbol('EXOCORTEX_AI_DEFAULT_MODEL');
+import {
+  AI_DEFAULT_MODEL,
+  AI_PROVIDER,
+  OBJECT_STORAGE,
+  PRISMA,
+  QUEUES,
+} from './platform-tokens';
+import { SettingsService } from './settings.service';
+
+export { AI_DEFAULT_MODEL, AI_PROVIDER, OBJECT_STORAGE, PRISMA, QUEUES };
 
 /**
  * Owns every long-lived infrastructure connection and closes them again on
@@ -88,8 +94,10 @@ export class PlatformLifecycle implements OnApplicationShutdown {
     {
       provide: AI_DEFAULT_MODEL,
       inject: [API_ENV],
-      // Same resolution the provider itself falls back to (registry.ts), so the
-      // model persisted on an AiRun row matches what actually gets called.
+      // Bootstrap value only: this is what a fresh process falls back to before
+      // it ever reads the database. Runtime resolution goes through
+      // `SettingsService.getKey('ai.defaultModelSlug')` (D4) -- callers that
+      // need the effective model must ask the settings service, not this token.
       useFactory: (env: ApiEnv): string => env.OPENROUTER_DEFAULT_MODEL ?? 'anthropic/claude-sonnet-4.5',
     },
     {
@@ -98,6 +106,8 @@ export class PlatformLifecycle implements OnApplicationShutdown {
       useFactory: (prisma: PrismaClient): WorkspaceAccessService =>
         new WorkspaceAccessService(prisma),
     },
+    OutboxService,
+    SettingsService,
     PlatformLifecycle,
   ],
   exports: [
@@ -109,6 +119,7 @@ export class PlatformLifecycle implements OnApplicationShutdown {
     AI_PROVIDER,
     AI_DEFAULT_MODEL,
     WorkspaceAccessService,
+    SettingsService,
   ],
 })
 export class PlatformModule {}

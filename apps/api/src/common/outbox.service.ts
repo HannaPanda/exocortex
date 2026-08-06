@@ -4,7 +4,7 @@ import { type ApplicationEvent, type ApplicationEventType } from '@exocortex/con
 import { type Prisma, type PrismaClient, type PrismaTransactionClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 
-import { PRISMA } from '../platform/platform.module';
+import { PRISMA } from '../platform/platform-tokens';
 
 import { LOGGER } from './logger.provider';
 
@@ -19,6 +19,7 @@ export const AUDIT_ACTIONS = [
   'workspace.member_removed',
   'workspace.deleted',
   'database.property.deleted',
+  'setting.updated',
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -33,7 +34,8 @@ export interface WriteAuditInput {
     | 'workspace'
     | 'workspace_member'
     | 'document_snapshot'
-    | 'database_property';
+    | 'database_property'
+    | 'setting';
   targetId: string;
   correlationId: string;
   /**
