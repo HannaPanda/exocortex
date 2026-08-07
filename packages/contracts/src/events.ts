@@ -129,6 +129,13 @@ export const aiRunToolCallPayloadSchema = z.object({
   iteration: z.number().int().nonnegative(),
   toolName: z.string(),
   status: z.enum(['started', 'succeeded', 'failed']),
+  /**
+   * Compact identifier of what the call touches, e.g. `document:<id>` for
+   * `exo_page_write` -- never the full argument payload. `null` when the tool
+   * has no natural target (a read-only tool, or the arguments could not be
+   * parsed) (issue #6).
+   */
+  target: z.string().nullable().default(null),
 });
 
 export const documentContentReplacedPayloadSchema = z.object({

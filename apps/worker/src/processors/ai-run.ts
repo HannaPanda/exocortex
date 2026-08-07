@@ -22,6 +22,7 @@ import {
   type PrismaClient,
 } from '@exocortex/database';
 import { type ProseMirrorNode } from '@exocortex/editor';
+import { findTool } from '@exocortex/mcp-tools';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
@@ -217,6 +218,26 @@ function resolveVisionCompanionSlug(
   if (conversationOverride === 'off') return 'off';
   if (conversationOverride !== null) return conversationOverride;
   return modelRowCompanion;
+}
+
+/**
+ * Compact identifier of what a tool call touches, e.g. `document:<id>` for
+ * `exo_page_write`, taken from the same `target` the catalogue already uses
+ * for the confirmation gate (`packages/mcp-tools/src/tool.ts`). Never the
+ * full argument payload, and never a thrown error: an unknown tool, invalid
+ * JSON or a read-only tool without a target all just mean "nothing to show"
+ * (issue #6).
+ */
+function toolCallTarget(name: string, argumentsJson: string): string | null {
+  const tool = findTool(name);
+  if (tool === null) return null;
+  let args: unknown;
+  try {
+    args = JSON.parse(argumentsJson) as unknown;
+  } catch {
+    return null;
+  }
+  return tool.targetOf(args);
 }
 
 /** Wire shape a tool call takes on an assistant message, matching what the provider round-trips. */
@@ -675,6 +696,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
                 iteration: toolIterations,
                 toolName: call.name.length > 0 ? call.name : 'unbekannt',
                 status: 'failed',
+                target: toolCallTarget(call.name, call.argumentsJson),
               },
             });
           }
@@ -742,6 +764,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
               iteration: toolIterations,
               toolName: call.name.length > 0 ? call.name : 'unbekannt',
               status: 'failed',
+              target: toolCallTarget(call.name, call.argumentsJson),
             },
           });
           logger.warn('Discarding a tool call the provider did not deliver completely', {
@@ -804,12 +827,16 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
             };
             break;
           }
+          // Computed once per call and reused for the `succeeded`/`failed`
+          // event below: the arguments (and therefore the target) never
+          // change between the two.
+          const target = toolCallTarget(call.name, call.argumentsJson);
           await bus.publish({
             type: 'ai.run.tool_call',
             workspaceId: run.workspaceId,
             correlationId: payload.correlationId,
             emittedAt: new Date().toISOString(),
-            payload: { runId: run.id, iteration: toolIterations, toolName: call.name, status: 'started' },
+            payload: { runId: run.id, iteration: toolIterations, toolName: call.name, status: 'started', target },
           });
 
           const result = await runner!.run({
@@ -840,6 +867,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
               iteration: toolIterations,
               toolName: call.name,
               status: result.isError ? 'failed' : 'succeeded',
+              target,
             },
           });
 
