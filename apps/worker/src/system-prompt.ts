@@ -34,6 +34,31 @@ export interface SystemPromptResult {
 /** How far up the tree the breadcrumb of the open page is resolved. Deeper ancestors are elided. */
 const MAX_PATH_DEPTH = 8;
 
+/**
+ * Tells the model exactly what the chat can display, and nothing more
+ * (issue #21). This lists precisely the node/mark vocabulary
+ * `apps/web/src/components/ai/chat-markdown.tsx` renders (via
+ * `pruneForChat` in `packages/editor/src/markdown/chat-render.ts`): naming
+ * more here than the surface actually shows would just trade raw asterisks
+ * for raw pipes.
+ *
+ * Deliberately part of the built-in prompt, not of the admin-configured
+ * `ai.systemPrompt`: it describes what this build of the product does, not a
+ * workspace's own instructions.
+ */
+const CHAT_FORMATTING_SECTION = [
+  '## Antwortformat im Chat',
+  'Antworten in diesem Chat werden als Markdown dargestellt, nicht nur als Klartext. ' +
+    'Nutzbar sind: Absätze, **fett** und *kursiv*, `Inline-Code`, Codeblöcke mit ' +
+    'Sprachangabe (werden farbig hervorgehoben wie im Editor), Aufzählungen und ' +
+    'nummerierte Listen, kleine Überschriften, Links (öffnen extern), Zitate mit `>` ' +
+    'und Tabellen.',
+  'Nicht dargestellt werden Bilder, Kästchen von Aufgabenlisten, Farbmarkierung, ' +
+    'Unterstreichung, Spaltenlayout, eingebettete Datenbanken und rohes HTML. Verwende ' +
+    'diese hier nicht. Verweise der Form `[[Seite]]` bleiben reiner Text und werden ' +
+    'nicht anklickbar.',
+].join('\n');
+
 const DOCUMENT_TYPE_LABEL: Record<DocumentType, string> = {
   PAGE: 'Seite',
   COLLECTION: 'Sammlung (Datenbank)',
@@ -228,8 +253,8 @@ async function loadOpenPage(input: {
 
 /**
  * Builds the system prompt for a run: the admin-configured base prompt, then the
- * workspace's ALWAYS rule pages in priority order, then a catalogue of ON_DEMAND
- * rules with their triggers only.
+ * built-in chat formatting section, then the workspace's ALWAYS rule pages in
+ * priority order, then a catalogue of ON_DEMAND rules with their triggers only.
  *
  * ON_DEMAND rules are the reason the context stays small: the model sees one line
  * per rule and calls `exo_rules_load` for the body when the trigger matches.
@@ -265,7 +290,7 @@ export async function buildSystemPrompt(input: BuildSystemPromptInput): Promise<
     }),
   ]);
 
-  const sections: string[] = [basePrompt];
+  const sections: string[] = [basePrompt, CHAT_FORMATTING_SECTION];
   let truncated = false;
   let alwaysRuleCount = 0;
   let remainingBudget = maxRuleChars;

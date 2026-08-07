@@ -97,3 +97,57 @@ export const ExocortexCodeBlock = CodeBlockLowlight.configure({
   exitOnArrowDown: true,
   HTMLAttributes: { class: 'exocortex-code-block' },
 });
+
+/**
+ * Structural subset of the hast tree `lowlight.highlight` returns, framework
+ * agnostic so a consumer outside the editor (the AI chat, issue #21) can turn
+ * it into its own UI without depending on `hast` or Tiptap.
+ */
+export interface HighlightNode {
+  type: 'element' | 'text';
+  /** Set on `'text'` nodes. */
+  value?: string;
+  /** `hljs-*` class names, set on `'element'` nodes. */
+  className?: readonly string[];
+  /** Set on `'element'` nodes. */
+  children?: readonly HighlightNode[];
+}
+
+/** The node shape `lowlight.highlight` actually produces, inferred rather than
+ *  imported from `hast`: this package has no direct dependency on `@types/hast`,
+ *  only a transitive one through `lowlight`, which pnpm does not expose here. */
+type LowlightNode = ReturnType<typeof lowlight.highlight>['children'][number];
+
+function toHighlightNode(node: LowlightNode): HighlightNode {
+  if (node.type === 'text') return { type: 'text', value: node.value };
+  if (node.type === 'element') {
+    const className = node.properties.className;
+    return {
+      type: 'element',
+      className: Array.isArray(className) ? className.map(String) : undefined,
+      children: node.children.map(toHighlightNode),
+    };
+  }
+  // `lowlight.highlight` only ever emits `element` and `text` nodes, but the
+  // hast union it is typed against also allows `comment` and `doctype`. Render
+  // those (never actually reached) as nothing rather than throw.
+  return { type: 'text', value: '' };
+}
+
+/**
+ * Highlights source code with the same grammar registry the editor's code
+ * block uses (`lowlight` above), so a fenced code block rendered outside the
+ * editor -- the AI chat (issue #21) -- gets identical `hljs-*` classes and can
+ * share its CSS theme (`apps/web/src/app/globals.css`).
+ *
+ * Falls back to a single unhighlighted text node for an empty or unregistered
+ * language: `lowlight.highlight` throws for a language it does not know, and a
+ * fenced block in a chat message may carry any string the model typed.
+ */
+export function highlightCode(code: string, language: string): readonly HighlightNode[] {
+  const normalized = language.trim().toLowerCase();
+  if (normalized.length === 0 || !lowlight.registered(normalized)) {
+    return code.length > 0 ? [{ type: 'text', value: code }] : [];
+  }
+  return lowlight.highlight(normalized, code).children.map(toHighlightNode);
+}

@@ -4,7 +4,9 @@ import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { type AiConversationMessage } from '@exocortex/contracts';
-import { Badge, cn,Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
+import { Badge, cn, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
+
+import { ChatMarkdown, CopyMarkdownButton } from './chat-markdown';
 
 export interface ChatMessageProps {
   message: AiConversationMessage;
@@ -14,9 +16,10 @@ export interface ChatMessageProps {
 
 /**
  * One bubble for all four conversation roles (`user`, `assistant`, `system`,
- * `tool`). Assistant content is rendered as plain text with preserved
- * whitespace; a Markdown renderer is a deliberately deferred follow-up (see
- * the commit message), not an oversight.
+ * `tool`). Assistant content and summaries (`isSummary`) are model text and
+ * are rendered as the chat's limited Markdown subset (issue #21, see
+ * `chat-markdown.tsx`); a user's own message stays plain text, and a tool
+ * result stays monospace -- neither is prose the model formatted.
  */
 export function ChatMessage({ message, streaming = false }: ChatMessageProps) {
   const body = (
@@ -49,16 +52,20 @@ function ChatMessageBody({ message, streaming }: ChatMessageProps) {
 
     case 'assistant':
       return (
-        <div className="flex justify-start">
-          <p
-            data-testid="ai-answer"
-            className="max-w-[85%] rounded-md bg-muted px-3 py-2 text-sm whitespace-pre-wrap break-words"
-          >
-            {message.content}
-            {streaming ? (
-              <span className="ml-0.5 inline-block h-3.5 w-1 animate-pulse bg-primary align-middle" />
+        <div className="group/message flex justify-start">
+          <div className="flex max-w-[85%] flex-col items-start gap-1">
+            <div data-testid="ai-answer" className="rounded-md bg-muted px-3 py-2 text-sm break-words">
+              <ChatMarkdown content={message.content} streaming={streaming} />
+              {streaming ? (
+                <span className="ml-0.5 inline-block h-3.5 w-1 animate-pulse bg-primary align-middle" />
+              ) : null}
+            </div>
+            {message.content.length > 0 ? (
+              <div className="opacity-0 transition-opacity focus-within:opacity-100 group-hover/message:opacity-100">
+                <CopyMarkdownButton markdown={message.content} />
+              </div>
             ) : null}
-          </p>
+          </div>
         </div>
       );
 
@@ -96,8 +103,13 @@ function SystemMessage({ message }: { message: AiConversationMessage }) {
           {expanded ? <ChevronDownIcon className="size-3" /> : <ChevronRightIcon className="size-3" />}
           Verlauf anzeigen
         </button>
+        {expanded ? <CopyMarkdownButton markdown={message.content} /> : null}
       </div>
-      {expanded ? <p className="mt-1 whitespace-pre-wrap break-words">{message.content}</p> : null}
+      {expanded ? (
+        <div className="mt-1">
+          <ChatMarkdown content={message.content} />
+        </div>
+      ) : null}
     </div>
   );
 }

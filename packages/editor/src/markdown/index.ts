@@ -1,3 +1,4 @@
+export * from './chat-render';
 export * from './core-adapter';
 export * from './frontmatter';
 export * from './parse';
