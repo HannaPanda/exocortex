@@ -16,6 +16,17 @@ const nextConfig: NextConfig = {
   // see its class names, packages/editor so the browser bundle shares one ESM
   // copy of prosemirror-* with @tiptap/* (see packages/editor/package.json).
   transpilePackages: ['@exocortex/ui', '@exocortex/editor'],
+  // `prosemirror-tables` registers `CellSelection` under the global `Selection`
+  // JSON-id registry (prosemirror-state) as a module-load side effect. Since
+  // `@exocortex/editor` (which pulls it in via `@tiptap/extension-table`) is
+  // transpiled, Turbopack's server build re-bundles that side effect into more
+  // than one internal module graph for a page that reaches it from a Client
+  // Component (the AI chat panel is in the shared app shell, so this now
+  // includes every authenticated page). Both copies run in the same process
+  // and the second registration throws "Duplicate use of selection JSON ID
+  // cell". Excluding the package from bundling makes Next load it once via a
+  // plain Node `require`, which is a real singleton across the whole build.
+  serverExternalPackages: ['prosemirror-tables'],
   productionBrowserSourceMaps: true,
   typedRoutes: false,
   env: {
