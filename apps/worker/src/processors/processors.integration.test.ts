@@ -572,6 +572,34 @@ describe('maintenance', () => {
     ).toBe(true);
   }, 30_000);
 
+  it('reaps a RUNNING run that never recorded a start, as ai_run_abandoned', async () => {
+    const runId = await createAiRunRow('RUNNING', { createdAt: new Date(Date.now() - 5 * 60_000) });
+
+    const published: { type: string; payload: Record<string, unknown> }[] = [];
+    const processor = createMaintenanceProcessor({
+      prisma,
+      queues,
+      storage: recordingStorage(),
+      bus: recordingEventBus(published),
+      settings: stubSettings(),
+    });
+    await processor(
+      contextFor({ correlationId: 'test-reap-5', task: 'reap-stale-ai-runs', workspaceId: null }).context,
+    );
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('FAILED');
+    expect(run.errorCode).toBe('ai_run_abandoned');
+    expect(
+      published.some(
+        (event) =>
+          event.type === 'ai.run.failed' &&
+          event.payload.runId === runId &&
+          event.payload.errorCode === 'ai_run_abandoned',
+      ),
+    ).toBe(true);
+  }, 30_000);
+
   it('reaps a PENDING run that was never picked up, as ai_run_lost', async () => {
     const runId = await createAiRunRow('PENDING', { createdAt: new Date(Date.now() - 6 * 60_000) });
 

@@ -194,6 +194,18 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
               { status: 'RUNNING', heartbeatAt: { lt: abandonedBefore } },
               { status: 'RUNNING', heartbeatAt: null, startedAt: { lt: abandonedBefore } },
               { status: 'RUNNING', startedAt: { lt: budgetBefore } },
+              // A row that reached RUNNING without ever recording a start: the
+              // status write and the `startedAt` write are one statement now,
+              // but rows from before that are out there, and a crash between
+              // the two would produce one again. Without this clause it has no
+              // timestamp any other clause can compare against, so it would
+              // stay RUNNING forever and keep its conversation locked.
+              {
+                status: 'RUNNING',
+                heartbeatAt: null,
+                startedAt: null,
+                createdAt: { lt: abandonedBefore },
+              },
               // Never picked up: the job was lost between creating the row and
               // enqueueing it, or Redis lost it. Without this the conversation
               // stays locked (`ai_conversation_locked`) forever.
