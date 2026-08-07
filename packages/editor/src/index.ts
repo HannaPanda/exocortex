@@ -9,6 +9,7 @@ export * from './collapsible-heading';
 export * from './columns';
 export * from './contract';
 export * from './database-embed';
+export * from './document-links';
 export * from './embed';
 export * from './extensions';
 export * from './fixtures';
