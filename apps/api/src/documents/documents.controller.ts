@@ -1,5 +1,12 @@
-import { Body, Controller, Get, Inject, Param, Patch, Post, Req } from '@nestjs/common';
-import { ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Inject, Param, Patch, Post, Query, Req } from '@nestjs/common';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { type FastifyRequest } from 'fastify';
 
 import { type VerifiedSession } from '@exocortex/auth';
@@ -39,6 +46,10 @@ import {
   markdownImportResponseSchema,
   type MoveDocumentRequest,
   moveDocumentRequestSchema,
+  type ResolveDocumentLinkRequest,
+  resolveDocumentLinkRequestSchema,
+  type ResolveDocumentLinkResponse,
+  resolveDocumentLinkResponseSchema,
   type UpdateDocumentRequest,
   updateDocumentRequestSchema,
 } from '@exocortex/contracts';
@@ -72,6 +83,29 @@ export class WorkspaceDocumentsController {
     @Param('workspaceId') workspaceId: string,
   ): Promise<DocumentTreeResponse> {
     return this.documents.getTree(workspaceId, session.userId);
+  }
+
+  /**
+   * Resolves a `[[Titel]]` / `wiki:Titel` link to the document(s) with exactly
+   * that title. Deliberately its own endpoint rather than `/search`: this must
+   * be a deterministic exact-title lookup, not a ranked full-text match, and
+   * it must not depend on the asynchronous search index.
+   *
+   * Placed before `:documentId` routes of the sibling controller would be
+   * wrong; this route lives here, under the workspace, because `resolve` is
+   * not a document id.
+   */
+  @Get('documents/resolve')
+  @ApiQuery({ name: 'title', required: true })
+  @ApiQuery({ name: 'includeArchived', required: false })
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiOkResponse({ schema: openApiResponseSchema(resolveDocumentLinkResponseSchema) })
+  async resolveLink(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+    @Query(zodPipe(resolveDocumentLinkRequestSchema)) query: ResolveDocumentLinkRequest,
+  ): Promise<ResolveDocumentLinkResponse> {
+    return this.documents.resolveLink(workspaceId, session.userId, query);
   }
 
   @Get('ai-rules')

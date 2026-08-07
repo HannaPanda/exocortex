@@ -22,6 +22,8 @@ import {
   type markdownImportRequestSchema,
   markdownImportResponseSchema,
   moveDocumentRequestSchema,
+  resolveDocumentLinkRequestSchema,
+  resolveDocumentLinkResponseSchema,
 } from '@exocortex/contracts';
 
 import { truncateText } from '../format.js';
@@ -404,6 +406,42 @@ export const pageGenerateCoverTool: AnyToolDefinition = defineTool({
   },
 });
 
+const resolveLinkInputSchema = z
+  .object({ workspaceId: idSchema })
+  .extend(resolveDocumentLinkRequestSchema.shape);
+
+export const pageResolveLinkTool: AnyToolDefinition = defineTool({
+  name: 'exo_page_resolve_link',
+  description:
+    'Löst einen internen Seitenverweis ([[Titel]] bzw. wiki:Titel) im Workspace auf und ' +
+    'liefert die documentId der Seite mit genau diesem Titel. Mehrere gleichnamige Seiten ' +
+    'werden alle mit ihrem Pfad zurückgegeben.',
+  inputSchema: resolveLinkInputSchema,
+  surfaces: ['mcp', 'ai'],
+  mutating: false,
+  async execute(client, input) {
+    const { workspaceId, ...query } = input;
+    const result = await client.request({
+      method: 'GET',
+      path: `/api/workspaces/${workspaceId}/documents/resolve`,
+      query,
+      responseSchema: resolveDocumentLinkResponseSchema,
+    });
+    if (result.matches.length === 0) {
+      return { text: `Keine Seite mit dem Titel "${result.title}".`, data: result };
+    }
+    const text = result.matches
+      .map(
+        (match) =>
+          `${match.title} (id: ${match.id}${
+            match.path.length > 0 ? `, Pfad: ${match.path.map((entry) => entry.title).join(' / ')}` : ''
+          }${match.archivedAt === null ? '' : ', archiviert'})`,
+      )
+      .join('\n');
+    return { text, data: result };
+  },
+});
+
 export const PAGE_TOOLS: readonly AnyToolDefinition[] = [
   pageTreeTool,
   pageReadTool,
@@ -419,4 +457,5 @@ export const PAGE_TOOLS: readonly AnyToolDefinition[] = [
   pageSetLayoutTool,
   pageSetCoverTool,
   pageGenerateCoverTool,
+  pageResolveLinkTool,
 ];

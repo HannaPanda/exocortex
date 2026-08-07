@@ -6,6 +6,7 @@ import {
   pageArchiveTool,
   pageGenerateCoverTool,
   pageReadTool,
+  pageResolveLinkTool,
   pageSetCoverTool,
   pageWriteTool,
 } from './pages.js';
@@ -15,6 +16,7 @@ interface RecordedCall {
   method?: string;
   path: string;
   body?: unknown;
+  query?: unknown;
 }
 
 /** Hand-written fake client: records every call, answers with a fixed response. */
@@ -22,7 +24,13 @@ function createFakeClient(response: unknown): { client: ExocortexApiClient; call
   const calls: RecordedCall[] = [];
   const client: ExocortexApiClient = {
     async request(input) {
-      calls.push({ kind: 'request', method: input.method, path: input.path, body: input.body });
+      calls.push({
+        kind: 'request',
+        method: input.method,
+        path: input.path,
+        body: input.body,
+        query: input.query,
+      });
       return input.responseSchema.parse(response);
     },
     async upload(input) {
@@ -169,6 +177,94 @@ describe('pageSetCoverTool', () => {
       },
     ]);
     expect(result.text).toContain('Titelbild entfernt');
+  });
+});
+
+describe('pageResolveLinkTool', () => {
+  it('reports when no page has that title', async () => {
+    const { client, calls } = createFakeClient({ title: 'Nirgendwo', matches: [] });
+
+    const result = await pageResolveLinkTool.run(client, {
+      workspaceId: 'ws1234567',
+      title: 'Nirgendwo',
+    });
+
+    expect(calls).toEqual([
+      {
+        kind: 'request',
+        method: 'GET',
+        path: '/api/workspaces/ws1234567/documents/resolve',
+        query: { title: 'Nirgendwo', includeArchived: true, limit: 10 },
+      },
+    ]);
+    expect(result.text).toBe('Keine Seite mit dem Titel "Nirgendwo".');
+  });
+
+  it('reports a single match without a path', async () => {
+    const { client, calls } = createFakeClient({
+      title: 'Ziel',
+      matches: [
+        {
+          id: 'doc123456',
+          workspaceId: 'ws1234567',
+          type: 'PAGE',
+          title: 'Ziel',
+          icon: null,
+          iconColor: null,
+          archivedAt: null,
+          path: [],
+        },
+      ],
+    });
+
+    const result = await pageResolveLinkTool.run(client, {
+      workspaceId: 'ws1234567',
+      title: 'Ziel',
+    });
+
+    expect((calls[0] as { query: unknown }).query).toEqual({
+      title: 'Ziel',
+      includeArchived: true,
+      limit: 10,
+    });
+    expect(result.text).toBe('Ziel (id: doc123456)');
+  });
+
+  it('reports every match with its path when the title is ambiguous', async () => {
+    const { client } = createFakeClient({
+      title: 'Doppelt',
+      matches: [
+        {
+          id: 'doc1111111',
+          workspaceId: 'ws1234567',
+          type: 'PAGE',
+          title: 'Doppelt',
+          icon: null,
+          iconColor: null,
+          archivedAt: null,
+          path: [{ id: 'parent1234', title: 'Elternseite' }],
+        },
+        {
+          id: 'doc2222222',
+          workspaceId: 'ws1234567',
+          type: 'PAGE',
+          title: 'Doppelt',
+          icon: null,
+          iconColor: null,
+          archivedAt: '2026-01-01T00:00:00.000Z',
+          path: [],
+        },
+      ],
+    });
+
+    const result = await pageResolveLinkTool.run(client, {
+      workspaceId: 'ws1234567',
+      title: 'Doppelt',
+    });
+
+    expect(result.text).toBe(
+      'Doppelt (id: doc1111111, Pfad: Elternseite)\nDoppelt (id: doc2222222, archiviert)',
+    );
   });
 });
 

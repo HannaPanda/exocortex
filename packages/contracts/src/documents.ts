@@ -137,6 +137,48 @@ export const documentTreeResponseSchema = z.object({
 });
 export type DocumentTreeResponse = z.infer<typeof documentTreeResponseSchema>;
 
+/**
+ * Resolves a `[[Titel]]` / `wiki:Titel` link to the document(s) with exactly
+ * that title. Deliberately not the fuzzy `/search` endpoint: following a link
+ * must be deterministic (exact title or nothing) and must not depend on the
+ * asynchronous search index having caught up with a page just created or
+ * renamed.
+ */
+export const resolveDocumentLinkRequestSchema = z.object({
+  title: documentTitleSchema,
+  /**
+   * An archived page is still a real target for a link (read-only view), so
+   * this defaults to `true` — defaulting to `false` would report a dead link
+   * for a page that in fact exists.
+   */
+  includeArchived: z
+    .union([z.boolean(), z.enum(['true', 'false'])])
+    .transform((value) => value === true || value === 'true')
+    .default(true),
+  limit: z.coerce.number().int().min(1).max(20).default(10),
+});
+export type ResolveDocumentLinkRequest = z.infer<typeof resolveDocumentLinkRequestSchema>;
+
+export const documentLinkMatchSchema = z.object({
+  id: idSchema,
+  workspaceId: idSchema,
+  type: documentTypeSchema,
+  title: z.string(),
+  icon: z.string().nullable(),
+  iconColor: z.enum(DOCUMENT_ICON_COLORS).nullable(),
+  archivedAt: isoDateTimeSchema.nullable(),
+  /** Ancestors from the root downwards. Only filled when there is more than one match. */
+  path: z.array(z.object({ id: idSchema, title: z.string() })),
+});
+export type DocumentLinkMatch = z.infer<typeof documentLinkMatchSchema>;
+
+export const resolveDocumentLinkResponseSchema = z.object({
+  /** The normalized title that was looked up. */
+  title: z.string(),
+  matches: z.array(documentLinkMatchSchema),
+});
+export type ResolveDocumentLinkResponse = z.infer<typeof resolveDocumentLinkResponseSchema>;
+
 export const documentDetailSchema = documentSummarySchema.extend({
   /** Access level the requesting user has for this document. */
   access: collaborationAccessSchema,

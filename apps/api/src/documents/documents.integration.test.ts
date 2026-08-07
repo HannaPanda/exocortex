@@ -811,3 +811,111 @@ describe('reaching an open editing session', () => {
     liveResult = { applied: false, clientsCount: 0, yjsUpdatedAt: null, reachable: true };
   });
 });
+
+describe('resolveLink', () => {
+  it('finds an exact title match regardless of case and surrounding whitespace', async () => {
+    const marker = Math.random().toString(36).slice(2);
+    const title = `Ziel ${marker}`;
+    const documentId = await createPage(title);
+
+    const result = await service.resolveLink(workspaceId, ownerId, {
+      title: `  ziel ${marker}  `,
+      includeArchived: true,
+      limit: 10,
+    });
+
+    expect(result.matches.map((match) => match.id)).toEqual([documentId]);
+  });
+
+  it('does not find a same-titled page in another workspace', async () => {
+    const marker = Math.random().toString(36).slice(2);
+    const title = `Nur hier ${marker}`;
+    await service.create({
+      workspaceId: otherWorkspaceId,
+      userId: ownerId,
+      request: { title, type: 'PAGE', parentId: null },
+      correlationId,
+    });
+
+    const result = await service.resolveLink(workspaceId, ownerId, {
+      title,
+      includeArchived: true,
+      limit: 10,
+    });
+
+    expect(result.matches).toEqual([]);
+  });
+
+  it('excludes an archived page unless asked for, then ranks it after active matches', async () => {
+    const marker = Math.random().toString(36).slice(2);
+    const title = `Zwilling ${marker}`;
+    const activeId = await createPage(title);
+    const archivedId = await createPage(title);
+    await service.archive({ documentId: archivedId, userId: ownerId, correlationId });
+
+    const withoutArchived = await service.resolveLink(workspaceId, ownerId, {
+      title,
+      includeArchived: false,
+      limit: 10,
+    });
+    expect(withoutArchived.matches.map((match) => match.id)).toEqual([activeId]);
+
+    const withArchived = await service.resolveLink(workspaceId, ownerId, {
+      title,
+      includeArchived: true,
+      limit: 10,
+    });
+    expect(withArchived.matches.map((match) => match.id)).toEqual([activeId, archivedId]);
+    expect(withArchived.matches.find((match) => match.id === archivedId)?.archivedAt).not.toBeNull();
+    expect(withArchived.matches.find((match) => match.id === activeId)?.archivedAt).toBeNull();
+  });
+
+  it('resolves two pages with the same title, each with its ancestor path root-first', async () => {
+    const marker = Math.random().toString(36).slice(2);
+    const title = `Doppelt ${marker}`;
+    const parentTitle = `Elternseite ${marker}`;
+    const parent = await createPage(parentTitle);
+    const child = await createPage(title, parent);
+    const rootSibling = await createPage(title);
+
+    const result = await service.resolveLink(workspaceId, ownerId, {
+      title,
+      includeArchived: true,
+      limit: 10,
+    });
+
+    expect(result.matches).toHaveLength(2);
+    const childMatch = result.matches.find((match) => match.id === child);
+    const rootMatch = result.matches.find((match) => match.id === rootSibling);
+    expect(childMatch?.path.map((entry) => entry.title)).toEqual([parentTitle]);
+    expect(rootMatch?.path).toEqual([]);
+  });
+
+  it('treats % and _ in a title as literal characters, not as SQL wildcards', async () => {
+    const marker = Math.random().toString(36).slice(2);
+    const title = `100%_Plan ${marker}`;
+    const documentId = await createPage(title);
+    // Would also match the search below if `%` and `_` were treated as ILIKE
+    // wildcards instead of literal characters — the reason resolveLink uses a
+    // raw equality comparison rather than Prisma's `mode: 'insensitive'`.
+    await createPage(`100XYQPlan ${marker}`);
+
+    const result = await service.resolveLink(workspaceId, ownerId, {
+      title,
+      includeArchived: true,
+      limit: 10,
+    });
+
+    expect(result.matches.map((match) => match.id)).toEqual([documentId]);
+  });
+
+  it('is not resolvable for a non-member', async () => {
+    await expect(
+      service.resolveLink(workspaceId, outsiderId, {
+        title: 'Irrelevant',
+        includeArchived: true,
+        limit: 10,
+      }),
+    ).rejects.toBeInstanceOf(AuthorizationError);
+  });
+});

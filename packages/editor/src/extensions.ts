@@ -1,4 +1,4 @@
-import { type Extensions } from '@tiptap/core';
+import { type Extensions, mergeAttributes } from '@tiptap/core';
 import { Blockquote } from '@tiptap/extension-blockquote';
 import { Bold } from '@tiptap/extension-bold';
 import { Code } from '@tiptap/extension-code';
@@ -65,6 +65,7 @@ import {
 } from './embed';
 import { INLINE_STYLING_EXTENSIONS, inlineStylingMarkdownAdapter } from './inline-styling';
 import { coreMarkdownAdapter } from './markdown/core-adapter';
+import { WIKI_LINK_SCHEME } from './markdown/serialize';
 import {
   MATHEMATICS_EXTENSIONS,
   mathematicsBlocks,
@@ -135,11 +136,30 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
       Italic,
       Strike,
       Code,
-      Link.configure({
+      Link.extend({
+        renderHTML({ HTMLAttributes }) {
+          const href = typeof HTMLAttributes.href === 'string' ? HTMLAttributes.href : '';
+          const internal =
+            href.toLowerCase().startsWith(WIKI_LINK_SCHEME) ||
+            href.startsWith('/') ||
+            href.startsWith('#');
+          return [
+            'a',
+            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
+              'data-link-kind': internal ? 'internal' : 'external',
+              // An internal link stays inside the application; a new tab would be wrong.
+              ...(internal ? { target: null, rel: null } : {}),
+            }),
+            0,
+          ];
+        },
+      }).configure({
         openOnClick: false,
         autolink: true,
         // Wiki links use the internal `wiki:` scheme, so it must be allowed.
         protocols: ['http', 'https', 'mailto', { scheme: 'wiki', optionalSlashes: true }],
+        // Stays correct for exported HTML and the non-editable state; the
+        // click handler in apps/web opens with `noopener` on its own anyway.
         HTMLAttributes: { rel: 'noopener noreferrer', target: '_blank' },
       }),
     ],

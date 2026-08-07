@@ -64,7 +64,7 @@ discipline completely, which the SDK does not guarantee out of the box.
 
 ## Tool reference
 
-All 29 tools are namespaced `exo_` so they cannot collide with the other MCP
+All 33 tools are namespaced `exo_` so they cannot collide with the other MCP
 servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 
 | Tool | Mutating | REST call |
@@ -84,6 +84,7 @@ servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 | `exo_page_set_layout` | yes | `PATCH /api/documents/:documentId` (layout: narrow/wide/full) |
 | `exo_page_set_cover` | yes | `PATCH /api/documents/:documentId` (coverAttachmentId/coverPosition) |
 | `exo_page_generate_cover` | yes | `POST /api/documents/:documentId/cover/generate` |
+| `exo_page_resolve_link` | no | `GET /api/workspaces/:workspaceId/documents/resolve?title=&includeArchived=&limit=` |
 | `exo_search` | no | `GET /api/workspaces/:workspaceId/search?q=&limit=&includeArchived=` |
 | `exo_database_create` | yes | `POST /api/workspaces/:workspaceId/documents` (`type: 'COLLECTION'`) + one `POST .../properties` per requested column |
 | `exo_database_schema` | no | `GET /api/documents/:documentId/properties` + `GET .../views` |

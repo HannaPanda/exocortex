@@ -17,11 +17,14 @@ import {
   DOCUMENT_ICON_COLORS,
   type DocumentDetail,
   type DocumentIconColor,
+  type DocumentLinkMatch,
   type DocumentSummary,
   type DocumentTreeNode,
   type DocumentTreeResponse,
   type MoveDocumentRequest,
   QUEUE_NAMES,
+  type ResolveDocumentLinkRequest,
+  type ResolveDocumentLinkResponse,
   type UpdateDocumentRequest,
 } from '@exocortex/contracts';
 import {
@@ -60,6 +63,17 @@ interface DocumentRow {
   updatedById: string;
   createdAt: Date;
   updatedAt: Date;
+  archivedAt: Date | null;
+}
+
+/** Row shape of the raw `resolveLink` query; a strict subset of `DocumentRow`. */
+interface ResolveLinkRow {
+  id: string;
+  workspaceId: string;
+  type: 'PAGE' | 'COLLECTION';
+  title: string;
+  icon: string | null;
+  iconColor: string | null;
   archivedAt: Date | null;
 }
 
@@ -143,6 +157,22 @@ export function toSummary(row: DocumentRow): DocumentSummary {
   };
 }
 
+function toLinkMatch(
+  row: ResolveLinkRow,
+  path: { id: string; title: string }[],
+): DocumentLinkMatch {
+  return {
+    id: row.id,
+    workspaceId: row.workspaceId,
+    type: row.type,
+    title: row.title,
+    icon: row.icon,
+    iconColor: toIconColor(row.iconColor),
+    archivedAt: row.archivedAt === null ? null : row.archivedAt.toISOString(),
+    path,
+  };
+}
+
 /**
  * Document domain service.
  *
@@ -192,6 +222,58 @@ export class DocumentsService {
         toNode(entry as unknown as { node: DocumentRow; children: { node: DocumentRow; children: unknown[] }[] }),
       ),
       archived: archived.map(toSummary),
+    };
+  }
+
+  /**
+   * Resolves a `[[Titel]]` / `wiki:Titel` link to the document(s) with exactly
+   * that title, workspace-scoped.
+   *
+   * Raw SQL, not `findMany({ title: { equals, mode: 'insensitive' } })`: Prisma
+   * translates `insensitive` to `ILIKE` without escaping `%`/`_` in the value,
+   * so a page titled e.g. "100%_Plan" would match unrelated titles. `lower` +
+   * `regexp_replace` on both sides keeps the comparison exact and predictable.
+   */
+  async resolveLink(
+    workspaceId: string,
+    userId: string,
+    request: ResolveDocumentLinkRequest,
+  ): Promise<ResolveDocumentLinkResponse> {
+    await this.access.requireRole(workspaceId, userId);
+
+    const title = request.title.trim().replace(/\s+/g, ' ');
+
+    const rows = await this.prisma.$queryRaw<ResolveLinkRow[]>`
+      SELECT "id", "workspaceId", "type", "title", "icon", "iconColor", "archivedAt"
+      FROM "document"
+      WHERE "workspaceId" = ${workspaceId}
+        AND lower(btrim(regexp_replace("title", '\\s+', ' ', 'g'))) = lower(${title})
+        AND (${request.includeArchived}::boolean OR "archivedAt" IS NULL)
+      ORDER BY ("archivedAt" IS NOT NULL) ASC, "updatedAt" DESC, "id" ASC
+      LIMIT ${request.limit}
+    `;
+
+    if (rows.length <= 1) {
+      return { title, matches: rows.map((row) => toLinkMatch(row, [])) };
+    }
+
+    // Only worth the extra query when the caller actually has to disambiguate.
+    const siblings = await this.prisma.document.findMany({
+      where: { workspaceId },
+      select: { id: true, parentId: true, orderKey: true, title: true },
+    });
+
+    return {
+      title,
+      matches: rows.map((row) =>
+        toLinkMatch(
+          row,
+          collectAncestors(siblings, row.id).map((ancestor) => ({
+            id: ancestor.id,
+            title: ancestor.title,
+          })),
+        ),
+      ),
     };
   }
 

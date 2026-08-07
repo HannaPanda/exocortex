@@ -13,6 +13,7 @@ export * from './embed';
 export * from './extensions';
 export * from './fixtures';
 export * from './inline-styling';
+export * from './link-target';
 export * from './markdown';
 export * from './mathematics';
 export * from './media';
