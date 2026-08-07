@@ -80,6 +80,17 @@ export interface MediaDocumentMetadata {
   ocrUsed: boolean | null;
 }
 
+/**
+ * Records that a person edited the extracted text by hand (issue #2).
+ *
+ * Metadata only, no text: this rides along on every `read()`, so the meta bar
+ * can show "von Hand korrigiert" without pulling the correction itself.
+ */
+export interface MediaDocumentCorrection {
+  editedAt: string;
+  editedById: string;
+}
+
 export interface MediaDocumentInfo {
   status: 'not_applicable' | 'pending' | 'ready' | 'failed';
   metadata: MediaDocumentMetadata | null;
@@ -104,6 +115,22 @@ export interface MediaDocumentInfo {
    * that shows nothing and offers nothing.
    */
   extractable: boolean;
+  /** Present once a person has corrected the extracted text; absent otherwise. */
+  correction: MediaDocumentCorrection | null;
+  /** True when the extracted text was cut off at the server's character cap. */
+  truncated: boolean;
+}
+
+/**
+ * `MediaDocumentInfo` plus the two fields that can be 400,000 characters long
+ * (issue #2). Loaded only when a reader actually asks to see the text, through
+ * `MediaInfoResolver.readText`, never as part of the render-time `read`.
+ */
+export interface MediaDocumentDetail extends MediaDocumentInfo {
+  /** The version to show and to edit: the correction if there is one. */
+  text: string | null;
+  /** The raw machine result, regardless of whether a correction exists. */
+  machineText: string | null;
 }
 
 /**
@@ -124,6 +151,23 @@ export interface MediaInfoResolver {
   read(src: string): Promise<MediaDocumentInfo | null>;
   /** Asks for an extraction to (re-)run. Absent when the reader may not. */
   request?(src: string): Promise<MediaDocumentInfo | null>;
+  /**
+   * Loads the full text for the "Ansehen" dialog (issue #2). Absent when the
+   * reader may not view it -- which never happens today, but keeps the same
+   * "absent means not offered" shape as `request`.
+   */
+  readText?(src: string): Promise<MediaDocumentDetail | null>;
+  /**
+   * Forces a fresh extraction even though the current one is already `ready`
+   * (issue #2). Distinct from `request`, which never re-runs a `ready` one.
+   * Absent when the reader may not.
+   */
+  forceReextract?(src: string): Promise<MediaDocumentInfo | null>;
+  /**
+   * Writes a human correction of the extracted text, or with `text: null`
+   * clears one (issue #2). Absent when the reader may not edit.
+   */
+  correctText?(src: string, text: string | null): Promise<MediaDocumentDetail | null>;
 }
 
 export interface MediaNodeOptions {
@@ -345,13 +389,30 @@ function describeDocument(metadata: MediaDocumentMetadata | null): string[] {
 /**
  * `not_applicable` only ever reaches this point for a file that *could* be
  * read, because the silent case returns earlier: it means nobody has asked yet.
+ *
+ * `ready` used to be `null`, i.e. silent: a successfully read PDF said nothing
+ * at all, which left no visible way to get to the text (issue #2). Saying so
+ * is also what gives the "Ansehen" action somewhere to sit.
  */
 const STATUS_NOTES: Record<MediaDocumentInfo['status'], string | null> = {
   not_applicable: 'Noch nicht ausgelesen',
   pending: 'Text wird ausgelesen …',
-  ready: null,
+  ready: 'Text gelesen',
   failed: 'Kein Text lesbar',
 };
+
+/**
+ * Independent of `status`: a correction can exist on a `failed` or even a
+ * `not_applicable` attachment (a person can describe a scan by hand when
+ * automatic extraction is switched off), and a truncation is a fact about the
+ * last successful read, not about the current one.
+ */
+function describeCorrectionAndTruncation(info: MediaDocumentInfo): string[] {
+  const chips: string[] = [];
+  if (info.correction !== null) chips.push('Von Hand korrigiert');
+  if (info.truncated) chips.push('Gekürzt');
+  return chips;
+}
 
 /**
  * How long to wait before asking again while an extraction runs.
@@ -410,6 +471,7 @@ function attachDocumentDetails(
   let cancelled = false;
   let timer: ReturnType<typeof setTimeout> | null = null;
   let polls = 0;
+  let dialog: TextDialogController | null = null;
 
   const render = (info: MediaDocumentInfo | null): void => {
     if (cancelled) return;
@@ -442,32 +504,81 @@ function attachDocumentDetails(
       bar.append(noteChip);
     }
 
+    for (const chip of describeCorrectionAndTruncation(info)) bar.append(buildChip(chip));
+
     // Both offer the same action, but they are not the same situation: one
     // failed, the other was never asked.
-    const action =
+    const retryAction =
       info.status === 'failed'
-        ? buildAction('Erneut versuchen')
+        ? buildActionButton('Erneut versuchen', 'exocortex-media-retry', resolver.request)
         : info.status === 'not_applicable'
-          ? buildAction('Text auslesen')
+          ? buildActionButton('Text auslesen', 'exocortex-media-retry', resolver.request)
           : null;
-    if (action !== null) bar.append(action);
+    if (retryAction !== null) bar.append(retryAction);
+
+    // Separate from the retry above: `request` never re-runs a `ready`
+    // attachment, so a successful-but-wrong extraction needed its own explicit
+    // "no, really, again" (issue #2).
+    const forceAction =
+      info.status === 'ready'
+        ? buildActionButton('Erneut auslesen', 'exocortex-media-force', resolver.forceReextract)
+        : null;
+    if (forceAction !== null) bar.append(forceAction);
+
+    // Offered whenever there is something to show: a completed or failed
+    // extraction, or a correction written by hand while automatic extraction
+    // stayed `not_applicable` (issue #2).
+    const canView = info.status !== 'not_applicable' || info.correction !== null;
+    if (canView && resolver.readText !== undefined) bar.append(buildViewButton());
+
     bar.hidden = bar.childElementCount === 0;
 
     // Keep watching only while something is actually running.
     if (info.status === 'pending') schedulePoll();
   };
 
-  /** Null when the reader may not start an extraction. */
-  const buildAction = (label: string): HTMLElement | null => {
-    if (resolver.request === undefined) return null;
+  // Arrow function expressions, not declarations: they are defined textually
+  // after the early `resolver === null` return above, which is what lets
+  // TypeScript's control-flow analysis carry the "resolver is not null"
+  // narrowing into them. A hoisted `function` declaration here would not get it.
+  /** Null when the reader may not perform `run` at all. */
+  const buildActionButton = (
+    label: string,
+    className: string,
+    run: ((src: string) => Promise<MediaDocumentInfo | null>) | undefined,
+  ): HTMLElement | null => {
+    if (run === undefined) return null;
     const button = window.document.createElement('button');
     button.type = 'button';
-    button.className = 'exocortex-media-retry';
+    button.className = className;
     button.textContent = label;
     button.addEventListener('click', () => {
       polls = 0;
       button.disabled = true;
-      void resolver.request?.(src).then(render, () => render(null));
+      void run(src).then(render, () => render(null));
+    });
+    return button;
+  };
+
+  const buildViewButton = (): HTMLElement => {
+    const button = window.document.createElement('button');
+    button.type = 'button';
+    button.className = 'exocortex-media-view';
+    button.textContent = 'Ansehen';
+    button.addEventListener('click', () => {
+      if (resolver.readText === undefined) return;
+      button.disabled = true;
+      void resolver.readText(src).then(
+        (detail) => {
+          button.disabled = false;
+          if (detail === null) return;
+          dialog ??= createTextDialog(resolver, src, name.length > 0 ? name : src, render);
+          dialog.open(detail);
+        },
+        () => {
+          button.disabled = false;
+        },
+      );
     });
     return button;
   };
@@ -487,8 +598,139 @@ function attachDocumentDetails(
     cancel: () => {
       cancelled = true;
       if (timer !== null) clearTimeout(timer);
+      dialog?.dispose();
     },
   };
+}
+
+interface TextDialogController {
+  open: (detail: MediaDocumentDetail) => void;
+  dispose: () => void;
+}
+
+/**
+ * The "Ansehen" dialog: shows the extracted text and, when the resolver
+ * allows it, lets a person correct it or discard an existing correction
+ * (issue #2).
+ *
+ * Built lazily, once per block, the first time "Ansehen" is clicked, and
+ * removed from `document.body` again when the node view is destroyed. A
+ * native `<dialog>` rather than a hand-rolled overlay: `showModal()` gives it
+ * a11y-correct focus trapping and Escape-to-close for free, which this
+ * package -- a Tiptap leaf with no UI framework of its own -- would otherwise
+ * have to rebuild from scratch.
+ */
+function createTextDialog(
+  resolver: MediaInfoResolver,
+  src: string,
+  fallbackTitle: string,
+  onChange: (info: MediaDocumentInfo) => void,
+): TextDialogController {
+  const dialog = window.document.createElement('dialog');
+  dialog.className = 'exocortex-media-text-dialog';
+
+  const heading = window.document.createElement('h2');
+  heading.className = 'exocortex-media-text-dialog-title';
+  const notice = window.document.createElement('p');
+  notice.className = 'exocortex-media-text-dialog-notice';
+  notice.hidden = true;
+  const textarea = window.document.createElement('textarea');
+  textarea.className = 'exocortex-media-text-dialog-textarea';
+  const errorLine = window.document.createElement('p');
+  errorLine.className = 'exocortex-media-text-dialog-error';
+  errorLine.hidden = true;
+
+  const discardButton = window.document.createElement('button');
+  discardButton.type = 'button';
+  discardButton.className = 'exocortex-media-text-dialog-discard';
+  discardButton.textContent = 'Korrektur verwerfen';
+  discardButton.hidden = true;
+
+  const saveButton = window.document.createElement('button');
+  saveButton.type = 'button';
+  saveButton.className = 'exocortex-media-text-dialog-save';
+  saveButton.textContent = 'Speichern';
+  saveButton.hidden = resolver.correctText === undefined;
+
+  const closeButton = window.document.createElement('button');
+  closeButton.type = 'button';
+  closeButton.className = 'exocortex-media-text-dialog-close';
+  closeButton.textContent = 'Schließen';
+  closeButton.addEventListener('click', () => closeDialog(dialog));
+
+  const actions = window.document.createElement('div');
+  actions.className = 'exocortex-media-text-dialog-actions';
+  actions.append(discardButton, saveButton, closeButton);
+
+  dialog.append(heading, notice, textarea, errorLine, actions);
+  window.document.body.append(dialog);
+
+  function renderDetail(detail: MediaDocumentDetail): void {
+    heading.textContent = detail.filename ?? fallbackTitle;
+    textarea.value = detail.text ?? '';
+    textarea.readOnly = resolver.correctText === undefined;
+
+    const notices: string[] = [];
+    if (detail.correction !== null) {
+      const day = formatDay(detail.correction.editedAt);
+      notices.push(day === null ? 'Von Hand korrigiert.' : `Von Hand korrigiert am ${day}.`);
+    }
+    if (detail.truncated) {
+      notices.push('Der ausgelesene Text wurde gekürzt und ist nicht vollständig.');
+    }
+    if (detail.error !== null) notices.push(`Fehler bei der letzten Auslesung: ${detail.error}`);
+    notice.textContent = notices.join(' ');
+    notice.hidden = notices.length === 0;
+
+    discardButton.hidden = detail.correction === null || resolver.correctText === undefined;
+    errorLine.hidden = true;
+  }
+
+  function runCorrection(text: string | null, button: HTMLButtonElement): void {
+    if (resolver.correctText === undefined) return;
+    button.disabled = true;
+    errorLine.hidden = true;
+    void resolver.correctText(src, text).then(
+      (detail) => {
+        button.disabled = false;
+        if (detail === null) return;
+        renderDetail(detail);
+        onChange(detail);
+      },
+      () => {
+        button.disabled = false;
+        errorLine.textContent = 'Das hat nicht geklappt. Bitte erneut versuchen.';
+        errorLine.hidden = false;
+      },
+    );
+  }
+
+  saveButton.addEventListener('click', () => runCorrection(textarea.value, saveButton));
+  discardButton.addEventListener('click', () => runCorrection(null, discardButton));
+
+  return {
+    open: (detail) => {
+      renderDetail(detail);
+      openDialog(dialog);
+    },
+    dispose: () => dialog.remove(),
+  };
+}
+
+/**
+ * `showModal`/`close` give correct focus trapping and Escape-to-close in
+ * every real browser, but are unimplemented in the jsdom environment the unit
+ * tests run under, so both fall back to toggling the `open` attribute
+ * directly rather than throwing.
+ */
+function openDialog(dialog: HTMLDialogElement): void {
+  if (typeof dialog.showModal === 'function') dialog.showModal();
+  else dialog.setAttribute('open', '');
+}
+
+function closeDialog(dialog: HTMLDialogElement): void {
+  if (typeof dialog.close === 'function') dialog.close();
+  else dialog.removeAttribute('open');
 }
 
 /** Live DOM for the node view. */

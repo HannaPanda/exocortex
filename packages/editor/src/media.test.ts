@@ -3,7 +3,11 @@ import { Editor } from '@tiptap/core';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { buildEditorExtensions } from './extensions';
-import { type MediaDocumentInfo, type MediaInfoResolver } from './media';
+import {
+  type MediaDocumentDetail,
+  type MediaDocumentInfo,
+  type MediaInfoResolver,
+} from './media';
 
 let editor: Editor | null = null;
 
@@ -83,6 +87,8 @@ describe('media block details', () => {
     error: null,
     filename: 'Kontoauszug-Q3.pdf',
     extractable: true,
+    correction: null,
+    truncated: false,
   };
 
   /** Lets an assertion run after the resolver's promise has settled. */
@@ -116,6 +122,7 @@ describe('media block details', () => {
       '2 Tabellen',
       '01.04.2026',
       'per Texterkennung gelesen',
+      'Text gelesen',
     ]);
   });
 
@@ -128,7 +135,15 @@ describe('media block details', () => {
 
   it('stays quiet about a file that has no text layer to begin with', async () => {
     const container = await insertPdfWith({
-      read: async () => ({ status: 'not_applicable', metadata: null, error: null, filename: 'notiz.txt', extractable: false }),
+      read: async () => ({
+        status: 'not_applicable',
+        metadata: null,
+        error: null,
+        filename: 'notiz.txt',
+        extractable: false,
+        correction: null,
+        truncated: false,
+      }),
     });
 
     // Every image, video and zip file answers this way. A line saying "no text"
@@ -147,10 +162,20 @@ describe('media block details', () => {
         error: 'No extractable text layer',
         filename: 'Scan.pdf',
         extractable: true,
+        correction: null,
+        truncated: false,
       }),
       request: async () => {
         requested += 1;
-        return { status: 'pending', metadata: null, error: null, filename: 'Scan.pdf', extractable: true };
+        return {
+          status: 'pending',
+          metadata: null,
+          error: null,
+          filename: 'Scan.pdf',
+          extractable: true,
+          correction: null,
+          truncated: false,
+        };
       },
     });
 
@@ -177,6 +202,8 @@ describe('media block details', () => {
         error: null,
         filename: 'Altbestand.pdf',
         extractable: true,
+        correction: null,
+        truncated: false,
       }),
       request: async () => {
         requested += 1;
@@ -186,6 +213,8 @@ describe('media block details', () => {
           error: null,
           filename: 'Altbestand.pdf',
           extractable: true,
+          correction: null,
+          truncated: false,
         };
       },
     });
@@ -215,6 +244,7 @@ describe('media block details', () => {
       '2 Tabellen',
       '01.04.2026',
       'per Texterkennung gelesen',
+      'Text gelesen',
     ]);
   });
 
@@ -250,9 +280,158 @@ describe('media block details', () => {
         error: null,
         filename: 'Scan.pdf',
         extractable: true,
+        correction: null,
+        truncated: false,
       }),
     });
 
     expect(container.querySelector('.exocortex-media-retry')).toBeNull();
+  });
+
+  it('offers no "Erneut auslesen" or "Ansehen" action when the resolver does not provide them', async () => {
+    const container = await insertPdfWith({ read: async () => READY });
+
+    expect(container.querySelector('.exocortex-media-force')).toBeNull();
+    expect(container.querySelector('.exocortex-media-view')).toBeNull();
+  });
+
+  it('shows a chip for a hand-made correction and for a truncated read', async () => {
+    const container = await insertPdfWith({
+      read: async () => ({
+        ...READY,
+        correction: { editedAt: '2026-05-02T00:00:00.000Z', editedById: 'user1' },
+        truncated: true,
+      }),
+    });
+
+    expect(chipsOf(container)).toEqual([
+      'Quartalsbericht Q3',
+      'Johanna Panda',
+      '3 Seiten',
+      '2 Tabellen',
+      '01.04.2026',
+      'per Texterkennung gelesen',
+      'Text gelesen',
+      'Von Hand korrigiert',
+      'Gekürzt',
+    ]);
+  });
+
+  it('offers to force a re-extraction of an already-ready attachment', async () => {
+    let forced = 0;
+    const container = await insertPdfWith({
+      read: async () => READY,
+      forceReextract: async () => {
+        forced += 1;
+        return { ...READY, status: 'pending', metadata: null };
+      },
+    });
+
+    const force = container.querySelector('.exocortex-media-force');
+    if (!(force instanceof window.HTMLButtonElement)) throw new Error('no force button');
+    expect(force.textContent).toBe('Erneut auslesen');
+    force.click();
+    expect(forced).toBe(1);
+  });
+
+  it('offers no "Erneut auslesen" once a re-extraction has been requested for a failed attachment', async () => {
+    // The ready-only force action and the failed/not_applicable retry action
+    // are deliberately distinct: `forceReextract` never applies here.
+    const container = await insertPdfWith({
+      read: async () => ({
+        status: 'failed',
+        metadata: null,
+        error: 'No extractable text layer',
+        filename: 'Scan.pdf',
+        extractable: true,
+        correction: null,
+        truncated: false,
+      }),
+      forceReextract: async () => null,
+    });
+
+    expect(container.querySelector('.exocortex-media-force')).toBeNull();
+  });
+
+  describe('viewing and correcting the text', () => {
+    const detail: MediaDocumentDetail = {
+      ...READY,
+      text: 'der ausgelesene Text',
+      machineText: 'der ausgelesene Text',
+    };
+
+    it('opens a dialog with the full text on "Ansehen"', async () => {
+      const container = await insertPdfWith({
+        read: async () => READY,
+        readText: async () => detail,
+      });
+
+      const view = container.querySelector('.exocortex-media-view');
+      if (!(view instanceof window.HTMLButtonElement)) throw new Error('no view button');
+      view.click();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      const dialog = window.document.querySelector('.exocortex-media-text-dialog');
+      if (!(dialog instanceof window.HTMLDialogElement)) throw new Error('no dialog');
+      expect(dialog.open).toBe(true);
+      const textarea = dialog.querySelector('.exocortex-media-text-dialog-textarea');
+      if (!(textarea instanceof window.HTMLTextAreaElement)) throw new Error('no textarea');
+      expect(textarea.value).toBe('der ausgelesene Text');
+    });
+
+    it('lets a correction be saved and reflects it in the meta bar without waiting for a poll', async () => {
+      let saved: string | null = null;
+      const container = await insertPdfWith({
+        read: async () => READY,
+        readText: async () => detail,
+        correctText: async (_src, text) => {
+          saved = text;
+          return {
+            ...detail,
+            text: text ?? detail.machineText,
+            correction: { editedAt: '2026-05-02T00:00:00.000Z', editedById: 'user1' },
+          };
+        },
+      });
+
+      const view = container.querySelector('.exocortex-media-view');
+      if (!(view instanceof window.HTMLButtonElement)) throw new Error('no view button');
+      view.click();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      const dialog = window.document.querySelector('.exocortex-media-text-dialog');
+      const textarea = dialog?.querySelector('.exocortex-media-text-dialog-textarea');
+      if (!(textarea instanceof window.HTMLTextAreaElement)) throw new Error('no textarea');
+      textarea.value = 'die korrigierte Fassung';
+
+      const save = dialog?.querySelector('.exocortex-media-text-dialog-save');
+      if (!(save instanceof window.HTMLButtonElement)) throw new Error('no save button');
+      save.click();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(saved).toBe('die korrigierte Fassung');
+      expect(chipsOf(container)).toContain('Von Hand korrigiert');
+    });
+
+    it('offers no editing when the resolver cannot write a correction', async () => {
+      const container = await insertPdfWith({
+        read: async () => READY,
+        readText: async () => detail,
+      });
+
+      const view = container.querySelector('.exocortex-media-view');
+      if (!(view instanceof window.HTMLButtonElement)) throw new Error('no view button');
+      view.click();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      const dialog = window.document.querySelector('.exocortex-media-text-dialog');
+      expect(dialog?.querySelector('.exocortex-media-text-dialog-save')).toHaveProperty(
+        'hidden',
+        true,
+      );
+      const textarea = dialog?.querySelector('.exocortex-media-text-dialog-textarea');
+      expect(textarea).toHaveProperty('readOnly', true);
+      dialog?.querySelector<HTMLButtonElement>('.exocortex-media-text-dialog-close')?.click();
+    });
   });
 });

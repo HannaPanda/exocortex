@@ -409,7 +409,11 @@
     @apply text-destructive-text;
   }
 
-  .exocortex-editor .exocortex-media-retry {
+  /* Retry (failed/never read), force re-extraction (ready but wrong) and
+     "Ansehen" (issue #2) all read as the same kind of small text action. */
+  .exocortex-editor .exocortex-media-retry,
+  .exocortex-editor .exocortex-media-force,
+  .exocortex-editor .exocortex-media-view {
     @apply cursor-pointer rounded-sm px-1.5 py-0.5 text-muted-foreground underline hover:text-foreground disabled:cursor-default disabled:no-underline;
   }
 
@@ -419,6 +423,53 @@
 
   .exocortex-editor .exocortex-media-fileAttachment a:hover {
     @apply bg-accent text-accent-foreground;
+  }
+
+  /* The "Ansehen" dialog (issue #2): what an extraction actually read, viewable
+   * and, where the resolver allows it, correctable. Appended to `<body>` by
+   * `createTextDialog` in `media.ts` rather than into the editor DOM, so these
+   * rules are deliberately not scoped under `.exocortex-editor`. A native
+   * `<dialog>` rather than a hand-rolled overlay: `showModal()` gives it
+   * a11y-correct focus trapping and Escape-to-close for free.
+   */
+  .exocortex-media-text-dialog {
+    @apply w-[min(42rem,calc(100vw-2rem))] max-w-none rounded-lg border border-border bg-popover p-6 text-popover-foreground shadow-xl;
+  }
+
+  .exocortex-media-text-dialog::backdrop {
+    @apply bg-overlay;
+  }
+
+  .exocortex-media-text-dialog-title {
+    @apply mb-2 truncate text-base font-semibold;
+  }
+
+  .exocortex-media-text-dialog-notice {
+    @apply mb-3 text-sm text-muted-foreground;
+  }
+
+  .exocortex-media-text-dialog-textarea {
+    @apply block h-[60vh] w-full resize-y rounded-md border border-input bg-background p-3 font-mono text-sm text-foreground;
+  }
+
+  .exocortex-media-text-dialog-error {
+    @apply mt-2 text-sm text-destructive-text;
+  }
+
+  .exocortex-media-text-dialog-actions {
+    @apply mt-4 flex justify-end gap-2;
+  }
+
+  .exocortex-media-text-dialog-save {
+    @apply rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50;
+  }
+
+  .exocortex-media-text-dialog-discard {
+    @apply rounded-md border border-border px-3 py-1.5 text-sm text-foreground hover:bg-accent hover:text-accent-foreground disabled:opacity-50;
+  }
+
+  .exocortex-media-text-dialog-close {
+    @apply rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground;
   }
 
   /* Database embed: a live view (Table/Board/Gallery/Calendar), not a static
