@@ -201,6 +201,7 @@ export interface DatabaseQueryRowRecord {
   type: 'PAGE' | 'COLLECTION';
   title: string;
   icon: string | null;
+  iconColor: string | null;
   layout: 'NARROW' | 'WIDE' | 'FULL';
   coverAttachmentId: string | null;
   coverPosition: number;
@@ -239,7 +240,7 @@ export async function queryDatabaseRows(
   return prisma.$queryRaw<DatabaseQueryRowRecord[]>(Prisma.sql`
     SELECT
       document.id, document."workspaceId", document."parentId", document."type"::text AS "type",
-      document.title, document.icon, document."layout"::text AS "layout",
+      document.title, document.icon, document."iconColor", document."layout"::text AS "layout",
       document."coverAttachmentId", document."coverPosition",
       document."orderKey", document."createdById", document."updatedById",
       document."createdAt", document."updatedAt", document."archivedAt"

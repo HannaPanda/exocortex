@@ -3,9 +3,9 @@
 import {
   ArchiveIcon,
   ChevronRightIcon,
-  FileTextIcon,
   PlusIcon,
   RotateCcwIcon,
+  SmilePlusIcon,
   TableIcon,
   Trash2Icon,
 } from 'lucide-react';
@@ -32,11 +32,14 @@ import {
   ScrollArea,
 } from '@exocortex/ui';
 
+import { DocumentIcon } from '@/components/document/document-icon';
+import { PageIconPicker } from '@/components/document/page-icon-picker';
 import {
   useArchiveDocument,
   useCreateDocument,
   useDocumentTree,
   useRestoreDocument,
+  useUpdateDocument,
 } from '@/lib/api/queries';
 
 interface PageTreeProps {
@@ -57,8 +60,13 @@ export function PageTree({ workspaceId }: PageTreeProps) {
   const createDocument = useCreateDocument(workspaceId);
   const archiveDocument = useArchiveDocument(workspaceId);
   const restoreDocument = useRestoreDocument(workspaceId);
+  const updateDocument = useUpdateDocument(workspaceId);
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
   const [showTrash, setShowTrash] = React.useState(false);
+  // Which row's icon picker is open. One id rather than one flag per row,
+  // because two of them can never be open at the same time, and because the
+  // context menu has to be able to open the picker of the row it belongs to.
+  const [iconPickerFor, setIconPickerFor] = React.useState<string | null>(null);
 
   const activeDocumentId = params.documentId;
 
@@ -118,23 +126,43 @@ export function PageTree({ workspaceId }: PageTreeProps) {
                   <ChevronRightIcon className="size-3.5" />
                 </button>
 
+                {/* The symbol is its own button and sits outside the link: it is
+                    the shortest way to change it, and inside the link every
+                    click on it would navigate instead. */}
+                <PageIconPicker
+                  icon={node.icon}
+                  iconColor={node.iconColor}
+                  type={node.type}
+                  open={iconPickerFor === node.id}
+                  onOpenChange={(next) => setIconPickerFor(next ? node.id : null)}
+                  onSelect={(selection) => {
+                    void updateDocument.mutateAsync({ documentId: node.id, request: selection });
+                  }}
+                  trigger={
+                    <button
+                      type="button"
+                      aria-label={`Symbol von „${node.title}“ ändern`}
+                      data-testid={`tree-icon-${node.id}`}
+                      className="grid size-5 shrink-0 place-items-center rounded hover:bg-accent-strong"
+                    >
+                      <DocumentIcon
+                        icon={node.icon}
+                        iconColor={node.iconColor}
+                        type={node.type}
+                        className={cn(
+                          'size-3.5 text-xs',
+                          isActive ? 'text-primary-text' : 'text-muted-foreground',
+                        )}
+                      />
+                    </button>
+                  }
+                />
+
                 <Link
                   href={`/arbeitsbereich/${workspaceId}/seite/${node.id}`}
-                  className="flex min-w-0 flex-1 items-center gap-1.5 py-1"
+                  className="flex min-w-0 flex-1 items-center py-1"
                   data-testid={`tree-link-${node.id}`}
                 >
-                  <span aria-hidden className="w-4 shrink-0 text-center text-xs">
-                    {node.icon ??
-                      (node.type === 'COLLECTION' ? (
-                        <TableIcon
-                          className={cn('size-3.5', isActive ? 'text-primary-text' : 'text-muted-foreground')}
-                        />
-                      ) : (
-                        <FileTextIcon
-                          className={cn('size-3.5', isActive ? 'text-primary-text' : 'text-muted-foreground')}
-                        />
-                      ))}
-                  </span>
                   <span className="truncate">{node.title}</span>
                 </Link>
 
@@ -150,6 +178,13 @@ export function PageTree({ workspaceId }: PageTreeProps) {
             }
           />
           <ContextMenuContent>
+            <ContextMenuItem
+              data-testid={`tree-change-icon-${node.id}`}
+              onClick={() => setIconPickerFor(node.id)}
+            >
+              <SmilePlusIcon /> Symbol ändern …
+            </ContextMenuItem>
+            <ContextMenuSeparator />
             <ContextMenuItem onClick={() => void createChild(node.id)}>
               <PlusIcon /> Unterseite anlegen
             </ContextMenuItem>

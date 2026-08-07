@@ -14,7 +14,9 @@ import {
 import {
   type AiRuleListResponse,
   type CreateDocumentRequest,
+  DOCUMENT_ICON_COLORS,
   type DocumentDetail,
+  type DocumentIconColor,
   type DocumentSummary,
   type DocumentTreeNode,
   type DocumentTreeResponse,
@@ -48,6 +50,8 @@ interface DocumentRow {
   type: 'PAGE' | 'COLLECTION';
   title: string;
   icon: string | null;
+  /** Validated by the contract, so the column is a plain string here. */
+  iconColor: string | null;
   layout: 'NARROW' | 'WIDE' | 'FULL';
   coverAttachmentId: string | null;
   coverPosition: number;
@@ -67,6 +71,7 @@ export const DOCUMENT_SELECT = {
   type: true,
   title: true,
   icon: true,
+  iconColor: true,
   layout: true,
   coverAttachmentId: true,
   coverPosition: true,
@@ -102,6 +107,21 @@ const LAYOUT_TO_DB = {
   full: 'FULL',
 } as const;
 
+/**
+ * Narrows the free-text colour column to the palette.
+ *
+ * The column is deliberately not an enum (adding a colour should not cost a
+ * migration), so a value from an older palette can survive in a row. Reading it
+ * back as "no colour" renders the icon exactly the way every icon rendered
+ * before the field existed, which is the harmless outcome.
+ */
+export function toIconColor(value: string | null): DocumentIconColor | null {
+  if (value === null) return null;
+  return (DOCUMENT_ICON_COLORS as readonly string[]).includes(value)
+    ? (value as DocumentIconColor)
+    : null;
+}
+
 export function toSummary(row: DocumentRow): DocumentSummary {
   return {
     id: row.id,
@@ -110,6 +130,7 @@ export function toSummary(row: DocumentRow): DocumentSummary {
     type: row.type,
     title: row.title,
     icon: row.icon,
+    iconColor: toIconColor(row.iconColor),
     layout: LAYOUT_TO_CONTRACT[row.layout],
     coverAttachmentId: row.coverAttachmentId,
     coverPosition: row.coverPosition,
@@ -189,7 +210,14 @@ export class DocumentsService {
       }),
       this.prisma.document.findMany({
         where: { workspaceId: context.workspaceId },
-        select: { id: true, parentId: true, orderKey: true, title: true, icon: true },
+        select: {
+          id: true,
+          parentId: true,
+          orderKey: true,
+          title: true,
+          icon: true,
+          iconColor: true,
+        },
       }),
     ]);
 
@@ -202,6 +230,7 @@ export class DocumentsService {
         id: entry.id,
         title: entry.title,
         icon: entry.icon,
+        iconColor: toIconColor(entry.iconColor),
       })),
       materializedAt: content?.materializedAt?.toISOString() ?? null,
       schemaVersion: content?.schemaVersion ?? EXOCORTEX_SCHEMA_VERSION,
@@ -249,6 +278,7 @@ export class DocumentsService {
           type: input.request.type,
           title: input.request.title,
           icon: input.request.icon ?? null,
+          iconColor: input.request.iconColor ?? null,
           // A database is unusable in the reading measure, so it defaults to
           // the full width while a page defaults to the measure.
           layout:
@@ -333,6 +363,7 @@ export class DocumentsService {
       data: {
         ...(input.request.title === undefined ? {} : { title: input.request.title }),
         ...(input.request.icon === undefined ? {} : { icon: input.request.icon }),
+        ...(input.request.iconColor === undefined ? {} : { iconColor: input.request.iconColor }),
         ...(input.request.layout === undefined
           ? {}
           : { layout: LAYOUT_TO_DB[input.request.layout] }),

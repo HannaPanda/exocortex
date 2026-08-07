@@ -5,6 +5,7 @@ import * as React from 'react';
 import {
   type AiRuleMode,
   type DocumentDetail,
+  type DocumentIconColor,
   type DocumentLayout,
 } from '@exocortex/contracts';
 import {
@@ -27,6 +28,9 @@ import {
 
 import { useSetAiRule } from '@/lib/api/ai-queries';
 import { useUpdateDocument } from '@/lib/api/queries';
+
+import { DocumentIcon } from './document-icon';
+import { PageIconPicker } from './page-icon-picker';
 
 const AI_RULE_MODE_LABELS: Record<AiRuleMode, string> = {
   off: 'Keine Regel',
@@ -70,7 +74,8 @@ export function PagePropertiesDialog({
   const setAiRule = useSetAiRule();
 
   const [title, setTitle] = React.useState(detail.title);
-  const [icon, setIcon] = React.useState(detail.icon ?? '');
+  const [icon, setIcon] = React.useState<string | null>(detail.icon);
+  const [iconColor, setIconColor] = React.useState<DocumentIconColor | null>(detail.iconColor);
   const [layout, setLayout] = React.useState<DocumentLayout>(detail.layout);
   const [mode, setMode] = React.useState<AiRuleMode>(detail.aiRuleMode);
   const [trigger, setTrigger] = React.useState(detail.aiRuleTrigger ?? '');
@@ -84,7 +89,8 @@ export function PagePropertiesDialog({
     setWasOpen(open);
     if (open) {
       setTitle(detail.title);
-      setIcon(detail.icon ?? '');
+      setIcon(detail.icon);
+      setIconColor(detail.iconColor);
       setLayout(detail.layout);
       setMode(detail.aiRuleMode);
       setTrigger(detail.aiRuleTrigger ?? '');
@@ -100,10 +106,10 @@ export function PagePropertiesDialog({
   const save = async (): Promise<void> => {
     if (triggerInvalid || titleInvalid) return;
 
-    const nextIcon = icon.trim().length === 0 ? null : icon.trim();
     const presentation = {
       ...(trimmedTitle === detail.title ? {} : { title: trimmedTitle }),
-      ...(nextIcon === detail.icon ? {} : { icon: nextIcon }),
+      ...(icon === detail.icon ? {} : { icon }),
+      ...(iconColor === detail.iconColor ? {} : { iconColor }),
       ...(layout === detail.layout ? {} : { layout }),
     };
     if (Object.keys(presentation).length > 0) {
@@ -139,15 +145,37 @@ export function PagePropertiesDialog({
 
         <div className="flex flex-col gap-4 overflow-y-auto">
           <div className="flex gap-2">
-            <div className="flex w-20 flex-col gap-1.5">
-              <Label htmlFor="page-icon">Symbol</Label>
-              <Input
-                id="page-icon"
-                value={icon}
-                readOnly={readOnly}
-                placeholder="📄"
-                maxLength={32}
-                onChange={(event) => setIcon(event.target.value)}
+            <div className="flex flex-col gap-1.5">
+              <Label>Symbol</Label>
+              {/* The dialog only edits the draft; nothing is written until
+                  "Speichern", the same as the title next to it. */}
+              <PageIconPicker
+                icon={icon}
+                iconColor={iconColor}
+                type={detail.type}
+                onSelect={(selection) => {
+                  setIcon(selection.icon);
+                  setIconColor(selection.iconColor);
+                }}
+                trigger={
+                  <button
+                    type="button"
+                    disabled={readOnly}
+                    aria-label="Symbol wählen"
+                    data-testid="page-properties-icon"
+                    className={cn(
+                      'grid size-9 place-items-center rounded-md border border-border transition-colors',
+                      'hover:border-border-strong disabled:opacity-50',
+                    )}
+                  >
+                    <DocumentIcon
+                      icon={icon}
+                      iconColor={iconColor}
+                      type={detail.type}
+                      className="size-5 text-lg text-muted-foreground"
+                    />
+                  </button>
+                }
               />
             </div>
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">

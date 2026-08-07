@@ -266,7 +266,15 @@ model Document {
   children    Document[]   @relation("DocumentHierarchy")
   type        DocumentType @default(PAGE)
   title       String
+  /// Either a literal character (an emoji) or `lucide:<name>` from the curated
+  /// set in `@exocortex/contracts`. One field for both, because a page has one
+  /// symbol; see `DOCUMENT_ICON_NAMES`.
   icon        String?
+  /// Colour of a drawn `lucide:` icon, one of `DOCUMENT_ICON_COLORS`. Left as a
+  /// plain string rather than an enum so adding a palette entry does not need a
+  /// database migration; the contract validates it. `null` inherits the
+  /// surrounding text colour, and an emoji ignores it.
+  iconColor   String?
   /// Body width of the page. See `DocumentLayout`.
   layout      DocumentLayout @default(NARROW)
 

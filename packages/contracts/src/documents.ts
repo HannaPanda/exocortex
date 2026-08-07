@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import {
   collaborationAccessSchema,
+  DOCUMENT_ICON_COLORS,
+  documentIconColorSchema,
   documentIconSchema,
   documentTitleSchema,
   documentTypeSchema,
@@ -22,6 +24,7 @@ export const createDocumentRequestSchema = z.object({
   parentId: idSchema.nullable().optional(),
   type: documentTypeSchema.default('PAGE'),
   icon: documentIconSchema,
+  iconColor: documentIconColorSchema,
   /**
    * Omitted means the server picks the default for the type: `full` for a
    * database, `narrow` for a page.
@@ -67,6 +70,7 @@ export type GenerateDocumentCoverResponse = z.infer<typeof generateDocumentCover
 const updateDocumentFieldsSchema = z.object({
   title: documentTitleSchema.optional(),
   icon: documentIconSchema,
+  iconColor: documentIconColorSchema,
   layout: documentLayoutSchema.optional(),
   /** An image attachment of the same workspace, or `null` to remove the cover. */
   coverAttachmentId: idSchema.nullable().optional(),
@@ -79,6 +83,7 @@ export const updateDocumentRequestSchema = updateDocumentFieldsSchema.refine(
   (value) =>
     value.title !== undefined ||
     value.icon !== undefined ||
+    value.iconColor !== undefined ||
     value.layout !== undefined ||
     value.coverAttachmentId !== undefined ||
     value.coverPosition !== undefined ||
@@ -103,6 +108,7 @@ export const documentSummarySchema = z.object({
   type: documentTypeSchema,
   title: z.string(),
   icon: z.string().nullable(),
+  iconColor: z.enum(DOCUMENT_ICON_COLORS).nullable(),
   layout: documentLayoutSchema,
   coverAttachmentId: idSchema.nullable(),
   coverPosition: coverPositionSchema,
@@ -134,7 +140,14 @@ export type DocumentTreeResponse = z.infer<typeof documentTreeResponseSchema>;
 export const documentDetailSchema = documentSummarySchema.extend({
   /** Access level the requesting user has for this document. */
   access: collaborationAccessSchema,
-  breadcrumb: z.array(z.object({ id: idSchema, title: z.string(), icon: z.string().nullable() })),
+  breadcrumb: z.array(
+    z.object({
+      id: idSchema,
+      title: z.string(),
+      icon: z.string().nullable(),
+      iconColor: z.enum(DOCUMENT_ICON_COLORS).nullable(),
+    }),
+  ),
   materializedAt: isoDateTimeSchema.nullable(),
   schemaVersion: z.number().int().nonnegative(),
   aiRuleMode: aiRuleModeSchema,

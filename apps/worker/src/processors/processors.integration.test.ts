@@ -517,6 +517,7 @@ describe('cover generation', () => {
           type: 'PAGE',
           title: 'Seite',
           icon: null,
+          iconColor: null,
           layout: 'narrow',
           coverAttachmentId: 'att1234567',
           coverPosition: 50,

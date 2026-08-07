@@ -7,6 +7,7 @@ import {
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import {
+  DOCUMENT_ICON_COLORS,
   type DocumentSummary,
   type MarkdownExportResponse,
   type MarkdownImportRequest,
@@ -67,6 +68,7 @@ export class DocumentMarkdownService {
         select: {
           title: true,
           icon: true,
+          iconColor: true,
           type: true,
           coverAttachmentId: true,
           coverPosition: true,
@@ -89,6 +91,9 @@ export class DocumentMarkdownService {
       frontmatter: {
         title: document.title,
         icon: document.icon,
+        // Only meaningful next to a drawn icon, so it travels with one or not
+        // at all, the same way the cover crop travels with the cover.
+        iconColor: document.icon === null ? undefined : document.iconColor,
         // The cover is page metadata, not a block, so it travels in the
         // frontmatter (ADR-007). The crop only means something with an image
         // to crop, so it is written alongside it or not at all.
@@ -150,6 +155,13 @@ export class DocumentMarkdownService {
 
     const title = input.request.title ?? imported.title ?? 'Importierte Seite';
     const icon = typeof imported.frontmatter.icon === 'string' ? imported.frontmatter.icon : null;
+    // An unknown colour is dropped rather than stored: the field is free text in
+    // the database, and only the palette renders.
+    const iconColor =
+      typeof imported.frontmatter.iconColor === 'string' &&
+      (DOCUMENT_ICON_COLORS as readonly string[]).includes(imported.frontmatter.iconColor)
+        ? imported.frontmatter.iconColor
+        : null;
     const cover = await this.resolveImportedCover(imported.frontmatter, input.workspaceId);
 
     const lastSibling = await this.prisma.document.findFirst({
@@ -166,6 +178,7 @@ export class DocumentMarkdownService {
           type: 'PAGE',
           title,
           icon,
+          iconColor,
           ...cover,
           orderKey: generateOrderKey(lastSibling?.orderKey ?? null, null),
           createdById: input.userId,

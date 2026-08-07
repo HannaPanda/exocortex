@@ -7,7 +7,11 @@ import {
   databaseViewSchema,
   updateDatabaseViewRequestSchema,
 } from './database-views';
-import { createDocumentRequestSchema, moveDocumentRequestSchema } from './documents';
+import {
+  createDocumentRequestSchema,
+  moveDocumentRequestSchema,
+  updateDocumentRequestSchema,
+} from './documents';
 import { API_ERROR_CODES,API_ERROR_STATUS } from './errors';
 import { applicationEventSchema, workspaceRoom } from './events';
 import { JOB_SCHEMAS, QUEUE_NAMES } from './jobs';
@@ -27,6 +31,40 @@ describe('document contracts', () => {
   it('requires an explicit parentId on move (null means root)', () => {
     expect(() => moveDocumentRequestSchema.parse({})).toThrow();
     expect(moveDocumentRequestSchema.parse({ parentId: null }).parentId).toBeNull();
+  });
+});
+
+describe('page icons', () => {
+  it('takes an emoji as the character it is', () => {
+    expect(updateDocumentRequestSchema.parse({ icon: '🧠' }).icon).toBe('🧠');
+  });
+
+  it('takes a drawn icon from the curated set', () => {
+    expect(updateDocumentRequestSchema.parse({ icon: 'lucide:folder' }).icon).toBe('lucide:folder');
+  });
+
+  // Without this, an unknown name would leave the page with an icon that renders
+  // as nothing — and the MCP tools write this field too.
+  it('rejects a drawn icon that is not in the set', () => {
+    expect(() => updateDocumentRequestSchema.parse({ icon: 'lucide:banana' })).toThrow();
+  });
+
+  it('rejects an icon that is empty after trimming', () => {
+    expect(() => updateDocumentRequestSchema.parse({ icon: '  ' })).toThrow();
+  });
+
+  it('takes null to clear the icon', () => {
+    expect(updateDocumentRequestSchema.parse({ icon: null }).icon).toBeNull();
+  });
+
+  it('accepts a colour from the palette and rejects anything else', () => {
+    expect(updateDocumentRequestSchema.parse({ iconColor: 'blue' }).iconColor).toBe('blue');
+    expect(() => updateDocumentRequestSchema.parse({ iconColor: 'chartreuse' })).toThrow();
+  });
+
+  it('counts a colour on its own as a change worth sending', () => {
+    expect(() => updateDocumentRequestSchema.parse({})).toThrow();
+    expect(updateDocumentRequestSchema.parse({ iconColor: null }).iconColor).toBeNull();
   });
 });
 

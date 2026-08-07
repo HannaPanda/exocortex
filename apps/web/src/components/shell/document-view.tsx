@@ -33,7 +33,9 @@ import {
 } from '@exocortex/ui';
 
 import { DatabaseShell } from '@/components/database/database-shell';
+import { DocumentIcon } from '@/components/document/document-icon';
 import { PageCover, PageCoverAddButton } from '@/components/document/page-cover';
+import { PageIconAddButton, PageIconButton } from '@/components/document/page-icon-picker';
 import { PagePropertiesDialog } from '@/components/document/page-properties-dialog';
 import { CollaborativeEditor } from '@/components/editor/collaborative-editor';
 import {
@@ -120,9 +122,23 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
         readOnly={readOnly}
       />
     );
-  const addCover =
-    detail.coverAttachmentId !== null || readOnly ? null : (
-      <PageCoverAddButton workspaceId={workspaceId} documentId={documentId} className="-ml-3 mb-1" />
+  // One row for everything a bare page can be given, so an empty page carries a
+  // single line of controls instead of one line per decoration.
+  const decorations =
+    readOnly || (detail.icon !== null && detail.coverAttachmentId !== null) ? null : (
+      <div className="-ml-3 mb-1 flex flex-wrap items-center">
+        {detail.icon === null ? (
+          <PageIconAddButton workspaceId={workspaceId} document={detail} />
+        ) : null}
+        {detail.coverAttachmentId === null ? (
+          <PageCoverAddButton workspaceId={workspaceId} documentId={documentId} />
+        ) : null}
+      </div>
+    );
+
+  const pageIcon =
+    detail.icon === null ? null : (
+      <PageIconButton workspaceId={workspaceId} document={detail} readOnly={readOnly} />
     );
 
   const downloadMarkdown = async (): Promise<void> => {
@@ -153,10 +169,20 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
             <React.Fragment key={entry.id}>
               <Link
                 href={`/arbeitsbereich/${workspaceId}/seite/${entry.id}`}
-                className="max-w-32 truncate hover:text-foreground"
+                className="flex max-w-32 items-center gap-1 truncate hover:text-foreground"
               >
-                {entry.icon !== null ? `${entry.icon} ` : ''}
-                {entry.title}
+                {/* Only a chosen symbol, never the default one: a path is a line
+                    of text, and a file icon in front of every step would say
+                    nothing the path does not already say. */}
+                {entry.icon === null ? null : (
+                  <DocumentIcon
+                    icon={entry.icon}
+                    iconColor={entry.iconColor}
+                    type="PAGE"
+                    className="size-3.5 text-xs"
+                  />
+                )}
+                <span className="truncate">{entry.title}</span>
               </Link>
               <span aria-hidden>/</span>
             </React.Fragment>
@@ -249,7 +275,8 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
             )}
             data-layout={detail.layout}
           >
-            {addCover}
+            {decorations}
+            {pageIcon}
             <DocumentTitleInput
               key={`${detail.id}:${detail.title}`}
               initialTitle={detail.title}
@@ -275,7 +302,8 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
             className={cn('exocortex-page px-6 pb-8', cover === null ? 'pt-8' : 'pt-5')}
             data-layout={detail.layout}
           >
-            {addCover}
+            {decorations}
+            {pageIcon}
             <DocumentTitleInput
               // Remounting on document change resets the field without an effect.
               key={`${detail.id}:${detail.title}`}

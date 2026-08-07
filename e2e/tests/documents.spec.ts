@@ -125,6 +125,45 @@ test.describe('documents', () => {
     await expect(page.getByTestId('add-cover')).toBeAttached();
   });
 
+  test('gives a page a coloured symbol, an emoji, and takes it away again', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const documentId = await createPage(page, `Symbol ${Date.now().toString(36)}`);
+
+    const treeIcon = page.getByTestId(`tree-icon-${documentId}`).locator('[data-icon]');
+
+    // A page without a symbol shows the default one for its type, and offers the
+    // button that gives it one.
+    await expect(treeIcon).toHaveAttribute('data-icon', 'default');
+    await page.getByTestId('add-page-icon').click();
+
+    // The colour is picked first, then the symbol it applies to.
+    await page.getByTestId('page-icon-color-blue').click();
+    await page.getByTestId('page-icon-brain').click();
+
+    await expect(page.getByTestId('page-icon-button')).toBeVisible();
+    await expect(treeIcon).toHaveAttribute('data-icon', 'lucide:brain');
+    await expect(treeIcon).toHaveClass(/text-content-blue/);
+
+    // It survives a reload, so it was stored and not just drawn.
+    await page.reload();
+    await expect(treeIcon).toHaveAttribute('data-icon', 'lucide:brain');
+    await expect(treeIcon).toHaveClass(/text-content-blue/);
+
+    // An emoji replaces it and takes the colour with it: it brings its own.
+    await page.getByTestId('page-icon-button').click();
+    await page.getByTestId('page-icon-tab-emoji').click();
+    await page.getByTestId('page-icon-emoji-🚀').click();
+    await expect(treeIcon).toHaveAttribute('data-icon', '🚀');
+    await expect(treeIcon).not.toHaveClass(/text-content-blue/);
+
+    // And the tree's own symbol opens the same picker, which can clear it.
+    await page.getByTestId(`tree-icon-${documentId}`).click();
+    await page.getByTestId('page-icon-remove').click();
+    await expect(treeIcon).toHaveAttribute('data-icon', 'default');
+    await expect(page.getByTestId('add-page-icon')).toBeAttached();
+  });
+
   test('keeps sidebar and context panel toggles working', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });

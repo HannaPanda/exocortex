@@ -1,6 +1,11 @@
 import { z } from 'zod';
 
-import { documentTypeSchema, idSchema, isoDateTimeSchema } from './primitives';
+import {
+  DOCUMENT_ICON_COLORS,
+  documentTypeSchema,
+  idSchema,
+  isoDateTimeSchema,
+} from './primitives';
 
 export const searchRequestSchema = z.object({
   q: z.string().trim().min(1).max(200),
@@ -17,6 +22,7 @@ export const searchResultSchema = z.object({
   workspaceId: idSchema,
   title: z.string(),
   icon: z.string().nullable(),
+  iconColor: z.enum(DOCUMENT_ICON_COLORS).nullable(),
   type: documentTypeSchema,
   /** Highlighted snippet from the materialized plain text. */
   snippet: z.string(),

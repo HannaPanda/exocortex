@@ -252,6 +252,66 @@ describe('document creation', () => {
   });
 });
 
+describe('page icons', () => {
+  it('keeps the drawn icon and its colour, and hands both back everywhere', async () => {
+    const parentId = await createPage('Technik');
+    const childId = await createPage('Server', parentId);
+
+    await service.update({
+      documentId: parentId,
+      userId: ownerId,
+      request: { icon: 'lucide:folder', iconColor: 'blue' },
+      correlationId,
+    });
+
+    const detail = await service.getDetail(childId, ownerId);
+    expect(detail.breadcrumb.at(-1)).toMatchObject({
+      id: parentId,
+      icon: 'lucide:folder',
+      iconColor: 'blue',
+    });
+
+    const tree = await service.getTree(workspaceId, ownerId);
+    const node = tree.nodes.find((entry) => entry.id === parentId);
+    expect(node).toMatchObject({ icon: 'lucide:folder', iconColor: 'blue' });
+  });
+
+  it('clears the colour on its own, without touching the icon', async () => {
+    const documentId = await createPage('Nur Farbe weg');
+    await service.update({
+      documentId,
+      userId: ownerId,
+      request: { icon: 'lucide:star', iconColor: 'red' },
+      correlationId,
+    });
+
+    const updated = await service.update({
+      documentId,
+      userId: ownerId,
+      request: { iconColor: null },
+      correlationId,
+    });
+
+    expect(updated.icon).toBe('lucide:star');
+    expect(updated.iconColor).toBeNull();
+  });
+
+  // The column is free text so the palette can grow without a migration. A value
+  // that is not in it must read back as "no colour" rather than reach a client
+  // that only knows the palette.
+  it('reports a colour outside the palette as no colour', async () => {
+    const documentId = await createPage('Alte Farbe');
+    await prisma.document.update({
+      where: { id: documentId },
+      data: { icon: 'lucide:star', iconColor: 'chartreuse' },
+    });
+
+    const detail = await service.getDetail(documentId, ownerId);
+    expect(detail.icon).toBe('lucide:star');
+    expect(detail.iconColor).toBeNull();
+  });
+});
+
 describe('page covers', () => {
   async function createAttachment(input: {
     workspace: string;

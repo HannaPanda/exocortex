@@ -39,7 +39,158 @@ export type Pagination = z.infer<typeof paginationSchema>;
  * enforced everywhere.
  */
 export const documentTitleSchema = z.string().trim().min(1).max(300);
-export const documentIconSchema = z.string().trim().max(32).nullable().optional();
+
+/**
+ * Prefix that marks a page icon as a *name* from the curated set below rather
+ * than a literal character.
+ *
+ * One field carries both kinds of icon because they are one decision: a page has
+ * exactly one symbol, and a second column would only ever hold the half of that
+ * decision the first one did not. `📁` is stored verbatim, the drawn folder as
+ * `lucide:folder`.
+ */
+export const DOCUMENT_ICON_NAME_PREFIX = 'lucide:';
+
+/**
+ * The drawable page icons.
+ *
+ * Curated rather than all ~1,600 Lucide icons, for the same reason the emoji
+ * picker is curated: a dataset that large in a product whose personality is
+ * speed is a bad trade (PRODUCT.md). Names are Lucide's own kebab-case ones, so
+ * `apps/web` can map them to components without a translation table.
+ *
+ * Only these names validate. An unknown one would leave the page with an icon
+ * that renders as nothing, and the MCP tools write this field too.
+ */
+export const DOCUMENT_ICON_NAMES = [
+  // Filing
+  'file-text',
+  'files',
+  'folder',
+  'folder-open',
+  'folder-tree',
+  'book-open',
+  'notebook-pen',
+  'sticky-note',
+  'bookmark',
+  'archive',
+  'inbox',
+  'paperclip',
+  // Marking
+  'star',
+  'heart',
+  'flag',
+  'pin',
+  'sparkles',
+  'flame',
+  'zap',
+  'target',
+  'trophy',
+  'bell',
+  'circle-check',
+  'triangle-alert',
+  // Work
+  'briefcase',
+  'calendar',
+  'clock',
+  'timer',
+  'list-checks',
+  'clipboard-list',
+  'chart-bar',
+  'chart-line',
+  'trending-up',
+  'users',
+  'mail',
+  'message-circle',
+  // Engineering
+  'code',
+  'terminal',
+  'database',
+  'server',
+  'cpu',
+  'git-branch',
+  'bug',
+  'wrench',
+  'settings',
+  'lock',
+  'key',
+  'shield',
+  'network',
+  'package',
+  // Knowledge
+  'brain',
+  'lightbulb',
+  'graduation-cap',
+  'microscope',
+  'palette',
+  'pen-tool',
+  'globe',
+  'map',
+  'compass',
+  'newspaper',
+  // Life
+  'house',
+  'map-pin',
+  'plane',
+  'car',
+  'coffee',
+  'utensils',
+  'dumbbell',
+  'leaf',
+  'mountain',
+  'sun',
+  'moon',
+  'gift',
+] as const;
+export type DocumentIconName = (typeof DOCUMENT_ICON_NAMES)[number];
+
+/**
+ * A page icon: either a literal character (an emoji) or `lucide:<name>`.
+ *
+ * `null` clears it and returns the page to the default icon for its type.
+ */
+export const documentIconSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(32)
+  .refine(
+    (value) =>
+      !value.startsWith(DOCUMENT_ICON_NAME_PREFIX) ||
+      (DOCUMENT_ICON_NAMES as readonly string[]).includes(
+        value.slice(DOCUMENT_ICON_NAME_PREFIX.length),
+      ),
+    { message: 'Unknown icon name' },
+  )
+  .nullable()
+  .optional();
+
+/**
+ * Colour of a drawn page icon.
+ *
+ * The same nine names as the editor's content colours (`TEXT_COLOR_NAMES` in
+ * `@exocortex/editor`), because the product has one palette and both render
+ * through the `--content-*` tokens. They are repeated rather than imported:
+ * contracts is a leaf package and depends on nothing.
+ *
+ * `null` means the icon inherits the surrounding text colour, which is what the
+ * default icons have always done. An emoji brings its own colours, so the field
+ * only takes effect on a `lucide:` icon.
+ */
+export const DOCUMENT_ICON_COLORS = [
+  'gray',
+  'brown',
+  'orange',
+  'yellow',
+  'green',
+  'blue',
+  'purple',
+  'pink',
+  'red',
+] as const;
+export type DocumentIconColor = (typeof DOCUMENT_ICON_COLORS)[number];
+
+export const documentIconColorSchema = z.enum(DOCUMENT_ICON_COLORS).nullable().optional();
 
 /** Fractional index used for sibling ordering (see packages/database/order-key). */
 export const orderKeySchema = z

@@ -40,6 +40,7 @@ interface SearchRow {
   workspaceId: string;
   title: string;
   icon: string | null;
+  iconColor: SearchResult['iconColor'];
   type: 'PAGE' | 'COLLECTION';
   snippet: string;
   rank: number;
@@ -89,6 +90,7 @@ export class PostgresSearchAdapter implements SearchAdapter {
         index."workspaceId"                                            AS "workspaceId",
         document."title"                                               AS "title",
         document."icon"                                                AS "icon",
+        document."iconColor"                                           AS "iconColor",
         document."type"                                                AS "type",
         CASE
           WHEN ${tsQuery} = '' THEN left(index."plainText", 200)
@@ -126,6 +128,7 @@ export class PostgresSearchAdapter implements SearchAdapter {
       workspaceId: row.workspaceId,
       title: row.title,
       icon: row.icon,
+      iconColor: row.iconColor,
       type: row.type,
       snippet: row.snippet.replace(/\s+/g, ' ').trim(),
       rank: Number(row.rank),

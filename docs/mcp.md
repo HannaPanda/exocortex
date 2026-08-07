@@ -74,7 +74,7 @@ servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 | `exo_page_read` | no | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars) |
 | `exo_page_create` | yes | `POST /api/workspaces/:workspaceId/import/markdown` when `markdown` is given, else `POST /api/workspaces/:workspaceId/documents` |
 | `exo_page_write` | yes | `POST /api/documents/:documentId/content` |
-| `exo_page_rename` | yes | `PATCH /api/documents/:documentId` (title, icon) |
+| `exo_page_rename` | yes | `PATCH /api/documents/:documentId` (title, icon, iconColor) |
 | `exo_page_move` | yes | `POST /api/documents/:documentId/move` |
 | `exo_page_archive` | yes | `POST /api/documents/:documentId/archive` |
 | `exo_page_restore` | yes | `POST /api/documents/:documentId/restore` |

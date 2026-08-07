@@ -1,11 +1,12 @@
 'use client';
 
-import { FileTextIcon, PlusIcon } from 'lucide-react';
+import { PlusIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
 import { type CommandItem,CommandPalette } from '@exocortex/ui';
 
+import { DocumentIcon } from '@/components/document/document-icon';
 import { useCreateDocument, useSearch } from '@/lib/api/queries';
 
 export interface SearchCommandProps {
@@ -50,7 +51,14 @@ export function SearchCommand({ workspaceId, open, onOpenChange }: SearchCommand
       group: 'Seiten',
       label: result.title,
       hint: result.snippet.replace(/<\/?mark>/g, '').slice(0, 60),
-      icon: <FileTextIcon className="size-4 text-muted-foreground" />,
+      icon: (
+        <DocumentIcon
+          icon={result.icon}
+          iconColor={result.iconColor}
+          type={result.type}
+          className="text-muted-foreground"
+        />
+      ),
       onSelect: () => {
         onOpenChange(false);
         router.push(`/arbeitsbereich/${result.workspaceId}/seite/${result.documentId}`);

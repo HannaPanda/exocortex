@@ -3,8 +3,11 @@ import { z } from 'zod';
 import {
   aiRuleModeSchema,
   coverPositionSchema,
+  DOCUMENT_ICON_COLORS,
+  DOCUMENT_ICON_NAMES,
   documentContentWriteRequestSchema,
   documentContentWriteResponseSchema,
+  documentIconColorSchema,
   documentIconSchema,
   documentLayoutSchema,
   documentSnapshotListResponseSchema,
@@ -26,6 +29,21 @@ import { restoreSnapshotResultSchema } from '../local-schemas.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
 const MAX_PAGE_READ_CHARS = 60_000;
+
+/**
+ * Built from the contract rather than written out, so a name added to the
+ * curated set reaches the model in the same commit that adds it. Without the
+ * list a caller can only guess, and every guess outside the set is rejected.
+ */
+const ICON_DESCRIPTION =
+  'Symbol der Seite: entweder ein Emoji als Zeichen ("🧠") oder ein gezeichnetes Symbol ' +
+  `als "lucide:<name>". Erlaubte Namen: ${DOCUMENT_ICON_NAMES.join(', ')}. ` +
+  'null entfernt das Symbol.';
+
+const ICON_COLOR_DESCRIPTION =
+  `Farbe eines gezeichneten Symbols: ${DOCUMENT_ICON_COLORS.join(', ')}. ` +
+  'Wirkt nur auf "lucide:"-Symbole, ein Emoji bringt seine eigenen Farben mit. ' +
+  'null bedeutet die Standardfarbe.';
 
 function formatDocumentSummary(document: DocumentSummary): string {
   return `${document.title} (id: ${document.id}, type: ${document.type})`;
@@ -69,7 +87,8 @@ const pageCreateInputSchema = z.object({
   title: documentTitleSchema.optional(),
   parentId: idSchema.nullable().optional(),
   type: documentTypeSchema.default('PAGE'),
-  icon: documentIconSchema,
+  icon: documentIconSchema.describe(ICON_DESCRIPTION),
+  iconColor: documentIconColorSchema.describe(ICON_COLOR_DESCRIPTION),
   /** When given, the page is created from Markdown via the import path. */
   markdown: z.string().min(1).max(2_000_000).optional(),
 });
@@ -107,6 +126,7 @@ export const pageCreateTool: AnyToolDefinition = defineTool({
         parentId: input.parentId,
         type: input.type,
         icon: input.icon,
+        iconColor: input.iconColor,
       },
       responseSchema: documentSummarySchema,
     });
@@ -150,12 +170,13 @@ export const pageWriteTool: AnyToolDefinition = defineTool({
 const pageRenameInputSchema = z.object({
   documentId: idSchema,
   title: documentTitleSchema.optional(),
-  icon: documentIconSchema,
+  icon: documentIconSchema.describe(ICON_DESCRIPTION),
+  iconColor: documentIconColorSchema.describe(ICON_COLOR_DESCRIPTION),
 });
 
 export const pageRenameTool: AnyToolDefinition = defineTool({
   name: 'exo_page_rename',
-  description: 'Benennt eine Seite um und/oder ändert ihr Icon.',
+  description: 'Benennt eine Seite um und/oder ändert ihr Symbol und dessen Farbe.',
   inputSchema: pageRenameInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,

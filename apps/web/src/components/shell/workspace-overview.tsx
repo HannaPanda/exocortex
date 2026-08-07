@@ -6,6 +6,7 @@ import * as React from 'react';
 
 import { Button, Card, CardContent, EmptyState, LoadingState } from '@exocortex/ui';
 
+import { DocumentIcon } from '@/components/document/document-icon';
 import { useCreateDocument, useDocumentTree } from '@/lib/api/queries';
 
 /** Landing view of a workspace: recent pages and the entry point to create one. */
@@ -49,9 +50,12 @@ export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
             <li key={document.id}>
               <Card className="transition-colors hover:border-border-strong">
                 <CardContent className="flex items-center gap-2 py-3">
-                  <span aria-hidden className="text-base">
-                    {document.icon ?? '📄'}
-                  </span>
+                  <DocumentIcon
+                    icon={document.icon}
+                    iconColor={document.iconColor}
+                    type={document.type}
+                    className="size-5 text-base text-muted-foreground"
+                  />
                   <button
                     type="button"
                     className="min-w-0 flex-1 truncate text-left text-sm"
