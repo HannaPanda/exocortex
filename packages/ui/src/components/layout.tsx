@@ -49,6 +49,35 @@ export function AppMain({ className, ...props }: React.ComponentPropsWithoutRef<
   );
 }
 
+export interface AppPageProps extends React.ComponentPropsWithoutRef<'div'> {
+  /**
+   * Tailwind max-width utility for the centered column, e.g. `'max-w-3xl'`.
+   * Passed as a literal so the Tailwind scanner (`@source` in globals.css)
+   * picks it up at the call site.
+   */
+  maxWidth: string;
+}
+
+/**
+ * A non-editor page's own scroll container: centered, padded, and — this is
+ * the part that is easy to forget — able to actually scroll.
+ *
+ * `AppShell`/`AppMain` clip on purpose (`overflow-hidden`) so the editor can
+ * run several independent scroll regions without fighting over one scrollbar.
+ * That means every other page must bring its own scroll area, and `min-h-0`
+ * is required alongside `flex-1 overflow-y-auto`: without it a flex child
+ * never shrinks below its content height, so the `overflow-y-auto` never
+ * actually engages (see docs/ui-system.md and issue #15).
+ */
+export function AppPage({ maxWidth, className, ...props }: AppPageProps) {
+  return (
+    <div
+      className={cn('mx-auto min-h-0 w-full flex-1 overflow-y-auto px-6 py-8', maxWidth, className)}
+      {...props}
+    />
+  );
+}
+
 export interface ResizablePanelProps extends React.ComponentPropsWithoutRef<'div'> {
   /** Current width in pixels. */
   width: number;

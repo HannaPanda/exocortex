@@ -7,6 +7,7 @@ import { type ApiToken, type CreateApiTokenResponse } from '@exocortex/contracts
 import {
   Alert,
   AlertDescription,
+  AppPage,
   Badge,
   Button,
   Dialog,
@@ -94,7 +95,7 @@ export function ApiTokenPanel() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-8">
+    <AppPage maxWidth="max-w-3xl" className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">API-Token</h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -264,6 +265,6 @@ export function ApiTokenPanel() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </AppPage>
   );
 }

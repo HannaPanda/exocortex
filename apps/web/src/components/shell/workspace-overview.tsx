@@ -4,7 +4,7 @@ import { FileTextIcon, PlusIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
-import { Button, Card, CardContent, EmptyState, LoadingState } from '@exocortex/ui';
+import { AppPage, Button, Card, CardContent, EmptyState, LoadingState } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { useCreateDocument, useDocumentTree } from '@/lib/api/queries';
@@ -20,7 +20,7 @@ export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
   const flat = (tree.data?.nodes ?? []).flatMap((node) => [node, ...node.children]);
 
   return (
-    <div className="mx-auto w-full max-w-3xl overflow-y-auto p-6">
+    <AppPage maxWidth="max-w-3xl">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-lg font-semibold">Übersicht</h1>
         <Button
@@ -71,6 +71,6 @@ export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
           ))}
         </ul>
       )}
-    </div>
+    </AppPage>
   );
 }

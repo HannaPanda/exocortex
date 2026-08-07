@@ -138,7 +138,7 @@ owns the code and nothing is fetched at runtime.
 | `src/styles.css` | Tailwind theme mapping, base layer, focus and scrollbar styles |
 | `src/components/ui/*` | installed and adapted shadcn components |
 | `src/components/ui/toolbar.tsx` | custom primitive: `role="toolbar"` with a roving tabindex, on Base UI |
-| `src/components/layout.tsx` | `AppShell`, `AppHeader`, `AppBody`, `AppMain`, `ResizablePanel`, `SkipToContentLink` |
+| `src/components/layout.tsx` | `AppShell`, `AppHeader`, `AppBody`, `AppMain`, `AppPage`, `ResizablePanel`, `SkipToContentLink` |
 | `src/components/states.tsx` | `LoadingState`, `EmptyState`, `ErrorState` |
 | `src/components/logo.tsx` | **LOGO PLACEHOLDER** — `ExocortexLogo`, `ExocortexWordmark` |
 | `src/lib/utils.ts` | `cn()` |
