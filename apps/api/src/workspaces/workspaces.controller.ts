@@ -7,6 +7,8 @@ import {
   createWorkspaceRequestSchema,
   type UpdateWorkspaceMemberRequest,
   updateWorkspaceMemberRequestSchema,
+  type UpdateWorkspaceRequest,
+  updateWorkspaceRequestSchema,
   type Workspace,
   type WorkspaceDetail,
   workspaceDetailSchema,
@@ -52,6 +54,22 @@ export class WorkspacesController {
     @Param('workspaceId') workspaceId: string,
   ): Promise<WorkspaceDetail> {
     return this.workspaces.getDetail(workspaceId, session.userId);
+  }
+
+  @Patch(':workspaceId')
+  @ApiBody({ schema: openApiSchema(updateWorkspaceRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(workspaceSchema) })
+  async update(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+    @Body(zodPipe(updateWorkspaceRequestSchema)) body: UpdateWorkspaceRequest,
+  ): Promise<Workspace> {
+    return this.workspaces.update({
+      workspaceId,
+      actorUserId: session.userId,
+      request: body,
+      correlationId: currentCorrelationId(),
+    });
   }
 
   @Patch(':workspaceId/members/:userId')

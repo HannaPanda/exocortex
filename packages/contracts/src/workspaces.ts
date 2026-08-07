@@ -51,3 +51,22 @@ export const updateWorkspaceMemberRequestSchema = z.object({
   role: workspaceRoleSchema,
 });
 export type UpdateWorkspaceMemberRequest = z.infer<typeof updateWorkspaceMemberRequestSchema>;
+
+/**
+ * Renaming a workspace and/or changing its slug.
+ *
+ * The two are deliberately independent: `slug` is never derived from `name`
+ * here (unlike on creation, where `findFreeSlug()` derives it once). The slug
+ * appears in URLs and in links people have already saved, so leaving it alone
+ * on a plain rename is the safe default; changing it is an explicit, separate
+ * choice the UI warns about.
+ */
+export const updateWorkspaceRequestSchema = z
+  .object({
+    name: z.string().trim().min(1).max(120).optional(),
+    slug: workspaceSlugSchema.optional(),
+  })
+  .refine((value) => value.name !== undefined || value.slug !== undefined, {
+    message: 'At least one field must be provided',
+  });
+export type UpdateWorkspaceRequest = z.infer<typeof updateWorkspaceRequestSchema>;

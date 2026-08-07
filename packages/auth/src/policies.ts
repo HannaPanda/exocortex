@@ -102,6 +102,20 @@ export function canPerformDestructiveWorkspaceOperation(role: WorkspaceRole | nu
   return ALLOW;
 }
 
+/**
+ * Renaming a workspace or changing its slug. Same bar as managing members:
+ * both change something every member relies on (the name shown everywhere, or
+ * the slug baked into saved links), so a GUEST or MEMBER may not touch it.
+ */
+export function canUpdateWorkspace(role: WorkspaceRole | null): PolicyDecision {
+  const read = canReadWorkspace(role);
+  if (!read.allowed) return read;
+  if (!hasAtLeast(role as WorkspaceRole, 'ADMIN')) {
+    return deny('forbidden', 'Updating workspace settings requires the ADMIN or OWNER role');
+  }
+  return ALLOW;
+}
+
 // --------------------------------------------------------------------------
 // Documents
 // --------------------------------------------------------------------------
@@ -159,6 +173,44 @@ export function canMoveDocument(
     }
     if (targetParent.id === document.id) {
       return deny('document_move_cycle', 'A document cannot be its own parent');
+    }
+  }
+  return ALLOW;
+}
+
+/**
+ * Moving a document (and its whole subtree) into a *different* workspace.
+ *
+ * Distinct from `canMoveDocument`, which rejects a cross-workspace parent
+ * outright -- this is the policy for the explicit cross-workspace path, so it
+ * has to check both sides: editing rights in the source workspace (the
+ * document leaves it) and at least member rights in the target workspace (the
+ * document, and everything hanging off it, becomes visible there).
+ */
+export function canMoveDocumentAcrossWorkspaces(
+  sourceRole: WorkspaceRole | null,
+  document: DocumentPolicySubject,
+  targetRole: WorkspaceRole | null,
+  targetParent: DocumentPolicySubject | null,
+  targetWorkspaceId: string,
+): PolicyDecision {
+  const edit = canEditDocument(sourceRole, document);
+  if (!edit.allowed) return edit;
+  if (targetRole === null) {
+    return deny('workspace_access_denied', 'The acting user is not a member of the target workspace');
+  }
+  if (!hasAtLeast(targetRole, 'MEMBER')) {
+    return deny('forbidden', 'Moving a page into a workspace requires at least the MEMBER role there');
+  }
+  if (targetParent !== null) {
+    if (targetParent.workspaceId !== targetWorkspaceId) {
+      return deny(
+        'document_cross_workspace',
+        'The target parent does not belong to the target workspace',
+      );
+    }
+    if (isArchived(targetParent)) {
+      return deny('document_archived', 'A document cannot be moved under an archived parent');
     }
   }
   return ALLOW;

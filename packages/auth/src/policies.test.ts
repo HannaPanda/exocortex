@@ -14,11 +14,13 @@ import {
   canManageDatabaseSchema,
   canManageWorkspaceMembers,
   canMoveDocument,
+  canMoveDocumentAcrossWorkspaces,
   canPerformDestructiveWorkspaceOperation,
   canReadDocument,
   canReadWorkspace,
   canRestoreSnapshot,
   canSubscribeToWorkspaceRoom,
+  canUpdateWorkspace,
   canUploadFile,
   resolveCollaborationAccess,
 } from './policies';
@@ -52,6 +54,13 @@ describe('workspace access', () => {
   it('restricts destructive workspace operations to OWNER', () => {
     expect(canPerformDestructiveWorkspaceOperation('ADMIN').allowed).toBe(false);
     expect(canPerformDestructiveWorkspaceOperation('OWNER').allowed).toBe(true);
+  });
+
+  it('restricts workspace settings (rename, slug) to ADMIN and OWNER', () => {
+    expect(canUpdateWorkspace('GUEST').allowed).toBe(false);
+    expect(canUpdateWorkspace('MEMBER').allowed).toBe(false);
+    expect(canUpdateWorkspace('ADMIN').allowed).toBe(true);
+    expect(canUpdateWorkspace('OWNER').allowed).toBe(true);
   });
 
   it('lets only owners grant ownership', () => {
@@ -114,6 +123,82 @@ describe('document policies', () => {
   it('restricts snapshot restore to ADMIN and OWNER', () => {
     expect(canRestoreSnapshot('MEMBER', activeDocument).allowed).toBe(false);
     expect(canRestoreSnapshot('ADMIN', activeDocument).allowed).toBe(true);
+  });
+});
+
+describe('cross-workspace move policy', () => {
+  const otherWorkspaceId = 'workspace_2';
+
+  it('requires edit rights in the source workspace first', () => {
+    const decision = canMoveDocumentAcrossWorkspaces(
+      'GUEST',
+      activeDocument,
+      'MEMBER',
+      null,
+      otherWorkspaceId,
+    );
+    expect(decision.allowed).toBe(false);
+    expect(decision.allowed === false && decision.code).toBe('forbidden');
+  });
+
+  it('denies a mover who is not a member of the target workspace', () => {
+    const decision = canMoveDocumentAcrossWorkspaces(
+      'OWNER',
+      activeDocument,
+      null,
+      null,
+      otherWorkspaceId,
+    );
+    expect(decision.allowed).toBe(false);
+    expect(decision.allowed === false && decision.code).toBe('workspace_access_denied');
+  });
+
+  it('requires at least MEMBER in the target workspace', () => {
+    const decision = canMoveDocumentAcrossWorkspaces(
+      'OWNER',
+      activeDocument,
+      'GUEST',
+      null,
+      otherWorkspaceId,
+    );
+    expect(decision.allowed).toBe(false);
+    expect(decision.allowed === false && decision.code).toBe('forbidden');
+  });
+
+  it('rejects a target parent that does not belong to the target workspace', () => {
+    const decision = canMoveDocumentAcrossWorkspaces(
+      'OWNER',
+      activeDocument,
+      'MEMBER',
+      activeDocument,
+      otherWorkspaceId,
+    );
+    expect(decision.allowed).toBe(false);
+    expect(decision.allowed === false && decision.code).toBe('document_cross_workspace');
+  });
+
+  it('rejects an archived target parent that does belong to the target workspace', () => {
+    const targetParent = { ...archivedDocument, workspaceId: otherWorkspaceId };
+    const decision = canMoveDocumentAcrossWorkspaces(
+      'OWNER',
+      activeDocument,
+      'MEMBER',
+      targetParent,
+      otherWorkspaceId,
+    );
+    expect(decision.allowed).toBe(false);
+    expect(decision.allowed === false && decision.code).toBe('document_archived');
+  });
+
+  it('allows the move to the target workspace root', () => {
+    const decision = canMoveDocumentAcrossWorkspaces(
+      'MEMBER',
+      activeDocument,
+      'MEMBER',
+      null,
+      otherWorkspaceId,
+    );
+    expect(decision.allowed).toBe(true);
   });
 });
 

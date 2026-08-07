@@ -1,10 +1,11 @@
 'use client';
 
-import { FileTextIcon, PlusIcon } from 'lucide-react';
+import { FileTextIcon, PlusIcon, SettingsIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
-import { AppPage, Button, Card, CardContent, EmptyState, LoadingState } from '@exocortex/ui';
+import { AppPage, Button, Card, CardContent, EmptyState, LoadingState, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { useCreateDocument, useDocumentTree } from '@/lib/api/queries';
@@ -23,19 +24,37 @@ export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
     <AppPage maxWidth="max-w-3xl">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-lg font-semibold">Übersicht</h1>
-        <Button
-          size="sm"
-          data-testid="overview-create-page"
-          onClick={() => {
-            void createDocument
-              .mutateAsync({ title: 'Unbenannte Seite', type: 'PAGE', parentId: null })
-              .then((document) =>
-                router.push(`/arbeitsbereich/${workspaceId}/seite/${document.id}`),
-              );
-          }}
-        >
-          <PlusIcon /> Neue Seite
-        </Button>
+        <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label="Arbeitsbereich-Einstellungen"
+                  data-testid="open-workspace-settings"
+                  render={<Link href={`/arbeitsbereich/${workspaceId}/einstellungen`} />}
+                >
+                  <SettingsIcon />
+                </Button>
+              }
+            />
+            <TooltipContent>Einstellungen</TooltipContent>
+          </Tooltip>
+          <Button
+            size="sm"
+            data-testid="overview-create-page"
+            onClick={() => {
+              void createDocument
+                .mutateAsync({ title: 'Unbenannte Seite', type: 'PAGE', parentId: null })
+                .then((document) =>
+                  router.push(`/arbeitsbereich/${workspaceId}/seite/${document.id}`),
+                );
+            }}
+          >
+            <PlusIcon /> Neue Seite
+          </Button>
+        </div>
       </div>
 
       {flat.length === 0 ? (

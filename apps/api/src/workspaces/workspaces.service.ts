@@ -4,10 +4,12 @@ import {
   assertPolicy,
   canChangeMemberRole,
   canManageWorkspaceMembers,
+  canUpdateWorkspace,
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import {
   type CreateWorkspaceRequest,
+  type UpdateWorkspaceRequest,
   type Workspace,
   type WorkspaceDetail,
   type WorkspaceMember,
@@ -129,6 +131,83 @@ export class WorkspacesService {
       role,
       memberCount: members.length,
       members,
+    };
+  }
+
+  /**
+   * Renames a workspace and/or changes its slug.
+   *
+   * The two are independent on purpose: unlike `create()`, this never derives
+   * `slug` from `name`. The slug appears in URLs and in links people already
+   * saved, so a plain rename must not silently move it; changing it is a
+   * separate, explicit field the UI warns about.
+   */
+  async update(input: {
+    workspaceId: string;
+    actorUserId: string;
+    request: UpdateWorkspaceRequest;
+    correlationId: string;
+  }): Promise<Workspace> {
+    const role = await this.access.findRole(input.workspaceId, input.actorUserId);
+    assertPolicy(canUpdateWorkspace(role));
+
+    if (input.request.slug !== undefined) {
+      const existing = await this.prisma.workspace.findUnique({
+        where: { slug: input.request.slug },
+        select: { id: true },
+      });
+      if (existing !== null && existing.id !== input.workspaceId) {
+        throw new AppError(
+          'workspace_slug_taken',
+          'This slug is already used by another workspace',
+        );
+      }
+    }
+
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const workspace = await tx.workspace.update({
+        where: { id: input.workspaceId },
+        data: {
+          ...(input.request.name === undefined ? {} : { name: input.request.name }),
+          ...(input.request.slug === undefined ? {} : { slug: input.request.slug }),
+        },
+        include: { _count: { select: { members: true } } },
+      });
+
+      await this.outbox.writeAudit(tx, {
+        workspaceId: input.workspaceId,
+        actorId: input.actorUserId,
+        action: 'workspace.renamed',
+        targetType: 'workspace',
+        targetId: input.workspaceId,
+        correlationId: input.correlationId,
+        metadata: {
+          ...(input.request.name === undefined ? {} : { name: input.request.name }),
+          ...(input.request.slug === undefined ? {} : { slug: input.request.slug }),
+        },
+      });
+      await this.outbox.writeEvent(tx, {
+        workspaceId: input.workspaceId,
+        type: 'workspace.updated',
+        payload: { workspace: { id: input.workspaceId } },
+        correlationId: input.correlationId,
+      });
+
+      return workspace;
+    });
+
+    await this.realtime.emit('workspace.updated', input.workspaceId, input.correlationId, {
+      workspace: { id: input.workspaceId },
+    });
+
+    return {
+      id: updated.id,
+      name: updated.name,
+      slug: updated.slug,
+      createdAt: updated.createdAt.toISOString(),
+      updatedAt: updated.updatedAt.toISOString(),
+      role: role as WorkspaceRole,
+      memberCount: updated._count.members,
     };
   }
 

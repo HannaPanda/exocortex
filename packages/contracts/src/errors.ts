@@ -42,6 +42,7 @@ export const API_ERROR_CODES = [
   'document_content_lossy',
   'attachment_text_unavailable',
   'setting_unknown',
+  'workspace_slug_taken',
 ] as const;
 
 export const apiErrorCodeSchema = z.enum(API_ERROR_CODES);
@@ -98,4 +99,5 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   document_content_lossy: 422,
   attachment_text_unavailable: 409,
   setting_unknown: 400,
+  workspace_slug_taken: 409,
 };
