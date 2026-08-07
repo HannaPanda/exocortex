@@ -4,7 +4,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import { PlusIcon, SparklesIcon } from 'lucide-react';
 import * as React from 'react';
 
-import { type AiConversationMessage, type AiReasoningLevel } from '@exocortex/contracts';
+import {
+  AI_RUN_QUIET_THRESHOLD_MS,
+  type AiConversationMessage,
+  type AiReasoningLevel,
+  type AiRunStatus,
+} from '@exocortex/contracts';
 import {
   Button,
   ErrorState,
@@ -20,13 +25,15 @@ import {
   aiQueryKeys,
   useAiConversation,
   useAiModels,
+  useAiRun,
+  useCancelAiRun,
   useCreateAiConversation,
   usePostConversationMessage,
   useUpdateAiConversation,
 } from '@/lib/api/ai-queries';
 import { ApiError } from '@/lib/api/client';
 import { useDocument } from '@/lib/api/queries';
-import { useRealtimeEvent } from '@/lib/realtime/realtime-provider';
+import { useRealtime, useRealtimeEvent } from '@/lib/realtime/realtime-provider';
 import { usePersistentState } from '@/lib/use-persistent-state';
 
 import { useAiSelection } from './ai-selection';
@@ -36,6 +43,7 @@ import { ContextChips } from './context-chips';
 import { ContextMeter } from './context-meter';
 import { ConversationSwitcher } from './conversation-switcher';
 import { ModelPicker } from './model-picker';
+import { RunActivity } from './run-activity';
 
 export interface AiPanelProps {
   workspaceId: string | null;
@@ -46,11 +54,15 @@ interface ToolActivityEntry {
   key: string;
   toolName: string;
   status: 'started' | 'succeeded' | 'failed';
+  /** Compact identifier of what the call touched, e.g. `document:<id>`. */
+  target: string | null;
 }
 
 /**
  * Reasons a run can fail that the user can actually do something about. Codes
- * outside this map keep the generic message.
+ * outside this map keep the generic message. `ai_cancelled` is deliberately
+ * absent: a user-triggered cancellation is shown as a neutral notice, not an
+ * error (see `applyTerminalRunState`).
  */
 const RUN_ERROR_MESSAGES: Record<string, string> = {
   ai_response_truncated:
@@ -67,6 +79,17 @@ function parseConversationId(raw: string): string | null {
   return typeof parsed === 'string' ? parsed : null;
 }
 
+/** Turns a tool's compact target (`document:<id>`, `workspace:<id>`) into a short German phrase. */
+function describeToolTarget(target: string | null): string | null {
+  if (target === null) return null;
+  const separatorIndex = target.indexOf(':');
+  if (separatorIndex === -1) return target;
+  const kind = target.slice(0, separatorIndex);
+  const id = target.slice(separatorIndex + 1);
+  const label = kind === 'document' ? 'Seite' : kind === 'workspace' ? 'Workspace' : kind;
+  return `${label} ${id}`;
+}
+
 function toolActivityLine(entry: ToolActivityEntry): string {
   const suffix =
     entry.status === 'started'
@@ -74,7 +97,19 @@ function toolActivityLine(entry: ToolActivityEntry): string {
       : entry.status === 'succeeded'
         ? '… fertig'
         : '… fehlgeschlagen';
-  return `Werkzeug ${entry.toolName} ${suffix}`;
+  const targetLabel = describeToolTarget(entry.target);
+  const targetSuffix = targetLabel === null ? '' : ` (${targetLabel})`;
+  return `Werkzeug ${entry.toolName}${targetSuffix} ${suffix}`;
+}
+
+/** Phase shown in the run's pulse while it is active: the tool in flight, or that the answer is streaming/starting. */
+function currentPhaseLabel(toolActivity: readonly ToolActivityEntry[], streamText: string): string {
+  const last = toolActivity[toolActivity.length - 1];
+  if (last !== undefined && last.status === 'started') {
+    const targetLabel = describeToolTarget(last.target);
+    return `Werkzeug ${last.toolName}${targetLabel === null ? '' : ` (${targetLabel})`} wird ausgeführt`;
+  }
+  return streamText.length > 0 ? 'Antwort wird geschrieben' : 'Antwort wird erzeugt';
 }
 
 /**
@@ -118,6 +153,17 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   const [error, setError] = React.useState<string | null>(null);
   const [commandNotices, setCommandNotices] = React.useState<AiConversationMessage[]>([]);
 
+  // Life-sign tracking for the run's pulse (issue #6): when it started, and
+  // the last time any signal (a delta, a tool-call event) arrived.
+  const [runStartedAt, setRunStartedAt] = React.useState<number | null>(null);
+  const [lastActivityAt, setLastActivityAt] = React.useState<number | null>(null);
+  // `ai.run.progress`'s monotonic `sequence`, and whether a gap in it was ever
+  // seen. Both fields are updated together (a functional `useState` updater,
+  // not a ref) so a burst of events arriving before a render commits can never
+  // compare against a stale `expected` value.
+  const [sequenceState, setSequenceState] = React.useState({ expected: 1, gap: false });
+  const cancelRun = useCancelAiRun();
+
   // Switching conversations must not carry the previous one's transient state
   // along. Adjusted during render (React's documented pattern for resetting
   // state when a value changes) rather than in an effect, so there is no extra
@@ -131,11 +177,98 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
     setNotice(null);
     setError(null);
     setCommandNotices([]);
+    setRunStartedAt(null);
+    setLastActivityAt(null);
+    setSequenceState({ expected: 1, gap: false });
   }
+
+  // The run's own status, polled independently of the realtime channel
+  // (issue #6, point 1). This is the safety net for every event the socket
+  // ever drops: a reconnect, a backgrounded tab, a cancellation the worker
+  // only learns about later. `applyTerminalRunState` below is the single
+  // place that reacts to a run ending, whichever way it finds out.
+  const runQuery = useAiRun(activeRunId);
+
+  const applyTerminalRunState = React.useCallback(
+    (status: AiRunStatus, errorCode: string | null): void => {
+      setActiveRunId(null);
+      setToolActivity([]);
+      setRunStartedAt(null);
+      setLastActivityAt(null);
+      setSequenceState({ expected: 1, gap: false });
+      if (status === 'completed') {
+        // Keep the streaming bubble on screen (its content is already final)
+        // until the refetched conversation carries the persisted message, so
+        // nothing flickers or disappears in between.
+        if (activeConversationId !== null) {
+          void queryClient
+            .invalidateQueries({ queryKey: aiQueryKeys.conversation(activeConversationId) })
+            .then(() => setStreamText(''));
+        } else {
+          setStreamText('');
+        }
+        return;
+      }
+      setStreamText('');
+      if (status === 'cancelled') {
+        setNotice('Lauf abgebrochen.');
+        return;
+      }
+      setError(RUN_ERROR_MESSAGES[errorCode ?? ''] ?? 'Die KI-Antwort konnte nicht erzeugt werden.');
+    },
+    [activeConversationId, queryClient],
+  );
+
+  // Applies a terminal status the poll (or a focus/reconnect refetch)
+  // revealed before any socket event reported it. Adjusted during render --
+  // the same idiom as the conversation-switch reset above -- guarded by
+  // `reconciledRunResultKey` so it fires exactly once per run outcome rather
+  // than on every render the ticking clock below causes.
+  const [reconciledRunResultKey, setReconciledRunResultKey] = React.useState<string | null>(null);
+  const runResultKey =
+    runQuery.data === undefined ? null : `${runQuery.data.id}:${runQuery.data.status}`;
+  if (
+    activeRunId !== null &&
+    runQuery.data !== undefined &&
+    runQuery.data.id === activeRunId &&
+    runQuery.data.status !== 'pending' &&
+    runQuery.data.status !== 'running' &&
+    reconciledRunResultKey !== runResultKey
+  ) {
+    setReconciledRunResultKey(runResultKey);
+    applyTerminalRunState(runQuery.data.status, runQuery.data.errorCode);
+  }
+
+  // The other half of "abgleichen statt nur zuzuhören": a reconnect of the
+  // realtime socket itself (not just the browser regaining focus, which
+  // `useAiRun`'s `refetchOnWindowFocus` already covers) refetches the run
+  // immediately rather than waiting out the poll interval.
+  const { status: realtimeStatus } = useRealtime();
+  const previousRealtimeStatusRef = React.useRef(realtimeStatus);
+  React.useEffect(() => {
+    const reconnected = previousRealtimeStatusRef.current !== 'connected' && realtimeStatus === 'connected';
+    previousRealtimeStatusRef.current = realtimeStatus;
+    if (reconnected && activeRunId !== null) void runQuery.refetch();
+  }, [realtimeStatus, activeRunId, runQuery]);
+
+  // A ticking clock, captured as state rather than read via `Date.now()`
+  // directly in the render body, so the elapsed-time display in
+  // `RunActivity` keeps moving once a second while a run is active.
+  const [now, setNow] = React.useState(() => Date.now());
+  React.useEffect(() => {
+    if (activeRunId === null) return;
+    const interval = setInterval(() => setNow(Date.now()), 1_000);
+    return () => clearInterval(interval);
+  }, [activeRunId]);
 
   useRealtimeEvent('ai.run.progress', (event) => {
     if (event.payload.runId !== activeRunId) return;
+    setSequenceState((current) => ({
+      expected: event.payload.sequence + 1,
+      gap: current.gap || event.payload.sequence !== current.expected,
+    }));
     setStreamText((current) => current + event.payload.delta);
+    setLastActivityAt(Date.now());
   });
 
   useRealtimeEvent('ai.run.tool_call', (event) => {
@@ -146,34 +279,20 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
         key: `${event.payload.iteration}:${event.payload.toolName}:${event.payload.status}`,
         toolName: event.payload.toolName,
         status: event.payload.status,
+        target: event.payload.target,
       },
     ]);
+    setLastActivityAt(Date.now());
   });
 
   useRealtimeEvent('ai.run.completed', (event) => {
     if (event.payload.runId !== activeRunId) return;
-    setActiveRunId(null);
-    setToolActivity([]);
-    // Keep the streaming bubble on screen (its content is already final) until
-    // the refetched conversation carries the persisted message, so nothing
-    // flickers or disappears in between.
-    if (activeConversationId !== null) {
-      void queryClient
-        .invalidateQueries({ queryKey: aiQueryKeys.conversation(activeConversationId) })
-        .then(() => setStreamText(''));
-    } else {
-      setStreamText('');
-    }
+    applyTerminalRunState('completed', null);
   });
 
   useRealtimeEvent('ai.run.failed', (event) => {
     if (event.payload.runId !== activeRunId) return;
-    setActiveRunId(null);
-    setStreamText('');
-    setToolActivity([]);
-    setError(
-      RUN_ERROR_MESSAGES[event.payload.errorCode] ?? 'Die KI-Antwort konnte nicht erzeugt werden.',
-    );
+    applyTerminalRunState(event.payload.status, event.payload.errorCode);
   });
 
   useRealtimeEvent('ai.conversation.compacted', (event) => {
@@ -183,6 +302,38 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
       queryKey: aiQueryKeys.conversation(event.payload.conversationId),
     });
   });
+
+  // Elapsed time counts from the latest confirmed sign of life: the run's
+  // own start, the last realtime event this panel received, or -- covering a
+  // dropped socket entirely -- the worker's own heartbeat as last observed by
+  // the poll above. Whichever is most recent wins, so a live heartbeat keeps
+  // the clock honest even if every event this tab would have received was
+  // lost.
+  const heartbeatAtMs =
+    runQuery.data?.id === activeRunId && runQuery.data.heartbeatAt !== null
+      ? new Date(runQuery.data.heartbeatAt).getTime()
+      : null;
+  const lastSignAt = Math.max(runStartedAt ?? 0, lastActivityAt ?? 0, heartbeatAtMs ?? 0);
+  const elapsedMs = activeRunId !== null && lastSignAt > 0 ? Math.max(0, now - lastSignAt) : 0;
+  const runQuiet = elapsedMs >= AI_RUN_QUIET_THRESHOLD_MS;
+
+  const handleCancelRun = async (): Promise<void> => {
+    if (activeRunId === null) return;
+    const runId = activeRunId;
+    try {
+      await cancelRun.mutateAsync(runId);
+      applyTerminalRunState('cancelled', null);
+    } catch (caught) {
+      if (caught instanceof ApiError && caught.status === 409) {
+        // The run finished by itself just before the cancellation reached the
+        // server; let the next poll (or the socket) reconcile the real
+        // outcome instead of reporting a cancellation that never happened.
+        void runQuery.refetch();
+        return;
+      }
+      setError(caught instanceof ApiError ? caught.message : 'Der Lauf konnte nicht abgebrochen werden.');
+    }
+  };
 
   const conversation = conversationQuery.data?.conversation ?? null;
   const messages = conversationQuery.data?.messages ?? [];
@@ -357,6 +508,10 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
       if (response.run !== null) {
         setStreamText('');
         setToolActivity([]);
+        setSequenceState({ expected: 1, gap: false });
+        const startedAt = Date.now();
+        setRunStartedAt(startedAt);
+        setLastActivityAt(startedAt);
         setActiveRunId(response.run.id);
       }
     } catch (caught) {
@@ -482,6 +637,17 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
           </p>
         ) : null}
       </div>
+
+      {activeRunId !== null ? (
+        <RunActivity
+          phaseLabel={currentPhaseLabel(toolActivity, streamText)}
+          elapsedMs={elapsedMs}
+          quiet={runQuiet}
+          gapDetected={sequenceState.gap}
+          onCancel={() => void handleCancelRun()}
+          cancelling={cancelRun.isPending}
+        />
+      ) : null}
 
       <div className="border-t border-border">
         <ContextChips
