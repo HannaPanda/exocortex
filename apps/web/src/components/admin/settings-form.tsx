@@ -44,8 +44,12 @@ const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
     help: 'Obergrenze für die Länge einer einzelnen KI-Antwort.',
   },
   'ai.timeoutMs': {
-    label: 'Zeitlimit pro Anfrage (ms)',
-    help: 'Nach dieser Zeit wird eine KI-Anfrage abgebrochen.',
+    label: 'Zeitlimit pro Modellantwort (ms)',
+    help: 'Bricht eine einzelne Antwort des Modells ab. Werkzeugaufrufe und Folgeantworten haben ihre eigene Zeit, siehe „Gesamtzeit pro Lauf".',
+  },
+  'ai.maxRunMs': {
+    label: 'Gesamtzeit pro Lauf (ms)',
+    help: 'Nach dieser Zeit endet ein Lauf insgesamt, auch wenn er noch Werkzeuge aufruft. Kann nie kürzer sein als das Zeitlimit pro Modellantwort.',
   },
   'ai.budgetMicroUsdPerRun': {
     label: 'Kostenlimit pro Anfrage (µUSD)',

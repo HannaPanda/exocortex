@@ -23,6 +23,8 @@ export interface AiRunRow {
   model: string;
   createdById: string;
   createdAt: Date;
+  startedAt: Date | null;
+  heartbeatAt: Date | null;
   finishedAt: Date | null;
   usage: unknown;
   errorCode: string | null;
@@ -48,6 +50,8 @@ export function mapAiRunRow(run: AiRunRow): AiRun {
     model: run.model,
     createdById: run.createdById,
     createdAt: run.createdAt.toISOString(),
+    startedAt: run.startedAt === null ? null : run.startedAt.toISOString(),
+    heartbeatAt: run.heartbeatAt === null ? null : run.heartbeatAt.toISOString(),
     finishedAt: run.finishedAt === null ? null : run.finishedAt.toISOString(),
     usage: run.usage === null ? null : (run.usage as AiRun['usage']),
     errorCode: run.errorCode,

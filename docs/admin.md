@@ -51,7 +51,8 @@ first; the admin form and this table follow.
 | `ai.defaultModelSlug` | string \| null | `null` → `OPENROUTER_DEFAULT_MODEL` | Model used when a conversation names none. Must be a slug in the `ai_model` registry. |
 | `ai.systemPrompt` | string (≤ 8000) | `''` | Prepended to every run's system prompt, ahead of any AI rule pages. |
 | `ai.maxOutputTokens` | int 256–200000 | `4096` | Output cap per model call. |
-| `ai.timeoutMs` | int 5000–600000 | `180000` | Hard timeout per run. |
+| `ai.timeoutMs` | int 5000–600000 | `180000` | Timeout for a single model answer, not the whole run — see `ai.maxRunMs`. |
+| `ai.maxRunMs` | int 60000–3600000 | `900000` | Timeout for the whole run, across every turn and tool round-trip. Ends the run as `timed_out`, never `failed` (ADR-017). Can never be shorter than `ai.timeoutMs`. |
 | `ai.budgetMicroUsdPerRun` | int 1000–50000000 | `500000` | Cost ceiling per run (µUSD), checked per tool iteration. |
 | `ai.toolsEnabled` | boolean | `true` | Whether the built-in AI gets tools at all. Also requires `SERVICE_TOKEN_SECRET`. |
 | `ai.mutatingToolsEnabled` | boolean | `true` | Whether the AI may call tools that change data. |

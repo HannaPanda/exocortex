@@ -63,6 +63,7 @@ export const maintenanceJobSchema = jobBase.extend({
     'dispatch-outbox',
     'vacuum-search-index',
     'collect-orphaned-covers',
+    'reap-stale-ai-runs',
   ]),
   /** Optional scope; `null` means all workspaces. */
   workspaceId: idSchema.nullable().default(null),

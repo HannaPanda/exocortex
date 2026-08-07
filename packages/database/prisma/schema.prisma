@@ -802,6 +802,11 @@ model AiRun {
   startedAt   DateTime?
   finishedAt  DateTime?
   cancelledAt DateTime?
+  /// Last sign of life from the worker processing this run, renewed every
+  /// few seconds while it is RUNNING. A RUNNING run without a recent one has
+  /// lost its worker (crash, deploy restart, stalled job) -- see
+  /// reap-stale-ai-runs (apps/worker/src/processors/maintenance.ts).
+  heartbeatAt DateTime?
 
   /// Conversation this run belongs to, when it was started from one (D7).
   /// No `@map`: every other column on this model keeps Prisma's default
@@ -818,5 +823,7 @@ model AiRun {
   /// Not for querying runs by view -- so deleting a view does not have to scan
   /// every run to apply the SET NULL.
   @@index([databaseViewId])
+  /// reap-stale-ai-runs scans exactly this pair.
+  @@index([status, heartbeatAt])
   @@map("ai_run")
 }

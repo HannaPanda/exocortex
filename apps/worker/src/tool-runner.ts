@@ -43,6 +43,8 @@ export interface CreateToolRunnerInput {
   userId: string;
   includeMutating: boolean;
   logger: Logger;
+  /** Ceiling for one tool call; see `AI_TOOL_CALL_TIMEOUT_MS`. */
+  toolCallTimeoutMs: number;
 }
 
 export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
@@ -68,7 +70,11 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
         ttlSeconds: input.serviceTokenTtlSeconds,
       });
       tokenExpiresAt = issued.expiresAt;
-      client = createFetchApiClient({ baseUrl: input.apiUrl, token: issued.token });
+      client = createFetchApiClient({
+        baseUrl: input.apiUrl,
+        token: issued.token,
+        timeoutMs: input.toolCallTimeoutMs,
+      });
     }
     return client;
   }

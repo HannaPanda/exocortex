@@ -21,6 +21,7 @@ import {
 } from '@exocortex/ui';
 
 import { AiPanel } from '@/components/ai/ai-panel';
+import { PanelErrorBoundary } from '@/components/shell/panel-error-boundary';
 import { useDocument } from '@/lib/api/queries';
 
 export interface ContextPanelProps {
@@ -85,7 +86,12 @@ export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
       </div>
 
       <TabsContent value="ai" className="flex min-h-0 flex-col">
-        <AiPanel workspaceId={workspaceId} documentId={documentId} />
+        <PanelErrorBoundary
+          title="KI-Panel nicht verfügbar"
+          description="Der Chat konnte nicht angezeigt werden. Ein laufender KI-Lauf arbeitet weiter; nach dem Neuladen ist der Verlauf vollständig."
+        >
+          <AiPanel workspaceId={workspaceId} documentId={documentId} />
+        </PanelErrorBoundary>
       </TabsContent>
 
       <TabsContent value="properties" className="overflow-y-auto p-3">

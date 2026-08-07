@@ -6,7 +6,15 @@ import {
   estimateTokens,
   type VisionPreprocessor,
 } from '@exocortex/ai';
-import { type AiMessage, aiMessageSchema, type AiUsage, type QUEUE_NAMES, type Settings } from '@exocortex/contracts';
+import {
+  AI_RUN_HEARTBEAT_STALE_MS,
+  type AiMessage,
+  aiMessageSchema,
+  type AiUsage,
+  deriveAiRunTimeouts,
+  type QUEUE_NAMES,
+  type Settings,
+} from '@exocortex/contracts';
 import {
   type AiConversationRole as AiConversationRolePrisma,
   type AiReasoningLevel as AiReasoningLevelPrisma,
@@ -42,7 +50,9 @@ export interface AiRunDependencies {
   storage: ObjectStorage;
   settings: () => Promise<Settings>;
   /** `null` when `SERVICE_TOKEN_SECRET` is unset: the AI simply runs without tools. */
-  toolRunnerFactory: ((input: { userId: string; includeMutating: boolean }) => ToolRunner) | null;
+  toolRunnerFactory:
+    | ((input: { userId: string; includeMutating: boolean; toolCallTimeoutMs: number }) => ToolRunner)
+    | null;
   /**
    * Resolves (and caches) a vision companion preprocessor for a given model
    * slug. Deliberately widened to accept `null`, meaning "no explicit
@@ -259,6 +269,40 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       logger.info('Skipping AI run: cancelled before start', { runId: run.id });
       return;
     }
+    if (run.status === 'RUNNING') {
+      const lastSign = run.heartbeatAt ?? run.startedAt ?? run.createdAt;
+      if (Date.now() - lastSign.getTime() < AI_RUN_HEARTBEAT_STALE_MS) {
+        // Another worker is still holding this run: taking over would
+        // produce a second answer and, through the tool loop, a second round
+        // of writes to whatever it touched.
+        logger.warn('Skipping AI run: another worker still holds it', { runId: run.id });
+        return;
+      }
+      // The heartbeat went stale: the previous worker died mid-run (crash,
+      // deploy restart, stalled job) without a chance to close this out
+      // itself. Closing it here, rather than resuming it, is what keeps a
+      // resend from ever answering twice or writing twice (docs/adr/ADR-017).
+      const closed = await prisma.aiRun.updateMany({
+        where: { id: run.id, status: 'RUNNING' },
+        data: { status: 'FAILED', errorCode: 'ai_run_abandoned', finishedAt: new Date() },
+      });
+      if (closed.count === 1) {
+        await bus.publish({
+          type: 'ai.run.failed',
+          workspaceId: run.workspaceId,
+          correlationId: payload.correlationId,
+          emittedAt: new Date().toISOString(),
+          payload: {
+            runId: run.id,
+            status: 'failed',
+            errorCode: 'ai_run_abandoned',
+            reason: 'The previous execution of this run stopped without finishing',
+          },
+        });
+      }
+      logger.warn('Closed out an abandoned AI run', { runId: run.id });
+      return;
+    }
     if (run.status !== 'PENDING') {
       // Idempotency: a retried job must not produce a second answer.
       logger.info('Skipping AI run: already processed', { runId: run.id, status: run.status });
@@ -434,9 +478,17 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     let providerMessages: AiMessage[] =
       imageContext === null ? [...baseMessages, ...restMessages] : [...baseMessages, imageContext, ...restMessages];
 
+    // Derived once, ahead of the tool runner: a tool call needs its own
+    // timeout before the run's clocks are otherwise started below.
+    const timeouts = deriveAiRunTimeouts(settings);
+
     // --- Tools ---------------------------------------------------------------
     const runner: ToolRunner | null = toolsEnabled
-      ? dependencies.toolRunnerFactory!({ userId: run.createdById, includeMutating: settings['ai.mutatingToolsEnabled'] })
+      ? dependencies.toolRunnerFactory!({
+          userId: run.createdById,
+          includeMutating: settings['ai.mutatingToolsEnabled'],
+          toolCallTimeoutMs: timeouts.toolCallTimeoutMs,
+        })
       : null;
 
     // The admin setting is the ceiling for one answer; a model that caps its own
@@ -450,13 +502,41 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
 
     await prisma.aiRun.update({
       where: { id: run.id },
-      data: { status: 'RUNNING', startedAt: new Date() },
+      data: { status: 'RUNNING', startedAt: new Date(), heartbeatAt: new Date() },
     });
     await reportProgress(5, 'Antwort wird erzeugt');
 
-    const timeoutMs = settings['ai.timeoutMs'];
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    const runDeadline = Date.now() + timeouts.runBudgetMs;
+    const runController = new AbortController();
+    /** Why `runController` aborted; disambiguates the `catch` below (`null` until it fires). */
+    let abortReason: 'run_budget' | 'turn_timeout' | 'cancelled' | null = null;
+    const runTimer = setTimeout(() => {
+      abortReason ??= 'run_budget';
+      runController.abort();
+    }, timeouts.runBudgetMs);
+
+    // A heartbeat write does two things at once: it renews the row's
+    // heartbeat, and `count === 0` reports that the row is no longer RUNNING
+    // -- cancelled through the API, or reaped by maintenance -- which is how
+    // `POST /cancel` reaches this loop without a second channel.
+    const beat = async (): Promise<void> => {
+      const touched = await prisma.aiRun.updateMany({
+        where: { id: run.id, status: 'RUNNING' },
+        data: { heartbeatAt: new Date() },
+      });
+      if (touched.count === 0) {
+        abortReason ??= 'cancelled';
+        runController.abort();
+      }
+    };
+    const heartbeat = setInterval(() => {
+      void beat().catch((error: unknown) => {
+        logger.warn('Heartbeat failed', {
+          runId: run.id,
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      });
+    }, timeouts.heartbeatIntervalMs);
     let sequence = 0;
 
     // A `const` arrow function (rather than a hoisted function declaration)
@@ -469,46 +549,62 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       let failure: { code: string; message: string } | null = null;
       let finishReason: AiGenerateResult['finishReason'] = 'stop';
 
-      for await (const event of provider.stream({
-        messages,
-        model: run.model,
-        correlationId: payload.correlationId,
-        signal: controller.signal,
-        timeoutMs,
-        maxOutputTokens,
-        tools: runner?.definitions,
-        toolChoice: toolsEnabled ? 'auto' : undefined,
-        reasoning: { effort: REASONING_LEVEL_TO_LOWER[run.reasoningLevel] },
-      })) {
-        switch (event.type) {
-          case 'delta': {
-            text += event.text;
-            sequence += 1;
-            await bus.publish({
-              type: 'ai.run.progress',
-              workspaceId: run.workspaceId,
-              correlationId: payload.correlationId,
-              emittedAt: new Date().toISOString(),
-              payload: { runId: run.id, status: 'running', delta: event.text, sequence },
-            });
-            break;
+      // Its own controller, chained to the run's: a turn that overruns
+      // `turnTimeoutMs` aborts only itself, while an abort of the whole run
+      // (budget, cancellation) still has to reach whichever turn is in flight.
+      const turnController = new AbortController();
+      const onRunAbort = (): void => turnController.abort();
+      runController.signal.addEventListener('abort', onRunAbort, { once: true });
+      const turnTimer = setTimeout(() => {
+        abortReason ??= 'turn_timeout';
+        turnController.abort();
+      }, timeouts.turnTimeoutMs);
+
+      try {
+        for await (const event of provider.stream({
+          messages,
+          model: run.model,
+          correlationId: payload.correlationId,
+          signal: turnController.signal,
+          timeoutMs: timeouts.turnTimeoutMs,
+          maxOutputTokens,
+          tools: runner?.definitions,
+          toolChoice: toolsEnabled ? 'auto' : undefined,
+          reasoning: { effort: REASONING_LEVEL_TO_LOWER[run.reasoningLevel] },
+        })) {
+          switch (event.type) {
+            case 'delta': {
+              text += event.text;
+              sequence += 1;
+              await bus.publish({
+                type: 'ai.run.progress',
+                workspaceId: run.workspaceId,
+                correlationId: payload.correlationId,
+                emittedAt: new Date().toISOString(),
+                payload: { runId: run.id, status: 'running', delta: event.text, sequence },
+              });
+              break;
+            }
+            case 'tool_calls':
+              toolCalls = [...event.toolCalls];
+              break;
+            case 'usage':
+              usage = event.usage;
+              break;
+            case 'error':
+              failure = { code: event.code, message: event.message };
+              break;
+            case 'done':
+              finishReason = event.finishReason;
+              break;
+            case 'start':
+            default:
+              break;
           }
-          case 'tool_calls':
-            toolCalls = [...event.toolCalls];
-            break;
-          case 'usage':
-            usage = event.usage;
-            break;
-          case 'error':
-            failure = { code: event.code, message: event.message };
-            break;
-          case 'done':
-            finishReason = event.finishReason;
-            break;
-          case 'start':
-          default:
-            break;
         }
+      } finally {
+        clearTimeout(turnTimer);
+        runController.signal.removeEventListener('abort', onRunAbort);
       }
 
       return { text, toolCalls, usage, failure, finishReason };
@@ -527,6 +623,13 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
 
     try {
       while (true) {
+        if (Date.now() > runDeadline) {
+          failure = {
+            code: 'ai_timeout',
+            message: `AI run exceeded its budget of ${timeouts.runBudgetMs}ms`,
+          };
+          break;
+        }
         const turn = await streamOneTurn(providerMessages);
 
         if (turn.usage !== null) {
@@ -694,6 +797,13 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         ];
 
         for (const call of runnableToolCalls) {
+          if (Date.now() > runDeadline) {
+            failure = {
+              code: 'ai_timeout',
+              message: `AI run exceeded its budget of ${timeouts.runBudgetMs}ms`,
+            };
+            break;
+          }
           await bus.publish({
             type: 'ai.run.tool_call',
             workspaceId: run.workspaceId,
@@ -738,23 +848,41 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
             { role: 'tool', content: result.text, toolCallId: call.id, toolName: call.name },
           ];
         }
+        if (failure !== null) break;
 
         providerMessages = nextMessages;
       }
     } catch (error) {
-      failure = {
-        code: 'ai_provider_unavailable',
-        message: error instanceof Error ? error.message : String(error),
-      };
+      failure =
+        abortReason === 'cancelled'
+          ? { code: 'ai_cancelled', message: 'The run was cancelled' }
+          : abortReason !== null
+            ? {
+                code: 'ai_timeout',
+                message:
+                  abortReason === 'turn_timeout'
+                    ? `A single model answer exceeded ${timeouts.turnTimeoutMs}ms`
+                    : `The run exceeded its budget of ${timeouts.runBudgetMs}ms`,
+              }
+            : {
+                code: 'ai_provider_unavailable',
+                message: error instanceof Error ? error.message : String(error),
+              };
     } finally {
-      clearTimeout(timeout);
+      clearTimeout(runTimer);
+      clearInterval(heartbeat);
     }
 
     if (failure !== null) {
-      await prisma.aiRun.update({
-        where: { id: run.id },
+      const terminalStatus: 'CANCELLED' | 'TIMED_OUT' | 'FAILED' =
+        failure.code === 'ai_cancelled' ? 'CANCELLED' : failure.code === 'ai_timeout' ? 'TIMED_OUT' : 'FAILED';
+      // A status-filtered write, not a blind `update`: the row may already
+      // carry a terminal status set by `POST /cancel` or by the maintenance
+      // reaper while this loop was still unwinding, and that status must win.
+      const written = await prisma.aiRun.updateMany({
+        where: { id: run.id, status: { in: ['PENDING', 'RUNNING'] } },
         data: {
-          status: failure.code === 'ai_cancelled' ? 'CANCELLED' : 'FAILED',
+          status: terminalStatus,
           errorCode: failure.code,
           finishedAt: new Date(),
           resultText: text.length > 0 ? text : null,
@@ -762,6 +890,10 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           toolIterations,
         },
       });
+      if (written.count === 0) {
+        logger.warn('AI run already ended elsewhere; discarding this result', { runId: run.id });
+        return;
+      }
       await bus.publish({
         type: 'ai.run.failed',
         workspaceId: run.workspaceId,
@@ -769,7 +901,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         emittedAt: new Date().toISOString(),
         payload: {
           runId: run.id,
-          status: failure.code === 'ai_cancelled' ? 'cancelled' : 'failed',
+          status: terminalStatus === 'CANCELLED' ? 'cancelled' : terminalStatus === 'TIMED_OUT' ? 'timed_out' : 'failed',
           errorCode: failure.code,
           reason: failure.message,
         },
@@ -778,8 +910,11 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       return;
     }
 
-    await prisma.aiRun.update({
-      where: { id: run.id },
+    // Same status-filtered write as above: a run that was cancelled or reaped
+    // while its final answer was still streaming must not be resurrected as
+    // COMPLETED just because the stream itself finished cleanly.
+    const written = await prisma.aiRun.updateMany({
+      where: { id: run.id, status: { in: ['PENDING', 'RUNNING'] } },
       data: {
         status: 'COMPLETED',
         resultText: text,
@@ -788,6 +923,10 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         toolIterations,
       },
     });
+    if (written.count === 0) {
+      logger.warn('AI run already ended elsewhere; discarding a completed result', { runId: run.id });
+      return;
+    }
 
     if (run.conversationId !== null) {
       // Only the final assistant text becomes `run.resultText` and the

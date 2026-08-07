@@ -69,6 +69,9 @@ export const aiRunSchema = z.object({
   model: z.string(),
   createdById: idSchema,
   createdAt: isoDateTimeSchema,
+  startedAt: isoDateTimeSchema.nullable(),
+  /** Last sign of life from the worker while the run is `running` (issue #16). */
+  heartbeatAt: isoDateTimeSchema.nullable(),
   finishedAt: isoDateTimeSchema.nullable(),
   usage: aiUsageSchema.nullable(),
   errorCode: z.string().nullable(),

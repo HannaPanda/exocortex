@@ -23,6 +23,10 @@ export interface CreateWorkerOptions<TName extends QueueName> {
   logger: Logger;
   handler: JobHandler<TName>;
   concurrency?: number;
+  /** Overrides the default lock duration; see `AI_QUEUE_LOCK_DURATION_MS`. */
+  lockDuration?: number;
+  /** Overrides BullMQ's own default; see `AI_QUEUE_STALLED_INTERVAL_MS`. */
+  stalledInterval?: number;
   /** Optional hook invoked whenever progress is reported. */
   onProgress?: (
     payload: JobPayloadMap[TName],
@@ -65,8 +69,12 @@ export function createTypedWorker<TName extends QueueName>(
   const workerOptions: WorkerOptions = {
     connection,
     concurrency: options.concurrency ?? 4,
-    // Keep the lock long enough for a large materialization run.
-    lockDuration: 60_000,
+    // Keep the lock long enough for a large materialization run. The `ai`
+    // queue overrides this to a much longer value (see main.ts): an agentic
+    // run can legitimately take minutes, and BullMQ renews the lock itself
+    // every `lockDuration / 2` anyway.
+    lockDuration: options.lockDuration ?? 60_000,
+    ...(options.stalledInterval === undefined ? {} : { stalledInterval: options.stalledInterval }),
   };
 
   const worker = new Worker<JobPayloadMap[TName]>(

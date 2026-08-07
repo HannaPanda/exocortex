@@ -471,18 +471,30 @@ container.
 1. `POST /api/ai/runs` — the API checks workspace membership, validates the payload,
    creates an `AiRun` row in `PENDING` and enqueues an `ai` job. It never calls a
    provider itself.
-2. The worker loads the run, refuses anything not in `PENDING` (idempotency), sets
-   `RUNNING`, and iterates `provider.stream(...)`.
+2. The worker loads the run. A `PENDING` row proceeds; anything else does not
+   necessarily mean "already answered" any more (ADR-017): a `RUNNING` row
+   with a fresh heartbeat is left alone (another worker is still on it), a
+   `RUNNING` row with a stale one is closed out as `FAILED` /
+   `ai_run_abandoned` rather than resumed, and everything else (`COMPLETED`,
+   `FAILED`, `CANCELLED`, `TIMED_OUT`) is the original idempotency skip. A
+   run that proceeds is set `RUNNING`, gets its first heartbeat, and the
+   worker iterates `provider.stream(...)`.
 3. Each `delta` is published as `ai.run.progress` on the Redis event bus with a
    monotonic sequence number, so clients can detect gaps.
 4. On completion the run is stored with `resultText` and `usage`, and
-   `ai.run.completed` is published. On failure or cancellation the status and
-   `errorCode` are stored and `ai.run.failed` is published.
+   `ai.run.completed` is published. On failure, timeout or cancellation the
+   status (`FAILED`, `TIMED_OUT` or `CANCELLED`) and `errorCode` are stored
+   and `ai.run.failed` is published. Every one of these terminal writes is a
+   status-filtered `updateMany`, so a race with the maintenance reaper or a
+   cancellation can never resurrect an already-ended row.
 5. The API's event-bus subscriber re-emits into the workspace room; the panel
    renders the deltas as they arrive.
 
-`POST /api/ai/runs/:runId/cancel` marks a pending or running run cancelled; the
-worker's `AbortSignal` stops the stream.
+`POST /api/ai/runs/:runId/cancel` marks a pending or running run cancelled;
+the worker notices through its own heartbeat write (a status-filtered
+`updateMany` that returns `count === 0` once the row has left `RUNNING`) and
+aborts the run's `AbortController`, at most one heartbeat interval later. See
+"Time budget of a run" below and ADR-017.
 
 ## Adding a provider
 
@@ -508,15 +520,71 @@ worker's `AbortSignal` stops the stream.
 
 ## Cost and limits
 
-`AI_DEFAULT_LIMITS`: 60 s timeout, 4096 output tokens, 50 000 micro-USD (5 cent) per
-run. Every provider must refuse to exceed the budget it is given.
+`AI_DEFAULT_LIMITS` (`packages/ai/src/provider.ts`) still declares a 60 s
+`timeoutMs` field, but nothing reads it: the mock provider takes its own
+default, and the OpenRouter adapter never applies it (it only ever forwards
+`signal`). Dead, and stated as such here instead of leaving it to be
+rediscovered — see "Time budget of a run" below for what actually governs a
+run's timing. `maxOutputTokens` and `budgetMicroUsd` on the same object are
+not dead: the OpenRouter adapter and the mock provider both read
+`maxOutputTokens` as their fallback when a request omits it.
 
-A run does not use that default: `createAiRunProcessor` passes
-`min(ai.maxOutputTokens, ai_model.maxOutputTokens)` with every turn, so the
-admin setting is the effective ceiling and a model that caps its own output
-lower still gets a request it can answer. The default only applies to callers
-that pass nothing (and the compaction summary and image descriptions pass their
-own, smaller limits).
+`createAiRunProcessor` passes `min(ai.maxOutputTokens, ai_model.maxOutputTokens)`
+with every turn, so the admin setting is the effective ceiling and a model
+that caps its own output lower still gets a request it can answer. The
+compaction summary and image descriptions pass their own, smaller limits.
+
+`ai.budgetMicroUsdPerRun` is checked after every turn and before every tool
+call; a run that would exceed it stops with `ai_budget_exceeded` rather than
+placing one more paid call.
+
+## Time budget of a run (ADR-017)
+
+Two settings, one derivation (`deriveAiRunTimeouts`,
+`packages/contracts/src/ai-runtime.ts`):
+
+| Setting | Default | Governs |
+| --- | --- | --- |
+| `ai.timeoutMs` | 180 000 ms | One model answer (one turn). |
+| `ai.maxRunMs` | 900 000 ms | The whole run: every turn and every tool round-trip. |
+
+`ai.maxRunMs` can never end up shorter than `ai.timeoutMs` — a run with tools
+enabled could otherwise never finish even its first answer — so an admin
+setting it lower gets the turn timeout instead.
+
+Everything else a run's clock needs is a fixed constant next to those two,
+not admin-configurable because it is infrastructure rather than a product
+preference: the heartbeat interval and staleness window a run's liveness is
+judged by, the `ai` queue's lock duration and stalled interval (long enough to
+never mistake a legitimately slow run for a dead one), the tool-call ceiling,
+and the maintenance reaper's grace period on top of the run budget.
+
+Three independent mechanisms end a run that overruns its budget, so "stuck on
+`RUNNING` forever" is not reachable from any of them:
+
+1. **The worker's own two `AbortController`s.** A per-turn timer aborts a
+   single slow answer; a per-run timer aborts the whole thing once
+   `ai.maxRunMs` elapses. Either produces `TIMED_OUT` with `errorCode:
+   'ai_timeout'`.
+2. **The heartbeat as the cancellation channel.** The run writes a
+   `heartbeatAt` timestamp every few seconds through a status-filtered
+   `updateMany` (`status: 'RUNNING'`); `count === 0` means the row left
+   `RUNNING` from outside (`POST /cancel`, or the reaper below), and the run
+   aborts itself with `errorCode: 'ai_cancelled'` — no second signalling path.
+3. **`reap-stale-ai-runs`**, a repeatable maintenance job
+   (`apps/worker/src/processors/maintenance.ts`), for the case the two above
+   cannot reach at all: a process that was killed hard enough to never run
+   its own cleanup. It closes out a `RUNNING` run whose heartbeat or budget
+   has expired (`ai_run_abandoned` or `ai_timeout`) and a `PENDING` run old
+   enough that it was evidently never picked up (`ai_run_lost`) — the latter
+   is what keeps `ai_conversation_locked` from becoming permanent.
+
+The `ai` queue's `attempts: 1` (`QUEUE_JOB_OPTIONS`,
+`packages/queue/src/registry.ts`) is part of the same decision:
+`createAiRunProcessor` never throws on a provider or timeout failure, so a
+BullMQ retry would only ever fire for an infrastructure error, and retrying an
+agentic run pays for the prompt again and can duplicate a write made through
+`exo_page_write`, which is not idempotent.
 
 ## Tests
 

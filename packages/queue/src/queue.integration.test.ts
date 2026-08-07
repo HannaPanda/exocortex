@@ -114,7 +114,41 @@ describe('QueueRegistry', () => {
   it('answers a Redis ping', async () => {
     expect(await queues.ping()).toBe(true);
   });
+
+  it('gives the ai queue its own retry policy', async () => {
+    // createAiRunProcessor never throws on a provider or timeout failure --
+    // it writes a terminal status itself -- so a BullMQ retry would only
+    // ever fire for an infrastructure error, and would pay for the prompt a
+    // second time (ADR-017). Enqueued with a delay: this Redis instance is
+    // shared with the live `exocortex-worker` on this host, and an
+    // undelayed job would be claimed by its real ai worker before this test
+    // gets to inspect (or remove) it.
+    const runId = `run-${Date.now().toString(36)}`;
+    const jobId = await queues.enqueue(
+      QUEUE_NAMES.ai,
+      {
+        correlationId: `corr-${runId}`,
+        runId,
+        workspaceId: 'workspace-test-0001',
+        userId: 'user-test-00001',
+      },
+      { delay: 60_000 },
+    );
+
+    const job = await queues.getQueue(QUEUE_NAMES.ai).getJob(jobId);
+    expect(job?.opts.attempts).toBe(1);
+    await job?.remove();
+  });
 });
+
+// `createTypedWorker`'s `lockDuration` / `stalledInterval` wiring
+// (packages/queue/src/worker.ts) is deliberately not exercised here with a
+// real `Worker`: every queue name is a real, actively-consumed production
+// queue on this shared Redis, and a second `Worker` instance starts polling
+// for jobs the moment it is constructed (BullMQ's `autorun` defaults to
+// `true`), which would race the live `exocortex-worker` for real jobs. The
+// plumbing itself is covered by `pnpm typecheck` and by
+// `apps/worker/src/main.ts` passing the two AI-specific constants through.
 
 describe('RedisEventBus', () => {
   it('delivers a validated event to a subscriber', async () => {

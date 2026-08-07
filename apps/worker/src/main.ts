@@ -11,7 +11,13 @@ import {
 } from '@exocortex/ai';
 import { issueServiceToken } from '@exocortex/auth';
 import { loadWorkerEnv } from '@exocortex/config';
-import { QUEUE_NAMES, resolveSettings, type Settings } from '@exocortex/contracts';
+import {
+  AI_QUEUE_LOCK_DURATION_MS,
+  AI_QUEUE_STALLED_INTERVAL_MS,
+  QUEUE_NAMES,
+  resolveSettings,
+  type Settings,
+} from '@exocortex/contracts';
 import { createPrismaClient, PostgresSearchAdapter } from '@exocortex/database';
 import { createCorrelationId, createLogger } from '@exocortex/logger';
 import { createFetchApiClient } from '@exocortex/mcp-tools';
@@ -90,13 +96,14 @@ async function bootstrap(): Promise<void> {
   const toolRunnerFactory =
     env.SERVICE_TOKEN_SECRET === undefined
       ? null
-      : (input: { userId: string; includeMutating: boolean }) =>
+      : (input: { userId: string; includeMutating: boolean; toolCallTimeoutMs: number }) =>
           createToolRunner({
             apiUrl: env.API_URL,
             serviceTokenSecret: env.SERVICE_TOKEN_SECRET!,
             serviceTokenTtlSeconds: env.SERVICE_TOKEN_TTL_SECONDS,
             userId: input.userId,
             includeMutating: input.includeMutating,
+            toolCallTimeoutMs: input.toolCallTimeoutMs,
             logger,
           });
 
@@ -333,6 +340,11 @@ async function bootstrap(): Promise<void> {
     redisUrl: env.REDIS_URL,
     logger,
     concurrency: 2,
+    // A run's own budget (`ai.maxRunMs`) can run into the minutes, so the
+    // queue's lock has to comfortably outlast it; `stalledInterval` follows
+    // the same reasoning (see `packages/contracts/src/ai-runtime.ts`).
+    lockDuration: AI_QUEUE_LOCK_DURATION_MS,
+    stalledInterval: AI_QUEUE_STALLED_INTERVAL_MS,
     handler: createAiRunProcessor({
       prisma,
       provider,
@@ -346,6 +358,35 @@ async function bootstrap(): Promise<void> {
     onFailed: async (payload, job, error) => {
       if (payload === null) return;
       logger.error('AI job failed', error, { runId: payload.runId, jobId: job?.id });
+
+      // `createAiRunProcessor` never throws on a provider or timeout failure --
+      // it writes a terminal status itself -- so landing here at all means an
+      // infrastructure error (crashed process, lost database connection) left
+      // the row on PENDING or RUNNING. Second rescue path alongside the
+      // maintenance reaper (`reap-stale-ai-runs`), and a faster one: this
+      // fires the moment BullMQ gives up rather than on the reaper's
+      // up-to-a-minute cycle. Guarded on attempts exhausted, since the `ai`
+      // queue's `attempts: 1` still leaves this the only attempt anyway.
+      const attemptsAllowed = job?.opts.attempts ?? 1;
+      if (job !== undefined && job.attemptsMade < attemptsAllowed) return;
+      const closed = await prisma.aiRun.updateMany({
+        where: { id: payload.runId, status: { in: ['PENDING', 'RUNNING'] } },
+        data: { status: 'FAILED', errorCode: 'ai_run_abandoned', finishedAt: new Date() },
+      });
+      if (closed.count === 1) {
+        await bus.publish({
+          type: 'ai.run.failed',
+          workspaceId: payload.workspaceId,
+          correlationId: payload.correlationId,
+          emittedAt: new Date().toISOString(),
+          payload: {
+            runId: payload.runId,
+            status: 'failed',
+            errorCode: 'ai_run_abandoned',
+            reason: 'The job failed and BullMQ has no attempts left',
+          },
+        });
+      }
     },
   });
 
@@ -354,7 +395,7 @@ async function bootstrap(): Promise<void> {
     redisUrl: env.REDIS_URL,
     logger,
     concurrency: 1,
-    handler: createMaintenanceProcessor({ prisma, queues, storage }),
+    handler: createMaintenanceProcessor({ prisma, queues, storage, bus, settings: readSettings }),
   });
 
   // Concurrency 1: PDF extraction is an external call and must not crowd out

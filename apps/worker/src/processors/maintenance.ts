@@ -1,12 +1,22 @@
-import { type QUEUE_NAMES, QUEUE_NAMES as QUEUES } from '@exocortex/contracts';
+import {
+  AI_RUN_PICKUP_GRACE_MS,
+  deriveAiRunTimeouts,
+  type QUEUE_NAMES,
+  QUEUE_NAMES as QUEUES,
+  type Settings,
+} from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
-import { type JobContext, type QueueRegistry } from '@exocortex/queue';
+import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
 export interface MaintenanceDependencies {
   prisma: PrismaClient;
   queues: QueueRegistry;
   storage: ObjectStorage;
+  /** Publishes `ai.run.failed` for a run `reap-stale-ai-runs` closes out. */
+  bus: RedisEventBus;
+  /** Same resolver the AI processor uses, so the reaper agrees with it on the run budget. */
+  settings: () => Promise<Settings>;
   /** Snapshots kept per document by `prune-snapshots`. */
   snapshotsToKeep?: number;
   /** Outbox rows dispatched per run. */
@@ -27,7 +37,7 @@ export interface MaintenanceDependencies {
  * them into follow-up work. Realtime delivery is the fast, best-effort half.
  */
 export function createMaintenanceProcessor(dependencies: MaintenanceDependencies) {
-  const { prisma, queues, storage } = dependencies;
+  const { prisma, queues, storage, bus } = dependencies;
   const snapshotsToKeep = dependencies.snapshotsToKeep ?? 20;
   const outboxBatchSize = dependencies.outboxBatchSize ?? 100;
   const orphanedCoverGraceMs = dependencies.orphanedCoverGraceMs ?? 60 * 60 * 1000;
@@ -165,6 +175,66 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
           WHERE "documentId" NOT IN (SELECT "id" FROM "document")
         `;
         logger.info('Search index vacuumed', { removed: orphans });
+        return;
+      }
+
+      case 'reap-stale-ai-runs': {
+        // Second line of defence behind the processor's own guard
+        // (`ai-run.ts`, part a): a run whose worker crashed hard enough to
+        // never re-enqueue at all is only ever found here.
+        const timeouts = deriveAiRunTimeouts(await dependencies.settings());
+        const now = Date.now();
+        const abandonedBefore = new Date(now - timeouts.heartbeatStaleMs);
+        const budgetBefore = new Date(now - timeouts.reaperDeadlineMs);
+        const pendingBefore = new Date(now - AI_RUN_PICKUP_GRACE_MS);
+
+        const candidates = await prisma.aiRun.findMany({
+          where: {
+            OR: [
+              { status: 'RUNNING', heartbeatAt: { lt: abandonedBefore } },
+              { status: 'RUNNING', heartbeatAt: null, startedAt: { lt: abandonedBefore } },
+              { status: 'RUNNING', startedAt: { lt: budgetBefore } },
+              // Never picked up: the job was lost between creating the row and
+              // enqueueing it, or Redis lost it. Without this the conversation
+              // stays locked (`ai_conversation_locked`) forever.
+              { status: 'PENDING', createdAt: { lt: pendingBefore } },
+            ],
+          },
+          select: { id: true, workspaceId: true, status: true, startedAt: true },
+          take: 100,
+        });
+
+        let reaped = 0;
+        for (const candidate of candidates) {
+          const timedOut =
+            candidate.status === 'RUNNING' &&
+            candidate.startedAt !== null &&
+            candidate.startedAt < budgetBefore;
+          const errorCode = candidate.status === 'PENDING'
+            ? 'ai_run_lost'
+            : timedOut
+              ? 'ai_timeout'
+              : 'ai_run_abandoned';
+          const closed = await prisma.aiRun.updateMany({
+            where: { id: candidate.id, status: candidate.status },
+            data: { status: timedOut ? 'TIMED_OUT' : 'FAILED', errorCode, finishedAt: new Date() },
+          });
+          if (closed.count === 0) continue; // Ended on its own in the meantime.
+          await bus.publish({
+            type: 'ai.run.failed',
+            workspaceId: candidate.workspaceId,
+            correlationId: payload.correlationId,
+            emittedAt: new Date().toISOString(),
+            payload: {
+              runId: candidate.id,
+              status: timedOut ? 'timed_out' : 'failed',
+              errorCode,
+              reason: `Reaped by maintenance: ${errorCode}`,
+            },
+          });
+          reaped += 1;
+        }
+        logger.info('Stale AI runs reaped', { reaped, candidates: candidates.length });
         return;
       }
 

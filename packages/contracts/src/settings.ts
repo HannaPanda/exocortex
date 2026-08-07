@@ -15,7 +15,10 @@ export const settingsSchema = z.object({
   /** Prepended to every run's system prompt, before any AI rule pages. */
   'ai.systemPrompt': z.string().max(8_000).default(''),
   'ai.maxOutputTokens': z.number().int().min(256).max(200_000).default(4_096),
+  /** Limit for a single model answer. A run with tools may take several of these (see `ai.maxRunMs`). */
   'ai.timeoutMs': z.number().int().min(5_000).max(600_000).default(180_000),
+  /** Limit for the whole run, across every turn and tool round-trip. Never allowed to undercut `ai.timeoutMs` (see `deriveAiRunTimeouts`). */
+  'ai.maxRunMs': z.number().int().min(60_000).max(3_600_000).default(900_000),
   'ai.budgetMicroUsdPerRun': z.number().int().min(1_000).max(50_000_000).default(500_000),
   'ai.toolsEnabled': z.boolean().default(true),
   /** Whether the built-in AI may call tools that change data. */

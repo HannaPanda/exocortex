@@ -46,6 +46,15 @@ describe('resolveSettings', () => {
     expect(settings).toEqual(settingsSchema.parse({}));
     expect(invalidKeys).toEqual([]);
   });
+
+  it('defaults ai.maxRunMs to 900000ms and rejects a value below its floor', () => {
+    expect(settingsSchema.parse({})['ai.maxRunMs']).toBe(900_000);
+    const { settings, invalidKeys } = resolveSettings({
+      rows: [{ key: 'ai.maxRunMs', value: 30_000 }],
+    });
+    expect(invalidKeys).toEqual(['ai.maxRunMs']);
+    expect(settings['ai.maxRunMs']).toBe(900_000);
+  });
 });
 
 describe('updateSettingsRequestSchema', () => {

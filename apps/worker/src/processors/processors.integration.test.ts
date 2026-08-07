@@ -17,6 +17,7 @@ import {
 } from '@exocortex/ai';
 import { loadWorkerEnv } from '@exocortex/config';
 import {
+  AI_RUN_HEARTBEAT_STALE_MS,
   type PdfMetadata,
   type QUEUE_NAMES,
   type Settings,
@@ -48,6 +49,30 @@ import { createMaterializeDocumentProcessor } from './materialize-document';
 function stubSettings(overrides: Partial<Settings> = {}): () => Promise<Settings> {
   const settings = settingsSchema.parse(overrides);
   return async () => settings;
+}
+
+/**
+ * Same as `stubSettings`, but bypasses zod validation for the override.
+ *
+ * A real deployment cannot set `ai.maxRunMs` or `ai.timeoutMs` below their
+ * documented floors (60s / 5s), so this is not a case a production settings
+ * row can reach. It is what lets a test exercise the run-budget mechanism
+ * itself in milliseconds instead of minutes.
+ */
+function stubSettingsUnchecked(overrides: Partial<Settings>): () => Promise<Settings> {
+  const settings = { ...settingsSchema.parse({}), ...overrides } as Settings;
+  return async () => settings;
+}
+
+/** Records what a processor published instead of reaching Redis. */
+function recordingEventBus(
+  published: { type: string; payload: Record<string, unknown> }[],
+): RedisEventBus {
+  return {
+    publish: async (event: { type: string; payload: Record<string, unknown> }) => {
+      published.push(event);
+    },
+  } as unknown as RedisEventBus;
 }
 
 /** A model row that supports tools, for the tool-loop tests below. */
@@ -361,6 +386,27 @@ describe('search indexing', () => {
   }, 60_000);
 });
 
+/** A minimal `AiRun` row for the reaper tests: no document, no conversation. */
+async function createAiRunRow(
+  status: 'PENDING' | 'RUNNING',
+  overrides: { startedAt?: Date | null; heartbeatAt?: Date | null; createdAt?: Date } = {},
+): Promise<string> {
+  const run = await prisma.aiRun.create({
+    data: {
+      workspaceId,
+      createdById: userId,
+      status,
+      provider: 'mock',
+      model: 'test-model',
+      messages: [{ role: 'user', content: 'test' }],
+      startedAt: overrides.startedAt ?? null,
+      heartbeatAt: overrides.heartbeatAt ?? null,
+      ...(overrides.createdAt === undefined ? {} : { createdAt: overrides.createdAt }),
+    },
+  });
+  return run.id;
+}
+
 describe('maintenance', () => {
   it('dispatches outbox events exactly once', async () => {
     const documentId = await createDocument();
@@ -373,7 +419,13 @@ describe('maintenance', () => {
       },
     });
 
-    const processor = createMaintenanceProcessor({ prisma, queues, storage: recordingStorage() });
+    const processor = createMaintenanceProcessor({
+      prisma,
+      queues,
+      storage: recordingStorage(),
+      bus,
+      settings: stubSettings(),
+    });
     await processor(
       contextFor({ correlationId: 'test-outbox', task: 'dispatch-outbox', workspaceId: null })
         .context,
@@ -413,6 +465,8 @@ describe('maintenance', () => {
       prisma,
       queues,
       storage: recordingStorage(),
+      bus,
+      settings: stubSettings(),
       snapshotsToKeep: 2,
     });
     await processor(
@@ -472,6 +526,8 @@ describe('maintenance', () => {
       prisma,
       queues,
       storage: recordingStorage(deleted),
+      bus,
+      settings: stubSettings(),
     });
     await processor(
       contextFor({ correlationId: 'test-covers', task: 'collect-orphaned-covers', workspaceId })
@@ -486,6 +542,112 @@ describe('maintenance', () => {
     expect((await prisma.attachment.findUniqueOrThrow({ where: { id: inBody.id } })).deletedAt)
       .toBeNull();
   }, 60_000);
+
+  it('reaps a RUNNING run whose heartbeat has gone stale, as ai_run_abandoned', async () => {
+    const staleHeartbeat = new Date(Date.now() - 5 * 60_000);
+    const runId = await createAiRunRow('RUNNING', { startedAt: staleHeartbeat, heartbeatAt: staleHeartbeat });
+
+    const published: { type: string; payload: Record<string, unknown> }[] = [];
+    const processor = createMaintenanceProcessor({
+      prisma,
+      queues,
+      storage: recordingStorage(),
+      bus: recordingEventBus(published),
+      settings: stubSettings(),
+    });
+    await processor(
+      contextFor({ correlationId: 'test-reap-1', task: 'reap-stale-ai-runs', workspaceId: null }).context,
+    );
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('FAILED');
+    expect(run.errorCode).toBe('ai_run_abandoned');
+    expect(
+      published.some(
+        (event) =>
+          event.type === 'ai.run.failed' &&
+          event.payload.runId === runId &&
+          event.payload.errorCode === 'ai_run_abandoned',
+      ),
+    ).toBe(true);
+  }, 30_000);
+
+  it('reaps a PENDING run that was never picked up, as ai_run_lost', async () => {
+    const runId = await createAiRunRow('PENDING', { createdAt: new Date(Date.now() - 6 * 60_000) });
+
+    const published: { type: string; payload: Record<string, unknown> }[] = [];
+    const processor = createMaintenanceProcessor({
+      prisma,
+      queues,
+      storage: recordingStorage(),
+      bus: recordingEventBus(published),
+      settings: stubSettings(),
+    });
+    await processor(
+      contextFor({ correlationId: 'test-reap-2', task: 'reap-stale-ai-runs', workspaceId: null }).context,
+    );
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('FAILED');
+    expect(run.errorCode).toBe('ai_run_lost');
+    expect(
+      published.some(
+        (event) =>
+          event.type === 'ai.run.failed' &&
+          event.payload.runId === runId &&
+          event.payload.errorCode === 'ai_run_lost',
+      ),
+    ).toBe(true);
+  }, 30_000);
+
+  it('leaves a healthy run alone', async () => {
+    const runningId = await createAiRunRow('RUNNING', { startedAt: new Date(), heartbeatAt: new Date() });
+    const pendingId = await createAiRunRow('PENDING');
+
+    const published: { type: string; payload: Record<string, unknown> }[] = [];
+    const processor = createMaintenanceProcessor({
+      prisma,
+      queues,
+      storage: recordingStorage(),
+      bus: recordingEventBus(published),
+      settings: stubSettings(),
+    });
+    await processor(
+      contextFor({ correlationId: 'test-reap-3', task: 'reap-stale-ai-runs', workspaceId: null }).context,
+    );
+
+    const runningRow = await prisma.aiRun.findUniqueOrThrow({ where: { id: runningId } });
+    const pendingRow = await prisma.aiRun.findUniqueOrThrow({ where: { id: pendingId } });
+    expect(runningRow.status).toBe('RUNNING');
+    expect(pendingRow.status).toBe('PENDING');
+    expect(
+      published.some((event) => event.payload.runId === runningId || event.payload.runId === pendingId),
+    ).toBe(false);
+  }, 30_000);
+
+  it('sets TIMED_OUT instead of FAILED once the total run budget is exceeded, even with a fresh heartbeat', async () => {
+    // Older than the default budget (900_000ms) plus the reaper's grace
+    // period (30_000ms), but the heartbeat is fresh: a run can legitimately
+    // still be ticking and still be over its own total time budget.
+    const startedAt = new Date(Date.now() - 950_000);
+    const runId = await createAiRunRow('RUNNING', { startedAt, heartbeatAt: new Date() });
+
+    const published: { type: string; payload: Record<string, unknown> }[] = [];
+    const processor = createMaintenanceProcessor({
+      prisma,
+      queues,
+      storage: recordingStorage(),
+      bus: recordingEventBus(published),
+      settings: stubSettings(),
+    });
+    await processor(
+      contextFor({ correlationId: 'test-reap-4', task: 'reap-stale-ai-runs', workspaceId: null }).context,
+    );
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('TIMED_OUT');
+    expect(run.errorCode).toBe('ai_timeout');
+  }, 30_000);
 });
 
 describe('cover generation', () => {
@@ -701,6 +863,53 @@ class ScriptedAiProvider implements AiProvider {
     if (turn.text.length > 0) yield { type: 'delta', text: turn.text, sequence: 1 };
     if (turn.toolCalls !== undefined) yield { type: 'tool_calls', toolCalls: turn.toolCalls };
     yield { type: 'done', text: turn.text, finishReason: turn.finishReason };
+  }
+}
+
+/**
+ * Never answers on its own; throws once the run aborts it, the way a real
+ * `fetch(..., { signal })` does. `MockAiProvider` deliberately turns an abort
+ * into a controlled `error` event instead of throwing, which is too forgiving
+ * to exercise the run/turn-timeout and cancellation paths in `ai-run.ts` --
+ * those rely on the exception reaching the outer `catch`.
+ */
+class HangingAiProvider implements AiProvider {
+  public readonly id = 'hanging-test-provider';
+  public readonly capabilities: AiProviderCapabilities = {
+    textGeneration: true,
+    vision: false,
+    toolCalling: false,
+    structuredOutput: false,
+    streaming: true,
+    contextWindowTokens: 32_000,
+    usageReporting: true,
+    costReporting: true,
+    models: [],
+  };
+
+  async generate(): Promise<AiGenerateResult> {
+    throw new Error('The hanging provider is only used for streaming');
+  }
+
+  async *stream(request: AiGenerateRequest): AsyncIterable<AiStreamEvent> {
+    yield { type: 'start', model: request.model ?? 'test-model', provider: this.id };
+    const signal = request.signal;
+    await new Promise<void>((resolve, reject) => {
+      if (signal?.aborted === true) {
+        reject(new DOMException('The operation was aborted', 'AbortError'));
+        return;
+      }
+      const timer = setTimeout(resolve, 10 * 60_000);
+      signal?.addEventListener(
+        'abort',
+        () => {
+          clearTimeout(timer);
+          reject(new DOMException('The operation was aborted', 'AbortError'));
+        },
+        { once: true },
+      );
+    });
+    yield { type: 'delta', text: 'unreachable', sequence: 1 };
   }
 }
 
@@ -991,6 +1200,134 @@ describe('ai runs', () => {
     expect(run.status).toBe('FAILED');
     expect(run.errorCode).toBe('ai_tool_call_invalid');
   }, 60_000);
+
+  it('marks the run TIMED_OUT with ai_timeout once its own time budget elapses', async () => {
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+    const published: { type: string; payload: Record<string, unknown> }[] = [];
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider: new HangingAiProvider(),
+      bus: recordingEventBus(published),
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettingsUnchecked({ 'ai.timeoutMs': 150, 'ai.maxRunMs': 150 }),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => null,
+      modelRegistry: async () => null,
+    });
+    await processor(contextFor({ correlationId: 'test-ai-timeout-1', runId, workspaceId, userId }).context);
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('TIMED_OUT');
+    expect(run.errorCode).toBe('ai_timeout');
+    expect(
+      published.some(
+        (event) => event.type === 'ai.run.failed' && event.payload.status === 'timed_out',
+      ),
+    ).toBe(true);
+  }, 30_000);
+
+  it('stops streaming once cancelled and never overwrites the cancellation with COMPLETED', async () => {
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+    const published: { type: string; payload: Record<string, unknown> }[] = [];
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider: new HangingAiProvider(),
+      bus: recordingEventBus(published),
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => null,
+      modelRegistry: async () => null,
+    });
+
+    const runPromise = processor(
+      contextFor({ correlationId: 'test-ai-cancel-1', runId, workspaceId, userId }).context,
+    );
+
+    // Give the processor a moment to reach RUNNING, then cancel exactly the
+    // way POST /cancel does: touch only the database row. The worker notices
+    // through its own next heartbeat write.
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    await prisma.aiRun.update({
+      where: { id: runId },
+      data: { status: 'CANCELLED', cancelledAt: new Date(), finishedAt: new Date() },
+    });
+
+    await runPromise;
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('CANCELLED');
+    expect(published.some((event) => event.type === 'ai.run.completed')).toBe(false);
+  }, 15_000);
+
+  it('skips a RUNNING run that still has a fresh heartbeat, instead of taking it over', async () => {
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+    await prisma.aiRun.update({
+      where: { id: runId },
+      data: { status: 'RUNNING', startedAt: new Date(), heartbeatAt: new Date() },
+    });
+    const published: { type: string; payload: Record<string, unknown> }[] = [];
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider: new CapturingAiProvider(),
+      bus: recordingEventBus(published),
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => null,
+      modelRegistry: async () => null,
+    });
+    await processor(contextFor({ correlationId: 'test-ai-fresh-1', runId, workspaceId, userId }).context);
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('RUNNING');
+    expect(published).toEqual([]);
+  }, 30_000);
+
+  it('closes a RUNNING run with a stale heartbeat as abandoned, instead of resuming it', async () => {
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+    const staleHeartbeat = new Date(Date.now() - AI_RUN_HEARTBEAT_STALE_MS - 5_000);
+    await prisma.aiRun.update({
+      where: { id: runId },
+      data: { status: 'RUNNING', startedAt: staleHeartbeat, heartbeatAt: staleHeartbeat },
+    });
+    const published: { type: string; payload: Record<string, unknown> }[] = [];
+    const provider = new CapturingAiProvider();
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider,
+      bus: recordingEventBus(published),
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => null,
+      modelRegistry: async () => null,
+    });
+    await processor(contextFor({ correlationId: 'test-ai-stale-1', runId, workspaceId, userId }).context);
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('FAILED');
+    expect(run.errorCode).toBe('ai_run_abandoned');
+    expect(
+      published.some(
+        (event) =>
+          event.type === 'ai.run.failed' &&
+          event.payload.runId === runId &&
+          event.payload.errorCode === 'ai_run_abandoned',
+      ),
+    ).toBe(true);
+    // The provider must never have been asked to answer: taking this run
+    // over would be a second answer, not a resume.
+    expect(provider.lastRequest).toBeNull();
+  }, 30_000);
 });
 
 async function createConversation(): Promise<string> {

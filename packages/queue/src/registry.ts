@@ -19,6 +19,22 @@ export const DEFAULT_JOB_OPTIONS: JobsOptions = {
   removeOnFail: { age: 7 * 24 * 3_600, count: 5_000 },
 };
 
+/**
+ * Per-queue overrides layered on top of `DEFAULT_JOB_OPTIONS`.
+ *
+ * The `ai` queue gets its own retry policy: `createAiRunProcessor`
+ * (`apps/worker/src/processors/ai-run.ts`) never throws on a provider or
+ * timeout failure, it writes `FAILED`/`TIMED_OUT` itself, so BullMQ's retries
+ * would only ever fire for an infrastructure error -- and a blind second
+ * attempt there would pay for the prompt twice and can duplicate writes made
+ * through `exo_page_write`, which is not idempotent (ADR-017).
+ */
+export const QUEUE_JOB_OPTIONS: Partial<Record<QueueName, JobsOptions>> = {
+  [QUEUE_NAMES.ai]: {
+    attempts: 1,
+  },
+};
+
 /** Debounce window for document materialization. */
 export const MATERIALIZATION_DEBOUNCE_MS = 2_000;
 /** Upper bound so a continuously edited document is still materialized. */
@@ -64,7 +80,7 @@ export class QueueRegistry {
     if (existing !== undefined) return existing;
     const queue = new Queue(name, {
       connection: this.connection,
-      defaultJobOptions: DEFAULT_JOB_OPTIONS,
+      defaultJobOptions: { ...DEFAULT_JOB_OPTIONS, ...(QUEUE_JOB_OPTIONS[name] ?? {}) },
     });
     this.queues.set(name, queue);
     return queue;
@@ -176,6 +192,17 @@ export class QueueRegistry {
       {
         name: QUEUE_NAMES.maintenance,
         data: { correlationId, task: 'collect-orphaned-covers', workspaceId: null },
+      },
+    );
+    // Every minute: the second-line defence for a run whose worker died
+    // without a chance to close it out itself (issue #16). See
+    // `apps/worker/src/processors/maintenance.ts`.
+    await queue.upsertJobScheduler(
+      'reap-stale-ai-runs',
+      { every: 60_000 },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: { correlationId, task: 'reap-stale-ai-runs', workspaceId: null },
       },
     );
     this.logger.info('Maintenance schedulers registered');

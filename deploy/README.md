@@ -144,7 +144,20 @@ last.
    `pnpm --filter @exocortex/database db:seed:ai-models`. Idempotent — it upserts
    by slug and re-wires vision companions.
 
-8. **Restart**, API first (everything talks to it), web last (it is what users
+8. **Sync nginx** if `deploy/nginx/exocortex.app.conf` changed:
+
+   ```bash
+   sudo cp deploy/nginx/exocortex.app.conf /etc/nginx/sites-available/exocortex
+   sudo nginx -t && sudo systemctl reload nginx
+   ```
+
+   `/api/` is `proxy_read_timeout 300s` / `proxy_send_timeout 300s` (ADR-017):
+   nothing behind it is allowed to take longer, because an AI run's own time
+   budget (`ai.maxRunMs`) lives in the worker, not in an HTTP request —
+   `POST /api/ai/runs` and `.../conversations/:id/messages` answer as soon as
+   the job is enqueued. `/` stays at 120s; Next.js has no long-running routes.
+
+9. **Restart**, API first (everything talks to it), web last (it is what users
    hit):
 
    ```bash
@@ -157,7 +170,16 @@ last.
    Never `pkill -f`: a pattern like `node dist/main.js` matches the live services.
    Use `systemctl`, or an exact PID.
 
-9. **Verify.** `systemctl is-active` for all four,
+   The worker restart is where `reap-stale-ai-runs` first runs against
+   whatever the previous deploy left behind. Right after this restart every
+   run still `RUNNING` from before it has a stale or absent heartbeat, so the
+   reaper (or the AI processor's own idempotency guard, if a job is still
+   queued for it) closes all of them out as `ai_run_abandoned` within a
+   minute — expected, but it is a burst of `ai.run.failed` events. Count
+   first if that matters: `SELECT status, count(*) FROM ai_run GROUP BY
+   status;`.
+
+10. **Verify.** `systemctl is-active` for all four,
    `curl -s https://exocortex.app/health/ready`, and
    `journalctl -u <unit> -n 30 --no-pager` for startup errors.
 

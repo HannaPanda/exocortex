@@ -9,7 +9,7 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `document-materialization` | collaboration server (debounced), API (import, snapshot restore) | `createMaterializeDocumentProcessor` | real |
 | `search-indexing` | materialization, document mutations, outbox dispatch | `createIndexDocumentProcessor` | real |
 | `ai` | `AiService.createRun`, `ConversationsService.postMessage` | `createAiRunProcessor` | real, mock provider |
-| `maintenance` | repeatable schedulers | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`), documented placeholder (`vacuum-search-index`) |
+| `maintenance` | repeatable schedulers | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`), documented placeholder (`vacuum-search-index`) |
 | `attachment-text` | attachment upload, `GET /api/attachments/:id/text` (on demand) | `createAttachmentTextProcessor` | real |
 | `document-cover` | `POST /api/documents/:id/cover/generate` | `createDocumentCoverProcessor` | real |
 
@@ -42,18 +42,45 @@ carries only `{ correlationId, runId, workspaceId, userId }`. The worker reads
 everything else — the model, the conversation, its live message list — from
 the `AiRun` and `AiConversation` rows themselves.
 
+The `ai` queue is the one queue that overrides the defaults above (ADR-017,
+`QUEUE_JOB_OPTIONS` in `packages/queue/src/registry.ts`):
+
+* **`attempts: 1`**, not the usual 5. `createAiRunProcessor` never throws on a
+  provider or timeout failure — it always writes a terminal status
+  (`FAILED`/`TIMED_OUT`/`CANCELLED`) itself — so a retry would only ever fire
+  for an infrastructure error, and retrying an agentic run pays for the prompt
+  a second time and can duplicate a write made through `exo_page_write`,
+  which is not idempotent.
+* **`lockDuration: 300_000` / `stalledInterval: 60_000`**
+  (`AI_QUEUE_LOCK_DURATION_MS` / `AI_QUEUE_STALLED_INTERVAL_MS`,
+  `packages/contracts/src/ai-runtime.ts`), well above the default 60 s: a run
+  legitimately takes minutes, and both values only exist to catch a worker
+  that is actually dead, not merely busy.
+
+`reap-stale-ai-runs` (every 60 s) is the second-line rescue for a run whose
+worker never got a chance to close it out itself — a hard process kill, a lost
+job. It closes a `RUNNING` run whose heartbeat or total budget has expired
+(`ai_run_abandoned` or `ai_timeout`) and a `PENDING` run old enough that it was
+evidently never picked up (`ai_run_lost`, which is also what keeps
+`ai_conversation_locked` from becoming permanent). See "Time budget of a run"
+in `docs/ai-architecture.md` and ADR-017 for the full mechanism, including the
+heartbeat the worker itself relies on to detect a cancellation.
+
 ## Guarantees
 
 * **Runtime-validated payloads.** `QueueRegistry.enqueue` parses with zod before
   writing to Redis; `createTypedWorker` parses again before running. A structurally
   invalid payload throws `UnrecoverableError`, so it is not retried but stays in the
   failed set for inspection.
-* **Retries with explicit backoff.** `attempts: 5`, exponential from 1 s.
+* **Retries with explicit backoff.** `attempts: 5`, exponential from 1 s —
+  except the `ai` queue, which gets `attempts: 1` (see above).
 * **Idempotent handlers.**
   * materialization compares `materializedAt` with `yjsUpdatedAt` and skips when the
     derived data is already fresh
   * search indexing is a full upsert of the current state
-  * AI runs only process a record in `PENDING` state
+  * AI runs process a `PENDING` record, or a `RUNNING` one whose heartbeat has
+    gone stale (closed as abandoned rather than resumed); a `RUNNING` record
+    with a fresh heartbeat is left alone, and every other status is skipped
   * outbox dispatch sets `processedAt` and increments `attempts`
   * attachment text extraction returns immediately once `textStatus` is
     `READY`, so a retried job never re-extracts
@@ -79,6 +106,7 @@ the `AiRun` and `AiConversation` rows themselves.
 | snapshots per document | 20 (`prune-snapshots`, daily at 04:00) |
 | replaced page covers | deleted 1 hour after they stop being a cover (`collect-orphaned-covers`, daily at 04:30) |
 | outbox dispatch interval | 5 seconds, 100 rows per run |
+| stale AI run reap interval | 60 seconds, 100 runs per pass |
 
 ## Adding a background job
 
