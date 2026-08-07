@@ -161,7 +161,7 @@ Replace the SVG there when the real asset exists; nothing else references the lo
 │ page tree    │ Tiptap                     │ KI (functional)  │
 │ trash        │ breadcrumb, title, actions  │ Eigenschaften    │
 │              │                            │ Kommentare*      │
-│              │                            │ Verweise*        │
+│              │                            │ Verweise         │
 │              │                            │ Aktivität*       │
 └──────────────┴────────────────────────────┴──────────────────┘
 ```

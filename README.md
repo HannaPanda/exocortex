@@ -148,8 +148,8 @@ for each of them:
   execution (runner contracts only), autonomous agents
 * a complete version-history UI (snapshot services and endpoints exist)
 * granular per-block permissions
-* comments, backlinks and activity views (the context panel already has the
-  tabs and layout for them)
+* comments and activity views (the context panel already has the tabs and
+  layout for them)
 
 ## Licence
 

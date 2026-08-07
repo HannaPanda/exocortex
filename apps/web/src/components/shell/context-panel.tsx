@@ -21,6 +21,7 @@ import {
 } from '@exocortex/ui';
 
 import { AiPanel } from '@/components/ai/ai-panel';
+import { BacklinksPanel } from '@/components/shell/backlinks-panel';
 import { PanelErrorBoundary } from '@/components/shell/panel-error-boundary';
 import { useDocument } from '@/lib/api/queries';
 
@@ -63,9 +64,9 @@ function ContextTab({
 /**
  * Right-hand context panel.
  *
- * Only the AI tab is functional in this version. The remaining tabs exist so
- * comments, backlinks, properties and activity can be added without changing the
- * shell layout (see docs/architecture.md, "Deferred work").
+ * The AI and Verweise tabs are functional. The remaining tabs exist so comments
+ * and activity can be added without changing the shell layout (see
+ * docs/architecture.md, "Deferred work").
  */
 export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
   const document = useDocument(documentId ?? undefined);
@@ -146,12 +147,13 @@ export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
         />
       </TabsContent>
 
-      <TabsContent value="backlinks" className="p-3">
-        <EmptyState
-          title="Verweise folgen"
-          description="Wiki-Links werden bereits gespeichert, die Auswertung als Backlinks kommt später."
-          icon={LinkIcon}
-        />
+      <TabsContent value="backlinks" className="overflow-y-auto p-3">
+        <PanelErrorBoundary
+          title="Verweise nicht verfügbar"
+          description="Der Verweisindex konnte nicht angezeigt werden. Die Verweise selbst stehen weiterhin im Text der Seite."
+        >
+          <BacklinksPanel workspaceId={workspaceId} documentId={documentId} />
+        </PanelErrorBoundary>
       </TabsContent>
 
       <TabsContent value="activity" className="p-3">
