@@ -1,21 +1,25 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
   HttpCode,
   Inject,
   Param,
+  Patch,
   Post,
   Query,
   Req,
   Res,
 } from '@nestjs/common';
-import { ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { type FastifyReply, type FastifyRequest } from 'fastify';
 
 import { type VerifiedSession } from '@exocortex/auth';
 import { type ApiEnv } from '@exocortex/config';
 import {
+  type AttachmentTextCorrectionInput,
+  attachmentTextCorrectionInputSchema,
   type AttachmentTextInfoResponse,
   attachmentTextInfoResponseSchema,
   type AttachmentTextResponse,
@@ -28,7 +32,7 @@ import { CurrentSession } from '../auth/session.guard';
 import { currentCorrelationId } from '../common/correlation';
 import { API_ENV } from '../common/logger.provider';
 import { readUploadedFile } from '../common/multipart';
-import { openApiResponseSchema } from '../common/zod';
+import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
 import { AttachmentsService } from './attachments.service';
 
@@ -126,5 +130,35 @@ export class AttachmentsController {
     @Param('attachmentId') attachmentId: string,
   ): Promise<AttachmentTextInfoResponse> {
     return this.attachments.getTextInfo(attachmentId, session.userId);
+  }
+
+  /**
+   * Forces a fresh extraction even when the attachment is already `ready`
+   * (issue #2). `GET .../text` is deliberately idempotent and never does
+   * this; a person unhappy with a *successful but wrong* extraction has to
+   * ask for this explicitly.
+   */
+  @Post('attachments/:attachmentId/text/reextract')
+  @ApiOkResponse({ schema: openApiResponseSchema(attachmentTextResponseSchema) })
+  async reextractText(
+    @CurrentSession() session: VerifiedSession,
+    @Param('attachmentId') attachmentId: string,
+  ): Promise<AttachmentTextResponse> {
+    return this.attachments.forceReextract(attachmentId, session.userId, currentCorrelationId());
+  }
+
+  /**
+   * Writes, or with `text: null` clears, a human correction of the extracted
+   * text (issue #2). The only write path `extractedText` has ever had.
+   */
+  @Patch('attachments/:attachmentId/text')
+  @ApiBody({ schema: openApiSchema(attachmentTextCorrectionInputSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(attachmentTextResponseSchema) })
+  async correctText(
+    @CurrentSession() session: VerifiedSession,
+    @Param('attachmentId') attachmentId: string,
+    @Body(zodPipe(attachmentTextCorrectionInputSchema)) body: AttachmentTextCorrectionInput,
+  ): Promise<AttachmentTextResponse> {
+    return this.attachments.correctText(attachmentId, session.userId, body.text);
   }
 }

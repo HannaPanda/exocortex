@@ -6,6 +6,7 @@ import {
   assertPolicy,
   canDeleteAttachment,
   canDownloadAttachment,
+  canEditAttachmentText,
   canUploadFile,
   WorkspaceAccessService,
 } from '@exocortex/auth';
@@ -375,7 +376,9 @@ export class AttachmentsService {
   ): Promise<AttachmentTextResponse> {
     const { attachment, projected } = await this.readTextState(attachmentId, userId);
 
-    // Ready or already running: nothing to start.
+    // Ready or already running: nothing to start. A caller that wants a fresh
+    // attempt of an already-`ready` attachment has to say so explicitly
+    // through `forceReextract` (issue #2); this route stays the idempotent one.
     if (projected.status === 'ready' || projected.status === 'pending') return projected;
     // Only a PDF has a text layer worth chasing; anything else is settled.
     if (attachment.mimeType !== 'application/pdf') return projected;
@@ -393,7 +396,9 @@ export class AttachmentsService {
       reason: 'requested',
     });
 
-    return { ...projected, status: 'pending', text: null, extractedAt: null, error: null };
+    // `text` is deliberately not blanked here: a correction, or a machine
+    // result from a previous run, stays visible while the new attempt runs.
+    return { ...projected, status: 'pending', extractedAt: null, error: null };
   }
 
   /**
@@ -407,18 +412,116 @@ export class AttachmentsService {
    */
   async getTextInfo(attachmentId: string, userId: string): Promise<AttachmentTextInfoResponse> {
     const { projected } = await this.readTextState(attachmentId, userId);
-    const { text: _text, ...info } = projected;
+    const { text: _text, machineText: _machineText, ...info } = projected;
     return info;
+  }
+
+  /**
+   * Forces a re-extraction even when the attachment is already `ready`
+   * (issue #2). A successful extraction can still be a wrong one -- OCR
+   * misreads a page, a table falls apart -- and until now the only way out was
+   * deleting the attachment and re-uploading it.
+   *
+   * Requires MEMBER: unlike a plain read, this can spend money on a hosted
+   * extraction engine, so a GUEST cannot trigger it just by asking to view a
+   * PDF. A human correction, if there is one, is never touched by this: it
+   * keeps winning as the effective `text` until someone edits or clears it.
+   */
+  async forceReextract(
+    attachmentId: string,
+    userId: string,
+    correlationId: string,
+  ): Promise<AttachmentTextResponse> {
+    const { attachment, projected } = await this.readTextState(attachmentId, userId, {
+      requireEdit: true,
+    });
+
+    if (attachment.mimeType !== 'application/pdf') {
+      throw new AppError(
+        'attachment_text_unavailable',
+        'Only a PDF attachment has a text layer to re-extract',
+      );
+    }
+
+    await this.prisma.attachment.update({
+      where: { id: attachmentId },
+      data: { textStatus: 'PENDING', textExtractionError: null },
+    });
+    await this.queues.enqueue(QUEUE_NAMES.attachmentText, {
+      correlationId,
+      attachmentId,
+      workspaceId: attachment.workspaceId,
+      reason: 'forced',
+    });
+
+    this.logger.info('Attachment text re-extraction forced', {
+      attachmentId,
+      correlationId,
+    });
+
+    return { ...projected, status: 'pending', extractedAt: null, error: null };
+  }
+
+  /**
+   * Writes, or clears, a human correction of the extracted text (issue #2).
+   *
+   * Stored in `correctedText`, next to `extractedText` rather than over it: a
+   * later re-extraction must never silently discard what a person fixed by
+   * hand. `text: null` clears an existing correction, which reverts the
+   * effective text seen by both the UI and `exo_attachment_read_text` back to
+   * the machine result -- the explicit "discard my correction" the concept
+   * asked for, distinct from correcting to an empty string.
+   */
+  async correctText(
+    attachmentId: string,
+    userId: string,
+    text: string | null,
+  ): Promise<AttachmentTextResponse> {
+    const { attachment, projected } = await this.readTextState(attachmentId, userId, {
+      requireEdit: true,
+    });
+
+    if (attachment.mimeType !== 'application/pdf') {
+      throw new AppError(
+        'attachment_text_unavailable',
+        'Only a PDF attachment has extracted text to correct',
+      );
+    }
+
+    const updated = await this.prisma.attachment.update({
+      where: { id: attachmentId },
+      data:
+        text === null
+          ? { correctedText: null, textCorrectedAt: null, textCorrectedById: null }
+          : { correctedText: text, textCorrectedAt: new Date(), textCorrectedById: userId },
+    });
+
+    return {
+      ...projected,
+      text: updated.correctedText ?? updated.extractedText,
+      correction:
+        updated.correctedText === null || updated.textCorrectedById === null
+          ? null
+          : {
+              editedAt: updated.textCorrectedAt?.toISOString() ?? new Date().toISOString(),
+              editedById: updated.textCorrectedById,
+            },
+    };
   }
 
   /**
    * Authorizes the read and projects the stored row, truthfully and without
    * side effects. `getText` layers the "reading it starts it" behaviour on top;
    * this reports `failed` as failed.
+   *
+   * `requireEdit` upgrades the authorization check from "can download" to
+   * "can edit the text" (`canEditAttachmentText`), for the two write paths
+   * above that share this projection.
    */
   private async readTextState(
     attachmentId: string,
     userId: string,
+    options?: { requireEdit?: boolean },
   ): Promise<{
     attachment: { workspaceId: string; mimeType: string };
     projected: AttachmentTextResponse;
@@ -431,7 +534,9 @@ export class AttachmentsService {
       );
     }
     assertPolicy(
-      canDownloadAttachment(context.role, context.attachment, context.attachment.workspaceId),
+      options?.requireEdit === true
+        ? canEditAttachmentText(context.role, context.attachment, context.attachment.workspaceId)
+        : canDownloadAttachment(context.role, context.attachment, context.attachment.workspaceId),
     );
 
     const { attachment } = context;
@@ -439,12 +544,25 @@ export class AttachmentsService {
     // reporting an extra field, must not turn a read into a 500: an unparsable
     // blob is reported as "no metadata".
     const parsedMetadata = pdfMetadataSchema.safeParse(attachment.textMetadata);
+    const correction =
+      attachment.correctedText === null || attachment.textCorrectedById === null
+        ? null
+        : {
+            editedAt: attachment.textCorrectedAt?.toISOString() ?? new Date(0).toISOString(),
+            editedById: attachment.textCorrectedById,
+          };
+    // The correction wins whenever there is one: it is what `exo_attachment_
+    // read_text` and the correction dialog both read as "the text".
+    const effectiveText = attachment.correctedText ?? attachment.extractedText;
     const base = {
       attachmentId,
       filename: attachment.filename,
       mimeType: attachment.mimeType,
       metadata: parsedMetadata.success ? parsedMetadata.data : null,
-      text: null,
+      text: effectiveText,
+      machineText: attachment.extractedText,
+      correction,
+      truncated: attachment.textTruncated,
       extractedAt: null,
       error: null,
     };
@@ -455,7 +573,6 @@ export class AttachmentsService {
         projected: {
           ...base,
           status: 'ready',
-          text: attachment.extractedText,
           extractedAt: attachment.textExtractedAt?.toISOString() ?? null,
         },
       };
