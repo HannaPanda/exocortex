@@ -68,6 +68,9 @@ All of it lives in `apps/web/src/components/editor` and contributes **no** schem
 | `turn-into-menu.tsx` | convert the current block |
 | `color-menu.tsx` | text and background colour |
 | `link-menu.tsx` | link editor, understands `[[Seite]]` |
+| `link-bubble.tsx` | bubble menu over the caret inside a link: open, edit, remove |
+| `follow-link-context.tsx` | ref bridge that hands `EditorSurface`'s click handler and the `pageLink` node view a `follow` function without either holding it as state |
+| `link-navigation.tsx` | `useLinkNavigation`: what following a resolved link *does* (new tab, router push, `wiki:` lookup plus its ambiguous/missing/error dialogs) |
 | `emoji-menu.tsx` | emoji picker (inserts characters) |
 | `slash-menu.tsx` | `/` block menu, reads the catalog |
 | `mention-menu.tsx` | `@` menu for pages, people and dates |
@@ -77,23 +80,39 @@ All of it lives in `apps/web/src/components/editor` and contributes **no** schem
 | `code-block-toolbar.tsx` | language picker and copy |
 | `table-toolbar.tsx` | rows, columns, header, merge |
 | `block-prompt.tsx` | value and file collection for catalog entries |
+| `page-link-node-view.tsx` | React node view for `pageLink`, see the exception below |
 
 Node views that render *inside* the document (table of contents, breadcrumb, media)
 live in `packages/editor` and are plain DOM, not React, so `getExocortexSchema()`
 keeps working without a DOM on the server.
 
-**One exception:** `databaseEmbed` (`database-embed.ts`). Its schema (attributes,
-`parseHTML`/`renderHTML`, Markdown adapter) lives in `packages/editor` like every
-other node, but it declares no `addNodeView()` — the interactive rendering (a
-live `DatabaseShell`, the same component the full-page database view uses) is a
-real React node view supplied entirely by `apps/web`
-(`database-embed-node-view.tsx`), wired in via `.extend({ addNodeView: () =>
+**Two exceptions:** `databaseEmbed` (`database-embed.ts`) and `pageLink`
+(`page-link.ts`). Their schema (attributes, `parseHTML`/`renderHTML`, Markdown
+adapter) lives in `packages/editor` like every other node, but each declares
+no `addNodeView()` — the interactive rendering is a real React node view
+supplied entirely by `apps/web`, wired in via `.extend({ addNodeView: () =>
 ReactNodeViewRenderer(...) })` on the extension instance in
-`collaborative-editor.tsx`. This is the only node worth this cost so far:
-reusing `DatabaseShell` outweighs hand-building filters, inline cell editing
-and four view layouts again in plain DOM. New interactive embeds should follow
-this pair (schema-only node here, `ReactNodeViewRenderer` override in
-`apps/web`) rather than inventing another mechanism.
+`collaborative-editor.tsx`.
+
+For `databaseEmbed` that is a live `DatabaseShell`, the same component the
+full-page database view uses: reusing it outweighs hand-building filters,
+inline cell editing and four view layouts again in plain DOM.
+
+For `pageLink` (`page-link-node-view.tsx`) it is the block's *resolution
+state*: whether the title matches one page, several, or none, and that page's
+icon and archived status. A plain anchor cannot say any of that without a
+network request, and knowing which page a title resolves to is application
+knowledge, not schema knowledge — `packages/editor` still only ever stores the
+title. The click itself is handled the same way for both: neither node view
+calls `stopPropagation` as a guard against the editor-wide click handler
+(`followFromEvent` in `collaborative-editor.tsx`, described below), because
+React's event system sits above ProseMirror's `view.dom` listener and would
+run too late. The guard is the `[data-page-link]` attribute the click handler
+checks for instead.
+
+New interactive embeds should follow this pair (schema-only node in
+`packages/editor`, `ReactNodeViewRenderer` override in `apps/web`) rather than
+inventing another mechanism.
 
 Two rules hold for this layer, both learned the hard way (docs/deviations.md 17–18):
 

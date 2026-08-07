@@ -295,4 +295,38 @@ test.describe('security', () => {
     };
     expect(session.user.email).toBe(SEED_USERS.stefan.email);
   });
+
+  test('resolving a wiki: link is authenticated', async () => {
+    const workspaceId = await createWorkspace('Auflösung');
+
+    const anonymous = await anonymousApi.get(
+      `${origin}/api/workspaces/${workspaceId}/documents/resolve?title=x`,
+    );
+    expect(anonymous.status()).toBe(401);
+  });
+
+  test('resolving a wiki: link is scoped to a member of the workspace', async () => {
+    const workspaceId = await createWorkspace('Auflösung fremd');
+
+    const outsider = await stefanApi.get(
+      `${origin}/api/workspaces/${workspaceId}/documents/resolve?title=x`,
+    );
+    expect(outsider.status()).toBe(403);
+    expect(((await outsider.json()) as { code: string }).code).toBe('workspace_access_denied');
+  });
+
+  test('resolving a wiki: link never crosses into another workspace', async () => {
+    const homeWorkspace = await createWorkspace('Auflösung eigen A');
+    const otherWorkspace = await createWorkspace('Auflösung eigen B');
+    const title = `Nur in A ${Date.now().toString(36)}`;
+    await createDocument(homeWorkspace, { title });
+
+    // Johanna owns both workspaces, but the title only exists in the first.
+    const response = await johannaApi.get(
+      `${origin}/api/workspaces/${otherWorkspace}/documents/resolve?title=${encodeURIComponent(title)}`,
+    );
+    expect(response.status()).toBe(200);
+    const body = (await response.json()) as { matches: unknown[] };
+    expect(body.matches).toEqual([]);
+  });
 });

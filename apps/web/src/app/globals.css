@@ -96,6 +96,13 @@
     @apply text-primary-text underline underline-offset-2;
   }
 
+  /* Marks an external link as leaving the app; `data-link-kind` is rendered
+     by the Link extension (packages/editor/src/extensions.ts), never stored. */
+  .exocortex-editor a[data-link-kind='external']::after {
+    content: '↗';
+    @apply ml-0.5 align-super text-[0.7em] text-muted-foreground;
+  }
+
   .exocortex-editor code {
     @apply rounded bg-muted px-1 py-0.5 font-mono text-[0.85em];
   }
@@ -342,6 +349,11 @@
 
   .exocortex-editor .exocortex-page-link:hover {
     @apply bg-accent text-accent-foreground;
+  }
+
+  /* Set by `page-link-node-view.tsx` once resolution comes back with no match. */
+  .exocortex-editor .exocortex-page-link[data-resolved='missing'] {
+    @apply border-dashed text-muted-foreground;
   }
 
   /* Media blocks. The video and audio players are the browser's own controls:

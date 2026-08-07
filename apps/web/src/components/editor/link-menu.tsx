@@ -4,10 +4,10 @@ import { type Editor } from '@tiptap/react';
 import { ExternalLinkIcon, UnlinkIcon } from 'lucide-react';
 import * as React from 'react';
 
+import { parseLinkHref, WIKI_LINK_SCHEME } from '@exocortex/editor';
 import { Button, Input, Popover, PopoverContent, PopoverTrigger } from '@exocortex/ui';
 
-/** Internal page links use this scheme; see packages/editor markdown/serialize.ts. */
-const WIKI_LINK_SCHEME = 'wiki:';
+import { FollowLinkContext } from './follow-link-context';
 
 interface LinkMenuProps {
   editor: Editor;
@@ -26,6 +26,7 @@ interface LinkMenuProps {
 export function LinkMenu({ editor, trigger }: LinkMenuProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
+  const followLinkRef = React.useContext(FollowLinkContext);
 
   const currentHref = editor.getAttributes('link').href;
 
@@ -82,7 +83,22 @@ export function LinkMenu({ editor, trigger }: LinkMenuProps) {
             >
               <UnlinkIcon /> Entfernen
             </Button>
-            {currentHref.startsWith(WIKI_LINK_SCHEME) ? null : (
+            {currentHref.startsWith(WIKI_LINK_SCHEME) ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                data-testid="link-open"
+                onClick={() => {
+                  const target = parseLinkHref(currentHref);
+                  if (target.kind !== 'unknown') {
+                    followLinkRef?.current?.(target, { download: false });
+                  }
+                  setOpen(false);
+                }}
+              >
+                <ExternalLinkIcon /> Öffnen
+              </Button>
+            ) : (
               <Button
                 variant="ghost"
                 size="sm"
@@ -101,7 +117,7 @@ export function LinkMenu({ editor, trigger }: LinkMenuProps) {
 }
 
 /** Shows an internal link the way it is written in Markdown. */
-function displayValue(href: string): string {
+export function displayValue(href: string): string {
   return href.startsWith(WIKI_LINK_SCHEME)
     ? `[[${href.slice(WIKI_LINK_SCHEME.length)}]]`
     : href;

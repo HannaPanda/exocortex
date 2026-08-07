@@ -7,6 +7,8 @@ import { CollaborationCaret } from '@tiptap/extension-collaboration-caret';
 import { FileHandler } from '@tiptap/extension-file-handler';
 import { NodeRange } from '@tiptap/extension-node-range';
 import { Placeholder } from '@tiptap/extension-placeholder';
+import { type Node as PmNode } from '@tiptap/pm/model';
+import { type EditorView } from '@tiptap/pm/view';
 import { type Editor, EditorContent, ReactNodeViewRenderer, useEditor } from '@tiptap/react';
 import * as React from 'react';
 import { IndexeddbPersistence } from 'y-indexeddb';
@@ -24,6 +26,8 @@ import {
   buildBlockCatalog,
   buildEditorExtensions,
   DatabaseEmbed,
+  PageLink,
+  parseLinkHref,
   YJS_DOCUMENT_FIELD,
 } from '@exocortex/editor';
 import { ErrorState, LoadingState } from '@exocortex/ui';
@@ -37,11 +41,15 @@ import {
   DatabaseEmbedPromptContext,
   type DatabaseEmbedSelection,
 } from '@/components/editor/database-embed-context';
+import { type FollowLink, FollowLinkContext } from '@/components/editor/follow-link-context';
+import { LinkBubble } from '@/components/editor/link-bubble';
+import { useLinkNavigation } from '@/components/editor/link-navigation';
 import {
   createMentionExtension,
   createMentionKeyboard,
   MentionMenu,
 } from '@/components/editor/mention-menu';
+import { PageLinkNodeView } from '@/components/editor/page-link-node-view';
 import { SelectionToolbar } from '@/components/editor/selection-toolbar';
 import {
   createSlashExtension,
@@ -103,6 +111,45 @@ function mediaNodeFor(
     return { type: 'pdf', attrs: { src: uploaded.src, name: uploaded.name } };
   }
   return { type: 'fileAttachment', attrs: { src: uploaded.src, name: uploaded.name } };
+}
+
+/**
+ * Decides whether a click follows a link, and if so, does it.
+ *
+ * Wired into `editorProps.handleClickOn` (mouse) and `handleDOMEvents.click`
+ * with `event.detail === 0` (keyboard-activated click), see the docstring on
+ * `EditorSurface` for why this has to be a plain module function rather than
+ * something that closes over component state: `useEditor`'s dependency array
+ * must not grow.
+ */
+function followFromEvent(
+  view: EditorView,
+  node: PmNode | null,
+  event: MouseEvent,
+  ref: React.RefObject<FollowLink | null>,
+): boolean {
+  if (event.button !== 0) return false;
+  // Alt holds the link still: the caret is meant to land next to it instead.
+  if (event.altKey && view.editable) return false;
+
+  const element = event.target instanceof HTMLElement ? event.target : null;
+  const anchor = element?.closest('a') ?? null;
+  // The page-link block brings its own click handling (a node view).
+  if (element?.closest('[data-page-link]') != null) return false;
+  if (anchor !== null && !view.dom.contains(anchor)) return false;
+
+  // Prefers the mark on the clicked text node, falling back to the DOM anchor
+  // (table of contents, breadcrumb and media blocks render their own anchors
+  // without a `link` mark).
+  const markHref = node?.marks.find((mark) => mark.type.name === 'link')?.attrs.href;
+  const href = typeof markHref === 'string' ? markHref : anchor?.getAttribute('href') ?? null;
+
+  const target = parseLinkHref(href);
+  if (target.kind === 'unknown') return false;
+
+  event.preventDefault();
+  ref.current?.(target, { download: anchor?.hasAttribute('download') === true });
+  return true;
 }
 
 /**
@@ -386,6 +433,13 @@ function EditorSurface({
     [workspaceId],
   );
 
+  // Same pattern, for following a link; see `follow-link-context.tsx`.
+  const followLinkRef = React.useRef<FollowLink | null>(null);
+  const PageLinkView = React.useCallback(
+    (props: NodeViewProps) => <PageLinkNodeView {...props} workspaceId={workspaceId} />,
+    [workspaceId],
+  );
+
   const insertFiles = React.useCallback(
     async (instance: Editor, files: File[], pos: number): Promise<void> => {
       let insertAt = pos;
@@ -419,6 +473,9 @@ function EditorSurface({
           // The schema for `databaseEmbed` lives in `packages/editor`; only the
           // React node view can live here (see `docs/editor-extensions.md`).
           DatabaseEmbed.extend({ addNodeView: () => ReactNodeViewRenderer(DatabaseEmbedView) }),
+          // Same pairing for `pageLink`: the schema stays in `packages/editor`,
+          // only its resolution state (icon, path, "does not exist") is React.
+          PageLink.extend({ addNodeView: () => ReactNodeViewRenderer(PageLinkView) }),
           Collaboration.configure({
             document: connection.ydoc,
             field: YJS_DOCUMENT_FIELD,
@@ -461,8 +518,20 @@ function EditorSurface({
           'data-testid': 'editor-surface',
           'aria-label': 'Seiteninhalt',
         },
+        handleClickOn: (view, _pos, node, _nodePos, event) =>
+          followFromEvent(view, node, event, followLinkRef),
+        // Keyboard activation (Enter on a focused link) fires a click with
+        // `detail === 0` and never reaches `handleClickOn`, which is wired to
+        // mousedown/mouseup.
+        handleDOMEvents: {
+          click: (view, event) =>
+            event.detail === 0 ? followFromEvent(view, null, event, followLinkRef) : false,
+        },
       },
     },
+    // `followLinkRef` is a stable ref and `followFromEvent` a module function:
+    // neither belongs here. Adding either would rebuild every plugin view on
+    // every render, exactly what this component exists to avoid (see above).
     [connection.ydoc, connection.provider, access, slashExtension, mentionExtension],
   );
 
@@ -477,7 +546,9 @@ function EditorSurface({
         </p>
       ) : null}
       <DatabaseEmbedPromptContext.Provider value={askDatabaseEmbedRef}>
-        <EditorContent editor={editor} className="exocortex-editor" />
+        <FollowLinkContext.Provider value={followLinkRef}>
+          <EditorContent editor={editor} className="exocortex-editor" />
+        </FollowLinkContext.Provider>
       </DatabaseEmbedPromptContext.Provider>
       {uploadError === null ? null : (
         <p className="mt-2 text-xs text-destructive-text" role="alert">
@@ -495,6 +566,7 @@ function EditorSurface({
           mentionKeyboard={mentionKeyboard}
           editable={access === 'write'}
           askDatabaseEmbedRef={askDatabaseEmbedRef}
+          followLinkRef={followLinkRef}
         />
       )}
     </div>
@@ -511,6 +583,7 @@ interface EditorChromeProps {
   mentionKeyboard: SuggestionKeyboard;
   editable: boolean;
   askDatabaseEmbedRef: React.RefObject<AskDatabaseEmbed | null>;
+  followLinkRef: React.RefObject<FollowLink | null>;
 }
 
 /**
@@ -529,6 +602,7 @@ function EditorChrome({
   mentionKeyboard,
   editable,
   askDatabaseEmbedRef,
+  followLinkRef,
 }: EditorChromeProps) {
   /*
    * Mention sources, both from data the shell already holds so that typing `@`
@@ -550,6 +624,7 @@ function EditorChrome({
   );
 
   const prompt = useBlockPrompt({ workspaceId, documentId });
+  const linkNavigation = useLinkNavigation({ workspaceId });
 
   // Lets the database embed node view reopen this same picker ("Datenbank
   // wechseln") through the ref `EditorSurface` handed down; see
@@ -560,6 +635,12 @@ function EditorChrome({
       return raw === null ? null : (JSON.parse(raw) as DatabaseEmbedSelection);
     };
   }, [askDatabaseEmbedRef, prompt]);
+
+  // Same bridge for following a link, read by the click handler in
+  // `editorProps` and by the `pageLink` node view; see `follow-link-context.tsx`.
+  React.useEffect(() => {
+    followLinkRef.current = linkNavigation.follow;
+  }, [followLinkRef, linkNavigation.follow]);
 
   /**
    * Entries that need a value (an uploaded file, a formula) cannot collect it
@@ -585,6 +666,7 @@ function EditorChrome({
       {editable ? (
         <>
           <SelectionToolbar editor={editor} catalog={catalog} documentId={documentId} />
+          <LinkBubble editor={editor} />
           <CodeBlockToolbar editor={editor} />
           <TableToolbar editor={editor} />
           <BlockHandle editor={editor} catalog={catalog} />
@@ -603,6 +685,7 @@ function EditorChrome({
         users={mentionUsers}
       />
       {prompt.element}
+      {linkNavigation.element}
     </>
   );
 }

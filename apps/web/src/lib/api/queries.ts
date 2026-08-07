@@ -20,6 +20,7 @@ import {
   type MarkdownExportResponse,
   type MarkdownImportResponse,
   type MoveDocumentRequest,
+  type ResolveDocumentLinkResponse,
   type SearchResponse,
   type UpdateDocumentRequest,
   type UploadAttachmentResponse,
@@ -36,6 +37,8 @@ export const queryKeys = {
   documentTree: (workspaceId: string) => ['workspace', workspaceId, 'tree'] as const,
   document: (documentId: string) => ['document', documentId] as const,
   search: (workspaceId: string, query: string) => ['workspace', workspaceId, 'search', query] as const,
+  pageLink: (workspaceId: string, title: string) =>
+    ['workspace', workspaceId, 'page-link', title.toLowerCase()] as const,
   aiRun: (runId: string) => ['ai-run', runId] as const,
 };
 
@@ -85,6 +88,32 @@ export function useSearch(workspaceId: string | undefined, query: string) {
     enabled: workspaceId !== undefined && query.trim().length > 1,
     staleTime: 5_000,
   });
+}
+
+/**
+ * Resolves a `wiki:` title to the document(s) with exactly that title.
+ *
+ * Shared by the click path (`link-navigation.tsx`, via `queryClient.fetchQuery`)
+ * and the `pageLink` block's own node view (`usePageLinkResolution` below), so
+ * both read from the same cache entry per title.
+ */
+export function pageLinkQueryOptions(workspaceId: string, title: string) {
+  return {
+    queryKey: queryKeys.pageLink(workspaceId, title),
+    queryFn: () =>
+      apiRequest<ResolveDocumentLinkResponse>(
+        `/api/workspaces/${workspaceId}/documents/resolve?title=${encodeURIComponent(title)}`,
+      ),
+    staleTime: 30_000,
+  };
+}
+
+/** For the page-link block, which shows its resolution state before anyone clicks it. */
+export function usePageLinkResolution(
+  workspaceId: string,
+  title: string,
+): UseQueryResult<ResolveDocumentLinkResponse> {
+  return useQuery({ ...pageLinkQueryOptions(workspaceId, title), enabled: title.length > 0 });
 }
 
 export function useCreateWorkspace() {
