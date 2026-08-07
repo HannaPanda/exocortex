@@ -5,7 +5,8 @@ import { type ApplicationEvent, QUEUE_NAMES } from '@exocortex/contracts';
 import { createLogger } from '@exocortex/logger';
 
 import { RedisEventBus } from './event-bus';
-import { QueueRegistry } from './registry';
+import { QueueRegistry, testQueuePrefix } from './registry';
+import { createTypedWorker } from './worker';
 
 /**
  * Queue integration tests against the Redis instance from `pnpm infra:up`.
@@ -13,10 +14,17 @@ import { QueueRegistry } from './registry';
  * The debounce and deduplication behaviour is what keeps a stream of keystrokes
  * from turning into a stream of jobs, so it is verified against real Redis rather
  * than a mock.
+ *
+ * That Redis is shared with the deployment running on the same machine, so every
+ * queue here lives under this suite's own prefix. Without it the queue names are
+ * the live ones: jobs enqueued below were consumed by the live
+ * `exocortex-worker`, and the `obliterate` in `afterAll` erased the live
+ * materialization queue.
  */
 loadDotEnv();
 
 const redisUrl = process.env.REDIS_URL ?? 'redis://127.0.0.1:6380';
+const prefix = testQueuePrefix('queue-registry');
 const logger = createLogger({ name: 'queue-test', level: 'silent' });
 
 let queues: QueueRegistry;
@@ -32,14 +40,11 @@ function materializePayload(documentId: string) {
 }
 
 beforeAll(() => {
-  queues = new QueueRegistry({ redisUrl, logger });
+  queues = new QueueRegistry({ redisUrl, logger, prefix });
 });
 
 afterAll(async () => {
-  const queue = queues.getQueue(QUEUE_NAMES.documentMaterialization);
-  await queue.obliterate({ force: true }).catch(() => {
-    // The queue may not exist if every test was skipped; nothing to clean up.
-  });
+  await queues.obliterateAll();
   await queues.close();
 });
 
@@ -119,21 +124,14 @@ describe('QueueRegistry', () => {
     // createAiRunProcessor never throws on a provider or timeout failure --
     // it writes a terminal status itself -- so a BullMQ retry would only
     // ever fire for an infrastructure error, and would pay for the prompt a
-    // second time (ADR-017). Enqueued with a delay: this Redis instance is
-    // shared with the live `exocortex-worker` on this host, and an
-    // undelayed job would be claimed by its real ai worker before this test
-    // gets to inspect (or remove) it.
+    // second time (ADR-017).
     const runId = `run-${Date.now().toString(36)}`;
-    const jobId = await queues.enqueue(
-      QUEUE_NAMES.ai,
-      {
-        correlationId: `corr-${runId}`,
-        runId,
-        workspaceId: 'workspace-test-0001',
-        userId: 'user-test-00001',
-      },
-      { delay: 60_000 },
-    );
+    const jobId = await queues.enqueue(QUEUE_NAMES.ai, {
+      correlationId: `corr-${runId}`,
+      runId,
+      workspaceId: 'workspace-test-0001',
+      userId: 'user-test-00001',
+    });
 
     const job = await queues.getQueue(QUEUE_NAMES.ai).getJob(jobId);
     expect(job?.opts.attempts).toBe(1);
@@ -141,14 +139,47 @@ describe('QueueRegistry', () => {
   });
 });
 
-// `createTypedWorker`'s `lockDuration` / `stalledInterval` wiring
-// (packages/queue/src/worker.ts) is deliberately not exercised here with a
-// real `Worker`: every queue name is a real, actively-consumed production
-// queue on this shared Redis, and a second `Worker` instance starts polling
-// for jobs the moment it is constructed (BullMQ's `autorun` defaults to
-// `true`), which would race the live `exocortex-worker` for real jobs. The
-// plumbing itself is covered by `pnpm typecheck` and by
-// `apps/worker/src/main.ts` passing the two AI-specific constants through.
+describe('createTypedWorker', () => {
+  it('consumes a job the registry enqueued under the same prefix', async () => {
+    // A `Worker` polls for jobs the moment it is constructed (BullMQ's `autorun`
+    // defaults to `true`). Under the live prefix that meant racing the real
+    // `exocortex-worker` for real jobs, which is why this was untested before.
+    // The test now doubles as the proof that producer and consumer agree on the
+    // prefix: a mismatch leaves the handler waiting forever.
+    const documentId = `doc-worker-${Date.now().toString(36)}`;
+    const handled = new Promise<{ documentId: string; progress: number[] }>((resolve, reject) => {
+      const progress: number[] = [];
+      const { worker, connection } = createTypedWorker({
+        name: QUEUE_NAMES.documentMaterialization,
+        redisUrl,
+        logger,
+        prefix,
+        handler: async ({ payload, reportProgress }) => {
+          await reportProgress(50, 'Seite wird verarbeitet');
+          progress.push(50);
+          // Closing from inside the handler would deadlock; hand the result out
+          // and let the assertions below tear the worker down.
+          setTimeout(() => {
+            void worker
+              .close()
+              .then(() => connection.quit())
+              .then(() => {
+                resolve({ documentId: payload.documentId, progress });
+              })
+              .catch(reject);
+          }, 0);
+        },
+      });
+      worker.on('error', reject);
+    });
+
+    await queues.enqueue(QUEUE_NAMES.documentMaterialization, materializePayload(documentId));
+
+    const result = await handled;
+    expect(result.documentId).toBe(documentId);
+    expect(result.progress).toEqual([50]);
+  }, 20_000);
+});
 
 describe('RedisEventBus', () => {
   it('delivers a validated event to a subscriber', async () => {

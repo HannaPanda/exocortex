@@ -6,7 +6,7 @@ import { QUEUE_NAMES, resolveSettings, type Settings } from '@exocortex/contract
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { type ProseMirrorDocument, serializePlainText } from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
-import { QueueRegistry } from '@exocortex/queue';
+import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
 
 import { type AttachmentsService } from '../attachments/attachments.service';
 import { AppError } from '../common/app-error';
@@ -87,6 +87,7 @@ beforeAll(async () => {
   queues = new QueueRegistry({
     redisUrl: process.env.REDIS_URL ?? 'redis://127.0.0.1:6380',
     logger,
+    prefix: testQueuePrefix('api-documents'),
   });
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
@@ -144,6 +145,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await prisma.workspace.deleteMany({ where: { id: { in: [workspaceId, otherWorkspaceId] } } });
   await prisma.user.deleteMany({ where: { id: { in: [ownerId, guestId, outsiderId] } } });
+  await queues.obliterateAll();
   await queues.close();
   await prisma.$disconnect();
 });

@@ -127,6 +127,30 @@ heartbeat the worker itself relies on to detect a cancellation.
 
 ## Tests
 
+### The queue prefix keeps a test run out of the deployment
+
+Every queue lives under a Redis key prefix: `DEFAULT_QUEUE_PREFIX` (`bull`,
+BullMQ's own default) for the deployment, and `testQueuePrefix('<suite>')` for a
+test suite. Redis is shared with the running deployment on this machine, so a
+queue *name* is not a boundary — whichever worker polls that name gets the job.
+Before the prefixes existed, a test's enqueued job was executed by the live
+`exocortex-worker` and then failed there (the run's user is deleted again in
+`afterAll`, so its service token resolved to nobody), and the queue test's
+`obliterate` erased the live materialization queue.
+
+So: any test that builds a `QueueRegistry` passes its own prefix, and tears down
+with `await queues.obliterateAll()` before `close()` — nothing consumes a test
+namespace, so its jobs would otherwise stay in Redis for good. `obliterateAll`
+refuses to run on any prefix that is not a test namespace, which is what keeps
+that teardown from ever reaching the deployment's jobs.
+
+A worker under a test prefix is safe to construct, which is how
+`packages/queue/src/queue.integration.test.ts` covers `createTypedWorker`
+end-to-end; a mismatch between producer and consumer prefix shows up there as a
+handler that is never called.
+
+### What the processor tests cover
+
 `apps/worker/src/processors/processors.integration.test.ts` runs the
 processors against the real PostgreSQL and Redis:
 

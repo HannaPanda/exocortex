@@ -4,6 +4,7 @@ import { JOB_SCHEMAS, type JobPayloadMap, type QueueName } from '@exocortex/cont
 import { type Logger } from '@exocortex/logger';
 
 import { createRedisConnection, type Redis } from './connection';
+import { DEFAULT_QUEUE_PREFIX } from './registry';
 
 export interface JobContext<TName extends QueueName> {
   payload: JobPayloadMap[TName];
@@ -22,6 +23,11 @@ export interface CreateWorkerOptions<TName extends QueueName> {
   redisUrl: string;
   logger: Logger;
   handler: JobHandler<TName>;
+  /**
+   * Redis key namespace. Must match the producer's, or this worker polls a
+   * namespace nobody writes to. Defaults to `DEFAULT_QUEUE_PREFIX`.
+   */
+  prefix?: string;
   concurrency?: number;
   /** Overrides the default lock duration; see `AI_QUEUE_LOCK_DURATION_MS`. */
   lockDuration?: number;
@@ -68,6 +74,7 @@ export function createTypedWorker<TName extends QueueName>(
 
   const workerOptions: WorkerOptions = {
     connection,
+    prefix: options.prefix ?? DEFAULT_QUEUE_PREFIX,
     concurrency: options.concurrency ?? 4,
     // Keep the lock long enough for a large materialization run. The `ai`
     // queue overrides this to a much longer value (see main.ts): an agentic

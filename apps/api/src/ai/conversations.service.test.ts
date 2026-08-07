@@ -4,7 +4,7 @@ import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
 import { loadDotEnv } from '@exocortex/config';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
-import { QueueRegistry } from '@exocortex/queue';
+import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
 
 import { AppError } from '../common/app-error';
 import { OutboxService } from '../common/outbox.service';
@@ -37,7 +37,11 @@ let noThinkingModelSlug: string;
 
 beforeAll(async () => {
   prisma = createPrismaClient({ databaseUrl: process.env.DATABASE_URL });
-  queues = new QueueRegistry({ redisUrl: process.env.REDIS_URL ?? 'redis://127.0.0.1:6380', logger });
+  queues = new QueueRegistry({
+    redisUrl: process.env.REDIS_URL ?? 'redis://127.0.0.1:6380',
+    logger,
+    prefix: testQueuePrefix('api-conversations'),
+  });
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
   const settings = new SettingsService(prisma, logger, outbox);
@@ -98,6 +102,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await prisma.workspace.deleteMany({ where: { id: { in: [workspaceId, foreignWorkspaceId] } } });
   await prisma.user.deleteMany({ where: { id: { in: [ownerId, otherMemberId, outsiderId] } } });
+  await queues.obliterateAll();
   await queues.close();
   await prisma.$disconnect();
 });

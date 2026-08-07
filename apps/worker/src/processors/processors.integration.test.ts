@@ -32,7 +32,7 @@ import {
 import { markdownToYjsState } from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { type ExocortexApiClient } from '@exocortex/mcp-tools';
-import { type JobContext, QueueRegistry, RedisEventBus } from '@exocortex/queue';
+import { type JobContext, QueueRegistry, RedisEventBus, testQueuePrefix } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
 import { compactIfNeeded } from '../compaction';
@@ -109,6 +109,13 @@ function stubToolRunner(responses: readonly { text: string; isError: boolean }[]
  * The processors are invoked directly instead of through BullMQ: that keeps the
  * tests fast while still exercising the real database writes, the real
  * derivation pipeline and the real idempotency checks.
+ *
+ * A processor still enqueues follow-up jobs, and that Redis is shared with the
+ * deployment on this machine, so the registry runs under this suite's own
+ * prefix. Without it those jobs were consumed by the live `exocortex-worker`,
+ * which then failed on them: the run's user is deleted again in `afterAll`, so
+ * the service token minted for a tool call resolved to nobody and the API
+ * rejected it with `api_token_invalid`.
  */
 const env = loadWorkerEnv();
 const logger: Logger = createLogger({ name: 'worker-test', level: 'silent' });
@@ -172,7 +179,11 @@ async function createDocument(): Promise<string> {
 
 beforeAll(async () => {
   prisma = createPrismaClient({ databaseUrl: env.DATABASE_URL });
-  queues = new QueueRegistry({ redisUrl: env.REDIS_URL, logger });
+  queues = new QueueRegistry({
+    redisUrl: env.REDIS_URL,
+    logger,
+    prefix: testQueuePrefix('worker-processors'),
+  });
   bus = new RedisEventBus({ redisUrl: env.REDIS_URL, logger });
   search = new PostgresSearchAdapter(prisma);
 
@@ -194,6 +205,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await prisma.workspace.deleteMany({ where: { id: workspaceId } });
   await prisma.user.deleteMany({ where: { id: userId } });
+  await queues.obliterateAll();
   await bus.close();
   await queues.close();
   await prisma.$disconnect();
@@ -478,6 +490,9 @@ describe('maintenance', () => {
 
   it('collects a replaced cover and leaves the current one alone', async () => {
     const documentId = await createDocument();
+    // `storageKey` is globally unique, so a fixed key survives as a landmine:
+    // once a run leaves its rows behind, every later run fails on the insert.
+    const keyPrefix = `test/${Date.now().toString(36)}`;
     const cover = async (name: string) =>
       prisma.attachment.create({
         data: {
@@ -486,12 +501,12 @@ describe('maintenance', () => {
           filename: name,
           mimeType: 'image/png',
           byteSize: 3,
-          storageKey: `test/${name}`,
+          storageKey: `${keyPrefix}/${name}`,
           createdById: userId,
           isCover: true,
           // Every image upload also stores a downscaled copy, and it has to go
           // with the original rather than outlive the file it was made from.
-          previewKey: `test/${name}.preview.webp`,
+          previewKey: `${keyPrefix}/${name}.preview.webp`,
           previewMimeType: 'image/webp',
           previewByteSize: 2,
           // Older than the grace period, which exists for the seconds between
@@ -511,7 +526,7 @@ describe('maintenance', () => {
         filename: 'im-text.png',
         mimeType: 'image/png',
         byteSize: 3,
-        storageKey: 'test/im-text.png',
+        storageKey: `${keyPrefix}/im-text.png`,
         createdById: userId,
         createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
       },
@@ -534,7 +549,7 @@ describe('maintenance', () => {
         .context,
     );
 
-    expect(deleted).toEqual(['test/alt.png', 'test/alt.png.preview.webp']);
+    expect(deleted).toEqual([`${keyPrefix}/alt.png`, `${keyPrefix}/alt.png.preview.webp`]);
     expect((await prisma.attachment.findUniqueOrThrow({ where: { id: replaced.id } })).deletedAt)
       .not.toBeNull();
     expect((await prisma.attachment.findUniqueOrThrow({ where: { id: current.id } })).deletedAt)

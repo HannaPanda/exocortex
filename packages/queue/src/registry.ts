@@ -40,9 +40,34 @@ export const MATERIALIZATION_DEBOUNCE_MS = 2_000;
 /** Upper bound so a continuously edited document is still materialized. */
 export const MATERIALIZATION_MAX_DELAY_MS = 15_000;
 
+/**
+ * Redis key namespace for every queue. BullMQ's own default, kept as the
+ * deployment's value so an upgrade never orphans the jobs already in Redis.
+ */
+export const DEFAULT_QUEUE_PREFIX = 'bull';
+
+/**
+ * Namespace for a test suite's queues.
+ *
+ * Redis is shared with the running deployment on this machine, and a queue name
+ * alone is not a boundary: an enqueued job is picked up by whichever worker
+ * polls that name, so a test's job went to the live `exocortex-worker` and a
+ * test's `obliterate` erased the live queue. The prefix is that boundary. Give
+ * each suite its own `label` so two suites running in parallel cannot consume
+ * each other's jobs either.
+ */
+export function testQueuePrefix(label: string): string {
+  return `${TEST_QUEUE_PREFIX_MARKER}${label}`;
+}
+
+/** Marks a prefix as belonging to a test suite; see `obliterateAll`. */
+export const TEST_QUEUE_PREFIX_MARKER = 'exocortex-test-';
+
 export interface QueueRegistryOptions {
   redisUrl: string;
   logger: Logger;
+  /** Redis key namespace. Defaults to `DEFAULT_QUEUE_PREFIX`. */
+  prefix?: string;
 }
 
 export interface EnqueueOptions extends JobsOptions {
@@ -64,9 +89,11 @@ export class QueueRegistry {
   private readonly queues = new Map<QueueName, Queue>();
   private readonly events = new Map<QueueName, QueueEvents>();
   private readonly logger: Logger;
+  private readonly prefix: string;
 
   constructor(options: QueueRegistryOptions) {
     this.connection = createRedisConnection(options.redisUrl);
+    this.prefix = options.prefix ?? DEFAULT_QUEUE_PREFIX;
     this.logger = options.logger.child({ component: 'queue-registry' });
   }
 
@@ -80,6 +107,7 @@ export class QueueRegistry {
     if (existing !== undefined) return existing;
     const queue = new Queue(name, {
       connection: this.connection,
+      prefix: this.prefix,
       defaultJobOptions: { ...DEFAULT_JOB_OPTIONS, ...(QUEUE_JOB_OPTIONS[name] ?? {}) },
     });
     this.queues.set(name, queue);
@@ -94,7 +122,10 @@ export class QueueRegistry {
   getQueueEvents(name: QueueName): QueueEvents {
     const existing = this.events.get(name);
     if (existing !== undefined) return existing;
-    const queueEvents = new QueueEvents(name, { connection: this.connection.duplicate() });
+    const queueEvents = new QueueEvents(name, {
+      connection: this.connection.duplicate(),
+      prefix: this.prefix,
+    });
     this.events.set(name, queueEvents);
     return queueEvents;
   }
@@ -211,6 +242,31 @@ export class QueueRegistry {
   async ping(): Promise<boolean> {
     const result = await this.connection.ping();
     return result === 'PONG';
+  }
+
+  /**
+   * Deletes every queue in this registry's namespace, jobs included.
+   *
+   * For test teardown: a suite's jobs are never consumed, since no worker runs
+   * on a test prefix, so without this they stay in Redis for good. It refuses to
+   * run on any other prefix, because on the deployment's namespace it would
+   * delete the work the live worker is about to do -- which is exactly what
+   * happened while the suites shared it.
+   */
+  async obliterateAll(): Promise<void> {
+    if (!this.prefix.startsWith(TEST_QUEUE_PREFIX_MARKER)) {
+      throw new Error(
+        `obliterateAll refused: prefix "${this.prefix}" is not a test namespace. ` +
+          'Pass `prefix: testQueuePrefix("<suite>")` to the registry.',
+      );
+    }
+    for (const name of Object.values(QUEUE_NAMES)) {
+      await this.rawQueue(name)
+        .obliterate({ force: true })
+        .catch(() => {
+          // A queue no test touched was never created; nothing to clean up.
+        });
+    }
   }
 
   /** Closes every queue and the shared connection. */

@@ -17,7 +17,7 @@ import {
   yjsStateToProseMirrorJson,
 } from '@exocortex/editor';
 import { createLogger } from '@exocortex/logger';
-import { QueueRegistry } from '@exocortex/queue';
+import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
 
 import { createCollaborationServer } from './server';
 
@@ -121,7 +121,11 @@ function ticketFor(target: string, access: 'read' | 'write', ttlSeconds = 60, no
 
 beforeAll(async () => {
   prisma = createPrismaClient({ databaseUrl: env.DATABASE_URL });
-  queues = new QueueRegistry({ redisUrl: env.REDIS_URL, logger });
+  queues = new QueueRegistry({
+    redisUrl: env.REDIS_URL,
+    logger,
+    prefix: testQueuePrefix('collaboration'),
+  });
 
   const suffix = Date.now().toString(36);
   const user = await prisma.user.create({
@@ -154,6 +158,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await prisma.workspace.deleteMany({ where: { id: workspaceId } });
   await prisma.user.deleteMany({ where: { id: userId } });
+  await queues.obliterateAll();
   await queues.close();
   await prisma.$disconnect();
 });
