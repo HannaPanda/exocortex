@@ -12,7 +12,7 @@ function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimi
     <TabsPrimitive.List
       data-slot="tabs-list"
       className={cn(
-        'relative inline-flex h-9 w-full items-center gap-1 rounded-md bg-muted p-1',
+        'relative inline-flex h-9 w-full items-center gap-1 overflow-hidden rounded-md bg-muted p-1',
         className,
       )}
       {...props}
@@ -25,7 +25,7 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
     <TabsPrimitive.Tab
       data-slot="tabs-trigger"
       className={cn(
-        'inline-flex flex-1 items-center justify-center gap-1.5 rounded-sm px-2 py-1 text-xs font-medium',
+        'inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 truncate rounded-sm px-2 py-1 text-xs font-medium',
         'text-muted-foreground transition-colors select-none',
         'hover:text-foreground',
         // The selected tab has to sit *above* the track, not below it: `bg-card`

@@ -42,6 +42,12 @@ function modelTooltip(model: AiModel): string {
   ].join('\n');
 }
 
+/** The trigger only ever shows "Automatisch"; the companion slug goes into the
+ * tooltip and the dropdown list, where a whole model slug actually fits. */
+function visionCompanionTooltip(companionSlug: string | null): string {
+  return `Automatischer Begleiter für Bildverständnis: ${companionSlug ?? 'keiner konfiguriert'}`;
+}
+
 export interface ModelPickerProps {
   models: AiModel[];
   defaultModelSlug: string | null;
@@ -149,18 +155,16 @@ export function ModelPicker({
                   data-testid="ai-vision-companion-picker"
                 >
                   <SelectValue>
-                    {(value: string) =>
-                      value === OFF_COMPANION
-                        ? 'Aus'
-                        : `Automatisch (${selectedModel.visionCompanionSlug ?? '—'})`
-                    }
+                    {(value: string) => (value === OFF_COMPANION ? 'Aus' : 'Automatisch')}
                   </SelectValue>
                 </SelectTrigger>
               }
             />
-            {!visionCompanionEditable ? (
-              <TooltipContent>Wird verfügbar, sobald die Unterhaltung begonnen hat.</TooltipContent>
-            ) : null}
+            <TooltipContent>
+              {visionCompanionEditable
+                ? visionCompanionTooltip(selectedModel.visionCompanionSlug)
+                : 'Wird verfügbar, sobald die Unterhaltung begonnen hat.'}
+            </TooltipContent>
           </Tooltip>
           <SelectContent>
             <SelectItem value={AUTO_COMPANION}>

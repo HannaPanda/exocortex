@@ -16,9 +16,18 @@ import { cn } from '../../lib/utils';
  * and `aria-*` come from the primitive.
  */
 const Select = SelectPrimitive.Root;
-const SelectValue = SelectPrimitive.Value;
 const SelectGroup = SelectPrimitive.Group;
 const SelectItemText = SelectPrimitive.ItemText;
+
+function SelectValue({ className, ...props }: React.ComponentProps<typeof SelectPrimitive.Value>) {
+  return (
+    <SelectPrimitive.Value
+      data-slot="select-value"
+      className={cn('min-w-0 truncate', className)}
+      {...props}
+    />
+  );
+}
 
 function SelectTrigger({
   className,
@@ -31,7 +40,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        'flex w-fit items-center justify-between gap-2 rounded-md border border-input bg-transparent px-3 text-sm whitespace-nowrap',
+        'flex w-fit items-center justify-between gap-2 overflow-hidden rounded-md border border-input bg-transparent px-3 text-sm whitespace-nowrap',
         'transition-[color,box-shadow] outline-none',
         'hover:bg-accent hover:text-accent-foreground',
         'focus-visible:ring-[3px] focus-visible:ring-ring/50',
@@ -42,7 +51,7 @@ function SelectTrigger({
       {...props}
     >
       {children}
-      <SelectPrimitive.Icon>
+      <SelectPrimitive.Icon className="shrink-0">
         <ChevronDownIcon className="size-4 text-muted-foreground" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
