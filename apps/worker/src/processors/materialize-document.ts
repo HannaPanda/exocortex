@@ -4,6 +4,8 @@ import { materializeYjsState } from '@exocortex/editor';
 import { createCorrelationId } from '@exocortex/logger';
 import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
 
+import { replaceDocumentLinks } from './document-links';
+
 export interface MaterializationDependencies {
   prisma: PrismaClient;
   queues: QueueRegistry;
@@ -72,6 +74,18 @@ export function createMaterializeDocumentProcessor(dependencies: Materialization
       },
     });
 
+    // References belong in this pass, not in a job of their own: they are
+    // derived from the same content in the same way Markdown and the plain
+    // text are, and one place that turns content into derived data is the
+    // whole point of ADR-007.
+    await reportProgress(85, 'Verweise werden erfasst');
+    const linkCount = await replaceDocumentLinks(prisma, {
+      documentId: job.documentId,
+      workspaceId: job.workspaceId,
+      proseMirrorJson: materialized.proseMirrorJson,
+      indexedAt: materializedAt,
+    });
+
     // Search indexing is a separate, retryable step.
     await queues.enqueue(QUEUE_NAMES.searchIndexing, {
       correlationId: job.correlationId,
@@ -97,6 +111,7 @@ export function createMaterializeDocumentProcessor(dependencies: Materialization
     logger.info('Document materialized', {
       documentId: job.documentId,
       plainTextLength: materialized.plainText.length,
+      linkCount,
       reason: job.reason,
     });
   };

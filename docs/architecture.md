@@ -181,6 +181,25 @@ Adding OpenSearch means adding a second implementation. The `vector` extension a
 the `DocumentEmbedding` table already exist for a future semantic adapter; no
 embeddings are generated yet.
 
+## References between pages
+
+`DocumentLink` is the index behind the Verweise panel, `exo_page_backlinks` and
+`GET /api/documents/:id/links`. It is derived data, written by the
+materialization pass that also derives Markdown and plain text (ADR-007) and
+replaced wholesale per source page, so a reference deleted from the text
+disappears from the index.
+
+The hard part is that a reference addresses a **title**, not an identity
+(issue #14): `targetDocumentId` is nullable and `targetTitleKey` carries the
+normalized title. The consequence is that the index can go stale from the
+*target* side — a page renamed while nothing about the referencing page changed
+— so a rename, a creation and a workspace move each enqueue a
+`resolve-document-links` maintenance job through the outbox (ADR-010). See
+`docs/background-jobs.md` for the two jobs and why neither of them is a sweep.
+
+A reference to a title no page carries is kept, not discarded. It is the one
+thing the panel can tell someone that nothing else in the application reveals.
+
 ## Adding things
 
 ### A new WebSocket event

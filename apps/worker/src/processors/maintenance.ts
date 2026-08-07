@@ -9,6 +9,20 @@ import { type PrismaClient } from '@exocortex/database';
 import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
+import {
+  asProseMirrorDocument,
+  replaceDocumentLinks,
+  resolveDocumentLinks,
+} from './document-links';
+
+/**
+ * Events after which a page may answer to a different title than before, so
+ * every reference addressing the old or the new one has to be re-resolved.
+ * An edit is deliberately not among them: editing a page changes what it
+ * references, and that is rebuilt by materialization itself.
+ */
+const TITLE_EVENTS = new Set(['document.created', 'document.updated', 'document.moved']);
+
 export interface MaintenanceDependencies {
   prisma: PrismaClient;
   queues: QueueRegistry;
@@ -27,6 +41,8 @@ export interface MaintenanceDependencies {
    * first and points the page at the file a moment later.
    */
   orphanedCoverGraceMs?: number;
+  /** Content rows the reference backfill extracts per run. */
+  linkBackfillBatchSize?: number;
 }
 
 /**
@@ -41,6 +57,7 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
   const snapshotsToKeep = dependencies.snapshotsToKeep ?? 20;
   const outboxBatchSize = dependencies.outboxBatchSize ?? 100;
   const orphanedCoverGraceMs = dependencies.orphanedCoverGraceMs ?? 60 * 60 * 1000;
+  const linkBackfillBatchSize = dependencies.linkBackfillBatchSize ?? 50;
 
   return async ({
     payload,
@@ -66,6 +83,19 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
                 documentId,
                 workspaceId: event.workspaceId,
                 reason: reasonFor(event.type),
+              });
+            }
+            // A title-based reference index goes stale when a *target* page
+            // appears or is renamed, not when the referencing page is edited,
+            // so it has to be refreshed from this side too (issue #19). The
+            // API only writes `document.updated` when the title actually
+            // changed, which is what keeps this from firing on every save.
+            if (documentId !== null && TITLE_EVENTS.has(event.type)) {
+              await queues.enqueue(QUEUES.maintenance, {
+                correlationId: event.correlationId,
+                task: 'resolve-document-links',
+                workspaceId: event.workspaceId,
+                documentId,
               });
             }
             await prisma.outboxEvent.update({
@@ -247,6 +277,69 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
           reaped += 1;
         }
         logger.info('Stale AI runs reaped', { reaped, candidates: candidates.length });
+        return;
+      }
+
+      case 'resolve-document-links': {
+        if (payload.documentId === null) {
+          logger.warn('Skipping link resolution: no document', { task: payload.task });
+          return;
+        }
+        const resolved = await resolveDocumentLinks(prisma, payload.documentId);
+        if (resolved === null) {
+          logger.debug('Skipping link resolution: document is gone', {
+            documentId: payload.documentId,
+          });
+          return;
+        }
+        logger.debug('Document links resolved', { documentId: payload.documentId, resolved });
+        return;
+      }
+
+      case 'backfill-document-links': {
+        // Pages that existed before the reference index did. Small batches on a
+        // slow schedule rather than one sweep, so a deployment with thousands
+        // of pages fills in over an hour instead of stalling for a minute.
+        const pending = await prisma.documentContent.findMany({
+          where: {
+            linksIndexedAt: null,
+            ...(payload.workspaceId === null
+              ? {}
+              : { document: { workspaceId: payload.workspaceId } }),
+          },
+          select: {
+            documentId: true,
+            proseMirrorJson: true,
+            document: { select: { workspaceId: true } },
+          },
+          take: linkBackfillBatchSize,
+        });
+        if (pending.length === 0) return;
+
+        await reportProgress(10, 'Verweise werden nachgetragen');
+        const now = new Date();
+        let indexed = 0;
+        for (const row of pending) {
+          const document = asProseMirrorDocument(row.proseMirrorJson);
+          if (document === null) {
+            // Never materialized: mark it so the sweep moves on. The next
+            // materialization writes the real references.
+            await prisma.documentContent.update({
+              where: { documentId: row.documentId },
+              data: { linksIndexedAt: now },
+            });
+            continue;
+          }
+          await replaceDocumentLinks(prisma, {
+            documentId: row.documentId,
+            workspaceId: row.document.workspaceId,
+            proseMirrorJson: document,
+            indexedAt: now,
+          });
+          indexed += 1;
+        }
+        await reportProgress(100, 'Verweise nachgetragen');
+        logger.info('Document links backfilled', { indexed, batch: pending.length });
         return;
       }
 

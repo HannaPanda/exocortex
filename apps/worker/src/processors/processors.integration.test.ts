@@ -1942,3 +1942,294 @@ describe('attachment text extraction', () => {
     expect(reread.textTruncated).toBe(false);
   }, 30_000);
 });
+
+/**
+ * The reference index (issue #19).
+ *
+ * Covers the two halves that can drift apart: extraction, which runs with
+ * materialization and must *replace* what it wrote before, and resolution,
+ * which runs from the target side when a page appears or is renamed and is the
+ * only thing standing between a title-based index and silent staleness.
+ */
+describe('document links', () => {
+  const LINKING_MARKDOWN = `# Quelle
+
+Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
+
+:::page Zielseite
+:::
+`;
+
+  async function createLinkingDocument(markdown: string, title: string): Promise<string> {
+    const imported = markdownToYjsState(markdown);
+    const document = await prisma.document.create({
+      data: {
+        workspaceId,
+        title,
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+        content: {
+          create: { yjsState: Buffer.from(imported.yjsState), yjsUpdatedAt: new Date() },
+        },
+      },
+    });
+    return document.id;
+  }
+
+  async function materialize(documentId: string, correlationId: string): Promise<void> {
+    const processor = createMaterializeDocumentProcessor({ prisma, queues, bus });
+    await processor(
+      contextFor({
+        correlationId,
+        documentId,
+        workspaceId,
+        yjsUpdatedAt: Date.now(),
+        reason: 'manual' as const,
+      }).context,
+    );
+  }
+
+  function maintenance() {
+    return createMaintenanceProcessor({
+      prisma,
+      queues,
+      storage: recordingStorage(),
+      bus,
+      settings: stubSettings(),
+    });
+  }
+
+  it('records all three notations when a page is materialized', async () => {
+    const sourceId = await createLinkingDocument(LINKING_MARKDOWN, 'Quelle A');
+    await materialize(sourceId, 'test-links-1');
+
+    const links = await prisma.documentLink.findMany({
+      where: { sourceDocumentId: sourceId },
+      orderBy: { position: 'asc' },
+    });
+    expect(links.map((link) => link.kind).sort()).toEqual(['MENTION', 'PAGE_LINK', 'WIKI_MARK']);
+    expect(new Set(links.map((link) => link.targetTitleKey))).toEqual(new Set(['zielseite']));
+    expect(links.every((link) => link.workspaceId === workspaceId)).toBe(true);
+    // Unresolved: no page carries that title yet.
+    expect(links.every((link) => link.targetDocumentId === null)).toBe(true);
+    // The wiki mark's preview is the sentence it sits in, not just the title.
+    const wikiMark = links.find((link) => link.kind === 'WIKI_MARK');
+    expect(wikiMark?.context).toContain('mittendrin');
+
+    const content = await prisma.documentContent.findUniqueOrThrow({
+      where: { documentId: sourceId },
+      select: { linksIndexedAt: true },
+    });
+    expect(content.linksIndexedAt).not.toBeNull();
+  }, 60_000);
+
+  it('replaces the references when the page is materialized again', async () => {
+    const sourceId = await createLinkingDocument(LINKING_MARKDOWN, 'Quelle B');
+    await materialize(sourceId, 'test-links-2');
+    expect(await prisma.documentLink.count({ where: { sourceDocumentId: sourceId } })).toBe(3);
+
+    const rewritten = markdownToYjsState('# Quelle B\n\nJetzt nur noch [[Andere Seite]].\n');
+    await prisma.documentContent.update({
+      where: { documentId: sourceId },
+      data: {
+        yjsState: Buffer.from(rewritten.yjsState),
+        yjsUpdatedAt: new Date(Date.now() + 1_000),
+      },
+    });
+    await materialize(sourceId, 'test-links-2b');
+
+    const links = await prisma.documentLink.findMany({ where: { sourceDocumentId: sourceId } });
+    expect(links).toHaveLength(1);
+    expect(links[0]?.targetTitleKey).toBe('andere seite');
+  }, 60_000);
+
+  it('resolves a reference to a page that is only created afterwards', async () => {
+    const sourceId = await createLinkingDocument(
+      '# Quelle C\n\nEin Verweis auf [[Spätgeburt]].\n',
+      'Quelle C',
+    );
+    await materialize(sourceId, 'test-links-3');
+    expect(
+      await prisma.documentLink.count({
+        where: { sourceDocumentId: sourceId, targetDocumentId: null },
+      }),
+    ).toBe(1);
+
+    const target = await prisma.document.create({
+      data: {
+        workspaceId,
+        title: 'Spätgeburt',
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+      },
+    });
+    await maintenance()(
+      contextFor({
+        correlationId: 'test-links-3b',
+        task: 'resolve-document-links',
+        workspaceId,
+        documentId: target.id,
+      }).context,
+    );
+
+    const link = await prisma.documentLink.findFirstOrThrow({
+      where: { sourceDocumentId: sourceId },
+    });
+    expect(link.targetDocumentId).toBe(target.id);
+  }, 60_000);
+
+  it('lets go of a reference when the target is renamed, and hands it to the new namesake', async () => {
+    const target = await prisma.document.create({
+      data: {
+        workspaceId,
+        title: 'Wanderpokal',
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+      },
+    });
+    const sourceId = await createLinkingDocument(
+      '# Quelle D\n\nEin Verweis auf [[Wanderpokal]].\n',
+      'Quelle D',
+    );
+    await materialize(sourceId, 'test-links-4');
+    const initial = await prisma.documentLink.findFirstOrThrow({
+      where: { sourceDocumentId: sourceId },
+    });
+    expect(initial.targetDocumentId).toBe(target.id);
+
+    await prisma.document.update({
+      where: { id: target.id },
+      data: { title: 'Ganz anders' },
+    });
+    await maintenance()(
+      contextFor({
+        correlationId: 'test-links-4b',
+        task: 'resolve-document-links',
+        workspaceId,
+        documentId: target.id,
+      }).context,
+    );
+    const orphaned = await prisma.documentLink.findFirstOrThrow({
+      where: { sourceDocumentId: sourceId },
+    });
+    expect(orphaned.targetDocumentId).toBeNull();
+
+    // A different page takes the title over: the reference follows the title.
+    const successor = await prisma.document.create({
+      data: {
+        workspaceId,
+        title: 'Wanderpokal',
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+      },
+    });
+    await maintenance()(
+      contextFor({
+        correlationId: 'test-links-4c',
+        task: 'resolve-document-links',
+        workspaceId,
+        documentId: successor.id,
+      }).context,
+    );
+    const rebound = await prisma.documentLink.findFirstOrThrow({
+      where: { sourceDocumentId: sourceId },
+    });
+    expect(rebound.targetDocumentId).toBe(successor.id);
+  }, 60_000);
+
+  it('does nothing when the page it should resolve for is gone', async () => {
+    await expect(
+      maintenance()(
+        contextFor({
+          correlationId: 'test-links-5',
+          task: 'resolve-document-links',
+          workspaceId,
+          documentId: 'does-not-exist',
+        }).context,
+      ),
+    ).resolves.toBeUndefined();
+  }, 30_000);
+
+  it('backfills a page that was materialized before the index existed', async () => {
+    const sourceId = await createLinkingDocument(
+      '# Quelle E\n\nEin Verweis auf [[Nachzügler]].\n',
+      'Quelle E',
+    );
+    await materialize(sourceId, 'test-links-6');
+    // Back to the state an existing deployment is in: derived JSON, no references.
+    await prisma.documentLink.deleteMany({ where: { sourceDocumentId: sourceId } });
+    await prisma.documentContent.update({
+      where: { documentId: sourceId },
+      data: { linksIndexedAt: null },
+    });
+
+    await maintenance()(
+      contextFor({
+        correlationId: 'test-links-6b',
+        task: 'backfill-document-links',
+        workspaceId,
+        documentId: null,
+      }).context,
+    );
+
+    const links = await prisma.documentLink.findMany({ where: { sourceDocumentId: sourceId } });
+    expect(links).toHaveLength(1);
+    expect(links[0]?.targetTitleKey).toBe('nachzügler');
+
+    // Running it again finds nothing left to do for this page.
+    const marked = await prisma.documentContent.findUniqueOrThrow({
+      where: { documentId: sourceId },
+      select: { linksIndexedAt: true },
+    });
+    expect(marked.linksIndexedAt).not.toBeNull();
+  }, 60_000);
+
+  it('turns a document.updated outbox event into a resolution job', async () => {
+    const target = await prisma.document.create({
+      data: {
+        workspaceId,
+        title: 'Umbenannt',
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+      },
+    });
+    const sourceId = await createLinkingDocument(
+      '# Quelle F\n\nEin Verweis auf [[Umbenannt]].\n',
+      'Quelle F',
+    );
+    await materialize(sourceId, 'test-links-7');
+    await prisma.document.update({ where: { id: target.id }, data: { title: 'Doch nicht' } });
+    await prisma.outboxEvent.create({
+      data: {
+        workspaceId,
+        type: 'document.updated',
+        payload: { documentId: target.id },
+        correlationId: 'test-links-7b',
+      },
+    });
+
+    const processor = maintenance();
+    await processor(
+      contextFor({
+        correlationId: 'test-links-7b',
+        task: 'dispatch-outbox',
+        workspaceId: null,
+        documentId: null,
+      }).context,
+    );
+
+    const job = await queues
+      .getQueue('maintenance')
+      .getJobs(['waiting', 'delayed', 'active', 'completed']);
+    const resolution = job.find(
+      (entry) =>
+        entry.data.task === 'resolve-document-links' && entry.data.documentId === target.id,
+    );
+    expect(resolution).toBeDefined();
+  }, 60_000);
+});

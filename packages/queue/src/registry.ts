@@ -206,7 +206,7 @@ export class QueueRegistry {
       { every: 5_000 },
       {
         name: QUEUE_NAMES.maintenance,
-        data: { correlationId, task: 'dispatch-outbox', workspaceId: null },
+        data: { correlationId, task: 'dispatch-outbox', workspaceId: null, documentId: null },
       },
     );
     await queue.upsertJobScheduler(
@@ -214,7 +214,7 @@ export class QueueRegistry {
       { pattern: '0 4 * * *' },
       {
         name: QUEUE_NAMES.maintenance,
-        data: { correlationId, task: 'prune-snapshots', workspaceId: null },
+        data: { correlationId, task: 'prune-snapshots', workspaceId: null, documentId: null },
       },
     );
     await queue.upsertJobScheduler(
@@ -222,7 +222,7 @@ export class QueueRegistry {
       { pattern: '30 4 * * *' },
       {
         name: QUEUE_NAMES.maintenance,
-        data: { correlationId, task: 'collect-orphaned-covers', workspaceId: null },
+        data: { correlationId, task: 'collect-orphaned-covers', workspaceId: null, documentId: null },
       },
     );
     // Every minute: the second-line defence for a run whose worker died
@@ -233,7 +233,19 @@ export class QueueRegistry {
       { every: 60_000 },
       {
         name: QUEUE_NAMES.maintenance,
-        data: { correlationId, task: 'reap-stale-ai-runs', workspaceId: null },
+        data: { correlationId, task: 'reap-stale-ai-runs', workspaceId: null, documentId: null },
+      },
+    );
+    // Every five minutes, a small batch: this is what pulls pages that existed
+    // before the reference index into it (issue #19), slowly enough that a
+    // running deployment does not notice. Once every content row is marked it
+    // costs one indexed query per run and nothing else.
+    await queue.upsertJobScheduler(
+      'backfill-document-links',
+      { every: 300_000 },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: { correlationId, task: 'backfill-document-links', workspaceId: null, documentId: null },
       },
     );
     this.logger.info('Maintenance schedulers registered');

@@ -64,9 +64,22 @@ export const maintenanceJobSchema = jobBase.extend({
     'vacuum-search-index',
     'collect-orphaned-covers',
     'reap-stale-ai-runs',
+    /**
+     * Re-points the reference index after a page appeared, was renamed or
+     * changed workspace. Needs `documentId`; without one it does nothing,
+     * because there is no title to resolve against (issue #19).
+     */
+    'resolve-document-links',
+    /**
+     * Extracts references from content rows the index has never seen, in small
+     * batches. Repeatable, and a no-op once every row is marked.
+     */
+    'backfill-document-links',
   ]),
   /** Optional scope; `null` means all workspaces. */
   workspaceId: idSchema.nullable().default(null),
+  /** Optional scope for tasks that act on a single page. */
+  documentId: idSchema.nullable().default(null),
 });
 export type MaintenanceJob = z.infer<typeof maintenanceJobSchema>;
 

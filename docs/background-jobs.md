@@ -9,7 +9,7 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `document-materialization` | collaboration server (debounced), API (import, snapshot restore) | `createMaterializeDocumentProcessor` | real |
 | `search-indexing` | materialization, document mutations, outbox dispatch | `createIndexDocumentProcessor` | real |
 | `ai` | `AiService.createRun`, `ConversationsService.postMessage` | `createAiRunProcessor` | real, mock provider |
-| `maintenance` | repeatable schedulers | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`), documented placeholder (`vacuum-search-index`) |
+| `maintenance` | repeatable schedulers, outbox dispatch | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`, `resolve-document-links`, `backfill-document-links`), documented placeholder (`vacuum-search-index`) |
 | `attachment-text` | attachment upload, `GET /api/attachments/:id/text` (on demand) | `createAttachmentTextProcessor` | real |
 | `document-cover` | `POST /api/documents/:id/cover/generate` | `createDocumentCoverProcessor` | real |
 
@@ -56,6 +56,26 @@ The `ai` queue is the one queue that overrides the defaults above (ADR-017,
   `packages/contracts/src/ai-runtime.ts`), well above the default 60 s: a run
   legitimately takes minutes, and both values only exist to catch a worker
   that is actually dead, not merely busy.
+
+`resolve-document-links` and `backfill-document-links` keep the reference
+index of issue #19 honest. The index itself is written by materialization,
+which extracts every `[[Titel]]`, `@[[Titel]]` and page-link block from the
+same ProseMirror JSON it derives Markdown and plain text from and replaces the
+source page's rows wholesale (ADR-007, `apps/worker/src/processors/document-links.ts`).
+
+* `resolve-document-links` carries a `documentId` and runs when a page appears,
+  is renamed or changes workspace. A reference addresses a *title*, not an
+  identity (issue #14), so the index would otherwise go stale from the target
+  side without the source page ever changing. It is enqueued by the outbox
+  dispatcher for `document.created`, `document.updated` and `document.moved`,
+  and the API writes `document.updated` **only on an actual rename**, which is
+  what keeps this from firing on every save. The work is one correlated
+  `UPDATE` over the two or three title keys involved, so it stays an index
+  range rather than a workspace-wide sweep.
+* `backfill-document-links` (every 5 minutes, 50 content rows per run) pulls
+  pages that existed before the index did. `DocumentContent.linksIndexedAt` is
+  `null` for exactly those rows; once the sweep is done each run costs one
+  indexed query and nothing else.
 
 `reap-stale-ai-runs` (every 60 s) is the second-line rescue for a run whose
 worker never got a chance to close it out itself — a hard process kill, a lost
@@ -107,6 +127,7 @@ heartbeat the worker itself relies on to detect a cancellation.
 | replaced page covers | deleted 1 hour after they stop being a cover (`collect-orphaned-covers`, daily at 04:30) |
 | outbox dispatch interval | 5 seconds, 100 rows per run |
 | stale AI run reap interval | 60 seconds, 100 runs per pass |
+| reference backfill interval | 5 minutes, 50 documents per run |
 
 ## Adding a background job
 
@@ -173,3 +194,8 @@ processors against the real PostgreSQL and Redis:
   active; does nothing when already within budget
 * attachment text extraction: `NOT_APPLICABLE` for a non-PDF, `FAILED` with a
   clear reason when no extractor is configured
+* references: all three notations are extracted on materialization, a second
+  materialization replaces them instead of adding to them, a reference to a
+  page created later is resolved, a rename releases the old binding and hands
+  it to a new namesake, the backfill picks up a content row the index never
+  saw, and the outbox dispatcher turns `document.updated` into a resolution job
