@@ -1832,4 +1832,113 @@ describe('attachment text extraction', () => {
       pageCount: 12,
     });
   }, 30_000);
+
+  it('skips a READY attachment unless the job says forced', async () => {
+    const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
+    await prisma.attachment.update({
+      where: { id: attachmentId },
+      data: { textStatus: 'READY', extractedText: 'already read' },
+    });
+    let calls = 0;
+    const processor = createAttachmentTextProcessor({
+      prisma,
+      storage: fakeStorage(Buffer.from('%PDF-1.7')),
+      extractors: () => [
+        {
+          extract: async () => {
+            calls += 1;
+            return { text: 'read again', metadata: stubMetadata };
+          },
+        },
+      ],
+      documentInfo: noDocumentInfo,
+      settings: stubSettings(),
+    });
+
+    await processor(
+      contextFor({ correlationId: 'test-attach-9', attachmentId, workspaceId, reason: 'retry' }).context,
+    );
+    expect(calls).toBe(0);
+    expect(
+      (await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } })).extractedText,
+    ).toBe('already read');
+
+    // `forced` is the one reason allowed to skip the guard (issue #2): a
+    // successful extraction can still be a wrong one.
+    await processor(
+      contextFor({ correlationId: 'test-attach-9b', attachmentId, workspaceId, reason: 'forced' })
+        .context,
+    );
+    expect(calls).toBe(1);
+    expect(
+      (await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } })).extractedText,
+    ).toBe('read again');
+  }, 30_000);
+
+  it('never touches a human correction, forced re-extraction or not', async () => {
+    const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
+    await prisma.attachment.update({
+      where: { id: attachmentId },
+      data: {
+        textStatus: 'READY',
+        extractedText: 'machine result',
+        correctedText: 'the corrected version a person wrote',
+        textCorrectedAt: new Date('2026-05-01T00:00:00.000Z'),
+        textCorrectedById: userId,
+      },
+    });
+    const processor = createAttachmentTextProcessor({
+      prisma,
+      storage: fakeStorage(Buffer.from('%PDF-1.7')),
+      extractors: () => [{ extract: async () => ({ text: 'a fresh machine result', metadata: stubMetadata }) }],
+      documentInfo: noDocumentInfo,
+      settings: stubSettings(),
+    });
+
+    await processor(
+      contextFor({ correlationId: 'test-attach-10', attachmentId, workspaceId, reason: 'forced' })
+        .context,
+    );
+
+    const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+    expect(attachment.extractedText).toBe('a fresh machine result');
+    expect(attachment.correctedText).toBe('the corrected version a person wrote');
+    expect(attachment.textCorrectedById).toBe(userId);
+  }, 30_000);
+
+  it('records when the extracted text was cut off, and resets the flag on a shorter re-read', async () => {
+    const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
+    const longText = 'a'.repeat(400_001);
+    const processor = createAttachmentTextProcessor({
+      prisma,
+      storage: fakeStorage(Buffer.from('%PDF-1.7')),
+      extractors: () => [{ extract: async () => ({ text: longText, metadata: stubMetadata }) }],
+      documentInfo: noDocumentInfo,
+      settings: stubSettings(),
+    });
+
+    await processor(
+      contextFor({ correlationId: 'test-attach-11', attachmentId, workspaceId, reason: 'upload' })
+        .context,
+    );
+
+    const truncated = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+    expect(truncated.textTruncated).toBe(true);
+    expect(truncated.extractedText).toHaveLength(400_000);
+
+    const processorShort = createAttachmentTextProcessor({
+      prisma,
+      storage: fakeStorage(Buffer.from('%PDF-1.7')),
+      extractors: () => [{ extract: async () => ({ text: 'short result', metadata: stubMetadata }) }],
+      documentInfo: noDocumentInfo,
+      settings: stubSettings(),
+    });
+    await processorShort(
+      contextFor({ correlationId: 'test-attach-11b', attachmentId, workspaceId, reason: 'forced' })
+        .context,
+    );
+
+    const reread = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+    expect(reread.textTruncated).toBe(false);
+  }, 30_000);
 });

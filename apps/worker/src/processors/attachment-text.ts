@@ -3,13 +3,15 @@ import {
   type PdfDocumentInfoReader,
   type PdfTextExtractor,
 } from '@exocortex/ai';
-import { type PdfMetadata, type QUEUE_NAMES, type Settings } from '@exocortex/contracts';
+import {
+  ATTACHMENT_TEXT_MAX_CHARS,
+  type PdfMetadata,
+  type QUEUE_NAMES,
+  type Settings,
+} from '@exocortex/contracts';
 import { Prisma, type PrismaClient } from '@exocortex/database';
 import { type JobContext } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
-
-/** Extracted text is capped here; a 400k character page is already enormous context. */
-const MAX_EXTRACTED_TEXT_CHARS = 400_000;
 
 export interface AttachmentTextDependencies {
   prisma: PrismaClient;
@@ -39,10 +41,21 @@ export interface AttachmentTextDependencies {
  * Extracts and caches the text layer of a PDF attachment (D6).
  *
  * Idempotent, following `materialize-document.ts`: a `READY` attachment is
- * never re-extracted, even by a retried job. `exo_attachment_read_text` (the
- * MCP/AI-facing read path) never extracts on its own -- it only reads this
- * cache or reports `pending`, which is what keeps that surface fast and
- * Redis-free.
+ * never re-extracted, even by a retried job -- with one deliberate exception.
+ * `reason: 'forced'` is the explicit "no, really, again" from
+ * `AttachmentsService.forceReextract` (issue #2): a successful extraction can
+ * still be a *wrong* one (OCR misreads, a table falls apart), and until now
+ * the only way out was deleting the attachment and re-uploading it. Every
+ * other reason leaves a `READY` attachment alone.
+ *
+ * A correction living in `correctedText` is never touched by this job, forced
+ * or not: only a human write (`AttachmentsService.correctText`) may set or
+ * clear it, so a re-extraction can refresh the machine result without ever
+ * discarding what someone fixed by hand.
+ *
+ * `exo_attachment_read_text` (the MCP/AI-facing read path) never extracts on
+ * its own -- it only reads this cache or reports `pending`, which is what
+ * keeps that surface fast and Redis-free.
  */
 export function createAttachmentTextProcessor(dependencies: AttachmentTextDependencies) {
   const { prisma, storage } = dependencies;
@@ -59,8 +72,8 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
       return;
     }
 
-    if (attachment.textStatus === 'READY') {
-      // Idempotency: a retried job must not re-extract.
+    if (attachment.textStatus === 'READY' && payload.reason !== 'forced') {
+      // Idempotency: a retried job must not re-extract, unless it was asked to.
       logger.info('Skipping attachment text extraction: already ready', { attachmentId: attachment.id });
       return;
     }
@@ -72,7 +85,11 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
     if (extractors.length === 0 || !settings['ai.pdfExtractionEnabled']) {
       await prisma.attachment.update({
         where: { id: attachment.id },
-        data: { textStatus: 'FAILED', textExtractionError: 'PDF extraction is not configured' },
+        data: {
+          textStatus: 'FAILED',
+          textExtractionError: 'PDF extraction is not configured',
+          textTruncated: false,
+        },
       });
       logger.info('Attachment text extraction unavailable', { attachmentId: attachment.id });
       return;
@@ -92,6 +109,7 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
         data: {
           textStatus: 'FAILED',
           textExtractionError: `PDF exceeds the configured size limit (${attachment.byteSize} > ${settings['ai.pdfMaxBytes']} bytes)`,
+          textTruncated: false,
         },
       });
       logger.info('Skipping attachment text extraction: PDF too large', {
@@ -176,6 +194,7 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
           // Even a total failure knows the page count and the title: they come
           // from the file, not from an engine.
           textMetadata: toJsonColumn(mergeAttempts(null, [localInfo, ...attempted])),
+          textTruncated: false,
         },
       });
       logger.info('PDF has no extractable text layer', {
@@ -186,19 +205,24 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
     }
 
     const metadata = mergeAttempts(winner, [localInfo, ...attempted]);
+    // Cut silently until now (issue #2): `textTruncated` is what lets the UI
+    // say so instead of a long scan looking like a complete result.
+    const truncated = text.length > ATTACHMENT_TEXT_MAX_CHARS;
     await prisma.attachment.update({
       where: { id: attachment.id },
       data: {
         textStatus: 'READY',
-        extractedText: text.slice(0, MAX_EXTRACTED_TEXT_CHARS),
+        extractedText: text.slice(0, ATTACHMENT_TEXT_MAX_CHARS),
         textExtractedAt: new Date(),
         textExtractionError: null,
         textMetadata: toJsonColumn(metadata),
+        textTruncated: truncated,
       },
     });
     logger.info('Attachment text extracted', {
       attachmentId: attachment.id,
       length: text.length,
+      truncated,
       extractor: metadata?.extractor,
       ocrUsed: metadata?.ocrUsed,
       pageCount: metadata?.pageCount,
