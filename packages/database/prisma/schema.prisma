@@ -176,6 +176,7 @@ model Workspace {
   auditLog        AuditLog[]
   aiRuns          AiRun[]
   aiConversations AiConversation[]
+  documentLinks   DocumentLink[]
 
   @@map("workspace")
 }
@@ -328,6 +329,9 @@ model Document {
   propertyValues     DocumentPropertyValue[] @relation("RowPropertyValues")
   /// Page a conversation was opened from. Context only.
   aiConversations    AiConversation[]        @relation("AiConversationDocument")
+  /// References this page makes, and references other pages make to it.
+  outgoingLinks      DocumentLink[]          @relation("DocumentLinkSource")
+  incomingLinks      DocumentLink[]          @relation("DocumentLinkTarget")
 
   @@index([workspaceId, parentId, orderKey])
   @@index([workspaceId, archivedAt])
@@ -350,8 +354,14 @@ model DocumentContent {
   plainText       String?
   markdown        String?
   materializedAt  DateTime?
+  /// When `DocumentLink` was last rebuilt from this content. `null` marks a row
+  /// the reference index has never seen, which is exactly what the
+  /// `backfill-document-links` maintenance task looks for; a partial index on
+  /// the column keeps that sweep cheap once the backfill is done.
+  linksIndexedAt  DateTime?
   updatedAt       DateTime  @updatedAt
 
+  @@index([linksIndexedAt])
   @@map("document_content")
 }
 
@@ -411,6 +421,64 @@ model DocumentEmbedding {
 
   @@index([documentId])
   @@map("document_embedding")
+}
+
+/// Which notation produced a reference. See `DOCUMENT_LINK_KINDS` in
+/// `@exocortex/editor`; the contract carries the same three values in camelCase.
+enum DocumentLinkKind {
+  PAGE_LINK
+  MENTION
+  WIKI_MARK
+}
+
+/// Reference from one page to another, rebuilt by materialization.
+///
+/// Derived data, like `plainText` and `DocumentSearchIndex`: the truth stays in
+/// the document content, and the rows of a source page are replaced wholesale
+/// on every materialization so a deleted reference disappears (ADR-007).
+///
+/// `targetDocumentId` is nullable because a reference addresses a **title**,
+/// not an identity (issue #14): it is null while no page carries that title,
+/// and it is re-pointed when one is created or renamed. `targetTitleKey` is the
+/// normalized title the resolution compares on, so a rename is two indexed
+/// statements rather than a scan of every document's content.
+model DocumentLink {
+  id          String    @id @default(cuid(2))
+  /// Denormalized from the source document: resolution is workspace-scoped and
+  /// must not join the whole document table to find that out.
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  sourceDocumentId String
+  sourceDocument   Document @relation("DocumentLinkSource", fields: [sourceDocumentId], references: [id], onDelete: Cascade)
+  /// `SetNull`, not `Cascade`: deleting the target turns the reference into an
+  /// unresolved one, which is exactly what it has become.
+  targetDocumentId String?
+  targetDocument   Document? @relation("DocumentLinkTarget", fields: [targetDocumentId], references: [id], onDelete: SetNull)
+
+  /// Title as written, whitespace-normalized. Always present.
+  targetTitle    String
+  /// `targetTitle` lowercased. Kept as a column so the resolution can use an index.
+  targetTitleKey String
+  kind           DocumentLinkKind
+  /// Addressable block the reference sits in, when it carries an identifier.
+  blockId        String?
+  /// Surrounding sentence, for the backlink preview.
+  context        String
+  /// Order of appearance in the source document.
+  position       Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  /// One row per notation, title and block. The extractor deduplicates on the
+  /// same triple, so this constraint only ever catches a bug — the wholesale
+  /// replacement inside one transaction is what actually keeps the table clean.
+  @@unique([sourceDocumentId, kind, targetTitleKey, blockId])
+  /// "Who links to this page?"
+  @@index([targetDocumentId])
+  /// Resolution after a page is created or renamed.
+  @@index([workspaceId, targetTitleKey])
+  @@index([sourceDocumentId, position])
+  @@map("document_link")
 }
 
 // ---------------------------------------------------------------------------
