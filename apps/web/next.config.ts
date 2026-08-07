@@ -27,6 +27,18 @@ const nextConfig: NextConfig = {
   // cell". Excluding the package from bundling makes Next load it once via a
   // plain Node `require`, which is a real singleton across the whole build.
   serverExternalPackages: ['prosemirror-tables'],
+  experimental: {
+    // The same registration breaks the browser bundle, where
+    // `serverExternalPackages` cannot reach. Scope hoisting merges a large group
+    // of modules -- `prosemirror-tables` among them -- into one factory and then
+    // registers that single factory under all 41 module ids of the group. The
+    // browser runtime's module cache is keyed by id, so importing two ids of the
+    // same group runs the factory twice, and the second run re-registers `cell`.
+    // `buildEditorExtensions` imports several of those ids, so it triggers this
+    // by itself. Scope hoisting is on by default in builds and always off in
+    // development, which is why only the deployed app was affected.
+    turbopackScopeHoisting: false,
+  },
   productionBrowserSourceMaps: true,
   typedRoutes: false,
   env: {
