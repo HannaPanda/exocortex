@@ -210,6 +210,23 @@ server-derived (`buildAttachmentKey`); clients never choose keys.
 3. add a thin controller method with `zodPipe(schema)` and
    `openApiSchema(schema)` so validation and OpenAPI come from the same source.
 
+### Deleting a workspace
+
+There is no REST endpoint for it, deliberately: a route that erases a
+workspace, every page under it and every uploaded file is a route a session can
+reach. It is an operator task instead —
+`apps/api/scripts/delete-workspaces.ts` (`pnpm --filter @exocortex/api
+workspaces:delete -- --id <id> [--dry-run]`), which removes the stored objects
+first, while the rows that name them still exist, and then deletes the one row
+everything else cascades from.
+
+The browser suite is its main caller: it creates a workspace per scenario,
+notes each id in `e2e/.created-workspaces`, and `e2e/support/global-teardown.ts`
+hands the list to the script when the run ends. Without that the deployment
+fills up — it reached 136 leftover workspaces before anyone noticed, at which
+point the workspace menu was unusable. A cleanup that fails never fails the
+run; the ids stay in the file for a manual sweep.
+
 ### Obsidian import
 
 `apps/api/scripts/import-obsidian.ts` (`pnpm --filter @exocortex/api

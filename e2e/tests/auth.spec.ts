@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 
+import { recordWorkspace } from '../support/created-workspaces';
 import { requireSeedCredentials, signIn, workspaceIdFrom } from '../support/fixtures';
 
 test.beforeAll(() => {
@@ -47,6 +48,8 @@ test.describe('authentication', () => {
     await page.getByTestId('workspace-create-submit').click();
     await page.waitForURL(/\/arbeitsbereich\/(?!$)/, { timeout: 30_000 });
     await expect(page.getByTestId('workspace-switcher')).toContainText(name);
+    // Noted for the teardown; the application cannot delete a workspace.
+    recordWorkspace(workspaceIdFrom(page));
 
     await page.getByTestId('workspace-switcher').click();
     await page.getByTestId(`workspace-option-${current}`).click();

@@ -1,5 +1,6 @@
 import { type APIRequestContext, expect, test } from '@playwright/test';
 
+import { recordWorkspace } from '../support/created-workspaces';
 import { apiSignIn, requireSeedCredentials, SEED_USERS } from '../support/fixtures';
 
 /**
@@ -46,7 +47,11 @@ async function createWorkspace(label: string): Promise<string> {
     headers: { origin },
   });
   expect(response.status(), await response.text()).toBe(201);
-  return ((await response.json()) as { id: string }).id;
+  const { id } = (await response.json()) as { id: string };
+  // Noted for the teardown: the application cannot delete a workspace, so a
+  // suite that makes one per test would otherwise leave it there for good.
+  recordWorkspace(id);
+  return id;
 }
 
 /** Creates a page in a workspace owned by Johanna and returns its id. */

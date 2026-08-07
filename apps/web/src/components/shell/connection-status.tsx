@@ -53,7 +53,17 @@ export function ConnectionStatus() {
     <Tooltip>
       <TooltipTrigger
         render={
-          <Badge variant={variant} className="gap-1 px-1.5" data-testid="connection-status">
+          <Badge
+            variant={variant}
+            className="gap-1 px-1.5"
+            data-testid="connection-status"
+            // The label alone cannot be read back: "Verbunden" is also what a
+            // page with no document open shows, so anything waiting for the
+            // editing session to be live would be satisfied too early. These
+            // two say which channel is in which state, separately.
+            data-app-socket={status}
+            data-collaboration={state.documentId === null ? 'none' : collaboration}
+          >
             {icon}
             <span className="exocortex-sr-only">{label}</span>
             {state.pendingSync ? (

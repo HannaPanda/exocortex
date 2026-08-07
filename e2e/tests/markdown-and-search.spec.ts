@@ -35,7 +35,9 @@ test.describe('markdown and search', () => {
 
     // The collaboration server persists with a debounce and the worker derives
     // Markdown afterwards, so the pipeline has to finish before exporting.
-    await waitForMaterialization(page);
+    // The heading, not the bare marker: the marker is part of the title too, so
+    // waiting for it would be satisfied by the frontmatter of a still-empty page.
+    await waitForMaterialization(page, documentId, `# Überschrift ${marker}`);
 
     // Export: the download contains deterministic Markdown.
     await page.getByTestId('document-actions').click();

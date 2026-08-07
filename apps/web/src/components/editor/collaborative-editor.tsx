@@ -136,7 +136,27 @@ export function CollaborativeEditor({
   const [error, setError] = React.useState<string | null>(null);
   const [synced, setSynced] = React.useState(false);
 
-  // Connection setup. Re-runs only when the document changes.
+  /**
+   * The title is a label, not part of the connection.
+   *
+   * It used to be a dependency of the effect below, which meant that renaming a
+   * page tore the live connection down and built a new one: a fresh ticket, a
+   * fresh `Y.Doc`, a fresh IndexedDB handle, and in between a spinner where the
+   * editor had been. Anything typed in that gap went into a document that was
+   * about to be thrown away. Reading it through a ref keeps the current value
+   * available to `connect()` without making a rename a reconnect.
+   */
+  const documentTitleRef = React.useRef(documentTitle);
+
+  // The session label follows the title on its own, with nothing torn down.
+  // Declared before the connection effect so that on the first mount the ref is
+  // already current by the time `connect()` reads it.
+  React.useEffect(() => {
+    documentTitleRef.current = documentTitle;
+    update({ documentTitle });
+  }, [documentTitle, update]);
+
+  // Connection setup. Re-runs only when the document or the user changes.
   React.useEffect(() => {
     let disposed = false;
     let active: Connection | null = null;
@@ -148,7 +168,7 @@ export function CollaborativeEditor({
       setSynced(false);
       update({
         documentId,
-        documentTitle,
+        documentTitle: documentTitleRef.current,
         collaboration: 'connecting',
         presence: [],
         saveState: 'idle',
@@ -276,8 +296,9 @@ export function CollaborativeEditor({
         savedAt: null,
       });
     };
-    // `update` is stable (useCallback in the provider).
-  }, [currentUser.id, currentUser.name, documentId, documentTitle, update]);
+    // `update` is stable (useCallback in the provider). `documentTitle` is
+    // deliberately absent; see the ref above for why.
+  }, [currentUser.id, currentUser.name, documentId, update]);
 
   if (error !== null) {
     return <ErrorState title="Editor nicht verfügbar" description={error} />;

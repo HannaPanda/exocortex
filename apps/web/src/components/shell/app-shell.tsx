@@ -160,11 +160,29 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     void queryClient.invalidateQueries({ queryKey: queryKeys.documentTree(workspaceId) });
   }, [queryClient, workspaceId]);
 
+  /**
+   * A page changed as a whole: refresh the tree *and* that page itself.
+   *
+   * The tree alone is not enough. These events also arrive for a change nobody
+   * in this browser made — the built-in AI setting a cover it just drew, an MCP
+   * client renaming a page, another person archiving one — and the open page
+   * would go on showing the stale properties until someone reloaded it.
+   */
+  const invalidateDocument = React.useCallback(
+    (event: { payload: { document: { id: string } } }) => {
+      invalidateTree();
+      void queryClient.invalidateQueries({
+        queryKey: queryKeys.document(event.payload.document.id),
+      });
+    },
+    [invalidateTree, queryClient],
+  );
+
   useRealtimeEvent('document.created', invalidateTree);
-  useRealtimeEvent('document.updated', invalidateTree);
+  useRealtimeEvent('document.updated', invalidateDocument);
   useRealtimeEvent('document.moved', invalidateTree);
-  useRealtimeEvent('document.archived', invalidateTree);
-  useRealtimeEvent('document.restored', invalidateTree);
+  useRealtimeEvent('document.archived', invalidateDocument);
+  useRealtimeEvent('document.restored', invalidateDocument);
   useRealtimeEvent('document.materialized', (event) => {
     void queryClient.invalidateQueries({
       queryKey: queryKeys.document(event.payload.documentId),

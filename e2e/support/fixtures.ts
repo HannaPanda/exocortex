@@ -80,9 +80,16 @@ export async function createSignedInContext(
  * background job has to wait for this first.
  */
 export async function waitForCollaboration(page: Page): Promise<void> {
-  await expect(page.getByTestId('connection-status')).toContainText('Verbunden', {
-    timeout: 60_000,
-  });
+  // Not the badge's label: "Verbunden" is also what a page with no document
+  // open shows, so waiting for that text passed while the editor was still
+  // unconnected and the keystrokes that followed went nowhere. The attribute
+  // reports the collaboration channel on its own, and `none` when there is no
+  // document to connect at all.
+  await expect(page.getByTestId('connection-status')).toHaveAttribute(
+    'data-collaboration',
+    'connected',
+    { timeout: 60_000 },
+  );
 }
 
 /** Waits until the page tree contains a node with the given title. */
@@ -136,7 +143,9 @@ export async function createDatabase(page: Page, title: string): Promise<string>
   await titleInput.fill(title);
   await titleInput.blur();
   await expectTreeContains(page, title);
-  await waitForCollaboration(page);
+  // No `waitForCollaboration` here, unlike `createPage`: a database renders its
+  // views rather than the editor, so it never opens a collaboration connection
+  // and waiting for one would wait forever.
   return documentId;
 }
 
@@ -163,14 +172,41 @@ export async function apiSignIn(
 
 /**
  * Waits until the collaboration server has persisted the document and the
- * materialization job has run.
+ * materialization job has derived Markdown containing `expected`.
  *
- * Persistence is debounced on purpose (see ADR-005), so a test that reads derived
- * data right after typing would race the pipeline. The job progress indicator is
- * the observable signal that the worker finished.
+ * Persistence is debounced on purpose (see ADR-005), so a test that reads
+ * derived data right after typing would race the pipeline.
+ *
+ * This asks the export endpoint rather than watching the job-progress
+ * indicator, which is what it used to do. That indicator is shown for two and a
+ * half seconds after the job ends and then removed, so a suite whose browser
+ * was busy elsewhere for those two seconds saw a page that had in fact been
+ * materialized and concluded it had not — a failure that could not be
+ * reproduced by running the test on its own. The derived Markdown is the thing
+ * the caller actually needs, and unlike a toast it stays true.
+ *
+ * That the indicator appears at all is still covered, in `ai.spec.ts`, where
+ * realtime job progress is the subject rather than a means.
+ *
+ * `expected` has to be something only the *body* can contain. The exported
+ * Markdown carries frontmatter, so a caller waiting for a marker that is also
+ * in the page title is told "ready" while the body is still empty.
  */
-export async function waitForMaterialization(page: Page): Promise<void> {
-  const indicator = page.getByTestId('job-progress');
-  await expect(indicator).toBeVisible({ timeout: 60_000 });
-  await expect(indicator).toBeHidden({ timeout: 60_000 });
+export async function waitForMaterialization(
+  page: Page,
+  documentId: string,
+  expected: string,
+): Promise<void> {
+  await expect
+    .poll(
+      async () => {
+        const response = await page.request.get(
+          `/api/documents/${documentId}/export/markdown`,
+        );
+        if (!response.ok()) return '';
+        return ((await response.json()) as { markdown: string }).markdown;
+      },
+      { timeout: 60_000, intervals: [500] },
+    )
+    .toContain(expected);
 }

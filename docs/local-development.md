@@ -150,6 +150,19 @@ pnpm test:e2e
 Browsers are installed once with
 `pnpm --filter @exocortex/e2e exec playwright install chromium --with-deps`.
 
+The run creates a workspace per scenario and deletes them again in its teardown
+(`e2e/support/global-teardown.ts`), which needs database and object-storage
+access — so a run against a deployment on another host warns and leaves them
+behind rather than failing. `E2E_SKIP_CLEANUP=1` keeps them on purpose, for
+inspecting what a failed test built. Either way the ids are in
+`e2e/.created-workspaces` and can be swept up later with
+`pnpm --filter @exocortex/api workspaces:delete -- --ids-file e2e/.created-workspaces`.
+
+Also worth knowing: `AI_PROVIDER` is read by the suite itself. The AI test
+asserts the mock provider's echo only when it is set to `mock`, so a run
+against a deployment on a real provider still checks everything that does not
+depend on which provider answered.
+
 ## Troubleshooting
 
 | Symptom | Cause and fix |

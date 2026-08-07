@@ -12,7 +12,8 @@
     "lint": "eslint src",
     "test": "vitest run",
     "token:create": "tsx scripts/create-api-token.ts",
-    "import:obsidian": "tsx scripts/import-obsidian.ts"
+    "import:obsidian": "tsx scripts/import-obsidian.ts",
+    "workspaces:delete": "tsx scripts/delete-workspaces.ts"
   },
   "dependencies": {
     "@exocortex/ai": "workspace:*",

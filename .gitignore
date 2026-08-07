@@ -40,3 +40,6 @@ apps/web/.env
 # the suite. The old unanchored pattern (`support/.auth/`) never matched this
 # nested path, so these were tracked with live tokens until 2026-08-05.
 e2e/support/.auth/
+
+# Playwright test artefacts
+e2e/.created-workspaces
