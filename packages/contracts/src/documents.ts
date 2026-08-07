@@ -98,6 +98,14 @@ export const moveDocumentRequestSchema = z.object({
   parentId: idSchema.nullable(),
   afterSiblingId: idSchema.nullable().optional(),
   beforeSiblingId: idSchema.nullable().optional(),
+  /**
+   * Moves the whole subtree into a different workspace. Omitted (the default)
+   * keeps today's behaviour: `parentId` must then name a document of the same
+   * workspace the moved document is already in. When given, `parentId` (unless
+   * `null`) must instead name a document of *this* workspace, the caller needs
+   * write access in both workspaces, and every descendant moves along with it.
+   */
+  workspaceId: idSchema.optional(),
 });
 export type MoveDocumentRequest = z.infer<typeof moveDocumentRequestSchema>;
 
@@ -178,6 +186,69 @@ export const resolveDocumentLinkResponseSchema = z.object({
   matches: z.array(documentLinkMatchSchema),
 });
 export type ResolveDocumentLinkResponse = z.infer<typeof resolveDocumentLinkResponseSchema>;
+
+// --------------------------------------------------------------------------
+// Reference index (backlinks)
+// --------------------------------------------------------------------------
+
+/**
+ * Which notation produced a reference: the page-link block, an inline mention
+ * or a `[[Titel]]` / `wiki:` link mark. Mirrors `DOCUMENT_LINK_KINDS` in
+ * `@exocortex/editor` and the `DocumentLinkKind` enum in the database.
+ */
+export const documentLinkKindSchema = z.enum(['pageLink', 'mention', 'wikiMark']);
+export type DocumentLinkKind = z.infer<typeof documentLinkKindSchema>;
+
+/** The other end of a reference, as much of it as a list needs. */
+export const documentLinkEndpointSchema = z.object({
+  id: idSchema,
+  title: z.string(),
+  type: documentTypeSchema,
+  icon: z.string().nullable(),
+  iconColor: z.enum(DOCUMENT_ICON_COLORS).nullable(),
+  archivedAt: isoDateTimeSchema.nullable(),
+});
+export type DocumentLinkEndpoint = z.infer<typeof documentLinkEndpointSchema>;
+
+const documentLinkBaseSchema = z.object({
+  id: idSchema,
+  kind: documentLinkKindSchema,
+  /** Title as written in the source document. */
+  targetTitle: z.string(),
+  /** Addressable block the reference sits in, when it carries an identifier. */
+  blockId: z.string().nullable(),
+  /** Surrounding sentence, for the preview. May be empty. */
+  context: z.string(),
+});
+
+/** A reference pointing *at* the requested document. */
+export const incomingDocumentLinkSchema = documentLinkBaseSchema.extend({
+  source: documentLinkEndpointSchema,
+});
+export type IncomingDocumentLink = z.infer<typeof incomingDocumentLinkSchema>;
+
+/**
+ * A reference the requested document makes. `target` is null while no page
+ * carries `targetTitle`, which is how an orphaned reference stays visible
+ * instead of disappearing.
+ */
+export const outgoingDocumentLinkSchema = documentLinkBaseSchema.extend({
+  target: documentLinkEndpointSchema.nullable(),
+});
+export type OutgoingDocumentLink = z.infer<typeof outgoingDocumentLinkSchema>;
+
+export const documentLinksResponseSchema = z.object({
+  documentId: idSchema,
+  incoming: z.array(incomingDocumentLinkSchema),
+  outgoing: z.array(outgoingDocumentLinkSchema),
+  /**
+   * True when the reference index has not run over this page yet, so an empty
+   * `outgoing` means "not looked at" rather than "nothing there". The UI says
+   * so instead of claiming the page references nothing.
+   */
+  pending: z.boolean(),
+});
+export type DocumentLinksResponse = z.infer<typeof documentLinksResponseSchema>;
 
 export const documentDetailSchema = documentSummarySchema.extend({
   /** Access level the requesting user has for this document. */

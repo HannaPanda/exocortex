@@ -3,6 +3,7 @@
 import {
   ArchiveIcon,
   ChevronRightIcon,
+  FolderInputIcon,
   PlusIcon,
   RotateCcwIcon,
   SmilePlusIcon,
@@ -15,6 +16,8 @@ import * as React from 'react';
 
 import { type DocumentTreeNode, type DocumentType } from '@exocortex/contracts';
 import {
+  Alert,
+  AlertDescription,
   Button,
   cn,
   ContextMenu,
@@ -22,6 +25,12 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -30,16 +39,25 @@ import {
   ErrorState,
   LoadingState,
   ScrollArea,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { PageIconPicker } from '@/components/document/page-icon-picker';
+import { ApiError } from '@/lib/api/client';
+import { messageForCode } from '@/lib/api/error-messages';
 import {
   useArchiveDocument,
   useCreateDocument,
   useDocumentTree,
+  useMoveDocument,
   useRestoreDocument,
   useUpdateDocument,
+  useWorkspaces,
 } from '@/lib/api/queries';
 
 interface PageTreeProps {
@@ -61,12 +79,19 @@ export function PageTree({ workspaceId }: PageTreeProps) {
   const archiveDocument = useArchiveDocument(workspaceId);
   const restoreDocument = useRestoreDocument(workspaceId);
   const updateDocument = useUpdateDocument(workspaceId);
+  const moveDocument = useMoveDocument(workspaceId);
+  const workspaces = useWorkspaces();
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
   const [showTrash, setShowTrash] = React.useState(false);
   // Which row's icon picker is open. One id rather than one flag per row,
   // because two of them can never be open at the same time, and because the
   // context menu has to be able to open the picker of the row it belongs to.
   const [iconPickerFor, setIconPickerFor] = React.useState<string | null>(null);
+  // The node offered for a cross-workspace move, and the workspace picked for
+  // it. Kept as one pair rather than a boolean flag, because the dialog needs
+  // to know which subtree it is about.
+  const [moveWorkspaceNode, setMoveWorkspaceNode] = React.useState<DocumentTreeNode | null>(null);
+  const [moveTargetWorkspaceId, setMoveTargetWorkspaceId] = React.useState('');
 
   const activeDocumentId = params.documentId;
 
@@ -193,6 +218,16 @@ export function PageTree({ workspaceId }: PageTreeProps) {
             </ContextMenuItem>
             <ContextMenuSeparator />
             <ContextMenuItem
+              data-testid={`tree-move-workspace-${node.id}`}
+              onClick={() => {
+                setMoveWorkspaceNode(node);
+                setMoveTargetWorkspaceId('');
+              }}
+            >
+              <FolderInputIcon /> In anderen Arbeitsbereich verschieben …
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem
               variant="destructive"
               onClick={() => void archiveDocument.mutateAsync(node.id)}
             >
@@ -285,6 +320,87 @@ export function PageTree({ workspaceId }: PageTreeProps) {
           ) : null}
         </div>
       </ScrollArea>
+
+      <Dialog
+        open={moveWorkspaceNode !== null}
+        onOpenChange={(open) => {
+          if (!open) setMoveWorkspaceNode(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>In anderen Arbeitsbereich verschieben</DialogTitle>
+            <DialogDescription>
+              „{moveWorkspaceNode?.title}“ wandert mit allen Unterseiten, Anhängen und eingebetteten
+              Datenbanken in den gewählten Arbeitsbereich. Inhalte, die bisher nur du gesehen hast,
+              sind danach für dessen Mitglieder sichtbar wie jede andere Seite dort auch.
+            </DialogDescription>
+          </DialogHeader>
+
+          {moveDocument.isError ? (
+            <Alert variant="destructive" data-testid="move-workspace-error">
+              <AlertDescription>
+                {messageForCode(
+                  moveDocument.error instanceof ApiError ? moveDocument.error.code : undefined,
+                )}
+              </AlertDescription>
+            </Alert>
+          ) : null}
+
+          <Select
+            value={moveTargetWorkspaceId.length === 0 ? null : moveTargetWorkspaceId}
+            onValueChange={(next) => setMoveTargetWorkspaceId(next ?? '')}
+          >
+            <SelectTrigger data-testid="move-workspace-select">
+              <SelectValue>
+                {() =>
+                  workspaces.data?.find((option) => option.id === moveTargetWorkspaceId)?.name ??
+                  'Zielarbeitsbereich wählen'
+                }
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {(workspaces.data ?? [])
+                .filter((option) => option.id !== workspaceId)
+                .map((option) => (
+                  <SelectItem key={option.id} value={option.id}>
+                    {option.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setMoveWorkspaceNode(null)}>
+              Abbrechen
+            </Button>
+            <Button
+              data-testid="move-workspace-submit"
+              disabled={moveTargetWorkspaceId.length === 0 || moveDocument.isPending}
+              onClick={() => {
+                if (moveWorkspaceNode === null) return;
+                const movedId = moveWorkspaceNode.id;
+                const targetId = moveTargetWorkspaceId;
+                void moveDocument
+                  .mutateAsync({
+                    documentId: movedId,
+                    request: { parentId: null, workspaceId: targetId },
+                  })
+                  .then(() => {
+                    setMoveWorkspaceNode(null);
+                    // The page that just left this workspace can no longer be
+                    // shown under its old workspaceId route.
+                    if (activeDocumentId === movedId) {
+                      router.push(`/arbeitsbereich/${targetId}/seite/${movedId}`);
+                    }
+                  });
+              }}
+            >
+              Verschieben
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

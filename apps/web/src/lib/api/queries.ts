@@ -14,6 +14,7 @@ import {
   type CreateDocumentRequest,
   type CurrentSessionResponse,
   type DocumentDetail,
+  type DocumentLinksResponse,
   type DocumentSummary,
   type DocumentTreeResponse,
   type GenerateDocumentCoverResponse,
@@ -23,8 +24,10 @@ import {
   type ResolveDocumentLinkResponse,
   type SearchResponse,
   type UpdateDocumentRequest,
+  type UpdateWorkspaceRequest,
   type UploadAttachmentResponse,
   type Workspace,
+  type WorkspaceDetail,
   type WorkspaceListResponse,
 } from '@exocortex/contracts';
 
@@ -34,9 +37,11 @@ import { ApiError, apiRequest } from './client';
 export const queryKeys = {
   session: ['session'] as const,
   workspaces: ['workspaces'] as const,
+  workspaceDetail: (workspaceId: string) => ['workspace', workspaceId, 'detail'] as const,
   documentTree: (workspaceId: string) => ['workspace', workspaceId, 'tree'] as const,
   document: (documentId: string) => ['document', documentId] as const,
   search: (workspaceId: string, query: string) => ['workspace', workspaceId, 'search', query] as const,
+  documentLinks: (documentId: string) => ['document', documentId, 'links'] as const,
   pageLink: (workspaceId: string, title: string) =>
     ['workspace', workspaceId, 'page-link', title.toLowerCase()] as const,
   aiRun: (runId: string) => ['ai-run', runId] as const,
@@ -61,6 +66,14 @@ export function useWorkspaces(): UseQueryResult<Workspace[]> {
   });
 }
 
+export function useWorkspaceDetail(workspaceId: string | undefined): UseQueryResult<WorkspaceDetail> {
+  return useQuery({
+    queryKey: queryKeys.workspaceDetail(workspaceId ?? 'none'),
+    queryFn: () => apiRequest<WorkspaceDetail>(`/api/workspaces/${workspaceId ?? ''}`),
+    enabled: workspaceId !== undefined,
+  });
+}
+
 export function useDocumentTree(workspaceId: string | undefined) {
   return useQuery({
     queryKey: queryKeys.documentTree(workspaceId ?? 'none'),
@@ -75,6 +88,22 @@ export function useDocument(documentId: string | undefined) {
     queryKey: queryKeys.document(documentId ?? 'none'),
     queryFn: () => apiRequest<DocumentDetail>(`/api/documents/${documentId ?? ''}`),
     enabled: documentId !== undefined,
+  });
+}
+
+/**
+ * The reference index of a page: who points at it, and what it points at.
+ *
+ * Kept out of `useDocument` on purpose — it is a second table, it is only read
+ * when the Verweise tab is open, and it is refreshed by materialization rather
+ * than by the request that changed the page.
+ */
+export function useDocumentLinks(documentId: string | undefined, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.documentLinks(documentId ?? 'none'),
+    queryFn: () => apiRequest<DocumentLinksResponse>(`/api/documents/${documentId ?? ''}/links`),
+    enabled: documentId !== undefined && enabled,
+    staleTime: 10_000,
   });
 }
 
@@ -123,6 +152,21 @@ export function useCreateWorkspace() {
       apiRequest<Workspace>('/api/workspaces', { method: 'POST', body: { name } }),
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: queryKeys.workspaces });
+    },
+  });
+}
+
+export function useUpdateWorkspace() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { workspaceId: string; request: UpdateWorkspaceRequest }) =>
+      apiRequest<Workspace>(`/api/workspaces/${input.workspaceId}`, {
+        method: 'PATCH',
+        body: input.request,
+      }),
+    onSuccess: (_workspace, variables) => {
+      void client.invalidateQueries({ queryKey: queryKeys.workspaces });
+      void client.invalidateQueries({ queryKey: queryKeys.workspaceDetail(variables.workspaceId) });
     },
   });
 }
@@ -222,9 +266,16 @@ export function useMoveDocument(workspaceId: string | undefined) {
         method: 'POST',
         body: input.request,
       }),
-    onSuccess: () => {
+    onSuccess: (_document, variables) => {
       if (workspaceId !== undefined) {
         void client.invalidateQueries({ queryKey: queryKeys.documentTree(workspaceId) });
+      }
+      // A move across workspaces empties the current tree and fills a
+      // different one; that target workspace's own tree query needs the same
+      // invalidation, whether or not anyone has it open right now.
+      const targetWorkspaceId = variables.request.workspaceId;
+      if (targetWorkspaceId !== undefined && targetWorkspaceId !== workspaceId) {
+        void client.invalidateQueries({ queryKey: queryKeys.documentTree(targetWorkspaceId) });
       }
     },
   });

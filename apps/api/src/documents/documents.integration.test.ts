@@ -20,6 +20,7 @@ import {
 } from './collaboration-bridge.service';
 import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
+import { DocumentLinksService } from './document-links.service';
 import { DocumentsService } from './documents.service';
 
 /**
@@ -38,6 +39,7 @@ let prisma: PrismaClient;
 let queues: QueueRegistry;
 let service: DocumentsService;
 let contentService: DocumentContentService;
+let linksService: DocumentLinksService;
 let workspaceId: string;
 let otherWorkspaceId: string;
 let ownerId: string;
@@ -92,6 +94,7 @@ beforeAll(async () => {
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
   service = new DocumentsService(prisma, queues, logger, access, outbox, realtime);
+  linksService = new DocumentLinksService(prisma, access);
   contentService = new DocumentContentService(
     prisma,
     queues,
@@ -569,6 +572,165 @@ describe('moving documents', () => {
   });
 });
 
+describe('moving documents across workspaces', () => {
+  it('moves the whole subtree, its search index rows and its attachments', async () => {
+    const parent = await createPage('Fusion-Eltern');
+    const child = await createPage('Fusion-Kind', parent);
+    const grandchild = await createPage('Fusion-Enkel', child);
+
+    const attachment = await prisma.attachment.create({
+      data: {
+        workspaceId,
+        documentId: child,
+        filename: 'anhang.png',
+        mimeType: 'image/png',
+        byteSize: 3,
+        storageKey: `test/${Math.random().toString(36).slice(2)}`,
+        createdById: ownerId,
+      },
+    });
+    // The indexing worker is not running in this test; insert the row
+    // directly so the move has something real to carry along.
+    await prisma.documentSearchIndex.create({
+      data: { documentId: grandchild, workspaceId, title: 'Fusion-Enkel', plainText: '' },
+    });
+
+    const moved = await service.move({
+      documentId: parent,
+      userId: ownerId,
+      request: { parentId: null, workspaceId: otherWorkspaceId },
+      correlationId,
+    });
+    expect(moved.workspaceId).toBe(otherWorkspaceId);
+
+    const rows = await prisma.document.findMany({
+      where: { id: { in: [parent, child, grandchild] } },
+      select: { id: true, workspaceId: true, parentId: true },
+    });
+    expect(rows.every((row) => row.workspaceId === otherWorkspaceId)).toBe(true);
+    // The subtree's internal shape survives the move untouched.
+    expect(rows.find((row) => row.id === child)?.parentId).toBe(parent);
+    expect(rows.find((row) => row.id === grandchild)?.parentId).toBe(child);
+
+    const movedAttachment = await prisma.attachment.findUniqueOrThrow({
+      where: { id: attachment.id },
+    });
+    expect(movedAttachment.workspaceId).toBe(otherWorkspaceId);
+
+    const movedSearchIndex = await prisma.documentSearchIndex.findUniqueOrThrow({
+      where: { documentId: grandchild },
+    });
+    expect(movedSearchIndex.workspaceId).toBe(otherWorkspaceId);
+
+    // Move it back: proves the path works both ways and keeps later tests in
+    // this file working against `workspaceId` as they expect.
+    const movedBack = await service.move({
+      documentId: parent,
+      userId: ownerId,
+      request: { parentId: null, workspaceId },
+      correlationId,
+    });
+    expect(movedBack.workspaceId).toBe(workspaceId);
+  });
+
+  it('writes an audit entry into both the source and the target workspace', async () => {
+    const documentId = await createPage('Fusion-Audit');
+
+    await service.move({
+      documentId,
+      userId: ownerId,
+      request: { parentId: null, workspaceId: otherWorkspaceId },
+      correlationId,
+    });
+
+    const sourceAudit = await prisma.auditLog.findFirst({
+      where: { workspaceId, action: 'document.moved_workspace', targetId: documentId },
+    });
+    const targetAudit = await prisma.auditLog.findFirst({
+      where: { workspaceId: otherWorkspaceId, action: 'document.moved_workspace', targetId: documentId },
+    });
+    expect(sourceAudit).not.toBeNull();
+    expect(targetAudit).not.toBeNull();
+  });
+
+  it('rejects a mover who is not a member of the target workspace', async () => {
+    const suffix = Date.now().toString(36);
+    const outsiderToTarget = await prisma.user.create({
+      data: { email: `mover-${suffix}@exocortex.test`, name: 'Mover', emailVerified: true },
+    });
+    await prisma.workspaceMember.create({
+      data: { workspaceId, userId: outsiderToTarget.id, role: 'MEMBER' },
+    });
+    const documentId = await createPage('Kein Zielzugriff');
+
+    try {
+      await expect(
+        service.move({
+          documentId,
+          userId: outsiderToTarget.id,
+          request: { parentId: null, workspaceId: otherWorkspaceId },
+          correlationId,
+        }),
+      ).rejects.toMatchObject({ code: 'workspace_access_denied' });
+    } finally {
+      await prisma.workspaceMember.deleteMany({ where: { userId: outsiderToTarget.id } });
+      await prisma.user.delete({ where: { id: outsiderToTarget.id } });
+    }
+  });
+
+  it('rejects a GUEST of the source workspace, even with a valid target', async () => {
+    const documentId = await createPage('Gast-Verschieben');
+
+    await expect(
+      service.move({
+        documentId,
+        userId: guestId,
+        request: { parentId: null, workspaceId: otherWorkspaceId },
+        correlationId,
+      }),
+    ).rejects.toBeInstanceOf(AuthorizationError);
+  });
+
+  it('rejects a target parent that does not belong to the target workspace', async () => {
+    const documentId = await createPage('Falsches Ziel');
+    const foreignParent = await createPage('Bleibt im Quellbereich');
+
+    await expect(
+      service.move({
+        documentId,
+        userId: ownerId,
+        request: { parentId: foreignParent, workspaceId: otherWorkspaceId },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'document_cross_workspace' });
+  });
+
+  it('keeps an AiRun pinned to the workspace it happened in, even after its page moves', async () => {
+    const documentId = await createPage('Mit KI-Lauf');
+    const run = await prisma.aiRun.create({
+      data: {
+        workspaceId,
+        documentId,
+        createdById: ownerId,
+        provider: 'mock',
+        model: 'mock',
+        messages: [],
+      },
+    });
+
+    await service.move({
+      documentId,
+      userId: ownerId,
+      request: { parentId: null, workspaceId: otherWorkspaceId },
+      correlationId,
+    });
+
+    const unchanged = await prisma.aiRun.findUniqueOrThrow({ where: { id: run.id } });
+    expect(unchanged.workspaceId).toBe(workspaceId);
+    expect(unchanged.documentId).toBe(documentId);
+  });
+});
+
 describe('archiving and restoring', () => {
   it('archives the whole subtree', async () => {
     const parent = await createPage('Archiv-Eltern');
@@ -919,5 +1081,186 @@ describe('resolveLink', () => {
         limit: 10,
       }),
     ).rejects.toBeInstanceOf(AuthorizationError);
+  });
+});
+
+/**
+ * Reading the reference index (issue #19).
+ *
+ * The rows are written by the worker; what this service adds is authorization
+ * and the workspace boundary, so that is what is asserted here. A reference is
+ * a fragment of another page's content, and it must never reach someone who
+ * cannot read that page.
+ */
+describe('document links', () => {
+  async function writeLink(input: {
+    sourceDocumentId: string;
+    targetDocumentId: string | null;
+    targetTitle: string;
+    workspaceId: string;
+    context?: string;
+  }): Promise<string> {
+    const row = await prisma.documentLink.create({
+      data: {
+        workspaceId: input.workspaceId,
+        sourceDocumentId: input.sourceDocumentId,
+        targetDocumentId: input.targetDocumentId,
+        targetTitle: input.targetTitle,
+        targetTitleKey: input.targetTitle.toLowerCase(),
+        kind: 'WIKI_MARK',
+        blockId: null,
+        context: input.context ?? `Ein Satz über ${input.targetTitle}.`,
+        position: 0,
+      },
+    });
+    return row.id;
+  }
+
+  it('reports both directions, with the sentence around the reference', async () => {
+    const target = await createPage('Verweisziel');
+    const source = await createPage('Verweisquelle');
+    await writeLink({
+      sourceDocumentId: source,
+      targetDocumentId: target,
+      targetTitle: 'Verweisziel',
+      workspaceId,
+      context: 'Der Betrieb steht in Verweisziel beschrieben.',
+    });
+
+    const incoming = await linksService.list(target, ownerId);
+    expect(incoming.incoming).toHaveLength(1);
+    expect(incoming.incoming[0]?.source.id).toBe(source);
+    expect(incoming.incoming[0]?.context).toContain('Der Betrieb steht in');
+    expect(incoming.outgoing).toHaveLength(0);
+
+    const outgoing = await linksService.list(source, ownerId);
+    expect(outgoing.outgoing).toHaveLength(1);
+    expect(outgoing.outgoing[0]?.target?.id).toBe(target);
+    expect(outgoing.incoming).toHaveLength(0);
+  });
+
+  it('keeps an unresolved reference visible instead of dropping it', async () => {
+    const source = await createPage('Quelle mit totem Verweis');
+    await writeLink({
+      sourceDocumentId: source,
+      targetDocumentId: null,
+      targetTitle: 'Gibt es nicht',
+      workspaceId,
+    });
+
+    const result = await linksService.list(source, ownerId);
+    expect(result.outgoing).toHaveLength(1);
+    expect(result.outgoing[0]?.target).toBeNull();
+    expect(result.outgoing[0]?.targetTitle).toBe('Gibt es nicht');
+  });
+
+  it('reports that a page has not been indexed yet', async () => {
+    const page = await createPage('Frisch angelegt');
+    const result = await linksService.list(page, ownerId);
+    expect(result.pending).toBe(true);
+
+    await prisma.documentContent.update({
+      where: { documentId: page },
+      data: { linksIndexedAt: new Date() },
+    });
+    expect((await linksService.list(page, ownerId)).pending).toBe(false);
+  });
+
+  it('refuses a non-member', async () => {
+    const page = await createPage('Nicht für Fremde');
+    await expect(linksService.list(page, outsiderId)).rejects.toBeInstanceOf(AuthorizationError);
+  });
+
+  it('lets a guest read them, because a guest may read the pages they come from', async () => {
+    const target = await createPage('Gastziel');
+    const source = await createPage('Gastquelle');
+    await writeLink({
+      sourceDocumentId: source,
+      targetDocumentId: target,
+      targetTitle: 'Gastziel',
+      workspaceId,
+    });
+
+    const result = await linksService.list(target, guestId);
+    expect(result.incoming.map((link) => link.source.id)).toEqual([source]);
+  });
+
+  it('never shows a reference whose source lives in another workspace', async () => {
+    const target = await createPage('Grenzziel');
+    const foreignSource = await service.create({
+      workspaceId: otherWorkspaceId,
+      userId: ownerId,
+      request: { title: 'Fremde Quelle', type: 'PAGE' },
+      correlationId,
+    });
+    // The state a cross-workspace move leaves behind before the worker has
+    // corrected the denormalized workspace of the row.
+    await writeLink({
+      sourceDocumentId: foreignSource.id,
+      targetDocumentId: target,
+      targetTitle: 'Grenzziel',
+      workspaceId,
+    });
+
+    const result = await linksService.list(target, ownerId);
+    expect(result.incoming).toHaveLength(0);
+  });
+
+  it('treats a target in another workspace as unresolved', async () => {
+    const source = await createPage('Quelle mit Fernziel');
+    const foreignTarget = await service.create({
+      workspaceId: otherWorkspaceId,
+      userId: ownerId,
+      request: { title: 'Fernziel', type: 'PAGE' },
+      correlationId,
+    });
+    await writeLink({
+      sourceDocumentId: source,
+      targetDocumentId: foreignTarget.id,
+      targetTitle: 'Fernziel',
+      workspaceId,
+    });
+
+    const result = await linksService.list(source, ownerId);
+    expect(result.outgoing).toHaveLength(1);
+    expect(result.outgoing[0]?.target).toBeNull();
+  });
+});
+
+describe('renaming a page', () => {
+  it('writes an outbox event so the reference index is re-resolved', async () => {
+    const documentId = await createPage('Alter Titel');
+    const before = await prisma.outboxEvent.count({
+      where: { workspaceId, type: 'document.updated' },
+    });
+
+    await service.update({
+      documentId,
+      userId: ownerId,
+      request: { title: 'Neuer Titel' },
+      correlationId,
+    });
+    expect(
+      await prisma.outboxEvent.count({ where: { workspaceId, type: 'document.updated' } }),
+    ).toBe(before + 1);
+
+    // Anything that is not a rename must not produce one: an event per icon
+    // change would be a storm for nothing.
+    await service.update({
+      documentId,
+      userId: ownerId,
+      request: { icon: '🧠' },
+      correlationId,
+    });
+    // Setting the same title again is not a rename either.
+    await service.update({
+      documentId,
+      userId: ownerId,
+      request: { title: 'Neuer Titel' },
+      correlationId,
+    });
+    expect(
+      await prisma.outboxEvent.count({ where: { workspaceId, type: 'document.updated' } }),
+    ).toBe(before + 1);
   });
 });

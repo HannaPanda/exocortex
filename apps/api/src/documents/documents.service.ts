@@ -6,9 +6,11 @@ import {
   canCreateDocument,
   canEditDocument,
   canMoveDocument,
+  canMoveDocumentAcrossWorkspaces,
   canReadDocument,
   canReadWorkspace,
   canRestoreDocument,
+  type DocumentAccessContext,
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import {
@@ -30,6 +32,7 @@ import {
 import {
   buildTree,
   collectAncestors,
+  collectDescendantIds,
   generateOrderKey,
   initialOrderKey,
   type PrismaClient,
@@ -440,33 +443,32 @@ export class DocumentsService {
       await this.assertUsableCover(input.request.coverAttachmentId, context.workspaceId);
     }
 
-    const updated = await this.prisma.document.update({
-      where: { id: input.documentId },
-      data: {
-        ...(input.request.title === undefined ? {} : { title: input.request.title }),
-        ...(input.request.icon === undefined ? {} : { icon: input.request.icon }),
-        ...(input.request.iconColor === undefined ? {} : { iconColor: input.request.iconColor }),
-        ...(input.request.layout === undefined
-          ? {}
-          : { layout: LAYOUT_TO_DB[input.request.layout] }),
-        ...(input.request.coverAttachmentId === undefined
-          ? {}
-          : { coverAttachmentId: input.request.coverAttachmentId }),
-        ...(input.request.coverPosition === undefined
-          ? {}
-          : { coverPosition: input.request.coverPosition }),
-        ...(input.request.aiRuleMode === undefined
-          ? {}
-          : { aiRuleMode: AI_RULE_MODE_TO_DB[input.request.aiRuleMode] }),
-        ...(input.request.aiRuleTrigger === undefined
-          ? {}
-          : { aiRuleTrigger: input.request.aiRuleTrigger }),
-        ...(input.request.aiRulePriority === undefined
-          ? {}
-          : { aiRulePriority: input.request.aiRulePriority }),
-        updatedById: input.userId,
-      },
-      select: DOCUMENT_SELECT,
+    const renamed =
+      input.request.title !== undefined && input.request.title !== context.document.title;
+
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const row = await tx.document.update({
+        where: { id: input.documentId },
+        data: this.updateData(input.request, input.userId),
+        select: DOCUMENT_SELECT,
+      });
+
+      // A rename moves a title from one page to another, and every reference
+      // written as `[[Titel]]` addresses the title, not the page (issue #19).
+      // The reference index therefore has to be re-resolved, and it has to
+      // happen reliably, so it goes through the outbox rather than a
+      // fire-and-forget call (ADR-010). Written only on an actual rename: an
+      // event per icon change would be a storm for nothing.
+      if (renamed) {
+        await this.outbox.writeEvent(tx, {
+          workspaceId: context.workspaceId,
+          type: 'document.updated',
+          payload: { documentId: input.documentId },
+          correlationId: input.correlationId,
+        });
+      }
+
+      return row;
     });
 
     const summary = toSummary(updated);
@@ -484,7 +486,33 @@ export class DocumentsService {
     return summary;
   }
 
-  /** Moves a document. Transactional, cycle-safe and audited. */
+  /** Field mapping of `PATCH /documents/:id`. Split out so `update` stays readable. */
+  private updateData(request: UpdateDocumentRequest, userId: string) {
+    return {
+      ...(request.title === undefined ? {} : { title: request.title }),
+      ...(request.icon === undefined ? {} : { icon: request.icon }),
+      ...(request.iconColor === undefined ? {} : { iconColor: request.iconColor }),
+      ...(request.layout === undefined ? {} : { layout: LAYOUT_TO_DB[request.layout] }),
+      ...(request.coverAttachmentId === undefined
+        ? {}
+        : { coverAttachmentId: request.coverAttachmentId }),
+      ...(request.coverPosition === undefined ? {} : { coverPosition: request.coverPosition }),
+      ...(request.aiRuleMode === undefined
+        ? {}
+        : { aiRuleMode: AI_RULE_MODE_TO_DB[request.aiRuleMode] }),
+      ...(request.aiRuleTrigger === undefined ? {} : { aiRuleTrigger: request.aiRuleTrigger }),
+      ...(request.aiRulePriority === undefined ? {} : { aiRulePriority: request.aiRulePriority }),
+      updatedById: userId,
+    };
+  }
+
+  /**
+   * Moves a document. Transactional, cycle-safe and audited.
+   *
+   * A `workspaceId` in the request that differs from the document's current
+   * workspace switches to the cross-workspace path (`moveAcrossWorkspaces`),
+   * which carries the whole subtree along instead of re-parenting a single row.
+   */
   async move(input: {
     documentId: string;
     userId: string;
@@ -492,6 +520,19 @@ export class DocumentsService {
     correlationId: string;
   }): Promise<DocumentSummary> {
     const context = await this.access.requireDocumentContext(input.documentId, input.userId);
+
+    const targetWorkspaceId = input.request.workspaceId ?? context.workspaceId;
+    if (targetWorkspaceId !== context.workspaceId) {
+      return this.moveAcrossWorkspaces({
+        documentId: input.documentId,
+        userId: input.userId,
+        request: input.request,
+        correlationId: input.correlationId,
+        context,
+        targetWorkspaceId,
+      });
+    }
+
     const targetParent =
       input.request.parentId === null ? null : await this.loadDocumentOrThrow(input.request.parentId);
 
@@ -551,6 +592,165 @@ export class DocumentsService {
 
     const summary = toSummary(updated);
     await this.realtime.emit('document.moved', context.workspaceId, input.correlationId, {
+      document: summary,
+      previousParentId,
+    });
+    return summary;
+  }
+
+  /**
+   * Moves a document's whole subtree into a different workspace.
+   *
+   * Runs as one transaction, same as the ordinary move. What has to travel
+   * along with the documents is deliberate, not "everything with a
+   * `workspaceId`" (issue #13):
+   *  - `Document` rows of the moved subtree: their `workspaceId` changes.
+   *  - `DocumentSearchIndex`: it denormalizes `workspaceId` for its own
+   *    `@@index([workspaceId])`, so it has to move even though its `tsvector`
+   *    and `plainText` do not change.
+   *  - `Attachment`: `workspaceId` is what `canDownloadAttachment` checks, so
+   *    leaving it behind would make every file on the moved pages either
+   *    inaccessible or governed by the workspace they left.
+   *  - `DatabaseProperty`/`DatabaseView`/`DocumentPropertyValue`/
+   *    `DocumentEmbedding` carry no `workspaceId` of their own (ADR-011: a
+   *    collection and its rows are ordinary `Document`s); they follow through
+   *    their `documentId` foreign key alone and need no update here.
+   *  - `AiRun`/`AiConversation` deliberately keep their original
+   *    `workspaceId`: a run is a record of the workspace the conversation
+   *    happened in, not a property of the page it was about. Their
+   *    `documentId` reference stays valid (the document still exists), it
+   *    just now points across a workspace boundary, which is accepted rather
+   *    than "fixed".
+   *  - `OutboxEvent`/`AuditLog` history is never rewritten; only the new
+   *    audit entries and outbox events this move itself produces are written,
+   *    once into each of the two workspaces so both audit trails show it.
+   */
+  private async moveAcrossWorkspaces(input: {
+    documentId: string;
+    userId: string;
+    request: MoveDocumentRequest;
+    correlationId: string;
+    context: DocumentAccessContext;
+    targetWorkspaceId: string;
+  }): Promise<DocumentSummary> {
+    const { context, targetWorkspaceId } = input;
+    const previousWorkspaceId = context.workspaceId;
+    const previousParentId = context.document.parentId;
+
+    const targetRole = await this.access.findRole(targetWorkspaceId, input.userId);
+    const targetParent =
+      input.request.parentId === null ? null : await this.loadDocumentOrThrow(input.request.parentId);
+
+    assertPolicy(
+      canMoveDocumentAcrossWorkspaces(
+        context.role,
+        context.document,
+        targetRole,
+        targetParent,
+        targetWorkspaceId,
+      ),
+    );
+
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const sourceRows = await tx.document.findMany({
+        where: { workspaceId: previousWorkspaceId },
+        select: { id: true, parentId: true, orderKey: true },
+      });
+      const subtreeIds = [...collectDescendantIds(sourceRows, input.documentId)];
+      const allIds = [input.documentId, ...subtreeIds];
+
+      const orderKey = await this.resolveOrderKey({
+        workspaceId: targetWorkspaceId,
+        parentId: input.request.parentId,
+        afterSiblingId: input.request.afterSiblingId ?? null,
+        beforeSiblingId: input.request.beforeSiblingId ?? null,
+        tx,
+      });
+
+      // The root of the moved subtree: new workspace, new parent, new order key.
+      const document = await tx.document.update({
+        where: { id: input.documentId },
+        data: {
+          workspaceId: targetWorkspaceId,
+          parentId: input.request.parentId,
+          orderKey,
+          updatedById: input.userId,
+        },
+        select: DOCUMENT_SELECT,
+      });
+
+      // The rest of the subtree keeps its internal shape (parentId/orderKey
+      // relative to each other never change); only the workspace it belongs
+      // to does.
+      if (subtreeIds.length > 0) {
+        await tx.document.updateMany({
+          where: { id: { in: subtreeIds } },
+          data: { workspaceId: targetWorkspaceId },
+        });
+      }
+
+      await tx.documentSearchIndex.updateMany({
+        where: { documentId: { in: allIds } },
+        data: { workspaceId: targetWorkspaceId },
+      });
+
+      await tx.attachment.updateMany({
+        where: { documentId: { in: allIds } },
+        data: { workspaceId: targetWorkspaceId },
+      });
+
+      const auditMetadata = {
+        previousParentId,
+        nextParentId: input.request.parentId,
+        previousWorkspaceId,
+        nextWorkspaceId: targetWorkspaceId,
+        descendantCount: subtreeIds.length,
+      };
+      // Written once per affected workspace, so the move shows up in both
+      // audit trails -- the source workspace lost the page, the target
+      // workspace gained it, and each is entitled to know why.
+      await this.outbox.writeAudit(tx, {
+        workspaceId: previousWorkspaceId,
+        actorId: input.userId,
+        action: 'document.moved_workspace',
+        targetType: 'document',
+        targetId: input.documentId,
+        correlationId: input.correlationId,
+        metadata: auditMetadata,
+      });
+      await this.outbox.writeAudit(tx, {
+        workspaceId: targetWorkspaceId,
+        actorId: input.userId,
+        action: 'document.moved_workspace',
+        targetType: 'document',
+        targetId: input.documentId,
+        correlationId: input.correlationId,
+        metadata: auditMetadata,
+      });
+      await this.outbox.writeEvent(tx, {
+        workspaceId: previousWorkspaceId,
+        type: 'document.moved',
+        payload: { documentId: input.documentId },
+        correlationId: input.correlationId,
+      });
+      await this.outbox.writeEvent(tx, {
+        workspaceId: targetWorkspaceId,
+        type: 'document.moved',
+        payload: { documentId: input.documentId },
+        correlationId: input.correlationId,
+      });
+
+      return document;
+    });
+
+    const summary = toSummary(updated);
+    // Both workspace rooms get told: the source tree has to drop the page,
+    // the target tree has to pick up the whole subtree.
+    await this.realtime.emit('document.moved', previousWorkspaceId, input.correlationId, {
+      document: summary,
+      previousParentId,
+    });
+    await this.realtime.emit('document.moved', targetWorkspaceId, input.correlationId, {
       document: summary,
       previousParentId,
     });

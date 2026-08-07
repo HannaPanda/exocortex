@@ -178,6 +178,12 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     [invalidateTree, queryClient],
   );
 
+  // A rename or slug change (this browser's own, another member's, or an MCP
+  // client's) affects the switcher list and, if open, the settings page.
+  useRealtimeEvent('workspace.updated', (event) => {
+    void queryClient.invalidateQueries({ queryKey: queryKeys.workspaces });
+    void queryClient.invalidateQueries({ queryKey: queryKeys.workspaceDetail(event.workspaceId) });
+  });
   useRealtimeEvent('document.created', invalidateTree);
   useRealtimeEvent('document.updated', invalidateDocument);
   useRealtimeEvent('document.moved', invalidateTree);
@@ -186,6 +192,12 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
   useRealtimeEvent('document.materialized', (event) => {
     void queryClient.invalidateQueries({
       queryKey: queryKeys.document(event.payload.documentId),
+    });
+    // Materializing *any* page rewrites its references, which changes who
+    // points at the page currently open. The open page's own key would not
+    // catch that, so every cached reference list is invalidated instead.
+    void queryClient.invalidateQueries({
+      predicate: (query) => query.queryKey[0] === 'document' && query.queryKey[2] === 'links',
     });
   });
   // A write from outside the editor (MCP, the built-in AI, the REST endpoint).

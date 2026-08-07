@@ -197,7 +197,10 @@ export const pageRenameTool: AnyToolDefinition = defineTool({
 
 export const pageMoveTool: AnyToolDefinition = defineTool({
   name: 'exo_page_move',
-  description: 'Verschiebt eine Seite zu einem neuen übergeordneten Element oder einer neuen Position.',
+  description:
+    'Verschiebt eine Seite zu einem neuen übergeordneten Element oder einer neuen Position. Mit ' +
+    'workspaceId wandert der gesamte Unterbaum (samt Anhängen und eingebetteten Datenbanken) in ' +
+    'einen anderen Arbeitsbereich; das braucht Schreibrecht in beiden Arbeitsbereichen.',
   inputSchema: z.object({ documentId: idSchema }).extend(moveDocumentRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
   mutating: true,

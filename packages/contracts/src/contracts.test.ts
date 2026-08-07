@@ -16,6 +16,7 @@ import { API_ERROR_CODES,API_ERROR_STATUS } from './errors';
 import { applicationEventSchema, workspaceRoom } from './events';
 import { JOB_SCHEMAS, QUEUE_NAMES } from './jobs';
 import { WORKSPACE_ROLE_RANK } from './primitives';
+import { updateWorkspaceRequestSchema } from './workspaces';
 
 describe('document contracts', () => {
   it('applies German defaults for new pages', () => {
@@ -31,6 +32,14 @@ describe('document contracts', () => {
   it('requires an explicit parentId on move (null means root)', () => {
     expect(() => moveDocumentRequestSchema.parse({})).toThrow();
     expect(moveDocumentRequestSchema.parse({ parentId: null }).parentId).toBeNull();
+  });
+
+  it('leaves the target workspace optional on move, for backward compatibility', () => {
+    const parsed = moveDocumentRequestSchema.parse({ parentId: null });
+    expect(parsed.workspaceId).toBeUndefined();
+    expect(moveDocumentRequestSchema.parse({ parentId: null, workspaceId: 'workspace_abcdefgh' }).workspaceId).toBe(
+      'workspace_abcdefgh',
+    );
   });
 });
 
@@ -134,6 +143,18 @@ describe('workspace roles', () => {
     expect(WORKSPACE_ROLE_RANK.GUEST).toBeLessThan(WORKSPACE_ROLE_RANK.MEMBER);
     expect(WORKSPACE_ROLE_RANK.MEMBER).toBeLessThan(WORKSPACE_ROLE_RANK.ADMIN);
     expect(WORKSPACE_ROLE_RANK.ADMIN).toBeLessThan(WORKSPACE_ROLE_RANK.OWNER);
+  });
+});
+
+describe('workspace update contract', () => {
+  it('requires at least one of name or slug', () => {
+    expect(() => updateWorkspaceRequestSchema.parse({})).toThrow();
+    expect(updateWorkspaceRequestSchema.parse({ name: 'Neuer Name' }).name).toBe('Neuer Name');
+    expect(updateWorkspaceRequestSchema.parse({ slug: 'neuer-slug' }).slug).toBe('neuer-slug');
+  });
+
+  it('rejects a slug that is not lowercase kebab-case', () => {
+    expect(() => updateWorkspaceRequestSchema.parse({ slug: 'Not Valid!' })).toThrow();
   });
 });
 
