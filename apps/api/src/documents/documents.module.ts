@@ -8,6 +8,7 @@ import { CollaborationBridgeService } from './collaboration-bridge.service';
 import { CollaborationTicketService } from './collaboration-ticket.service';
 import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
+import { DocumentLinksService } from './document-links.service';
 import { DocumentMarkdownService } from './document-markdown.service';
 import { DocumentSnapshotService } from './document-snapshot.service';
 import { DocumentsController, WorkspaceDocumentsController } from './documents.controller';
@@ -22,6 +23,7 @@ import { DocumentsService } from './documents.service';
     DocumentMarkdownService,
     DocumentSnapshotService,
     DocumentContentService,
+    DocumentLinksService,
     CollaborationTicketService,
     CollaborationBridgeService,
     OutboxService,
@@ -31,6 +33,7 @@ import { DocumentsService } from './documents.service';
     DocumentMarkdownService,
     DocumentSnapshotService,
     DocumentContentService,
+    DocumentLinksService,
   ],
 })
 export class DocumentsModule {}

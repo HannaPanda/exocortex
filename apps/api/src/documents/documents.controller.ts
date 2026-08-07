@@ -26,6 +26,8 @@ import {
   documentContentWriteResponseSchema,
   type DocumentDetail,
   documentDetailSchema,
+  type DocumentLinksResponse,
+  documentLinksResponseSchema,
   type DocumentSnapshot,
   type DocumentSnapshotListResponse,
   documentSnapshotListResponseSchema,
@@ -63,6 +65,7 @@ import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 import { CollaborationTicketService } from './collaboration-ticket.service';
 import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
+import { DocumentLinksService } from './document-links.service';
 import { DocumentMarkdownService } from './document-markdown.service';
 import { DocumentSnapshotService } from './document-snapshot.service';
 import { DocumentsService } from './documents.service';
@@ -162,6 +165,7 @@ export class DocumentsController {
     private readonly tickets: CollaborationTicketService,
     private readonly content: DocumentContentService,
     private readonly cover: DocumentCoverService,
+    private readonly documentLinks: DocumentLinksService,
     @Inject(API_ENV) private readonly env: ApiEnv,
   ) {}
 
@@ -224,6 +228,20 @@ export class DocumentsController {
       correlationId: currentCorrelationId(),
       source: 'api',
     });
+  }
+
+  /**
+   * The reference index for this page: who points at it, and what it points
+   * at. Both directions in one answer because the Verweise panel shows both,
+   * and a second round trip for the same page would only add latency.
+   */
+  @Get(':documentId/links')
+  @ApiOkResponse({ schema: openApiResponseSchema(documentLinksResponseSchema) })
+  async links(
+    @CurrentSession() session: VerifiedSession,
+    @Param('documentId') documentId: string,
+  ): Promise<DocumentLinksResponse> {
+    return this.documentLinks.list(documentId, session.userId);
   }
 
   @Get(':documentId')
