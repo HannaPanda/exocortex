@@ -3,12 +3,14 @@
 import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 
 import {
+  AI_RUN_POLL_INTERVAL_MS,
   type AiConversation,
   type AiConversationDetailResponse,
   type AiConversationListResponse,
   type AiModelListResponse,
   type AiRuleListResponse,
   type AiRuleSummary,
+  type AiRun,
   type CreateAiConversationRequest,
   type DocumentSummary,
   type PostConversationMessageRequest,
@@ -31,7 +33,16 @@ export const aiQueryKeys = {
   conversations: (workspaceId: string) => ['ai', 'conversations', workspaceId] as const,
   conversation: (conversationId: string) => ['ai', 'conversation', conversationId] as const,
   aiRules: (workspaceId: string) => ['ai', 'rules', workspaceId] as const,
+  run: (runId: string) => ['ai', 'run', runId] as const,
 };
+
+/** Run statuses that mean the worker is finished with it, either way. */
+const TERMINAL_RUN_STATUSES: ReadonlySet<AiRun['status']> = new Set([
+  'completed',
+  'failed',
+  'cancelled',
+  'timed_out',
+]);
 
 // ---------------------------------------------------------------------------
 // Model registry
@@ -43,6 +54,40 @@ export function useAiModels(): UseQueryResult<AiModelListResponse> {
     queryFn: () => apiRequest<AiModelListResponse>('/api/ai/models'),
     // The registry barely changes; no need to refetch it constantly.
     staleTime: 300_000,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Runs
+// ---------------------------------------------------------------------------
+
+/**
+ * Reconciles the panel's locally-tracked run against the server's truth
+ * (issue #6). The realtime channel is the fast path; this is the safety net
+ * for whatever it drops -- a missed `ai.run.completed`, a reconnect, a tab
+ * that was backgrounded -- so `activeRunId` can never stay set forever just
+ * because a socket event never arrived. Polls only while a run id is given;
+ * stops polling itself once the run reaches a terminal status.
+ */
+export function useAiRun(runId: string | null): UseQueryResult<AiRun> {
+  return useQuery({
+    queryKey: aiQueryKeys.run(runId ?? 'none'),
+    queryFn: () => apiRequest<AiRun>(`/api/ai/runs/${runId ?? ''}`),
+    enabled: runId !== null,
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      return status === undefined || TERMINAL_RUN_STATUSES.has(status) ? false : AI_RUN_POLL_INTERVAL_MS;
+    },
+    // Overrides the app-wide default (off): a run the user is watching must
+    // reconcile the moment the tab regains focus, not only every poll tick.
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+  });
+}
+
+export function useCancelAiRun() {
+  return useMutation({
+    mutationFn: (runId: string) => apiRequest<AiRun>(`/api/ai/runs/${runId}/cancel`, { method: 'POST' }),
   });
 }
 
