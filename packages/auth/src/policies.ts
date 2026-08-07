@@ -260,6 +260,26 @@ export function canDownloadAttachment(
   return ALLOW;
 }
 
+/**
+ * Correcting the extracted text, or forcing a re-extraction, both change what
+ * the attachment is understood to say (issue #2) -- unlike downloading, which
+ * only reads. Anyone who could not upload a file to begin with should not be
+ * able to rewrite what one is read as containing, and a forced re-extraction
+ * can spend money on a hosted engine, so both require at least MEMBER.
+ */
+export function canEditAttachmentText(
+  role: WorkspaceRole | null,
+  attachment: AttachmentPolicySubject,
+  workspaceId: string,
+): PolicyDecision {
+  const download = canDownloadAttachment(role, attachment, workspaceId);
+  if (!download.allowed) return download;
+  if (!hasAtLeast(role as WorkspaceRole, 'MEMBER')) {
+    return deny('forbidden', 'Editing attachment text requires at least the MEMBER role');
+  }
+  return ALLOW;
+}
+
 export function canDeleteAttachment(
   role: WorkspaceRole | null,
   attachment: AttachmentPolicySubject,

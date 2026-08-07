@@ -123,6 +123,12 @@ export class WorkspaceAccessService {
       textExtractionError: string | null;
       /** Engine-reported facts, shaped by `pdfMetadataSchema`. Parsed by the caller. */
       textMetadata: unknown;
+      /** True when `extractedText` was cut off at `ATTACHMENT_TEXT_MAX_CHARS`. */
+      textTruncated: boolean;
+      /** Human correction of `extractedText` (issue #2); absent when nobody has corrected it. */
+      correctedText: string | null;
+      textCorrectedAt: Date | null;
+      textCorrectedById: string | null;
       /** Downscaled copy, or null when there is none and the original is it. */
       previewKey: string | null;
       previewMimeType: string | null;
@@ -147,6 +153,10 @@ export class WorkspaceAccessService {
         textExtractedAt: true,
         textExtractionError: true,
         textMetadata: true,
+        textTruncated: true,
+        correctedText: true,
+        textCorrectedAt: true,
+        textCorrectedById: true,
         previewKey: true,
         previewMimeType: true,
         previewByteSize: true,

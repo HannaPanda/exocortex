@@ -95,12 +95,47 @@ export const pdfMetadataSchema = z.object({
 });
 export type PdfMetadata = z.infer<typeof pdfMetadataSchema>;
 
+/**
+ * Extracted text is capped here; a 400k character page is already enormous
+ * context. Shared between the worker (which cuts the text) and the API (which
+ * caps a human correction to the same length), so the two limits cannot drift.
+ */
+export const ATTACHMENT_TEXT_MAX_CHARS = 400_000;
+
+/**
+ * Records that a person edited the extracted text by hand (issue #2).
+ *
+ * Deliberately metadata only, no text: this rides along on the lightweight
+ * `.../text/info` read too, so a block can show "von Hand korrigiert" without
+ * pulling the correction itself.
+ */
+export const attachmentTextCorrectionSchema = z.object({
+  editedAt: isoDateTimeSchema,
+  editedById: idSchema,
+});
+export type AttachmentTextCorrection = z.infer<typeof attachmentTextCorrectionSchema>;
+
 export const attachmentTextResponseSchema = z.object({
   attachmentId: idSchema,
   filename: z.string(),
   mimeType: z.string(),
   status: attachmentTextStatusSchema,
+  /**
+   * The version every reader sees: the human correction when there is one,
+   * the machine result otherwise. `exo_attachment_read_text` returns exactly
+   * this field, so a correction the AI cannot see would defeat its own point.
+   */
   text: z.string().nullable(),
+  /**
+   * The machine result on its own, regardless of whether a correction exists.
+   * Lets the correction dialog show what the engine actually produced next to
+   * what a person changed it to.
+   */
+  machineText: z.string().nullable(),
+  /** Present once a person has corrected the text; absent otherwise. */
+  correction: attachmentTextCorrectionSchema.nullable(),
+  /** True when `machineText` was cut off at `ATTACHMENT_TEXT_MAX_CHARS`. */
+  truncated: z.boolean(),
   /** Null until an extraction succeeded, and for engines that report nothing. */
   metadata: pdfMetadataSchema.nullable(),
   extractedAt: isoDateTimeSchema.nullable(),
@@ -109,13 +144,29 @@ export const attachmentTextResponseSchema = z.object({
 export type AttachmentTextResponse = z.infer<typeof attachmentTextResponseSchema>;
 
 /**
- * The same answer without the text.
+ * The same answer without the two fields that can be 400,000 characters long.
  *
- * A rendered PDF block wants the page count and the title, which are a few
- * dozen bytes; the text next to them can be 400,000 characters. Every PDF on a
- * page would pull all of it just to draw a one-line header, so the two reads
- * are separate. This one is also side-effect free: reading it never starts an
- * extraction, because a render must not enqueue work.
+ * A rendered PDF block wants the page count, the title and whether a
+ * correction exists, which together are a few dozen bytes; `text` and
+ * `machineText` next to them can each be 400,000 characters. Every PDF on a
+ * page would pull all of that just to draw a one-line header, so the two
+ * reads are separate. This one is also side-effect free: reading it never
+ * starts an extraction, because a render must not enqueue work.
  */
-export const attachmentTextInfoResponseSchema = attachmentTextResponseSchema.omit({ text: true });
+export const attachmentTextInfoResponseSchema = attachmentTextResponseSchema.omit({
+  text: true,
+  machineText: true,
+});
 export type AttachmentTextInfoResponse = z.infer<typeof attachmentTextInfoResponseSchema>;
+
+/**
+ * Body of `PATCH /api/attachments/:id/text`.
+ *
+ * `text: null` clears an existing correction, reverting the effective text to
+ * the machine result -- the explicit "discard my correction" the concept
+ * asked for, rather than an empty string silently meaning the same thing.
+ */
+export const attachmentTextCorrectionInputSchema = z.object({
+  text: z.string().max(ATTACHMENT_TEXT_MAX_CHARS).nullable(),
+});
+export type AttachmentTextCorrectionInput = z.infer<typeof attachmentTextCorrectionInputSchema>;

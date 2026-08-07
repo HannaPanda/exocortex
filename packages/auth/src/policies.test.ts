@@ -8,6 +8,7 @@ import {
   canCreateDocument,
   canDeleteAttachment,
   canDownloadAttachment,
+  canEditAttachmentText,
   canEditDocument,
   canIssueCollaborationTicket,
   canManageDatabaseSchema,
@@ -190,6 +191,17 @@ describe('attachment policies', () => {
   it('prevents another member from deleting a foreign attachment', () => {
     expect(canDeleteAttachment('MEMBER', attachment, 'user_2').allowed).toBe(false);
     expect(canDeleteAttachment('ADMIN', attachment, 'user_2').allowed).toBe(true);
+  });
+
+  it('lets a member correct extracted text or force a re-extraction, but not a guest', () => {
+    expect(canEditAttachmentText('MEMBER', attachment, workspaceId).allowed).toBe(true);
+    const decision = canEditAttachmentText('GUEST', attachment, workspaceId);
+    expect(decision.allowed).toBe(false);
+    expect(decision.allowed === false && decision.code).toBe('forbidden');
+  });
+
+  it('denies editing attachment text across workspaces, the same as download', () => {
+    expect(canEditAttachmentText('OWNER', attachment, 'workspace_other').allowed).toBe(false);
   });
 });
 

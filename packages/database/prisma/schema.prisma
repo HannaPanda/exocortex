@@ -42,6 +42,7 @@ model User {
   updatedDocuments   Document[]         @relation("DocumentUpdatedBy")
   createdSnapshots   DocumentSnapshot[]
   createdAttachments Attachment[]
+  correctedAttachmentTexts Attachment[] @relation("AttachmentTextCorrectedBy")
   auditEntries       AuditLog[]
   aiRuns             AiRun[]
   apiTokens          ApiToken[]
@@ -579,6 +580,20 @@ model Attachment {
   /// `pdfMetadataSchema`; a Json column because the fields are engine-reported
   /// and open-ended, and none of them is ever queried or filtered on.
   textMetadata        Json?
+  /// True when the last successful extraction was longer than
+  /// `ATTACHMENT_TEXT_MAX_CHARS` and got cut off (issue #2). Reset on every new
+  /// extraction so a stale flag never survives a shorter re-read.
+  textTruncated       Boolean              @default(false)
+
+  /// Human correction of `extractedText` (issue #2), kept in a column of its
+  /// own rather than overwriting the machine result: a later re-extraction must
+  /// never silently discard what a person fixed by hand, and keeping both lets
+  /// the UI show that they differ. Whenever present, this is the version every
+  /// reader (human or `exo_attachment_read_text`) sees.
+  correctedText       String?
+  textCorrectedAt     DateTime?
+  textCorrectedById   String?
+  textCorrectedBy     User?                @relation("AttachmentTextCorrectedBy", fields: [textCorrectedById], references: [id], onDelete: SetNull)
 
   @@index([workspaceId, createdAt])
   @@index([documentId])

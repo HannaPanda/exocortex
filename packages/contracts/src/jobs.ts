@@ -73,7 +73,12 @@ export type MaintenanceJob = z.infer<typeof maintenanceJobSchema>;
 export const attachmentTextJobSchema = jobBase.extend({
   attachmentId: idSchema,
   workspaceId: idSchema,
-  reason: z.enum(['upload', 'requested', 'retry']),
+  /**
+   * `forced` is the one reason that is allowed to skip the `READY` idempotency
+   * guard in the worker (issue #2): every other reason leaves an already
+   * extracted attachment alone.
+   */
+  reason: z.enum(['upload', 'requested', 'retry', 'forced']),
 });
 export type AttachmentTextJob = z.infer<typeof attachmentTextJobSchema>;
 
