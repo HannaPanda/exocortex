@@ -1,6 +1,7 @@
 import { type AnyToolDefinition, type ToolSurface } from './tool.js';
 import { ATTACHMENT_TOOLS } from './tools/attachments.js';
 import { DATABASE_TOOLS } from './tools/databases.js';
+import { LINK_TOOLS } from './tools/links.js';
 import { PAGE_TOOLS } from './tools/pages.js';
 import { RULES_TOOLS } from './tools/rules.js';
 import { SEARCH_TOOLS } from './tools/search.js';
@@ -9,6 +10,7 @@ import { WORKSPACE_TOOLS } from './tools/workspaces.js';
 export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...WORKSPACE_TOOLS,
   ...PAGE_TOOLS,
+  ...LINK_TOOLS,
   ...SEARCH_TOOLS,
   ...DATABASE_TOOLS,
   ...ATTACHMENT_TOOLS,
