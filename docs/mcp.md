@@ -99,7 +99,9 @@ servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 | `exo_database_row_create` | yes | `POST /api/documents/:documentId/rows` |
 | `exo_database_row_update` | yes | `PATCH /api/documents/:rowId/values` |
 | `exo_attachment_upload` | yes | `POST /api/workspaces/:workspaceId/attachments` (multipart, Base64 input) |
-| `exo_attachment_read_text` | no | `GET /api/attachments/:attachmentId/text` (text plus PDF metadata), or `…/text/info` with `includeText: false` (metadata only, and no extraction is started) |
+| `exo_attachment_read_text` | no | `GET /api/attachments/:attachmentId/text` (text plus PDF metadata), or `…/text/info` with `includeText: false` (metadata only, and no extraction is started). Returns the human correction whenever one exists, never the raw machine text on its own. |
+| `exo_attachment_reextract_text` | yes | `POST /api/attachments/:attachmentId/text/reextract` -- forces a fresh extraction even when the current one is already `ready` (issue #2); a plain `exo_attachment_read_text` never does this |
+| `exo_attachment_correct_text` | yes | `PATCH /api/attachments/:attachmentId/text` -- writes a human correction, or clears one with `text: null` (issue #2) |
 | `exo_rules_list` | no | `GET /api/workspaces/:workspaceId/ai-rules` |
 | `exo_rules_load` | no | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars) |
 

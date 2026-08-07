@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  ATTACHMENT_TEXT_MAX_CHARS,
   attachmentTextInfoResponseSchema,
   attachmentTextResponseSchema,
   idSchema,
@@ -82,13 +83,30 @@ function describeMetadata(metadata: PdfMetadata | null): string {
   return parts.length === 0 ? '' : `[${parts.join(' | ')}]\n\n`;
 }
 
+/**
+ * Note prepended when a correction exists, so a model never mistakes a
+ * hand-corrected text for the raw machine output, or vice versa (issue #2):
+ * `text`/`AttachmentTextResponse.text` is always the corrected version once
+ * one exists, and this is what tells the model so.
+ */
+function describeCorrection(result: {
+  correction: { editedAt: string } | null;
+  truncated: boolean;
+}): string {
+  const parts: string[] = [];
+  if (result.correction !== null) parts.push('von Hand korrigiert');
+  if (result.truncated) parts.push('maschinell gelesener Anteil gekürzt');
+  return parts.length === 0 ? '' : `[${parts.join(', ')}]\n\n`;
+}
+
 export const attachmentReadTextTool: AnyToolDefinition = defineTool({
   name: 'exo_attachment_read_text',
   description:
     'Liest den extrahierten Text eines Anhangs (z. B. eines PDFs). Die Extraktion läuft im Hintergrund; ' +
     'status: "pending" bedeutet, dass das Werkzeug in Kürze erneut aufgerufen werden sollte. ' +
     'Mit includeText: false kommen nur Status und Metadaten (Titel, Autor, Seitenzahl, Tabellen, ' +
-    'Texterkennung) zurück, und eine noch nicht gelaufene Extraktion wird dadurch auch nicht gestartet.',
+    'Texterkennung) zurück, und eine noch nicht gelaufene Extraktion wird dadurch auch nicht gestartet. ' +
+    'Wenn ein Mensch den Text korrigiert hat, ist es immer die korrigierte Fassung, die hier zurückkommt.',
   inputSchema: z.object({
     attachmentId: idSchema,
     /**
@@ -121,17 +139,83 @@ export const attachmentReadTextTool: AnyToolDefinition = defineTool({
     if (result.status === 'pending') {
       return { text: `Textextraktion für ${result.filename} läuft noch. Bitte gleich erneut versuchen.`, data: result };
     }
-    if (result.status === 'failed') {
+    if (result.status === 'failed' && result.text === null) {
       return { text: `Textextraktion für ${result.filename} fehlgeschlagen: ${result.error ?? 'unbekannt'}`, data: result, isError: true };
     }
-    if (result.status === 'not_applicable') {
+    if (result.status === 'not_applicable' && result.text === null) {
       return { text: `${result.filename} hat keine extrahierbare Textebene.`, data: result };
     }
     // The metadata is prepended as a short header rather than left in `data`
     // alone: a model reading a PDF wants to know that it is looking at page 33
-    // of a scan before it starts quoting from it.
-    return { text: `${describeMetadata(result.metadata)}${result.text ?? ''}`, data: result };
+    // of a scan before it starts quoting from it -- and, if a correction
+    // exists, that it is reading that correction rather than the raw scan.
+    return {
+      text: `${describeMetadata(result.metadata)}${describeCorrection(result)}${result.text ?? ''}`,
+      data: result,
+    };
   },
 });
 
-export const ATTACHMENT_TOOLS: readonly AnyToolDefinition[] = [attachmentUploadTool, attachmentReadTextTool];
+export const attachmentReextractTextTool: AnyToolDefinition = defineTool({
+  name: 'exo_attachment_reextract_text',
+  description:
+    'Erzwingt eine erneute Textextraktion eines Anhangs, auch wenn bereits ein Ergebnis vorliegt ' +
+    '(status: "ready"). Für den Fall, dass eine Extraktion zwar gelungen, aber inhaltlich falsch war ' +
+    '(z. B. verlesene Texterkennung, zerfallene Tabellen). Läuft im Hintergrund; das Ergebnis kommt erst ' +
+    'bei einem erneuten Aufruf von exo_attachment_read_text. Eine vorhandene Korrektur bleibt dabei ' +
+    'unangetastet und bleibt die Fassung, die gelesen wird, bis sie geändert oder verworfen wird.',
+  inputSchema: z.object({ attachmentId: idSchema }),
+  surfaces: ['mcp', 'ai'],
+  mutating: true,
+  target: (input) => `attachment:${input.attachmentId}`,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'POST',
+      path: `/api/attachments/${input.attachmentId}/text/reextract`,
+      responseSchema: attachmentTextResponseSchema,
+    });
+    return {
+      text: `Erneute Textextraktion für ${result.filename} gestartet.`,
+      data: result,
+    };
+  },
+});
+
+export const attachmentCorrectTextTool: AnyToolDefinition = defineTool({
+  name: 'exo_attachment_correct_text',
+  description:
+    'Schreibt eine von Hand korrigierte Fassung des ausgelesenen Texts eines Anhangs, oder verwirft ' +
+    `sie wieder mit text: null (bis zu ${ATTACHMENT_TEXT_MAX_CHARS.toLocaleString('de-DE')} Zeichen). ` +
+    'Die Korrektur ersetzt nicht das Maschinenergebnis, sondern liegt daneben, und gewinnt: eine ' +
+    'spätere erneute Extraktion überschreibt sie nicht, und exo_attachment_read_text liefert danach die ' +
+    'korrigierte Fassung. Nur für PDF-Anhänge mit einer Textebene verfügbar.',
+  inputSchema: z.object({
+    attachmentId: idSchema,
+    text: z.string().max(ATTACHMENT_TEXT_MAX_CHARS).nullable(),
+  }),
+  surfaces: ['mcp', 'ai'],
+  mutating: true,
+  target: (input) => `attachment:${input.attachmentId}`,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'PATCH',
+      path: `/api/attachments/${input.attachmentId}/text`,
+      body: { text: input.text },
+      responseSchema: attachmentTextResponseSchema,
+    });
+    return {
+      text:
+        input.text === null
+          ? `Korrektur für ${result.filename} verworfen; die maschinell gelesene Fassung gilt wieder.`
+          : `Korrektur für ${result.filename} gespeichert.`,
+      data: result,
+    };
+  },
+});
+
+export const ATTACHMENT_TOOLS: readonly AnyToolDefinition[] = [
+  attachmentUploadTool,
+  attachmentReadTextTool,
+  attachmentReextractTextTool,
+  attachmentCorrectTextTool,
+];
