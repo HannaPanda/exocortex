@@ -12,12 +12,18 @@ export {
   listCollections,
 } from './discovery';
 export { parseCalendarObject, type ParseOptions } from './ics';
+export {
+  describeRecurrence,
+  resolveOccurrence,
+  type ResolveOccurrenceOptions,
+} from './recurrence';
 export { fetchObjects, fetchObjectsInRange, listObjects, syncCollection, toIcalUtc } from './sync';
 export type {
   CalDavCredentials,
   CalendarCollection,
   CalendarObject,
   CalendarObjectRef,
+  CalendarOccurrence,
   ParsedCalendarEvent,
   ParsedCalendarObject,
   ParsedCalendarTodo,

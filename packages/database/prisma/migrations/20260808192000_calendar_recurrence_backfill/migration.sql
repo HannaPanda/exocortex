@@ -1,0 +1,11 @@
+-- One forced re-read, so already mirrored series get their rule cached.
+--
+-- `recurrenceIcs` is filled while a body is being parsed, and a body is only
+-- fetched when its etag moved. Everything mirrored before the previous migration
+-- therefore has an unchanged etag and no cached rule, and would keep showing the
+-- date its series began until somebody edited the appointment.
+--
+-- Clearing the etag makes the next pass fetch each object exactly once: the sync
+-- fetches a body when the stored etag differs from the reported one, and NULL
+-- always differs. Costs one multiget per collection, once.
+UPDATE "calendar_object_state" SET "etag" = NULL;

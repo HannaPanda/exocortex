@@ -85,6 +85,12 @@ export interface ParsedCalendarEvent {
   /** Raw RRULE, stored and expanded on read. Never materialized into rows. */
   rrule: string | null;
   /**
+   * Whether this event repeats at all, by RRULE *or* by RDATE. The flag exists
+   * because RDATE without RRULE is still a series, and `resolveOccurrence` is
+   * what such an event needs.
+   */
+  recurs: boolean;
+  /**
    * Set when this component overrides a single instance of a series
    * (RECURRENCE-ID). Such a component is not a separate appointment.
    */
@@ -115,6 +121,32 @@ export interface ParsedCalendarTodo {
   percentComplete: number | null;
   priority: number | null;
   lastModified: string | null;
+}
+
+/**
+ * One occurrence of a series, resolved out of its rule.
+ *
+ * The instants follow the same convention as `ParsedCalendarEvent`: all-day
+ * values are floating dates at UTC midnight, `end` is exclusive, and a null
+ * `end` means a point in time.
+ */
+export interface CalendarOccurrence {
+  start: string;
+  end: string | null;
+  allDay: boolean;
+  /**
+   * The slot in the series this occurrence fills, as an ISO instant. Null for an
+   * event that does not recur at all. Note that this is the *rule's* slot: for a
+   * moved instance it differs from `start`, which is the point of a move.
+   */
+  recurrenceId: string | null;
+  /** True when a RECURRENCE-ID override supplied this occurrence's times. */
+  overridden: boolean;
+  /**
+   * True when the rule produces nothing after this occurrence, so a caller need
+   * never ask again.
+   */
+  isFinal: boolean;
 }
 
 /**

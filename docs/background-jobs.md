@@ -12,6 +12,7 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `maintenance` | repeatable schedulers, outbox dispatch | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`, `resolve-document-links`, `backfill-document-links`), documented placeholder (`vacuum-search-index`) |
 | `attachment-text` | attachment upload, `GET /api/attachments/:id/text` (on demand) | `createAttachmentTextProcessor` | real |
 | `document-cover` | `POST /api/documents/:id/cover/generate` | `createDocumentCoverProcessor` | real |
+| `calendar-sync` | repeatable schedulers (`calendar-pull` every 5 min, `calendar-discover` daily 05:15) | `createCalendarSyncProcessor` | real, read-only (mailbox.org CalDAV) |
 
 Queue names and payload schemas live in `packages/contracts/src/jobs.ts`, so
 producers and consumers cannot drift apart.
@@ -85,6 +86,47 @@ evidently never picked up (`ai_run_lost`, which is also what keeps
 `ai_conversation_locked` from becoming permanent). See "Time budget of a run"
 in `docs/ai-architecture.md` and ADR-017 for the full mechanism, including the
 heartbeat the worker itself relies on to detect a cancellation.
+
+### `calendar-sync`: mirroring a remote calendar
+
+`calendarSyncJobSchema`: `{ correlationId, accountId, mode: 'discover' | 'pull',
+full }`. There is no `userId`: a repeatable schedule has no user context, so it
+sits on the `CalendarAccount` row, and every row the mirror writes goes through
+the REST API with a service token minted for that person (ADR-014, ADR-016).
+`createCalendarSyncProcessor` runs at concurrency 1 and isolates failures per
+account and per link, because one calendar with a revoked password must not stop
+the other two from staying current; the message lands in `lastError` on the row
+that caused it.
+
+`discover` lists the collections and provisions one COLLECTION document per
+calendar (ADR-011) with the columns the sync writes. The `CalendarLink` row is
+written **before** the columns, with an empty property map: a run that created the
+document and then failed on a column used to leave an orphan database behind, and
+the next run, finding no link, created a second one next to it.
+
+`pull` reads changed objects. It costs one REPORT per calendar when nothing
+happened, which is what makes a five-minute cadence affordable: a `sync-token`
+(RFC 6578) reports only what moved, and an unchanged `getetag` means the body is
+never fetched. A rejected token is data, not an error, and forces a full re-read
+rather than being mistaken for "nothing changed".
+
+Recurring appointments are the one thing that goes stale without anything
+changing remotely. A series is mirrored at the occurrence that is **current or
+next** (`resolveOccurrence` in `packages/calendar/src/recurrence.ts`), never at
+its DTSTART, which for a yearly appointment is the one date it will not happen
+again. Because that occurrence moves with the clock and not with the object,
+`CalendarObjectState.recurrenceIcs` caches the raw body of recurring objects
+only, and every pass re-expands the rule locally and moves the row forward
+(`refreshed` in the log line). No network is involved. RECURRENCE-ID overrides are
+applied to the occurrence they belong to instead of becoming rows of their own,
+so a moved instance shows its new time and a series stays one appointment. The
+`Wiederholung` column holds a German phrase (`describeRecurrence`), not the raw
+RRULE, which is still in the cached body when a write-back needs it.
+
+Deliberate gaps while the link direction is `PULL`: nothing is ever written to
+the calendar server, a repeating VTODO keeps its plain DUE date, and there are no
+REST endpoints or MCP tools for calendar accounts yet, so an account row is
+created by hand.
 
 ## Guarantees
 

@@ -235,7 +235,19 @@ beforeAll(async () => {
       orderKey: generateOrderKey(date.orderKey, null),
     },
   });
-  propertyMap = parseCalendarLinkPropertyMap({ date: date.id, location: location.id });
+  const recurrence = await prisma.databaseProperty.create({
+    data: {
+      documentId: collectionId,
+      type: 'TEXT',
+      name: 'Wiederholung',
+      orderKey: generateOrderKey(location.orderKey, null),
+    },
+  });
+  propertyMap = parseCalendarLinkPropertyMap({
+    date: date.id,
+    location: location.id,
+    recurrence: recurrence.id,
+  });
 });
 
 afterAll(async () => {
@@ -547,5 +559,165 @@ describe('pullLink', () => {
     expect(state?.partStat).toBe('ACCEPTED');
     // Everything a pull discovers was created elsewhere.
     expect(state?.origin).toBe('REMOTE');
+  });
+
+  it('mirrors a series at its next occurrence and describes the rule in German', async () => {
+    const link = await createLink();
+    const rows = new Map<string, RecordedRow>();
+    // Starts in 2020, so the date the series *began* is far in the past. That
+    // date used to end up in the table, which is the one date it never happens.
+    const yearly = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Test//EN',
+      'BEGIN:VEVENT',
+      'UID:g@test',
+      'SUMMARY:Jahrestag',
+      'DTSTART;VALUE=DATE:20200817',
+      'DTEND;VALUE=DATE:20200818',
+      'RRULE:FREQ=YEARLY',
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].join('\r\n');
+
+    await pullLink({
+      prisma,
+      client: fakeApi(rows).client,
+      dav: davFor([
+        { body: deltaBody([{ href: '/caldav/main/g.ics', etag: '"1"' }], 'tok-1') },
+        { body: multigetBody([{ href: '/caldav/main/g.ics', etag: '"1"', ics: yearly }]) },
+      ]),
+      logger,
+      link,
+      selfAddresses: [],
+      full: false,
+    });
+
+    const row = [...rows.values()][0];
+    const span = row?.values.find((value) => value.propertyId === propertyMap.date)?.value as {
+      start: string;
+    };
+    // Same day of the year, but never a year that is already over.
+    expect(span.start.slice(4)).toBe('-08-17T00:00:00.000Z');
+    expect(Number(span.start.slice(0, 4))).toBeGreaterThanOrEqual(new Date().getUTCFullYear());
+    expect(row?.values.find((value) => value.propertyId === propertyMap.recurrence)?.value).toBe(
+      'jährlich',
+    );
+
+    const state = await prisma.calendarObjectState.findFirst({
+      where: { linkId: link.id, remoteHref: '/caldav/main/g.ics' },
+    });
+    // The body is cached because the occurrence has to be recomputed as time
+    // passes, long after the last change to the object.
+    expect(state?.recurrenceIcs).toContain('RRULE:FREQ=YEARLY');
+    expect(state?.occurrenceStart?.toISOString()).toBe(span.start);
+  });
+
+  it('moves a stale series onto its current occurrence without fetching a body', async () => {
+    const link = await createLink();
+    const rows = new Map<string, RecordedRow>();
+    const weekly = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Test//EN',
+      'BEGIN:VEVENT',
+      'UID:h@test',
+      'SUMMARY:Standup',
+      'DTSTART:20260601T090000Z',
+      'DTEND:20260601T100000Z',
+      'RRULE:FREQ=WEEKLY;BYDAY=MO',
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].join('\r\n');
+
+    await pullLink({
+      prisma,
+      client: fakeApi(rows).client,
+      dav: davFor([
+        { body: deltaBody([{ href: '/caldav/main/h.ics', etag: '"1"' }], 'tok-1') },
+        { body: multigetBody([{ href: '/caldav/main/h.ics', etag: '"1"', ics: weekly }]) },
+      ]),
+      logger,
+      link,
+      selfAddresses: [],
+      full: false,
+    });
+
+    // Rewind the mirror to the first occurrence: what a row looks like once a
+    // week has gone by without the appointment changing.
+    const rowId = [...rows.keys()][0]!;
+    rows.get(rowId)!.values = [
+      {
+        propertyId: propertyMap.date!,
+        value: { start: '2026-06-01T09:00:00.000Z', end: '2026-06-01T10:00:00.000Z', allDay: false },
+      },
+    ];
+    await prisma.calendarObjectState.updateMany({
+      where: { linkId: link.id, remoteHref: '/caldav/main/h.ics' },
+      data: { occurrenceStart: new Date('2026-06-01T09:00:00.000Z') },
+    });
+
+    const second = fakeApi(rows);
+    const result = await pullLink({
+      prisma,
+      client: second.client,
+      // A single response: the etag is unchanged, so a body must never be
+      // requested. The rule is expanded from the cached copy instead.
+      dav: davFor([{ body: deltaBody([{ href: '/caldav/main/h.ics', etag: '"1"' }], 'tok-2') }]),
+      logger,
+      link: { ...link, syncToken: 'tok-1' },
+      selfAddresses: [],
+      full: false,
+    });
+
+    expect(result).toMatchObject({ created: 0, updated: 0, unchanged: 1, refreshed: 1 });
+    const span = rows.get(rowId)?.values.find((value) => value.propertyId === propertyMap.date)
+      ?.value as { start: string; end: string };
+    // The occurrence now current: its end is still ahead of us.
+    expect(Date.parse(span.end)).toBeGreaterThan(Date.now());
+    expect(new Date(span.start).getUTCDay()).toBe(1);
+  });
+
+  it('folds an override into the series instead of creating a second row', async () => {
+    const link = await createLink();
+    const rows = new Map<string, RecordedRow>();
+    const withOverride = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Test//EN',
+      'BEGIN:VEVENT',
+      'UID:i@test',
+      'SUMMARY:Standup',
+      'DTSTART:20260601T090000Z',
+      'DTEND:20260601T100000Z',
+      'RRULE:FREQ=WEEKLY;BYDAY=MO',
+      'END:VEVENT',
+      'BEGIN:VEVENT',
+      'UID:i@test',
+      'SUMMARY:Standup (verschoben)',
+      'RECURRENCE-ID:20260608T090000Z',
+      'DTSTART:20260608T140000Z',
+      'DTEND:20260608T150000Z',
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].join('\r\n');
+
+    const result = await pullLink({
+      prisma,
+      client: fakeApi(rows).client,
+      dav: davFor([
+        { body: deltaBody([{ href: '/caldav/main/i.ics', etag: '"1"' }], 'tok-1') },
+        { body: multigetBody([{ href: '/caldav/main/i.ics', etag: '"1"', ics: withOverride }]) },
+      ]),
+      logger,
+      link,
+      selfAddresses: [],
+      full: false,
+    });
+
+    // One appointment, one row. The moved instance is a modification of the
+    // series, not a second entry in the calendar.
+    expect(result).toMatchObject({ created: 1, overrides: 1 });
+    expect(rows.size).toBe(1);
   });
 });

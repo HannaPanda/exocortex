@@ -1,11 +1,14 @@
 import {
   type CalendarObjectRef,
+  type CalendarOccurrence,
   type DavClient,
+  describeRecurrence,
   fetchObjects,
   listObjects,
   parseCalendarObject,
   type ParsedCalendarEvent,
   type ParsedCalendarTodo,
+  resolveOccurrence,
   syncCollection,
 } from '@exocortex/calendar';
 import {
@@ -44,8 +47,13 @@ export interface PullLinkResult {
   updated: number;
   unchanged: number;
   archived: number;
-  /** Recurrence overrides seen but not yet mirrored; see the note below. */
-  skippedOverrides: number;
+  /**
+   * Rows whose date was moved to a later occurrence without the remote object
+   * having changed. This is time passing, not a sync event.
+   */
+  refreshed: number;
+  /** Override components folded into their series; see the note below. */
+  overrides: number;
   syncToken: string | null;
   /** True when the server made us re-read everything. */
   wasFullRead: boolean;
@@ -62,6 +70,9 @@ export interface PullLinkResult {
  */
 export async function pullLink(input: PullLinkInput): Promise<PullLinkResult> {
   const { prisma, dav, link, logger } = input;
+  // One reading of "now" for the whole pass, so two rows of the same series
+  // cannot end up on different sides of a midnight that fell mid-sync.
+  const now = new Date();
 
   const useToken = !input.full && link.supportsSyncCollection && link.syncToken !== null;
   let refs: CalendarObjectRef[];
@@ -113,7 +124,8 @@ export async function pullLink(input: PullLinkInput): Promise<PullLinkResult> {
     updated: 0,
     unchanged,
     archived: 0,
-    skippedOverrides: 0,
+    refreshed: 0,
+    overrides: 0,
     syncToken,
     wasFullRead,
   };
@@ -134,6 +146,11 @@ export async function pullLink(input: PullLinkInput): Promise<PullLinkResult> {
         partStat: null,
         remoteUpdatedAt: todo.lastModified,
         values: todoValues(link.propertyMap, todo),
+        // A repeating todo keeps its plain DUE date. A deadline that moves on its
+        // own is a different feature from an appointment that recurs, and
+        // pretending otherwise would silently reschedule someone's task.
+        recurrenceIcs: null,
+        occurrenceStart: null,
         result,
       });
       continue;
@@ -142,10 +159,19 @@ export async function pullLink(input: PullLinkInput): Promise<PullLinkResult> {
     // A recurring series and its per-instance overrides share one object. The
     // series (no RECURRENCE-ID) is the row; an override is a modification of one
     // occurrence, not a second appointment, and mirroring it as its own row would
-    // show a duplicate. Counted so the gap is visible rather than silent.
+    // show a duplicate. The overrides are not thrown away: `resolveOccurrence`
+    // applies them, so a moved instance shows its new time.
     const master = parsed.events.find((event) => event.recurrenceId === null);
-    result.skippedOverrides += parsed.events.filter((event) => event.recurrenceId !== null).length;
+    result.overrides += parsed.events.filter((event) => event.recurrenceId !== null).length;
     if (master === undefined) continue;
+
+    // A series is mirrored at the occurrence that is current or next, not at the
+    // date it first happened. Otherwise a yearly appointment sits in the table
+    // with the year it was created in, which is the one date it will never
+    // happen again.
+    const occurrence = master.recurs
+      ? resolveOccurrence(object.ics, { from: now, uid: master.uid })
+      : null;
 
     await upsertRow({
       ...input,
@@ -155,7 +181,12 @@ export async function pullLink(input: PullLinkInput): Promise<PullLinkResult> {
       organizer: master.organizer,
       partStat: master.partStat,
       remoteUpdatedAt: master.lastModified,
-      values: eventValues(link.propertyMap, master),
+      values: eventValues(link.propertyMap, master, occurrence),
+      // The body is kept only for a series, because only a series needs to be
+      // re-read as time passes -- and an unchanged etag means it will never be
+      // fetched again.
+      recurrenceIcs: master.recurs ? object.ics : null,
+      occurrenceStart: occurrence?.start ?? null,
       result,
     });
   }
@@ -176,7 +207,100 @@ export async function pullLink(input: PullLinkInput): Promise<PullLinkResult> {
     });
   }
 
+  result.refreshed = await refreshOccurrences({
+    prisma,
+    client: input.client,
+    logger,
+    link,
+    now,
+  });
+
   return result;
+}
+
+/**
+ * Moves every mirrored series onto its current occurrence.
+ *
+ * This runs on every pass, independently of what the server reported, because a
+ * series goes stale without anything changing remotely: last Monday's standup
+ * becomes this Monday's by the clock alone, and its etag never moves. The rule is
+ * read from the cached body, so this costs no network at all.
+ *
+ * The states are re-read rather than reused from the pass above on purpose: the
+ * rows just written already carry the right occurrence, and a fresh read is what
+ * makes them skip themselves here.
+ */
+async function refreshOccurrences(input: {
+  prisma: PrismaClient;
+  client: ExocortexApiClient;
+  logger: Logger;
+  link: { id: string; propertyMap: CalendarLinkPropertyMap };
+  now: Date;
+}): Promise<number> {
+  const propertyId = input.link.propertyMap.date;
+  if (propertyId === null) return 0;
+
+  const states = await input.prisma.calendarObjectState.findMany({
+    where: {
+      linkId: input.link.id,
+      deletedAt: null,
+      recurrenceIcs: { not: null },
+      rowDocumentId: { not: null },
+    },
+  });
+
+  let refreshed = 0;
+  for (const state of states) {
+    if (state.recurrenceIcs === null || state.rowDocumentId === null) continue;
+
+    let occurrence: CalendarOccurrence | null;
+    try {
+      occurrence = resolveOccurrence(state.recurrenceIcs, {
+        from: input.now,
+        uid: state.icsUid,
+      });
+    } catch (error) {
+      // A body that cannot be expanded is not worth failing a whole sync over;
+      // the row keeps the date it has.
+      input.logger.warn('Could not expand a recurring calendar object', {
+        stateId: state.id,
+        reason: error instanceof Error ? error.message : String(error),
+      });
+      continue;
+    }
+    if (occurrence === null) continue;
+
+    const start = new Date(occurrence.start);
+    if (state.occurrenceStart !== null && state.occurrenceStart.getTime() === start.getTime()) {
+      continue;
+    }
+
+    const alive = await patchValues(
+      input.client,
+      state.rowDocumentId,
+      [
+        {
+          propertyId,
+          value: { start: occurrence.start, end: occurrence.end, allDay: occurrence.allDay },
+        },
+      ],
+      input.logger,
+    );
+    if (!alive) {
+      await input.prisma.calendarObjectState.update({
+        where: { id: state.id },
+        data: { rowDocumentId: null },
+      });
+      continue;
+    }
+
+    await input.prisma.calendarObjectState.update({
+      where: { id: state.id },
+      data: { occurrenceStart: start },
+    });
+    refreshed += 1;
+  }
+  return refreshed;
 }
 
 /**
@@ -198,15 +322,24 @@ async function readEverything(
   return { refs: await listObjects(dav, link.remoteHref), syncToken: null };
 }
 
+/**
+ * The row values for one event.
+ *
+ * When an occurrence is given it wins over the event's own DTSTART: for a series
+ * the master's start is the date the series began, which is exactly the date that
+ * does not belong in a calendar.
+ */
 function eventValues(
   map: CalendarLinkPropertyMap,
   event: ParsedCalendarEvent,
+  occurrence: CalendarOccurrence | null,
 ): DatabaseRowPropertyValue[] {
   const values: DatabaseRowPropertyValue[] = [];
   if (map.date !== null) {
+    const span = occurrence ?? event;
     values.push({
       propertyId: map.date,
-      value: { start: event.start, end: event.end, allDay: event.allDay },
+      value: { start: span.start, end: span.end, allDay: span.allDay },
     });
   }
   if (map.location !== null) values.push({ propertyId: map.location, value: event.location });
@@ -217,7 +350,14 @@ function eventValues(
   if (map.participation !== null) {
     values.push({ propertyId: map.participation, value: event.partStat });
   }
-  if (map.recurrence !== null) values.push({ propertyId: map.recurrence, value: event.rrule });
+  if (map.recurrence !== null) {
+    // German, because this column is read by a human. The rule itself stays in
+    // the mirrored object, where a write-back can still reach it.
+    values.push({
+      propertyId: map.recurrence,
+      value: event.rrule === null ? null : describeRecurrence(event.rrule),
+    });
+  }
   return values;
 }
 
@@ -257,6 +397,10 @@ async function upsertRow(input: {
   partStat: string | null;
   remoteUpdatedAt: string | null;
   values: DatabaseRowPropertyValue[];
+  /** The raw body, for a recurring object only. Null clears a stale cache. */
+  recurrenceIcs: string | null;
+  /** Which occurrence the values name, so a later pass can tell it is stale. */
+  occurrenceStart: string | null;
   result: PullLinkResult;
 }): Promise<void> {
   const { prisma, client, link, object } = input;
@@ -270,6 +414,8 @@ async function upsertRow(input: {
     organizer: input.organizer,
     partStat: input.partStat,
     remoteUpdatedAt: input.remoteUpdatedAt === null ? null : new Date(input.remoteUpdatedAt),
+    recurrenceIcs: input.recurrenceIcs,
+    occurrenceStart: input.occurrenceStart === null ? null : new Date(input.occurrenceStart),
     lastSeenAt: new Date(),
     // Re-appearing after a remote delete clears the tombstone: the object is
     // demonstrably back.
@@ -329,22 +475,45 @@ async function updateRow(
       body: { title: rowTitle(title) },
       responseSchema: documentSummarySchema,
     });
-    if (values.length > 0) {
-      await client.request({
-        method: 'PATCH',
-        path: `/api/documents/${rowDocumentId}/values`,
-        body: { values },
-        responseSchema: databaseRowSchema,
-      });
-    }
-    return true;
   } catch (error) {
-    if (error instanceof ExocortexApiError && (error.code === 'not_found' || error.code === 'document_archived')) {
+    if (isGone(error)) {
       logger.debug('Calendar row is gone, will be recreated', { rowDocumentId });
       return false;
     }
     throw error;
   }
+  return values.length === 0 ? true : patchValues(client, rowDocumentId, values, logger);
+}
+
+/** Writes cell values. Returns false when the row is gone. */
+async function patchValues(
+  client: ExocortexApiClient,
+  rowDocumentId: string,
+  values: DatabaseRowPropertyValue[],
+  logger: Logger,
+): Promise<boolean> {
+  try {
+    await client.request({
+      method: 'PATCH',
+      path: `/api/documents/${rowDocumentId}/values`,
+      body: { values },
+      responseSchema: databaseRowSchema,
+    });
+    return true;
+  } catch (error) {
+    if (isGone(error)) {
+      logger.debug('Calendar row is gone, will be recreated', { rowDocumentId });
+      return false;
+    }
+    throw error;
+  }
+}
+
+function isGone(error: unknown): boolean {
+  return (
+    error instanceof ExocortexApiError &&
+    (error.code === 'not_found' || error.code === 'document_archived')
+  );
 }
 
 /**
@@ -364,7 +533,7 @@ async function archiveRow(
       responseSchema: documentSummarySchema,
     });
   } catch (error) {
-    if (error instanceof ExocortexApiError && (error.code === 'not_found' || error.code === 'document_archived')) {
+    if (isGone(error)) {
       return;
     }
     logger.warn('Could not archive a removed calendar row', { rowDocumentId });

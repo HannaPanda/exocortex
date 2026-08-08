@@ -1063,6 +1063,16 @@ model CalendarObjectState {
   organizer     String?
   /// Our own PARTSTAT, e.g. ACCEPTED. Read-only until ITIP replies exist.
   partStat      String?
+  /// The object's raw iCalendar body, stored only for recurring objects.
+  ///
+  /// A series' next occurrence changes as time passes, not when the object
+  /// changes, and an unchanged etag means there is deliberately nothing to
+  /// fetch. So the rule has to be readable locally, or "next Monday" would stay
+  /// last Monday until someone edited the appointment.
+  recurrenceIcs String?
+  /// Start of the occurrence currently written into the mirrored row. Lets a pass
+  /// see at a glance whether the row still names the right date.
+  occurrenceStart DateTime?
   /// Hash of the payload last written outward, so a future two-way sync can tell
   /// "the remote changed" from "the remote is echoing our own write" and cannot
   /// ping-pong. Unused while the link is PULL.

@@ -1,5 +1,6 @@
 import ICAL from 'ical.js';
 
+import { readEnd, registerTimezones, toIsoInstant } from './ical-values';
 import {
   type ParsedCalendarEvent,
   type ParsedCalendarObject,
@@ -15,9 +16,6 @@ export interface ParseOptions {
   selfAddresses?: readonly string[];
 }
 
-/** One millisecond short of a day, for the all-day default duration. */
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
-
 /**
  * Parses one calendar object into typed events and todos.
  *
@@ -32,16 +30,7 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
  */
 export function parseCalendarObject(ics: string, options: ParseOptions = {}): ParsedCalendarObject {
   const root = new ICAL.Component(ICAL.parse(ics));
-
-  // Timezone definitions travel inside the object that uses them. Without
-  // registering them first, a `TZID=Europe/Berlin` start time is read in the
-  // wrong zone, which moves every appointment by one or two hours.
-  for (const vtimezone of root.getAllSubcomponents('vtimezone')) {
-    const timezone = new ICAL.Timezone(vtimezone);
-    if (!ICAL.TimezoneService.has(timezone.tzid)) {
-      ICAL.TimezoneService.register(timezone);
-    }
-  }
+  registerTimezones(root);
 
   const self = new Set(
     (options.selfAddresses ?? []).map((address) => normalizeAddress(address)),
@@ -73,6 +62,9 @@ function readEvent(component: ICAL.Component, self: ReadonlySet<string>): Parsed
     // authored, which is what a write-back has to reproduce.
     timeZone: allDay ? null : (startProperty?.getParameter('tzid') as string | undefined) ?? null,
     rrule: readRrule(component),
+    // RDATE alone makes an event recurring too, and a caller that only looked at
+    // RRULE would mirror such a series at its first date forever.
+    recurs: component.hasProperty('rrule') || component.hasProperty('rdate'),
     recurrenceId: readRecurrenceId(component),
     organizer: normalizeOptionalAddress(text(component, 'organizer')),
     partStat: readPartStat(component, self),
@@ -82,48 +74,6 @@ function readEvent(component: ICAL.Component, self: ReadonlySet<string>): Parsed
     sequence: numeric(component, 'sequence') ?? 0,
     lastModified: readTimeProperty(component, 'last-modified'),
   };
-}
-
-/**
- * The exclusive end of the event.
- *
- * Three cases, and the defaults are the specified ones rather than convenient
- * guesses. An explicit DTEND wins. A DURATION is added to the start. With
- * neither, an all-day event lasts one day (so a one-day event ends on the
- * following date, exactly as mailbox.org writes it out), while a timed event has
- * zero duration -- which is reported as `null`, because "a point in time" is
- * precisely what a null end means downstream.
- */
-function readEnd(component: ICAL.Component, start: ICAL.Time, allDay: boolean): string | null {
-  const end = component.getFirstPropertyValue('dtend');
-  if (end instanceof ICAL.Time) return toIsoInstant(end);
-
-  const duration = component.getFirstPropertyValue('duration');
-  if (duration instanceof ICAL.Duration) {
-    const shifted = start.clone();
-    shifted.addDuration(duration);
-    return toIsoInstant(shifted);
-  }
-
-  if (allDay) {
-    return new Date(Date.parse(toIsoInstant(start)) + MS_PER_DAY).toISOString();
-  }
-  return null;
-}
-
-/**
- * An ICAL.Time as an ISO instant.
- *
- * The two branches are the whole timezone story of this package. A DATE value
- * is a floating calendar date and is pinned to UTC midnight, so it survives
- * every zone unchanged -- a birthday must not move. A DATE-TIME value is a real
- * instant and is converted through its own zone.
- */
-function toIsoInstant(time: ICAL.Time): string {
-  if (time.isDate) {
-    return new Date(Date.UTC(time.year, time.month - 1, time.day)).toISOString();
-  }
-  return time.toJSDate().toISOString();
 }
 
 function readRrule(component: ICAL.Component): string | null {
