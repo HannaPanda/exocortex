@@ -12,6 +12,12 @@ export {
   listCollections,
 } from './discovery';
 export { parseCalendarObject, type ParseOptions } from './ics';
+export { buildEventIcs, patchEventIcs, type WriteEventOptions } from './ics-write';
+export {
+  type CalendarEventPayload,
+  hashCalendarEventPayload,
+  newCalendarUid,
+} from './payload';
 export {
   describeRecurrence,
   resolveOccurrence,
@@ -30,3 +36,10 @@ export type {
   SyncDelta,
   TimeRange,
 } from './types';
+export {
+  calendarObjectHref,
+  deleteCalendarObject,
+  putCalendarObject,
+  type PutCalendarObjectInput,
+  type PutCalendarObjectResult,
+} from './write';

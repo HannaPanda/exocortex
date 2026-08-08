@@ -11,6 +11,7 @@ import { type JobContext } from '@exocortex/queue';
 
 import { createMirrorDatabase, ensureMirrorProperties, mirrorableCollections } from '../calendar/provision';
 import { pullLink } from '../calendar/pull';
+import { pushLink } from '../calendar/push';
 
 export interface CalendarSyncDependencies {
   prisma: PrismaClient;
@@ -34,12 +35,19 @@ export interface CalendarSyncDependencies {
 }
 
 /**
- * Mirrors remote calendars into Exocortex databases.
+ * Mirrors remote calendars into Exocortex databases, and writes local changes
+ * back to the links that ask for it.
  *
- * Read-only in this round: nothing here writes to the calendar server, so the
- * worst a bug can do is put wrong rows in Exocortex, never corrupt the calendar
- * someone's phone depends on. Write-back is a later, separate direction on
- * `CalendarLink`.
+ * Reading first, then writing, in that order and never the other way round. The
+ * pull settles what the remote side currently says and records it on every state;
+ * the push then only has genuinely local changes left to send. Pushing first
+ * would mean deciding what changed locally against a picture of the remote side
+ * that is one pass old.
+ *
+ * Writing outward is off unless a link's `direction` says otherwise, and it stays
+ * narrow even then (see `pushLink`): a pull that goes wrong puts wrong rows in
+ * Exocortex, a push that goes wrong damages the calendar someone's phone depends
+ * on.
  *
  * A failure on one link never stops the others. The whole point of a sync is to
  * run unattended, and one calendar with a revoked password must not stop the
@@ -89,6 +97,7 @@ export function createCalendarSyncProcessor(dependencies: CalendarSyncDependenci
           await discoverAndProvision({ prisma, client, dav, logger, account });
         }
         await pullAllLinks({ ...dependencies, client, dav, logger, account, full: payload.full });
+        await pushAllLinks({ prisma, client, dav, logger, account });
         await prisma.calendarAccount.update({
           where: { id: account.id },
           data: { lastSyncedAt: new Date(), lastError: null },
@@ -277,6 +286,70 @@ async function pullAllLinks(input: {
     } catch (error) {
       const message = describeError(error);
       logger.error('Calendar link sync failed', error, { linkId: link.id });
+      await prisma.calendarLink.update({
+        where: { id: link.id },
+        data: { lastError: message.slice(0, 500) },
+      });
+    }
+  }
+}
+
+/**
+ * Writes local changes back, for the links that are allowed to.
+ *
+ * A link is `PULL` until somebody says otherwise, so an untouched deployment
+ * finds nothing to do here and makes no request at all. Same failure isolation as
+ * the pull: a link that cannot be written to records why and the others continue.
+ */
+async function pushAllLinks(input: {
+  prisma: PrismaClient;
+  client: ExocortexApiClient;
+  dav: DavClient;
+  logger: Logger;
+  account: { id: string };
+}): Promise<void> {
+  const { prisma, logger, account } = input;
+  const links = await prisma.calendarLink.findMany({
+    where: { accountId: account.id, enabled: true, direction: { in: ['PUSH', 'BOTH'] } },
+  });
+
+  for (const link of links) {
+    try {
+      const result = await pushLink({
+        prisma,
+        client: input.client,
+        dav: input.dav,
+        logger,
+        link: {
+          id: link.id,
+          remoteHref: link.remoteHref,
+          component: link.component,
+          documentId: link.documentId,
+          propertyMap: parseCalendarLinkPropertyMap(link.propertyMap as Record<string, unknown> | null),
+        },
+        now: new Date(),
+      });
+
+      // Only worth a line when something actually went out. A calendar nobody
+      // edited would otherwise log a row of zeros every five minutes.
+      if (result.created + result.updated + result.deleted + result.conflicts > 0) {
+        logger.info('Calendar link pushed', {
+          linkId: link.id,
+          collection: link.remoteDisplayName,
+          created: result.created,
+          updated: result.updated,
+          deleted: result.deleted,
+          skipped: result.skipped,
+          conflicts: result.conflicts,
+        });
+      }
+      await prisma.calendarLink.update({
+        where: { id: link.id },
+        data: { lastError: null },
+      });
+    } catch (error) {
+      const message = describeError(error);
+      logger.error('Calendar link push failed', error, { linkId: link.id });
       await prisma.calendarLink.update({
         where: { id: link.id },
         data: { lastError: message.slice(0, 500) },

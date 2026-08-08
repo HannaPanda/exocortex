@@ -12,7 +12,7 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `maintenance` | repeatable schedulers, outbox dispatch | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`, `resolve-document-links`, `backfill-document-links`), documented placeholder (`vacuum-search-index`) |
 | `attachment-text` | attachment upload, `GET /api/attachments/:id/text` (on demand) | `createAttachmentTextProcessor` | real |
 | `document-cover` | `POST /api/documents/:id/cover/generate` | `createDocumentCoverProcessor` | real |
-| `calendar-sync` | repeatable schedulers (`calendar-pull` every 5 min, `calendar-discover` daily 05:15) | `createCalendarSyncProcessor` | real, read-only (mailbox.org CalDAV) |
+| `calendar-sync` | repeatable schedulers (`calendar-pull` every 5 min, `calendar-discover` daily 05:15) | `createCalendarSyncProcessor` | real (mailbox.org CalDAV); writes outward only for a `PUSH`/`BOTH` link |
 
 Queue names and payload schemas live in `packages/contracts/src/jobs.ts`, so
 producers and consumers cannot drift apart.
@@ -123,10 +123,52 @@ so a moved instance shows its new time and a series stays one appointment. The
 `Wiederholung` column holds a German phrase (`describeRecurrence`), not the raw
 RRULE, which is still in the cached body when a write-back needs it.
 
-Deliberate gaps while the link direction is `PULL`: nothing is ever written to
-the calendar server, a repeating VTODO keeps its plain DUE date, and there are no
-REST endpoints or MCP tools for calendar accounts yet, so an account row is
-created by hand.
+`push` writes local changes back, and only for a link whose `direction` is `PUSH`
+or `BOTH`. A link is `PULL` until somebody says otherwise, so an untouched
+deployment makes no request here at all. The order inside a pass is fixed: read
+first, then write. The pull settles what the remote side currently says and
+records it on every state, so the push has only genuinely local changes left to
+send; the other order would decide what changed locally against a picture of the
+remote side that is one pass old.
+
+Loop prevention is a hash, not a timestamp. `CalendarObjectState.lastPushedHash`
+holds a fingerprint of the fields Exocortex owns (title, span, location,
+description; `hashCalendarEventPayload`), and **both** directions write it: a pull
+records what it put into the row, a push records what it sent outward. A row whose
+fingerprint still matches is silent. With a modification time instead, our own push
+would change the remote object, the next pull would rewrite the row, and that echo
+would look like a fresh local edit: one write per pass, forever.
+
+Four things the push will never do, and each of them is load-bearing:
+
+* **Touch an object with an ORGANIZER.** It arrived as an invitation, the
+  organizer owns the appointment, and rewriting the time would put an ITIP
+  counter-proposal on the wire that nobody asked for.
+* **Touch a recurring object.** The row holds *one occurrence* of the series (see
+  above), so writing the row back would flatten the whole rule onto that date.
+* **Write unconditionally.** A create sends `If-None-Match: *`, a replace and a
+  delete send `If-Match` with the etag just read. A refused precondition (412) is
+  counted as a conflict and left to the next pull, never retried with the same
+  stale body: the calendar is open in a phone and in a mail client too.
+* **Delete an object it did not create.** Only `origin: LOCAL` is removed, and only
+  after the row was confirmed archived or gone by a direct lookup rather than
+  inferred from its absence in a listing. Archiving a mirrored row is tidying a
+  table; cancelling somebody's appointment because of it is not what they asked
+  for.
+
+An existing object is **patched**, never rebuilt: its body is parsed, the owned
+fields are replaced and everything else is written back untouched
+(`patchEventIcs`). Rebuilding it from the mirrored columns would delete its
+VALARM, which is to say the reminder someone's phone depends on. The times are
+removed and re-added rather than updated in place, because ical.js keeps a
+property's existing parameters and an event authored in a zone came out as
+`DTSTART;TZID=Europe/Berlin:…Z`: a zone and a UTC marker on one value.
+
+Deliberate gaps: VTODO is never written outward (its own shape, with STATUS and
+PERCENT-COMPLETE, is a separate step), a repeating VTODO keeps its plain DUE date,
+a written event is stored in UTC rather than in its authored zone, and there are
+still no REST endpoints or MCP tools for calendar accounts and links, so an
+account row is created by hand and `direction` is flipped by hand.
 
 ## Guarantees
 

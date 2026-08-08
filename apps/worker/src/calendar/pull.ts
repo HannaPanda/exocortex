@@ -1,9 +1,11 @@
 import {
+  type CalendarEventPayload,
   type CalendarObjectRef,
   type CalendarOccurrence,
   type DavClient,
   describeRecurrence,
   fetchObjects,
+  hashCalendarEventPayload,
   listObjects,
   parseCalendarObject,
   type ParsedCalendarEvent,
@@ -151,6 +153,9 @@ export async function pullLink(input: PullLinkInput): Promise<PullLinkResult> {
         // pretending otherwise would silently reschedule someone's task.
         recurrenceIcs: null,
         occurrenceStart: null,
+        // No todo is ever written outward yet, so there is no agreed-on version to
+        // record. See `pushLink`.
+        pushedHash: null,
         result,
       });
       continue;
@@ -172,6 +177,7 @@ export async function pullLink(input: PullLinkInput): Promise<PullLinkResult> {
     const occurrence = master.recurs
       ? resolveOccurrence(object.ics, { from: now, uid: master.uid })
       : null;
+    const payload = eventPayload(master, occurrence);
 
     await upsertRow({
       ...input,
@@ -181,7 +187,11 @@ export async function pullLink(input: PullLinkInput): Promise<PullLinkResult> {
       organizer: master.organizer,
       partStat: master.partStat,
       remoteUpdatedAt: master.lastModified,
-      values: eventValues(link.propertyMap, master, occurrence),
+      values: eventValues(link.propertyMap, master, payload),
+      // What the row now says, as the two directions agree to measure it. A push
+      // compares the row against this, so the remote echo of our own write is
+      // recognised as an echo instead of as a fresh local edit.
+      pushedHash: hashCalendarEventPayload(payload),
       // The body is kept only for a series, because only a series needs to be
       // re-read as time passes -- and an unchanged etag means it will never be
       // fetched again.
@@ -294,6 +304,11 @@ async function refreshOccurrences(input: {
       continue;
     }
 
+    // `lastPushedHash` is left as it is, and that is deliberate: the row now says
+    // something else than the hash records, but a series is never written back
+    // (`pushLink` skips anything with a cached rule), so nothing reads the
+    // difference. Recomputing it here would mean parsing the cached body again for
+    // fields that did not change.
     await input.prisma.calendarObjectState.update({
       where: { id: state.id },
       data: { occurrenceStart: start },
@@ -323,23 +338,47 @@ async function readEverything(
 }
 
 /**
- * The row values for one event.
+ * The fields of an event that the mirror owns, as one value.
+ *
+ * Both directions read it from here: the pull writes these fields into the row,
+ * the push reads them back out of it, and the hash of this payload is what tells
+ * a human's edit from the echo of our own write. Deriving it twice is how the two
+ * directions would start disagreeing about what "unchanged" means.
  *
  * When an occurrence is given it wins over the event's own DTSTART: for a series
  * the master's start is the date the series began, which is exactly the date that
  * does not belong in a calendar.
  */
+function eventPayload(
+  event: ParsedCalendarEvent,
+  occurrence: CalendarOccurrence | null,
+): CalendarEventPayload {
+  const span = occurrence ?? event;
+  return {
+    uid: event.uid,
+    // The title as the row will actually carry it, empty summary included:
+    // comparing the raw summary against a row that says "Ohne Titel" would report
+    // a change on every single pass.
+    summary: rowTitle(event.summary),
+    description: event.description,
+    location: event.location,
+    start: span.start,
+    end: span.end,
+    allDay: span.allDay,
+  };
+}
+
+/** The row values for one event. */
 function eventValues(
   map: CalendarLinkPropertyMap,
   event: ParsedCalendarEvent,
-  occurrence: CalendarOccurrence | null,
+  payload: CalendarEventPayload,
 ): DatabaseRowPropertyValue[] {
   const values: DatabaseRowPropertyValue[] = [];
   if (map.date !== null) {
-    const span = occurrence ?? event;
     values.push({
       propertyId: map.date,
-      value: { start: span.start, end: span.end, allDay: span.allDay },
+      value: { start: payload.start, end: payload.end, allDay: payload.allDay },
     });
   }
   if (map.location !== null) values.push({ propertyId: map.location, value: event.location });
@@ -401,6 +440,8 @@ async function upsertRow(input: {
   recurrenceIcs: string | null;
   /** Which occurrence the values name, so a later pass can tell it is stale. */
   occurrenceStart: string | null;
+  /** Fingerprint of what was written, as the write-back direction measures it. */
+  pushedHash: string | null;
   result: PullLinkResult;
 }): Promise<void> {
   const { prisma, client, link, object } = input;
@@ -416,6 +457,7 @@ async function upsertRow(input: {
     remoteUpdatedAt: input.remoteUpdatedAt === null ? null : new Date(input.remoteUpdatedAt),
     recurrenceIcs: input.recurrenceIcs,
     occurrenceStart: input.occurrenceStart === null ? null : new Date(input.occurrenceStart),
+    lastPushedHash: input.pushedHash,
     lastSeenAt: new Date(),
     // Re-appearing after a remote delete clears the tombstone: the object is
     // demonstrably back.
