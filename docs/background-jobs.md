@@ -12,7 +12,7 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `maintenance` | repeatable schedulers, outbox dispatch | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`, `resolve-document-links`, `backfill-document-links`), documented placeholder (`vacuum-search-index`) |
 | `attachment-text` | attachment upload, `GET /api/attachments/:id/text` (on demand) | `createAttachmentTextProcessor` | real |
 | `document-cover` | `POST /api/documents/:id/cover/generate` | `createDocumentCoverProcessor` | real |
-| `calendar-sync` | repeatable schedulers (`calendar-pull` every 5 min, `calendar-discover` daily 05:15) | `createCalendarSyncProcessor` | real (mailbox.org CalDAV); writes outward only for a `PUSH`/`BOTH` link |
+| `calendar-sync` | repeatable schedulers (`calendar-pull` every 5 min, `calendar-remind` every minute, `calendar-discover` daily 05:15) | `createCalendarSyncProcessor` | real (mailbox.org CalDAV); writes outward only for a `PUSH`/`BOTH` link |
 
 Queue names and payload schemas live in `packages/contracts/src/jobs.ts`, so
 producers and consumers cannot drift apart.
@@ -164,11 +164,53 @@ removed and re-added rather than updated in place, because ical.js keeps a
 property's existing parameters and an event authored in a zone came out as
 `DTSTART;TZID=Europe/Berlin:…Z`: a zone and a UTC marker on one value.
 
+`remind` touches no calendar server at all and runs **every minute**, which is the
+point: a reminder is a promise about a time, and one that arrives four minutes late
+has broken it. It costs one indexed query per tick while nothing is due.
+
+It is a sweep, not a delayed job per appointment, and that is a decision rather
+than a shortcut. A delayed job has to be found and cancelled whenever an
+appointment moves, and a mirrored series moves *by itself* as the clock passes each
+occurrence, so the queue would fill with jobs for times that no longer exist while
+the one job that mattered got lost in a restart. A sweep holds no state that can
+rot: it asks what is due and derives the answer from the mirror every time.
+
+Idempotence is `remindedFor` compared against `occurrenceStart`, not a flag. Equal
+means announced; an appointment that moved gets a fresh reminder because its start
+no longer matches, which is right — a new time is news. A delivery that fails is
+left unmarked and logged, so the next minute retries it while the appointment is
+still ahead.
+
+The due moment comes from the span, in the configured zone
+(`calendar.timeZone`). A timed appointment is announced
+`calendar.reminderLeadMinutes` before it starts and stays worth sending for 15
+minutes after ("you are late"), never an hour. An all-day appointment has no start
+time to count back from, so it is announced at `calendar.reminderAllDayHour` local
+time on its own date and stays valid until that local day is over: a birthday
+announced at 23:00 is late, announced the next morning it is wrong.
+`reminder-time.ts` resolves the local hour through `Intl` with a two-pass offset
+correction, because on the day the clocks change a single pass can land on the
+wrong side of the transition.
+
+Delivery goes through `CALENDAR_REMINDER_COMMAND` and
+`CALENDAR_REMINDER_TARGET`: an executable that takes the message on stdin
+(`<command> send --to <target> --quiet --file -`). On this host that is Hermes'
+one-shot sender, which reaches Telegram with the gateway's own credentials and
+without starting an LLM. In the environment rather than in the `setting` table
+because it is an absolute path on one machine; unset leaves reminders off however
+`calendar.remindersEnabled` is switched, the same seam as a missing
+`SERVICE_TOKEN_SECRET`. The body travels on stdin, never as an argument: an
+argument list has a length limit and a message beginning with a dash would be read
+as an option. Spawned without a shell (CLAUDE.md rule 6 is why this lives in the
+worker and nowhere else).
+
 Deliberate gaps: VTODO is never written outward (its own shape, with STATUS and
-PERCENT-COMPLETE, is a separate step), a repeating VTODO keeps its plain DUE date,
-a written event is stored in UTC rather than in its authored zone, and there are
-still no REST endpoints or MCP tools for calendar accounts and links, so an
-account row is created by hand and `direction` is flipped by hand.
+PERCENT-COMPLETE, is a separate step) and never announced (a deadline is not an
+appointment), a repeating VTODO keeps its plain DUE date, a written event is stored
+in UTC rather than in its authored zone, reminders are all-or-nothing rather than
+per calendar, and there are still no REST endpoints or MCP tools for calendar
+accounts and links, so an account row is created by hand and `direction` is flipped
+by hand.
 
 ## Guarantees
 

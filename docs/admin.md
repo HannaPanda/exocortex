@@ -74,6 +74,10 @@ first; the admin form and this table follow.
 | `mcp.enabled` | boolean | `true` | Master switch for the MCP tool surface. |
 | `mcp.maxSearchResults` | int 1–100 | `20` | Result cap for `exo_search`. |
 | `mcp.writeConfirmationRequired` | boolean | `true` | Two-step, destination-keyed confirmation for mutating MCP tools. |
+| `calendar.remindersEnabled` | boolean | `false` | Master switch for appointment reminders. Also requires `CALENDAR_REMINDER_COMMAND` and `CALENDAR_REMINDER_TARGET`; a deployment that mirrors a calendar has not thereby asked to be messaged about it. |
+| `calendar.reminderLeadMinutes` | int 0–1440 | `30` | How long before a timed appointment the reminder goes out. `0` means at the start. |
+| `calendar.reminderAllDayHour` | int 0–23 | `9` | Local hour at which an all-day appointment is announced. It has no start time to count back from. |
+| `calendar.timeZone` | string | `Europe/Berlin` | IANA zone the two settings above are read in. Validated against `Intl`, so a typo is refused at the boundary instead of thrown inside the worker every minute. |
 
 Secrets are deliberately **not** settings. `OPENROUTER_API_KEY`,
 `SERVICE_TOKEN_SECRET` and `DATABASE_URL` stay in `.env`, out of reach of

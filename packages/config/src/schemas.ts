@@ -98,6 +98,20 @@ export const calendarSchema = z.object({
   MAILBOX_CALDAV_URL: z.url().optional(),
   MAILBOX_CALDAV_USERNAME: z.string().trim().min(1).optional(),
   MAILBOX_CALDAV_PASSWORD: z.string().min(1).optional(),
+  /**
+   * How an appointment reminder leaves the deployment: an executable that takes
+   * the message on stdin, plus the target to hand it. On this host that is
+   * Hermes' one-shot sender, `/home/johanna/.local/bin/hermes`, which reaches
+   * Telegram with the gateway's own credentials and without an LLM.
+   *
+   * Here rather than in the `setting` table because it is deployment topology:
+   * an absolute path on this machine, meaningless on another. Unset means
+   * reminders stay off however the settings are configured, the same seam that
+   * disables the AI tool loop without a service-token secret.
+   */
+  CALENDAR_REMINDER_COMMAND: z.string().trim().min(1).optional(),
+  /** Passed as the delivery target, e.g. `telegram` or `telegram:<chatId>`. */
+  CALENDAR_REMINDER_TARGET: z.string().trim().min(1).optional(),
 });
 
 export const apiProcessSchema = z.object({

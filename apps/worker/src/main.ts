@@ -24,6 +24,7 @@ import { createFetchApiClient } from '@exocortex/mcp-tools';
 import { createTypedWorker, QueueRegistry, RedisEventBus } from '@exocortex/queue';
 import { S3ObjectStorage } from '@exocortex/storage';
 
+import { createCommandNotifier } from './calendar/notifier';
 import { createAiRunProcessor, type ResolvedModelRow } from './processors/ai-run';
 import { createAttachmentTextProcessor } from './processors/attachment-text';
 import { createCalendarSyncProcessor } from './processors/calendar-sync';
@@ -161,6 +162,19 @@ async function bootstrap(): Promise<void> {
     if (password === undefined || password.trim().length === 0 || baseUrl === null) return null;
     return { baseUrl, username: account.username, password };
   };
+
+  // Reminder delivery: both halves have to be configured, because a command
+  // without a target and a target without a command are each half a setup. Unset
+  // leaves reminders off however the settings are switched, the same shape as the
+  // service-token seam above -- a missing line in `.env` never stops the boot.
+  const reminderNotifier =
+    env.CALENDAR_REMINDER_COMMAND === undefined || env.CALENDAR_REMINDER_TARGET === undefined
+      ? null
+      : createCommandNotifier({
+          command: env.CALENDAR_REMINDER_COMMAND,
+          target: env.CALENDAR_REMINDER_TARGET,
+          logger,
+        });
 
   // Image generation: the model comes from the settings, so an admin can point
   // it at a different one without a restart; the generators are cached per slug
@@ -502,6 +516,9 @@ async function bootstrap(): Promise<void> {
       prisma,
       apiClientFor,
       credentialsFor: resolveCalendarCredentials,
+      notifier: reminderNotifier,
+      settings: readSettings,
+      appUrl: env.APP_URL,
     }),
   });
 

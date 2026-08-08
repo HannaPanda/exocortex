@@ -42,6 +42,16 @@ export interface PullLinkInput {
   selfAddresses: readonly string[];
   /** Ignore the stored token and re-read everything. */
   full: boolean;
+  /**
+   * Whether this link is also allowed to write outward.
+   *
+   * It changes one thing here, and it is not cosmetic: what an archived row means.
+   * On a read-only link a missing row is a mirror that lost a page, so it is
+   * recreated. On a link that can push, archiving a row it created is how a human
+   * cancels the appointment, and recreating the row would erase the request before
+   * the write-back ever saw it.
+   */
+  canPush: boolean;
 }
 
 export interface PullLinkResult {
@@ -56,6 +66,11 @@ export interface PullLinkResult {
   refreshed: number;
   /** Override components folded into their series; see the note below. */
   overrides: number;
+  /**
+   * Rows that were archived here and whose remote object the write-back still has
+   * to delete. Left untouched rather than recreated, see `canPush`.
+   */
+  pendingDelete: number;
   syncToken: string | null;
   /** True when the server made us re-read everything. */
   wasFullRead: boolean;
@@ -128,6 +143,7 @@ export async function pullLink(input: PullLinkInput): Promise<PullLinkResult> {
     archived: 0,
     refreshed: 0,
     overrides: 0,
+    pendingDelete: 0,
     syncToken,
     wasFullRead,
   };
@@ -196,7 +212,10 @@ export async function pullLink(input: PullLinkInput): Promise<PullLinkResult> {
       // re-read as time passes -- and an unchanged etag means it will never be
       // fetched again.
       recurrenceIcs: master.recurs ? object.ics : null,
-      occurrenceStart: occurrence?.start ?? null,
+      // Written for every appointment, not just a series: this is the date the
+      // row currently names, and the reminder sweep reads it instead of querying
+      // every row back through the API once a minute.
+      occurrenceStart: payload.start,
       result,
     });
   }
@@ -442,6 +461,8 @@ async function upsertRow(input: {
   occurrenceStart: string | null;
   /** Fingerprint of what was written, as the write-back direction measures it. */
   pushedHash: string | null;
+  /** See `PullLinkInput.canPush`: it decides what an archived row means. */
+  canPush: boolean;
   result: PullLinkResult;
 }): Promise<void> {
   const { prisma, client, link, object } = input;
@@ -471,8 +492,21 @@ async function upsertRow(input: {
       input.result.updated += 1;
       return;
     }
-    // The row was deleted or archived in Exocortex. Forget the pointer and fall
-    // through to a fresh create, which is what a PULL mirror means.
+    // The row was deleted or archived in Exocortex, and what that means depends on
+    // which way this link is allowed to sync.
+    //
+    // On a link that can write outward, archiving a row this sync created is how a
+    // human cancels the appointment, and the write-back reads exactly that state to
+    // decide. Recreating the row here would erase the request before the push ever
+    // saw it -- and because the pull runs first, it would win every time. So the
+    // pointer is kept and the object is left for `pushLink` to delete.
+    //
+    // On a read-only link there is nothing to wait for: a missing row is a mirror
+    // that lost a page, and recreating it is the whole job.
+    if (input.canPush && known.origin === 'LOCAL') {
+      input.result.pendingDelete += 1;
+      return;
+    }
     await prisma.calendarObjectState.update({
       where: { id: known.id },
       data: { rowDocumentId: null },

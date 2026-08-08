@@ -131,8 +131,13 @@ export const calendarSyncJobSchema = jobBase.extend({
    * `discover` refreshes the collection list and provisions missing mirror
    * databases; `pull` only reads objects into existing links. Kept apart because
    * discovery creates documents and should not run every five minutes.
+   *
+   * `remind` touches no calendar server at all: it reads the mirrored state and
+   * sends what is due. Its own mode because it runs on a much tighter cadence
+   * than a sync does -- a reminder that is five minutes late is a reminder that
+   * failed.
    */
-  mode: z.enum(['discover', 'pull']).default('pull'),
+  mode: z.enum(['discover', 'pull', 'remind']).default('pull'),
   /**
    * Ignores the stored sync token and re-reads everything. The recovery path
    * after the server forgets a token, and the manual escape hatch when a mirror

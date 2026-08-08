@@ -1071,8 +1071,17 @@ model CalendarObjectState {
   /// last Monday until someone edited the appointment.
   recurrenceIcs String?
   /// Start of the occurrence currently written into the mirrored row. Lets a pass
-  /// see at a glance whether the row still names the right date.
+  /// see at a glance whether the row still names the right date, and is what the
+  /// reminder sweep reads instead of querying every row through the API.
   occurrenceStart DateTime?
+  /// The occurrence a reminder has already gone out for.
+  ///
+  /// Compared against `occurrenceStart`, which makes the sweep idempotent for
+  /// free: equal means "already announced", and an appointment that moves gets a
+  /// fresh reminder because its start no longer matches. A boolean would have to
+  /// be reset by hand on every change, and a series would only ever be announced
+  /// once.
+  remindedFor   DateTime?
   /// Hash of the payload last written outward, so a future two-way sync can tell
   /// "the remote changed" from "the remote is echoing our own write" and cannot
   /// ping-pong. Unused while the link is PULL.
@@ -1091,5 +1100,7 @@ model CalendarObjectState {
   /// Dedup and tombstone lookups both go by UID within a link.
   @@index([linkId, icsUid])
   @@index([rowDocumentId])
+  /// The reminder sweep asks for "appointments around now", once a minute.
+  @@index([occurrenceStart])
   @@map("calendar_object_state")
 }

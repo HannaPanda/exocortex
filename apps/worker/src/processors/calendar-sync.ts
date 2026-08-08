@@ -3,15 +3,18 @@ import {
   type CalendarComponent,
   parseCalendarLinkPropertyMap,
   type QUEUE_NAMES,
+  type Settings,
 } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type JobContext } from '@exocortex/queue';
 
+import { type ReminderNotifier } from '../calendar/notifier';
 import { createMirrorDatabase, ensureMirrorProperties, mirrorableCollections } from '../calendar/provision';
 import { pullLink } from '../calendar/pull';
 import { pushLink } from '../calendar/push';
+import { sendDueReminders } from '../calendar/reminders';
 
 export interface CalendarSyncDependencies {
   prisma: PrismaClient;
@@ -32,6 +35,16 @@ export interface CalendarSyncDependencies {
     credentialRef: string;
     baseUrl: string | null;
   }) => { baseUrl: string; username: string; password: string } | null;
+  /**
+   * Where a due reminder goes, or null when the deployment configured no sender.
+   * Same seam as `apiClientFor`: without it the feature is off rather than
+   * half-working.
+   */
+  notifier: ReminderNotifier | null;
+  /** Runtime settings, read per job so an admin's change takes effect at once. */
+  settings: () => Promise<Settings>;
+  /** Public base URL, so a reminder can link back to the page it came from. */
+  appUrl: string;
 }
 
 /**
@@ -60,6 +73,14 @@ export function createCalendarSyncProcessor(dependencies: CalendarSyncDependenci
   return async ({ payload, logger }: JobContext<typeof QUEUE_NAMES.calendarSync>): Promise<void> => {
     if (dependencies.apiClientFor === null) {
       logger.info('Calendar sync unavailable: no service-token secret configured');
+      return;
+    }
+
+    // Reminders touch no calendar server, so they run on their own path: no
+    // account loop, no credentials, no DAV client. They also run every minute,
+    // and doing a full sync that often would hammer somebody else's server.
+    if (payload.mode === 'remind') {
+      await runReminders({ ...dependencies, apiClientFor: dependencies.apiClientFor, logger });
       return;
     }
 
@@ -115,6 +136,52 @@ export function createCalendarSyncProcessor(dependencies: CalendarSyncDependenci
       }
     }
   };
+}
+
+/**
+ * One reminder sweep, if the deployment wants reminders at all.
+ *
+ * Three ways this ends up doing nothing, and each of them is a legitimate state
+ * rather than a failure: the setting is off, no sender is configured, or nothing is
+ * due. Only the first two are worth a log line, and only once per pass -- a job
+ * that runs every minute must not narrate itself.
+ */
+async function runReminders(input: {
+  prisma: PrismaClient;
+  apiClientFor: (userId: string) => ExocortexApiClient;
+  notifier: ReminderNotifier | null;
+  settings: () => Promise<Settings>;
+  appUrl: string;
+  logger: Logger;
+}): Promise<void> {
+  const settings = await input.settings();
+  if (!settings['calendar.remindersEnabled']) return;
+  if (input.notifier === null) {
+    input.logger.debug('Calendar reminders are on but no sender is configured');
+    return;
+  }
+
+  const result = await sendDueReminders({
+    prisma: input.prisma,
+    apiClientFor: input.apiClientFor,
+    notifier: input.notifier,
+    logger: input.logger,
+    schedule: {
+      leadMinutes: settings['calendar.reminderLeadMinutes'],
+      allDayHour: settings['calendar.reminderAllDayHour'],
+      timeZone: settings['calendar.timeZone'],
+    },
+    appUrl: input.appUrl,
+    now: new Date(),
+  });
+
+  if (result.sent + result.failed > 0) {
+    input.logger.info('Calendar reminders sent', {
+      sent: result.sent,
+      failed: result.failed,
+      pending: result.pending,
+    });
+  }
 }
 
 /**
@@ -266,6 +333,7 @@ async function pullAllLinks(input: {
         },
         selfAddresses: [account.username],
         full: input.full,
+        canPush: link.direction === 'BOTH' || link.direction === 'PUSH',
       });
 
       await prisma.calendarLink.update({
@@ -281,6 +349,7 @@ async function pullAllLinks(input: {
         archived: result.archived,
         refreshed: result.refreshed,
         overrides: result.overrides,
+        pendingDelete: result.pendingDelete,
         fullRead: result.wasFullRead,
       });
     } catch (error) {

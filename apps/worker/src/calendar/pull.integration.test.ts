@@ -5,7 +5,7 @@ import { loadDotEnv } from '@exocortex/config';
 import { type CalendarLinkPropertyMap, parseCalendarLinkPropertyMap } from '@exocortex/contracts';
 import { createPrismaClient, generateOrderKey, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
-import { type ExocortexApiClient } from '@exocortex/mcp-tools';
+import { type ExocortexApiClient, ExocortexApiError } from '@exocortex/mcp-tools';
 
 import { pullLink } from './pull';
 
@@ -85,6 +85,13 @@ function fakeApi(rows: Map<string, RecordedRow>): {
       const rowId = /\/api\/documents\/([^/]+)/.exec(input.path)?.[1] ?? '';
       const row = rows.get(rowId);
       if (row === undefined) throw new Error(`unknown row ${rowId}`);
+
+      // The real API refuses to write to an archived document, and the sync's
+      // whole "the row is gone" branch hangs off that refusal. A fake that
+      // happily wrote anyway would report every such path as working.
+      if (row.archived && !input.path.endsWith('/archive')) {
+        throw new ExocortexApiError('document_archived', 'Die Seite ist archiviert.', 409, null);
+      }
 
       if (input.path.endsWith('/values')) {
         row.values = body.values ?? [];
@@ -330,6 +337,7 @@ describe('pullLink', () => {
       link,
       selfAddresses: ['me@test.org'],
       full: false,
+      canPush: false,
     });
 
     expect(result.created).toBe(1);
@@ -366,6 +374,7 @@ describe('pullLink', () => {
       link,
       selfAddresses: [],
       full: false,
+      canPush: false,
     });
 
     // Second pass: the server reports the same etag, so nothing needs fetching
@@ -379,6 +388,7 @@ describe('pullLink', () => {
       link: { ...link, syncToken: 'tok-1' },
       selfAddresses: [],
       full: false,
+      canPush: false,
     });
 
     expect(result).toMatchObject({ created: 0, updated: 0, unchanged: 1 });
@@ -408,6 +418,7 @@ describe('pullLink', () => {
       link,
       selfAddresses: [],
       full: false,
+      canPush: false,
     });
 
     const second = fakeApi(rows);
@@ -430,6 +441,7 @@ describe('pullLink', () => {
       link: { ...link, syncToken: 'tok-1' },
       selfAddresses: [],
       full: false,
+      canPush: false,
     });
 
     expect(result).toMatchObject({ created: 0, updated: 1 });
@@ -463,6 +475,7 @@ describe('pullLink', () => {
       link,
       selfAddresses: [],
       full: false,
+      canPush: false,
     });
 
     const removal = `<?xml version="1.0" encoding="UTF-8"?>
@@ -478,6 +491,7 @@ describe('pullLink', () => {
       link: { ...link, syncToken: 'tok-1' },
       selfAddresses: [],
       full: false,
+      canPush: false,
     });
 
     expect(result.archived).toBe(1);
@@ -514,6 +528,7 @@ describe('pullLink', () => {
       link: { ...link, syncToken: 'ancient' },
       selfAddresses: [],
       full: false,
+      canPush: false,
     });
 
     expect(result.wasFullRead).toBe(true);
@@ -550,6 +565,7 @@ describe('pullLink', () => {
       link,
       selfAddresses: ['me@test.org'],
       full: false,
+      canPush: false,
     });
 
     const state = await prisma.calendarObjectState.findFirst({
@@ -591,6 +607,7 @@ describe('pullLink', () => {
       link,
       selfAddresses: [],
       full: false,
+      canPush: false,
     });
 
     const row = [...rows.values()][0];
@@ -641,6 +658,7 @@ describe('pullLink', () => {
       link,
       selfAddresses: [],
       full: false,
+      canPush: false,
     });
 
     // Rewind the mirror to the first occurrence: what a row looks like once a
@@ -668,6 +686,7 @@ describe('pullLink', () => {
       link: { ...link, syncToken: 'tok-1' },
       selfAddresses: [],
       full: false,
+      canPush: false,
     });
 
     expect(result).toMatchObject({ created: 0, updated: 0, unchanged: 1, refreshed: 1 });
@@ -676,6 +695,104 @@ describe('pullLink', () => {
     // The occurrence now current: its end is still ahead of us.
     expect(Date.parse(span.end)).toBeGreaterThan(Date.now());
     expect(new Date(span.start).getUTCDay()).toBe(1);
+  });
+
+  it('recreates an archived row on a read-only link, because a mirror lost a page', async () => {
+    const link = await createLink();
+    const rows = new Map<string, RecordedRow>();
+    const object = {
+      href: '/caldav/main/j.ics',
+      ics: icsFor('j@test', 'Termin', '20260820T080000Z', '20260820T090000Z'),
+    };
+    await pullLink({
+      prisma,
+      client: fakeApi(rows).client,
+      dav: davFor([
+        { body: deltaBody([{ href: object.href, etag: '"1"' }], 'tok-1') },
+        { body: multigetBody([{ ...object, etag: '"1"' }]) },
+      ]),
+      logger,
+      link,
+      selfAddresses: [],
+      full: false,
+      canPush: false,
+    });
+
+    const rowId = [...rows.keys()][0]!;
+    rows.get(rowId)!.archived = true;
+    await prisma.document.update({ where: { id: rowId }, data: { archivedAt: new Date() } });
+
+    const result = await pullLink({
+      prisma,
+      client: fakeApi(rows).client,
+      dav: davFor([
+        { body: deltaBody([{ href: object.href, etag: '"2"' }], 'tok-2') },
+        { body: multigetBody([{ ...object, etag: '"2"' }]) },
+      ]),
+      logger,
+      link: { ...link, syncToken: 'tok-1' },
+      selfAddresses: [],
+      full: false,
+      canPush: false,
+    });
+
+    expect(result).toMatchObject({ created: 1, pendingDelete: 0 });
+    expect(rows.size).toBe(2);
+  });
+
+  it('leaves an archived row alone on a link that pushes, so the delete can happen', async () => {
+    const link = await createLink();
+    const rows = new Map<string, RecordedRow>();
+    const object = {
+      href: '/caldav/main/k.ics',
+      ics: icsFor('k@test', 'Selbst angelegt', '20260820T080000Z', '20260820T090000Z'),
+    };
+    await pullLink({
+      prisma,
+      client: fakeApi(rows).client,
+      dav: davFor([
+        { body: deltaBody([{ href: object.href, etag: '"1"' }], 'tok-1') },
+        { body: multigetBody([{ ...object, etag: '"1"' }]) },
+      ]),
+      logger,
+      link,
+      selfAddresses: [],
+      full: false,
+      canPush: true,
+    });
+
+    // Born here, which is what makes an archived row a cancellation rather than a
+    // mirror that lost a page.
+    await prisma.calendarObjectState.updateMany({
+      where: { linkId: link.id, remoteHref: object.href },
+      data: { origin: 'LOCAL' },
+    });
+    const rowId = [...rows.keys()][0]!;
+    rows.get(rowId)!.archived = true;
+    await prisma.document.update({ where: { id: rowId }, data: { archivedAt: new Date() } });
+
+    const result = await pullLink({
+      prisma,
+      client: fakeApi(rows).client,
+      dav: davFor([
+        { body: deltaBody([{ href: object.href, etag: '"2"' }], 'tok-2') },
+        { body: multigetBody([{ ...object, etag: '"2"' }]) },
+      ]),
+      logger,
+      link: { ...link, syncToken: 'tok-1' },
+      selfAddresses: [],
+      full: false,
+      canPush: true,
+    });
+
+    // No second row, and the pointer is kept: the pull runs first, so recreating
+    // the row here would erase the cancellation before the push ever saw it.
+    expect(result).toMatchObject({ created: 0, pendingDelete: 1 });
+    expect(rows.size).toBe(1);
+    const state = await prisma.calendarObjectState.findFirst({
+      where: { linkId: link.id, remoteHref: object.href },
+    });
+    expect(state?.rowDocumentId).toBe(rowId);
   });
 
   it('folds an override into the series instead of creating a second row', async () => {
@@ -713,6 +830,7 @@ describe('pullLink', () => {
       link,
       selfAddresses: [],
       full: false,
+      canPush: false,
     });
 
     // One appointment, one row. The moved instance is a modification of the

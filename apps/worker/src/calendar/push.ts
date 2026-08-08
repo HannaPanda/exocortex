@@ -13,16 +13,13 @@ import {
 import {
   type CalendarLinkPropertyMap,
   type DatabaseRow,
-  type DatabaseRowPropertyValue,
   documentSummarySchema,
-  queryDatabaseRowsResponseSchema,
 } from '@exocortex/contracts';
 import { type CalendarObjectState, type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 import { type ExocortexApiClient, ExocortexApiError } from '@exocortex/mcp-tools';
 
-/** One page of rows. The API caps a page at 100. */
-const ROW_PAGE_SIZE = 100;
+import { readAllRows, readSpan, readText, valueOf } from './rows';
 
 export interface PushLinkInput {
   prisma: PrismaClient;
@@ -124,30 +121,6 @@ export async function pushLink(input: PushLinkInput): Promise<PushLinkResult> {
 }
 
 /**
- * Every row of the mirror database, one page at a time.
- *
- * All of them are read before anything is written, and that ordering carries the
- * safety of this whole function: a row with no known state is treated as new and
- * gets created on the server, so a listing that failed halfway through would
- * create a second copy of every appointment it did not manage to list.
- */
-async function readAllRows(client: ExocortexApiClient, documentId: string): Promise<DatabaseRow[]> {
-  const rows: DatabaseRow[] = [];
-  let cursor: string | undefined;
-  do {
-    const page = await client.request({
-      method: 'POST',
-      path: `/api/documents/${documentId}/rows/query`,
-      body: { limit: ROW_PAGE_SIZE, ...(cursor === undefined ? {} : { cursor }) },
-      responseSchema: queryDatabaseRowsResponseSchema,
-    });
-    rows.push(...page.rows);
-    cursor = page.nextCursor ?? undefined;
-  } while (cursor !== undefined);
-  return rows;
-}
-
-/**
  * The payload a row describes, or null when it describes no appointment.
  *
  * A row without a start is the normal state of a row somebody has just added and
@@ -171,33 +144,6 @@ function payloadFrom(
     end: span.end,
     allDay: span.allDay,
   };
-}
-
-function valueOf(row: DatabaseRow, propertyId: string | null): DatabaseRowPropertyValue['value'] {
-  if (propertyId === null) return null;
-  return row.values.find((entry) => entry.propertyId === propertyId)?.value ?? null;
-}
-
-/**
- * A DATE cell as a span. Both shapes the contract allows are accepted: a range
- * object from a `isRange` property, and a bare instant from one that is not.
- */
-function readSpan(
-  value: DatabaseRowPropertyValue['value'],
-): { start: string; end: string | null; allDay: boolean } | null {
-  if (typeof value === 'string') {
-    return value.trim().length === 0 ? null : { start: value, end: null, allDay: false };
-  }
-  if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-    return { start: value.start, end: value.end, allDay: value.allDay };
-  }
-  return null;
-}
-
-function readText(value: DatabaseRowPropertyValue['value']): string | null {
-  if (typeof value !== 'string') return null;
-  const trimmed = value.trim();
-  return trimmed.length === 0 ? null : trimmed;
 }
 
 /** A row that no calendar object belongs to yet becomes one. */
@@ -235,6 +181,10 @@ async function createRemote(input: {
       // entitled to rewrite and to delete later.
       origin: 'LOCAL',
       lastPushedHash: hashCalendarEventPayload(input.payload),
+      // The date the row names, so the reminder sweep can see it without asking
+      // the API. A locally created appointment deserves a reminder as much as a
+      // mirrored one.
+      occurrenceStart: new Date(input.payload.start),
       lastSeenAt: input.now,
     },
     update: {
@@ -242,6 +192,7 @@ async function createRemote(input: {
       rowDocumentId: input.rowDocumentId,
       etag: written.etag,
       lastPushedHash: hashCalendarEventPayload(input.payload),
+      occurrenceStart: new Date(input.payload.start),
       lastSeenAt: input.now,
       deletedAt: null,
     },
@@ -307,7 +258,12 @@ async function updateRemote(input: {
 
   await input.prisma.calendarObjectState.update({
     where: { id: state.id },
-    data: { etag: written.etag, lastPushedHash: hash, lastSeenAt: input.now },
+    data: {
+      etag: written.etag,
+      lastPushedHash: hash,
+      occurrenceStart: new Date(input.payload.start),
+      lastSeenAt: input.now,
+    },
   });
   input.result.updated += 1;
 }

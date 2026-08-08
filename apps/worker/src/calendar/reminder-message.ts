@@ -1,0 +1,114 @@
+import { MS_PER_DAY } from './reminder-constants';
+
+/**
+ * The text of a reminder. German, because a human reads it.
+ *
+ * Two lines and an optional third: what and when, then the details, then the page
+ * it came from. Short on purpose -- this arrives on a phone, next to everything
+ * else that wants attention, and a reminder that has to be read twice has already
+ * failed.
+ */
+
+export interface ReminderSpan {
+  start: Date;
+  /** Exclusive end, or null for a point in time. */
+  end: Date | null;
+  allDay: boolean;
+}
+
+export interface ReminderContext {
+  title: string;
+  location: string | null;
+  /** Link to the mirrored row, or null when no public URL is configured. */
+  url: string | null;
+  timeZone: string;
+  now: Date;
+}
+
+export function buildReminderMessage(span: ReminderSpan, context: ReminderContext): string {
+  const lines = [`🔔 ${lead(span, context)}: ${context.title.trim()}`];
+
+  const detail = [describeSpan(span, context.timeZone), context.location?.trim()]
+    .filter((part): part is string => part !== undefined && part.length > 0)
+    .join(' · ');
+  if (detail.length > 0) lines.push(detail);
+
+  if (context.url !== null) lines.push(context.url);
+  return lines.join('\n');
+}
+
+/** The part before the title: how far away the appointment is. */
+function lead(span: ReminderSpan, context: ReminderContext): string {
+  if (span.allDay) return 'Heute';
+
+  const minutes = Math.round((span.start.getTime() - context.now.getTime()) / 60_000);
+  if (minutes <= 0) return 'Jetzt';
+  if (minutes === 1) return 'In einer Minute';
+  if (minutes < 60) return `In ${minutes} Minuten`;
+
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  const hourPart = hours === 1 ? 'einer Stunde' : `${hours} Stunden`;
+  return rest === 0 ? `In ${hourPart}` : `In ${hourPart} ${rest} Minuten`;
+}
+
+/**
+ * The when, spelled out. An all-day appointment says so instead of naming a time,
+ * and a multi-day one names the days it actually covers: its stored end is
+ * exclusive, so the last day is the day before it.
+ */
+function describeSpan(span: ReminderSpan, timeZone: string): string {
+  if (span.allDay) {
+    const lastDay = span.end === null ? null : new Date(span.end.getTime() - MS_PER_DAY);
+    if (lastDay === null || lastDay.getTime() <= span.start.getTime()) return 'Ganztägig';
+    return `Ganztägig, ${formatDate(span.start, timeZone)} bis ${formatDate(lastDay, timeZone)}`;
+  }
+
+  const from = formatTime(span.start, timeZone);
+  if (span.end === null) return `${from} Uhr`;
+  // A time on another day would be ambiguous as a bare clock reading.
+  if (!sameDay(span.start, span.end, timeZone)) {
+    return `${from} Uhr bis ${formatDate(span.end, timeZone)}, ${formatTime(span.end, timeZone)} Uhr`;
+  }
+  return `${from} bis ${formatTime(span.end, timeZone)} Uhr`;
+}
+
+function formatTime(instant: Date, timeZone: string): string {
+  return new Intl.DateTimeFormat('de-DE', {
+    timeZone,
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(instant);
+}
+
+/**
+ * An all-day date is a floating date pinned to UTC midnight, so it is rendered in
+ * UTC: reading it in a zone behind UTC would move a birthday to the day before.
+ */
+function formatDate(instant: Date, timeZone: string): string {
+  return new Intl.DateTimeFormat('de-DE', {
+    timeZone: isFloating(instant) ? 'UTC' : timeZone,
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(instant);
+}
+
+function isFloating(instant: Date): boolean {
+  return (
+    instant.getUTCHours() === 0 &&
+    instant.getUTCMinutes() === 0 &&
+    instant.getUTCSeconds() === 0 &&
+    instant.getUTCMilliseconds() === 0
+  );
+}
+
+function sameDay(a: Date, b: Date, timeZone: string): boolean {
+  const format = new Intl.DateTimeFormat('de-DE', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  return format.format(a) === format.format(b);
+}

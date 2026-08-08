@@ -254,15 +254,20 @@ export class QueueRegistry {
   /**
    * Registers the calendar sync schedulers.
    *
-   * Two cadences, because the two modes cost very different things. `pull` reads
-   * changed objects and, thanks to sync tokens and etags, costs one REPORT per
-   * calendar when nothing happened -- cheap enough for every five minutes.
+   * Three cadences, because the three modes cost very different things. `pull`
+   * reads changed objects and, thanks to sync tokens and etags, costs one REPORT
+   * per calendar when nothing happened -- cheap enough for every five minutes.
    * `discover` re-lists the collections and may create documents and columns, so
    * it runs once a day: a new calendar appearing on someone's phone does not need
    * to show up here within the minute.
    *
-   * Both are no-ops without a `calendar_account` row, so registering them on a
-   * deployment that has no calendar costs one indexed query per tick.
+   * `remind` runs every minute and talks to no calendar server at all. The tight
+   * cadence is the point: a reminder is a promise about a time, and one that
+   * arrives four minutes late has broken it. It costs one indexed query per tick
+   * and nothing else while nothing is due.
+   *
+   * All three are no-ops without a `calendar_account` row, so registering them on
+   * a deployment that has no calendar costs one indexed query per tick.
    */
   async scheduleCalendarSync(correlationId: string): Promise<void> {
     const queue = this.rawQueue(QUEUE_NAMES.calendarSync);
@@ -280,6 +285,14 @@ export class QueueRegistry {
       {
         name: QUEUE_NAMES.calendarSync,
         data: { correlationId, accountId: null, mode: 'discover', full: false },
+      },
+    );
+    await queue.upsertJobScheduler(
+      'calendar-remind',
+      { every: 60_000 },
+      {
+        name: QUEUE_NAMES.calendarSync,
+        data: { correlationId, accountId: null, mode: 'remind', full: false },
       },
     );
     this.logger.info('Calendar sync schedulers registered');

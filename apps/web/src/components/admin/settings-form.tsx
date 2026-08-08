@@ -23,7 +23,7 @@ import { useAdminAiModels, useAdminSettings, useUpdateAdminSettings } from '@/li
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 
-const GROUP_LABELS: Record<string, string> = { ai: 'KI', mcp: 'MCP' };
+const GROUP_LABELS: Record<string, string> = { ai: 'KI', mcp: 'MCP', calendar: 'Kalender' };
 
 /** German label and help text for every setting key. Written in the same voice. */
 const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
@@ -134,6 +134,22 @@ const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
   'mcp.writeConfirmationRequired': {
     label: 'Schreibzugriffe bestätigen lassen',
     help: 'Verlangt eine zweistufige Bestätigung, bevor ein MCP-Werkzeug Daten verändert.',
+  },
+  'calendar.remindersEnabled': {
+    label: 'Terminerinnerungen senden',
+    help: 'Schickt vor einem gespiegelten Termin eine Nachricht. Braucht zusätzlich einen eingerichteten Versandweg auf dem Server.',
+  },
+  'calendar.reminderLeadMinutes': {
+    label: 'Vorlauf in Minuten',
+    help: 'Wie lange vor einem Termin mit Uhrzeit die Erinnerung rausgeht. 0 bedeutet genau zum Beginn.',
+  },
+  'calendar.reminderAllDayHour': {
+    label: 'Uhrzeit für ganztägige Termine',
+    help: 'Zu welcher Stunde ganztägige Termine wie Geburtstage angekündigt werden. Sie haben keine Startzeit, von der aus man zurückrechnen könnte.',
+  },
+  'calendar.timeZone': {
+    label: 'Zeitzone',
+    help: 'In welcher Zone die beiden Angaben darüber gelesen werden, zum Beispiel Europe/Berlin.',
   },
 };
 

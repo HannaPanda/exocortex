@@ -91,7 +91,46 @@ export const settingsSchema = z.object({
   'mcp.maxSearchResults': z.number().int().min(1).max(100).default(20),
   /** Two-step confirmation for mutating MCP tools (destination-keyed). */
   'mcp.writeConfirmationRequired': z.boolean().default(true),
+  /**
+   * Master switch for appointment reminders. Off by default: a deployment that
+   * mirrors a calendar has not thereby asked to be messaged about it.
+   */
+  'calendar.remindersEnabled': z.boolean().default(false),
+  /**
+   * How long before a timed appointment the reminder goes out. Zero means "when
+   * it starts", which is a legitimate choice for somebody who wants the nudge at
+   * the door rather than on the way.
+   */
+  'calendar.reminderLeadMinutes': z.number().int().min(0).max(1_440).default(30),
+  /**
+   * Local hour at which an all-day appointment is announced. A birthday has no
+   * start time to count back from, so counting back from midnight would send the
+   * reminder in the middle of the night.
+   */
+  'calendar.reminderAllDayHour': z.number().int().min(0).max(23).default(9),
+  /**
+   * The zone the two settings above are read in. An IANA name, validated here so
+   * a typo is refused at the boundary instead of throwing inside the worker
+   * every minute.
+   */
+  'calendar.timeZone': z
+    .string()
+    .trim()
+    .min(1)
+    .max(64)
+    .refine(isUsableTimeZone, { message: 'Unbekannte Zeitzone' })
+    .default('Europe/Berlin'),
 });
+
+/** Whether the runtime knows the zone. `Intl` is the only authority available. */
+function isUsableTimeZone(value: string): boolean {
+  try {
+    new Intl.DateTimeFormat('de-DE', { timeZone: value });
+    return true;
+  } catch {
+    return false;
+  }
+}
 export type Settings = z.infer<typeof settingsSchema>;
 
 export const SETTING_KEYS = Object.keys(settingsSchema.shape) as readonly (keyof Settings)[];
