@@ -80,13 +80,6 @@ export function SignInForm() {
           <Button type="submit" disabled={pending} data-testid="signin-submit">
             {pending ? 'Wird angemeldet …' : 'Anmelden'}
           </Button>
-
-          <p className="text-center text-xs text-muted-foreground">
-            Noch kein Konto?{' '}
-            <Link href="/registrieren" className="underline underline-offset-2">
-              Registrieren
-            </Link>
-          </p>
         </form>
       </CardContent>
     </Card>

@@ -56,25 +56,22 @@ test.describe('authentication', () => {
     await page.waitForURL(new RegExp(`/arbeitsbereich/${current}`), { timeout: 30_000 });
   });
 
-  test('registers a new account and lands in the application', async ({ page }) => {
+  test('refuses to register a new account', async ({ page, request }) => {
+    // Self-registration is closed (`emailAndPassword.disableSignUp`). The route
+    // is gone from the frontend and the endpoint rejects the call, so neither
+    // half can quietly come back without this test noticing.
+    const response = await page.goto('/registrieren');
+    expect(response?.status()).toBe(404);
+
     const suffix = Date.now().toString(36);
-    await page.goto('/registrieren');
-    await page.getByLabel('Name').fill(`Testnutzer ${suffix}`);
-    await page.getByLabel('E-Mail-Adresse').fill(`test-${suffix}@exocortex.test`);
-    await page.getByLabel('Passwort').fill(`sicheres-passwort-${suffix}`);
-    await page.getByTestId('signup-submit').click();
-
-    await page.waitForURL(/\/arbeitsbereich/, { timeout: 30_000 });
-    // A brand-new user has no workspace yet and is offered to create one.
-    await expect(page.getByTestId('create-first-workspace')).toBeVisible({ timeout: 30_000 });
-  });
-
-  test('enforces the minimum password length in the form', async ({ page }) => {
-    await page.goto('/registrieren');
-    await page.getByLabel('Name').fill('Kurz');
-    await page.getByLabel('E-Mail-Adresse').fill(`short-${Date.now().toString(36)}@exocortex.test`);
-    await page.getByLabel('Passwort').fill('kurz');
-    await page.getByTestId('signup-submit').click({ force: true });
-    await expect(page).toHaveURL(/\/registrieren/);
+    const api = await request.post('/api/auth/sign-up/email', {
+      data: {
+        name: `Testnutzer ${suffix}`,
+        email: `test-${suffix}@exocortex.test`,
+        password: `sicheres-passwort-${suffix}`,
+      },
+      failOnStatusCode: false,
+    });
+    expect(api.status()).toBe(400);
   });
 });

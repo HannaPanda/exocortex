@@ -14,5 +14,6 @@ export const authClient = createAuthClient({
   basePath: '/api/auth',
 });
 
-export const { useSession, signIn, signOut, signUp, requestPasswordReset, resetPassword } =
-  authClient;
+// `signUp` is deliberately not re-exported: self-registration is disabled in the
+// API (`emailAndPassword.disableSignUp`), so a caller would only ever get a 400.
+export const { useSession, signIn, signOut, requestPasswordReset, resetPassword } = authClient;

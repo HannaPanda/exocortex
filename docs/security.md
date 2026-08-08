@@ -35,9 +35,16 @@ authorization mechanism.
   reproduces the same format so a seeded account can log in normally.
 * Sessions: `httpOnly`, `sameSite=lax`, `Secure` when `APP_URL` is HTTPS, cookie
   prefix `exocortex`, 30-day lifetime with a 1-day refresh window.
-* Email verification and password reset are wired up and send mail (Mailpit
-  locally). `requireEmailVerification` is `false` at this stage; flipping it to
-  `true` needs no other change.
+* Self-registration is **off** (`emailAndPassword.disableSignUp`). This is a
+  private deployment for a handful of known people, so an open `/sign-up/email`
+  only ever creates accounts nobody asked for, and each one can send a
+  verification mail through our SMTP credentials. `/registrieren` does not exist
+  in the frontend either. Accounts come from the seed script or an administrator.
+* Email verification and password reset are wired up and send mail, but in this
+  deployment `SMTP_HOST` still points at Mailpit, so **no mail leaves the host**.
+  `requireEmailVerification` therefore stays `false`: turning it on would lock
+  out every account whose address was never verified, with no way to verify it.
+  Flip it together with real SMTP, not before.
 * Sign-in, sign-up and password-reset endpoints have explicit per-IP rate limits
   (10/min, 5/min, 5 per 5 min). nginx forwards the real client address and Fastify
   runs with `trustProxy`.

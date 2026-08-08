@@ -46,9 +46,16 @@ export function createAuth(options: CreateAuthOptions) {
       enabled: true,
       minPasswordLength: 12,
       maxPasswordLength: 256,
-      // Verification infrastructure exists and mails are sent, but an
-      // unverified account can still sign in. Flipping this to `true` enforces
-      // verification without any other change.
+      // Self-registration is closed. The deployment is a private workspace for a
+      // handful of known people, so an open `/sign-up/email` only ever adds
+      // accounts nobody asked for -- and every one of them can send a
+      // verification mail through our SMTP credentials. Accounts are created by
+      // the seed script or by an administrator; see docs/security.md.
+      disableSignUp: true,
+      // Deliberately still `false`. Turning this on would lock out every account
+      // whose address was never verified, and outbound mail does not work in
+      // this deployment yet (SMTP points at Mailpit, so nothing leaves the
+      // host). Flip it together with real SMTP, not before.
       requireEmailVerification: false,
       sendResetPassword: async ({ user, url }) => {
         await mailer.sendPasswordResetEmail({ to: user.email, name: user.name, url });
