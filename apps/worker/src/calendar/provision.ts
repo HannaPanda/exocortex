@@ -84,7 +84,7 @@ export async function ensureMirrorProperties(input: {
     }
 
     if (type === 'DATE') {
-      property = await ensureDateSpan(input.client, property, input.timeZone);
+      property = await ensureDateSpan(input.client, input.documentId, property, input.timeZone);
     }
     map[field] = property.id;
   }
@@ -100,6 +100,7 @@ export async function ensureMirrorProperties(input: {
  */
 async function ensureDateSpan(
   client: ExocortexApiClient,
+  documentId: string,
   property: DatabaseProperty,
   timeZone: string | null,
 ): Promise<DatabaseProperty> {
@@ -108,7 +109,9 @@ async function ensureDateSpan(
 
   return client.request({
     method: 'PATCH',
-    path: `/api/properties/${property.id}`,
+    // Nested under the collection, not `/api/properties/:id`: the controller is
+    // mounted at `api/documents/:documentId/properties`, so the flat path 404s.
+    path: `/api/documents/${documentId}/properties/${property.id}`,
     body: { config: { includeTime: true, isRange: true, timeZone } },
     responseSchema: databasePropertySchema,
   });
