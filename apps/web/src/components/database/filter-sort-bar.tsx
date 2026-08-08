@@ -26,7 +26,7 @@ import {
 
 import { useUpdateDatabaseView } from '@/lib/api/database-queries';
 
-import { FILTER_OPERATOR_LABELS, operatorsForType } from './property-types';
+import { FILTER_OPERATOR_LABELS, filterValueChoices, filterValueLabel, operatorsForType } from './property-types';
 import { ViewOptionsMenu } from './view-options-menu';
 
 interface FilterSortBarProps {
@@ -79,7 +79,12 @@ export function FilterSortBar({ documentId, view, properties, readOnly }: Filter
       {conditions.map((condition, index) => (
         <Badge key={`${condition.propertyId}-${index}`} variant="secondary" className="gap-1">
           {propertyName(properties, condition.propertyId)} {FILTER_OPERATOR_LABELS[condition.operator]}
-          {condition.value !== undefined ? ` ${String(condition.value)}` : ''}
+          {condition.value !== undefined
+            ? ` ${filterValueLabel(
+                properties.find((property) => property.id === condition.propertyId),
+                condition.value,
+              )}`
+            : ''}
           {readOnly ? null : (
             <button type="button" aria-label="Filter entfernen" onClick={() => removeCondition(index)}>
               <XIcon className="size-3" />
@@ -113,6 +118,16 @@ export function FilterSortBar({ documentId, view, properties, readOnly }: Filter
   );
 }
 
+/**
+ * A closed value set is offered as a dropdown, so it must start on a real
+ * choice: an empty string would show an empty trigger and submit an id that
+ * matches nothing. Free-text properties keep starting empty.
+ */
+function defaultFilterValue(property: DatabaseProperty | undefined): string {
+  if (property === undefined) return '';
+  return filterValueChoices(property)[0]?.value ?? '';
+}
+
 function AddFilterPopover({
   properties,
   onAdd,
@@ -125,10 +140,11 @@ function AddFilterPopover({
   const property = properties.find((entry) => entry.id === propertyId) ?? properties[0];
   const operators = property === undefined ? [] : operatorsForType(property.type);
   const [operator, setOperator] = React.useState<DatabaseFilterOperator>(operators[0] ?? 'equals');
-  const [value, setValue] = React.useState('');
+  const [value, setValue] = React.useState(() => defaultFilterValue(properties[0]));
 
   if (property === undefined) return null;
   const needsValue = operator !== 'is_empty' && operator !== 'is_not_empty';
+  const choices = filterValueChoices(property);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -154,7 +170,7 @@ function AddFilterPopover({
                     : value;
             onAdd({ propertyId: property.id, operator, value: parsedValue });
             setOpen(false);
-            setValue('');
+            setValue(defaultFilterValue(property));
           }}
         >
           <Select
@@ -168,6 +184,7 @@ function AddFilterPopover({
               // the old operator may no longer be valid for it.
               const nextProperty = properties.find((entry) => entry.id === id);
               setOperator(operatorsForType(nextProperty?.type ?? 'TEXT')[0] ?? 'equals');
+              setValue(defaultFilterValue(nextProperty));
             }}
           >
             <SelectTrigger className="w-full" data-testid="filter-property">
@@ -193,15 +210,29 @@ function AddFilterPopover({
               ))}
             </SelectContent>
           </Select>
-          {needsValue ? (
+          {!needsValue ? null : choices.length > 0 ? (
+            <Select value={value} onValueChange={(next) => setValue(next ?? '')}>
+              <SelectTrigger className="w-full" data-testid="filter-value">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {choices.map((choice) => (
+                  <SelectItem key={choice.value} value={choice.value}>
+                    {choice.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
             <Input
               autoFocus
               type={property.type === 'NUMBER' ? 'number' : property.type === 'DATE' ? 'date' : 'text'}
               value={value}
               placeholder="Wert"
+              data-testid="filter-value"
               onChange={(event) => setValue(event.target.value)}
             />
-          ) : null}
+          )}
           <Button type="submit" size="sm">
             Filter hinzufügen
           </Button>

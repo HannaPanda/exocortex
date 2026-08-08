@@ -52,6 +52,20 @@ test.describe('databases', () => {
 
     // Only the row with priority 5 matches "greater than 1".
     await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, { timeout: 15_000 });
+
+    await page.getByLabel('Filter entfernen').click();
+
+    // A select filter is picked by label and stored by option id; the chip has
+    // to read back the label, never the id.
+    await page.getByTestId('add-filter').click();
+    await page.getByTestId('filter-property').click();
+    await page.getByRole('option', { name: 'Status' }).click();
+    await page.getByTestId('filter-value').click();
+    await page.getByRole('option', { name: 'Erledigt' }).click();
+    await page.getByRole('button', { name: 'Filter hinzufügen' }).click();
+
+    await expect(page.getByText('Status ist Erledigt')).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, { timeout: 15_000 });
   });
 
   test('switches between Table, Board, Gallery and Calendar on the same data', async ({ page }) => {

@@ -1,6 +1,7 @@
 import {
   type DatabaseFilterOperator,
   type DatabaseOptionColor,
+  type DatabaseProperty,
   type DatabasePropertyType,
   IMPLEMENTED_PROPERTY_TYPES,
 } from '@exocortex/contracts';
@@ -51,6 +52,36 @@ export const FILTER_OPERATOR_LABELS: Record<DatabaseFilterOperator, string> = {
   on_or_after: 'ab',
   on_or_before: 'bis',
 };
+
+/**
+ * The values a filter for this property can take, when they are a closed set.
+ * A select stores the option's *id*, never its label, so the picker offers the
+ * label and hands the id to the filter. An empty list means "free text".
+ */
+export function filterValueChoices(property: DatabaseProperty): { value: string; label: string }[] {
+  if (property.type === 'CHECKBOX') {
+    return [
+      { value: 'true', label: 'Angehakt' },
+      { value: 'false', label: 'Nicht angehakt' },
+    ];
+  }
+  if (property.type === 'SELECT' || property.type === 'MULTI_SELECT') {
+    return property.options.map((option) => ({ value: option.id, label: option.label }));
+  }
+  return [];
+}
+
+/** The chip's reading of a stored filter value: an option id becomes its label. */
+export function filterValueLabel(property: DatabaseProperty | undefined, value: unknown): string {
+  if (property !== undefined) {
+    if (property.type === 'CHECKBOX') return value === true || value === 'true' ? 'angehakt' : 'nicht angehakt';
+    if (property.type === 'SELECT' || property.type === 'MULTI_SELECT') {
+      const option = property.options.find((entry) => entry.id === value);
+      if (option !== undefined) return option.label;
+    }
+  }
+  return String(value);
+}
 
 /** Which filter operators make sense for a given property type, in menu order. */
 export function operatorsForType(type: DatabasePropertyType): DatabaseFilterOperator[] {
