@@ -13,10 +13,25 @@ Internet ──► nginx :443 (TLS + HTTP basic auth)
                ├─ /collab    (ws)  → 127.0.0.1:3212   exocortex-collaboration
                └─ /health/         → 127.0.0.1:3211   (no basic auth)
 
+Docker bridge ──► nginx 172.17.0.1:3213 (no TLS, no basic auth)
+               └─ /api/, /health/  → 127.0.0.1:3211   exocortex-api
+
 Docker (127.0.0.1 only): PostgreSQL 5433 · Redis 6380 · MinIO 9110/9111 · Mailpit 1026/8026
 ```
 
 Nothing except nginx listens on a public interface.
+
+The second listener exists for automations that run in containers on this host
+(the Windmill morning briefing). They authenticate with an API token, and basic
+auth and a bearer token cannot share the `Authorization` header, so they need a
+door that does not ask for basic auth. It is bound to the Docker bridge address,
+so the internet never reaches it, and the API token stays the real
+authentication. ufw has to let the container subnet in:
+
+```bash
+sudo ufw allow from 172.18.0.0/16 to 172.17.0.1 port 3213 proto tcp \
+  comment "Windmill -> Exocortex API (intern)"
+```
 
 ## Files
 
