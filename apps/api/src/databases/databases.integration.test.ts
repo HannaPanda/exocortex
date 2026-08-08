@@ -605,3 +605,206 @@ describe('database rows', () => {
     );
   });
 });
+
+describe('date spans', () => {
+  /** A calendar-shaped database: one DATE property configured as a span with times. */
+  async function setupCalendar() {
+    const collectionId = await createCollection('Termine');
+    const when = await properties.create({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { type: 'DATE', name: 'Zeitraum' },
+      correlationId,
+    });
+    await properties.update({
+      propertyId: when.id,
+      userId: ownerId,
+      request: { config: { includeTime: true, isRange: true, timeZone: 'Europe/Berlin' } },
+      correlationId,
+    });
+    return { collectionId, whenId: when.id };
+  }
+
+  async function addEvent(collectionId: string, whenId: string, title: string, start: string, end: string | null) {
+    return rows.create({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { title, values: [{ propertyId: whenId, value: { start, end, allDay: false } }] },
+      correlationId,
+    });
+  }
+
+  it('round-trips a span and keeps the response in span shape', async () => {
+    const { collectionId, whenId } = await setupCalendar();
+    const row = await addEvent(
+      collectionId,
+      whenId,
+      'Zahnarzt',
+      '2026-08-20T08:00:00.000Z',
+      '2026-08-20T09:00:00.000Z',
+    );
+
+    expect(row.values.find((value) => value.propertyId === whenId)?.value).toEqual({
+      start: '2026-08-20T08:00:00.000Z',
+      end: '2026-08-20T09:00:00.000Z',
+      allDay: false,
+    });
+  });
+
+  it('keeps a plain DATE property answering as an ISO string', async () => {
+    const collectionId = await createCollection('Fristen');
+    const due = await properties.create({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { type: 'DATE', name: 'Fällig am' },
+      correlationId,
+    });
+    const row = await rows.create({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { title: 'Steuer', values: [{ propertyId: due.id, value: '2026-08-31T00:00:00.000Z' }] },
+      correlationId,
+    });
+
+    // The shape every existing reader (Hermes, the morning briefing) relies on.
+    expect(row.values.find((value) => value.propertyId === due.id)?.value).toBe('2026-08-31T00:00:00.000Z');
+  });
+
+  it('accepts a bare ISO string on a span property as a start without an end', async () => {
+    const { collectionId, whenId } = await setupCalendar();
+    const row = await rows.create({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { title: 'Offen', values: [{ propertyId: whenId, value: '2026-08-21T10:00:00.000Z' }] },
+      correlationId,
+    });
+
+    expect(row.values.find((value) => value.propertyId === whenId)?.value).toEqual({
+      start: '2026-08-21T10:00:00.000Z',
+      end: null,
+      allDay: false,
+    });
+  });
+
+  it('rejects a span on a property that is not one', async () => {
+    const collectionId = await createCollection('Fristen ohne Zeitraum');
+    const due = await properties.create({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { type: 'DATE', name: 'Fällig am' },
+      correlationId,
+    });
+
+    await expect(
+      rows.create({
+        collectionDocumentId: collectionId,
+        userId: ownerId,
+        request: {
+          title: 'Falsch',
+          values: [{ propertyId: due.id, value: { start: '2026-08-01T00:00:00.000Z', end: null, allDay: false } }],
+        },
+        correlationId,
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+  });
+
+  it('rejects a span that ends before it starts', async () => {
+    const { collectionId, whenId } = await setupCalendar();
+    await expect(
+      addEvent(collectionId, whenId, 'Rückwärts', '2026-08-20T10:00:00.000Z', '2026-08-20T09:00:00.000Z'),
+    ).rejects.toBeInstanceOf(AppError);
+  });
+
+  it('refuses to turn the span off while rows still carry an end', async () => {
+    const { collectionId, whenId } = await setupCalendar();
+    await addEvent(collectionId, whenId, 'Meeting', '2026-08-20T08:00:00.000Z', '2026-08-20T09:00:00.000Z');
+
+    await expect(
+      properties.update({
+        propertyId: whenId,
+        userId: ownerId,
+        request: { config: { includeTime: true, isRange: false, timeZone: null } },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'database_property_date_range_in_use' });
+  });
+
+  describe('the overlaps operator', () => {
+    /**
+     * Three events around one window, so the half-open boundaries are actually
+     * exercised rather than assumed: the window is 20.08. 09:00 to 10:00.
+     */
+    async function setupWindow() {
+      const { collectionId, whenId } = await setupCalendar();
+      const before = await addEvent(collectionId, whenId, 'Endet genau am Fensteranfang', '2026-08-20T08:00:00.000Z', '2026-08-20T09:00:00.000Z');
+      const inside = await addEvent(collectionId, whenId, 'Mitten im Fenster', '2026-08-20T09:15:00.000Z', '2026-08-20T09:45:00.000Z');
+      const after = await addEvent(collectionId, whenId, 'Beginnt genau am Fensterende', '2026-08-20T10:00:00.000Z', '2026-08-20T11:00:00.000Z');
+      const across = await addEvent(collectionId, whenId, 'Mehrtägig', '2026-08-19T00:00:00.000Z', '2026-08-22T00:00:00.000Z');
+      return { collectionId, whenId, before, inside, after, across };
+    }
+
+    async function titlesInWindow(collectionId: string, whenId: string, from: string, to: string) {
+      const result = await rows.query({
+        collectionDocumentId: collectionId,
+        userId: ownerId,
+        request: {
+          limit: 50,
+          filters: { combinator: 'and', conditions: [{ propertyId: whenId, operator: 'overlaps', value: [from, to] }] },
+        },
+      });
+      return result.rows.map((row) => row.document.title).sort();
+    }
+
+    it('excludes a span that only touches the window boundary', async () => {
+      const { collectionId, whenId } = await setupWindow();
+      const titles = await titlesInWindow(collectionId, whenId, '2026-08-20T09:00:00.000Z', '2026-08-20T10:00:00.000Z');
+
+      // The span ending at 09:00 and the one starting at 10:00 are outside a
+      // half-open window; the multi-day span covers it.
+      expect(titles).toEqual(['Mehrtägig', 'Mitten im Fenster']);
+    });
+
+    it('matches a point in time inside the window and not one outside it', async () => {
+      const { collectionId, whenId } = await setupCalendar();
+      await rows.create({
+        collectionDocumentId: collectionId,
+        userId: ownerId,
+        request: { title: 'Punkt drin', values: [{ propertyId: whenId, value: '2026-09-01T12:00:00.000Z' }] },
+        correlationId,
+      });
+      await rows.create({
+        collectionDocumentId: collectionId,
+        userId: ownerId,
+        request: { title: 'Punkt draußen', values: [{ propertyId: whenId, value: '2026-09-02T12:00:00.000Z' }] },
+        correlationId,
+      });
+
+      const titles = await titlesInWindow(collectionId, whenId, '2026-09-01T00:00:00.000Z', '2026-09-02T00:00:00.000Z');
+      expect(titles).toEqual(['Punkt drin']);
+    });
+
+    it('rejects the operator on a property type that has no span', async () => {
+      const { collectionId } = await setupCalendar();
+      const note = await properties.create({
+        collectionDocumentId: collectionId,
+        userId: ownerId,
+        request: { type: 'TEXT', name: 'Notiz' },
+        correlationId,
+      });
+
+      await expect(
+        rows.query({
+          collectionDocumentId: collectionId,
+          userId: ownerId,
+          request: {
+            limit: 20,
+            filters: {
+              combinator: 'and',
+              conditions: [{ propertyId: note.id, operator: 'overlaps', value: ['2026-08-01', '2026-08-02'] }],
+            },
+          },
+        }),
+      ).rejects.toBeInstanceOf(AppError);
+    });
+  });
+});

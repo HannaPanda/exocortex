@@ -6,6 +6,7 @@ import {
   buildPropertyMap,
   compileFilterGroup,
   compileSorts,
+  InvalidDatabaseFilterError,
   UnknownDatabasePropertyError,
 } from './database-query';
 
@@ -121,6 +122,49 @@ describe('compileFilterGroup', () => {
     const sql = compileFilterGroup(group, properties);
     expect(sql.sql).toMatch(/\([\s\S]*AND[\s\S]*\)/);
     expect(sql.sql).toContain(' OR ');
+  });
+});
+
+describe('compileFilterGroup with the overlaps operator', () => {
+  const overlaps = (propertyId: string, value: unknown): DatabaseFilterGroup => ({
+    combinator: 'and',
+    // The operand is deliberately typed loosely here: the point of these cases
+    // is what the compiler does with an operand the type system did not vet.
+    conditions: [{ propertyId, operator: 'overlaps', value: value as string[] }],
+  });
+
+  it('compares both ends of the span and binds the window as parameters', () => {
+    const sql = compileFilterGroup(overlaps(DATE.id, ['2026-08-01T00:00:00.000Z', '2026-09-01T00:00:00.000Z']), properties);
+    expect(sql.sql).toContain('EXISTS');
+    expect(sql.sql).toContain('"dateEndValue"');
+    // The propertyId, plus both window bounds once per CASE branch: the window
+    // never reaches the SQL as literal text.
+    expect(sql.values).toHaveLength(5);
+    expect(sql.values[0]).toBe(DATE.id);
+  });
+
+  it('treats a value without an end as a point in time, not as an open span', () => {
+    const sql = compileFilterGroup(overlaps(DATE.id, ['2026-08-01T00:00:00.000Z', '2026-09-01T00:00:00.000Z']), properties);
+    // The NULL branch is bounded on both sides; the span branch is not.
+    expect(sql.sql).toContain('WHEN dpv."dateEndValue" IS NULL');
+    expect(sql.sql).toContain('THEN dpv."dateValue" >= ? AND dpv."dateValue" < ?');
+    expect(sql.sql).toContain('ELSE dpv."dateValue" < ? AND dpv."dateEndValue" > ?');
+  });
+
+  it('rejects the operator on a property type that has no span', () => {
+    expect(() => compileFilterGroup(overlaps(TEXT.id, ['2026-08-01', '2026-09-01']), properties)).toThrow(
+      InvalidDatabaseFilterError,
+    );
+  });
+
+  it.each([
+    ['a single bound', ['2026-08-01']],
+    ['three bounds', ['2026-08-01', '2026-09-01', '2026-10-01']],
+    ['a non-string bound', [1, 2]],
+    ['an unparsable date', ['not-a-date', '2026-09-01']],
+    ['a reversed window', ['2026-09-01', '2026-08-01']],
+  ])('rejects %s', (_label, value) => {
+    expect(() => compileFilterGroup(overlaps(DATE.id, value), properties)).toThrow(InvalidDatabaseFilterError);
   });
 });
 

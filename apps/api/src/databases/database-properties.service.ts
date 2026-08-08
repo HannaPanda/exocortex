@@ -4,10 +4,13 @@ import { assertPolicy, canManageDatabaseSchema, canReadDocument, WorkspaceAccess
 import {
   type CreateDatabasePropertyOptionRequest,
   type CreateDatabasePropertyRequest,
+  databaseDatePropertyConfigSchema,
   type DatabaseOptionColor,
   type DatabaseProperty,
   type DatabasePropertyOption,
+  type DatabasePropertyType,
   IMPLEMENTED_PROPERTY_TYPES,
+  parseDatePropertyConfig,
   type ReorderDatabasePropertyRequest,
   type UpdateDatabasePropertyOptionRequest,
   type UpdateDatabasePropertyRequest,
@@ -137,6 +140,10 @@ export class DatabasePropertiesService {
     const context = await this.requireCollection(property.documentId, input.userId);
     assertPolicy(canManageDatabaseSchema(context.role, context.document));
 
+    if (property.type === 'DATE' && input.request.config !== undefined) {
+      await this.assertDateConfigChangeIsSafe(input.propertyId, property.config, input.request.config);
+    }
+
     const updated = await this.prisma.databaseProperty.update({
       where: { id: input.propertyId },
       data: {
@@ -152,6 +159,42 @@ export class DatabasePropertiesService {
       documentId: property.documentId,
     });
     return toResponse(updated);
+  }
+
+  /**
+   * A DATE property's config decides the response shape of every one of its
+   * values, so the two ways of getting it wrong are checked before the write:
+   *
+   * 1. A malformed bag would leave the property answering in whatever shape
+   *    `parseDatePropertyConfig`'s fallback happens to produce.
+   * 2. Turning `isRange` off while rows still carry an end would make those
+   *    ends unreachable through the API, which reads as data loss even though
+   *    the column keeps them. Refused with a count rather than done silently;
+   *    clearing the ends first is the caller's decision, not ours.
+   */
+  private async assertDateConfigChangeIsSafe(
+    propertyId: string,
+    currentConfig: Prisma.JsonValue,
+    nextConfig: Record<string, unknown> | null,
+  ): Promise<void> {
+    const parsed = databaseDatePropertyConfigSchema.safeParse(nextConfig ?? {});
+    if (!parsed.success) {
+      throw AppError.validation(
+        'A DATE property config accepts only { includeTime, isRange, timeZone }',
+      );
+    }
+    const wasRange = parseDatePropertyConfig(currentConfig as Record<string, unknown> | null).isRange;
+    if (!wasRange || parsed.data.isRange) return;
+
+    const withEnd = await this.prisma.documentPropertyValue.count({
+      where: { propertyId, dateEndValue: { not: null } },
+    });
+    if (withEnd > 0) {
+      throw new AppError(
+        'database_property_date_range_in_use',
+        `${withEnd} value(s) of this property have an end date; clear them before turning the span off`,
+      );
+    }
   }
 
   async reorder(input: {
@@ -293,10 +336,16 @@ export class DatabasePropertiesService {
     return { deleted: true };
   }
 
-  private async loadPropertyOrThrow(propertyId: string): Promise<{ id: string; documentId: string; name: string }> {
+  private async loadPropertyOrThrow(propertyId: string): Promise<{
+    id: string;
+    documentId: string;
+    name: string;
+    type: DatabasePropertyType;
+    config: Prisma.JsonValue;
+  }> {
     const property = await this.prisma.databaseProperty.findUnique({
       where: { id: propertyId },
-      select: { id: true, documentId: true, name: true },
+      select: { id: true, documentId: true, name: true, type: true, config: true },
     });
     if (property === null) throw AppError.notFound('Database property');
     return property;

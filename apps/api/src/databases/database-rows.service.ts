@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { assertPolicy, canCreateDocument, canEditDocument, canReadDocument, WorkspaceAccessService } from '@exocortex/auth';
 import {
   type CreateDatabaseRowRequest,
+  databaseDateRangeValueSchema,
   type DatabaseFilterGroup,
   databaseFilterGroupSchema,
   type DatabasePropertyType,
@@ -12,6 +13,7 @@ import {
   type DatabaseSort,
   databaseSortSchema,
   EMPTY_DATABASE_FILTER_GROUP,
+  parseDatePropertyConfig,
   type QueryDatabaseRowsRequest,
   type QueryDatabaseRowsResponse,
   type UpdateDatabaseRowValuesRequest,
@@ -20,6 +22,7 @@ import {
   buildPropertyMap,
   type DatabasePropertyRef,
   type DatabaseQueryRowRecord,
+  InvalidDatabaseFilterError,
   Prisma,
   type PrismaClient,
   queryDatabaseRows,
@@ -50,20 +53,55 @@ function computedValue(type: DatabasePropertyType, row: DatabaseQueryRowRecord):
   }
 }
 
+/**
+ * Prisma types a `Json?` column as the whole `JsonValue` union, which is wider
+ * than the config bag every reader here expects. Narrowed in one place so the
+ * cast is not repeated at each call site.
+ */
+function toPropertyRef(row: {
+  id: string;
+  type: DatabasePropertyType;
+  config: Prisma.JsonValue;
+}): DatabasePropertyRef {
+  return { id: row.id, type: row.type, config: (row.config ?? null) as Record<string, unknown> | null };
+}
+
 interface StoredValueRow {
   propertyId: string;
   textValue: string | null;
   numberValue: unknown;
   boolValue: boolean | null;
   dateValue: Date | null;
+  dateEndValue: Date | null;
+  dateAllDay: boolean | null;
   jsonValue: unknown;
+}
+
+/**
+ * Response shape of a DATE value is decided by the property, not by what
+ * happens to be stored: `isRange: false` returns the bare ISO string every
+ * client has always read, `isRange: true` returns the span object. Deriving it
+ * from "is `dateEndValue` set?" instead would make the same property answer in
+ * two different shapes depending on the row, which no client can type.
+ */
+function storedToDateResponseValue(
+  property: DatabasePropertyRef,
+  stored: StoredValueRow,
+): DatabaseRowPropertyValue['value'] {
+  if (stored.dateValue === null) return null;
+  if (!parseDatePropertyConfig(property.config).isRange) return stored.dateValue.toISOString();
+  return {
+    start: stored.dateValue.toISOString(),
+    end: stored.dateEndValue === null ? null : stored.dateEndValue.toISOString(),
+    allDay: stored.dateAllDay ?? false,
+  };
 }
 
 function storedToResponseValue(property: DatabasePropertyRef, stored: StoredValueRow | undefined): DatabaseRowPropertyValue['value'] {
   if (stored === undefined) return null;
   if (property.type === 'NUMBER') return stored.numberValue === null ? null : Number(stored.numberValue);
   if (property.type === 'CHECKBOX') return stored.boolValue;
-  if (property.type === 'DATE') return stored.dateValue === null ? null : stored.dateValue.toISOString();
+  if (property.type === 'DATE') return storedToDateResponseValue(property, stored);
   if (ARRAY_TYPES.has(property.type)) return (stored.jsonValue as string[] | null) ?? null;
   return stored.textValue;
 }
@@ -73,9 +111,52 @@ interface ColumnData {
   numberValue: number | null;
   boolValue: boolean | null;
   dateValue: Date | null;
+  dateEndValue: Date | null;
+  dateAllDay: boolean | null;
   // Prisma's Json column needs the `JsonNull` sentinel for an explicit null,
   // not the plain JS value: a bare `null` there means "leave column unset".
   jsonValue: Prisma.InputJsonValue | typeof Prisma.JsonNull;
+}
+
+function parseIsoOrThrow(propertyId: string, value: string): Date {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    throw AppError.validation(`Property ${propertyId} received an invalid date`);
+  }
+  return date;
+}
+
+/**
+ * A DATE write accepts the bare ISO string in both modes, so every existing
+ * writer (the MCP catalogue, Hermes, the morning briefing) keeps working; the
+ * span object is accepted only where the property actually is a span, because
+ * silently dropping an `end` on a non-range property would look like a
+ * successful write of data that is not there afterwards.
+ */
+function toDateColumnData(
+  property: DatabasePropertyRef,
+  value: DatabaseRowPropertyValue['value'],
+  empty: ColumnData,
+): ColumnData {
+  if (typeof value === 'string') {
+    return { ...empty, dateValue: parseIsoOrThrow(property.id, value) };
+  }
+  if (typeof value !== 'object' || Array.isArray(value)) {
+    throw AppError.validation(`Property ${property.id} expects an ISO date string or a date span`);
+  }
+  if (!parseDatePropertyConfig(property.config).isRange) {
+    throw AppError.validation(`Property ${property.id} is not a date span; pass an ISO date string`);
+  }
+  const span = databaseDateRangeValueSchema.safeParse(value);
+  if (!span.success) {
+    throw AppError.validation(`Property ${property.id} expects { start, end, allDay }`);
+  }
+  const start = parseIsoOrThrow(property.id, span.data.start);
+  const end = span.data.end === null ? null : parseIsoOrThrow(property.id, span.data.end);
+  if (end !== null && end < start) {
+    throw AppError.validation(`Property ${property.id} received a span that ends before it starts`);
+  }
+  return { ...empty, dateValue: start, dateEndValue: end, dateAllDay: span.data.allDay };
 }
 
 /** Converts one incoming `{propertyId, value}` write into the correct typed column. */
@@ -85,6 +166,8 @@ function toColumnData(property: DatabasePropertyRef, value: DatabaseRowPropertyV
     numberValue: null,
     boolValue: null,
     dateValue: null,
+    dateEndValue: null,
+    dateAllDay: null,
     jsonValue: Prisma.JsonNull,
   };
   if (value === null) return empty;
@@ -98,10 +181,7 @@ function toColumnData(property: DatabasePropertyRef, value: DatabaseRowPropertyV
     return { ...empty, boolValue: value };
   }
   if (property.type === 'DATE') {
-    if (typeof value !== 'string') throw AppError.validation(`Property ${property.id} expects an ISO date string`);
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) throw AppError.validation(`Property ${property.id} received an invalid date`);
-    return { ...empty, dateValue: date };
+    return toDateColumnData(property, value, empty);
   }
   if (ARRAY_TYPES.has(property.type)) {
     if (!Array.isArray(value)) throw AppError.validation(`Property ${property.id} expects an array of ids`);
@@ -146,9 +226,9 @@ export class DatabaseRowsService {
 
     const propertyRows = await this.prisma.databaseProperty.findMany({
       where: { documentId: input.collectionDocumentId },
-      select: { id: true, type: true },
+      select: { id: true, type: true, config: true },
     });
-    const properties = buildPropertyMap(propertyRows);
+    const properties = buildPropertyMap(propertyRows.map(toPropertyRef));
 
     const { filters, sorts } = await this.resolveFiltersAndSorts(input.collectionDocumentId, input.request);
     const offset = decodeCursor(input.request.cursor);
@@ -166,7 +246,7 @@ export class DatabaseRowsService {
         offset,
       });
     } catch (error) {
-      if (error instanceof UnknownDatabasePropertyError) {
+      if (error instanceof UnknownDatabasePropertyError || error instanceof InvalidDatabaseFilterError) {
         throw AppError.validation(error.message);
       }
       throw error;
@@ -249,9 +329,9 @@ export class DatabaseRowsService {
   ): Promise<void> {
     const propertyRows = await this.prisma.databaseProperty.findMany({
       where: { documentId: collectionDocumentId },
-      select: { id: true, type: true },
+      select: { id: true, type: true, config: true },
     });
-    const properties = buildPropertyMap(propertyRows);
+    const properties = buildPropertyMap(propertyRows.map(toPropertyRef));
 
     await this.prisma.$transaction(
       values.map((entry) => {
@@ -277,7 +357,7 @@ export class DatabaseRowsService {
       this.documents.loadDocumentOrThrow(rowId),
       this.prisma.databaseProperty.findMany({
         where: { documentId: collectionDocumentId },
-        select: { id: true, type: true },
+        select: { id: true, type: true, config: true },
       }),
       this.prisma.documentPropertyValue.findMany({ where: { documentId: rowId } }),
     ]);
@@ -289,7 +369,7 @@ export class DatabaseRowsService {
         value: COMPUTED_TYPES.has(property.type)
           ? computedValue(property.type, row as unknown as DatabaseQueryRowRecord)
           : storedToResponseValue(
-              property,
+              toPropertyRef(property),
               values.find((entry) => entry.propertyId === property.id),
             ),
       })),

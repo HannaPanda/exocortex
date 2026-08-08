@@ -47,6 +47,50 @@ All four view types share one query path (`POST /api/documents/:id/rows/query`
    (`apps/web/src/components/database/property-types.ts`) and, if it should
    be filterable, entries in `FILTER_OPERATOR_LABELS`/`operatorsForType`.
 
+## Dates: point in time or span
+
+A `DATE` property answers in one of two shapes, and which one is decided by the
+property's `config`, never by the individual row. `parseDatePropertyConfig`
+(contracts) reads the bag with defaults, so a property created before the field
+existed keeps behaving exactly as it did.
+
+| `config` field | Effect |
+| --- | --- |
+| `includeTime` | The value carries a time of day. Editors switch from `<input type="date">` to `<input type="datetime-local">`, and rendering shows the time. |
+| `isRange` | The value is a span. **This changes the response shape** of every value of that property: `false` returns the bare ISO string, `true` returns `{ start, end, allDay }` (`databaseDateRangeValueSchema`). |
+| `timeZone` | IANA zone the wall-clock parts were authored in. Stored instants are always UTC; this only records the authoring zone. |
+
+Storage is three columns on `DocumentPropertyValue`: `dateValue` (the instant,
+and the start of a span), `dateEndValue` (exclusive end, null = no stated end,
+which is *not* a zero-length span) and `dateAllDay` (per value, because one
+calendar holds birthdays and 14:00 meetings).
+
+Two rules that are easy to get wrong:
+
+* **Writes always accept the bare ISO string**, in both modes, so every existing
+  writer (MCP catalogue, Hermes, the morning briefing) keeps working. The span
+  object is accepted only where `isRange` is true; sending it to a non-range
+  property is rejected rather than silently truncated.
+* **Turning `isRange` off is refused** while rows still carry an end
+  (`database_property_date_range_in_use`, 409). Clearing those ends first is the
+  caller's decision.
+
+An all-day value is a *floating* calendar date stored as UTC midnight. Read it
+off the ISO string; converting it into the viewer's zone shifts every birthday a
+day for anyone west of Greenwich. A timed value is a real instant and belongs in
+the day the *viewer* sees it in. `dayKeyOf` in `calendar-view.tsx` is the one
+place that decision lives.
+
+### The `overlaps` filter operator
+
+`overlaps` takes `value: [fromIso, toIso]` and matches every row whose span
+intersects the half-open window `[from, to)`. It is the query behind a calendar
+view and the only condition that reads two columns of one property, so it
+compiles to an `EXISTS` subquery rather than the scalar `valueSubquery` the other
+operators use. A value with no end counts as a point in time, so the operator
+works on both kinds of DATE property. Served by the
+`(propertyId, dateValue, dateEndValue)` index.
+
 ## Adding a new view type
 
 1. Add it to `DatabaseViewType` in `schema.prisma` (migration) and

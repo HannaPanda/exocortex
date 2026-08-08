@@ -575,7 +575,16 @@ model DocumentPropertyValue {
   textValue   String?
   numberValue Decimal?  @db.Decimal(20, 6)
   boolValue   Boolean?
+  /// DATE: the instant, and the *start* of the span when the property has
+  /// `isRange: true`. Always UTC; the authoring zone is on the property config.
   dateValue   DateTime?
+  /// DATE with `isRange: true` only: exclusive end of the span. Null means the
+  /// span has no stated end, which is not the same as a zero-length one.
+  dateEndValue DateTime?
+  /// DATE only: whether the span covers whole days rather than a time of day.
+  /// Per value, not per property -- one calendar holds birthdays and 14:00
+  /// meetings. Null for a property that has never been written as all-day.
+  dateAllDay  Boolean?
   /// Arrays only: MULTI_SELECT (option ids), PERSON (user ids), FILES
   /// (attachment ids). Never used for the scalar types above.
   jsonValue   Json?
@@ -588,6 +597,8 @@ model DocumentPropertyValue {
   @@index([propertyId, numberValue])
   @@index([propertyId, dateValue])
   @@index([propertyId, boolValue])
+  /// Serves the `overlaps` filter, which reads both ends of a span.
+  @@index([propertyId, dateValue, dateEndValue])
   @@map("document_property_value")
 }
 

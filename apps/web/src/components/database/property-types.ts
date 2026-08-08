@@ -51,6 +51,7 @@ export const FILTER_OPERATOR_LABELS: Record<DatabaseFilterOperator, string> = {
   less_than: 'kleiner als',
   on_or_after: 'ab',
   on_or_before: 'bis',
+  overlaps: 'liegt im Zeitraum',
 };
 
 /**

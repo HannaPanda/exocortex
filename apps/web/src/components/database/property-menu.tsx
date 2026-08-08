@@ -3,7 +3,11 @@
 import { MoreVerticalIcon, PlusIcon, SettingsIcon, TrashIcon, XIcon } from 'lucide-react';
 import * as React from 'react';
 
-import { type DatabaseProperty } from '@exocortex/contracts';
+import {
+  type DatabaseDatePropertyConfig,
+  type DatabaseProperty,
+  parseDatePropertyConfig,
+} from '@exocortex/contracts';
 import {
   Badge,
   Button,
@@ -20,9 +24,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   Input,
+  Label,
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Switch,
 } from '@exocortex/ui';
 
 import {
@@ -52,6 +58,7 @@ interface PropertyMenuProps {
 export function PropertyMenu({ documentId, property, readOnly }: PropertyMenuProps) {
   const [renaming, setRenaming] = React.useState(false);
   const [managingOptions, setManagingOptions] = React.useState(false);
+  const [editingDateFormat, setEditingDateFormat] = React.useState(false);
   const [confirmingDelete, setConfirmingDelete] = React.useState(false);
   const [name, setName] = React.useState(property.name);
 
@@ -88,6 +95,11 @@ export function PropertyMenu({ documentId, property, readOnly }: PropertyMenuPro
           {hasOptions ? (
             <DropdownMenuItem onClick={() => setManagingOptions(true)}>
               <SettingsIcon /> Optionen verwalten
+            </DropdownMenuItem>
+          ) : null}
+          {property.type === 'DATE' ? (
+            <DropdownMenuItem onClick={() => setEditingDateFormat(true)}>
+              <SettingsIcon /> Datumsformat
             </DropdownMenuItem>
           ) : null}
           <DropdownMenuSeparator />
@@ -132,6 +144,14 @@ export function PropertyMenu({ documentId, property, readOnly }: PropertyMenuPro
         </PopoverContent>
       </Popover>
 
+      <Popover open={editingDateFormat} onOpenChange={setEditingDateFormat}>
+        {/* Same programmatic-anchor pattern as the two popovers above. */}
+        <PopoverTrigger render={<span />} nativeButton={false} />
+        <PopoverContent align="start" className="w-72">
+          <DateFormatEditor documentId={documentId} property={property} />
+        </PopoverContent>
+      </Popover>
+
       <Dialog open={confirmingDelete} onOpenChange={setConfirmingDelete}>
         <DialogContent>
           <DialogHeader>
@@ -157,6 +177,61 @@ export function PropertyMenu({ documentId, property, readOnly }: PropertyMenuPro
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+/**
+ * The two switches that turn a plain date into a calendar event: a time of day,
+ * and an end. Both live on the property because they decide the shape of every
+ * value it holds, so the whole column changes together or not at all.
+ *
+ * Turning the span off again is refused by the API while rows still carry an
+ * end (`database_property_date_range_in_use`), which surfaces here as the
+ * mutation's error message rather than as silent data loss.
+ */
+function DateFormatEditor({ documentId, property }: { documentId: string; property: DatabaseProperty }) {
+  const updateProperty = useUpdateDatabaseProperty(documentId);
+  const config = parseDatePropertyConfig(property.config);
+
+  const submit = (next: Partial<DatabaseDatePropertyConfig>) => {
+    updateProperty.mutate({
+      propertyId: property.id,
+      // The API replaces the whole config bag, so every field is sent, not only
+      // the one that changed.
+      request: { config: { ...config, ...next } },
+    });
+  };
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center justify-between gap-3">
+        <Label htmlFor={`date-time-${property.id}`} className="text-sm font-normal">
+          Uhrzeit
+        </Label>
+        <Switch
+          id={`date-time-${property.id}`}
+          checked={config.includeTime}
+          onCheckedChange={(checked) => submit({ includeTime: checked })}
+        />
+      </div>
+      <div className="flex items-center justify-between gap-3">
+        <Label htmlFor={`date-range-${property.id}`} className="text-sm font-normal">
+          Enddatum
+        </Label>
+        <Switch
+          id={`date-range-${property.id}`}
+          checked={config.isRange}
+          onCheckedChange={(checked) => submit({ isRange: checked })}
+        />
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Mit Enddatum wird aus der Eigenschaft ein Zeitraum. Erst dann kann eine Kalenderansicht Termine über
+        mehrere Tage zeigen.
+      </p>
+      {updateProperty.isError ? (
+        <p className="text-xs text-destructive-text">{updateProperty.error.message}</p>
+      ) : null}
+    </div>
   );
 }
 

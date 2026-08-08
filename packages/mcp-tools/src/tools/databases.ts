@@ -10,6 +10,7 @@ import {
   databasePropertySchema,
   type DatabasePropertyType,
   type DatabaseRow,
+  type DatabaseRowPropertyValue,
   databaseRowSchema,
   databaseViewSchema,
   documentSummarySchema,
@@ -287,8 +288,20 @@ export const databaseViewDeleteTool: AnyToolDefinition = defineTool({
 
 const MAX_QUERY_ROWS = 50;
 
+/**
+ * One cell as table text. A date span is an object, so `String()` alone would
+ * put "[object Object]" in front of the model where an appointment belongs.
+ */
+function formatCell(value: DatabaseRowPropertyValue['value']): string {
+  if (value === null) return '';
+  if (typeof value === 'object' && !Array.isArray(value) && 'start' in value) {
+    return value.end === null ? value.start : `${value.start} bis ${value.end}`;
+  }
+  return String(value);
+}
+
 function formatRow(row: DatabaseRow): string[] {
-  return [row.document.title, ...row.values.map((v) => (v.value === null ? '' : String(v.value)))];
+  return [row.document.title, ...row.values.map((v) => formatCell(v.value))];
 }
 
 function propertyLabelsFor(rows: readonly DatabaseRow[]): string[] {
@@ -332,7 +345,8 @@ const databaseRowCreateInputSchema = z
 
 export const databaseRowCreateTool: AnyToolDefinition = defineTool({
   name: 'exo_database_row_create',
-  description: 'Legt eine neue Zeile in einer Datenbank an.',
+  description:
+    'Legt eine neue Zeile in einer Datenbank an. Ein Datumswert ist normalerweise ein ISO-String; ist die Eigenschaft ein Zeitraum (isRange), dann { start, end, allDay }.',
   inputSchema: databaseRowCreateInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,
@@ -355,7 +369,8 @@ const databaseRowUpdateInputSchema = z
 
 export const databaseRowUpdateTool: AnyToolDefinition = defineTool({
   name: 'exo_database_row_update',
-  description: 'Aktualisiert einzelne Spaltenwerte einer Zeile.',
+  description:
+    'Aktualisiert einzelne Spaltenwerte einer Zeile. Ein Datumswert ist normalerweise ein ISO-String; ist die Eigenschaft ein Zeitraum (isRange), dann { start, end, allDay }.',
   inputSchema: databaseRowUpdateInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,

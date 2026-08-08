@@ -5,6 +5,7 @@ import {
   type DatabaseSort,
   databaseSortSchema,
   databaseViewConfigSchema,
+  parseDatePropertyConfig,
 } from '@exocortex/contracts';
 import {
   buildPropertyMap,
@@ -69,6 +70,7 @@ const OPERATOR_LABEL: Record<DatabaseFilterCondition['operator'], string> = {
   less_than: 'kleiner als',
   on_or_after: 'am oder nach',
   on_or_before: 'am oder vor',
+  overlaps: 'liegt im Zeitraum',
 };
 
 const COMPUTED_TYPES = new Set<DatabasePropertyType>([
@@ -83,6 +85,8 @@ interface PropertyRow {
   id: string;
   name: string;
   type: DatabasePropertyType;
+  /** Read for DATE: decides whether the cell carries a time and an end. */
+  config: Record<string, unknown> | null;
   options: { id: string; label: string }[];
 }
 
@@ -173,6 +177,7 @@ export async function describeCollection(input: {
         id: true,
         name: true,
         type: true,
+        config: true,
         options: { orderBy: { orderKey: 'asc' }, select: { id: true, label: true } },
       },
     }),
@@ -197,6 +202,7 @@ export async function describeCollection(input: {
     id: row.id,
     name: row.name,
     type: row.type,
+    config: (row.config ?? null) as Record<string, unknown> | null,
     options: row.options,
   }));
   const propertiesById = new Map(properties.map((property) => [property.id, property]));
@@ -326,6 +332,8 @@ async function describeRows(input: {
       numberValue: true,
       boolValue: true,
       dateValue: true,
+      dateEndValue: true,
+      dateAllDay: true,
       jsonValue: true,
     },
   });
@@ -377,7 +385,29 @@ interface StoredValue {
   numberValue: unknown;
   boolValue: boolean | null;
   dateValue: Date | null;
+  dateEndValue: Date | null;
+  dateAllDay: boolean | null;
   jsonValue: unknown;
+}
+
+/**
+ * A DATE cell as text for the prompt. The time of day and the end are part of
+ * what a date *means* once the property is a calendar: an appointment rendered
+ * as a bare day would let the model answer "when?" with the wrong hour, and a
+ * multi-day span rendered as its start day would lose the duration entirely.
+ *
+ * ISO throughout rather than German formatting: this is model input, and an
+ * unambiguous instant travels better than a locale.
+ */
+function renderDateValue(property: PropertyRow, stored: StoredValue): string {
+  if (stored.dateValue === null) return '';
+  const config = parseDatePropertyConfig(property.config);
+  const withTime = config.includeTime && stored.dateAllDay !== true;
+  const format = (date: Date) => (withTime ? date.toISOString() : date.toISOString().slice(0, 10));
+
+  const start = format(stored.dateValue);
+  if (!config.isRange || stored.dateEndValue === null) return start;
+  return `${start} bis ${format(stored.dateEndValue)}`;
 }
 
 /** One cell as text. Option ids become their labels; everything else stays literal. */
@@ -410,7 +440,7 @@ function renderValue(
     return stored.boolValue === null ? '' : stored.boolValue ? 'ja' : 'nein';
   }
   if (property.type === 'DATE') {
-    return stored.dateValue === null ? '' : stored.dateValue.toISOString().slice(0, 10);
+    return renderDateValue(property, stored);
   }
   if (ARRAY_TYPES.has(property.type)) {
     const ids = Array.isArray(stored.jsonValue) ? (stored.jsonValue as unknown[]) : [];

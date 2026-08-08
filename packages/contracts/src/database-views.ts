@@ -107,6 +107,47 @@ export type UpdateDatabasePropertyOptionRequest = z.infer<
   typeof updateDatabasePropertyOptionRequestSchema
 >;
 
+// ---------------------------------------------------------------------------
+// DATE property configuration
+// ---------------------------------------------------------------------------
+
+/**
+ * Typed shape of a DATE property's `config` bag.
+ *
+ * `isRange` is what separates a due date from a calendar event, and it decides
+ * the *response* shape of every value of that property: `false` keeps the bare
+ * ISO string every existing client already reads, `true` returns
+ * `databaseDateRangeValueSchema`. Flipping it is therefore a contract change
+ * for that one property, never a global one -- which is why the flag lives on
+ * the property and not on the value.
+ */
+export const databaseDatePropertyConfigSchema = z.object({
+  /** Whether values carry a time-of-day. Parsing and display hint. */
+  includeTime: z.boolean().default(false),
+  /** Whether a value is a span with an end. A calendar event is, a due date is not. */
+  isRange: z.boolean().default(false),
+  /**
+   * IANA zone the wall-clock parts are meant in, e.g. `Europe/Berlin`. Null
+   * means "render in the viewer's zone". Stored values are always UTC instants;
+   * this only says which zone they were authored in, which a recurring event
+   * and an external calendar both need to round-trip correctly.
+   */
+  timeZone: z.string().trim().min(1).max(64).nullable().default(null),
+});
+export type DatabaseDatePropertyConfig = z.infer<typeof databaseDatePropertyConfigSchema>;
+
+/**
+ * Reads a DATE property's config, filling in defaults for a property created
+ * before the field existed. Never throws: an unparsable bag falls back to the
+ * defaults, because a hand-edited row must not be able to break a query.
+ */
+export function parseDatePropertyConfig(
+  config: Record<string, unknown> | null | undefined,
+): DatabaseDatePropertyConfig {
+  const parsed = databaseDatePropertyConfigSchema.safeParse(config ?? {});
+  return parsed.success ? parsed.data : databaseDatePropertyConfigSchema.parse({});
+}
+
 export const databasePropertySchema = z.object({
   id: idSchema,
   documentId: idSchema,
@@ -159,6 +200,17 @@ export const databaseFilterOperatorSchema = z.enum([
   'less_than',
   'on_or_after',
   'on_or_before',
+  /**
+   * DATE only, and the reason the calendar can be a saved view at all: matches
+   * every row whose span intersects the half-open window `[from, to)` passed as
+   * `value: [fromIso, toIso]`. A point-in-time date (`isRange: false`) counts as
+   * a zero-length span, so the operator works on both kinds of DATE property.
+   *
+   * Not expressible as two conditions in the tree: an overlap compares the
+   * property's *start* against `to` and its *end* against `from`, so it reads
+   * two columns of one property, which a single-column condition cannot do.
+   */
+  'overlaps',
 ]);
 export type DatabaseFilterOperator = z.infer<typeof databaseFilterOperatorSchema>;
 
@@ -332,9 +384,37 @@ export type ReorderDatabaseViewRequest = z.infer<typeof reorderDatabaseViewReque
 // Rows
 // ---------------------------------------------------------------------------
 
+/**
+ * Value of a DATE property with `isRange: true`.
+ *
+ * `end` is nullable because an appointment without a stated end is a normal
+ * thing to write down; the calendar renders it with a default duration rather
+ * than inventing an end here. `allDay` is per value, not per property: the same
+ * calendar holds birthdays and 14:00 meetings.
+ */
+export const databaseDateRangeValueSchema = z.object({
+  start: isoDateTimeSchema,
+  end: isoDateTimeSchema.nullable().default(null),
+  allDay: z.boolean().default(false),
+});
+export type DatabaseDateRangeValue = z.infer<typeof databaseDateRangeValueSchema>;
+
 export const databaseRowPropertyValueSchema = z.object({
   propertyId: idSchema,
-  value: z.union([z.string(), z.number(), z.boolean(), z.array(z.string()), z.null()]),
+  /**
+   * A DATE property accepts a bare ISO string in both modes, so every existing
+   * writer keeps working; it accepts and returns `databaseDateRangeValueSchema`
+   * only when the property has `isRange: true` (see
+   * `databaseDatePropertyConfigSchema`).
+   */
+  value: z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.array(z.string()),
+    databaseDateRangeValueSchema,
+    z.null(),
+  ]),
 });
 export type DatabaseRowPropertyValue = z.infer<typeof databaseRowPropertyValueSchema>;
 

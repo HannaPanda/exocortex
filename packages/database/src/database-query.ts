@@ -38,9 +38,27 @@ export class UnknownDatabasePropertyError extends Error {
   }
 }
 
+/**
+ * An operator used on a property type it does not apply to, or with a malformed
+ * operand. Distinct from `UnknownDatabasePropertyError` so the API can tell
+ * "no such property" from "that operator makes no sense here".
+ */
+export class InvalidDatabaseFilterError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'InvalidDatabaseFilterError';
+  }
+}
+
 export interface DatabasePropertyRef {
   id: string;
   type: DatabasePropertyType;
+  /**
+   * Type-specific configuration bag. Optional because the filter and sort
+   * compiler never needs it; the row serializer does, to know whether a DATE
+   * property is a span. Absent and null both mean "defaults".
+   */
+  config?: Record<string, unknown> | null;
 }
 
 export type DatabasePropertyMap = ReadonlyMap<string, DatabasePropertyRef>;
@@ -119,6 +137,60 @@ function computedValueRef(type: DatabasePropertyType): Prisma.Sql {
 
 const ARRAY_VALUED_TYPES = new Set<DatabasePropertyType>(['MULTI_SELECT', 'PERSON', 'FILES']);
 
+/**
+ * `overlaps`: does the property's span intersect the half-open window
+ * `[from, to)`? This is the query behind a calendar view.
+ *
+ * Two cases, kept apart on purpose:
+ *
+ * - `dateEndValue IS NULL` is a point in time, not a zero-length span, so it
+ *   matches when it falls *inside* the window (`>= from AND < to`).
+ * - otherwise the span itself is half-open, so `[10:00, 11:00)` must *not*
+ *   match the window `[11:00, 12:00)`. Hence `dateEndValue > from`, not `>=`.
+ *
+ * `EXISTS` rather than the scalar `valueSubquery` because this is the one
+ * condition that reads two columns of the same value row; the
+ * `(propertyId, dateValue, dateEndValue)` index serves exactly this shape.
+ */
+function compileOverlapsCondition(property: DatabasePropertyRef, value: unknown): Prisma.Sql {
+  if (property.type !== 'DATE') {
+    throw new InvalidDatabaseFilterError(
+      `Operator "overlaps" applies to DATE properties only, got ${property.type}`,
+    );
+  }
+  if (!Array.isArray(value) || value.length !== 2) {
+    throw new InvalidDatabaseFilterError('Operator "overlaps" expects [fromIso, toIso]');
+  }
+  const parseBound = (entry: unknown): Date => {
+    if (typeof entry !== 'string') {
+      throw new InvalidDatabaseFilterError('Operator "overlaps" expects ISO date strings');
+    }
+    const parsed = new Date(entry);
+    if (Number.isNaN(parsed.getTime())) {
+      throw new InvalidDatabaseFilterError(`Operator "overlaps" received an invalid date: ${entry}`);
+    }
+    return parsed;
+  };
+  const from = parseBound(value[0]);
+  const to = parseBound(value[1]);
+  if (from > to) {
+    throw new InvalidDatabaseFilterError('Operator "overlaps" expects from <= to');
+  }
+
+  return Prisma.sql`EXISTS (
+    SELECT 1
+    FROM "document_property_value" AS dpv
+    WHERE dpv."documentId" = document.id
+      AND dpv."propertyId" = ${property.id}
+      AND dpv."dateValue" IS NOT NULL
+      AND CASE
+        WHEN dpv."dateEndValue" IS NULL
+          THEN dpv."dateValue" >= ${from} AND dpv."dateValue" < ${to}
+          ELSE dpv."dateValue" < ${to} AND dpv."dateEndValue" > ${from}
+      END
+  )`;
+}
+
 function compileCondition(
   condition: DatabaseFilterCondition,
   properties: DatabasePropertyMap,
@@ -162,6 +234,8 @@ function compileCondition(
       return Prisma.sql`${valueRef} >= ${condition.value}`;
     case 'on_or_before':
       return Prisma.sql`${valueRef} <= ${condition.value}`;
+    case 'overlaps':
+      return compileOverlapsCondition(property, condition.value);
   }
 }
 
