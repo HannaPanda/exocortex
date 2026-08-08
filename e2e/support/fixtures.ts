@@ -1,5 +1,6 @@
 import { type APIRequestContext, type Browser, type BrowserContext, expect, type Page } from '@playwright/test';
 
+import { BASIC_AUTH_CREDENTIALS } from './basic-auth';
 import { storageStatePath } from './global-setup';
 
 /**
@@ -60,10 +61,7 @@ export async function createSignedInContext(
   const context = await browser.newContext({
     baseURL,
     storageState: storageStatePath(user),
-    httpCredentials: {
-      username: process.env.E2E_BASIC_USER ?? 'johanna',
-      password: process.env.E2E_BASIC_PASSWORD ?? 'test123',
-    },
+    httpCredentials: BASIC_AUTH_CREDENTIALS,
   });
   const page = await context.newPage();
   await page.goto('/arbeitsbereich');

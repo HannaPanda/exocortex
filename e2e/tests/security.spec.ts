@@ -1,5 +1,6 @@
 import { type APIRequestContext, expect, test } from '@playwright/test';
 
+import { BASIC_AUTH_CREDENTIALS } from '../support/basic-auth';
 import { recordWorkspace } from '../support/created-workspaces';
 import { apiSignIn, requireSeedCredentials, SEED_USERS } from '../support/fixtures';
 
@@ -23,10 +24,7 @@ let origin: string;
 test.beforeAll(async ({ playwright, baseURL }) => {
   requireSeedCredentials();
   origin = baseURL as string;
-  const httpCredentials = {
-    username: process.env.E2E_BASIC_USER ?? 'johanna',
-    password: process.env.E2E_BASIC_PASSWORD ?? 'test123',
-  };
+  const httpCredentials = BASIC_AUTH_CREDENTIALS;
   johannaApi = await playwright.request.newContext({ httpCredentials });
   stefanApi = await playwright.request.newContext({ httpCredentials });
   anonymousApi = await playwright.request.newContext({ httpCredentials });

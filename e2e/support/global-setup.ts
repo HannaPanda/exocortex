@@ -3,6 +3,7 @@ import { join } from 'node:path';
 
 import { chromium, type FullConfig } from '@playwright/test';
 
+import { BASIC_AUTH_CREDENTIALS } from './basic-auth';
 import { requireSeedCredentials, SEED_USERS, type SeedUserKey } from './fixtures';
 
 /**
@@ -23,10 +24,7 @@ export default async function globalSetup(config: FullConfig): Promise<void> {
   mkdirSync(AUTH_STATE_DIRECTORY, { recursive: true });
 
   const baseURL = config.projects[0]?.use.baseURL ?? 'https://exocortex.app';
-  const httpCredentials = {
-    username: process.env.E2E_BASIC_USER ?? 'johanna',
-    password: process.env.E2E_BASIC_PASSWORD ?? 'test123',
-  };
+  const httpCredentials = BASIC_AUTH_CREDENTIALS;
 
   const browser = await chromium.launch();
   try {

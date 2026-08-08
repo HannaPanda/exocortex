@@ -49,9 +49,10 @@ sudo ufw allow from 172.18.0.0/16 to 172.17.0.1 port 3213 proto tcp \
 # TLS certificate (Let's Encrypt, auto-renewing)
 sudo certbot --nginx -d exocortex.app -d www.exocortex.app --redirect
 
-# HTTP basic auth while the deployment is private
-printf 'johanna:%s\n' "$(openssl passwd -apr1 'CHANGE-ME')" \
-  | sudo tee /etc/nginx/exocortex.htpasswd
+# HTTP basic auth while the deployment is private.
+# bcrypt, not apr1: apr1 is MD5 and falls to a GPU in seconds if the file ever
+# leaks. `htpasswd -B` prompts, so the password stays out of the shell history.
+sudo htpasswd -B -c /etc/nginx/exocortex.htpasswd johanna
 sudo chown root:www-data /etc/nginx/exocortex.htpasswd
 sudo chmod 640 /etc/nginx/exocortex.htpasswd
 
