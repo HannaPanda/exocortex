@@ -26,7 +26,12 @@ SyslogIdentifier=exocortex-web
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=full
-ProtectHome=read-only
+# `true`, not `read-only`: these services run as `johanna`, so a read-only
+# /home still hands anything that achieves code execution here the SSH private
+# keys in ~/.ssh and the MCP tokens in ~/.claude.json. Nothing under /home is
+# needed -- the code lives in /var/www/exocortex and its configuration comes
+# from the .env there.
+ProtectHome=true
 ReadWritePaths=/var/www/exocortex
 ProtectKernelTunables=true
 ProtectControlGroups=true
