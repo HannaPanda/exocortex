@@ -13,6 +13,7 @@ export const QUEUE_NAMES = {
   maintenance: 'maintenance',
   attachmentText: 'attachment-text',
   documentCover: 'document-cover',
+  calendarSync: 'calendar-sync',
 } as const;
 
 export const queueNameSchema = z.enum([
@@ -22,6 +23,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.maintenance,
   QUEUE_NAMES.attachmentText,
   QUEUE_NAMES.documentCover,
+  QUEUE_NAMES.calendarSync,
 ]);
 export type QueueName = z.infer<typeof queueNameSchema>;
 
@@ -111,6 +113,35 @@ export const documentCoverJobSchema = jobBase.extend({
 });
 export type DocumentCoverJob = z.infer<typeof documentCoverJobSchema>;
 
+/**
+ * One pass over the calendar links of one account, or of every account.
+ *
+ * Deliberately carries no user: which human the sync acts as is a property of
+ * the account (`CalendarAccount.userId`), because this job runs from a
+ * repeatable schedule that has no user context. Rows are still written through
+ * the REST API with a service token minted for that human, so a mirrored
+ * appointment passes exactly the permission checks a hand-typed one does
+ * (ADR-014). There is no privileged path into the domain, not even for a
+ * background sync.
+ */
+export const calendarSyncJobSchema = jobBase.extend({
+  /** Null means every enabled account. */
+  accountId: idSchema.nullable().default(null),
+  /**
+   * `discover` refreshes the collection list and provisions missing mirror
+   * databases; `pull` only reads objects into existing links. Kept apart because
+   * discovery creates documents and should not run every five minutes.
+   */
+  mode: z.enum(['discover', 'pull']).default('pull'),
+  /**
+   * Ignores the stored sync token and re-reads everything. The recovery path
+   * after the server forgets a token, and the manual escape hatch when a mirror
+   * has drifted.
+   */
+  full: z.boolean().default(false),
+});
+export type CalendarSyncJob = z.infer<typeof calendarSyncJobSchema>;
+
 export const JOB_SCHEMAS = {
   [QUEUE_NAMES.documentMaterialization]: materializeDocumentJobSchema,
   [QUEUE_NAMES.searchIndexing]: indexDocumentJobSchema,
@@ -118,6 +149,7 @@ export const JOB_SCHEMAS = {
   [QUEUE_NAMES.maintenance]: maintenanceJobSchema,
   [QUEUE_NAMES.attachmentText]: attachmentTextJobSchema,
   [QUEUE_NAMES.documentCover]: documentCoverJobSchema,
+  [QUEUE_NAMES.calendarSync]: calendarSyncJobSchema,
 } as const;
 
 export type JobPayloadMap = {
@@ -127,4 +159,5 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.maintenance]: MaintenanceJob;
   [QUEUE_NAMES.attachmentText]: AttachmentTextJob;
   [QUEUE_NAMES.documentCover]: DocumentCoverJob;
+  [QUEUE_NAMES.calendarSync]: CalendarSyncJob;
 };

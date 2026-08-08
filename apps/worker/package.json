@@ -15,6 +15,7 @@
   "dependencies": {
     "@exocortex/ai": "workspace:*",
     "@exocortex/auth": "workspace:*",
+    "@exocortex/calendar": "workspace:*",
     "@exocortex/config": "workspace:*",
     "@exocortex/contracts": "workspace:*",
     "@exocortex/database": "workspace:*",

@@ -380,6 +380,23 @@ export const reorderDatabaseViewRequestSchema = z.object({
 });
 export type ReorderDatabaseViewRequest = z.infer<typeof reorderDatabaseViewRequestSchema>;
 
+/**
+ * `GET /api/documents/:documentId/properties` and `.../views`.
+ *
+ * These lived in `packages/mcp-tools/src/local-schemas.ts` while contracts was
+ * frozen; they belong here, because every client that reads a database's schema
+ * needs them, not only the tool catalogue.
+ */
+export const databasePropertyListResponseSchema = z.object({
+  properties: z.array(databasePropertySchema),
+});
+export type DatabasePropertyListResponse = z.infer<typeof databasePropertyListResponseSchema>;
+
+export const databaseViewListResponseSchema = z.object({
+  views: z.array(databaseViewSchema),
+});
+export type DatabaseViewListResponse = z.infer<typeof databaseViewListResponseSchema>;
+
 // ---------------------------------------------------------------------------
 // Rows
 // ---------------------------------------------------------------------------

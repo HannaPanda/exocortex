@@ -48,6 +48,7 @@ model User {
   apiTokens          ApiToken[]
   updatedSettings    Setting[]          @relation("SettingUpdatedBy")
   aiConversations    AiConversation[]   @relation("AiConversationCreatedBy")
+  calendarAccounts   CalendarAccount[]  @relation("CalendarAccountOwner")
 
   @@map("user")
 }
@@ -177,6 +178,7 @@ model Workspace {
   aiRuns          AiRun[]
   aiConversations AiConversation[]
   documentLinks   DocumentLink[]
+  calendarAccounts CalendarAccount[]
 
   @@map("workspace")
 }
@@ -332,6 +334,10 @@ model Document {
   /// References this page makes, and references other pages make to it.
   outgoingLinks      DocumentLink[]          @relation("DocumentLinkSource")
   incomingLinks      DocumentLink[]          @relation("DocumentLinkTarget")
+  /// Present when this COLLECTION mirrors a remote calendar.
+  calendarLinks      CalendarLink[]          @relation("CalendarLinkTarget")
+  /// Present when this row mirrors one remote calendar object.
+  calendarObject     CalendarObjectState[]   @relation("CalendarRow")
 
   @@index([workspaceId, parentId, orderKey])
   @@index([workspaceId, archivedAt])
@@ -920,4 +926,160 @@ model AiRun {
   /// reap-stale-ai-runs scans exactly this pair.
   @@index([status, heartbeatAt])
   @@map("ai_run")
+}
+
+// ---------------------------------------------------------------------------
+// Calendar synchronisation
+// ---------------------------------------------------------------------------
+
+/// Which protocol reaches a calendar account.
+enum CalendarProvider {
+  /// CalDAV. mailbox.org, Nextcloud, Radicale, anything standards-compliant.
+  CALDAV
+  /// Reserved: Google Calendar API v3. Google's own CalDAV is second-class and
+  /// gives no push channel, so it gets its own provider rather than pretending
+  /// to be CALDAV.
+  GOOGLE
+}
+
+/// How far a link is allowed to write.
+enum CalendarSyncDirection {
+  /// Read the remote side into Exocortex. Never writes outward.
+  PULL
+  /// Reserved for the write-back round.
+  PUSH
+  BOTH
+}
+
+/// Where an event was born, and therefore who is allowed to change it.
+enum CalendarEventOrigin {
+  /// Created in Exocortex. Exocortex is leading and may rewrite it.
+  LOCAL
+  /// Created outside: in the mail app, in another client, or by accepting an
+  /// iCal invitation. Rewriting the time of one of these would send an ITIP
+  /// counter-proposal to the organizer, so a PULL link never does.
+  REMOTE
+}
+
+/// One remote calendar account. Credentials are NOT here: the columns below are
+/// identifiers, and `credentialRef` only names the environment key that holds
+/// the secret (source of truth is Infisical, see deploy/README.md). The
+/// `setting` table is not encrypted, so a password may never land in the
+/// database at all.
+model CalendarAccount {
+  id          String           @id @default(cuid(2))
+  workspaceId String
+  workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  /// The human the sync acts as. Every row it writes goes through the REST API
+  /// with a service token minted for this user, so the mirror can reach exactly
+  /// the pages they could reach and no more (ADR-014). On the account rather than
+  /// in the job payload, because a repeatable schedule has no user context.
+  userId      String
+  user        User             @relation("CalendarAccountOwner", fields: [userId], references: [id], onDelete: Cascade)
+  provider    CalendarProvider
+  /// Label shown in the UI, e.g. "mailbox.org".
+  displayName String
+  /// The login as the provider knows it. Also matched against ATTENDEE to read
+  /// our own participation status out of an invitation.
+  username    String
+  /// Name of the env key holding the credentials, e.g. `MAILBOX_CALDAV_PASSWORD`.
+  /// Indirection on purpose: rotating the secret never touches this row.
+  credentialRef String
+  /// Entry point for discovery. Null falls back to the provider's default.
+  baseUrl     String?
+  enabled     Boolean          @default(true)
+  lastSyncedAt DateTime?
+  /// Last failure, kept so the UI can say why a calendar is stale.
+  lastError   String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  links CalendarLink[]
+
+  @@unique([workspaceId, provider, username])
+  @@map("calendar_account")
+}
+
+/// One remote collection mirrored into one Exocortex database.
+model CalendarLink {
+  id                String                @id @default(cuid(2))
+  accountId         String
+  account           CalendarAccount       @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  /// The remote collection's path, e.g. `/caldav/Y2FsOi8vMC8yNQ/`. Its identity.
+  remoteHref        String
+  /// The name the server gives it, refreshed on every discovery run.
+  remoteDisplayName String
+  /// `VEVENT` or `VTODO`. A collection can advertise both; a link handles one.
+  component         String                @default("VEVENT")
+  /// The COLLECTION document the rows live under (ADR-011).
+  documentId        String
+  document          Document              @relation("CalendarLinkTarget", fields: [documentId], references: [id], onDelete: Cascade)
+  /// Which property receives which field. Validated against
+  /// calendarLinkPropertyMapSchema in @exocortex/contracts, the same
+  /// "JSON column validated at the boundary" pattern as DatabaseView.config.
+  propertyMap       Json                  @default("{}")
+  direction         CalendarSyncDirection  @default(PULL)
+  /// Last `sync-collection` token. Null means the next run reads everything.
+  syncToken         String?
+  /// False for a collection the server reports no sync-token for (mailbox.org's
+  /// generated "Geburtstage"). Such a link can only ever be read in full, so it
+  /// is polled far less often -- see the sync processor.
+  supportsSyncCollection Boolean          @default(true)
+  /// Cheap change detector for the collections above.
+  ctag              String?
+  enabled           Boolean               @default(true)
+  lastSyncedAt      DateTime?
+  lastError         String?
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  objects CalendarObjectState[]
+
+  @@unique([accountId, remoteHref, component])
+  @@index([documentId])
+  @@map("calendar_link")
+}
+
+/// What Exocortex knows about one remote calendar object, and which row mirrors
+/// it. This is the table that makes the sync safe rather than lossy.
+model CalendarObjectState {
+  id            String              @id @default(cuid(2))
+  linkId        String
+  link          CalendarLink        @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  /// Path of the object on the server, e.g. `/caldav/…/abc.ics`.
+  remoteHref    String
+  /// Version as the server states it. Unchanged etag means the body need not be
+  /// fetched at all, which is what keeps a routine sync cheap.
+  etag          String?
+  /// The iCalendar UID. Stable across servers, so the same invitation arriving
+  /// in mailbox.org *and* in Google is recognised as one event instead of two.
+  icsUid        String
+  /// The row Document mirroring this object. Null while a mapping is pending or
+  /// after the row was deleted by hand.
+  rowDocumentId String?
+  row           Document?           @relation("CalendarRow", fields: [rowDocumentId], references: [id], onDelete: SetNull)
+  origin        CalendarEventOrigin @default(REMOTE)
+  /// Set when the object arrived as an invitation; then the organizer owns it.
+  organizer     String?
+  /// Our own PARTSTAT, e.g. ACCEPTED. Read-only until ITIP replies exist.
+  partStat      String?
+  /// Hash of the payload last written outward, so a future two-way sync can tell
+  /// "the remote changed" from "the remote is echoing our own write" and cannot
+  /// ping-pong. Unused while the link is PULL.
+  lastPushedHash String?
+  remoteUpdatedAt DateTime?
+  lastSeenAt    DateTime            @default(now())
+  /// Tombstone. Set when the object is gone from the server instead of deleting
+  /// this row: with remote creation allowed, absence is no longer a delete
+  /// signal, so the sync needs to remember that this UID *was* deleted or it
+  /// will recreate it on the next full read.
+  deletedAt     DateTime?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@unique([linkId, remoteHref])
+  /// Dedup and tombstone lookups both go by UID within a link.
+  @@index([linkId, icsUid])
+  @@index([rowDocumentId])
+  @@map("calendar_object_state")
 }

@@ -251,6 +251,40 @@ export class QueueRegistry {
     this.logger.info('Maintenance schedulers registered');
   }
 
+  /**
+   * Registers the calendar sync schedulers.
+   *
+   * Two cadences, because the two modes cost very different things. `pull` reads
+   * changed objects and, thanks to sync tokens and etags, costs one REPORT per
+   * calendar when nothing happened -- cheap enough for every five minutes.
+   * `discover` re-lists the collections and may create documents and columns, so
+   * it runs once a day: a new calendar appearing on someone's phone does not need
+   * to show up here within the minute.
+   *
+   * Both are no-ops without a `calendar_account` row, so registering them on a
+   * deployment that has no calendar costs one indexed query per tick.
+   */
+  async scheduleCalendarSync(correlationId: string): Promise<void> {
+    const queue = this.rawQueue(QUEUE_NAMES.calendarSync);
+    await queue.upsertJobScheduler(
+      'calendar-pull',
+      { every: 300_000 },
+      {
+        name: QUEUE_NAMES.calendarSync,
+        data: { correlationId, accountId: null, mode: 'pull', full: false },
+      },
+    );
+    await queue.upsertJobScheduler(
+      'calendar-discover',
+      { pattern: '15 5 * * *' },
+      {
+        name: QUEUE_NAMES.calendarSync,
+        data: { correlationId, accountId: null, mode: 'discover', full: false },
+      },
+    );
+    this.logger.info('Calendar sync schedulers registered');
+  }
+
   async ping(): Promise<boolean> {
     const result = await this.connection.ping();
     return result === 'PONG';

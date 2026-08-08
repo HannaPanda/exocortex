@@ -5,6 +5,7 @@ export * from './ai-models';
 export * from './ai-runtime';
 export * from './attachments';
 export * from './auth';
+export * from './calendar';
 export * from './collaboration';
 export * from './database-views';
 export * from './documents';

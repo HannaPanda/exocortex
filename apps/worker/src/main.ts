@@ -26,6 +26,7 @@ import { S3ObjectStorage } from '@exocortex/storage';
 
 import { createAiRunProcessor, type ResolvedModelRow } from './processors/ai-run';
 import { createAttachmentTextProcessor } from './processors/attachment-text';
+import { createCalendarSyncProcessor } from './processors/calendar-sync';
 import { createDocumentCoverProcessor } from './processors/document-cover';
 import { createIndexDocumentProcessor } from './processors/index-document';
 import { createMaintenanceProcessor } from './processors/maintenance';
@@ -129,6 +130,37 @@ async function bootstrap(): Promise<void> {
               ttlSeconds: env.SERVICE_TOKEN_TTL_SECONDS,
             }).token,
           });
+
+  /**
+   * Which environment key a calendar account's credentials may be read from.
+   *
+   * The indirection is the point of `credentialRef`: rotating a password never
+   * touches the row. But a dynamic env lookup driven by a database value is also
+   * a way to read *any* variable, and whatever it reads is sent to a remote
+   * server in an Authorization header -- so a hand-edited row pointing at
+   * `DATABASE_URL` would exfiltrate it. The pattern is the boundary that stops
+   * that, and it is checked here rather than at write time because this is the
+   * only place that dereferences the name.
+   */
+  const CREDENTIAL_REF_PATTERN = /^[A-Z][A-Z0-9_]*_(PASSWORD|TOKEN|SECRET)$/;
+
+  const resolveCalendarCredentials = (account: {
+    provider: string;
+    username: string;
+    credentialRef: string;
+    baseUrl: string | null;
+  }): { baseUrl: string; username: string; password: string } | null => {
+    if (!CREDENTIAL_REF_PATTERN.test(account.credentialRef)) {
+      logger.error('Calendar account credentialRef is not an allowed environment key', {
+        credentialRef: account.credentialRef,
+      });
+      return null;
+    }
+    const password = process.env[account.credentialRef];
+    const baseUrl = account.baseUrl ?? env.MAILBOX_CALDAV_URL ?? null;
+    if (password === undefined || password.trim().length === 0 || baseUrl === null) return null;
+    return { baseUrl, username: account.username, password };
+  };
 
   // Image generation: the model comes from the settings, so an admin can point
   // it at a different one without a restart; the generators are cached per slug
@@ -255,7 +287,11 @@ async function bootstrap(): Promise<void> {
   const publishProgress = async (
     queue: Exclude<
       (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES],
-      typeof QUEUE_NAMES.attachmentText | typeof QUEUE_NAMES.documentCover
+      | typeof QUEUE_NAMES.attachmentText
+      | typeof QUEUE_NAMES.documentCover
+      // The calendar sync has no workspace in its payload and no browser
+      // waiting on it, so it reports nothing over the progress channel.
+      | typeof QUEUE_NAMES.calendarSync
     >,
     workspaceId: string,
     correlationId: string,
@@ -454,7 +490,23 @@ async function bootstrap(): Promise<void> {
     }),
   });
 
+  // Concurrency 1: this talks to someone else's mail server. Two passes over the
+  // same account would race on the sync token, and a parallel burst per calendar
+  // is how a sync gets itself rate limited.
+  const calendarSync = createTypedWorker({
+    name: QUEUE_NAMES.calendarSync,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 1,
+    handler: createCalendarSyncProcessor({
+      prisma,
+      apiClientFor,
+      credentialsFor: resolveCalendarCredentials,
+    }),
+  });
+
   await queues.scheduleMaintenance(createCorrelationId());
+  await queues.scheduleCalendarSync(createCorrelationId());
 
   logger.info('Worker started', {
     environment: env.NODE_ENV,
@@ -477,6 +529,7 @@ async function bootstrap(): Promise<void> {
         maintenance.worker.close(),
         attachmentText.worker.close(),
         documentCover.worker.close(),
+        calendarSync.worker.close(),
       ]);
       await Promise.all([
         materialization.connection.quit(),
@@ -485,6 +538,7 @@ async function bootstrap(): Promise<void> {
         maintenance.connection.quit(),
         attachmentText.connection.quit(),
         documentCover.connection.quit(),
+        calendarSync.connection.quit(),
       ]);
       await bus.close();
       await queues.close();

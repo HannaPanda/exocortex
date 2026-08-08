@@ -342,6 +342,9 @@ importers:
       '@exocortex/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@exocortex/calendar':
+        specifier: workspace:*
+        version: link:../../packages/calendar
       '@exocortex/config':
         specifier: workspace:*
         version: link:../../packages/config
