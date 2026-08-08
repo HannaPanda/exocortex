@@ -10,6 +10,9 @@ coverage/
 .env
 .env.local
 .env.*.local
+# Backups the Infisical sync writes before it merges. Same secrets as the .env,
+# and the pattern above does not match them.
+.env.bak-*
 !.env.example
 
 # Playwright
@@ -43,3 +46,7 @@ e2e/support/.auth/
 
 # Playwright test artefacts
 e2e/.created-workspaces
+
+# Machine-identity credentials for the Infisical -> .env sync
+# (deploy/infisical-sync-env.py). Template: deploy/infisical-sync.env.example
+.infisical-sync.env

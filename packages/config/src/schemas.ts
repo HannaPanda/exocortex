@@ -80,6 +80,26 @@ export const aiSchema = z.object({
   DOCLING_BASE_URL: z.url().optional(),
 });
 
+/**
+ * CalDAV credentials for the calendar sync. Optional throughout: an unset
+ * account means "no calendar configured", which degrades the sync job to a
+ * no-op instead of stopping the worker from booting.
+ *
+ * These live in the environment rather than the `setting` table because the
+ * table is not encrypted (ADR-013 makes it the authority for *configuration*,
+ * not for credentials). Source of truth is Infisical, project `Exocortex`,
+ * env `prod`; `deploy/infisical-sync-env.py` merges them into the root `.env`.
+ *
+ * Known limit: one account per provider. A second mailbox.org account has to
+ * move to a per-account row that references its own Infisical key.
+ */
+export const calendarSchema = z.object({
+  /** CalDAV entry point, e.g. `https://dav.mailbox.org/`. Discovery starts here. */
+  MAILBOX_CALDAV_URL: z.url().optional(),
+  MAILBOX_CALDAV_USERNAME: z.string().trim().min(1).optional(),
+  MAILBOX_CALDAV_PASSWORD: z.string().min(1).optional(),
+});
+
 export const apiProcessSchema = z.object({
   API_PORT: port.default(3211),
   MAX_UPLOAD_BYTES: z.coerce
@@ -154,6 +174,7 @@ export const workerEnvSchema = baseSchema
   .extend(redisSchema.shape)
   .extend(storageSchema.shape)
   .extend(aiSchema.shape)
+  .extend(calendarSchema.shape)
   .extend(serviceTokenSchema.shape)
   .extend(internalApiSchema.shape);
 

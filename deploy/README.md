@@ -109,6 +109,38 @@ table and overrides the environment at runtime (ADR-013). The `.env` file stays
 the bootstrap fallback, so all four units boot with an empty `setting` table.
 See `docs/admin.md` for the full key list.
 
+### Secrets that come from Infisical
+
+Some credentials are not edited in `.env` at all. Infisical (project
+`Exocortex`, id `83526c90-de12-446f-afcd-26adc138c01c`, environment `prod`,
+secret path `/`) is the source of truth, and a nightly timer merges them in:
+
+| File | Role |
+| --- | --- |
+| `deploy/infisical-sync-env.py` | Pulls the managed keys and merges them into the root `.env`. **Merge-only**: it never deletes and never rewrites a key Infisical does not manage. Dry run by default, `--apply` writes and backs up first. Never prints a value. |
+| `deploy/infisical-sync-reload.sh` | Runs the sync and restarts `exocortex-worker` **only** if the file actually changed (the script exits 10 for that). A no-change run touches no live unit. |
+| `deploy/systemd/exocortex-infisical-sync.{service,timer}` | Nightly at 03:40, `Persistent=true` so a rotated secret is not missed after a reboot. |
+| `deploy/infisical-sync.env.example` | Template for `/var/www/exocortex/.infisical-sync.env`, which holds the machine-identity credentials and is git-ignored. |
+
+Managed today: `MAILBOX_CALDAV_URL`, `MAILBOX_CALDAV_USERNAME`,
+`MAILBOX_CALDAV_PASSWORD`. A secret still sitting at the placeholder
+`BITTE_EINTRAGEN` is skipped rather than written, so a half-configured project
+cannot put that literal string into the environment.
+
+```bash
+# What would change, without touching anything
+python3 deploy/infisical-sync-env.py
+
+# Apply now instead of waiting for the timer
+sudo systemctl start exocortex-infisical-sync.service
+sudo journalctl -u exocortex-infisical-sync -n 20 --no-pager
+```
+
+Rotating a credential means editing it in Infisical, not here: the next run
+overwrites the `.env` value. Only the worker is restarted, because it is the
+only process that reads these; bouncing the API or collaboration server would
+drop live editing sessions for nothing.
+
 ## Deploying a change
 
 **This host has 8 GB of RAM, shared with other services, and the four units keep

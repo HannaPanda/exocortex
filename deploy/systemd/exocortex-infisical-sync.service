@@ -1,0 +1,27 @@
+[Unit]
+Description=Pull Infisical-managed secrets into the Exocortex .env
+Documentation=file:///var/www/exocortex/deploy/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+# Runs as root so the wrapper can restart exocortex-worker without a sudoers
+# rule. The script keeps the .env's ownership (it truncates in place) and hands
+# the backup back to that owner.
+User=root
+WorkingDirectory=/var/www/exocortex
+ExecStart=/var/www/exocortex/deploy/infisical-sync-reload.sh
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=exocortex-infisical-sync
+
+# Hardening. ProtectHome is off on purpose: nothing here reads /home, but
+# ProtectSystem=full would make /etc read-only, which is all this needs.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/www/exocortex
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true

@@ -1,0 +1,14 @@
+[Unit]
+Description=Nightly Infisical secret sync for Exocortex
+Documentation=file:///var/www/exocortex/deploy/README.md
+
+[Timer]
+# Nightly, off the hour so it does not collide with the 03:00 maintenance sweep.
+OnCalendar=*-*-* 03:40:00
+# A rotated secret must not wait a whole day because the host was down.
+Persistent=true
+RandomizedDelaySec=300
+Unit=exocortex-infisical-sync.service
+
+[Install]
+WantedBy=timers.target
