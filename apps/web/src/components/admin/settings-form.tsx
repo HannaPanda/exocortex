@@ -183,7 +183,8 @@ function SettingRow({ settingKey, value, onChange, models }: SettingRowProps) {
     control = (
       <Select value={typeof value === 'string' ? value : ''} onValueChange={onChange}>
         <SelectTrigger id={id} className="w-full">
-          <SelectValue />
+          {/* Base UI shows the raw value without a render function. */}
+          <SelectValue>{() => choices.find((choice) => choice.value === value)?.label ?? ''}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {choices.map((choice) => (
@@ -215,7 +216,9 @@ function SettingRow({ settingKey, value, onChange, models }: SettingRowProps) {
         onValueChange={(next) => onChange(next === AUTO_VALUE ? null : next)}
       >
         <SelectTrigger id={id} className="w-full">
-          <SelectValue />
+          <SelectValue>
+            {() => models.find((model) => model.slug === value)?.displayName ?? 'Automatisch'}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value={AUTO_VALUE}>Automatisch</SelectItem>

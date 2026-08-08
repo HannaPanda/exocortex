@@ -190,7 +190,10 @@ export function ApiTokenPanel() {
             <Label htmlFor="token-expiry">Gültigkeit</Label>
             <Select value={expiry} onValueChange={(next) => setExpiry(next as ExpiryOption)}>
               <SelectTrigger id="token-expiry" className="w-40">
-                <SelectValue />
+                {/* Base UI shows the raw value without a render function. */}
+                <SelectValue>
+                  {() => EXPIRY_OPTIONS.find((option) => option.value === expiry)?.label ?? expiry}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {EXPIRY_OPTIONS.map((option) => (

@@ -384,7 +384,12 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
               }
             >
               <SelectTrigger id="model-companion" className="w-full">
-                <SelectValue />
+                {/* Base UI shows the raw value (the slug) without this. */}
+                <SelectValue>
+                  {() =>
+                    companionOptions.find((entry) => entry.slug === form.visionCompanionSlug)?.displayName ?? 'Keines'
+                  }
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={NO_COMPANION}>Keines</SelectItem>

@@ -19,6 +19,13 @@ const Select = SelectPrimitive.Root;
 const SelectGroup = SelectPrimitive.Group;
 const SelectItemText = SelectPrimitive.ItemText;
 
+/**
+ * Unlike Radix's `Select.Value`, Base UI's renders the selected *value*, not the
+ * selected item's text. Whenever the value differs from what the item shows
+ * (an id, a slug, an English enum member), pass a render function:
+ * `<SelectValue>{() => label}</SelectValue>`. A bare `<SelectValue />` is only
+ * correct when the value is already the label.
+ */
 function SelectValue({ className, ...props }: React.ComponentProps<typeof SelectPrimitive.Value>) {
   return (
     <SelectPrimitive.Value

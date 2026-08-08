@@ -90,7 +90,8 @@ export function UserTable() {
                     }
                   >
                     <SelectTrigger aria-label={`Rolle von ${user.name}`} size="sm">
-                      <SelectValue />
+                      {/* Base UI shows the raw value ("admin") without this. */}
+                      <SelectValue>{() => ROLE_LABELS[user.role]}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="user">{ROLE_LABELS.user}</SelectItem>

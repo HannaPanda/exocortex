@@ -60,6 +60,8 @@ test.describe('databases', () => {
     await page.getByTestId('add-filter').click();
     await page.getByTestId('filter-property').click();
     await page.getByRole('option', { name: 'Status' }).click();
+    // The trigger has to show the label too, not the id behind it.
+    await expect(page.getByTestId('filter-property')).toContainText('Status');
     await page.getByTestId('filter-value').click();
     await page.getByRole('option', { name: 'Erledigt' }).click();
     await page.getByRole('button', { name: 'Filter hinzufügen' }).click();

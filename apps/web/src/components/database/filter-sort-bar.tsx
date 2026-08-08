@@ -188,7 +188,9 @@ function AddFilterPopover({
             }}
           >
             <SelectTrigger className="w-full" data-testid="filter-property">
-              <SelectValue />
+              {/* Base UI renders the raw value without a render function, and a
+                  property's value is its id. */}
+              <SelectValue>{() => property.name}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {properties.map((entry) => (
@@ -200,7 +202,7 @@ function AddFilterPopover({
           </Select>
           <Select value={operator} onValueChange={(next) => setOperator(next as DatabaseFilterOperator)}>
             <SelectTrigger className="w-full" data-testid="filter-operator">
-              <SelectValue />
+              <SelectValue>{() => FILTER_OPERATOR_LABELS[operator]}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {operators.map((entry) => (
@@ -213,7 +215,7 @@ function AddFilterPopover({
           {!needsValue ? null : choices.length > 0 ? (
             <Select value={value} onValueChange={(next) => setValue(next ?? '')}>
               <SelectTrigger className="w-full" data-testid="filter-value">
-                <SelectValue />
+                <SelectValue>{() => choices.find((choice) => choice.value === value)?.label ?? value}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {choices.map((choice) => (
@@ -265,7 +267,7 @@ function AddSortPopover({
         <div className="flex flex-col gap-2">
           <Select value={propertyId} onValueChange={(next) => setPropertyId(next ?? '')}>
             <SelectTrigger className="w-full" data-testid="sort-property">
-              <SelectValue />
+              <SelectValue>{() => propertyName(properties, propertyId)}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {properties.map((entry) => (
