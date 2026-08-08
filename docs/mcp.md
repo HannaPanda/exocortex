@@ -179,6 +179,15 @@ exact same tool with the exact same arguments again, which consumes the
 pending entry and lets the call through. A changed payload or target starts a
 fresh pending cycle; an unconfirmed entry expires after 5 minutes.
 
+The prompt text spells that out at length on purpose. A model that reads
+"call it again with the same parameters" as "call it again" will reword its
+Markdown between attempts, hash differently every time, conclude the *content*
+is being rejected, and start changing things that were never the problem — in
+one observed run it switched from `append` to `replace` and overwrote a whole
+page (the automatic pre-write snapshot got it back). So the message states that
+nothing was written, that a single differing character counts as a new
+operation, and that the prompt is not a complaint about the payload.
+
 This exists because flauschibrain shipped a confirmation gate keyed on a
 client-supplied token **twice** — a scheme that lets a model confirm an
 operation it never actually announced, because the client (not the server)

@@ -136,17 +136,44 @@ export const pageCreateTool: AnyToolDefinition = defineTool({
   },
 });
 
+const WRITE_MODE_DESCRIPTION =
+  'Was mit dem bisherigen Seiteninhalt passiert. ' +
+  '"append" hängt hinten an und lässt alles Bestehende stehen: der Normalfall, wenn du etwas ' +
+  'ergänzen willst. "prepend" stellt voran, ebenfalls ohne Verlust. ' +
+  '"replace" löscht den kompletten bisherigen Inhalt und ersetzt ihn durch dein Markdown; ' +
+  'schick dort immer den vollständigen neuen Seitentext, nie nur den neuen Abschnitt. ' +
+  'Fehlt das Feld, gilt "replace", die Seite wird also überschrieben.';
+
+const WRITE_MARKDOWN_DESCRIPTION =
+  'Der zu schreibende Markdown-Text. Bei mode "append" oder "prepend" nur der neue Abschnitt, ' +
+  'bei mode "replace" der gesamte Inhalt, den die Seite danach haben soll. ' +
+  'Seitenlinks als [[Seitentitel]] schreiben.';
+
+const pageWriteInputSchema = z
+  .object({ documentId: idSchema })
+  .extend(documentContentWriteRequestSchema.shape)
+  .extend({
+    markdown: documentContentWriteRequestSchema.shape.markdown.describe(WRITE_MARKDOWN_DESCRIPTION),
+    mode: documentContentWriteRequestSchema.shape.mode.describe(WRITE_MODE_DESCRIPTION),
+  });
+
 export const pageWriteTool: AnyToolDefinition = defineTool({
   name: 'exo_page_write',
   description:
-    'Schreibt Markdown in eine bestehende Seite (ersetzen, anhängen oder voranstellen). ' +
+    'Schreibt Markdown in eine bestehende Seite. Der Modus entscheidet über den bisherigen ' +
+    'Inhalt: "append" hängt an (zum Ergänzen fast immer richtig), "prepend" stellt voran, ' +
+    '"replace" ersetzt die GANZE Seite und gilt auch dann, wenn mode ganz fehlt. ' +
+    'Vor einem "replace" erst exo_page_read aufrufen und den vollständigen neuen Seitentext ' +
+    'schicken, sonst löscht der Aufruf alles, was nicht mitgeschickt wurde. ' +
     'Der bisherige Zustand wird vorher als Snapshot gesichert und kann mit exo_page_snapshots ' +
     'und exo_page_restore_snapshot wiederhergestellt werden. ' +
     'Lange Inhalte in mehreren Aufrufen schreiben: den ersten mit mode "replace", die weiteren ' +
     'mit mode "append". Ein einzelner Aufruf mit sehr viel Markdown kann am Ausgabelimit ' +
     'abgeschnitten werden und wird dann gar nicht ausgeführt. ' +
+    'Der Aufruf verändert Daten: der erste Aufruf fragt zurück, erst der identisch wiederholte ' +
+    'schreibt. Umformulieren zwischen den beiden Aufrufen startet die Rückfrage von vorn. ' +
     'Hat jemand die Seite gerade geöffnet, erscheint die Änderung dort sofort.',
-  inputSchema: z.object({ documentId: idSchema }).extend(documentContentWriteRequestSchema.shape),
+  inputSchema: pageWriteInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,
   target: (input) => `document:${input.documentId}`,

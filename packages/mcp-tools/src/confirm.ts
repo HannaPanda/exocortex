@@ -64,11 +64,19 @@ export class WriteConfirmationGate {
       return { state: 'confirmed' };
     }
     this.pending.set(key, { expiresAt: Date.now() + this.ttlMs });
+    const ttlMinutes = Math.max(1, Math.round(this.ttlMs / 60_000));
     return {
       state: 'pending',
       message:
-        `Dieser Vorgang verändert Daten (${input.toolName} auf ${input.target}). ` +
-        'Rufe das Werkzeug mit denselben Parametern erneut auf, um zu bestätigen.',
+        `${input.toolName} auf ${input.target} verändert Daten und wurde noch NICHT ausgeführt. ` +
+        'Zum Bestätigen schick denselben Aufruf ein zweites Mal, Zeichen für Zeichen identisch: ' +
+        'gleiches Werkzeug, gleiches Ziel, exakt dieselben Parameter. ' +
+        'Jede Abweichung zählt als neuer Vorgang und verlangt wieder zwei Aufrufe, auch ein ' +
+        'einzelnes geändertes Zeichen im Inhalt, anderes Escaping oder ein anderer Modus. ' +
+        'Formuliere den Inhalt also nicht um und versuche nicht, ihn zu "reparieren", sondern ' +
+        'wiederhole ihn unverändert. Diese Rückfrage ist kein Fehler und kein Hinweis darauf, ' +
+        'dass mit deinem Inhalt etwas nicht stimmt. ' +
+        `Ohne Bestätigung verfällt der Vorgang nach ${ttlMinutes} Minuten.`,
     };
   }
 
