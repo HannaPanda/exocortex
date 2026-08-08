@@ -28,6 +28,12 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
   '@exocortex/storage': ['@exocortex/config', '@exocortex/logger'],
   '@exocortex/queue': ['@exocortex/config', '@exocortex/logger', '@exocortex/contracts'],
   '@exocortex/ai': ['@exocortex/config', '@exocortex/logger', '@exocortex/contracts'],
+  // CalDAV and iCalendar only: HTTP against a remote server, XML and ICS in and
+  // out, nothing about Exocortex's own domain. Deliberately *not* allowed to see
+  // @exocortex/database or @exocortex/contracts, so the protocol layer cannot
+  // start writing rows or reasoning about documents; mapping an external event
+  // onto a database row is the worker's job.
+  '@exocortex/calendar': ['@exocortex/logger'],
   '@exocortex/auth': [
     '@exocortex/config',
     '@exocortex/logger',
@@ -81,6 +87,9 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
     // Only to mint the short-lived service tokens the API accepts (D3).
     '@exocortex/auth',
     '@exocortex/mcp-tools',
+    // Talks CalDAV to mailbox.org; the mapping onto database rows lives here,
+    // in the worker, not in the protocol package.
+    '@exocortex/calendar',
   ],
   // The web frontend must never reach infrastructure packages directly.
   // The web bundle must never reach server-side packages. Authentication is
