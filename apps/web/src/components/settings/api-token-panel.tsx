@@ -50,6 +50,33 @@ const EXPIRY_OPTIONS = [
 type ExpiryOption = (typeof EXPIRY_OPTIONS)[number]['value'];
 
 /**
+ * Scopes are cumulative, so one choice is enough: sending the highest scope also
+ * grants everything below it. Offering three checkboxes would only let someone
+ * tick "admin" without "read" and wonder why nothing works.
+ */
+const SCOPE_OPTIONS = [
+  { value: 'read', label: 'Nur lesen', hint: 'Seiten und Datenbanken lesen, nichts ändern.' },
+  {
+    value: 'write',
+    label: 'Lesen und schreiben',
+    hint: 'Zusätzlich Inhalte anlegen, ändern und löschen.',
+  },
+  {
+    value: 'admin',
+    label: 'Voller Zugriff',
+    hint: 'Zusätzlich Administration und Token-Verwaltung.',
+  },
+] as const;
+
+type ScopeOption = (typeof SCOPE_OPTIONS)[number]['value'];
+
+const SCOPE_LABELS: Record<string, string> = {
+  read: 'Lesen',
+  write: 'Schreiben',
+  admin: 'Administration',
+};
+
+/**
  * Personal API tokens. Not admin-gated: every signed-in user manages their own
  * (the API only ever returns the caller's own tokens, one per row).
  */
@@ -60,6 +87,7 @@ export function ApiTokenPanel() {
 
   const [name, setName] = React.useState('');
   const [expiry, setExpiry] = React.useState<ExpiryOption>('90');
+  const [scope, setScope] = React.useState<ScopeOption>('read');
   const [revealedToken, setRevealedToken] = React.useState<CreateApiTokenResponse | null>(null);
   const [revokeTarget, setRevokeTarget] = React.useState<ApiToken | null>(null);
   const [copied, setCopied] = React.useState(false);
@@ -72,13 +100,18 @@ export function ApiTokenPanel() {
     const trimmed = name.trim();
     if (trimmed.length === 0) return;
     createToken.mutate(
-      { name: trimmed, expiresInDays: expiry === 'never' ? null : Number(expiry) },
+      {
+        name: trimmed,
+        scopes: [scope],
+        expiresInDays: expiry === 'never' ? null : Number(expiry),
+      },
       {
         onSuccess: (response) => {
           setRevealedToken(response);
           setCopied(false);
           setName('');
           setExpiry('90');
+          setScope('read');
         },
       },
     );
@@ -100,7 +133,8 @@ export function ApiTokenPanel() {
         <h1 className="text-2xl font-semibold tracking-tight">API-Token</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           API-Token erlauben externen Programmen wie dem MCP-Server, in deinem Namen auf
-          Exocortex zuzugreifen. Ein Token hat genau deine Rechte.
+          Exocortex zuzugreifen. Gib jedem Token nur die Rechte, die es wirklich braucht:
+          Wenn es abhandenkommt, kann jemand genau das damit tun.
         </p>
       </div>
 
@@ -124,6 +158,7 @@ export function ApiTokenPanel() {
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Präfix</TableHead>
+              <TableHead>Rechte</TableHead>
               <TableHead>Zuletzt benutzt</TableHead>
               <TableHead>Läuft ab</TableHead>
               <TableHead>Status</TableHead>
@@ -137,6 +172,21 @@ export function ApiTokenPanel() {
                 <TableRow key={token.id}>
                   <TableCell>{token.name}</TableCell>
                   <TableCell className="font-mono text-xs">{token.prefix}</TableCell>
+                  <TableCell>
+                    {token.scopes.length > 0 ? (
+                      <span className="flex flex-wrap gap-1">
+                        {token.scopes.map((granted) => (
+                          <Badge key={granted} variant="muted">
+                            {SCOPE_LABELS[granted] ?? granted}
+                          </Badge>
+                        ))}
+                      </span>
+                    ) : (
+                      // Issued before scopes existed. The API refuses it, so say so
+                      // instead of showing an empty cell that looks like a glitch.
+                      <Badge variant="destructive">Keine</Badge>
+                    )}
+                  </TableCell>
                   <TableCell>
                     {token.lastUsedAt !== null
                       ? dateTimeFormat.format(new Date(token.lastUsedAt))
@@ -187,6 +237,23 @@ export function ApiTokenPanel() {
             />
           </div>
           <div className="flex flex-col gap-1.5">
+            <Label htmlFor="token-scope">Rechte</Label>
+            <Select value={scope} onValueChange={(next) => setScope(next as ScopeOption)}>
+              <SelectTrigger id="token-scope" className="w-56">
+                <SelectValue>
+                  {() => SCOPE_OPTIONS.find((option) => option.value === scope)?.label ?? scope}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {SCOPE_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-1.5">
             <Label htmlFor="token-expiry">Gültigkeit</Label>
             <Select value={expiry} onValueChange={(next) => setExpiry(next as ExpiryOption)}>
               <SelectTrigger id="token-expiry" className="w-40">
@@ -208,6 +275,9 @@ export function ApiTokenPanel() {
             Erstellen
           </Button>
         </form>
+        <p className="text-xs text-muted-foreground">
+          {SCOPE_OPTIONS.find((option) => option.value === scope)?.hint}
+        </p>
       </div>
 
       {/*

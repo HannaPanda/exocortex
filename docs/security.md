@@ -49,6 +49,37 @@ authorization mechanism.
   (10/min, 5/min, 5 per 5 min). nginx forwards the real client address and Fastify
   runs with `trustProxy`.
 
+## API token scopes
+
+A persistent `exo_` token is a credential handed to a machine, so it must be able
+to carry less authority than the person who issued it. Otherwise every leaked
+token — a CI log, a chat message, a stolen laptop — is a full account takeover.
+
+Three cumulative scopes, stored in `ApiToken.scopes`:
+
+| Scope | May do |
+| ----- | ------ |
+| `read` | safe requests (`GET`, `HEAD`, `OPTIONS`) |
+| `write` | additionally create, change and delete content |
+| `admin` | additionally `/api/admin/*` and `/api/me/api-tokens` |
+
+* `TokenScopeGuard` enforces them, running after `SessionGuard` (which resolves
+  the credential and its scopes) and before `AdminGuard` (which checks the
+  *user's* role). Both must pass: an administrator holding a read-only token is
+  still refused the admin API, and an `admin`-scoped token grants nothing to a
+  user who is not one.
+* The required scope is **derived** from method and path, not declared per route.
+  A `@RequiredScope()` decorator would have to be remembered on every new route,
+  and the one that gets forgotten is the one a read-only token can reach.
+* Token management needs `admin`, because managing tokens with a token is how a
+  narrow credential widens itself into a broad one.
+* An empty scope list grants **nothing**. Tokens issued before scoping have an
+  empty array; migration `20260808230000_api_token_scopes` backfills the ones in
+  use to `read,write`, and anything left over fails closed.
+* Cookie sessions and the worker's `exos_` service tokens are not scoped. A human
+  at a browser already is the account, and a service token is minted per AI run
+  from a session that was itself authorized.
+
 ## CSRF
 
 The architecture is cookie-based, so CSRF protection matters:

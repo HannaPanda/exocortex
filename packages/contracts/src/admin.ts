@@ -42,10 +42,28 @@ export const adminOverviewResponseSchema = z.object({
 });
 export type AdminOverviewResponse = z.infer<typeof adminOverviewResponseSchema>;
 
+/**
+ * What an API token is allowed to do. A token is a credential handed to a
+ * machine, so it should be able to carry less authority than the person who
+ * issued it -- otherwise every leaked token is a full account takeover.
+ *
+ * The three levels are cumulative and deliberately coarse: a finer grid would
+ * have to be re-decided on every new route, and a scope nobody can reason about
+ * is a scope nobody sets correctly.
+ *
+ *   read   - safe requests (GET, HEAD)
+ *   write  - additionally creating, changing and deleting content
+ *   admin  - additionally the deployment-wide admin API and token management
+ */
+export const API_TOKEN_SCOPES = ['read', 'write', 'admin'] as const;
+export const apiTokenScopeSchema = z.enum(API_TOKEN_SCOPES);
+export type ApiTokenScope = z.infer<typeof apiTokenScopeSchema>;
+
 export const apiTokenSchema = z.object({
   id: idSchema,
   name: z.string(),
   prefix: z.string(),
+  scopes: z.array(apiTokenScopeSchema),
   lastUsedAt: isoDateTimeSchema.nullable(),
   expiresAt: isoDateTimeSchema.nullable(),
   revokedAt: isoDateTimeSchema.nullable(),
@@ -58,6 +76,11 @@ export type ApiTokenListResponse = z.infer<typeof apiTokenListResponseSchema>;
 
 export const createApiTokenRequestSchema = z.object({
   name: z.string().trim().min(1).max(80),
+  /**
+   * At least one scope; the least dangerous one is the default, so a caller who
+   * does not think about it gets a read-only token rather than a master key.
+   */
+  scopes: z.array(apiTokenScopeSchema).min(1).max(API_TOKEN_SCOPES.length).default(['read']),
   /** Days until expiry. Null creates a token that does not expire. */
   expiresInDays: z.number().int().min(1).max(3_650).nullable().default(null),
 });

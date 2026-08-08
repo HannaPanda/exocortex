@@ -140,8 +140,11 @@ model ApiToken {
   tokenHash  String    @unique
   /// First 12 characters of the raw token, so a token is recognisable in a list.
   prefix     String
-  /// Reserved for finer scoping. An empty array means "everything this user may do".
-  scopes     String[]  @default([])
+  /// What this token may do: 'read', 'write', 'admin'. Cumulative, so 'write'
+  /// implies 'read'. Enforced by TokenScopeGuard in the API. An empty array
+  /// grants nothing -- it fails closed, so a row that predates scoping cannot
+  /// quietly keep full authority.
+  scopes     String[]  @default(["read"])
   lastUsedAt DateTime?
   expiresAt  DateTime?
   revokedAt  DateTime?

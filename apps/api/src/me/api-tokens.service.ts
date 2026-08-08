@@ -4,6 +4,8 @@ import { generateApiToken } from '@exocortex/auth';
 import {
   type ApiToken,
   type ApiTokenListResponse,
+  type ApiTokenScope,
+  apiTokenScopeSchema,
   type CreateApiTokenRequest,
   type CreateApiTokenResponse,
 } from '@exocortex/contracts';
@@ -16,10 +18,15 @@ import { PRISMA } from '../platform/platform-tokens';
 const MAX_ACTIVE_TOKENS_PER_USER = 20;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
+function isApiTokenScope(value: string): value is ApiTokenScope {
+  return apiTokenScopeSchema.safeParse(value).success;
+}
+
 interface ApiTokenRow {
   id: string;
   name: string;
   prefix: string;
+  scopes: string[];
   lastUsedAt: Date | null;
   expiresAt: Date | null;
   revokedAt: Date | null;
@@ -31,6 +38,10 @@ function toContract(row: ApiTokenRow): ApiToken {
     id: row.id,
     name: row.name,
     prefix: row.prefix,
+    // Rows predating scopes, and any value the enum no longer knows, are dropped
+    // rather than surfaced: the guard already treats them as granting nothing,
+    // and the list must not claim an authority the token does not have.
+    scopes: row.scopes.filter(isApiTokenScope),
     lastUsedAt: row.lastUsedAt === null ? null : row.lastUsedAt.toISOString(),
     expiresAt: row.expiresAt === null ? null : row.expiresAt.toISOString(),
     revokedAt: row.revokedAt === null ? null : row.revokedAt.toISOString(),
@@ -73,6 +84,9 @@ export class ApiTokensService {
         name: request.name,
         tokenHash: generated.tokenHash,
         prefix: generated.prefix,
+        // Deduplicated, because the scopes are cumulative and a repeated entry
+        // would only make the stored row harder to read.
+        scopes: [...new Set(request.scopes)],
         expiresAt,
       },
     });

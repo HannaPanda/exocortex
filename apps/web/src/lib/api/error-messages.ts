@@ -33,6 +33,7 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   admin_required: 'Dafür brauchst du Administratorrechte.',
   api_token_invalid: 'Das API-Token ist ungültig.',
   api_token_expired: 'Das API-Token ist abgelaufen.',
+  api_token_insufficient_scope: 'Diesem API-Token fehlen die nötigen Rechte.',
   ai_model_unknown: 'Dieses KI-Modell ist nicht bekannt.',
   ai_model_disabled: 'Dieses KI-Modell ist derzeit deaktiviert.',
   ai_tools_unavailable: 'Werkzeuge stehen für die KI gerade nicht bereit.',

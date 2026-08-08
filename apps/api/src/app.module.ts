@@ -10,6 +10,7 @@ import { AttachmentsModule } from './attachments/attachments.module';
 import { AdminGuard } from './auth/admin.guard';
 import { AuthModule } from './auth/auth.module';
 import { SessionGuard } from './auth/session.guard';
+import { TokenScopeGuard } from './auth/token-scope.guard';
 import { ApiExceptionFilter } from './common/exception.filter';
 import { API_ENV } from './common/logger.provider';
 import { DatabasesModule } from './databases/databases.module';
@@ -54,6 +55,9 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     // Authentication runs after rate limiting so unauthenticated floods are
     // rejected before any database access.
     { provide: APP_GUARD, useClass: SessionGuard },
+    // Runs after SessionGuard, so the credential kind and its scopes are known.
+    // Only narrows `exo_` API tokens; sessions and service tokens pass through.
+    { provide: APP_GUARD, useClass: TokenScopeGuard },
     // Runs after SessionGuard, so `request.exocortexSession` already exists;
     // only routes marked `@AdminOnly()` are affected.
     { provide: APP_GUARD, useClass: AdminGuard },

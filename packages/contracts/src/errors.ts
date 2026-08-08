@@ -33,6 +33,7 @@ export const API_ERROR_CODES = [
   'admin_required',
   'api_token_invalid',
   'api_token_expired',
+  'api_token_insufficient_scope',
   'ai_model_unknown',
   'ai_model_disabled',
   'ai_tools_unavailable',
@@ -91,6 +92,9 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   admin_required: 403,
   api_token_invalid: 401,
   api_token_expired: 401,
+  // The credential is valid, it simply may not do this. 403, not 401: retrying
+  // with the same token will never help.
+  api_token_insufficient_scope: 403,
   ai_model_unknown: 404,
   ai_model_disabled: 409,
   ai_tools_unavailable: 503,

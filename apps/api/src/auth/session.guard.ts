@@ -40,10 +40,23 @@ export interface AuthenticatedRequest extends FastifyRequest {
   exocortexSession?: VerifiedSession;
   /** The built-in AI service uses this to know whether tools are allowed. */
   exocortexCredential?: ExocortexCredential;
+  /**
+   * Scopes of the `exo_` token that authenticated this request, if any. A cookie
+   * session and a service token carry the full authority of their user and set
+   * nothing here; `TokenScopeGuard` only narrows persistent API tokens.
+   */
+  exocortexTokenScopes?: readonly string[];
 }
 
 /** A far-future expiry for tokens that never expire (`ApiToken.expiresAt === null`). */
 const NEVER_EXPIRES = new Date('2999-01-01T00:00:00.000Z');
+
+interface VerifiedBearer {
+  session: VerifiedSession;
+  credential: ExocortexCredential;
+  /** Only set for `api_token`; see `AuthenticatedRequest.exocortexTokenScopes`. */
+  scopes?: readonly string[];
+}
 
 /**
  * Global guard: every route requires a valid session unless explicitly marked
@@ -91,16 +104,15 @@ export class SessionGuard implements CanActivate {
       throw AppError.unauthenticated('No valid session cookie was provided');
     }
 
-    const { session, credential } = await this.verifyBearerToken(bearer);
+    const { session, credential, scopes } = await this.verifyBearerToken(bearer);
     request.exocortexSession = session;
     request.exocortexCredential = credential;
+    request.exocortexTokenScopes = scopes;
     setRequestUser(session.userId);
     return true;
   }
 
-  private async verifyBearerToken(
-    token: string,
-  ): Promise<{ session: VerifiedSession; credential: ExocortexCredential }> {
+  private async verifyBearerToken(token: string): Promise<VerifiedBearer> {
     if (token.startsWith(SERVICE_TOKEN_PREFIX)) {
       return this.verifyServiceBearerToken(token);
     }
@@ -110,9 +122,7 @@ export class SessionGuard implements CanActivate {
     throw new AppError('api_token_invalid', 'Unrecognized bearer token format');
   }
 
-  private async verifyServiceBearerToken(
-    token: string,
-  ): Promise<{ session: VerifiedSession; credential: ExocortexCredential }> {
+  private async verifyServiceBearerToken(token: string): Promise<VerifiedBearer> {
     if (this.env.SERVICE_TOKEN_SECRET === undefined) {
       throw new AppError('api_token_invalid', 'Service tokens are not configured');
     }
@@ -152,13 +162,12 @@ export class SessionGuard implements CanActivate {
     };
   }
 
-  private async verifyApiBearerToken(
-    token: string,
-  ): Promise<{ session: VerifiedSession; credential: ExocortexCredential }> {
+  private async verifyApiBearerToken(token: string): Promise<VerifiedBearer> {
     const apiToken = await this.prisma.apiToken.findUnique({
       where: { tokenHash: hashApiToken(token) },
       select: {
         id: true,
+        scopes: true,
         expiresAt: true,
         revokedAt: true,
         user: { select: { id: true, email: true, name: true, emailVerified: true } },
@@ -195,6 +204,7 @@ export class SessionGuard implements CanActivate {
         expiresAt: apiToken.expiresAt ?? NEVER_EXPIRES,
       },
       credential: 'api_token',
+      scopes: apiToken.scopes,
     };
   }
 }

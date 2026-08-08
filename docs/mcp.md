@@ -20,6 +20,11 @@ One catalogue, two surfaces:
   AI's tool loop, authenticated with a short-lived service token instead of a
   persistent API token.
 
+The token an external client uses carries scopes (`docs/security.md`). A client
+given a `read` token can call every tool in the "no" column of the table below
+and will get `api_token_insufficient_scope` from the ones marked "yes". Give a
+read-only client a read-only token; the catalogue does not need to know.
+
 Because both surfaces read `packages/mcp-tools/src/catalog.ts`, adding a tool
 in one place adds it to both at once — external MCP and the built-in AI can
 never drift apart. This is the parity rule referenced from `CLAUDE.md`.
