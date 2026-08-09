@@ -43,6 +43,42 @@ test.describe('documents', () => {
     await expect(page.getByRole('navigation', { name: 'Pfad' })).toContainText(parentTitle);
   });
 
+  /**
+   * Issue #29: opening a subpage through a direct link left the tree folded, so
+   * the "you are here" marking sat on a row nobody could see.
+   */
+  test('unfolds the path to the page a direct link opens', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const marker = Date.now().toString(36);
+    const parentId = await createPage(page, `Baum-Eltern ${marker}`);
+
+    const parentUrl = page.url();
+    await page.getByTestId(`tree-item-${parentId}`).hover();
+    await page
+      .getByTestId(`tree-item-${parentId}`)
+      .getByRole('button', { name: /Unterseite/ })
+      .click();
+    await page.waitForURL(
+      (url) => url.toString() !== parentUrl && /\/seite\/[a-z0-9]+/.test(url.pathname),
+    );
+    const childUrl = page.url();
+    const childId = childUrl.split('/').pop() as string;
+
+    // Fold the parent by hand, then arrive at the child from somewhere else
+    // entirely — the state a search hit or a link in the text produces.
+    await page
+      .getByTestId(`tree-item-${parentId}`)
+      .getByRole('button', { name: 'Unterseiten einklappen' })
+      .click();
+    await expect(page.getByTestId(`tree-item-${childId}`)).toBeHidden();
+
+    await page.goto(parentUrl);
+    await page.goto(childUrl);
+
+    await expect(page.getByTestId(`tree-item-${childId}`)).toBeVisible({ timeout: 30_000 });
+  });
+
   test('archives and restores a page', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });

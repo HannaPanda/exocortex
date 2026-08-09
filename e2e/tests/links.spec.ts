@@ -287,4 +287,96 @@ test.describe('links', () => {
     await page.locator('.exocortex-editor a[data-link-kind="internal"]').click();
     await page.waitForURL(new RegExp(`/seite/${targetId}$`), { timeout: 30_000 });
   });
+  /**
+   * Issue #29: inside a `contenteditable` the browser does not follow anchors,
+   * so "this tab or a new one" is a decision the click handler has to read off
+   * the event instead of deciding for the reader.
+   */
+  test('Strg-click on a link in the text opens it in a new tab', async ({ page, context }) => {
+    const marker = Date.now().toString(36);
+    const targetTitle = `Neuer Tab ${marker}`;
+    const targetId = await createPageWithTitle(page, targetTitle);
+
+    await openEditor(page);
+    await waitForCollaboration(page);
+    const documentUrl = page.url();
+
+    await page.keyboard.type('Verweis mit Zusatztaste');
+    await page.keyboard.press('Home');
+    await page.keyboard.press('Shift+End');
+    await page.getByTestId('mark-link').click();
+    await page.getByTestId('link-input').fill(`[[${targetTitle}]]`);
+    await page.getByTestId('link-apply').click();
+
+    const [popup] = await Promise.all([
+      context.waitForEvent('page'),
+      page
+        .locator('.exocortex-editor a[data-link-kind="internal"]')
+        .click({ modifiers: ['ControlOrMeta'] }),
+    ]);
+    await popup.waitForLoadState('domcontentloaded');
+    expect(popup.url()).toContain(`/seite/${targetId}`);
+    await popup.close();
+
+    // And this tab stayed where it was, which is the whole point.
+    expect(page.url()).toBe(documentUrl);
+  });
+
+  /**
+   * Issue #24: a `[[Titel]]` in running text now carries the identity of its
+   * target, so renaming the target no longer breaks it — the guarantee the
+   * page-link block already had.
+   */
+  test('a [[Titel]] picked from the list survives its target being renamed', async ({ page }) => {
+    const marker = Date.now().toString(36);
+    const targetTitle = `Fließtext-Ziel ${marker}`;
+    const renamedTitle = `Fließtext umbenannt ${marker}`;
+    const targetId = await createPageWithTitle(page, targetTitle);
+
+    await openEditor(page);
+    await waitForCollaboration(page);
+    await page.keyboard.type('Siehe dort');
+    await page.keyboard.press('Home');
+    await page.keyboard.press('Shift+End');
+
+    // Picking the page from the list is the moment the identity is known, and
+    // therefore the moment it is written.
+    await page.getByTestId('mark-link').click();
+    await page.getByTestId('link-input').fill(targetTitle);
+    await page.getByTestId(`link-page-option-${targetId}`).click();
+    await waitForCollaboration(page);
+
+    const sourceUrl = page.url();
+    await page.goto(sourceUrl.replace(/\/seite\/[a-z0-9]+$/, `/seite/${targetId}`));
+    const titleInput = page.getByTestId('document-title');
+    await expect(titleInput).toHaveValue(targetTitle, { timeout: 15_000 });
+    await titleInput.fill(renamedTitle);
+    await titleInput.blur();
+    await waitForCollaboration(page);
+
+    await page.goto(sourceUrl);
+    const link = page.locator('.exocortex-editor a[data-link-kind="internal"]');
+    await expect(link).toBeVisible();
+    // Not marked as dead, and it still lands on the page it always meant.
+    await expect(link).not.toHaveClass(/exocortex-wiki-unresolved/);
+    await link.click();
+    await page.waitForURL(new RegExp(`/seite/${targetId}$`), { timeout: 30_000 });
+  });
+
+  test('a [[Titel]] nobody carries is marked as unresolved in the text', async ({ page }) => {
+    const marker = Date.now().toString(36);
+
+    await openEditor(page);
+    await waitForCollaboration(page);
+    await page.keyboard.type('Toter Verweis im Text');
+    await page.keyboard.press('Home');
+    await page.keyboard.press('Shift+End');
+    await page.getByTestId('mark-link').click();
+    await page.getByTestId('link-input').fill(`[[Es gibt mich nicht ${marker}]]`);
+    await page.getByTestId('link-apply').click();
+
+    await expect(page.locator('.exocortex-editor .exocortex-wiki-unresolved')).toBeVisible({
+      timeout: 30_000,
+    });
+  });
 });

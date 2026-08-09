@@ -106,5 +106,13 @@ test.describe('markdown and search', () => {
       .toBeGreaterThan(0);
 
     await expect(page.getByRole('listbox')).toContainText(marker);
+
+    // Issue #29: a hit is a real anchor, so it can be middle-clicked, opened in
+    // a new tab from the context menu, or have its address copied — none of
+    // which an `onSelect` handler can offer.
+    // By attribute rather than by role: a link inside a `role="option"` row is
+    // pruned from the accessibility tree, so the anchor is only findable here.
+    const hit = page.locator('[data-testid^="search-result-"]').first();
+    await expect(hit).toHaveAttribute('href', /\/seite\/[a-z0-9]+$/);
   });
 });
