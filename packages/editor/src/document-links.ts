@@ -21,6 +21,13 @@ export interface ExtractedDocumentLink {
   targetTitle: string;
   /** Comparison key: `targetTitle` lowercased. Resolution happens on this. */
   targetTitleKey: string;
+  /**
+   * Identity the reference itself carries, when it has one (`pageLink`'s
+   * `documentId`, `mention`'s `id`). The index resolves against this first, so
+   * renaming a page does not orphan the references to it. `null` for a
+   * `wikiMark`, which is addressed by title by nature.
+   */
+  targetDocumentId: string | null;
   /** Identifier of the addressable block the reference sits in, when it has one. */
   blockId: string | null;
   /** Surrounding sentence, for the backlink preview. May be empty. */
@@ -54,6 +61,11 @@ const ADDRESSABLE = new Set<string>(ADDRESSABLE_BLOCK_TYPES);
 
 function stringAttribute(value: unknown): string {
   return typeof value === 'string' ? value : '';
+}
+
+/** A stored identity, normalized to `null` when it is absent or empty. */
+function identityAttribute(value: unknown): string | null {
+  return typeof value === 'string' && value.length > 0 ? value : null;
 }
 
 /**
@@ -106,6 +118,7 @@ export function extractDocumentLinks(document: ProseMirrorDocument): ExtractedDo
   const add = (
     kind: DocumentLinkKind,
     rawTitle: string,
+    targetDocumentId: string | null,
     block: ProseMirrorNode | null,
     blockId: string | null,
   ): void => {
@@ -117,7 +130,12 @@ export function extractDocumentLinks(document: ProseMirrorDocument): ExtractedDo
 
     // Joined on U+0000, written as an escape rather than a literal byte: a
     // literal NUL makes this file binary to grep and friends.
-    const key = `${kind}\u0000${targetTitleKey}\u0000${blockId ?? ''}`;
+    //
+    // The identity is deliberately *not* part of the key. Two references to two
+    // different pages that happen to share one title, inside one block, stay
+    // one row: the index is a convenience projection and the unique constraint
+    // behind it is on the same triple.
+    const key =`${kind}\u0000${targetTitleKey}\u0000${blockId ?? ''}`;
     if (seen.has(key)) return;
     seen.add(key);
 
@@ -125,6 +143,7 @@ export function extractDocumentLinks(document: ProseMirrorDocument): ExtractedDo
       kind,
       targetTitle,
       targetTitleKey,
+      targetDocumentId,
       blockId,
       context: contextOf(block, targetTitle),
       position: links.length,
@@ -143,12 +162,24 @@ export function extractDocumentLinks(document: ProseMirrorDocument): ExtractedDo
     const nextBlockId = isValidBlockId(ownId) ? ownId : blockId;
 
     if (node.type === 'pageLink') {
-      add('pageLink', stringAttribute(node.attrs?.title), nextBlock, nextBlockId);
+      add(
+        'pageLink',
+        stringAttribute(node.attrs?.title),
+        identityAttribute(node.attrs?.documentId),
+        nextBlock,
+        nextBlockId,
+      );
     } else if (node.type === 'mention') {
       const kind = stringAttribute(node.attrs?.kind).toLowerCase();
       // `page` is the schema default, so an absent attribute means a page.
       if (kind === '' || kind === 'page') {
-        add('mention', stringAttribute(node.attrs?.label), nextBlock, nextBlockId);
+        add(
+          'mention',
+          stringAttribute(node.attrs?.label),
+          identityAttribute(node.attrs?.id),
+          nextBlock,
+          nextBlockId,
+        );
       }
     } else if (node.type === 'text') {
       for (const mark of node.marks ?? []) {
@@ -156,7 +187,8 @@ export function extractDocumentLinks(document: ProseMirrorDocument): ExtractedDo
         const target = parseLinkHref(
           typeof mark.attrs?.href === 'string' ? mark.attrs.href : null,
         );
-        if (target.kind === 'wiki') add('wikiMark', target.title, nextBlock, nextBlockId);
+        // A `wiki:` href addresses by title by nature: no identity to carry.
+        if (target.kind === 'wiki') add('wikiMark', target.title, null, nextBlock, nextBlockId);
       }
     }
 

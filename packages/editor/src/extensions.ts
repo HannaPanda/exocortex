@@ -89,6 +89,7 @@ import {
 import { corePlainTextAdapter } from './plain-text-adapter';
 import { SCHEMA_V2_MIGRATION } from './schema-v2';
 import { SCHEMA_V3_MIGRATION } from './schema-v3';
+import { SCHEMA_V4_MIGRATION } from './schema-v4';
 import {
   TableOfContents,
   tableOfContentsBlocks,
@@ -222,10 +223,12 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
   },
   {
     name: 'page-link',
-    schemaVersion: 2,
+    // Introduced in 2, changed in 4 (the target's identity, issue #14).
+    schemaVersion: 4,
     extensions: [PageLink],
     markdown: pageLinkMarkdownAdapter,
     plainText: pageLinkPlainTextAdapter,
+    migrations: [SCHEMA_V4_MIGRATION],
     blocks: pageLinkBlocks,
   },
   {

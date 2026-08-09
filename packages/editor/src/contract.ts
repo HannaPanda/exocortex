@@ -9,7 +9,7 @@ import { type BlockCatalogEntry } from './block-catalog';
  * documents must be migrated for. Every `DocumentContent` and
  * `DocumentSnapshot` row stores the version it was written with.
  */
-export const EXOCORTEX_SCHEMA_VERSION = 3;
+export const EXOCORTEX_SCHEMA_VERSION = 4;
 
 /** Minimal structural view of a ProseMirror JSON node. */
 export interface ProseMirrorMark {

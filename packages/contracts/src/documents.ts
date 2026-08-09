@@ -146,25 +146,39 @@ export const documentTreeResponseSchema = z.object({
 export type DocumentTreeResponse = z.infer<typeof documentTreeResponseSchema>;
 
 /**
- * Resolves a `[[Titel]]` / `wiki:Titel` link to the document(s) with exactly
- * that title. Deliberately not the fuzzy `/search` endpoint: following a link
- * must be deterministic (exact title or nothing) and must not depend on the
+ * Resolves a reference to another page to the document(s) it means.
+ *
+ * Two ways in, and they are tried in that order: `documentId`, the identity a
+ * `pageLink` block stores, and `title`, which is what `[[Titel]]` /
+ * `wiki:Titel` and a page mention carry. Identity first is what makes renaming
+ * a page harmless; the title is the fallback that keeps a reference alive when
+ * its target was deleted and written again.
+ *
+ * Deliberately not the fuzzy `/search` endpoint: following a link must be
+ * deterministic (exact title or nothing) and must not depend on the
  * asynchronous search index having caught up with a page just created or
  * renamed.
  */
-export const resolveDocumentLinkRequestSchema = z.object({
-  title: documentTitleSchema,
-  /**
-   * An archived page is still a real target for a link (read-only view), so
-   * this defaults to `true` — defaulting to `false` would report a dead link
-   * for a page that in fact exists.
-   */
-  includeArchived: z
-    .union([z.boolean(), z.enum(['true', 'false'])])
-    .transform((value) => value === true || value === 'true')
-    .default(true),
-  limit: z.coerce.number().int().min(1).max(20).default(10),
-});
+export const resolveDocumentLinkRequestSchema = z
+  .object({
+    /** Optional only when `documentId` is given; both together is the normal case. */
+    title: documentTitleSchema.optional(),
+    /** Identity of the target, when the reference carries one. */
+    documentId: idSchema.optional(),
+    /**
+     * An archived page is still a real target for a link (read-only view), so
+     * this defaults to `true` — defaulting to `false` would report a dead link
+     * for a page that in fact exists.
+     */
+    includeArchived: z
+      .union([z.boolean(), z.enum(['true', 'false'])])
+      .transform((value) => value === true || value === 'true')
+      .default(true),
+    limit: z.coerce.number().int().min(1).max(20).default(10),
+  })
+  .refine((value) => value.title !== undefined || value.documentId !== undefined, {
+    message: 'Either title or documentId is required',
+  });
 export type ResolveDocumentLinkRequest = z.infer<typeof resolveDocumentLinkRequestSchema>;
 
 export const documentLinkMatchSchema = z.object({
@@ -181,9 +195,20 @@ export const documentLinkMatchSchema = z.object({
 export type DocumentLinkMatch = z.infer<typeof documentLinkMatchSchema>;
 
 export const resolveDocumentLinkResponseSchema = z.object({
-  /** The normalized title that was looked up. */
+  /**
+   * The normalized title that was looked up. When only a `documentId` was
+   * given, the title that document carries — which is exactly what a caller
+   * needs in order to refresh a stale label.
+   */
   title: z.string(),
   matches: z.array(documentLinkMatchSchema),
+  /**
+   * Which of the two given values produced the matches: `id` when the stored
+   * identity still names a document, `title` when the title had to stand in
+   * for it (a link made before identities, or a target that was deleted and
+   * written again), `none` when neither resolved to anything.
+   */
+  resolvedBy: z.enum(['id', 'title', 'none']),
 });
 export type ResolveDocumentLinkResponse = z.infer<typeof resolveDocumentLinkResponseSchema>;
 

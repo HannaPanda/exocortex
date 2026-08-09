@@ -182,17 +182,36 @@ export interface MarkdownImportResult {
   schemaVersion: number;
 }
 
+export interface MarkdownImportOptions {
+  /**
+   * Runs over the parsed document before it becomes canonical Yjs state.
+   *
+   * The one seam the import needs and this package cannot fill itself:
+   * `[[Titel]]` carries no identity, so binding it to a document
+   * (`bindPageLinkIdentities`) requires a workspace and a database. The caller
+   * supplies that; the transform stays pure.
+   */
+  transformDocument?: (document: ProseMirrorDocument) => ProseMirrorDocument;
+}
+
 /**
  * Converts a Markdown file into a Yjs-backed document. The Yjs state produced
  * here becomes the canonical state of the new document.
  */
-export function markdownToYjsState(markdown: string): MarkdownImportResult {
+export function markdownToYjsState(
+  markdown: string,
+  options: MarkdownImportOptions = {},
+): MarkdownImportResult {
   const parsed = parseMarkdown(markdown);
-  const yjsState = proseMirrorJsonToYjsState(parsed.document);
+  const document =
+    options.transformDocument === undefined
+      ? parsed.document
+      : options.transformDocument(parsed.document);
+  const yjsState = proseMirrorJsonToYjsState(document);
   return {
     yjsState,
-    proseMirrorJson: parsed.document,
-    plainText: serializePlainText(parsed.document),
+    proseMirrorJson: document,
+    plainText: serializePlainText(document),
     title: parsed.title,
     frontmatter: parsed.frontmatter,
     schemaVersion: EXOCORTEX_SCHEMA_VERSION,
