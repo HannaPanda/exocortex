@@ -11,6 +11,7 @@ import {
   type DatabasePropertyOption,
   type DatabaseRow,
   type DatabaseView,
+  type DocumentRowResponse,
   type QueryDatabaseRowsRequest,
   type QueryDatabaseRowsResponse,
   type ReorderDatabasePropertyRequest,
@@ -28,6 +29,8 @@ export const databaseQueryKeys = {
   views: (documentId: string) => ['database', documentId, 'views'] as const,
   rows: (documentId: string, viewId: string | undefined) =>
     ['database', documentId, 'rows', viewId ?? 'default'] as const,
+  /** A single row by its own document id, independent of its collection. */
+  row: (rowId: string) => ['database', 'row', rowId] as const,
 };
 
 // ---------------------------------------------------------------------------
@@ -242,6 +245,29 @@ export function useUpdateDatabaseRowValues(documentId: string) {
         method: 'PATCH',
         body: input.request,
       }),
-    onSuccess: () => void client.invalidateQueries({ queryKey: ['database', documentId, 'rows'] }),
+    onSuccess: (_row, variables) => {
+      void client.invalidateQueries({ queryKey: ['database', documentId, 'rows'] });
+      // The row-peek sheet and the table view both read from `rows` above; the
+      // context panel's properties tab reads a single row by its own id
+      // instead (`useDocumentRow`), so it needs its own invalidation.
+      void client.invalidateQueries({ queryKey: databaseQueryKeys.row(variables.rowId) });
+    },
+  });
+}
+
+/**
+ * A single row by the id of the document it is (not by its collection): "is
+ * this document a database row, and if so what are its values?" Used by the
+ * context panel's properties tab (issue #17), which has an open document's id
+ * and no reason to already know its collection.
+ */
+export function useDocumentRow(documentId: string | undefined) {
+  return useQuery({
+    queryKey: databaseQueryKeys.row(documentId ?? 'none'),
+    queryFn: async () => {
+      const response = await apiRequest<DocumentRowResponse>(`/api/documents/${documentId ?? ''}/row`);
+      return response.row;
+    },
+    enabled: documentId !== undefined,
   });
 }

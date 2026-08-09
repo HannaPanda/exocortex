@@ -32,7 +32,8 @@ import { useUpdateDocument } from '@/lib/api/queries';
 import { DocumentIcon } from './document-icon';
 import { PageIconPicker } from './page-icon-picker';
 
-const AI_RULE_MODE_LABELS: Record<AiRuleMode, string> = {
+/** Also reused by the context panel's properties tab (issue #17). */
+export const AI_RULE_MODE_LABELS: Record<AiRuleMode, string> = {
   off: 'Keine Regel',
   always: 'Immer anwenden',
   on_demand: 'Auf Anfrage',

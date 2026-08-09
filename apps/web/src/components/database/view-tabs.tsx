@@ -19,7 +19,8 @@ import {
 
 import { useCreateDatabaseView, useDeleteDatabaseView } from '@/lib/api/database-queries';
 
-const VIEW_TYPE_LABELS: Record<DatabaseViewType, string> = {
+/** Also reused by the context panel's "Sammlung" tab (issue #17). */
+export const VIEW_TYPE_LABELS: Record<DatabaseViewType, string> = {
   TABLE: 'Tabelle',
   BOARD: 'Board',
   GALLERY: 'Galerie',
