@@ -59,9 +59,63 @@ import {
   useUpdateDocument,
   useWorkspaces,
 } from '@/lib/api/queries';
+import { usePersistentState } from '@/lib/use-persistent-state';
 
 interface PageTreeProps {
   workspaceId: string;
+}
+
+/** Which rows are unfolded, by document id. Only `true` counts as open. */
+type ExpandedState = Readonly<Record<string, boolean>>;
+
+/** Stable fallback: `usePersistentState` memoizes on the identity of this. */
+const EMPTY_EXPANDED: ExpandedState = {};
+
+/**
+ * Reads the persisted unfold state back.
+ *
+ * Anything that is not an object of booleans is discarded rather than repaired:
+ * the state is a convenience, and a half-read one would be worse than starting
+ * folded.
+ */
+function parseExpanded(raw: string): ExpandedState {
+  const parsed: unknown = JSON.parse(raw);
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return {};
+  const result: Record<string, boolean> = {};
+  for (const [id, value] of Object.entries(parsed)) {
+    if (value === true) result[id] = true;
+  }
+  return result;
+}
+
+/**
+ * The ids of every ancestor of `documentId`, excluding the node itself.
+ *
+ * Derived from the tree the sidebar already holds, so finding out where the
+ * open document sits costs no request — `GET /api/documents/:id` would answer
+ * the same question with a round trip.
+ */
+function ancestorsOf(
+  nodes: readonly DocumentTreeNode[],
+  documentId: string | undefined,
+): string[] {
+  if (documentId === undefined) return [];
+
+  const search = (node: DocumentTreeNode, path: string[]): string[] | null => {
+    if (node.id === documentId) return path;
+    const nextPath = [...path, node.id];
+    for (const child of node.children) {
+      const found = search(child, nextPath);
+      if (found !== null) return found;
+    }
+    return null;
+  };
+
+  for (const node of nodes) {
+    const found = search(node, []);
+    if (found !== null) return found;
+  }
+  return [];
 }
 
 /**
@@ -81,7 +135,13 @@ export function PageTree({ workspaceId }: PageTreeProps) {
   const updateDocument = useUpdateDocument(workspaceId);
   const moveDocument = useMoveDocument(workspaceId);
   const workspaces = useWorkspaces();
-  const [expanded, setExpanded] = React.useState<Record<string, boolean>>({});
+  // Per workspace, and persisted: which rows are unfolded is orientation, and
+  // orientation that a reload throws away is orientation nobody relies on.
+  const [expanded, setExpanded] = usePersistentState<ExpandedState>(
+    `exocortex.tree.expanded.${workspaceId}`,
+    EMPTY_EXPANDED,
+    parseExpanded,
+  );
   const [showTrash, setShowTrash] = React.useState(false);
   // Which row's icon picker is open. One id rather than one flag per row,
   // because two of them can never be open at the same time, and because the
@@ -94,9 +154,30 @@ export function PageTree({ workspaceId }: PageTreeProps) {
   const [moveTargetWorkspaceId, setMoveTargetWorkspaceId] = React.useState('');
 
   const activeDocumentId = params.documentId;
+  const nodes = tree.data?.nodes;
+
+  /**
+   * Unfolds the path down to the open document.
+   *
+   * Without this the active row is marked but not rendered: the marking sits on
+   * a node inside a folded parent, so opening a subpage through the search, a
+   * reference in the text or a direct link left the tree showing nothing at all
+   * (issue #29).
+   *
+   * An effect rather than a derived "ancestors count as open": the unfold state
+   * belongs to the reader, so navigation *opens* the path and leaves it open
+   * afterwards, instead of forcing it open for as long as the page is the
+   * active one — which would make the chevron on those rows do nothing.
+   */
+  React.useEffect(() => {
+    if (nodes === undefined) return;
+    const path = ancestorsOf(nodes, activeDocumentId);
+    if (path.every((id) => expanded[id] === true)) return;
+    setExpanded({ ...expanded, ...Object.fromEntries(path.map((id) => [id, true])) });
+  }, [activeDocumentId, expanded, nodes, setExpanded]);
 
   const toggle = (documentId: string): void => {
-    setExpanded((current) => ({ ...current, [documentId]: current[documentId] !== true }));
+    setExpanded({ ...expanded, [documentId]: expanded[documentId] !== true });
   };
 
   const createChild = async (parentId: string | null, type: DocumentType = 'PAGE'): Promise<void> => {
@@ -105,7 +186,7 @@ export function PageTree({ workspaceId }: PageTreeProps) {
       type,
       parentId,
     });
-    if (parentId !== null) setExpanded((current) => ({ ...current, [parentId]: true }));
+    if (parentId !== null) setExpanded({ ...expanded, [parentId]: true });
     router.push(`/arbeitsbereich/${workspaceId}/seite/${document.id}`);
   };
 

@@ -8,6 +8,16 @@ import { type LinkTarget } from '@exocortex/editor';
 export interface FollowLinkOptions {
   /** The anchor had a `download` attribute: force a download instead of a new tab. */
   download: boolean;
+  /**
+   * The click asked for a second tab: middle click, Strg-/Cmd-click, or an
+   * anchor that carries `target="_blank"` of its own.
+   *
+   * A `contenteditable` root does not let the browser follow anchors, so the
+   * decision "this tab or a new one" — which belongs to the reader everywhere
+   * else in a browser — has to be read off the event and carried down to
+   * whichever branch of `follow` knows how to open the target (issue #29).
+   */
+  newTab: boolean;
 }
 
 /** Navigates to, or resolves and shows a dialog for, a classified link target. */

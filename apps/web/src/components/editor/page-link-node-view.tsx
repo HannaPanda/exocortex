@@ -3,6 +3,7 @@
 import { type NodeViewProps } from '@tiptap/core';
 import { NodeViewWrapper } from '@tiptap/react';
 import { PencilIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
@@ -23,6 +24,9 @@ import { PageLinkPromptContext } from './page-link-context';
 interface PageLinkNodeViewProps extends NodeViewProps {
   workspaceId: string;
 }
+
+/** Layout of the clickable part of the card, shared by the anchor and the button. */
+const TARGET_CLASS = 'flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-left';
 
 /** German for each way a reference can fail to name a page. */
 const UNRESOLVED_TEXT: Readonly<Record<'empty' | 'deleted' | 'missing', string>> = {
@@ -78,22 +82,32 @@ export function PageLinkNodeView({
     },
   );
 
+  /**
+   * The route this card points at, or `null` while it points at nothing
+   * unambiguous — several pages carry the title, or none does.
+   *
+   * A known route is rendered as a real `href` below, which is what makes
+   * middle click, Strg-/Cmd-click, "Link in neuem Tab öffnen" and copying the
+   * address work at all (issue #29). `role="link"` without one is a promise to
+   * a screen reader that nothing keeps.
+   */
+  const href =
+    target.state === 'resolved' && !target.ambiguous
+      ? `/arbeitsbereich/${workspaceId}/seite/${target.target.id}`
+      : null;
+
   const activate = (): void => {
     // An unambiguous target is navigated to directly; everything else goes
     // through `follow`, which owns the "several pages" and "no such page"
     // dialogs including the offer to create one.
-    if (target.state === 'resolved' && !target.ambiguous) {
-      router.push(`/arbeitsbereich/${workspaceId}/seite/${target.target.id}`);
+    if (href !== null) {
+      router.push(href);
       return;
     }
-    followLinkRef?.current?.({ kind: 'wiki', title }, { download: false });
-  };
-
-  const onKeyDown = (event: React.KeyboardEvent): void => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      activate();
-    }
+    followLinkRef?.current?.(
+      { kind: 'wiki', title, documentId },
+      { download: false, newTab: false },
+    );
   };
 
   const retarget = async (): Promise<void> => {
@@ -103,6 +117,23 @@ export function PageLinkNodeView({
   };
 
   const unresolved = target.state === 'unresolved';
+
+  // Built once and put inside whichever element the resolution calls for below.
+  const label =
+    target.state === 'resolved' ? (
+      <>
+        <DocumentIcon
+          icon={matches[0]?.icon ?? null}
+          iconColor={matches[0]?.iconColor ?? null}
+          type={matches[0]?.type ?? 'PAGE'}
+        />
+        <span className="truncate">{target.target.title}</span>
+        {matches[0]?.archivedAt == null ? null : <Badge variant="muted">Archiviert</Badge>}
+        {target.ambiguous ? (
+          <span className="text-xs text-muted-foreground">Mehrere Seiten mit diesem Titel</span>
+        ) : null}
+      </>
+    ) : null;
 
   return (
     <NodeViewWrapper
@@ -142,24 +173,19 @@ export function PageLinkNodeView({
         </div>
       ) : (
         <div className="flex flex-1 items-center gap-2">
-          <div
-            role="link"
-            tabIndex={0}
-            className="flex min-w-0 flex-1 items-center gap-2"
-            onClick={activate}
-            onKeyDown={onKeyDown}
-          >
-            <DocumentIcon
-              icon={matches[0]?.icon ?? null}
-              iconColor={matches[0]?.iconColor ?? null}
-              type={matches[0]?.type ?? 'PAGE'}
-            />
-            <span className="truncate">{target.target.title}</span>
-            {matches[0]?.archivedAt == null ? null : <Badge variant="muted">Archiviert</Badge>}
-            {target.ambiguous ? (
-              <span className="text-xs text-muted-foreground">Mehrere Seiten mit diesem Titel</span>
-            ) : null}
-          </div>
+          {/* An anchor when the target is known, a button when a click can only
+              open the "mehrere Seiten" dialog: the element type says which of
+              the two the click does, and the anchor is left to navigate on its
+              own so a modifier still reaches the browser. */}
+          {href === null ? (
+            <button type="button" className={TARGET_CLASS} onClick={activate}>
+              {label}
+            </button>
+          ) : (
+            <Link href={href} className={TARGET_CLASS} data-testid="page-link-target">
+              {label}
+            </Link>
+          )}
           {editor.isEditable ? (
             <Button
               variant="ghost"

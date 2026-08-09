@@ -1,6 +1,7 @@
 'use client';
 
 import { PlusIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
@@ -46,24 +47,41 @@ export function SearchCommand({ workspaceId, open, onOpenChange }: SearchCommand
       });
     }
 
-    const results = (search.data?.results ?? []).map<CommandItem>((result) => ({
-      id: result.documentId,
-      group: 'Seiten',
-      label: result.title,
-      hint: result.snippet.replace(/<\/?mark>/g, '').slice(0, 60),
-      icon: (
-        <DocumentIcon
-          icon={result.icon}
-          iconColor={result.iconColor}
-          type={result.type}
-          className="text-muted-foreground"
-        />
-      ),
-      onSelect: () => {
-        onOpenChange(false);
-        router.push(`/arbeitsbereich/${result.workspaceId}/seite/${result.documentId}`);
-      },
-    }));
+    const results = (search.data?.results ?? []).map<CommandItem>((result) => {
+      const href = `/arbeitsbereich/${result.workspaceId}/seite/${result.documentId}`;
+      return {
+        id: result.documentId,
+        group: 'Seiten',
+        label: result.title,
+        hint: result.snippet.replace(/<\/?mark>/g, '').slice(0, 60),
+        icon: (
+          <DocumentIcon
+            icon={result.icon}
+            iconColor={result.iconColor}
+            type={result.type}
+            className="text-muted-foreground"
+          />
+        ),
+        // A real anchor, so a hit can be opened in a new tab or its address
+        // copied; `onSelect` below is the same route for the keyboard.
+        link: (
+          <Link
+            href={href}
+            data-testid={`search-result-${result.documentId}`}
+            onClick={(event) => {
+              // A modified click opens a background tab: the palette is still
+              // the surface the reader is working in and must stay open.
+              if (event.ctrlKey || event.metaKey || event.shiftKey) return;
+              onOpenChange(false);
+            }}
+          />
+        ),
+        onSelect: () => {
+          onOpenChange(false);
+          router.push(href);
+        },
+      };
+    });
 
     return [...actions, ...results];
   }, [createDocument, onOpenChange, router, search.data, workspaceId]);

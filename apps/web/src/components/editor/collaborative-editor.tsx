@@ -7,7 +7,7 @@ import { CollaborationCaret } from '@tiptap/extension-collaboration-caret';
 import { FileHandler } from '@tiptap/extension-file-handler';
 import { NodeRange } from '@tiptap/extension-node-range';
 import { Placeholder } from '@tiptap/extension-placeholder';
-import { type Node as PmNode } from '@tiptap/pm/model';
+import { type Mark as PmMark, type Node as PmNode } from '@tiptap/pm/model';
 import { type EditorView } from '@tiptap/pm/view';
 import { type Editor, EditorContent, ReactNodeViewRenderer, useEditor } from '@tiptap/react';
 import * as React from 'react';
@@ -26,6 +26,7 @@ import {
   buildBlockCatalog,
   buildEditorExtensions,
   DatabaseEmbed,
+  type LinkTarget,
   PageLink,
   parseLinkHref,
   YJS_DOCUMENT_FIELD,
@@ -64,6 +65,7 @@ import {
 } from '@/components/editor/slash-menu';
 import { type SuggestionKeyboard } from '@/components/editor/suggestion-menu';
 import { TableToolbar } from '@/components/editor/table-toolbar';
+import { createWikiLinkMarkers, WikiLinkMarkers } from '@/components/editor/wiki-link-markers';
 import {
   presenceColor,
   type PresenceUser,
@@ -120,13 +122,37 @@ function mediaNodeFor(
 }
 
 /**
+ * Puts the identity a `[[Titel]]` mark carries back onto the parsed target.
+ *
+ * `parseLinkHref` only ever sees the address, and a wiki address is a title
+ * (issue #24 keeps it that way: an exported file contains no internal ids).
+ * The identity lives next to it, in the mark's `documentId` attribute — or, on
+ * the paths that have no mark to read (middle click arrives as a DOM event, and
+ * a read-only page is rendered HTML), in the anchor's `data-document-id`.
+ */
+function withLinkIdentity(
+  target: LinkTarget,
+  mark: PmMark | undefined,
+  anchor: HTMLAnchorElement | null,
+): LinkTarget {
+  if (target.kind !== 'wiki') return target;
+  const fromMark = mark?.attrs.documentId;
+  const documentId =
+    typeof fromMark === 'string' && fromMark.length > 0
+      ? fromMark
+      : anchor?.getAttribute('data-document-id') ?? null;
+  return documentId === null || documentId.length === 0 ? target : { ...target, documentId };
+}
+
+/**
  * Decides whether a click follows a link, and if so, does it.
  *
- * Wired into `editorProps.handleClickOn` (mouse) and `handleDOMEvents.click`
- * with `event.detail === 0` (keyboard-activated click), see the docstring on
- * `EditorSurface` for why this has to be a plain module function rather than
- * something that closes over component state: `useEditor`'s dependency array
- * must not grow.
+ * Wired into `editorProps.handleClickOn` (mouse), `handleDOMEvents.click` with
+ * `event.detail === 0` (keyboard-activated click) and `handleDOMEvents.auxclick`
+ * (middle click, which never produces a `click` event and therefore never
+ * reaches `handleClickOn`). See the docstring on `EditorSurface` for why this
+ * has to be a plain module function rather than something that closes over
+ * component state: `useEditor`'s dependency array must not grow.
  */
 function followFromEvent(
   view: EditorView,
@@ -134,7 +160,9 @@ function followFromEvent(
   event: MouseEvent,
   ref: React.RefObject<FollowLink | null>,
 ): boolean {
-  if (event.button !== 0) return false;
+  // Left and middle button only: the right button belongs to the context menu,
+  // where "Link in neuem Tab öffnen" is the browser's own affair.
+  if (event.button !== 0 && event.button !== 1) return false;
   // Alt holds the link still: the caret is meant to land next to it instead.
   if (event.altKey && view.editable) return false;
 
@@ -147,14 +175,21 @@ function followFromEvent(
   // Prefers the mark on the clicked text node, falling back to the DOM anchor
   // (table of contents, breadcrumb and media blocks render their own anchors
   // without a `link` mark).
-  const markHref = node?.marks.find((mark) => mark.type.name === 'link')?.attrs.href;
+  const mark = node?.marks.find((candidate) => candidate.type.name === 'link');
+  const markHref = mark?.attrs.href;
   const href = typeof markHref === 'string' ? markHref : anchor?.getAttribute('href') ?? null;
 
   const target = parseLinkHref(href);
   if (target.kind === 'unknown') return false;
 
   event.preventDefault();
-  ref.current?.(target, { download: anchor?.hasAttribute('download') === true });
+  ref.current?.(withLinkIdentity(target, mark, anchor), {
+    download: anchor?.hasAttribute('download') === true,
+    // Middle click and Strg-/Cmd-click mean the same thing on every other
+    // anchor in the browser; an anchor of its own that says `_blank` (every
+    // external link does, see the Link extension) keeps saying it.
+    newTab: event.button === 1 || event.ctrlKey || event.metaKey || anchor?.target === '_blank',
+  });
   return true;
 }
 
@@ -426,6 +461,10 @@ function EditorSurface({
   // like the suggestion plugins above: which blocks are marked is pushed in
   // from `CommentMarkers` in the chrome, never read here.
   const commentMarkers = React.useMemo(() => createCommentMarkers(), []);
+  // Marks the `[[Titel]]` references whose target does not exist. Same shape as
+  // the comment markers: stateless here, fed from `WikiLinkMarkers` in the
+  // chrome.
+  const wikiLinkMarkers = React.useMemo(() => createWikiLinkMarkers(), []);
 
   /**
    * Dropped and pasted files. Kept here rather than in the chrome because the
@@ -509,6 +548,7 @@ function EditorSurface({
           slashExtension,
           mentionExtension,
           commentMarkers,
+          wikiLinkMarkers,
           // A peer requirement of the drag handle: dragging selects a whole node
           // range. Without it the handle is registered but never becomes visible,
           // because the plugin cannot resolve a range to grab.
@@ -540,6 +580,21 @@ function EditorSurface({
         handleDOMEvents: {
           click: (view, event) =>
             event.detail === 0 ? followFromEvent(view, null, event, followLinkRef) : false,
+          // Middle click fires `auxclick`, never `click`, so `handleClickOn`
+          // never sees it. Without this a middle click on a link inside a
+          // `contenteditable` does nothing at all (issue #29). No node is
+          // available here; the DOM anchor carries everything needed.
+          auxclick: (view, event) =>
+            event.button === 1 ? followFromEvent(view, null, event, followLinkRef) : false,
+          // Stops the middle button from starting autoscroll (or pasting the
+          // X11 selection) on the link the `auxclick` above is about to open.
+          mousedown: (_view, event) => {
+            const element = event.target instanceof HTMLElement ? event.target : null;
+            if (event.button !== 1 || element?.closest('a') == null) return false;
+            event.preventDefault();
+            // Not handled: ProseMirror still gets to place the selection.
+            return false;
+          },
         },
       },
     },
@@ -553,6 +608,7 @@ function EditorSurface({
       slashExtension,
       mentionExtension,
       commentMarkers,
+      wikiLinkMarkers,
     ],
   );
 
@@ -729,6 +785,9 @@ function EditorChrome({
           the panel, in both directions. Read-only pages get them too — a marker
           is a pointer to a discussion, not an editing affordance. */}
       <CommentMarkers editor={editor} documentId={documentId} />
+      {/* Renders nothing either: it tells the text which of its `[[Titel]]`
+          references point at a page that exists (issue #24). */}
+      <WikiLinkMarkers editor={editor} workspaceId={workspaceId} />
       {prompt.element}
       {linkNavigation.element}
     </>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useRender } from '@base-ui-components/react/use-render';
 import { SearchIcon } from 'lucide-react';
 import * as React from 'react';
 
@@ -15,6 +16,38 @@ export interface CommandItem {
   onSelect: () => void;
   /** Section heading this item belongs to. */
   group: string;
+  /**
+   * The anchor an item that merely navigates is wrapped in — pass
+   * `<Link href="…" />`, the same `render` convention `Button` uses.
+   *
+   * A palette entry that goes somewhere has to *be* a link, not a row that
+   * happens to call the router: middle click, Strg-/Cmd-click, "open in new
+   * tab" from the context menu and copying the address are all things the
+   * browser does for free with an anchor and cannot be re-earned with an
+   * `onClick` (issue #29). `onSelect` stays for the keyboard path, which is
+   * what the palette is really for; the anchor is the addition, not the
+   * replacement.
+   */
+  link?: useRender.RenderProp<React.ComponentPropsWithRef<'a'>>;
+}
+
+/** The row body: rendered plain, or inside whatever anchor `link` supplies. */
+function CommandItemBody({
+  link,
+  children,
+}: {
+  link?: useRender.RenderProp<React.ComponentPropsWithRef<'a'>>;
+  children: React.ReactNode;
+}) {
+  return useRender({
+    render: link ?? <div />,
+    props: {
+      // The input keeps the focus, so the anchor must stay out of the tab order.
+      tabIndex: -1,
+      className: 'flex min-w-0 flex-1 items-center gap-2 text-inherit no-underline',
+      children,
+    },
+  });
 }
 
 export interface CommandPaletteProps {
@@ -139,9 +172,13 @@ export function CommandPalette({
                         role="option"
                         aria-selected={active}
                         onMouseEnter={() => setActiveId(item.id)}
-                        onClick={() => item.onSelect()}
+                        // An item with an anchor is navigated by the anchor
+                        // itself; a second `onSelect` here would push the route
+                        // a second time and undo the modifier the click carried.
+                        onClick={item.link === undefined ? () => item.onSelect() : undefined}
                         className={cn(
-                          'flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm',
+                          'flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm',
+                          item.link === undefined ? 'cursor-default' : 'cursor-pointer',
                           // The palette is driven by arrow keys, so the active row
                           // has to be findable at a glance, not merely tinted.
                           active
@@ -149,13 +186,15 @@ export function CommandPalette({
                             : 'text-muted-foreground',
                         )}
                       >
-                        {item.icon}
-                        <span className="min-w-0 flex-1 truncate">{item.label}</span>
-                        {item.hint !== undefined ? (
-                          <span className="shrink-0 truncate text-xs text-muted-foreground">
-                            {item.hint}
-                          </span>
-                        ) : null}
+                        <CommandItemBody link={item.link}>
+                          {item.icon}
+                          <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                          {item.hint !== undefined ? (
+                            <span className="shrink-0 truncate text-xs text-muted-foreground">
+                              {item.hint}
+                            </span>
+                          ) : null}
+                        </CommandItemBody>
                       </li>
                     );
                   })}

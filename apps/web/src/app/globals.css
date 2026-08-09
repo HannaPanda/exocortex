@@ -92,8 +92,22 @@
     @apply mt-0;
   }
 
+  /* `cursor: pointer` is not decoration here. Inside a `contenteditable` the
+     default is the text caret, so the hand is the only thing that tells "hier
+     wird navigiert" apart from "hier wird geschrieben" (issue #29). */
   .exocortex-editor a {
-    @apply text-primary-text underline underline-offset-2;
+    @apply cursor-pointer text-primary-text underline underline-offset-2;
+  }
+
+  /* A `[[Titel]]` whose target does not exist. Applied as a ProseMirror
+     *decoration* (`wiki-link-markers.tsx`), never as a stored attribute:
+     whether the other page exists is a fact about the workspace, not about
+     this document. Dashed and muted, exactly like the page-link block's own
+     unresolved state below, so the two notations look the same when they mean
+     the same thing (issue #24). */
+  .exocortex-editor a.exocortex-wiki-unresolved,
+  .exocortex-editor .exocortex-wiki-unresolved {
+    @apply text-muted-foreground decoration-dashed;
   }
 
   /* Marks an external link as leaving the app; `data-link-kind` is rendered
@@ -357,7 +371,7 @@
 
   /* Page link: a block-level target needs a target-sized hit area. */
   .exocortex-editor .exocortex-page-link {
-    @apply flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 font-medium no-underline;
+    @apply flex cursor-pointer items-center gap-2 rounded-md border border-border bg-card px-3 py-2 font-medium no-underline;
   }
 
   .exocortex-editor .exocortex-page-link:hover {

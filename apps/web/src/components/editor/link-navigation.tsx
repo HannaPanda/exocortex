@@ -69,11 +69,23 @@ export function useLinkNavigation({
   const role = workspaces.data?.find((workspace) => workspace.id === workspaceId)?.role;
   const canCreate = role === 'OWNER' || role === 'ADMIN' || role === 'MEMBER';
 
+  /** `router.push` or a second tab, whichever the click asked for. */
+  const goTo = React.useCallback(
+    (path: string, newTab: boolean): void => {
+      if (newTab) window.open(path, '_blank', 'noopener');
+      else router.push(path);
+    },
+    [router],
+  );
+
   const followWiki = React.useCallback(
-    async (title: string): Promise<void> => {
+    async (
+      reference: { title: string; documentId?: string | null },
+      newTab: boolean,
+    ): Promise<void> => {
       let response;
       try {
-        response = await queryClient.fetchQuery(pageLinkQueryOptions(workspaceId, { title }));
+        response = await queryClient.fetchQuery(pageLinkQueryOptions(workspaceId, reference));
       } catch (error) {
         setPending({
           mode: 'error',
@@ -85,7 +97,7 @@ export function useLinkNavigation({
         return;
       }
       if (response.matches.length === 1) {
-        router.push(`/arbeitsbereich/${workspaceId}/seite/${response.matches[0]?.id}`);
+        goTo(`/arbeitsbereich/${workspaceId}/seite/${response.matches[0]?.id}`, newTab);
         return;
       }
       if (response.matches.length === 0) {
@@ -94,22 +106,31 @@ export function useLinkNavigation({
       }
       setPending({ mode: 'ambiguous', title: response.title, matches: response.matches });
     },
-    [queryClient, router, workspaceId],
+    [goTo, queryClient, workspaceId],
   );
 
   const follow = React.useCallback<FollowLink>(
     (target: LinkTarget, options: FollowLinkOptions) => {
       switch (target.kind) {
         case 'external':
-          window.open(target.url, '_blank', 'noopener,noreferrer');
+          // `newTab` is what the anchor and the click together asked for, not a
+          // house rule: every external link the schema renders carries
+          // `target="_blank"`, so the usual case is unchanged, but a link that
+          // does not — and a plain click on one — now stays in this tab
+          // (issue #29).
+          if (options.newTab) window.open(target.url, '_blank', 'noopener,noreferrer');
+          else window.location.assign(target.url);
           return;
         case 'mailto':
+          // A second tab for a `mailto:` would be an empty tab: the handler
+          // takes over either way.
           window.location.href = target.url;
           return;
         case 'attachment':
           // A `contenteditable` root does not let the browser follow anchors
           // on its own, so both the download and the open-in-new-tab case are
-          // done by hand here.
+          // done by hand here. A binary always gets its own tab: replacing the
+          // workspace with a PDF viewer is never what a click meant.
           if (options.download) {
             const anchor = document.createElement('a');
             anchor.href = target.path;
@@ -120,7 +141,7 @@ export function useLinkNavigation({
           }
           return;
         case 'route':
-          router.push(target.path);
+          goTo(target.path, options.newTab);
           return;
         case 'anchor':
           document
@@ -128,13 +149,16 @@ export function useLinkNavigation({
             ?.scrollIntoView({ block: 'start', behavior: 'smooth' });
           return;
         case 'wiki':
-          void followWiki(target.title);
+          void followWiki(
+            { title: target.title, documentId: target.documentId ?? null },
+            options.newTab,
+          );
           return;
         case 'unknown':
           return;
       }
     },
-    [followWiki, router],
+    [followWiki, goTo],
   );
 
   const closeDialog = (): void => {

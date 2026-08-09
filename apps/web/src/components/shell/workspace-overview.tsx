@@ -75,15 +75,17 @@ export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
                     type={document.type}
                     className="size-5 text-base text-muted-foreground"
                   />
-                  <button
-                    type="button"
-                    className="min-w-0 flex-1 truncate text-left text-sm"
-                    onClick={() =>
-                      router.push(`/arbeitsbereich/${workspaceId}/seite/${document.id}`)
-                    }
+                  {/* An anchor, not a button: the card goes somewhere, so
+                      middle click, Strg-/Cmd-click and „Link in neuem Tab
+                      öffnen“ have to work without this component doing
+                      anything for it (issue #29). */}
+                  <Link
+                    href={`/arbeitsbereich/${workspaceId}/seite/${document.id}`}
+                    className="min-w-0 flex-1 cursor-pointer truncate text-left text-sm"
+                    data-testid={`overview-page-${document.id}`}
                   >
                     {document.title}
-                  </button>
+                  </Link>
                 </CardContent>
               </Card>
             </li>
