@@ -77,6 +77,14 @@ export interface AiGenerateResult {
 export type AiStreamEvent =
   | { type: 'start'; model: string; provider: string }
   | { type: 'delta'; text: string; sequence: number }
+  /**
+   * The model is thinking. Carries the size of the reasoning fragment, never
+   * the fragment itself: reasoning is the model's private working-out, it is
+   * not the answer, and putting it on an event bus or in a log would spill it
+   * into places the user never asked for. Consumers use this to say that a
+   * silence is thinking rather than a stall (issue #6).
+   */
+  | { type: 'reasoning'; charCount: number }
   | { type: 'tool_calls'; toolCalls: readonly AiToolCall[] }
   | { type: 'usage'; usage: AiUsage }
   | { type: 'done'; text: string; finishReason: AiGenerateResult['finishReason'] }

@@ -28,6 +28,8 @@ export interface AiRunRow {
   finishedAt: Date | null;
   usage: unknown;
   errorCode: string | null;
+  /** Partial while the run is still going; final once it has ended (issue #6). */
+  resultText: string | null;
   conversationId: string | null;
   reasoningLevel: AiReasoningLevelPrisma;
   toolIterations: number;
@@ -55,6 +57,7 @@ export function mapAiRunRow(run: AiRunRow): AiRun {
     finishedAt: run.finishedAt === null ? null : run.finishedAt.toISOString(),
     usage: run.usage === null ? null : (run.usage as AiRun['usage']),
     errorCode: run.errorCode,
+    resultText: run.resultText,
     conversationId: run.conversationId,
     reasoningLevel: REASONING_LEVEL_TO_CONTRACT[run.reasoningLevel],
     toolIterations: run.toolIterations,

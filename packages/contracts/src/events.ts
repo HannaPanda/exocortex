@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { aiRunStatusSchema, aiUsageSchema } from './ai';
+import { aiRunPhaseSchema, aiRunStatusSchema, aiUsageSchema } from './ai';
 import { documentSummarySchema } from './documents';
 import { idSchema, isoDateTimeSchema } from './primitives';
 import { workspaceSchema } from './workspaces';
@@ -31,6 +31,7 @@ export const APPLICATION_EVENT_TYPES = [
   'database.row.updated',
   'ai.conversation.compacted',
   'ai.run.tool_call',
+  'ai.run.phase',
   'document.content.replaced',
   'document.cover.generated',
 ] as const;
@@ -138,6 +139,19 @@ export const aiRunToolCallPayloadSchema = z.object({
   target: z.string().nullable().default(null),
 });
 
+/**
+ * A run entered a phase that produces no text of its own (issue #6).
+ *
+ * Deliberately carries nothing but the phase: reasoning tokens are the
+ * model's private working-out and must not travel to a client or into a log,
+ * and the compaction summary is not the user's answer either. The point is to
+ * name the silence, not to fill it.
+ */
+export const aiRunPhasePayloadSchema = z.object({
+  runId: idSchema,
+  phase: aiRunPhaseSchema,
+});
+
 export const documentContentReplacedPayloadSchema = z.object({
   documentId: idSchema,
   snapshotId: idSchema,
@@ -178,6 +192,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('database.row.updated', databaseChangedPayloadSchema),
   envelope('ai.conversation.compacted', aiConversationCompactedPayloadSchema),
   envelope('ai.run.tool_call', aiRunToolCallPayloadSchema),
+  envelope('ai.run.phase', aiRunPhasePayloadSchema),
   envelope('document.content.replaced', documentContentReplacedPayloadSchema),
   envelope('document.cover.generated', documentCoverGeneratedPayloadSchema),
 ]);

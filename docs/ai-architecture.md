@@ -480,15 +480,35 @@ container.
    run that proceeds is set `RUNNING`, gets its first heartbeat, and the
    worker iterates `provider.stream(...)`.
 3. Each `delta` is published as `ai.run.progress` on the Redis event bus with a
-   monotonic sequence number, so clients can detect gaps.
-4. On completion the run is stored with `resultText` and `usage`, and
+   monotonic sequence number, so clients can detect gaps. The web panel does
+   exactly that: a hole in the sequence flips a sticky flag, and the answer is
+   reloaded from `GET /api/ai/runs/:runId` instead of being shown incomplete
+   (issue #6). That is why the heartbeat also writes `resultText` as the run
+   goes: the row always carries the answer as far as it has streamed, so there
+   is something authoritative to fall back on.
+4. A phase that produces no text of its own is announced as `ai.run.phase`
+   (`reasoning`, `compacting`, `generating`). Reasoning fragments are dropped
+   by the provider adapter before they become deltas, and compaction only used
+   to report itself once it was over, so both looked exactly like a stalled
+   run. The payload carries the phase and nothing else: the model's
+   working-out and the compaction summary never travel on the event bus.
+   Repeats of the same phase are throttled to `AI_RUN_PHASE_MIN_INTERVAL_MS`.
+5. On completion the run is stored with `resultText` and `usage`, and
    `ai.run.completed` is published. On failure, timeout or cancellation the
    status (`FAILED`, `TIMED_OUT` or `CANCELLED`) and `errorCode` are stored
    and `ai.run.failed` is published. Every one of these terminal writes is a
    status-filtered `updateMany`, so a race with the maintenance reaper or a
    cancellation can never resurrect an already-ended row.
-5. The API's event-bus subscriber re-emits into the workspace room; the panel
+6. The API's event-bus subscriber re-emits into the workspace room; the panel
    renders the deltas as they arrive.
+
+The panel never relies on that channel alone. For as long as it believes a run
+is in flight it polls `GET /api/ai/runs/:runId` every
+`AI_RUN_POLL_INTERVAL_MS`, refetches on window focus and on realtime
+reconnect, and applies whatever terminal status it finds exactly as the
+matching socket event would have (`reconcileAiRun` in
+`packages/contracts/src/ai-runtime.ts`). A dropped `ai.run.completed` used to
+leave the panel waiting forever, because nothing ever asked.
 
 `POST /api/ai/runs/:runId/cancel` marks a pending or running run cancelled;
 the worker notices through its own heartbeat write (a status-filtered

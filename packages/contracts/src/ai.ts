@@ -13,6 +13,19 @@ export const aiRunStatusSchema = z.enum([
 ]);
 export type AiRunStatus = z.infer<typeof aiRunStatusSchema>;
 
+/**
+ * What a run is busy with while it produces no text (issue #6).
+ *
+ * `reasoning` and `compacting` are the two phases that used to look exactly
+ * like a stalled run from the outside: reasoning tokens are dropped by the
+ * provider adapter and never become deltas, and compaction only reports
+ * itself once it is over (`ai.conversation.compacted`). `generating` ends
+ * either of them again, so a client never has to guess when a named silence
+ * stopped.
+ */
+export const aiRunPhaseSchema = z.enum(['reasoning', 'compacting', 'generating']);
+export type AiRunPhase = z.infer<typeof aiRunPhaseSchema>;
+
 /** Widened from `['system', 'user', 'assistant']` to support the tool loop. */
 export const aiMessageRoleSchema = z.enum(['system', 'user', 'assistant', 'tool']);
 export type AiMessageRole = z.infer<typeof aiMessageRoleSchema>;
@@ -75,6 +88,14 @@ export const aiRunSchema = z.object({
   finishedAt: isoDateTimeSchema.nullable(),
   usage: aiUsageSchema.nullable(),
   errorCode: z.string().nullable(),
+  /**
+   * The answer as the worker has it so far. Complete once the run reached a
+   * terminal status, and the authoritative text *while* it is still running:
+   * the worker renews it with every heartbeat, so a client that noticed a gap
+   * in `ai.run.progress` can reload the answer instead of showing the
+   * incomplete text it stitched together from deltas (issue #6).
+   */
+  resultText: z.string().nullable(),
   conversationId: idSchema.nullable(),
   reasoningLevel: aiReasoningLevelSchema,
   toolIterations: z.number().int().nonnegative(),

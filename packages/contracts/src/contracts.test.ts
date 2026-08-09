@@ -94,6 +94,31 @@ describe('application events', () => {
     expect(event.type).toBe('job.progress');
   });
 
+  it('validates a run phase event and carries nothing but the phase (issue #6)', () => {
+    const event = applicationEventSchema.parse({
+      type: 'ai.run.phase',
+      workspaceId: 'workspace_abcdefgh',
+      emittedAt: '2026-08-09T10:00:00.000Z',
+      correlationId: 'corr-2',
+      payload: { runId: 'run_abcdefgh', phase: 'reasoning' },
+    });
+    // Reasoning text and compaction summaries must never ride along on the
+    // event bus; the payload has no field that could carry them.
+    expect(event.payload).toEqual({ runId: 'run_abcdefgh', phase: 'reasoning' });
+  });
+
+  it('rejects a phase the worker does not publish', () => {
+    expect(() =>
+      applicationEventSchema.parse({
+        type: 'ai.run.phase',
+        workspaceId: 'workspace_abcdefgh',
+        emittedAt: '2026-08-09T10:00:00.000Z',
+        correlationId: 'corr-2',
+        payload: { runId: 'run_abcdefgh', phase: 'daydreaming' },
+      }),
+    ).toThrow();
+  });
+
   it('rejects an unknown event type', () => {
     expect(() =>
       applicationEventSchema.parse({

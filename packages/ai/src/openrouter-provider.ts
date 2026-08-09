@@ -241,8 +241,13 @@ export class OpenRouterProvider implements AiProvider {
         }
         const choice = chunk.choices?.[0];
         const delta = choice?.delta;
-        // Reasoning deltas are deliberately dropped: they are not the answer
-        // and would corrupt `resultText`. Surfacing thinking is a later feature.
+        // Reasoning *text* is still deliberately dropped: it is not the answer
+        // and would corrupt `resultText`. Only its size is passed on, so a
+        // client can tell "the model is thinking" apart from "nothing is
+        // happening" without the thinking itself leaving this adapter.
+        if (typeof delta?.reasoning === 'string' && delta.reasoning.length > 0) {
+          yield { type: 'reasoning', charCount: delta.reasoning.length };
+        }
         if (typeof delta?.content === 'string' && delta.content.length > 0) {
           text += delta.content;
           sequence += 1;

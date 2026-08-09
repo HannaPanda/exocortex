@@ -12,6 +12,13 @@ export interface CompactIfNeededInput {
   prisma: PrismaClient;
   provider: AiProvider;
   bus: RedisEventBus;
+  /**
+   * Run this compaction is being done for, when there is one. Compaction only
+   * reported itself once it was over, which from the outside was
+   * indistinguishable from a stalled run for as long as the summariser took;
+   * with a run id it can announce the phase while it happens (issue #6).
+   */
+  runId: string | null;
   conversationId: string;
   workspaceId: string;
   contextWindowTokens: number;
@@ -65,6 +72,18 @@ export async function compactIfNeeded(input: CompactIfNeededInput): Promise<Comp
   }
 
   const transcript = toSummarize.map((message) => `${message.role}: ${message.content}`).join('\n\n');
+
+  // Announced before the summariser call, not after it: this is the silence
+  // that has to be named while it lasts.
+  if (input.runId !== null) {
+    await input.bus.publish({
+      type: 'ai.run.phase',
+      workspaceId: input.workspaceId,
+      correlationId: input.correlationId,
+      emittedAt: new Date().toISOString(),
+      payload: { runId: input.runId, phase: 'compacting' },
+    });
+  }
 
   let summaryText: string;
   try {

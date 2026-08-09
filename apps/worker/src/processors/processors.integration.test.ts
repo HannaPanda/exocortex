@@ -870,6 +870,8 @@ interface ScriptedTurn {
   text: string;
   finishReason: AiGenerateResult['finishReason'];
   toolCalls?: readonly AiToolCall[];
+  /** Reasoning fragments emitted before the answer, as a thinking model does. */
+  reasoningChunks?: number;
 }
 
 /** Replays a fixed list of turns; the last entry answers every further turn. */
@@ -903,9 +905,46 @@ class ScriptedAiProvider implements AiProvider {
     const turn = this.turns[Math.min(this.requests.length, this.turns.length - 1)]!;
     this.requests.push(request);
     yield { type: 'start', model: request.model ?? 'test-model', provider: this.id };
+    for (let index = 0; index < (turn.reasoningChunks ?? 0); index += 1) {
+      yield { type: 'reasoning', charCount: 40 };
+    }
     if (turn.text.length > 0) yield { type: 'delta', text: turn.text, sequence: 1 };
     if (turn.toolCalls !== undefined) yield { type: 'tool_calls', toolCalls: turn.toolCalls };
     yield { type: 'done', text: turn.text, finishReason: turn.finishReason };
+  }
+}
+
+/**
+ * Streams one delta, then keeps the turn open long enough for the run's
+ * heartbeat to fire at least once. That is what lets a test observe the
+ * partial answer the heartbeat persists (issue #6, point 6).
+ */
+class SlowStreamingAiProvider implements AiProvider {
+  public readonly id = 'slow-test-provider';
+  public readonly capabilities: AiProviderCapabilities = {
+    textGeneration: true,
+    vision: false,
+    toolCalling: false,
+    structuredOutput: false,
+    streaming: true,
+    contextWindowTokens: 32_000,
+    usageReporting: true,
+    costReporting: true,
+    models: [],
+  };
+
+  constructor(private readonly pauseMs: number) {}
+
+  async generate(): Promise<AiGenerateResult> {
+    throw new Error('The slow provider is only used for streaming');
+  }
+
+  async *stream(request: AiGenerateRequest): AsyncIterable<AiStreamEvent> {
+    yield { type: 'start', model: request.model ?? 'test-model', provider: this.id };
+    yield { type: 'delta', text: 'Teil eins', sequence: 1 };
+    await new Promise<void>((resolve) => setTimeout(resolve, this.pauseMs));
+    yield { type: 'delta', text: ' und Teil zwei', sequence: 2 };
+    yield { type: 'done', text: 'Teil eins und Teil zwei', finishReason: 'stop' };
   }
 }
 
@@ -1244,6 +1283,70 @@ describe('ai runs', () => {
     expect(run.errorCode).toBe('ai_tool_call_invalid');
   }, 60_000);
 
+  it('names the thinking phase instead of letting it look like a stall (issue #6)', async () => {
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+    const published: { type: string; payload: Record<string, unknown> }[] = [];
+    const provider = new ScriptedAiProvider([
+      { text: 'Fertig.', finishReason: 'stop', reasoningChunks: 5 },
+    ]);
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider,
+      bus: recordingEventBus(published),
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => null,
+      modelRegistry: async () => null,
+    });
+    await processor(contextFor({ correlationId: 'test-ai-phase-1', runId, workspaceId, userId }).context);
+
+    const phases = published.filter((event) => event.type === 'ai.run.phase');
+    expect(phases.map((event) => event.payload.phase)).toContain('reasoning');
+    expect(phases.map((event) => event.payload.phase)).toContain('generating');
+    // Five fragments, one announcement: the throttle keeps a life sign from
+    // turning into a flood.
+    expect(phases.filter((event) => event.payload.phase === 'reasoning')).toHaveLength(1);
+    // The thinking itself must never ride along on the bus.
+    for (const event of phases) {
+      expect(Object.keys(event.payload).sort()).toEqual(['phase', 'runId']);
+    }
+  }, 60_000);
+
+  it('keeps the partial answer on the run while it streams, so a client can reload it', async () => {
+    // Issue #6, point 6: a gap in ai.run.progress means the text stitched
+    // together from deltas is wrong, and the client needs something
+    // authoritative to fall back on. The heartbeat is what puts it there.
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider: new SlowStreamingAiProvider(7_000),
+      bus,
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => null,
+      modelRegistry: async () => null,
+    });
+    const finished = processor(
+      contextFor({ correlationId: 'test-ai-partial-1', runId, workspaceId, userId }).context,
+    );
+
+    await new Promise<void>((resolve) => setTimeout(resolve, 6_000));
+    const midRun = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(midRun.status).toBe('RUNNING');
+    expect(midRun.resultText).toBe('Teil eins');
+
+    await finished;
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('COMPLETED');
+    expect(run.resultText).toBe('Teil eins und Teil zwei');
+  }, 60_000);
+
   it('marks the run TIMED_OUT with ai_timeout once its own time budget elapses', async () => {
     const documentId = await createDocument();
     const runId = await createRun(documentId);
@@ -1491,10 +1594,12 @@ describe('compactIfNeeded', () => {
     }
 
     const provider = new MockAiProvider({ chunkDelayMs: 0, fixedResponse: 'Kurze Zusammenfassung.' });
+    const published: { type: string; payload: Record<string, unknown> }[] = [];
     const result = await compactIfNeeded({
       prisma,
       provider,
-      bus,
+      bus: recordingEventBus(published),
+      runId: 'run_compaction_1',
       conversationId,
       workspaceId,
       contextWindowTokens: 1_000,
@@ -1521,6 +1626,15 @@ describe('compactIfNeeded', () => {
     expect(active.length).toBe(3);
     expect(active.some((message) => message.isSummary)).toBe(true);
     expect(active.find((message) => message.isSummary)?.content).toContain('Kurze Zusammenfassung.');
+
+    // Issue #6, point 5: the compaction says so while it runs, not only once
+    // it is over. Summarising a long transcript is exactly the kind of pause
+    // that used to be indistinguishable from a dead run.
+    const phases = published.filter((event) => event.type === 'ai.run.phase');
+    expect(phases).toHaveLength(1);
+    expect(phases[0]?.payload).toEqual({ runId: 'run_compaction_1', phase: 'compacting' });
+    const compactedIndex = published.findIndex((event) => event.type === 'ai.conversation.compacted');
+    expect(published.indexOf(phases[0]!)).toBeLessThan(compactedIndex);
   }, 60_000);
 
   it('does nothing when the active messages are already within budget', async () => {
@@ -1534,6 +1648,7 @@ describe('compactIfNeeded', () => {
       prisma,
       provider,
       bus,
+      runId: 'run_compaction_2',
       conversationId,
       workspaceId,
       contextWindowTokens: 100_000,

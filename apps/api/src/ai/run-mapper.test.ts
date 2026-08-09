@@ -17,6 +17,7 @@ const baseRow: AiRunRow = {
   finishedAt: null,
   usage: null,
   errorCode: null,
+  resultText: null,
   conversationId: null,
   reasoningLevel: 'NONE',
   toolIterations: 0,
@@ -33,5 +34,12 @@ describe('mapAiRunRow', () => {
     const mapped = mapAiRunRow({ ...baseRow, status: 'PENDING', startedAt: null, heartbeatAt: null });
     expect(mapped.startedAt).toBeNull();
     expect(mapped.heartbeatAt).toBeNull();
+  });
+
+  it('carries the partial answer of a still-running run (issue #6)', () => {
+    // The worker renews this with every heartbeat, so a client that noticed a
+    // gap in the delta stream has something authoritative to reload.
+    const mapped = mapAiRunRow({ ...baseRow, resultText: 'Ich schreibe jetzt' });
+    expect(mapped.resultText).toBe('Ich schreibe jetzt');
   });
 });

@@ -8,8 +8,10 @@ import {
 } from '@exocortex/ai';
 import {
   AI_RUN_HEARTBEAT_STALE_MS,
+  AI_RUN_PHASE_MIN_INTERVAL_MS,
   type AiMessage,
   aiMessageSchema,
+  type AiRunPhase,
   type AiUsage,
   deriveAiRunTimeouts,
   type QUEUE_NAMES,
@@ -228,7 +230,7 @@ function resolveVisionCompanionSlug(
  * JSON or a read-only tool without a target all just mean "nothing to show"
  * (issue #6).
  */
-function toolCallTarget(name: string, argumentsJson: string): string | null {
+export function toolCallTarget(name: string, argumentsJson: string): string | null {
   const tool = findTool(name);
   if (tool === null) return null;
   let args: unknown;
@@ -422,6 +424,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         prisma,
         provider,
         bus,
+        runId: run.id,
         conversationId: run.conversationId,
         workspaceId: run.workspaceId,
         contextWindowTokens: modelRow.contextWindowTokens,
@@ -536,6 +539,16 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       runController.abort();
     }, timeouts.runBudgetMs);
 
+    /**
+     * The answer as far as it has streamed, kept up to date so the heartbeat
+     * can persist it. A client that noticed a gap in `ai.run.progress` reloads
+     * the run and takes this instead of the text it stitched together from
+     * deltas it can no longer trust (issue #6).
+     */
+    let liveText = '';
+    /** Text of earlier turns that were cut off at the output cap and picked up again. */
+    let carriedText = '';
+
     // A heartbeat write does two things at once: it renews the row's
     // heartbeat, and `count === 0` reports that the row is no longer RUNNING
     // -- cancelled through the API, or reaped by maintenance -- which is how
@@ -543,12 +556,39 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     const beat = async (): Promise<void> => {
       const touched = await prisma.aiRun.updateMany({
         where: { id: run.id, status: 'RUNNING' },
-        data: { heartbeatAt: new Date() },
+        data: {
+          heartbeatAt: new Date(),
+          // Only ever grows while the run is in flight, and the terminal
+          // writes below overwrite it with the final text either way.
+          ...(liveText.length > 0 ? { resultText: liveText } : {}),
+        },
       });
       if (touched.count === 0) {
         abortReason ??= 'cancelled';
         runController.abort();
       }
+    };
+
+    /**
+     * Names a phase that produces no text of its own, so a legitimate silence
+     * (three minutes of it are allowed by `ai.timeoutMs`) is distinguishable
+     * from a stall. Throttled per phase: reasoning arrives as a stream of tiny
+     * fragments, and repeating "still thinking" for each one says nothing the
+     * first one did not.
+     */
+    const lastPhasePublishedAt = new Map<AiRunPhase, number>();
+    const publishPhase = async (phase: AiRunPhase): Promise<void> => {
+      const now = Date.now();
+      const previous = lastPhasePublishedAt.get(phase);
+      if (previous !== undefined && now - previous < AI_RUN_PHASE_MIN_INTERVAL_MS) return;
+      lastPhasePublishedAt.set(phase, now);
+      await bus.publish({
+        type: 'ai.run.phase',
+        workspaceId: run.workspaceId,
+        correlationId: payload.correlationId,
+        emittedAt: new Date().toISOString(),
+        payload: { runId: run.id, phase },
+      });
     };
     const heartbeat = setInterval(() => {
       void beat().catch((error: unknown) => {
@@ -581,6 +621,14 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         turnController.abort();
       }, timeouts.turnTimeoutMs);
 
+      // Ends whatever named silence came before it (a compaction, the
+      // previous turn's thinking) and says a fresh answer is being asked for.
+      await publishPhase('generating');
+      // What the run's answer is worth right now: everything carried over
+      // from a turn that was cut off at the output cap, and nothing else
+      // until this turn produces its first delta.
+      liveText = carriedText;
+
       try {
         for await (const event of provider.stream({
           messages,
@@ -596,6 +644,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           switch (event.type) {
             case 'delta': {
               text += event.text;
+              liveText = carriedText + text;
               sequence += 1;
               await bus.publish({
                 type: 'ai.run.progress',
@@ -606,6 +655,11 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
               });
               break;
             }
+            case 'reasoning':
+              // The fragment itself never leaves the provider adapter; only
+              // the fact that thinking is going on does.
+              await publishPhase('reasoning');
+              break;
             case 'tool_calls':
               toolCalls = [...event.toolCalls];
               break;
@@ -636,8 +690,6 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     let failure: { code: string; message: string } | null = null;
     let toolIterations = 0;
     let spentMicroUsd = 0;
-    /** Text of earlier turns that were cut off at the output cap and picked up again. */
-    let carriedText = '';
     let truncationRetries = 0;
     const maxIterations = toolsEnabled ? settings['ai.maxToolIterations'] : 0;
     const budgetMicroUsd = settings['ai.budgetMicroUsdPerRun'];
