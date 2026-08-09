@@ -42,6 +42,45 @@ sudo ufw allow from 172.18.0.0/16 to 172.17.0.1 port 3213 proto tcp \
 | `systemd/exocortex-api.service` | `/etc/systemd/system/exocortex-api.service` |
 | `systemd/exocortex-collaboration.service` | `/etc/systemd/system/exocortex-collaboration.service` |
 | `systemd/exocortex-worker.service` | `/etc/systemd/system/exocortex-worker.service` |
+| `fail2ban/filter.d/exocortex-auth.conf` | `/etc/fail2ban/filter.d/exocortex-auth.conf` |
+| `fail2ban/jail.d/nginx.conf` | `/etc/fail2ban/jail.d/nginx.conf` |
+
+## Brute-force protection
+
+Three fail2ban jails guard the edge, all reading `/var/log/nginx/`:
+
+* `nginx-http-auth` and `nginx-botsearch` watch the error log: HTTP basic auth
+  failures and scanners probing for paths that do not exist.
+* `exocortex-auth` watches the **access** log for repeated `401`/`429` answers to
+  `/api/auth/sign-in/email` and the password-reset endpoints. This is the one
+  that matters once the basic auth in front of the deployment comes off, because
+  the other two then see nothing here: Better Auth's per-IP limit slows an
+  attacker to ten guesses a minute but never stops them.
+
+The application log is deliberately not the source. pino writes structured JSON
+to the journal and does not record the client address, so there would be nothing
+to ban; nginx knows the real address and writes it as the first field.
+
+`ignoreip` covers loopback, the Hetzner private network, the Docker bridges and
+fpb2, so a ban can never land on one of our own automations. After changing
+either file:
+
+```bash
+sudo fail2ban-client -t                      # validate
+sudo systemctl restart fail2ban
+sudo fail2ban-client status exocortex-auth   # confirm the jail is live
+```
+
+To check a filter against real traffic before trusting it:
+
+```bash
+sudo fail2ban-regex /var/log/nginx/access.log /etc/fail2ban/filter.d/exocortex-auth.conf
+```
+
+Note that fail2ban here bans through **nftables**, not iptables
+(`jail.d/defaults-debian.conf` sets `banaction = nftables`). Looking for an
+`f2b-*` chain in `iptables -L` finds nothing and proves nothing; the rules live
+in `nft list table inet f2b-table`.
 
 ## Initial setup
 
