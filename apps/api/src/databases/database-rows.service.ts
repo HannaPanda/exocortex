@@ -305,6 +305,33 @@ export class DatabaseRowsService {
     return this.toRowResponse(input.collectionDocumentId, row.id);
   }
 
+  /**
+   * Answers "is this document a database row, and if so what are its values?"
+   * for the context panel's properties tab (issue #17) and the `exo_database_row_get`
+   * MCP tool — both need a row's values by the row's own id, without already
+   * knowing (or querying for) its collection.
+   *
+   * Returns `null`, not a 404, when the document is not a `PAGE` whose parent
+   * is a `COLLECTION` (ADR-011): a plain page, a database itself and a
+   * top-level document are all simply "not a row", which is a normal answer
+   * here, not an error.
+   */
+  async getForDocument(documentId: string, userId: string): Promise<DatabaseRow | null> {
+    const context = await this.access.requireDocumentContext(documentId, userId);
+    assertPolicy(canReadDocument(context.role, context.document, context.workspaceId));
+
+    const collectionDocumentId = context.document.parentId;
+    if (collectionDocumentId === null) return null;
+
+    const parent = await this.prisma.document.findUnique({
+      where: { id: collectionDocumentId },
+      select: { type: true },
+    });
+    if (parent === null || parent.type !== 'COLLECTION') return null;
+
+    return this.toRowResponse(collectionDocumentId, documentId);
+  }
+
   async updateValues(input: {
     rowId: string;
     userId: string;

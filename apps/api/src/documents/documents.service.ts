@@ -328,7 +328,14 @@ export class DocumentsService {
     const [row, content, siblings] = await Promise.all([
       this.prisma.document.findUniqueOrThrow({
         where: { id: documentId },
-        select: { ...DOCUMENT_SELECT, aiRuleMode: true, aiRuleTrigger: true, aiRulePriority: true },
+        select: {
+          ...DOCUMENT_SELECT,
+          aiRuleMode: true,
+          aiRuleTrigger: true,
+          aiRulePriority: true,
+          createdBy: { select: { name: true } },
+          updatedBy: { select: { name: true } },
+        },
       }),
       this.prisma.documentContent.findUnique({
         where: { documentId },
@@ -343,11 +350,23 @@ export class DocumentsService {
           title: true,
           icon: true,
           iconColor: true,
+          type: true,
         },
       }),
     ]);
 
     const ancestors = collectAncestors(siblings, documentId);
+    // The immediate parent's type, read from the workspace-wide list already
+    // fetched above rather than a second query: it is what tells the context
+    // panel apart a database row (`PAGE` under a `COLLECTION`, ADR-011) from an
+    // ordinary sub-page.
+    const parentType = row.parentId === null ? null : (siblings.find((entry) => entry.id === row.parentId)?.type ?? null);
+    // Only a database itself has rows; the count is one extra query, run only
+    // when the question actually applies.
+    const rowCount =
+      row.type === 'COLLECTION'
+        ? await this.prisma.document.count({ where: { parentId: documentId, archivedAt: null } })
+        : null;
 
     return {
       ...toSummary(row),
@@ -363,6 +382,10 @@ export class DocumentsService {
       aiRuleMode: AI_RULE_MODE_TO_CONTRACT[row.aiRuleMode],
       aiRuleTrigger: row.aiRuleTrigger,
       aiRulePriority: row.aiRulePriority,
+      createdByName: row.createdBy.name,
+      updatedByName: row.updatedBy.name,
+      parentType,
+      rowCount,
     };
   }
 

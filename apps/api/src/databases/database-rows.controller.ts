@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { type VerifiedSession } from '@exocortex/auth';
@@ -7,6 +7,8 @@ import {
   createDatabaseRowRequestSchema,
   type DatabaseRow,
   databaseRowSchema,
+  type DocumentRowResponse,
+  documentRowResponseSchema,
   type QueryDatabaseRowsRequest,
   queryDatabaseRowsRequestSchema,
   type QueryDatabaseRowsResponse,
@@ -57,6 +59,20 @@ export class DatabaseRowsController {
       request: body,
       correlationId: currentCorrelationId(),
     });
+  }
+
+  /**
+   * Answers "is this document a database row, and if so what are its values?"
+   * for the context panel's properties tab (issue #17): the caller has a
+   * document id and no reason to already know its collection.
+   */
+  @Get(':documentId/row')
+  @ApiOkResponse({ schema: openApiResponseSchema(documentRowResponseSchema) })
+  async getRow(
+    @CurrentSession() session: VerifiedSession,
+    @Param('documentId') documentId: string,
+  ): Promise<DocumentRowResponse> {
+    return { row: await this.rows.getForDocument(documentId, session.userId) };
   }
 
   @Patch(':documentId/values')

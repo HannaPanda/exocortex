@@ -451,6 +451,65 @@ describe('database rows', () => {
     expect(updated.values.find((entry) => entry.propertyId === priority.id)?.value).toBeNull();
   });
 
+  describe('getForDocument (issue #17 context panel)', () => {
+    it('answers a row document id with its values, keyed by property id', async () => {
+      const { collectionId, status, done } = await setupTaskDatabase();
+      const row = await rows.create({
+        collectionDocumentId: collectionId,
+        userId: ownerId,
+        request: { title: 'Über den Umweg der Zeilen-ID gelesen', values: [{ propertyId: status.id, value: done.id }] },
+        correlationId,
+      });
+
+      const answer = await rows.getForDocument(row.document.id, ownerId);
+      expect(answer).not.toBeNull();
+      expect(answer?.document.id).toBe(row.document.id);
+      expect(answer?.values.find((entry) => entry.propertyId === status.id)?.value).toBe(done.id);
+    });
+
+    it('answers null for an ordinary page, not an error', async () => {
+      const documentId = await documents.create({
+        workspaceId,
+        userId: ownerId,
+        request: { title: 'Gewöhnliche Seite', type: 'PAGE', parentId: null },
+        correlationId,
+      });
+
+      expect(await rows.getForDocument(documentId.id, ownerId)).toBeNull();
+    });
+
+    it('answers null for a database itself, and for a page whose parent is not a database', async () => {
+      const collectionId = await createCollection('Datenbank selbst');
+      expect(await rows.getForDocument(collectionId, ownerId)).toBeNull();
+
+      const plainParent = await documents.create({
+        workspaceId,
+        userId: ownerId,
+        request: { title: 'Gewöhnlicher Elternteil', type: 'PAGE', parentId: null },
+        correlationId,
+      });
+      const child = await documents.create({
+        workspaceId,
+        userId: ownerId,
+        request: { title: 'Kind einer gewöhnlichen Seite', type: 'PAGE', parentId: plainParent.id },
+        correlationId,
+      });
+      expect(await rows.getForDocument(child.id, ownerId)).toBeNull();
+    });
+
+    it('denies a non-member, the same as any other document read', async () => {
+      const collectionId = await createCollection('Fremde Datenbank', otherWorkspaceId);
+      const row = await rows.create({
+        collectionDocumentId: collectionId,
+        userId: ownerId,
+        request: { title: 'Fremde Zeile', values: [] },
+        correlationId,
+      });
+
+      await expect(rows.getForDocument(row.document.id, guestId)).rejects.toBeInstanceOf(AuthorizationError);
+    });
+  });
+
   it('filters rows by a SELECT value and a NUMBER comparison', async () => {
     const { collectionId, status, done, priority } = await setupTaskDatabase();
     await rows.create({

@@ -259,6 +259,75 @@ describe('document creation', () => {
   });
 });
 
+describe('document detail metadata (issue #17)', () => {
+  it('names who created and who last changed the page', async () => {
+    const documentId = await createPage('Herkunft');
+    await service.update({
+      documentId,
+      userId: ownerId,
+      request: { title: 'Herkunft geändert' },
+      correlationId,
+    });
+
+    const detail = await service.getDetail(documentId, ownerId);
+    expect(detail.createdByName).toBe('Owner');
+    expect(detail.updatedByName).toBe('Owner');
+  });
+
+  it('reports parentType null at the workspace root and PAGE under an ordinary page', async () => {
+    const root = await createPage('Wurzel für parentType');
+    const child = await createPage('Kind für parentType', root);
+
+    expect((await service.getDetail(root, ownerId)).parentType).toBeNull();
+    expect((await service.getDetail(child, ownerId)).parentType).toBe('PAGE');
+  });
+
+  it('reports parentType COLLECTION for a database row and rowCount for the database', async () => {
+    const collection = await service.create({
+      workspaceId,
+      userId: ownerId,
+      request: { title: 'Sammlung für rowCount', type: 'COLLECTION', parentId: null },
+      correlationId,
+    });
+    const row = await service.create({
+      workspaceId,
+      userId: ownerId,
+      request: { title: 'Zeile', type: 'PAGE', parentId: collection.id },
+      correlationId,
+    });
+
+    const rowDetail = await service.getDetail(row.id, ownerId);
+    expect(rowDetail.parentType).toBe('COLLECTION');
+    expect(rowDetail.rowCount).toBeNull();
+
+    const collectionDetail = await service.getDetail(collection.id, ownerId);
+    expect(collectionDetail.rowCount).toBe(1);
+  });
+
+  it('does not count an archived row', async () => {
+    const collection = await service.create({
+      workspaceId,
+      userId: ownerId,
+      request: { title: 'Sammlung mit Papierkorb', type: 'COLLECTION', parentId: null },
+      correlationId,
+    });
+    const row = await service.create({
+      workspaceId,
+      userId: ownerId,
+      request: { title: 'Wird archiviert', type: 'PAGE', parentId: collection.id },
+      correlationId,
+    });
+    await service.archive({ documentId: row.id, userId: ownerId, correlationId });
+
+    expect((await service.getDetail(collection.id, ownerId)).rowCount).toBe(0);
+  });
+
+  it('answers rowCount null for a plain page', async () => {
+    const documentId = await createPage('Gewöhnliche Seite ohne rowCount');
+    expect((await service.getDetail(documentId, ownerId)).rowCount).toBeNull();
+  });
+});
+
 describe('page icons', () => {
   it('keeps the drawn icon and its colour, and hands both back everywhere', async () => {
     const parentId = await createPage('Technik');
