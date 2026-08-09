@@ -10,6 +10,7 @@ import { type ApiEnv } from '@exocortex/config';
 import { createCorrelationId, type Logger } from '@exocortex/logger';
 
 import { AppModule } from './app.module';
+import { AuthService } from './auth/auth.service';
 import { CORRELATION_HEADER, enterRequestContext } from './common/correlation';
 import { API_ENV, LOGGER } from './common/logger.provider';
 
@@ -17,8 +18,18 @@ import 'reflect-metadata';
 
 async function bootstrap(): Promise<void> {
   const adapter = new FastifyAdapter({
-    // The API always runs behind nginx in this deployment.
-    trustProxy: true,
+    // The API always runs behind exactly one reverse proxy (nginx on loopback),
+    // so trust exactly one hop.
+    //
+    // `true` trusted the whole chain and took the *leftmost* `X-Forwarded-For`
+    // entry as the client address. nginx builds that header with
+    // `$proxy_add_x_forwarded_for`, which appends the real address to whatever
+    // the caller sent -- so the leftmost entry is caller-controlled. Every
+    // per-IP rate limit in Better Auth was therefore reset by sending a
+    // different fake address, which is unlimited password guessing against
+    // `/sign-in/email`. With one hop, the address is read from the right and
+    // the fake prefix is ignored.
+    trustProxy: 1,
     bodyLimit: 8 * 1024 * 1024,
     genReqId: () => crypto.randomUUID(),
   });
@@ -66,6 +77,25 @@ async function bootstrap(): Promise<void> {
   });
 
   app.enableShutdownHooks();
+
+  // Swagger is mounted straight onto Fastify, so none of Nest's guards see it:
+  // `SessionGuard` never runs for /docs. Until now the HTTP basic auth in front
+  // of the deployment was the only thing keeping the full API surface -- 57
+  // paths, their payload shapes and their error codes -- from being world
+  // readable, which makes removing that basic auth a bigger step than it looks.
+  // This hook applies the same session check the rest of the API uses.
+  const authService = app.get(AuthService);
+  fastify.addHook('onRequest', async (request, reply) => {
+    if (!request.url.startsWith('/docs')) return;
+    const headers = request.headers as Record<string, string | string[] | undefined>;
+    const session = await authService.verifySession(headers);
+    if (session !== null) return;
+    void reply.code(401).send({
+      code: 'unauthenticated',
+      message: 'Sign in to read the API documentation',
+      correlationId: reply.getHeader(CORRELATION_HEADER),
+    });
+  });
 
   const openApi = new DocumentBuilder()
     .setTitle('Exocortex API')

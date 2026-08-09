@@ -51,8 +51,14 @@ authorization mechanism.
   that impossible. Turning it on would still lock out any account whose address
   was never verified, which currently includes the only administrator.
 * Sign-in, sign-up and password-reset endpoints have explicit per-IP rate limits
-  (10/min, 5/min, 5 per 5 min). nginx forwards the real client address and Fastify
-  runs with `trustProxy`.
+  (10/min, 5/min, 5 per 5 min).
+* Those limits are only worth anything if the client address cannot be chosen by
+  the client. Two things guarantee that, and both are load-bearing: nginx sets
+  `X-Forwarded-For` to `$remote_addr` rather than appending to what the caller
+  sent, and Fastify runs with `trustProxy: 1` so the address is read from the
+  right-hand end of the chain. With `trustProxy: true` and an appending nginx,
+  the leftmost entry -- the caller's own -- won, and rotating a fake value reset
+  every limit.
 
 ## API token scopes
 
