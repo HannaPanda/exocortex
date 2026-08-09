@@ -89,18 +89,19 @@ function parseExpanded(raw: string): ExpandedState {
 }
 
 /**
- * The ids of every ancestor of `documentId`, excluding the node itself.
+ * The ids of every ancestor of `documentId`, excluding the node itself, or
+ * `null` when this tree does not contain that document.
  *
  * Derived from the tree the sidebar already holds, so finding out where the
  * open document sits costs no request — `GET /api/documents/:id` would answer
- * the same question with a round trip.
+ * the same question with a round trip. The `null` matters: "a root page, no
+ * ancestors" and "not in the tree yet" are different answers, and only the
+ * second one is worth waiting for.
  */
 function ancestorsOf(
   nodes: readonly DocumentTreeNode[],
-  documentId: string | undefined,
-): string[] {
-  if (documentId === undefined) return [];
-
+  documentId: string,
+): string[] | null {
   const search = (node: DocumentTreeNode, path: string[]): string[] | null => {
     if (node.id === documentId) return path;
     const nextPath = [...path, node.id];
@@ -115,7 +116,7 @@ function ancestorsOf(
     const found = search(node, []);
     if (found !== null) return found;
   }
-  return [];
+  return null;
 }
 
 /**
@@ -157,21 +158,38 @@ export function PageTree({ workspaceId }: PageTreeProps) {
   const nodes = tree.data?.nodes;
 
   /**
+   * Which document the unfolding below has already been done for.
+   *
+   * The whole point of the ref: unfolding happens **once per arrival**, not for
+   * as long as a page is the active one. Re-running it whenever `expanded`
+   * changes would undo the very next click on the chevron of an ancestor —
+   * folding away the subtree you are standing in would snap straight back open.
+   */
+  const unfoldedFor = React.useRef<string | null>(null);
+
+  /**
    * Unfolds the path down to the open document.
    *
    * Without this the active row is marked but not rendered: the marking sits on
    * a node inside a folded parent, so opening a subpage through the search, a
    * reference in the text or a direct link left the tree showing nothing at all
-   * (issue #29).
-   *
-   * An effect rather than a derived "ancestors count as open": the unfold state
-   * belongs to the reader, so navigation *opens* the path and leaves it open
-   * afterwards, instead of forcing it open for as long as the page is the
-   * active one — which would make the chevron on those rows do nothing.
+   * (issue #29). Navigation *opens* the path and then leaves it to the reader.
    */
   React.useEffect(() => {
-    if (nodes === undefined) return;
+    if (activeDocumentId === undefined) {
+      // Back on the overview. Arriving at the same page again should unfold
+      // again, so this is a fresh arrival rather than the one already handled.
+      unfoldedFor.current = null;
+      return;
+    }
+    if (nodes === undefined || unfoldedFor.current === activeDocumentId) return;
+
     const path = ancestorsOf(nodes, activeDocumentId);
+    // Not in the tree yet — a page just created, or a tree still catching up.
+    // Leave the ref alone so the next version of the tree tries again.
+    if (path === null) return;
+
+    unfoldedFor.current = activeDocumentId;
     if (path.every((id) => expanded[id] === true)) return;
     setExpanded({ ...expanded, ...Object.fromEntries(path.map((id) => [id, true])) });
   }, [activeDocumentId, expanded, nodes, setExpanded]);

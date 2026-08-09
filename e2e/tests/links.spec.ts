@@ -35,6 +35,15 @@ test.describe('links', () => {
    * the title, exactly the case the "ambiguous" test needs.
    */
   async function createPageWithTitle(page: Page, title: string): Promise<string> {
+    // The `page` fixture starts at `about:blank`, and the button this clicks
+    // lives in the page tree — so a test that calls this as its first action
+    // has to arrive somewhere first. Tests that already navigated keep their
+    // place, which is what the "ambiguous" test needs to make two pages in a
+    // row.
+    if (!/\/arbeitsbereich\/[a-z0-9]+/.test(page.url())) {
+      await page.goto('/arbeitsbereich');
+      await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    }
     await page.getByTestId('create-root-page').click();
     await page.getByTestId('create-root-page-item').click();
     await page.waitForURL(/\/seite\/[a-z0-9]+/, { timeout: 30_000 });
