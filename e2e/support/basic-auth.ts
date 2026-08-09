@@ -1,27 +1,25 @@
 /**
- * HTTP basic auth credentials of the deployment under test.
+ * Optional HTTP basic auth credentials for the deployment under test.
  *
- * One source for the config, the fixtures and the specs. They used to carry
- * four copies of `?? 'test123'`, and that fallback quietly became the real
- * password guarding the deployment: a credential in a public repository,
- * protecting everything behind it. A missing value now fails the run loudly
- * instead of silently being the answer.
+ * exocortex.app served an nginx basic auth realm in front of everything until
+ * 2026-08-09; it no longer does, so a run needs no credentials at all. They stay
+ * configurable because a staging deployment may well put one back.
+ *
+ * What must never come back is a default value. `E2E_BASIC_PASSWORD` used to
+ * fall back to `test123` in four places, and that fallback was the real password
+ * guarding the deployment: a credential in a public repository, protecting
+ * everything behind it. Absent means absent here -- never a guess.
  */
-export const BASIC_AUTH_USER = process.env.E2E_BASIC_USER ?? 'johanna';
+const user = process.env.E2E_BASIC_USER;
+const password = process.env.E2E_BASIC_PASSWORD;
 
-export const BASIC_AUTH_PASSWORD = ((): string => {
-  const password = process.env.E2E_BASIC_PASSWORD;
-  if (password === undefined || password.length === 0) {
-    throw new Error(
-      'E2E_BASIC_PASSWORD is not set. Export the HTTP basic auth password of the ' +
-        'deployment under test; there is deliberately no default.',
-    );
-  }
-  return password;
-})();
-
-/** Ready-made `httpCredentials` for Playwright's `use` block and `request.newContext`. */
-export const BASIC_AUTH_CREDENTIALS = {
-  username: BASIC_AUTH_USER,
-  password: BASIC_AUTH_PASSWORD,
-} as const;
+/**
+ * `httpCredentials` for Playwright's `use` block and `request.newContext`, or
+ * `undefined` when the deployment asks for none. Playwright only sends them when
+ * a server actually issues a challenge, so passing them at an open deployment is
+ * harmless -- but passing a made-up pair to a closed one would silently fail.
+ */
+export const BASIC_AUTH_CREDENTIALS =
+  password !== undefined && password.length > 0
+    ? { username: user ?? 'johanna', password }
+    : undefined;

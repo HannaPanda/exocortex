@@ -4,7 +4,7 @@
 
 ```text
                      ┌──────────────────────────────┐
-   browser  ─────────┤ nginx (TLS, HTTP basic auth) │
+   browser  ─────────┤ nginx (TLS) │
                      └───┬──────────┬───────────┬───┘
                          │ /        │ /api      │ /collab
                          │ /realtime│           │

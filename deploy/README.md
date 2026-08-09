@@ -6,14 +6,14 @@ This directory contains the configuration used for the live deployment of
 ## Topology
 
 ```text
-Internet ──► nginx :443 (TLS + HTTP basic auth)
+Internet ──► nginx :443 (TLS)
                ├─ /                → 127.0.0.1:3210   exocortex-web
                ├─ /api/, /docs     → 127.0.0.1:3211   exocortex-api
                ├─ /realtime  (ws)  → 127.0.0.1:3211   exocortex-api
                ├─ /collab    (ws)  → 127.0.0.1:3212   exocortex-collaboration
-               └─ /health/         → 127.0.0.1:3211   (no basic auth)
+               └─ /health/         → 127.0.0.1:3211
 
-Docker bridge ──► nginx 172.17.0.1:3213 (no TLS, no basic auth)
+Docker bridge ──► nginx 172.17.0.1:3213 (no TLS)
                └─ /api/, /health/  → 127.0.0.1:3211   exocortex-api
 
 Docker (127.0.0.1 only): PostgreSQL 5433 · Redis 6380 · MinIO 9110/9111 · Mailpit 1026/8026
@@ -21,12 +21,17 @@ Docker (127.0.0.1 only): PostgreSQL 5433 · Redis 6380 · MinIO 9110/9111 · Mai
 
 Nothing except nginx listens on a public interface.
 
+There is no HTTP basic auth in front of the application. There was one while the
+deployment was private; it came off on 2026-08-09, once the things it had been
+quietly covering were fixed (see `docs/security.md`). The application's own
+authentication is the gate, which is what it is designed to be.
+
 The second listener exists for automations that run in containers on this host
-(the Windmill morning briefing). They authenticate with an API token, and basic
-auth and a bearer token cannot share the `Authorization` header, so they need a
-door that does not ask for basic auth. It is bound to the Docker bridge address,
-so the internet never reaches it, and the API token stays the real
-authentication. ufw has to let the container subnet in:
+(the Windmill morning briefing). It predates the removal, when basic auth and a
+bearer token could not share the `Authorization` header. It is kept because it
+never leaves the Docker bridge and saves those callers a TLS round trip; the API
+token is the real authentication either way. ufw has to let the container subnet
+in:
 
 ```bash
 sudo ufw allow from 172.18.0.0/16 to 172.17.0.1 port 3213 proto tcp \
@@ -50,11 +55,12 @@ sudo ufw allow from 172.18.0.0/16 to 172.17.0.1 port 3213 proto tcp \
 Three fail2ban jails guard the edge, all reading `/var/log/nginx/`:
 
 * `nginx-http-auth` and `nginx-botsearch` watch the error log: HTTP basic auth
-  failures and scanners probing for paths that do not exist.
+  failures (the realms still in front of Windmill and Steel) and scanners probing
+  for paths that do not exist.
 * `exocortex-auth` watches the **access** log for repeated `401`/`429` answers to
   `/api/auth/sign-in/email` and the password-reset endpoints. This is the one
-  that matters once the basic auth in front of the deployment comes off, because
-  the other two then see nothing here: Better Auth's per-IP limit slows an
+  that matters now that the basic auth in front of the deployment is gone,
+  because the other two see nothing here: Better Auth's per-IP limit slows an
   attacker to ten guesses a minute but never stops them.
 
 The application log is deliberately not the source. pino writes structured JSON
@@ -88,12 +94,16 @@ in `nft list table inet f2b-table`.
 # TLS certificate (Let's Encrypt, auto-renewing)
 sudo certbot --nginx -d exocortex.app -d www.exocortex.app --redirect
 
-# HTTP basic auth while the deployment is private.
-# bcrypt, not apr1: apr1 is MD5 and falls to a GPU in seconds if the file ever
-# leaks. `htpasswd -B` prompts, so the password stays out of the shell history.
-sudo htpasswd -B -c /etc/nginx/exocortex.htpasswd johanna
-sudo chown root:www-data /etc/nginx/exocortex.htpasswd
-sudo chmod 640 /etc/nginx/exocortex.htpasswd
+# Optional: an HTTP basic auth realm in front of everything, for a deployment
+# that should not be reachable at all yet. exocortex.app does not use one.
+# If you add it, use bcrypt -- apr1 is MD5 and falls to a GPU in seconds if the
+# file ever leaks -- and let `htpasswd -B` prompt, so the password stays out of
+# the shell history. Remember that /.well-known/acme-challenge/ and /health/
+# have to stay exempt, and that a bearer token cannot share the Authorization
+# header with basic auth.
+#   sudo htpasswd -B -c /etc/nginx/exocortex.htpasswd johanna
+#   sudo chown root:www-data /etc/nginx/exocortex.htpasswd
+#   sudo chmod 640 /etc/nginx/exocortex.htpasswd
 
 sudo cp deploy/nginx/exocortex.app.conf /etc/nginx/sites-available/exocortex
 sudo ln -sfn /etc/nginx/sites-available/exocortex /etc/nginx/sites-enabled/exocortex
@@ -104,8 +114,10 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now exocortex-api exocortex-collaboration exocortex-worker exocortex-web
 ```
 
-The `/.well-known/acme-challenge/` and `/health/` locations are exempt from basic
-auth so certificate renewal and monitoring keep working.
+`/.well-known/acme-challenge/` is served from disk so certificate renewal keeps
+working, and `/health/` reaches the API without a session so monitoring can probe
+it. Both were also the two exemptions the old basic auth realm needed; if you put
+one back, they have to stay exempt.
 
 ## Configuration
 
@@ -120,7 +132,7 @@ PUBLIC_API_URL=https://exocortex.app
 PUBLIC_COLLABORATION_URL=wss://exocortex.app/collab
 
 # Internal base URL for server-to-server calls: the worker's AI tool loop and
-# the MCP server reach the API through it. nginx and its basic auth are bypassed
+# the MCP server reach the API through it. nginx is bypassed
 # on purpose -- this never leaves the loopback interface.
 API_URL=http://127.0.0.1:3211
 
@@ -280,7 +292,7 @@ correctness.
 ```bash
 sudo systemctl status  exocortex-api
 sudo journalctl -u exocortex-worker -f          # structured JSON logs
-curl -s https://exocortex.app/health/ready      # no basic auth needed
+curl -s https://exocortex.app/health/ready      # no credentials needed
 sudo -u johanna docker compose -f /var/www/exocortex/docker-compose.yml ps
 ```
 

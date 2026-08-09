@@ -243,9 +243,11 @@ mcp_servers:
 
 `EXOCORTEX_API_URL=http://127.0.0.1:3211` is the intended value whenever the
 MCP client runs on the same host as the API (Hermes does): it talks to
-`apps/api` directly, bypassing nginx (and its HTTP basic auth) entirely.
-`EXOCORTEX_BASIC_AUTH` (`user:password`) exists for a remote deployment behind
-nginx basic auth, but cannot simply be sent as `Authorization` — the bearer
+`apps/api` directly, bypassing nginx entirely.
+`EXOCORTEX_BASIC_AUTH` (`user:password`) exists for a remote deployment that
+puts an nginx basic auth realm in front of the API. `exocortex.app` no longer
+does, so a remote client needs nothing but its bearer token. Where such a realm
+exists, the credentials cannot simply be sent as `Authorization` — the bearer
 token already needs that header. `apps/mcp` sends it as
 `X-Forwarded-Authorization: Basic <base64>` instead; the nginx config in front
 of a remote deployment would need an explicit rule translating that header

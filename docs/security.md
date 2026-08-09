@@ -147,12 +147,19 @@ codes to German messages in `apps/web/src/lib/api/error-messages.ts`.
 
 * nginx terminates TLS (Let's Encrypt, auto-renewed) and adds HSTS, `nosniff`,
   `X-Frame-Options` and a referrer policy.
-* While the deployment is private, nginx additionally requires HTTP basic auth for
-  everything except `/.well-known/acme-challenge/` and `/health/`.
+* There is **no** HTTP basic auth in front of the application. One guarded the
+  deployment while it was private and was removed on 2026-08-09. It had been
+  covering two holes that only became visible when removing it was considered:
+  Swagger mounted outside every Nest guard, and per-IP login limits that a forged
+  `X-Forwarded-For` reset. Both are fixed above; a shield that hides defects is
+  worse than no shield, because nobody looks behind it.
+* Repeated failed logins are banned by the `exocortex-auth` fail2ban jail, which
+  reads the nginx access log (`deploy/README.md`). Rate limiting only slows an
+  attacker down; this is what stops one.
 * All four application processes bind to `127.0.0.1` only. PostgreSQL, Redis, MinIO
   and Mailpit are published to `127.0.0.1` only.
 * systemd units run with `NoNewPrivileges`, `PrivateTmp`, `ProtectSystem=full`,
-  `ProtectHome=read-only` and a single `ReadWritePaths` entry.
+  `ProtectHome=true` and a single `ReadWritePaths` entry.
 
 ## Reporting
 
