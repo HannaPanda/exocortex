@@ -69,7 +69,7 @@ discipline completely, which the SDK does not guarantee out of the box.
 
 ## Tool reference
 
-All 37 tools are namespaced `exo_` so they cannot collide with the other MCP
+All 38 tools are namespaced `exo_` so they cannot collide with the other MCP
 servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 
 | Tool | Mutating | REST call |
@@ -94,7 +94,7 @@ servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 | `exo_page_backlinks` | no | `GET /api/documents/:documentId/links` -- both directions of the reference index, including references to a title no page carries |
 | `exo_search` | no | `GET /api/workspaces/:workspaceId/search?q=&limit=&includeArchived=` |
 | `exo_database_create` | yes | `POST /api/workspaces/:workspaceId/documents` (`type: 'COLLECTION'`) + one `POST .../properties` per requested column |
-| `exo_database_schema` | no | `GET /api/documents/:documentId/properties` + `GET .../views` |
+| `exo_database_schema` | no | `GET /api/documents/:documentId` (for `rowCount`) + `GET .../properties` + `GET .../views` |
 | `exo_database_property_create` | yes | `POST /api/documents/:documentId/properties` |
 | `exo_database_property_update` | yes | `PATCH /api/documents/:documentId/properties/:propertyId` |
 | `exo_database_property_delete` | yes | `DELETE /api/documents/:documentId/properties/:propertyId` |
@@ -103,6 +103,7 @@ servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 | `exo_database_view_update` | yes | `PATCH /api/documents/:documentId/views/:viewId` |
 | `exo_database_view_delete` | yes | `DELETE /api/documents/:documentId/views/:viewId` |
 | `exo_database_query` | no | `POST /api/documents/:documentId/rows/query` (Markdown table, capped at 50 rows) |
+| `exo_database_row_get` | no | `GET /api/documents/:documentId/row` -- values of the row this document id names, or `row: null` if it is not a row |
 | `exo_database_row_create` | yes | `POST /api/documents/:documentId/rows` |
 | `exo_database_row_update` | yes | `PATCH /api/documents/:rowId/values` |
 | `exo_attachment_upload` | yes | `POST /api/workspaces/:workspaceId/attachments` (multipart, Base64 input) |

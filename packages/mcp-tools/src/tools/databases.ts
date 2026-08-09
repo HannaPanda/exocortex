@@ -13,6 +13,9 @@ import {
   type DatabaseRowPropertyValue,
   databaseRowSchema,
   databaseViewSchema,
+  documentDetailSchema,
+  type DocumentRowResponse,
+  documentRowResponseSchema,
   documentSummarySchema,
   documentTitleSchema,
   idSchema,
@@ -89,12 +92,17 @@ export const databaseCreateTool: AnyToolDefinition = defineTool({
 
 export const databaseSchemaTool: AnyToolDefinition = defineTool({
   name: 'exo_database_schema',
-  description: 'Liest Spalten und Ansichten einer Datenbank.',
+  description: 'Liest Zeilenanzahl, Spalten und Ansichten einer Datenbank.',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
   mutating: false,
   async execute(client, input) {
-    const [properties, views] = await Promise.all([
+    const [detail, properties, views] = await Promise.all([
+      client.request({
+        method: 'GET',
+        path: `/api/documents/${input.documentId}`,
+        responseSchema: documentDetailSchema,
+      }),
       client.request({
         method: 'GET',
         path: `/api/documents/${input.documentId}/properties`,
@@ -109,12 +117,16 @@ export const databaseSchemaTool: AnyToolDefinition = defineTool({
     const propertyLines = properties.properties.map((p) => `- ${p.name} (${p.type}, id: ${p.id})`);
     const viewLines = views.views.map((v) => `- ${v.name} (${v.type}, id: ${v.id})`);
     const text = [
+      `Zeilen: ${detail.rowCount ?? 0}`,
       `Spalten (${properties.properties.length}):`,
       ...propertyLines,
       `Ansichten (${views.views.length}):`,
       ...viewLines,
     ].join('\n');
-    return { text, data: { properties: properties.properties, views: views.views } };
+    return {
+      text,
+      data: { rowCount: detail.rowCount, properties: properties.properties, views: views.views },
+    };
   },
 });
 
@@ -339,6 +351,34 @@ export const databaseQueryTool: AnyToolDefinition = defineTool({
   },
 });
 
+const databaseRowGetInputSchema = z.object({ documentId: idSchema });
+
+export const databaseRowGetTool: AnyToolDefinition = defineTool({
+  name: 'exo_database_row_get',
+  description:
+    'Liest die Spaltenwerte einer Seite, falls sie eine Zeile in einer Datenbank ist (ADR-011: eine Zeile ist eine ' +
+    'gewöhnliche Seite mit einer Datenbank als übergeordnetem Element). Antwortet mit row: null, wenn die Seite ' +
+    'keine Zeile ist -- eine gewöhnliche Seite, eine Datenbank selbst oder eine Seite auf oberster Ebene.',
+  inputSchema: databaseRowGetInputSchema,
+  surfaces: ['mcp', 'ai'],
+  mutating: false,
+  async execute(client, input) {
+    const result: DocumentRowResponse = await client.request({
+      method: 'GET',
+      path: `/api/documents/${input.documentId}/row`,
+      responseSchema: documentRowResponseSchema,
+    });
+    if (result.row === null) {
+      return { text: `Seite ${input.documentId} ist keine Datenbankzeile.`, data: result };
+    }
+    const lines = result.row.values.map((value) => `- ${value.propertyId}: ${formatCell(value.value)}`);
+    return {
+      text: `${result.row.document.title} (id: ${result.row.document.id})\n${lines.join('\n')}`,
+      data: result,
+    };
+  },
+});
+
 const databaseRowCreateInputSchema = z
   .object({ documentId: idSchema })
   .extend(createDatabaseRowRequestSchema.shape);
@@ -398,6 +438,7 @@ export const DATABASE_TOOLS: readonly AnyToolDefinition[] = [
   databaseViewUpdateTool,
   databaseViewDeleteTool,
   databaseQueryTool,
+  databaseRowGetTool,
   databaseRowCreateTool,
   databaseRowUpdateTool,
 ];
