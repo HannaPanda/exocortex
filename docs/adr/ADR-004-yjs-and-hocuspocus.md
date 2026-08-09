@@ -11,7 +11,7 @@ and merge, and the collaboration hot path must not be able to take the REST API 
 ## Decision
 
 Yjs is the collaborative data structure, Hocuspocus is the server, one Yjs document
-per Exocortex document. The collaboration server is its own process.
+per eXocortex document. The collaboration server is its own process.
 
 Access control uses short-lived, signed, per-document tickets rather than session
 cookies:

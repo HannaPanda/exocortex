@@ -35,7 +35,7 @@ function textEmail(title: string, body: string, url: string): string {
     '',
     'Wenn du das nicht angefordert hast, kannst du diese E-Mail ignorieren.',
     '',
-    'Exocortex',
+    'eXocortex',
   ].join('\n');
 }
 
@@ -86,10 +86,10 @@ export function createMailer(options: MailerOptions): Mailer {
     async sendVerificationEmail({ to, name, url }) {
       await send(
         to,
-        'Exocortex: E-Mail-Adresse bestätigen',
+        'eXocortex: E-Mail-Adresse bestätigen',
         textEmail(
           `Hallo ${name},`,
-          'bitte bestätige deine E-Mail-Adresse für Exocortex über diesen Link:',
+          'bitte bestätige deine E-Mail-Adresse für eXocortex über diesen Link:',
           url,
         ),
         'verification',
@@ -98,10 +98,10 @@ export function createMailer(options: MailerOptions): Mailer {
     async sendPasswordResetEmail({ to, name, url }) {
       await send(
         to,
-        'Exocortex: Passwort zurücksetzen',
+        'eXocortex: Passwort zurücksetzen',
         textEmail(
           `Hallo ${name},`,
-          'über diesen Link kannst du ein neues Passwort für Exocortex setzen:',
+          'über diesen Link kannst du ein neues Passwort für eXocortex setzen:',
           url,
         ),
         'password_reset',

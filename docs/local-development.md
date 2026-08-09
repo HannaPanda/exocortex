@@ -97,7 +97,7 @@ check with `\d document_search_index` before assuming otherwise.
 ### Seed data and credentials
 
 `pnpm db:seed` creates the users **Johanna** (`OWNER`) and **Stefan** (`MEMBER`),
-the shared workspace *Exocortex Team* and six nested example pages whose content is
+the shared workspace *eXocortex Team* and six nested example pages whose content is
 real Yjs state.
 
 Passwords are never hardcoded. Either set them yourself:

@@ -8,7 +8,7 @@ product
 
 Two overlapping groups, in this order of priority:
 
-1. **The daily solo user.** Johanna, using Exocortex every day as a personal
+1. **The daily solo user.** Johanna, using eXocortex every day as a personal
    external brain. Long sessions, deep page hierarchies, high tolerance for
    information density. She knows the tool by heart, so speed and keyboard
    access matter more than discoverability. She is not exploring; she is
@@ -31,13 +31,13 @@ cost of retrieval is not an improvement.
 
 ## Product Purpose
 
-Exocortex is a self-hostable, collaborative workspace and external brain:
+eXocortex is a self-hostable, collaborative workspace and external brain:
 hierarchical pages, real-time collaborative editing, full-text search, Markdown
 interchange, background automation and an AI side panel, in one deployment the
 user controls.
 
 It exists because the alternatives force a trade: hosted tools own your data,
-and local tools do not collaborate. Exocortex refuses both. Self-hosting is not
+and local tools do not collaborate. eXocortex refuses both. Self-hosting is not
 a feature flag here, it is the premise.
 
 Success looks like: the daily user stops thinking about the tool. Pages are

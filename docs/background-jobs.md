@@ -132,7 +132,7 @@ send; the other order would decide what changed locally against a picture of the
 remote side that is one pass old.
 
 Loop prevention is a hash, not a timestamp. `CalendarObjectState.lastPushedHash`
-holds a fingerprint of the fields Exocortex owns (title, span, location,
+holds a fingerprint of the fields eXocortex owns (title, span, location,
 description; `hashCalendarEventPayload`), and **both** directions write it: a pull
 records what it put into the row, a push records what it sent outward. A row whose
 fingerprint still matches is silent. With a modification time instead, our own push

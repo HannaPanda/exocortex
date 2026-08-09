@@ -6,11 +6,11 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Exocortex',
-    template: '%s · Exocortex',
+    default: 'eXocortex',
+    template: '%s · eXocortex',
   },
-  description: 'Exocortex: dein gemeinsames externes Gehirn.',
-  applicationName: 'Exocortex',
+  description: 'eXocortex: dein gemeinsames externes Gehirn.',
+  applicationName: 'eXocortex',
   robots: { index: false, follow: false },
 };
 

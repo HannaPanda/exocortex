@@ -1,6 +1,6 @@
 # CLAUDE.md — instructions for Claude Code sessions in this repository
 
-Exocortex is a self-hostable, collaborative workspace and external brain. This
+eXocortex is a self-hostable, collaborative workspace and external brain. This
 file is the contract for automated sessions. Read it before changing code.
 
 ## Non-negotiable rules
@@ -13,7 +13,7 @@ file is the contract for automated sessions. Read it before changing code.
    - read the current source and docs (`view_items_in_registries`,
      `get_item_examples_from_registries`, `shadcn docs <component>`)
    - install with the official CLI: `cd packages/ui && pnpm dlx shadcn@4.16.1 add <name>`
-   - only then adapt the installed source to the Exocortex design system
+   - only then adapt the installed source to the eXocortex design system
 2. **Search existing components before creating new ones.**
    `packages/ui/src/components/ui` and `packages/ui/src/components` first,
    the shadcn registry second, a new primitive last.
@@ -40,8 +40,18 @@ file is the contract for automated sessions. Read it before changing code.
 8. **Visible UI text is German. Code, comments, logs, identifiers and API error
    codes are English.**
 9. **No hardcoded colours.** Use the semantic tokens from
-   `packages/ui/src/tokens.css` through Tailwind utilities.
-10. **Every feature change must be reflected in the MCP surface.**
+   `packages/ui/src/tokens.css` through Tailwind utilities. The single exception
+   is the brand amber in `packages/ui/src/components/logo.tsx`: a logo keeps its
+   colour when the surface underneath it changes.
+10. **The brand is written `eXocortex`** — small `e`, capital `X` — in every
+    string a human reads: UI text, page titles, email subjects, documentation,
+    headings, and at the start of a sentence. Technical identifiers keep the
+    plain lowercase form and must never be renamed in a search-and-replace:
+    the `@exocortex/*` package names, the `exocortex-*` CSS class prefix, the
+    `exocortex` cookie prefix, `exocortex.ai.*` local-storage keys, the
+    `exocortex:*` NestJS metadata keys, `EXOCORTEX_*` environment variables,
+    `data-testid` values, the domain, the systemd units and the database name.
+11. **Every feature change must be reflected in the MCP surface.**
     `packages/mcp-tools` is the single tool catalogue: it serves both the external
     stdio MCP server (`apps/mcp`) and the built-in AI's tool loop in
     `apps/worker`. If a change adds, alters or removes something a human can do
@@ -88,7 +98,7 @@ pnpm test:e2e          # Playwright (needs a running deployment)
 
 ## Architectural decisions you must not silently reverse
 
-* ADR-004/005: one Yjs document per Exocortex document; the binary state is
+* ADR-004/005: one Yjs document per eXocortex document; the binary state is
   canonical and is never rebuilt from JSON on load.
 * ADR-007: Markdown is an interchange format only.
 * ADR-008: application events and Yjs updates travel over **separate** sockets.

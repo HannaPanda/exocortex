@@ -5,7 +5,7 @@
 
 ## Context
 
-Two things need to call into Exocortex on a model's behalf: the external stdio
+Two things need to call into eXocortex on a model's behalf: the external stdio
 MCP server that Hermes and Claude Code spawn, and the built-in AI's tool loop in
 `apps/worker`. Written separately they would drift immediately. The predecessor
 system demonstrated this precisely: the flauschibrain MCP server and the agent's

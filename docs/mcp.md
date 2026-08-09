@@ -1,6 +1,6 @@
 # MCP server
 
-Exocortex is reachable from external MCP clients (Hermes, Claude Code, any
+eXocortex is reachable from external MCP clients (Hermes, Claude Code, any
 stdio-speaking client) and from its own built-in AI tool loop through the
 *same* tool catalogue. This document covers the architecture, the tool
 reference, how to add a tool, authentication, the confirmation gate, and how
@@ -275,7 +275,7 @@ that nginx rule is added.
 * **AI conversations are not in the catalogue at all**, by design rather than
   by omission: the catalogue is what an assistant may do *to a workspace*, and
   a conversation is the assistant's own session. An MCP client has its own
-  transcript and its own context; handing it tools to steer Exocortex's side
+  transcript and its own context; handing it tools to steer eXocortex's side
   panel would be steering a second, unrelated chat. This is why the panel's
   slash commands (`/model`, `/think`, `/context`, …) have no tool counterparts.
   If a conversation-management API is ever wanted, it needs its own decision,

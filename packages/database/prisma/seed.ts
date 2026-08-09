@@ -196,8 +196,8 @@ async function main(): Promise<void> {
 
     const workspace = await prisma.workspace.upsert({
       where: { slug: 'exocortex-team' },
-      create: { name: 'Exocortex Team', slug: 'exocortex-team' },
-      update: { name: 'Exocortex Team' },
+      create: { name: 'eXocortex Team', slug: 'exocortex-team' },
+      update: { name: 'eXocortex Team' },
       select: { id: true },
     });
 
@@ -226,8 +226,8 @@ async function main(): Promise<void> {
     });
 
     console.log('');
-    console.log('Exocortex seed completed.');
-    console.log(`  workspace : Exocortex Team (${workspace.id})`);
+    console.log('eXocortex seed completed.');
+    console.log(`  workspace : eXocortex Team (${workspace.id})`);
     console.log(`  users     : ${users.map((user) => user.email).join(', ')}`);
     console.log(`  pages     : ${pageCount}`);
 

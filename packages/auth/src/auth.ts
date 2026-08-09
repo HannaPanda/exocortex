@@ -35,7 +35,7 @@ export function createAuth(options: CreateAuthOptions) {
   const { prisma, mailer, logger } = options;
 
   return betterAuth({
-    appName: 'Exocortex',
+    appName: 'eXocortex',
     secret: options.secret,
     baseURL: options.appUrl,
     basePath: AUTH_BASE_PATH,

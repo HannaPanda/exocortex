@@ -73,7 +73,7 @@ headings, code blocks, list items, task items and callouts do.
 
 `file-type` is ESM-only, which does not combine with the CommonJS builds of the
 API and worker. `packages/storage/src/mime.ts` implements a short, auditable
-signature table for exactly the formats Exocortex allows, plus a UTF-8 text check.
+signature table for exactly the formats eXocortex allows, plus a UTF-8 text check.
 It is covered by 11 unit tests, including "rejects an executable disguised as an
 image".
 
@@ -147,7 +147,7 @@ the `[[Seite]]` wiki link on purpose.
 
 ## 14. Emoji are characters, not a schema node
 
-Tiptap ships an emoji node with a shortcode dataset. Exocortex inserts the Unicode
+Tiptap ships an emoji node with a shortcode dataset. eXocortex inserts the Unicode
 character as plain text instead: as a character an emoji round-trips through
 Markdown perfectly, is found by full-text search, and needs neither a node view nor
 a ~1,800-entry dataset in the browser bundle. The picker

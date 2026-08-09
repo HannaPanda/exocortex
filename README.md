@@ -1,6 +1,6 @@
-# Exocortex
+# eXocortex
 
-Exocortex is a self-hostable, collaborative workspace and external brain:
+eXocortex is a self-hostable, collaborative workspace and external brain:
 hierarchical pages, real-time collaborative editing, full-text search, Markdown
 interchange, background automation and an AI side panel — all in one deployment
 you control.

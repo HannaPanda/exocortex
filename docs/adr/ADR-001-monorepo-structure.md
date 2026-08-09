@@ -5,7 +5,7 @@
 
 ## Context
 
-Exocortex is four cooperating processes (frontend, API, collaboration server,
+eXocortex is four cooperating processes (frontend, API, collaboration server,
 worker) that share contracts, an editor schema, a database schema and a design
 system. Splitting them into separate repositories would make every contract change a
 multi-repository release; keeping everything in one application would couple the

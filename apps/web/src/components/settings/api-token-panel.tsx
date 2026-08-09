@@ -133,7 +133,7 @@ export function ApiTokenPanel() {
         <h1 className="text-2xl font-semibold tracking-tight">API-Token</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           API-Token erlauben externen Programmen wie dem MCP-Server, in deinem Namen auf
-          Exocortex zuzugreifen. Gib jedem Token nur die Rechte, die es wirklich braucht:
+          eXocortex zuzugreifen. Gib jedem Token nur die Rechte, die es wirklich braucht:
           Wenn es abhandenkommt, kann jemand genau das damit tun.
         </p>
       </div>

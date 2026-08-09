@@ -140,7 +140,8 @@ owns the code and nothing is fetched at runtime.
 | `src/components/ui/toolbar.tsx` | custom primitive: `role="toolbar"` with a roving tabindex, on Base UI |
 | `src/components/layout.tsx` | `AppShell`, `AppHeader`, `AppBody`, `AppMain`, `AppPage`, `ResizablePanel`, `SkipToContentLink` |
 | `src/components/states.tsx` | `LoadingState`, `EmptyState`, `ErrorState` |
-| `src/components/logo.tsx` | **LOGO PLACEHOLDER** — `ExocortexLogo`, `ExocortexWordmark` |
+| `src/components/logo.tsx` | `ExocortexLogo` (square mark), `ExocortexWordmark` (full lockup) |
+| `src/assets/*.svg` | the brand assets the two components are inlined from |
 | `src/lib/utils.ts` | `cn()` |
 
 Domain components (page tree, document view, AI panel) live in
@@ -148,8 +149,29 @@ Domain components (page tree, document view, AI panel) live in
 
 ### Logo
 
-`packages/ui/src/components/logo.tsx` contains a clearly marked placeholder mark.
-Replace the SVG there when the real asset exists; nothing else references the logo.
+`packages/ui/src/components/logo.tsx` exports the two brand marks and is the only
+place that draws them:
+
+* `ExocortexWordmark` is the full lockup (mark plus wordmark, about 3.4:1). It has
+  no intrinsic width, so size it by height — `h-8` by default.
+* `ExocortexLogo` is the same mark cropped square, for tight spots.
+
+Both inline their path data from `packages/ui/src/assets`, which holds the
+canonical brand files: `exocortex-logo.svg` and `exocortex-mark.svg` carry dark
+ink for light surfaces, `*-dark.svg` light ink for dark ones. The four files share
+one geometry and differ only in the colour of the ink, so the components inline
+the geometry once and let the ink follow `currentColor`. That makes the theme
+switch the logo in CSS: there is no JavaScript state that could flash the wrong
+variant while the page hydrates. The amber stays fixed at `#FD922F`, the one
+hardcoded colour in the design system.
+
+The browser tab icon is `apps/web/src/app/icon.svg` and the home-screen icon is
+`apps/web/src/app/apple-icon.png` (Next.js picks both up by file name). The tab
+icon drops the four synapse stems of the mark on purpose: they blur below 32px,
+and the amber X is what carries the brand at that size.
+
+If the assets are ever redrawn, run them through SVGO before checking them in —
+the traced paths shrink by about 60%.
 
 ## Application shell
 

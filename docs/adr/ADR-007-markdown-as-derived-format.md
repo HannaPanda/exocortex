@@ -19,7 +19,7 @@ the Yjs state (ADR-005).
 * import: `markdownToYjsState(markdown)` — parses to ProseMirror JSON, validates it
   against the canonical schema and builds Yjs state, which becomes the new document's
   canonical state
-* frontmatter: Exocortex keys in a fixed order, unknown keys preserved verbatim and
+* frontmatter: eXocortex keys in a fixed order, unknown keys preserved verbatim and
   written back
 * raw HTML is rejected on import
 

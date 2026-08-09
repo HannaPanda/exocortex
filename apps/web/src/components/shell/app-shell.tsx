@@ -235,7 +235,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       <SkipToContentLink />
 
       <AppHeader>
-        <ExocortexWordmark className="mr-1 hidden sm:flex" />
+        <ExocortexWordmark className="mr-1 hidden sm:block" />
 
         <Tooltip>
           <TooltipTrigger

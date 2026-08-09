@@ -98,9 +98,9 @@ async function bootstrap(): Promise<void> {
   });
 
   const openApi = new DocumentBuilder()
-    .setTitle('Exocortex API')
+    .setTitle('eXocortex API')
     .setDescription(
-      'REST API of the Exocortex workspace. All error responses use the shared ' +
+      'REST API of the eXocortex workspace. All error responses use the shared ' +
         'ApiErrorResponse shape: { code, message, details?, correlationId }.',
     )
     .setVersion('0.1.0')

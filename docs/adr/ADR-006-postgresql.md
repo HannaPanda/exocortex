@@ -5,7 +5,7 @@
 
 ## Context
 
-Exocortex needs relational integrity (workspaces, memberships, hierarchies), binary
+eXocortex needs relational integrity (workspaces, memberships, hierarchies), binary
 blobs (Yjs state and snapshots), full-text search, typo tolerance and — later —
 vector search. It must be self-hostable with a single database engine.
 

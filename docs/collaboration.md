@@ -2,7 +2,7 @@
 
 ## Model
 
-* **One Yjs document per Exocortex document.** Never one per workspace: that would
+* **One Yjs document per eXocortex document.** Never one per workspace: that would
   load unrelated content into memory, leak content across permissions and make
   awareness meaningless.
 * The Yjs `XmlFragment` is named `default` (`YJS_DOCUMENT_FIELD`). Client, server
