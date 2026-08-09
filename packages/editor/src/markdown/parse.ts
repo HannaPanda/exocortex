@@ -15,6 +15,7 @@ import {
 } from '../contract';
 import { buildMarkdownRegistry } from '../extensions';
 import { MARKDOWN_HIGHLIGHT_BACKGROUND } from '../inline-styling';
+import { WIKI_LINK_IDENTITY_ATTRIBUTE } from '../link-target';
 import { getExocortexSchema } from '../schema';
 
 import {
@@ -201,7 +202,18 @@ export function parseMarkdown(
       const label = (match[2] ?? target).trim();
       pushText(label, [
         ...activeMarks,
-        { type: 'link', attrs: { href: `${WIKI_LINK_SCHEME}${target}`, title: null, target: null } },
+        {
+          type: 'link',
+          // No identity in the file — `[[Titel]]` is an interchange format and
+          // stays free of internal identifiers. `bindPageLinkIdentities` maps
+          // the title back onto a document where the importer has a workspace.
+          attrs: {
+            href: `${WIKI_LINK_SCHEME}${target}`,
+            title: null,
+            target: null,
+            [WIKI_LINK_IDENTITY_ATTRIBUTE]: null,
+          },
+        },
       ]);
       lastIndex = match.index + match[0].length;
     }

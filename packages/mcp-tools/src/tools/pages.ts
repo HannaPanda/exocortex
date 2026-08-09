@@ -497,9 +497,10 @@ const resolveLinkInputSchema = z
 export const pageResolveLinkTool: AnyToolDefinition = defineTool({
   name: 'exo_page_resolve_link',
   description:
-    'Löst einen internen Seitenverweis auf und liefert die Seite, die er meint. Ein ' +
-    'Seitenlink-Block führt die "documentId" der Zielseite mit; [[Titel]] bzw. wiki:Titel ' +
-    'führen nur den Titel. Beides darf angegeben werden: die Identität gewinnt, deshalb ' +
+    'Löst einen internen Seitenverweis auf und liefert die Seite, die er meint. Sowohl der ' +
+    'Seitenlink-Block als auch ein [[Titel]] im Fließtext führen die "documentId" der ' +
+    'Zielseite mit; nur ein von Hand getippter Titel, dem noch keine Seite zugeordnet ist, ' +
+    'führt allein den Titel. Beides darf angegeben werden: die Identität gewinnt, deshalb ' +
     'überlebt ein Verweis das Umbenennen seiner Zielseite. Der Titel dient als Rückfall, ' +
     'wenn es die Identität nicht mehr gibt. "resolvedBy" sagt, was gegriffen hat. Mehrere ' +
     'gleichnamige Seiten werden alle mit ihrem Pfad zurückgegeben.',

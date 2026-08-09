@@ -1,6 +1,6 @@
 import { ADDRESSABLE_BLOCK_TYPES, BLOCK_ID_ATTRIBUTE, isValidBlockId } from './block-id';
 import { type ProseMirrorDocument, type ProseMirrorNode } from './contract';
-import { normalizeWikiTitle, parseLinkHref } from './link-target';
+import { normalizeWikiTitle, wikiLinkDocumentId, wikiLinkTitle } from './link-target';
 import { serializePlainText } from './plain-text';
 
 /**
@@ -22,10 +22,12 @@ export interface ExtractedDocumentLink {
   /** Comparison key: `targetTitle` lowercased. Resolution happens on this. */
   targetTitleKey: string;
   /**
-   * Identity the reference itself carries, when it has one (`pageLink`'s
-   * `documentId`, `mention`'s `id`). The index resolves against this first, so
-   * renaming a page does not orphan the references to it. `null` for a
-   * `wikiMark`, which is addressed by title by nature.
+   * Identity the reference itself carries, when it has one (`pageLink`'s and
+   * the `link` mark's `documentId`, `mention`'s `id`). The index resolves
+   * against this first, so renaming a page does not orphan the references to
+   * it. `null` for a reference that only ever carried a title: one typed for a
+   * page that does not exist yet, or one imported from Markdown before the
+   * identity was bound.
    */
   targetDocumentId: string | null;
   /** Identifier of the addressable block the reference sits in, when it has one. */
@@ -183,12 +185,13 @@ export function extractDocumentLinks(document: ProseMirrorDocument): ExtractedDo
       }
     } else if (node.type === 'text') {
       for (const mark of node.marks ?? []) {
-        if (mark.type !== 'link') continue;
-        const target = parseLinkHref(
-          typeof mark.attrs?.href === 'string' ? mark.attrs.href : null,
-        );
-        // A `wiki:` href addresses by title by nature: no identity to carry.
-        if (target.kind === 'wiki') add('wikiMark', target.title, null, nextBlock, nextBlockId);
+        const title = wikiLinkTitle(mark);
+        // The address is a title, but the mark carries the identity next to it
+        // (issue #24), so `repointLinks` resolves a `[[Titel]]` in prose the
+        // same way it resolves a page-link block: identity first, title second.
+        if (title !== null) {
+          add('wikiMark', title, wikiLinkDocumentId(mark.attrs), nextBlock, nextBlockId);
+        }
       }
     }
 

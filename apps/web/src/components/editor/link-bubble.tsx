@@ -5,7 +5,7 @@ import { BubbleMenu } from '@tiptap/react/menus';
 import { ExternalLinkIcon, PencilIcon, UnlinkIcon } from 'lucide-react';
 import * as React from 'react';
 
-import { parseLinkHref } from '@exocortex/editor';
+import { parseLinkHref, wikiLinkDocumentId } from '@exocortex/editor';
 import { Button, Toolbar, ToolbarSeparator } from '@exocortex/ui';
 
 import { FollowLinkContext } from './follow-link-context';
@@ -41,6 +41,13 @@ export function LinkBubble({ editor, workspaceId }: LinkBubbleProps) {
     },
   });
 
+  // The identity next to the address (issue #24): "Öffnen" has to land on the
+  // page the reference means, not merely on one that carries its title.
+  const documentId = useEditorState({
+    editor,
+    selector: ({ editor: instance }) => wikiLinkDocumentId(instance.getAttributes('link')),
+  });
+
   return (
     <BubbleMenu
       editor={editor}
@@ -68,8 +75,17 @@ export function LinkBubble({ editor, workspaceId }: LinkBubbleProps) {
           // buttons in `SelectionToolbar`.
           onMouseDown={(event) => event.preventDefault()}
           onClick={() => {
-            const target = parseLinkHref(href);
-            if (target.kind !== 'unknown') followLinkRef?.current?.(target, { download: false });
+            const parsed = parseLinkHref(href);
+            const target = parsed.kind === 'wiki' ? { ...parsed, documentId } : parsed;
+            // An explicit "Öffnen" while editing must not take the editor away:
+            // a target that leaves the application gets its own tab, an
+            // internal one is a normal in-app navigation.
+            if (target.kind !== 'unknown') {
+              followLinkRef?.current?.(target, {
+                download: false,
+                newTab: target.kind === 'external',
+              });
+            }
           }}
         >
           <ExternalLinkIcon /> Öffnen

@@ -5,7 +5,12 @@ import { ExternalLinkIcon, UnlinkIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { type DocumentSummary, type DocumentTreeNode } from '@exocortex/contracts';
-import { parseLinkHref, WIKI_LINK_SCHEME } from '@exocortex/editor';
+import {
+  parseLinkHref,
+  WIKI_LINK_IDENTITY_ATTRIBUTE,
+  WIKI_LINK_SCHEME,
+  wikiLinkDocumentId,
+} from '@exocortex/editor';
 import { Button, Input, Popover, PopoverContent, PopoverTrigger } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
@@ -66,11 +71,22 @@ export function LinkMenu({ editor, workspaceId, trigger }: LinkMenuProps) {
     setOpen(next);
   };
 
-  const applyHref = (href: string | null): void => {
+  /**
+   * Sets the link, with the identity of its target when one is known.
+   *
+   * Picking a page from the list below is the one moment where the application
+   * knows *which* page is meant rather than only what it is called, so that is
+   * where the identity has to be written (issue #24). A title typed by hand
+   * carries none — and explicitly none: the address changed, so an identity
+   * left over from the link that was there before would point somewhere else
+   * entirely.
+   */
+  const applyHref = (href: string | null, documentId: string | null = null): void => {
     if (href === null) {
       editor.chain().focus().unsetLink().run();
     } else {
-      editor.chain().focus().setLink({ href }).run();
+      const attributes = { href, [WIKI_LINK_IDENTITY_ATTRIBUTE]: documentId };
+      editor.chain().focus().setLink(attributes).run();
     }
     setOpen(false);
   };
@@ -116,7 +132,7 @@ export function LinkMenu({ editor, workspaceId, trigger }: LinkMenuProps) {
                   // The editor loses its selection when a button takes focus,
                   // and the link would then be set on nothing.
                   onMouseDown={(event) => event.preventDefault()}
-                  onClick={() => applyHref(`${WIKI_LINK_SCHEME}${page.title}`)}
+                  onClick={() => applyHref(`${WIKI_LINK_SCHEME}${page.title}`, page.id)}
                 >
                   <DocumentIcon icon={page.icon} iconColor={page.iconColor} type={page.type} />
                   <span className="min-w-0 flex-1 truncate">{page.title}</span>
@@ -145,9 +161,14 @@ export function LinkMenu({ editor, workspaceId, trigger }: LinkMenuProps) {
                 size="sm"
                 data-testid="link-open"
                 onClick={() => {
-                  const target = parseLinkHref(currentHref);
+                  const parsed = parseLinkHref(currentHref);
+                  const target =
+                    parsed.kind === 'wiki'
+                      ? { ...parsed, documentId: wikiLinkDocumentId(editor.getAttributes('link')) }
+                      : parsed;
                   if (target.kind !== 'unknown') {
-                    followLinkRef?.current?.(target, { download: false });
+                    // Only shown for a `wiki:` target, which stays in this tab.
+                    followLinkRef?.current?.(target, { download: false, newTab: false });
                   }
                   setOpen(false);
                 }}

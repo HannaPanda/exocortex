@@ -254,21 +254,29 @@ plain-DOM node view.
 
 ## Page references and their identity
 
-Two nodes point at another page: the `pageLink` block and `mention` with
-`kind: 'page'`. Both store the **identity** of the target (`documentId` / `id`)
-next to the **title** they display, and both write only the title to Markdown.
-`[[Titel]]` is therefore an interchange format, not the storage format: an
-exported file still contains no internal identifiers, and renaming a page no
-longer breaks the references to it (issue #14).
+Three notations point at another page: the `pageLink` block, `mention` with
+`kind: 'page'`, and the `link` **mark** carrying a `wiki:` address, which is
+what `[[Titel]]` in running text becomes. All three store the **identity** of
+the target (`documentId` / `id`) next to the **title** they display, and all
+three write only the title to Markdown. `[[Titel]]` is therefore an interchange
+format, not the storage format: an exported file still contains no internal
+identifiers, and renaming a page no longer breaks the references to it
+(issue #14 for the block, issue #24 for the mark).
 
 The three pure operations that keep those two halves in step live in
 `packages/editor/src/page-link-identity.ts`:
 
 | Function | Used by | Does |
 | -------- | ------- | ---- |
-| `resolvePageLinkTitles` | Markdown export | rewrites every stored title from its identity, so a file says what the target is called *now* |
+| `resolvePageLinkTitles` | Markdown export | rewrites every stored title from its identity, so a file says what the target is called *now*. For a mark it rewrites the address, and the visible text only when that text still *was* the address — `[[Ziel\|siehe dort]]` is a wording the author chose |
 | `bindPageLinkIdentities` | Markdown import, `POST /documents/:id/content` | maps a title back onto a page of the workspace |
 | `resolvePageLinkTarget` | the `pageLink` node view | decides what a reference resolves to, identity first, title as the fallback, `unresolved` when neither answers |
+
+An unresolved reference is visible in both notations: the block says so on its
+own card, a `[[Titel]]` in prose is marked by a ProseMirror decoration
+(`apps/web/src/components/editor/wiki-link-markers.tsx`) rather than a stored
+attribute — whether the other page exists is a fact about the workspace, not
+about this document, and it has to change without this document being edited.
 
 All three take the lookup as an argument, because only the application may talk
 to the database; `apps/api/src/documents/page-link-identity.service.ts` supplies
@@ -278,8 +286,9 @@ never dropped — it is shown as unresolved and offers to create the page.
 ## Document migrations
 
 `EXOCORTEX_SCHEMA_VERSION` is stored on every `DocumentContent` and
-`DocumentSnapshot` row. It is at **4**: version 2 added the full block set,
-version 3 the database embed, version 4 the page link's identity.
+`DocumentSnapshot` row. It is at **5**: version 2 added the full block set,
+version 3 the database embed, version 4 the page link's identity, version 5 the
+link mark's.
 
 `SCHEMA_V2_MIGRATION` and `SCHEMA_V3_MIGRATION` are identity migrations — those
 steps were purely additive. They exist because `migrateDocument` requires
@@ -287,9 +296,13 @@ exactly one migration per version step, which keeps the upgrade path explicit
 instead of silently permissive. `SCHEMA_V4_MIGRATION`
 (`packages/editor/src/schema-v4.ts`) is the first one that actually rewrites
 nodes: it gives every `pageLink` an explicit `documentId: null`, so "no identity
-recorded" is one case instead of two. It cannot invent an identity — that needs
-a workspace and a database — so old links keep resolving through their title
-until someone edits them.
+recorded" is one case instead of two. `SCHEMA_V5_MIGRATION`
+(`packages/editor/src/schema-v5.ts`) does the same for the `link` **mark**,
+which is what `[[Titel]]` in running text is (issue #24) — the notation people
+actually type, and the one #14 left behind. Neither can invent an identity —
+that needs a workspace and a database — so old references keep resolving through
+their title until someone edits them or the document passes the Markdown
+boundary, where `bindPageLinkIdentities` binds them.
 
 To add one:
 

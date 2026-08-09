@@ -8,7 +8,20 @@
  */
 
 export type LinkTarget =
-  | { kind: 'wiki'; title: string }
+  | {
+      kind: 'wiki';
+      title: string;
+      /**
+       * Identity of the page the reference means, when it carries one.
+       *
+       * Not part of the address: `wiki:Titel` stays a title, because Markdown
+       * is an interchange format and must contain no internal identifiers
+       * (ADR-007). The identity rides along in the mark's `documentId`
+       * attribute and is what survives a rename (issue #24); the title is the
+       * fallback and the label.
+       */
+      documentId?: string | null;
+    }
   | { kind: 'external'; url: string }
   | { kind: 'mailto'; url: string }
   | { kind: 'attachment'; path: string } // /api/…
@@ -19,6 +32,39 @@ export type LinkTarget =
 // `wiki:` and `wiki://` both occur: the Tiptap Link extension is configured
 // with `{ scheme: 'wiki', optionalSlashes: true }`.
 const WIKI_SCHEME_PATTERN = /^wiki:\/{0,2}/i;
+
+/**
+ * Attribute the `link` mark stores the identity of its target in, and the HTML
+ * attribute it renders as.
+ *
+ * Named here rather than spelled out in each place that reads it: the schema
+ * writes it, the Markdown boundary binds it, the reference index reads it and
+ * the click path in `apps/web` falls back to the rendered HTML attribute when
+ * no mark is at hand (a middle click arrives as a plain DOM event).
+ */
+export const WIKI_LINK_IDENTITY_ATTRIBUTE = 'documentId';
+export const WIKI_LINK_IDENTITY_HTML_ATTRIBUTE = 'data-document-id';
+
+/** The identity a `link` mark carries, or `null` when it only names a title. */
+export function wikiLinkDocumentId(attrs: Record<string, unknown> | undefined): string | null {
+  const value = attrs?.[WIKI_LINK_IDENTITY_ATTRIBUTE];
+  return typeof value === 'string' && value.length > 0 ? value : null;
+}
+
+/**
+ * The `wiki:` title a `link` mark addresses, or `null` for every other kind of
+ * address.
+ *
+ * The one place that decides "is this mark a reference to a page": the export,
+ * the import, the reference index and the editor UI all ask the same question
+ * and must not each answer it with their own `startsWith`.
+ */
+export function wikiLinkTitle(mark: { type: string; attrs?: Record<string, unknown> }): string | null {
+  if (mark.type !== 'link') return null;
+  const href = mark.attrs?.href;
+  const target = parseLinkHref(typeof href === 'string' ? href : null);
+  return target.kind === 'wiki' ? target.title : null;
+}
 
 function decodeSafely(value: string): string {
   try {

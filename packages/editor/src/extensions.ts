@@ -64,6 +64,11 @@ import {
   embedPlainTextAdapter,
 } from './embed';
 import { INLINE_STYLING_EXTENSIONS, inlineStylingMarkdownAdapter } from './inline-styling';
+import {
+  WIKI_LINK_IDENTITY_ATTRIBUTE,
+  WIKI_LINK_IDENTITY_HTML_ATTRIBUTE,
+  wikiLinkDocumentId,
+} from './link-target';
 import { coreMarkdownAdapter } from './markdown/core-adapter';
 import { WIKI_LINK_SCHEME } from './markdown/serialize';
 import {
@@ -90,6 +95,7 @@ import { corePlainTextAdapter } from './plain-text-adapter';
 import { SCHEMA_V2_MIGRATION } from './schema-v2';
 import { SCHEMA_V3_MIGRATION } from './schema-v3';
 import { SCHEMA_V4_MIGRATION } from './schema-v4';
+import { SCHEMA_V5_MIGRATION } from './schema-v5';
 import {
   TableOfContents,
   tableOfContentsBlocks,
@@ -131,13 +137,40 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
   },
   {
     name: 'core-marks',
-    schemaVersion: 1,
+    schemaVersion: 5,
     extensions: [
       Bold,
       Italic,
       Strike,
       Code,
       Link.extend({
+        /**
+         * The identity next to the address (issue #24).
+         *
+         * `[[Titel]]` in running text used to carry nothing but the title, so
+         * renaming a page silently broke every mention of it in prose — the
+         * exact problem `pageLink` was fixed for in issue #14, left standing
+         * for the notation people actually use. The attribute is optional and
+         * empty for every other kind of link; the address stays a title, so
+         * an exported file still contains no internal identifiers.
+         */
+        addAttributes() {
+          return {
+            ...this.parent?.(),
+            [WIKI_LINK_IDENTITY_ATTRIBUTE]: {
+              default: null,
+              parseHTML: (element: HTMLElement) =>
+                element.getAttribute(WIKI_LINK_IDENTITY_HTML_ATTRIBUTE),
+              renderHTML: (attributes: Record<string, unknown>) => {
+                const documentId = wikiLinkDocumentId(attributes);
+                return documentId === null
+                  ? {}
+                  : { [WIKI_LINK_IDENTITY_HTML_ATTRIBUTE]: documentId };
+              },
+            },
+          };
+        },
+
         renderHTML({ HTMLAttributes }) {
           const href = typeof HTMLAttributes.href === 'string' ? HTMLAttributes.href : '';
           const internal =
@@ -164,6 +197,7 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
         HTMLAttributes: { rel: 'noopener noreferrer', target: '_blank' },
       }),
     ],
+    migrations: [SCHEMA_V5_MIGRATION],
   },
   {
     name: 'inline-styling',

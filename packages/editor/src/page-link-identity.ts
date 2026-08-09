@@ -1,11 +1,13 @@
 /**
  * Identity handling for references to other pages.
  *
- * Two node types point at a page: the `pageLink` block and the `mention` node
- * with `kind: 'page'`. Both store an identity (`documentId` / `id`) next to the
- * title they display, and both write only the title to Markdown. That split
- * needs exactly three pure operations, and they all live here so the export
- * path, the import path and the editor UI cannot drift apart:
+ * Three notations point at a page: the `pageLink` block, the `mention` node
+ * with `kind: 'page'`, and the `link` mark carrying a `wiki:` address, which is
+ * what `[[Titel]]` in running text becomes. All three store an identity
+ * (`documentId` / `id`) next to the title they display, and all three write
+ * only the title to Markdown. That split needs exactly three pure operations,
+ * and they all live here so the export path, the import path and the editor UI
+ * cannot drift apart:
  *
  *  * **export** — `resolvePageLinkTitles` refreshes every stored title from the
  *    identity, so a file written today says what the target is called today;
@@ -18,14 +20,20 @@
  * application (API, worker) may talk to the database.
  */
 
-import { type ProseMirrorDocument, type ProseMirrorNode } from './contract';
+import { type ProseMirrorDocument, type ProseMirrorMark, type ProseMirrorNode } from './contract';
 import { mapDocumentNodes } from './document-nodes';
-import { normalizeWikiTitle } from './link-target';
+import {
+  normalizeWikiTitle,
+  WIKI_LINK_IDENTITY_ATTRIBUTE,
+  wikiLinkDocumentId,
+  wikiLinkTitle,
+} from './link-target';
+import { WIKI_LINK_SCHEME } from './markdown/serialize';
 import { pageLinkDocumentId, pageLinkTitle } from './page-link';
 
 /** One reference to another page, regardless of which notation produced it. */
 export interface PageReference {
-  kind: 'pageLink' | 'mention';
+  kind: 'pageLink' | 'mention' | 'wikiMark';
   /** Stored identity, or `null` when the reference only carries a title. */
   documentId: string | null;
   /** Stored display title, whitespace-normalized. */
@@ -48,6 +56,42 @@ function isPageMention(node: ProseMirrorNode): boolean {
 function mentionId(attrs: Record<string, unknown> | undefined): string | null {
   const value = attrs?.id;
   return typeof value === 'string' && value.length > 0 ? value : null;
+}
+
+/**
+ * Rewrites the `wiki:` link marks of one node, leaving everything else — other
+ * marks, the node itself — untouched and referentially identical.
+ *
+ * Both directions below need the same walk over a text node's marks; doing it
+ * once here is what keeps them from disagreeing about which marks count as a
+ * reference (`wikiLinkTitle` answers that, in one place).
+ */
+function mapWikiMarks(
+  node: ProseMirrorNode,
+  map: (mark: ProseMirrorMark, title: string) => ProseMirrorMark,
+): ProseMirrorNode {
+  const marks = node.marks;
+  if (marks === undefined) return node;
+
+  let changed = false;
+  const next = marks.map((mark) => {
+    const title = wikiLinkTitle(mark);
+    if (title === null) return mark;
+    const mapped = map(mark, title);
+    if (mapped !== mark) changed = true;
+    return mapped;
+  });
+
+  return changed ? { ...node, marks: next } : node;
+}
+
+/** The `wiki:` title the first reference mark on a node addresses, if any. */
+function wikiTitleOf(node: ProseMirrorNode): string | null {
+  for (const mark of node.marks ?? []) {
+    const title = wikiLinkTitle(mark);
+    if (title !== null) return title;
+  }
+  return null;
 }
 
 /**
@@ -75,6 +119,10 @@ export function collectPageReferences(document: ProseMirrorDocument): PageRefere
       add('pageLink', pageLinkDocumentId(node.attrs), pageLinkTitle(node.attrs));
     } else if (isPageMention(node)) {
       add('mention', mentionId(node.attrs), stringAttribute(node.attrs?.label));
+    }
+    for (const mark of node.marks ?? []) {
+      const title = wikiLinkTitle(mark);
+      if (title !== null) add('wikiMark', wikiLinkDocumentId(mark.attrs), title);
     }
     for (const child of node.content ?? []) walk(child);
   };
@@ -124,7 +172,25 @@ export function resolvePageLinkTitles(
       return { ...node, attrs: { ...node.attrs, label: title } };
     }
 
-    return node;
+    // `[[Titel]]` in running text.
+    const stored = wikiTitleOf(node);
+    const rewritten = mapWikiMarks(node, (mark, storedTitle) => {
+      const documentId = wikiLinkDocumentId(mark.attrs);
+      if (documentId === null) return mark;
+      const title = lookup(documentId);
+      if (typeof title !== 'string' || title.length === 0 || title === storedTitle) return mark;
+      return { ...mark, attrs: { ...mark.attrs, href: `${WIKI_LINK_SCHEME}${title}` } };
+    });
+    if (rewritten === node) return node;
+
+    // The visible text follows the address only when it still *was* the
+    // address. `[[Ziel|siehe dort]]` is a wording the author chose, and a
+    // rename of the target is no reason to overwrite it — the reference stays
+    // correct either way, because it is the address that carries it.
+    const refreshed = wikiTitleOf(rewritten);
+    return node.text === stored && refreshed !== null
+      ? { ...rewritten, text: refreshed }
+      : rewritten;
   });
 }
 
@@ -160,7 +226,12 @@ export function bindPageLinkIdentities(
       return { ...node, attrs: { ...node.attrs, id } };
     }
 
-    return node;
+    return mapWikiMarks(node, (mark, title) => {
+      if (wikiLinkDocumentId(mark.attrs) !== null) return mark;
+      const documentId = lookup(title);
+      if (typeof documentId !== 'string' || documentId.length === 0) return mark;
+      return { ...mark, attrs: { ...mark.attrs, [WIKI_LINK_IDENTITY_ATTRIBUTE]: documentId } };
+    });
   });
 }
 

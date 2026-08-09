@@ -149,10 +149,11 @@ export type DocumentTreeResponse = z.infer<typeof documentTreeResponseSchema>;
  * Resolves a reference to another page to the document(s) it means.
  *
  * Two ways in, and they are tried in that order: `documentId`, the identity a
- * `pageLink` block stores, and `title`, which is what `[[Titel]]` /
- * `wiki:Titel` and a page mention carry. Identity first is what makes renaming
- * a page harmless; the title is the fallback that keeps a reference alive when
- * its target was deleted and written again.
+ * `pageLink` block, a `[[Titel]]` link mark and a page mention all store, and
+ * `title`, which every one of them carries as its label. Identity first is what
+ * makes renaming a page harmless; the title is the fallback that keeps a
+ * reference alive when its target was deleted and written again, and the only
+ * thing a reference typed by hand has until it is bound to a page.
  *
  * Deliberately not the fuzzy `/search` endpoint: following a link must be
  * deterministic (exact title or nothing) and must not depend on the

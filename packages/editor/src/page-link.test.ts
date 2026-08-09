@@ -2,7 +2,7 @@
 import { Editor } from '@tiptap/core';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { type ProseMirrorDocument } from './contract';
+import { EXOCORTEX_SCHEMA_VERSION, type ProseMirrorDocument } from './contract';
 import { extractDocumentLinks } from './document-links';
 import { buildEditorExtensions } from './extensions';
 import { parseMarkdown } from './markdown/parse';
@@ -16,6 +16,7 @@ import {
   resolvePageLinkTitles,
 } from './page-link-identity';
 import { SCHEMA_V4_MIGRATION } from './schema-v4';
+import { SCHEMA_V5_MIGRATION } from './schema-v5';
 
 let editor: Editor | null = null;
 
@@ -255,14 +256,14 @@ describe('schema 4 migration', () => {
 
   it('is part of the registered upgrade path', () => {
     const result = migrateDocument(doc({ type: 'pageLink', attrs: { title: 'Alt' } }), 3);
-    expect(result.toVersion).toBe(4);
-    expect(result.applied).toEqual(['schema 4: page links carry the identity of their target']);
+    expect(result.toVersion).toBe(EXOCORTEX_SCHEMA_VERSION);
+    expect(result.applied).toContain('schema 4: page links carry the identity of their target');
     expect(result.document.content?.[0]?.attrs).toEqual({ title: 'Alt', documentId: null });
   });
 });
 
 describe('the reference index carries the identity', () => {
-  it('reads it from both notations and from neither for a wiki mark', () => {
+  it('reads it from all three notations', () => {
     const links = extractDocumentLinks(
       doc(
         pageLink('Architektur', 'doc1'),
@@ -276,7 +277,7 @@ describe('the reference index carries the identity', () => {
             {
               type: 'text',
               text: 'Sicherheit',
-              marks: [{ type: 'link', attrs: { href: 'wiki:Sicherheit' } }],
+              marks: [{ type: 'link', attrs: { href: 'wiki:Sicherheit', documentId: 'doc3' } }],
             },
           ],
         },
@@ -286,12 +287,127 @@ describe('the reference index carries the identity', () => {
     expect(links.map((link) => [link.kind, link.targetDocumentId])).toEqual([
       ['pageLink', 'doc1'],
       ['mention', 'doc2'],
-      ['wikiMark', null],
+      ['wikiMark', 'doc3'],
     ]);
+  });
+
+  it('reports no identity for a wiki mark that carries only a title', () => {
+    const links = extractDocumentLinks(
+      doc({
+        type: 'paragraph',
+        content: [
+          { type: 'text', text: 'Neu', marks: [{ type: 'link', attrs: { href: 'wiki:Neu' } }] },
+        ],
+      }),
+    );
+    expect(links.map((link) => [link.kind, link.targetDocumentId])).toEqual([['wikiMark', null]]);
   });
 
   it('reports no identity for a reference that has none', () => {
     const links = extractDocumentLinks(doc(pageLink('Ohne Ziel')));
     expect(links[0]?.targetDocumentId).toBeNull();
+  });
+});
+
+/**
+ * Issue #24: the block was given an identity in #14, the notation people
+ * actually type was not. These are the same guarantees as above, for the mark.
+ */
+describe('a [[Titel]] in running text carries an identity', () => {
+  function wikiMark(title: string, documentId: string | null = null, label: string = title) {
+    return {
+      type: 'paragraph',
+      content: [
+        {
+          type: 'text',
+          text: label,
+          marks: [{ type: 'link', attrs: { href: `wiki:${title}`, documentId } }],
+        },
+      ],
+    };
+  }
+
+  it('is collected as a reference with its identity', () => {
+    expect(collectPageReferences(doc(wikiMark('Architektur', 'doc1')))).toEqual([
+      { kind: 'wikiMark', documentId: 'doc1', title: 'Architektur' },
+    ]);
+  });
+
+  it('binds an imported title to an identity', () => {
+    const parsed = parseMarkdown('Siehe [[Andere Seite]].\n');
+    const bound = bindPageLinkIdentities(parsed.document, (title) =>
+      title === 'Andere Seite' ? 'doc123' : null,
+    );
+
+    expect(collectPageReferences(bound)).toEqual([
+      { kind: 'wikiMark', documentId: 'doc123', title: 'Andere Seite' },
+    ]);
+    // Still exactly the file it came from: no identifier reaches the Markdown.
+    expect(serializeMarkdown(bound)).toBe('Siehe [[Andere Seite]].\n');
+  });
+
+  it('never overwrites an identity it already has', () => {
+    const bound = bindPageLinkIdentities(doc(wikiMark('Ziel', 'doc1')), () => 'doc2');
+    expect(collectPageReferences(bound)[0]?.documentId).toBe('doc1');
+  });
+
+  it('follows a rename in both the address and the label', () => {
+    const resolved = resolvePageLinkTitles(doc(wikiMark('Alter Name', 'doc7')), () => 'Neuer Name');
+    expect(serializeMarkdown(resolved)).toBe('[[Neuer Name]]\n');
+  });
+
+  it('follows a rename in the address but leaves an authored label alone', () => {
+    const resolved = resolvePageLinkTitles(
+      doc(wikiMark('Alter Name', 'doc7', 'siehe dort')),
+      () => 'Neuer Name',
+    );
+    expect(serializeMarkdown(resolved)).toBe('[[Neuer Name|siehe dort]]\n');
+  });
+
+  it('keeps the stored title when the identity is gone', () => {
+    const resolved = resolvePageLinkTitles(doc(wikiMark('Verwaist', 'gone')), () => null);
+    expect(serializeMarkdown(resolved)).toBe('[[Verwaist]]\n');
+  });
+
+  it('leaves a reference without an identity to be resolved by title', () => {
+    const resolved = resolvePageLinkTitles(doc(wikiMark('Ohne Identität')), () => 'Egal');
+    expect(serializeMarkdown(resolved)).toBe('[[Ohne Identität]]\n');
+  });
+});
+
+describe('schema 5 migration', () => {
+  it('gives every link mark the attribute, so old and new documents look alike', () => {
+    const before = doc({
+      type: 'paragraph',
+      content: [
+        { type: 'text', text: 'Ziel', marks: [{ type: 'link', attrs: { href: 'wiki:Ziel' } }] },
+      ],
+    });
+    const after = SCHEMA_V5_MIGRATION.migrate(before);
+
+    expect(after.content?.[0]?.content?.[0]?.marks?.[0]?.attrs).toEqual({
+      href: 'wiki:Ziel',
+      documentId: null,
+    });
+  });
+
+  it('leaves an identity that is already there alone', () => {
+    const before = doc({
+      type: 'paragraph',
+      content: [
+        {
+          type: 'text',
+          text: 'Ziel',
+          marks: [{ type: 'link', attrs: { href: 'wiki:Ziel', documentId: 'doc1' } }],
+        },
+      ],
+    });
+    expect(SCHEMA_V5_MIGRATION.migrate(before)).toBe(before);
+  });
+
+  it('is part of the registered upgrade path', () => {
+    const result = migrateDocument(doc({ type: 'paragraph' }), 4);
+    expect(result.toVersion).toBe(EXOCORTEX_SCHEMA_VERSION);
+    expect(result.applied).toEqual(['schema 5: link marks carry the identity of their target']);
   });
 });

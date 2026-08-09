@@ -2630,6 +2630,66 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
     expect(afterNamesake.targetDocumentId).toBe(target.id);
   }, 60_000);
 
+  /**
+   * Issue #24: the same guarantee for the notation people actually type. A
+   * `[[Titel]]` in running text is a `link` mark, and it carried nothing but
+   * the title until now — so this is the half of the rename problem #14 left
+   * standing.
+   */
+  it('keeps a [[Titel]] in running text pointing at its target after a rename', async () => {
+    const target = await prisma.document.create({
+      data: {
+        workspaceId,
+        title: 'Ziel im Fließtext',
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+      },
+    });
+
+    const imported = markdownToYjsState('Siehe [[Ziel im Fließtext]].\n', {
+      transformDocument: (document) => bindPageLinkIdentities(document, () => target.id),
+    });
+    const source = await prisma.document.create({
+      data: {
+        workspaceId,
+        title: 'Quelle mit Wikilink',
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+        content: {
+          create: { yjsState: Buffer.from(imported.yjsState), yjsUpdatedAt: new Date() },
+        },
+      },
+    });
+    await materialize(source.id, 'test-links-wikimark');
+
+    const initial = await prisma.documentLink.findFirstOrThrow({
+      where: { sourceDocumentId: source.id },
+    });
+    expect(initial.kind).toBe('WIKI_MARK');
+    expect(initial.targetHintId).toBe(target.id);
+    expect(initial.targetDocumentId).toBe(target.id);
+
+    await prisma.document.update({
+      where: { id: target.id },
+      data: { title: 'Anders benannt' },
+    });
+    await maintenance()(
+      contextFor({
+        correlationId: 'test-links-wikimark-b',
+        task: 'resolve-document-links',
+        workspaceId,
+        documentId: target.id,
+      }).context,
+    );
+
+    const afterRename = await prisma.documentLink.findFirstOrThrow({
+      where: { sourceDocumentId: source.id },
+    });
+    expect(afterRename.targetDocumentId).toBe(target.id);
+  }, 60_000);
+
   it('does nothing when the page it should resolve for is gone', async () => {
     await expect(
       maintenance()(
