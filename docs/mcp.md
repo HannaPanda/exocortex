@@ -69,7 +69,7 @@ discipline completely, which the SDK does not guarantee out of the box.
 
 ## Tool reference
 
-All 40 tools are namespaced `exo_` so they cannot collide with the other MCP
+All 41 tools are namespaced `exo_` so they cannot collide with the other MCP
 servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 
 | Tool | Mutating | REST call |
@@ -86,6 +86,7 @@ servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 | `exo_page_restore` | yes | `POST /api/documents/:documentId/restore` |
 | `exo_page_snapshots` | no | `GET /api/documents/:documentId/snapshots` |
 | `exo_page_restore_snapshot` | yes | `POST /api/documents/:documentId/snapshots/:snapshotId/restore` |
+| `exo_page_activity` | no | `GET /api/documents/:documentId/activity` -- the page's own history (issue #20): created, renamed, moved, archived, restored, restorable snapshots and condensed editing sessions, merged server-side. Not a compliance audit trail; see `docs/background-jobs.md`. |
 | `exo_page_set_ai_rule` | yes | `PATCH /api/documents/:documentId` (aiRuleMode/Trigger/Priority) |
 | `exo_page_set_layout` | yes | `PATCH /api/documents/:documentId` (layout: narrow/wide/full) |
 | `exo_page_set_cover` | yes | `PATCH /api/documents/:documentId` (coverAttachmentId/coverPosition) |

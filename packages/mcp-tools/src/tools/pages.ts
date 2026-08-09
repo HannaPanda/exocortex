@@ -5,6 +5,7 @@ import {
   coverPositionSchema,
   DOCUMENT_ICON_COLORS,
   DOCUMENT_ICON_NAMES,
+  documentActivityResponseSchema,
   documentContentWriteRequestSchema,
   documentContentWriteResponseSchema,
   documentIconColorSchema,
@@ -320,6 +321,53 @@ export const pageRestoreSnapshotTool: AnyToolDefinition = defineTool({
   },
 });
 
+/** One-line German summary of an activity entry, for the model's text response. */
+function formatActivityEntry(entry: z.infer<typeof documentActivityResponseSchema>['entries'][number]): string {
+  const who = entry.actorName ?? 'Unbekannt';
+  switch (entry.type) {
+    case 'created':
+      return `${entry.occurredAt}: Seite angelegt von ${who}`;
+    case 'renamed':
+      return `${entry.occurredAt}: umbenannt von ${who} ("${entry.previousTitle ?? '?'}" → "${entry.nextTitle ?? '?'}")`;
+    case 'moved':
+      return `${entry.occurredAt}: verschoben von ${who}${entry.acrossWorkspace ? ' (anderer Workspace)' : ''}`;
+    case 'archived':
+      return `${entry.occurredAt}: archiviert von ${who}`;
+    case 'restored':
+      return `${entry.occurredAt}: wiederhergestellt von ${who}`;
+    case 'snapshotRestored':
+      return `${entry.occurredAt}: auf Snapshot ${entry.restoredFromSnapshotId} zurückgesetzt von ${who}`;
+    case 'snapshot':
+      return `${entry.occurredAt}: Snapshot ${entry.id} (${entry.reason}) von ${who}`;
+    case 'editingSession':
+      return entry.startedAt === entry.endedAt
+        ? `${entry.endedAt}: bearbeitet von ${who}`
+        : `${entry.startedAt} – ${entry.endedAt}: bearbeitet von ${who}`;
+  }
+}
+
+export const pageActivityTool: AnyToolDefinition = defineTool({
+  name: 'exo_page_activity',
+  description:
+    'Liest den Verlauf einer Seite: angelegt, umbenannt, verschoben, archiviert, wiederhergestellt, ' +
+    'Snapshots (mit exo_page_restore_snapshot wiederherstellbar) und verdichtete Bearbeitungssitzungen. ' +
+    'Das ist der Seitenverlauf, kein Prüfprotokoll für die Verwaltung.',
+  inputSchema: z.object({ documentId: idSchema }),
+  surfaces: ['mcp', 'ai'],
+  mutating: false,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'GET',
+      path: `/api/documents/${input.documentId}/activity`,
+      responseSchema: documentActivityResponseSchema,
+    });
+    if (result.entries.length === 0) {
+      return { text: 'Kein Verlauf vorhanden.', data: result };
+    }
+    return { text: result.entries.map(formatActivityEntry).join('\n'), data: result };
+  },
+});
+
 const pageSetAiRuleInputSchema = z.object({
   documentId: idSchema,
   aiRuleMode: aiRuleModeSchema,
@@ -501,6 +549,7 @@ export const PAGE_TOOLS: readonly AnyToolDefinition[] = [
   pageRestoreTool,
   pageSnapshotsTool,
   pageRestoreSnapshotTool,
+  pageActivityTool,
   pageSetAiRuleTool,
   pageSetLayoutTool,
   pageSetCoverTool,
