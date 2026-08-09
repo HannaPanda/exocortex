@@ -56,6 +56,20 @@ test.describe('authentication', () => {
     await page.waitForURL(new RegExp(`/arbeitsbereich/${current}`), { timeout: 30_000 });
   });
 
+  test('the realtime socket recovers from connecting before the session exists', async ({
+    page,
+  }) => {
+    // `RealtimeProvider` lives in the root layout, so the socket opens on the
+    // login page -- before anyone is signed in. The gateway rejects it and
+    // Socket.IO does not reconnect after a server-initiated disconnect, so the
+    // connection pill used to stay red for the entire visit and only a reload
+    // fixed it. A first sign-in in a fresh browser hit this every time.
+    await signIn(page, 'johanna');
+
+    const status = page.getByTestId('connection-status');
+    await expect(status).toHaveAttribute('data-app-socket', 'connected', { timeout: 30_000 });
+  });
+
   test('refuses to register a new account', async ({ page, request }) => {
     // Self-registration is closed (`emailAndPassword.disableSignUp`). The route
     // is gone from the frontend and the endpoint rejects the call, so neither

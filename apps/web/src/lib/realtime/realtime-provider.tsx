@@ -32,6 +32,11 @@ interface RealtimeContextValue {
 
 const RealtimeContext = React.createContext<RealtimeContextValue | null>(null);
 
+const RECONNECT_BASE_DELAY_MS = 1_000;
+const RECONNECT_MAX_DELAY_MS = 30_000;
+/** How long a connection must last before it counts as healthy. */
+const RECONNECT_STABLE_AFTER_MS = 3_000;
+
 /**
  * Application realtime channel.
  *
@@ -47,6 +52,20 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
   const subscribed = React.useRef(new Set<string>());
 
   React.useEffect(() => {
+    /** Backoff for manual reconnects, doubling from 1s to a 30s ceiling. */
+    let retryDelay = RECONNECT_BASE_DELAY_MS;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    let stableTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const scheduleReconnect = (): void => {
+      if (retryTimer !== null) return;
+      retryTimer = setTimeout(() => {
+        retryTimer = null;
+        retryDelay = Math.min(retryDelay * 2, RECONNECT_MAX_DELAY_MS);
+        socketRef.current?.connect();
+      }, retryDelay);
+    };
+
     const socket = io(realtimeOrigin(), {
       path: REALTIME_SOCKET_PATH,
       withCredentials: true,
@@ -59,6 +78,16 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
     socket.on('connect', () => {
       setStatus('connected');
       setLastError(null);
+      // The backoff resets only once the connection has *lasted*, never on the
+      // `connect` event itself: a socket the gateway is about to reject still
+      // fires `connect` first, so resetting here would hold the delay at its
+      // minimum forever and turn a signed-out tab into a permanent retry loop
+      // against our own gateway.
+      if (stableTimer !== null) clearTimeout(stableTimer);
+      stableTimer = setTimeout(() => {
+        stableTimer = null;
+        if (socket.connected) retryDelay = RECONNECT_BASE_DELAY_MS;
+      }, RECONNECT_STABLE_AFTER_MS);
       // Re-subscribe after a reconnect; rooms live on the server.
       for (const workspaceId of subscribed.current) {
         socket.emit('workspace.subscribe', { workspaceId }, (result: SubscriptionResult) => {
@@ -66,7 +95,29 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
         });
       }
     });
-    socket.on('disconnect', () => setStatus('disconnected'));
+    socket.on('disconnect', (reason) => {
+      setStatus('disconnected');
+      if (stableTimer !== null) {
+        clearTimeout(stableTimer);
+        stableTimer = null;
+      }
+      // Socket.IO reconnects on its own after a dropped network, but never
+      // after the *server* closed the connection -- that is documented
+      // behaviour, and `io server disconnect` is exactly what the gateway
+      // produces when it rejects a socket that carried no session
+      // (`handleConnection` calls `client.disconnect(true)`).
+      //
+      // The provider mounts with the app shell, so a socket can open in the
+      // moment between the page loading and the session cookie existing: a
+      // first sign-in on a fresh browser hits that window. Without this, the
+      // rejection is permanent, the connection pill stays red for the whole
+      // visit, and only a reload fixes it.
+      //
+      // Backoff rather than a tight retry: if the visitor really is signed out,
+      // every attempt is refused, and hammering our own gateway would be the
+      // wrong way to find that out.
+      if (reason === 'io server disconnect') scheduleReconnect();
+    });
     socket.on('connect_error', () => setStatus('disconnected'));
 
     socket.on(REALTIME_EVENT_NAME, (event: ApplicationEvent) => {
@@ -76,6 +127,8 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => {
+      if (retryTimer !== null) clearTimeout(retryTimer);
+      if (stableTimer !== null) clearTimeout(stableTimer);
       socket.close();
       socketRef.current = null;
     };
