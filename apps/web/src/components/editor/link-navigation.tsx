@@ -73,7 +73,7 @@ export function useLinkNavigation({
     async (title: string): Promise<void> => {
       let response;
       try {
-        response = await queryClient.fetchQuery(pageLinkQueryOptions(workspaceId, title));
+        response = await queryClient.fetchQuery(pageLinkQueryOptions(workspaceId, { title }));
       } catch (error) {
         setPending({
           mode: 'error',
@@ -147,8 +147,10 @@ export function useLinkNavigation({
     setCreating(true);
     try {
       const created = await createDocument.mutateAsync({ title, type: 'PAGE', parentId: null });
-      // The title is unchanged, so the same link resolves to the new page next time.
-      void queryClient.invalidateQueries({ queryKey: queryKeys.pageLink(workspaceId, title) });
+      // The title is unchanged, so the same link resolves to the new page next
+      // time. Invalidating by title alone would miss a `pageLink` whose cache
+      // entry also carries an identity, so the whole namespace goes.
+      void queryClient.invalidateQueries({ queryKey: queryKeys.pageLinks(workspaceId) });
       setPending(null);
       router.push(`/arbeitsbereich/${workspaceId}/seite/${created.id}`);
     } catch (error) {

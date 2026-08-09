@@ -13,6 +13,8 @@ import { displayValue, LinkMenu } from './link-menu';
 
 interface LinkBubbleProps {
   editor: Editor;
+  /** Passed through to `LinkMenu`, whose page search reads this workspace's tree. */
+  workspaceId: string;
 }
 
 /**
@@ -28,7 +30,7 @@ interface LinkBubbleProps {
  * Never overlaps `SelectionToolbar`: that one only shows for `from !== to`
  * (`selection-toolbar.tsx`), this one only for `from === to`.
  */
-export function LinkBubble({ editor }: LinkBubbleProps) {
+export function LinkBubble({ editor, workspaceId }: LinkBubbleProps) {
   const followLinkRef = React.useContext(FollowLinkContext);
 
   const href = useEditorState({
@@ -77,6 +79,7 @@ export function LinkBubble({ editor }: LinkBubbleProps) {
             `SelectionToolbar` (`LinkMenu`, `ColorMenu`, `EmojiMenu`). */}
         <LinkMenu
           editor={editor}
+          workspaceId={workspaceId}
           trigger={
             <Button variant="ghost" size="sm" data-testid="link-bubble-edit">
               <PencilIcon /> Bearbeiten

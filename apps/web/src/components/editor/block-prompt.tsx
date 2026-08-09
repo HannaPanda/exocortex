@@ -18,18 +18,31 @@ import {
   Textarea,
 } from '@exocortex/ui';
 
+import { DocumentIcon } from '@/components/document/document-icon';
 import { ApiError } from '@/lib/api/client';
 import { uploadAttachment, useDocumentTree } from '@/lib/api/queries';
 
-/** Every `COLLECTION` document in the tree, flattened, for the database picker. */
-function collectDatabases(nodes: readonly DocumentTreeNode[]): DocumentTreeNode[] {
+/**
+ * Flattens the tree for a picker.
+ *
+ * `'COLLECTION'` selects databases, `'any'` every page — a page link may point
+ * at a database page just as well as at an ordinary one, and the resolution
+ * endpoint makes no distinction either.
+ */
+function collectDocuments(
+  nodes: readonly DocumentTreeNode[],
+  kind: 'COLLECTION' | 'any',
+): DocumentTreeNode[] {
   const result: DocumentTreeNode[] = [];
   for (const node of nodes) {
-    if (node.type === 'COLLECTION') result.push(node);
-    result.push(...collectDatabases(node.children));
+    if (kind === 'any' || node.type === kind) result.push(node);
+    result.push(...collectDocuments(node.children, kind));
   }
   return result;
 }
+
+/** Kinds whose dialog is a picker over the workspace rather than a free field. */
+const PICKER_KINDS = new Set<BlockPromptKind>(['page', 'database']);
 
 /** What the dialog asks for, and what it does with the answer. */
 interface PendingPrompt {
@@ -55,8 +68,10 @@ const PROMPT_COPY: Readonly<
   },
   page: {
     title: 'Seite verknüpfen',
-    description: 'Titel der Seite, auf die verlinkt werden soll.',
-    placeholder: 'Seitentitel',
+    description:
+      'Wähle eine Seite aus diesem Arbeitsbereich. Tippst du einen Titel, den es noch nicht ' +
+      'gibt, entsteht ein Verweis, der anbietet, die Seite anzulegen.',
+    placeholder: 'Seite suchen …',
   },
   database: {
     title: 'Datenbank einbetten',
@@ -69,8 +84,11 @@ export interface BlockPromptController {
   /**
    * Asks the user for the extra value a catalog entry needs. Resolves with `null`
    * when the dialog is dismissed or the upload fails.
+   *
+   * `initialValue` pre-fills the field, which is what turns the picker into an
+   * editor for a block that already has a target (issue #14).
    */
-  ask: (kind: BlockPromptKind) => Promise<string | null>;
+  ask: (kind: BlockPromptKind, initialValue?: string) => Promise<string | null>;
   /** The dialog element; render it once next to the editor. */
   element: React.ReactNode;
   /** German message of the last failed upload, or `null`. */
@@ -84,11 +102,15 @@ export interface UseBlockPromptOptions {
 
 /**
  * Collects whatever a catalog entry needs before it can run: a URL, a formula, a
- * page title, or an uploaded file.
+ * page, a database, or an uploaded file.
  *
  * A promise-returning `ask` keeps the call sites readable: an entry with
  * `prompt: 'url'` is executed as `run(editor, await ask('url'))` instead of
  * spreading the flow across three pieces of component state.
+ *
+ * The two picker kinds answer with JSON (`{ documentId, title }`) rather than a
+ * bare string, because a reference to a page is an identity plus a label, not a
+ * label alone.
  */
 export function useBlockPrompt({
   workspaceId,
@@ -99,19 +121,32 @@ export function useBlockPrompt({
   const [error, setError] = React.useState<string | null>(null);
   const fileInput = React.useRef<HTMLInputElement | null>(null);
   const fileResolve = React.useRef<((value: string | null) => void) | null>(null);
-  const tree = useDocumentTree(pending?.kind === 'database' ? workspaceId : undefined);
-  const databases = React.useMemo(
-    () => (tree.data === undefined ? [] : collectDatabases(tree.data.nodes)),
-    [tree.data],
-  );
-  const filteredDatabases = React.useMemo(() => {
-    const needle = value.trim().toLowerCase();
-    if (needle.length === 0) return databases;
-    return databases.filter((database) => database.title.toLowerCase().includes(needle));
-  }, [databases, value]);
+  const isPicker = pending !== null && PICKER_KINDS.has(pending.kind);
+  const tree = useDocumentTree(isPicker ? workspaceId : undefined);
+
+  const candidates = React.useMemo(() => {
+    if (tree.data === undefined || pending === null) return [];
+    return collectDocuments(tree.data.nodes, pending.kind === 'database' ? 'COLLECTION' : 'any');
+  }, [pending, tree.data]);
+
+  const needle = value.trim().toLowerCase();
+  const filtered = React.useMemo(() => {
+    if (needle.length === 0) return candidates;
+    return candidates.filter((entry) => entry.title.toLowerCase().includes(needle));
+  }, [candidates, needle]);
+
+  /**
+   * Whether the typed text is a title no page carries. Obsidian's behaviour:
+   * naming a page that does not exist yet is a feature, not a typo, so it gets
+   * its own option instead of an empty list.
+   */
+  const isNewTitle =
+    pending?.kind === 'page' &&
+    needle.length > 0 &&
+    !candidates.some((entry) => entry.title.trim().toLowerCase() === needle);
 
   const ask = React.useCallback(
-    (kind: BlockPromptKind): Promise<string | null> => {
+    (kind: BlockPromptKind, initialValue?: string): Promise<string | null> => {
       if (kind === 'none') return Promise.resolve(null);
 
       if (kind === 'file') {
@@ -129,7 +164,7 @@ export function useBlockPrompt({
       }
 
       return new Promise<string | null>((resolve) => {
-        setValue('');
+        setValue(initialValue ?? '');
         setPending({ kind, ...PROMPT_COPY[kind], resolve });
       });
     },
@@ -161,9 +196,19 @@ export function useBlockPrompt({
     setPending(null);
   };
 
+  /** Picks an existing page or database: the answer carries the identity. */
+  const choose = (chosen: { id: string; title: string }): void =>
+    finish(JSON.stringify({ documentId: chosen.id, title: chosen.title }));
+
   const submit = (): void => {
     const trimmed = value.trim();
-    finish(trimmed.length === 0 ? null : trimmed);
+    if (trimmed.length === 0) {
+      finish(null);
+      return;
+    }
+    // A page link may be made for a page that does not exist yet; every other
+    // kind answers with the raw string it collected.
+    finish(pending?.kind === 'page' ? JSON.stringify({ documentId: null, title: trimmed }) : trimmed);
   };
 
   const element = (
@@ -196,7 +241,7 @@ export function useBlockPrompt({
         </DialogHeader>
         <div className="grid gap-1.5">
           <Label htmlFor="block-prompt-value">
-            {pending?.kind === 'latex' ? 'Formel' : pending?.kind === 'database' ? 'Suche' : 'Wert'}
+            {pending?.kind === 'latex' ? 'Formel' : isPicker ? 'Suche' : 'Wert'}
           </Label>
           {pending?.kind === 'latex' ? (
             <Textarea
@@ -225,31 +270,61 @@ export function useBlockPrompt({
               }}
             />
           )}
-          {pending?.kind === 'database' ? (
-            <ul className="max-h-64 overflow-y-auto rounded-md border border-border">
-              {filteredDatabases.length === 0 ? (
+          {isPicker ? (
+            <ul
+              className="max-h-64 overflow-y-auto rounded-md border border-border"
+              data-testid={pending?.kind === 'page' ? 'page-prompt-list' : 'database-prompt-list'}
+            >
+              {filtered.length === 0 && !isNewTitle ? (
                 <li>
                   <EmptyState
-                    title="Keine Datenbank gefunden"
-                    description="Lege zuerst eine Datenbank in diesem Arbeitsbereich an."
+                    title={
+                      pending?.kind === 'page' ? 'Keine Seite gefunden' : 'Keine Datenbank gefunden'
+                    }
+                    description={
+                      pending?.kind === 'page'
+                        ? 'Tippe einen Titel, um einen Verweis auf eine noch nicht angelegte Seite zu setzen.'
+                        : 'Lege zuerst eine Datenbank in diesem Arbeitsbereich an.'
+                    }
                   />
                 </li>
               ) : (
-                filteredDatabases.map((database) => (
-                  <li key={database.id}>
+                filtered.map((entry) => (
+                  <li key={entry.id}>
                     <button
                       type="button"
-                      data-testid={`database-prompt-option-${database.id}`}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
-                      onClick={() =>
-                        finish(JSON.stringify({ documentId: database.id, title: database.title }))
+                      data-testid={
+                        pending?.kind === 'page'
+                          ? `page-prompt-option-${entry.id}`
+                          : `database-prompt-option-${entry.id}`
                       }
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
+                      onClick={() => choose(entry)}
                     >
-                      {database.title}
+                      {pending?.kind === 'page' ? (
+                        <DocumentIcon
+                          icon={entry.icon}
+                          iconColor={entry.iconColor}
+                          type={entry.type}
+                        />
+                      ) : null}
+                      <span className="min-w-0 flex-1 truncate">{entry.title}</span>
                     </button>
                   </li>
                 ))
               )}
+              {isNewTitle ? (
+                <li>
+                  <button
+                    type="button"
+                    data-testid="page-prompt-new"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-muted-foreground hover:bg-muted"
+                    onClick={submit}
+                  >
+                    „{value.trim()}“ als noch nicht angelegte Seite verknüpfen
+                  </button>
+                </li>
+              ) : null}
             </ul>
           ) : null}
         </div>

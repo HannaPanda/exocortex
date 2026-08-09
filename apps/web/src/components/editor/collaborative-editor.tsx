@@ -49,6 +49,11 @@ import {
   createMentionKeyboard,
   MentionMenu,
 } from '@/components/editor/mention-menu';
+import {
+  type AskPageLink,
+  PageLinkPromptContext,
+  type PageLinkSelection,
+} from '@/components/editor/page-link-context';
 import { PageLinkNodeView } from '@/components/editor/page-link-node-view';
 import { SelectionToolbar } from '@/components/editor/selection-toolbar';
 import {
@@ -435,6 +440,9 @@ function EditorSurface({
 
   // Same pattern, for following a link; see `follow-link-context.tsx`.
   const followLinkRef = React.useRef<FollowLink | null>(null);
+  // And once more, so a placed page link can be re-targeted; see
+  // `page-link-context.tsx`.
+  const askPageLinkRef = React.useRef<AskPageLink | null>(null);
   const PageLinkView = React.useCallback(
     (props: NodeViewProps) => <PageLinkNodeView {...props} workspaceId={workspaceId} />,
     [workspaceId],
@@ -546,9 +554,11 @@ function EditorSurface({
         </p>
       ) : null}
       <DatabaseEmbedPromptContext.Provider value={askDatabaseEmbedRef}>
-        <FollowLinkContext.Provider value={followLinkRef}>
-          <EditorContent editor={editor} className="exocortex-editor" />
-        </FollowLinkContext.Provider>
+        <PageLinkPromptContext.Provider value={askPageLinkRef}>
+          <FollowLinkContext.Provider value={followLinkRef}>
+            <EditorContent editor={editor} className="exocortex-editor" />
+          </FollowLinkContext.Provider>
+        </PageLinkPromptContext.Provider>
       </DatabaseEmbedPromptContext.Provider>
       {uploadError === null ? null : (
         <p className="mt-2 text-xs text-destructive-text" role="alert">
@@ -566,6 +576,7 @@ function EditorSurface({
           mentionKeyboard={mentionKeyboard}
           editable={access === 'write'}
           askDatabaseEmbedRef={askDatabaseEmbedRef}
+          askPageLinkRef={askPageLinkRef}
           followLinkRef={followLinkRef}
         />
       )}
@@ -583,6 +594,7 @@ interface EditorChromeProps {
   mentionKeyboard: SuggestionKeyboard;
   editable: boolean;
   askDatabaseEmbedRef: React.RefObject<AskDatabaseEmbed | null>;
+  askPageLinkRef: React.RefObject<AskPageLink | null>;
   followLinkRef: React.RefObject<FollowLink | null>;
 }
 
@@ -602,6 +614,7 @@ function EditorChrome({
   mentionKeyboard,
   editable,
   askDatabaseEmbedRef,
+  askPageLinkRef,
   followLinkRef,
 }: EditorChromeProps) {
   /*
@@ -636,6 +649,16 @@ function EditorChrome({
     };
   }, [askDatabaseEmbedRef, prompt]);
 
+  // The same bridge for the page picker, so the `pageLink` node view can
+  // re-target a link that is already placed ("Seite ändern") instead of the
+  // block having to be deleted and made again; see `page-link-context.tsx`.
+  React.useEffect(() => {
+    askPageLinkRef.current = async (currentTitle: string) => {
+      const raw = await prompt.ask('page', currentTitle);
+      return raw === null ? null : (JSON.parse(raw) as PageLinkSelection);
+    };
+  }, [askPageLinkRef, prompt]);
+
   // Same bridge for following a link, read by the click handler in
   // `editorProps` and by the `pageLink` node view; see `follow-link-context.tsx`.
   React.useEffect(() => {
@@ -665,8 +688,13 @@ function EditorChrome({
     <>
       {editable ? (
         <>
-          <SelectionToolbar editor={editor} catalog={catalog} documentId={documentId} />
-          <LinkBubble editor={editor} />
+          <SelectionToolbar
+            editor={editor}
+            catalog={catalog}
+            documentId={documentId}
+            workspaceId={workspaceId}
+          />
+          <LinkBubble editor={editor} workspaceId={workspaceId} />
           <CodeBlockToolbar editor={editor} />
           <TableToolbar editor={editor} />
           <BlockHandle editor={editor} catalog={catalog} />

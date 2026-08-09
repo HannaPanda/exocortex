@@ -4,14 +4,27 @@ import { type Editor } from '@tiptap/react';
 import { ExternalLinkIcon, UnlinkIcon } from 'lucide-react';
 import * as React from 'react';
 
+import { type DocumentSummary, type DocumentTreeNode } from '@exocortex/contracts';
 import { parseLinkHref, WIKI_LINK_SCHEME } from '@exocortex/editor';
 import { Button, Input, Popover, PopoverContent, PopoverTrigger } from '@exocortex/ui';
+
+import { DocumentIcon } from '@/components/document/document-icon';
+import { useDocumentTree } from '@/lib/api/queries';
 
 import { FollowLinkContext } from './follow-link-context';
 
 interface LinkMenuProps {
   editor: Editor;
+  workspaceId: string;
   trigger: React.ReactElement<Record<string, unknown>>;
+}
+
+/** How many pages the suggestion list offers at once. */
+const MAX_PAGE_SUGGESTIONS = 6;
+
+/** Depth-first flattening of the page tree, like the `@` menu's source. */
+function flattenTree(nodes: readonly DocumentTreeNode[]): DocumentSummary[] {
+  return nodes.flatMap((node) => [node, ...flattenTree(node.children)]);
 }
 
 /**
@@ -22,13 +35,30 @@ interface LinkMenuProps {
  *   * `[[Seite]]` and a bare page title become the internal `wiki:` scheme,
  *   * everything else that looks like a host gets `https://` prepended, because a
  *     protocol-less href would resolve against the app itself.
+ *
+ * Text that does not look like an address is also treated as a *search*: the
+ * pages of this workspace whose title contains it are offered for selection,
+ * so linking to a page no longer means typing its title exactly right, and the
+ * bracket notation becomes optional rather than required (issue #14). Nothing
+ * is looked up over the network for that — the page tree is already in the
+ * cache, the same source the `@` menu reads.
  */
-export function LinkMenu({ editor, trigger }: LinkMenuProps) {
+export function LinkMenu({ editor, workspaceId, trigger }: LinkMenuProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
   const followLinkRef = React.useContext(FollowLinkContext);
+  const tree = useDocumentTree(open ? workspaceId : undefined);
 
   const currentHref = editor.getAttributes('link').href;
+
+  const suggestions = React.useMemo((): DocumentSummary[] => {
+    const needle = searchTermOf(value);
+    if (needle === null || tree.data === undefined) return [];
+    const lowered = needle.toLowerCase();
+    return flattenTree(tree.data.nodes)
+      .filter((page) => page.title.toLowerCase().includes(lowered))
+      .slice(0, MAX_PAGE_SUGGESTIONS);
+  }, [tree.data, value]);
 
   // Opening the popover seeds the field from the link under the cursor.
   const onOpenChange = (next: boolean): void => {
@@ -36,8 +66,7 @@ export function LinkMenu({ editor, trigger }: LinkMenuProps) {
     setOpen(next);
   };
 
-  const apply = (): void => {
-    const href = normalizeHref(value);
+  const applyHref = (href: string | null): void => {
     if (href === null) {
       editor.chain().focus().unsetLink().run();
     } else {
@@ -45,6 +74,8 @@ export function LinkMenu({ editor, trigger }: LinkMenuProps) {
     }
     setOpen(false);
   };
+
+  const apply = (): void => applyHref(normalizeHref(value));
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
@@ -56,7 +87,7 @@ export function LinkMenu({ editor, trigger }: LinkMenuProps) {
             value={value}
             aria-label="Adresse oder Seitentitel"
             data-testid="link-input"
-            placeholder="https://… oder [[Seite]]"
+            placeholder="https://… oder Seite suchen"
             onChange={(event) => setValue(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === 'Enter') {
@@ -69,6 +100,31 @@ export function LinkMenu({ editor, trigger }: LinkMenuProps) {
             Setzen
           </Button>
         </div>
+
+        {suggestions.length > 0 ? (
+          <ul
+            className="mt-2 max-h-56 overflow-y-auto rounded-md border border-border"
+            data-testid="link-page-suggestions"
+            aria-label="Passende Seiten"
+          >
+            {suggestions.map((page) => (
+              <li key={page.id}>
+                <button
+                  type="button"
+                  data-testid={`link-page-option-${page.id}`}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
+                  // The editor loses its selection when a button takes focus,
+                  // and the link would then be set on nothing.
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => applyHref(`${WIKI_LINK_SCHEME}${page.title}`)}
+                >
+                  <DocumentIcon icon={page.icon} iconColor={page.iconColor} type={page.type} />
+                  <span className="min-w-0 flex-1 truncate">{page.title}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : null}
 
         {typeof currentHref === 'string' && currentHref.length > 0 ? (
           <div className="mt-2 flex items-center gap-1">
@@ -121,6 +177,30 @@ export function displayValue(href: string): string {
   return href.startsWith(WIKI_LINK_SCHEME)
     ? `[[${href.slice(WIKI_LINK_SCHEME.length)}]]`
     : href;
+}
+
+/**
+ * What to search pages for, or `null` when the input is plainly an address.
+ *
+ * `[[Seite]]` counts: the brackets stay valid, they just stop being the only
+ * way in, and while they are being typed the list should already narrow down.
+ */
+export function searchTermOf(input: string): string | null {
+  const trimmed = input.trim();
+  if (trimmed.length === 0) return null;
+
+  const brackets = /^\[\[(.*?)\]?\]?$/.exec(trimmed);
+  if (brackets !== null) {
+    const inner = (brackets[1] ?? '').trim();
+    return inner.length === 0 ? null : inner;
+  }
+
+  if (/^(https?:|mailto:|wiki:)/i.test(trimmed)) return null;
+  if (trimmed.startsWith('/') || trimmed.startsWith('#')) return null;
+  // A bare token with a dot is a host, not a page title.
+  if (/^[^\s/]+\.[^\s/]{2,}(\/.*)?$/.test(trimmed)) return null;
+
+  return trimmed;
 }
 
 /** `null` means "remove the link". */

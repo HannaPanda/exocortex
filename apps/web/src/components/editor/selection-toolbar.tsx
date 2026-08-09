@@ -40,6 +40,8 @@ interface SelectionToolbarProps {
   editor: Editor;
   catalog: readonly BlockCatalogEntry[];
   documentId: string;
+  /** Passed through to `LinkMenu`, whose page search reads this workspace's tree. */
+  workspaceId: string;
 }
 
 interface MarkButton {
@@ -123,7 +125,12 @@ const MARK_BUTTONS: readonly MarkButton[] = [
  * an empty selection (nothing to format), inside a code block (no marks apply) or
  * while the document is read-only.
  */
-export function SelectionToolbar({ editor, catalog, documentId }: SelectionToolbarProps) {
+export function SelectionToolbar({
+  editor,
+  catalog,
+  documentId,
+  workspaceId,
+}: SelectionToolbarProps) {
   const { handOver } = useAiSelection();
 
   /**
@@ -217,6 +224,7 @@ export function SelectionToolbar({ editor, catalog, documentId }: SelectionToolb
         {/* These three open a popover or a menu, where the trigger owns the click. */}
         <LinkMenu
           editor={editor}
+          workspaceId={workspaceId}
           trigger={
             <Button
               variant="ghost"

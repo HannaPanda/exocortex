@@ -162,41 +162,102 @@ test.describe('links', () => {
     await expect(page.getByTestId('editor-surface')).toContainText('X');
   });
 
-  test('the page-link block shows its resolution and can be followed', async ({ page }) => {
+  /** Opens the slash menu's page picker and types into its search field. */
+  async function openPagePicker(page: Page, search: string): Promise<void> {
+    await page.keyboard.type('/seitenlink');
+    await expect(page.getByTestId('slash-option-page-link')).toBeVisible();
+    await page.getByTestId('slash-option-page-link').click();
+    await page.getByTestId('block-prompt-input').fill(search);
+  }
+
+  test('the page-link block is filled from a picker and can be followed', async ({ page }) => {
     const marker = Date.now().toString(36);
     const targetTitle = `Blockziel ${marker}`;
     const targetId = await createPageWithTitle(page, targetTitle);
 
     await openEditor(page);
     await waitForCollaboration(page);
-    await page.keyboard.type('/seitenlink');
-    await expect(page.getByTestId('slash-option-page-link')).toBeVisible();
-    await page.getByTestId('slash-option-page-link').click();
-
-    await page.getByTestId('block-prompt-input').fill(targetTitle);
-    await page.getByTestId('block-prompt-submit').click();
+    await openPagePicker(page, targetTitle);
+    await page.getByTestId(`page-prompt-option-${targetId}`).click();
 
     const card = page.getByTestId('page-link-card');
     await expect(card).toBeVisible();
-    await card.click();
+    await card.getByRole('link').click();
     await page.waitForURL(new RegExp(`/seite/${targetId}$`), { timeout: 30_000 });
   });
 
-  test('the page-link block shows a dead link for an unknown title', async ({ page }) => {
+  test('a page-link block picked from the list survives its target being renamed', async ({
+    page,
+  }) => {
     const marker = Date.now().toString(36);
-    const missingTitle = `Kein Block-Ziel ${marker}`;
+    const targetTitle = `Umzubenennen ${marker}`;
+    const renamedTitle = `Heißt jetzt anders ${marker}`;
+    const targetId = await createPageWithTitle(page, targetTitle);
 
     await openEditor(page);
     await waitForCollaboration(page);
-    await page.keyboard.type('/seitenlink');
-    await expect(page.getByTestId('slash-option-page-link')).toBeVisible();
-    await page.getByTestId('slash-option-page-link').click();
+    await openPagePicker(page, targetTitle);
+    await page.getByTestId(`page-prompt-option-${targetId}`).click();
+    await expect(page.getByTestId('page-link-card')).toContainText(targetTitle);
 
-    await page.getByTestId('block-prompt-input').fill(missingTitle);
-    await page.getByTestId('block-prompt-submit').click();
+    const sourceUrl = page.url();
+    await page.goto(sourceUrl.replace(/\/seite\/[a-z0-9]+$/, `/seite/${targetId}`));
+    const titleInput = page.getByTestId('document-title');
+    await expect(titleInput).toHaveValue(targetTitle, { timeout: 15_000 });
+    await titleInput.fill(renamedTitle);
+    await titleInput.blur();
+    await waitForCollaboration(page);
+
+    await page.goto(sourceUrl);
+    // The reference is an identity: it still resolves, and it shows the new name.
+    const card = page.getByTestId('page-link-card');
+    await expect(card).toBeVisible();
+    await expect(card).toContainText(renamedTitle);
+  });
+
+  test('the page-link block shows a dead link for an unknown title and can be re-targeted', async ({
+    page,
+  }) => {
+    const marker = Date.now().toString(36);
+    const missingTitle = `Kein Block-Ziel ${marker}`;
+    const realTitle = `Doch ein Ziel ${marker}`;
+    const realId = await createPageWithTitle(page, realTitle);
+
+    await openEditor(page);
+    await waitForCollaboration(page);
+    await openPagePicker(page, missingTitle);
+    // No page carries that title, so the picker offers it as a new one.
+    await page.getByTestId('page-prompt-new').click();
 
     await expect(page.getByTestId('page-link-missing')).toBeVisible();
     await expect(page.getByTestId('page-link-missing')).toContainText(missingTitle);
+
+    // Editing a placed block instead of deleting and making it again.
+    await page.getByTestId('page-link-retarget').click();
+    await page.getByTestId('block-prompt-input').fill(realTitle);
+    await page.getByTestId(`page-prompt-option-${realId}`).click();
+
+    await expect(page.getByTestId('page-link-card')).toContainText(realTitle);
+  });
+
+  test('the link menu suggests pages for text that is not an address', async ({ page }) => {
+    const marker = Date.now().toString(36);
+    const targetTitle = `Vorschlag ${marker}`;
+    const targetId = await createPageWithTitle(page, targetTitle);
+
+    await openEditor(page);
+    await waitForCollaboration(page);
+    await page.keyboard.type('Verweis ohne Klammern');
+    await page.keyboard.press('Home');
+    await page.keyboard.press('Shift+End');
+
+    await page.getByTestId('mark-link').click();
+    // No brackets, no scheme: the field doubles as a page search.
+    await page.getByTestId('link-input').fill(`Vorschlag ${marker}`);
+    await page.getByTestId(`link-page-option-${targetId}`).click();
+
+    await page.locator('.exocortex-editor a[data-link-kind="internal"]').click();
+    await page.waitForURL(new RegExp(`/seite/${targetId}$`), { timeout: 30_000 });
   });
 
   test('a link is still clickable on a read-only, archived page', async ({ page }) => {

@@ -42,8 +42,16 @@ export const queryKeys = {
   document: (documentId: string) => ['document', documentId] as const,
   search: (workspaceId: string, query: string) => ['workspace', workspaceId, 'search', query] as const,
   documentLinks: (documentId: string) => ['document', documentId, 'links'] as const,
-  pageLink: (workspaceId: string, title: string) =>
-    ['workspace', workspaceId, 'page-link', title.toLowerCase()] as const,
+  /** Every resolved reference of a workspace; the prefix all of them share. */
+  pageLinks: (workspaceId: string) => ['workspace', workspaceId, 'page-link'] as const,
+  pageLink: (workspaceId: string, reference: { documentId?: string | null; title?: string }) =>
+    [
+      'workspace',
+      workspaceId,
+      'page-link',
+      reference.documentId ?? '',
+      (reference.title ?? '').toLowerCase(),
+    ] as const,
   aiRun: (runId: string) => ['ai-run', runId] as const,
 };
 
@@ -119,19 +127,36 @@ export function useSearch(workspaceId: string | undefined, query: string) {
   });
 }
 
+/** What a reference to another page carries: an identity, a title, or both. */
+export interface PageLinkReference {
+  /** `pageLink`'s `documentId`. Absent for a `[[Titel]]` mark or a page mention. */
+  documentId?: string | null;
+  /** The stored display title. */
+  title?: string;
+}
+
 /**
- * Resolves a `wiki:` title to the document(s) with exactly that title.
+ * Resolves a reference to another page to the document(s) it means.
  *
  * Shared by the click path (`link-navigation.tsx`, via `queryClient.fetchQuery`)
  * and the `pageLink` block's own node view (`usePageLinkResolution` below), so
- * both read from the same cache entry per title.
+ * both read from the same cache entry per reference. The identity is part of
+ * the cache key, because two links with the same label may well mean two
+ * different pages (issue #14).
  */
-export function pageLinkQueryOptions(workspaceId: string, title: string) {
+export function pageLinkQueryOptions(workspaceId: string, reference: PageLinkReference) {
+  const query = new URLSearchParams();
+  if (typeof reference.title === 'string' && reference.title.length > 0) {
+    query.set('title', reference.title);
+  }
+  if (typeof reference.documentId === 'string' && reference.documentId.length > 0) {
+    query.set('documentId', reference.documentId);
+  }
   return {
-    queryKey: queryKeys.pageLink(workspaceId, title),
+    queryKey: queryKeys.pageLink(workspaceId, reference),
     queryFn: () =>
       apiRequest<ResolveDocumentLinkResponse>(
-        `/api/workspaces/${workspaceId}/documents/resolve?title=${encodeURIComponent(title)}`,
+        `/api/workspaces/${workspaceId}/documents/resolve?${query.toString()}`,
       ),
     staleTime: 30_000,
   };
@@ -140,9 +165,15 @@ export function pageLinkQueryOptions(workspaceId: string, title: string) {
 /** For the page-link block, which shows its resolution state before anyone clicks it. */
 export function usePageLinkResolution(
   workspaceId: string,
-  title: string,
+  reference: PageLinkReference,
 ): UseQueryResult<ResolveDocumentLinkResponse> {
-  return useQuery({ ...pageLinkQueryOptions(workspaceId, title), enabled: title.length > 0 });
+  const hasTitle = typeof reference.title === 'string' && reference.title.length > 0;
+  const hasIdentity =
+    typeof reference.documentId === 'string' && reference.documentId.length > 0;
+  return useQuery({
+    ...pageLinkQueryOptions(workspaceId, reference),
+    enabled: hasTitle || hasIdentity,
+  });
 }
 
 export function useCreateWorkspace() {
