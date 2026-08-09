@@ -58,6 +58,14 @@ export const mailSchema = z.object({
   SMTP_HOST: requiredString,
   SMTP_PORT: port,
   SMTP_FROM: requiredString,
+  /**
+   * Credentials for the relay. Optional as a pair: Mailpit accepts anything and
+   * needs none, a public relay needs both. Supplying them also switches the
+   * transport to STARTTLS, because a password must never cross the wire in the
+   * clear -- see `createMailer`.
+   */
+  SMTP_USER: z.string().trim().min(1).optional(),
+  SMTP_PASSWORD: z.string().trim().min(1).optional(),
 });
 
 export const aiSchema = z.object({

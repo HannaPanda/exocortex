@@ -40,11 +40,16 @@ authorization mechanism.
   only ever creates accounts nobody asked for, and each one can send a
   verification mail through our SMTP credentials. `/registrieren` does not exist
   in the frontend either. Accounts come from the seed script or an administrator.
-* Email verification and password reset are wired up and send mail, but in this
-  deployment `SMTP_HOST` still points at Mailpit, so **no mail leaves the host**.
-  `requireEmailVerification` therefore stays `false`: turning it on would lock
-  out every account whose address was never verified, with no way to verify it.
-  Flip it together with real SMTP, not before.
+* Email verification and password reset send real mail. The relay is configured
+  through `SMTP_HOST`/`SMTP_PORT`/`SMTP_FROM` plus the optional
+  `SMTP_USER`/`SMTP_PASSWORD` pair; supplying credentials switches the transport
+  to STARTTLS and makes it **refuse to send** rather than fall back to a
+  plaintext session, so the password cannot cross the wire in the clear. Without
+  credentials the mailer talks to Mailpit as before.
+* `requireEmailVerification` is `false`. Verification exists to stop someone
+  registering with an address they do not own, and `disableSignUp` already makes
+  that impossible. Turning it on would still lock out any account whose address
+  was never verified, which currently includes the only administrator.
 * Sign-in, sign-up and password-reset endpoints have explicit per-IP rate limits
   (10/min, 5/min, 5 per 5 min). nginx forwards the real client address and Fastify
   runs with `trustProxy`.

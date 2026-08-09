@@ -39,6 +39,8 @@ export class AuthService implements OnApplicationShutdown {
       host: env.SMTP_HOST,
       port: env.SMTP_PORT,
       from: env.SMTP_FROM,
+      user: env.SMTP_USER,
+      password: env.SMTP_PASSWORD,
       logger,
     });
 

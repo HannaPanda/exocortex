@@ -13,6 +13,9 @@ export interface MailerOptions {
   host: string;
   port: number;
   from: string;
+  /** Relay credentials. Both or neither; see `createMailer`. */
+  user?: string | undefined;
+  password?: string | undefined;
   logger: Logger;
 }
 
@@ -37,12 +40,30 @@ function textEmail(title: string, body: string, url: string): string {
 }
 
 export function createMailer(options: MailerOptions): Mailer {
+  const hasCredentials =
+    options.user !== undefined &&
+    options.user.length > 0 &&
+    options.password !== undefined &&
+    options.password.length > 0;
+
   const transporter: Transporter = createTransport({
     host: options.host,
     port: options.port,
-    // Mailpit and most internal relays do not use TLS on the local network.
-    secure: false,
-    ignoreTLS: true,
+    // `secure` means TLS from the first byte, which is port 465. Submission on
+    // 587 starts in the clear and upgrades, so it stays false in both cases.
+    secure: options.port === 465,
+    ...(hasCredentials
+      ? {
+          // A password is being sent, so an upgrade to TLS is not optional:
+          // `requireTLS` makes nodemailer abort rather than fall back to a
+          // plaintext session if the relay does not offer STARTTLS.
+          requireTLS: true,
+          auth: { user: options.user as string, pass: options.password as string },
+        }
+      : {
+          // Mailpit and other loopback relays speak no TLS and want no login.
+          ignoreTLS: true,
+        }),
   });
 
   const send = async (

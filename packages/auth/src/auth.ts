@@ -52,10 +52,16 @@ export function createAuth(options: CreateAuthOptions) {
       // verification mail through our SMTP credentials. Accounts are created by
       // the seed script or by an administrator; see docs/security.md.
       disableSignUp: true,
-      // Deliberately still `false`. Turning this on would lock out every account
-      // whose address was never verified, and outbound mail does not work in
-      // this deployment yet (SMTP points at Mailpit, so nothing leaves the
-      // host). Flip it together with real SMTP, not before.
+      // Deliberately `false`, and no longer for want of a working relay: mail
+      // goes out through Brevo since 2026-08-09.
+      //
+      // Verification exists to stop someone registering with an address they do
+      // not own, and `disableSignUp` above already makes that impossible --
+      // every account is created by the seed script or by an administrator.
+      // What turning it on would still do is lock out any account whose address
+      // was never verified, and that currently includes the only administrator.
+      // The cost is real and the remaining benefit is not, so it stays off until
+      // there is a reason beyond tidiness.
       requireEmailVerification: false,
       sendResetPassword: async ({ user, url }) => {
         await mailer.sendPasswordResetEmail({ to: user.email, name: user.name, url });
