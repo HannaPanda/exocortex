@@ -291,6 +291,24 @@ export const documentDetailSchema = documentSummarySchema.extend({
   aiRuleMode: aiRuleModeSchema,
   aiRuleTrigger: z.string().nullable(),
   aiRulePriority: z.number().int(),
+  /** Display name of `createdById`, so the context panel can show who without a second lookup. */
+  createdByName: z.string(),
+  /** Display name of `updatedById`. */
+  updatedByName: z.string(),
+  /**
+   * `type` of the parent document, or `null` at the workspace root. Distinguishes
+   * a database row (`parentType: 'COLLECTION'`) from an ordinary sub-page
+   * (`parentType: 'PAGE'`) without a second request — the context panel's
+   * properties tab needs exactly this to decide whether to show row properties
+   * (ADR-011: a row is a `PAGE` whose parent is a `COLLECTION`).
+   */
+  parentType: documentTypeSchema.nullable(),
+  /**
+   * Number of active (non-archived) rows, when this document is itself a
+   * database (`type: 'COLLECTION'`); `null` for a plain page, for which the
+   * question does not apply.
+   */
+  rowCount: z.number().int().nonnegative().nullable(),
 });
 export type DocumentDetail = z.infer<typeof documentDetailSchema>;
 

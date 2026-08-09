@@ -441,6 +441,18 @@ export const databaseRowSchema = z.object({
 });
 export type DatabaseRow = z.infer<typeof databaseRowSchema>;
 
+/**
+ * Answer to "is this document a database row, and if so what are its values?"
+ * `row` is `null` when the document is not a `PAGE` whose parent is a
+ * `COLLECTION` (ADR-011) — a plain page, a database itself, or a top-level
+ * document all answer `null` here rather than a 404, because "not a row" is a
+ * normal outcome for this question, not an error.
+ */
+export const documentRowResponseSchema = z.object({
+  row: databaseRowSchema.nullable(),
+});
+export type DocumentRowResponse = z.infer<typeof documentRowResponseSchema>;
+
 export const queryDatabaseRowsRequestSchema = z.object({
   /** Omit to query ad hoc with inline filters/sorts instead of a saved view. */
   viewId: idSchema.optional(),
