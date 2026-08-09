@@ -120,6 +120,41 @@ export const settingsSchema = z.object({
     .max(64)
     .refine(isUsableTimeZone, { message: 'Unbekannte Zeitzone' })
     .default('Europe/Berlin'),
+  /**
+   * Takes a `SCHEDULED` snapshot of a page that changed since its last
+   * snapshot, on the interval below (issue #20, "Bearbeitungen im Editor
+   * verdichten"). Off by default: it is a new, recurring write the deployment
+   * has not asked for yet, and it is what feeds session ranges in the
+   * Aktivität tab -- without it, a session collapses to the single point
+   * `Document.updatedAt` already carries.
+   */
+  'activity.editSessionSnapshotsEnabled': z.boolean().default(false),
+  /**
+   * How often `snapshot-active-documents` may take a fresh snapshot of the
+   * same page. Also the window a page must have changed within to count as
+   * "active" at all, so a page nobody has touched in months is never swept.
+   */
+  'activity.editSessionSnapshotIntervalMinutes': z.number().int().min(5).max(1_440).default(15),
+  /**
+   * Every snapshot younger than this is kept, whatever `reason` it has.
+   * Below this age, `prune-snapshots` never removes anything.
+   */
+  'activity.snapshotRetentionFullDays': z.number().int().min(1).max(365).default(7),
+  /**
+   * Between the full-retention window above and this age, at most one
+   * snapshot per calendar day survives (the newest of that day). Older than
+   * this, at most one per calendar week survives. `MANUAL` snapshots are
+   * exempt from both tiers -- a deliberately named version is never thinned
+   * by age alone.
+   */
+  'activity.snapshotRetentionDailyDays': z.number().int().min(1).max(3_650).default(30),
+  /**
+   * Computes and logs what tiered retention would delete without deleting
+   * anything. Defaults **on**: the first run after this feature ships must
+   * not silently remove existing snapshots on a live deployment. Switch off
+   * deliberately, once the dry-run log line looks right.
+   */
+  'activity.snapshotRetentionDryRun': z.boolean().default(true),
 });
 
 /** Whether the runtime knows the zone. `Intl` is the only authority available. */

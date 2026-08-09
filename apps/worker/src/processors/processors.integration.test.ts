@@ -459,34 +459,154 @@ describe('maintenance', () => {
     expect(processed.attempts).toBe(1);
   }, 60_000);
 
-  it('prunes snapshots down to the configured number', async () => {
-    const documentId = await createDocument();
+  describe('prune-snapshots (tiered retention, issue #20)', () => {
     const state = markdownToYjsState('# Snapshot\n').yjsState;
-    for (let index = 0; index < 5; index += 1) {
-      await prisma.documentSnapshot.create({
-        data: {
-          documentId,
-          yjsState: Buffer.from(state),
-          createdById: userId,
-          reason: 'MANUAL',
-        },
-      });
+
+    /**
+     * UTC noon on the day `daysAgo` calendar days before today, offset by
+     * `hourOffset` hours. Anchored to a calendar date rather than to
+     * `Date.now() - N*DAY_MS`: two timestamps on the same UTC calendar date
+     * always share the same epoch-day bucket (`dayBucket` in `maintenance.ts`
+     * floors on the same UTC-midnight boundaries), so this stays correct no
+     * matter what time of day the test happens to run at -- a raw ms offset
+     * near a fractional day would risk crossing that boundary depending on
+     * the clock.
+     */
+    function utcNoon(daysAgo: number, hourOffset = 0): Date {
+      const now = new Date();
+      return new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - daysAgo, 12 + hourOffset),
+      );
     }
 
-    const processor = createMaintenanceProcessor({
-      prisma,
-      queues,
-      storage: recordingStorage(),
-      bus,
-      settings: stubSettings(),
-      snapshotsToKeep: 2,
-    });
-    await processor(
-      contextFor({ correlationId: 'test-prune', task: 'prune-snapshots', workspaceId }).context,
-    );
+    async function snapshotAt(
+      documentId: string,
+      createdAt: Date,
+      reason: 'API_WRITE' | 'MANUAL' = 'API_WRITE',
+    ): Promise<string> {
+      const row = await prisma.documentSnapshot.create({
+        data: { documentId, yjsState: Buffer.from(state), createdById: userId, reason, createdAt },
+      });
+      return row.id;
+    }
 
-    expect(await prisma.documentSnapshot.count({ where: { documentId } })).toBe(2);
-  }, 60_000);
+    const retentionSettings = (overrides: Partial<Settings> = {}) =>
+      stubSettings({
+        'activity.snapshotRetentionFullDays': 7,
+        'activity.snapshotRetentionDailyDays': 30,
+        'activity.snapshotRetentionDryRun': false,
+        ...overrides,
+      });
+
+    it('deletes nothing when everything is inside the full-retention window (too little data to prune)', async () => {
+      const documentId = await createDocument();
+      await snapshotAt(documentId, utcNoon(0));
+      await snapshotAt(documentId, utcNoon(3));
+      await snapshotAt(documentId, utcNoon(6));
+
+      const processor = createMaintenanceProcessor({
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        settings: retentionSettings(),
+      });
+      await processor(
+        contextFor({ correlationId: 'test-prune-1', task: 'prune-snapshots', workspaceId }).context,
+      );
+
+      expect(await prisma.documentSnapshot.count({ where: { documentId } })).toBe(3);
+    }, 60_000);
+
+    it('thins to one snapshot per day beyond the full-retention window', async () => {
+      const documentId = await createDocument();
+      // Same UTC calendar day (10 days ago), three snapshots hours apart:
+      // only the newest of the three should survive daily thinning.
+      await snapshotAt(documentId, utcNoon(10, -2));
+      await snapshotAt(documentId, utcNoon(10, 0));
+      const newest = await snapshotAt(documentId, utcNoon(10, 2));
+      // A different calendar day, alone in its own bucket: untouched.
+      const differentDay = await snapshotAt(documentId, utcNoon(15));
+
+      const processor = createMaintenanceProcessor({
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        settings: retentionSettings(),
+      });
+      await processor(
+        contextFor({ correlationId: 'test-prune-2', task: 'prune-snapshots', workspaceId }).context,
+      );
+
+      const remaining = await prisma.documentSnapshot.findMany({
+        where: { documentId },
+        select: { id: true },
+      });
+      expect(remaining.map((row) => row.id).sort()).toEqual([differentDay, newest].sort());
+    }, 60_000);
+
+    it('never removes a MANUAL snapshot, however old', async () => {
+      const documentId = await createDocument();
+      const manual = await snapshotAt(documentId, utcNoon(400), 'MANUAL');
+      const survivor = await snapshotAt(documentId, utcNoon(200));
+
+      const processor = createMaintenanceProcessor({
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        settings: retentionSettings(),
+      });
+      await processor(
+        contextFor({ correlationId: 'test-prune-3', task: 'prune-snapshots', workspaceId }).context,
+      );
+
+      const remainingIds = (
+        await prisma.documentSnapshot.findMany({ where: { documentId }, select: { id: true } })
+      ).map((row) => row.id);
+      expect(remainingIds.sort()).toEqual([manual, survivor].sort());
+    }, 60_000);
+
+    it('dry run computes deletions but changes nothing in the database', async () => {
+      const documentId = await createDocument();
+      await snapshotAt(documentId, utcNoon(10, -1));
+      await snapshotAt(documentId, utcNoon(10, 0));
+      await snapshotAt(documentId, utcNoon(10, 1));
+
+      const processor = createMaintenanceProcessor({
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        settings: retentionSettings({ 'activity.snapshotRetentionDryRun': true }),
+      });
+      await processor(
+        contextFor({ correlationId: 'test-prune-4', task: 'prune-snapshots', workspaceId }).context,
+      );
+
+      expect(await prisma.documentSnapshot.count({ where: { documentId } })).toBe(3);
+    }, 60_000);
+
+    it('defaults to a dry run: the bare `stubSettings()` used elsewhere in this file never deletes', async () => {
+      const documentId = await createDocument();
+      await snapshotAt(documentId, utcNoon(400, -1));
+      await snapshotAt(documentId, utcNoon(400, 1));
+
+      const processor = createMaintenanceProcessor({
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        settings: stubSettings(),
+      });
+      await processor(
+        contextFor({ correlationId: 'test-prune-5', task: 'prune-snapshots', workspaceId }).context,
+      );
+
+      expect(await prisma.documentSnapshot.count({ where: { documentId } })).toBe(2);
+    }, 60_000);
+  });
 
   it('collects a replaced cover and leaves the current one alone', async () => {
     const documentId = await createDocument();
@@ -691,6 +811,177 @@ describe('maintenance', () => {
     expect(run.status).toBe('TIMED_OUT');
     expect(run.errorCode).toBe('ai_timeout');
   }, 30_000);
+
+  describe('snapshot-active-documents (issue #20, editing-session snapshots)', () => {
+    it('is a no-op while the setting is off, the default', async () => {
+      const documentId = await createDocument();
+      await prisma.documentContent.update({
+        where: { documentId },
+        data: { yjsUpdatedAt: new Date() },
+      });
+
+      const processor = createMaintenanceProcessor({
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        settings: stubSettings(),
+      });
+      await processor(
+        contextFor({
+          correlationId: 'test-snap-active-1',
+          task: 'snapshot-active-documents',
+          workspaceId: null,
+        }).context,
+      );
+
+      expect(
+        await prisma.documentSnapshot.count({ where: { documentId, reason: 'SCHEDULED' } }),
+      ).toBe(0);
+    }, 30_000);
+
+    it('takes a SCHEDULED snapshot of a page that changed within the interval, attributed to its current editor', async () => {
+      const documentId = await createDocument();
+      await prisma.documentContent.update({
+        where: { documentId },
+        data: { yjsUpdatedAt: new Date() },
+      });
+
+      const processor = createMaintenanceProcessor({
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        settings: stubSettings({
+          'activity.editSessionSnapshotsEnabled': true,
+          'activity.editSessionSnapshotIntervalMinutes': 15,
+        }),
+      });
+      await processor(
+        contextFor({
+          correlationId: 'test-snap-active-2',
+          task: 'snapshot-active-documents',
+          workspaceId: null,
+        }).context,
+      );
+
+      const snapshot = await prisma.documentSnapshot.findFirst({
+        where: { documentId, reason: 'SCHEDULED' },
+      });
+      expect(snapshot).not.toBeNull();
+      expect(snapshot?.createdById).toBe(userId);
+    }, 30_000);
+
+    it('skips a page that has not changed since its last snapshot', async () => {
+      const documentId = await createDocument();
+      const yjsUpdatedAt = new Date();
+      await prisma.documentContent.update({ where: { documentId }, data: { yjsUpdatedAt } });
+      // Already checkpointed at least as recently as the content: nothing new
+      // to capture.
+      await prisma.documentSnapshot.create({
+        data: {
+          documentId,
+          yjsState: Buffer.from(markdownToYjsState('# Snapshot\n').yjsState),
+          createdById: userId,
+          reason: 'SCHEDULED',
+          createdAt: new Date(yjsUpdatedAt.getTime() + 1_000),
+        },
+      });
+
+      const processor = createMaintenanceProcessor({
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        settings: stubSettings({
+          'activity.editSessionSnapshotsEnabled': true,
+          'activity.editSessionSnapshotIntervalMinutes': 15,
+        }),
+      });
+      await processor(
+        contextFor({
+          correlationId: 'test-snap-active-3',
+          task: 'snapshot-active-documents',
+          workspaceId: null,
+        }).context,
+      );
+
+      expect(
+        await prisma.documentSnapshot.count({ where: { documentId, reason: 'SCHEDULED' } }),
+      ).toBe(1);
+    }, 30_000);
+
+    it('skips a page whose last snapshot is more recent than the configured interval, even with newer content', async () => {
+      const documentId = await createDocument();
+      const yjsUpdatedAt = new Date();
+      await prisma.documentContent.update({ where: { documentId }, data: { yjsUpdatedAt } });
+      // A checkpoint from a moment ago, well inside the (long) configured
+      // interval, but strictly older than the content: the "changed since
+      // last checkpoint" guard alone must not be enough to fire again yet.
+      await prisma.documentSnapshot.create({
+        data: {
+          documentId,
+          yjsState: Buffer.from(markdownToYjsState('# Snapshot\n').yjsState),
+          createdById: userId,
+          reason: 'SCHEDULED',
+          createdAt: new Date(yjsUpdatedAt.getTime() - 1_000),
+        },
+      });
+
+      const processor = createMaintenanceProcessor({
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        settings: stubSettings({
+          'activity.editSessionSnapshotsEnabled': true,
+          'activity.editSessionSnapshotIntervalMinutes': 1_440,
+        }),
+      });
+      await processor(
+        contextFor({
+          correlationId: 'test-snap-active-4',
+          task: 'snapshot-active-documents',
+          workspaceId: null,
+        }).context,
+      );
+
+      expect(
+        await prisma.documentSnapshot.count({ where: { documentId, reason: 'SCHEDULED' } }),
+      ).toBe(1);
+    }, 30_000);
+
+    it('leaves a page alone whose content has not changed recently at all', async () => {
+      const documentId = await createDocument();
+      await prisma.documentContent.update({
+        where: { documentId },
+        // Older than any reasonable interval: not "active" at all.
+        data: { yjsUpdatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+      });
+
+      const processor = createMaintenanceProcessor({
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        settings: stubSettings({
+          'activity.editSessionSnapshotsEnabled': true,
+          'activity.editSessionSnapshotIntervalMinutes': 15,
+        }),
+      });
+      await processor(
+        contextFor({
+          correlationId: 'test-snap-active-5',
+          task: 'snapshot-active-documents',
+          workspaceId: null,
+        }).context,
+      );
+
+      expect(
+        await prisma.documentSnapshot.count({ where: { documentId, reason: 'SCHEDULED' } }),
+      ).toBe(0);
+    }, 30_000);
+  });
 });
 
 describe('cover generation', () => {

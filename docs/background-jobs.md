@@ -9,7 +9,7 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `document-materialization` | collaboration server (debounced), API (import, snapshot restore) | `createMaterializeDocumentProcessor` | real |
 | `search-indexing` | materialization, document mutations, outbox dispatch | `createIndexDocumentProcessor` | real |
 | `ai` | `AiService.createRun`, `ConversationsService.postMessage` | `createAiRunProcessor` | real, mock provider |
-| `maintenance` | repeatable schedulers, outbox dispatch | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`, `resolve-document-links`, `backfill-document-links`), documented placeholder (`vacuum-search-index`) |
+| `maintenance` | repeatable schedulers, outbox dispatch | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`, `resolve-document-links`, `backfill-document-links`, `snapshot-active-documents`), documented placeholder (`vacuum-search-index`) |
 | `attachment-text` | attachment upload, `GET /api/attachments/:id/text` (on demand) | `createAttachmentTextProcessor` | real |
 | `document-cover` | `POST /api/documents/:id/cover/generate` | `createDocumentCoverProcessor` | real |
 | `calendar-sync` | repeatable schedulers (`calendar-pull` every 5 min, `calendar-remind` every minute, `calendar-discover` daily 05:15) | `createCalendarSyncProcessor` | real (mailbox.org CalDAV); writes outward only for a `PUSH`/`BOTH` link |
@@ -87,6 +87,58 @@ evidently never picked up (`ai_run_lost`, which is also what keeps
 `ai_conversation_locked` from becoming permanent). See "Time budget of a run"
 in `docs/ai-architecture.md` and ADR-017 for the full mechanism, including the
 heartbeat the worker itself relies on to detect a cancellation.
+
+### The Aktivität tab (issue #20): snapshots as history
+
+`prune-snapshots` (daily at 04:00) used to keep a flat count per document; it
+now thins with age instead, tuned from `activity.*` settings (ADR-013, table
+in `docs/admin.md`) rather than a constructor option, so retention changes
+without a redeploy. `pruneSnapshotIds` (`apps/worker/src/processors/maintenance.ts`,
+pure and unit-tested on its own) buckets a document's non-`MANUAL` snapshots
+into an epoch-day or epoch-week index — not real ISO calendar weeks, a
+deterministic index is all thinning needs — and keeps the newest of each
+bucket:
+
+* younger than `activity.snapshotRetentionFullDays`: every snapshot survives.
+* between that and `activity.snapshotRetentionDailyDays`: at most one per day.
+* older than `activity.snapshotRetentionDailyDays`: at most one per week.
+* `MANUAL` snapshots are exempt from all three tiers — a deliberately named
+  version is not "the regular checkpoint" this retention is about.
+
+A bucket with only one snapshot in it loses nothing, which is what keeps a
+lightly edited document from being thinned at all — the edge case worth
+testing explicitly, alongside "dry run changes nothing in the database".
+`activity.snapshotRetentionDryRun` defaults **on**: it computes and logs what
+would be deleted without deleting it, so the first run after this shipped
+cannot silently remove snapshots that already existed on a live deployment.
+
+`snapshot-active-documents` (every 5 min, a no-op unless
+`activity.editSessionSnapshotsEnabled` is on) is what feeds a real session
+*range* into the Aktivität tab rather than the single point
+`Document.updatedAt` alone carries ("Bearbeitungen im Editor verdichten").
+It takes a `SCHEDULED` `DocumentSnapshot` of a page whose `yjsUpdatedAt` moved
+within `activity.editSessionSnapshotIntervalMinutes` and whose last snapshot
+is both older than that content change and older than the interval itself —
+two independent guards, so a page with no new content since its last
+checkpoint is skipped even if the checkpoint is old, and a page mid-burst of
+edits is not re-snapshotted on every five-minute sweep. `DocumentActivityService`
+(`apps/api/src/documents/document-activity.service.ts`) later folds
+consecutive same-actor `SCHEDULED` snapshots less than 30 minutes apart into
+one `editingSession` entry; ordinary `MANUAL`/`API_WRITE`/`IMPORT`/`PRE_RESTORE`
+snapshots stay out of that folding because they already appear as their own
+precise, individually restorable entries, and burying a restore point inside
+a vague session range would be a regression, not a condensation.
+
+The Aktivität tab itself (`GET /api/documents/:documentId/activity`,
+`exo_page_activity`) merges this with the audit log (`document.moved`,
+`document.moved_workspace`, `document.archived`, `document.restored`,
+`document.snapshot_restored`, plus the new `document.renamed` — a title has no
+other history, so a rename needed its own audit entry) and the document row's
+own `createdAt`/`createdById` — deliberately **not** what `AuditLog`'s own doc
+comment scopes it to ("destructive and permission-relevant operations"): this
+is the page's own history, not a compliance trail, and every entry it adds
+carries structural metadata only (who, when, a title, a byte size), never
+document content.
 
 ### `calendar-sync`: mirroring a remote calendar
 
@@ -250,11 +302,13 @@ by hand.
 | ------- | ----- |
 | completed jobs | 1 hour / 1000 jobs |
 | failed jobs | 7 days / 5000 jobs |
-| snapshots per document | 20 (`prune-snapshots`, daily at 04:00) |
+| snapshots per document | tiered by age, not a flat count: full for `activity.snapshotRetentionFullDays` (default 7d), then one/day until `activity.snapshotRetentionDailyDays` (default 30d), then one/week; `MANUAL` exempt (`prune-snapshots`, daily at 04:00, dry-run by default) |
+| active-document snapshot interval | `activity.editSessionSnapshotIntervalMinutes` (default 15 min), off by default (`activity.editSessionSnapshotsEnabled`) |
 | replaced page covers | deleted 1 hour after they stop being a cover (`collect-orphaned-covers`, daily at 04:30) |
 | outbox dispatch interval | 5 seconds, 100 rows per run |
 | stale AI run reap interval | 60 seconds, 100 runs per pass |
 | reference backfill interval | 5 minutes, 50 documents per run |
+| snapshot-active-documents interval | 5 minutes (scheduler cadence; see `activity.editSessionSnapshotIntervalMinutes` for the per-document minimum) |
 
 ## Adding a background job
 
@@ -310,7 +364,15 @@ processors against the real PostgreSQL and Redis:
 * removes the projection of a deleted document
 * excludes archived documents by default
 * "dispatches outbox events exactly once"
-* prunes snapshots down to the configured number
+* tiered snapshot pruning: keeps everything inside the full-retention window,
+  thins to one/day then one/week outside it, never touches `MANUAL` snapshots,
+  and — the edge case that matters most — deletes nothing from a bucket that
+  only has one snapshot in it; `activity.snapshotRetentionDryRun` computes the
+  same deletions but leaves every row in place
+* `snapshot-active-documents` is a no-op with the setting off, takes exactly
+  one `SCHEDULED` snapshot for a page that changed since its last checkpoint,
+  and skips a page whose last checkpoint is still inside the configured
+  interval even though its content changed again since
 * AI runs: describes a document image and prepends it as context, leaves
   messages untouched without images, completes even when an attachment
   cannot be resolved

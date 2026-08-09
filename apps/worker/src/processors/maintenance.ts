@@ -23,16 +23,77 @@ import {
  */
 const TITLE_EVENTS = new Set(['document.created', 'document.updated', 'document.moved']);
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+const WEEK_MS = 7 * DAY_MS;
+
+/** Epoch-day / epoch-week bucket. Not calendar-aware (no ISO week rules) on purpose: a deterministic, testable index is all tiered retention needs. */
+function dayBucket(date: Date): number {
+  return Math.floor(date.getTime() / DAY_MS);
+}
+function weekBucket(date: Date): number {
+  return Math.floor(date.getTime() / WEEK_MS);
+}
+
+/**
+ * Tiered snapshot retention (issue #20, point 4).
+ *
+ * `snapshots` needs no particular order; this sorts newest-first itself.
+ * Everything younger than `fullCutoff` is kept outright. Between
+ * `fullCutoff` and `dailyCutoff`, at most one snapshot per epoch-day
+ * survives (the newest — the first one encountered once sorted). Older than
+ * `dailyCutoff`, at most one per epoch-week survives. A day or week with
+ * only one snapshot in it loses nothing: it has no second entry to delete,
+ * which is what keeps a lightly edited document from being thinned at all.
+ *
+ * Exported and pure so the edge cases ("too little data to prune") are unit
+ * tests, not database round trips.
+ */
+export function pruneSnapshotIds(
+  snapshots: readonly { id: string; createdAt: Date }[],
+  cutoffs: { fullCutoff: Date; dailyCutoff: Date },
+): string[] {
+  const sorted = [...snapshots].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  const toDelete: string[] = [];
+  const seenDaily = new Set<number>();
+  const seenWeekly = new Set<number>();
+
+  for (const snapshot of sorted) {
+    if (snapshot.createdAt >= cutoffs.fullCutoff) continue;
+
+    if (snapshot.createdAt >= cutoffs.dailyCutoff) {
+      const key = dayBucket(snapshot.createdAt);
+      if (seenDaily.has(key)) {
+        toDelete.push(snapshot.id);
+      } else {
+        seenDaily.add(key);
+      }
+      continue;
+    }
+
+    const key = weekBucket(snapshot.createdAt);
+    if (seenWeekly.has(key)) {
+      toDelete.push(snapshot.id);
+    } else {
+      seenWeekly.add(key);
+    }
+  }
+
+  return toDelete;
+}
+
 export interface MaintenanceDependencies {
   prisma: PrismaClient;
   queues: QueueRegistry;
   storage: ObjectStorage;
   /** Publishes `ai.run.failed` for a run `reap-stale-ai-runs` closes out. */
   bus: RedisEventBus;
-  /** Same resolver the AI processor uses, so the reaper agrees with it on the run budget. */
+  /**
+   * Same resolver the AI processor uses. `prune-snapshots` and
+   * `snapshot-active-documents` also read their tuning from here
+   * (`activity.*`, ADR-013) rather than from a constructor option, so an
+   * admin can change retention without a redeploy.
+   */
   settings: () => Promise<Settings>;
-  /** Snapshots kept per document by `prune-snapshots`. */
-  snapshotsToKeep?: number;
   /** Outbox rows dispatched per run. */
   outboxBatchSize?: number;
   /**
@@ -54,7 +115,6 @@ export interface MaintenanceDependencies {
  */
 export function createMaintenanceProcessor(dependencies: MaintenanceDependencies) {
   const { prisma, queues, storage, bus } = dependencies;
-  const snapshotsToKeep = dependencies.snapshotsToKeep ?? 20;
   const outboxBatchSize = dependencies.outboxBatchSize ?? 100;
   const orphanedCoverGraceMs = dependencies.orphanedCoverGraceMs ?? 60 * 60 * 1000;
   const linkBackfillBatchSize = dependencies.linkBackfillBatchSize ?? 50;
@@ -125,28 +185,106 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
 
       case 'prune-snapshots': {
         await reportProgress(10, 'Alte Versionen werden aufgeräumt');
+        const settings = await dependencies.settings();
+        const fullDays = settings['activity.snapshotRetentionFullDays'];
+        const dailyDays = settings['activity.snapshotRetentionDailyDays'];
+        const dryRun = settings['activity.snapshotRetentionDryRun'];
+        const now = Date.now();
+        const cutoffs = {
+          fullCutoff: new Date(now - fullDays * DAY_MS),
+          dailyCutoff: new Date(now - dailyDays * DAY_MS),
+        };
+
         const documents = await prisma.document.findMany({
           where: payload.workspaceId === null ? {} : { workspaceId: payload.workspaceId },
           select: { id: true },
         });
+
         let removed = 0;
+        let candidates = 0;
         for (const document of documents) {
-          const keep = await prisma.documentSnapshot.findMany({
-            where: { documentId: document.id },
-            orderBy: { createdAt: 'desc' },
-            take: snapshotsToKeep,
-            select: { id: true },
+          // `MANUAL` is exempt from age-based thinning: a deliberately named
+          // version is not the "regular checkpoint" this retention tier is
+          // about, and pruning it by age alone would defeat the one
+          // permanent restore point a person asked for.
+          const snapshots = await prisma.documentSnapshot.findMany({
+            where: { documentId: document.id, reason: { not: 'MANUAL' } },
+            select: { id: true, createdAt: true },
           });
-          const result = await prisma.documentSnapshot.deleteMany({
-            where: {
-              documentId: document.id,
-              id: { notIn: keep.map((snapshot) => snapshot.id) },
-            },
-          });
-          removed += result.count;
+          const toDelete = pruneSnapshotIds(snapshots, cutoffs);
+          candidates += toDelete.length;
+          if (toDelete.length === 0) continue;
+          if (!dryRun) {
+            const result = await prisma.documentSnapshot.deleteMany({
+              where: { id: { in: toDelete } },
+            });
+            removed += result.count;
+          }
         }
         await reportProgress(100, 'Versionen aufgeräumt');
-        logger.info('Snapshots pruned', { removed, documents: documents.length });
+        logger.info('Snapshots pruned', {
+          removed,
+          candidates,
+          dryRun,
+          documents: documents.length,
+        });
+        return;
+      }
+
+      case 'snapshot-active-documents': {
+        const settings = await dependencies.settings();
+        if (!settings['activity.editSessionSnapshotsEnabled']) return;
+
+        const intervalMs = settings['activity.editSessionSnapshotIntervalMinutes'] * 60_000;
+        const activeSince = new Date(Date.now() - intervalMs);
+
+        // A page whose content changed inside the interval is "active"; one
+        // whose last edit is older than that is left alone entirely, which is
+        // what keeps this cheap -- most pages are not being edited at any
+        // given moment.
+        const candidates = await prisma.documentContent.findMany({
+          where: {
+            yjsUpdatedAt: { gte: activeSince },
+            ...(payload.workspaceId === null
+              ? {}
+              : { document: { workspaceId: payload.workspaceId } }),
+          },
+          select: {
+            documentId: true,
+            yjsState: true,
+            schemaVersion: true,
+            yjsUpdatedAt: true,
+            document: { select: { updatedById: true } },
+          },
+          take: 200,
+        });
+
+        let taken = 0;
+        for (const candidate of candidates) {
+          const latest = await prisma.documentSnapshot.findFirst({
+            where: { documentId: candidate.documentId },
+            orderBy: { createdAt: 'desc' },
+            select: { createdAt: true },
+          });
+          // Two independent guards: nothing changed since the last checkpoint
+          // (nothing new to capture), or the last checkpoint is too recent
+          // (this is what "every N minutes" means, not "every sweep").
+          const changedSinceLast = latest === null || latest.createdAt < candidate.yjsUpdatedAt;
+          const dueForNext = latest === null || Date.now() - latest.createdAt.getTime() >= intervalMs;
+          if (!changedSinceLast || !dueForNext) continue;
+
+          await prisma.documentSnapshot.create({
+            data: {
+              documentId: candidate.documentId,
+              yjsState: candidate.yjsState,
+              schemaVersion: candidate.schemaVersion,
+              createdById: candidate.document.updatedById,
+              reason: 'SCHEDULED',
+            },
+          });
+          taken += 1;
+        }
+        logger.debug('Active-document snapshots taken', { taken, candidates: candidates.length });
         return;
       }
 

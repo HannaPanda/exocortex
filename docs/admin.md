@@ -78,6 +78,11 @@ first; the admin form and this table follow.
 | `calendar.reminderLeadMinutes` | int 0–1440 | `30` | How long before a timed appointment the reminder goes out. `0` means at the start. |
 | `calendar.reminderAllDayHour` | int 0–23 | `9` | Local hour at which an all-day appointment is announced. It has no start time to count back from. |
 | `calendar.timeZone` | string | `Europe/Berlin` | IANA zone the two settings above are read in. Validated against `Intl`, so a typo is refused at the boundary instead of thrown inside the worker every minute. |
+| `activity.editSessionSnapshotsEnabled` | boolean | `false` | Lets `snapshot-active-documents` take periodic `SCHEDULED` snapshots of a page while it is being edited, which is what lets the Aktivität tab show a real session range instead of a single point. Off by default: a new recurring write the deployment has not asked for yet. |
+| `activity.editSessionSnapshotIntervalMinutes` | int 5–1440 | `15` | Minimum time between two `SCHEDULED` snapshots of the same page. Only takes effect with the switch above on. |
+| `activity.snapshotRetentionFullDays` | int 1–365 | `7` | Every snapshot younger than this survives `prune-snapshots` outright, whatever its `reason`. |
+| `activity.snapshotRetentionDailyDays` | int 1–3650 | `30` | Between the full-retention window and this age, at most one snapshot per calendar day survives; older than this, at most one per calendar week. `MANUAL` snapshots are exempt from both tiers. |
+| `activity.snapshotRetentionDryRun` | boolean | `true` | Computes and logs what tiered retention would delete without deleting anything. Defaults on so the first run after this feature ships cannot silently remove existing snapshots; switch off deliberately once the log line looks right. |
 
 Secrets are deliberately **not** settings. `OPENROUTER_API_KEY`,
 `SERVICE_TOKEN_SECRET` and `DATABASE_URL` stay in `.env`, out of reach of

@@ -77,6 +77,14 @@ export const maintenanceJobSchema = jobBase.extend({
      * batches. Repeatable, and a no-op once every row is marked.
      */
     'backfill-document-links',
+    /**
+     * Takes a `SCHEDULED` `DocumentSnapshot` of every page that changed since
+     * its last snapshot, gated by `activity.editSessionSnapshotsEnabled`
+     * (issue #20). What lets the Aktivität tab show a real session range
+     * ("14:20-14:45") instead of the single point `Document.updatedAt` alone
+     * carries.
+     */
+    'snapshot-active-documents',
   ]),
   /** Optional scope; `null` means all workspaces. */
   workspaceId: idSchema.nullable().default(null),

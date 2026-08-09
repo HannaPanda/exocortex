@@ -248,6 +248,20 @@ export class QueueRegistry {
         data: { correlationId, task: 'backfill-document-links', workspaceId: null, documentId: null },
       },
     );
+    // Every five minutes, same cadence as the link backfill: the processor
+    // itself is a no-op unless `activity.editSessionSnapshotsEnabled` is on,
+    // and even then only takes a snapshot for a page whose content is both
+    // new since its last checkpoint and due for the next one
+    // (`activity.editSessionSnapshotIntervalMinutes`, minimum 5) -- the
+    // scheduler's own cadence only has to be at least that fine (issue #20).
+    await queue.upsertJobScheduler(
+      'snapshot-active-documents',
+      { every: 300_000 },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: { correlationId, task: 'snapshot-active-documents', workspaceId: null, documentId: null },
+      },
+    );
     this.logger.info('Maintenance schedulers registered');
   }
 
