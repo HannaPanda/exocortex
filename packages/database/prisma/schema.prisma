@@ -49,6 +49,8 @@ model User {
   updatedSettings    Setting[]          @relation("SettingUpdatedBy")
   aiConversations    AiConversation[]   @relation("AiConversationCreatedBy")
   calendarAccounts   CalendarAccount[]  @relation("CalendarAccountOwner")
+  comments           Comment[]          @relation("CommentCreatedBy")
+  resolvedComments   Comment[]          @relation("CommentResolvedBy")
 
   @@map("user")
 }
@@ -182,6 +184,7 @@ model Workspace {
   aiConversations AiConversation[]
   documentLinks   DocumentLink[]
   calendarAccounts CalendarAccount[]
+  comments        Comment[]
 
   @@map("workspace")
 }
@@ -341,6 +344,8 @@ model Document {
   calendarLinks      CalendarLink[]          @relation("CalendarLinkTarget")
   /// Present when this row mirrors one remote calendar object.
   calendarObject     CalendarObjectState[]   @relation("CalendarRow")
+  /// Remarks about this page. Not part of its content (see `Comment`).
+  comments           Comment[]               @relation("DocumentComments")
 
   @@index([workspaceId, parentId, orderKey])
   @@index([workspaceId, archivedAt])
@@ -497,6 +502,67 @@ model DocumentLink {
   @@index([targetHintId])
   @@index([sourceDocumentId, position])
   @@map("document_link")
+}
+
+/// A remark *about* a page, which is not part of the page (issue #18).
+///
+/// Deliberately outside the Yjs state: a comment that lived in the document
+/// would be captured by every snapshot and thrown away again by every restore,
+/// and it would travel in a Markdown export as if it were content. It lives
+/// here instead and reaches open editors over the application socket (ADR-008).
+///
+/// A thread is one root plus its replies, one level deep. Notion works the same
+/// way, and a tree buys nothing a panel this narrow can render.
+model Comment {
+  id          String    @id @default(cuid(2))
+  /// Denormalized from the document: events are emitted into the workspace
+  /// room, and neither that nor the authorization check should have to join
+  /// the document table to find out which workspace this belongs to.
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  documentId  String
+  document    Document  @relation("DocumentComments", fields: [documentId], references: [id], onDelete: Cascade)
+
+  /// The thread this comment answers. `null` makes it the root of one.
+  parentId String?
+  parent   Comment?  @relation("CommentThread", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("CommentThread")
+
+  /// Addressable block the thread hangs on (`@exocortex/editor`'s block
+  /// identifiers, which survive rewording). `null` is a comment on the page as
+  /// a whole. Deliberately not a foreign key: there is no block table, and the
+  /// comment has to outlive the block it names -- see `orphanedAt`.
+  blockId    String?
+  /// The anchored block's text at the moment the thread was opened, shortened.
+  /// Kept so an orphaned thread still says what it was about.
+  anchorText String?
+  /// Set by materialization when the document no longer contains `blockId`.
+  /// Derived data, like the reference index: cleared again when the block comes
+  /// back (an undo does that). The comment itself is never deleted for it.
+  orphanedAt DateTime?
+
+  body        String
+  createdById String
+  createdBy   User      @relation("CommentCreatedBy", fields: [createdById], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  /// Set the first time the author rewrites the body, so the UI can say so.
+  editedAt    DateTime?
+
+  /// Resolved threads are collapsed, never deleted: the discussion is the
+  /// record of why the page reads the way it does.
+  resolvedAt   DateTime?
+  resolvedById String?
+  resolvedBy   User?     @relation("CommentResolvedBy", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  /// The panel's own query: every thread of a page, oldest first.
+  @@index([documentId, createdAt])
+  /// "Which blocks of this page carry a thread?" — the editor's markers.
+  @@index([documentId, blockId])
+  @@index([parentId])
+  @@index([workspaceId])
+  @@index([createdById])
+  @@map("comment")
 }
 
 // ---------------------------------------------------------------------------
