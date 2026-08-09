@@ -245,6 +245,53 @@ test.describe('databases', () => {
     await page.waitForURL(new RegExp(`/seite/${databaseId}$`), { timeout: 15_000 });
     await expect(page.getByTestId('database-shell')).toBeVisible({ timeout: 15_000 });
   });
+
+  /**
+   * The context panel's "Eigenschaften" tab (issue #17) tells a database, a row
+   * and an ordinary page apart: a database shows its row count/columns/views, a
+   * row shows the same editable column values the table does, and editing one
+   * from the panel has to reach the table too — same data, one editor.
+   */
+  test('shows different context panel content for a database and one of its rows', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+
+    const title = `Kontextbereich ${Date.now().toString(36)}`;
+    await createDatabase(page, title);
+    await expect(page.getByTestId('add-property')).toBeVisible({ timeout: 15_000 });
+    await addProperty(page, 'Priorität', 'Zahl');
+
+    await page.getByTestId('add-row').click();
+    await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, { timeout: 15_000 });
+
+    // The database itself: row count, its own properties, its own views.
+    await page.getByTestId('context-tab-properties').click();
+    await expect(page.getByTestId('collection-properties')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByTestId('collection-row-count')).toHaveText('1');
+    await expect(page.getByTestId('collection-properties')).toContainText('Priorität');
+    await expect(page.getByTestId('row-properties')).toHaveCount(0);
+
+    // Open the row as its own page: now the panel shows the row's own values,
+    // through the same PropertyCell the table edits.
+    const row = page.locator('[data-testid^="database-row-"]').first();
+    await row.getByRole('link').click();
+    await expect(page.getByTestId('document-title')).toBeVisible({ timeout: 15_000 });
+
+    await page.getByTestId('context-tab-properties').click();
+    await expect(page.getByTestId('row-properties')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByTestId('collection-properties')).toHaveCount(0);
+
+    const numberInput = page.getByTestId('row-properties').locator('input[type="number"]');
+    await numberInput.fill('7');
+    await numberInput.blur();
+
+    // Back to the database: the table shows the value just set from the panel.
+    await page.getByRole('navigation', { name: 'Pfad' }).getByRole('link', { name: title }).click();
+    await expect(page.getByTestId('database-shell')).toBeVisible({ timeout: 15_000 });
+    await expect(
+      page.locator('[data-testid^="database-row-"]').first().locator('input[type="number"]'),
+    ).toHaveValue('7', { timeout: 15_000 });
+  });
 });
 
 async function addProperty(page: Page, name: string, typeLabel: string): Promise<void> {

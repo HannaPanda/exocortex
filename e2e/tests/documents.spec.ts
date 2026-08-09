@@ -177,4 +177,48 @@ test.describe('documents', () => {
     await page.getByTestId('toggle-context').click();
     await expect(page.getByTestId('context-panel')).toBeHidden();
   });
+
+  /**
+   * The context panel's "Eigenschaften" tab (issue #17): provenance, an
+   * editable symbol distinct from the page header's own icon control, the AI
+   * rule surfaced (not hidden away in its own dialog only), and the technical
+   * details collapsed until asked for.
+   */
+  test('shows and edits page properties in the context panel', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const title = `Eigenschaften ${Date.now().toString(36)}`;
+    const documentId = await createPage(page, title);
+
+    await page.getByTestId('context-tab-properties').click();
+    await expect(page.getByTestId('page-properties')).toBeVisible({ timeout: 15_000 });
+
+    // Not a database row, so no row-property section.
+    await expect(page.getByTestId('row-properties')).toHaveCount(0);
+
+    // Provenance names who created the page -- Johanna, the signed-in seed user.
+    await expect(page.getByTestId('provenance')).toContainText('Johanna');
+
+    // Technical details start collapsed.
+    await expect(page.getByTestId('materialized-at')).toHaveCount(0);
+    await page.getByTestId('technical-section-toggle').click();
+    await expect(page.getByTestId('materialized-at')).toBeVisible();
+
+    // The panel's own symbol control is distinct from the page header's: both
+    // can be on screen at once without colliding on the same test id.
+    await page.getByTestId('properties-icon-button').click();
+    await page.getByTestId('page-icon-color-blue').click();
+    await page.getByTestId('page-icon-brain').click();
+    await expect(page.getByTestId(`tree-icon-${documentId}`).locator('[data-icon]')).toHaveAttribute(
+      'data-icon',
+      'lucide:brain',
+    );
+
+    // The AI rule is visible without opening a separate menu, and editing it
+    // reuses the existing "Seiteneigenschaften" dialog rather than a second
+    // implementation of the same fields.
+    await expect(page.getByTestId('open-ai-rule-from-properties')).toBeVisible();
+    await page.getByTestId('open-ai-rule-from-properties').click();
+    await expect(page.getByTestId('save-page-properties')).toBeVisible({ timeout: 15_000 });
+  });
 });
