@@ -80,6 +80,7 @@ All of it lives in `apps/web/src/components/editor` and contributes **no** schem
 | `code-block-toolbar.tsx` | language picker and copy |
 | `table-toolbar.tsx` | rows, columns, header, merge |
 | `block-prompt.tsx` | value and file collection for catalog entries |
+| `comment-markers.tsx` | ProseMirror **decorations** on the blocks that carry an open comment thread, plus the two-way wiring to the Kommentare panel. Never a mark: a comment is not document content, so it must leave no trace in the Yjs state (issue #18) |
 | `page-link-node-view.tsx` | React node view for `pageLink`, see the exception below |
 | `page-link-context.tsx` | ref bridge that lets the `pageLink` node view reopen the page picker, so a placed link can be re-targeted |
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { type ResolvedPos } from '@tiptap/pm/model';
 import { type Editor, useEditorState } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
 import {
@@ -8,6 +9,7 @@ import {
   CodeIcon,
   ItalicIcon,
   LinkIcon,
+  MessageSquarePlusIcon,
   MoreHorizontalIcon,
   SmileIcon,
   SparklesIcon,
@@ -18,7 +20,12 @@ import {
 } from 'lucide-react';
 import * as React from 'react';
 
-import { type BlockCatalogEntry, collectBlockIdsInRange } from '@exocortex/editor';
+import {
+  BLOCK_ID_ATTRIBUTE,
+  type BlockCatalogEntry,
+  collectBlockIdsInRange,
+  isValidBlockId,
+} from '@exocortex/editor';
 import {
   Button,
   DropdownMenu,
@@ -29,6 +36,7 @@ import {
 } from '@exocortex/ui';
 
 import { useAiSelection } from '@/components/ai/ai-selection';
+import { useCommentAnchor } from '@/components/comments/comment-anchor';
 
 import { BlockActionItems } from './block-actions';
 import { ColorMenu } from './color-menu';
@@ -118,6 +126,22 @@ const MARK_BUTTONS: readonly MarkButton[] = [
 ];
 
 /**
+ * The innermost addressable block a position sits in.
+ *
+ * Walked from the inside out rather than taken from `collectBlockIdsInRange`,
+ * which returns ancestors first: a comment on a sentence inside a list belongs
+ * to that list *item*, not to the whole list. `null` when nothing on the path
+ * carries an identifier yet, which makes the comment a page-wide one.
+ */
+function innermostBlockId(position: ResolvedPos): string | null {
+  for (let depth = position.depth; depth > 0; depth -= 1) {
+    const id: unknown = position.node(depth).attrs[BLOCK_ID_ATTRIBUTE];
+    if (isValidBlockId(id)) return id;
+  }
+  return null;
+}
+
+/**
  * Formatting bar that appears over a selection.
  *
  * This is the discoverable half of the editor: every mark the schema supports is
@@ -132,6 +156,22 @@ export function SelectionToolbar({
   workspaceId,
 }: SelectionToolbarProps) {
   const { handOver } = useAiSelection();
+  const { compose } = useCommentAnchor();
+
+  /**
+   * Opens a comment thread on the selected passage.
+   *
+   * The anchor is the *first* block the selection touches, not the range: a
+   * comment addresses a place, and a block identifier is the only address that
+   * survives the sentence being rewritten (issue #18). The selected text
+   * travels as the quote so the thread still reads sensibly once the block is
+   * gone.
+   */
+  const commentOnSelection = (): void => {
+    const { from, to, $from } = editor.state.selection;
+    const text = editor.state.doc.textBetween(from, to, '\n', ' ').trim();
+    compose({ documentId, blockId: innermostBlockId($from), quote: text });
+  };
 
   /**
    * Hands the selected passage to the AI panel. It is not sent here: it becomes
@@ -272,6 +312,20 @@ export function SelectionToolbar({
         />
 
         <ToolbarSeparator />
+
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Kommentieren"
+          title="Kommentieren"
+          data-testid="selection-to-comment"
+          // Same reason as the mark buttons: taking the focus on mousedown drops
+          // the ProseMirror selection, and the quote would be empty.
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={commentOnSelection}
+        >
+          <MessageSquarePlusIcon />
+        </Button>
 
         <Button
           variant="ghost"

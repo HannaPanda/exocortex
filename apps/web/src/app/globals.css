@@ -103,6 +103,19 @@
     @apply ml-0.5 align-super text-[0.7em] text-muted-foreground;
   }
 
+  /* A block that carries an open comment thread (issue #18). Applied as a
+     ProseMirror *decoration*, never as a stored mark: a comment is not part of
+     the document, so it must leave no trace in the Yjs state. A left rule plus
+     a very light wash, so a page with many remarks still reads as text rather
+     than as a highlighter accident. */
+  .exocortex-editor .exocortex-commented {
+    @apply -ml-3 cursor-pointer rounded-r-sm border-l-2 border-warning bg-warning/8 pl-[calc(0.75rem-2px)];
+  }
+
+  .exocortex-editor .exocortex-commented:hover {
+    @apply bg-warning/14;
+  }
+
   .exocortex-editor code {
     @apply rounded bg-muted px-1 py-0.5 font-mono text-[0.85em];
   }

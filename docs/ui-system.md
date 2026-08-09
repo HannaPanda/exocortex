@@ -182,7 +182,7 @@ the traced paths shrink by about 60%.
 │ Navigation   │ Document editor            │ Context / AI     │
 │ page tree    │ Tiptap                     │ KI (functional)  │
 │ trash        │ breadcrumb, title, actions  │ Eigenschaften    │
-│              │                            │ Kommentare*      │
+│              │                            │ Kommentare       │
 │              │                            │ Verweise         │
 │              │                            │ Aktivität*       │
 └──────────────┴────────────────────────────┴──────────────────┘

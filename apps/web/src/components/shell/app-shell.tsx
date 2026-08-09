@@ -34,6 +34,7 @@ import {
 } from '@exocortex/ui';
 
 import { AiSelectionProvider, useAiSelection } from '@/components/ai/ai-selection';
+import { CommentAnchorProvider, useCommentAnchor } from '@/components/comments/comment-anchor';
 import { SearchCommand } from '@/components/search/search-command';
 import { queryKeys, useSessionQuery } from '@/lib/api/queries';
 import { signOut } from '@/lib/auth/client';
@@ -76,7 +77,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <DocumentSessionProvider>
       <AiSelectionProvider>
-        <AppShellInner>{children}</AppShellInner>
+        <CommentAnchorProvider>
+          <AppShellInner>{children}</AppShellInner>
+        </CommentAnchorProvider>
       </AiSelectionProvider>
     </DocumentSessionProvider>
   );
@@ -121,6 +124,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
   const sidebarOpen = sidebar.open;
   const contextOpen = context.open;
   const { selection: pendingAiSelection } = useAiSelection();
+  const { request: pendingCommentRequest } = useCommentAnchor();
   const setSidebarOpen = React.useCallback(
     (open: boolean) => setSidebar({ ...sidebar, open }),
     [setSidebar, sidebar],
@@ -142,6 +146,16 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     handledSelectionRequest.current = requestId;
     if (!contextOpen) setContextOpen(true);
   }, [pendingAiSelection, contextOpen, setContextOpen]);
+
+  // Same for commenting a passage, and for clicking a marker in the text: the
+  // thread lives in the panel, so the panel has to be there to be looked at.
+  const handledCommentRequest = React.useRef<number | null>(null);
+  React.useEffect(() => {
+    const requestId = pendingCommentRequest?.requestId ?? null;
+    if (requestId === null || handledCommentRequest.current === requestId) return;
+    handledCommentRequest.current = requestId;
+    if (!contextOpen) setContextOpen(true);
+  }, [pendingCommentRequest, contextOpen, setContextOpen]);
 
   // Redirect unauthenticated visitors. The API is the source of truth.
   React.useEffect(() => {

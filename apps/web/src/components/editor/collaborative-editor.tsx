@@ -36,6 +36,7 @@ import { DatabaseEmbedNodeView } from '@/components/database/database-embed-node
 import { BlockHandle } from '@/components/editor/block-handle';
 import { useBlockPrompt } from '@/components/editor/block-prompt';
 import { CodeBlockToolbar } from '@/components/editor/code-block-toolbar';
+import { CommentMarkers, createCommentMarkers } from '@/components/editor/comment-markers';
 import {
   type AskDatabaseEmbed,
   DatabaseEmbedPromptContext,
@@ -421,6 +422,10 @@ function EditorSurface({
     () => createMentionExtension(mentionKeyboard),
     [mentionKeyboard],
   );
+  // Marks the blocks that carry an open comment thread. Stateless and stable,
+  // like the suggestion plugins above: which blocks are marked is pushed in
+  // from `CommentMarkers` in the chrome, never read here.
+  const commentMarkers = React.useMemo(() => createCommentMarkers(), []);
 
   /**
    * Dropped and pasted files. Kept here rather than in the chrome because the
@@ -503,6 +508,7 @@ function EditorSurface({
           }),
           slashExtension,
           mentionExtension,
+          commentMarkers,
           // A peer requirement of the drag handle: dragging selects a whole node
           // range. Without it the handle is registered but never becomes visible,
           // because the plugin cannot resolve a range to grab.
@@ -540,7 +546,14 @@ function EditorSurface({
     // `followLinkRef` is a stable ref and `followFromEvent` a module function:
     // neither belongs here. Adding either would rebuild every plugin view on
     // every render, exactly what this component exists to avoid (see above).
-    [connection.ydoc, connection.provider, access, slashExtension, mentionExtension],
+    [
+      connection.ydoc,
+      connection.provider,
+      access,
+      slashExtension,
+      mentionExtension,
+      commentMarkers,
+    ],
   );
 
   return (
@@ -712,6 +725,10 @@ function EditorChrome({
         pages={mentionPages}
         users={mentionUsers}
       />
+      {/* Renders nothing: it keeps the comment markers in the text in step with
+          the panel, in both directions. Read-only pages get them too — a marker
+          is a pointer to a discussion, not an editing affordance. */}
+      <CommentMarkers editor={editor} documentId={documentId} />
       {prompt.element}
       {linkNavigation.element}
     </>
