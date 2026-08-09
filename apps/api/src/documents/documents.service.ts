@@ -530,6 +530,23 @@ export class DocumentsService {
           payload: { documentId: input.documentId },
           correlationId: input.correlationId,
         });
+        // The title itself has no other history (`Document` only stores the
+        // current one), so a rename needs its own audit entry to be
+        // reconstructable later (issue #20, the Aktivität tab). Titles are
+        // structural metadata, not document content, so this stays within
+        // what `AuditLog`'s doc comment allows.
+        await this.outbox.writeAudit(tx, {
+          workspaceId: context.workspaceId,
+          actorId: input.userId,
+          action: 'document.renamed',
+          targetType: 'document',
+          targetId: input.documentId,
+          correlationId: input.correlationId,
+          metadata: {
+            previousTitle: context.document.title,
+            nextTitle: input.request.title ?? context.document.title,
+          },
+        });
       }
 
       return row;

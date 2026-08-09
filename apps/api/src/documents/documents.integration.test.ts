@@ -1405,4 +1405,29 @@ describe('renaming a page', () => {
       await prisma.outboxEvent.count({ where: { workspaceId, type: 'document.updated' } }),
     ).toBe(before + 1);
   });
+
+  it('writes exactly one document.renamed audit entry per actual rename (issue #20)', async () => {
+    const documentId = await createPage('Vorher');
+
+    await service.update({
+      documentId,
+      userId: ownerId,
+      request: { title: 'Nachher' },
+      correlationId,
+    });
+    // An icon-only change is not a rename and must not audit one either.
+    await service.update({
+      documentId,
+      userId: ownerId,
+      request: { icon: '🧠' },
+      correlationId,
+    });
+
+    const entries = await prisma.auditLog.findMany({
+      where: { targetType: 'document', targetId: documentId, action: 'document.renamed' },
+    });
+    expect(entries).toHaveLength(1);
+    expect(entries[0]?.actorId).toBe(ownerId);
+    expect(entries[0]?.metadata).toMatchObject({ previousTitle: 'Vorher', nextTitle: 'Nachher' });
+  });
 });

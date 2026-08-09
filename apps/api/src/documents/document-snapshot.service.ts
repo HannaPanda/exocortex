@@ -71,6 +71,16 @@ export class DocumentSnapshotService {
         createdById: input.userId,
         reason: 'MANUAL',
       },
+      select: {
+        id: true,
+        documentId: true,
+        schemaVersion: true,
+        createdById: true,
+        reason: true,
+        createdAt: true,
+        yjsState: true,
+        createdBy: { select: { name: true } },
+      },
     });
 
     return {
@@ -78,6 +88,7 @@ export class DocumentSnapshotService {
       documentId: snapshot.documentId,
       schemaVersion: snapshot.schemaVersion,
       createdById: snapshot.createdById,
+      createdByName: snapshot.createdBy?.name ?? null,
       reason: REASON_MAP[snapshot.reason],
       createdAt: snapshot.createdAt.toISOString(),
       byteSize: snapshot.yjsState.byteLength,
@@ -101,6 +112,7 @@ export class DocumentSnapshotService {
         reason: true,
         createdAt: true,
         yjsState: true,
+        createdBy: { select: { name: true } },
       },
     });
 
@@ -109,6 +121,7 @@ export class DocumentSnapshotService {
       documentId: snapshot.documentId,
       schemaVersion: snapshot.schemaVersion,
       createdById: snapshot.createdById,
+      createdByName: snapshot.createdBy?.name ?? null,
       reason: REASON_MAP[snapshot.reason],
       createdAt: snapshot.createdAt.toISOString(),
       byteSize: snapshot.yjsState.byteLength,

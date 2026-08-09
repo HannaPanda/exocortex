@@ -20,6 +20,8 @@ import {
   createDocumentRequestSchema,
   type CreateSnapshotRequest,
   createSnapshotRequestSchema,
+  type DocumentActivityResponse,
+  documentActivityResponseSchema,
   type DocumentContentWriteRequest,
   documentContentWriteRequestSchema,
   type DocumentContentWriteResponse,
@@ -63,6 +65,7 @@ import { readUploadedFile } from '../common/multipart';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
 import { CollaborationTicketService } from './collaboration-ticket.service';
+import { DocumentActivityService } from './document-activity.service';
 import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
 import { DocumentLinksService } from './document-links.service';
@@ -164,6 +167,7 @@ export class DocumentsController {
     private readonly documents: DocumentsService,
     private readonly markdown: DocumentMarkdownService,
     private readonly snapshots: DocumentSnapshotService,
+    private readonly activity: DocumentActivityService,
     private readonly tickets: CollaborationTicketService,
     private readonly content: DocumentContentService,
     private readonly cover: DocumentCoverService,
@@ -366,5 +370,19 @@ export class DocumentsController {
       userId: session.userId,
       correlationId: currentCorrelationId(),
     });
+  }
+
+  /**
+   * The page's own history: the "Aktivität" tab (issue #20). Merged from
+   * snapshots, the audit log and the document row itself -- see
+   * `DocumentActivityService` for why none of those is enough on its own.
+   */
+  @Get(':documentId/activity')
+  @ApiOkResponse({ schema: openApiResponseSchema(documentActivityResponseSchema) })
+  async listActivity(
+    @CurrentSession() session: VerifiedSession,
+    @Param('documentId') documentId: string,
+  ): Promise<DocumentActivityResponse> {
+    return this.activity.list(documentId, session.userId);
   }
 }

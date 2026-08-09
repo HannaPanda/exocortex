@@ -348,6 +348,8 @@ export const documentSnapshotSchema = z.object({
   documentId: idSchema,
   schemaVersion: z.number().int().nonnegative(),
   createdById: idSchema.nullable(),
+  /** Null once the user who took it is gone (`onDelete: SetNull`). */
+  createdByName: z.string().nullable(),
   reason: z.enum(['manual', 'scheduled', 'pre_restore', 'import', 'restore', 'api_write']),
   createdAt: isoDateTimeSchema,
   byteSize: z.number().int().nonnegative(),
@@ -363,6 +365,98 @@ export const createSnapshotRequestSchema = z.object({
   reason: z.enum(['manual']).default('manual'),
 });
 export type CreateSnapshotRequest = z.infer<typeof createSnapshotRequestSchema>;
+
+/**
+ * The page's own history (issue #20), merged server-side from three sources
+ * that are each incomplete on their own:
+ *
+ * - `DocumentSnapshot` (`snapshot`): a restorable version, including the ones
+ *   taken automatically before a write from outside the editor.
+ * - `AuditLog` (`renamed`, `moved`, `archived`, `restored`, `snapshotRestored`):
+ *   the heikle operations already audited there, plus `renamed`, added
+ *   alongside this feature because a title has no other history.
+ * - `Document.createdAt`/`createdById` (`created`): a document is created
+ *   exactly once, so the row itself is the whole history for this entry.
+ * - `editingSession`: a condensed range derived from the timestamps above,
+ *   not a fourth persisted source (see `document-activity.service.ts`).
+ *
+ * Deliberately **not** what `AuditLog`'s own doc comment scopes it to
+ * ("destructive and permission-relevant operations, must never contain
+ * document contents or secrets"): every variant below carries structural
+ * metadata only (who, when, a title, a byte size), never page content.
+ */
+export const documentActivityEntrySchema = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('created'),
+    id: z.string(),
+    occurredAt: isoDateTimeSchema,
+    actorId: idSchema.nullable(),
+    actorName: z.string().nullable(),
+  }),
+  z.object({
+    type: z.literal('renamed'),
+    id: z.string(),
+    occurredAt: isoDateTimeSchema,
+    actorId: idSchema.nullable(),
+    actorName: z.string().nullable(),
+    previousTitle: z.string().nullable(),
+    nextTitle: z.string().nullable(),
+  }),
+  z.object({
+    type: z.literal('moved'),
+    id: z.string(),
+    occurredAt: isoDateTimeSchema,
+    actorId: idSchema.nullable(),
+    actorName: z.string().nullable(),
+    acrossWorkspace: z.boolean(),
+  }),
+  z.object({
+    type: z.literal('archived'),
+    id: z.string(),
+    occurredAt: isoDateTimeSchema,
+    actorId: idSchema.nullable(),
+    actorName: z.string().nullable(),
+  }),
+  z.object({
+    type: z.literal('restored'),
+    id: z.string(),
+    occurredAt: isoDateTimeSchema,
+    actorId: idSchema.nullable(),
+    actorName: z.string().nullable(),
+  }),
+  z.object({
+    type: z.literal('snapshotRestored'),
+    id: z.string(),
+    occurredAt: isoDateTimeSchema,
+    actorId: idSchema.nullable(),
+    actorName: z.string().nullable(),
+    restoredFromSnapshotId: idSchema,
+  }),
+  z.object({
+    type: z.literal('snapshot'),
+    /** The snapshot's own id; what `exo_page_restore_snapshot` takes. */
+    id: idSchema,
+    occurredAt: isoDateTimeSchema,
+    actorId: idSchema.nullable(),
+    actorName: z.string().nullable(),
+    reason: documentSnapshotSchema.shape.reason,
+    byteSize: z.number().int().nonnegative(),
+  }),
+  z.object({
+    type: z.literal('editingSession'),
+    id: z.string(),
+    startedAt: isoDateTimeSchema,
+    endedAt: isoDateTimeSchema,
+    actorId: idSchema.nullable(),
+    actorName: z.string().nullable(),
+  }),
+]);
+export type DocumentActivityEntry = z.infer<typeof documentActivityEntrySchema>;
+
+export const documentActivityResponseSchema = z.object({
+  entries: z.array(documentActivityEntrySchema),
+});
+export type DocumentActivityResponse = z.infer<typeof documentActivityResponseSchema>;
 
 /**
  * Writes Markdown into an existing document's canonical Yjs state (D8). The

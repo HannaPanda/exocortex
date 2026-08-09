@@ -14,6 +14,7 @@ export const AUDIT_ACTIONS = [
   'document.restored',
   'document.moved',
   'document.moved_workspace',
+  'document.renamed',
   'document.snapshot_restored',
   'attachment.deleted',
   'workspace.renamed',

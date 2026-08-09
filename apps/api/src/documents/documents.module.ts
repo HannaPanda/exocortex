@@ -6,6 +6,7 @@ import { RealtimeModule } from '../realtime/realtime.module';
 
 import { CollaborationBridgeService } from './collaboration-bridge.service';
 import { CollaborationTicketService } from './collaboration-ticket.service';
+import { DocumentActivityService } from './document-activity.service';
 import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
 import { DocumentLinksService } from './document-links.service';
@@ -23,6 +24,7 @@ import { PageLinkIdentityService } from './page-link-identity.service';
     DocumentCoverService,
     DocumentMarkdownService,
     DocumentSnapshotService,
+    DocumentActivityService,
     DocumentContentService,
     DocumentLinksService,
     PageLinkIdentityService,
@@ -34,6 +36,7 @@ import { PageLinkIdentityService } from './page-link-identity.service';
     DocumentsService,
     DocumentMarkdownService,
     DocumentSnapshotService,
+    DocumentActivityService,
     DocumentContentService,
     DocumentLinksService,
   ],
