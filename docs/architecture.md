@@ -189,13 +189,22 @@ materialization pass that also derives Markdown and plain text (ADR-007) and
 replaced wholesale per source page, so a reference deleted from the text
 disappears from the index.
 
-The hard part is that a reference addresses a **title**, not an identity
-(issue #14): `targetDocumentId` is nullable and `targetTitleKey` carries the
-normalized title. The consequence is that the index can go stale from the
-*target* side — a page renamed while nothing about the referencing page changed
-— so a rename, a creation and a workspace move each enqueue a
-`resolve-document-links` maintenance job through the outbox (ADR-010). See
-`docs/background-jobs.md` for the two jobs and why neither of them is a sweep.
+A reference can address its target two ways, and the index carries both
+(issue #14). `targetHintId` is the identity written in the document itself —
+a `pageLink` block's `documentId`, a page mention's `id` — and it is tried
+first, which is what makes renaming a page a non-event for every reference
+made through the page picker. `targetTitleKey` carries the normalized title
+and answers for the notations that have nothing else: a `[[Titel]]` link mark,
+an import that has not been bound yet, a link made before identities existed.
+`targetDocumentId` is the *resolved* pointer either produced, and it is
+nullable because a reference to a page that does not exist is kept, not
+discarded.
+
+The title half can still go stale from the *target* side — a page renamed while
+nothing about the referencing page changed — so a rename, a creation and a
+workspace move each enqueue a `resolve-document-links` maintenance job through
+the outbox (ADR-010). See `docs/background-jobs.md` for the two jobs and why
+neither of them is a sweep.
 
 A reference to a title no page carries is kept, not discarded. It is the one
 thing the panel can tell someone that nothing else in the application reveals.

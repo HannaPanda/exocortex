@@ -147,7 +147,10 @@ const WRITE_MODE_DESCRIPTION =
 const WRITE_MARKDOWN_DESCRIPTION =
   'Der zu schreibende Markdown-Text. Bei mode "append" oder "prepend" nur der neue Abschnitt, ' +
   'bei mode "replace" der gesamte Inhalt, den die Seite danach haben soll. ' +
-  'Seitenlinks als [[Seitentitel]] schreiben.';
+  'Seitenlinks als [[Seitentitel]] schreiben: Exocortex bindet sie beim Schreiben an die Seite ' +
+  'mit diesem Titel, sodass der Verweis ein späteres Umbenennen dieser Seite übersteht. ' +
+  'Ein Titel, den es noch nicht gibt, bleibt als unaufgelöster Verweis stehen und bietet in ' +
+  'der Oberfläche an, die Seite anzulegen.';
 
 const pageWriteInputSchema = z
   .object({ documentId: idSchema })
@@ -438,14 +441,20 @@ export const pageGenerateCoverTool: AnyToolDefinition = defineTool({
 
 const resolveLinkInputSchema = z
   .object({ workspaceId: idSchema })
-  .extend(resolveDocumentLinkRequestSchema.shape);
+  .extend(resolveDocumentLinkRequestSchema.shape)
+  .refine((value) => value.title !== undefined || value.documentId !== undefined, {
+    message: 'Entweder "title" oder "documentId" muss angegeben werden.',
+  });
 
 export const pageResolveLinkTool: AnyToolDefinition = defineTool({
   name: 'exo_page_resolve_link',
   description:
-    'Löst einen internen Seitenverweis ([[Titel]] bzw. wiki:Titel) im Workspace auf und ' +
-    'liefert die documentId der Seite mit genau diesem Titel. Mehrere gleichnamige Seiten ' +
-    'werden alle mit ihrem Pfad zurückgegeben.',
+    'Löst einen internen Seitenverweis auf und liefert die Seite, die er meint. Ein ' +
+    'Seitenlink-Block führt die "documentId" der Zielseite mit; [[Titel]] bzw. wiki:Titel ' +
+    'führen nur den Titel. Beides darf angegeben werden: die Identität gewinnt, deshalb ' +
+    'überlebt ein Verweis das Umbenennen seiner Zielseite. Der Titel dient als Rückfall, ' +
+    'wenn es die Identität nicht mehr gibt. "resolvedBy" sagt, was gegriffen hat. Mehrere ' +
+    'gleichnamige Seiten werden alle mit ihrem Pfad zurückgegeben.',
   inputSchema: resolveLinkInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: false,
@@ -458,17 +467,26 @@ export const pageResolveLinkTool: AnyToolDefinition = defineTool({
       responseSchema: resolveDocumentLinkResponseSchema,
     });
     if (result.matches.length === 0) {
-      return { text: `Keine Seite mit dem Titel "${result.title}".`, data: result };
+      return {
+        text:
+          query.documentId === undefined
+            ? `Keine Seite mit dem Titel "${result.title}".`
+            : `Der Verweis ist unaufgelöst: die Seite ${query.documentId} gibt es nicht mehr, ` +
+              `und keine Seite trägt den Titel "${result.title}".`,
+        data: result,
+      };
     }
-    const text = result.matches
-      .map(
-        (match) =>
-          `${match.title} (id: ${match.id}${
-            match.path.length > 0 ? `, Pfad: ${match.path.map((entry) => entry.title).join(' / ')}` : ''
-          }${match.archivedAt === null ? '' : ', archiviert'})`,
-      )
-      .join('\n');
-    return { text, data: result };
+    const lines = result.matches.map(
+      (match) =>
+        `${match.title} (id: ${match.id}${
+          match.path.length > 0 ? `, Pfad: ${match.path.map((entry) => entry.title).join(' / ')}` : ''
+        }${match.archivedAt === null ? '' : ', archiviert'})`,
+    );
+    const note =
+      result.resolvedBy === 'title' && query.documentId !== undefined
+        ? '\n(Über den Titel aufgelöst: die mitgegebene Identität gibt es nicht mehr.)'
+        : '';
+    return { text: `${lines.join('\n')}${note}`, data: result };
   },
 });
 

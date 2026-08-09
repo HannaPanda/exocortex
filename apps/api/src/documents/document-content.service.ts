@@ -8,12 +8,15 @@ import {
 } from '@exocortex/contracts';
 import { type Prisma, type PrismaClient } from '@exocortex/database';
 import {
+  bindPageLinkIdentities,
   EXOCORTEX_SCHEMA_VERSION,
   markdownToYjsState,
   parseMarkdown,
   type ProseMirrorDocument,
   type ProseMirrorNode,
-  yjsStateToMarkdown,
+  resolvePageLinkTitles,
+  serializeMarkdown,
+  yjsStateToProseMirrorJson,
 } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
@@ -25,6 +28,7 @@ import { PRISMA, QUEUES } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
 import { CollaborationBridgeService } from './collaboration-bridge.service';
+import { PageLinkIdentityService } from './page-link-identity.service';
 
 /** Depth-first search for a `databaseEmbed` node (D8, mirrors collectImageSources). */
 function containsDatabaseEmbed(node: ProseMirrorNode | null | undefined): boolean {
@@ -58,6 +62,7 @@ export class DocumentContentService {
     private readonly outbox: OutboxService,
     private readonly realtime: RealtimeService,
     private readonly collaboration: CollaborationBridgeService,
+    private readonly pageLinks: PageLinkIdentityService,
   ) {}
 
   async write(input: {
@@ -100,7 +105,21 @@ export class DocumentContentService {
       warnings.push('Die Seite enthielt eingebettete Datenbanken; diese wurden ersetzt.');
     }
 
-    const currentMarkdown = yjsStateToMarkdown(existing.yjsState);
+    /*
+     * A write goes through Markdown, and Markdown carries no identities: every
+     * reference on the page is written as `[[Titel]]` and read back in. Both
+     * halves therefore run through the identity index (issue #14) — the
+     * existing content is serialized from the titles its targets carry *now*,
+     * so the titles that go out are the titles that come back and bind to the
+     * same pages. Without that, appending a paragraph would silently strip the
+     * identity from every reference already on the page.
+     */
+    const identities = await this.pageLinks.loadIndex(context.workspaceId);
+    const currentMarkdown = serializeMarkdown(
+      resolvePageLinkTitles(yjsStateToProseMirrorJson(existing.yjsState), (documentId) =>
+        identities.titleFor(documentId),
+      ),
+    );
     const effectiveMarkdown =
       input.request.mode === 'replace'
         ? input.request.markdown
@@ -117,11 +136,13 @@ export class DocumentContentService {
      */
     let liveUpdate: ProseMirrorDocument;
     try {
-      imported = markdownToYjsState(effectiveMarkdown);
+      const bind = (document: ProseMirrorDocument): ProseMirrorDocument =>
+        bindPageLinkIdentities(document, (title) => identities.identityFor(title));
+      imported = markdownToYjsState(effectiveMarkdown, { transformDocument: bind });
       liveUpdate =
         input.request.mode === 'replace'
           ? imported.proseMirrorJson
-          : parseMarkdown(input.request.markdown).document;
+          : bind(parseMarkdown(input.request.markdown).document);
     } catch (error) {
       this.logger.warn('Document content write rejected: markdown could not be parsed', {
         documentId: input.documentId,

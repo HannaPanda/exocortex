@@ -67,7 +67,7 @@ All of it lives in `apps/web/src/components/editor` and contributes **no** schem
 | `selection-toolbar.tsx` | formatting bar over a selection |
 | `turn-into-menu.tsx` | convert the current block |
 | `color-menu.tsx` | text and background colour |
-| `link-menu.tsx` | link editor, understands `[[Seite]]` |
+| `link-menu.tsx` | link editor: understands `[[Seite]]`, and searches the workspace's pages for anything that does not look like an address |
 | `link-bubble.tsx` | bubble menu over the caret inside a link: open, edit, remove |
 | `follow-link-context.tsx` | ref bridge that hands `EditorSurface`'s click handler and the `pageLink` node view a `follow` function without either holding it as state |
 | `link-navigation.tsx` | `useLinkNavigation`: what following a resolved link *does* (new tab, router push, `wiki:` lookup plus its ambiguous/missing/error dialogs) |
@@ -81,6 +81,7 @@ All of it lives in `apps/web/src/components/editor` and contributes **no** schem
 | `table-toolbar.tsx` | rows, columns, header, merge |
 | `block-prompt.tsx` | value and file collection for catalog entries |
 | `page-link-node-view.tsx` | React node view for `pageLink`, see the exception below |
+| `page-link-context.tsx` | ref bridge that lets the `pageLink` node view reopen the page picker, so a placed link can be re-targeted |
 
 Node views that render *inside* the document (table of contents, breadcrumb, media)
 live in `packages/editor` and are plain DOM, not React, so `getExocortexSchema()`
@@ -99,11 +100,12 @@ full-page database view uses: reusing it outweighs hand-building filters,
 inline cell editing and four view layouts again in plain DOM.
 
 For `pageLink` (`page-link-node-view.tsx`) it is the block's *resolution
-state*: whether the title matches one page, several, or none, and that page's
-icon and archived status. A plain anchor cannot say any of that without a
-network request, and knowing which page a title resolves to is application
-knowledge, not schema knowledge — `packages/editor` still only ever stores the
-title. The click itself is handled the same way for both: neither node view
+state*: whether the reference resolves to one page, several, or none, and that
+page's icon, current title and archived status. A plain anchor cannot say any
+of that without a network request, and knowing which page a reference resolves
+to is application knowledge, not schema knowledge. The *rule* it follows is
+pure and lives in the package (`resolvePageLinkTarget`); only the lookup is
+here. The click itself is handled the same way for both: neither node view
 calls `stopPropagation` as a guard against the editor-wide click handler
 (`followFromEvent` in `collaborative-editor.tsx`, described below), because
 React's event system sits above ProseMirror's `view.dom` listener and would
@@ -249,14 +251,44 @@ The real `toggle` unit is `packages/editor/src/toggle.ts`; `columns.ts` is the
 reference for a node with its own commands, `table-of-contents.ts` for one with a
 plain-DOM node view.
 
+## Page references and their identity
+
+Two nodes point at another page: the `pageLink` block and `mention` with
+`kind: 'page'`. Both store the **identity** of the target (`documentId` / `id`)
+next to the **title** they display, and both write only the title to Markdown.
+`[[Titel]]` is therefore an interchange format, not the storage format: an
+exported file still contains no internal identifiers, and renaming a page no
+longer breaks the references to it (issue #14).
+
+The three pure operations that keep those two halves in step live in
+`packages/editor/src/page-link-identity.ts`:
+
+| Function | Used by | Does |
+| -------- | ------- | ---- |
+| `resolvePageLinkTitles` | Markdown export | rewrites every stored title from its identity, so a file says what the target is called *now* |
+| `bindPageLinkIdentities` | Markdown import, `POST /documents/:id/content` | maps a title back onto a page of the workspace |
+| `resolvePageLinkTarget` | the `pageLink` node view | decides what a reference resolves to, identity first, title as the fallback, `unresolved` when neither answers |
+
+All three take the lookup as an argument, because only the application may talk
+to the database; `apps/api/src/documents/page-link-identity.service.ts` supplies
+it from one read of the workspace. A reference that resolves to nothing is
+never dropped — it is shown as unresolved and offers to create the page.
+
 ## Document migrations
 
 `EXOCORTEX_SCHEMA_VERSION` is stored on every `DocumentContent` and
-`DocumentSnapshot` row. It is at **2**: version 2 added the full block set. Every
-addition was purely additive, so `SCHEMA_V2_MIGRATION`
-(`packages/editor/src/schema-v2.ts`) is an identity migration. It exists because
-`migrateDocument` requires exactly one migration per version step, which keeps the
-upgrade path explicit instead of silently permissive.
+`DocumentSnapshot` row. It is at **4**: version 2 added the full block set,
+version 3 the database embed, version 4 the page link's identity.
+
+`SCHEMA_V2_MIGRATION` and `SCHEMA_V3_MIGRATION` are identity migrations — those
+steps were purely additive. They exist because `migrateDocument` requires
+exactly one migration per version step, which keeps the upgrade path explicit
+instead of silently permissive. `SCHEMA_V4_MIGRATION`
+(`packages/editor/src/schema-v4.ts`) is the first one that actually rewrites
+nodes: it gives every `pageLink` an explicit `documentId: null`, so "no identity
+recorded" is one case instead of two. It cannot invent an identity — that needs
+a workspace and a database — so old links keep resolving through their title
+until someone edits them.
 
 To add one:
 

@@ -173,6 +173,8 @@ themselves.
   round-trips the array completely through the API.
 * **A database embed's Markdown export/import loses the reference.** Markdown
   is interchange-only (ADR-007) and never carries internal ids, so the
-  `:::database-embed` container round-trips only the database's title, the
-  same accepted limitation `pageLink` already has. Re-importing such a file
-  produces an embed with no database picked yet.
+  `:::database-embed` container round-trips only the database's title, and
+  re-importing such a file produces an embed with no database picked yet.
+  `pageLink` used to share this limitation and no longer does: the import path
+  binds `[[Titel]]` back to a document (`bindPageLinkIdentities`, issue #14).
+  The same treatment would work here and has simply not been built.

@@ -15,6 +15,7 @@ import {
 } from '@exocortex/contracts';
 import { generateOrderKey, type Prisma, type PrismaClient } from '@exocortex/database';
 import {
+  bindPageLinkIdentities,
   EXOCORTEX_SCHEMA_VERSION,
   markdownToYjsState,
   serializeMarkdown,
@@ -30,6 +31,7 @@ import { PRISMA, QUEUES } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
 import { DOCUMENT_SELECT, toSummary } from './documents.service';
+import { PageLinkIdentityService } from './page-link-identity.service';
 
 function filenameFor(title: string): string {
   const base = title
@@ -56,6 +58,7 @@ export class DocumentMarkdownService {
     private readonly access: WorkspaceAccessService,
     private readonly outbox: OutboxService,
     private readonly realtime: RealtimeService,
+    private readonly pageLinks: PageLinkIdentityService,
   ) {}
 
   async export(documentId: string, userId: string): Promise<MarkdownExportResponse> {
@@ -86,7 +89,13 @@ export class DocumentMarkdownService {
       throw AppError.notFound('Document content');
     }
 
-    const proseMirrorJson = yjsStateToProseMirrorJson(content.yjsState);
+    // `[[Titel]]` is written from the identity a reference stores, not from the
+    // label frozen into it when it was made: a file exported after a rename
+    // names the target the way it is called now (issue #14).
+    const proseMirrorJson = await this.pageLinks.refreshTitles(
+      context.workspaceId,
+      yjsStateToProseMirrorJson(content.yjsState),
+    );
     const markdown = serializeMarkdown(proseMirrorJson, {
       frontmatter: {
         title: document.title,
@@ -141,9 +150,17 @@ export class DocumentMarkdownService {
       }
     }
 
+    // The counterpart of the export above: a file says `[[Titel]]`, and the
+    // reference it becomes carries the identity of the page that title names,
+    // so it survives that page being renamed afterwards.
+    const identities = await this.pageLinks.loadIndex(input.workspaceId);
+
     let imported: ReturnType<typeof markdownToYjsState>;
     try {
-      imported = markdownToYjsState(input.request.markdown);
+      imported = markdownToYjsState(input.request.markdown, {
+        transformDocument: (document) =>
+          bindPageLinkIdentities(document, (title) => identities.identityFor(title)),
+      });
     } catch (error) {
       this.logger.warn('Markdown import rejected', {
         workspaceId: input.workspaceId,

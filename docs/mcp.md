@@ -90,7 +90,7 @@ servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 | `exo_page_set_layout` | yes | `PATCH /api/documents/:documentId` (layout: narrow/wide/full) |
 | `exo_page_set_cover` | yes | `PATCH /api/documents/:documentId` (coverAttachmentId/coverPosition) |
 | `exo_page_generate_cover` | yes | `POST /api/documents/:documentId/cover/generate` |
-| `exo_page_resolve_link` | no | `GET /api/workspaces/:workspaceId/documents/resolve?title=&includeArchived=&limit=` |
+| `exo_page_resolve_link` | no | `GET /api/workspaces/:workspaceId/documents/resolve?documentId=&title=&includeArchived=&limit=` -- identity first, title as the fallback; `resolvedBy` says which answered |
 | `exo_page_backlinks` | no | `GET /api/documents/:documentId/links` -- both directions of the reference index, including references to a title no page carries |
 | `exo_search` | no | `GET /api/workspaces/:workspaceId/search?q=&limit=&includeArchived=` |
 | `exo_database_create` | yes | `POST /api/workspaces/:workspaceId/documents` (`type: 'COLLECTION'`) + one `POST .../properties` per requested column |

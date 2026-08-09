@@ -13,6 +13,7 @@ import { DocumentMarkdownService } from './document-markdown.service';
 import { DocumentSnapshotService } from './document-snapshot.service';
 import { DocumentsController, WorkspaceDocumentsController } from './documents.controller';
 import { DocumentsService } from './documents.service';
+import { PageLinkIdentityService } from './page-link-identity.service';
 
 @Module({
   imports: [RealtimeModule, AttachmentsModule],
@@ -24,6 +25,7 @@ import { DocumentsService } from './documents.service';
     DocumentSnapshotService,
     DocumentContentService,
     DocumentLinksService,
+    PageLinkIdentityService,
     CollaborationTicketService,
     CollaborationBridgeService,
     OutboxService,

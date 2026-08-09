@@ -182,7 +182,7 @@ describe('pageSetCoverTool', () => {
 
 describe('pageResolveLinkTool', () => {
   it('reports when no page has that title', async () => {
-    const { client, calls } = createFakeClient({ title: 'Nirgendwo', matches: [] });
+    const { client, calls } = createFakeClient({ title: 'Nirgendwo', matches: [], resolvedBy: 'none' });
 
     const result = await pageResolveLinkTool.run(client, {
       workspaceId: 'ws1234567',
@@ -203,6 +203,7 @@ describe('pageResolveLinkTool', () => {
   it('reports a single match without a path', async () => {
     const { client, calls } = createFakeClient({
       title: 'Ziel',
+      resolvedBy: 'title',
       matches: [
         {
           id: 'doc123456',
@@ -233,6 +234,7 @@ describe('pageResolveLinkTool', () => {
   it('reports every match with its path when the title is ambiguous', async () => {
     const { client } = createFakeClient({
       title: 'Doppelt',
+      resolvedBy: 'title',
       matches: [
         {
           id: 'doc1111111',
@@ -265,6 +267,78 @@ describe('pageResolveLinkTool', () => {
     expect(result.text).toBe(
       'Doppelt (id: doc1111111, Pfad: Elternseite)\nDoppelt (id: doc2222222, archiviert)',
     );
+  });
+
+  it('resolves by identity, so a renamed target still answers', async () => {
+    const { client, calls } = createFakeClient({
+      title: 'Neuer Name',
+      resolvedBy: 'id',
+      matches: [
+        {
+          id: 'doc123456',
+          workspaceId: 'ws1234567',
+          type: 'PAGE',
+          title: 'Neuer Name',
+          icon: null,
+          iconColor: null,
+          archivedAt: null,
+          path: [],
+        },
+      ],
+    });
+
+    const result = await pageResolveLinkTool.run(client, {
+      workspaceId: 'ws1234567',
+      documentId: 'doc123456',
+      title: 'Alter Name',
+    });
+
+    expect((calls[0] as { query: unknown }).query).toEqual({
+      documentId: 'doc123456',
+      title: 'Alter Name',
+      includeArchived: true,
+      limit: 10,
+    });
+    expect(result.text).toBe('Neuer Name (id: doc123456)');
+  });
+
+  it('says so when the identity is gone and the title had to stand in', async () => {
+    const { client } = createFakeClient({
+      title: 'Ziel',
+      resolvedBy: 'title',
+      matches: [
+        {
+          id: 'doc999999',
+          workspaceId: 'ws1234567',
+          type: 'PAGE',
+          title: 'Ziel',
+          icon: null,
+          iconColor: null,
+          archivedAt: null,
+          path: [],
+        },
+      ],
+    });
+
+    const result = await pageResolveLinkTool.run(client, {
+      workspaceId: 'ws1234567',
+      documentId: 'doc123456',
+      title: 'Ziel',
+    });
+
+    expect(result.text).toContain('Über den Titel aufgelöst');
+  });
+
+  it('reports an unresolved reference when neither identity nor title answers', async () => {
+    const { client } = createFakeClient({ title: 'Weg', matches: [], resolvedBy: 'none' });
+
+    const result = await pageResolveLinkTool.run(client, {
+      workspaceId: 'ws1234567',
+      documentId: 'doc123456',
+      title: 'Weg',
+    });
+
+    expect(result.text).toContain('unaufgelöst');
   });
 });
 

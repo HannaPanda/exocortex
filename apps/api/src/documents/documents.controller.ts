@@ -89,17 +89,19 @@ export class WorkspaceDocumentsController {
   }
 
   /**
-   * Resolves a `[[Titel]]` / `wiki:Titel` link to the document(s) with exactly
-   * that title. Deliberately its own endpoint rather than `/search`: this must
-   * be a deterministic exact-title lookup, not a ranked full-text match, and
-   * it must not depend on the asynchronous search index.
+   * Resolves a reference to another page — the `documentId` a `pageLink` block
+   * stores, a `[[Titel]]` / `wiki:Titel` address, or both — to the document(s)
+   * it means. Deliberately its own endpoint rather than `/search`: this must be
+   * a deterministic exact lookup, not a ranked full-text match, and it must not
+   * depend on the asynchronous search index.
    *
    * Placed before `:documentId` routes of the sibling controller would be
    * wrong; this route lives here, under the workspace, because `resolve` is
    * not a document id.
    */
   @Get('documents/resolve')
-  @ApiQuery({ name: 'title', required: true })
+  @ApiQuery({ name: 'title', required: false })
+  @ApiQuery({ name: 'documentId', required: false })
   @ApiQuery({ name: 'includeArchived', required: false })
   @ApiQuery({ name: 'limit', required: false })
   @ApiOkResponse({ schema: openApiResponseSchema(resolveDocumentLinkResponseSchema) })

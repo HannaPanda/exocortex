@@ -22,6 +22,7 @@ import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
 import { DocumentLinksService } from './document-links.service';
 import { DocumentsService } from './documents.service';
+import { PageLinkIdentityService } from './page-link-identity.service';
 
 /**
  * Document domain tests against the real database.
@@ -103,6 +104,7 @@ beforeAll(async () => {
     outbox,
     realtime,
     collaboration,
+    new PageLinkIdentityService(prisma),
   );
 
   const suffix = Date.now().toString(36);
@@ -1081,6 +1083,77 @@ describe('resolveLink', () => {
         limit: 10,
       }),
     ).rejects.toBeInstanceOf(AuthorizationError);
+  });
+
+  // Issue #14: a reference stores the identity of its target, and honouring it
+  // is what makes renaming that target harmless.
+  it('prefers the identity over the stored title, so a rename changes nothing', async () => {
+    const marker = Math.random().toString(36).slice(2);
+    const documentId = await createPage(`Alter Name ${marker}`);
+    await service.update({
+      documentId,
+      userId: ownerId,
+      request: { title: `Neuer Name ${marker}` },
+      correlationId,
+    });
+
+    const result = await service.resolveLink(workspaceId, ownerId, {
+      documentId,
+      title: `Alter Name ${marker}`,
+      includeArchived: true,
+      limit: 10,
+    });
+
+    expect(result.resolvedBy).toBe('id');
+    expect(result.matches.map((match) => match.id)).toEqual([documentId]);
+    // The caller gets the title the page carries now, not the stale label.
+    expect(result.title).toBe(`Neuer Name ${marker}`);
+  });
+
+  it('falls back to the title when the identity no longer names a document', async () => {
+    const marker = Math.random().toString(36).slice(2);
+    const title = `Neu geschrieben ${marker}`;
+    const documentId = await createPage(title);
+
+    const result = await service.resolveLink(workspaceId, ownerId, {
+      documentId: 'doc-that-never-existed',
+      title,
+      includeArchived: true,
+      limit: 10,
+    });
+
+    expect(result.resolvedBy).toBe('title');
+    expect(result.matches.map((match) => match.id)).toEqual([documentId]);
+  });
+
+  it('reports an unresolved reference when neither the identity nor the title answers', async () => {
+    const result = await service.resolveLink(workspaceId, ownerId, {
+      documentId: 'doc-that-never-existed',
+      title: `Gibt es nicht ${Math.random().toString(36).slice(2)}`,
+      includeArchived: true,
+      limit: 10,
+    });
+
+    expect(result).toMatchObject({ resolvedBy: 'none', matches: [] });
+  });
+
+  it('does not resolve an identity that belongs to another workspace', async () => {
+    const marker = Math.random().toString(36).slice(2);
+    const foreign = await service.create({
+      workspaceId: otherWorkspaceId,
+      userId: ownerId,
+      request: { title: `Fremd ${marker}`, type: 'PAGE', parentId: null },
+      correlationId,
+    });
+
+    const result = await service.resolveLink(workspaceId, ownerId, {
+      documentId: foreign.id,
+      title: `Fremd ${marker}`,
+      includeArchived: true,
+      limit: 10,
+    });
+
+    expect(result).toMatchObject({ resolvedBy: 'none', matches: [] });
   });
 });
 

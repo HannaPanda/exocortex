@@ -229,13 +229,22 @@ export class DocumentsService {
   }
 
   /**
-   * Resolves a `[[Titel]]` / `wiki:Titel` link to the document(s) with exactly
-   * that title, workspace-scoped.
+   * Resolves a reference to another page to the document(s) it means,
+   * workspace-scoped.
    *
-   * Raw SQL, not `findMany({ title: { equals, mode: 'insensitive' } })`: Prisma
-   * translates `insensitive` to `ILIKE` without escaping `%`/`_` in the value,
-   * so a page titled e.g. "100%_Plan" would match unrelated titles. `lower` +
-   * `regexp_replace` on both sides keeps the comparison exact and predictable.
+   * Identity first: a `pageLink` block stores the target's `documentId`, and
+   * honouring that is what keeps every reference intact when the target is
+   * renamed (issue #14). The title is the fallback — for the notations that
+   * carry nothing else (`[[Titel]]`, a page mention, a link made before
+   * identities existed) and for a target that was deleted and written again
+   * under the same name. A reference must not silently vanish, so `resolvedBy`
+   * reports which of the two answered.
+   *
+   * Raw SQL for the title lookup, not `findMany({ title: { equals, mode:
+   * 'insensitive' } })`: Prisma translates `insensitive` to `ILIKE` without
+   * escaping `%`/`_` in the value, so a page titled e.g. "100%_Plan" would
+   * match unrelated titles. `lower` + `regexp_replace` on both sides keeps the
+   * comparison exact and predictable.
    */
   async resolveLink(
     workspaceId: string,
@@ -244,7 +253,34 @@ export class DocumentsService {
   ): Promise<ResolveDocumentLinkResponse> {
     await this.access.requireRole(workspaceId, userId);
 
-    const title = request.title.trim().replace(/\s+/g, ' ');
+    const title = (request.title ?? '').trim().replace(/\s+/g, ' ');
+
+    if (request.documentId !== undefined) {
+      const byId = await this.prisma.document.findFirst({
+        where: {
+          id: request.documentId,
+          workspaceId,
+          ...(request.includeArchived ? {} : { archivedAt: null }),
+        },
+        select: {
+          id: true,
+          workspaceId: true,
+          type: true,
+          title: true,
+          icon: true,
+          iconColor: true,
+          archivedAt: true,
+        },
+      });
+      // The identity is unambiguous by definition, so no path is needed and no
+      // second query runs. Only when it no longer names a document does the
+      // title get its turn below.
+      if (byId !== null) {
+        return { title: byId.title, matches: [toLinkMatch(byId, [])], resolvedBy: 'id' };
+      }
+    }
+
+    if (title.length === 0) return { title, matches: [], resolvedBy: 'none' };
 
     const rows = await this.prisma.$queryRaw<ResolveLinkRow[]>`
       SELECT "id", "workspaceId", "type", "title", "icon", "iconColor", "archivedAt"
@@ -257,7 +293,11 @@ export class DocumentsService {
     `;
 
     if (rows.length <= 1) {
-      return { title, matches: rows.map((row) => toLinkMatch(row, [])) };
+      return {
+        title,
+        matches: rows.map((row) => toLinkMatch(row, [])),
+        resolvedBy: rows.length === 0 ? 'none' : 'title',
+      };
     }
 
     // Only worth the extra query when the caller actually has to disambiguate.
@@ -277,6 +317,7 @@ export class DocumentsService {
           })),
         ),
       ),
+      resolvedBy: 'title',
     };
   }
 
