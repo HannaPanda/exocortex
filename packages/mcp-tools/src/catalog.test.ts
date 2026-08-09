@@ -33,6 +33,18 @@ describe('EXOCORTEX_TOOLS', () => {
     }
   });
 
+  it('keeps run-lifecycle tools away from the built-in AI (issue #6)', () => {
+    // Everything else in the catalogue is offered on both surfaces. These two
+    // are not, and the reason is worth an assertion: a tool loop that can
+    // cancel a run can cancel the run it is itself executing in.
+    const aiToolNames = toolsFor('ai').map((tool) => tool.name);
+    expect(aiToolNames).not.toContain('exo_ai_run_cancel');
+    expect(aiToolNames).not.toContain('exo_ai_run_get');
+    const mcpToolNames = toolsFor('mcp').map((tool) => tool.name);
+    expect(mcpToolNames).toContain('exo_ai_run_cancel');
+    expect(mcpToolNames).toContain('exo_ai_run_get');
+  });
+
   it('excludes mutating tools from the read-only AI surface', () => {
     const readOnlyAiTools = toolsFor('ai', { includeMutating: false });
     expect(readOnlyAiTools.length).toBeGreaterThan(0);

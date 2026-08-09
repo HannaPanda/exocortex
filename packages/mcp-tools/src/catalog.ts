@@ -1,4 +1,5 @@
 import { type AnyToolDefinition, type ToolSurface } from './tool.js';
+import { AI_RUN_TOOLS } from './tools/ai-runs.js';
 import { ATTACHMENT_TOOLS } from './tools/attachments.js';
 import { DATABASE_TOOLS } from './tools/databases.js';
 import { LINK_TOOLS } from './tools/links.js';
@@ -15,6 +16,7 @@ export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...DATABASE_TOOLS,
   ...ATTACHMENT_TOOLS,
   ...RULES_TOOLS,
+  ...AI_RUN_TOOLS,
 ];
 
 /** Tools offered on a given surface, optionally excluding mutating ones. */

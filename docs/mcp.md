@@ -69,7 +69,7 @@ discipline completely, which the SDK does not guarantee out of the box.
 
 ## Tool reference
 
-All 38 tools are namespaced `exo_` so they cannot collide with the other MCP
+All 40 tools are namespaced `exo_` so they cannot collide with the other MCP
 servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 
 | Tool | Mutating | REST call |
@@ -112,6 +112,8 @@ servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 | `exo_attachment_correct_text` | yes | `PATCH /api/attachments/:attachmentId/text` -- writes a human correction, or clears one with `text: null` (issue #2) |
 | `exo_rules_list` | no | `GET /api/workspaces/:workspaceId/ai-rules` |
 | `exo_rules_load` | no | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars) |
+| `exo_ai_run_get` | no | `GET /api/ai/runs/:runId` -- status, model, `heartbeatAt`, tool rounds, error code and the answer so far (capped at 2,000 chars) |
+| `exo_ai_run_cancel` | yes | `POST /api/ai/runs/:runId/cancel` -- refuses a run that has already finished |
 
 `exo_page_write` reaches a page that somebody has open at that moment: the API
 hands the change to the collaboration server, which applies it to the live
@@ -281,5 +283,14 @@ that nginx rule is added.
   slash commands (`/model`, `/think`, `/context`, …) have no tool counterparts.
   If a conversation-management API is ever wanted, it needs its own decision,
   not an incremental tool.
+
+  A run's *lifecycle* is the deliberate exception (issue #6). "Is this run
+  still alive, and can I stop it?" is a question about a job, not about
+  somebody else's chat, and it is the whole point of that issue that the
+  answer must be reachable from outside the browser panel too. Hence
+  `exo_ai_run_get` and `exo_ai_run_cancel` — and hence both are declared
+  `surfaces: ['mcp']` and are the only tools in the catalogue that the
+  built-in AI does not get. A tool loop with a cancel button has, first of
+  all, the button that cancels itself.
 * **Two response shapes are defined locally, not in `@exocortex/contracts`.**
   See "Tool reference" above; `packages/contracts` was frozen for this wave.
