@@ -29,7 +29,7 @@ import {
   PostgresSearchAdapter,
   type PrismaClient,
 } from '@exocortex/database';
-import { markdownToYjsState } from '@exocortex/editor';
+import { bindPageLinkIdentities, markdownToYjsState } from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type JobContext, QueueRegistry, RedisEventBus, testQueuePrefix } from '@exocortex/queue';
@@ -2139,6 +2139,89 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
       where: { sourceDocumentId: sourceId },
     });
     expect(rebound.targetDocumentId).toBe(successor.id);
+  }, 60_000);
+
+  /**
+   * Issue #14: a `pageLink` block carries the identity of its target, so a
+   * rename is a non-event for it. The title-only notations above keep their old
+   * behaviour; this is the difference the identity makes.
+   */
+  it('keeps a reference that carries an identity when the target is renamed', async () => {
+    const target = await prisma.document.create({
+      data: {
+        workspaceId,
+        title: 'Wird umbenannt',
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+      },
+    });
+
+    const imported = markdownToYjsState(':::page Wird umbenannt\n:::\n', {
+      transformDocument: (document) => bindPageLinkIdentities(document, () => target.id),
+    });
+    const source = await prisma.document.create({
+      data: {
+        workspaceId,
+        title: 'Quelle mit Identität',
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+        content: {
+          create: { yjsState: Buffer.from(imported.yjsState), yjsUpdatedAt: new Date() },
+        },
+      },
+    });
+    await materialize(source.id, 'test-links-identity');
+
+    const initial = await prisma.documentLink.findFirstOrThrow({
+      where: { sourceDocumentId: source.id },
+    });
+    expect(initial.targetHintId).toBe(target.id);
+    expect(initial.targetDocumentId).toBe(target.id);
+
+    await prisma.document.update({
+      where: { id: target.id },
+      data: { title: 'Heißt jetzt anders' },
+    });
+    await maintenance()(
+      contextFor({
+        correlationId: 'test-links-identity-b',
+        task: 'resolve-document-links',
+        workspaceId,
+        documentId: target.id,
+      }).context,
+    );
+
+    const afterRename = await prisma.documentLink.findFirstOrThrow({
+      where: { sourceDocumentId: source.id },
+    });
+    // The title in the index is stale, the reference is not.
+    expect(afterRename.targetDocumentId).toBe(target.id);
+
+    // And a new page taking the old title over does not steal the reference.
+    const namesake = await prisma.document.create({
+      data: {
+        workspaceId,
+        title: 'Wird umbenannt',
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+      },
+    });
+    await maintenance()(
+      contextFor({
+        correlationId: 'test-links-identity-c',
+        task: 'resolve-document-links',
+        workspaceId,
+        documentId: namesake.id,
+      }).context,
+    );
+
+    const afterNamesake = await prisma.documentLink.findFirstOrThrow({
+      where: { sourceDocumentId: source.id },
+    });
+    expect(afterNamesake.targetDocumentId).toBe(target.id);
   }, 60_000);
 
   it('does nothing when the page it should resolve for is gone', async () => {

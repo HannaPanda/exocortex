@@ -465,6 +465,13 @@ model DocumentLink {
   targetDocumentId String?
   targetDocument   Document? @relation("DocumentLinkTarget", fields: [targetDocumentId], references: [id], onDelete: SetNull)
 
+  /// Identity the reference itself carries (`pageLink.documentId`,
+  /// `mention.id`), copied out of the document as written. Not a foreign key on
+  /// purpose: it must survive the target being deleted, so that a page written
+  /// again under the same id keeps its incoming references, and so that the
+  /// resolution can tell "the identity is gone" from "there never was one".
+  /// `targetDocumentId` above stays the *resolved* pointer.
+  targetHintId   String?
   /// Title as written, whitespace-normalized. Always present.
   targetTitle    String
   /// `targetTitle` lowercased. Kept as a column so the resolution can use an index.
@@ -486,6 +493,8 @@ model DocumentLink {
   @@index([targetDocumentId])
   /// Resolution after a page is created or renamed.
   @@index([workspaceId, targetTitleKey])
+  /// Resolution by identity, which is what a rename no longer has to touch.
+  @@index([targetHintId])
   @@index([sourceDocumentId, position])
   @@map("document_link")
 }

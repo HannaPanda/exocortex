@@ -25,15 +25,22 @@ const KIND_TO_DB = {
 const TITLE_KEY_SQL = Prisma.sql`lower(btrim(regexp_replace(d."title", '\s+', ' ', 'g')))`;
 
 /**
- * Re-points every reference matched by `where` at the page that currently
- * carries its title, or at nothing when no page does.
+ * Re-points every reference matched by `where` at the page it means, or at
+ * nothing when no page answers.
+ *
+ * Identity first, title second — the same order as
+ * `DocumentsService.resolveLink`, so following a link in the editor and reading
+ * the Verweise tab always agree. That order is what makes a rename a non-event
+ * for every reference made through the page picker: the title moved, the
+ * identity did not. References that carry no identity (a `[[Titel]]` mark, an
+ * import that has not been bound yet) fall through to the title lookup exactly
+ * as before, and the ordering there decides which of several same-titled pages
+ * wins.
  *
  * One correlated update rather than a link step and an unlink step: whichever
- * direction a title moved in, "the best page with this title, or NULL" is the
+ * direction a title moved in, "the page this reference means, or NULL" is the
  * correct answer for every row in scope, so the statement is idempotent and
- * cannot leave half of a rename applied. The ordering mirrors
- * `DocumentsService.resolveLink`, so following a link in the editor and reading
- * the Verweise tab agree on which of several same-titled pages wins.
+ * cannot leave half of a rename applied.
  */
 async function repointLinks(
   client: PrismaClient | PrismaTransactionClient,
@@ -41,13 +48,21 @@ async function repointLinks(
 ): Promise<number> {
   return client.$executeRaw`
     UPDATE "document_link" l
-    SET "targetDocumentId" = (
-      SELECT d."id"
-      FROM "document" d
-      WHERE d."workspaceId" = l."workspaceId"
-        AND ${TITLE_KEY_SQL} = l."targetTitleKey"
-      ORDER BY (d."archivedAt" IS NOT NULL) ASC, d."updatedAt" DESC, d."id" ASC
-      LIMIT 1
+    SET "targetDocumentId" = COALESCE(
+      (
+        SELECT d."id"
+        FROM "document" d
+        WHERE d."id" = l."targetHintId"
+          AND d."workspaceId" = l."workspaceId"
+      ),
+      (
+        SELECT d."id"
+        FROM "document" d
+        WHERE d."workspaceId" = l."workspaceId"
+          AND ${TITLE_KEY_SQL} = l."targetTitleKey"
+        ORDER BY (d."archivedAt" IS NOT NULL) ASC, d."updatedAt" DESC, d."id" ASC
+        LIMIT 1
+      )
     )
     WHERE ${where}
   `;
@@ -100,6 +115,7 @@ export async function replaceDocumentLinks(
           workspaceId: input.workspaceId,
           sourceDocumentId: input.documentId,
           targetDocumentId: null,
+          targetHintId: link.targetDocumentId,
           targetTitle: link.targetTitle,
           targetTitleKey: link.targetTitleKey,
           kind: KIND_TO_DB[link.kind],
@@ -123,14 +139,16 @@ export async function replaceDocumentLinks(
  * Re-resolves every reference affected by a page appearing, being renamed or
  * changing workspace.
  *
- * The titles in play are read rather than carried in the job: the page's
- * current one, plus every title currently bound to the page. The second set is
- * exactly the set of stale bindings a rename leaves behind, and reading it from
- * the index means the caller does not have to know what the old title was, and
- * a binding left over from an earlier failure is repaired on the next pass too.
+ * Two sets of rows are in scope. Rows that name the page by identity
+ * (`targetHintId`), which is the cheap and exact half and the reason a rename
+ * mostly has nothing left to do. And rows that name it by title: the page's
+ * current title, plus every title currently bound to the page. That second set
+ * is exactly the set of stale bindings a rename leaves behind, and reading it
+ * from the index means the caller does not have to know what the old title
+ * was, and a binding left over from an earlier failure is repaired on the next
+ * pass too.
  *
- * Bounded on purpose: only rows whose `targetTitleKey` is one of those few keys
- * are touched, which is an index range, not a workspace-wide sweep.
+ * Bounded on purpose: both halves are index ranges, not a workspace-wide sweep.
  *
  * Returns `null` when the page no longer exists; the foreign key has already
  * turned its incoming references into unresolved ones in that case.
@@ -173,14 +191,20 @@ export async function resolveDocumentLinks(
   const keys = [
     ...new Set([documentLinkTitleKey(document.title), ...bound.map((row) => row.targetTitleKey)]),
   ].filter((key) => key.length > 0);
-  if (keys.length === 0) return 0;
 
-  // The second disjunct is the same move seen from the other side: a reference
-  // in the *old* workspace still points at the page and has to let go of it,
-  // even though its own workspace is no longer the page's.
-  return repointLinks(
-    prisma,
-    Prisma.sql`l."targetTitleKey" IN (${Prisma.join(keys)})
-      AND (l."workspaceId" = ${document.workspaceId} OR l."targetDocumentId" = ${documentId})`,
-  );
+  // Rows that name this page by identity are always in scope, whatever their
+  // title says: a page created, restored or moved into this workspace has to
+  // pick up the references that were waiting for exactly that id, and one that
+  // left has to release them. This is an index range on `targetHintId`.
+  const byIdentity = Prisma.sql`l."targetHintId" = ${documentId}`;
+  const where =
+    keys.length === 0
+      ? byIdentity
+      : // The last disjunct is the workspace move seen from the other side: a
+        // reference in the *old* workspace still points at the page and has to
+        // let go of it, even though its own workspace is no longer the page's.
+        Prisma.sql`${byIdentity} OR (l."targetTitleKey" IN (${Prisma.join(keys)})
+          AND (l."workspaceId" = ${document.workspaceId} OR l."targetDocumentId" = ${documentId}))`;
+
+  return repointLinks(prisma, where);
 }
