@@ -7,6 +7,7 @@ export * from './attachments';
 export * from './auth';
 export * from './calendar';
 export * from './collaboration';
+export * from './comments';
 export * from './database-views';
 export * from './documents';
 export * from './errors';

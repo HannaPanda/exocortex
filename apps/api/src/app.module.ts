@@ -11,6 +11,7 @@ import { AdminGuard } from './auth/admin.guard';
 import { AuthModule } from './auth/auth.module';
 import { SessionGuard } from './auth/session.guard';
 import { TokenScopeGuard } from './auth/token-scope.guard';
+import { CommentsModule } from './comments/comments.module';
 import { ApiExceptionFilter } from './common/exception.filter';
 import { API_ENV } from './common/logger.provider';
 import { DatabasesModule } from './databases/databases.module';
@@ -41,6 +42,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     RealtimeModule,
     WorkspacesModule,
     DocumentsModule,
+    CommentsModule,
     DatabasesModule,
     SearchModule,
     AttachmentsModule,

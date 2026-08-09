@@ -4,6 +4,7 @@ import { materializeYjsState } from '@exocortex/editor';
 import { createCorrelationId } from '@exocortex/logger';
 import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
 
+import { sweepCommentAnchors } from './comment-anchors';
 import { replaceDocumentLinks } from './document-links';
 
 export interface MaterializationDependencies {
@@ -86,6 +87,15 @@ export function createMaterializeDocumentProcessor(dependencies: Materialization
       indexedAt: materializedAt,
     });
 
+    // Anchored comments belong in this pass too: whether the block a thread
+    // names still exists is derived from the same content. A deleted block
+    // orphans its thread, it never removes it (issue #18).
+    const commentAnchors = await sweepCommentAnchors(prisma, {
+      documentId: job.documentId,
+      proseMirrorJson: materialized.proseMirrorJson,
+      sweptAt: materializedAt,
+    });
+
     // Search indexing is a separate, retryable step.
     await queues.enqueue(QUEUE_NAMES.searchIndexing, {
       correlationId: job.correlationId,
@@ -112,6 +122,8 @@ export function createMaterializeDocumentProcessor(dependencies: Materialization
       documentId: job.documentId,
       plainTextLength: materialized.plainText.length,
       linkCount,
+      orphanedComments: commentAnchors.orphaned,
+      restoredComments: commentAnchors.restored,
       reason: job.reason,
     });
   };

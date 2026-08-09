@@ -262,6 +262,96 @@ export function canRestoreSnapshot(
 }
 
 // --------------------------------------------------------------------------
+// Comments (issue #18)
+// --------------------------------------------------------------------------
+
+export interface CommentPolicySubject {
+  readonly id: string;
+  readonly documentId: string;
+  readonly createdById: string;
+}
+
+/**
+ * Reading a page's comments is reading the page: they are remarks about it, and
+ * anyone who may see the text may see what was said about it.
+ */
+export function canReadComments(
+  role: WorkspaceRole | null,
+  document: DocumentPolicySubject,
+  workspaceId: string,
+): PolicyDecision {
+  return canReadDocument(role, document, workspaceId);
+}
+
+/**
+ * Writing a comment or a reply.
+ *
+ * The same bar as editing the page, deliberately: a GUEST is a reader, and an
+ * archived page is a closed record. Commenting on an archived page would be
+ * writing into something the product says is read-only, and the comment would
+ * have nowhere to lead.
+ */
+export function canCreateComment(
+  role: WorkspaceRole | null,
+  document: DocumentPolicySubject,
+): PolicyDecision {
+  return canEditDocument(role, document);
+}
+
+/**
+ * Rewriting a comment body. **Only the author**, no matter the role.
+ *
+ * An ADMIN may delete somebody's remark (below), but not put different words in
+ * their mouth. Those are two different powers and they are kept apart on
+ * purpose.
+ */
+export function canEditComment(
+  role: WorkspaceRole | null,
+  document: DocumentPolicySubject,
+  comment: CommentPolicySubject,
+  actorUserId: string,
+): PolicyDecision {
+  const write = canCreateComment(role, document);
+  if (!write.allowed) return write;
+  if (comment.createdById !== actorUserId) {
+    return deny('forbidden', 'Only the author may edit a comment');
+  }
+  return ALLOW;
+}
+
+/**
+ * Deleting a comment: its author, or an ADMIN/OWNER cleaning up. The same shape
+ * as `canDeleteAttachment`, for the same reason -- somebody has to be able to
+ * remove a remark that should never have been made.
+ */
+export function canDeleteComment(
+  role: WorkspaceRole | null,
+  document: DocumentPolicySubject,
+  comment: CommentPolicySubject,
+  actorUserId: string,
+): PolicyDecision {
+  const write = canCreateComment(role, document);
+  if (!write.allowed) return write;
+  if (comment.createdById !== actorUserId && !hasAtLeast(role as WorkspaceRole, 'ADMIN')) {
+    return deny('forbidden', 'Only the author or an ADMIN/OWNER may delete a comment');
+  }
+  return ALLOW;
+}
+
+/**
+ * Resolving or reopening a thread. Anyone who may comment may, including on
+ * somebody else's thread: "this is dealt with" is a statement about the page,
+ * not about the remark, and the person who fixes the thing is rarely the person
+ * who reported it.
+ */
+export function canResolveComment(
+  role: WorkspaceRole | null,
+  document: DocumentPolicySubject,
+): PolicyDecision {
+  return canCreateComment(role, document);
+}
+
+// --------------------------------------------------------------------------
 // Collaboration tickets
 // --------------------------------------------------------------------------
 

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { aiRunPhaseSchema, aiRunStatusSchema, aiUsageSchema } from './ai';
+import { commentSchema } from './comments';
 import { documentSummarySchema } from './documents';
 import { idSchema, isoDateTimeSchema } from './primitives';
 import { workspaceSchema } from './workspaces';
@@ -34,6 +35,10 @@ export const APPLICATION_EVENT_TYPES = [
   'ai.run.phase',
   'document.content.replaced',
   'document.cover.generated',
+  'comment.created',
+  'comment.updated',
+  'comment.resolved',
+  'comment.deleted',
 ] as const;
 
 export const applicationEventTypeSchema = z.enum(APPLICATION_EVENT_TYPES);
@@ -173,6 +178,26 @@ export const documentCoverGeneratedPayloadSchema = z.object({
   error: z.string().nullable().default(null),
 });
 
+/**
+ * A comment appeared, changed or was resolved (issue #18).
+ *
+ * The whole comment travels, not just its id: the panel would otherwise refetch
+ * the page's threads for every keystroke somebody else finishes, and a comment
+ * is small. `comment.deleted` carries no comment because there is none left, so
+ * it names the thread instead.
+ */
+export const commentEventPayloadSchema = z.object({
+  documentId: idSchema,
+  comment: commentSchema,
+});
+
+export const commentDeletedPayloadSchema = z.object({
+  documentId: idSchema,
+  commentId: idSchema,
+  /** Root of the thread it belonged to, or its own id when it *was* the root. */
+  threadId: idSchema,
+});
+
 export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('workspace.updated', z.object({ workspace: workspaceSchema.partial() })),
   envelope('document.created', z.object({ document: documentSummarySchema })),
@@ -195,6 +220,10 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('ai.run.phase', aiRunPhasePayloadSchema),
   envelope('document.content.replaced', documentContentReplacedPayloadSchema),
   envelope('document.cover.generated', documentCoverGeneratedPayloadSchema),
+  envelope('comment.created', commentEventPayloadSchema),
+  envelope('comment.updated', commentEventPayloadSchema),
+  envelope('comment.resolved', commentEventPayloadSchema),
+  envelope('comment.deleted', commentDeletedPayloadSchema),
 ]);
 export type ApplicationEvent = z.infer<typeof applicationEventSchema>;
 

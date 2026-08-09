@@ -5,10 +5,13 @@ import { type WorkspaceRole } from '@exocortex/contracts';
 import {
   canArchiveDocument,
   canChangeMemberRole,
+  canCreateComment,
   canCreateDocument,
   canDeleteAttachment,
+  canDeleteComment,
   canDownloadAttachment,
   canEditAttachmentText,
+  canEditComment,
   canEditDocument,
   canIssueCollaborationTicket,
   canManageDatabaseSchema,
@@ -16,8 +19,10 @@ import {
   canMoveDocument,
   canMoveDocumentAcrossWorkspaces,
   canPerformDestructiveWorkspaceOperation,
+  canReadComments,
   canReadDocument,
   canReadWorkspace,
+  canResolveComment,
   canRestoreSnapshot,
   canSubscribeToWorkspaceRoom,
   canUpdateWorkspace,
@@ -287,6 +292,53 @@ describe('attachment policies', () => {
 
   it('denies editing attachment text across workspaces, the same as download', () => {
     expect(canEditAttachmentText('OWNER', attachment, 'workspace_other').allowed).toBe(false);
+  });
+});
+
+describe('comment policies', () => {
+  const own = { id: 'comment_1', documentId: activeDocument.id, createdById: 'user_1' };
+  const foreign = { id: 'comment_2', documentId: activeDocument.id, createdById: 'user_2' };
+
+  it('lets every member of the workspace read comments, guests included', () => {
+    for (const role of allRoles) {
+      expect(canReadComments(role, activeDocument, workspaceId).allowed).toBe(true);
+    }
+    expect(canReadComments(null, activeDocument, workspaceId).allowed).toBe(false);
+  });
+
+  it('reads comments of an archived page but does not write them', () => {
+    expect(canReadComments('MEMBER', archivedDocument, workspaceId).allowed).toBe(true);
+    const decision = canCreateComment('MEMBER', archivedDocument);
+    expect(decision.allowed).toBe(false);
+    expect(decision.allowed === false && decision.code).toBe('document_archived');
+  });
+
+  it('lets members comment but not guests', () => {
+    expect(canCreateComment('MEMBER', activeDocument).allowed).toBe(true);
+    const decision = canCreateComment('GUEST', activeDocument);
+    expect(decision.allowed).toBe(false);
+    expect(decision.allowed === false && decision.code).toBe('forbidden');
+  });
+
+  it('lets only the author rewrite a comment, whatever the role', () => {
+    expect(canEditComment('MEMBER', activeDocument, own, 'user_1').allowed).toBe(true);
+    for (const role of ['MEMBER', 'ADMIN', 'OWNER'] as WorkspaceRole[]) {
+      const decision = canEditComment(role, activeDocument, foreign, 'user_1');
+      expect(decision.allowed).toBe(false);
+      expect(decision.allowed === false && decision.code).toBe('forbidden');
+    }
+  });
+
+  it('lets the author or an admin delete, but not another member', () => {
+    expect(canDeleteComment('MEMBER', activeDocument, own, 'user_1').allowed).toBe(true);
+    expect(canDeleteComment('MEMBER', activeDocument, foreign, 'user_1').allowed).toBe(false);
+    expect(canDeleteComment('ADMIN', activeDocument, foreign, 'user_1').allowed).toBe(true);
+    expect(canDeleteComment('OWNER', activeDocument, foreign, 'user_1').allowed).toBe(true);
+  });
+
+  it('lets a member resolve somebody else’s thread', () => {
+    expect(canResolveComment('MEMBER', activeDocument).allowed).toBe(true);
+    expect(canResolveComment('GUEST', activeDocument).allowed).toBe(false);
   });
 });
 
