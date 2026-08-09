@@ -5,10 +5,15 @@ import { PlusIcon, SparklesIcon } from 'lucide-react';
 import * as React from 'react';
 
 import {
-  AI_RUN_QUIET_THRESHOLD_MS,
+  advanceAiRunSequence,
   type AiConversationMessage,
   type AiReasoningLevel,
+  type AiRunPhase,
   type AiRunStatus,
+  INITIAL_AI_RUN_SEQUENCE_STATE,
+  isAiRunQuiet,
+  reconcileAiRun,
+  resolveAiRunElapsedMs,
 } from '@exocortex/contracts';
 import {
   Button,
@@ -102,13 +107,27 @@ function toolActivityLine(entry: ToolActivityEntry): string {
   return `Werkzeug ${entry.toolName}${targetSuffix} ${suffix}`;
 }
 
-/** Phase shown in the run's pulse while it is active: the tool in flight, or that the answer is streaming/starting. */
-function currentPhaseLabel(toolActivity: readonly ToolActivityEntry[], streamText: string): string {
+/**
+ * Phase shown in the run's pulse while it is active.
+ *
+ * A tool in flight wins, because it is the most concrete thing to say. After
+ * that comes whatever the worker last reported about itself: thinking and
+ * compaction produce no text at all, and being able to name them is the
+ * difference between a legitimate silence and a run that looks dead
+ * (issue #6).
+ */
+function currentPhaseLabel(
+  toolActivity: readonly ToolActivityEntry[],
+  streamText: string,
+  phase: AiRunPhase | null,
+): string {
   const last = toolActivity[toolActivity.length - 1];
   if (last !== undefined && last.status === 'started') {
     const targetLabel = describeToolTarget(last.target);
     return `Werkzeug ${last.toolName}${targetLabel === null ? '' : ` (${targetLabel})`} wird ausgeführt`;
   }
+  if (phase === 'reasoning') return 'KI denkt nach';
+  if (phase === 'compacting') return 'Älterer Verlauf wird zusammengefasst';
   return streamText.length > 0 ? 'Antwort wird geschrieben' : 'Antwort wird erzeugt';
 }
 
@@ -161,7 +180,9 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   // seen. Both fields are updated together (a functional `useState` updater,
   // not a ref) so a burst of events arriving before a render commits can never
   // compare against a stale `expected` value.
-  const [sequenceState, setSequenceState] = React.useState({ expected: 1, gap: false });
+  const [sequenceState, setSequenceState] = React.useState(INITIAL_AI_RUN_SEQUENCE_STATE);
+  // What the worker last said it is busy with. Null until it says anything.
+  const [runPhase, setRunPhase] = React.useState<AiRunPhase | null>(null);
   const cancelRun = useCancelAiRun();
 
   // Switching conversations must not carry the previous one's transient state
@@ -179,7 +200,8 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
     setCommandNotices([]);
     setRunStartedAt(null);
     setLastActivityAt(null);
-    setSequenceState({ expected: 1, gap: false });
+    setSequenceState(INITIAL_AI_RUN_SEQUENCE_STATE);
+    setRunPhase(null);
   }
 
   // The run's own status, polled independently of the realtime channel
@@ -195,7 +217,8 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
       setToolActivity([]);
       setRunStartedAt(null);
       setLastActivityAt(null);
-      setSequenceState({ expected: 1, gap: false });
+      setSequenceState(INITIAL_AI_RUN_SEQUENCE_STATE);
+      setRunPhase(null);
       if (status === 'completed') {
         // Keep the streaming bubble on screen (its content is already final)
         // until the refetched conversation carries the persisted message, so
@@ -225,18 +248,14 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   // `reconciledRunResultKey` so it fires exactly once per run outcome rather
   // than on every render the ticking clock below causes.
   const [reconciledRunResultKey, setReconciledRunResultKey] = React.useState<string | null>(null);
-  const runResultKey =
-    runQuery.data === undefined ? null : `${runQuery.data.id}:${runQuery.data.status}`;
-  if (
-    activeRunId !== null &&
-    runQuery.data !== undefined &&
-    runQuery.data.id === activeRunId &&
-    runQuery.data.status !== 'pending' &&
-    runQuery.data.status !== 'running' &&
-    reconciledRunResultKey !== runResultKey
-  ) {
-    setReconciledRunResultKey(runResultKey);
-    applyTerminalRunState(runQuery.data.status, runQuery.data.errorCode);
+  const reconciliation = reconcileAiRun({
+    activeRunId,
+    run: runQuery.data ?? null,
+    appliedKey: reconciledRunResultKey,
+  });
+  if (reconciliation !== null) {
+    setReconciledRunResultKey(reconciliation.key);
+    applyTerminalRunState(reconciliation.status, reconciliation.errorCode);
   }
 
   // The other half of "abgleichen statt nur zuzuhören": a reconnect of the
@@ -263,11 +282,18 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
 
   useRealtimeEvent('ai.run.progress', (event) => {
     if (event.payload.runId !== activeRunId) return;
-    setSequenceState((current) => ({
-      expected: event.payload.sequence + 1,
-      gap: current.gap || event.payload.sequence !== current.expected,
-    }));
+    setSequenceState((current) => advanceAiRunSequence(current, event.payload.sequence));
     setStreamText((current) => current + event.payload.delta);
+    // Text arriving is itself the end of any named silence before it.
+    setRunPhase('generating');
+    setLastActivityAt(Date.now());
+  });
+
+  // The silence gets a name (issue #6, point 5): reasoning produces no deltas
+  // at all, and compaction used to report itself only once it was over.
+  useRealtimeEvent('ai.run.phase', (event) => {
+    if (event.payload.runId !== activeRunId) return;
+    setRunPhase(event.payload.phase);
     setLastActivityAt(Date.now());
   });
 
@@ -313,9 +339,41 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
     runQuery.data?.id === activeRunId && runQuery.data.heartbeatAt !== null
       ? new Date(runQuery.data.heartbeatAt).getTime()
       : null;
-  const lastSignAt = Math.max(runStartedAt ?? 0, lastActivityAt ?? 0, heartbeatAtMs ?? 0);
-  const elapsedMs = activeRunId !== null && lastSignAt > 0 ? Math.max(0, now - lastSignAt) : 0;
-  const runQuiet = elapsedMs >= AI_RUN_QUIET_THRESHOLD_MS;
+  const elapsedMs =
+    activeRunId === null
+      ? 0
+      : resolveAiRunElapsedMs({
+          startedAtMs: runStartedAt,
+          lastEventAtMs: lastActivityAt,
+          heartbeatAtMs,
+          nowMs: now,
+        });
+  const runQuiet = isAiRunQuiet(elapsedMs);
+
+  // A gap in `ai.run.progress` means the locally stitched preview is missing
+  // something, and no amount of further deltas repairs it. So the answer is
+  // reloaded from the run itself, which the worker keeps current with every
+  // heartbeat, instead of quietly showing an incomplete text (issue #6,
+  // point 6). Repeated on every poll for as long as the gap flag stands, so
+  // the preview keeps catching up while the run continues.
+  const [repairedTextKey, setRepairedTextKey] = React.useState<string | null>(null);
+  const repairKey =
+    sequenceState.gap && activeRunId !== null && runQuery.data?.id === activeRunId
+      ? `${activeRunId}:${String(runQuery.dataUpdatedAt)}`
+      : null;
+  if (repairKey !== null && repairKey !== repairedTextKey) {
+    setRepairedTextKey(repairKey);
+    setStreamText(runQuery.data?.resultText ?? '');
+  }
+
+  // ... and ask for it right away rather than waiting out the poll interval.
+  const gapDetected = sequenceState.gap;
+  React.useEffect(() => {
+    if (gapDetected && activeRunId !== null) void runQuery.refetch();
+    // `runQuery` is deliberately not a dependency: including it would refetch
+    // on every poll result, not on the gap being noticed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gapDetected, activeRunId]);
 
   const handleCancelRun = async (): Promise<void> => {
     if (activeRunId === null) return;
@@ -508,7 +566,8 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
       if (response.run !== null) {
         setStreamText('');
         setToolActivity([]);
-        setSequenceState({ expected: 1, gap: false });
+        setSequenceState(INITIAL_AI_RUN_SEQUENCE_STATE);
+        setRunPhase(null);
         const startedAt = Date.now();
         setRunStartedAt(startedAt);
         setLastActivityAt(startedAt);
@@ -640,7 +699,7 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
 
       {activeRunId !== null ? (
         <RunActivity
-          phaseLabel={currentPhaseLabel(toolActivity, streamText)}
+          phaseLabel={currentPhaseLabel(toolActivity, streamText, runPhase)}
           elapsedMs={elapsedMs}
           quiet={runQuiet}
           gapDetected={sequenceState.gap}

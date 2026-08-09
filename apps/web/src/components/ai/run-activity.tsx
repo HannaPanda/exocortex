@@ -10,7 +10,7 @@ export interface RunActivityProps {
   elapsedMs: number;
   /** True once `elapsedMs` crosses the quiet threshold: the pulse alone stops being enough. */
   quiet: boolean;
-  /** A gap in `ai.run.progress`'s `sequence` was detected; the streamed preview may be incomplete. */
+  /** A gap in `ai.run.progress`'s `sequence` was detected; the preview was reloaded from the run. */
   gapDetected: boolean;
   onCancel: () => void;
   cancelling: boolean;
@@ -30,33 +30,56 @@ function formatElapsed(ms: number): string {
  * `aria-live` log on purpose -- a counter that changes every second would
  * otherwise re-announce itself to screen readers once a second.
  */
-export function RunActivity({ phaseLabel, elapsedMs, quiet, gapDetected, onCancel, cancelling }: RunActivityProps) {
+export function RunActivity({
+  phaseLabel,
+  elapsedMs,
+  quiet,
+  gapDetected,
+  onCancel,
+  cancelling,
+}: RunActivityProps) {
   return (
     <div
       data-testid="ai-run-activity"
       className={cn(
-        'flex items-center gap-2 border-t px-2 py-1.5 text-xs',
+        'flex flex-col gap-1 border-t px-2 py-1.5 text-xs',
         quiet ? 'border-warning/40 bg-warning/10 text-warning' : 'border-border text-muted-foreground',
       )}
     >
-      <span
-        aria-hidden
-        className={cn('size-1.5 shrink-0 animate-pulse rounded-full', quiet ? 'bg-warning' : 'bg-primary')}
-      />
-      <span className="min-w-0 flex-1 truncate" data-testid="ai-run-phase">
-        {phaseLabel} · seit {formatElapsed(elapsedMs)}
-        {gapDetected ? ' · Lücke im Text erkannt' : ''}
-      </span>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={onCancel}
-        disabled={cancelling}
-        data-testid="ai-cancel-run"
-      >
-        <XIcon aria-hidden />
-        {cancelling ? 'Wird abgebrochen …' : 'Abbrechen'}
-      </Button>
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden
+          className={cn('size-1.5 shrink-0 animate-pulse rounded-full', quiet ? 'bg-warning' : 'bg-primary')}
+        />
+        <span className={cn('min-w-0 flex-1 truncate', quiet && 'font-medium')} data-testid="ai-run-phase">
+          {phaseLabel} · seit {formatElapsed(elapsedMs)}
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onCancel}
+          disabled={cancelling}
+          data-testid="ai-cancel-run"
+        >
+          <XIcon aria-hidden />
+          {cancelling ? 'Wird abgebrochen …' : 'Abbrechen'}
+        </Button>
+      </div>
+      {/* Past the threshold the line stops being a decorative pulse and says
+          what a long silence actually means: still allowed, still cancellable.
+          Without this, a legitimate three-minute tool call and a dead run look
+          exactly alike. */}
+      {quiet ? (
+        <p data-testid="ai-run-quiet-hint">
+          Noch keine neue Rückmeldung. Ein Denkschritt oder ein Werkzeugaufruf darf mehrere Minuten
+          dauern; mit „Abbrechen“ beendest du den Lauf.
+        </p>
+      ) : null}
+      {gapDetected ? (
+        <p data-testid="ai-run-gap-hint">
+          Ein Teil des Textes ging unterwegs verloren. Die Vorschau wurde vom Server neu geladen.
+        </p>
+      ) : null}
     </div>
   );
 }
