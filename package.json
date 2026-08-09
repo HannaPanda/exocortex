@@ -22,6 +22,7 @@
     "db:generate": "pnpm --filter @exocortex/database db:generate",
     "db:migrate": "pnpm --filter @exocortex/database db:migrate",
     "db:seed": "pnpm --filter @exocortex/database db:seed",
+    "db:provision-user": "pnpm --filter @exocortex/database db:provision-user --",
     "db:reset": "pnpm --filter @exocortex/database db:reset",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

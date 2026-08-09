@@ -50,6 +50,29 @@ sudo ufw allow from 172.18.0.0/16 to 172.17.0.1 port 3213 proto tcp \
 | `fail2ban/filter.d/exocortex-auth.conf` | `/etc/fail2ban/filter.d/exocortex-auth.conf` |
 | `fail2ban/jail.d/nginx.conf` | `/etc/fail2ban/jail.d/nginx.conf` |
 
+## Adding a person
+
+Self-registration is off and there is no admin endpoint that creates users, so
+accounts are handed out rather than requested:
+
+```bash
+pnpm db:provision-user --email someone@example.com --name Stefan \
+  --workspace "Stefans Arbeitsbereich" --role OWNER
+```
+
+That creates the account, a workspace of their own, and their membership of it.
+The password is generated and printed once, stored nowhere else and never
+mailed: pass it on over a channel you trust, and let them change it through
+"Passwort vergessen", which reaches a real mailbox.
+
+`--workspace-of <slug>` adds someone to a workspace that already exists instead
+of creating one. The script refuses an email that already has an account, so
+running it twice cannot quietly reset somebody's password.
+
+Workspaces are isolated by membership alone: a person who is not a member gets
+403, in both directions, and the deployment-wide admin area needs `User.role`
+`ADMIN`, which this script never grants.
+
 ## Brute-force protection
 
 Three fail2ban jails guard the edge, all reading `/var/log/nginx/`:
