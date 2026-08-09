@@ -21,6 +21,7 @@ import {
 } from '@exocortex/ui';
 
 import { AiPanel } from '@/components/ai/ai-panel';
+import { ActivityPanel } from '@/components/shell/activity-panel';
 import { BacklinksPanel } from '@/components/shell/backlinks-panel';
 import { PanelErrorBoundary } from '@/components/shell/panel-error-boundary';
 import { PropertiesPanel } from '@/components/shell/properties-panel';
@@ -64,9 +65,9 @@ function ContextTab({
 /**
  * Right-hand context panel.
  *
- * The AI and Verweise tabs are functional. The remaining tabs exist so comments
- * and activity can be added without changing the shell layout (see
- * docs/architecture.md, "Deferred work").
+ * AI, Eigenschaften, Verweise and Aktivität are functional. Kommentare stays a
+ * placeholder so the shell layout does not need to change when it is built
+ * (see docs/architecture.md, "Deferred work").
  */
 export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
   return (
@@ -85,7 +86,12 @@ export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
           />
           <ContextTab value="comments" icon={<MessageSquareIcon />} label="Kommentare" />
           <ContextTab value="backlinks" icon={<LinkIcon />} label="Verweise" />
-          <ContextTab value="activity" icon={<ActivityIcon />} label="Aktivität" />
+          <ContextTab
+            value="activity"
+            icon={<ActivityIcon />}
+            label="Aktivität"
+            data-testid="context-tab-activity"
+          />
         </TabsList>
       </div>
 
@@ -124,12 +130,13 @@ export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
         </PanelErrorBoundary>
       </TabsContent>
 
-      <TabsContent value="activity" className="p-3">
-        <EmptyState
-          title="Aktivität folgt"
-          description="Alle Änderungen werden serverseitig auditiert; die Anzeige kommt später."
-          icon={ActivityIcon}
-        />
+      <TabsContent value="activity" className="overflow-y-auto p-3">
+        <PanelErrorBoundary
+          title="Aktivität nicht verfügbar"
+          description="Der Verlauf dieser Seite konnte nicht angezeigt werden."
+        >
+          <ActivityPanel workspaceId={workspaceId} documentId={documentId} />
+        </PanelErrorBoundary>
       </TabsContent>
     </Tabs>
   );

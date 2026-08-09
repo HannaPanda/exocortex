@@ -13,6 +13,7 @@ import {
   type CollaborationTicketResponse,
   type CreateDocumentRequest,
   type CurrentSessionResponse,
+  type DocumentActivityResponse,
   type DocumentDetail,
   type DocumentLinksResponse,
   type DocumentSummary,
@@ -42,6 +43,7 @@ export const queryKeys = {
   document: (documentId: string) => ['document', documentId] as const,
   search: (workspaceId: string, query: string) => ['workspace', workspaceId, 'search', query] as const,
   documentLinks: (documentId: string) => ['document', documentId, 'links'] as const,
+  documentActivity: (documentId: string) => ['document', documentId, 'activity'] as const,
   /** Every resolved reference of a workspace; the prefix all of them share. */
   pageLinks: (workspaceId: string) => ['workspace', workspaceId, 'page-link'] as const,
   pageLink: (workspaceId: string, reference: { documentId?: string | null; title?: string }) =>
@@ -112,6 +114,43 @@ export function useDocumentLinks(documentId: string | undefined, enabled = true)
     queryFn: () => apiRequest<DocumentLinksResponse>(`/api/documents/${documentId ?? ''}/links`),
     enabled: documentId !== undefined && enabled,
     staleTime: 10_000,
+  });
+}
+
+/**
+ * The "Aktivität" tab: the page's own history, merged server-side from
+ * snapshots, the audit log and the document row (issue #20). Kept out of
+ * `useDocument` for the same reason `useDocumentLinks` is: a second table,
+ * only read while that tab is open.
+ */
+export function useDocumentActivity(documentId: string | undefined, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.documentActivity(documentId ?? 'none'),
+    queryFn: () => apiRequest<DocumentActivityResponse>(`/api/documents/${documentId ?? ''}/activity`),
+    enabled: documentId !== undefined && enabled,
+    staleTime: 10_000,
+  });
+}
+
+/**
+ * Restores a page to an earlier snapshot. Destructive (the current state is
+ * itself snapshotted first as a safety net, but the visible content changes
+ * immediately and reaches an open editing session), so the caller is expected
+ * to confirm before calling this.
+ */
+export function useRestoreSnapshot(documentId: string | undefined) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (snapshotId: string) =>
+      apiRequest<{ documentId: string; restoredFrom: string }>(
+        `/api/documents/${documentId ?? ''}/snapshots/${snapshotId}/restore`,
+        { method: 'POST' },
+      ),
+    onSuccess: () => {
+      if (documentId === undefined) return;
+      void client.invalidateQueries({ queryKey: queryKeys.document(documentId) });
+      void client.invalidateQueries({ queryKey: queryKeys.documentActivity(documentId) });
+    },
   });
 }
 

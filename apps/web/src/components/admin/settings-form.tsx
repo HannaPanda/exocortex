@@ -23,7 +23,12 @@ import { useAdminAiModels, useAdminSettings, useUpdateAdminSettings } from '@/li
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 
-const GROUP_LABELS: Record<string, string> = { ai: 'KI', mcp: 'MCP', calendar: 'Kalender' };
+const GROUP_LABELS: Record<string, string> = {
+  ai: 'KI',
+  mcp: 'MCP',
+  calendar: 'Kalender',
+  activity: 'Aktivität',
+};
 
 /** German label and help text for every setting key. Written in the same voice. */
 const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
@@ -150,6 +155,26 @@ const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
   'calendar.timeZone': {
     label: 'Zeitzone',
     help: 'In welcher Zone die beiden Angaben darüber gelesen werden, zum Beispiel Europe/Berlin.',
+  },
+  'activity.editSessionSnapshotsEnabled': {
+    label: 'Bearbeitungssitzungen aufzeichnen',
+    help: 'Sichert eine aktiv bearbeitete Seite in regelmäßigen Abständen, damit der Aktivitäts-Reiter echte Zeitspannen zeigen kann ("14:20 bis 14:45 bearbeitet") statt nur des letzten Standes. Aus: es entstehen keine zusätzlichen Sicherungen.',
+  },
+  'activity.editSessionSnapshotIntervalMinutes': {
+    label: 'Abstand zwischen Sitzungs-Sicherungen (Minuten)',
+    help: 'So oft darf eine aktiv bearbeitete Seite höchstens neu gesichert werden. Wirkt nur, wenn die Zeile darüber an ist.',
+  },
+  'activity.snapshotRetentionFullDays': {
+    label: 'Volle Aufbewahrung (Tage)',
+    help: 'So lange bleiben alle Sicherungen einer Seite erhalten, unabhängig vom Grund.',
+  },
+  'activity.snapshotRetentionDailyDays': {
+    label: 'Tägliche Ausdünnung bis (Tage)',
+    help: 'Zwischen der vollen Aufbewahrung und diesem Alter bleibt höchstens eine Sicherung pro Kalendertag übrig, danach höchstens eine pro Woche. Manuell benannte Sicherungen sind davon ausgenommen.',
+  },
+  'activity.snapshotRetentionDryRun': {
+    label: 'Ausdünnung nur simulieren (Trockenlauf)',
+    help: 'An: die tägliche Aufräumung berechnet und protokolliert, was sie löschen würde, löscht aber nichts. Vor dem ersten scharfen Lauf empfohlen; danach bewusst ausschalten.',
   },
 };
 
