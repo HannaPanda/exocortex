@@ -17,7 +17,7 @@
     "db:reset": "prisma migrate reset --force",
     "db:seed": "tsx prisma/seed.ts",
     "db:seed:ai-models": "tsx prisma/seed-ai-models.ts",
-    "db:provision-user": "tsx prisma/provision-user.ts",
+    "db:provision-user": "tsx scripts/provision-user.ts",
     "db:studio": "prisma studio",
     "build": "prisma generate && tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
