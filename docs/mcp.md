@@ -69,7 +69,7 @@ discipline completely, which the SDK does not guarantee out of the box.
 
 ## Tool reference
 
-All 41 tools are namespaced `exo_` so they cannot collide with the other MCP
+All 46 tools are namespaced `exo_` so they cannot collide with the other MCP
 servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 
 | Tool | Mutating | REST call |
@@ -93,6 +93,11 @@ servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
 | `exo_page_generate_cover` | yes | `POST /api/documents/:documentId/cover/generate` |
 | `exo_page_resolve_link` | no | `GET /api/workspaces/:workspaceId/documents/resolve?documentId=&title=&includeArchived=&limit=` -- identity first, title as the fallback; `resolvedBy` says which answered |
 | `exo_page_backlinks` | no | `GET /api/documents/:documentId/links` -- both directions of the reference index, including references to a title no page carries |
+| `exo_comment_list` | no | `GET /api/documents/:documentId/comments?includeResolved=` -- threads with their replies, open ones first, and whether an anchored thread has been orphaned |
+| `exo_comment_create` | yes | `POST /api/documents/:documentId/comments` -- page-wide without `blockId`, anchored to a block with one, a reply with `parentId` |
+| `exo_comment_update` | yes | `PATCH /api/comments/:commentId` -- the author's own body only |
+| `exo_comment_resolve` | yes | `POST /api/comments/:commentId/resolve` (`resolved: false` reopens) |
+| `exo_comment_delete` | yes | `DELETE /api/comments/:commentId` -- takes a thread's replies with it |
 | `exo_search` | no | `GET /api/workspaces/:workspaceId/search?q=&limit=&includeArchived=` |
 | `exo_database_create` | yes | `POST /api/workspaces/:workspaceId/documents` (`type: 'COLLECTION'`) + one `POST .../properties` per requested column |
 | `exo_database_schema` | no | `GET /api/documents/:documentId` (for `rowCount`) + `GET .../properties` + `GET .../views` |
@@ -274,8 +279,19 @@ that nginx rule is added.
   response at upload time; fetching a fresh one for an already-uploaded
   attachment requires either a new `apps/api` route or downloading through the
   web app.
-* **No comments or share-links API yet.** Nothing to wrap in a tool until
-  those REST endpoints exist.
+* **No share-links API yet.** Nothing to wrap in a tool until those REST
+  endpoints exist. (Comments used to stand here too; they exist since issue #18
+  and are in the table above.)
+
+  The comment tools are the catalogue's answer to a problem `exo_page_write`
+  cannot solve: an assistant asked to review a page has, until now, had only
+  one way to say something — by changing the page. `exo_comment_create` lets it
+  say the same thing next to the text instead, and leaves the decision with
+  whoever wrote it. `blockId` comes from `exo_page_read`, whose `^id` suffixes
+  are the same identifiers, so "the third paragraph" never has to be described
+  in prose. An anchored thread whose block is later deleted is **not** deleted
+  with it: materialization marks it orphaned and `exo_comment_list` says so,
+  along with the quote taken when the thread was opened.
 * **AI conversations are not in the catalogue at all**, by design rather than
   by omission: the catalogue is what an assistant may do *to a workspace*, and
   a conversation is the assistant's own session. An MCP client has its own
