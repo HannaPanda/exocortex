@@ -56,13 +56,13 @@ first; the admin form and this table follow.
 | `ai.budgetMicroUsdPerRun` | int 1000–50000000 | `500000` | Cost ceiling per run (µUSD), checked per tool iteration. |
 | `ai.toolsEnabled` | boolean | `true` | Whether the built-in AI gets tools at all. Also requires `SERVICE_TOKEN_SECRET`. |
 | `ai.mutatingToolsEnabled` | boolean | `true` | Whether the AI may call tools that change data. |
-| `ai.maxToolIterations` | int 0–25 | `8` | Tool round-trips per run before the loop stops. |
+| `ai.maxToolIterations` | int 0–1000 | `8` | Tool round-trips per run before the loop stops. Deliberately roomy: cost and duration are already bounded by `ai.budgetMicroUsdPerRun` and `ai.maxRunMs`, which know money and time (issue #28). |
 | `ai.visionEnabled` | boolean | `true` | Master switch for vision preprocessing (ADR-012). |
-| `ai.visionMaxImagesPerRun` | int 0–16 | `4` | Images described per run. |
+| `ai.visionMaxImagesPerRun` | int 0–64 | `4` | Images described per run. Each one is a paid vision call, so the run budget is the real limit. |
 | `ai.pageContextEnabled` | boolean | `false` | Puts the open page's text into the system prompt (ADR-015). Off by default: it is the one switch here that sends document content the user did not ask for in that turn. Off, the model gets the page's title and path and fetches the text with `exo_page_read` when a question needs it — enough for a tool-capable model. Turn it on for models without tool support. |
 | `ai.pageContextMaxChars` | int 500–100000 | `12000` | Cap on that text. What is cut is stated in the prompt, so the model knows it has an excerpt. |
-| `ai.compactionThresholdPercent` | int 30–95 | `70` | Share of the context window at which compaction starts. |
-| `ai.compactionKeepRecentMessages` | int 2–40 | `8` | Messages left untouched by a compaction. |
+| `ai.compactionThresholdPercent` | int 30–95 | `70` | Share of the context window at which compaction starts. Capped below 100 because at 100 the window has already overflowed. |
+| `ai.compactionKeepRecentMessages` | int 2–200 | `8` | Messages left untouched by a compaction. A tail large enough to fill the window on its own turns compaction into a logged no-op. |
 | `ai.compactionModelSlug` | string \| null | `null` | Model that writes the summary. Null reuses the conversation's model. |
 | `ai.pdfExtractionEnabled` | boolean | `true` | Whether the `attachment-text` queue extracts PDF text. |
 | `ai.pdfExtractor` | `docling` \| `openrouter` | `docling` | Engine tried first. `docling` is local, free per document and reads scans; `openrouter` needs no container but is billed per page. |
@@ -83,6 +83,18 @@ first; the admin form and this table follow.
 | `activity.snapshotRetentionFullDays` | int 1–365 | `7` | Every snapshot younger than this survives `prune-snapshots` outright, whatever its `reason`. |
 | `activity.snapshotRetentionDailyDays` | int 1–3650 | `30` | Between the full-retention window and this age, at most one snapshot per calendar day survives; older than this, at most one per calendar week. `MANUAL` snapshots are exempt from both tiers. |
 | `activity.snapshotRetentionDryRun` | boolean | `true` | Computes and logs what tiered retention would delete without deleting anything. Defaults on so the first run after this feature ships cannot silently remove existing snapshots; switch off deliberately once the log line looks right. |
+
+The bounds in the table are not repeated in the admin form. `SETTING_NUMBER_RANGES`
+derives them from `settingsSchema`, and the form reads them for the input's
+`min`/`max` and for the "Zulässig: … bis …" line under the field, so a range
+cannot be stated in two places and drift. A refused save names the offending
+setting at its own row and scrolls it into view; the summary alert sits next to
+the save button, not at the top of the page (issue #27).
+
+A bound that exists only out of caution is a bug, not a safety measure: the
+places where a run can really cost something are `ai.budgetMicroUsdPerRun` and
+`ai.maxRunMs`. Every remaining cap above carries the reason it exists in a
+comment next to it in `settings.ts` (issue #28).
 
 Secrets are deliberately **not** settings. `OPENROUTER_API_KEY`,
 `SERVICE_TOKEN_SECRET` and `DATABASE_URL` stay in `.env`, out of reach of

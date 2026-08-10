@@ -14,6 +14,10 @@ export const settingsSchema = z.object({
   'ai.defaultModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
   /** Prepended to every run's system prompt, before any AI rule pages. */
   'ai.systemPrompt': z.string().max(8_000).default(''),
+  /**
+   * Upper bound is the largest output window any model in the registry offers,
+   * not a policy of ours: asking a provider for more is a request it rejects.
+   */
   'ai.maxOutputTokens': z.number().int().min(256).max(200_000).default(4_096),
   /** Limit for a single model answer. A run with tools may take several of these (see `ai.maxRunMs`). */
   'ai.timeoutMs': z.number().int().min(5_000).max(600_000).default(180_000),
@@ -23,9 +27,20 @@ export const settingsSchema = z.object({
   'ai.toolsEnabled': z.boolean().default(true),
   /** Whether the built-in AI may call tools that change data. */
   'ai.mutatingToolsEnabled': z.boolean().default(true),
-  'ai.maxToolIterations': z.number().int().min(0).max(25).default(8),
+  /**
+   * Tool round-trips one run may take. Deliberately generous (issue #28): the
+   * cost of a long run is already bounded by `ai.budgetMicroUsdPerRun`, checked
+   * after every round, and by `ai.maxRunMs`. Those two know money and time; a
+   * round counter knows only itself, so a low third brake would just pre-empt
+   * the better ones. Reordering a whole page tree genuinely needs hundreds.
+   */
+  'ai.maxToolIterations': z.number().int().min(0).max(1_000).default(8),
   'ai.visionEnabled': z.boolean().default(true),
-  'ai.visionMaxImagesPerRun': z.number().int().min(0).max(16).default(4),
+  /**
+   * Images described before the main answer. Each one is a paid vision call, so
+   * the ceiling is high rather than tight and the run budget does the limiting.
+   */
+  'ai.visionMaxImagesPerRun': z.number().int().min(0).max(64).default(4),
   /**
    * Whether the open page's text is put into the system prompt directly.
    *
@@ -40,9 +55,19 @@ export const settingsSchema = z.object({
   'ai.pageContextEnabled': z.boolean().default(false),
   /** Hard cap on the characters the open page's text may contribute. */
   'ai.pageContextMaxChars': z.number().int().min(500).max(100_000).default(12_000),
-  /** Compaction starts once the prompt passes this share of the context window. */
+  /**
+   * Compaction starts once the prompt passes this share of the context window.
+   * Capped below 100 on purpose: at 100 the threshold is only reached once the
+   * window has already overflowed, so compaction would never run in time.
+   */
   'ai.compactionThresholdPercent': z.number().int().min(30).max(95).default(70),
-  'ai.compactionKeepRecentMessages': z.number().int().min(2).max(40).default(8),
+  /**
+   * Messages the compaction leaves untouched at the end of the transcript. A
+   * value large enough that the tail alone fills the window turns compaction
+   * into a no-op (`compactIfNeeded` logs and skips), which is why the ceiling
+   * stays finite even though the useful value depends on the model.
+   */
+  'ai.compactionKeepRecentMessages': z.number().int().min(2).max(200).default(8),
   /** Model used to write the summary. Null reuses the conversation's model. */
   'ai.compactionModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
   'ai.pdfExtractionEnabled': z.boolean().default(true),
@@ -173,6 +198,31 @@ export const settingKeySchema = z.enum(
   SETTING_KEYS as [keyof Settings, ...(keyof Settings)[]],
 );
 export type SettingKey = z.infer<typeof settingKeySchema>;
+
+/** The inclusive bounds of one numeric setting. */
+export interface SettingNumberRange {
+  readonly min: number;
+  readonly max: number;
+}
+
+/**
+ * The bounds of every numeric setting, read off `settingsSchema` itself.
+ *
+ * The admin form needs them twice -- as `min`/`max` on the input, so the
+ * browser refuses an out-of-range value before it is ever sent, and as the
+ * range printed in the help text. Deriving them here means neither copy can
+ * drift from the schema the API actually validates against (issue #27).
+ */
+export const SETTING_NUMBER_RANGES: Readonly<Partial<Record<SettingKey, SettingNumberRange>>> =
+  Object.fromEntries(
+    SETTING_KEYS.flatMap((key) => {
+      const inner = settingsSchema.shape[key].unwrap();
+      if (!(inner instanceof z.ZodNumber)) return [];
+      const { minValue, maxValue } = inner;
+      if (minValue === null || maxValue === null) return [];
+      return [[key, { min: minValue, max: maxValue }] as const];
+    }),
+  );
 
 /**
  * Environment variables that seed a setting when its row is absent. The `.env`

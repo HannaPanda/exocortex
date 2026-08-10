@@ -2,7 +2,14 @@
 
 import * as React from 'react';
 
-import { type AiModel, SETTING_KEYS, type SettingKey, type Settings } from '@exocortex/contracts';
+import {
+  type AiModel,
+  SETTING_KEYS,
+  SETTING_NUMBER_RANGES,
+  type SettingKey,
+  type Settings,
+  updateSettingsRequestSchema,
+} from '@exocortex/contracts';
 import {
   Alert,
   AlertDescription,
@@ -201,11 +208,54 @@ function inputId(key: SettingKey): string {
   return `setting-${key.replace(/\./g, '-')}`;
 }
 
+const numberFormat = new Intl.NumberFormat('de-DE');
+
+/**
+ * The permitted range in words, for the help text under a numeric field.
+ *
+ * Derived from `SETTING_NUMBER_RANGES`, never typed out, so it cannot say
+ * something different from what the API validates (issue #28).
+ */
+function rangeHint(key: SettingKey): string | null {
+  const range = SETTING_NUMBER_RANGES[key];
+  if (range === undefined) return null;
+  return `Zulässig: ${numberFormat.format(range.min)} bis ${numberFormat.format(range.max)}.`;
+}
+
+/** What to say about a value the schema refused. */
+function invalidMessage(key: SettingKey): string {
+  const hint = rangeHint(key);
+  return hint === null ? 'Dieser Wert ist nicht gültig.' : `Nicht gespeichert. ${hint}`;
+}
+
+/**
+ * Per-setting messages for a rejected save.
+ *
+ * The API reports which key failed in `details[].path` (see `ZodValidationPipe`),
+ * but the shape crosses an `unknown` boundary, so it is narrowed here instead of
+ * trusted. Anything unrecognisable yields no field message and leaves the
+ * summary alert as the only feedback.
+ */
+function fieldErrorsFromDetails(details: unknown): Partial<Record<SettingKey, string>> {
+  if (!Array.isArray(details)) return {};
+  const errors: Partial<Record<SettingKey, string>> = {};
+  for (const entry of details) {
+    if (typeof entry !== 'object' || entry === null || !('path' in entry)) continue;
+    const path = (entry as { path: unknown }).path;
+    // Every setting is a scalar, so the issue path is the setting key itself.
+    if (typeof path !== 'string' || !(SETTING_KEYS as readonly string[]).includes(path)) continue;
+    errors[path as SettingKey] = invalidMessage(path as SettingKey);
+  }
+  return errors;
+}
+
 interface SettingRowProps {
   settingKey: SettingKey;
   value: Settings[SettingKey];
   onChange: (value: Settings[SettingKey]) => void;
   models: AiModel[];
+  /** Set when the last save attempt refused this value. */
+  error?: string;
 }
 
 /**
@@ -213,11 +263,14 @@ interface SettingRowProps {
  * `*ModelSlug` naming convention), not from a hardcoded per-key list, so a
  * setting added later to `settingsSchema` renders here automatically.
  */
-function SettingRow({ settingKey, value, onChange, models }: SettingRowProps) {
+function SettingRow({ settingKey, value, onChange, models, error }: SettingRowProps) {
   const copy = SETTING_COPY[settingKey];
   const id = inputId(settingKey);
+  const errorId = `${id}-error`;
 
   const choices = SETTING_CHOICES[settingKey];
+  const range = SETTING_NUMBER_RANGES[settingKey];
+  const hint = rangeHint(settingKey);
 
   let control: React.ReactNode;
   if (choices !== undefined) {
@@ -244,6 +297,11 @@ function SettingRow({ settingKey, value, onChange, models }: SettingRowProps) {
         id={id}
         type="number"
         value={value}
+        // Bounds come from the schema (`SETTING_NUMBER_RANGES`), so the spinner
+        // stops where the API does instead of offering values it will refuse.
+        {...(range === undefined ? {} : { min: range.min, max: range.max, step: 1 })}
+        aria-invalid={error !== undefined}
+        aria-describedby={error === undefined ? undefined : errorId}
         onChange={(event) => {
           const next = Number(event.target.value);
           if (!Number.isNaN(next)) onChange(next);
@@ -298,7 +356,14 @@ function SettingRow({ settingKey, value, onChange, models }: SettingRowProps) {
       </Label>
       <div className="flex max-w-md flex-col gap-1">
         {control}
-        <p className="text-xs text-muted-foreground">{copy.help}</p>
+        <p className="text-xs text-muted-foreground">
+          {hint === null ? copy.help : `${copy.help} ${hint}`}
+        </p>
+        {error === undefined ? null : (
+          <p id={errorId} className="text-xs text-destructive-text" data-testid={`${id}-error`}>
+            {error}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -311,6 +376,10 @@ export function SettingsForm() {
 
   const [draft, setDraft] = React.useState<Settings | null>(null);
   const [saved, setSaved] = React.useState(false);
+  const [fieldErrors, setFieldErrors] = React.useState<Partial<Record<SettingKey, string>>>({});
+  // Set when the save was refused before it left the browser; the API's own
+  // rejection is reported through `updateSettings.error` instead.
+  const [localError, setLocalError] = React.useState(false);
 
   // Initialise the draft once the query resolves. Setting state directly
   // during render (guarded so it only fires once) is the pattern React
@@ -350,11 +419,31 @@ export function SettingsForm() {
       return { ...current, [key]: value } as Settings;
     });
     setSaved(false);
+    // Editing the offending field retracts its complaint; leaving it standing
+    // would make a corrected value still look rejected.
+    setFieldErrors((current) => {
+      if (current[key] === undefined) return current;
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
   }
 
   function handleDiscard(): void {
     setDraft(original);
     setSaved(false);
+    setFieldErrors({});
+    setLocalError(false);
+    updateSettings.reset();
+  }
+
+  /** Puts the first refused setting on screen; a message out of sight is none. */
+  function revealFirstError(errors: Partial<Record<SettingKey, string>>): void {
+    const first = SETTING_KEYS.find((key) => errors[key] !== undefined);
+    if (first === undefined) return;
+    const element = document.getElementById(inputId(first));
+    element?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    element?.focus({ preventScroll: true });
   }
 
   function handleSave(): void {
@@ -365,24 +454,53 @@ export function SettingsForm() {
       }
     }
     if (Object.keys(changed).length === 0) return;
-    updateSettings.mutate(changed, { onSuccess: () => setSaved(true) });
+
+    // The same schema the API validates against, run here first: an
+    // out-of-range value is named at its own field straight away instead of
+    // coming back as a bare "Die Eingaben sind nicht gültig." (issue #27).
+    const parsed = updateSettingsRequestSchema.safeParse(changed);
+    if (!parsed.success) {
+      const errors: Partial<Record<SettingKey, string>> = {};
+      for (const issue of parsed.error.issues) {
+        const key = issue.path[0];
+        if (typeof key !== 'string' || !(SETTING_KEYS as readonly string[]).includes(key)) continue;
+        errors[key as SettingKey] = invalidMessage(key as SettingKey);
+      }
+      setFieldErrors(errors);
+      setLocalError(true);
+      setSaved(false);
+      updateSettings.reset();
+      revealFirstError(errors);
+      return;
+    }
+
+    setFieldErrors({});
+    setLocalError(false);
+    updateSettings.mutate(changed, {
+      onSuccess: () => setSaved(true),
+      onError: (caught) => {
+        // A rejection the local check did not anticipate still has to land at
+        // the field it belongs to rather than only in the summary.
+        const errors =
+          caught instanceof ApiError ? fieldErrorsFromDetails(caught.details) : {};
+        setFieldErrors(errors);
+        revealFirstError(errors);
+      },
+    });
   }
 
   const errorCode = updateSettings.error instanceof ApiError ? updateSettings.error.code : undefined;
+  const refusedCount = Object.keys(fieldErrors).length;
+  const summaryMessage =
+    refusedCount > 0
+      ? refusedCount === 1
+        ? 'Eine Einstellung liegt außerhalb ihres zulässigen Bereichs und wurde nicht gespeichert. Sie ist im Formular rot markiert.'
+        : `${refusedCount} Einstellungen liegen außerhalb ihres zulässigen Bereichs und wurden nicht gespeichert. Sie sind im Formular rot markiert.`
+      : messageForCode(errorCode);
+  const showError = localError || updateSettings.isError;
 
   return (
     <div className="flex flex-col gap-8">
-      {saved ? (
-        <Alert data-testid="settings-saved">
-          <AlertDescription>Einstellungen gespeichert.</AlertDescription>
-        </Alert>
-      ) : null}
-      {updateSettings.isError ? (
-        <Alert variant="destructive" data-testid="settings-error">
-          <AlertDescription>{messageForCode(errorCode)}</AlertDescription>
-        </Alert>
-      ) : null}
-
       <fieldset disabled={updateSettings.isPending} className="flex flex-col gap-8 border-0 p-0">
         {[...groups.entries()].map(([group, keys]) => (
           <section key={group} className="flex flex-col gap-4">
@@ -397,12 +515,27 @@ export function SettingsForm() {
                   value={currentDraft[key]}
                   onChange={(value) => updateField(key, value)}
                   models={modelsQuery.data?.models ?? []}
+                  error={fieldErrors[key]}
                 />
               ))}
             </div>
           </section>
         ))}
       </fieldset>
+
+      {/* Both messages sit next to the button that triggers them. Above the
+          form they would appear several screen heights away from the click,
+          which is where the rejection in issue #27 went unnoticed. */}
+      {saved ? (
+        <Alert data-testid="settings-saved">
+          <AlertDescription>Einstellungen gespeichert.</AlertDescription>
+        </Alert>
+      ) : null}
+      {showError ? (
+        <Alert variant="destructive" data-testid="settings-error">
+          <AlertDescription>{summaryMessage}</AlertDescription>
+        </Alert>
+      ) : null}
 
       <div className="flex gap-2">
         <Button onClick={handleSave} disabled={!dirty || updateSettings.isPending}>

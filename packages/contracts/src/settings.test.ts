@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { resolveSettings, settingsSchema, updateSettingsRequestSchema } from './settings';
+import {
+  resolveSettings,
+  SETTING_KEYS,
+  SETTING_NUMBER_RANGES,
+  settingsSchema,
+  updateSettingsRequestSchema,
+} from './settings';
 
 describe('resolveSettings', () => {
   it('returns the full default configuration for empty input', () => {
@@ -76,7 +82,7 @@ describe('updateSettingsRequestSchema', () => {
   });
 
   it('still validates the values that are present', () => {
-    expect(updateSettingsRequestSchema.safeParse({ 'ai.maxToolIterations': 99 }).success).toBe(
+    expect(updateSettingsRequestSchema.safeParse({ 'ai.maxToolIterations': 1_001 }).success).toBe(
       false,
     );
     expect(updateSettingsRequestSchema.safeParse({ 'ai.enabled': 'yes' }).success).toBe(false);
@@ -84,5 +90,26 @@ describe('updateSettingsRequestSchema', () => {
 
   it('parses an empty patch to an empty object', () => {
     expect(updateSettingsRequestSchema.parse({})).toEqual({});
+  });
+});
+
+describe('SETTING_NUMBER_RANGES', () => {
+  it('covers every numeric setting and nothing else', () => {
+    const numericKeys = SETTING_KEYS.filter(
+      (key) => typeof settingsSchema.parse({})[key] === 'number',
+    );
+
+    expect(Object.keys(SETTING_NUMBER_RANGES).sort()).toEqual([...numericKeys].sort());
+  });
+
+  it('reports the bounds the schema actually enforces', () => {
+    for (const [key, range] of Object.entries(SETTING_NUMBER_RANGES)) {
+      const field = settingsSchema.shape[key as keyof typeof settingsSchema.shape].unwrap();
+
+      expect(field.safeParse(range.min).success).toBe(true);
+      expect(field.safeParse(range.max).success).toBe(true);
+      expect(field.safeParse(range.min - 1).success).toBe(false);
+      expect(field.safeParse(range.max + 1).success).toBe(false);
+    }
   });
 });
