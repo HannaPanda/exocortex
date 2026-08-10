@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  type QueryClient,
   useMutation,
   useQuery,
   useQueryClient,
@@ -359,6 +360,7 @@ export function useArchiveDocument(workspaceId: string | undefined) {
     onSuccess: (document) => {
       // The open page becomes read-only, so its detail query must refresh too.
       void client.invalidateQueries({ queryKey: queryKeys.document(document.id) });
+      invalidateParentDetail(client, document.parentId);
       if (workspaceId !== undefined) {
         void client.invalidateQueries({ queryKey: queryKeys.documentTree(workspaceId) });
       }
@@ -373,11 +375,26 @@ export function useRestoreDocument(workspaceId: string | undefined) {
       apiRequest<DocumentSummary>(`/api/documents/${documentId}/restore`, { method: 'POST' }),
     onSuccess: (document) => {
       void client.invalidateQueries({ queryKey: queryKeys.document(document.id) });
+      invalidateParentDetail(client, document.parentId);
       if (workspaceId !== undefined) {
         void client.invalidateQueries({ queryKey: queryKeys.documentTree(workspaceId) });
       }
     },
   });
+}
+
+/**
+ * Refreshes the parent's detail after a child appeared or disappeared.
+ *
+ * A database's detail carries `rowCount`, and its rows are ordinary child
+ * documents (ADR-011), so archiving or restoring one changes a number that is
+ * cached against the *parent*. The parent of a plain page has nothing that
+ * depends on its children, which makes this a cheap no-op there rather than a
+ * special case worth branching on.
+ */
+function invalidateParentDetail(client: QueryClient, parentId: string | null): void {
+  if (parentId === null) return;
+  void client.invalidateQueries({ queryKey: queryKeys.document(parentId) });
 }
 
 export function useExportMarkdown() {

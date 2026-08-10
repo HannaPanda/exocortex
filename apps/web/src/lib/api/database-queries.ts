@@ -23,6 +23,7 @@ import {
 } from '@exocortex/contracts';
 
 import { apiRequest } from './client';
+import { queryKeys } from './queries';
 
 export const databaseQueryKeys = {
   properties: (documentId: string) => ['database', documentId, 'properties'] as const,
@@ -233,7 +234,13 @@ export function useCreateDatabaseRow(documentId: string) {
         method: 'POST',
         body: request,
       }),
-    onSuccess: () => void client.invalidateQueries({ queryKey: ['database', documentId, 'rows'] }),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: ['database', documentId, 'rows'] });
+      // The database's own detail carries `rowCount`, which the context panel
+      // prints. Without this the panel keeps the number it was given when the
+      // database was opened, so a freshly added row leaves it reading "0".
+      void client.invalidateQueries({ queryKey: queryKeys.document(documentId) });
+    },
   });
 }
 
