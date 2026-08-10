@@ -49,6 +49,7 @@ import { ContextMeter } from './context-meter';
 import { ConversationSwitcher } from './conversation-switcher';
 import { ModelPicker } from './model-picker';
 import { RunActivity } from './run-activity';
+import { Transcript } from './transcript';
 
 export interface AiPanelProps {
   workspaceId: string | null;
@@ -170,7 +171,12 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   const [toolActivity, setToolActivity] = React.useState<ToolActivityEntry[]>([]);
   const [notice, setNotice] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
-  const [commandNotices, setCommandNotices] = React.useState<AiConversationMessage[]>([]);
+  // A single slot, not a list: a command's answer replaces the previous one
+  // instead of piling up below the transcript (issue #25). Only the commands
+  // that answer with a list (`/help`, `/tools`, `/rules`) land here; a one-line
+  // confirmation goes into `notice`, and `/clear` needs neither, because the
+  // boundary drawn in the transcript is its answer.
+  const [commandNotice, setCommandNotice] = React.useState<AiConversationMessage | null>(null);
 
   // Life-sign tracking for the run's pulse (issue #6): when it started, and
   // the last time any signal (a delta, a tool-call event) arrived.
@@ -197,7 +203,7 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
     setToolActivity([]);
     setNotice(null);
     setError(null);
-    setCommandNotices([]);
+    setCommandNotice(null);
     setRunStartedAt(null);
     setLastActivityAt(null);
     setSequenceState(INITIAL_AI_RUN_SEQUENCE_STATE);
@@ -418,12 +424,12 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
     !conversationLoading &&
     !conversationErrored &&
     messages.length === 0 &&
-    commandNotices.length === 0 &&
+    commandNotice === null &&
     streamingMessage === null;
 
   React.useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-  }, [messages.length, streamText, commandNotices.length, toolActivity.length]);
+  }, [messages.length, streamText, commandNotice?.id, toolActivity.length, notice]);
 
   const models = modelsQuery.data?.models ?? [];
   const defaultModelSlug = modelsQuery.data?.defaultModelSlug ?? null;
@@ -525,6 +531,7 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
     if (workspaceId === null || activeRunId !== null) return;
     setError(null);
     setNotice(null);
+    setCommandNotice(null);
     try {
       const conversationId = activeConversationId ?? (await startNewConversation());
       const response = await postMessage.mutateAsync({
@@ -543,9 +550,12 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
 
       if (response.command !== null) {
         const command = response.command;
-        setCommandNotices((current) => [
-          ...current,
-          {
+        // A command that answers with a list (`/help`, `/tools`, `/rules`) is
+        // something to read, so it keeps a bubble. Everything else confirms a
+        // changed setting in one line and belongs in the notice slot, where the
+        // next message replaces it instead of stacking below the transcript.
+        if (command.message.includes('\n')) {
+          setCommandNotice({
             id: `command-${Date.now().toString(36)}`,
             conversationId,
             role: 'system',
@@ -556,8 +566,13 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
             superseded: false,
             runId: null,
             createdAt: new Date().toISOString(),
-          },
-        ]);
+          });
+        } else if (command.command !== 'clear' || messages.length === 0) {
+          // `/clear` says it in the transcript itself, by way of the boundary
+          // that appears once the refetched messages come back superseded --
+          // except when there was nothing to cut, and nothing would show.
+          setNotice(command.message);
+        }
         if (command.conversationChanged && command.conversationId !== null) {
           setActiveConversationId(command.conversationId);
         }
@@ -668,12 +683,8 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
               </div>
             ) : null}
 
-            {messages.map((message) => (
-              <ChatMessage key={message.id} message={message} />
-            ))}
-            {commandNotices.map((message) => (
-              <ChatMessage key={message.id} message={message} />
-            ))}
+            <Transcript messages={messages} />
+            {commandNotice !== null ? <ChatMessage message={commandNotice} /> : null}
 
             {toolActivity.length > 0 ? (
               <div className="space-y-0.5 text-xs text-muted-foreground">

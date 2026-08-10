@@ -66,4 +66,51 @@ test.describe('AI side panel', () => {
     // `job.progress` / `job.completed` events reach the browser.
     await expect(page.getByTestId('job-progress')).toBeVisible({ timeout: 60_000 });
   });
+
+  test('draws the /clear cut where it happened and never stacks it', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    await createPage(page, `Schnitt ${Date.now().toString(36)}`);
+    await page.getByTestId('context-tab-ai').click();
+
+    const boundary = page.getByTestId('ai-context-boundary');
+
+    /** Sends a question and returns once its run has finished. */
+    const ask = async (content: string): Promise<void> => {
+      await page.getByTestId('ai-input').fill(content);
+      await page.getByTestId('ai-send').click();
+      // The composer stays disabled for the whole run, so this is also the
+      // gate that keeps the next `/clear` from being swallowed.
+      const activity = page.getByTestId('ai-run-activity');
+      await expect(activity).toBeVisible({ timeout: 30_000 });
+      await expect(activity).toBeHidden({ timeout: 60_000 });
+    };
+
+    /** Sends a slash command, which starts no run. */
+    const command = async (content: string): Promise<void> => {
+      await page.getByTestId('ai-input').fill(content);
+      await page.getByTestId('ai-send').click();
+    };
+
+    await ask('Erste Frage.');
+    await command('/clear');
+    await expect(boundary).toHaveCount(1, { timeout: 30_000 });
+    await expect(boundary).toContainText('Kontext geleert');
+
+    // The cut stays where it was made: the next question appears *below* it,
+    // which is the part that used to be wrong (issue #25).
+    await ask('Zweite Frage.');
+    await expect(page.getByTestId('ai-question')).toHaveCount(2, { timeout: 30_000 });
+    await expect(boundary).toHaveCount(1);
+    // Cuts and questions in document order: the newest question has to be the
+    // last of them, i.e. below the cut rather than above it.
+    const cutsAndQuestions = page.locator(
+      '[data-testid="ai-context-boundary"], [data-testid="ai-question"]',
+    );
+    await expect(cutsAndQuestions.last()).toHaveAttribute('data-testid', 'ai-question');
+
+    // A second `/clear` moves the single cut along instead of adding one.
+    await command('/clear');
+    await expect(boundary).toHaveCount(1, { timeout: 30_000 });
+  });
 });
