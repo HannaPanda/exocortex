@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { createPage, requireSeedCredentials } from '../support/fixtures';
+import { createPage, requireSeedCredentials, waitForMaterialization } from '../support/fixtures';
 import { storageStatePath } from '../support/global-setup';
 
 // Reuse the session created by the global setup instead of logging in again:
@@ -8,15 +8,21 @@ import { storageStatePath } from '../support/global-setup';
 test.use({ storageState: storageStatePath('johanna') });
 
 /**
- * Which provider the deployment under test actually runs.
+ * What the runner *declared* the deployment's provider to be, if anything.
  *
- * The mock provider echoes the question back in a fixed German sentence, which
- * is a much stronger assertion than "some text arrived" — but it is only true
- * for a deployment configured with `AI_PROVIDER=mock`. Against a real provider
- * the answer is a real answer, so the echo assertions have to stand down while
- * everything provider-independent still runs.
+ * `AI_PROVIDER` is read by the worker, out of the server's `.env`. The
+ * Playwright process does not load that file, so this used to default to
+ * `'mock'` and then assert the mock's echo against a deployment happily
+ * running OpenRouter: a green pipeline's worth of nothing, and a red test for
+ * an answer that was entirely correct.
+ *
+ * Absent now means "read it off the answer" instead of guessing, and a
+ * declared `mock` is enforced rather than assumed.
  */
-const aiProvider = process.env.AI_PROVIDER ?? 'mock';
+const declaredProvider = process.env.AI_PROVIDER ?? null;
+
+/** The mock names itself in every answer it writes; no real provider does. */
+const MOCK_MARKER = 'Mock-Anbieters';
 
 test.beforeAll(() => {
   requireSeedCredentials();
@@ -40,31 +46,60 @@ test.describe('AI side panel', () => {
       .poll(async () => (await answer.innerText()).trim().length, { timeout: 60_000 })
       .toBeGreaterThan(0);
 
-    if (aiProvider === 'mock') {
-      // The mock provider echoes the question, which proves the payload arrived.
-      await expect(answer).toContainText('Was ist Exocortex?', { timeout: 60_000 });
-      await expect(answer).toContainText('Mock-Anbieters', { timeout: 60_000 });
-    }
-
-    // The answer grows over time: streaming, not a single response.
+    // The visible text only ever grows while the run is live: a re-render that
+    // fell back to an earlier buffer would show up here. It cannot demand
+    // strict growth, because a short answer may already be complete when it is
+    // first read.
     const firstLength = (await answer.innerText()).length;
     await expect
       .poll(async () => (await answer.innerText()).length, { timeout: 60_000 })
       .toBeGreaterThanOrEqual(firstLength);
+
+    // Judge who answered only once the run is over, so a marker that has
+    // merely not streamed in yet is never read as "a real provider".
+    await expect(page.getByTestId('ai-run-activity')).toBeHidden({ timeout: 60_000 });
+    const servedByMock =
+      declaredProvider === 'mock' ||
+      (declaredProvider === null && (await answer.innerText()).includes(MOCK_MARKER));
+
+    if (servedByMock) {
+      // The mock echoes the question back, which proves the payload reached it
+      // intact. A declared mock that stops echoing fails here rather than
+      // quietly dropping to the weaker assertions above.
+      await expect(answer).toContainText('Was ist Exocortex?', { timeout: 60_000 });
+      await expect(answer).toContainText(MOCK_MARKER, { timeout: 60_000 });
+    }
   });
 
-  test('shows background job progress while a page is materialized', async ({ page }) => {
+  test('keeps quiet while a fast background job is materialized', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
     // `createPage` returns only once the collaboration socket is connected;
     // without that the keystrokes below would land before the Yjs provider is
     // there, nothing would be persisted and no job would ever be enqueued.
-    await createPage(page, `Fortschritt ${Date.now().toString(36)}`);
+    const documentId = await createPage(page, `Fortschritt ${Date.now().toString(36)}`);
+    const marker = `hintergrundjob${Date.now().toString(36)}`;
     await page.getByTestId('editor-surface').click();
-    await page.keyboard.type('Diese Änderung löst einen Hintergrundjob aus.');
+    await page.keyboard.type(`Diese Änderung löst einen Hintergrundjob aus: ${marker}.`);
 
-    // `job.progress` / `job.completed` events reach the browser.
-    await expect(page.getByTestId('job-progress')).toBeVisible({ timeout: 60_000 });
+    // The indicator is deliberately silent for a job that succeeds quickly:
+    // `job-progress.tsx` waits `SHOW_DELAY_MS` (1s) before revealing anything
+    // and cancels that reveal on `job.completed`, so a materialization that
+    // takes tens of milliseconds must never flash a card. This used to assert
+    // the opposite and had been failing ever since that rule was introduced.
+    //
+    // A window several times the reveal delay: if the card were coming, it
+    // would be here.
+    const appeared = await page
+      .waitForSelector('[data-testid="job-progress"]', { state: 'attached', timeout: 5_000 })
+      .then(() => true)
+      .catch(() => false);
+    expect(appeared).toBe(false);
+
+    // Without this the assertion above would also pass for a pipeline that did
+    // nothing at all. The derived Markdown is the job's own output, so it
+    // proves the job really ran and really finished.
+    await waitForMaterialization(page, documentId, marker);
   });
 
   test('draws the /clear cut where it happened and never stacks it', async ({ page }) => {

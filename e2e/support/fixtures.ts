@@ -176,15 +176,16 @@ export async function apiSignIn(
  * derived data right after typing would race the pipeline.
  *
  * This asks the export endpoint rather than watching the job-progress
- * indicator, which is what it used to do. That indicator is shown for two and a
- * half seconds after the job ends and then removed, so a suite whose browser
- * was busy elsewhere for those two seconds saw a page that had in fact been
- * materialized and concluded it had not — a failure that could not be
- * reproduced by running the test on its own. The derived Markdown is the thing
- * the caller actually needs, and unlike a toast it stays true.
+ * indicator, which is what it used to do. The indicator was never a reliable
+ * signal here and has since stopped being one at all: `job-progress.tsx` holds
+ * a card back for a second and drops it again on `job.completed`, so a
+ * materialization that takes tens of milliseconds shows nothing whatsoever.
+ * The derived Markdown is the thing the caller actually needs, and unlike a
+ * toast it stays true.
  *
- * That the indicator appears at all is still covered, in `ai.spec.ts`, where
- * realtime job progress is the subject rather than a means.
+ * What `ai.spec.ts` covers is therefore that silence, not an appearance. That
+ * the card *does* appear for a slow or failed job has no browser-level
+ * coverage: neither state can be provoked from the UI.
  *
  * `expected` has to be something only the *body* can contain. The exported
  * Markdown carries frontmatter, so a caller waiting for a marker that is also
