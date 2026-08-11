@@ -57,9 +57,9 @@ function formatDocumentSummary(document: DocumentSummary): string {
  * How many pages the tree renders before it stops counting them out.
  *
  * A workspace can hold thousands, and a tool result is not a place to put all
- * of them: the reader is a model with a context window. The cap is generous
- * enough that an ordinary workspace arrives whole and honest enough to say so
- * when it does not.
+ * of them: the reader is a model with a context window. The Second Brain holds
+ * 721 pages, so this cap is reached in practice, and what gets dropped matters
+ * more than how much.
  */
 const MAX_TREE_LINES = 300;
 
@@ -72,26 +72,55 @@ const MAX_TREE_LINES = 300;
  * content, which is most of them: ChatGPT called this tool four times in a row,
  * learned "3 Wurzelseiten" each time, and then guessed a workspace. A tool
  * result has to carry its answer in the text.
+ *
+ * The cap is spent breadth-first, level by level, and only then rendered in
+ * tree order. Cutting depth-first instead would spend the whole budget inside
+ * whichever section happens to sort first and leave the later top-level
+ * sections out entirely — a reader looking for "Technik" would conclude it does
+ * not exist, which is a worse answer than an incomplete one. Losing the deepest
+ * level only costs detail: every page that disappears still has a visible
+ * parent to ask about.
  */
 function renderTree(nodes: readonly DocumentTreeNode[]): { lines: string[]; omitted: number } {
-  const lines: string[] = [];
-  let omitted = 0;
+  const total = countNodes(nodes);
 
+  // Widen level by level for as long as the whole level fits.
+  let budget = MAX_TREE_LINES;
+  let maxDepth = -1;
+  for (let depth = 0; ; depth += 1) {
+    const width = countNodesAtDepth(nodes, depth);
+    if (width === 0 || width > budget) break;
+    budget -= width;
+    maxDepth = depth;
+  }
+
+  // Not even the root level fits. Show as much of it as there is room for
+  // rather than nothing: a truncated list of sections is still a map.
+  if (maxDepth < 0) {
+    const lines = nodes
+      .slice(0, MAX_TREE_LINES)
+      .map((node) => `- ${formatDocumentSummary(node)}`);
+    return { lines, omitted: total - lines.length };
+  }
+
+  const lines: string[] = [];
   const walk = (node: DocumentTreeNode, depth: number): void => {
-    if (lines.length >= MAX_TREE_LINES) {
-      omitted += 1 + countDescendants(node);
-      return;
-    }
+    if (depth > maxDepth) return;
     lines.push(`${'  '.repeat(depth)}- ${formatDocumentSummary(node)}`);
     for (const child of node.children) walk(child, depth + 1);
   };
-
   for (const node of nodes) walk(node, 0);
-  return { lines, omitted };
+
+  return { lines, omitted: total - lines.length };
 }
 
-function countDescendants(node: DocumentTreeNode): number {
-  return node.children.reduce((total, child) => total + 1 + countDescendants(child), 0);
+function countNodes(nodes: readonly DocumentTreeNode[]): number {
+  return nodes.reduce((sum, node) => sum + 1 + countNodes(node.children), 0);
+}
+
+function countNodesAtDepth(nodes: readonly DocumentTreeNode[], depth: number): number {
+  if (depth === 0) return nodes.length;
+  return nodes.reduce((sum, node) => sum + countNodesAtDepth(node.children, depth - 1), 0);
 }
 
 export const pageTreeTool: AnyToolDefinition = defineTool({
@@ -109,7 +138,12 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
     const { lines, omitted } = renderTree(result.nodes);
     const parts = [
       lines.length === 0 ? 'Keine Seiten vorhanden.' : lines.join('\n'),
-      ...(omitted === 0 ? [] : [`… ${omitted} weitere Seite(n) nicht angezeigt (gekürzt).`]),
+      ...(omitted === 0
+        ? []
+        : [
+            `… ${omitted} weitere Seite(n) auf tieferen Ebenen nicht angezeigt (gekürzt). ` +
+              'Jede davon hängt unter einer der Seiten oben; frag sie über ihre Elternseite ab.',
+          ]),
       // Archived pages stay out of the tree and behind a count: they are not
       // somewhere to file a new page, and listing them invites writing into
       // the trash.

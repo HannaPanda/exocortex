@@ -425,15 +425,65 @@ describe('pageTreeTool', () => {
     expect(result.text).not.toContain('Alter Kram');
   });
 
-  it('says so when it stops listing rather than trailing off', async () => {
-    const many = Array.from({ length: 400 }, (_, i) => node(`nnnnnnnn${String(i).padStart(4, '0')}`, `Seite ${String(i)}`));
-    const { client } = createFakeClient({ nodes: many, archived: [] });
+  it('drops the deepest level rather than the last sections', async () => {
+    // The failure this guards against: spending the whole budget inside the
+    // first section, so a reader looking for the last one concludes it is not
+    // there. Every root section stays visible; depth is what gives way.
+    const roots = Array.from({ length: 20 }, (_, i) =>
+      node(
+        `rrrrrrrr${String(i).padStart(4, '0')}`,
+        `Abschnitt ${String(i)}`,
+        Array.from({ length: 30 }, (_, j) =>
+          node(`cccccccc${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`, `Kind ${String(i)}-${String(j)}`),
+        ),
+      ),
+    );
+    const { client } = createFakeClient({ nodes: roots, archived: [] });
 
     const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
 
-    expect(result.text).toContain('Seite 299');
-    expect(result.text).not.toContain('Seite 300 (');
-    expect(result.text).toContain('… 100 weitere Seite(n) nicht angezeigt (gekürzt).');
+    // 20 roots fit, 600 children do not, so the children go and every section
+    // survives -- including the last one.
+    expect(result.text).toContain('- Abschnitt 0 (');
+    expect(result.text).toContain('- Abschnitt 19 (');
+    expect(result.text).not.toContain('Kind 0-0');
+    expect(result.text).toContain('… 600 weitere Seite(n) auf tieferen Ebenen nicht angezeigt');
+  });
+
+  it('keeps a level whole when it fits and cuts the one below', async () => {
+    const roots = Array.from({ length: 10 }, (_, i) =>
+      node(
+        `rrrrrrrr${String(i).padStart(4, '0')}`,
+        `Abschnitt ${String(i)}`,
+        Array.from({ length: 10 }, (_, j) =>
+          node(`cccccccc${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`, `Kind ${String(i)}-${String(j)}`, [
+            node(`gggggggg${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`, `Enkel ${String(i)}-${String(j)}`),
+          ]),
+        ),
+      ),
+    );
+    const { client } = createFakeClient({ nodes: roots, archived: [] });
+
+    const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+
+    // 10 + 100 = 110 fit, the 100 grandchildren would make 210 which still
+    // fits, so nothing is dropped at all.
+    expect(result.text).toContain('    - Enkel 9-9 (');
+    expect(result.text).not.toContain('gekürzt');
+  });
+
+  it('shows part of the root level rather than nothing when even that overflows', async () => {
+    const roots = Array.from({ length: 400 }, (_, i) =>
+      node(`rrrrrrrr${String(i).padStart(4, '0')}`, `Abschnitt ${String(i)}`),
+    );
+    const { client } = createFakeClient({ nodes: roots, archived: [] });
+
+    const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+
+    expect(result.text).toContain('- Abschnitt 0 (');
+    expect(result.text).toContain('- Abschnitt 299 (');
+    expect(result.text).not.toContain('- Abschnitt 300 (');
+    expect(result.text).toContain('… 100 weitere Seite(n)');
   });
 
   it('has something to say about an empty workspace', async () => {

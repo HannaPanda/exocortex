@@ -109,7 +109,7 @@ change as dangerous only trains people to click past the warnings that matter.
 | --- | --- | --- | --- |
 | `exo_list_workspaces` | no | no | `GET /api/workspaces` |
 | `exo_workspace_rename` | yes | yes | `PATCH /api/workspaces/:workspaceId` (name and/or slug, independently) |
-| `exo_page_tree` | no | no | `GET /api/workspaces/:workspaceId/documents/tree` -- the text answer is the indented tree with ids, capped at 300 pages; archived pages are counted, not listed |
+| `exo_page_tree` | no | no | `GET /api/workspaces/:workspaceId/documents/tree` -- the text answer is the indented tree with ids, capped at 300 pages. The cap is spent breadth-first, so an oversized workspace loses its deepest level rather than its last sections; archived pages are counted, not listed |
 | `exo_page_read` | no | no | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars) |
 | `exo_page_create` | yes | no | `POST /api/workspaces/:workspaceId/import/markdown` when `markdown` is given, else `POST /api/workspaces/:workspaceId/documents` |
 | `exo_page_write` | yes | yes | `POST /api/documents/:documentId/content` |
