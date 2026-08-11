@@ -130,9 +130,10 @@ export class SessionGuard implements CanActivate {
     const result = verifyServiceToken({
       secret: this.env.SERVICE_TOKEN_SECRET,
       token,
-      // The API only ever accepts the worker's tool-loop tokens here; a
+      // The API accepts the worker's tool-loop tokens and the ones its own
+      // MCP endpoint mints for an OAuth-authenticated client; a
       // `collaboration-write` token is for the Hocuspocus process alone.
-      expectedPurpose: 'ai-tools',
+      expectedPurpose: ['ai-tools', 'mcp-tools'],
     });
     if (!result.valid) {
       if (result.reason === 'expired') {

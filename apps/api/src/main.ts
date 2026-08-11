@@ -58,6 +58,35 @@ async function bootstrap(): Promise<void> {
     done();
   });
 
+  // CORS for the MCP endpoint, which needs different rules than the rest of
+  // the API and must therefore be answered before the global CORS middleware
+  // sees the request.
+  //
+  // `*` is safe here and nowhere else: `/api/mcp` refuses cookie sessions
+  // outright and authenticates by bearer token only, so a cross-origin caller
+  // has nothing ambient to ride on -- it must present a credential the user
+  // handed it. `WWW-Authenticate` is exposed because that header is how a
+  // client discovers the authorization server after a 401.
+  fastify.addHook('onRequest', (request, reply, done) => {
+    if (!request.url.startsWith('/api/mcp')) {
+      done();
+      return;
+    }
+    void reply.header('access-control-allow-origin', '*');
+    void reply.header('access-control-allow-methods', 'GET, POST, DELETE, OPTIONS');
+    void reply.header(
+      'access-control-allow-headers',
+      'authorization, content-type, mcp-protocol-version, mcp-session-id',
+    );
+    void reply.header('access-control-expose-headers', 'WWW-Authenticate, Mcp-Session-Id');
+    void reply.header('access-control-max-age', '86400');
+    if (request.method === 'OPTIONS') {
+      void reply.status(204).send();
+      return;
+    }
+    done();
+  });
+
   await fastify.register(fastifyHelmet, {
     contentSecurityPolicy: false, // The API serves JSON; the web app sets its own CSP.
     crossOriginResourcePolicy: { policy: 'same-site' },

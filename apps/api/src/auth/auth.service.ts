@@ -18,6 +18,53 @@ import { type Logger } from '@exocortex/logger';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
 
+/** The `mcp` plugin's authorization endpoint, relative to the app origin. */
+const MCP_AUTHORIZE_PATH = `${AUTH_BASE_PATH}/mcp/authorize`;
+
+/**
+ * Makes the consent screen unconditional on the OAuth authorization endpoint.
+ *
+ * Better Auth only routes to `consentPage` when the *client* asks for it with
+ * `prompt=consent`. That puts the decision to ask a human in the hands of the
+ * party that wants the token, and since dynamic client registration is open,
+ * that party can be anyone: a website could redirect a signed-in person to
+ * `/authorize` with a client it registered seconds earlier and receive a
+ * working access token without a single visible step. Adding the prompt here
+ * takes the choice back. The rewritten query is also what gets stored in the
+ * login-prompt cookie, so it survives the detour through the sign-in page.
+ */
+/**
+ * Serializes an already-parsed body back into the wire format its own
+ * `Content-Type` announced. Anything that is not form-encoded becomes JSON,
+ * which is what every other Better Auth route sends.
+ */
+export function encodeBody(body: unknown, contentType: string | null): string {
+  if (typeof body === 'string') return body;
+  if (contentType !== null && contentType.includes('application/x-www-form-urlencoded')) {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(body as Record<string, unknown>)) {
+      // A repeated field parses into an array; each value has to go back on
+      // the wire separately, or the receiver reads one field named `a,b`.
+      if (Array.isArray(value)) {
+        for (const item of value) params.append(key, String(item));
+      } else if (value !== undefined && value !== null) {
+        params.append(key, String(value));
+      }
+    }
+    return params.toString();
+  }
+  return JSON.stringify(body);
+}
+
+export function forceConsentPrompt(url: URL): void {
+  if (url.pathname !== MCP_AUTHORIZE_PATH) return;
+  const prompt = url.searchParams.get('prompt');
+  const values = new Set(prompt === null ? [] : prompt.split(' ').filter((value) => value !== ''));
+  if (values.has('consent')) return;
+  values.add('consent');
+  url.searchParams.set('prompt', [...values].join(' '));
+}
+
 /**
  * Owns the Better Auth instance.
  *
@@ -75,11 +122,18 @@ export class AuthService implements OnApplicationShutdown {
 
   /**
    * Converts a Fastify request into a Web `Request` and lets Better Auth handle
-   * it. Fastify has already parsed the JSON body, so it is re-serialized here;
-   * Better Auth only ever receives JSON or form bodies on these routes.
+   * it. Fastify has already parsed the body, so it is re-serialized here in the
+   * shape the incoming `Content-Type` promised.
+   *
+   * The form-encoded branch is not hypothetical: the OAuth token endpoint
+   * (`/api/auth/mcp/token`) is posted form-encoded by every OAuth client there
+   * is, Nest's Fastify adapter parses that into a plain object, and handing
+   * Better Auth a JSON string under a form content type would fail in the one
+   * exchange the whole connector flow depends on.
    */
   async handleAuthRequest(request: FastifyRequest): Promise<Response> {
     const url = new URL(request.url, this.env.APP_URL);
+    forceConsentPrompt(url);
     const headers = toWebHeaders(request.headers as Record<string, string | string[] | undefined>);
     // The proxy hostname must not leak into redirect URLs.
     headers.set('host', new URL(this.env.APP_URL).host);
@@ -88,7 +142,7 @@ export class AuthService implements OnApplicationShutdown {
     const hasBody = method !== 'GET' && method !== 'HEAD';
     let body: string | undefined;
     if (hasBody && request.body !== undefined && request.body !== null) {
-      body = typeof request.body === 'string' ? request.body : JSON.stringify(request.body);
+      body = encodeBody(request.body, headers.get('content-type'));
       if (!headers.has('content-type')) headers.set('content-type', 'application/json');
     }
 
