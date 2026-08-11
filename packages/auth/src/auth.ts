@@ -1,5 +1,9 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
+// `better-auth/plugins/mcp` is built but not listed in the package's export
+// map in 1.6.25; the barrel is the only importable path.
+import { mcp } from 'better-auth/plugins';
+import { type BetterAuthPlugin } from 'better-auth/types';
 
 import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
@@ -7,6 +11,22 @@ import { type Logger } from '@exocortex/logger';
 import { type Mailer } from './mailer';
 
 export const AUTH_BASE_PATH = '/api/auth';
+
+/** Where an unauthenticated OAuth authorization request sends the person. */
+export const OAUTH_LOGIN_PATH = '/anmelden';
+/** Where an authorization request that needs an explicit "yes" sends them. */
+export const OAUTH_CONSENT_PATH = '/verbinden';
+
+/**
+ * How long an MCP access token lives, in seconds.
+ *
+ * Short, because these tokens are stored in the clear (the plugin looks a
+ * token up by its own value) and because a remote connector refreshes without
+ * bothering anyone. A person only notices this number if refreshing is broken.
+ */
+const MCP_ACCESS_TOKEN_TTL_SECONDS = 60 * 60;
+/** How long a connector may stay away before it has to ask a human again. */
+const MCP_REFRESH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 30;
 
 export interface CreateAuthOptions {
   prisma: PrismaClient;
@@ -19,6 +39,51 @@ export interface CreateAuthOptions {
   /** Additional origins allowed to send credentialed requests. */
   trustedOrigins?: string[];
   secureCookies: boolean;
+}
+
+/**
+ * OAuth 2.1 authorization server for remote MCP clients (ADR-018).
+ *
+ * ChatGPT cannot spawn the stdio MCP bin and offers no field for an API token,
+ * so a connector authenticates by authorization code with PKCE and registers
+ * itself dynamically. Everything this adds is scoped to `/api/auth/mcp/*` plus
+ * the two `.well-known` documents; it issues no cookie session, and the tokens
+ * it mints are only accepted by `/api/mcp`.
+ *
+ * `consentPage` is not decoration. Without it the plugin hands out an
+ * authorization code the moment a signed-in browser reaches `/authorize`, and
+ * since client registration is open to anyone, any website could redirect a
+ * signed-in person and collect a working token. The consent screen is what
+ * makes that a decision instead of a side effect. Better Auth only routes
+ * there when the client asks with `prompt=consent`, so the API adds that
+ * parameter itself before the plugin sees the request; see
+ * `forceConsentPrompt` in `apps/api/src/auth/auth.service.ts`.
+ *
+ * The return type is widened to the base plugin interface on purpose. The
+ * plugin's own type mentions `MCPOptions`, and better-auth 1.6.25 does not
+ * list `./plugins/mcp` in its export map, so no declaration file that names
+ * that type can be emitted (TS4058). Widening costs nothing here: the endpoints
+ * it would otherwise add to `auth.api` are ones this codebase never calls.
+ * Access tokens are verified directly against the `oauth_access_token` table by
+ * `verifyMcpAccessToken`, the same way `SessionGuard` verifies an `exo_` token,
+ * so the MCP endpoint does not depend on the plugin's typing at all. The value
+ * handed to `betterAuth` is the whole plugin; only its type is narrowed.
+ */
+function createMcpPlugin(): BetterAuthPlugin {
+  return mcp({
+    loginPage: OAUTH_LOGIN_PATH,
+    oidcConfig: {
+      // Repeated from the option above: `oidcConfig` is the underlying OIDC
+      // provider's own type and declares it required. The plugin overwrites it
+      // with the outer `loginPage` either way.
+      loginPage: OAUTH_LOGIN_PATH,
+      consentPage: OAUTH_CONSENT_PATH,
+      requirePKCE: true,
+      allowPlainCodeChallengeMethod: false,
+      accessTokenExpiresIn: MCP_ACCESS_TOKEN_TTL_SECONDS,
+      refreshTokenExpiresIn: MCP_REFRESH_TOKEN_TTL_SECONDS,
+    },
+  });
 }
 
 /**
@@ -111,6 +176,8 @@ export function createAuth(options: CreateAuthOptions) {
         path: '/',
       },
     },
+
+    plugins: [createMcpPlugin()],
 
     onAPIError: {
       onError: (error) => {

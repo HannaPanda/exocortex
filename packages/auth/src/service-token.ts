@@ -22,9 +22,12 @@ import { SERVICE_TOKEN_PREFIX } from './api-token';
  * What a service token may be used for. Each purpose is signed with the secret
  * shared by exactly the two processes that speak to each other:
  * `ai-tools` with `SERVICE_TOKEN_SECRET` (worker -> API),
+ * `mcp-tools` with `SERVICE_TOKEN_SECRET` (API -> API, for a remote MCP
+ * client that authenticated with OAuth and therefore holds no `exo_` token
+ * the tool catalogue could pass through),
  * `collaboration-write` with `COLLABORATION_TICKET_SECRET` (API -> Hocuspocus).
  */
-export const SERVICE_TOKEN_PURPOSES = ['ai-tools', 'collaboration-write'] as const;
+export const SERVICE_TOKEN_PURPOSES = ['ai-tools', 'mcp-tools', 'collaboration-write'] as const;
 export type ServiceTokenPurpose = (typeof SERVICE_TOKEN_PURPOSES)[number];
 
 export interface ServiceTokenClaims {
@@ -86,11 +89,13 @@ export interface VerifyServiceTokenOptions {
   secret: string;
   token: string;
   /**
-   * The purpose this verifier accepts. A token signed for a different purpose
-   * is rejected even when the signature is valid, which keeps the two service
-   * paths separate should they ever share a secret.
+   * The purposes this verifier accepts. A token signed for a different purpose
+   * is rejected even when the signature is valid, which keeps the service
+   * paths separate should they ever share a secret. A list, because the API
+   * accepts two kinds of caller on the same door: the worker's tool loop and
+   * its own MCP endpoint.
    */
-  expectedPurpose: ServiceTokenPurpose;
+  expectedPurpose: ServiceTokenPurpose | readonly ServiceTokenPurpose[];
   now?: number;
 }
 
@@ -138,7 +143,10 @@ export function verifyServiceToken(
     return { valid: false, reason: 'malformed' };
   }
 
-  if (payload.purpose !== options.expectedPurpose) {
+  const accepted = Array.isArray(options.expectedPurpose)
+    ? options.expectedPurpose
+    : [options.expectedPurpose as ServiceTokenPurpose];
+  if (!accepted.includes(payload.purpose)) {
     return { valid: false, reason: 'wrong_purpose' };
   }
 

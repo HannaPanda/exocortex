@@ -35,22 +35,25 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  sessions           Session[]
-  accounts           Account[]
-  memberships        WorkspaceMember[]
-  createdDocuments   Document[]         @relation("DocumentCreatedBy")
-  updatedDocuments   Document[]         @relation("DocumentUpdatedBy")
-  createdSnapshots   DocumentSnapshot[]
-  createdAttachments Attachment[]
-  correctedAttachmentTexts Attachment[] @relation("AttachmentTextCorrectedBy")
-  auditEntries       AuditLog[]
-  aiRuns             AiRun[]
-  apiTokens          ApiToken[]
-  updatedSettings    Setting[]          @relation("SettingUpdatedBy")
-  aiConversations    AiConversation[]   @relation("AiConversationCreatedBy")
-  calendarAccounts   CalendarAccount[]  @relation("CalendarAccountOwner")
-  comments           Comment[]          @relation("CommentCreatedBy")
-  resolvedComments   Comment[]          @relation("CommentResolvedBy")
+  sessions                 Session[]
+  accounts                 Account[]
+  memberships              WorkspaceMember[]
+  createdDocuments         Document[]         @relation("DocumentCreatedBy")
+  updatedDocuments         Document[]         @relation("DocumentUpdatedBy")
+  createdSnapshots         DocumentSnapshot[]
+  createdAttachments       Attachment[]
+  correctedAttachmentTexts Attachment[]       @relation("AttachmentTextCorrectedBy")
+  auditEntries             AuditLog[]
+  aiRuns                   AiRun[]
+  apiTokens                ApiToken[]
+  updatedSettings          Setting[]          @relation("SettingUpdatedBy")
+  aiConversations          AiConversation[]   @relation("AiConversationCreatedBy")
+  calendarAccounts         CalendarAccount[]  @relation("CalendarAccountOwner")
+  comments                 Comment[]          @relation("CommentCreatedBy")
+  resolvedComments         Comment[]          @relation("CommentResolvedBy")
+  oauthApplications        OauthApplication[]
+  oauthAccessTokens        OauthAccessToken[]
+  oauthConsents            OauthConsent[]
 
   @@map("user")
 }
@@ -109,6 +112,94 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+// ---------------------------------------------------------------------------
+// OAuth 2.1 authorization server (Better Auth `mcp` plugin)
+// ---------------------------------------------------------------------------
+//
+// These three tables exist for one reason: ChatGPT cannot start a subprocess,
+// so it cannot speak the stdio MCP transport, and it does not let a person
+// paste an API token either. A remote MCP connector authenticates with OAuth
+// and registers itself dynamically (RFC 7591), which needs an authorization
+// server -- this one. Field names and shapes are dictated by the plugin's
+// adapter mapping; see docs/mcp.md.
+
+/// An OAuth client. Almost every row here is written by dynamic client
+/// registration rather than by a human, so `name` and `redirectUrls` are
+/// whatever the registering client claimed. Nothing downstream may treat them
+/// as trustworthy: they are shown on the consent page precisely so a person
+/// decides, and `disabled` is how that decision is revoked later.
+model OauthApplication {
+  id           String   @id @default(cuid(2))
+  name         String
+  icon         String?
+  /// Raw JSON blob of the registration request's `metadata`, stored verbatim.
+  metadata     String?
+  clientId     String   @unique
+  /// Null for public clients, which prove themselves with PKCE instead.
+  clientSecret String?
+  /// Comma-separated list. The plugin splits on `,` itself.
+  redirectUrls String
+  type         String
+  disabled     Boolean? @default(false)
+  /// Who registered it, when registration happened in a session. Null for
+  /// anonymous dynamic registration, which is the normal case for ChatGPT.
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime
+  updatedAt    DateTime
+
+  accessTokens OauthAccessToken[]
+  consents     OauthConsent[]
+
+  @@index([userId])
+  @@map("oauth_application")
+}
+
+/// An issued access/refresh token pair. Unlike `ApiToken` these are stored in
+/// the clear, because the plugin looks a token up by its own value; they are
+/// short-lived (one hour by default) to make that bearable, and the endpoint
+/// they unlock is only `/api/mcp`.
+model OauthAccessToken {
+  id                    String           @id @default(cuid(2))
+  accessToken           String           @unique
+  refreshToken          String           @unique
+  accessTokenExpiresAt  DateTime
+  refreshTokenExpiresAt DateTime
+  clientId              String
+  application           OauthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  userId                String?
+  user                  User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Space-separated OAuth scopes. These are the OpenID scopes the plugin
+  /// knows (openid, profile, email, offline_access) and say nothing about what
+  /// the token may do in eXocortex -- authorization stays with the workspace
+  /// policies the API applies to the token's user.
+  scopes                String
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@index([clientId])
+  @@index([userId])
+  @@map("oauth_access_token")
+}
+
+/// A person's recorded "yes" to one client. Its absence is what makes the
+/// consent page appear.
+model OauthConsent {
+  id           String           @id @default(cuid(2))
+  clientId     String
+  application  OauthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  userId       String
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scopes       String
+  consentGiven Boolean
+  createdAt    DateTime
+  updatedAt    DateTime
+
+  @@index([clientId])
+  @@index([userId])
+  @@map("oauth_consent")
 }
 
 // ---------------------------------------------------------------------------
@@ -175,16 +266,16 @@ model Workspace {
   updatedAt  DateTime  @updatedAt
   archivedAt DateTime?
 
-  members         WorkspaceMember[]
-  documents       Document[]
-  attachments     Attachment[]
-  outbox          OutboxEvent[]
-  auditLog        AuditLog[]
-  aiRuns          AiRun[]
-  aiConversations AiConversation[]
-  documentLinks   DocumentLink[]
+  members          WorkspaceMember[]
+  documents        Document[]
+  attachments      Attachment[]
+  outbox           OutboxEvent[]
+  auditLog         AuditLog[]
+  aiRuns           AiRun[]
+  aiConversations  AiConversation[]
+  documentLinks    DocumentLink[]
   calendarAccounts CalendarAccount[]
-  comments        Comment[]
+  comments         Comment[]
 
   @@map("workspace")
 }
@@ -268,13 +359,13 @@ enum AiRuleMode {
 }
 
 model Document {
-  id          String       @id @default(cuid(2))
+  id          String         @id @default(cuid(2))
   workspaceId String
-  workspace   Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   parentId    String?
-  parent      Document?    @relation("DocumentHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
-  children    Document[]   @relation("DocumentHierarchy")
-  type        DocumentType @default(PAGE)
+  parent      Document?      @relation("DocumentHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children    Document[]     @relation("DocumentHierarchy")
+  type        DocumentType   @default(PAGE)
   title       String
   /// Either a literal character (an emoji) or `lucide:<name>` from the curated
   /// set in `@exocortex/contracts`. One field for both, because a page has one
@@ -304,14 +395,14 @@ model Document {
   /// The column uses the `C` collation (see migration
   /// 20260804101500_order_key_c_collation) so comparisons use byte order, which
   /// is what the fractional index algorithm assumes.
-  orderKey    String
-  createdById String
-  createdBy   User         @relation("DocumentCreatedBy", fields: [createdById], references: [id])
-  updatedById String
-  updatedBy   User         @relation("DocumentUpdatedBy", fields: [updatedById], references: [id])
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  archivedAt  DateTime?
+  orderKey          String
+  createdById       String
+  createdBy         User        @relation("DocumentCreatedBy", fields: [createdById], references: [id])
+  updatedById       String
+  updatedBy         User        @relation("DocumentUpdatedBy", fields: [updatedById], references: [id])
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  archivedAt        DateTime?
 
   /// AI rule flags (D5). `OFF` is the default so no existing page becomes a
   /// rule by accident.
@@ -464,7 +555,7 @@ model DocumentLink {
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   sourceDocumentId String
-  sourceDocument   Document @relation("DocumentLinkSource", fields: [sourceDocumentId], references: [id], onDelete: Cascade)
+  sourceDocument   Document  @relation("DocumentLinkSource", fields: [sourceDocumentId], references: [id], onDelete: Cascade)
   /// `SetNull`, not `Cascade`: deleting the target turns the reference into an
   /// unresolved one, which is exactly what it has become.
   targetDocumentId String?
@@ -487,8 +578,8 @@ model DocumentLink {
   /// Surrounding sentence, for the backlink preview.
   context        String
   /// Order of appearance in the source document.
-  position       Int      @default(0)
-  createdAt      DateTime @default(now())
+  position       Int              @default(0)
+  createdAt      DateTime         @default(now())
 
   /// One row per notation, title and block. The extractor deduplicates on the
   /// same triple, so this constraint only ever catches a bug — the wholesale
@@ -656,22 +747,22 @@ model DocumentPropertyValue {
   property   DatabaseProperty @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   /// TEXT, URL, EMAIL, PHONE, and the selected option id for SELECT.
-  textValue   String?
-  numberValue Decimal?  @db.Decimal(20, 6)
-  boolValue   Boolean?
+  textValue    String?
+  numberValue  Decimal?  @db.Decimal(20, 6)
+  boolValue    Boolean?
   /// DATE: the instant, and the *start* of the span when the property has
   /// `isRange: true`. Always UTC; the authoring zone is on the property config.
-  dateValue   DateTime?
+  dateValue    DateTime?
   /// DATE with `isRange: true` only: exclusive end of the span. Null means the
   /// span has no stated end, which is not the same as a zero-length one.
   dateEndValue DateTime?
   /// DATE only: whether the span covers whole days rather than a time of day.
   /// Per value, not per property -- one calendar holds birthdays and 14:00
   /// meetings. Null for a property that has never been written as all-day.
-  dateAllDay  Boolean?
+  dateAllDay   Boolean?
   /// Arrays only: MULTI_SELECT (option ids), PERSON (user ids), FILES
   /// (attachment ids). Never used for the scalar types above.
-  jsonValue   Json?
+  jsonValue    Json?
 
   updatedAt DateTime @updatedAt
 
@@ -722,16 +813,16 @@ model Attachment {
   /// and nothing else points at it. That is what lets maintenance delete it
   /// once it stops being one; an image a user placed in the body is never
   /// marked and is never collected.
-  isCover     Boolean   @default(false)
-  coverOf     Document[] @relation("DocumentCover")
+  isCover Boolean    @default(false)
+  coverOf Document[] @relation("DocumentCover")
 
   /// Downscaled copy of an image, stored next to the original so a page view
   /// does not have to pull a 12-megapixel photo to draw a cover. Derived data:
   /// null simply means "serve the original", and the three columns are always
   /// written and cleared together.
-  previewKey       String? @unique
-  previewMimeType  String?
-  previewByteSize  Int?
+  previewKey      String? @unique
+  previewMimeType String?
+  previewByteSize Int?
 
   /// Extracted text cache (D6). Populated by the `attachment-text` queue.
   extractedText       String?
@@ -753,10 +844,10 @@ model Attachment {
   /// never silently discard what a person fixed by hand, and keeping both lets
   /// the UI show that they differ. Whenever present, this is the version every
   /// reader (human or `exo_attachment_read_text`) sees.
-  correctedText       String?
-  textCorrectedAt     DateTime?
-  textCorrectedById   String?
-  textCorrectedBy     User?                @relation("AttachmentTextCorrectedBy", fields: [textCorrectedById], references: [id], onDelete: SetNull)
+  correctedText     String?
+  textCorrectedAt   DateTime?
+  textCorrectedById String?
+  textCorrectedBy   User?     @relation("AttachmentTextCorrectedBy", fields: [textCorrectedById], references: [id], onDelete: SetNull)
 
   @@index([workspaceId, createdAt])
   @@index([documentId])
@@ -953,38 +1044,38 @@ enum AiRunStatus {
 }
 
 model AiRun {
-  id          String      @id @default(cuid(2))
-  workspaceId String
-  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  documentId  String?
-  document    Document?   @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  id             String        @id @default(cuid(2))
+  workspaceId    String
+  workspace      Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  documentId     String?
+  document       Document?     @relation(fields: [documentId], references: [id], onDelete: SetNull)
   /// The view that was open when `documentId` points at a COLLECTION. A
   /// database's rows only mean something through a view's filters and sorts, so
   /// describing the page without it would describe a different table than the
   /// one on screen. Null for ordinary pages.
   databaseViewId String?
   databaseView   DatabaseView? @relation(fields: [databaseViewId], references: [id], onDelete: SetNull)
-  createdById String
-  createdBy   User        @relation(fields: [createdById], references: [id], onDelete: Cascade)
-  status      AiRunStatus @default(PENDING)
-  provider    String
-  model       String
+  createdById    String
+  createdBy      User          @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  status         AiRunStatus   @default(PENDING)
+  provider       String
+  model          String
   /// Prompt messages as submitted by the user. Never includes document
   /// content: image descriptions generated for this run (ADR-012) are
   /// prepended in memory before the provider call and are not persisted here.
-  messages    Json
-  resultText  String?
-  usage       Json?
-  errorCode   String?
-  createdAt   DateTime    @default(now())
-  startedAt   DateTime?
-  finishedAt  DateTime?
-  cancelledAt DateTime?
+  messages       Json
+  resultText     String?
+  usage          Json?
+  errorCode      String?
+  createdAt      DateTime      @default(now())
+  startedAt      DateTime?
+  finishedAt     DateTime?
+  cancelledAt    DateTime?
   /// Last sign of life from the worker processing this run, renewed every
   /// few seconds while it is RUNNING. A RUNNING run without a recent one has
   /// lost its worker (crash, deploy restart, stalled job) -- see
   /// reap-stale-ai-runs (apps/worker/src/processors/maintenance.ts).
-  heartbeatAt DateTime?
+  heartbeatAt    DateTime?
 
   /// Conversation this run belongs to, when it was started from one (D7).
   /// No `@map`: every other column on this model keeps Prisma's default
@@ -1045,32 +1136,32 @@ enum CalendarEventOrigin {
 /// `setting` table is not encrypted, so a password may never land in the
 /// database at all.
 model CalendarAccount {
-  id          String           @id @default(cuid(2))
-  workspaceId String
-  workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  id            String           @id @default(cuid(2))
+  workspaceId   String
+  workspace     Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   /// The human the sync acts as. Every row it writes goes through the REST API
   /// with a service token minted for this user, so the mirror can reach exactly
   /// the pages they could reach and no more (ADR-014). On the account rather than
   /// in the job payload, because a repeatable schedule has no user context.
-  userId      String
-  user        User             @relation("CalendarAccountOwner", fields: [userId], references: [id], onDelete: Cascade)
-  provider    CalendarProvider
+  userId        String
+  user          User             @relation("CalendarAccountOwner", fields: [userId], references: [id], onDelete: Cascade)
+  provider      CalendarProvider
   /// Label shown in the UI, e.g. "mailbox.org".
-  displayName String
+  displayName   String
   /// The login as the provider knows it. Also matched against ATTENDEE to read
   /// our own participation status out of an invitation.
-  username    String
+  username      String
   /// Name of the env key holding the credentials, e.g. `MAILBOX_CALDAV_PASSWORD`.
   /// Indirection on purpose: rotating the secret never touches this row.
   credentialRef String
   /// Entry point for discovery. Null falls back to the provider's default.
-  baseUrl     String?
-  enabled     Boolean          @default(true)
-  lastSyncedAt DateTime?
+  baseUrl       String?
+  enabled       Boolean          @default(true)
+  lastSyncedAt  DateTime?
   /// Last failure, kept so the UI can say why a calendar is stale.
-  lastError   String?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  lastError     String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 
   links CalendarLink[]
 
@@ -1080,36 +1171,36 @@ model CalendarAccount {
 
 /// One remote collection mirrored into one Exocortex database.
 model CalendarLink {
-  id                String                @id @default(cuid(2))
-  accountId         String
-  account           CalendarAccount       @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  id                     String                @id @default(cuid(2))
+  accountId              String
+  account                CalendarAccount       @relation(fields: [accountId], references: [id], onDelete: Cascade)
   /// The remote collection's path, e.g. `/caldav/Y2FsOi8vMC8yNQ/`. Its identity.
-  remoteHref        String
+  remoteHref             String
   /// The name the server gives it, refreshed on every discovery run.
-  remoteDisplayName String
+  remoteDisplayName      String
   /// `VEVENT` or `VTODO`. A collection can advertise both; a link handles one.
-  component         String                @default("VEVENT")
+  component              String                @default("VEVENT")
   /// The COLLECTION document the rows live under (ADR-011).
-  documentId        String
-  document          Document              @relation("CalendarLinkTarget", fields: [documentId], references: [id], onDelete: Cascade)
+  documentId             String
+  document               Document              @relation("CalendarLinkTarget", fields: [documentId], references: [id], onDelete: Cascade)
   /// Which property receives which field. Validated against
   /// calendarLinkPropertyMapSchema in @exocortex/contracts, the same
   /// "JSON column validated at the boundary" pattern as DatabaseView.config.
-  propertyMap       Json                  @default("{}")
-  direction         CalendarSyncDirection  @default(PULL)
+  propertyMap            Json                  @default("{}")
+  direction              CalendarSyncDirection @default(PULL)
   /// Last `sync-collection` token. Null means the next run reads everything.
-  syncToken         String?
+  syncToken              String?
   /// False for a collection the server reports no sync-token for (mailbox.org's
   /// generated "Geburtstage"). Such a link can only ever be read in full, so it
   /// is polled far less often -- see the sync processor.
-  supportsSyncCollection Boolean          @default(true)
+  supportsSyncCollection Boolean               @default(true)
   /// Cheap change detector for the collections above.
-  ctag              String?
-  enabled           Boolean               @default(true)
-  lastSyncedAt      DateTime?
-  lastError         String?
-  createdAt         DateTime              @default(now())
-  updatedAt         DateTime              @updatedAt
+  ctag                   String?
+  enabled                Boolean               @default(true)
+  lastSyncedAt           DateTime?
+  lastError              String?
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
 
   objects CalendarObjectState[]
 
@@ -1121,33 +1212,33 @@ model CalendarLink {
 /// What Exocortex knows about one remote calendar object, and which row mirrors
 /// it. This is the table that makes the sync safe rather than lossy.
 model CalendarObjectState {
-  id            String              @id @default(cuid(2))
-  linkId        String
-  link          CalendarLink        @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  id              String              @id @default(cuid(2))
+  linkId          String
+  link            CalendarLink        @relation(fields: [linkId], references: [id], onDelete: Cascade)
   /// Path of the object on the server, e.g. `/caldav/…/abc.ics`.
-  remoteHref    String
+  remoteHref      String
   /// Version as the server states it. Unchanged etag means the body need not be
   /// fetched at all, which is what keeps a routine sync cheap.
-  etag          String?
+  etag            String?
   /// The iCalendar UID. Stable across servers, so the same invitation arriving
   /// in mailbox.org *and* in Google is recognised as one event instead of two.
-  icsUid        String
+  icsUid          String
   /// The row Document mirroring this object. Null while a mapping is pending or
   /// after the row was deleted by hand.
-  rowDocumentId String?
-  row           Document?           @relation("CalendarRow", fields: [rowDocumentId], references: [id], onDelete: SetNull)
-  origin        CalendarEventOrigin @default(REMOTE)
+  rowDocumentId   String?
+  row             Document?           @relation("CalendarRow", fields: [rowDocumentId], references: [id], onDelete: SetNull)
+  origin          CalendarEventOrigin @default(REMOTE)
   /// Set when the object arrived as an invitation; then the organizer owns it.
-  organizer     String?
+  organizer       String?
   /// Our own PARTSTAT, e.g. ACCEPTED. Read-only until ITIP replies exist.
-  partStat      String?
+  partStat        String?
   /// The object's raw iCalendar body, stored only for recurring objects.
   ///
   /// A series' next occurrence changes as time passes, not when the object
   /// changes, and an unchanged etag means there is deliberately nothing to
   /// fetch. So the rule has to be readable locally, or "next Monday" would stay
   /// last Monday until someone edited the appointment.
-  recurrenceIcs String?
+  recurrenceIcs   String?
   /// Start of the occurrence currently written into the mirrored row. Lets a pass
   /// see at a glance whether the row still names the right date, and is what the
   /// reminder sweep reads instead of querying every row through the API.
@@ -1159,20 +1250,20 @@ model CalendarObjectState {
   /// fresh reminder because its start no longer matches. A boolean would have to
   /// be reset by hand on every change, and a series would only ever be announced
   /// once.
-  remindedFor   DateTime?
+  remindedFor     DateTime?
   /// Hash of the payload last written outward, so a future two-way sync can tell
   /// "the remote changed" from "the remote is echoing our own write" and cannot
   /// ping-pong. Unused while the link is PULL.
-  lastPushedHash String?
+  lastPushedHash  String?
   remoteUpdatedAt DateTime?
-  lastSeenAt    DateTime            @default(now())
+  lastSeenAt      DateTime            @default(now())
   /// Tombstone. Set when the object is gone from the server instead of deleting
   /// this row: with remote creation allowed, absence is no longer a delete
   /// signal, so the sync needs to remember that this UID *was* deleted or it
   /// will recreate it on the next full read.
-  deletedAt     DateTime?
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
+  deletedAt       DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
 
   @@unique([linkId, remoteHref])
   /// Dedup and tombstone lookups both go by UID within a link.
