@@ -6,6 +6,11 @@ import * as React from 'react';
 
 import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -13,6 +18,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  Input,
 } from '@exocortex/ui';
 
 import { useCreateWorkspace, useWorkspaces } from '@/lib/api/queries';
@@ -38,84 +44,98 @@ export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: st
   };
 
   return (
-    // Controlled, so creating a workspace can close the menu itself and so a
-    // half-typed name never survives into the next time it is opened.
-    <DropdownMenu
-      open={open}
-      onOpenChange={(next: boolean) => {
-        setOpen(next);
-        if (!next) {
-          setCreating(false);
-          setName('');
-        }
-      }}
-    >
-      <DropdownMenuTrigger
-        render={
-          <Button
-            variant="ghost"
-            size="sm"
-            className="max-w-52 justify-between gap-1"
-            data-testid="workspace-switcher"
-          >
-            <span className="truncate">{active?.name ?? 'Arbeitsbereich wählen'}</span>
-            <ChevronsUpDownIcon className="size-3.5 shrink-0 text-muted-foreground" />
-          </Button>
-        }
-      />
-      <DropdownMenuContent className="flex min-w-60 flex-col overflow-hidden">
-        {/*
+    <>
+      {/*
+      Controlled, so selecting a workspace can close the menu itself.
+    */}
+      <DropdownMenu open={open} onOpenChange={setOpen}>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="sm"
+              className="max-w-52 justify-between gap-1"
+              data-testid="workspace-switcher"
+            >
+              <span className="truncate">{active?.name ?? 'Arbeitsbereich wählen'}</span>
+              <ChevronsUpDownIcon className="size-3.5 shrink-0 text-muted-foreground" />
+            </Button>
+          }
+        />
+        <DropdownMenuContent className="flex min-w-60 flex-col overflow-hidden">
+          {/*
           Only the list scrolls. "Neuer Arbeitsbereich" below it has to stay
           reachable no matter how many workspaces someone is a member of — with
           a hundred of them, a menu that scrolls as a whole hides the one entry
           that is not a workspace.
         */}
-        <DropdownMenuGroup className="min-h-0 flex-1 overflow-y-auto">
-          <DropdownMenuLabel>Arbeitsbereiche</DropdownMenuLabel>
-          {(workspaces.data ?? []).map((workspace) => (
-            <DropdownMenuItem
-              key={workspace.id}
-              onClick={() => router.push(`/arbeitsbereich/${workspace.id}`)}
-              data-testid={`workspace-option-${workspace.id}`}
-            >
-              <span className="min-w-0 flex-1 truncate">{workspace.name}</span>
-              <span className="text-xs text-muted-foreground">{workspace.role}</span>
-              {workspace.id === activeWorkspaceId ? <CheckIcon /> : null}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        {creating ? (
-          <div className="flex flex-col gap-2 p-2">
-            <input
-              autoFocus
-              value={name}
-              placeholder="Name des Arbeitsbereichs"
-              onChange={(event) => setName(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') void create();
-                if (event.key === 'Escape') setCreating(false);
-              }}
-              className="h-8 rounded-md border border-input bg-transparent px-2 text-sm outline-none"
-              data-testid="workspace-name-input"
-            />
-            <Button size="sm" onClick={() => void create()} data-testid="workspace-create-submit">
-              Anlegen
-            </Button>
-          </div>
-        ) : (
-          <DropdownMenuItem
-            // Without this the menu closes on the click, taking the form this
-            // very item opens down with it: `preventDefault` does not stop it,
-            // because Base UI closes on activation and not on the DOM default.
-            closeOnClick={false}
-            onClick={() => setCreating(true)}
-            data-testid="workspace-create"
-          >
+          <DropdownMenuGroup className="min-h-0 flex-1 overflow-y-auto">
+            <DropdownMenuLabel>Arbeitsbereiche</DropdownMenuLabel>
+            {(workspaces.data ?? []).map((workspace) => (
+              <DropdownMenuItem
+                key={workspace.id}
+                onClick={() => router.push(`/arbeitsbereich/${workspace.id}`)}
+                data-testid={`workspace-option-${workspace.id}`}
+              >
+                <span className="min-w-0 flex-1 truncate">{workspace.name}</span>
+                <span className="text-xs text-muted-foreground">{workspace.role}</span>
+                {workspace.id === activeWorkspaceId ? <CheckIcon /> : null}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => setCreating(true)} data-testid="workspace-create">
             <PlusIcon /> Neuer Arbeitsbereich
           </DropdownMenuItem>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/*
+      The name is typed in a dialog and not inside the menu: an open Base UI
+      menu consumes every character key for its typeahead navigation, so an
+      input rendered in the popup never receives a single keystroke.
+    */}
+      <Dialog
+        open={creating}
+        onOpenChange={(next: boolean) => {
+          setCreating(next);
+          if (!next) setName('');
+        }}
+      >
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Neuer Arbeitsbereich</DialogTitle>
+          </DialogHeader>
+          <label htmlFor="workspace-create-name" className="sr-only">
+            Name des Arbeitsbereichs
+          </label>
+          <Input
+            id="workspace-create-name"
+            autoFocus
+            value={name}
+            placeholder="Name des Arbeitsbereichs"
+            onChange={(event) => setName(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key !== 'Enter') return;
+              event.preventDefault();
+              void create();
+            }}
+            data-testid="workspace-name-input"
+          />
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setCreating(false)}>
+              Abbrechen
+            </Button>
+            <Button
+              onClick={() => void create()}
+              disabled={name.trim().length === 0 || createWorkspace.isPending}
+              data-testid="workspace-create-submit"
+            >
+              Anlegen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

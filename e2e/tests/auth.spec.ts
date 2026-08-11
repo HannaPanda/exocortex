@@ -44,7 +44,11 @@ test.describe('authentication', () => {
     // Create a second workspace from the menu and switch into it.
     await page.getByTestId('workspace-create').click();
     const name = `Wechsel ${Date.now().toString(36)}`;
-    await page.getByTestId('workspace-name-input').fill(name);
+    // Typed key by key on purpose: `fill` sets the value through the DOM and
+    // would still pass while an open menu swallows every character key for its
+    // typeahead, which is exactly how that bug reached production once.
+    await page.getByTestId('workspace-name-input').pressSequentially(name);
+    await expect(page.getByTestId('workspace-name-input')).toHaveValue(name);
     await page.getByTestId('workspace-create-submit').click();
     await page.waitForURL(/\/arbeitsbereich\/(?!$)/, { timeout: 30_000 });
     await expect(page.getByTestId('workspace-switcher')).toContainText(name);
