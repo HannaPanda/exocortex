@@ -15,6 +15,7 @@ import {
   type DocumentSummary,
   documentSummarySchema,
   documentTitleSchema,
+  type DocumentTreeNode,
   documentTreeResponseSchema,
   documentTypeSchema,
   generateDocumentCoverResponseSchema,
@@ -52,6 +53,47 @@ function formatDocumentSummary(document: DocumentSummary): string {
   return `${document.title} (id: ${document.id}, type: ${document.type})`;
 }
 
+/**
+ * How many pages the tree renders before it stops counting them out.
+ *
+ * A workspace can hold thousands, and a tool result is not a place to put all
+ * of them: the reader is a model with a context window. The cap is generous
+ * enough that an ordinary workspace arrives whole and honest enough to say so
+ * when it does not.
+ */
+const MAX_TREE_LINES = 300;
+
+/**
+ * Renders the hierarchy as indented lines, one page per line, each with the id
+ * a follow-up call needs.
+ *
+ * This used to answer with the two counts alone and leave the pages themselves
+ * in `structuredContent`. That is invisible to any client that reads the text
+ * content, which is most of them: ChatGPT called this tool four times in a row,
+ * learned "3 Wurzelseiten" each time, and then guessed a workspace. A tool
+ * result has to carry its answer in the text.
+ */
+function renderTree(nodes: readonly DocumentTreeNode[]): { lines: string[]; omitted: number } {
+  const lines: string[] = [];
+  let omitted = 0;
+
+  const walk = (node: DocumentTreeNode, depth: number): void => {
+    if (lines.length >= MAX_TREE_LINES) {
+      omitted += 1 + countDescendants(node);
+      return;
+    }
+    lines.push(`${'  '.repeat(depth)}- ${formatDocumentSummary(node)}`);
+    for (const child of node.children) walk(child, depth + 1);
+  };
+
+  for (const node of nodes) walk(node, 0);
+  return { lines, omitted };
+}
+
+function countDescendants(node: DocumentTreeNode): number {
+  return node.children.reduce((total, child) => total + 1 + countDescendants(child), 0);
+}
+
 export const pageTreeTool: AnyToolDefinition = defineTool({
   name: 'exo_page_tree',
   description: 'Liest die Seitenhierarchie eines Workspace als Baum, inklusive archivierter Seiten.',
@@ -64,7 +106,21 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
       path: `/api/workspaces/${input.workspaceId}/documents/tree`,
       responseSchema: documentTreeResponseSchema,
     });
-    return { text: `${result.nodes.length} Wurzelseiten, ${result.archived.length} archivierte Seiten.`, data: result };
+    const { lines, omitted } = renderTree(result.nodes);
+    const parts = [
+      lines.length === 0 ? 'Keine Seiten vorhanden.' : lines.join('\n'),
+      ...(omitted === 0 ? [] : [`… ${omitted} weitere Seite(n) nicht angezeigt (gekürzt).`]),
+      // Archived pages stay out of the tree and behind a count: they are not
+      // somewhere to file a new page, and listing them invites writing into
+      // the trash.
+      ...(result.archived.length === 0
+        ? []
+        : [
+            `\n${result.archived.length} archivierte Seite(n), nicht aufgelistet. ` +
+              'exo_page_restore holt eine davon zurück.',
+          ]),
+    ];
+    return { text: parts.join('\n'), data: result };
   },
 });
 

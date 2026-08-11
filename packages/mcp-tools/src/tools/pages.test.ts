@@ -8,6 +8,7 @@ import {
   pageReadTool,
   pageResolveLinkTool,
   pageSetCoverTool,
+  pageTreeTool,
   pageWriteTool,
 } from './pages.js';
 
@@ -369,5 +370,77 @@ describe('pageGenerateCoverTool', () => {
       pageGenerateCoverTool.run(client, { documentId: 'doc123456', prompt: 'x' }),
     ).rejects.toThrow();
     expect(calls).toEqual([]);
+  });
+});
+
+describe('pageTreeTool', () => {
+  function node(id: string, title: string, children: unknown[] = []) {
+    return {
+      id,
+      workspaceId: 'm19i6551nw1eafb88aoisg6x',
+      parentId: null,
+      type: 'PAGE',
+      title,
+      icon: null,
+      iconColor: null,
+      layout: 'narrow',
+      coverAttachmentId: null,
+      coverPosition: 50,
+      orderKey: 'V',
+      createdById: 'uuuuuuuu1111uuuu',
+      updatedById: 'uuuuuuuu1111uuuu',
+      createdAt: '2026-08-11T00:00:00.000Z',
+      updatedAt: '2026-08-11T00:00:00.000Z',
+      archivedAt: null,
+      children,
+    };
+  }
+
+  it('puts the pages in the text, not only in the structured payload', async () => {
+    // The regression this pins: the tool used to answer "3 Wurzelseiten, 1
+    // archivierte Seiten" and leave the pages themselves in `data`. A client
+    // that reads the text content -- ChatGPT does -- learned nothing from it
+    // and started guessing which workspace to write into.
+    const { client } = createFakeClient({
+      nodes: [node('aaaaaaaa1111aaaa', 'Projekte', [node('bbbbbbbb2222bbbb', 'Kalender')]), node('cccccccc3333cccc', 'Notizen')],
+      archived: [],
+    });
+
+    const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+
+    expect(result.text).toContain('- Projekte (id: aaaaaaaa1111aaaa, type: PAGE)');
+    expect(result.text).toContain('  - Kalender (id: bbbbbbbb2222bbbb, type: PAGE)');
+    expect(result.text).toContain('- Notizen (id: cccccccc3333cccc, type: PAGE)');
+  });
+
+  it('counts archived pages instead of listing them', async () => {
+    const { client } = createFakeClient({
+      nodes: [node('aaaaaaaa1111aaaa', 'Projekte')],
+      archived: [{ ...node('zzzzzzzz9999zzzz', 'Alter Kram'), archivedAt: '2026-08-01T00:00:00.000Z' }],
+    });
+
+    const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+
+    expect(result.text).toContain('1 archivierte Seite(n)');
+    expect(result.text).not.toContain('Alter Kram');
+  });
+
+  it('says so when it stops listing rather than trailing off', async () => {
+    const many = Array.from({ length: 400 }, (_, i) => node(`nnnnnnnn${String(i).padStart(4, '0')}`, `Seite ${String(i)}`));
+    const { client } = createFakeClient({ nodes: many, archived: [] });
+
+    const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+
+    expect(result.text).toContain('Seite 299');
+    expect(result.text).not.toContain('Seite 300 (');
+    expect(result.text).toContain('… 100 weitere Seite(n) nicht angezeigt (gekürzt).');
+  });
+
+  it('has something to say about an empty workspace', async () => {
+    const { client } = createFakeClient({ nodes: [], archived: [] });
+
+    const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+
+    expect(result.text).toBe('Keine Seiten vorhanden.');
   });
 });

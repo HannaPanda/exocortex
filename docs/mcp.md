@@ -109,7 +109,7 @@ change as dangerous only trains people to click past the warnings that matter.
 | --- | --- | --- | --- |
 | `exo_list_workspaces` | no | no | `GET /api/workspaces` |
 | `exo_workspace_rename` | yes | yes | `PATCH /api/workspaces/:workspaceId` (name and/or slug, independently) |
-| `exo_page_tree` | no | no | `GET /api/workspaces/:workspaceId/documents/tree` |
+| `exo_page_tree` | no | no | `GET /api/workspaces/:workspaceId/documents/tree` -- the text answer is the indented tree with ids, capped at 300 pages; archived pages are counted, not listed |
 | `exo_page_read` | no | no | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars) |
 | `exo_page_create` | yes | no | `POST /api/workspaces/:workspaceId/import/markdown` when `markdown` is given, else `POST /api/workspaces/:workspaceId/documents` |
 | `exo_page_write` | yes | yes | `POST /api/documents/:documentId/content` |
@@ -182,18 +182,25 @@ contracts is a follow-up for whichever wave next touches `packages/contracts`.
    with `defineTool({...})`, a German `description`, and an `inputSchema` reused
    from `@exocortex/contracts` wherever it fits (`z.object({...}).extend(x.shape)`
    to add a path parameter to a request schema).
-3. **Set `mutating` and, if `mutating: true`, `target`** — a function from the
+3. **Put the answer in `text`.** `data` is mirrored into `structuredContent`,
+   which many clients never look at; `text` is what reaches the model. A result
+   whose text is a summary of a payload only the structured half carries is a
+   tool that returns nothing. `exo_page_tree` shipped like that and answered
+   "3 Wurzelseiten" to every call, which is how ChatGPT ended up guessing a
+   workspace instead of choosing one. Cap what could be unbounded
+   (`truncateText`, a line limit) and say out loud that it was capped.
+4. **Set `mutating` and, if `mutating: true`, `target`** — a function from the
    validated input to a stable string identifying the write destination
    (`document:<id>`, `workspace:<id>`). Every mutating tool must define one; the
    catalogue test enforces this.
-4. **Export it** from the domain file's array (e.g. `PAGE_TOOLS`) and make sure
+5. **Export it** from the domain file's array (e.g. `PAGE_TOOLS`) and make sure
    `catalog.ts` re-exports that array into `EXOCORTEX_TOOLS`.
-5. **Extend `catalog.test.ts`** if the new tool needs a specific assertion
+6. **Extend `catalog.test.ts`** if the new tool needs a specific assertion
    beyond the blanket checks (unique `exo_`-prefixed name, ≥20-char German
    description, `z.toJSONSchema` succeeds, mutating ⇒ has a target). Add a
    focused test in `packages/mcp-tools/src/tools/*.test.ts` for anything with
    non-trivial formatting (truncation, table rendering, branching REST calls).
-6. **No `apps/worker` change is needed.** The built-in AI tool loop reads
+7. **No `apps/worker` change is needed.** The built-in AI tool loop reads
    `toolsFor('ai', ...)` from the same catalogue; the new tool appears there
    automatically once step 4 is done, gated by `ai.mutatingToolsEnabled` if it
    is mutating.
