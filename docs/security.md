@@ -87,9 +87,45 @@ Three cumulative scopes, stored in `ApiToken.scopes`:
 * An empty scope list grants **nothing**. Tokens issued before scoping have an
   empty array; migration `20260808230000_api_token_scopes` backfills the ones in
   use to `read,write`, and anything left over fails closed.
-* Cookie sessions and the worker's `exos_` service tokens are not scoped. A human
-  at a browser already is the account, and a service token is minted per AI run
-  from a session that was itself authorized.
+* Cookie sessions and `exos_` service tokens are not scoped. A human at a
+  browser already is the account, and a service token is minted per AI run, or
+  per MCP request from an OAuth client, from a credential that was itself
+  authorized.
+
+## The MCP endpoint and its OAuth server
+
+`POST /api/mcp` ([ADR-018](adr/ADR-018-remote-mcp-over-http.md)) is the one
+route in the API that authenticates itself instead of leaving it to
+`SessionGuard`, and it is stricter, not looser:
+
+* **No cookies.** Only a bearer token opens it. A cookie travels with any
+  request a page can provoke; accepting one would put every mutating tool one
+  cross-site request away, and there is no CSRF token to fall back on because
+  MCP clients do not have one.
+* **An `exo_` token is passed through** to the endpoint's loopback calls into
+  the REST API, so `TokenScopeGuard` narrows a tool exactly as it narrows a
+  direct request. A read-scoped token cannot write through a tool.
+* **An OAuth access token** is verified against `oauth_access_token`, then
+  exchanged for a 120-second `mcp-tools` service token for the loopback. It
+  opens no other route. Its limit is the tool list its endpoint serves.
+* **CORS is `*` on this path only**, which is sound precisely because the path
+  refuses cookies: a cross-origin caller has nothing ambient to ride on and
+  must present a credential a person handed it.
+
+Being an OAuth authorization server is new surface, and the honest summary of
+it is: dynamic client registration is open, as the MCP specification requires,
+so anyone can create a client row. That row is worth nothing on its own. What
+turns it into access is a signed-in person answering the consent screen at
+`/verbinden`, and that screen is unconditional — Better Auth would only show it
+when the *client* asks with `prompt=consent`, so `forceConsentPrompt` in the
+API adds the parameter before the plugin sees the request. Without that, a
+website could redirect a signed-in visitor to the authorization endpoint and
+collect a token with nothing visible happening.
+
+Access tokens here are stored unhashed, unlike `ApiToken`, because the plugin
+looks a token up by its value. The compensations are that they live one hour,
+that they unlock exactly one endpoint, and that setting `disabled` on the
+client kills every token it holds at once, checked on each use.
 
 ## CSRF
 

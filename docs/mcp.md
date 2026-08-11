@@ -1,21 +1,27 @@
 # MCP server
 
-eXocortex is reachable from external MCP clients (Hermes, Claude Code, any
-stdio-speaking client) and from its own built-in AI tool loop through the
-*same* tool catalogue. This document covers the architecture, the tool
-reference, how to add a tool, authentication, the confirmation gate, and how
-to configure a client.
+eXocortex is reachable from external MCP clients (Hermes, Claude Code, ChatGPT,
+any client that speaks stdio or Streamable HTTP) and from its own built-in AI
+tool loop through the *same* tool catalogue. This document covers the
+architecture, the two transports, the tool reference, how to add a tool,
+authentication, the confirmation gate, and how to configure a client.
 
 ## What it is
 
-One catalogue, two surfaces:
+One catalogue, several surfaces:
 
 * **`packages/mcp-tools`** — the tool catalogue. Each tool is a name, a German
   description, a zod input schema, and an `execute(client, input)` that talks
-  to the REST API through an injected `ExocortexApiClient`.
-* **`apps/mcp`** — a ~400-line stdio JSON-RPC bin. It builds a `fetch`-based
-  `ExocortexApiClient` from environment variables and dispatches
-  `tools/list`/`tools/call` into the catalogue.
+  to the REST API through an injected `ExocortexApiClient`. It also owns the
+  MCP method dispatch (`src/protocol.ts`), which is transport-free on purpose:
+  both transports below run that same code and add only their own framing.
+* **`apps/mcp`** — a small stdio JSON-RPC bin. It builds a `fetch`-based
+  `ExocortexApiClient` from environment variables and hands messages to the
+  shared dispatcher. Started as a subprocess by the client.
+* **`apps/api`, `POST /api/mcp`** — the same protocol over HTTP
+  ([ADR-018](adr/ADR-018-remote-mcp-over-http.md)), for clients that connect to
+  a URL and cannot start a process. This is the only way ChatGPT can be
+  connected.
 * **`apps/worker`** (brief 04) imports the *same* catalogue for the built-in
   AI's tool loop, authenticated with a short-lived service token instead of a
   persistent API token.
@@ -32,20 +38,30 @@ never drift apart. This is the parity rule referenced from `CLAUDE.md`.
 ## Architecture
 
 ```
-Hermes / Claude Code / any MCP client
-        │  stdio, newline-delimited JSON-RPC 2.0
-        ▼
-   apps/mcp (this package)
-        │  tools/list, tools/call
-        ▼
- @exocortex/mcp-tools catalogue  ◄──── apps/worker's AI tool loop (brief 04)
-        │  ExocortexApiClient.request/upload
-        ▼
-   apps/api (REST, bearer auth)
-        │
-        ▼
-  packages/database, packages/queue, packages/storage, ...
+Hermes / Claude Code                        ChatGPT / any remote client
+        │  stdio, newline-delimited                 │  Streamable HTTP,
+        │  JSON-RPC 2.0                             │  bearer or OAuth
+        ▼                                           ▼
+   apps/mcp                                POST /api/mcp (apps/api)
+        │                                           │
+        └───────────────┬───────────────────────────┘
+                        ▼
+     @exocortex/mcp-tools: protocol dispatch + catalogue
+                        │             ▲
+                        │             └──── apps/worker's AI tool loop (brief 04)
+                        │  ExocortexApiClient.request/upload
+                        ▼
+                 apps/api (REST, bearer auth)
+                        │
+                        ▼
+   packages/database, packages/queue, packages/storage, ...
 ```
+
+The HTTP endpoint's arrow back into `apps/api` is a real HTTP call, over
+loopback to `127.0.0.1:3211`. The API answers its own request. That is one
+extra hop per tool call, and it is what keeps the rule below true for the HTTP
+transport as well: a tool cannot skip a policy check, because the check *is*
+the same request a browser makes.
 
 The catalogue **only** talks REST. It never imports `@exocortex/database`,
 `@exocortex/auth` or `@exocortex/queue` directly (enforced by
@@ -69,8 +85,11 @@ discipline completely, which the SDK does not guarantee out of the box.
 
 ## Tool reference
 
-All 46 tools are namespaced `exo_` so they cannot collide with the other MCP
-servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`).
+All 46 tools below are namespaced `exo_` so they cannot collide with the other
+MCP servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`). Two
+further tools, `search` and `fetch`, live on a surface of their own and are
+described under "ChatGPT deep research"; they are the only tools in the
+catalogue without the prefix, because ChatGPT matches them by exact name.
 
 | Tool | Mutating | REST call |
 | --- | --- | --- |
@@ -167,18 +186,98 @@ contracts is a follow-up for whichever wave next touches `packages/contracts`.
 
 ## Authentication
 
-Two credential kinds resolve to a `VerifiedSession` in `apps/api`'s
-`SessionGuard` (see `packages/auth/src/api-token.ts` and `service-token.ts`):
-
 | Prefix | Who mints it | Lifetime | Used by |
 | --- | --- | --- | --- |
-| `exo_` | A user, via `POST /api/me/api-tokens` (brief 02) | Until revoked or its optional `expiresAt` | External MCP clients: `apps/mcp` via `EXOCORTEX_API_TOKEN` |
-| `exos_` | The worker itself, per AI run (D3) | 300 seconds, HMAC-signed with `SERVICE_TOKEN_SECRET` | The built-in AI's tool loop |
+| `exo_` | A user, via `POST /api/me/api-tokens` | Until revoked or its optional `expiresAt` | `apps/mcp` via `EXOCORTEX_API_TOKEN`, and `POST /api/mcp` directly |
+| `exos_` | The worker, per AI run; the API, per MCP request from an OAuth client | 300 seconds (AI) / 120 seconds (MCP), HMAC-signed with `SERVICE_TOKEN_SECRET` | The built-in AI's tool loop; the HTTP endpoint's loopback calls |
+| *(none)* | The OAuth authorization server, per authorization | 1 hour, refreshable for 30 days | ChatGPT and other remote connectors, against `POST /api/mcp` only |
 
-Either way, a token carries **exactly its issuing user's permissions** — the
-same workspace roles and policies a browser session would have. There is no
-elevated "MCP" role. `ApiToken.scopes` is reserved for finer-grained scoping
-but is not enforced yet (an empty array means "everything this user may do").
+A token carries **exactly its issuing user's permissions** — the same workspace
+roles and policies a browser session would have. There is no elevated "MCP"
+role.
+
+`ApiToken.scopes` is enforced by `TokenScopeGuard` (`read`, `write`, `admin`,
+cumulative; an empty list grants nothing). The HTTP endpoint passes an `exo_`
+token straight through to its loopback calls, so a read-scoped token lists
+every tool and gets `api_token_insufficient_scope` back from the writing ones.
+Refuse the temptation to give an agent an `admin` token: nothing in the
+catalogue needs it, and it is the one scope that can mint further tokens.
+
+An OAuth access token carries no eXocortex scope — the OpenID scopes it holds
+say nothing about pages. What limits it is the tool list its endpoint serves
+(`/api/mcp/research` cannot write at all) and the fact that it opens no other
+route in the API. Revoke a connector by setting `disabled` on its row in
+`oauth_application`; the check runs on every use, so its existing tokens die
+with it.
+
+`POST /api/mcp` does **not** accept a cookie session, only a bearer token. A
+cookie travels with any request a page can provoke, so accepting one would put
+every mutating tool one cross-site request away.
+
+## The HTTP transport
+
+`POST /api/mcp` carries one JSON-RPC message per request and answers with the
+result as JSON. There is no session id and no SSE stream: this server sends no
+notifications and makes no requests of its own, so a stream would be an idle
+socket, and being stateless is what lets any API process answer any request.
+`GET` is refused with 405, `DELETE` answers 204 so a client that tidies up on
+shutdown gets a plain "fine".
+
+Two endpoints, differing only in which tools they serve:
+
+| URL | Tools | For |
+| --- | --- | --- |
+| `https://exocortex.app/api/mcp` | the 46 `exo_` tools | a general-purpose agent |
+| `https://exocortex.app/api/mcp/research` | `search`, `fetch` | ChatGPT deep research |
+
+`tools/call` resolves a name against the list the connection was served, so the
+research endpoint cannot reach a writing tool by naming it.
+
+A quick check with a token:
+
+```bash
+curl -sS https://exocortex.app/api/mcp \
+  -H 'authorization: Bearer exo_...' \
+  -H 'content-type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | head -c 400
+```
+
+### Connecting ChatGPT
+
+ChatGPT cannot start a subprocess and has no field for a bearer token, so it
+authenticates with OAuth: it discovers the authorization server from the
+endpoint, registers itself (RFC 7591), and runs an authorization code flow with
+PKCE. All of that is served by Better Auth's `mcp` plugin under
+`/api/auth/mcp/*`, with the two discovery documents rewritten to the origin
+root by nginx, where clients look for them:
+
+* `/.well-known/oauth-protected-resource`
+* `/.well-known/oauth-authorization-server`
+
+In ChatGPT, add a connector with the URL `https://exocortex.app/api/mcp`
+(or `.../api/mcp/research` for deep research) and pick OAuth. The browser lands
+on `/anmelden` if signed out, then on `/verbinden`, which names the client and
+what it is asking for. **Nothing is issued until that page is answered.**
+
+The consent screen is not a formality. Client registration is open, as the
+specification requires, so without it any website could redirect a signed-in
+person to the authorization endpoint with a client it registered seconds
+earlier and receive a working token in silence. Better Auth only shows the
+screen when the client asks for it with `prompt=consent`, so the API adds that
+parameter itself before the plugin sees the request (`forceConsentPrompt` in
+`apps/api/src/auth/auth.service.ts`). If a consent screen ever appears that you
+did not set off, the answer is "Ablehnen".
+
+### ChatGPT deep research
+
+Deep research requires two tools named exactly `search` and `fetch`, answering
+with JSON in the text content rather than prose. They are thin: `search` fans
+out over the same `/search` endpoint `exo_search` uses, across every workspace
+the account belongs to, merges by rank and returns `{id, title, url}`; `fetch`
+returns the same Markdown `exo_page_read` returns, plus the title, a citation
+URL and metadata. They live on their own surface (`surfaces: ['research']`) so
+no other client is offered two unprefixed names, and the full catalogue is not
+dumped on a connector that works badly with more than a handful of tools.
 
 ## Confirmation gate
 
@@ -214,6 +313,12 @@ confirmation.
 To disable the gate for trusted automation (a script driving its own
 workspace, a CI job), set `EXOCORTEX_REQUIRE_WRITE_CONFIRMATION=false` in that
 client's environment. Do this per deployment of `apps/mcp`, not globally.
+
+Over HTTP the gate is always on and there is no switch, because the endpoint is
+shared: one client's convenience would be every other client's missing
+safeguard. The gate lives in the API process and its key includes the user id,
+so the announcement and the confirmation — two unrelated HTTP requests — pair
+up per person and never across people.
 
 ## Configuring a client
 

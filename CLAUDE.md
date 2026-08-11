@@ -112,6 +112,10 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   and the built-in AI, and it reaches the domain only through the REST API.
 * ADR-016: a write that does not come from the editor must reach the open
   editing session through the collaboration server, never only the database.
+* ADR-018: MCP is served over two transports (stdio bin and `POST /api/mcp`)
+  that share one protocol dispatcher; the HTTP one reaches the domain by calling
+  the REST API over loopback, never Prisma, and it accepts bearer credentials
+  only, never a cookie.
 * ADR-015: the open page's *text* reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

@@ -11,6 +11,7 @@ Internet ──► nginx :443 (TLS)
                ├─ /api/, /docs     → 127.0.0.1:3211   exocortex-api
                ├─ /realtime  (ws)  → 127.0.0.1:3211   exocortex-api
                ├─ /collab    (ws)  → 127.0.0.1:3212   exocortex-collaboration
+               ├─ /.well-known/oauth-*  → 127.0.0.1:3211 (rewritten to /api/auth/…)
                └─ /health/         → 127.0.0.1:3211
 
 Docker bridge ──► nginx 172.17.0.1:3213 (no TLS)
@@ -142,6 +143,16 @@ working, and `/health/` reaches the API without a session so monitoring can prob
 it. Both were also the two exemptions the old basic auth realm needed; if you put
 one back, they have to stay exempt.
 
+The two `/.well-known/oauth-*` locations are OAuth discovery for remote MCP
+clients ([ADR-018](../docs/adr/ADR-018-remote-mcp-over-http.md)). They must
+answer at the origin root, which is where a client looks and is not negotiable;
+Better Auth serves them under its own base path, so nginx rewrites rather than
+the application moving them. The trailing `(?:/.*)?` in the location regex is
+deliberate: a client that found the endpoint at `/api/mcp` asks for
+`/.well-known/oauth-authorization-server/api/mcp` before it asks for the bare
+path. If you put a basic auth realm back, these two need the same exemption as
+the ACME challenge, or ChatGPT cannot discover anything.
+
 ## Configuration
 
 All four services read `/var/www/exocortex/.env` through `@exocortex/config`
@@ -166,10 +177,13 @@ API_URL=http://127.0.0.1:3211
 # configuration and the process binds 127.0.0.1 only; never publish it.
 COLLABORATION_INTERNAL_URL=http://127.0.0.1:3212
 
-# Shared secret the worker uses to mint short-lived `exos_` service tokens that
-# the API accepts as bearer credentials, resolving to the run's own user.
-# Optional: without it the built-in AI still runs, just without tools, and logs
-# a warning. Generate with `openssl rand -hex 32`.
+# Shared secret for short-lived `exos_` service tokens, which the API accepts as
+# bearer credentials resolving to the acting user. Two processes mint them: the
+# worker, once per AI run, and the API itself, once per MCP request from a
+# client that authenticated with OAuth and therefore holds no `exo_` token.
+# Optional, but the cost of leaving it out is now larger: the built-in AI runs
+# without tools, and `/api/mcp` refuses every OAuth client (an `exo_` token
+# still works). Generate with `openssl rand -hex 32`.
 SERVICE_TOKEN_SECRET=<64 hex characters>
 SERVICE_TOKEN_TTL_SECONDS=300
 ```
