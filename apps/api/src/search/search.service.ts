@@ -1,8 +1,17 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import { WorkspaceAccessService } from '@exocortex/auth';
-import { type SearchRequest, type SearchResponse } from '@exocortex/contracts';
-import { PostgresSearchAdapter, type PrismaClient, type SearchAdapter } from '@exocortex/database';
+import {
+  type DocumentPathEntry,
+  type SearchRequest,
+  type SearchResponse,
+} from '@exocortex/contracts';
+import {
+  collectAncestors,
+  PostgresSearchAdapter,
+  type PrismaClient,
+  type SearchAdapter,
+} from '@exocortex/database';
 
 import { PRISMA } from '../platform/platform.module';
 
@@ -18,6 +27,7 @@ export const SEARCH_ADAPTER = Symbol('EXOCORTEX_SEARCH_ADAPTER');
 export class SearchService {
   constructor(
     @Inject(SEARCH_ADAPTER) private readonly adapter: SearchAdapter,
+    @Inject(PRISMA) private readonly prisma: PrismaClient,
     private readonly access: WorkspaceAccessService,
   ) {}
 
@@ -29,19 +39,53 @@ export class SearchService {
     await this.access.requireRole(workspaceId, userId);
 
     const startedAt = Date.now();
-    const results = await this.adapter.search({
+    const hits = await this.adapter.search({
       workspaceId,
       query: request.q,
       limit: request.limit,
       includeArchived: request.includeArchived,
     });
 
+    const paths = await this.resolvePaths(
+      workspaceId,
+      hits.map((hit) => hit.documentId),
+    );
+
     return {
       query: request.q,
-      results,
+      results: hits.map((hit) => ({ ...hit, path: paths.get(hit.documentId) ?? [] })),
       adapter: this.adapter.id,
       tookMs: Date.now() - startedAt,
     };
+  }
+
+  /**
+   * The ancestor chain of every hit, root first.
+   *
+   * One flat read of the workspace's parent links rather than a query per hit:
+   * a chain can be any length, and walking it row by row would be a request
+   * per level per result. The rows carry three small columns, so even a large
+   * workspace stays a single cheap index scan.
+   */
+  private async resolvePaths(
+    workspaceId: string,
+    documentIds: readonly string[],
+  ): Promise<Map<string, DocumentPathEntry[]>> {
+    const paths = new Map<string, DocumentPathEntry[]>();
+    if (documentIds.length === 0) return paths;
+
+    const rows = await this.prisma.document.findMany({
+      where: { workspaceId },
+      select: { id: true, parentId: true, title: true },
+    });
+
+    for (const documentId of documentIds) {
+      paths.set(
+        documentId,
+        collectAncestors(rows, documentId).map((row) => ({ id: row.id, title: row.title })),
+      );
+    }
+    return paths;
   }
 }
 

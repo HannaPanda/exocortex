@@ -15,6 +15,7 @@ import {
 } from '@exocortex/auth';
 import {
   type AiRuleListResponse,
+  type ArchiveDocumentResponse,
   type CreateDocumentRequest,
   DOCUMENT_ICON_COLORS,
   type DocumentDetail,
@@ -22,6 +23,7 @@ import {
   type DocumentLinkMatch,
   type DocumentSummary,
   type DocumentTreeNode,
+  type DocumentTreeRequest,
   type DocumentTreeResponse,
   type MoveDocumentRequest,
   QUEUE_NAMES,
@@ -198,7 +200,21 @@ export class DocumentsService {
     private readonly realtime: RealtimeService,
   ) {}
 
-  async getTree(workspaceId: string, userId: string): Promise<DocumentTreeResponse> {
+  /**
+   * The workspace hierarchy, or one branch of it.
+   *
+   * `parentId` narrows the answer to what sits below a single page, which is
+   * what makes a truncated tree usable: a caller told "417 pages were left out"
+   * needs a way to ask about one section instead of the whole workspace.
+   * `depth` cuts the answer off after that many levels below the starting
+   * point. `totalCount` always reports the untruncated size of the scope, so a
+   * renderer knows how much it is not showing.
+   */
+  async getTree(
+    workspaceId: string,
+    userId: string,
+    request: DocumentTreeRequest = {},
+  ): Promise<DocumentTreeResponse> {
     await this.access.requireRole(workspaceId, userId);
 
     const rows = await this.prisma.document.findMany({
@@ -207,24 +223,66 @@ export class DocumentsService {
       orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
     });
 
-    const active = rows.filter((row) => row.archivedAt === null);
-    const archived = rows.filter((row) => row.archivedAt !== null);
+    const parentId = request.parentId;
+    // A `parentId` from another workspace must not silently answer with that
+    // workspace's root level, which is what filtering alone would do.
+    if (parentId !== undefined && !rows.some((row) => row.id === parentId)) {
+      throw AppError.notFound('Document');
+    }
 
-    const toNode = (entry: {
-      node: DocumentRow;
-      children: { node: DocumentRow; children: unknown[] }[];
-    }): DocumentTreeNode => ({
+    const scope =
+      parentId === undefined
+        ? rows
+        : (() => {
+            const descendants = collectDescendantIds(rows, parentId);
+            return rows.filter((row) => descendants.has(row.id));
+          })();
+
+    const active = scope.filter((row) => row.archivedAt === null);
+    const archived = scope.filter((row) => row.archivedAt !== null);
+
+    const toNode = (
+      entry: {
+        node: DocumentRow;
+        children: { node: DocumentRow; children: unknown[] }[];
+      },
+      remainingDepth: number,
+    ): DocumentTreeNode => ({
       ...toSummary(entry.node),
-      children: entry.children.map((child) =>
-        toNode(child as { node: DocumentRow; children: { node: DocumentRow; children: unknown[] }[] }),
-      ),
+      children:
+        remainingDepth <= 1
+          ? []
+          : entry.children.map((child) =>
+              toNode(
+                child as {
+                  node: DocumentRow;
+                  children: { node: DocumentRow; children: unknown[] }[];
+                },
+                remainingDepth - 1,
+              ),
+            ),
     });
+
+    const depth = request.depth ?? Number.POSITIVE_INFINITY;
 
     return {
       nodes: buildTree(active).map((entry) =>
-        toNode(entry as unknown as { node: DocumentRow; children: { node: DocumentRow; children: unknown[] }[] }),
+        toNode(
+          entry as unknown as {
+            node: DocumentRow;
+            children: { node: DocumentRow; children: unknown[] }[];
+          },
+          depth,
+        ),
       ),
       archived: archived.map(toSummary),
+      path:
+        parentId === undefined
+          ? []
+          : [...collectAncestors(rows, parentId), rows.find((row) => row.id === parentId)]
+              .filter((row): row is DocumentRow => row !== undefined)
+              .map((row) => ({ id: row.id, title: row.title })),
+      totalCount: active.length,
     };
   }
 
@@ -838,16 +896,24 @@ export class DocumentsService {
     return summary;
   }
 
+  /**
+   * Moves a page and everything under it into the trash.
+   *
+   * The descendants are reported back, not just counted: the caller may be an
+   * agent with no sidebar to watch, and an answer that names only the page the
+   * caller asked about reads like one page was archived when it was eight. A
+   * page that was already in the trash is not listed — it did not move.
+   */
   async archive(input: {
     documentId: string;
     userId: string;
     correlationId: string;
-  }): Promise<DocumentSummary> {
+  }): Promise<ArchiveDocumentResponse> {
     const context = await this.access.requireDocumentContext(input.documentId, input.userId);
     assertPolicy(canArchiveDocument(context.role, context.document));
 
     const now = new Date();
-    const updated = await this.prisma.$transaction(async (tx) => {
+    const { updated, descendants } = await this.prisma.$transaction(async (tx) => {
       // Archiving a page archives its whole subtree, so no editable page can
       // remain under an archived parent.
       const all = await tx.document.findMany({
@@ -855,6 +921,15 @@ export class DocumentsService {
         select: { id: true, parentId: true, orderKey: true },
       });
       const subtree = collectSubtree(all, input.documentId);
+
+      // Read before the update: afterwards every one of them carries the same
+      // `archivedAt` and the ones that were already in the trash are
+      // indistinguishable from the ones this call put there.
+      const moving = await tx.document.findMany({
+        where: { id: { in: subtree }, archivedAt: null },
+        select: DOCUMENT_SELECT,
+        orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
+      });
 
       await tx.document.updateMany({
         where: { id: { in: [input.documentId, ...subtree] }, archivedAt: null },
@@ -877,10 +952,13 @@ export class DocumentsService {
         correlationId: input.correlationId,
       });
 
-      return tx.document.findUniqueOrThrow({
-        where: { id: input.documentId },
-        select: DOCUMENT_SELECT,
-      });
+      return {
+        updated: await tx.document.findUniqueOrThrow({
+          where: { id: input.documentId },
+          select: DOCUMENT_SELECT,
+        }),
+        descendants: moving,
+      };
     });
 
     const summary = toSummary(updated);
@@ -893,7 +971,20 @@ export class DocumentsService {
       'archived',
       input.correlationId,
     );
-    return summary;
+    // The descendants left the active tree too, so their index entries have to
+    // follow; otherwise search keeps answering with pages that are in the trash.
+    for (const descendant of descendants) {
+      await this.enqueueIndexing(
+        descendant.id,
+        context.workspaceId,
+        'archived',
+        input.correlationId,
+      );
+    }
+    return {
+      ...summary,
+      archivedDescendants: descendants.map((row) => toSummary({ ...row, archivedAt: now })),
+    };
   }
 
   async restore(input: {

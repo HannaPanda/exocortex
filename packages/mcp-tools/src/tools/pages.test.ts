@@ -49,6 +49,8 @@ describe('pageReadTool', () => {
       documentId: 'doc123456',
       filename: 'doc.md',
       markdown: longMarkdown,
+      path: [],
+      children: [],
     });
 
     const result = await pageReadTool.run(client, { documentId: 'doc123456' });
@@ -59,6 +61,45 @@ describe('pageReadTool', () => {
     expect(result.text.length).toBeLessThan(longMarkdown.length);
     expect(result.text.endsWith('… (gekürzt)')).toBe(true);
     expect((result.data as { fullLength: number }).fullLength).toBe(longMarkdown.length);
+  });
+
+  it('names the child pages, which the Markdown itself never mentions', async () => {
+    // The failure this pins: a section page whose body lists its topics as
+    // prose reads as complete, so a caller that only gets the body treats the
+    // prose as the structure and never learns about the real subpages.
+    const { client } = createFakeClient({
+      documentId: 'doc123456',
+      filename: 'kreativ.md',
+      markdown: '# Kreativ\n\nBereiche: DIY, Audio, Rezepte.',
+      path: [{ id: 'root1234567', title: 'Second Brain' }],
+      children: [
+        {
+          id: 'child1234567',
+          workspaceId: 'ws1234567',
+          parentId: 'doc123456',
+          type: 'PAGE' as const,
+          title: 'Triple Chocolate Cookies',
+          icon: null,
+          iconColor: null,
+          layout: 'narrow' as const,
+          coverAttachmentId: null,
+          coverPosition: 50,
+          orderKey: 'a0',
+          createdById: 'user1234',
+          updatedById: 'user1234',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          archivedAt: null,
+        },
+      ],
+    });
+
+    const result = await pageReadTool.run(client, { documentId: 'doc123456' });
+
+    expect(result.text).toContain('Pfad: Second Brain');
+    expect(result.text).toContain('Unterseiten (1):');
+    expect(result.text).toContain('- Triple Chocolate Cookies (id: child1234567, type: PAGE)');
+    expect(result.text).toContain('Bereiche: DIY, Audio, Rezepte.');
   });
 });
 
@@ -91,24 +132,29 @@ describe('pageWriteTool', () => {
 });
 
 describe('pageArchiveTool', () => {
+  const archived = (id: string, title: string) => ({
+    id,
+    workspaceId: 'ws1234567',
+    parentId: null,
+    type: 'PAGE' as const,
+    title,
+    icon: null,
+    iconColor: null,
+    layout: 'narrow' as const,
+    coverAttachmentId: null,
+    coverPosition: 50,
+    orderKey: 'a0',
+    createdById: 'user1234',
+    updatedById: 'user1234',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    archivedAt: new Date().toISOString(),
+  });
+
   it('posts to the archive endpoint', async () => {
     const { client, calls } = createFakeClient({
-      id: 'doc123456',
-      workspaceId: 'ws1234567',
-      parentId: null,
-      type: 'PAGE',
-      title: 'Archivierte Seite',
-      icon: null,
-      iconColor: null,
-      layout: 'narrow',
-      coverAttachmentId: null,
-      coverPosition: 50,
-      orderKey: 'a0',
-      createdById: 'user1234',
-      updatedById: 'user1234',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      archivedAt: new Date().toISOString(),
+      ...archived('doc123456', 'Archivierte Seite'),
+      archivedDescendants: [],
     });
 
     const result = await pageArchiveTool.run(client, { documentId: 'doc123456' });
@@ -117,6 +163,25 @@ describe('pageArchiveTool', () => {
       { kind: 'request', method: 'POST', path: '/api/documents/doc123456/archive', body: undefined },
     ]);
     expect(result.text).toContain('Archivierte Seite');
+  });
+
+  it('names the subpages that went into the trash along with it', async () => {
+    // The failure this pins: archiving a section reported one page while it
+    // moved eight, so nobody noticed four recipes had gone with it.
+    const { client } = createFakeClient({
+      ...archived('doc123456', 'Rezepte'),
+      archivedDescendants: [
+        archived('child1111111', 'Macadamia-Cookies'),
+        archived('child2222222', 'Erdbeer-Tiramisu'),
+      ],
+    });
+
+    const result = await pageArchiveTool.run(client, { documentId: 'doc123456' });
+
+    expect(result.text).toContain('Mit archiviert wurden 2 Unterseite(n)');
+    expect(result.text).toContain('- Macadamia-Cookies (id: child1111111, type: PAGE)');
+    expect(result.text).toContain('- Erdbeer-Tiramisu (id: child2222222, type: PAGE)');
+    expect(result.text).toContain('exo_page_restore');
   });
 });
 
@@ -396,15 +461,31 @@ describe('pageTreeTool', () => {
     };
   }
 
+  /** A tree response with the bookkeeping fields filled in from the nodes. */
+  function treeResponse(
+    nodes: ReturnType<typeof node>[],
+    archived: ReturnType<typeof node>[] = [],
+    path: { id: string; title: string }[] = [],
+  ) {
+    const count = (list: { children: unknown[] }[]): number =>
+      list.reduce(
+        (sum, entry) => sum + 1 + count(entry.children as { children: unknown[] }[]),
+        0,
+      );
+    return { nodes, archived, path, totalCount: count(nodes) };
+  }
+
   it('puts the pages in the text, not only in the structured payload', async () => {
     // The regression this pins: the tool used to answer "3 Wurzelseiten, 1
     // archivierte Seiten" and leave the pages themselves in `data`. A client
     // that reads the text content -- ChatGPT does -- learned nothing from it
     // and started guessing which workspace to write into.
-    const { client } = createFakeClient({
-      nodes: [node('aaaaaaaa1111aaaa', 'Projekte', [node('bbbbbbbb2222bbbb', 'Kalender')]), node('cccccccc3333cccc', 'Notizen')],
-      archived: [],
-    });
+    const { client } = createFakeClient(
+      treeResponse([
+        node('aaaaaaaa1111aaaa', 'Projekte', [node('bbbbbbbb2222bbbb', 'Kalender')]),
+        node('cccccccc3333cccc', 'Notizen'),
+      ]),
+    );
 
     const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
 
@@ -413,16 +494,54 @@ describe('pageTreeTool', () => {
     expect(result.text).toContain('- Notizen (id: cccccccc3333cccc, type: PAGE)');
   });
 
-  it('counts archived pages instead of listing them', async () => {
-    const { client } = createFakeClient({
-      nodes: [node('aaaaaaaa1111aaaa', 'Projekte')],
-      archived: [{ ...node('zzzzzzzz9999zzzz', 'Alter Kram'), archivedAt: '2026-08-01T00:00:00.000Z' }],
-    });
+  it('names the archived pages instead of only counting them', async () => {
+    // A caller that just archived something, or that is looking for a page it
+    // cannot find in the tree, cannot learn anything from a bare number.
+    const { client } = createFakeClient(
+      treeResponse(
+        [node('aaaaaaaa1111aaaa', 'Projekte')],
+        [{ ...node('zzzzzzzz9999zzzz', 'Alter Kram'), archivedAt: '2026-08-01T00:00:00.000Z' }],
+      ),
+    );
 
     const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
 
     expect(result.text).toContain('1 archivierte Seite(n)');
-    expect(result.text).not.toContain('Alter Kram');
+    expect(result.text).toContain('- Alter Kram (id: zzzzzzzz9999zzzz, type: PAGE)');
+  });
+
+  it('answers a branch with its path and offers no truncation note when it fits', async () => {
+    const { client, calls } = createFakeClient(
+      treeResponse(
+        [node('bbbbbbbb2222bbbb', 'Kalender')],
+        [],
+        [{ id: 'aaaaaaaa1111aaaa', title: 'Projekte' }],
+      ),
+    );
+
+    const result = await pageTreeTool.run(client, {
+      workspaceId: 'm19i6551nw1eafb88aoisg6x',
+      parentId: 'aaaaaaaa1111aaaa',
+    });
+
+    expect((calls[0] as { query: unknown }).query).toEqual({ parentId: 'aaaaaaaa1111aaaa' });
+    expect(result.text).toContain('Zweig unter: Projekte');
+    expect(result.text).toContain('- Kalender (id: bbbbbbbb2222bbbb, type: PAGE)');
+    expect(result.text).not.toContain('gekürzt');
+  });
+
+  it('says a branch is empty rather than saying the workspace is', async () => {
+    const { client } = createFakeClient(
+      treeResponse([], [], [{ id: 'aaaaaaaa1111aaaa', title: 'Projekte' }]),
+    );
+
+    const result = await pageTreeTool.run(client, {
+      workspaceId: 'm19i6551nw1eafb88aoisg6x',
+      parentId: 'aaaaaaaa1111aaaa',
+    });
+
+    expect(result.text).toContain('Keine Unterseiten.');
+    expect(result.text).not.toContain('Keine Seiten vorhanden.');
   });
 
   it('keeps every root section visible and shares the rest of the budget out', async () => {
@@ -438,7 +557,7 @@ describe('pageTreeTool', () => {
         ),
       ),
     );
-    const { client } = createFakeClient({ nodes: roots, archived: [] });
+    const { client } = createFakeClient(treeResponse(roots));
 
     const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
 
@@ -450,7 +569,10 @@ describe('pageTreeTool', () => {
     expect(result.text).toContain('  - Kind 0-13 (');
     expect(result.text).not.toContain('  - Kind 0-14 (');
     expect(result.text).toContain('  - Kind 19-13 (');
-    expect(result.text).toContain('… 320 weitere Seite(n) auf tieferen Ebenen nicht angezeigt');
+    expect(result.text).toContain('… 320 von 620 Seite(n) hier nicht angezeigt (gekürzt)');
+    // The advice names the parents it is talking about, so it is an
+    // instruction a caller can actually follow.
+    expect(result.text).toContain('Abschnitt 0 (parentId: rrrrrrrr0000, 16)');
   });
 
   it('lets a small section hand its unused share to a large one', async () => {
@@ -464,7 +586,7 @@ describe('pageTreeTool', () => {
         ),
       ),
     ];
-    const { client } = createFakeClient({ nodes: roots, archived: [] });
+    const { client } = createFakeClient(treeResponse(roots));
 
     const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
 
@@ -483,7 +605,7 @@ describe('pageTreeTool', () => {
       'Breit',
       Array.from({ length: 600 }, (_, j) => node(`wwwwwwww${String(j).padStart(4, '0')}`, `Breit ${String(j)}`)),
     );
-    const { client } = createFakeClient({ nodes: [deep, wide], archived: [] });
+    const { client } = createFakeClient(treeResponse([deep, wide]));
 
     const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
 
@@ -497,18 +619,18 @@ describe('pageTreeTool', () => {
     const roots = Array.from({ length: 400 }, (_, i) =>
       node(`rrrrrrrr${String(i).padStart(4, '0')}`, `Abschnitt ${String(i)}`),
     );
-    const { client } = createFakeClient({ nodes: roots, archived: [] });
+    const { client } = createFakeClient(treeResponse(roots));
 
     const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
 
     expect(result.text).toContain('- Abschnitt 0 (');
     expect(result.text).toContain('- Abschnitt 299 (');
     expect(result.text).not.toContain('- Abschnitt 300 (');
-    expect(result.text).toContain('… 100 weitere Seite(n)');
+    expect(result.text).toContain('… 100 von 400 Seite(n) hier nicht angezeigt');
   });
 
   it('has something to say about an empty workspace', async () => {
-    const { client } = createFakeClient({ nodes: [], archived: [] });
+    const { client } = createFakeClient(treeResponse([]));
 
     const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
 

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { documentPathEntrySchema } from './documents';
 import {
   DOCUMENT_ICON_COLORS,
   documentTypeSchema,
@@ -24,6 +25,11 @@ export const searchResultSchema = z.object({
   icon: z.string().nullable(),
   iconColor: z.enum(DOCUMENT_ICON_COLORS).nullable(),
   type: documentTypeSchema,
+  /**
+   * Ancestors of the hit, root first, so a caller can tell three pages called
+   * "Rezepte" apart and knows where the one it found actually lives.
+   */
+  path: z.array(documentPathEntrySchema),
   /** Highlighted snippet from the materialized plain text. */
   snippet: z.string(),
   rank: z.number(),

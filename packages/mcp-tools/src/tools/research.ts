@@ -153,6 +153,11 @@ export const researchFetchTool: AnyToolDefinition = defineTool({
         archived: detail.archivedAt !== null,
         truncated,
         fullLength: exported.markdown.length,
+        // Where the page sits and what hangs under it. `results` keeps the
+        // shape deep research expects (id, title, url), so this is the one
+        // place the structure can travel without inventing fields there.
+        path: exported.path.map((entry) => entry.title),
+        children: exported.children.map((child) => ({ id: child.id, title: child.title })),
       },
     });
   },

@@ -58,6 +58,7 @@ function hit(overrides: Record<string, unknown> = {}) {
     icon: null,
     iconColor: null,
     type: 'PAGE' as const,
+    path: [],
     snippet: 'Der <mark>Kalender</mark> läuft über Exocortex.',
     rank: 0.5,
     archivedAt: null,
@@ -162,6 +163,8 @@ describe('fetch (deep research)', () => {
           documentId: 'doc1111111',
           filename: 'kalenderplan.md',
           markdown: '# Kalenderplan\n\nExocortex ist führend.',
+          path: [{ id: 'parent11111', title: 'Projekte' }],
+          children: [],
         },
       },
       { appUrl: 'https://exocortex.app' },
@@ -173,7 +176,7 @@ describe('fetch (deep research)', () => {
       title: string;
       text: string;
       url: string;
-      metadata: { truncated: boolean; fullLength: number };
+      metadata: { truncated: boolean; fullLength: number; path: string[] };
     };
 
     expect(payload.id).toBe('doc1111111');
@@ -182,6 +185,9 @@ describe('fetch (deep research)', () => {
     expect(payload.url).toBe('https://exocortex.app/arbeitsbereich/ws11111111/seite/doc1111111');
     expect(payload.metadata.truncated).toBe(false);
     expect(payload.metadata.fullLength).toBe(payload.text.length);
+    // Where the page sits travels with it: `results` has to keep the shape
+    // deep research expects, so the metadata is the only place for it.
+    expect(payload.metadata.path).toEqual(['Projekte']);
   });
 
   it('flags truncation instead of silently shortening the text', async () => {
@@ -192,6 +198,8 @@ describe('fetch (deep research)', () => {
         documentId: 'doc1111111',
         filename: 'lang.md',
         markdown,
+        path: [],
+        children: [],
       },
     });
 

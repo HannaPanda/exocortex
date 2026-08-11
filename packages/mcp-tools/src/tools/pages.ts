@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import {
   aiRuleModeSchema,
+  archiveDocumentResponseSchema,
   coverPositionSchema,
   DOCUMENT_ICON_COLORS,
   DOCUMENT_ICON_NAMES,
@@ -16,6 +17,7 @@ import {
   documentSummarySchema,
   documentTitleSchema,
   type DocumentTreeNode,
+  documentTreeRequestSchema,
   documentTreeResponseSchema,
   documentTypeSchema,
   generateDocumentCoverResponseSchema,
@@ -86,20 +88,24 @@ const MAX_TREE_LINES = 300;
  * is spent breadth-first, nearest pages first. Nothing dropped is unreachable:
  * every omitted page still has a visible ancestor to ask about.
  */
-function renderTree(nodes: readonly DocumentTreeNode[]): { lines: string[]; omitted: number } {
+function renderTree(nodes: readonly DocumentTreeNode[]): RenderedTree {
   const total = countNodes(nodes);
 
   // Not even the root level fits. Show as much of it as there is room for
   // rather than nothing: a truncated list of sections is still a map.
   if (nodes.length >= MAX_TREE_LINES) {
-    const lines = nodes.slice(0, MAX_TREE_LINES).map((node) => `- ${formatDocumentSummary(node)}`);
-    return { lines, omitted: total - lines.length };
+    const shown = nodes.slice(0, MAX_TREE_LINES);
+    return {
+      lines: shown.map((node) => `- ${formatDocumentSummary(node)}`),
+      omitted: total - shown.length,
+      truncated: shown
+        .filter((node) => node.children.length > 0)
+        .map((node) => ({ id: node.id, title: node.title, omitted: countNodes(node.children) })),
+    };
   }
 
-  const shares = shareEvenly(
-    nodes.map((node) => countNodes(node.children)),
-    MAX_TREE_LINES - nodes.length,
-  );
+  const demands = nodes.map((node) => countNodes(node.children));
+  const shares = shareEvenly(demands, MAX_TREE_LINES - nodes.length);
   const kept = new Set<string>();
   nodes.forEach((node, index) => {
     for (const id of nearestDescendants(node, shares[index] ?? 0)) kept.add(id);
@@ -114,8 +120,30 @@ function renderTree(nodes: readonly DocumentTreeNode[]): { lines: string[]; omit
   };
   for (const node of nodes) walk(node, 0);
 
-  return { lines, omitted: total - lines.length };
+  return {
+    lines,
+    omitted: total - lines.length,
+    // Named, with their ids, because "ask via the parent page" is only an
+    // instruction a caller can follow if it is told which parents those are.
+    truncated: nodes
+      .map((node, index) => ({
+        id: node.id,
+        title: node.title,
+        omitted: (demands[index] ?? 0) - (shares[index] ?? 0),
+      }))
+      .filter((section) => section.omitted > 0),
+  };
 }
+
+interface RenderedTree {
+  lines: string[];
+  omitted: number;
+  /** Sections that lost pages to the cap, largest loss first when rendered. */
+  truncated: { id: string; title: string; omitted: number }[];
+}
+
+/** How many archived pages the tool names before it falls back to a count. */
+const MAX_ARCHIVED_LINES = 40;
 
 /**
  * Hands out `budget` one unit at a time, skipping anyone already satisfied, so
@@ -162,33 +190,64 @@ function countNodes(nodes: readonly DocumentTreeNode[]): number {
 
 export const pageTreeTool: AnyToolDefinition = defineTool({
   name: 'exo_page_tree',
-  description: 'Liest die Seitenhierarchie eines Workspace als Baum, inklusive archivierter Seiten.',
-  inputSchema: z.object({ workspaceId: idSchema }),
+  description:
+    'Liest die Seitenhierarchie als Baum. Ohne parentId den ganzen Workspace (bei vielen Seiten ' +
+    'gekürzt), mit parentId nur den Zweig unter dieser Seite. Ein gekürzter Baum ist keine ' +
+    'vollständige Liste: um sicher zu wissen, was unter einer Seite hängt, ruf das Tool mit ' +
+    'deren parentId auf.',
+  inputSchema: z.object({ workspaceId: idSchema }).extend(documentTreeRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
   mutating: false,
   async execute(client, input) {
+    const { workspaceId, ...query } = input;
     const result = await client.request({
       method: 'GET',
-      path: `/api/workspaces/${input.workspaceId}/documents/tree`,
+      path: `/api/workspaces/${workspaceId}/documents/tree`,
+      query,
       responseSchema: documentTreeResponseSchema,
     });
-    const { lines, omitted } = renderTree(result.nodes);
+    const { lines, omitted, truncated } = renderTree(result.nodes);
+    const scope =
+      result.path.length === 0
+        ? []
+        : [`Zweig unter: ${result.path.map((entry) => entry.title).join(' > ')}\n`];
     const parts = [
-      lines.length === 0 ? 'Keine Seiten vorhanden.' : lines.join('\n'),
+      ...scope,
+      lines.length === 0
+        ? result.path.length === 0
+          ? 'Keine Seiten vorhanden.'
+          : 'Keine Unterseiten.'
+        : lines.join('\n'),
       ...(omitted === 0
         ? []
         : [
-            `… ${omitted} weitere Seite(n) auf tieferen Ebenen nicht angezeigt (gekürzt). ` +
-              'Jede davon hängt unter einer der Seiten oben; frag sie über ihre Elternseite ab.',
+            `\n… ${omitted} von ${result.totalCount} Seite(n) hier nicht angezeigt (gekürzt). ` +
+              'Ruf exo_page_tree mit parentId der jeweiligen Seite auf, um darunter ' +
+              'vollständig zu lesen. Am meisten gekürzt: ' +
+              truncated
+                .slice()
+                .sort((a, b) => b.omitted - a.omitted)
+                .slice(0, 5)
+                .map((section) => `${section.title} (parentId: ${section.id}, ${section.omitted})`)
+                .join(', '),
           ]),
-      // Archived pages stay out of the tree and behind a count: they are not
-      // somewhere to file a new page, and listing them invites writing into
-      // the trash.
+      // Named, not just counted: a caller that has to judge whether a page it
+      // is looking for was archived cannot do that from a number, and a caller
+      // that just archived something has no other way to see what went along.
+      // Still separated from the tree, because the trash is not a place to
+      // file a new page into.
       ...(result.archived.length === 0
         ? []
         : [
-            `\n${result.archived.length} archivierte Seite(n), nicht aufgelistet. ` +
-              'exo_page_restore holt eine davon zurück.',
+            `\n${result.archived.length} archivierte Seite(n) (Papierkorb, nicht Teil des Baums, ` +
+              'exo_page_restore holt eine zurück):\n' +
+              result.archived
+                .slice(0, MAX_ARCHIVED_LINES)
+                .map((document) => `- ${formatDocumentSummary(document)}`)
+                .join('\n') +
+              (result.archived.length > MAX_ARCHIVED_LINES
+                ? `\n… und ${result.archived.length - MAX_ARCHIVED_LINES} weitere.`
+                : ''),
           ]),
     ];
     return { text: parts.join('\n'), data: result };
@@ -197,7 +256,10 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
 
 export const pageReadTool: AnyToolDefinition = defineTool({
   name: 'exo_page_read',
-  description: 'Exportiert den Inhalt einer Seite als Markdown.',
+  description:
+    'Exportiert den Inhalt einer Seite als Markdown, mit ihrem Pfad und ihren direkten ' +
+    'Unterseiten. Der Fließtext einer Übersichtsseite ist nicht die Struktur: was wirklich unter ' +
+    'ihr hängt, steht in der Liste der Unterseiten.',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
   mutating: false,
@@ -208,7 +270,19 @@ export const pageReadTool: AnyToolDefinition = defineTool({
       responseSchema: markdownExportResponseSchema,
     });
     const { text } = truncateText(result.markdown, MAX_PAGE_READ_CHARS);
-    return { text, data: { ...result, fullLength: result.markdown.length } };
+    const header = [
+      ...(result.path.length === 0
+        ? []
+        : [`Pfad: ${result.path.map((entry) => entry.title).join(' > ')}`]),
+      result.children.length === 0
+        ? 'Unterseiten: keine'
+        : `Unterseiten (${result.children.length}):\n` +
+          result.children.map((child) => `- ${formatDocumentSummary(child)}`).join('\n'),
+    ].join('\n');
+    return {
+      text: `${header}\n\n---\n\n${text}`,
+      data: { ...result, fullLength: result.markdown.length },
+    };
   },
 });
 
@@ -379,7 +453,10 @@ export const pageMoveTool: AnyToolDefinition = defineTool({
 
 export const pageArchiveTool: AnyToolDefinition = defineTool({
   name: 'exo_page_archive',
-  description: 'Verschiebt eine Seite in den Papierkorb (archivieren).',
+  description:
+    'Verschiebt eine Seite in den Papierkorb (archivieren). Achtung: alle Unterseiten wandern ' +
+    'mit. Wer nur die Seite selbst wegräumen will, verschiebt die Unterseiten vorher mit ' +
+    'exo_page_move woanders hin.',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
   mutating: true,
@@ -389,9 +466,20 @@ export const pageArchiveTool: AnyToolDefinition = defineTool({
     const result = await client.request({
       method: 'POST',
       path: `/api/documents/${input.documentId}/archive`,
-      responseSchema: documentSummarySchema,
+      responseSchema: archiveDocumentResponseSchema,
     });
-    return { text: `Seite archiviert: ${formatDocumentSummary(result)}`, data: result };
+    const cascade =
+      result.archivedDescendants.length === 0
+        ? []
+        : [
+            `Mit archiviert wurden ${result.archivedDescendants.length} Unterseite(n):`,
+            ...result.archivedDescendants.map((child) => `- ${formatDocumentSummary(child)}`),
+            'Falls das nicht gewollt war: exo_page_restore holt jede einzeln zurück.',
+          ];
+    return {
+      text: [`Seite archiviert: ${formatDocumentSummary(result)}`, ...cascade].join('\n'),
+      data: result,
+    };
   },
 });
 

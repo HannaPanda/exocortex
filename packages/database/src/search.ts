@@ -26,10 +26,19 @@ export interface IndexDocumentInput {
  * contains `pgvector` columns for a future semantic adapter; no embeddings are
  * generated in this version.
  */
+/**
+ * What an adapter can answer on its own.
+ *
+ * `path` is deliberately not part of it: where a page sits is a property of the
+ * document tree, not of the index, and an engine like OpenSearch would have no
+ * way to know. The application service fills it in.
+ */
+export type SearchHit = Omit<SearchResult, 'path'>;
+
 export interface SearchAdapter {
   /** Identifier reported in the API response, e.g. `postgres`. */
   readonly id: string;
-  search(query: SearchQuery): Promise<SearchResult[]>;
+  search(query: SearchQuery): Promise<SearchHit[]>;
   index(input: IndexDocumentInput): Promise<void>;
   remove(documentId: string): Promise<void>;
   healthCheck(): Promise<boolean>;
@@ -80,7 +89,7 @@ export class PostgresSearchAdapter implements SearchAdapter {
 
   constructor(private readonly prisma: PrismaClient) {}
 
-  async search(query: SearchQuery): Promise<SearchResult[]> {
+  async search(query: SearchQuery): Promise<SearchHit[]> {
     const tsQuery = buildTsQuery(query.query);
     const like = `%${query.query.trim().toLowerCase()}%`;
 

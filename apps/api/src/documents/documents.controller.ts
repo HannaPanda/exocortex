@@ -14,6 +14,8 @@ import { type ApiEnv } from '@exocortex/config';
 import {
   type AiRuleListResponse,
   aiRuleListResponseSchema,
+  type ArchiveDocumentResponse,
+  archiveDocumentResponseSchema,
   type CollaborationTicketResponse,
   collaborationTicketResponseSchema,
   type CreateDocumentRequest,
@@ -36,6 +38,8 @@ import {
   documentSnapshotSchema,
   type DocumentSummary,
   documentSummarySchema,
+  type DocumentTreeRequest,
+  documentTreeRequestSchema,
   type DocumentTreeResponse,
   documentTreeResponseSchema,
   type GenerateDocumentCoverRequest,
@@ -83,12 +87,15 @@ export class WorkspaceDocumentsController {
   ) {}
 
   @Get('documents/tree')
+  @ApiQuery({ name: 'parentId', required: false })
+  @ApiQuery({ name: 'depth', required: false })
   @ApiOkResponse({ schema: openApiResponseSchema(documentTreeResponseSchema) })
   async tree(
     @CurrentSession() session: VerifiedSession,
     @Param('workspaceId') workspaceId: string,
+    @Query(zodPipe(documentTreeRequestSchema)) query: DocumentTreeRequest,
   ): Promise<DocumentTreeResponse> {
-    return this.documents.getTree(workspaceId, session.userId);
+    return this.documents.getTree(workspaceId, session.userId, query);
   }
 
   /**
@@ -292,11 +299,11 @@ export class DocumentsController {
   }
 
   @Post(':documentId/archive')
-  @ApiOkResponse({ schema: openApiResponseSchema(documentSummarySchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(archiveDocumentResponseSchema) })
   async archive(
     @CurrentSession() session: VerifiedSession,
     @Param('documentId') documentId: string,
-  ): Promise<DocumentSummary> {
+  ): Promise<ArchiveDocumentResponse> {
     return this.documents.archive({
       documentId,
       userId: session.userId,

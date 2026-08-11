@@ -138,12 +138,60 @@ export interface DocumentTreeNode extends DocumentSummary {
   children: DocumentTreeNode[];
 }
 
+/**
+ * One step of the chain of ancestors above a page, root first.
+ *
+ * A bare title is not an address: a workspace can hold three pages called
+ * "Rezepte" under three different sections. Anything that hands a page to a
+ * reader who cannot see the sidebar — search results, an export, an MCP tool
+ * result — has to say where it sits, or the reader has to guess, and it will
+ * guess the section it happened to read last.
+ */
+export const documentPathEntrySchema = z.object({
+  id: idSchema,
+  title: z.string(),
+});
+export type DocumentPathEntry = z.infer<typeof documentPathEntrySchema>;
+
+export const documentTreeRequestSchema = z.object({
+  /**
+   * Answers with the subtree under this document instead of the whole
+   * workspace. Without it the tree is capped by whatever renders it, and a
+   * capped tree needs a way to ask about the part that was cut.
+   */
+  parentId: idSchema.optional(),
+  /** How many levels below the starting point to include. Omitted: all of them. */
+  depth: z.coerce.number().int().min(1).max(20).optional(),
+});
+export type DocumentTreeRequest = z.infer<typeof documentTreeRequestSchema>;
+
 export const documentTreeResponseSchema = z.object({
   nodes: z.array(documentTreeNodeSchema),
   /** Archived documents are returned flat so the trash view can list them. */
   archived: z.array(documentSummarySchema),
+  /**
+   * The chain from the root down to and including `parentId`, so the answer
+   * says which branch it is. Empty for a whole-workspace tree.
+   */
+  path: z.array(documentPathEntrySchema),
+  /**
+   * Active documents in the answered scope, including the ones `depth` cut off.
+   * A renderer that truncates needs to know what it is truncating.
+   */
+  totalCount: z.number().int().nonnegative(),
 });
 export type DocumentTreeResponse = z.infer<typeof documentTreeResponseSchema>;
+
+/**
+ * Archiving a page archives everything under it. The caller is told which
+ * pages went along, because a caller that is not a human looking at a sidebar
+ * cannot see it happen, and "Seite archiviert: Rezepte" reads like one page
+ * when it was eight.
+ */
+export const archiveDocumentResponseSchema = documentSummarySchema.extend({
+  archivedDescendants: z.array(documentSummarySchema),
+});
+export type ArchiveDocumentResponse = z.infer<typeof archiveDocumentResponseSchema>;
 
 /**
  * Resolves a reference to another page to the document(s) it means.
@@ -328,6 +376,16 @@ export const markdownExportResponseSchema = z.object({
   documentId: idSchema,
   filename: z.string(),
   markdown: z.string(),
+  /** Ancestors of this page, root first. */
+  path: z.array(documentPathEntrySchema),
+  /**
+   * The page's direct child pages, active ones only.
+   *
+   * Markdown carries none of them: a section page whose body lists its topics
+   * as prose looks complete, and a reader that only gets the body concludes
+   * the prose *is* the structure. It is not; the children are.
+   */
+  children: z.array(documentSummarySchema),
 });
 export type MarkdownExportResponse = z.infer<typeof markdownExportResponseSchema>;
 

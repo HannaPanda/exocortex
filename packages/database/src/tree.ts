@@ -6,9 +6,18 @@
  * hierarchy rules unit-testable without a database.
  */
 
-export interface TreeNodeInput {
+/**
+ * The minimum a helper needs to walk the hierarchy. Split out from
+ * `TreeNodeInput` because following parent links upwards never looks at sibling
+ * order, and demanding `orderKey` would force callers to select a column they
+ * have no use for.
+ */
+export interface ParentLink {
   id: string;
   parentId: string | null;
+}
+
+export interface TreeNodeInput extends ParentLink {
   orderKey: string;
 }
 
@@ -56,7 +65,7 @@ export function buildTree<TInput extends TreeNodeInput>(nodes: readonly TInput[]
 
 /** All descendant identifiers of `documentId`, excluding the document itself. */
 export function collectDescendantIds(
-  nodes: readonly TreeNodeInput[],
+  nodes: readonly ParentLink[],
   documentId: string,
 ): Set<string> {
   const childrenByParent = new Map<string, string[]>();
@@ -86,7 +95,7 @@ export function collectDescendantIds(
  * a cycle (moving a document into itself or into one of its own descendants).
  */
 export function wouldCreateCycle(
-  nodes: readonly TreeNodeInput[],
+  nodes: readonly ParentLink[],
   documentId: string,
   newParentId: string | null,
 ): boolean {
@@ -96,7 +105,7 @@ export function wouldCreateCycle(
 }
 
 /** Ancestor chain from the root down to (but excluding) `documentId`. */
-export function collectAncestors<TInput extends TreeNodeInput>(
+export function collectAncestors<TInput extends ParentLink>(
   nodes: readonly TInput[],
   documentId: string,
 ): TInput[] {

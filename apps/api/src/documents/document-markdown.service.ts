@@ -13,7 +13,12 @@ import {
   type MarkdownImportRequest,
   QUEUE_NAMES,
 } from '@exocortex/contracts';
-import { generateOrderKey, type Prisma, type PrismaClient } from '@exocortex/database';
+import {
+  collectAncestors,
+  generateOrderKey,
+  type Prisma,
+  type PrismaClient,
+} from '@exocortex/database';
 import {
   bindPageLinkIdentities,
   EXOCORTEX_SCHEMA_VERSION,
@@ -65,7 +70,7 @@ export class DocumentMarkdownService {
     const context = await this.access.requireDocumentContext(documentId, userId);
     assertPolicy(canReadDocument(context.role, context.document, context.workspaceId));
 
-    const [document, content] = await Promise.all([
+    const [document, content, siblingRows] = await Promise.all([
       this.prisma.document.findUniqueOrThrow({
         where: { id: documentId },
         select: {
@@ -82,6 +87,14 @@ export class DocumentMarkdownService {
       this.prisma.documentContent.findUnique({
         where: { documentId },
         select: { yjsState: true, schemaVersion: true },
+      }),
+      // The page's place in the tree: its ancestors and its child pages. Both
+      // are read from the same flat list, which is one query instead of a walk
+      // up the chain plus a walk down it.
+      this.prisma.document.findMany({
+        where: { workspaceId: context.workspaceId },
+        select: DOCUMENT_SELECT,
+        orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
       }),
     ]);
 
@@ -116,7 +129,18 @@ export class DocumentMarkdownService {
       },
     });
 
-    return { documentId, filename: filenameFor(document.title), markdown };
+    return {
+      documentId,
+      filename: filenameFor(document.title),
+      markdown,
+      path: collectAncestors(siblingRows, documentId).map((row) => ({
+        id: row.id,
+        title: row.title,
+      })),
+      children: siblingRows
+        .filter((row) => row.parentId === documentId && row.archivedAt === null)
+        .map(toSummary),
+    };
   }
 
   /**
