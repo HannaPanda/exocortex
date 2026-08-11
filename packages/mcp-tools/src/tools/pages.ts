@@ -73,54 +73,91 @@ const MAX_TREE_LINES = 300;
  * learned "3 Wurzelseiten" each time, and then guessed a workspace. A tool
  * result has to carry its answer in the text.
  *
- * The cap is spent breadth-first, level by level, and only then rendered in
- * tree order. Cutting depth-first instead would spend the whole budget inside
- * whichever section happens to sort first and leave the later top-level
- * sections out entirely — a reader looking for "Technik" would conclude it does
- * not exist, which is a worse answer than an incomplete one. Losing the deepest
- * level only costs detail: every page that disappears still has a visible
- * parent to ask about.
+ * Which pages the cap keeps is the whole design, and two obvious rules are both
+ * wrong. Depth-first spends the budget inside whichever section sorts first and
+ * leaves the later ones out entirely, so a reader looking for "Technik"
+ * concludes it does not exist. Whole-levels-only is honest but starves: the
+ * Second Brain's second level is 700 pages wide, so the answer collapses to
+ * eighteen section names and nothing else.
+ *
+ * So every root section is always listed, and what is left of the budget is
+ * shared out among them evenly, one line at a time, with anything a small
+ * section does not need flowing to the larger ones. Inside a section the share
+ * is spent breadth-first, nearest pages first. Nothing dropped is unreachable:
+ * every omitted page still has a visible ancestor to ask about.
  */
 function renderTree(nodes: readonly DocumentTreeNode[]): { lines: string[]; omitted: number } {
   const total = countNodes(nodes);
 
-  // Widen level by level for as long as the whole level fits.
-  let budget = MAX_TREE_LINES;
-  let maxDepth = -1;
-  for (let depth = 0; ; depth += 1) {
-    const width = countNodesAtDepth(nodes, depth);
-    if (width === 0 || width > budget) break;
-    budget -= width;
-    maxDepth = depth;
-  }
-
   // Not even the root level fits. Show as much of it as there is room for
   // rather than nothing: a truncated list of sections is still a map.
-  if (maxDepth < 0) {
-    const lines = nodes
-      .slice(0, MAX_TREE_LINES)
-      .map((node) => `- ${formatDocumentSummary(node)}`);
+  if (nodes.length >= MAX_TREE_LINES) {
+    const lines = nodes.slice(0, MAX_TREE_LINES).map((node) => `- ${formatDocumentSummary(node)}`);
     return { lines, omitted: total - lines.length };
   }
 
+  const shares = shareEvenly(
+    nodes.map((node) => countNodes(node.children)),
+    MAX_TREE_LINES - nodes.length,
+  );
+  const kept = new Set<string>();
+  nodes.forEach((node, index) => {
+    for (const id of nearestDescendants(node, shares[index] ?? 0)) kept.add(id);
+  });
+
   const lines: string[] = [];
   const walk = (node: DocumentTreeNode, depth: number): void => {
-    if (depth > maxDepth) return;
     lines.push(`${'  '.repeat(depth)}- ${formatDocumentSummary(node)}`);
-    for (const child of node.children) walk(child, depth + 1);
+    for (const child of node.children) {
+      if (kept.has(child.id)) walk(child, depth + 1);
+    }
   };
   for (const node of nodes) walk(node, 0);
 
   return { lines, omitted: total - lines.length };
 }
 
-function countNodes(nodes: readonly DocumentTreeNode[]): number {
-  return nodes.reduce((sum, node) => sum + 1 + countNodes(node.children), 0);
+/**
+ * Hands out `budget` one unit at a time, skipping anyone already satisfied, so
+ * a section that wants three lines takes three and the rest goes to the ones
+ * that can use it. Equal shares with the leftovers redistributed, without the
+ * rounding arguments a proportional split invites.
+ */
+function shareEvenly(demands: readonly number[], budget: number): number[] {
+  const grants = demands.map(() => 0);
+  let left = budget;
+  let progress = true;
+  while (left > 0 && progress) {
+    progress = false;
+    for (const [index, demand] of demands.entries()) {
+      if (left === 0) break;
+      if ((grants[index] ?? 0) >= demand) continue;
+      grants[index] = (grants[index] ?? 0) + 1;
+      left -= 1;
+      progress = true;
+    }
+  }
+  return grants;
 }
 
-function countNodesAtDepth(nodes: readonly DocumentTreeNode[], depth: number): number {
-  if (depth === 0) return nodes.length;
-  return nodes.reduce((sum, node) => sum + countNodesAtDepth(node.children, depth - 1), 0);
+/** The `limit` descendants closest to `node`, breadth-first, as a set of ids. */
+function nearestDescendants(node: DocumentTreeNode, limit: number): string[] {
+  const chosen: string[] = [];
+  let level: readonly DocumentTreeNode[] = node.children;
+  while (level.length > 0 && chosen.length < limit) {
+    const next: DocumentTreeNode[] = [];
+    for (const child of level) {
+      if (chosen.length >= limit) break;
+      chosen.push(child.id);
+      next.push(...child.children);
+    }
+    level = next;
+  }
+  return chosen;
+}
+
+function countNodes(nodes: readonly DocumentTreeNode[]): number {
+  return nodes.reduce((sum, node) => sum + 1 + countNodes(node.children), 0);
 }
 
 export const pageTreeTool: AnyToolDefinition = defineTool({

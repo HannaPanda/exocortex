@@ -425,10 +425,10 @@ describe('pageTreeTool', () => {
     expect(result.text).not.toContain('Alter Kram');
   });
 
-  it('drops the deepest level rather than the last sections', async () => {
+  it('keeps every root section visible and shares the rest of the budget out', async () => {
     // The failure this guards against: spending the whole budget inside the
     // first section, so a reader looking for the last one concludes it is not
-    // there. Every root section stays visible; depth is what gives way.
+    // there. 20 sections of 30 children each is 620 pages for a 300-line cap.
     const roots = Array.from({ length: 20 }, (_, i) =>
       node(
         `rrrrrrrr${String(i).padStart(4, '0')}`,
@@ -442,34 +442,55 @@ describe('pageTreeTool', () => {
 
     const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
 
-    // 20 roots fit, 600 children do not, so the children go and every section
-    // survives -- including the last one.
+    // Every section is named, the last one included ...
     expect(result.text).toContain('- Abschnitt 0 (');
     expect(result.text).toContain('- Abschnitt 19 (');
-    expect(result.text).not.toContain('Kind 0-0');
-    expect(result.text).toContain('… 600 weitere Seite(n) auf tieferen Ebenen nicht angezeigt');
+    // ... and the 280 remaining lines are split 14 apiece rather than being
+    // eaten by the first section.
+    expect(result.text).toContain('  - Kind 0-13 (');
+    expect(result.text).not.toContain('  - Kind 0-14 (');
+    expect(result.text).toContain('  - Kind 19-13 (');
+    expect(result.text).toContain('… 320 weitere Seite(n) auf tieferen Ebenen nicht angezeigt');
   });
 
-  it('keeps a level whole when it fits and cuts the one below', async () => {
-    const roots = Array.from({ length: 10 }, (_, i) =>
+  it('lets a small section hand its unused share to a large one', async () => {
+    const roots = [
+      node('rrrrrrrr0000', 'Klein', [node('cccccccc0000', 'Einziges Kind')]),
       node(
-        `rrrrrrrr${String(i).padStart(4, '0')}`,
-        `Abschnitt ${String(i)}`,
-        Array.from({ length: 10 }, (_, j) =>
-          node(`cccccccc${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`, `Kind ${String(i)}-${String(j)}`, [
-            node(`gggggggg${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`, `Enkel ${String(i)}-${String(j)}`),
-          ]),
+        'rrrrrrrr0001',
+        'Gross',
+        Array.from({ length: 400 }, (_, j) =>
+          node(`cccccccc1${String(j).padStart(3, '0')}`, `Kind ${String(j)}`),
         ),
       ),
-    );
+    ];
     const { client } = createFakeClient({ nodes: roots, archived: [] });
 
     const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
 
-    // 10 + 100 = 110 fit, the 100 grandchildren would make 210 which still
-    // fits, so nothing is dropped at all.
-    expect(result.text).toContain('    - Enkel 9-9 (');
-    expect(result.text).not.toContain('gekürzt');
+    // Klein wants 1 of its 149, so Gross gets 297 instead of 149.
+    expect(result.text).toContain('  - Einziges Kind (');
+    expect(result.text).toContain('  - Kind 296 (');
+    expect(result.text).not.toContain('  - Kind 297 (');
+  });
+
+  it('spends a section share on the nearest pages, not the deepest branch', async () => {
+    const deep = node('ddddddddaaaa', 'Tief', [
+      node('ddddddddbbbb', 'Ebene 1', [node('ddddddddcccc', 'Ebene 2', [node('dddddddddddd', 'Ebene 3')])]),
+    ]);
+    const wide = node(
+      'wwwwwwwwaaaa',
+      'Breit',
+      Array.from({ length: 600 }, (_, j) => node(`wwwwwwww${String(j).padStart(4, '0')}`, `Breit ${String(j)}`)),
+    );
+    const { client } = createFakeClient({ nodes: [deep, wide], archived: [] });
+
+    const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+
+    // Tief needs only 3 lines and gets all of them; Breit spends its share on
+    // its own direct children rather than descending anywhere.
+    expect(result.text).toContain('      - Ebene 3 (');
+    expect(result.text).toContain('  - Breit 0 (');
   });
 
   it('shows part of the root level rather than nothing when even that overflows', async () => {
