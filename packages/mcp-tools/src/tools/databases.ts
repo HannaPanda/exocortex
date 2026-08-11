@@ -172,6 +172,7 @@ export const databasePropertyUpdateTool: AnyToolDefinition = defineTool({
   inputSchema: databasePropertyUpdateInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,
+  destructive: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
     const { documentId, propertyId, ...body } = input;
@@ -191,6 +192,7 @@ export const databasePropertyDeleteTool: AnyToolDefinition = defineTool({
   inputSchema: z.object({ documentId: idSchema, propertyId: idSchema }),
   surfaces: ['mcp', 'ai'],
   mutating: true,
+  destructive: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
     const result = await client.request({
@@ -268,6 +270,7 @@ export const databaseViewUpdateTool: AnyToolDefinition = defineTool({
   inputSchema: databaseViewUpdateInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,
+  destructive: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
     const { documentId, viewId, ...body } = input;
@@ -287,6 +290,7 @@ export const databaseViewDeleteTool: AnyToolDefinition = defineTool({
   inputSchema: z.object({ documentId: idSchema, viewId: idSchema }),
   surfaces: ['mcp', 'ai'],
   mutating: true,
+  destructive: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
     const result = await client.request({
@@ -414,6 +418,7 @@ export const databaseRowUpdateTool: AnyToolDefinition = defineTool({
   inputSchema: databaseRowUpdateInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,
+  destructive: true,
   target: (input) => `document:${input.rowId}`,
   async execute(client, input) {
     const { rowId, ...body } = input;

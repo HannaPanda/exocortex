@@ -212,13 +212,35 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
   };
 }
 
+/** MCP tool behaviour hints, as the specification defines them. */
+export interface McpToolAnnotations {
+  readOnlyHint: boolean;
+  destructiveHint: boolean;
+  openWorldHint: boolean;
+}
+
 /** MCP `tools/list` shape. */
-export function toMcpToolList(
-  tools: readonly AnyToolDefinition[],
-): { name: string; description: string; inputSchema: unknown }[] {
+export function toMcpToolList(tools: readonly AnyToolDefinition[]): {
+  name: string;
+  description: string;
+  inputSchema: unknown;
+  annotations: McpToolAnnotations;
+}[] {
   return tools.map((tool) => ({
     name: tool.name,
     description: tool.description,
     inputSchema: tool.jsonSchema,
+    // Without these a client cannot tell a search from a deletion, so it has
+    // to treat the whole catalogue as one risk class. Clients that gate write
+    // access behind a separate opt-in -- ChatGPT's connectors do -- read
+    // `readOnlyHint` to decide which side of that line a tool falls on, which
+    // makes the annotation the difference between a usable catalogue and a
+    // read-only one.
+    annotations: {
+      readOnlyHint: !tool.mutating,
+      destructiveHint: tool.destructive,
+      // Every tool acts on this deployment's own workspaces and nothing else.
+      openWorldHint: false,
+    },
   }));
 }

@@ -90,6 +90,46 @@ describe('createMcpRequestHandler', () => {
     expect(names).toEqual(['exo_read_thing', 'exo_write_thing']);
   });
 
+  it('annotates every tool as reading or writing', async () => {
+    // A client that gates write access behind its own opt-in has no other way
+    // to tell the two apart, and answering without the hints puts the whole
+    // catalogue on the wrong side of that gate.
+    const handler = handlerWith();
+    const response = await handler({ jsonrpc: '2.0', id: 1, method: 'tools/list' });
+    const tools = (
+      response as {
+        result: { tools: { name: string; annotations: Record<string, boolean> }[] };
+      }
+    ).result.tools;
+
+    const byName = new Map(tools.map((tool) => [tool.name, tool.annotations]));
+    expect(byName.get('exo_read_thing')).toEqual({
+      readOnlyHint: true,
+      destructiveHint: false,
+      openWorldHint: false,
+    });
+    expect(byName.get('exo_write_thing')).toEqual({
+      readOnlyHint: false,
+      destructiveHint: false,
+      openWorldHint: false,
+    });
+  });
+
+  it('never calls a read-only tool destructive', async () => {
+    const confused = defineTool({
+      name: 'exo_confused_thing',
+      description: 'Behauptet zu zerstören, verändert aber nichts.',
+      inputSchema: z.object({ id: z.string() }),
+      surfaces: ['mcp'],
+      mutating: false,
+      destructive: true,
+      async execute() {
+        return { text: 'nichts passiert' };
+      },
+    });
+    expect(confused.destructive).toBe(false);
+  });
+
   it('refuses a tool that is not on this connection, even if it exists elsewhere', async () => {
     // The whole point of serving a subset: naming a tool must not be enough to
     // reach it.

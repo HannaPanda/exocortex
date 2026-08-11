@@ -91,54 +91,68 @@ further tools, `search` and `fetch`, live on a surface of their own and are
 described under "ChatGPT deep research"; they are the only tools in the
 catalogue without the prefix, because ChatGPT matches them by exact name.
 
-| Tool | Mutating | REST call |
-| --- | --- | --- |
-| `exo_list_workspaces` | no | `GET /api/workspaces` |
-| `exo_workspace_rename` | yes | `PATCH /api/workspaces/:workspaceId` (name and/or slug, independently) |
-| `exo_page_tree` | no | `GET /api/workspaces/:workspaceId/documents/tree` |
-| `exo_page_read` | no | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars) |
-| `exo_page_create` | yes | `POST /api/workspaces/:workspaceId/import/markdown` when `markdown` is given, else `POST /api/workspaces/:workspaceId/documents` |
-| `exo_page_write` | yes | `POST /api/documents/:documentId/content` |
-| `exo_page_rename` | yes | `PATCH /api/documents/:documentId` (title, icon, iconColor) |
-| `exo_page_move` | yes | `POST /api/documents/:documentId/move` -- an optional `workspaceId` moves the whole subtree into a different workspace instead of just re-parenting within the current one |
-| `exo_page_archive` | yes | `POST /api/documents/:documentId/archive` |
-| `exo_page_restore` | yes | `POST /api/documents/:documentId/restore` |
-| `exo_page_snapshots` | no | `GET /api/documents/:documentId/snapshots` |
-| `exo_page_restore_snapshot` | yes | `POST /api/documents/:documentId/snapshots/:snapshotId/restore` |
-| `exo_page_activity` | no | `GET /api/documents/:documentId/activity` -- the page's own history (issue #20): created, renamed, moved, archived, restored, restorable snapshots and condensed editing sessions, merged server-side. Not a compliance audit trail; see `docs/background-jobs.md`. |
-| `exo_page_set_ai_rule` | yes | `PATCH /api/documents/:documentId` (aiRuleMode/Trigger/Priority) |
-| `exo_page_set_layout` | yes | `PATCH /api/documents/:documentId` (layout: narrow/wide/full) |
-| `exo_page_set_cover` | yes | `PATCH /api/documents/:documentId` (coverAttachmentId/coverPosition) |
-| `exo_page_generate_cover` | yes | `POST /api/documents/:documentId/cover/generate` |
-| `exo_page_resolve_link` | no | `GET /api/workspaces/:workspaceId/documents/resolve?documentId=&title=&includeArchived=&limit=` -- identity first, title as the fallback; `resolvedBy` says which answered |
-| `exo_page_backlinks` | no | `GET /api/documents/:documentId/links` -- both directions of the reference index, including references to a title no page carries |
-| `exo_comment_list` | no | `GET /api/documents/:documentId/comments?includeResolved=` -- threads with their replies, open ones first, and whether an anchored thread has been orphaned |
-| `exo_comment_create` | yes | `POST /api/documents/:documentId/comments` -- page-wide without `blockId`, anchored to a block with one, a reply with `parentId` |
-| `exo_comment_update` | yes | `PATCH /api/comments/:commentId` -- the author's own body only |
-| `exo_comment_resolve` | yes | `POST /api/comments/:commentId/resolve` (`resolved: false` reopens) |
-| `exo_comment_delete` | yes | `DELETE /api/comments/:commentId` -- takes a thread's replies with it |
-| `exo_search` | no | `GET /api/workspaces/:workspaceId/search?q=&limit=&includeArchived=` |
-| `exo_database_create` | yes | `POST /api/workspaces/:workspaceId/documents` (`type: 'COLLECTION'`) + one `POST .../properties` per requested column |
-| `exo_database_schema` | no | `GET /api/documents/:documentId` (for `rowCount`) + `GET .../properties` + `GET .../views` |
-| `exo_database_property_create` | yes | `POST /api/documents/:documentId/properties` |
-| `exo_database_property_update` | yes | `PATCH /api/documents/:documentId/properties/:propertyId` |
-| `exo_database_property_delete` | yes | `DELETE /api/documents/:documentId/properties/:propertyId` |
-| `exo_database_option_create` | yes | `POST /api/documents/:documentId/properties/:propertyId/options` |
-| `exo_database_view_create` | yes | `POST /api/documents/:documentId/views` |
-| `exo_database_view_update` | yes | `PATCH /api/documents/:documentId/views/:viewId` |
-| `exo_database_view_delete` | yes | `DELETE /api/documents/:documentId/views/:viewId` |
-| `exo_database_query` | no | `POST /api/documents/:documentId/rows/query` (Markdown table, capped at 50 rows) |
-| `exo_database_row_get` | no | `GET /api/documents/:documentId/row` -- values of the row this document id names, or `row: null` if it is not a row |
-| `exo_database_row_create` | yes | `POST /api/documents/:documentId/rows` |
-| `exo_database_row_update` | yes | `PATCH /api/documents/:rowId/values` |
-| `exo_attachment_upload` | yes | `POST /api/workspaces/:workspaceId/attachments` (multipart, Base64 input) |
-| `exo_attachment_read_text` | no | `GET /api/attachments/:attachmentId/text` (text plus PDF metadata), or `…/text/info` with `includeText: false` (metadata only, and no extraction is started). Returns the human correction whenever one exists, never the raw machine text on its own. |
-| `exo_attachment_reextract_text` | yes | `POST /api/attachments/:attachmentId/text/reextract` -- forces a fresh extraction even when the current one is already `ready` (issue #2); a plain `exo_attachment_read_text` never does this |
-| `exo_attachment_correct_text` | yes | `PATCH /api/attachments/:attachmentId/text` -- writes a human correction, or clears one with `text: null` (issue #2) |
-| `exo_rules_list` | no | `GET /api/workspaces/:workspaceId/ai-rules` |
-| `exo_rules_load` | no | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars) |
-| `exo_ai_run_get` | no | `GET /api/ai/runs/:runId` -- status, model, `heartbeatAt`, tool rounds, error code and the answer so far (capped at 2,000 chars) |
-| `exo_ai_run_cancel` | yes | `POST /api/ai/runs/:runId/cancel` -- refuses a run that has already finished |
+Every entry in `tools/list` carries MCP annotations derived from the columns
+below: `readOnlyHint` is the negation of "Mutating", `destructiveHint` is the
+"Destructive" column, and `openWorldHint` is always false because no tool
+reaches outside this deployment. They are not decoration. A client that keeps
+write access behind its own opt-in reads `readOnlyHint` to decide which side of
+that switch a tool belongs on, so a catalogue served without the hints arrives
+as one undifferentiated block and tends to be used read-only.
+
+"Destructive" is narrower than "Mutating": it means the call can remove content
+or write over content a person authored. Creating, uploading, moving and
+restoring are not destructive, and neither are the reversible metadata switches
+(layout, cover, AI rule, resolving a comment), because marking a one-click
+change as dangerous only trains people to click past the warnings that matter.
+
+| Tool | Mutating | Destructive | REST call |
+| --- | --- | --- | --- |
+| `exo_list_workspaces` | no | no | `GET /api/workspaces` |
+| `exo_workspace_rename` | yes | yes | `PATCH /api/workspaces/:workspaceId` (name and/or slug, independently) |
+| `exo_page_tree` | no | no | `GET /api/workspaces/:workspaceId/documents/tree` |
+| `exo_page_read` | no | no | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars) |
+| `exo_page_create` | yes | no | `POST /api/workspaces/:workspaceId/import/markdown` when `markdown` is given, else `POST /api/workspaces/:workspaceId/documents` |
+| `exo_page_write` | yes | yes | `POST /api/documents/:documentId/content` |
+| `exo_page_rename` | yes | yes | `PATCH /api/documents/:documentId` (title, icon, iconColor) |
+| `exo_page_move` | yes | no | `POST /api/documents/:documentId/move` -- an optional `workspaceId` moves the whole subtree into a different workspace instead of just re-parenting within the current one |
+| `exo_page_archive` | yes | yes | `POST /api/documents/:documentId/archive` |
+| `exo_page_restore` | yes | no | `POST /api/documents/:documentId/restore` |
+| `exo_page_snapshots` | no | no | `GET /api/documents/:documentId/snapshots` |
+| `exo_page_restore_snapshot` | yes | yes | `POST /api/documents/:documentId/snapshots/:snapshotId/restore` |
+| `exo_page_activity` | no | no | `GET /api/documents/:documentId/activity` -- the page's own history (issue #20): created, renamed, moved, archived, restored, restorable snapshots and condensed editing sessions, merged server-side. Not a compliance audit trail; see `docs/background-jobs.md`. |
+| `exo_page_set_ai_rule` | yes | no | `PATCH /api/documents/:documentId` (aiRuleMode/Trigger/Priority) |
+| `exo_page_set_layout` | yes | no | `PATCH /api/documents/:documentId` (layout: narrow/wide/full) |
+| `exo_page_set_cover` | yes | no | `PATCH /api/documents/:documentId` (coverAttachmentId/coverPosition) |
+| `exo_page_generate_cover` | yes | no | `POST /api/documents/:documentId/cover/generate` |
+| `exo_page_resolve_link` | no | no | `GET /api/workspaces/:workspaceId/documents/resolve?documentId=&title=&includeArchived=&limit=` -- identity first, title as the fallback; `resolvedBy` says which answered |
+| `exo_page_backlinks` | no | no | `GET /api/documents/:documentId/links` -- both directions of the reference index, including references to a title no page carries |
+| `exo_comment_list` | no | no | `GET /api/documents/:documentId/comments?includeResolved=` -- threads with their replies, open ones first, and whether an anchored thread has been orphaned |
+| `exo_comment_create` | yes | no | `POST /api/documents/:documentId/comments` -- page-wide without `blockId`, anchored to a block with one, a reply with `parentId` |
+| `exo_comment_update` | yes | yes | `PATCH /api/comments/:commentId` -- the author's own body only |
+| `exo_comment_resolve` | yes | no | `POST /api/comments/:commentId/resolve` (`resolved: false` reopens) |
+| `exo_comment_delete` | yes | yes | `DELETE /api/comments/:commentId` -- takes a thread's replies with it |
+| `exo_search` | no | no | `GET /api/workspaces/:workspaceId/search?q=&limit=&includeArchived=` |
+| `exo_database_create` | yes | no | `POST /api/workspaces/:workspaceId/documents` (`type: 'COLLECTION'`) + one `POST .../properties` per requested column |
+| `exo_database_schema` | no | no | `GET /api/documents/:documentId` (for `rowCount`) + `GET .../properties` + `GET .../views` |
+| `exo_database_property_create` | yes | no | `POST /api/documents/:documentId/properties` |
+| `exo_database_property_update` | yes | yes | `PATCH /api/documents/:documentId/properties/:propertyId` |
+| `exo_database_property_delete` | yes | yes | `DELETE /api/documents/:documentId/properties/:propertyId` |
+| `exo_database_option_create` | yes | no | `POST /api/documents/:documentId/properties/:propertyId/options` |
+| `exo_database_view_create` | yes | no | `POST /api/documents/:documentId/views` |
+| `exo_database_view_update` | yes | yes | `PATCH /api/documents/:documentId/views/:viewId` |
+| `exo_database_view_delete` | yes | yes | `DELETE /api/documents/:documentId/views/:viewId` |
+| `exo_database_query` | no | no | `POST /api/documents/:documentId/rows/query` (Markdown table, capped at 50 rows) |
+| `exo_database_row_get` | no | no | `GET /api/documents/:documentId/row` -- values of the row this document id names, or `row: null` if it is not a row |
+| `exo_database_row_create` | yes | no | `POST /api/documents/:documentId/rows` |
+| `exo_database_row_update` | yes | yes | `PATCH /api/documents/:rowId/values` |
+| `exo_attachment_upload` | yes | no | `POST /api/workspaces/:workspaceId/attachments` (multipart, Base64 input) |
+| `exo_attachment_read_text` | no | no | `GET /api/attachments/:attachmentId/text` (text plus PDF metadata), or `…/text/info` with `includeText: false` (metadata only, and no extraction is started). Returns the human correction whenever one exists, never the raw machine text on its own. |
+| `exo_attachment_reextract_text` | yes | yes | `POST /api/attachments/:attachmentId/text/reextract` -- forces a fresh extraction even when the current one is already `ready` (issue #2); a plain `exo_attachment_read_text` never does this |
+| `exo_attachment_correct_text` | yes | yes | `PATCH /api/attachments/:attachmentId/text` -- writes a human correction, or clears one with `text: null` (issue #2) |
+| `exo_rules_list` | no | no | `GET /api/workspaces/:workspaceId/ai-rules` |
+| `exo_rules_load` | no | no | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars) |
+| `exo_ai_run_get` | no | no | `GET /api/ai/runs/:runId` -- status, model, `heartbeatAt`, tool rounds, error code and the answer so far (capped at 2,000 chars) |
+| `exo_ai_run_cancel` | yes | no | `POST /api/ai/runs/:runId/cancel` -- refuses a run that has already finished |
 
 `exo_page_write` reaches a page that somebody has open at that moment: the API
 hands the change to the collaboration server, which applies it to the live
@@ -226,7 +240,7 @@ shutdown gets a plain "fine".
 Two endpoints, differing only in which tools they serve:
 
 | URL | Tools | For |
-| --- | --- | --- |
+| --- | --- | --- | --- |
 | `https://exocortex.app/api/mcp` | the 46 `exo_` tools | a general-purpose agent |
 | `https://exocortex.app/api/mcp/research` | `search`, `fetch` | ChatGPT deep research |
 

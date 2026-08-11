@@ -180,6 +180,7 @@ export const pageWriteTool: AnyToolDefinition = defineTool({
   inputSchema: pageWriteInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,
+  destructive: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
     const { documentId, ...body } = input;
@@ -213,6 +214,7 @@ export const pageRenameTool: AnyToolDefinition = defineTool({
   inputSchema: pageRenameInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,
+  destructive: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
     const { documentId, ...body } = input;
@@ -254,6 +256,7 @@ export const pageArchiveTool: AnyToolDefinition = defineTool({
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
   mutating: true,
+  destructive: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
     const result = await client.request({
@@ -310,6 +313,7 @@ export const pageRestoreSnapshotTool: AnyToolDefinition = defineTool({
   inputSchema: z.object({ documentId: idSchema, snapshotId: idSchema }),
   surfaces: ['mcp', 'ai'],
   mutating: true,
+  destructive: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
     const result = await client.request({

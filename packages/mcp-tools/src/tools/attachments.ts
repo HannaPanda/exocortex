@@ -167,6 +167,7 @@ export const attachmentReextractTextTool: AnyToolDefinition = defineTool({
   inputSchema: z.object({ attachmentId: idSchema }),
   surfaces: ['mcp', 'ai'],
   mutating: true,
+  destructive: true,
   target: (input) => `attachment:${input.attachmentId}`,
   async execute(client, input) {
     const result = await client.request({
@@ -195,6 +196,7 @@ export const attachmentCorrectTextTool: AnyToolDefinition = defineTool({
   }),
   surfaces: ['mcp', 'ai'],
   mutating: true,
+  destructive: true,
   target: (input) => `attachment:${input.attachmentId}`,
   async execute(client, input) {
     const result = await client.request({

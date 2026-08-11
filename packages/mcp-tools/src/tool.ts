@@ -30,6 +30,21 @@ export interface ToolDefinition<TInput> {
    */
   mutating: boolean;
   /**
+   * True when the write can take something away that was there before: a
+   * deletion, or an overwrite of content a person authored. Creating,
+   * uploading, moving and restoring stay `false`, and so do the reversible
+   * metadata switches (layout, cover, AI rule, resolving a comment): flipping
+   * one back costs a click, so treating them as dangerous only teaches people
+   * to click past the warning that matters.
+   *
+   * It is reported to MCP clients as `destructiveHint`, which is how a client
+   * decides whether to ask a human before running the tool. The distinction is
+   * per tool, not per call, so a tool that can overwrite depending on its
+   * arguments (`exo_page_write` with `mode: 'replace'`) counts as destructive
+   * even when this particular call only appends.
+   */
+  destructive?: boolean;
+  /**
    * Identifies the write target for the destination-keyed confirmation gate.
    * Required for every mutating tool, absent for read-only tools.
    */
@@ -51,6 +66,8 @@ export interface AnyToolDefinition {
   description: string;
   surfaces: readonly ToolSurface[];
   mutating: boolean;
+  /** See `ToolDefinition.destructive`. Always `false` for a read-only tool. */
+  destructive: boolean;
   jsonSchema: unknown;
   /** True when the underlying `ToolDefinition` declared a `target` function. */
   hasTarget: boolean;
@@ -88,6 +105,8 @@ export function defineTool<TInput>(definition: ToolDefinition<TInput>): AnyToolD
     description: definition.description,
     surfaces: definition.surfaces,
     mutating: definition.mutating,
+    // A tool that changes nothing cannot destroy anything, whatever it claims.
+    destructive: definition.mutating && (definition.destructive ?? false),
     jsonSchema,
     hasTarget: definition.target !== undefined,
     targetOf(rawInput: unknown): string | null {

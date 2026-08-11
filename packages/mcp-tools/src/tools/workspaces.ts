@@ -48,6 +48,7 @@ export const workspaceRenameTool: AnyToolDefinition = defineTool({
   inputSchema: workspaceRenameInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,
+  destructive: true,
   target: (input) => `workspace:${input.workspaceId}`,
   async execute(client, input) {
     const { workspaceId, ...body } = input;

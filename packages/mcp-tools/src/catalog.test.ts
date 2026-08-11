@@ -46,6 +46,32 @@ describe('EXOCORTEX_TOOLS', () => {
     }
   });
 
+  it('marks the deletions and overwrites as destructive, and nothing else', () => {
+    // Pinned by name rather than by rule, because the list is the judgement
+    // call: everything here removes content or writes over content a person
+    // authored, and a tool that quietly joins the list should have to say so
+    // in a diff.
+    const destructive = EXOCORTEX_TOOLS.filter((tool) => tool.destructive)
+      .map((tool) => tool.name)
+      .sort();
+    expect(destructive).toEqual([
+      'exo_attachment_correct_text',
+      'exo_attachment_reextract_text',
+      'exo_comment_delete',
+      'exo_comment_update',
+      'exo_database_property_delete',
+      'exo_database_property_update',
+      'exo_database_row_update',
+      'exo_database_view_delete',
+      'exo_database_view_update',
+      'exo_page_archive',
+      'exo_page_rename',
+      'exo_page_restore_snapshot',
+      'exo_page_write',
+      'exo_workspace_rename',
+    ]);
+  });
+
   it('produces a JSON Schema for every tool input', () => {
     for (const tool of EXOCORTEX_TOOLS) {
       expect(tool.jsonSchema).toBeTypeOf('object');
