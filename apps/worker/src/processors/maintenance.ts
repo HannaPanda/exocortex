@@ -5,7 +5,7 @@ import {
   QUEUE_NAMES as QUEUES,
   type Settings,
 } from '@exocortex/contracts';
-import { type PrismaClient } from '@exocortex/database';
+import { Prisma, type PrismaClient } from '@exocortex/database';
 import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
@@ -104,6 +104,15 @@ export interface MaintenanceDependencies {
   orphanedCoverGraceMs?: number;
   /** Content rows the reference backfill extracts per run. */
   linkBackfillBatchSize?: number;
+}
+
+/**
+ * True when a write failed because the row it points at is gone. `P2003` is the
+ * foreign key violation a delete between reading a candidate and writing its
+ * snapshot produces.
+ */
+function isMissingDocument(error: unknown): boolean {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003';
 }
 
 /**
@@ -260,6 +269,7 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
         });
 
         let taken = 0;
+        let vanished = 0;
         for (const candidate of candidates) {
           const latest = await prisma.documentSnapshot.findFirst({
             where: { documentId: candidate.documentId },
@@ -273,18 +283,34 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
           const dueForNext = latest === null || Date.now() - latest.createdAt.getTime() >= intervalMs;
           if (!changedSinceLast || !dueForNext) continue;
 
-          await prisma.documentSnapshot.create({
-            data: {
-              documentId: candidate.documentId,
-              yjsState: candidate.yjsState,
-              schemaVersion: candidate.schemaVersion,
-              createdById: candidate.document.updatedById,
-              reason: 'SCHEDULED',
-            },
-          });
-          taken += 1;
+          try {
+            await prisma.documentSnapshot.create({
+              data: {
+                documentId: candidate.documentId,
+                yjsState: candidate.yjsState,
+                schemaVersion: candidate.schemaVersion,
+                createdById: candidate.document.updatedById,
+                reason: 'SCHEDULED',
+              },
+            });
+            taken += 1;
+          } catch (error) {
+            // The candidate list is read once and worked through afterwards, so
+            // a page can be deleted in between -- and a page being deleted is
+            // precisely a page someone was just editing, which is what put it
+            // on this list. The write then fails on the foreign key. Skipping
+            // it is the whole correction: there is nothing left to snapshot.
+            // What must not happen is the throw ending the sweep, because every
+            // candidate after it would silently lose its checkpoint too.
+            if (!isMissingDocument(error)) throw error;
+            vanished += 1;
+          }
         }
-        logger.debug('Active-document snapshots taken', { taken, candidates: candidates.length });
+        logger.debug('Active-document snapshots taken', {
+          taken,
+          candidates: candidates.length,
+          ...(vanished === 0 ? {} : { vanished }),
+        });
         return;
       }
 

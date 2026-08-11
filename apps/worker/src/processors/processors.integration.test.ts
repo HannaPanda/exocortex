@@ -1,6 +1,6 @@
 import { Readable } from 'node:stream';
 
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import {
   type AiGenerateRequest,
@@ -948,6 +948,62 @@ describe('maintenance', () => {
 
       expect(
         await prisma.documentSnapshot.count({ where: { documentId, reason: 'SCHEDULED' } }),
+      ).toBe(1);
+    }, 30_000);
+
+    it('keeps sweeping when a candidate page is deleted mid-run', async () => {
+      // The sweep reads its candidates once and works through them afterwards,
+      // so a page can be deleted in between -- and a page being deleted is
+      // exactly a page someone was just editing, which is what put it on the
+      // list. This showed up as a flaky foreign key violation whenever the API
+      // suite ran against the same database at the same time. The point is not
+      // that the doomed page is skipped, it is that the pages behind it in the
+      // list still get their checkpoint.
+      const doomedId = await createDocument();
+      const survivorId = await createDocument();
+      const recent = new Date(Date.now() - 60_000);
+      await prisma.documentContent.updateMany({
+        where: { documentId: { in: [doomedId, survivorId] } },
+        data: { yjsUpdatedAt: recent },
+      });
+
+      const processor = createMaintenanceProcessor({
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        settings: stubSettings({
+          'activity.editSessionSnapshotsEnabled': true,
+          'activity.editSessionSnapshotIntervalMinutes': 15,
+        }),
+      });
+
+      const realCreate = prisma.documentSnapshot.create.bind(prisma.documentSnapshot);
+      let deleted = false;
+      const spy = vi
+        .spyOn(prisma.documentSnapshot, 'create')
+        .mockImplementation(async (args: Parameters<typeof realCreate>[0]) => {
+          if (!deleted) {
+            deleted = true;
+            await prisma.document.delete({ where: { id: doomedId } });
+          }
+          return realCreate(args);
+        });
+
+      try {
+        await processor(
+          contextFor({
+            correlationId: 'test-snap-active-6',
+            task: 'snapshot-active-documents',
+            workspaceId: null,
+          }).context,
+        );
+      } finally {
+        spy.mockRestore();
+      }
+
+      expect(
+        await prisma.documentSnapshot.count({ where: { documentId: survivorId, reason: 'SCHEDULED' } }),
       ).toBe(1);
     }, 30_000);
 
