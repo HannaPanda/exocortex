@@ -5,6 +5,7 @@ import { COMMENT_TOOLS } from './tools/comments.js';
 import { DATABASE_TOOLS } from './tools/databases.js';
 import { LINK_TOOLS } from './tools/links.js';
 import { PAGE_TOOLS } from './tools/pages.js';
+import { RESEARCH_TOOLS } from './tools/research.js';
 import { RULES_TOOLS } from './tools/rules.js';
 import { SEARCH_TOOLS } from './tools/search.js';
 import { WORKSPACE_TOOLS } from './tools/workspaces.js';
@@ -19,6 +20,7 @@ export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...ATTACHMENT_TOOLS,
   ...RULES_TOOLS,
   ...AI_RUN_TOOLS,
+  ...RESEARCH_TOOLS,
 ];
 
 /** Tools offered on a given surface, optionally excluding mutating ones. */
@@ -34,17 +36,6 @@ export function toolsFor(
 
 export function findTool(name: string): AnyToolDefinition | null {
   return EXOCORTEX_TOOLS.find((tool) => tool.name === name) ?? null;
-}
-
-/** MCP `tools/list` shape. */
-export function toMcpToolList(
-  tools: readonly AnyToolDefinition[],
-): { name: string; description: string; inputSchema: unknown }[] {
-  return tools.map((tool) => ({
-    name: tool.name,
-    description: tool.description,
-    inputSchema: tool.jsonSchema,
-  }));
 }
 
 /** OpenAI/OpenRouter `tools` array shape. */

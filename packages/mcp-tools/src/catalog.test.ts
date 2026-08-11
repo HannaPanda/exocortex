@@ -3,11 +3,31 @@ import { describe, expect, it } from 'vitest';
 import { EXOCORTEX_TOOLS, toolsFor } from './catalog.js';
 
 describe('EXOCORTEX_TOOLS', () => {
-  it('has unique names, all starting with exo_', () => {
+  it('has unique names', () => {
     const names = EXOCORTEX_TOOLS.map((tool) => tool.name);
     expect(new Set(names).size).toBe(names.length);
-    for (const name of names) {
-      expect(name.startsWith('exo_')).toBe(true);
+  });
+
+  it('prefixes every tool with exo_ except the two ChatGPT dictates', () => {
+    // The prefix exists so the catalogue cannot collide with the other MCP
+    // servers a client spawns alongside it. `search` and `fetch` are the
+    // exception because ChatGPT's deep research connector matches on those
+    // exact names; they live on their own surface, which no other client sees.
+    for (const tool of EXOCORTEX_TOOLS) {
+      if (tool.surfaces.includes('research')) {
+        expect(['search', 'fetch']).toContain(tool.name);
+        expect(tool.surfaces).toEqual(['research']);
+      } else {
+        expect(tool.name.startsWith('exo_')).toBe(true);
+      }
+    }
+  });
+
+  it('keeps the research surface read-only and small', () => {
+    const research = toolsFor('research');
+    expect(research.map((tool) => tool.name).sort()).toEqual(['fetch', 'search']);
+    for (const tool of research) {
+      expect(tool.mutating).toBe(false);
     }
   });
 

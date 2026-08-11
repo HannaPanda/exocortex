@@ -10,34 +10,24 @@
  * determined at all.
  */
 
-export type JsonRpcId = string | number | null;
+import {
+  JSON_RPC_ERROR_CODES,
+  type JsonRpcErrorResponse,
+  type JsonRpcId,
+  type JsonRpcRequest,
+  type JsonRpcResponse,
+} from '@exocortex/mcp-tools';
 
-export interface JsonRpcRequest {
-  jsonrpc: '2.0';
-  id?: JsonRpcId;
-  method: string;
-  params?: unknown;
-}
+export type {
+  JsonRpcErrorResponse,
+  JsonRpcId,
+  JsonRpcRequest,
+  JsonRpcResponse,
+  JsonRpcSuccessResponse,
+} from '@exocortex/mcp-tools';
 
-export interface JsonRpcSuccessResponse {
-  jsonrpc: '2.0';
-  id: JsonRpcId;
-  result: unknown;
-}
-
-export interface JsonRpcErrorResponse {
-  jsonrpc: '2.0';
-  id: JsonRpcId;
-  error: { code: number; message: string; data?: unknown };
-}
-
-export type JsonRpcResponse = JsonRpcSuccessResponse | JsonRpcErrorResponse;
-
-const PARSE_ERROR = -32700;
-const INVALID_REQUEST = -32600;
-const METHOD_NOT_FOUND = -32601;
-const INVALID_PARAMS = -32602;
-const INTERNAL_ERROR = -32603;
+const { parseError: PARSE_ERROR, invalidRequest: INVALID_REQUEST, internalError: INTERNAL_ERROR } =
+  JSON_RPC_ERROR_CODES;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -168,12 +158,3 @@ export function createStdioServer(
     },
   };
 }
-
-/** Exposed for `server.ts` to build the "unknown method" error consistently. */
-export const JSON_RPC_ERROR_CODES = {
-  parseError: PARSE_ERROR,
-  invalidRequest: INVALID_REQUEST,
-  methodNotFound: METHOD_NOT_FOUND,
-  invalidParams: INVALID_PARAMS,
-  internalError: INTERNAL_ERROR,
-} as const;

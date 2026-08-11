@@ -19,8 +19,13 @@ export function stableStringify(value: unknown): string {
   return JSON.stringify(value);
 }
 
-function deriveKey(input: { toolName: string; target: string; payload: unknown }): string {
-  const material = `${input.toolName}\n${input.target}\n${stableStringify(input.payload)}`;
+function deriveKey(input: {
+  toolName: string;
+  target: string;
+  payload: unknown;
+  principal?: string;
+}): string {
+  const material = `${input.principal ?? ''}\n${input.toolName}\n${input.target}\n${stableStringify(input.payload)}`;
   return createHash('sha256').update(material).digest('hex');
 }
 
@@ -55,6 +60,14 @@ export class WriteConfirmationGate {
     toolName: string;
     target: string;
     payload: unknown;
+    /**
+     * Who is asking. One gate instance serves every caller of the HTTP
+     * endpoint, so without this two users announcing the same write would
+     * confirm each other's: the first call would arm the gate and the second
+     * user's first call would fire it. Absent for stdio, where the gate lives
+     * in a subprocess belonging to a single client.
+     */
+    principal?: string;
   }): { state: 'confirmed' } | { state: 'pending'; message: string } {
     this.prune();
     const key = deriveKey(input);

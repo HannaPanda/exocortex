@@ -20,6 +20,13 @@ export interface ExocortexApiClient {
     /** Parses and validates the response. */
     responseSchema: z.ZodType<T>;
   }): Promise<T>;
+  /**
+   * Where a human reads this deployment, e.g. `https://exocortex.app`. Only
+   * the research tools need it, to hand ChatGPT a citation URL a person can
+   * actually click; every other tool answers in ids. Absent when the caller
+   * did not configure one, and a tool must then fall back to the id alone.
+   */
+  readonly appUrl?: string;
   /** Multipart upload; separate because the body is not JSON. */
   upload<T>(input: {
     path: string;
@@ -51,6 +58,8 @@ export interface FetchClientOptions {
   timeoutMs?: number; // default 30_000
   /** Optional extra headers, e.g. HTTP basic auth when going through nginx. */
   headers?: Readonly<Record<string, string>>;
+  /** Public origin a human uses, for citation URLs. See `ExocortexApiClient`. */
+  appUrl?: string;
 }
 
 const DEFAULT_TIMEOUT_MS = 30_000;
@@ -108,6 +117,8 @@ export function createFetchApiClient(options: FetchClientOptions): ExocortexApiC
   }
 
   return {
+    appUrl: options.appUrl,
+
     async request<T>(input: {
       method: 'GET' | 'POST' | 'PATCH' | 'DELETE';
       path: string;
