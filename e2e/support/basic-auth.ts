@@ -10,6 +10,10 @@
  * guarding the deployment: a credential in a public repository, protecting
  * everything behind it. Absent means absent here -- never a guess.
  */
+import { loadRepositoryEnv } from './env';
+
+loadRepositoryEnv();
+
 const user = process.env.E2E_BASIC_USER;
 const password = process.env.E2E_BASIC_PASSWORD;
 

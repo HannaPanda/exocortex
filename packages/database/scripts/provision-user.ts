@@ -16,6 +16,18 @@
  * `--role` sets the workspace role and defaults to OWNER, because the point of a
  * workspace of one's own is that nobody has to ask permission to arrange it. Use
  * `--workspace-of <slug>` instead to add someone to a workspace that exists.
+ *
+ * For an account that already exists, `--reset-password` issues a new one and
+ * changes nothing else (no `--name`: the account has one, and this must not
+ * touch it):
+ *
+ *   pnpm db:provision-user --email a@b.de --reset-password
+ *
+ * That is a separate flag rather than the default because running the create
+ * command twice must never lock somebody out of their own account. It exists for
+ * the two cases where "Passwort vergessen" cannot help: a mailbox nobody reads
+ * any more, and the end-to-end suite's own accounts, whose password has to be
+ * known to a script rather than to a person.
  */
 import { randomBytes, scryptSync } from 'node:crypto';
 
@@ -79,24 +91,36 @@ interface Options {
   workspaceName: string | undefined;
   workspaceOf: string | undefined;
   role: WorkspaceRole;
+  resetPassword: boolean;
 }
 
 function parseArguments(argv: string[]): Options {
   const values = new Map<string, string>();
+  const flags = new Set<string>();
   for (let index = 0; index < argv.length; index += 1) {
     const key = argv[index];
     // pnpm passes its own `--` separator straight through to argv.
     if (key === undefined || key === '--' || !key.startsWith('--')) continue;
     const next = argv[index + 1];
+    // A switch takes no value, so the next `--something` is the next argument
+    // and not a missing one.
     if (next === undefined || next.startsWith('--')) {
+      if (key === '--reset-password') {
+        flags.add(key.slice(2));
+        continue;
+      }
       throw new Error(`Missing value for ${key}`);
     }
     values.set(key.slice(2), next);
     index += 1;
   }
 
+  const resetPassword = flags.has('reset-password');
+
   const email = values.get('email');
-  const name = values.get('name');
+  // A reset needs no name: the account it belongs to already has one, and this
+  // command is not allowed to change it.
+  const name = values.get('name') ?? (resetPassword ? '' : undefined);
   if (email === undefined || name === undefined) {
     throw new Error('Both --email and --name are required');
   }
@@ -115,7 +139,47 @@ function parseArguments(argv: string[]): Options {
     throw new Error('Use either --workspace (create one) or --workspace-of (join one)');
   }
 
-  return { email, name, workspaceName, workspaceOf, role };
+  return { email, name, workspaceName, workspaceOf, role, resetPassword };
+}
+
+/**
+ * Issues a new password for an account that already exists, and touches nothing
+ * else: not the name, not the roles, not the memberships. Whoever runs this is
+ * fixing a way in, not editing a person.
+ */
+async function resetPassword(prisma: PrismaClient, email: string): Promise<void> {
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true, name: true },
+  });
+  if (user === null) {
+    throw new Error(`No user with ${email}. Drop --reset-password to create one.`);
+  }
+
+  const account = await prisma.account.findFirst({
+    where: { userId: user.id, providerId: 'credential' },
+    select: { id: true },
+  });
+  if (account === null) {
+    throw new Error(`${email} has no password login to reset (${user.id}).`);
+  }
+
+  const password = generatePassword();
+  await prisma.account.update({
+    where: { id: account.id },
+    data: { password: hashPassword(password) },
+  });
+  // Every session signed in with the old password is left standing on purpose:
+  // this reissues a key, it does not throw anyone out. Disabling an account is
+  // what does that, and it is a different operation in the admin area.
+
+  console.log('');
+  console.log('Password reset.');
+  console.log(`  user     : ${user.name} <${email}> (${user.id})`);
+  console.log('');
+  console.log('  New password, shown here and stored nowhere else:');
+  console.log(`    ${password}`);
+  console.log('');
 }
 
 async function main(): Promise<void> {
@@ -123,6 +187,11 @@ async function main(): Promise<void> {
   const prisma = createPrismaClient();
 
   try {
+    if (options.resetPassword) {
+      await resetPassword(prisma, options.email);
+      return;
+    }
+
     const existing = await prisma.user.findUnique({
       where: { email: options.email },
       select: { id: true },
@@ -133,7 +202,7 @@ async function main(): Promise<void> {
       // command was run twice.
       throw new Error(
         `A user with ${options.email} already exists (${existing.id}). ` +
-          'This script only creates; change roles or passwords deliberately.',
+          'Pass --reset-password to issue a new password, or change roles deliberately.',
       );
     }
 

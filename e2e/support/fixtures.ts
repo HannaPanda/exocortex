@@ -1,13 +1,24 @@
 import { type APIRequestContext, type Browser, type BrowserContext, expect, type Page } from '@playwright/test';
 
 import { BASIC_AUTH_CREDENTIALS } from './basic-auth';
+import { loadRepositoryEnv } from './env';
 import { storageStatePath } from './global-setup';
+
+// Before `SEED_USERS` below reads them. Idempotent, and an already-set variable
+// always wins.
+loadRepositoryEnv();
 
 /**
  * Shared helpers for the end-to-end suite.
  *
- * Credentials come from the environment: the seed script prints them, and
- * `pnpm db:seed` writes them nowhere else. Never hardcode a password here.
+ * The two accounts are seeded test users in the "Exocortex Team" workspace, not
+ * the person who owns the deployment: a run creates and deletes pages, and it
+ * must never do that in somebody's real workspace. They are ordinary users
+ * globally — `invitations.spec.ts` asserts exactly that, so making one of them a
+ * global admin would break the suite rather than enable it.
+ *
+ * Credentials come from the environment, and the repository's `.env` is where
+ * they sit on this host. Never hardcode a password here.
  */
 export const SEED_USERS = {
   johanna: {
@@ -28,8 +39,10 @@ export function requireSeedCredentials(): void {
   for (const [key, user] of Object.entries(SEED_USERS)) {
     if (user.password.length === 0) {
       throw new Error(
-        `Missing password for seed user "${key}". Run \`pnpm db:seed\` and export ` +
-          `SEED_JOHANNA_PASSWORD / SEED_STEFAN_PASSWORD (see docs/local-development.md).`,
+        `Missing password for seed user "${key}". Put SEED_JOHANNA_PASSWORD and ` +
+          'SEED_STEFAN_PASSWORD in the repository .env; `pnpm db:provision-user ' +
+          '--email <address> --reset-password` issues a new one ' +
+          '(see docs/local-development.md).',
       );
     }
   }
@@ -98,6 +111,23 @@ export async function expectTreeContains(page: Page, title: string): Promise<voi
 }
 
 /**
+ * Waits for the browser to arrive at a document page that is not the one it was
+ * already on.
+ *
+ * A bare `/\/seite\/[a-z0-9]+/` matches instantly when a document is already
+ * open, so the id read straight afterwards is the *previous* document's. Calling
+ * `createPage` twice in a row then returned the same id twice, and the test that
+ * did so compared a page with itself.
+ */
+async function waitForNewDocumentUrl(page: Page, previousUrl: string): Promise<string> {
+  await page.waitForURL(
+    (url) => url.toString() !== previousUrl && /\/seite\/[a-z0-9]+/.test(url.pathname),
+    { timeout: 30_000 },
+  );
+  return new URL(page.url()).pathname.split('/').pop() as string;
+}
+
+/**
  * Creates a page from the sidebar's "Anlegen" menu and returns its document id.
  *
  * The trigger (`create-root-page`) opens a menu with "Seite anlegen" and
@@ -108,10 +138,10 @@ export async function expectTreeContains(page: Page, title: string): Promise<voi
  * keystrokes to a provider that has not connected yet.
  */
 export async function createPage(page: Page, title: string): Promise<string> {
+  const previousUrl = page.url();
   await page.getByTestId('create-root-page').click();
   await page.getByTestId('create-root-page-item').click();
-  await page.waitForURL(/\/seite\/[a-z0-9]+/, { timeout: 30_000 });
-  const documentId = new URL(page.url()).pathname.split('/').pop() as string;
+  const documentId = await waitForNewDocumentUrl(page, previousUrl);
   const titleInput = page.getByTestId('document-title');
   // The URL changes before Next finishes swapping in the new route's content
   // (it keeps the previous page's DOM, including its title input, visible
@@ -129,10 +159,10 @@ export async function createPage(page: Page, title: string): Promise<string> {
 
 /** Creates a database (a COLLECTION document) from the sidebar and returns its document id. */
 export async function createDatabase(page: Page, title: string): Promise<string> {
+  const previousUrl = page.url();
   await page.getByTestId('create-root-page').click();
   await page.getByTestId('create-root-database').click();
-  await page.waitForURL(/\/seite\/[a-z0-9]+/, { timeout: 30_000 });
-  const documentId = new URL(page.url()).pathname.split('/').pop() as string;
+  const documentId = await waitForNewDocumentUrl(page, previousUrl);
   const titleInput = page.getByTestId('document-title');
   // See the comment in `createPage`: wait for the new document's own default
   // title before touching the input, so a fast second creation never renames

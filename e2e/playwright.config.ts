@@ -1,15 +1,24 @@
 import { defineConfig, devices } from '@playwright/test';
 
 import { BASIC_AUTH_CREDENTIALS } from './support/basic-auth';
+import { loadRepositoryEnv } from './support/env';
+
+// `import` is hoisted, so a module that reads `process.env` while it is being
+// evaluated cannot be helped by a call placed above it here. Every such module
+// loads the file itself; this call is for the variables read below.
+loadRepositoryEnv();
 
 /**
- * The suite runs against a real deployment: nginx terminates TLS and protects the
- * app with HTTP basic auth, so `httpCredentials` is part of the configuration.
+ * The suite runs against a real deployment, and signs in as the seeded test
+ * accounts (`johanna@exocortex.app`, `stefan@exocortex.app`) in the "Exocortex
+ * Team" workspace — never as the person who owns the deployment. Their passwords
+ * come from the repository's `.env`; `docs/local-development.md` says how to
+ * reissue one.
  *
  * Override with:
  *   E2E_BASE_URL       default https://exocortex.app
  *   E2E_BASIC_USER     default johanna
- *   E2E_BASIC_PASSWORD required, no default (see support/basic-auth.ts)
+ *   E2E_BASIC_PASSWORD only if the deployment under test has a basic auth realm
  *   E2E_SKIP_CLEANUP   set to 1 to keep the workspaces the run created
  */
 const baseURL = process.env.E2E_BASE_URL ?? 'https://exocortex.app';

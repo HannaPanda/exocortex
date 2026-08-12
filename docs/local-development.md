@@ -118,6 +118,26 @@ or leave them empty and the script generates one-time passwords and prints them:
 The seed is idempotent: re-running it rebuilds the example pages and resets the
 credentials.
 
+On a deployment that is in use, re-seeding is not an option — it would rebuild
+example pages in a workspace people are working in. To issue a new password for
+one account and change nothing else:
+
+```bash
+pnpm db:provision-user --email johanna@exocortex.app --reset-password
+```
+
+It prints the password once. Put it back into `.env` under
+`SEED_JOHANNA_PASSWORD` / `SEED_STEFAN_PASSWORD`, which is where the end-to-end
+suite reads it from.
+
+**These two accounts are not the person who runs the deployment.** They are
+`johanna@exocortex.app` and `stefan@exocortex.app` in the *eXocortex Team*
+workspace, and the suite creates and deletes pages as them; pointing it at a real
+account would let it loose in a real workspace. They are also ordinary users
+globally — `invitations.spec.ts` asserts that a signed-in seed user gets 403 from
+`/api/admin/*`, so promoting one to global `ADMIN` breaks the suite rather than
+enabling anything.
+
 ## Running
 
 ```bash
@@ -137,14 +157,17 @@ pnpm test         # unit + integration (requires pnpm infra:up)
 pnpm test:e2e     # Playwright against a running deployment
 ```
 
-The Playwright suite needs:
+The Playwright suite reads the repository's `.env` itself
+(`e2e/support/env.ts`), so on this host `pnpm test:e2e` needs no preparation at
+all. It wants `SEED_JOHANNA_PASSWORD` and `SEED_STEFAN_PASSWORD` to be in there;
+see "Seed data and credentials" above for how to reissue one.
+
+Anything already exported wins over the file, which is how a run is pointed
+somewhere else:
 
 ```bash
-export SEED_JOHANNA_PASSWORD=…
-export SEED_STEFAN_PASSWORD=…
-export E2E_BASE_URL=https://exocortex.app      # default
-export E2E_BASIC_USER=…  E2E_BASIC_PASSWORD=…  # nginx basic auth
-pnpm test:e2e
+E2E_BASE_URL=https://staging.example.com pnpm test:e2e
+E2E_BASIC_USER=…  E2E_BASIC_PASSWORD=…   # only if that deployment has a basic auth realm
 ```
 
 Browsers are installed once with
