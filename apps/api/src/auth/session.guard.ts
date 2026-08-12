@@ -144,10 +144,17 @@ export class SessionGuard implements CanActivate {
 
     const user = await this.prisma.user.findUnique({
       where: { id: result.claims.userId },
-      select: { id: true, email: true, name: true, emailVerified: true },
+      select: { id: true, email: true, name: true, emailVerified: true, disabledAt: true },
     });
     if (user === null) {
       throw new AppError('api_token_invalid', 'The service token references an unknown user');
+    }
+    // A service token is HMAC-signed and therefore not revocable, so unlike a
+    // session or an `exo_` token it cannot be taken away when the account is
+    // switched off -- it has to be refused on use. The lookup was happening
+    // anyway, so this costs one more selected column.
+    if (user.disabledAt !== null) {
+      throw new AppError('user_disabled', 'This account is disabled');
     }
 
     return {
@@ -171,7 +178,9 @@ export class SessionGuard implements CanActivate {
         scopes: true,
         expiresAt: true,
         revokedAt: true,
-        user: { select: { id: true, email: true, name: true, emailVerified: true } },
+        user: {
+          select: { id: true, email: true, name: true, emailVerified: true, disabledAt: true },
+        },
       },
     });
     if (apiToken === null) {
@@ -179,6 +188,12 @@ export class SessionGuard implements CanActivate {
     }
     if (apiToken.revokedAt !== null) {
       throw new AppError('api_token_invalid', 'The API token has been revoked');
+    }
+    // Belt and braces: disabling an account revokes its tokens in the same
+    // transaction, so this should be unreachable. It stays because "should be"
+    // is doing a lot of work in that sentence, and the column is already loaded.
+    if (apiToken.user.disabledAt !== null) {
+      throw new AppError('user_disabled', 'This account is disabled');
     }
     if (apiToken.expiresAt !== null && apiToken.expiresAt.getTime() <= Date.now()) {
       throw new AppError('api_token_expired', 'The API token has expired');

@@ -27,8 +27,15 @@ interface UserWithCounts {
   name: string;
   role: UserRolePrisma;
   emailVerified: boolean;
+  disabledAt: Date | null;
   createdAt: Date;
-  _count: { memberships: number };
+  _count: {
+    memberships: number;
+    createdDocuments: number;
+    updatedDocuments: number;
+    comments: number;
+    createdAttachments: number;
+  };
   sessions: { createdAt: Date }[];
 }
 
@@ -42,11 +49,38 @@ function toAdminUser(user: UserWithCounts): AdminUser {
     workspaceCount: user._count.memberships,
     createdAt: user.createdAt.toISOString(),
     lastSessionAt: user.sessions[0]?.createdAt.toISOString() ?? null,
+    disabledAt: user.disabledAt?.toISOString() ?? null,
+    hasAuthoredContent: hasAuthoredContent(user._count),
   };
 }
 
+/**
+ * Whether anything still names this account as its author.
+ *
+ * The four relations counted here are exactly the ones whose foreign key to
+ * `user` is required, so they are the ones that make a `DELETE` impossible at
+ * the database level. Everything else about an account (sessions, tokens,
+ * memberships, conversations) cascades away on its own.
+ */
+function hasAuthoredContent(counts: UserWithCounts['_count']): boolean {
+  return (
+    counts.createdDocuments > 0 ||
+    counts.updatedDocuments > 0 ||
+    counts.comments > 0 ||
+    counts.createdAttachments > 0
+  );
+}
+
 const USER_WITH_COUNTS_INCLUDE = {
-  _count: { select: { memberships: true } },
+  _count: {
+    select: {
+      memberships: true,
+      createdDocuments: true,
+      updatedDocuments: true,
+      comments: true,
+      createdAttachments: true,
+    },
+  },
   sessions: { orderBy: { createdAt: 'desc' as const }, take: 1, select: { createdAt: true } },
 };
 
@@ -156,5 +190,111 @@ export class AdminService {
 
     this.logger.info('User global role changed', { actorId, userId, nextRole: role });
     return toAdminUser(updated);
+  }
+
+  /**
+   * Switches an account off, or back on.
+   *
+   * Disabling is not a flag somebody has to remember to check on every request.
+   * It takes effect by removing what the account can act with: every session row
+   * and every API token goes, and `packages/auth`'s session-creation hook refuses
+   * to make a new one while `disabledAt` is set. So there is no window in which a
+   * disabled account still holds a working credential, and no per-request lookup
+   * on the hot path either.
+   *
+   * The same two lock-out guards as `updateUserRole`: not yourself, and not the
+   * last remaining admin.
+   */
+  async setUserDisabled(input: {
+    userId: string;
+    disabled: boolean;
+    actorId: string;
+  }): Promise<AdminUser> {
+    if (input.userId === input.actorId) {
+      throw AppError.validation('You cannot disable your own account');
+    }
+
+    const target = await this.prisma.user.findUnique({
+      where: { id: input.userId },
+      select: { id: true, role: true, disabledAt: true },
+    });
+    if (target === null) throw AppError.notFound('User');
+
+    if (input.disabled && target.role === 'ADMIN') {
+      const activeAdmins = await this.prisma.user.count({
+        where: { role: 'ADMIN', disabledAt: null },
+      });
+      if (activeAdmins <= 1) {
+        throw AppError.conflict('The last global admin cannot be disabled');
+      }
+    }
+
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const user = await tx.user.update({
+        where: { id: input.userId },
+        data: { disabledAt: input.disabled ? new Date() : null },
+        include: USER_WITH_COUNTS_INCLUDE,
+      });
+
+      if (input.disabled) {
+        // Both credential kinds at once. A session cookie stops working because
+        // the row it points at is gone; a bearer token because it is marked
+        // revoked, which `SessionGuard` already refuses.
+        await tx.session.deleteMany({ where: { userId: input.userId } });
+        await tx.apiToken.updateMany({
+          where: { userId: input.userId, revokedAt: null },
+          data: { revokedAt: new Date() },
+        });
+        // An OAuth connector holds its own access tokens, so a switched-off
+        // account must lose those too, or ChatGPT keeps working for an hour.
+        await tx.oauthAccessToken.deleteMany({ where: { userId: input.userId } });
+      }
+
+      return user;
+    });
+
+    this.logger.info(input.disabled ? 'User disabled' : 'User re-enabled', {
+      actorId: input.actorId,
+      userId: input.userId,
+    });
+    return toAdminUser(updated);
+  }
+
+  /**
+   * Deletes an account outright.
+   *
+   * Only for an account that authored nothing. `Document.createdById` is a
+   * required reference, so the database would refuse anyway; catching it here
+   * turns a 500 into `user_has_content` and a sentence that says what to do
+   * instead. What this is for is the invitation that went to the wrong address
+   * and the account nobody ever used -- everything with a history gets disabled.
+   */
+  async deleteUser(input: { userId: string; actorId: string }): Promise<void> {
+    if (input.userId === input.actorId) {
+      throw AppError.validation('You cannot delete your own account');
+    }
+
+    const target = await this.prisma.user.findUnique({
+      where: { id: input.userId },
+      include: USER_WITH_COUNTS_INCLUDE,
+    });
+    if (target === null) throw AppError.notFound('User');
+
+    if (target.role === 'ADMIN') {
+      const adminCount = await this.prisma.user.count({ where: { role: 'ADMIN' } });
+      if (adminCount <= 1) {
+        throw AppError.conflict('The last global admin cannot be deleted');
+      }
+    }
+
+    if (hasAuthoredContent(target._count)) {
+      throw new AppError(
+        'user_has_content',
+        'This account authored pages, comments or uploads; disable it instead of deleting it',
+      );
+    }
+
+    await this.prisma.user.delete({ where: { id: input.userId } });
+    this.logger.info('User deleted', { actorId: input.actorId, userId: input.userId });
   }
 }

@@ -179,6 +179,43 @@ export function createAuth(options: CreateAuthOptions) {
 
     plugins: [createMcpPlugin()],
 
+    databaseHooks: {
+      session: {
+        create: {
+          /**
+           * A disabled account gets no session (issue #3).
+           *
+           * This is the only place the check has to live. Disabling already
+           * deletes every existing session and revokes every token, so the one
+           * remaining way for a switched-off account to act is to make a *new*
+           * session, and every path that does -- the sign-in form, the OAuth
+           * authorization flow, auto-sign-in after verification -- goes through
+           * this hook. That is why `SessionGuard` needs no per-request lookup:
+           * the state cannot exist rather than being filtered out afterwards.
+           *
+           * Returning `false` fails the sign-in with Better Auth's generic
+           * message. Deliberately not a distinct "this account is disabled":
+           * the sign-in form is unauthenticated, and an error that tells apart
+           * "wrong password" from "account exists but is off" tells anybody who
+           * asks which addresses have accounts here.
+           */
+          before: async (session): Promise<boolean> => {
+            const user = await prisma.user.findUnique({
+              where: { id: session.userId },
+              select: { disabledAt: true },
+            });
+            if (user !== null && user.disabledAt !== null) {
+              logger.warn('Session creation refused for disabled account', {
+                userId: session.userId,
+              });
+              return false;
+            }
+            return true;
+          },
+        },
+      },
+    },
+
     onAPIError: {
       onError: (error) => {
         logger.warn('Better Auth request failed', {

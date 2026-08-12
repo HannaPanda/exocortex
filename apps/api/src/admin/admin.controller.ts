@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { type VerifiedSession } from '@exocortex/auth';
@@ -9,12 +9,16 @@ import {
   type AdminUserListResponse,
   adminUserListResponseSchema,
   adminUserSchema,
+  type DeleteUserResponse,
+  deleteUserResponseSchema,
   type SettingsResponse,
   settingsResponseSchema,
   type UpdateSettingsRequest,
   updateSettingsRequestSchema,
   type UpdateUserRoleRequest,
   updateUserRoleRequestSchema,
+  type UpdateUserStatusRequest,
+  updateUserStatusRequestSchema,
 } from '@exocortex/contracts';
 
 import { AdminOnly } from '../auth/admin.guard';
@@ -71,5 +75,37 @@ export class AdminController {
     @Body(zodPipe(updateUserRoleRequestSchema)) body: UpdateUserRoleRequest,
   ): Promise<AdminUser> {
     return this.admin.updateUserRole(userId, body.role, session.userId);
+  }
+
+  /**
+   * Switching an account off is its own route rather than a field on the one
+   * above: the two do different things (one changes what somebody may do, the
+   * other whether they may do anything), and a single PATCH that could do both
+   * makes "disable this person" and "demote this person" one fat-fingered
+   * keystroke apart.
+   */
+  @Patch('users/:userId/status')
+  @ApiBody({ schema: openApiSchema(updateUserStatusRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(adminUserSchema) })
+  async updateUserStatus(
+    @CurrentSession() session: VerifiedSession,
+    @Param('userId') userId: string,
+    @Body(zodPipe(updateUserStatusRequestSchema)) body: UpdateUserStatusRequest,
+  ): Promise<AdminUser> {
+    return this.admin.setUserDisabled({
+      userId,
+      disabled: body.disabled,
+      actorId: session.userId,
+    });
+  }
+
+  @Delete('users/:userId')
+  @ApiOkResponse({ schema: openApiResponseSchema(deleteUserResponseSchema) })
+  async deleteUser(
+    @CurrentSession() session: VerifiedSession,
+    @Param('userId') userId: string,
+  ): Promise<DeleteUserResponse> {
+    await this.admin.deleteUser({ userId, actorId: session.userId });
+    return { deleted: true };
   }
 }

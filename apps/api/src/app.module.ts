@@ -17,6 +17,7 @@ import { API_ENV } from './common/logger.provider';
 import { DatabasesModule } from './databases/databases.module';
 import { DocumentsModule } from './documents/documents.module';
 import { HealthModule } from './health/health.module';
+import { InvitationsModule } from './invitations/invitations.module';
 import { McpModule } from './mcp/mcp.module';
 import { MeModule } from './me/me.module';
 import { MemoryModule } from './memory/memory.module';
@@ -50,6 +51,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     AttachmentsModule,
     AiModule,
     AdminModule,
+    InvitationsModule,
     HealthModule,
     MeModule,
     MemoryModule,

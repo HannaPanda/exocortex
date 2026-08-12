@@ -20,6 +20,8 @@ export const AUDIT_ACTIONS = [
   'workspace.renamed',
   'workspace.member_role_changed',
   'workspace.member_removed',
+  'workspace.member_invited',
+  'workspace.member_joined',
   'workspace.deleted',
   'database.property.deleted',
   'setting.updated',
@@ -38,7 +40,8 @@ export interface WriteAuditInput {
     | 'workspace_member'
     | 'document_snapshot'
     | 'database_property'
-    | 'setting';
+    | 'setting'
+    | 'invitation';
   targetId: string;
   correlationId: string;
   /**

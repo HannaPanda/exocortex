@@ -75,7 +75,12 @@ export function forceConsentPrompt(url: URL): void {
 @Injectable()
 export class AuthService implements OnApplicationShutdown {
   public readonly auth: ExocortexAuth;
-  private readonly mailer: Mailer;
+  /**
+   * The one SMTP transport in the process. Public because invitations are sent
+   * outside Better Auth's own flows (issue #3) and a second transport would mean
+   * a second connection pool and a second place to configure the relay.
+   */
+  public readonly mailer: Mailer;
 
   constructor(
     @Inject(PRISMA) prisma: PrismaClient,
