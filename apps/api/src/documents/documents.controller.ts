@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Inject, Param, Patch, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
 import {
   ApiBody,
   ApiConsumes,
@@ -22,12 +33,20 @@ import {
   createDocumentRequestSchema,
   type CreateSnapshotRequest,
   createSnapshotRequestSchema,
+  type DeleteDocumentsRequest,
+  deleteDocumentsRequestSchema,
+  type DeleteDocumentsResponse,
+  deleteDocumentsResponseSchema,
   type DocumentActivityResponse,
   documentActivityResponseSchema,
   type DocumentContentWriteRequest,
   documentContentWriteRequestSchema,
   type DocumentContentWriteResponse,
   documentContentWriteResponseSchema,
+  type DocumentDeletionPreview,
+  documentDeletionPreviewSchema,
+  type DocumentDeletionPreviewsResponse,
+  documentDeletionPreviewsResponseSchema,
   type DocumentDetail,
   documentDetailSchema,
   type DocumentLinksResponse,
@@ -58,6 +77,8 @@ import {
   resolveDocumentLinkRequestSchema,
   type ResolveDocumentLinkResponse,
   resolveDocumentLinkResponseSchema,
+  type TrashResponse,
+  trashResponseSchema,
   type UpdateDocumentRequest,
   updateDocumentRequestSchema,
 } from '@exocortex/contracts';
@@ -121,6 +142,55 @@ export class WorkspaceDocumentsController {
     @Query(zodPipe(resolveDocumentLinkRequestSchema)) query: ResolveDocumentLinkRequest,
   ): Promise<ResolveDocumentLinkResponse> {
     return this.documents.resolveLink(workspaceId, session.userId, query);
+  }
+
+  /**
+   * The trash as a tree (issue #32). Separate from `documents/tree`, which
+   * hands archived pages back flat: what belongs to what, and what came along
+   * with what, is the whole point of this one.
+   */
+  @Get('trash')
+  @ApiOkResponse({ schema: openApiResponseSchema(trashResponseSchema) })
+  async trash(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+  ): Promise<TrashResponse> {
+    return this.documents.getTrash(workspaceId, session.userId);
+  }
+
+  /** What deleting this selection would take with it, before it is confirmed. */
+  @Post('trash/deletion-preview')
+  @ApiOkResponse({ schema: openApiResponseSchema(documentDeletionPreviewsResponseSchema) })
+  async trashDeletionPreview(
+    @CurrentSession() session: VerifiedSession,
+    @Body(zodPipe(deleteDocumentsRequestSchema)) body: DeleteDocumentsRequest,
+  ): Promise<DocumentDeletionPreviewsResponse> {
+    return {
+      previews: await this.documents.previewDeletion({
+        documentIds: body.documentIds,
+        userId: session.userId,
+      }),
+    };
+  }
+
+  /**
+   * Deletes several archived pages for good, in one transaction and one event.
+   * Emptying a trash of 145 pages must not be 145 requests, each of which could
+   * half-succeed.
+   */
+  @Post('trash/delete')
+  @ApiOkResponse({ schema: openApiResponseSchema(deleteDocumentsResponseSchema) })
+  async deleteFromTrash(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+    @Body(zodPipe(deleteDocumentsRequestSchema)) body: DeleteDocumentsRequest,
+  ): Promise<DeleteDocumentsResponse> {
+    return this.documents.deletePermanently({
+      documentIds: body.documentIds,
+      userId: session.userId,
+      workspaceId,
+      correlationId: currentCorrelationId(),
+    });
   }
 
   @Get('ai-rules')
@@ -319,6 +389,38 @@ export class DocumentsController {
   ): Promise<DocumentSummary> {
     return this.documents.restore({
       documentId,
+      userId: session.userId,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  /**
+   * What deleting this page for good would take with it (issue #31). Read-only:
+   * it exists so that neither a human nor an agent has to confirm a deletion
+   * whose size it does not know.
+   */
+  @Get(':documentId/deletion-preview')
+  @ApiOkResponse({ schema: openApiResponseSchema(documentDeletionPreviewSchema) })
+  async deletionPreview(
+    @CurrentSession() session: VerifiedSession,
+    @Param('documentId') documentId: string,
+  ): Promise<DocumentDeletionPreview> {
+    const [preview] = await this.documents.previewDeletion({
+      documentIds: [documentId],
+      userId: session.userId,
+    });
+    return preview as DocumentDeletionPreview;
+  }
+
+  /** Deletes an archived page and its subtree for good. Not reversible. */
+  @Delete(':documentId')
+  @ApiOkResponse({ schema: openApiResponseSchema(deleteDocumentsResponseSchema) })
+  async delete(
+    @CurrentSession() session: VerifiedSession,
+    @Param('documentId') documentId: string,
+  ): Promise<DeleteDocumentsResponse> {
+    return this.documents.deletePermanently({
+      documentIds: [documentId],
       userId: session.userId,
       correlationId: currentCorrelationId(),
     });

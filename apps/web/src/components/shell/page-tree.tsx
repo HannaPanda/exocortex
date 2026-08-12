@@ -9,7 +9,6 @@ import {
   IndentDecreaseIcon,
   IndentIncreaseIcon,
   PlusIcon,
-  RotateCcwIcon,
   SmilePlusIcon,
   TableIcon,
   Trash2Icon,
@@ -63,11 +62,12 @@ import {
   useCreateDocument,
   useDocumentTree,
   useMoveDocument,
-  useRestoreDocument,
   useUpdateDocument,
   useWorkspaces,
 } from '@/lib/api/queries';
 import { usePersistentState } from '@/lib/use-persistent-state';
+
+import { TrashSheet } from './trash-sheet';
 
 interface PageTreeProps {
   workspaceId: string;
@@ -195,7 +195,6 @@ export function PageTree({ workspaceId }: PageTreeProps) {
   const tree = useDocumentTree(workspaceId);
   const createDocument = useCreateDocument(workspaceId);
   const archiveDocument = useArchiveDocument(workspaceId);
-  const restoreDocument = useRestoreDocument(workspaceId);
   const updateDocument = useUpdateDocument(workspaceId);
   const moveDocument = useMoveDocument(workspaceId);
   const workspaces = useWorkspaces();
@@ -700,11 +699,13 @@ export function PageTree({ workspaceId }: PageTreeProps) {
           </div>
         ) : null}
 
+        {/* The trash opens as its own sheet rather than unfolding here: what it
+            has to show (structure, dates, what came along, a selection) does not
+            fit a navigation column, and half of it is unreadable when it does. */}
         <div className="mt-2 border-t border-border pt-2">
           <button
             type="button"
-            onClick={() => setShowTrash((value) => !value)}
-            aria-expanded={showTrash}
+            onClick={() => setShowTrash(true)}
             className="flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-accent/60 hover:text-foreground"
             data-testid="toggle-trash"
           >
@@ -712,35 +713,10 @@ export function PageTree({ workspaceId }: PageTreeProps) {
             Papierkorb
             <span className="exocortex-numeric ml-auto">{tree.data.archived.length}</span>
           </button>
-
-          {showTrash ? (
-            tree.data.archived.length === 0 ? (
-              <p className="px-3 py-2 text-xs text-muted-foreground">Der Papierkorb ist leer.</p>
-            ) : (
-              <ul className="mt-1" data-testid="trash-list">
-                {tree.data.archived.map((document) => (
-                  <li
-                    key={document.id}
-                    className="flex items-center gap-1 rounded-md px-2 py-1 text-sm hover:bg-accent/60"
-                  >
-                    <span className="min-w-0 flex-1 truncate text-muted-foreground">
-                      {document.title}
-                    </span>
-                    <button
-                      type="button"
-                      aria-label={`„${document.title}“ wiederherstellen`}
-                      onClick={() => void restoreDocument.mutateAsync(document.id)}
-                      className="shrink-0 text-muted-foreground hover:text-foreground"
-                    >
-                      <RotateCcwIcon className="size-3.5" />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )
-          ) : null}
         </div>
       </ScrollArea>
+
+      <TrashSheet workspaceId={workspaceId} open={showTrash} onOpenChange={setShowTrash} />
 
       <Dialog
         open={moveWorkspaceNode !== null}

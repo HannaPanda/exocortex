@@ -7,6 +7,7 @@ import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { type ProseMirrorDocument, serializePlainText } from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
+import { type ObjectStorage } from '@exocortex/storage';
 
 import { OutboxService } from '../common/outbox.service';
 import {
@@ -37,6 +38,9 @@ import { MemoryService } from './memory.service';
 loadDotEnv();
 
 const logger: Logger = createLogger({ name: 'api-test', level: 'silent' });
+
+/** Nothing here deletes a page, so the storage half of the service is never reached. */
+const noopStorage = {} as unknown as ObjectStorage;
 const correlationId = 'test-memory';
 
 let prisma: PrismaClient;
@@ -142,7 +146,7 @@ beforeAll(async () => {
 
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
-  const documents = new DocumentsService(prisma, queues, logger, access, outbox, realtime);
+  const documents = new DocumentsService(prisma, queues, logger, noopStorage, access, outbox, realtime);
   const content = new DocumentContentService(
     prisma,
     queues,

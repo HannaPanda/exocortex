@@ -152,7 +152,7 @@ test.describe('collaborative editing', () => {
       });
 
       await second.page.getByTestId('toggle-trash').click();
-      await expect(second.page.getByTestId('trash-list')).toContainText(title, { timeout: 30_000 });
+      await expect(second.page.getByTestId('trash-sheet')).toContainText(title, { timeout: 30_000 });
       expect(documentId).toMatch(/^[a-z0-9]+$/);
     } finally {
       await first.context.close();

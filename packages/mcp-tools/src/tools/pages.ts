@@ -4,11 +4,13 @@ import {
   aiRuleModeSchema,
   archiveDocumentResponseSchema,
   coverPositionSchema,
+  deleteDocumentsResponseSchema,
   DOCUMENT_ICON_COLORS,
   DOCUMENT_ICON_NAMES,
   documentActivityResponseSchema,
   documentContentWriteRequestSchema,
   documentContentWriteResponseSchema,
+  documentDeletionPreviewSchema,
   documentIconColorSchema,
   documentIconSchema,
   documentLayoutSchema,
@@ -28,6 +30,8 @@ import {
   moveDocumentRequestSchema,
   resolveDocumentLinkRequestSchema,
   resolveDocumentLinkResponseSchema,
+  type TrashEntry,
+  trashResponseSchema,
 } from '@exocortex/contracts';
 
 import { truncateText } from '../format.js';
@@ -530,6 +534,144 @@ export const pageRestoreTool: AnyToolDefinition = defineTool({
   },
 });
 
+/** Enough to read a trash of a few hundred pages, short of pasting a workspace. */
+const MAX_TRASH_LINES = 200;
+
+/** `2026-08-11T19:22:36.000Z` → `2026-08-11 19:22`. Unambiguous, and short. */
+function formatArchivedAt(iso: string): string {
+  return `${iso.slice(0, 10)} ${iso.slice(11, 16)}`;
+}
+
+function renderTrashEntries(
+  entries: readonly TrashEntry[],
+  depth: number,
+  budget: { left: number },
+): string[] {
+  const lines: string[] = [];
+  for (const entry of entries) {
+    if (budget.left <= 0) break;
+    budget.left -= 1;
+    const cascade = entry.reason === 'cascade' ? ', mit archiviert' : '';
+    const below =
+      entry.descendantCount === 0
+        ? ''
+        : `, ${entry.descendantCount} archivierte Seite(n) darunter`;
+    lines.push(
+      `${'  '.repeat(depth)}- ${entry.title} (id: ${entry.id}, type: ${entry.type}, ` +
+        `archiviert ${formatArchivedAt(entry.archivedAt)}${cascade}${below})`,
+    );
+    lines.push(...renderTrashEntries(entry.children, depth + 1, budget));
+  }
+  return lines;
+}
+
+export const pageTrashTool: AnyToolDefinition = defineTool({
+  name: 'exo_page_trash',
+  description:
+    'Liest den Papierkorb eines Arbeitsbereichs als Baum: was archiviert wurde, was dabei ' +
+    'mitgegangen ist und wann. Eingerückte Einträge hingen unter dem Eintrag darüber. ' +
+    '"mit archiviert" heißt: diese Seite wurde nie selbst gewählt, sie kam mit ihrer ' +
+    'Elternseite mit. exo_page_restore holt eine Seite zurück, exo_page_delete löscht sie ' +
+    'endgültig.',
+  inputSchema: z.object({ workspaceId: idSchema }),
+  surfaces: ['mcp', 'ai'],
+  mutating: false,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'GET',
+      path: `/api/workspaces/${input.workspaceId}/trash`,
+      responseSchema: trashResponseSchema,
+    });
+    if (result.totalCount === 0) {
+      return { text: 'Der Papierkorb ist leer.', data: result };
+    }
+    const budget = { left: MAX_TRASH_LINES };
+    const lines = renderTrashEntries(result.entries, 0, budget);
+    const omitted = result.totalCount - lines.length;
+    const notice =
+      omitted <= 0
+        ? ''
+        : `\n… ${omitted} weitere archivierte Seite(n) hier nicht angezeigt (gekürzt).`;
+    return {
+      text:
+        `${result.totalCount} archivierte Seite(n), davon ${result.entries.length} eigenständig ` +
+        `archiviert:\n${lines.join('\n')}${notice}`,
+      data: result,
+    };
+  },
+});
+
+export const pageDeleteTool: AnyToolDefinition = defineTool({
+  name: 'exo_page_delete',
+  description:
+    'Löscht eine archivierte Seite endgültig, mit allem, was unter ihr hängt: Inhalt, ' +
+    'Versionsstände, Kommentare, Anhänge und Dateien. Das ist der einzige Vorgang in ' +
+    'eXocortex, den nichts rückgängig macht, auch kein Snapshot. Die Seite muss vorher im ' +
+    'Papierkorb liegen (exo_page_archive), und es braucht Adminrechte im Arbeitsbereich. ' +
+    'Verweise anderer Seiten auf sie bleiben stehen und werden zu unaufgelösten Verweisen. ' +
+    'Der Aufruf verändert Daten: der erste Aufruf sagt, wie viele Seiten mitgehen, und führt ' +
+    'nichts aus; erst der identisch wiederholte löscht.',
+  inputSchema: z.object({ documentId: idSchema }),
+  // `mcp` only, deliberately. The built-in AI's tool loop has no confirmation
+  // gate -- it is governed by the `ai.mutatingToolsEnabled` switch, which is one
+  // decision for every write there is. The single operation nothing can undo
+  // does not belong behind a switch somebody flipped once, so it stays with the
+  // surfaces that ask twice.
+  surfaces: ['mcp'],
+  mutating: true,
+  destructive: true,
+  target: (input) => `document:${input.documentId}`,
+  async preview(client, input) {
+    const preview = await client.request({
+      method: 'GET',
+      path: `/api/documents/${input.documentId}/deletion-preview`,
+      responseSchema: documentDeletionPreviewSchema,
+    });
+    const names = preview.documents
+      .slice(1, 11)
+      .map((document) => `- ${formatDocumentSummary(document)}`);
+    return [
+      `Endgültig gelöscht würden ${preview.documents.length} Seite(n): „${preview.title}“` +
+        (preview.descendantCount === 0
+          ? ' (keine Unterseiten).'
+          : ` und ${preview.descendantCount} Seite(n) darunter.`),
+      ...(names.length === 0 ? [] : names),
+      ...(preview.descendantCount > names.length
+        ? [`… und ${preview.descendantCount - names.length} weitere.`]
+        : []),
+      ...(preview.attachmentCount === 0
+        ? []
+        : [`Dazu ${preview.attachmentCount} Anhang/Anhänge samt Dateien.`]),
+      ...(preview.incomingLinkCount === 0
+        ? []
+        : [
+            `${preview.incomingLinkCount} Verweis(e) anderer Seiten zeigen darauf und werden ` +
+              'unaufgelöst.',
+          ]),
+      'Das ist nicht rückgängig zu machen.',
+    ].join('\n');
+  },
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'DELETE',
+      path: `/api/documents/${input.documentId}`,
+      responseSchema: deleteDocumentsResponseSchema,
+    });
+    const extras = [
+      result.attachmentCount === 0 ? null : `${result.attachmentCount} Anhang/Anhänge`,
+      result.unresolvedLinkCount === 0
+        ? null
+        : `${result.unresolvedLinkCount} Verweis(e) sind jetzt unaufgelöst`,
+    ].filter((part): part is string => part !== null);
+    return {
+      text:
+        `${result.deletedCount} Seite(n) endgültig gelöscht.` +
+        (extras.length === 0 ? '' : ` ${extras.join(', ')}.`),
+      data: result,
+    };
+  },
+});
+
 export const pageSnapshotsTool: AnyToolDefinition = defineTool({
   name: 'exo_page_snapshots',
   description: 'Listet die gespeicherten Snapshots einer Seite (für Wiederherstellung nach einem Schreibvorgang).',
@@ -797,6 +939,8 @@ export const PAGE_TOOLS: readonly AnyToolDefinition[] = [
   pageMoveTool,
   pageArchiveTool,
   pageRestoreTool,
+  pageTrashTool,
+  pageDeleteTool,
   pageSnapshotsTool,
   pageRestoreSnapshotTool,
   pageActivityTool,

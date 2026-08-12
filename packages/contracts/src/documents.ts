@@ -194,6 +194,110 @@ export const archiveDocumentResponseSchema = documentSummarySchema.extend({
 export type ArchiveDocumentResponse = z.infer<typeof archiveDocumentResponseSchema>;
 
 /**
+ * Why a page sits in the trash.
+ *
+ * `direct` means somebody archived this page. `cascade` means it went along
+ * because the page above it was archived in the same operation — it was never
+ * chosen, and that is the difference between "I threw this away" and "I threw
+ * away the folder it happened to be in".
+ */
+export const trashReasonSchema = z.enum(['direct', 'cascade']);
+export type TrashReason = z.infer<typeof trashReasonSchema>;
+
+/**
+ * One archived page, with the archived pages that hang below it.
+ *
+ * The trash keeps its shape. A flat list of 145 titles cannot answer "did this
+ * page have anything under it", and that is the question somebody deciding what
+ * may go for good has to answer first.
+ */
+export const trashEntrySchema: z.ZodType<TrashEntry> = z.lazy(() =>
+  documentSummarySchema.extend({
+    /** Never null in the trash: everything here has been archived. */
+    archivedAt: isoDateTimeSchema,
+    reason: trashReasonSchema,
+    /** Archived pages below this one, at any depth. */
+    descendantCount: z.number().int().nonnegative(),
+    children: z.array(trashEntrySchema),
+  }),
+);
+export interface TrashEntry extends DocumentSummary {
+  archivedAt: string;
+  reason: TrashReason;
+  descendantCount: number;
+  children: TrashEntry[];
+}
+
+export const trashResponseSchema = z.object({
+  /**
+   * The roots of the trash: archived pages whose parent is not itself archived.
+   * Newest operation first, because the trash is read from the recent end.
+   */
+  entries: z.array(trashEntrySchema),
+  /** Every archived page in the workspace, including the nested ones. */
+  totalCount: z.number().int().nonnegative(),
+});
+export type TrashResponse = z.infer<typeof trashResponseSchema>;
+
+/**
+ * What deleting a page for good would take with it.
+ *
+ * Deletion is the one step this application cannot undo, so the answer to
+ * "what happens if I do this" must exist before it happens — for the dialog
+ * that asks a human, and for the confirmation an agent has to read back.
+ */
+export const documentDeletionPreviewSchema = z.object({
+  documentId: idSchema,
+  title: z.string(),
+  /** The page itself first, then everything below it. */
+  documents: z.array(documentSummarySchema),
+  /** Pages below the named one. `documents.length` is this plus one. */
+  descendantCount: z.number().int().nonnegative(),
+  /** Files that go with them, including the objects in storage. */
+  attachmentCount: z.number().int().nonnegative(),
+  /**
+   * References from pages that stay. They are not deleted: they turn into
+   * unresolved references, the same state a `[[Titel]]` has before its page
+   * exists. A reader following one lands on "not found", not on nothing.
+   */
+  incomingLinkCount: z.number().int().nonnegative(),
+});
+export type DocumentDeletionPreview = z.infer<typeof documentDeletionPreviewSchema>;
+
+/**
+ * One preview per page named in the request, in the same order.
+ *
+ * Overlapping selections are the caller's job to avoid: asking about a page and
+ * about a page below it counts the shared subtree twice. The trash view never
+ * offers that, because selecting a page covers everything under it.
+ */
+export const documentDeletionPreviewsResponseSchema = z.object({
+  previews: z.array(documentDeletionPreviewSchema),
+});
+export type DocumentDeletionPreviewsResponse = z.infer<
+  typeof documentDeletionPreviewsResponseSchema
+>;
+
+export const deleteDocumentsRequestSchema = z.object({
+  /**
+   * Capped so one request cannot walk the whole workspace. Emptying a large
+   * trash takes several rounds, and each of them is a decision.
+   */
+  documentIds: z.array(idSchema).min(1).max(100),
+});
+export type DeleteDocumentsRequest = z.infer<typeof deleteDocumentsRequestSchema>;
+
+export const deleteDocumentsResponseSchema = z.object({
+  /** Ids that no longer exist, descendants included. */
+  deletedIds: z.array(idSchema),
+  deletedCount: z.number().int().nonnegative(),
+  attachmentCount: z.number().int().nonnegative(),
+  /** References that became unresolved because their target is gone. */
+  unresolvedLinkCount: z.number().int().nonnegative(),
+});
+export type DeleteDocumentsResponse = z.infer<typeof deleteDocumentsResponseSchema>;
+
+/**
  * Resolves a reference to another page to the document(s) it means.
  *
  * Two ways in, and they are tried in that order: `documentId`, the identity a

@@ -4,6 +4,7 @@ import {
   assertPolicy,
   canArchiveDocument,
   canCreateDocument,
+  canDeleteDocument,
   canEditDocument,
   canMoveDocument,
   canMoveDocumentAcrossWorkspaces,
@@ -17,7 +18,9 @@ import {
   type AiRuleListResponse,
   type ArchiveDocumentResponse,
   type CreateDocumentRequest,
+  type DeleteDocumentsResponse,
   DOCUMENT_ICON_COLORS,
+  type DocumentDeletionPreview,
   type DocumentDetail,
   type DocumentIconColor,
   type DocumentLinkMatch,
@@ -29,6 +32,8 @@ import {
   QUEUE_NAMES,
   type ResolveDocumentLinkRequest,
   type ResolveDocumentLinkResponse,
+  type TrashEntry,
+  type TrashResponse,
   type UpdateDocumentRequest,
 } from '@exocortex/contracts';
 import {
@@ -44,11 +49,12 @@ import {
 import { createEmptyYjsState, EXOCORTEX_SCHEMA_VERSION } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
+import { type ObjectStorage } from '@exocortex/storage';
 
 import { AppError } from '../common/app-error';
 import { LOGGER } from '../common/logger.provider';
 import { OutboxService } from '../common/outbox.service';
-import { PRISMA, QUEUES } from '../platform/platform.module';
+import { OBJECT_STORAGE, PRISMA, QUEUES } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
 interface DocumentRow {
@@ -195,6 +201,7 @@ export class DocumentsService {
     @Inject(PRISMA) private readonly prisma: PrismaClient,
     @Inject(QUEUES) private readonly queues: QueueRegistry,
     @Inject(LOGGER) private readonly logger: Logger,
+    @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
     private readonly access: WorkspaceAccessService,
     private readonly outbox: OutboxService,
     private readonly realtime: RealtimeService,
@@ -1046,6 +1053,263 @@ export class DocumentsService {
       input.correlationId,
     );
     return summary;
+  }
+
+  /**
+   * The trash, with its shape intact (issue #32).
+   *
+   * The tree endpoint hands archived pages back as one flat list, which is
+   * enough to restore a page you can name and useless for deciding what may go
+   * for good: it answers neither "did anything hang under this" nor "did I
+   * throw this away or did it just come along". Both answers are already in the
+   * data -- `parentId` survives archiving, and one archive operation stamps
+   * every page it takes with the same `archivedAt` -- so this is a view, not a
+   * new record.
+   */
+  async getTrash(workspaceId: string, userId: string): Promise<TrashResponse> {
+    const role = await this.access.findRole(workspaceId, userId);
+    assertPolicy(canReadWorkspace(role));
+
+    const rows = await this.prisma.document.findMany({
+      where: { workspaceId, archivedAt: { not: null } },
+      select: DOCUMENT_SELECT,
+      orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
+    });
+
+    const byId = new Map(rows.map((row) => [row.id, row]));
+    const childrenByParent = new Map<string, DocumentRow[]>();
+    const roots: DocumentRow[] = [];
+    for (const row of rows) {
+      // A parent that is *not* in the trash makes this row a root of the trash,
+      // even though it has a parent in the tree. That is the page somebody
+      // archived; everything under it came along.
+      const parent = row.parentId === null ? undefined : byId.get(row.parentId);
+      if (parent === undefined) {
+        roots.push(row);
+        continue;
+      }
+      const siblings = childrenByParent.get(parent.id);
+      if (siblings === undefined) childrenByParent.set(parent.id, [row]);
+      else siblings.push(row);
+    }
+
+    const toEntry = (row: DocumentRow): TrashEntry => {
+      const children = (childrenByParent.get(row.id) ?? []).map(toEntry);
+      const archivedAt = row.archivedAt as Date;
+      const parent = row.parentId === null ? undefined : byId.get(row.parentId);
+      return {
+        ...toSummary(row),
+        archivedAt: archivedAt.toISOString(),
+        // Same instant as the page above it means the same operation took both.
+        // A page archived on its own and only later joined by its parent keeps
+        // `direct`, because it *was* chosen once.
+        reason:
+          parent !== undefined && parent.archivedAt?.getTime() === archivedAt.getTime()
+            ? 'cascade'
+            : 'direct',
+        descendantCount: children.reduce(
+          (total, child) => total + child.descendantCount + 1,
+          0,
+        ),
+        children,
+      };
+    };
+
+    const entries = roots
+      .map(toEntry)
+      .sort((a, b) =>
+        a.archivedAt === b.archivedAt
+          ? a.title.localeCompare(b.title, 'de')
+          : b.archivedAt.localeCompare(a.archivedAt),
+      );
+
+    return { entries, totalCount: rows.length };
+  }
+
+  /**
+   * What deleting these pages for good would take with it.
+   *
+   * Deliberately its own call rather than a number computed by whoever renders
+   * the dialog: the same sentence has to reach a human reading a confirmation
+   * and an agent reading back what it is about to do (`exo_page_delete`), and
+   * only the server can count the subtree, the files and the references.
+   */
+  async previewDeletion(input: {
+    documentIds: string[];
+    userId: string;
+  }): Promise<DocumentDeletionPreview[]> {
+    const previews: DocumentDeletionPreview[] = [];
+    for (const documentId of input.documentIds) {
+      const context = await this.access.requireDocumentContext(documentId, input.userId);
+      assertPolicy(canDeleteDocument(context.role, context.document));
+      const scope = await this.collectDeletionScope(context.workspaceId, [documentId]);
+      previews.push({
+        documentId,
+        title: context.document.title,
+        documents: scope.documents.map(toSummary),
+        descendantCount: scope.documents.length - 1,
+        attachmentCount: scope.attachments.length,
+        incomingLinkCount: scope.incomingLinkCount,
+      });
+    }
+    return previews;
+  }
+
+  /**
+   * Deletes archived pages for good (issue #31).
+   *
+   * The one irreversible operation in the application. Everything that hangs
+   * off a deleted page goes with it through the foreign keys: content, the Yjs
+   * state, snapshots, the search projection, embeddings, comments, property
+   * values and the definitions of a database. Two things deliberately do not
+   * cascade: references *to* the page become unresolved instead of vanishing
+   * (the reader lands on "not found" rather than on a link that was silently
+   * rewritten), and the stored files are removed by hand after the transaction
+   * commits, because object storage has no transaction to join.
+   */
+  async deletePermanently(input: {
+    documentIds: string[];
+    userId: string;
+    correlationId: string;
+    /** When given, every document must belong to this workspace. */
+    workspaceId?: string;
+  }): Promise<DeleteDocumentsResponse> {
+    if (input.documentIds.length === 0) {
+      throw AppError.validation('No documents to delete');
+    }
+
+    let workspaceId: string | null = input.workspaceId ?? null;
+    const titles = new Map<string, string>();
+    for (const documentId of input.documentIds) {
+      const context = await this.access.requireDocumentContext(documentId, input.userId);
+      assertPolicy(canDeleteDocument(context.role, context.document));
+      if (workspaceId === null) workspaceId = context.workspaceId;
+      else if (context.workspaceId !== workspaceId) {
+        throw new AppError(
+          'document_cross_workspace',
+          'One deletion cannot span two workspaces',
+        );
+      }
+      titles.set(documentId, context.document.title);
+    }
+    const scopeWorkspaceId = workspaceId as string;
+
+    const scope = await this.collectDeletionScope(scopeWorkspaceId, input.documentIds);
+    const deletedIds = scope.documents.map((row) => row.id);
+
+    await this.prisma.$transaction(async (tx) => {
+      // Before the documents: the rows would otherwise survive with a dangling
+      // `documentId` (the relation is SetNull), and nothing would ever collect
+      // the objects they point at.
+      if (scope.attachments.length > 0) {
+        await tx.attachment.deleteMany({
+          where: { id: { in: scope.attachments.map((attachment) => attachment.id) } },
+        });
+      }
+
+      await tx.document.deleteMany({ where: { id: { in: deletedIds } } });
+
+      for (const documentId of input.documentIds) {
+        await this.outbox.writeAudit(tx, {
+          workspaceId: scopeWorkspaceId,
+          actorId: input.userId,
+          action: 'document.deleted',
+          targetType: 'document',
+          targetId: documentId,
+          correlationId: input.correlationId,
+          metadata: {
+            title: titles.get(documentId) ?? null,
+            deletedCount: deletedIds.length,
+            attachmentCount: scope.attachments.length,
+          },
+        });
+      }
+      await this.outbox.writeEvent(tx, {
+        workspaceId: scopeWorkspaceId,
+        type: 'document.deleted',
+        payload: { documentId: input.documentIds[0] as string, documentIds: deletedIds },
+        correlationId: input.correlationId,
+      });
+    });
+
+    for (const attachment of scope.attachments) {
+      const keys = [attachment.storageKey, attachment.previewKey].filter(
+        (key): key is string => key !== null,
+      );
+      for (const key of keys) {
+        try {
+          await this.storage.deleteObject({ key });
+        } catch (error) {
+          // The rows are gone either way. A file left behind costs disk space,
+          // which the orphan sweep in the maintenance job is there for; failing
+          // the deletion here would leave the caller unable to finish something
+          // that has already happened.
+          this.logger.error('Failed to delete a stored object of a deleted page', error, {
+            attachmentId: attachment.id,
+            storageKey: key,
+            correlationId: input.correlationId,
+          });
+        }
+      }
+    }
+
+    await this.realtime.emit('document.deleted', scopeWorkspaceId, input.correlationId, {
+      documentId: input.documentIds[0] as string,
+      documentIds: deletedIds,
+    });
+
+    return {
+      deletedIds,
+      deletedCount: deletedIds.length,
+      attachmentCount: scope.attachments.length,
+      unresolvedLinkCount: scope.incomingLinkCount,
+    };
+  }
+
+  /**
+   * Everything a deletion of `documentIds` would touch: the pages themselves
+   * with their subtrees, the files hanging off them, and the references from
+   * pages that stay.
+   */
+  private async collectDeletionScope(
+    workspaceId: string,
+    documentIds: string[],
+  ): Promise<{
+    documents: DocumentRow[];
+    attachments: { id: string; storageKey: string; previewKey: string | null }[];
+    incomingLinkCount: number;
+  }> {
+    const all = await this.prisma.document.findMany({
+      where: { workspaceId },
+      select: { id: true, parentId: true },
+    });
+
+    const ids = new Set<string>();
+    for (const documentId of documentIds) {
+      ids.add(documentId);
+      for (const descendant of collectSubtree(all, documentId)) ids.add(descendant);
+    }
+
+    const documents = await this.prisma.document.findMany({
+      where: { id: { in: [...ids] } },
+      select: DOCUMENT_SELECT,
+      orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
+    });
+    // The page the caller named first, then everything that comes along -- the
+    // order the confirmation is read in.
+    const requested = new Set(documentIds);
+    documents.sort((a, b) => Number(requested.has(b.id)) - Number(requested.has(a.id)));
+
+    const attachments = await this.prisma.attachment.findMany({
+      where: { documentId: { in: [...ids] } },
+      select: { id: true, storageKey: true, previewKey: true },
+    });
+
+    const incomingLinkCount = await this.prisma.documentLink.count({
+      where: { targetDocumentId: { in: [...ids] }, sourceDocumentId: { notIn: [...ids] } },
+    });
+
+    return { documents, attachments, incomingLinkCount };
   }
 
   /**

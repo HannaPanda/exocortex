@@ -238,6 +238,34 @@ export function canRestoreDocument(
 }
 
 /**
+ * Deleting a page for good (issue #31).
+ *
+ * Two gates, and both are deliberate. The page must be in the trash first, so
+ * that no single call can turn a page somebody is working on into nothing --
+ * archiving stays the reversible step everyone uses, and deletion only ever
+ * applies to something already put aside. And it takes ADMIN, unlike archiving,
+ * which every MEMBER may do: this is the one operation in the application that
+ * no snapshot, no restore and no backup inside the product can undo.
+ */
+export function canDeleteDocument(
+  role: WorkspaceRole | null,
+  document: DocumentPolicySubject,
+): PolicyDecision {
+  const read = canReadWorkspace(role);
+  if (!read.allowed) return read;
+  if (!hasAtLeast(role as WorkspaceRole, 'ADMIN')) {
+    return deny('forbidden', 'Deleting a page permanently requires the ADMIN or OWNER role');
+  }
+  if (!isArchived(document)) {
+    return deny(
+      'conflict',
+      'Only an archived page can be deleted permanently; archive it first',
+    );
+  }
+  return ALLOW;
+}
+
+/**
  * Adding, renaming or deleting a database property or view. Deliberately the
  * same bar as `canEditDocument` — Notion does not require a higher role to
  * change a database's schema than to edit one of its rows.

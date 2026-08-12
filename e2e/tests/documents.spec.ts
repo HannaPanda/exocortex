@@ -91,7 +91,7 @@ test.describe('documents', () => {
     await page.waitForURL(new RegExp(`/arbeitsbereich/${workspaceId}$`));
 
     await page.getByTestId('toggle-trash').click();
-    await expect(page.getByTestId('trash-list')).toContainText(title);
+    await expect(page.getByTestId('trash-sheet')).toContainText(title);
 
     // An archived page is read-only.
     await page.goto(`/arbeitsbereich/${workspaceId}/seite/${documentId}`);
@@ -100,6 +100,28 @@ test.describe('documents', () => {
     await page.getByTestId('restore-document').click();
     await expect(page.getByTestId('archived-banner')).toBeHidden({ timeout: 30_000 });
     await expectTreeContains(page, title);
+  });
+
+  /** Issue #31: the trash used to only grow. */
+  test('deletes an archived page for good', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const title = `Endgültig ${Date.now().toString(36)}`;
+    await createPage(page, title);
+
+    await page.getByTestId('document-actions').click();
+    await page.getByTestId('archive-document').click();
+
+    await page.getByTestId('toggle-trash').click();
+    const sheet = page.getByTestId('trash-sheet');
+    await expect(sheet).toContainText(title);
+
+    await sheet.getByRole('checkbox', { name: `„${title}“ zum Löschen auswählen` }).click();
+    await page.getByTestId('trash-delete').click();
+    await page.getByTestId('trash-delete-confirm').click();
+
+    // Gone from the trash, and gone for good: nothing restores it.
+    await expect(sheet).not.toContainText(title, { timeout: 30_000 });
   });
 
   /**

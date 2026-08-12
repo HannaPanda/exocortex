@@ -12,6 +12,11 @@ import { LOGGER } from './logger.provider';
 export const AUDIT_ACTIONS = [
   'document.archived',
   'document.restored',
+  /**
+   * Deleted for good. The page it names no longer exists, which is exactly why
+   * this entry has to: the audit log is the only place the deletion survives.
+   */
+  'document.deleted',
   'document.moved',
   'document.moved_workspace',
   'document.renamed',

@@ -122,9 +122,17 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
       if (target !== null) {
         const check = gate.check({ toolName: tool.name, target, payload: rawInput, principal });
         if (check.state === 'pending') {
+          // What the call would do goes *before* the prompt that asks about it.
+          // A model that reads the first line and repeats the call has then
+          // read the consequence; a footer after ten lines of gate wording has
+          // no such guarantee.
+          const preview = await tool.previewOf(client, rawInput);
           // A confirmation prompt is not a protocol failure: the model must
           // be able to read it and call the tool again to confirm.
-          return { text: check.message, isError: false };
+          return {
+            text: preview === null ? check.message : `${preview}\n\n${check.message}`,
+            isError: false,
+          };
         }
       }
     }

@@ -15,6 +15,7 @@ authorization mechanism.
 | API keys never reach the browser | only `PUBLIC_*` values are exposed (`apps/web/next.config.ts`); `apps/web` may not import `@exocortex/ai` | `scripts/check-dependency-boundaries.mjs` |
 | Collaboration tickets expire quickly | `COLLABORATION_TICKET_TTL_SECONDS` (default 60, max 600) | "a collaboration ticket is scoped to one document and expires quickly", "rejects an expired ticket" |
 | Archived documents cannot be edited | `canEditDocument`, plus a second check in `DocumentPersistence.store` | "an archived document cannot be edited", "rejects a write ticket for an archived document by downgrading to read-only" |
+| Deleting a page for good needs ADMIN, and the trash first | `canDeleteDocument` | "refuses a member without the ADMIN role", "refuses to delete a page that is not archived" |
 | Read-only tickets cannot submit updates | `connectionConfig.readOnly = true` in `onAuthenticate` | "refuses updates from a read-only connection" |
 | Cross-workspace moves are rejected | `canMoveDocument` | "a cross-workspace parent assignment is rejected" |
 | Circular moves are rejected | `wouldCreateCycle` inside the move transaction | "a circular move is rejected" |

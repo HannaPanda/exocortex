@@ -20,6 +20,7 @@ export const APPLICATION_EVENT_TYPES = [
   'document.moved',
   'document.archived',
   'document.restored',
+  'document.deleted',
   'document.materialized',
   'job.progress',
   'job.completed',
@@ -198,6 +199,16 @@ export const commentDeletedPayloadSchema = z.object({
   threadId: idSchema,
 });
 
+/**
+ * Pages that no longer exist. Unlike `document.archived` this cannot carry a
+ * summary: there is nothing left to summarize, so it names ids only. Every one
+ * of them is gone, the first is the page the caller asked about.
+ */
+export const documentDeletedPayloadSchema = z.object({
+  documentId: idSchema,
+  documentIds: z.array(idSchema),
+});
+
 export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('workspace.updated', z.object({ workspace: workspaceSchema.partial() })),
   envelope('document.created', z.object({ document: documentSummarySchema })),
@@ -205,6 +216,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('document.moved', documentMovedPayloadSchema),
   envelope('document.archived', z.object({ document: documentSummarySchema })),
   envelope('document.restored', z.object({ document: documentSummarySchema })),
+  envelope('document.deleted', documentDeletedPayloadSchema),
   envelope('document.materialized', documentMaterializedPayloadSchema),
   envelope('job.progress', jobProgressPayloadSchema),
   envelope('job.completed', jobResultPayloadSchema),

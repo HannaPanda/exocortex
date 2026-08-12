@@ -6,6 +6,7 @@ import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { type ProseMirrorDocument, serializePlainText } from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
+import { type ObjectStorage } from '@exocortex/storage';
 
 import { OutboxService } from '../common/outbox.service';
 import { type RealtimeService } from '../realtime/realtime.service';
@@ -28,6 +29,9 @@ import { PageLinkIdentityService } from './page-link-identity.service';
 loadDotEnv();
 
 const logger: Logger = createLogger({ name: 'api-test', level: 'silent' });
+
+/** Nothing here deletes a page, so the storage half of the service is never reached. */
+const noopStorage = {} as unknown as ObjectStorage;
 
 let prisma: PrismaClient;
 let queues: QueueRegistry;
@@ -76,7 +80,7 @@ beforeAll(async () => {
   });
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
-  documents = new DocumentsService(prisma, queues, logger, access, outbox, realtime);
+  documents = new DocumentsService(prisma, queues, logger, noopStorage, access, outbox, realtime);
   snapshots = new DocumentSnapshotService(prisma, queues, logger, access, outbox, realtime, collaboration);
   content = new DocumentContentService(
     prisma,

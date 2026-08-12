@@ -52,6 +52,19 @@ export interface ToolDefinition<TInput> {
    * Required for every mutating tool, absent for read-only tools.
    */
   target?: (input: TInput) => string;
+  /**
+   * What this call would do, read before it is confirmed.
+   *
+   * The confirmation gate can only say "this changes data" -- it knows the tool
+   * name and the payload, not the consequences. For an operation that cannot be
+   * undone, that is not enough: "delete page X" hides that X has eleven pages
+   * under it. A tool that can say so implements this, and the sentence it
+   * returns is put in front of the confirmation prompt. Read-only, and its
+   * failure is not the caller's problem: a preview that cannot be fetched is
+   * left out rather than turned into an error, because the confirmation itself
+   * still has to be offered.
+   */
+  preview?: (client: ExocortexApiClient, input: TInput) => Promise<string>;
   execute: (client: ExocortexApiClient, input: TInput) => Promise<ToolResult>;
 }
 
@@ -75,6 +88,8 @@ export interface AnyToolDefinition {
   /** True when the underlying `ToolDefinition` declared a `target` function. */
   hasTarget: boolean;
   targetOf: (input: unknown) => string | null;
+  /** See `ToolDefinition.preview`. `null` when the tool has none, or it failed. */
+  previewOf: (client: ExocortexApiClient, rawInput: unknown) => Promise<string | null>;
   run: (client: ExocortexApiClient, rawInput: unknown) => Promise<ToolResult>;
 }
 
@@ -150,6 +165,16 @@ export function defineTool<TInput>(definition: ToolDefinition<TInput>): AnyToolD
       const parsed = definition.inputSchema.safeParse(rawInput);
       if (!parsed.success) return null;
       return definition.target(parsed.data);
+    },
+    async previewOf(client: ExocortexApiClient, rawInput: unknown): Promise<string | null> {
+      if (definition.preview === undefined) return null;
+      const parsed = definition.inputSchema.safeParse(rawInput);
+      if (!parsed.success) return null;
+      try {
+        return await definition.preview(client, parsed.data);
+      } catch {
+        return null;
+      }
     },
     async run(client: ExocortexApiClient, rawInput: unknown): Promise<ToolResult> {
       const parsed = definition.inputSchema.safeParse(rawInput);

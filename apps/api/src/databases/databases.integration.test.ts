@@ -6,6 +6,7 @@ import { IMPLEMENTED_PROPERTY_TYPES } from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
+import { type ObjectStorage } from '@exocortex/storage';
 
 import { AppError } from '../common/app-error';
 import { OutboxService } from '../common/outbox.service';
@@ -24,6 +25,9 @@ import { DatabaseViewsService } from './database-views.service';
 loadDotEnv();
 
 const logger: Logger = createLogger({ name: 'api-test', level: 'silent' });
+
+/** Nothing here deletes a page, so the storage half of the service is never reached. */
+const noopStorage = {} as unknown as ObjectStorage;
 
 let prisma: PrismaClient;
 let queues: QueueRegistry;
@@ -54,7 +58,7 @@ beforeAll(async () => {
   });
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
-  documents = new DocumentsService(prisma, queues, logger, access, outbox, realtime);
+  documents = new DocumentsService(prisma, queues, logger, noopStorage, access, outbox, realtime);
   properties = new DatabasePropertiesService(prisma, access, outbox, realtime);
   views = new DatabaseViewsService(prisma, access, realtime);
   rows = new DatabaseRowsService(prisma, access, documents);

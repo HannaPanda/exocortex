@@ -7,6 +7,7 @@ import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { type ProseMirrorDocument, serializePlainText } from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
+import { type ObjectStorage } from '@exocortex/storage';
 
 import { type AttachmentsService } from '../attachments/attachments.service';
 import { AppError } from '../common/app-error';
@@ -83,6 +84,18 @@ const collaboration = {
   },
 } as unknown as CollaborationBridgeService;
 
+/**
+ * Deleting a page removes the objects its attachments point at. MinIO is not
+ * what these tests are about, so the keys are recorded instead of removed --
+ * what matters here is that the service asks for exactly the right ones.
+ */
+const deletedObjectKeys: string[] = [];
+const storage = {
+  deleteObject: async ({ key }: { key: string }) => {
+    deletedObjectKeys.push(key);
+  },
+} as unknown as ObjectStorage;
+
 const correlationId = 'test-correlation';
 
 beforeAll(async () => {
@@ -94,7 +107,7 @@ beforeAll(async () => {
   });
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
-  service = new DocumentsService(prisma, queues, logger, access, outbox, realtime);
+  service = new DocumentsService(prisma, queues, logger, storage, access, outbox, realtime);
   linksService = new DocumentLinksService(prisma, access);
   contentService = new DocumentContentService(
     prisma,
@@ -873,6 +886,187 @@ describe('archiving and restoring', () => {
       select: { type: true },
     });
     expect(events.map((event) => event.type)).toContain('document.archived');
+  });
+});
+
+describe('the trash as a view (issue #32)', () => {
+  it('keeps the hierarchy and says what came along', async () => {
+    const parent = await createPage('Papierkorb-Eltern');
+    const child = await createPage('Papierkorb-Kind', parent);
+    await createPage('Papierkorb-Enkel', child);
+
+    await service.archive({ documentId: parent, userId: ownerId, correlationId });
+    const trash = await service.getTrash(workspaceId, ownerId);
+
+    const root = trash.entries.find((entry) => entry.id === parent);
+    expect(root).toBeDefined();
+    // The page somebody chose, and the two that had no say in it.
+    expect(root?.reason).toBe('direct');
+    expect(root?.descendantCount).toBe(2);
+    expect(root?.children).toHaveLength(1);
+    expect(root?.children[0]?.reason).toBe('cascade');
+    expect(root?.children[0]?.children[0]?.reason).toBe('cascade');
+    // A page that went along is never a root of the trash, or it would read
+    // like a second thing somebody threw away.
+    expect(trash.entries.some((entry) => entry.id === child)).toBe(false);
+  });
+
+  it('calls a page archived on its own direct, even under an archived parent', async () => {
+    const parent = await createPage('Später archiviert');
+    const child = await createPage('Zuerst archiviert', parent);
+
+    await service.archive({ documentId: child, userId: ownerId, correlationId });
+    await service.archive({ documentId: parent, userId: ownerId, correlationId });
+
+    const trash = await service.getTrash(workspaceId, ownerId);
+    const root = trash.entries.find((entry) => entry.id === parent);
+    expect(root?.children[0]?.id).toBe(child);
+    // Two operations, two timestamps: this one was chosen once.
+    expect(root?.children[0]?.reason).toBe('direct');
+  });
+});
+
+describe('deleting for good (issue #31)', () => {
+  it('refuses to delete a page that is not archived', async () => {
+    const documentId = await createPage('Noch aktiv');
+    await expect(
+      service.deletePermanently({ documentIds: [documentId], userId: ownerId, correlationId }),
+    ).rejects.toMatchObject({ code: 'conflict' });
+  });
+
+  it('refuses a member without the ADMIN role', async () => {
+    const memberUser = await prisma.user.create({
+      data: {
+        email: `member-${Date.now().toString(36)}@exocortex.test`,
+        name: 'Member',
+        emailVerified: true,
+      },
+    });
+    await prisma.workspaceMember.create({
+      data: { workspaceId, userId: memberUser.id, role: 'MEMBER' },
+    });
+
+    const documentId = await createPage('Nur Admins');
+    await service.archive({ documentId, userId: ownerId, correlationId });
+
+    await expect(
+      service.deletePermanently({
+        documentIds: [documentId],
+        userId: memberUser.id,
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'forbidden' });
+
+    await prisma.workspaceMember.deleteMany({ where: { userId: memberUser.id } });
+    await prisma.user.delete({ where: { id: memberUser.id } });
+  });
+
+  it('takes the subtree, its content and its files, and says so beforehand', async () => {
+    const parent = await createPage('Endgültig weg');
+    const child = await createPage('Kind weg', parent);
+    const attachment = await prisma.attachment.create({
+      data: {
+        workspaceId,
+        documentId: child,
+        filename: 'anhang.txt',
+        mimeType: 'text/plain',
+        byteSize: 3,
+        storageKey: `test/trash-${Date.now().toString(36)}`,
+        createdById: ownerId,
+      },
+    });
+    await service.archive({ documentId: parent, userId: ownerId, correlationId });
+
+    const [preview] = await service.previewDeletion({
+      documentIds: [parent],
+      userId: ownerId,
+    });
+    expect(preview?.descendantCount).toBe(1);
+    expect(preview?.attachmentCount).toBe(1);
+    // The page the caller named is the one the confirmation opens with.
+    expect(preview?.documents[0]?.id).toBe(parent);
+
+    deletedObjectKeys.length = 0;
+    const result = await service.deletePermanently({
+      documentIds: [parent],
+      userId: ownerId,
+      correlationId,
+    });
+
+    expect(result.deletedCount).toBe(2);
+    expect(result.attachmentCount).toBe(1);
+    expect(deletedObjectKeys).toContain(attachment.storageKey);
+    expect(await prisma.document.count({ where: { id: { in: [parent, child] } } })).toBe(0);
+    // Cascades, not a second sweep: content and search projection go with it.
+    expect(await prisma.documentContent.count({ where: { documentId: parent } })).toBe(0);
+    expect(await prisma.attachment.count({ where: { id: attachment.id } })).toBe(0);
+  });
+
+  it('turns references to a deleted page into unresolved ones', async () => {
+    const target = await createPage('Zielseite für Verweise');
+    const source = await createPage('Quellseite');
+    await prisma.documentLink.create({
+      data: {
+        workspaceId,
+        sourceDocumentId: source,
+        targetDocumentId: target,
+        targetTitle: 'Zielseite für Verweise',
+        targetTitleKey: 'zielseite für verweise',
+        kind: 'WIKI_MARK',
+        context: 'Siehe [[Zielseite für Verweise]]',
+      },
+    });
+
+    await service.archive({ documentId: target, userId: ownerId, correlationId });
+    const [preview] = await service.previewDeletion({ documentIds: [target], userId: ownerId });
+    expect(preview?.incomingLinkCount).toBe(1);
+
+    const result = await service.deletePermanently({
+      documentIds: [target],
+      userId: ownerId,
+      correlationId,
+    });
+    expect(result.unresolvedLinkCount).toBe(1);
+
+    // The reference survives its target: the reader lands on "not found",
+    // which is what it has become, rather than on nothing at all.
+    const link = await prisma.documentLink.findFirst({ where: { sourceDocumentId: source } });
+    expect(link).not.toBeNull();
+    expect(link?.targetDocumentId).toBeNull();
+    expect(link?.targetTitle).toBe('Zielseite für Verweise');
+  });
+
+  it('writes an audit entry that outlives the page', async () => {
+    const documentId = await createPage('Auditiert und gelöscht');
+    await service.archive({ documentId, userId: ownerId, correlationId });
+    await service.deletePermanently({ documentIds: [documentId], userId: ownerId, correlationId });
+
+    const entries = await prisma.auditLog.findMany({
+      where: { targetId: documentId, action: 'document.deleted' },
+      select: { metadata: true },
+    });
+    expect(entries).toHaveLength(1);
+    expect(entries[0]?.metadata).toMatchObject({ title: 'Auditiert und gelöscht' });
+  });
+
+  it('refuses a deletion that spans two workspaces', async () => {
+    const here = await createPage('Hier');
+    const there = await service.create({
+      workspaceId: otherWorkspaceId,
+      userId: ownerId,
+      request: { title: 'Dort', type: 'PAGE', parentId: null },
+      correlationId,
+    });
+    await service.archive({ documentId: here, userId: ownerId, correlationId });
+    await service.archive({ documentId: there.id, userId: ownerId, correlationId });
+
+    await expect(
+      service.deletePermanently({
+        documentIds: [here, there.id],
+        userId: ownerId,
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'document_cross_workspace' });
   });
 });
 

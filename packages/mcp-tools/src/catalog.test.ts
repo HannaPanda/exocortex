@@ -90,6 +90,7 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_invitation_resend',
       'exo_invitation_revoke',
       'exo_page_archive',
+      'exo_page_delete',
       'exo_page_rename',
       'exo_page_restore_snapshot',
       'exo_page_write',

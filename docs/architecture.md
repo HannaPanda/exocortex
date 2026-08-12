@@ -101,6 +101,17 @@ tested (26 tests in `packages/auth/src/policies.test.ts`).
   subtree inside the move transaction.
 * Archiving a page archives its subtree, so no editable page can hang under an
   archived parent.
+* The trash keeps that subtree (`GET /api/workspaces/:id/trash`, issue #32):
+  `parentId` survives archiving, and one archive operation stamps every page it
+  takes with the same `archivedAt`, so "was this chosen or did it come along"
+  is derived, never recorded a second time.
+* Deleting a page for good (`DELETE /api/documents/:id`, issue #31) needs the
+  page to be archived first and the ADMIN role, and it is the only operation in
+  the application that nothing undoes. Content, snapshots, the search
+  projection, embeddings, comments and property values go with it through the
+  foreign keys; references *to* the page become unresolved rather than
+  disappearing, and its files are removed from object storage after the
+  transaction commits, because storage has no transaction to join.
 * Moves, archives, restores, snapshot restores, attachment deletions and permission
   changes write an `AuditLog` entry. Audit metadata never contains document content.
 * `layout` (`NARROW` / `WIDE` / `FULL`) is the width of the page body: the 68ch

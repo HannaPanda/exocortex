@@ -118,6 +118,8 @@ change as dangerous only trains people to click past the warnings that matter.
 | `exo_page_move` | yes | no | `POST /api/documents/:documentId/move` -- an optional `workspaceId` moves the whole subtree into a different workspace instead of just re-parenting within the current one |
 | `exo_page_archive` | yes | yes | `POST /api/documents/:documentId/archive` |
 | `exo_page_restore` | yes | no | `POST /api/documents/:documentId/restore` |
+| `exo_page_trash` | no | no | `GET /api/workspaces/:workspaceId/trash` (issue #32) -- the trash as a tree: what was archived, what came along with it (`reason: cascade`) and when. Capped at 200 lines |
+| `exo_page_delete` | yes | yes | `DELETE /api/documents/:documentId` (issue #31) -- irreversible, archived pages only, ADMIN or OWNER. Offered on `mcp` only, never to the built-in AI: that surface has no confirmation gate, only the `ai.mutatingToolsEnabled` switch, and the one operation nothing can undo does not belong behind a switch somebody flipped once. The first call answers with what the deletion would take with it (`GET .../deletion-preview`) and executes nothing |
 | `exo_page_snapshots` | no | no | `GET /api/documents/:documentId/snapshots` |
 | `exo_page_restore_snapshot` | yes | yes | `POST /api/documents/:documentId/snapshots/:snapshotId/restore` |
 | `exo_page_activity` | no | no | `GET /api/documents/:documentId/activity` -- the page's own history (issue #20): created, renamed, moved, archived, restored, restorable snapshots and condensed editing sessions, merged server-side. Not a compliance audit trail; see `docs/background-jobs.md`. |
@@ -424,6 +426,16 @@ one observed run it switched from `append` to `replace` and overwrote a whole
 page (the automatic pre-write snapshot got it back). So the message states that
 nothing was written, that a single differing character counts as a new
 operation, and that the prompt is not a complaint about the payload.
+
+A tool may also say what its call would *do*, not just that it changes
+something. `ToolDefinition.preview` is a read-only call the dispatcher makes
+while the gate is pending, and its sentence goes in front of the prompt.
+`exo_page_delete` is what it exists for: "delete page X" hides that X has eleven
+pages, two attachments and four incoming references hanging off it, and for the
+one operation nothing can undo, the announcement has to carry the size of what
+is being announced. A preview that fails is left out rather than turned into an
+error — the confirmation still has to be offered, or the caller could never
+delete anything at all.
 
 This exists because flauschibrain shipped a confirmation gate keyed on a
 client-supplied token **twice** — a scheme that lets a model confirm an

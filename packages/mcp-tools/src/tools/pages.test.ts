@@ -4,10 +4,12 @@ import { type ExocortexApiClient } from '../client.js';
 
 import {
   pageArchiveTool,
+  pageDeleteTool,
   pageGenerateCoverTool,
   pageReadTool,
   pageResolveLinkTool,
   pageSetCoverTool,
+  pageTrashTool,
   pageTreeTool,
   pageWriteTool,
 } from './pages.js';
@@ -693,5 +695,146 @@ describe('pageTreeTool', () => {
     const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
 
     expect(result.text).toBe('Keine Seiten vorhanden.');
+  });
+});
+
+describe('pageTrashTool', () => {
+  function trashEntry(
+    id: string,
+    title: string,
+    options: {
+      archivedAt?: string;
+      reason?: 'direct' | 'cascade';
+      children?: ReturnType<typeof trashEntry>[];
+    } = {},
+  ) {
+    const children = options.children ?? [];
+    const countBelow = (list: ReturnType<typeof trashEntry>[]): number =>
+      list.reduce((sum, entry) => sum + 1 + entry.descendantCount, 0);
+    return {
+      id,
+      workspaceId: 'm19i6551nw1eafb88aoisg6x',
+      parentId: null,
+      type: 'PAGE' as const,
+      title,
+      icon: null,
+      iconColor: null,
+      layout: 'narrow' as const,
+      coverAttachmentId: null,
+      coverPosition: 50,
+      orderKey: 'V',
+      createdById: 'uuuuuuuu1111uuuu',
+      updatedById: 'uuuuuuuu1111uuuu',
+      createdAt: '2026-08-11T00:00:00.000Z',
+      updatedAt: '2026-08-11T00:00:00.000Z',
+      archivedAt: options.archivedAt ?? '2026-08-11T19:22:36.000Z',
+      reason: options.reason ?? 'direct',
+      descendantCount: countBelow(children),
+      children,
+    };
+  }
+
+  it('renders the trash as a tree and says what came along', async () => {
+    const entries = [
+      trashEntry('aaaaaaaa1111aaaa', 'Dubletten', {
+        children: [trashEntry('bbbbbbbb2222bbbb', 'Backen', { reason: 'cascade' })],
+      }),
+    ];
+    const { client, calls } = createFakeClient({ entries, totalCount: 2 });
+
+    const result = await pageTrashTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+
+    expect(calls[0]?.path).toBe('/api/workspaces/m19i6551nw1eafb88aoisg6x/trash');
+    expect(result.text).toContain('2 archivierte Seite(n)');
+    expect(result.text).toContain('Dubletten (id: aaaaaaaa1111aaaa');
+    expect(result.text).toContain('1 archivierte Seite(n) darunter');
+    // Indented, and named as what it is: a page nobody chose to throw away.
+    expect(result.text).toContain('  - Backen (id: bbbbbbbb2222bbbb');
+    expect(result.text).toContain('mit archiviert');
+    expect(result.text).toContain('2026-08-11 19:22');
+  });
+
+  it('has something to say about an empty trash', async () => {
+    const { client } = createFakeClient({ entries: [], totalCount: 0 });
+
+    const result = await pageTrashTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+
+    expect(result.text).toBe('Der Papierkorb ist leer.');
+  });
+});
+
+describe('pageDeleteTool', () => {
+  function summary(id: string, title: string) {
+    return {
+      id,
+      workspaceId: 'm19i6551nw1eafb88aoisg6x',
+      parentId: null,
+      type: 'PAGE' as const,
+      title,
+      icon: null,
+      iconColor: null,
+      layout: 'narrow' as const,
+      coverAttachmentId: null,
+      coverPosition: 50,
+      orderKey: 'V',
+      createdById: 'uuuuuuuu1111uuuu',
+      updatedById: 'uuuuuuuu1111uuuu',
+      createdAt: '2026-08-11T00:00:00.000Z',
+      updatedAt: '2026-08-11T00:00:00.000Z',
+      archivedAt: '2026-08-11T19:22:36.000Z',
+    };
+  }
+
+  it('says how much a deletion takes with it before it is confirmed', async () => {
+    const { client, calls } = createFakeClient({
+      documentId: 'aaaaaaaa1111aaaa',
+      title: 'Dubletten',
+      documents: [summary('aaaaaaaa1111aaaa', 'Dubletten'), summary('bbbbbbbb2222bbbb', 'Backen')],
+      descendantCount: 1,
+      attachmentCount: 2,
+      incomingLinkCount: 3,
+    });
+
+    const preview = await pageDeleteTool.previewOf(client, { documentId: 'aaaaaaaa1111aaaa' });
+
+    expect(calls[0]?.path).toBe('/api/documents/aaaaaaaa1111aaaa/deletion-preview');
+    expect(preview).toContain('2 Seite(n)');
+    expect(preview).toContain('Backen');
+    expect(preview).toContain('2 Anhang/Anhänge');
+    expect(preview).toContain('3 Verweis(e)');
+    expect(preview).toContain('nicht rückgängig');
+  });
+
+  /**
+   * A preview is a courtesy, not a precondition. If it fails, the confirmation
+   * still has to be offered -- refusing to ask would leave the caller unable to
+   * delete anything at all.
+   */
+  it('answers with no preview rather than an error when the preview fails', async () => {
+    const client: ExocortexApiClient = {
+      async request() {
+        throw new Error('preview endpoint down');
+      },
+      async upload() {
+        throw new Error('not used');
+      },
+    };
+
+    expect(await pageDeleteTool.previewOf(client, { documentId: 'aaaaaaaa1111aaaa' })).toBeNull();
+  });
+
+  it('deletes and reports what is gone', async () => {
+    const { client, calls } = createFakeClient({
+      deletedIds: ['aaaaaaaa1111aaaa', 'bbbbbbbb2222bbbb'],
+      deletedCount: 2,
+      attachmentCount: 1,
+      unresolvedLinkCount: 4,
+    });
+
+    const result = await pageDeleteTool.run(client, { documentId: 'aaaaaaaa1111aaaa' });
+
+    expect(calls[0]).toMatchObject({ method: 'DELETE', path: '/api/documents/aaaaaaaa1111aaaa' });
+    expect(result.text).toContain('2 Seite(n) endgültig gelöscht');
+    expect(result.text).toContain('4 Verweis(e) sind jetzt unaufgelöst');
   });
 });
