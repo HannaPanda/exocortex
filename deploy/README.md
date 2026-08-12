@@ -397,8 +397,10 @@ series that regenerate themselves and describe a past nobody restores),
 Hermes is **not** covered here and does not need to be: the user timer
 `hermes-backup.timer` has been writing `~/.hermes` state to
 `/Backups/hermes-state/` daily since long before this, with a 14-day retention
-and its own `~/.hermes/RESTORE.md`. It is unencrypted on MEGA, which is the one
-difference from the snapshots above.
+and its own `~/.hermes/RESTORE.md`. Since 2026-08-12 those archives are encrypted
+with the same passphrase, so one key opens everything on MEGA. Its script refuses
+to run rather than fall back to a plaintext upload when the passphrase is
+unreadable.
 
 ### Verification
 
