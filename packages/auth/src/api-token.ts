@@ -52,9 +52,18 @@ export function apiTokenHashesMatch(a: string, b: string): boolean {
  * `path` is the request path without the query string.
  */
 export function requiredScopeForRequest(method: string, path: string): ApiTokenScope {
-  // Managing tokens with a token is how a narrow credential widens itself into
-  // a broad one, so it sits at the top level together with the admin API.
-  if (path.startsWith('/api/admin') || path.startsWith('/api/me/api-tokens')) return 'admin';
+  // Managing credentials with a credential is how a narrow one widens itself
+  // into a broad one, so it sits at the top level together with the admin API.
+  // `/api/me/connections` belongs here for the mirror image of that reason: it
+  // can cut off *other* clients, and an agent that can disconnect the connector
+  // watching it is an agent that can work unobserved.
+  if (
+    path.startsWith('/api/admin') ||
+    path.startsWith('/api/me/api-tokens') ||
+    path.startsWith('/api/me/connections')
+  ) {
+    return 'admin';
+  }
   return SAFE_METHODS.has(method.toUpperCase()) ? 'read' : 'write';
 }
 

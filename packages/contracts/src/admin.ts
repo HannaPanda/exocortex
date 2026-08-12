@@ -92,3 +92,48 @@ export const createApiTokenResponseSchema = z.object({
   secret: z.string(),
 });
 export type CreateApiTokenResponse = z.infer<typeof createApiTokenResponseSchema>;
+
+/**
+ * An OAuth client a person has connected to their account (ChatGPT and anything
+ * else that registers itself remotely). The counterpart of an API token: a token
+ * is a secret the person hands out, a connection is a client the person said yes
+ * to on `/verbinden`.
+ *
+ * `name` and `redirectUrls` are whatever the client claimed at registration and
+ * are never verified, so the UI must present them as claims -- they exist so a
+ * person can recognise the connector they set up, or fail to recognise one they
+ * did not.
+ */
+export const connectedAppSchema = z.object({
+  clientId: z.string(),
+  name: z.string(),
+  redirectUrls: z.array(z.string()),
+  /** When this account first said yes to the client. */
+  connectedAt: isoDateTimeSchema,
+  /**
+   * When the client last received or refreshed an access token. Not "last
+   * request": tokens are minted and refreshed, not touched per call, so this is
+   * the closest honest answer the authorization server can give.
+   */
+  lastAuthorizedAt: isoDateTimeSchema.nullable(),
+  /** Access tokens that have not expired yet, i.e. whether it can act right now. */
+  activeTokenCount: z.number().int().nonnegative(),
+  disabled: z.boolean(),
+});
+export type ConnectedApp = z.infer<typeof connectedAppSchema>;
+
+export const connectedAppListResponseSchema = z.object({
+  applications: z.array(connectedAppSchema),
+});
+export type ConnectedAppListResponse = z.infer<typeof connectedAppListResponseSchema>;
+
+export const disconnectAppResponseSchema = z.object({
+  disconnected: z.literal(true),
+  /**
+   * Whether the client row itself was switched off, which happens when no other
+   * account still consents to it. False means only this account's tokens and
+   * consent were removed.
+   */
+  clientDisabled: z.boolean(),
+});
+export type DisconnectAppResponse = z.infer<typeof disconnectAppResponseSchema>;

@@ -70,6 +70,11 @@ describe('requiredScopeForRequest', () => {
     expect(requiredScopeForRequest('DELETE', '/api/me/api-tokens/abc')).toBe('admin');
   });
 
+  it('asks for admin on connection management, so an agent cannot cut its watchers loose', () => {
+    expect(requiredScopeForRequest('GET', '/api/me/connections')).toBe('admin');
+    expect(requiredScopeForRequest('DELETE', '/api/me/connections/client123')).toBe('admin');
+  });
+
   it('does not confuse a lookalike path with the admin API', () => {
     expect(requiredScopeForRequest('GET', '/api/me')).toBe('read');
     expect(requiredScopeForRequest('POST', '/api/documents/admin-notes')).toBe('write');
