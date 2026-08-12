@@ -1,5 +1,5 @@
 [Unit]
-Description=Restore the newest MEGA snapshot into a scratch database
+Description=Restore the newest MEGA snapshots into scratch databases
 Documentation=file:///var/www/exocortex/deploy/README.md
 After=network-online.target docker.service
 Wants=network-online.target

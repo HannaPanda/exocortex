@@ -1,0 +1,31 @@
+[Unit]
+Description=Encrypted automation-stack snapshot to MEGA
+Documentation=file:///var/www/exocortex/deploy/README.md
+After=network-online.target docker.service
+Wants=network-online.target
+OnFailure=exocortex-backup-alert@%n.service
+
+[Service]
+Type=oneshot
+# Runs as johanna for the same reasons as exocortex-backup.service: the MEGA
+# session lives in her ~/.megaCmd and the docker group covers the containers.
+User=johanna
+Group=johanna
+Environment=HOME=/home/johanna
+WorkingDirectory=/var/www/exocortex
+ExecStart=/var/www/exocortex/deploy/backup-stack-to-mega.sh
+TimeoutStartSec=45min
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=automation-stack-backup
+
+# NoNewPrivileges is deliberately absent: /opt/automation-stack/.env and
+# grafana.db are root-only, and both belong in the snapshot.
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/backups
+ProtectKernelTunables=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target

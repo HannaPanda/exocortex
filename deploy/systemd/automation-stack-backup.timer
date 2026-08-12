@@ -1,0 +1,14 @@
+[Unit]
+Description=Daily automation-stack snapshot to MEGA
+Documentation=file:///var/www/exocortex/deploy/README.md
+
+[Timer]
+# Once a day at 02:15 UTC: Windmill flows and Infisical secrets change far less
+# often than notes do. Well clear of the eXocortex runs and of the 03:00 sweep.
+OnCalendar=*-*-* 02:15:00
+Persistent=true
+RandomizedDelaySec=600
+Unit=automation-stack-backup.service
+
+[Install]
+WantedBy=timers.target

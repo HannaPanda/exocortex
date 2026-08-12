@@ -346,7 +346,10 @@ and answers `503` when any of them is down.
 Losing PostgreSQL loses documents. Losing MinIO loses attachments but not documents.
 Both are covered by `deploy/backup-to-mega.sh`, which runs every six hours from
 `exocortex-backup.timer` and writes one folder per run to MEGA under
-`/Backups/exocortex/<UTC-Zeitstempel>/`:
+`/Backups/exocortex/<UTC-Zeitstempel>/`. The automation stack next door is covered
+by the same machinery, see "The rest of the host" below.
+
+One eXocortex snapshot holds:
 
 | File | Contents |
 | ---- | -------- |
@@ -372,15 +375,45 @@ months. That settles at roughly 29 snapshots, about 1 GB.
 Redis is deliberately absent: it only holds BullMQ queues, which rebuild from the
 outbox and the next materialization run.
 
+### The rest of the host
+
+`deploy/backup-stack-to-mega.sh` does the same for the automation stack in
+`/opt/automation-stack`, daily at 02:15 UTC from `automation-stack-backup.timer`,
+into `/Backups/automation-stack/<UTC-Zeitstempel>/`. Both scripts share
+`deploy/backup-lib.sh`, so the retention arithmetic exists exactly once: a bug in
+it deletes backups rather than failing loudly.
+
+| File | Contents |
+| ---- | -------- |
+| `windmill.dump.gpg` | scripts, flows, schedules, resources, job history |
+| `infisical.dump.gpg` | the secret store. Useless on its own: every secret in it is encrypted with `INFISICAL_ENCRYPTION_KEY`, which is why the stack's `.env` travels in the same snapshot |
+| `grafana.db.gpg` | the Grafana sqlite database, copied through the sqlite backup API so a running Grafana cannot tear it |
+| `config.tar.gz.gpg` | `/opt/automation-stack` without `data/`: compose files, `.env`, `secrets/`, `helpers/`, `scripts/`, `monitoring/` |
+
+A run is 8.7 MB. Left out: `data/prometheus` and `data/loki` (425 MB of time
+series that regenerate themselves and describe a past nobody restores),
+`data/windmill-cache`, and the raw postgres data directories the dumps replace.
+
+Hermes is **not** covered here and does not need to be: the user timer
+`hermes-backup.timer` has been writing `~/.hermes` state to
+`/Backups/hermes-state/` daily since long before this, with a 14-day retention
+and its own `~/.hermes/RESTORE.md`. It is unencrypted on MEGA, which is the one
+difference from the snapshots above.
+
 ### Verification
 
 `exocortex-backup-verify.timer` runs `deploy/backup-restore-test.sh` every Sunday
-at 04:30 UTC. It pulls the newest snapshot back out of MEGA (not the local copy,
-so the upload path is tested too), checks it against the manifest checksum,
-restores it into a throwaway `exocortex_restore_test` database and fails unless
-documents, Yjs states, workspaces and users all come back non-empty. A failure in
-either unit triggers `exocortex-backup-alert@.service`, which sends the journal
-tail to Telegram through `hermes send`.
+at 04:30 UTC over both snapshot families. It pulls the newest snapshot back out of
+MEGA (not the local copy, so the upload path is tested too), checks each file
+against the manifest checksum, restores the dumps into throwaway databases and
+fails unless the tables a restore needs come back populated:
+
+* eXocortex: documents, Yjs states, workspaces, users,
+* Windmill: scripts and schedules,
+* Infisical: secrets, projects, users.
+
+A failure in any unit triggers `exocortex-backup-alert@.service`, which sends the
+journal tail to Telegram through `hermes send`.
 
 ### Restoring
 
