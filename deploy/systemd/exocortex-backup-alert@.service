@@ -1,0 +1,17 @@
+[Unit]
+Description=Telegram alert for a failed %i
+Documentation=file:///var/www/exocortex/deploy/README.md
+
+[Service]
+Type=oneshot
+User=johanna
+Group=johanna
+Environment=HOME=/home/johanna
+ExecStart=/var/www/exocortex/deploy/backup-alert.sh %i
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=exocortex-backup-alert
+
+# NoNewPrivileges is deliberately absent: the script reads the failed unit's
+# journal through sudo so the alert carries the actual error, not just a name.
+PrivateTmp=true

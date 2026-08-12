@@ -1,0 +1,34 @@
+[Unit]
+Description=Encrypted eXocortex snapshot to MEGA
+Documentation=file:///var/www/exocortex/deploy/README.md
+After=network-online.target docker.service
+Wants=network-online.target
+OnFailure=exocortex-backup-alert@%n.service
+
+[Service]
+Type=oneshot
+# Runs as johanna, not as root: the MEGA session lives in her ~/.megaCmd and
+# the docker group gives the script everything it needs to read the volumes.
+User=johanna
+Group=johanna
+Environment=HOME=/home/johanna
+WorkingDirectory=/var/www/exocortex
+ExecStart=/var/www/exocortex/deploy/backup-to-mega.sh
+# A dump plus two uploads over a home connection: generous, but not forever.
+TimeoutStartSec=45min
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=exocortex-backup
+
+# Hardening. ProtectHome stays off: the MEGA session and the agent memory
+# config both live under /home/johanna.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/backups/exocortex
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+
+[Install]
+WantedBy=multi-user.target

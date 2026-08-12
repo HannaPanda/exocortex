@@ -343,14 +343,75 @@ and answers `503` when any of them is down.
 
 ## Backups
 
-At minimum:
-
-* `pg_dump` of the `exocortex` database — it contains the canonical `yjsState` blobs
-  and every snapshot,
-* the MinIO `exocortex` bucket (attachments),
-* `/var/www/exocortex/.env` (secrets), stored separately from the database dump.
-
 Losing PostgreSQL loses documents. Losing MinIO loses attachments but not documents.
+Both are covered by `deploy/backup-to-mega.sh`, which runs every six hours from
+`exocortex-backup.timer` and writes one folder per run to MEGA under
+`/Backups/exocortex/<UTC-Zeitstempel>/`:
+
+| File | Contents |
+| ---- | -------- |
+| `database.dump.gpg` | `pg_dump -Fc` of the whole database, including the canonical `yjsState` blobs, every snapshot, the memory workspace, accounts and API tokens |
+| `uploads.tar.gz.gpg` | the raw `exocortex-minio-data` volume, so object metadata survives |
+| `config.tar.gz.gpg` | `.env`, the systemd units, the nginx site, `~/.claude/exocortex-memory.json` |
+| `MANIFEST.txt` | sizes, SHA-256 sums, versions, git commit — plain text, readable without the passphrase |
+
+Snapshots are full, not incremental: a run is about 36 MB and takes eight
+seconds, which is cheaper than the machinery an incremental scheme needs, and it
+keeps a restore down to two commands. Revisit that when the uploads pass ~20 GB;
+`restic` over `rclone` is the next step, not a bigger shell script.
+
+Everything is encrypted with GPG (symmetric, AES256). The passphrase lives in
+`/etc/exocortex/backup-passphrase` (`root:johanna`, `0640`) and in the Second
+Brain page "eXocortex-Backups auf MEGA". **Both copies sit on this host. Keep a
+third one in a password manager, or a dead machine takes the key with it.**
+
+Retention is pruned on every run and the buckets overlap: the last 8 snapshots,
+the newest of each of the last 14 days, of the last 8 weeks and of the last 6
+months. That settles at roughly 29 snapshots, about 1 GB.
+
+Redis is deliberately absent: it only holds BullMQ queues, which rebuild from the
+outbox and the next materialization run.
+
+### Verification
+
+`exocortex-backup-verify.timer` runs `deploy/backup-restore-test.sh` every Sunday
+at 04:30 UTC. It pulls the newest snapshot back out of MEGA (not the local copy,
+so the upload path is tested too), checks it against the manifest checksum,
+restores it into a throwaway `exocortex_restore_test` database and fails unless
+documents, Yjs states, workspaces and users all come back non-empty. A failure in
+either unit triggers `exocortex-backup-alert@.service`, which sends the journal
+tail to Telegram through `hermes send`.
+
+### Restoring
+
+```bash
+# 1. Fetch and decrypt
+mega-get /Backups/exocortex/<stamp>/database.dump.gpg .
+mega-get /Backups/exocortex/<stamp>/uploads.tar.gz.gpg .
+gpg --batch --pinentry-mode loopback \
+  --passphrase-file /etc/exocortex/backup-passphrase \
+  --decrypt --output database.dump database.dump.gpg
+
+# 2. Database
+sudo systemctl stop exocortex-api exocortex-worker exocortex-collaboration exocortex-web
+docker exec -i exocortex-postgres pg_restore -U exocortex -d exocortex \
+  --clean --if-exists --no-owner < database.dump
+
+# 3. Uploads, with MinIO stopped so it does not fight the extraction
+gpg --batch --pinentry-mode loopback \
+  --passphrase-file /etc/exocortex/backup-passphrase \
+  --decrypt uploads.tar.gz.gpg > uploads.tar.gz
+docker stop exocortex-minio
+docker run --rm -v exocortex-minio-data:/data -v "$PWD:/in" alpine \
+  sh -c 'rm -rf /data/* && tar xzf /in/uploads.tar.gz -C /data'
+docker start exocortex-minio
+sudo systemctl start exocortex-collaboration exocortex-api exocortex-worker exocortex-web
+```
+
+Restoring the database is enough to get the documents back; the attachments are
+independent and can follow later. Open editing sessions must be reconnected
+afterwards: the collaboration server holds a Yjs document in memory that no
+longer matches the database (ADR-016).
 
 ## Before making the deployment public
 

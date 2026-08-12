@@ -1,0 +1,15 @@
+[Unit]
+Description=Six-hourly eXocortex snapshot to MEGA
+Documentation=file:///var/www/exocortex/deploy/README.md
+
+[Timer]
+# 01:15, 07:15, 13:15, 19:15 UTC. Off the hour so it does not land on the
+# maintenance sweep at 03:00 or the Infisical sync at 03:40.
+OnCalendar=*-*-* 01,07,13,19:15:00
+# A missed window must be caught up: the host reboots more often than it should.
+Persistent=true
+RandomizedDelaySec=600
+Unit=exocortex-backup.service
+
+[Install]
+WantedBy=timers.target

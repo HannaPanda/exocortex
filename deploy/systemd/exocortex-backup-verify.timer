@@ -1,0 +1,13 @@
+[Unit]
+Description=Weekly restore test of the newest eXocortex snapshot
+Documentation=file:///var/www/exocortex/deploy/README.md
+
+[Timer]
+# Sunday morning, after the 01:15 snapshot has landed.
+OnCalendar=Sun *-*-* 04:30:00
+Persistent=true
+RandomizedDelaySec=900
+Unit=exocortex-backup-verify.service
+
+[Install]
+WantedBy=timers.target
