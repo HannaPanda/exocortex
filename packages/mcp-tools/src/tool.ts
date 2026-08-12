@@ -10,8 +10,11 @@ import { type ExocortexApiClient } from './client.js';
  * two-tool surface ChatGPT's deep research connector insists on: it requires
  * tools named exactly `search` and `fetch` and works badly when it is handed
  * dozens of others, so it gets a deliberately tiny catalogue of its own.
+ * `memory` is the same argument applied to an ordinary chat connector: three
+ * tools (`recall`, `remember`, `fetch`) that make eXocortex a memory rather
+ * than a reference work (issue #34).
  */
-export type ToolSurface = 'mcp' | 'ai' | 'research';
+export type ToolSurface = 'mcp' | 'ai' | 'research' | 'memory';
 
 export interface ToolDefinition<TInput> {
   /**

@@ -8,19 +8,35 @@ describe('EXOCORTEX_TOOLS', () => {
     expect(new Set(names).size).toBe(names.length);
   });
 
-  it('prefixes every tool with exo_ except the two ChatGPT dictates', () => {
+  it('prefixes every tool with exo_ except the ones on the small client surfaces', () => {
     // The prefix exists so the catalogue cannot collide with the other MCP
-    // servers a client spawns alongside it. `search` and `fetch` are the
-    // exception because ChatGPT's deep research connector matches on those
-    // exact names; they live on their own surface, which no other client sees.
+    // servers a client spawns alongside it. The exceptions live on the two
+    // deliberately tiny surfaces a person configures on their own URL:
+    // `research`, where ChatGPT's deep research connector matches on the exact
+    // names `search` and `fetch`, and `memory` (issue #34), where the model
+    // should reach for the word a memory is called by. Neither name is ever
+    // offered on the full catalogue or to the built-in AI.
+    const smallSurfaces = ['research', 'memory'];
     for (const tool of EXOCORTEX_TOOLS) {
-      if (tool.surfaces.includes('research')) {
-        expect(['search', 'fetch']).toContain(tool.name);
-        expect(tool.surfaces).toEqual(['research']);
+      const onSmallSurface = tool.surfaces.some((surface) => smallSurfaces.includes(surface));
+      if (onSmallSurface) {
+        expect(['search', 'fetch', 'recall', 'remember']).toContain(tool.name);
+        expect(tool.surfaces.every((surface) => smallSurfaces.includes(surface))).toBe(true);
       } else {
         expect(tool.name.startsWith('exo_')).toBe(true);
       }
     }
+  });
+
+  it('keeps the memory surface at three tools, one of which writes', () => {
+    // Three, not four and not forty-six: a chat client that is handed choices
+    // stops picking the right one, and this surface exists to be picked from
+    // reliably (issue #34, AP3).
+    const memory = toolsFor('memory');
+    expect(memory.map((tool) => tool.name).sort()).toEqual(['fetch', 'recall', 'remember']);
+    expect(memory.filter((tool) => tool.mutating).map((tool) => tool.name)).toEqual(['remember']);
+    // `remember` adds; it never replaces what somebody else wrote.
+    expect(memory.every((tool) => tool.destructive !== true)).toBe(true);
   });
 
   it('keeps the research surface read-only and small', () => {

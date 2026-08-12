@@ -64,6 +64,21 @@ export class McpController {
   }
 
   /**
+   * The three-tool memory surface (issue #34): `recall`, `remember`, `fetch`.
+   *
+   * Its own URL for the same reason the research one has its own: which
+   * catalogue a client should see is a decision belonging to whoever configures
+   * it, not something to negotiate at runtime. A chat client handed the full
+   * forty-six tools reaches for the wrong one; handed three, it uses the
+   * memory it is connected to.
+   */
+  @Public()
+  @Post('memory')
+  async handleMemory(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<void> {
+    await this.handle(request, reply, 'memory');
+  }
+
+  /**
    * What the consent page shows about the client asking for access.
    *
    * Not `@Public()`: only a signed-in person is answering a consent prompt, so
@@ -94,6 +109,12 @@ export class McpController {
     this.refuseStream(reply);
   }
 
+  @Public()
+  @Get('memory')
+  openMemoryStream(@Res() reply: FastifyReply): void {
+    this.refuseStream(reply);
+  }
+
   /**
    * Ending a session. There is none to end, but a client that reaches for this
    * on shutdown deserves a plain "fine" rather than a 404 it has to interpret.
@@ -107,6 +128,12 @@ export class McpController {
   @Public()
   @Delete('research')
   endResearchSession(@Res() reply: FastifyReply): void {
+    void reply.status(204).send();
+  }
+
+  @Public()
+  @Delete('memory')
+  endMemorySession(@Res() reply: FastifyReply): void {
     void reply.status(204).send();
   }
 

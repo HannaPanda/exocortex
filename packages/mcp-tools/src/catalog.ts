@@ -4,6 +4,7 @@ import { ATTACHMENT_TOOLS } from './tools/attachments.js';
 import { COMMENT_TOOLS } from './tools/comments.js';
 import { DATABASE_TOOLS } from './tools/databases.js';
 import { LINK_TOOLS } from './tools/links.js';
+import { MEMORY_TOOLS } from './tools/memory.js';
 import { PAGE_TOOLS } from './tools/pages.js';
 import { RESEARCH_TOOLS } from './tools/research.js';
 import { RULES_TOOLS } from './tools/rules.js';
@@ -21,6 +22,7 @@ export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...RULES_TOOLS,
   ...AI_RUN_TOOLS,
   ...RESEARCH_TOOLS,
+  ...MEMORY_TOOLS,
 ];
 
 /** Tools offered on a given surface, optionally excluding mutating ones. */

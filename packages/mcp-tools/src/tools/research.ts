@@ -116,9 +116,12 @@ export const researchFetchTool: AnyToolDefinition = defineTool({
     'Lädt den vollständigen Text einer eXocortex-Seite als Markdown. ' +
     'Die id stammt aus einem search-Ergebnis.',
   inputSchema: z.object({
-    id: idSchema.describe('documentId aus einem search-Ergebnis'),
+    id: idSchema.describe('documentId aus einem search- oder recall-Ergebnis'),
   }),
-  surfaces: ['research'],
+  // Shared with the memory surface rather than copied: "load that page in
+  // full" is the same operation there, and a second tool with the same job
+  // under a different name would only be one more thing to keep in step.
+  surfaces: ['research', 'memory'],
   mutating: false,
   async execute(client, input) {
     // Two reads, because neither endpoint alone carries both halves: the
