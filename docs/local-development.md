@@ -157,6 +157,31 @@ pnpm test         # unit + integration (requires pnpm infra:up)
 pnpm test:e2e     # Playwright against a running deployment
 ```
 
+### What a test run leaves behind
+
+The integration suites create a workspace and a few accounts each and delete them
+in `afterAll` — which does not run when the process is killed, and that is
+exactly when the mess is made. Interrupted runs had left 21 workspaces by
+2026-08-12, in `Collab`/`Worker` pairs created in the same second, because two
+packages test in parallel and an interrupt takes both.
+
+`pnpm test` therefore sweeps *before* it starts, which is the only moment that
+catches a run nobody finished:
+
+```bash
+pnpm --filter @exocortex/api test-data:prune -- [--older-than 2] [--dry-run]
+```
+
+It recognises test data by the accounts: they live at `@exocortex.test`, and
+`.test` is reserved by RFC 6761 so it can never be a real address. A workspace
+whose members are *all* such accounts was made by a test run and by nothing else.
+One real member is enough to spare it, and nothing younger than `--older-than`
+(two hours) is touched, so a suite running in another terminal keeps its ground.
+
+A name prefix would have been the obvious rule and the wrong one: it needs
+updating whenever a suite invents a name, and it would happily match a real
+workspace somebody called "Docs".
+
 The Playwright suite reads the repository's `.env` itself
 (`e2e/support/env.ts`), so on this host `pnpm test:e2e` needs no preparation at
 all. It wants `SEED_JOHANNA_PASSWORD` and `SEED_STEFAN_PASSWORD` to be in there;

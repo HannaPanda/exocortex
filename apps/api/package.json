@@ -14,7 +14,8 @@
     "token:create": "tsx scripts/create-api-token.ts",
     "import:obsidian": "tsx scripts/import-obsidian.ts",
     "workspaces:delete": "tsx scripts/delete-workspaces.ts",
-    "documents:delete": "tsx scripts/delete-documents.ts"
+    "documents:delete": "tsx scripts/delete-documents.ts",
+    "test-data:prune": "tsx scripts/delete-test-data.ts"
   },
   "dependencies": {
     "@exocortex/ai": "workspace:*",
