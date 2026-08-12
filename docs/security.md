@@ -39,7 +39,8 @@ authorization mechanism.
   private deployment for a handful of known people, so an open `/sign-up/email`
   only ever creates accounts nobody asked for, and each one can send a
   verification mail through our SMTP credentials. `/registrieren` does not exist
-  in the frontend either. Accounts come from the seed script or an administrator.
+  in the frontend either. Accounts come from the seed script or from an
+  **invitation** (see below); there is no third way in.
 * Email verification and password reset send real mail. The relay is configured
   through `SMTP_HOST`/`SMTP_PORT`/`SMTP_FROM` plus the optional
   `SMTP_USER`/`SMTP_PASSWORD` pair; supplying credentials switches the transport
@@ -48,8 +49,11 @@ authorization mechanism.
   credentials the mailer talks to Mailpit as before.
 * `requireEmailVerification` is `false`. Verification exists to stop someone
   registering with an address they do not own, and `disableSignUp` already makes
-  that impossible. Turning it on would still lock out any account whose address
-  was never verified, which currently includes the only administrator.
+  that impossible: a seeded account is created by whoever runs the deployment,
+  and an invited one proves the address by the token arriving there and coming
+  back (which is why redemption sets `emailVerified` itself). Turning the flag on
+  would add nothing and would still lock out any account whose address was never
+  verified, which includes the only administrator.
 * Sign-in, sign-up and password-reset endpoints have explicit per-IP rate limits
   (10/min, 5/min, 5 per 5 min).
 * Those limits are only worth anything if the client address cannot be chosen by
@@ -59,6 +63,100 @@ authorization mechanism.
   right-hand end of the chain. With `trustProxy: true` and an appending nginx,
   the leftmost entry -- the caller's own -- won, and rotating a fake value reset
   every limit.
+
+## Invitations
+
+Registration being closed leaves one question: how does anybody else get in? By
+invitation, and by nothing else (issue #3).
+
+An `Invitation` row carries the address, the SHA-256 of a token, who sent it,
+optionally a workspace and role, an expiry, and the three timestamps that make up
+its state (`acceptedAt`, `revokedAt`, plus the expiry). The status shown anywhere
+is derived from those, never stored.
+
+The token itself is `exoinv_` plus 32 random bytes, hashed exactly like an `exo_`
+API token (`packages/auth/src/invitation-token.ts`): returned once in the
+response, never stored, never logged. A database dump therefore cannot be
+replayed into accounts.
+
+Properties worth stating:
+
+* **The address is not an input.** `POST /api/invitations/accept` takes the token,
+  a name and a password. The address comes from the invitation, so a valid token
+  cannot be used to register somebody else's address.
+* **One use.** Redemption claims the row with an `updateMany` that only matches
+  while `acceptedAt` is null, inside the same transaction that creates the account
+  and the membership. Two simultaneous redemptions produce one account and one
+  `invitation_already_used`.
+* **Every wrong token looks the same.** Unknown, revoked and malformed tokens all
+  answer `invitation_invalid` (404). Only expiry gets its own code, because that
+  one is actionable by the person holding it.
+* **The token stays out of URLs on the API side.** Both public routes are POSTs
+  with the token in the body, so it does not reach nginx's access log twice. Once
+  is unavoidable: the link a person clicks is a URL. That is why it expires and
+  works once.
+* **Own rate limits.** `preview` 10/min, `accept` 5/min per address, far below the
+  global 300/min. These are the only routes an anonymous request can use to create
+  a row, and a redemption costs a scrypt hash.
+* **Re-sending rotates the token.** The usual reason to re-send is that the first
+  mail went astray, and a link that went astray should stop working.
+* **A failed mail does not roll the invitation back.** `emailSent: false` comes
+  back with a working link to hand over directly. The alternative would leave an
+  administrator with a broken relay and no way to invite anybody, which is the
+  situation the feature exists to escape.
+
+Who may invite:
+
+| Caller | Where | Global admin rights |
+| ------ | ----- | ------------------- |
+| global `ADMIN` | any workspace, or none | may grant |
+| workspace `OWNER`/`ADMIN` | their own workspace only | never |
+
+The second row does create an instance account as a side effect. That is
+deliberate: in a deployment for a handful of friends, a workspace owner who cannot
+add a collaborator without the operator turns the operator into a ticket queue.
+The authority is bounded to one workspace, carries no global role, and every
+invitation is listed with its sender under `/admin/nutzer`.
+
+Expired, unredeemed invitations are deleted by the `prune-invitations`
+maintenance sweep 30 days after expiry. Accepted ones stay: that row is the
+answer to "where did this account come from".
+
+## Switching an account off
+
+`User.disabledAt` is how somebody stops having access without their history being
+rewritten. Pages point at their author through a required `createdById`, so
+deleting the account would take the pages with it.
+
+Disabling is not a flag that has to be checked on every request. It takes effect
+by removing what the account can act with, in one transaction:
+
+* every `Session` row is deleted,
+* every unrevoked `ApiToken` is revoked,
+* every `OauthAccessToken` is deleted, so a connector stops working immediately
+  rather than at the end of its hour.
+
+What is left is making a *new* session, and `databaseHooks.session.create.before`
+in `packages/auth/src/auth.ts` refuses that while `disabledAt` is set. Every path
+that creates a session goes through it: the sign-in form, the OAuth authorization
+flow, auto-sign-in after verification. So `SessionGuard` needs no per-request
+lookup — the state cannot exist rather than being filtered out afterwards.
+
+Two exceptions are checked on use instead, both for free because the row is
+already loaded: an `exo_` API token (belt and braces, it was revoked above) and an
+HMAC service token, which is not revocable at all and would otherwise keep working
+for the few minutes it lives.
+
+The sign-in failure is Better Auth's generic one, not "this account is disabled".
+The sign-in form is unauthenticated, and an error that distinguishes "wrong
+password" from "account exists but is off" tells anybody who asks which addresses
+have accounts here.
+
+Deleting an account is offered only when it authored nothing — no pages, comments
+or uploads. Otherwise the API answers `user_has_content` and the UI offers only
+disabling. What deletion is for is the invitation that went to the wrong address.
+Neither route lets an administrator act on their own account, and neither lets the
+last global admin be removed.
 
 ## API token scopes
 

@@ -285,6 +285,18 @@ export class QueueRegistry {
         data: { correlationId, task: 'prune-memories', workspaceId: null, documentId: null },
       },
     );
+    // Daily, after the other sweeps. One indexed DELETE that matches nothing on
+    // almost every run: invitations expire in a week and are kept for a month
+    // after that, so this only ever has work in a deployment that invites people
+    // and gets ignored (issue #3).
+    await queue.upsertJobScheduler(
+      'prune-invitations',
+      { pattern: '45 4 * * *' },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: { correlationId, task: 'prune-invitations', workspaceId: null, documentId: null },
+      },
+    );
     this.logger.info('Maintenance schedulers registered');
   }
 

@@ -9,7 +9,7 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `document-materialization` | collaboration server (debounced), API (import, snapshot restore) | `createMaterializeDocumentProcessor` | real |
 | `search-indexing` | materialization, document mutations, outbox dispatch | `createIndexDocumentProcessor` | real |
 | `ai` | `AiService.createRun`, `ConversationsService.postMessage` | `createAiRunProcessor` | real, mock provider |
-| `maintenance` | repeatable schedulers, outbox dispatch | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`, `resolve-document-links`, `backfill-document-links`, `snapshot-active-documents`, `backfill-embeddings`, `prune-memories`), documented placeholder (`vacuum-search-index`) |
+| `maintenance` | repeatable schedulers, outbox dispatch | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`, `resolve-document-links`, `backfill-document-links`, `snapshot-active-documents`, `backfill-embeddings`, `prune-memories`, `prune-invitations`), documented placeholder (`vacuum-search-index`) |
 | `attachment-text` | attachment upload, `GET /api/attachments/:id/text` (on demand) | `createAttachmentTextProcessor` | real |
 | `document-cover` | `POST /api/documents/:id/cover/generate` | `createDocumentCoverProcessor` | real |
 | `memory-capture` | `POST /api/memory/capture` (Claude Code hook, Hermes, any client) | `createMemoryCaptureProcessor` | real |
@@ -179,6 +179,24 @@ hang under. The archive stage writes `document.archived` outbox rows so the
 search projection follows the same path an archive from the API takes
 (ADR-010); the delete stage needs no follow-up, because the cascades take the
 content, the projection, the embeddings and the snapshots with them.
+
+### `prune-invitations`: the guest list stops growing
+
+Daily at 04:45, one indexed `DELETE` that matches nothing on almost every run.
+It removes invitations that expired more than 30 days ago and were never
+redeemed (issue #3).
+
+Two choices worth naming. Accepted invitations are never removed
+(`acceptedAt: null` is in the filter): that row is the answer to "where did this
+account come from", and it costs one row per person who ever joined. And the
+30-day grace period after expiry exists so an administrator looking at the list
+a week later still sees what happened, rather than wondering whether the
+invitation was ever sent. Withdrawn invitations age out on the same clock —
+`expiresAt` keeps running whether the invitation was revoked or not.
+
+Unlike `prune-memories` this deletes outright with no trash stage, and the
+reason is that nothing was created: an unredeemed invitation is a link nobody
+used, not a page somebody wrote.
 
 ### `backfill-embeddings`: the semantic index catches up
 

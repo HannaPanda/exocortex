@@ -67,6 +67,13 @@ describe('EXOCORTEX_TOOLS', () => {
     // call: everything here removes content or writes over content a person
     // authored, and a tool that quietly joins the list should have to say so
     // in a diff.
+    //
+    // The four access-related entries (issue #3) are destructive in a second
+    // sense the word has to stretch to cover: they take away something a person
+    // is holding rather than something they wrote. Withdrawing or re-sending an
+    // invitation kills a link somebody may be about to click, and switching an
+    // account off or deleting it ends a session mid-sentence. A client that asks
+    // before destructive calls should ask before those too.
     const destructive = EXOCORTEX_TOOLS.filter((tool) => tool.destructive)
       .map((tool) => tool.name)
       .sort();
@@ -80,10 +87,14 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_database_row_update',
       'exo_database_view_delete',
       'exo_database_view_update',
+      'exo_invitation_resend',
+      'exo_invitation_revoke',
       'exo_page_archive',
       'exo_page_rename',
       'exo_page_restore_snapshot',
       'exo_page_write',
+      'exo_user_delete',
+      'exo_user_set_disabled',
       'exo_workspace_rename',
     ]);
   });

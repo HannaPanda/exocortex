@@ -100,6 +100,12 @@ export const maintenanceJobSchema = jobBase.extend({
      * pages the notes hang under, and never another workspace (ADR-019).
      */
     'prune-memories',
+    /**
+     * Deletes invitations that are long past their expiry and were never
+     * redeemed (issue #3). Accepted ones stay: they are the record of where an
+     * account came from, and that is worth keeping.
+     */
+    'prune-invitations',
   ]),
   /** Optional scope; `null` means all workspaces. */
   workspaceId: idSchema.nullable().default(null),

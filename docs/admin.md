@@ -33,6 +33,41 @@ psql -h 127.0.0.1 -p 5433 -U exocortex -d exocortex \
 `pnpm db:seed` also promotes the production admin email it knows about, so a
 freshly seeded deployment always has one.
 
+## Who is here: invitations and account status
+
+`/admin/nutzer` is the whole answer to "who has access", in two tables on one
+page: the accounts, and the invitations that have not become accounts yet. They
+belong together because they are the same question at two points in time — an
+accepted invitation turns into a row in the upper table.
+
+Self-registration is off, so an invitation is the only way in besides the seed
+script. `docs/security.md` has the token design, the one-use guarantee and the
+rate limits; what matters here is the shape of the routes:
+
+| Route | Who | What |
+| ----- | --- | ---- |
+| `GET /api/admin/invitations` | global admin | every invitation, newest first |
+| `POST /api/admin/invitations` | global admin | invite; `workspaceId` optional, `role: "admin"` allowed |
+| `POST /api/admin/invitations/:id/resend` | global admin | new token, old link dies |
+| `DELETE /api/admin/invitations/:id` | global admin | withdraw |
+| `GET`/`POST`/`DELETE` `/api/workspaces/:workspaceId/invitations…` | workspace `OWNER`/`ADMIN` | the same, bounded to that workspace, never a global role |
+| `PATCH /api/admin/users/:userId/status` | global admin | `{"disabled":true}` switches the account off |
+| `DELETE /api/admin/users/:userId` | global admin | only if the account authored nothing |
+
+Three things about this that are easy to get wrong later:
+
+* **The invitation link comes back exactly once**, in the create/resend response,
+  and is never stored — only its SHA-256 is. If the mail fails, `emailSent` is
+  `false` and the dialog stays open with the link, because that is the only
+  chance to hand it over.
+* **Disabling is not the same as deleting**, and the UI only offers deletion for
+  an account with no authored content. `Document.createdById` is a required
+  reference; the database would refuse the rest, and rewriting authorship to get
+  around that would falsify the history.
+* **Neither route works on your own account**, and neither can remove the last
+  global admin. Same two guards as `updateUserRole`, for the same reason: a
+  locked-out sole administrator cannot repair themselves.
+
 ## Settings
 
 Runtime configuration lives in the `setting` table and overrides the

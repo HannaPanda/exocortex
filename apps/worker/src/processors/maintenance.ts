@@ -35,6 +35,13 @@ const WEEK_MS = 7 * DAY_MS;
  */
 const EMBEDDING_BACKFILL_RUN_MS = 30_000;
 
+/**
+ * How long an expired, unredeemed invitation stays in the list before the sweep
+ * removes it. Thirty days: long enough that "did I ever invite them?" still has
+ * an answer, short enough that the list stays about the present.
+ */
+const INVITATION_RETENTION_MS = 30 * DAY_MS;
+
 /** Epoch-day / epoch-week bucket. Not calendar-aware (no ISO week rules) on purpose: a deterministic, testable index is all tiered retention needs. */
 function dayBucket(date: Date): number {
   return Math.floor(date.getTime() / DAY_MS);
@@ -714,6 +721,33 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
           retentionDays,
           workspaceId,
         });
+        return;
+      }
+
+      case 'prune-invitations': {
+        /**
+         * Invitations that expired long ago and were never taken up (issue #3).
+         *
+         * Deletion rather than archival, because an unredeemed invitation is not
+         * a record of anything: nobody arrived, nothing points at it. What *is*
+         * kept is every accepted one -- `acceptedAt: null` in the filter -- since
+         * that row is the answer to "where did this account come from".
+         *
+         * The grace period exists so an administrator looking at the list a week
+         * after an expiry still sees what happened, instead of wondering whether
+         * they ever sent it. Withdrawn invitations age out on the same clock:
+         * `expiresAt` keeps running whether the invitation was revoked or not.
+         */
+        await reportProgress(10, 'Alte Einladungen werden aufgeräumt');
+        const cutoff = new Date(Date.now() - INVITATION_RETENTION_MS);
+        const removed = await prisma.invitation.deleteMany({
+          where: { acceptedAt: null, expiresAt: { lt: cutoff } },
+        });
+
+        await reportProgress(100, 'Einladungen aufgeräumt');
+        if (removed.count > 0) {
+          logger.info('Expired invitations pruned', { removed: removed.count });
+        }
         return;
       }
 

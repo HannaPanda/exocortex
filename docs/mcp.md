@@ -85,7 +85,7 @@ discipline completely, which the SDK does not guarantee out of the box.
 
 ## Tool reference
 
-All 46 tools below are namespaced `exo_` so they cannot collide with the other
+All 53 tools below are namespaced `exo_` so they cannot collide with the other
 MCP servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`). Four
 further tools live on surfaces of their own and are the only ones in the
 catalogue without the prefix: `search` and `fetch` for deep research, which
@@ -154,6 +154,25 @@ change as dangerous only trains people to click past the warnings that matter.
 | `exo_rules_load` | no | no | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars) |
 | `exo_ai_run_get` | no | no | `GET /api/ai/runs/:runId` -- status, model, `heartbeatAt`, tool rounds, error code and the answer so far (capped at 2,000 chars) |
 | `exo_ai_run_cancel` | yes | no | `POST /api/ai/runs/:runId/cancel` -- refuses a run that has already finished |
+| `exo_invitation_list` | no | no | `GET /api/admin/invitations`, or `GET /api/workspaces/:workspaceId/invitations` when `workspaceId` is given |
+| `exo_invitation_create` | yes | no | `POST /api/admin/invitations` or `POST /api/workspaces/:workspaceId/invitations`, chosen by `via` -- the link is in the response only, and `emailSent: false` means it has to be handed over by hand |
+| `exo_invitation_resend` | yes | yes | `POST …/invitations/:invitationId/resend` -- rotates the token, so the previous link dies |
+| `exo_invitation_revoke` | yes | yes | `DELETE …/invitations/:invitationId` |
+| `exo_user_list` | no | no | `GET /api/admin/users` |
+| `exo_user_set_disabled` | yes | yes | `PATCH /api/admin/users/:userId/status` -- ends every session and revokes every token of that account |
+| `exo_user_delete` | yes | yes | `DELETE /api/admin/users/:userId` -- only for an account that authored nothing, else `user_has_content` |
+
+The seven access tools exist because registration is closed (issue #3): "add a
+person" is something a human can do in the admin area, so the catalogue has to
+carry it too, or the MCP surface quietly stops matching the application. All but
+`exo_invitation_create` with `via: 'workspace'` need an `admin`-scoped token,
+because they sit under `/api/admin` and `requiredScopeForRequest` says so.
+
+They stretch "destructive" to a second meaning: not overwriting what somebody
+wrote, but taking away something somebody is holding. Withdrawing or re-sending an
+invitation kills a link that may be about to be clicked; switching an account off
+ends a session mid-sentence. A client that asks before destructive calls should ask
+before these.
 
 `exo_page_write` reaches a page that somebody has open at that moment: the API
 hands the change to the collaboration server, which applies it to the live
@@ -258,7 +277,7 @@ Two endpoints, differing only in which tools they serve:
 
 | URL | Tools | For |
 | --- | --- | --- | --- |
-| `https://exocortex.app/api/mcp` | the 46 `exo_` tools | a general-purpose agent |
+| `https://exocortex.app/api/mcp` | the 53 `exo_` tools | a general-purpose agent |
 | `https://exocortex.app/api/mcp/research` | `search`, `fetch` | ChatGPT deep research |
 
 `tools/call` resolves a name against the list the connection was served, so the
@@ -312,7 +331,7 @@ dumped on a connector that works badly with more than a handful of tools.
 
 ### The memory surface
 
-`POST /api/mcp/memory` serves three tools instead of forty-six: `recall`,
+`POST /api/mcp/memory` serves three tools instead of fifty-three: `recall`,
 `remember` and `fetch`. It is what turns eXocortex from a reference work into a
 memory for a chat client (issue #34, [ADR-019](adr/ADR-019-agent-memory-in-its-own-workspace.md)).
 
