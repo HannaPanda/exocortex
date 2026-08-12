@@ -5,6 +5,7 @@ import { chromium, type FullConfig } from '@playwright/test';
 
 import { BASIC_AUTH_CREDENTIALS } from './basic-auth';
 import { requireSeedCredentials, SEED_USERS, type SeedUserKey } from './fixtures';
+import { recordRunScope } from './run-scope';
 
 /**
  * Signs the seed users in once and stores their session cookies.
@@ -25,6 +26,10 @@ export default async function globalSetup(config: FullConfig): Promise<void> {
 
   const baseURL = config.projects[0]?.use.baseURL ?? 'https://exocortex.app';
   const httpCredentials = BASIC_AUTH_CREDENTIALS;
+  // Taken before the first sign-in, so nothing the run creates falls outside the
+  // window the teardown cleans up.
+  const startedAt = new Date().toISOString();
+  const workspaceIds = new Set<string>();
 
   const browser = await chromium.launch();
   try {
@@ -35,11 +40,17 @@ export default async function globalSetup(config: FullConfig): Promise<void> {
       await page.getByLabel('E-Mail-Adresse').fill(SEED_USERS[user].email);
       await page.getByLabel('Passwort').fill(SEED_USERS[user].password);
       await page.getByTestId('signin-submit').click();
-      await page.waitForURL(/\/arbeitsbereich/, { timeout: 60_000 });
+      // Not a bare `/arbeitsbereich`: the landing page resolves the workspace and
+      // replaces itself, and the id is the whole point of waiting here.
+      await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+      const workspaceId = /\/arbeitsbereich\/([a-z0-9]+)/.exec(page.url())?.[1];
+      if (workspaceId !== undefined) workspaceIds.add(workspaceId);
       await context.storageState({ path: storageStatePath(user) });
       await context.close();
     }
   } finally {
     await browser.close();
   }
+
+  recordRunScope({ startedAt, workspaceIds: [...workspaceIds] });
 }

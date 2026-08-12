@@ -46,6 +46,7 @@ e2e/support/.auth/
 
 # Playwright test artefacts
 e2e/.created-workspaces
+e2e/.run-scope
 
 # Machine-identity credentials for the Infisical -> .env sync
 # (deploy/infisical-sync-env.py). Template: deploy/infisical-sync.env.example

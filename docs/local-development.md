@@ -173,13 +173,27 @@ E2E_BASIC_USER=…  E2E_BASIC_PASSWORD=…   # only if that deployment has a bas
 Browsers are installed once with
 `pnpm --filter @exocortex/e2e exec playwright install chromium --with-deps`.
 
-The run creates a workspace per scenario and deletes them again in its teardown
-(`e2e/support/global-teardown.ts`), which needs database and object-storage
-access — so a run against a deployment on another host warns and leaves them
-behind rather than failing. `E2E_SKIP_CLEANUP=1` keeps them on purpose, for
-inspecting what a failed test built. Either way the ids are in
-`e2e/.created-workspaces` and can be swept up later with
-`pnpm --filter @exocortex/api workspaces:delete -- --ids-file e2e/.created-workspaces`.
+The teardown (`e2e/support/global-teardown.ts`) cleans up in two halves, because
+the run leaves two kinds of thing behind:
+
+* **the workspaces it created**, one per scenario, deleted outright. The ids are
+  in `e2e/.created-workspaces`:
+  `pnpm --filter @exocortex/api workspaces:delete -- --ids-file e2e/.created-workspaces`
+* **the pages it created in the seeded workspace it signed in to**, which cannot
+  be deleted with the workspace because that workspace has to survive. The
+  teardown removes everything in it that is newer than the moment the run
+  started; the window is in `e2e/.run-scope`:
+  `pnpm --filter @exocortex/api documents:delete -- --workspace <id> --created-after <iso>`
+
+A window rather than a list of page ids, because tests create pages through the
+tree, the editor and the API, and a list would miss whichever path someone adds
+next. It was written after the seeded workspace reached 1,271 pages against the
+six that belong there.
+
+Both halves need database and object-storage access, so a run against a
+deployment on another host warns and leaves things behind rather than failing.
+`E2E_SKIP_CLEANUP=1` keeps everything on purpose, for inspecting what a failed
+test built.
 
 Also worth knowing: `AI_PROVIDER` is read by the suite itself. The AI test
 asserts the mock provider's echo only when it is set to `mock`, so a run
