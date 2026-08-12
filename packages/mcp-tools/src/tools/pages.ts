@@ -37,14 +37,16 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
 const MAX_PAGE_READ_CHARS = 60_000;
 
 /**
- * Built from the contract rather than written out, so a name added to the
- * curated set reaches the model in the same commit that adds it. Without the
- * list a caller can only guess, and every guess outside the set is rejected.
+ * Every Lucide name is accepted, but naming all 1,756 of them would cost more
+ * prompt than it buys. The curated shortlist is built from the contract instead,
+ * so a name added to it reaches the model in the same commit, and the sentence
+ * before it tells a caller that the shortlist is not the limit.
  */
 const ICON_DESCRIPTION =
   'Symbol der Seite: entweder ein Emoji als Zeichen ("🧠") oder ein gezeichnetes Symbol ' +
-  `als "lucide:<name>". Erlaubte Namen: ${DOCUMENT_ICON_NAMES.join(', ')}. ` +
-  'null entfernt das Symbol.';
+  'als "lucide:<name>", wobei jeder Icon-Name von lucide.dev erlaubt ist ' +
+  '(kebab-case, z. B. "lucide:rocket"). Gebräuchlich sind: ' +
+  `${DOCUMENT_ICON_NAMES.join(', ')}. null entfernt das Symbol.`;
 
 const ICON_COLOR_DESCRIPTION =
   `Farbe eines gezeichneten Symbols: ${DOCUMENT_ICON_COLORS.join(', ')}. ` +

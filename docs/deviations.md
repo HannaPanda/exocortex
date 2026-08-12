@@ -259,3 +259,20 @@ source and renders its own header with the two actions that do work, "Öffnen" a
 "Herunterladen". Persistent annotations would mean storing them as document
 content and painting the pages ourselves; that is a feature to build, not a bug to
 fix here.
+
+## 22. The icon and emoji datasets are generated into the repository
+
+`packages/contracts/src/lucide-icon-names.ts`,
+`apps/web/src/components/document/lucide-icon-nodes.generated.ts` and
+`apps/web/src/lib/emoji-data.generated.ts` are written by
+`pnpm data:generate` (`scripts/generate-icon-data.mjs`,
+`scripts/generate-emoji-data.mjs`) out of `lucide-react` and `emojibase-data`, and
+they are committed rather than built on the fly. Two reasons: the build must not
+depend on a package the runtime does not use, and a dataset that changes only when
+a dependency is upgraded should change in a diff someone can read.
+
+Both generated data modules are one `JSON.parse` of a single string literal. As an
+object literal, TypeScript would infer a type for all 1,756 icons and the engine
+would parse half a megabyte as source; as a string it is one token to both, and
+the bytes on the wire are the same. They are excluded from Prettier and ESLint —
+reformatting them costs seconds and nobody reads them.

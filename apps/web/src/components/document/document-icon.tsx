@@ -75,15 +75,19 @@ import {
   WrenchIcon,
   ZapIcon,
 } from 'lucide-react';
+import { Icon as LucideIcon } from 'lucide-react';
 import * as React from 'react';
 
 import {
+  type CuratedDocumentIconName,
   DOCUMENT_ICON_NAME_PREFIX,
   type DocumentIconColor,
   type DocumentIconName,
   type DocumentType,
 } from '@exocortex/contracts';
 import { cn } from '@exocortex/ui';
+
+import { useLucideIconData } from './lucide-icon-store';
 
 /**
  * The one place a page icon turns into pixels.
@@ -96,9 +100,14 @@ import { cn } from '@exocortex/ui';
  * The name-to-component map lives in `apps/web` and not in the contract for the
  * same reason the block catalog's does: the contract must stay renderer-free so
  * the worker and the API can read it headlessly.
+ *
+ * The map covers the curated names only. Any of Lucide's 1,756 icons can be
+ * stored, and the rest are drawn from the path data in `lucide-icon-store`, which
+ * loads on demand. Curated ones stay static imports because they are the ones a
+ * freshly loaded page tree is likely to be full of, and those must not blink.
  */
 const ICON_COMPONENTS: Readonly<
-  Record<DocumentIconName, React.ComponentType<{ className?: string }>>
+  Record<CuratedDocumentIconName, React.ComponentType<{ className?: string }>>
 > = {
   'file-text': FileTextIcon,
   files: FilesIcon,
@@ -179,7 +188,7 @@ const ICON_COMPONENTS: Readonly<
  * field matches. A picker whose entries are unnamed pictures cannot be searched
  * and cannot be read out.
  */
-export const DOCUMENT_ICON_LABELS: Readonly<Record<DocumentIconName, string>> = {
+export const DOCUMENT_ICON_LABELS: Readonly<Record<CuratedDocumentIconName, string>> = {
   'file-text': 'Seite',
   files: 'Mehrere Seiten',
   folder: 'Ordner',
@@ -258,7 +267,9 @@ export const DOCUMENT_ICON_LABELS: Readonly<Record<DocumentIconName, string>> = 
  * Extra search words per icon, for the times the label is not what someone
  * types. Only where it earns its keep; most icons are found by their name.
  */
-export const DOCUMENT_ICON_KEYWORDS: Partial<Readonly<Record<DocumentIconName, readonly string[]>>> =
+export const DOCUMENT_ICON_KEYWORDS: Partial<
+  Readonly<Record<CuratedDocumentIconName, readonly string[]>>
+> =
   {
     'file-text': ['dokument', 'datei'],
     folder: ['projekt', 'sammlung'],
@@ -314,7 +325,7 @@ export const DOCUMENT_ICON_KEYWORDS: Partial<Readonly<Record<DocumentIconName, r
 /** The icon grid, grouped the way the emoji picker is. */
 export const DOCUMENT_ICON_GROUPS: readonly {
   label: string;
-  names: readonly DocumentIconName[];
+  names: readonly CuratedDocumentIconName[];
 }[] = [
   {
     label: 'Ablage',
@@ -451,16 +462,46 @@ export const DOCUMENT_ICON_COLOR_LABELS: Readonly<Record<DocumentIconColor, stri
   red: 'Rot',
 };
 
-/** The name behind a `lucide:` icon, or `null` for an emoji or an unknown name. */
+/** The name behind a `lucide:` icon, or `null` for an emoji or no icon at all. */
 export function documentIconName(icon: string | null): DocumentIconName | null {
   if (icon === null || !icon.startsWith(DOCUMENT_ICON_NAME_PREFIX)) return null;
   const name = icon.slice(DOCUMENT_ICON_NAME_PREFIX.length);
-  return name in ICON_COMPONENTS ? (name as DocumentIconName) : null;
+  return name.length === 0 ? null : name;
 }
 
 /** Builds the stored value for a picked icon name. */
 export function documentIconValue(name: DocumentIconName): string {
   return `${DOCUMENT_ICON_NAME_PREFIX}${name}`;
+}
+
+/**
+ * What to call an icon out loud.
+ *
+ * The curated ones have a German name. The other 1,700 have only Lucide's
+ * English one, which is at least a real word and beats reading out
+ * `square-dashed-bottom-code`: it becomes "Square dashed bottom code". A made-up
+ * German translation would be worse than the honest English label, because it is
+ * not what the search field matches either.
+ */
+export function documentIconLabel(name: DocumentIconName): string {
+  const curated = (DOCUMENT_ICON_LABELS as Readonly<Record<string, string | undefined>>)[name];
+  if (curated !== undefined) return curated;
+  const words = name.replaceAll('-', ' ');
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+/**
+ * Draws one of the icons that is not in the static map.
+ *
+ * Its own component so that the subscription to the loaded path data exists only
+ * for the rows that actually need it — a tree full of curated icons subscribes
+ * nothing at all.
+ */
+function LazyDrawnIcon({ name, className }: { name: string; className?: string }) {
+  const data = useLucideIconData();
+  const node = data?.nodes[data.aliases[name] ?? name];
+  if (node === undefined) return null;
+  return <LucideIcon iconNode={node} className={className} />;
 }
 
 export interface DocumentIconProps {
@@ -489,9 +530,14 @@ export interface DocumentIconProps {
  */
 export function DocumentIcon({ icon, iconColor, type, className }: DocumentIconProps) {
   const name = documentIconName(icon);
-  const isEmoji = icon !== null && name === null && !icon.startsWith(DOCUMENT_ICON_NAME_PREFIX);
-  const Drawn =
-    name !== null ? ICON_COMPONENTS[name] : type === 'COLLECTION' ? TableIcon : FileTextIcon;
+  const isEmoji = icon !== null && name === null;
+  const Curated =
+    name === null
+      ? null
+      : ((ICON_COMPONENTS as Readonly<Record<string, React.ComponentType<{ className?: string }>>>)[
+          name
+        ] ?? null);
+  const Fallback = type === 'COLLECTION' ? TableIcon : FileTextIcon;
 
   return (
     <span
@@ -505,7 +551,15 @@ export function DocumentIcon({ icon, iconColor, type, className }: DocumentIconP
         !isEmoji && iconColor !== null && DOCUMENT_ICON_COLOR_CLASS[iconColor],
       )}
     >
-      {isEmoji ? icon : <Drawn className="size-[1em]" />}
+      {isEmoji ? (
+        icon
+      ) : name === null ? (
+        <Fallback className="size-[1em]" />
+      ) : Curated !== null ? (
+        <Curated className="size-[1em]" />
+      ) : (
+        <LazyDrawnIcon name={name} className="size-[1em]" />
+      )}
     </span>
   );
 }

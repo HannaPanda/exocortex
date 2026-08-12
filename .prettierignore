@@ -8,3 +8,8 @@ packages/database/generated
 packages/database/prisma/migrations
 playwright-report
 test-results
+
+# Written by scripts/generate-*-data.mjs. Reformatting a half-megabyte string
+# literal costs seconds and no one reads it.
+**/*.generated.ts
+packages/contracts/src/lucide-icon-names.ts

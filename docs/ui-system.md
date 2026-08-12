@@ -200,6 +200,19 @@ indicator.
 Keyboard shortcuts: `Ctrl/⌘ K` command menu, `Ctrl/⌘ B` sidebar,
 `Ctrl/⌘ .` context panel.
 
+### The symbol picker
+
+`PageIconPicker` offers every emoji (1,914) and every Lucide icon (1,756), but
+opens on neither. What is on screen before anyone types is the curated shortlist
+in `DOCUMENT_ICON_NAMES` / `CURATED_EMOJI_GROUPS` and the symbols this browser
+picked last; the rest is reached by searching or by scrolling into "Alle Symbole".
+German search words for icons that only have an English name live in
+`icon-search.ts`.
+
+Both datasets are loaded through a dynamic `import()` when the picker opens, never
+in the first bundle. `DocumentIcon` keeps a static component map of the curated
+icons so a freshly loaded page tree paints without waiting for anything.
+
 ## Editor chrome
 
 The editor's own surfaces live in `apps/web/src/components/editor` and are listed in

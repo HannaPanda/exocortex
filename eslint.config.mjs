@@ -52,6 +52,8 @@ export default tseslint.config(
       '**/.turbo/**',
       '**/coverage/**',
       '**/generated/**',
+      '**/*.generated.ts',
+      'packages/contracts/src/lucide-icon-names.ts',
       '**/playwright-report/**',
       '**/test-results/**',
       'packages/database/prisma/migrations/**',

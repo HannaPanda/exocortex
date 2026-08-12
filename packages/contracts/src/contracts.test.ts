@@ -52,10 +52,24 @@ describe('page icons', () => {
     expect(updateDocumentRequestSchema.parse({ icon: 'lucide:folder' }).icon).toBe('lucide:folder');
   });
 
+  // The curated set is what the picker *offers* first, not what it allows: the
+  // search reaches every icon Lucide draws, so the contract has to as well.
+  it('takes a drawn icon from outside the curated set', () => {
+    expect(updateDocumentRequestSchema.parse({ icon: 'lucide:banana' }).icon).toBe('lucide:banana');
+  });
+
   // Without this, an unknown name would leave the page with an icon that renders
   // as nothing — and the MCP tools write this field too.
-  it('rejects a drawn icon that is not in the set', () => {
-    expect(() => updateDocumentRequestSchema.parse({ icon: 'lucide:banana' })).toThrow();
+  it('rejects a drawn icon Lucide does not have', () => {
+    expect(() => updateDocumentRequestSchema.parse({ icon: 'lucide:definitely-not-an-icon' })).toThrow();
+  });
+
+  // The longest name Lucide has is 35 characters, which the old 32-character
+  // limit would have refused before the name was ever looked up.
+  it('takes the longest icon name Lucide has', () => {
+    expect(
+      updateDocumentRequestSchema.parse({ icon: 'lucide:square-centerline-dashed-horizontal' }).icon,
+    ).toBe('lucide:square-centerline-dashed-horizontal');
   });
 
   it('rejects an icon that is empty after trimming', () => {

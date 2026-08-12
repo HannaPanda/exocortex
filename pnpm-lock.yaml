@@ -20,6 +20,9 @@ importers:
       '@types/node':
         specifier: 24.10.4
         version: 24.10.4
+      emojibase-data:
+        specifier: 17.0.0
+        version: 17.0.0(emojibase@17.0.0)
       eslint:
         specifier: 9.39.5
         version: 9.39.5(jiti@2.7.0)(supports-color@7.2.0)
@@ -3098,6 +3101,15 @@ packages:
 
   electron-to-chromium@1.5.399:
     resolution: {integrity: sha512-lEcqhErbHjXRvd41rnWLpzbyU/IXfIYo7QwaFWmxGeLiLyY2TBCdHnWY88vB+p3ubnihRypDm66panXl7TylLA==}
+
+  emojibase-data@17.0.0:
+    resolution: {integrity: sha512-Yvgb5AWoHViHV/gq1qr5ZAarcBip+B27/ZLRsUJkbgAEaLlZ/fof9g882LTpmEpyhBNEC0m2SEmItljHsTygjA==}
+    peerDependencies:
+      emojibase: '*'
+
+  emojibase@17.0.0:
+    resolution: {integrity: sha512-bXdpf4HPY3p41zK5swVKZdC/VynsMZ4LoLxdYDE+GucqkFwzcM1GVc4ODfYAlwoKaf2U2oNNUoOO78N96ovpBA==}
+    engines: {node: '>=18.12.0'}
 
   empathic@2.0.0:
     resolution: {integrity: sha512-i6UzDscO/XfAcNYD75CfICkmfLedpyPDdozrLMmQc5ORaQcdMoc21OnlEylMIqI7U8eniKrPMxxtj8k0vhmJhA==}
@@ -7182,6 +7194,12 @@ snapshots:
       fast-check: 3.23.2
 
   electron-to-chromium@1.5.399: {}
+
+  emojibase-data@17.0.0(emojibase@17.0.0):
+    dependencies:
+      emojibase: 17.0.0
+
+  emojibase@17.0.0: {}
 
   empathic@2.0.0: {}
 

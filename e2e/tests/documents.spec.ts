@@ -200,6 +200,38 @@ test.describe('documents', () => {
     await expect(page.getByTestId('add-page-icon')).toBeAttached();
   });
 
+  /**
+   * The picker offers every Lucide icon and every emoji, not the curated
+   * shortlist it opens on. Both sets arrive in a chunk of their own, so this also
+   * covers that the chunk is actually fetched when the picker is opened.
+   */
+  test('finds a symbol outside the curated shortlist by its German name', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const documentId = await createPage(page, `Suche ${Date.now().toString(36)}`);
+    const treeIcon = page.getByTestId(`tree-icon-${documentId}`).locator('[data-icon]');
+
+    // "rocket" is not in the curated set and is not a German word; both the full
+    // icon set and the German synonym have to be in play for this to match.
+    await page.getByTestId('add-page-icon').click();
+    await page.getByTestId('page-icon-search').fill('rakete');
+    await page.getByTestId('page-icon-rocket').click({ timeout: 15_000 });
+    await expect(treeIcon).toHaveAttribute('data-icon', 'lucide:rocket');
+
+    // Reload: the icon is drawn from the lazily loaded path data, not from the
+    // static map, so this is where a missing loader would show up.
+    await page.reload();
+    await expect(treeIcon).toHaveAttribute('data-icon', 'lucide:rocket');
+    await expect(page.getByTestId(`tree-icon-${documentId}`).locator('svg')).toBeVisible();
+
+    // An emoji from outside the shortlist, found by its German label.
+    await page.getByTestId(`tree-icon-${documentId}`).click();
+    await page.getByTestId('page-icon-tab-emoji').click();
+    await page.getByTestId('page-icon-search').fill('marienkäfer');
+    await page.getByTestId('page-icon-emoji-🐞').click({ timeout: 15_000 });
+    await expect(treeIcon).toHaveAttribute('data-icon', '🐞');
+  });
+
   test('keeps sidebar and context panel toggles working', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
