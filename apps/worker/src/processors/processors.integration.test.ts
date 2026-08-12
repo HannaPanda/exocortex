@@ -459,6 +459,68 @@ describe('maintenance', () => {
     expect(processed.attempts).toBe(1);
   }, 60_000);
 
+  it('keeps dispatching when an outbox row is deleted mid-run', async () => {
+    // The dispatcher reads its batch once and works through it afterwards, and
+    // it reads across every workspace. A workspace deleted in that window takes
+    // its outbox rows along, so the row this iteration holds can be gone by the
+    // time it is marked. That surfaced as a flaky "no record was found for an
+    // update" whenever the API suite deleted its fixtures in parallel. What
+    // matters is not the vanished row, it is that the rows behind it are still
+    // dispatched.
+    const documentId = await createDocument();
+    const [doomed, survivor] = await Promise.all([
+      prisma.outboxEvent.create({
+        data: {
+          workspaceId,
+          type: 'document.updated',
+          payload: { documentId },
+          correlationId: 'test-outbox-vanish',
+        },
+      }),
+      prisma.outboxEvent.create({
+        data: {
+          workspaceId,
+          type: 'document.updated',
+          payload: { documentId },
+          correlationId: 'test-outbox-survivor',
+        },
+      }),
+    ]);
+
+    const processor = createMaintenanceProcessor({
+      prisma,
+      queues,
+      storage: recordingStorage(),
+      bus,
+      settings: stubSettings(),
+    });
+
+    const realUpdate = prisma.outboxEvent.update.bind(prisma.outboxEvent);
+    const spy = vi
+      .spyOn(prisma.outboxEvent, 'update')
+      .mockImplementation(async (args: Parameters<typeof realUpdate>[0]) => {
+        await prisma.outboxEvent.deleteMany({ where: { id: doomed.id } });
+        return realUpdate(args);
+      });
+
+    try {
+      await expect(
+        processor(
+          contextFor({
+            correlationId: 'test-outbox-vanish',
+            task: 'dispatch-outbox',
+            workspaceId: null,
+          }).context,
+        ),
+      ).resolves.toBeUndefined();
+    } finally {
+      spy.mockRestore();
+    }
+
+    const survivorRow = await prisma.outboxEvent.findUnique({ where: { id: survivor.id } });
+    expect(survivorRow?.processedAt).not.toBeNull();
+  }, 60_000);
+
   describe('prune-snapshots (tiered retention, issue #20)', () => {
     const state = markdownToYjsState('# Snapshot\n').yjsState;
 

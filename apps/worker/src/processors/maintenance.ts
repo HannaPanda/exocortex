@@ -116,6 +116,16 @@ function isMissingDocument(error: unknown): boolean {
 }
 
 /**
+ * True when an update found nothing to update. `P2025` is what Prisma reports
+ * when the row addressed by `where` no longer exists -- for an outbox row that
+ * means its workspace was deleted between the batch being read and the row
+ * being marked, which is a race, not a defect.
+ */
+function isMissingRow(error: unknown): boolean {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025';
+}
+
+/**
  * Maintenance processor.
  *
  * `dispatch-outbox` is the reliable half of the event system: the API writes
@@ -143,6 +153,7 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
         if (events.length === 0) return;
 
         let dispatched = 0;
+        let vanished = 0;
         for (const event of events) {
           try {
             const documentId = extractDocumentId(event.payload);
@@ -173,22 +184,38 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
             });
             dispatched += 1;
           } catch (error) {
-            // Record the failure and leave the row unprocessed for a later run;
-            // it is never silently dropped.
-            await prisma.outboxEvent.update({
-              where: { id: event.id },
-              data: {
-                attempts: { increment: 1 },
-                lastError: error instanceof Error ? error.message : String(error),
-              },
-            });
+            // The batch is read once and worked through afterwards. A workspace
+            // deleted in that window takes its outbox rows with it, so the row
+            // this iteration is holding may no longer exist -- nothing failed,
+            // there is simply nothing left to dispatch or to record against.
+            if (isMissingRow(error)) {
+              vanished += 1;
+              continue;
+            }
             logger.error('Failed to dispatch outbox event', error, {
               outboxEventId: event.id,
               type: event.type,
             });
+            try {
+              // Record the failure and leave the row unprocessed for a later
+              // run; it is never silently dropped.
+              await prisma.outboxEvent.update({
+                where: { id: event.id },
+                data: {
+                  attempts: { increment: 1 },
+                  lastError: error instanceof Error ? error.message : String(error),
+                },
+              });
+            } catch (recordingError) {
+              // Same race, one step later: the row disappeared while its
+              // failure was being written. Anything else is a real fault and
+              // must stay loud.
+              if (!isMissingRow(recordingError)) throw recordingError;
+              vanished += 1;
+            }
           }
         }
-        logger.debug('Outbox dispatched', { dispatched, batch: events.length });
+        logger.debug('Outbox dispatched', { dispatched, vanished, batch: events.length });
         return;
       }
 
