@@ -32,6 +32,7 @@ import { createDocumentCoverProcessor } from './processors/document-cover';
 import { createIndexDocumentProcessor } from './processors/index-document';
 import { createMaintenanceProcessor } from './processors/maintenance';
 import { createMaterializeDocumentProcessor } from './processors/materialize-document';
+import { createMemoryCaptureProcessor } from './processors/memory-capture';
 import { createToolRunner } from './tool-runner';
 
 /**
@@ -306,6 +307,9 @@ async function bootstrap(): Promise<void> {
       // The calendar sync has no workspace in its payload and no browser
       // waiting on it, so it reports nothing over the progress channel.
       | typeof QUEUE_NAMES.calendarSync
+      // Nor does memory capture: by the time it runs, the session that
+      // triggered it has ended and its editor is gone.
+      | typeof QUEUE_NAMES.memoryCapture
     >,
     workspaceId: string,
     correlationId: string,
@@ -522,6 +526,22 @@ async function bootstrap(): Promise<void> {
     }),
   });
 
+  // Concurrency 1: one model call per finished session, and several sessions
+  // ending at once is exactly the burst that should queue rather than fan out
+  // into parallel paid calls.
+  const memoryCapture = createTypedWorker({
+    name: QUEUE_NAMES.memoryCapture,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 1,
+    handler: createMemoryCaptureProcessor({
+      provider,
+      apiClientFor,
+      settings: readSettings,
+      defaultModel: env.OPENROUTER_DEFAULT_MODEL ?? null,
+    }),
+  });
+
   await queues.scheduleMaintenance(createCorrelationId());
   await queues.scheduleCalendarSync(createCorrelationId());
 
@@ -547,6 +567,7 @@ async function bootstrap(): Promise<void> {
         attachmentText.worker.close(),
         documentCover.worker.close(),
         calendarSync.worker.close(),
+        memoryCapture.worker.close(),
       ]);
       await Promise.all([
         materialization.connection.quit(),
@@ -556,6 +577,7 @@ async function bootstrap(): Promise<void> {
         attachmentText.connection.quit(),
         documentCover.connection.quit(),
         calendarSync.connection.quit(),
+        memoryCapture.connection.quit(),
       ]);
       await bus.close();
       await queues.close();
