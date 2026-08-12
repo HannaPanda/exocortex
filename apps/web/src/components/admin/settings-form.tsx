@@ -13,6 +13,7 @@ import {
 import {
   Alert,
   AlertDescription,
+  AlertTitle,
   Button,
   Input,
   Label,
@@ -429,7 +430,7 @@ export function SettingsForm() {
   // when a prop changes") and avoids the cascading-render lint warning an
   // effect-based version would trigger.
   if (draft === null && settingsQuery.data !== undefined) {
-    setDraft(settingsQuery.data);
+    setDraft(settingsQuery.data.settings);
   }
 
   if (settingsQuery.isPending || settingsQuery.data === undefined || draft === null) {
@@ -440,8 +441,13 @@ export function SettingsForm() {
   // `settingsQuery.data` directly) keeps the non-null narrowing above valid
   // inside the nested handlers below, which TypeScript otherwise widens back
   // to the declared (nullable) type at a function boundary.
-  const original: Settings = settingsQuery.data;
+  const original: Settings = settingsQuery.data.settings;
   const currentDraft: Settings = draft;
+  // Rows the deployment refused to load. Not an error of this form: the value
+  // shown is the default that stepped in, and saving the field replaces the bad
+  // row. Named per setting, because "irgendeine Zeile ist kaputt" is what the
+  // log already said.
+  const ignoredKeys = settingsQuery.data.invalidKeys;
   const dirty = SETTING_KEYS.some((key) => currentDraft[key] !== original[key]);
 
   const groups = new Map<string, SettingKey[]>();
@@ -543,6 +549,20 @@ export function SettingsForm() {
 
   return (
     <div className="flex flex-col gap-8">
+      {/* Unlike the two messages further down, this one belongs at the top: it is
+          not the answer to a click but a condition that was already true when the
+          page opened. */}
+      {ignoredKeys.length > 0 ? (
+        <Alert variant="destructive" data-testid="settings-invalid-rows">
+          <AlertTitle>Gespeicherte Werte werden ignoriert</AlertTitle>
+          <AlertDescription>
+            {`In der Datenbank steht für ${ignoredKeys.length === 1 ? 'diese Einstellung' : 'diese Einstellungen'} ein unzulässiger Wert: ${ignoredKeys
+              .map((key) => SETTING_COPY[key].label)
+              .join(', ')}. Die Installation läuft stattdessen mit der Vorgabe. Einmal speichern ersetzt die fehlerhafte Zeile.`}
+          </AlertDescription>
+        </Alert>
+      ) : null}
+
       <fieldset disabled={updateSettings.isPending} className="flex flex-col gap-8 border-0 p-0">
         {[...groups.entries()].map(([group, keys]) => (
           <section key={group} className="flex flex-col gap-4">

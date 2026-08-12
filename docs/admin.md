@@ -126,6 +126,15 @@ cannot be stated in two places and drift. A refused save names the offending
 setting at its own row and scrolls it into view; the summary alert sits next to
 the save button, not at the top of the page (issue #27).
 
+A row already in the table that does not validate is a second, quieter version
+of the same problem. `resolveSettings` drops it and boots on the default, which
+must stay that way — one hand-edited row cannot be allowed to stop a process
+from starting — but the drop used to be reported only into the log, so the form
+showed a default while the table held something else. `GET /api/admin/settings`
+and `PATCH /api/admin/settings` therefore both answer with `invalidKeys`
+alongside `settings`, and the form states at the top which settings are being
+ignored. Saving the field replaces the bad row.
+
 A bound that exists only out of caution is a bug, not a safety measure: the
 places where a run can really cost something are `ai.budgetMicroUsdPerRun` and
 `ai.maxRunMs`. Every remaining cap above carries the reason it exists in a

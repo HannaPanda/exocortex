@@ -39,7 +39,7 @@ export interface UpdateSettingsInput {
  */
 @Injectable()
 export class SettingsService {
-  private cache: { settings: Settings; expiresAt: number } | null = null;
+  private cache: { settings: Settings; invalidKeys: SettingKey[]; expiresAt: number } | null = null;
 
   constructor(
     @Inject(PRISMA) private readonly prisma: PrismaClient,
@@ -48,9 +48,24 @@ export class SettingsService {
   ) {}
 
   async get(): Promise<Settings> {
+    return (await this.resolve()).settings;
+  }
+
+  /**
+   * Stored rows that failed validation and were replaced by their default.
+   *
+   * Served to the admin area so a bad row is visible where settings are edited
+   * instead of only in the journal (issue #27). Reads the same cache as `get`,
+   * so asking for both costs one round trip.
+   */
+  async invalidKeys(): Promise<SettingKey[]> {
+    return (await this.resolve()).invalidKeys;
+  }
+
+  private async resolve(): Promise<{ settings: Settings; invalidKeys: SettingKey[] }> {
     const now = Date.now();
     if (this.cache !== null && this.cache.expiresAt > now) {
-      return this.cache.settings;
+      return this.cache;
     }
 
     const rows = await this.prisma.setting.findMany({ select: { key: true, value: true } });
@@ -59,8 +74,8 @@ export class SettingsService {
       this.logger.warn('Dropped invalid setting rows while resolving settings', { invalidKeys });
     }
 
-    this.cache = { settings, expiresAt: now + CACHE_TTL_MS };
-    return settings;
+    this.cache = { settings, invalidKeys, expiresAt: now + CACHE_TTL_MS };
+    return this.cache;
   }
 
   async getKey<K extends SettingKey>(key: K): Promise<Settings[K]> {

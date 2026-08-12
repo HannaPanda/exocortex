@@ -17,7 +17,6 @@ import {
   type CreateApiTokenResponse,
   type DeleteUserResponse,
   type DisconnectAppResponse,
-  type Settings,
   type SettingsResponse,
   type SyncAiModelsRequest,
   type SyncAiModelsResponse,
@@ -62,13 +61,14 @@ export function useAdminOverview(): UseQueryResult<AdminOverviewResponse> {
 // Settings
 // ---------------------------------------------------------------------------
 
-export function useAdminSettings(): UseQueryResult<Settings> {
+/**
+ * The whole response, not just `settings`: `invalidKeys` names the stored rows
+ * the deployment had to ignore, and the form has to say so (issue #27).
+ */
+export function useAdminSettings(): UseQueryResult<SettingsResponse> {
   return useQuery({
     queryKey: adminQueryKeys.settings,
-    queryFn: async () => {
-      const response = await apiRequest<SettingsResponse>('/api/admin/settings');
-      return response.settings;
-    },
+    queryFn: () => apiRequest<SettingsResponse>('/api/admin/settings'),
   });
 }
 

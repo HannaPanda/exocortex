@@ -4,7 +4,7 @@ import {
   type AdminOverviewResponse,
   type AdminUser,
   type AdminUserListResponse,
-  type Settings,
+  type SettingsResponse,
   type UpdateSettingsRequest,
   type UserRole,
 } from '@exocortex/contracts';
@@ -144,12 +144,24 @@ export class AdminService {
     };
   }
 
-  async getSettings(): Promise<Settings> {
-    return this.settingsService.get();
+  /**
+   * The settings plus the stored rows that had to be ignored. The admin area is
+   * the one place where a dropped row has to be visible (issue #27), so both
+   * halves travel together rather than needing a second request.
+   */
+  async getSettings(): Promise<SettingsResponse> {
+    const settings = await this.settingsService.get();
+    return { settings, invalidKeys: await this.settingsService.invalidKeys() };
   }
 
-  async updateSettings(patch: UpdateSettingsRequest, actorId: string): Promise<Settings> {
-    return this.settingsService.update({ patch, actorId });
+  async updateSettings(
+    patch: UpdateSettingsRequest,
+    actorId: string,
+  ): Promise<SettingsResponse> {
+    const settings = await this.settingsService.update({ patch, actorId });
+    // Read after the write: a save that corrected a bad row must not answer with
+    // the list from before it.
+    return { settings, invalidKeys: await this.settingsService.invalidKeys() };
   }
 
   async listUsers(): Promise<AdminUserListResponse> {

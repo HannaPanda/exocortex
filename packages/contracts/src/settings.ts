@@ -335,7 +335,7 @@ export const SETTING_ENV_MAP: Readonly<Partial<Record<SettingKey, string>>> = {
 export function resolveSettings(input: {
   rows: readonly { key: string; value: unknown }[];
   env?: Readonly<Record<string, string | undefined>>;
-}): { settings: Settings; invalidKeys: string[] } {
+}): { settings: Settings; invalidKeys: SettingKey[] } {
   const candidate: Record<string, unknown> = {};
 
   for (const [settingKey, envVariable] of Object.entries(SETTING_ENV_MAP)) {
@@ -356,13 +356,15 @@ export function resolveSettings(input: {
     return { settings: parsed.data, invalidKeys: [] };
   }
 
-  const invalidKeys: string[] = [];
+  const invalidKeys: SettingKey[] = [];
   for (const key of Object.keys(candidate)) {
     if (!(SETTING_KEYS as readonly string[]).includes(key)) continue;
     const shape = settingsSchema.shape[key as SettingKey];
     const fieldResult = shape.safeParse(candidate[key]);
     if (!fieldResult.success) {
-      invalidKeys.push(key);
+      // Narrowed by the guard above: only a known key ever gets this far, which
+      // is what lets the admin API report these as settings rather than strings.
+      invalidKeys.push(key as SettingKey);
       delete candidate[key];
     }
   }
@@ -373,7 +375,20 @@ export function resolveSettings(input: {
   return { settings: retried, invalidKeys };
 }
 
-export const settingsResponseSchema = z.object({ settings: settingsSchema });
+export const settingsResponseSchema = z.object({
+  settings: settingsSchema,
+  /**
+   * Stored rows that failed validation and are therefore being ignored, the
+   * running deployment using the default in their place.
+   *
+   * Dropping them rather than throwing is deliberate (see `resolveSettings`): one
+   * hand-edited row must never stop a process from booting. But until this list
+   * reached the admin area, the only trace was a log line, so the form showed a
+   * default while the table held something else and said nothing about it
+   * (issue #27). Empty is the ordinary case.
+   */
+  invalidKeys: z.array(settingKeySchema),
+});
 export type SettingsResponse = z.infer<typeof settingsResponseSchema>;
 
 /**

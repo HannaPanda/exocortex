@@ -4,6 +4,7 @@ import {
   resolveSettings,
   SETTING_KEYS,
   SETTING_NUMBER_RANGES,
+  settingsResponseSchema,
   settingsSchema,
   updateSettingsRequestSchema,
 } from './settings';
@@ -111,5 +112,31 @@ describe('SETTING_NUMBER_RANGES', () => {
       expect(field.safeParse(range.min - 1).success).toBe(false);
       expect(field.safeParse(range.max + 1).success).toBe(false);
     }
+  });
+});
+
+describe('settingsResponseSchema', () => {
+  it('carries the ignored rows alongside the settings', () => {
+    const parsed = settingsResponseSchema.parse({
+      settings: settingsSchema.parse({}),
+      invalidKeys: ['ai.maxToolIterations'],
+    });
+
+    expect(parsed.invalidKeys).toEqual(['ai.maxToolIterations']);
+  });
+
+  it('demands the list, so a producer cannot quietly stop reporting', () => {
+    expect(settingsResponseSchema.safeParse({ settings: settingsSchema.parse({}) }).success).toBe(
+      false,
+    );
+  });
+
+  it('accepts setting keys only', () => {
+    expect(
+      settingsResponseSchema.safeParse({
+        settings: settingsSchema.parse({}),
+        invalidKeys: ['not.a.real.setting'],
+      }).success,
+    ).toBe(false);
   });
 });

@@ -47,7 +47,7 @@ export class AdminController {
   @Get('settings')
   @ApiOkResponse({ schema: openApiResponseSchema(settingsResponseSchema) })
   async getSettings(): Promise<SettingsResponse> {
-    return { settings: await this.admin.getSettings() };
+    return this.admin.getSettings();
   }
 
   @Patch('settings')
@@ -57,7 +57,7 @@ export class AdminController {
     @CurrentSession() session: VerifiedSession,
     @Body(zodPipe(updateSettingsRequestSchema)) body: UpdateSettingsRequest,
   ): Promise<SettingsResponse> {
-    return { settings: await this.admin.updateSettings(body, session.userId) };
+    return this.admin.updateSettings(body, session.userId);
   }
 
   @Get('users')
