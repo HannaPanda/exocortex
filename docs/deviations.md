@@ -276,3 +276,20 @@ object literal, TypeScript would infer a type for all 1,756 icons and the engine
 would parse half a megabyte as source; as a string it is one token to both, and
 the bytes on the wire are the same. They are excluded from Prettier and ESLint —
 reformatting them costs seconds and nobody reads them.
+
+## 23. The page tree drags with the platform, not with a library
+
+Reordering pages in the sidebar is native HTML5 drag and drop
+(`apps/web/src/components/shell/page-tree.tsx`) rather than `dnd-kit` or
+`react-dnd`. The tree is one column of rows with three drop zones each — before,
+into, after — which `dragover` plus the pointer's offset inside the row already
+answers. A drag-and-drop library is a second interaction framework to keep in step
+with Base UI and the design system, and it would be carrying a sortable-grid
+engine to draw one amber line.
+
+The price is that native drag has no keyboard story at all. That is why the four
+`Alt`-plus-arrow commands in the row's context menu are not a convenience here but
+the other half of the feature: they are how the tree is reordered without a mouse,
+and they go through the same `POST /api/documents/:id/move` with the same sibling
+anchors. Touch is the same story — a long press opens the context menu, and the
+commands are there.

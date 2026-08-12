@@ -193,12 +193,28 @@ the traced paths shrink by about 60%.
 Implemented: collapsible left sidebar, optional right panel, both resizable by
 pointer *and* keyboard (`role="separator"`, arrow keys, Shift for larger steps),
 responsive layout, a skip link, visible focus rings everywhere, a command menu
-(`Ctrl/⌘ K`), context menus on tree items, dialogs, tooltips, dropdown menus,
-loading/empty/error states, a route-level error boundary and a live job-progress
-indicator.
+(`Ctrl/⌘ K`), context menus on tree items, a draggable page tree, dialogs,
+tooltips, dropdown menus, loading/empty/error states, a route-level error boundary
+and a live job-progress indicator.
 
 Keyboard shortcuts: `Ctrl/⌘ K` command menu, `Ctrl/⌘ B` sidebar,
-`Ctrl/⌘ .` context panel.
+`Ctrl/⌘ .` context panel. On a page-tree row, `Alt ↑/↓` moves it among its
+siblings and `Alt →/←` changes which page it belongs to.
+
+### The page tree
+
+Rows are dragged with native HTML5 drag and drop (deviation 23). The row under
+the pointer has three zones: the top and bottom quarters mean "between", drawn as
+an amber line on that edge, and the middle half means "into", drawn as an amber
+ring around the row. A folded row that is hovered for 700ms opens under the
+pointer, and a drop area appears at the end of the list while a nested page is
+being dragged, because otherwise a page three levels down can be dragged onto any
+row but never simply out.
+
+Order is never computed here. The client names the sibling to land before or
+after and the server turns that into a fractional `orderKey`. The one exception to
+the app's "no optimistic updates" rule lives in `useMoveDocument`: a dragged row
+that snaps back for a round trip reads as a drag that failed.
 
 ### The symbol picker
 

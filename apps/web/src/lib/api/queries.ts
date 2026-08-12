@@ -34,6 +34,7 @@ import {
 } from '@exocortex/contracts';
 
 import { ApiError, apiRequest } from './client';
+import { applyOptimisticMove } from './tree-move';
 
 /** Query keys are centralised so invalidation stays consistent. */
 export const queryKeys = {
@@ -337,6 +338,33 @@ export function useMoveDocument(workspaceId: string | undefined) {
         method: 'POST',
         body: input.request,
       }),
+    /**
+     * The dragged page lands where it was dropped, before the server has said so.
+     *
+     * The one optimistic update in the app. Everything else can wait a round trip
+     * because nothing else is being *held*; a page that jumps back to its old row
+     * and then forward again reads as a drag that failed and was retried.
+     */
+    onMutate: async (variables) => {
+      if (workspaceId === undefined) return undefined;
+      const key = queryKeys.documentTree(workspaceId);
+      // Without this, a tree request already in flight would land afterwards and
+      // overwrite the optimistic one with the pre-move order.
+      await client.cancelQueries({ queryKey: key });
+
+      const previous = client.getQueryData<DocumentTreeResponse>(key);
+      if (previous === undefined) return undefined;
+
+      const next = applyOptimisticMove(previous, variables.documentId, variables.request);
+      if (next === null) return undefined;
+
+      client.setQueryData(key, next);
+      return { previous };
+    },
+    onError: (_error, _variables, context) => {
+      if (workspaceId === undefined || context?.previous === undefined) return;
+      client.setQueryData(queryKeys.documentTree(workspaceId), context.previous);
+    },
     onSuccess: (_document, variables) => {
       if (workspaceId !== undefined) {
         void client.invalidateQueries({ queryKey: queryKeys.documentTree(workspaceId) });

@@ -2,8 +2,12 @@
 
 import {
   ArchiveIcon,
+  ArrowDownIcon,
+  ArrowUpIcon,
   ChevronRightIcon,
   FolderInputIcon,
+  IndentDecreaseIcon,
+  IndentIncreaseIcon,
   PlusIcon,
   RotateCcwIcon,
   SmilePlusIcon,
@@ -14,7 +18,11 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
-import { type DocumentTreeNode, type DocumentType } from '@exocortex/contracts';
+import {
+  type DocumentTreeNode,
+  type DocumentType,
+  type MoveDocumentRequest,
+} from '@exocortex/contracts';
 import {
   Alert,
   AlertDescription,
@@ -119,12 +127,67 @@ function ancestorsOf(
   return null;
 }
 
+/** Where a dragged page would land relative to the row under the pointer. */
+type DropZone = 'before' | 'inside' | 'after';
+
+/** A row's place in the tree: who its parent is and who it sits between. */
+interface TreePosition {
+  readonly node: DocumentTreeNode;
+  readonly parentId: string | null;
+  readonly siblings: readonly DocumentTreeNode[];
+  readonly index: number;
+}
+
+/**
+ * Every row by id, with the neighbours a move has to be expressed against.
+ *
+ * The server takes sibling anchors ("put it before that one"), never a position,
+ * so reordering needs to know what is above and below the row before it can ask
+ * for anything.
+ */
+function indexTree(nodes: readonly DocumentTreeNode[]): ReadonlyMap<string, TreePosition> {
+  const positions = new Map<string, TreePosition>();
+
+  const walk = (siblings: readonly DocumentTreeNode[], parentId: string | null): void => {
+    siblings.forEach((node, index) => {
+      positions.set(node.id, { node, parentId, siblings, index });
+      walk(node.children, node.id);
+    });
+  };
+
+  walk(nodes, null);
+  return positions;
+}
+
+/** Whether `candidateId` is `node` itself or sits somewhere below it. */
+function isSelfOrDescendant(node: DocumentTreeNode, candidateId: string): boolean {
+  if (node.id === candidateId) return true;
+  return node.children.some((child) => isSelfOrDescendant(child, candidateId));
+}
+
+/**
+ * How long a folded page has to be hovered before it opens under the pointer.
+ *
+ * Long enough that dragging *past* a folded page does not open it, short enough
+ * that dropping something three levels down does not need three separate drags.
+ */
+const SPRING_OPEN_MS = 700;
+
 /**
  * Hierarchical page tree.
  *
  * Ordering comes from the server's fractional `orderKey`; the client never
- * computes order. Tree updates arrive through `document.*` realtime events, which
- * the shell turns into query invalidations.
+ * computes order — it names the sibling to land before or after and lets the
+ * server work out the key. Tree updates arrive through `document.*` realtime
+ * events, which the shell turns into query invalidations.
+ *
+ * Rows can be dragged, and every drag has a keyboard equivalent in the context
+ * menu (`Alt` plus an arrow key). Native HTML5 drag and drop rather than a
+ * library: the tree is one list of rows with three drop zones each, which the
+ * platform already does, and a drag-and-drop library is a second interaction
+ * framework to keep in step with the design system. Native drag has no keyboard
+ * story at all, which is why the four commands are not a nicety here but the
+ * other half of the feature.
  */
 export function PageTree({ workspaceId }: PageTreeProps) {
   const params = useParams<{ documentId?: string }>();
@@ -153,9 +216,31 @@ export function PageTree({ workspaceId }: PageTreeProps) {
   // to know which subtree it is about.
   const [moveWorkspaceNode, setMoveWorkspaceNode] = React.useState<DocumentTreeNode | null>(null);
   const [moveTargetWorkspaceId, setMoveTargetWorkspaceId] = React.useState('');
+  // The row being dragged, and the row it is currently over. Two pieces of state
+  // rather than one: the dragged row stays marked while the pointer travels over
+  // rows that would refuse it.
+  const [draggedId, setDraggedId] = React.useState<string | null>(null);
+  const [dropTarget, setDropTarget] = React.useState<{ id: string; zone: DropZone } | null>(null);
+  const [rootDropActive, setRootDropActive] = React.useState(false);
 
   const activeDocumentId = params.documentId;
   const nodes = tree.data?.nodes;
+  const positions = React.useMemo(() => indexTree(nodes ?? []), [nodes]);
+
+  /**
+   * The folded row the pointer is currently resting on, and the timer that will
+   * open it. A ref because it changes on every `dragover` — dozens per second —
+   * and none of those changes belong on screen.
+   */
+  const springOpen = React.useRef<{ id: string; timer: ReturnType<typeof setTimeout> } | null>(null);
+
+  const cancelSpringOpen = React.useCallback((): void => {
+    if (springOpen.current === null) return;
+    clearTimeout(springOpen.current.timer);
+    springOpen.current = null;
+  }, []);
+
+  React.useEffect(() => cancelSpringOpen, [cancelSpringOpen]);
 
   /**
    * Which document the unfolding below has already been done for.
@@ -208,6 +293,127 @@ export function PageTree({ workspaceId }: PageTreeProps) {
     router.push(`/arbeitsbereich/${workspaceId}/seite/${document.id}`);
   };
 
+  const submitMove = (documentId: string, request: MoveDocumentRequest): void => {
+    // A page dropped into another one is only useful once you can see it there.
+    if (request.parentId !== null) setExpanded({ ...expanded, [request.parentId]: true });
+    void moveDocument.mutateAsync({ documentId, request });
+  };
+
+  /** Turns "over that row, in its upper third" into a move the server accepts. */
+  const dropOn = (documentId: string, targetId: string, zone: DropZone): void => {
+    const target = positions.get(targetId);
+    if (target === undefined) return;
+
+    if (zone === 'inside') {
+      submitMove(documentId, { parentId: targetId });
+      return;
+    }
+    submitMove(documentId, {
+      parentId: target.parentId,
+      ...(zone === 'before' ? { beforeSiblingId: targetId } : { afterSiblingId: targetId }),
+    });
+  };
+
+  /**
+   * The keyboard half of dragging.
+   *
+   * Up and down swap a page with the neighbour it already has; in and out change
+   * which page it belongs to. Four commands cover every move a drag can make
+   * except moving across a long distance, and that is what the drag is for.
+   */
+  const nudge = (documentId: string, direction: 'up' | 'down' | 'in' | 'out'): void => {
+    const position = positions.get(documentId);
+    if (position === undefined) return;
+    const { parentId, siblings, index } = position;
+
+    if (direction === 'up') {
+      const previous = siblings[index - 1];
+      if (previous !== undefined) submitMove(documentId, { parentId, beforeSiblingId: previous.id });
+      return;
+    }
+    if (direction === 'down') {
+      const next = siblings[index + 1];
+      if (next !== undefined) submitMove(documentId, { parentId, afterSiblingId: next.id });
+      return;
+    }
+    if (direction === 'in') {
+      // Into the page above it, which is where an outline puts it.
+      const previous = siblings[index - 1];
+      if (previous !== undefined) submitMove(documentId, { parentId: previous.id });
+      return;
+    }
+    if (parentId === null) return;
+    const parent = positions.get(parentId);
+    if (parent === undefined) return;
+    submitMove(documentId, { parentId: parent.parentId, afterSiblingId: parentId });
+  };
+
+  const canNudge = (documentId: string, direction: 'up' | 'down' | 'in' | 'out'): boolean => {
+    const position = positions.get(documentId);
+    if (position === undefined) return false;
+    if (direction === 'up' || direction === 'in') return position.index > 0;
+    if (direction === 'down') return position.index < position.siblings.length - 1;
+    return position.parentId !== null;
+  };
+
+  const draggedNode = draggedId === null ? null : (positions.get(draggedId)?.node ?? null);
+
+  /** Whether a row is allowed to receive the page currently being dragged. */
+  const acceptsDrop = (targetId: string): boolean =>
+    draggedNode !== null && !isSelfOrDescendant(draggedNode, targetId);
+
+  const onRowDragOver = (event: React.DragEvent<HTMLDivElement>, node: DocumentTreeNode): void => {
+    // No `preventDefault` means "not a drop target", which is how the browser is
+    // told that a page cannot be dropped into itself.
+    if (!acceptsDrop(node.id)) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const offset = (event.clientY - rect.top) / rect.height;
+    // The middle half of the row means "into", the edges mean "between". A row
+    // is 28 pixels tall, so the edges are seven each: enough to hit on purpose,
+    // small enough that the common drop is the one in the middle.
+    const zone: DropZone = offset < 0.25 ? 'before' : offset > 0.75 ? 'after' : 'inside';
+
+    if (dropTarget?.id !== node.id || dropTarget.zone !== zone) {
+      setDropTarget({ id: node.id, zone });
+    }
+
+    const shouldSpring = zone === 'inside' && node.children.length > 0 && expanded[node.id] !== true;
+    if (!shouldSpring) {
+      if (springOpen.current?.id === node.id) cancelSpringOpen();
+      return;
+    }
+    if (springOpen.current?.id === node.id) return;
+    cancelSpringOpen();
+    springOpen.current = {
+      id: node.id,
+      timer: setTimeout(() => {
+        springOpen.current = null;
+        setExpanded({ ...expanded, [node.id]: true });
+      }, SPRING_OPEN_MS),
+    };
+  };
+
+  const onRowDrop = (event: React.DragEvent<HTMLDivElement>, node: DocumentTreeNode): void => {
+    event.preventDefault();
+    const zone = dropTarget?.id === node.id ? dropTarget.zone : 'inside';
+    const documentId = draggedId;
+    setDraggedId(null);
+    setDropTarget(null);
+    cancelSpringOpen();
+    if (documentId === null || !acceptsDrop(node.id)) return;
+    dropOn(documentId, node.id, zone);
+  };
+
+  const nudgeKeys: Readonly<Record<string, 'up' | 'down' | 'in' | 'out'>> = {
+    ArrowUp: 'up',
+    ArrowDown: 'down',
+    ArrowRight: 'in',
+    ArrowLeft: 'out',
+  };
+
   if (tree.isPending) return <LoadingState variant="skeleton" rows={6} label="Seiten werden geladen" />;
   if (tree.isError) {
     return <ErrorState onRetry={() => void tree.refetch()} title="Seitenbaum nicht geladen" />;
@@ -217,6 +423,9 @@ export function PageTree({ workspaceId }: PageTreeProps) {
     const isOpen = expanded[node.id] === true;
     const hasChildren = node.children.length > 0;
     const isActive = node.id === activeDocumentId;
+    const zone = dropTarget?.id === node.id ? dropTarget.zone : null;
+    const isDropInside = zone === 'inside';
+    const dropLine = zone === 'inside' ? null : zone;
 
     return (
       <li key={node.id}>
@@ -224,18 +433,53 @@ export function PageTree({ workspaceId }: PageTreeProps) {
           <ContextMenuTrigger
             render={
               <div
+                draggable
+                onDragStart={(event) => {
+                  event.dataTransfer.effectAllowed = 'move';
+                  event.dataTransfer.setData('text/plain', node.id);
+                  setDraggedId(node.id);
+                }}
+                onDragEnd={() => {
+                  setDraggedId(null);
+                  setDropTarget(null);
+                  cancelSpringOpen();
+                }}
+                onDragOver={(event) => onRowDragOver(event, node)}
+                onDrop={(event) => onRowDrop(event, node)}
+                onKeyDown={(event) => {
+                  const direction = event.altKey ? nudgeKeys[event.key] : undefined;
+                  if (direction === undefined) return;
+                  event.preventDefault();
+                  nudge(node.id, direction);
+                }}
                 className={cn(
-                  'group flex items-center gap-1 rounded-md pr-1 text-sm transition-colors',
+                  'group relative flex items-center gap-1 rounded-md pr-1 text-sm transition-colors',
                   // Where you are is the most important state in the tree, so it
                   // is carried three times over: surface, weight and an amber
                   // icon. Hover stays a hint and never comes close to it.
                   isActive
                     ? 'bg-accent-strong font-medium text-foreground'
                     : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                  draggedId === node.id && 'opacity-40',
+                  isDropInside && 'bg-accent ring-1 ring-primary ring-inset',
                 )}
                 style={{ paddingLeft: `${depth * 0.75 + 0.25}rem` }}
                 data-testid={`tree-item-${node.id}`}
+                data-drop-zone={dropTarget?.id === node.id ? dropTarget.zone : undefined}
               >
+                {/* The line that says "it lands here", drawn on the edge it would
+                    land on. Amber, because in this product amber means the thing
+                    that is about to happen. */}
+                {dropLine !== null ? (
+                  <span
+                    aria-hidden
+                    className={cn(
+                      'pointer-events-none absolute inset-x-1 h-0.5 rounded-full bg-primary',
+                      dropLine === 'before' ? 'top-0' : 'bottom-0',
+                    )}
+                  />
+                ) : null}
+
                 <button
                   type="button"
                   aria-label={isOpen ? 'Unterseiten einklappen' : 'Unterseiten ausklappen'}
@@ -284,6 +528,9 @@ export function PageTree({ workspaceId }: PageTreeProps) {
 
                 <Link
                   href={`/arbeitsbereich/${workspaceId}/seite/${node.id}`}
+                  // A link drags itself by default, which would start a drag of
+                  // its URL instead of the row the pointer is actually on.
+                  draggable={false}
                   className="flex min-w-0 flex-1 items-center py-1"
                   data-testid={`tree-link-${node.id}`}
                 >
@@ -307,6 +554,49 @@ export function PageTree({ workspaceId }: PageTreeProps) {
               onClick={() => setIconPickerFor(node.id)}
             >
               <SmilePlusIcon /> Symbol ändern …
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+            {/* The keyboard half of dragging. Named with their shortcuts, because
+                a command nobody can find is a command that does not exist. */}
+            <ContextMenuItem
+              disabled={!canNudge(node.id, 'up')}
+              data-testid={`tree-move-up-${node.id}`}
+              onClick={() => nudge(node.id, 'up')}
+            >
+              <ArrowUpIcon /> Nach oben
+              <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">
+                Alt ↑
+              </span>
+            </ContextMenuItem>
+            <ContextMenuItem
+              disabled={!canNudge(node.id, 'down')}
+              data-testid={`tree-move-down-${node.id}`}
+              onClick={() => nudge(node.id, 'down')}
+            >
+              <ArrowDownIcon /> Nach unten
+              <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">
+                Alt ↓
+              </span>
+            </ContextMenuItem>
+            <ContextMenuItem
+              disabled={!canNudge(node.id, 'in')}
+              data-testid={`tree-indent-${node.id}`}
+              onClick={() => nudge(node.id, 'in')}
+            >
+              <IndentIncreaseIcon /> Unter die Seite darüber
+              <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">
+                Alt →
+              </span>
+            </ContextMenuItem>
+            <ContextMenuItem
+              disabled={!canNudge(node.id, 'out')}
+              data-testid={`tree-outdent-${node.id}`}
+              onClick={() => nudge(node.id, 'out')}
+            >
+              <IndentDecreaseIcon /> Eine Ebene höher
+              <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">
+                Alt ←
+              </span>
             </ContextMenuItem>
             <ContextMenuSeparator />
             <ContextMenuItem onClick={() => void createChild(node.id)}>
@@ -377,6 +667,38 @@ export function PageTree({ workspaceId }: PageTreeProps) {
         ) : (
           <ul data-testid="page-tree">{tree.data.nodes.map((node) => renderNode(node, 0))}</ul>
         )}
+
+        {/* Only while something is being dragged, and only for a page that is not
+            already at the top level. Without it, a page three levels down can be
+            dragged onto any row but never simply out. */}
+        {draggedNode !== null && draggedNode.parentId !== null ? (
+          <div
+            onDragOver={(event) => {
+              event.preventDefault();
+              event.dataTransfer.dropEffect = 'move';
+              setRootDropActive(true);
+            }}
+            onDragLeave={() => setRootDropActive(false)}
+            onDrop={(event) => {
+              event.preventDefault();
+              const documentId = draggedId;
+              setRootDropActive(false);
+              setDraggedId(null);
+              setDropTarget(null);
+              cancelSpringOpen();
+              if (documentId !== null) submitMove(documentId, { parentId: null });
+            }}
+            data-testid="tree-root-drop"
+            className={cn(
+              'mt-1 rounded-md border border-dashed px-2 py-1.5 text-xs transition-colors',
+              rootDropActive
+                ? 'border-primary bg-accent text-foreground'
+                : 'border-border text-muted-foreground',
+            )}
+          >
+            Hierher: oberste Ebene
+          </div>
+        ) : null}
 
         <div className="mt-2 border-t border-border pt-2">
           <button

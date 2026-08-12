@@ -232,6 +232,58 @@ test.describe('documents', () => {
     await expect(treeIcon).toHaveAttribute('data-icon', '🐞');
   });
 
+  /**
+   * Reordering pages (the keyboard half of dragging). Drag and drop itself is
+   * native HTML5 and not driven reliably by Playwright, but both paths end in the
+   * same `POST /api/documents/:id/move` with the same sibling anchors.
+   */
+  test('reorders and re-parents pages from the tree', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const marker = Date.now().toString(36);
+    const firstId = await createPage(page, `Ordnung A ${marker}`);
+    const secondId = await createPage(page, `Ordnung B ${marker}`);
+
+    const rowIndex = async (documentId: string): Promise<number> => {
+      const ids = await page
+        .getByTestId('page-tree')
+        .locator('[data-testid^="tree-item-"]')
+        .evaluateAll((rows) =>
+          rows.map((row) => row.getAttribute('data-testid')?.replace('tree-item-', '') ?? ''),
+        );
+      return ids.indexOf(documentId);
+    };
+
+    // Both are root pages, and the newer one was appended after the older one.
+    expect(await rowIndex(firstId)).toBeLessThan(await rowIndex(secondId));
+
+    // Move the second one up past the first.
+    await page.getByTestId(`tree-item-${secondId}`).click({ button: 'right' });
+    await page.getByTestId(`tree-move-up-${secondId}`).click();
+    await expect
+      .poll(async () => (await rowIndex(secondId)) < (await rowIndex(firstId)))
+      .toBe(true);
+
+    // Then make the lower one a child of the one above it, and check the nesting
+    // survives a reload rather than living only in the optimistic update.
+    await page.getByTestId(`tree-item-${firstId}`).click({ button: 'right' });
+    await page.getByTestId(`tree-indent-${firstId}`).click();
+    await page.reload();
+    await expect(page.getByTestId(`tree-item-${firstId}`)).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId(`tree-item-${firstId}`)).toHaveAttribute(
+      'style',
+      /padding-left:\s*1rem/,
+    );
+
+    // And back out to the top level again.
+    await page.getByTestId(`tree-item-${firstId}`).click({ button: 'right' });
+    await page.getByTestId(`tree-outdent-${firstId}`).click();
+    await expect(page.getByTestId(`tree-item-${firstId}`)).toHaveAttribute(
+      'style',
+      /padding-left:\s*0.25rem/,
+    );
+  });
+
   test('keeps sidebar and context panel toggles working', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
