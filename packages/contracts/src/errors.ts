@@ -46,6 +46,12 @@ export const API_ERROR_CODES = [
   'setting_unknown',
   'memory_unavailable',
   'workspace_slug_taken',
+  'invitation_invalid',
+  'invitation_expired',
+  'invitation_already_used',
+  'invitation_email_taken',
+  'user_disabled',
+  'user_has_content',
 ] as const;
 
 export const apiErrorCodeSchema = z.enum(API_ERROR_CODES);
@@ -110,4 +116,19 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // not 404: the route exists and will work once somebody names a workspace.
   memory_unavailable: 503,
   workspace_slug_taken: 409,
+  // Unknown token, or one that was revoked. 404, not 401: there is nothing to
+  // authenticate as, and every wrong token has to look identical -- a 401 here
+  // and a 404 there would tell somebody probing which tokens exist.
+  invitation_invalid: 404,
+  invitation_expired: 410,
+  invitation_already_used: 409,
+  // Somebody already has an account for this address, so an invitation would
+  // create a second one. They sign in instead.
+  invitation_email_taken: 409,
+  // The credential is genuine and the account exists; it has been switched off.
+  // 403, not 401: signing in again will not help.
+  user_disabled: 403,
+  // The account authored pages, comments or uploads, so it cannot be deleted
+  // without taking that history with it. Disabling is the way out.
+  user_has_content: 409,
 };

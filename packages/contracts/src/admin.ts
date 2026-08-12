@@ -19,6 +19,18 @@ export const adminUserSchema = z.object({
   workspaceCount: z.number().int().nonnegative(),
   createdAt: isoDateTimeSchema,
   lastSessionAt: isoDateTimeSchema.nullable(),
+  /**
+   * When set, the account exists but may not act. The list shows it rather than
+   * hiding the row: a switched-off account is something an administrator has to
+   * be able to see and undo, not something that disappears.
+   */
+  disabledAt: isoDateTimeSchema.nullable(),
+  /**
+   * Whether anything in the deployment still points at this account as its
+   * author. False is what makes outright deletion possible; true means disabling
+   * is the only option, and the UI offers only that.
+   */
+  hasAuthoredContent: z.boolean(),
 });
 export type AdminUser = z.infer<typeof adminUserSchema>;
 

@@ -19,10 +19,60 @@ export interface MailerOptions {
   logger: Logger;
 }
 
+export interface InvitationEmailInput {
+  to: string;
+  /** Who invited them, by name. An invitation from nobody is a phishing mail. */
+  invitedByName: string;
+  /** Workspace they are invited into, or null for an instance-only invitation. */
+  workspaceName: string | null;
+  url: string;
+  expiresAt: Date;
+}
+
 export interface Mailer {
   sendVerificationEmail(input: { to: string; name: string; url: string }): Promise<void>;
   sendPasswordResetEmail(input: { to: string; name: string; url: string }): Promise<void>;
+  sendInvitationEmail(input: InvitationEmailInput): Promise<void>;
   close(): Promise<void>;
+}
+
+const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'long' });
+
+/**
+ * The invitation mail.
+ *
+ * Written separately from `textEmail` rather than squeezed into it, because the
+ * closing line of the other two ("falls du das nicht angefordert hast") is wrong
+ * here: nobody requests an invitation, it arrives unasked. An unexpected mail
+ * that tells you to ignore it reads like phishing, so this one names the person
+ * who sent it and says plainly that the address can simply be left alone.
+ */
+function invitationEmail(input: {
+  invitedByName: string;
+  workspaceName: string | null;
+  url: string;
+  expiresAt: Date;
+}): string {
+  const destination =
+    input.workspaceName === null
+      ? 'zu eXocortex eingeladen'
+      : `zum Arbeitsbereich „${input.workspaceName}“ in eXocortex eingeladen`;
+  return [
+    'Hallo,',
+    '',
+    `${input.invitedByName} hat dich ${destination}.`,
+    '',
+    'Über diesen Link legst du dein Konto an:',
+    '',
+    input.url,
+    '',
+    `Der Link gilt bis zum ${dateFormat.format(input.expiresAt)} und lässt sich nur einmal verwenden.`,
+    '',
+    'Wenn du damit nichts zu tun hast, brauchst du nichts zu unternehmen: ohne diesen',
+    'Link entsteht kein Konto.',
+    '',
+    'eXocortex',
+  ].join('\n');
 }
 
 function textEmail(title: string, body: string, url: string): string {
@@ -70,7 +120,7 @@ export function createMailer(options: MailerOptions): Mailer {
     to: string,
     subject: string,
     text: string,
-    kind: 'verification' | 'password_reset',
+    kind: 'verification' | 'password_reset' | 'invitation',
   ): Promise<void> => {
     try {
       await transporter.sendMail({ from: options.from, to, subject, text });
@@ -107,6 +157,16 @@ export function createMailer(options: MailerOptions): Mailer {
         'password_reset',
       );
     },
+    async sendInvitationEmail({ to, invitedByName, workspaceName, url, expiresAt }) {
+      await send(
+        to,
+        workspaceName === null
+          ? 'eXocortex: Einladung'
+          : `eXocortex: Einladung zu „${workspaceName}“`,
+        invitationEmail({ invitedByName, workspaceName, url, expiresAt }),
+        'invitation',
+      );
+    },
     async close() {
       transporter.close();
     },
@@ -121,6 +181,11 @@ export function createNoopMailer(logger: Logger): Mailer {
     },
     async sendPasswordResetEmail({ to }) {
       logger.warn('Password reset email suppressed (noop mailer)', {
+        recipientDomain: to.split('@')[1],
+      });
+    },
+    async sendInvitationEmail({ to }) {
+      logger.warn('Invitation email suppressed (noop mailer)', {
         recipientDomain: to.split('@')[1],
       });
     },

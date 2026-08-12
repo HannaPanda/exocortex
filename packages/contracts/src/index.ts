@@ -12,6 +12,7 @@ export * from './database-views';
 export * from './documents';
 export * from './errors';
 export * from './events';
+export * from './invitations';
 export * from './jobs';
 export * from './memory';
 export * from './primitives';

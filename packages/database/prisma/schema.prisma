@@ -32,6 +32,11 @@ model User {
   /// Global (cross-workspace) role. Distinct from WorkspaceRole: a global admin
   /// administers the deployment, a workspace ADMIN administers one workspace.
   role          UserRole @default(USER)
+  /// When set, the account exists but may not act: sign-in is refused and every
+  /// credential is rejected. Deliberately not a deletion -- documents point at
+  /// their author through `createdById`/`updatedById`, so removing the row would
+  /// take the history with it. Reversible by clearing the field.
+  disabledAt    DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -54,6 +59,8 @@ model User {
   oauthApplications        OauthApplication[]
   oauthAccessTokens        OauthAccessToken[]
   oauthConsents            OauthConsent[]
+  sentInvitations          Invitation[]       @relation("InvitationInvitedBy")
+  acceptedInvitation       Invitation?        @relation("InvitationAcceptedBy")
 
   @@map("user")
 }
@@ -247,6 +254,62 @@ model ApiToken {
   @@map("api_token")
 }
 
+/// The only way an account comes into being besides the seed script (issue #3).
+///
+/// Self-registration is off, so an invitation is what turns "somebody has an
+/// email address" into "somebody has an account here". It carries the workspace
+/// the person is expected to land in, because memberships are explicit: without
+/// one, an invited friend signs up and stares at an empty application.
+model Invitation {
+  id    String @id @default(cuid(2))
+  /// Lowercased at write time. The address the token was sent to, and the only
+  /// address the invitation can create an account for -- the person redeeming it
+  /// cannot substitute another one.
+  email String
+  /// SHA-256 of the raw token, exactly like `ApiToken.tokenHash`. The raw value
+  /// travels in the invitation link and is never stored, so a database dump
+  /// cannot be replayed into accounts.
+  tokenHash String @unique
+
+  invitedById String
+  invitedBy   User   @relation("InvitationInvitedBy", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  /// Where the invited person becomes a member on acceptance. Null means the
+  /// invitation only creates the account; the person then has no workspace until
+  /// somebody adds them or they create their own.
+  workspaceId   String?
+  workspace     Workspace?     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  /// Role granted in `workspaceId`. Meaningless without one, and never OWNER:
+  /// ownership is transferred deliberately, not handed out in a mail.
+  workspaceRole WorkspaceRole?
+
+  /// Optional global role for the new account. Only a global admin may set this
+  /// to ADMIN; a workspace admin inviting into their own workspace cannot.
+  role UserRole @default(USER)
+
+  expiresAt DateTime
+  /// Set once, when the invitation was redeemed. A second redemption is refused.
+  acceptedAt DateTime?
+  /// The account that came out of this invitation, so an admin can see what an
+  /// invitation turned into. Unique: one invitation, one account.
+  acceptedById String? @unique
+  acceptedBy   User?   @relation("InvitationAcceptedBy", fields: [acceptedById], references: [id], onDelete: SetNull)
+  revokedAt    DateTime?
+  /// How often the invitation mail was sent, including the first time. Visible
+  /// in the admin list so "did it arrive?" has an answer.
+  sentCount Int @default(1)
+  /// When the mail last went out, or null when sending failed every time. That
+  /// case is the reason "Link kopieren" exists in the UI.
+  lastSentAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([email])
+  @@index([workspaceId])
+  @@index([invitedById])
+  @@map("invitation")
+}
+
 // ---------------------------------------------------------------------------
 // Workspaces
 // ---------------------------------------------------------------------------
@@ -276,6 +339,7 @@ model Workspace {
   documentLinks    DocumentLink[]
   calendarAccounts CalendarAccount[]
   comments         Comment[]
+  invitations      Invitation[]
 
   @@map("workspace")
 }
