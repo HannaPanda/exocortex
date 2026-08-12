@@ -106,6 +106,23 @@ describe('EXOCORTEX_TOOLS', () => {
     }
   });
 
+  /**
+   * OpenAI validates the whole `tools` array and rejects the *entire request*
+   * over one unsupported pattern. `z.email()` emits `^(?!\.)(?!.*\.\.)…`, so
+   * adding `exo_invitation_create` disabled the built-in AI's tool loop
+   * altogether: every run failed with `ai_provider_unavailable` and nothing in
+   * the log named the tool responsible.
+   */
+  it('emits no regex lookaround in any tool schema', () => {
+    const lookaround = /\(\?[=!]|\(\?<[=!]/;
+    for (const tool of EXOCORTEX_TOOLS) {
+      expect(
+        lookaround.test(JSON.stringify(tool.jsonSchema)),
+        `${tool.name} carries a pattern OpenAI refuses`,
+      ).toBe(false);
+    }
+  });
+
   it('keeps run-lifecycle tools away from the built-in AI (issue #6)', () => {
     // Everything else in the catalogue is offered on both surfaces. These two
     // are not, and the reason is worth an assertion: a tool loop that can

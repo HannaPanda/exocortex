@@ -90,6 +90,37 @@ export class ToolInputValidationError extends Error {
   }
 }
 
+/** `(?=`, `(?!`, `(?<=`, `(?<!` — the constructs OpenAI's schema validator rejects. */
+const LOOKAROUND = /\(\?[=!]|\(\?<[=!]/;
+
+/**
+ * Strips every `pattern` that uses a regex lookaround.
+ *
+ * OpenAI (and Azure behind it) validate the whole `tools` array against a
+ * dialect that has no lookaround, and reject the *entire request* when one
+ * pattern uses it — not the offending tool, the request. `z.email()` in zod 4
+ * emits `^(?!\.)(?!.*\.\.)…`, so adding a single tool that takes an email
+ * address silently disabled the built-in AI's tool loop altogether: every run
+ * came back `ai_provider_unavailable`, with nothing naming the tool that did it.
+ *
+ * Dropping the pattern costs nothing that matters. This schema is what the model
+ * is *told* about the arguments; what actually guards the call is
+ * `definition.inputSchema.safeParse` in `run` below, and then the API's own
+ * validation behind that. A model that invents a malformed address now gets a
+ * readable validation error back instead of every tool disappearing.
+ */
+function withoutLookaroundPatterns(schema: unknown): unknown {
+  if (Array.isArray(schema)) return schema.map(withoutLookaroundPatterns);
+  if (schema === null || typeof schema !== 'object') return schema;
+
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(schema)) {
+    if (key === 'pattern' && typeof value === 'string' && LOOKAROUND.test(value)) continue;
+    result[key] = withoutLookaroundPatterns(value);
+  }
+  return result;
+}
+
 /**
  * Erases the input type while keeping validation. `run` parses `rawInput` with
  * the tool's own schema before calling `execute`, so an unvalidated value can
@@ -97,11 +128,13 @@ export class ToolInputValidationError extends Error {
  * guarded by the parse immediately above it.
  */
 export function defineTool<TInput>(definition: ToolDefinition<TInput>): AnyToolDefinition {
-  const jsonSchema = z.toJSONSchema(definition.inputSchema, {
-    target: 'draft-2020-12',
-    io: 'input',
-    unrepresentable: 'any',
-  });
+  const jsonSchema = withoutLookaroundPatterns(
+    z.toJSONSchema(definition.inputSchema, {
+      target: 'draft-2020-12',
+      io: 'input',
+      unrepresentable: 'any',
+    }),
+  );
 
   return {
     name: definition.name,
