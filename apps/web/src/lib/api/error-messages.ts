@@ -45,6 +45,8 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   document_content_lossy: 'Anhängen würde eingebettete Datenbanken auf dieser Seite verlieren.',
   attachment_text_unavailable: 'Der Text dieser Datei liegt noch nicht vor.',
   setting_unknown: 'Diese Einstellung gibt es nicht.',
+  memory_unavailable:
+    'Für das Gedächtnis der Agenten ist noch kein Arbeitsbereich hinterlegt. Das lässt sich im Administrationsbereich nachholen.',
   workspace_slug_taken: 'Dieser Slug wird bereits von einem anderen Arbeitsbereich verwendet.',
 };
 

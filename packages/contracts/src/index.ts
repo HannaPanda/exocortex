@@ -13,6 +13,7 @@ export * from './documents';
 export * from './errors';
 export * from './events';
 export * from './jobs';
+export * from './memory';
 export * from './primitives';
 export * from './search';
 export * from './settings';

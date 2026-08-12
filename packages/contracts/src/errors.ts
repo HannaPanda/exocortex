@@ -44,6 +44,7 @@ export const API_ERROR_CODES = [
   'document_content_lossy',
   'attachment_text_unavailable',
   'setting_unknown',
+  'memory_unavailable',
   'workspace_slug_taken',
 ] as const;
 
@@ -105,5 +106,8 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   document_content_lossy: 422,
   attachment_text_unavailable: 409,
   setting_unknown: 400,
+  // The deployment has no memory area configured, or switched it off. 503,
+  // not 404: the route exists and will work once somebody names a workspace.
+  memory_unavailable: 503,
   workspace_slug_taken: 409,
 };

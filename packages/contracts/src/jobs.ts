@@ -14,6 +14,7 @@ export const QUEUE_NAMES = {
   attachmentText: 'attachment-text',
   documentCover: 'document-cover',
   calendarSync: 'calendar-sync',
+  memoryCapture: 'memory-capture',
 } as const;
 
 export const queueNameSchema = z.enum([
@@ -24,6 +25,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.attachmentText,
   QUEUE_NAMES.documentCover,
   QUEUE_NAMES.calendarSync,
+  QUEUE_NAMES.memoryCapture,
 ]);
 export type QueueName = z.infer<typeof queueNameSchema>;
 
@@ -155,6 +157,32 @@ export const calendarSyncJobSchema = jobBase.extend({
 });
 export type CalendarSyncJob = z.infer<typeof calendarSyncJobSchema>;
 
+/**
+ * Turning one finished working session into one memory note.
+ *
+ * Carries the whole transcript because the distillation happens here and
+ * nowhere else: the API refuses to store raw conversation, and a job payload
+ * in Redis is the only place it rests, for as long as the job runs. Carries
+ * the acting user for the same reason `documentCoverJobSchema` does -- the
+ * page is written back through the REST API with a service token minted for
+ * that human, so an automatically written memory passes exactly the permission
+ * checks a hand-typed page does (ADR-014).
+ */
+export const memoryCaptureJobSchema = jobBase.extend({
+  workspaceId: idSchema,
+  userId: idSchema,
+  /** Readable project label, already derived from the caller's path. */
+  project: z.string().min(1).max(300),
+  /** Stable key for the project page, so two spellings of one path share a page. */
+  projectKey: z.string().min(1).max(300),
+  client: z.string().min(1).max(40),
+  sessionId: z.string().max(200).nullable().default(null),
+  transcript: z.string().min(1),
+  hint: z.string().max(500).nullable().default(null),
+  startedAt: z.string().nullable().default(null),
+});
+export type MemoryCaptureJob = z.infer<typeof memoryCaptureJobSchema>;
+
 export const JOB_SCHEMAS = {
   [QUEUE_NAMES.documentMaterialization]: materializeDocumentJobSchema,
   [QUEUE_NAMES.searchIndexing]: indexDocumentJobSchema,
@@ -163,6 +191,7 @@ export const JOB_SCHEMAS = {
   [QUEUE_NAMES.attachmentText]: attachmentTextJobSchema,
   [QUEUE_NAMES.documentCover]: documentCoverJobSchema,
   [QUEUE_NAMES.calendarSync]: calendarSyncJobSchema,
+  [QUEUE_NAMES.memoryCapture]: memoryCaptureJobSchema,
 } as const;
 
 export type JobPayloadMap = {
@@ -173,4 +202,5 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.attachmentText]: AttachmentTextJob;
   [QUEUE_NAMES.documentCover]: DocumentCoverJob;
   [QUEUE_NAMES.calendarSync]: CalendarSyncJob;
+  [QUEUE_NAMES.memoryCapture]: MemoryCaptureJob;
 };

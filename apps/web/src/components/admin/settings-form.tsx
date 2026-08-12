@@ -32,6 +32,7 @@ import { messageForCode } from '@/lib/api/error-messages';
 
 const GROUP_LABELS: Record<string, string> = {
   ai: 'KI',
+  memory: 'Gedächtnis',
   mcp: 'MCP',
   calendar: 'Kalender',
   activity: 'Aktivität',
@@ -134,6 +135,30 @@ const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
   'ai.imageModelSlug': {
     label: 'Modell für Bilder',
     help: 'Ein Modell, das Bilder ausgeben kann, zum Beispiel google/gemini-2.5-flash-image. Ohne Eintrag bleibt die Bilderzeugung aus, auch wenn der Schalter darüber an ist.',
+  },
+  'memory.enabled': {
+    label: 'Gedächtnis aktiviert',
+    help: 'Erlaubt Agenten, Sitzungen mitzuschreiben und Erinnerungen abzulegen. Aus: es wird nichts mehr geschrieben, gelesen werden kann weiter.',
+  },
+  'memory.workspaceId': {
+    label: 'Arbeitsbereich fürs Gedächtnis',
+    help: 'Die Id des Arbeitsbereichs, in den Agenten ihre Notizen schreiben. Sie steht in der Adresszeile eines seiner Seiten hinter /arbeitsbereich/. Ohne Eintrag wird nichts mitgeschrieben. Bewusst nicht der gepflegte Wissensbereich: automatischer Mitschrieb gehört nicht dorthin, wo Menschen etwas nachschlagen.',
+  },
+  'memory.captureModelSlug': {
+    label: 'Modell fürs Verdichten',
+    help: 'Fasst eine beendete Sitzung zu wenigen Stichpunkten zusammen. Ohne Eintrag wird das Modell für die Verdichtung von Verläufen genommen, sonst das Standardmodell.',
+  },
+  'memory.captureMinChars': {
+    label: 'Kürzeste Sitzung (Zeichen)',
+    help: 'Kürzere Sitzungen werden gar nicht erst angenommen. Kleinkram im Gedächtnis verschlechtert das Wiederfinden.',
+  },
+  'memory.recallMaxChars': {
+    label: 'Obergrenze pro Abruf (Zeichen)',
+    help: 'So viel Text darf ein Abruf höchstens zurückgeben. Ein Gedächtnis, das den Kontext auffrisst, den es verbessern soll, hilft nicht.',
+  },
+  'memory.recallMaxResults': {
+    label: 'Obergrenze pro Abruf (Treffer)',
+    help: 'Wie viele Erinnerungen ein Abruf höchstens zurückgibt, egal wonach gefragt wurde.',
   },
   'mcp.enabled': {
     label: 'MCP-Server aktiviert',

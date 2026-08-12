@@ -112,6 +112,36 @@ export const settingsSchema = z.object({
    * default here, because the main driver model cannot draw.
    */
   'ai.imageModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
+  /**
+   * The agents' memory area (issue #34).
+   *
+   * Off until a workspace is named, and that is the whole switch: without
+   * `memory.workspaceId` there is nowhere to write, so `recall` answers from
+   * the readable workspaces only and `capture` refuses politely instead of
+   * guessing a destination. The area is deliberately *not* the curated brain:
+   * automatically written notes must never land in what a human curates.
+   */
+  'memory.enabled': z.boolean().default(true),
+  /** Workspace the agents write their notes into. Null means no capture destination. */
+  'memory.workspaceId': z.string().trim().min(8).max(64).nullable().default(null),
+  /**
+   * Model that turns a session into a handful of bullet points. Null falls
+   * back to `ai.compactionModelSlug`, then to `ai.defaultModelSlug`: distilling
+   * a transcript is the same kind of work compaction already does, and it
+   * should not need a second model to be configured.
+   */
+  'memory.captureModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
+  /**
+   * Shortest session worth remembering, in characters of transcript. The cheap
+   * half of "what counts as memorable": a two-message session is noise, and
+   * noise is what makes recall worse over time. The other half is the model's,
+   * which may answer that there is nothing to keep.
+   */
+  'memory.captureMinChars': z.number().int().min(0).max(100_000).default(600),
+  /** Hard ceiling for one recall answer, whatever a caller asks for. */
+  'memory.recallMaxChars': z.number().int().min(500).max(50_000).default(6_000),
+  /** Hard ceiling for the number of hits in one recall answer. */
+  'memory.recallMaxResults': z.number().int().min(1).max(20).default(5),
   'mcp.enabled': z.boolean().default(true),
   'mcp.maxSearchResults': z.number().int().min(1).max(100).default(20),
   /** Two-step confirmation for mutating MCP tools (destination-keyed). */
