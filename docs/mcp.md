@@ -86,10 +86,11 @@ discipline completely, which the SDK does not guarantee out of the box.
 ## Tool reference
 
 All 46 tools below are namespaced `exo_` so they cannot collide with the other
-MCP servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`). Two
-further tools, `search` and `fetch`, live on a surface of their own and are
-described under "ChatGPT deep research"; they are the only tools in the
-catalogue without the prefix, because ChatGPT matches them by exact name.
+MCP servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`). Four
+further tools live on surfaces of their own and are the only ones in the
+catalogue without the prefix: `search` and `fetch` for deep research, which
+ChatGPT matches by exact name, and `recall` and `remember` on the memory
+surface. Both surfaces are described below.
 
 Every entry in `tools/list` carries MCP annotations derived from the columns
 below: `readOnlyHint` is the negation of "Mutating", `destructiveHint` is the
@@ -308,6 +309,73 @@ returns the same Markdown `exo_page_read` returns, plus the title, a citation
 URL and metadata. They live on their own surface (`surfaces: ['research']`) so
 no other client is offered two unprefixed names, and the full catalogue is not
 dumped on a connector that works badly with more than a handful of tools.
+
+### The memory surface
+
+`POST /api/mcp/memory` serves three tools instead of forty-six: `recall`,
+`remember` and `fetch`. It is what turns eXocortex from a reference work into a
+memory for a chat client (issue #34, [ADR-019](adr/ADR-019-agent-memory-in-its-own-workspace.md)).
+
+| Tool | Mutating | REST call | Answers with |
+| --- | --- | --- | --- |
+| `recall` | no | `GET /api/memory/recall` | three to five distilled hits with id, source and location, plus one ready-made German text block |
+| `remember` | yes | `POST /api/memory/remember` | where the note landed |
+| `fetch` | no | `GET /api/documents/:id` + `/export/markdown` | the full page (shared with the deep research surface) |
+
+`recall` is not `exo_search` with a smaller limit. It searches every workspace
+the connected account may read, ranks the hits together, and weights the agents'
+own notes above the curated pages, more so when the caller names a project. What
+comes back is a handful of lines, never the raw index: a chat window carries
+every answer for the rest of the conversation.
+
+`remember` writes into the workspace named by `memory.workspaceId`, under a page
+per project, appending to today's note. It is the same endpoint the capture job
+uses, so a note a person dictated and a note distilled from a session look the
+same afterwards.
+
+The three names carry no `exo_` prefix. That prefix exists so a coding agent
+running several MCP servers side by side cannot confuse them; this surface is
+configured on its own URL by somebody who wants exactly a memory.
+
+**ChatGPT has no `SessionStart` hook**, so recalling has to be asked for. Paste
+this into the custom instructions of the project or the account that has the
+connector:
+
+```text
+Du hast über den eXocortex-Connector ein gemeinsames Gedächtnis.
+
+- Bevor du auf eine Frage antwortest, die sich auf frühere Arbeit, getroffene
+  Entscheidungen, Server, Zugänge oder Einrichtungen bezieht: rufe zuerst
+  `recall` auf. Nimm den Suchbegriff aus der Frage.
+- Interessiert dich ein Treffer genauer, lade ihn mit `fetch` und der id
+  vollständig nach.
+- Erfährst du etwas, das später noch gebraucht wird (eine Entscheidung, ein
+  Pfad, ein Zugang, ein offener Punkt): lege es mit `remember` ab, kurz und in
+  Stichpunkten. Nicht den Gesprächsverlauf ablegen.
+- Findet `recall` nichts, sag das, statt zu raten.
+```
+
+Without those lines the connector is a lookup tool that is never looked up in.
+
+## Memory over REST
+
+The three tools call three ordinary endpoints, and so does everything else that
+remembers (the Claude Code hooks in `tools/claude-code-hooks`, Hermes, a shell
+script):
+
+| Endpoint | Scope | What it does |
+| --- | --- | --- |
+| `GET /api/memory/recall` | `read` | Searches across the readable workspaces. Without `q` it answers with the newest notes for `project`. `maxChars` and `limit` are clamped by `memory.recallMaxChars` / `memory.recallMaxResults`. |
+| `POST /api/memory/remember` | `write` | Writes one distilled note under the project page. `appendToday` adds to today's note instead of starting a page. |
+| `POST /api/memory/capture` | `write` | Hands a finished session over for distillation. Answers `{accepted, jobId, reason}` at once and never throws for something the caller cannot fix. |
+
+`recall` is a `GET` deliberately: `requiredScopeForRequest` derives the needed
+scope from the method, so a `POST` would force every client that only ever looks
+things up to hold a `write` token.
+
+`capture` stores nothing itself. The transcript goes into a `memory-capture`
+job, a model distils it, and only the summary is written; see
+`docs/background-jobs.md`.
 
 ## Confirmation gate
 

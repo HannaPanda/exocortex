@@ -80,6 +80,7 @@ file is the contract for automated sessions. Read it before changing code.
 | `packages/ai`           | Provider-neutral AI contracts, mock provider, runner contracts. |
 | `packages/ui`           | Design tokens, shadcn components on Base UI, layout primitives, states. |
 | `e2e`                   | Playwright browser and API tests. |
+| `tools/claude-code-hooks` | SessionStart/SessionEnd hooks that make this deployment Claude Code's memory. Plain Node, no dependencies, silent on failure. |
 
 ## Commands
 
@@ -116,6 +117,9 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   that share one protocol dispatcher; the HTTP one reaches the domain by calling
   the REST API over loopback, never Prisma, and it accepts bearer credentials
   only, never a cookie.
+* ADR-019: agent memory is its own workspace (`memory.workspaceId`), written
+  through the ordinary domain services; a raw transcript is never stored, and
+  authority comes from the agent account's membership, not from its token scope.
 * ADR-015: the open page's *text* reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

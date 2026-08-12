@@ -12,6 +12,7 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `maintenance` | repeatable schedulers, outbox dispatch | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`, `resolve-document-links`, `backfill-document-links`, `snapshot-active-documents`), documented placeholder (`vacuum-search-index`) |
 | `attachment-text` | attachment upload, `GET /api/attachments/:id/text` (on demand) | `createAttachmentTextProcessor` | real |
 | `document-cover` | `POST /api/documents/:id/cover/generate` | `createDocumentCoverProcessor` | real |
+| `memory-capture` | `POST /api/memory/capture` (Claude Code hook, Hermes, any client) | `createMemoryCaptureProcessor` | real |
 | `calendar-sync` | repeatable schedulers (`calendar-pull` every 5 min, `calendar-remind` every minute, `calendar-discover` daily 05:15) | `createCalendarSyncProcessor` | real (mailbox.org CalDAV); writes outward only for a `PUSH`/`BOTH` link |
 
 Queue names and payload schemas live in `packages/contracts/src/jobs.ts`, so
@@ -139,6 +140,31 @@ comment scopes it to ("destructive and permission-relevant operations"): this
 is the page's own history, not a compliance trail, and every entry it adds
 carries structural metadata only (who, when, a title, a byte size), never
 document content.
+
+### `memory-capture`: one session becomes one note
+
+`memoryCaptureJobSchema`: `{ correlationId, workspaceId, userId, project,
+projectKey, client, sessionId, transcript, hint, startedAt }`. This is the one
+job that carries bulk text, and that is the point: the API refuses to store a
+raw conversation, so the transcript lives in the Redis payload for as long as
+the job runs and nowhere else (issue #34, ADR-019).
+
+`createMemoryCaptureProcessor` asks the model named by `memory.captureModelSlug`
+(falling back to `ai.compactionModelSlug`, then `ai.defaultModelSlug`) for a
+title line and a handful of German bullet points, then writes them through
+`POST /api/memory/remember` with a service token minted for the capturing user
+(ADR-014). Only the summary is written; nothing keeps the transcript.
+
+Concurrency 1 and `attempts: 1`, for the same reason as `document-cover`: every
+attempt is a paid model call, and the processor reports its own failures instead
+of throwing, so a retry could only ever repeat an infrastructure problem and pay
+twice. A failed capture is a memory that was not written, not an incident: the
+hook that triggered it exited when the session did.
+
+Two filters keep the memory from filling with noise, which is what makes recall
+worse over time. `memory.captureMinChars` throws away the shortest sessions in
+the API, before a model is ever paid; and the prompt allows the model to answer
+`NICHTS`, in which case nothing is written at all.
 
 ### `calendar-sync`: mirroring a remote calendar
 

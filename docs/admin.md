@@ -100,6 +100,26 @@ Secrets are deliberately **not** settings. `OPENROUTER_API_KEY`,
 `SERVICE_TOKEN_SECRET` and `DATABASE_URL` stay in `.env`, out of reach of
 `GET /api/admin/settings`.
 
+### Memory settings (issue #34)
+
+The agents' memory is off until a workspace is named, and that is deliberately
+the whole switch.
+
+| Setting | Meaning |
+| --- | --- |
+| `memory.enabled` | Master switch for writing. Off: nothing is captured or remembered; recall still answers. |
+| `memory.workspaceId` | Which workspace the agents write into. Empty means there is no destination, and `POST /api/memory/capture` answers `{accepted: false, reason: 'memory_workspace_not_configured'}` instead of guessing one. |
+| `memory.captureModelSlug` | Model that distils a session. Empty falls back to `ai.compactionModelSlug`, then `ai.defaultModelSlug`. |
+| `memory.captureMinChars` | Shortest session worth remembering. The cheap half of the "is this memorable" question; the other half is the model's, which may answer that there is nothing to keep. |
+| `memory.recallMaxChars` / `memory.recallMaxResults` | Hard ceilings on one recall answer, whatever a caller asks for. A memory that eats the context window it is meant to improve is worse than none. |
+
+**Do not point `memory.workspaceId` at a curated workspace.** Automatically
+written session notes belong where they may be tidied and expired; a workspace
+somebody reads as a document is not that. The permission model does the rest:
+give the agent account a writing role in the memory workspace and a reading role
+in the curated ones, and `requireRole` makes the boundary physical, whatever
+scope its token carries ([ADR-019](adr/ADR-019-agent-memory-in-its-own-workspace.md)).
+
 ## The AI model registry
 
 `AiModel` is the admin-editable catalogue of selectable models. The picker, the
