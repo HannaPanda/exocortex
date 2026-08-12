@@ -3,13 +3,45 @@
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
-import { Alert, AlertDescription, AppPage, Button, Input, Label, LoadingState } from '@exocortex/ui';
+import { type WorkspaceDetail, type WorkspaceRole } from '@exocortex/contracts';
+import {
+  Alert,
+  AlertDescription,
+  AppPage,
+  Badge,
+  Button,
+  Input,
+  Label,
+  LoadingState,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@exocortex/ui';
 
+import { InvitationTable } from '@/components/invitations/invitation-table';
+import { InviteDialog } from '@/components/invitations/invite-dialog';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
-import { useUpdateWorkspace, useWorkspaceDetail } from '@/lib/api/queries';
+import { useUpdateWorkspaceMember } from '@/lib/api/invitation-queries';
+import { useSessionQuery, useUpdateWorkspace, useWorkspaceDetail } from '@/lib/api/queries';
 
 const WORKSPACE_ADMIN_ROLES = new Set(['OWNER', 'ADMIN']);
+
+const MEMBER_ROLE_LABELS: Record<WorkspaceRole, string> = {
+  OWNER: 'Besitzer',
+  ADMIN: 'Administrator',
+  MEMBER: 'Mitglied',
+  GUEST: 'Gast',
+};
 
 /**
  * Workspace settings: rename and, separately, change the slug.
@@ -162,8 +194,118 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
               </p>
             ) : null}
           </section>
+
+          <MembersSection workspace={original} />
         </div>
       )}
     </AppPage>
+  );
+}
+
+/**
+ * Who is in this workspace, and how somebody else gets in (issue #3).
+ *
+ * The member list existed only as an API route until now, which is what left
+ * "invite from the member list" with no list to sit on. Roles are editable here
+ * for the same reason the invite button lives here: both answer "who may do what
+ * in this workspace", and splitting that across two screens means the owner has
+ * to guess which one they wanted.
+ */
+function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
+  const sessionQuery = useSessionQuery();
+  const updateMember = useUpdateWorkspaceMember(workspace.id);
+  const [inviteOpen, setInviteOpen] = React.useState(false);
+
+  const currentUserId = sessionQuery.data?.user?.id ?? null;
+  const isOwner = workspace.role === 'OWNER';
+  const errorCode = updateMember.error instanceof ApiError ? updateMember.error.code : undefined;
+
+  /**
+   * Only an owner may hand out or take back ownership (`canChangeMemberRole`), so
+   * everybody else is offered the three roles they can actually set. The API
+   * refuses either way; this just avoids an option that always fails.
+   */
+  const assignableRoles: readonly WorkspaceRole[] = isOwner
+    ? ['OWNER', 'ADMIN', 'MEMBER', 'GUEST']
+    : ['ADMIN', 'MEMBER', 'GUEST'];
+
+  return (
+    <section className="flex flex-col gap-4 border-t border-border pt-6">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-sm font-medium">Mitglieder</h2>
+          <p className="text-xs text-muted-foreground">
+            Mitgliedschaften gelten immer ausdrücklich: wer eingeladen wird, landet genau in diesem
+            Arbeitsbereich.
+          </p>
+        </div>
+        <Button onClick={() => setInviteOpen(true)} data-testid="open-workspace-invite">
+          Einladen
+        </Button>
+      </div>
+
+      {updateMember.isError ? (
+        <Alert variant="destructive" data-testid="member-role-error">
+          <AlertDescription>{messageForCode(errorCode)}</AlertDescription>
+        </Alert>
+      ) : null}
+
+      <Table>
+        <TableCaption className="sr-only">Mitglieder dieses Arbeitsbereichs</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>E-Mail</TableHead>
+            <TableHead>Rolle</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {workspace.members.map((member) => (
+            <TableRow key={member.id}>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{member.name}</span>
+                  {member.userId === currentUserId ? (
+                    <Badge variant="secondary">Du</Badge>
+                  ) : null}
+                </div>
+              </TableCell>
+              <TableCell className="text-muted-foreground">{member.email}</TableCell>
+              <TableCell>
+                <Select
+                  value={member.role}
+                  disabled={updateMember.isPending || (member.role === 'OWNER' && !isOwner)}
+                  onValueChange={(next) =>
+                    updateMember.mutate({ userId: member.userId, role: next as WorkspaceRole })
+                  }
+                >
+                  <SelectTrigger aria-label={`Rolle von ${member.name}`} size="sm">
+                    <SelectValue>{() => MEMBER_ROLE_LABELS[member.role]}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {assignableRoles.map((role) => (
+                      <SelectItem key={role} value={role}>
+                        {MEMBER_ROLE_LABELS[role]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      <div className="flex flex-col gap-2 pt-2">
+        <h3 className="text-sm font-medium">Offene Einladungen</h3>
+        <InvitationTable scope={{ kind: 'workspace', workspaceId: workspace.id }} />
+      </div>
+
+      <InviteDialog
+        open={inviteOpen}
+        onOpenChange={setInviteOpen}
+        scope={{ kind: 'workspace', workspaceId: workspace.id }}
+      />
+    </section>
   );
 }

@@ -15,6 +15,7 @@ import {
   type CreateAiModelRequest,
   type CreateApiTokenRequest,
   type CreateApiTokenResponse,
+  type DeleteUserResponse,
   type DisconnectAppResponse,
   type Settings,
   type SettingsResponse,
@@ -23,6 +24,7 @@ import {
   type UpdateAiModelRequest,
   type UpdateSettingsRequest,
   type UpdateUserRoleRequest,
+  type UpdateUserStatusRequest,
 } from '@exocortex/contracts';
 
 import { apiRequest } from './client';
@@ -104,6 +106,34 @@ export function useUpdateUserRole() {
         method: 'PATCH',
         body: input.request,
       }),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: adminQueryKeys.users });
+      void client.invalidateQueries({ queryKey: adminQueryKeys.overview });
+    },
+  });
+}
+
+/** Switching an account off or back on. Separate route, separate mutation. */
+export function useUpdateUserStatus() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { userId: string; disabled: boolean }) =>
+      apiRequest<AdminUser>(`/api/admin/users/${input.userId}/status`, {
+        method: 'PATCH',
+        body: { disabled: input.disabled } satisfies UpdateUserStatusRequest,
+      }),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: adminQueryKeys.users });
+      void client.invalidateQueries({ queryKey: adminQueryKeys.overview });
+    },
+  });
+}
+
+export function useDeleteUser() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (userId: string) =>
+      apiRequest<DeleteUserResponse>(`/api/admin/users/${userId}`, { method: 'DELETE' }),
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: adminQueryKeys.users });
       void client.invalidateQueries({ queryKey: adminQueryKeys.overview });

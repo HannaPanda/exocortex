@@ -48,6 +48,13 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   memory_unavailable:
     'Für das Gedächtnis der Agenten ist noch kein Arbeitsbereich hinterlegt. Das lässt sich im Administrationsbereich nachholen.',
   workspace_slug_taken: 'Dieser Slug wird bereits von einem anderen Arbeitsbereich verwendet.',
+  invitation_invalid: 'Diese Einladung gibt es nicht oder sie wurde zurückgezogen.',
+  invitation_expired: 'Diese Einladung ist abgelaufen. Bitte lass dir eine neue schicken.',
+  invitation_already_used: 'Diese Einladung wurde schon eingelöst. Melde dich einfach an.',
+  invitation_email_taken: 'Für diese E-Mail-Adresse gibt es bereits ein Konto.',
+  user_disabled: 'Dieses Konto ist deaktiviert.',
+  user_has_content:
+    'Dieses Konto hat Seiten, Kommentare oder Dateien angelegt und lässt sich deshalb nicht löschen. Deaktiviere es stattdessen.',
 };
 
 export function messageForCode(code: string | undefined): string {
