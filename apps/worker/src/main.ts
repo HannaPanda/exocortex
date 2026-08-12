@@ -1,5 +1,7 @@
 import {
   createAiProvider,
+  createEmbeddingClient,
+  createEmbeddingProvider,
   createImageGenerator,
   createOptionalDoclingPdfExtractor,
   createPdfDocumentInfoReader,
@@ -16,9 +18,14 @@ import {
   AI_QUEUE_STALLED_INTERVAL_MS,
   QUEUE_NAMES,
   resolveSettings,
+  semanticSearchOptions,
   type Settings,
 } from '@exocortex/contracts';
-import { createPrismaClient, PostgresSearchAdapter } from '@exocortex/database';
+import {
+  createPrismaClient,
+  HybridSearchAdapter,
+  PostgresSearchAdapter,
+} from '@exocortex/database';
 import { createCorrelationId, createLogger } from '@exocortex/logger';
 import { createFetchApiClient } from '@exocortex/mcp-tools';
 import { createTypedWorker, QueueRegistry, RedisEventBus } from '@exocortex/queue';
@@ -53,7 +60,6 @@ async function bootstrap(): Promise<void> {
   const prisma = createPrismaClient({ databaseUrl: env.DATABASE_URL });
   const queues = new QueueRegistry({ redisUrl: env.REDIS_URL, logger });
   const bus = new RedisEventBus({ redisUrl: env.REDIS_URL, logger });
-  const search = new PostgresSearchAdapter(prisma);
   const provider = createAiProvider({
     providerId: env.AI_PROVIDER,
     logger,
@@ -93,6 +99,29 @@ async function bootstrap(): Promise<void> {
     settingsCache = { settings, expiresAt: now + SETTINGS_CACHE_TTL_MS };
     return settings;
   };
+
+  /**
+   * The search projection, both halves of it (issue #34, AP4).
+   *
+   * Built after `readSettings` because the semantic half is a runtime setting,
+   * not a boot-time one: turning it on in the administration area has to reach
+   * the next indexing job without a restart.
+   */
+  const search = new HybridSearchAdapter({
+    prisma,
+    keyword: new PostgresSearchAdapter(prisma),
+    embeddings: createEmbeddingClient(
+      createEmbeddingProvider({
+        providerId: env.AI_PROVIDER,
+        logger,
+        appUrl: env.APP_URL,
+        apiKey: env.OPENROUTER_API_KEY ?? '',
+        baseUrl: env.OPENROUTER_BASE_URL,
+      }),
+    ),
+    options: async () => semanticSearchOptions(await readSettings()),
+    logger,
+  });
 
   // Tool loop authentication (D3): `SERVICE_TOKEN_SECRET` is optional, so an
   // unset secret disables tools without ever crashing boot (R2).
@@ -449,7 +478,14 @@ async function bootstrap(): Promise<void> {
     redisUrl: env.REDIS_URL,
     logger,
     concurrency: 1,
-    handler: createMaintenanceProcessor({ prisma, queues, storage, bus, settings: readSettings }),
+    handler: createMaintenanceProcessor({
+      prisma,
+      queues,
+      storage,
+      bus,
+      search,
+      settings: readSettings,
+    }),
   });
 
   // Concurrency 1: PDF extraction is an external call and must not crowd out

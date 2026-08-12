@@ -112,6 +112,7 @@ the whole switch.
 | `memory.captureModelSlug` | Model that distils a session. Empty falls back to `ai.compactionModelSlug`, then `ai.defaultModelSlug`. |
 | `memory.captureMinChars` | Shortest session worth remembering. The cheap half of the "is this memorable" question; the other half is the model's, which may answer that there is nothing to keep. |
 | `memory.recallMaxChars` / `memory.recallMaxResults` | Hard ceilings on one recall answer, whatever a caller asks for. A memory that eats the context window it is meant to improve is worse than none. |
+| `memory.retentionDays` | How long a session note survives. `0` (the default) never deletes anything. With a period set, `prune-memories` moves an untouched note into the trash after it, and destroys it after a second one — so nothing was ever unrecoverable. Project pages and other workspaces are never touched. |
 
 **Do not point `memory.workspaceId` at a curated workspace.** Automatically
 written session notes belong where they may be tidied and expired; a workspace
@@ -119,6 +120,22 @@ somebody reads as a document is not that. The permission model does the rest:
 give the agent account a writing role in the memory workspace and a reading role
 in the curated ones, and `requireRole` makes the boundary physical, whatever
 scope its token carries ([ADR-019](adr/ADR-019-agent-memory-in-its-own-workspace.md)).
+
+### Search settings (issue #34, AP4)
+
+Semantic search is off until somebody turns it on, because switching it on
+turns every indexed page into a paid embedding call.
+
+| Setting | Meaning |
+| --- | --- |
+| `search.semanticEnabled` | Adds vector similarity beside full-text, fused by rank. Off: the search box and `recall` behave exactly as before. On: newly indexed pages are embedded as they are written, and `backfill-embeddings` works through the ones that already exist. |
+| `search.embeddingModelSlug` | An OpenRouter slug that returns 1536 dimensions. `openai/text-embedding-3-small` (the default) does natively; `openai/text-embedding-3-large` shortens to it on request. Anything else is refused rather than stored wrong. Changing it makes the old vectors invisible and the backfill writes new ones. |
+| `search.semanticWeightPercent` | How much the semantic list counts against the full-text list. `0` is pure full-text, `100` pure meaning, `50` weighs them equally. |
+
+Cost, so it is not a surprise: `text-embedding-3-small` is about two cents per
+million tokens, one vector per page of up to 24k characters, and a page whose
+text has not changed is never embedded twice. Searching costs one embedding of
+the query per search ([ADR-020](adr/ADR-020-semantic-search-beside-full-text.md)).
 
 ## The AI model registry
 

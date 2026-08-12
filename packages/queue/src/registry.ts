@@ -262,6 +262,29 @@ export class QueueRegistry {
         data: { correlationId, task: 'snapshot-active-documents', workspaceId: null, documentId: null },
       },
     );
+    // Every two minutes, a small batch. A no-op while semantic search is off,
+    // and the only thing that ever fills the vector index for pages that
+    // existed before it was switched on (issue #34, AP4). Faster than the link
+    // backfill because a deployment that just enabled the feature is waiting
+    // for it, and each batch is bounded by a paid call it pays for once.
+    await queue.upsertJobScheduler(
+      'backfill-embeddings',
+      { every: 120_000 },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: { correlationId, task: 'backfill-embeddings', workspaceId: null, documentId: null },
+      },
+    );
+    // Daily, after the snapshot sweep. Does nothing while
+    // `memory.retentionDays` is zero, which is the default.
+    await queue.upsertJobScheduler(
+      'prune-memories',
+      { pattern: '15 4 * * *' },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: { correlationId, task: 'prune-memories', workspaceId: null, documentId: null },
+      },
+    );
     this.logger.info('Maintenance schedulers registered');
   }
 

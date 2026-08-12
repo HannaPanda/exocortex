@@ -120,6 +120,11 @@ pnpm test:e2e          # Playwright (needs a running deployment)
 * ADR-019: agent memory is its own workspace (`memory.workspaceId`), written
   through the ordinary domain services; a raw transcript is never stored, and
   authority comes from the agent account's membership, not from its token scope.
+* ADR-020: semantic search sits beside full-text and never replaces it.
+  `HybridSearchAdapter` wraps `PostgresSearchAdapter`, fuses the two lists by
+  rank, and falls back to full-text alone whenever the embedding call fails.
+  `packages/database` reaches the model through a port, never by importing
+  `@exocortex/ai`.
 * ADR-015: the open page's *text* reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

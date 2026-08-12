@@ -1,11 +1,13 @@
+import { EMBEDDING_BATCH_SIZE } from '@exocortex/ai';
 import {
   AI_RUN_PICKUP_GRACE_MS,
   deriveAiRunTimeouts,
   type QUEUE_NAMES,
   QUEUE_NAMES as QUEUES,
+  semanticSearchOptions,
   type Settings,
 } from '@exocortex/contracts';
-import { Prisma, type PrismaClient } from '@exocortex/database';
+import { type HybridSearchAdapter, Prisma, type PrismaClient } from '@exocortex/database';
 import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
@@ -25,6 +27,13 @@ const TITLE_EVENTS = new Set(['document.created', 'document.updated', 'document.
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEK_MS = 7 * DAY_MS;
+
+/**
+ * How long one `backfill-embeddings` run may keep working. Long enough that a
+ * first fill of a large workspace is minutes rather than hours, short enough
+ * that the shared maintenance queue is never held for a noticeable time.
+ */
+const EMBEDDING_BACKFILL_RUN_MS = 30_000;
 
 /** Epoch-day / epoch-week bucket. Not calendar-aware (no ISO week rules) on purpose: a deterministic, testable index is all tiered retention needs. */
 function dayBucket(date: Date): number {
@@ -85,6 +94,12 @@ export interface MaintenanceDependencies {
   prisma: PrismaClient;
   queues: QueueRegistry;
   storage: ObjectStorage;
+  /**
+   * The same adapter the indexing worker writes through, so `backfill-embeddings`
+   * produces exactly what ordinary indexing produces -- including the "text has
+   * not changed" check that keeps a re-run from paying for the same vector twice.
+   */
+  search: HybridSearchAdapter;
   /** Publishes `ai.run.failed` for a run `reap-stale-ai-runs` closes out. */
   bus: RedisEventBus;
   /**
@@ -104,6 +119,8 @@ export interface MaintenanceDependencies {
   orphanedCoverGraceMs?: number;
   /** Content rows the reference backfill extracts per run. */
   linkBackfillBatchSize?: number;
+  /** Documents per embedding request inside a backfill run. */
+  embeddingBackfillBatchSize?: number;
 }
 
 /**
@@ -133,10 +150,11 @@ function isMissingRow(error: unknown): boolean {
  * them into follow-up work. Realtime delivery is the fast, best-effort half.
  */
 export function createMaintenanceProcessor(dependencies: MaintenanceDependencies) {
-  const { prisma, queues, storage, bus } = dependencies;
+  const { prisma, queues, storage, bus, search } = dependencies;
   const outboxBatchSize = dependencies.outboxBatchSize ?? 100;
   const orphanedCoverGraceMs = dependencies.orphanedCoverGraceMs ?? 60 * 60 * 1000;
   const linkBackfillBatchSize = dependencies.linkBackfillBatchSize ?? 50;
+  const embeddingBackfillBatchSize = dependencies.embeddingBackfillBatchSize ?? EMBEDDING_BATCH_SIZE;
 
   return async ({
     payload,
@@ -531,6 +549,171 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
         }
         await reportProgress(100, 'Verweise nachgetragen');
         logger.info('Document links backfilled', { indexed, batch: pending.length });
+        return;
+      }
+
+      case 'backfill-embeddings': {
+        const settings = await dependencies.settings();
+        const semantic = semanticSearchOptions(settings);
+        if (semantic === null) return;
+
+        // Pages the vector index has never seen under the model that is
+        // currently configured. Newest first: a deployment that has just
+        // switched semantic search on gets the pages it is working on today
+        // long before the ones it has not touched in a year.
+        const scope =
+          payload.workspaceId === null
+            ? Prisma.empty
+            : Prisma.sql`AND index."workspaceId" = ${payload.workspaceId}`;
+        const readBatch = async (): Promise<
+          {
+            documentId: string;
+            workspaceId: string;
+            title: string;
+            plainText: string;
+            archivedAt: Date | null;
+          }[]
+        > =>
+          prisma.$queryRaw(Prisma.sql`
+            SELECT
+              index."documentId"  AS "documentId",
+              index."workspaceId" AS "workspaceId",
+              index."title"       AS "title",
+              index."plainText"   AS "plainText",
+              index."archivedAt"  AS "archivedAt"
+            FROM "document_search_index" AS index
+            LEFT JOIN "document_embedding" AS embedding
+              ON embedding."documentId" = index."documentId"
+             AND embedding."blockId" IS NULL
+             AND embedding."model" = ${semantic.model}
+            WHERE embedding."id" IS NULL
+              ${scope}
+            ORDER BY index."updatedAt" DESC
+            LIMIT ${embeddingBackfillBatchSize}
+          `);
+
+        /**
+         * Several batches per run, bounded by time rather than by count.
+         *
+         * A first fill is thousands of pages, and one batch every two minutes
+         * would take hours; a fixed higher count would instead hold the
+         * maintenance queue for however long the provider happens to be slow.
+         * The budget keeps both ends honest, and the sweep is a no-op once
+         * every page has a vector.
+         */
+        const deadline = Date.now() + EMBEDDING_BACKFILL_RUN_MS;
+        let embedded = 0;
+        let seen = 0;
+        let progressed = false;
+        while (Date.now() < deadline) {
+          const pending = await readBatch();
+          if (pending.length === 0) break;
+          if (!progressed) {
+            await reportProgress(10, 'Bedeutungen werden nachgetragen');
+            progressed = true;
+          }
+          seen += pending.length;
+          try {
+            embedded += await search.writeEmbeddings(pending, semantic.model);
+          } catch (error) {
+            // A batch the model refuses (a rate limit, a page too long even
+            // after truncation) must not fail the job into a retry loop.
+            // Nothing was written for it, so the next run sees it again.
+            logger.warn('Could not backfill a batch of embeddings', {
+              batch: pending.length,
+              reason: error instanceof Error ? error.message : String(error),
+            });
+            break;
+          }
+        }
+        if (!progressed) return;
+
+        await reportProgress(100, 'Bedeutungen nachgetragen');
+        logger.info('Embeddings backfilled', {
+          embedded,
+          seen,
+          model: semantic.model,
+        });
+        return;
+      }
+
+      case 'prune-memories': {
+        const settings = await dependencies.settings();
+        const retentionDays = settings['memory.retentionDays'];
+        const workspaceId = settings['memory.workspaceId'];
+        if (retentionDays === 0 || workspaceId === null) return;
+
+        const cutoff = new Date(Date.now() - retentionDays * DAY_MS);
+        await reportProgress(10, 'Altes Gedächtnis wird aufgeräumt');
+
+        /**
+         * Two stages, one setting.
+         *
+         * A note that has not been touched for the retention period goes into
+         * the trash; a note that has been *in* the trash for another retention
+         * period is deleted for good. Nothing in this application has ever
+         * destroyed a page outright, and a background sweep is the last place
+         * that should start: this way every deletion was visible and
+         * recoverable in the trash for a full period first.
+         *
+         * `parentId: { not: null }` is what keeps the project pages: they are
+         * the roots of the memory workspace and hold the notes that are still
+         * current.
+         */
+        const expiring = await prisma.document.findMany({
+          where: {
+            workspaceId,
+            parentId: { not: null },
+            archivedAt: null,
+            updatedAt: { lt: cutoff },
+          },
+          select: { id: true },
+        });
+
+        const now = new Date();
+        if (expiring.length > 0) {
+          await prisma.document.updateMany({
+            where: { id: { in: expiring.map((row) => row.id) } },
+            data: { archivedAt: now },
+          });
+          // The search projection has to learn that these left the active
+          // tree, or recall keeps answering with notes that are in the trash.
+          // Writing outbox rows rather than enqueuing directly keeps this on
+          // the same path an archive from the API takes (ADR-010).
+          await prisma.outboxEvent.createMany({
+            data: expiring.map((row) => ({
+              workspaceId,
+              type: 'document.archived',
+              payload: { documentId: row.id },
+              correlationId: payload.correlationId,
+            })),
+          });
+        }
+
+        const purgeable = await prisma.document.findMany({
+          where: {
+            workspaceId,
+            parentId: { not: null },
+            archivedAt: { lt: cutoff },
+          },
+          select: { id: true },
+        });
+        // Cascades take the content, the search projection, the embeddings and
+        // the snapshots with them; there is no second sweep to write.
+        const purged =
+          purgeable.length === 0
+            ? { count: 0 }
+            : await prisma.document.deleteMany({
+                where: { id: { in: purgeable.map((row) => row.id) } },
+              });
+
+        await reportProgress(100, 'Gedächtnis aufgeräumt');
+        logger.info('Memory notes pruned', {
+          archived: expiring.length,
+          purged: purged.count,
+          retentionDays,
+          workspaceId,
+        });
         return;
       }
 

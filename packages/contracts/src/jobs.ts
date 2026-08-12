@@ -87,6 +87,19 @@ export const maintenanceJobSchema = jobBase.extend({
      * carries.
      */
     'snapshot-active-documents',
+    /**
+     * Embeds documents the semantic index has never seen under the configured
+     * model, in small batches. Repeatable, a no-op while `search.semanticEnabled`
+     * is off, and how a deployment that switches semantic search on catches up
+     * with the pages it already has (issue #34, AP4).
+     */
+    'backfill-embeddings',
+    /**
+     * Deletes session notes in the memory workspace that are older than
+     * `memory.retentionDays`. Off while that is zero. Never touches the project
+     * pages the notes hang under, and never another workspace (ADR-019).
+     */
+    'prune-memories',
   ]),
   /** Optional scope; `null` means all workspaces. */
   workspaceId: idSchema.nullable().default(null),

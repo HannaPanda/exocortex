@@ -328,6 +328,13 @@ own notes above the curated pages, more so when the caller names a project. What
 comes back is a handful of lines, never the raw index: a chat window carries
 every answer for the rest of the conversation.
 
+With `search.semanticEnabled` on, the search underneath both `recall` and
+`exo_search` is full text and vector similarity fused
+([ADR-020](adr/ADR-020-semantic-search-beside-full-text.md)). Neither tool's
+shape changes; what changes is that a question phrased in words the note does
+not contain can still find it, which is the ordinary case when an agent asks
+"what did we do here last time".
+
 `remember` writes into the workspace named by `memory.workspaceId`, under a page
 per project, appending to today's note. It is the same endpoint the capture job
 uses, so a note a person dictated and a note distilled from a session look the

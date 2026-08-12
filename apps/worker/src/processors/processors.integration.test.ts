@@ -10,7 +10,9 @@ import {
   AiProviderError,
   type AiStreamEvent,
   type AiToolCall,
+  createEmbeddingClient,
   MockAiProvider,
+  MockEmbeddingProvider,
   MockImageGenerator,
   type PdfDocumentInfoReader,
   type VisionPreprocessor,
@@ -26,6 +28,7 @@ import {
 import {
   createPrismaClient,
   generateOrderKey,
+  HybridSearchAdapter,
   PostgresSearchAdapter,
   type PrismaClient,
 } from '@exocortex/database';
@@ -123,7 +126,14 @@ const logger: Logger = createLogger({ name: 'worker-test', level: 'silent' });
 let prisma: PrismaClient;
 let queues: QueueRegistry;
 let bus: RedisEventBus;
-let search: PostgresSearchAdapter;
+let search: HybridSearchAdapter;
+/**
+ * The semantic half is off for every existing test, so the hybrid adapter
+ * behaves exactly like the full-text one, and the tests that are about
+ * semantic search switch it on for their own duration.
+ */
+let semanticModel: string | null = null;
+const TEST_EMBEDDING_MODEL = 'mock/embedding';
 let workspaceId: string;
 let userId: string;
 
@@ -185,7 +195,14 @@ beforeAll(async () => {
     prefix: testQueuePrefix('worker-processors'),
   });
   bus = new RedisEventBus({ redisUrl: env.REDIS_URL, logger });
-  search = new PostgresSearchAdapter(prisma);
+  search = new HybridSearchAdapter({
+    prisma,
+    keyword: new PostgresSearchAdapter(prisma),
+    embeddings: createEmbeddingClient(new MockEmbeddingProvider()),
+    options: async () =>
+      semanticModel === null ? null : { model: semanticModel, weight: 0.5 },
+    logger,
+  });
 
   const suffix = Date.now().toString(36);
   const user = await prisma.user.create({
@@ -398,6 +415,412 @@ describe('search indexing', () => {
   }, 60_000);
 });
 
+/**
+ * Semantic search (issue #34, AP4).
+ *
+ * The embedding client is `MockEmbeddingProvider`, which hashes vocabulary
+ * rather than understanding it. That is enough to prove what these tests are
+ * about: that a vector is written, that it is not written twice for the same
+ * text, and that a page no full-text query matches still comes back.
+ */
+describe('semantic search', () => {
+  async function indexedPage(title: string, body: string): Promise<string> {
+    const document = await prisma.document.create({
+      data: {
+        workspaceId,
+        title,
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+        content: { create: { yjsState: Buffer.from([]), plainText: body } },
+      },
+    });
+    await createIndexDocumentProcessor({ prisma, search })(
+      contextFor({
+        correlationId: 'semantic',
+        documentId: document.id,
+        workspaceId,
+        reason: 'materialized' as const,
+      }).context,
+    );
+    return document.id;
+  }
+
+  it('writes no vector while the feature is off', async () => {
+    semanticModel = null;
+    const documentId = await indexedPage('Ohne Bedeutung', 'Ein Text ohne Vektor.');
+
+    expect(await prisma.documentEmbedding.count({ where: { documentId } })).toBe(0);
+  }, 60_000);
+
+  it('writes one vector per page and does not pay for an unchanged text twice', async () => {
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const documentId = await indexedPage('Mit Bedeutung', 'Kalender Termine Erinnerungen.');
+      const first = await prisma.documentEmbedding.findFirstOrThrow({ where: { documentId } });
+      expect(first.textHash).not.toBeNull();
+
+      // Re-indexing the same text must leave the row exactly as it was.
+      await createIndexDocumentProcessor({ prisma, search })(
+        contextFor({
+          correlationId: 'semantic',
+          documentId,
+          workspaceId,
+          reason: 'materialized' as const,
+        }).context,
+      );
+      const rows = await prisma.documentEmbedding.findMany({ where: { documentId } });
+      expect(rows).toHaveLength(1);
+      expect(rows[0]?.createdAt.getTime()).toBe(first.createdAt.getTime());
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+
+  it('finds a page by meaning that the full-text half does not match at all', async () => {
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const documentId = await indexedPage(
+        'Verabredungen',
+        'Kalender Termine Erinnerungen Vorlauf Benachrichtigung.',
+      );
+
+      // `unauffindbarerbegriff` is in no document, and the full-text half ANDs
+      // its tokens, so the keyword list for this query is empty.
+      const query = {
+        workspaceId,
+        query: 'Kalender Termine unauffindbarerbegriff',
+        limit: 10,
+        includeArchived: false,
+      };
+      semanticModel = null;
+      const keywordOnly = await search.search(query);
+      expect(keywordOnly.map((result) => result.documentId)).not.toContain(documentId);
+
+      semanticModel = TEST_EMBEDDING_MODEL;
+      const hybrid = await search.search(query);
+      expect(hybrid.map((result) => result.documentId)).toContain(documentId);
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+
+  it('answers from full-text alone when the embedding model fails', async () => {
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const documentId = await indexedPage('Robustheit', 'Ein Absatz über Zwiebelkuchen.');
+      const failing = new HybridSearchAdapter({
+        prisma,
+        keyword: new PostgresSearchAdapter(prisma),
+        embeddings: {
+          dimensions: 1536,
+          maxInputChars: 24_000,
+          embed: async () => {
+            throw new Error('no credit');
+          },
+        },
+        options: async () => ({ model: TEST_EMBEDDING_MODEL, weight: 0.5 }),
+        logger,
+      });
+
+      const results = await failing.search({
+        workspaceId,
+        query: 'Zwiebelkuchen',
+        limit: 10,
+        includeArchived: false,
+      });
+      expect(results.map((result) => result.documentId)).toContain(documentId);
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+
+  it('fills in the pages that existed before the feature was switched on', async () => {
+    semanticModel = null;
+    const documentId = await indexedPage('Nachträglich', 'Ein Text von vorher.');
+    expect(await prisma.documentEmbedding.count({ where: { documentId } })).toBe(0);
+
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const processor = createMaintenanceProcessor({
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        search,
+        settings: stubSettings({
+          'search.semanticEnabled': true,
+          'search.embeddingModelSlug': TEST_EMBEDDING_MODEL,
+        }),
+      });
+      await processor(
+        contextFor({
+          correlationId: 'backfill',
+          task: 'backfill-embeddings',
+          workspaceId,
+          documentId: null,
+        }).context,
+      );
+
+      expect(await prisma.documentEmbedding.count({ where: { documentId } })).toBe(1);
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+
+  it('asks the model once for a whole batch, not once per page', async () => {
+    semanticModel = null;
+    const ids = [
+      await indexedPage('Stapel eins', 'Erster Text im Stapel.'),
+      await indexedPage('Stapel zwei', 'Zweiter Text im Stapel.'),
+      await indexedPage('Stapel drei', 'Dritter Text im Stapel.'),
+    ];
+
+    let requests = 0;
+    const counting = new HybridSearchAdapter({
+      prisma,
+      keyword: new PostgresSearchAdapter(prisma),
+      embeddings: {
+        dimensions: 1536,
+        maxInputChars: 24_000,
+        embed: async (input) => {
+          requests += 1;
+          return (await new MockEmbeddingProvider().embed({
+            input: input.texts,
+            model: input.model,
+            correlationId: input.correlationId,
+          })).vectors;
+        },
+      },
+      options: async () => ({ model: TEST_EMBEDDING_MODEL, weight: 0.5 }),
+      logger,
+    });
+
+    const written = await counting.writeEmbeddings(
+      ids.map((documentId) => ({
+        documentId,
+        workspaceId,
+        title: 'Stapel',
+        plainText: 'Text',
+        archivedAt: null,
+      })),
+      TEST_EMBEDDING_MODEL,
+    );
+
+    expect(written).toBe(3);
+    expect(requests).toBe(1);
+
+    // And a second call with the same texts costs no request at all.
+    await counting.writeEmbeddings(
+      ids.map((documentId) => ({
+        documentId,
+        workspaceId,
+        title: 'Stapel',
+        plainText: 'Text',
+        archivedAt: null,
+      })),
+      TEST_EMBEDDING_MODEL,
+    );
+    expect(requests).toBe(1);
+  }, 60_000);
+
+  it('does nothing at all while the semantic half is off', async () => {
+    semanticModel = null;
+    const documentId = await indexedPage('Bleibt leer', 'Noch ein Text von vorher.');
+    const processor = createMaintenanceProcessor({
+      prisma,
+      queues,
+      storage: recordingStorage(),
+      bus,
+      search,
+      settings: stubSettings({ 'search.semanticEnabled': false }),
+    });
+
+    await processor(
+      contextFor({
+        correlationId: 'backfill',
+        task: 'backfill-embeddings',
+        workspaceId,
+        documentId: null,
+      }).context,
+    );
+
+    expect(await prisma.documentEmbedding.count({ where: { documentId } })).toBe(0);
+  }, 60_000);
+});
+
+/**
+ * Tidying the agents' memory area (issue #34).
+ *
+ * The two stages are the point: a note first goes into the trash and is only
+ * destroyed a second retention period later, so nothing this sweep deletes was
+ * ever unrecoverable. The workspace under test stands in for the memory
+ * workspace; the project page it hangs the notes under must survive both.
+ */
+describe('memory retention', () => {
+  async function memoryNote(input: {
+    parentId: string;
+    title: string;
+    updatedAt: Date;
+    archivedAt?: Date;
+  }): Promise<string> {
+    const note = await prisma.document.create({
+      data: {
+        workspaceId,
+        parentId: input.parentId,
+        title: input.title,
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+        ...(input.archivedAt === undefined ? {} : { archivedAt: input.archivedAt }),
+      },
+    });
+    // `updatedAt` is maintained by Prisma, so the age a retention sweep reads
+    // has to be written past it.
+    await prisma.$executeRaw`
+      UPDATE "document" SET "updatedAt" = ${input.updatedAt} WHERE "id" = ${note.id}
+    `;
+    return note.id;
+  }
+
+  async function projectPage(title: string): Promise<string> {
+    const page = await prisma.document.create({
+      data: {
+        workspaceId,
+        title,
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+      },
+    });
+    await prisma.$executeRaw`
+      UPDATE "document" SET "updatedAt" = ${new Date('2020-01-01')} WHERE "id" = ${page.id}
+    `;
+    return page.id;
+  }
+
+  function pruner(overrides: Partial<Settings>) {
+    return createMaintenanceProcessor({
+      prisma,
+      queues,
+      storage: recordingStorage(),
+      bus,
+      search,
+      settings: stubSettings({
+        'memory.workspaceId': workspaceId,
+        ...overrides,
+      }),
+    });
+  }
+
+  const job = contextFor({
+    correlationId: 'prune-memories',
+    task: 'prune-memories',
+    workspaceId: null,
+    documentId: null,
+  });
+
+  it('leaves everything alone while no retention is configured', async () => {
+    const parentId = await projectPage('Projekt A');
+    const noteId = await memoryNote({
+      parentId,
+      title: 'Uralte Notiz',
+      updatedAt: new Date('2020-01-01'),
+    });
+
+    await pruner({ 'memory.retentionDays': 0 })(job.context);
+
+    const note = await prisma.document.findUniqueOrThrow({ where: { id: noteId } });
+    expect(note.archivedAt).toBeNull();
+  }, 60_000);
+
+  it('moves an expired note into the trash and tells the search index', async () => {
+    const parentId = await projectPage('Projekt B');
+    const oldId = await memoryNote({
+      parentId,
+      title: 'Alte Notiz',
+      updatedAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000),
+    });
+    const freshId = await memoryNote({ parentId, title: 'Frische Notiz', updatedAt: new Date() });
+
+    await pruner({ 'memory.retentionDays': 30 })(job.context);
+
+    expect((await prisma.document.findUniqueOrThrow({ where: { id: oldId } })).archivedAt).not.toBeNull();
+    expect((await prisma.document.findUniqueOrThrow({ where: { id: freshId } })).archivedAt).toBeNull();
+    expect((await prisma.document.findUniqueOrThrow({ where: { id: parentId } })).archivedAt).toBeNull();
+
+    const events = await prisma.outboxEvent.findMany({
+      where: { workspaceId, type: 'document.archived' },
+    });
+    expect(events.map((event) => (event.payload as { documentId: string }).documentId)).toContain(
+      oldId,
+    );
+  }, 60_000);
+
+  it('destroys a note only after it has been in the trash for a second period', async () => {
+    const parentId = await projectPage('Projekt C');
+    const longGoneId = await memoryNote({
+      parentId,
+      title: 'Längst weg',
+      updatedAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
+      archivedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
+    });
+    const recentlyTrashedId = await memoryNote({
+      parentId,
+      title: 'Gerade erst weggeräumt',
+      updatedAt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
+      archivedAt: new Date(),
+    });
+
+    await pruner({ 'memory.retentionDays': 30 })(job.context);
+
+    expect(await prisma.document.count({ where: { id: longGoneId } })).toBe(0);
+    expect(await prisma.document.count({ where: { id: recentlyTrashedId } })).toBe(1);
+    expect(await prisma.document.count({ where: { id: parentId } })).toBe(1);
+  }, 60_000);
+
+  it('never touches a workspace that is not the memory one', async () => {
+    const other = await prisma.workspace.create({
+      data: {
+        name: `Fremd ${Date.now().toString(36)}`,
+        slug: `fremd-${Date.now().toString(36)}`,
+        members: { create: { userId, role: 'OWNER' } },
+      },
+    });
+    const foreignNote = await prisma.document.create({
+      data: {
+        workspaceId: other.id,
+        parentId: null,
+        title: 'Fremde Seite',
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+      },
+    });
+    const child = await prisma.document.create({
+      data: {
+        workspaceId: other.id,
+        parentId: foreignNote.id,
+        title: 'Fremde Unterseite',
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+      },
+    });
+    await prisma.$executeRaw`
+      UPDATE "document" SET "updatedAt" = ${new Date('2020-01-01')} WHERE "id" = ${child.id}
+    `;
+
+    try {
+      await pruner({ 'memory.retentionDays': 30 })(job.context);
+      const untouched = await prisma.document.findUniqueOrThrow({ where: { id: child.id } });
+      expect(untouched.archivedAt).toBeNull();
+    } finally {
+      await prisma.workspace.delete({ where: { id: other.id } });
+    }
+  }, 60_000);
+});
+
 /** A minimal `AiRun` row for the reaper tests: no document, no conversation. */
 async function createAiRunRow(
   status: 'PENDING' | 'RUNNING',
@@ -432,6 +855,7 @@ describe('maintenance', () => {
     });
 
     const processor = createMaintenanceProcessor({
+      search,
       prisma,
       queues,
       storage: recordingStorage(),
@@ -488,6 +912,7 @@ describe('maintenance', () => {
     ]);
 
     const processor = createMaintenanceProcessor({
+      search,
       prisma,
       queues,
       storage: recordingStorage(),
@@ -567,6 +992,7 @@ describe('maintenance', () => {
       await snapshotAt(documentId, utcNoon(6));
 
       const processor = createMaintenanceProcessor({
+        search,
         prisma,
         queues,
         storage: recordingStorage(),
@@ -591,6 +1017,7 @@ describe('maintenance', () => {
       const differentDay = await snapshotAt(documentId, utcNoon(15));
 
       const processor = createMaintenanceProcessor({
+        search,
         prisma,
         queues,
         storage: recordingStorage(),
@@ -614,6 +1041,7 @@ describe('maintenance', () => {
       const survivor = await snapshotAt(documentId, utcNoon(200));
 
       const processor = createMaintenanceProcessor({
+        search,
         prisma,
         queues,
         storage: recordingStorage(),
@@ -637,6 +1065,7 @@ describe('maintenance', () => {
       await snapshotAt(documentId, utcNoon(10, 1));
 
       const processor = createMaintenanceProcessor({
+        search,
         prisma,
         queues,
         storage: recordingStorage(),
@@ -656,6 +1085,7 @@ describe('maintenance', () => {
       await snapshotAt(documentId, utcNoon(400, 1));
 
       const processor = createMaintenanceProcessor({
+        search,
         prisma,
         queues,
         storage: recordingStorage(),
@@ -720,6 +1150,7 @@ describe('maintenance', () => {
 
     const deleted: string[] = [];
     const processor = createMaintenanceProcessor({
+      search,
       prisma,
       queues,
       storage: recordingStorage(deleted),
@@ -746,6 +1177,7 @@ describe('maintenance', () => {
 
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
+      search,
       prisma,
       queues,
       storage: recordingStorage(),
@@ -774,6 +1206,7 @@ describe('maintenance', () => {
 
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
+      search,
       prisma,
       queues,
       storage: recordingStorage(),
@@ -802,6 +1235,7 @@ describe('maintenance', () => {
 
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
+      search,
       prisma,
       queues,
       storage: recordingStorage(),
@@ -831,6 +1265,7 @@ describe('maintenance', () => {
 
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
+      search,
       prisma,
       queues,
       storage: recordingStorage(),
@@ -859,6 +1294,7 @@ describe('maintenance', () => {
 
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
+      search,
       prisma,
       queues,
       storage: recordingStorage(),
@@ -883,6 +1319,7 @@ describe('maintenance', () => {
       });
 
       const processor = createMaintenanceProcessor({
+        search,
         prisma,
         queues,
         storage: recordingStorage(),
@@ -910,6 +1347,7 @@ describe('maintenance', () => {
       });
 
       const processor = createMaintenanceProcessor({
+        search,
         prisma,
         queues,
         storage: recordingStorage(),
@@ -951,6 +1389,7 @@ describe('maintenance', () => {
       });
 
       const processor = createMaintenanceProcessor({
+        search,
         prisma,
         queues,
         storage: recordingStorage(),
@@ -991,6 +1430,7 @@ describe('maintenance', () => {
       });
 
       const processor = createMaintenanceProcessor({
+        search,
         prisma,
         queues,
         storage: recordingStorage(),
@@ -1030,6 +1470,7 @@ describe('maintenance', () => {
       });
 
       const processor = createMaintenanceProcessor({
+        search,
         prisma,
         queues,
         storage: recordingStorage(),
@@ -1078,6 +1519,7 @@ describe('maintenance', () => {
       });
 
       const processor = createMaintenanceProcessor({
+        search,
         prisma,
         queues,
         storage: recordingStorage(),
@@ -2516,6 +2958,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
 
   function maintenance() {
     return createMaintenanceProcessor({
+      search,
       prisma,
       queues,
       storage: recordingStorage(),

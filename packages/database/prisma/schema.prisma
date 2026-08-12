@@ -513,8 +513,10 @@ model DocumentSearchIndex {
   @@map("document_search_index")
 }
 
-/// Prepared for future semantic search. No embeddings are generated yet
-/// (see docs/architecture.md, "Deferred work").
+/// Semantic search projection (issue #34, AP4). One row per document and model:
+/// `blockId` stays null until per-block chunking exists. Written and read
+/// through raw SQL in `semantic-search.ts`, because Prisma has no vector type.
+/// `textHash` is what keeps re-indexing an unchanged page free.
 model DocumentEmbedding {
   id         String                       @id @default(cuid(2))
   documentId String
@@ -522,8 +524,10 @@ model DocumentEmbedding {
   blockId    String?
   model      String
   embedding  Unsupported("vector(1536)")?
+  textHash   String?
   createdAt  DateTime                     @default(now())
 
+  @@unique([documentId, blockId, model])
   @@index([documentId])
   @@map("document_embedding")
 }

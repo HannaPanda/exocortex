@@ -1,19 +1,26 @@
 import { Inject, Injectable } from '@nestjs/common';
 
+import { createEmbeddingClient, createEmbeddingProvider } from '@exocortex/ai';
 import { WorkspaceAccessService } from '@exocortex/auth';
+import { type ApiEnv } from '@exocortex/config';
 import {
   type DocumentPathEntry,
   type SearchRequest,
   type SearchResponse,
+  semanticSearchOptions,
 } from '@exocortex/contracts';
 import {
   collectAncestors,
+  HybridSearchAdapter,
   PostgresSearchAdapter,
   type PrismaClient,
   type SearchAdapter,
 } from '@exocortex/database';
+import { type Logger } from '@exocortex/logger';
 
+import { API_ENV, LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
+import { SettingsService } from '../platform/settings.service';
 
 export const SEARCH_ADAPTER = Symbol('EXOCORTEX_SEARCH_ADAPTER');
 
@@ -91,6 +98,26 @@ export class SearchService {
 
 export const searchAdapterProvider = {
   provide: SEARCH_ADAPTER,
-  inject: [PRISMA],
-  useFactory: (prisma: PrismaClient): SearchAdapter => new PostgresSearchAdapter(prisma),
+  inject: [PRISMA, API_ENV, LOGGER, SettingsService],
+  useFactory: (
+    prisma: PrismaClient,
+    env: ApiEnv,
+    logger: Logger,
+    settings: SettingsService,
+  ): SearchAdapter =>
+    new HybridSearchAdapter({
+      prisma,
+      keyword: new PostgresSearchAdapter(prisma),
+      embeddings: createEmbeddingClient(
+        createEmbeddingProvider({
+          providerId: env.AI_PROVIDER,
+          logger,
+          appUrl: env.APP_URL,
+          apiKey: env.OPENROUTER_API_KEY ?? '',
+          baseUrl: env.OPENROUTER_BASE_URL,
+        }),
+      ),
+      options: async () => semanticSearchOptions(await settings.get()),
+      logger,
+    }),
 };

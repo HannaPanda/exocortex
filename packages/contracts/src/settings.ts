@@ -142,6 +142,46 @@ export const settingsSchema = z.object({
   'memory.recallMaxChars': z.number().int().min(500).max(50_000).default(6_000),
   /** Hard ceiling for the number of hits in one recall answer. */
   'memory.recallMaxResults': z.number().int().min(1).max(20).default(5),
+  /**
+   * Days a session note survives in the memory workspace. Zero means "for
+   * ever", and that is the default: deleting somebody's notes is not something
+   * an update should quietly start doing.
+   *
+   * The memory area was separated from the curated brain precisely so that this
+   * is allowed here (ADR-019). It only ever touches notes under a project page,
+   * never the project pages themselves, and never another workspace.
+   */
+  'memory.retentionDays': z.number().int().min(0).max(3_650).default(0),
+  /**
+   * Semantic search over `document_embedding` (issue #34, AP4).
+   *
+   * Off by default, because switching it on means every indexed page becomes a
+   * paid embedding call. Once on, the search box and `recall` answer from
+   * full-text and vector similarity fused together, and a page nobody
+   * remembers the words of is findable by what it was about.
+   */
+  'search.semanticEnabled': z.boolean().default(false),
+  /**
+   * Embedding model, an OpenRouter slug. Must return 1536 dimensions, which is
+   * what the column holds: `openai/text-embedding-3-small` does natively, and
+   * the larger `text-embedding-3-large` shortens to it on request. A model that
+   * answers with another length is refused rather than stored.
+   */
+  'search.embeddingModelSlug': z
+    .string()
+    .trim()
+    .min(1)
+    .max(120)
+    .default('openai/text-embedding-3-small'),
+  /**
+   * How much the semantic list counts against the full-text list when the two
+   * are fused, in percent. Half and half is the honest starting point:
+   * full-text is precise when the words match, vectors are what find the page
+   * whose words nobody remembers. A percentage rather than a fraction because
+   * every number in this schema is an integer an admin types into a plain
+   * number field.
+   */
+  'search.semanticWeightPercent': z.number().int().min(0).max(100).default(50),
   'mcp.enabled': z.boolean().default(true),
   'mcp.maxSearchResults': z.number().int().min(1).max(100).default(20),
   /** Two-step confirmation for mutating MCP tools (destination-keyed). */
@@ -222,6 +262,29 @@ function isUsableTimeZone(value: string): boolean {
   }
 }
 export type Settings = z.infer<typeof settingsSchema>;
+
+/**
+ * The semantic half of search, as the running deployment has it set.
+ *
+ * Lives here rather than in either composition root because both of them need
+ * exactly this reading: the API searches with it and the worker writes with
+ * it, and a deployment that embedded under one model and searched under
+ * another would return nothing while looking perfectly healthy. `null` is the
+ * ordinary "off" answer, not an error: search then behaves as it always did.
+ *
+ * The return shape is what `HybridSearchAdapter` in `@exocortex/database`
+ * declares as `SemanticOptions`; this package cannot import it (contracts is a
+ * leaf), so the two are matched structurally at the call sites.
+ */
+export function semanticSearchOptions(
+  settings: Settings,
+): { model: string; weight: number } | null {
+  if (!settings['search.semanticEnabled']) return null;
+  return {
+    model: settings['search.embeddingModelSlug'],
+    weight: settings['search.semanticWeightPercent'] / 100,
+  };
+}
 
 export const SETTING_KEYS = Object.keys(settingsSchema.shape) as readonly (keyof Settings)[];
 export const settingKeySchema = z.enum(

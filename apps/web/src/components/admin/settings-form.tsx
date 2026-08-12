@@ -33,6 +33,7 @@ import { messageForCode } from '@/lib/api/error-messages';
 const GROUP_LABELS: Record<string, string> = {
   ai: 'KI',
   memory: 'Gedächtnis',
+  search: 'Suche',
   mcp: 'MCP',
   calendar: 'Kalender',
   activity: 'Aktivität',
@@ -159,6 +160,22 @@ const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
   'memory.recallMaxResults': {
     label: 'Obergrenze pro Abruf (Treffer)',
     help: 'Wie viele Erinnerungen ein Abruf höchstens zurückgibt, egal wonach gefragt wurde.',
+  },
+  'memory.retentionDays': {
+    label: 'Notizen aufbewahren (Tage)',
+    help: 'Ältere Sitzungsnotizen werden im Gedächtnis-Arbeitsbereich gelöscht. 0 bedeutet: nie aufräumen. Projektseiten bleiben immer stehen, andere Arbeitsbereiche werden nie angefasst.',
+  },
+  'search.semanticEnabled': {
+    label: 'Semantische Suche',
+    help: 'Sucht zusätzlich nach Bedeutung statt nur nach Wörtern, damit eine Seite auch dann auftaucht, wenn niemand mehr weiß, wie sie formuliert war. Jede indexierte Seite wird dafür einmal von einem Modell in einen Vektor übersetzt, das kostet ein paar Cent pro Arbeitsbereich.',
+  },
+  'search.embeddingModelSlug': {
+    label: 'Modell für Vektoren',
+    help: 'Muss 1536 Dimensionen liefern, so breit ist die Spalte. openai/text-embedding-3-small tut das von sich aus, openai/text-embedding-3-large kürzt auf Wunsch darauf. Ein Modell mit anderer Länge wird abgelehnt statt falsch gespeichert.',
+  },
+  'search.semanticWeightPercent': {
+    label: 'Gewicht der Bedeutung (%)',
+    help: 'Wie stark die semantische Trefferliste gegenüber der Volltextliste zählt. 0 ist reiner Volltext, 100 ist reine Bedeutung, 50 wiegt beides gleich.',
   },
   'mcp.enabled': {
     label: 'MCP-Server aktiviert',

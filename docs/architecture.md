@@ -177,9 +177,20 @@ application uses. `PostgresSearchAdapter` combines:
 * `ts_headline` for highlighted snippets,
 * a hard workspace filter in SQL.
 
-Adding OpenSearch means adding a second implementation. The `vector` extension and
-the `DocumentEmbedding` table already exist for a future semantic adapter; no
-embeddings are generated yet.
+Adding OpenSearch means adding a second implementation.
+
+`HybridSearchAdapter` (`packages/database/src/semantic-search.ts`) is the second
+one, and it wraps the first (ADR-020). It writes a vector per document into
+`DocumentEmbedding` as it indexes, searches `pgvector` for nearest neighbours
+alongside the full-text query, and fuses the two lists by reciprocal rank. It is
+what both composition roots build; `search.semanticEnabled` decides per call
+whether the second half runs at all, and with it off the behaviour is exactly
+`PostgresSearchAdapter`'s.
+
+The vectors come from `EmbeddingProvider` in `packages/ai`, which
+`packages/database` may not import — the adapter declares its own
+`EmbeddingClient` port and the composition root passes the bridge
+(`createEmbeddingClient`).
 
 ## References between pages
 

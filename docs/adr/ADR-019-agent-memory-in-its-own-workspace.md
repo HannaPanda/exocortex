@@ -97,8 +97,10 @@ situation.
   the custom instructions ("call `recall` before answering when the question
   refers to earlier work"), which is why that text block belongs in
   `docs/mcp.md` rather than in somebody's head.
-* Recall ranks on Postgres full text plus the boosts above. Semantic recall over
-  the `pgvector` columns (issue #34, AP4) would replace the ranking inside
-  `MemoryService` and change nothing about the shape decided here.
-* The memory workspace grows without bound until something prunes it. Nothing
-  does yet; the workspace was chosen so that pruning is allowed to exist.
+* Recall ranks on whatever `SearchService` answers with, plus the boosts above.
+  Since ADR-020 that is full text and vector similarity fused, which changed
+  the ranking inside `MemoryService` and nothing about the shape decided here.
+* The memory workspace was chosen so that pruning is allowed to exist, and
+  `memory.retentionDays` is that pruning: untouched notes into the trash after
+  the period, destroyed after a second one. Zero, the default, keeps
+  everything.

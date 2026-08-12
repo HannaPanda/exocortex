@@ -9,7 +9,7 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `document-materialization` | collaboration server (debounced), API (import, snapshot restore) | `createMaterializeDocumentProcessor` | real |
 | `search-indexing` | materialization, document mutations, outbox dispatch | `createIndexDocumentProcessor` | real |
 | `ai` | `AiService.createRun`, `ConversationsService.postMessage` | `createAiRunProcessor` | real, mock provider |
-| `maintenance` | repeatable schedulers, outbox dispatch | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`, `resolve-document-links`, `backfill-document-links`, `snapshot-active-documents`), documented placeholder (`vacuum-search-index`) |
+| `maintenance` | repeatable schedulers, outbox dispatch | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`, `resolve-document-links`, `backfill-document-links`, `snapshot-active-documents`, `backfill-embeddings`, `prune-memories`), documented placeholder (`vacuum-search-index`) |
 | `attachment-text` | attachment upload, `GET /api/attachments/:id/text` (on demand) | `createAttachmentTextProcessor` | real |
 | `document-cover` | `POST /api/documents/:id/cover/generate` | `createDocumentCoverProcessor` | real |
 | `memory-capture` | `POST /api/memory/capture` (Claude Code hook, Hermes, any client) | `createMemoryCaptureProcessor` | real |
@@ -165,6 +165,34 @@ Two filters keep the memory from filling with noise, which is what makes recall
 worse over time. `memory.captureMinChars` throws away the shortest sessions in
 the API, before a model is ever paid; and the prompt allows the model to answer
 `NICHTS`, in which case nothing is written at all.
+
+`prune-memories` (daily at 04:15) is the third filter, and the only one that
+acts on notes that are already written. It does nothing while
+`memory.retentionDays` is `0`, which is the default. With a retention set, it
+works in two stages against the workspace named by `memory.workspaceId` and no
+other: a note untouched for the period goes into the trash, and a note that has
+been *in* the trash for another period is deleted for good. Nothing else in
+this application destroys a page outright, so a background sweep is the last
+place that should start doing it without a recoverable step first. Project
+pages (`parentId IS NULL`) are never touched — they are the roots the notes
+hang under. The archive stage writes `document.archived` outbox rows so the
+search projection follows the same path an archive from the API takes
+(ADR-010); the delete stage needs no follow-up, because the cascades take the
+content, the projection, the embeddings and the snapshots with them.
+
+### `backfill-embeddings`: the semantic index catches up
+
+A no-op while `search.semanticEnabled` is off (ADR-020). With it on, every two
+minutes it takes the 25 newest pages that have no vector under the configured
+model, embeds them through the same `HybridSearchAdapter` the indexing worker
+writes through, and stops being work at all once they all have one. Newest
+first, because a deployment that has just switched the feature on is waiting
+for the pages it is working on today, not the ones it last touched a year ago.
+
+One page the model refuses is logged and skipped, not retried in a loop:
+nothing was written for it, so the next run picks it up again. Ordinary
+indexing embeds a page as it goes, so this sweep exists only for pages that
+predate the feature or that were written while it was off.
 
 ### `calendar-sync`: mirroring a remote calendar
 

@@ -31,6 +31,27 @@ Stream events are typed: `start`, `delta`, `usage`, `done`, `error`.
   never silently start making paid calls. `OPENROUTER_DEFAULT_MODEL` is the main
   driver (currently `z-ai/glm-5.2`, text-only, no vision).
 
+## Embeddings
+
+`EmbeddingProvider` (`packages/ai/src/embedding-provider.ts`) is a contract of
+its own, not a degenerate `AiProvider`: an embedding model does not chat, has no
+tools, no streaming and no finish reason. It turns a batch of texts into a batch
+of vectors, in order, and refuses a response that is missing one rather than
+misaligning page A with page B's vector.
+
+* `OpenRouterEmbeddingProvider` — `POST {baseUrl}/embeddings`, OpenAI-shaped,
+  the same key and account as everything else. `dimensions` is sent so a model
+  with a longer natural output can shorten to the 1536 the column holds.
+* `MockEmbeddingProvider` — hashes vocabulary into a normalised vector. Not
+  semantics, but it makes the whole pipeline exercisable offline and in tests,
+  the same reasoning as `MockImageGenerator`.
+
+`createEmbeddingProvider` returns `null` without a key, and `null` means "the
+feature is unavailable", not "something broke". What consumes it is
+`HybridSearchAdapter` in `packages/database`, through the `EmbeddingClient`
+port and the `createEmbeddingClient` bridge — see ADR-020 and
+`docs/architecture.md`.
+
 ## Vision preprocessing
 
 `z-ai/glm-5.2` cannot see images, so the worker turns them into text first
