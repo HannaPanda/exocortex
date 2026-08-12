@@ -629,6 +629,64 @@ describe('pageTreeTool', () => {
     expect(result.text).toContain('… 100 von 400 Seite(n) hier nicht angezeigt');
   });
 
+  it('puts the truncation notice before the list, not after it', async () => {
+    // A reader that stops partway through 300 lines of tree never reaches a
+    // footer. ChatGPT read a capped whole-workspace tree three times, never
+    // passed parentId, and reported that the pages did not exist.
+    const roots = Array.from({ length: 20 }, (_, i) =>
+      node(
+        `rrrrrrrr${String(i).padStart(4, '0')}`,
+        `Abschnitt ${String(i)}`,
+        Array.from({ length: 30 }, (_, j) =>
+          node(`cccccccc${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`, `Kind ${String(i)}-${String(j)}`),
+        ),
+      ),
+    );
+    const { client } = createFakeClient(treeResponse(roots));
+
+    const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+
+    expect(result.text.indexOf('gekürzt')).toBeLessThan(result.text.indexOf('- Abschnitt 0 ('));
+  });
+
+  it('carries the truncation notice in the structured payload too', async () => {
+    // The half ChatGPT's connector renders. Without this the structured answer
+    // looks complete: a tree, a totalCount, and nothing saying the rendered
+    // list was capped.
+    const roots = Array.from({ length: 20 }, (_, i) =>
+      node(
+        `rrrrrrrr${String(i).padStart(4, '0')}`,
+        `Abschnitt ${String(i)}`,
+        Array.from({ length: 30 }, (_, j) =>
+          node(`cccccccc${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`, `Kind ${String(i)}-${String(j)}`),
+        ),
+      ),
+    );
+    const { client } = createFakeClient(treeResponse(roots));
+
+    const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+    const { truncation } = result.data as {
+      truncation: { omitted: number; shown: number; totalCount: number; hint: string; sections: { id: string }[] };
+    };
+
+    expect(truncation.omitted).toBe(320);
+    expect(truncation.shown).toBe(300);
+    expect(truncation.totalCount).toBe(620);
+    expect(truncation.hint).toContain('parentId');
+    // Every section that lost lines, so the caller can ask about any of them,
+    // not only the five the text has room to name.
+    expect(truncation.sections).toHaveLength(20);
+    expect(truncation.sections[0]?.id).toBe('rrrrrrrr0000');
+  });
+
+  it('leaves the structured payload alone when nothing was cut', async () => {
+    const { client } = createFakeClient(treeResponse([node('aaaaaaaa1111aaaa', 'Projekte')]));
+
+    const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+
+    expect(result.data).not.toHaveProperty('truncation');
+  });
+
   it('has something to say about an empty workspace', async () => {
     const { client } = createFakeClient(treeResponse([]));
 

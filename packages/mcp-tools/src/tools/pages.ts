@@ -211,26 +211,31 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
       result.path.length === 0
         ? []
         : [`Zweig unter: ${result.path.map((entry) => entry.title).join(' > ')}\n`];
+    const sections = truncated.slice().sort((a, b) => b.omitted - a.omitted);
+    // The caveat goes before the list it qualifies, not after it. A reader that
+    // stops somewhere inside 300 lines of tree never reaches a footer, and a
+    // client that shows only the first lines of a tool result hides one.
+    const notice =
+      omitted === 0
+        ? []
+        : [
+            `… ${omitted} von ${result.totalCount} Seite(n) hier nicht angezeigt (gekürzt). ` +
+              'Diese Liste ist keine vollständige Antwort. Ruf exo_page_tree mit parentId der ' +
+              'jeweiligen Seite auf, um darunter vollständig zu lesen. Am meisten gekürzt: ' +
+              sections
+                .slice(0, 5)
+                .map((section) => `${section.title} (parentId: ${section.id}, ${section.omitted})`)
+                .join(', ') +
+              '\n',
+          ];
     const parts = [
       ...scope,
+      ...notice,
       lines.length === 0
         ? result.path.length === 0
           ? 'Keine Seiten vorhanden.'
           : 'Keine Unterseiten.'
         : lines.join('\n'),
-      ...(omitted === 0
-        ? []
-        : [
-            `\n… ${omitted} von ${result.totalCount} Seite(n) hier nicht angezeigt (gekürzt). ` +
-              'Ruf exo_page_tree mit parentId der jeweiligen Seite auf, um darunter ' +
-              'vollständig zu lesen. Am meisten gekürzt: ' +
-              truncated
-                .slice()
-                .sort((a, b) => b.omitted - a.omitted)
-                .slice(0, 5)
-                .map((section) => `${section.title} (parentId: ${section.id}, ${section.omitted})`)
-                .join(', '),
-          ]),
       // Named, not just counted: a caller that has to judge whether a page it
       // is looking for was archived cannot do that from a number, and a caller
       // that just archived something has no other way to see what went along.
@@ -250,7 +255,30 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
                 : ''),
           ]),
     ];
-    return { text: parts.join('\n'), data: result };
+    return {
+      text: parts.join('\n'),
+      // Mirrored into `structuredContent` as well, because a client that renders
+      // the structured payload instead of the text -- ChatGPT's connector does,
+      // and collapses it to `nodes: Array(20)` -- otherwise sees a tree with no
+      // sign that the rendered answer was capped, and concludes it read
+      // everything. The caveat has to travel with both halves of the result.
+      data:
+        omitted === 0
+          ? result
+          : {
+              ...result,
+              truncation: {
+                omitted,
+                shown: lines.length,
+                totalCount: result.totalCount,
+                /** Every section that lost lines, not just the five the text names. */
+                sections,
+                hint:
+                  'Die gerenderte Liste ist gekürzt und beantwortet nicht, was unter einer ' +
+                  'Seite hängt. Ruf exo_page_tree mit deren parentId auf.',
+              },
+            },
+    };
   },
 });
 
