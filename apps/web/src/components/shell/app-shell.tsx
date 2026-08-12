@@ -335,15 +335,15 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  aria-label="API-Token"
+                  aria-label="Verbindungen"
                   data-testid="open-api-tokens"
-                  render={<Link href="/einstellungen/tokens" />}
+                  render={<Link href="/einstellungen/verbindungen" />}
                 >
                   <KeyIcon />
                 </Button>
               }
             />
-            <TooltipContent>API-Token</TooltipContent>
+            <TooltipContent>Verbindungen</TooltipContent>
           </Tooltip>
 
           <Separator orientation="vertical" className="h-5" />

@@ -136,14 +136,14 @@ model then reasons about (ADR-012). Resolution order, in
 
 The seeded companion for the text-only models is `qwen/qwen3.7-flash`.
 
-## API tokens
+## Connections: API tokens and connected applications
 
 Long-lived bearer credentials for external clients (the MCP server, scripts,
-cron jobs). A token carries **exactly its user's permissions** — nothing more,
-nothing less — because `TokenOrSessionGuard` resolves it into the same
-`VerifiedSession` a cookie produces (ADR/decision D1). There is no separate
-scope vocabulary; `ApiToken.scopes` exists but an empty array means "everything
-this user may do".
+cron jobs). A token carries **at most its user's permissions** — never more —
+because `TokenOrSessionGuard` resolves it into the same `VerifiedSession` a
+cookie produces (ADR/decision D1). It can carry less: `ApiToken.scopes`
+(`read` / `write` / `admin`, cumulative) is enforced by `TokenScopeGuard`, and
+an empty array grants **nothing**.
 
 ```bash
 pnpm --filter @exocortex/api token:create -- \
@@ -152,8 +152,31 @@ pnpm --filter @exocortex/api token:create -- \
 
 The raw value is printed on the last line and **never again**: only its SHA-256
 hash and a 12-character `prefix` are stored. Users manage their own tokens at
-`/einstellungen/tokens` and through `GET`/`POST /api/me/api-tokens` and
+`/einstellungen/verbindungen` (the old `/einstellungen/tokens` redirects there)
+and through `GET`/`POST /api/me/api-tokens` and
 `DELETE /api/me/api-tokens/:tokenId`.
+
+That page has three sections, because "which agent may reach my brain" is one
+question, not three:
+
+* **Verbundene Anwendungen** — the OAuth clients this account let in through
+  `/verbinden`, from `GET /api/me/connections`, each with a button behind
+  `DELETE /api/me/connections/:clientId`. That call deletes the account's access
+  tokens for the client (each row holds the refresh token too, so renewal stops
+  as well), deletes its consent, and switches the `oauth_application` row off
+  when nobody else still consents to it. Before this existed, the only way to
+  end a connection was an UPDATE against the database.
+* **Token** — the personal API tokens described above.
+* **Einrichten** — one finished command per client, built from
+  `apps/web/src/lib/connection-snippets.ts` and the browser's own origin. The
+  reveal dialog renders the same command with the new secret already inside it:
+  a token is shown once, so anything a person has to paste in by hand is a step
+  where setup fails.
+
+Both connection routes need the `admin` scope (`requiredScopeForRequest`), for
+the same reason token management does: a credential that can manage credentials
+is not a narrow credential. An agent holding a `write` token can neither see nor
+cut the connections watching over it.
 
 Two prefixes exist, and they are different mechanisms:
 

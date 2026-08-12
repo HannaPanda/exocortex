@@ -7,7 +7,6 @@ import { type ApiToken, type CreateApiTokenResponse } from '@exocortex/contracts
 import {
   Alert,
   AlertDescription,
-  AppPage,
   Badge,
   Button,
   Dialog,
@@ -37,6 +36,9 @@ import {
 import { useApiTokens, useCreateApiToken, useRevokeApiToken } from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
+import { connectionSnippets } from '@/lib/connection-snippets';
+
+import { CopyBlock } from './copy-block';
 
 const dateTimeFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
 
@@ -76,11 +78,20 @@ const SCOPE_LABELS: Record<string, string> = {
   admin: 'Administration',
 };
 
+interface ApiTokenPanelProps {
+  /**
+   * Called with the raw secret the moment a token is created, so the setup
+   * section below can put it into its commands. The page drops it again on
+   * reload; nothing here stores it.
+   */
+  onTokenCreated?: (secret: string) => void;
+}
+
 /**
  * Personal API tokens. Not admin-gated: every signed-in user manages their own
  * (the API only ever returns the caller's own tokens, one per row).
  */
-export function ApiTokenPanel() {
+export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
   const tokensQuery = useApiTokens();
   const createToken = useCreateApiToken();
   const revokeToken = useRevokeApiToken();
@@ -112,6 +123,7 @@ export function ApiTokenPanel() {
           setName('');
           setExpiry('90');
           setScope('read');
+          onTokenCreated?.(response.secret);
         },
       },
     );
@@ -128,9 +140,11 @@ export function ApiTokenPanel() {
   }
 
   return (
-    <AppPage maxWidth="max-w-3xl" className="flex flex-col gap-6">
+    <section className="flex flex-col gap-3" aria-labelledby="api-tokens-heading">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">API-Token</h1>
+        <h2 id="api-tokens-heading" className="text-sm font-semibold">
+          Token
+        </h2>
         <p className="mt-1 text-sm text-muted-foreground">
           API-Token erlauben externen Programmen wie dem MCP-Server, in deinem Namen auf
           eXocortex zuzugreifen. Gib jedem Token nur die Rechte, die es wirklich braucht:
@@ -304,6 +318,24 @@ export function ApiTokenPanel() {
               <p className="text-sm text-destructive-text">
                 Dieses Token wird nie wieder angezeigt. Bewahre es an einem sicheren Ort auf.
               </p>
+              {/*
+                The finished command, not just the secret: this dialog is the
+                one moment the token exists in the browser, so what a person
+                actually needs has to be copyable right here. The other clients
+                stay available in the setup section for as long as the page
+                lives.
+              */}
+              <div className="flex flex-col gap-1.5">
+                <p className="text-sm font-medium">Direkt in Claude Code einrichten</p>
+                <CopyBlock
+                  value={claudeCodeCommand(revealedToken.secret)}
+                  label="Befehl für Claude Code kopieren"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Befehle für ChatGPT und Hermes stehen unter „Einrichten“, mit diesem Token bereits
+                  eingesetzt.
+                </p>
+              </div>
             </div>
           ) : null}
           <DialogFooter>
@@ -338,6 +370,17 @@ export function ApiTokenPanel() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </AppPage>
+    </section>
   );
+}
+
+/**
+ * The one-liner for the client most people arrive from. Built from the same
+ * catalogue the setup cards use, so the two can never drift apart, and from
+ * `window.location.origin` so a self-hosted deployment names itself.
+ */
+function claudeCodeCommand(secret: string): string {
+  const origin = typeof window === 'undefined' ? 'https://exocortex.app' : window.location.origin;
+  const snippet = connectionSnippets(origin, secret).find((entry) => entry.id === 'claude-code');
+  return snippet?.code ?? '';
 }

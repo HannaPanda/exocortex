@@ -27,7 +27,12 @@ test.beforeAll(() => {
  * `/admin` is deliberately included even though the seed user is not an
  * administrator, because the bundle is evaluated before the guard renders.
  */
-const ROUTES = ['/arbeitsbereich', '/admin', '/admin/einstellungen', '/einstellungen/tokens'];
+const ROUTES = [
+  '/arbeitsbereich',
+  '/admin',
+  '/admin/einstellungen',
+  '/einstellungen/verbindungen',
+];
 
 test.describe('client runtime', () => {
   for (const route of ROUTES) {

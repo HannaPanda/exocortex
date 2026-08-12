@@ -10,9 +10,12 @@ import {
   type AiModelListResponse,
   type ApiToken,
   type ApiTokenListResponse,
+  type ConnectedApp,
+  type ConnectedAppListResponse,
   type CreateAiModelRequest,
   type CreateApiTokenRequest,
   type CreateApiTokenResponse,
+  type DisconnectAppResponse,
   type Settings,
   type SettingsResponse,
   type SyncAiModelsRequest,
@@ -36,6 +39,7 @@ export const adminQueryKeys = {
   users: ['admin', 'users'] as const,
   aiModels: ['admin', 'ai-models'] as const,
   apiTokens: ['me', 'api-tokens'] as const,
+  connections: ['me', 'connections'] as const,
 };
 
 // ---------------------------------------------------------------------------
@@ -191,5 +195,30 @@ export function useRevokeApiToken() {
     mutationFn: (tokenId: string) =>
       apiRequest<{ revoked: true }>(`/api/me/api-tokens/${tokenId}`, { method: 'DELETE' }),
     onSuccess: () => void client.invalidateQueries({ queryKey: adminQueryKeys.apiTokens }),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Connected OAuth applications (the caller's own, same as the tokens above)
+// ---------------------------------------------------------------------------
+
+export function useConnectedApps(): UseQueryResult<ConnectedApp[]> {
+  return useQuery({
+    queryKey: adminQueryKeys.connections,
+    queryFn: async () => {
+      const response = await apiRequest<ConnectedAppListResponse>('/api/me/connections');
+      return response.applications;
+    },
+  });
+}
+
+export function useDisconnectApp() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (clientId: string) =>
+      apiRequest<DisconnectAppResponse>(`/api/me/connections/${encodeURIComponent(clientId)}`, {
+        method: 'DELETE',
+      }),
+    onSuccess: () => void client.invalidateQueries({ queryKey: adminQueryKeys.connections }),
   });
 }

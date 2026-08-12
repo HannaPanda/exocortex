@@ -227,9 +227,18 @@ catalogue needs it, and it is the one scope that can mint further tokens.
 An OAuth access token carries no eXocortex scope — the OpenID scopes it holds
 say nothing about pages. What limits it is the tool list its endpoint serves
 (`/api/mcp/research` cannot write at all) and the fact that it opens no other
-route in the API. Revoke a connector by setting `disabled` on its row in
-`oauth_application`; the check runs on every use, so its existing tokens die
-with it.
+route in the API. Revoke a connector under **Einstellungen → Verbindungen**
+(`/einstellungen/verbindungen`, section "Verbundene Anwendungen"): that deletes
+the account's tokens and its consent and sets `disabled` on the
+`oauth_application` row when nobody else still uses the registration. The
+`disabled` check runs on every use, so surviving tokens die with it.
+
+Neither the connections list nor the disconnect button is in the tool
+catalogue, and that is a decision rather than an omission. Both live in the
+`admin` scope precisely because they are credential management; a tool for them
+would be a tool no correctly scoped agent can call, and an incorrectly scoped
+one could use it to cut off the connectors watching it. The same reasoning
+already keeps `/api/me/api-tokens` out of the catalogue.
 
 `POST /api/mcp` does **not** accept a cookie session, only a bearer token. A
 cookie travels with any request a page can provoke, so accepting one would put
@@ -343,6 +352,34 @@ up per person and never across people.
 
 ## Configuring a client
 
+**The short way, for anyone who is not developing eXocortex:**
+`/einstellungen/verbindungen` in the app. The "Einrichten" section prints the
+finished line per client, with the deployment's own URL filled in, and with the
+token already inside it when it was just created there. Nothing below has to be
+retyped from this document.
+
+Which rights to hand out:
+
+| Client | Scope | Why |
+| --- | --- | --- |
+| ChatGPT (OAuth) | *(none to choose)* | It authenticates as the person; what limits it is the endpoint's tool list |
+| Coding agents (Claude Code, Codex) | `write` | They create and maintain pages, which is the point |
+| Read-only lookups, dashboards | `read` | A token that cannot write cannot be made to write |
+| Anything at all | **not** `admin` | Nothing in the catalogue needs it, and it is the one scope that mints further tokens and cuts connections |
+
+**ChatGPT does not call anything on its own.** It has no `SessionStart` hook, so
+without an instruction it treats the connector as a reference work it consults
+when asked. Paste this into the project's custom instructions to change that:
+
+```text
+Du hast einen eXocortex-Connector. Bevor du eine Frage beantwortest, die sich auf
+frühere Arbeit, Entscheidungen, Setups oder Personen bezieht, such zuerst dort
+danach und stütz die Antwort auf das, was du findest. Wenn ein Treffer relevant
+aussieht, lad die Seite vollständig nach, statt nur den Ausschnitt zu verwenden.
+Sag dazu, worauf du dich stützt.
+```
+
+**The long way, for a client that reads a config file:**
 `apps/mcp` reads `EXOCORTEX_API_URL` + `EXOCORTEX_API_TOKEN` from its process
 environment (see `src/env.ts`); no config file. Mint a token with
 `POST /api/me/api-tokens` (brief 02) or the equivalent seed/admin script, then:
@@ -375,6 +412,19 @@ mcp_servers:
   }
 }
 ```
+
+**Claude Code, without a config file** (one line, and the same line the
+"Einrichten" section prints):
+
+```bash
+claude mcp add --transport http exocortex https://exocortex.app/api/mcp \
+  --header "Authorization: Bearer exo_..."
+```
+
+`--scope user` at the end makes it available in every project instead of only
+the current one. This is the better route for a machine that is not the server:
+no path to a built `apps/mcp`, no `node` process, nothing to rebuild after a
+deployment.
 
 `EXOCORTEX_API_URL=http://127.0.0.1:3211` is the intended value whenever the
 MCP client runs on the same host as the API (Hermes does): it talks to
