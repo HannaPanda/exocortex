@@ -143,6 +143,23 @@ function bodyOf(markdown, title) {
  * on a page in the trash bothers nobody, and rewriting a page somebody threw
  * away would drag it back through indexing for nothing.
  */
+/**
+ * What the read-back comparison is allowed to ignore.
+ *
+ * The imported pages contain Markdown that never parsed as it was meant to:
+ * `` `/clear`** räumt auf.** `` opens bold immediately after a code span, which
+ * is literal text, not emphasis. Reading it and writing it back escapes those
+ * asterisks (`\*\*`), so the page renders exactly as before and its stored
+ * Markdown says more honestly what it is. Around one page in six does this.
+ *
+ * Dropping the escapes on both sides keeps that from stopping a run, while a
+ * comparison that still notices the thing worth noticing: a paragraph, a list
+ * or a link that did not survive.
+ */
+function normalizeEscapes(markdown) {
+  return markdown.replace(/\\([-!"#$%&'()*+,./:;<=>?@[\]^_`{|}~])/g, '$1');
+}
+
 async function collectDocumentIds(token, workspaceId) {
   const result = await api(token, 'GET', `/api/workspaces/${workspaceId}/documents/tree`);
   const ids = [];
@@ -204,7 +221,7 @@ async function main() {
     // the page now holds is the one failure mode worth stopping the run for.
     const after = await api(token, 'GET', `/api/documents/${document.id}/export/markdown`);
     const actual = bodyOf(after.markdown, title);
-    if (actual !== next) {
+    if (normalizeEscapes(actual) !== normalizeEscapes(next)) {
       console.error(`\nAbbruch: ${title} (${document.id}) sieht nach dem Schreiben anders aus.`);
       console.error(`Snapshot zum Zurückrollen: ${written.snapshotId}`);
       console.error(`--- erwartet ---\n${next.slice(-400)}`);
