@@ -21,8 +21,15 @@ const KIND_TO_DB = {
  * The one expression that turns a page title into the key a reference is
  * compared against. It must produce the same value as `documentLinkTitleKey`
  * in `@exocortex/editor`, which is what writes `targetTitleKey`.
+ *
+ * The escape is doubled on purpose. In a JavaScript template literal `\s` is
+ * just `s`, so the single-backslash form silently ships
+ * `regexp_replace(title, 's+', ' ')` to PostgreSQL: it replaces every *letter
+ * s* with a space, and then only titles without an `s` in them resolve at all.
+ * That compiles, runs, and passes every test whose fixture titles happen to
+ * avoid the letter.
  */
-const TITLE_KEY_SQL = Prisma.sql`lower(btrim(regexp_replace(d."title", '\s+', ' ', 'g')))`;
+const TITLE_KEY_SQL = Prisma.sql`lower(btrim(regexp_replace(d."title", '\\s+', ' ', 'g')))`;
 
 /**
  * Re-points every reference matched by `where` at the page it means, or at
@@ -133,6 +140,53 @@ export async function replaceDocumentLinks(
   });
 
   return links.length;
+}
+
+/**
+ * Points every reference that is stored as unresolved at the page it names,
+ * for a whole workspace at once.
+ *
+ * The event-driven resolution above is bounded on purpose, and that bound has
+ * a blind spot: it can only match rows that already exist when the event
+ * fires. A bulk import creates the pages and materializes their content in
+ * separate, asynchronous steps, so a target page's `document.created` arrives
+ * before the references to it have been extracted, matches nothing, and no
+ * later event ever comes back to those rows. They stay `NULL` forever and the
+ * Verweise tab reports "no such page" about a page that is right there.
+ *
+ * Deliberately not batched: this is one correlated update over an index range,
+ * and splitting it would mean re-attempting the genuinely unresolvable rows
+ * (a reference to a title nobody ever wrote) on every pass without ever
+ * finishing.
+ *
+ * Counted around the statement rather than from its row count, because the
+ * update touches every unresolved row and leaves most of them unresolved: the
+ * useful number is how many stopped being unresolved, and how many are left
+ * that no page can answer.
+ */
+export async function repairUnresolvedLinks(
+  prisma: PrismaClient,
+  workspaceId: string | null,
+): Promise<{ repaired: number; unresolvable: number }> {
+  const scope =
+    workspaceId === null
+      ? Prisma.sql`l."targetDocumentId" IS NULL`
+      : Prisma.sql`l."targetDocumentId" IS NULL AND l."workspaceId" = ${workspaceId}`;
+
+  const countUnresolved = async (): Promise<number> => {
+    const rows = await prisma.documentLink.count({
+      where: {
+        targetDocumentId: null,
+        ...(workspaceId === null ? {} : { workspaceId }),
+      },
+    });
+    return rows;
+  };
+
+  const before = await countUnresolved();
+  await repointLinks(prisma, scope);
+  const unresolvable = await countUnresolved();
+  return { repaired: before - unresolvable, unresolvable };
 }
 
 /**

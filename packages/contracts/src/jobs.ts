@@ -80,6 +80,18 @@ export const maintenanceJobSchema = jobBase.extend({
      */
     'backfill-document-links',
     /**
+     * Re-points references that are stored as unresolved although the page
+     * they name exists.
+     *
+     * `resolve-document-links` reacts to an event and can only see the state
+     * at the moment it runs: during a bulk import, a target page appears
+     * before the pages referencing it have been materialized, so its event
+     * finds nothing to attach, and no later event ever revisits those rows.
+     * This is the sweep underneath, and a no-op once every reference that can
+     * resolve has.
+     */
+    'repair-document-links',
+    /**
      * Takes a `SCHEDULED` `DocumentSnapshot` of every page that changed since
      * its last snapshot, gated by `activity.editSessionSnapshotsEnabled`
      * (issue #20). What lets the Aktivität tab show a real session range

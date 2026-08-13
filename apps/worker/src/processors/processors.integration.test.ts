@@ -44,6 +44,7 @@ import { type ToolRunner } from '../tool-runner';
 import { createAiRunProcessor, type ResolvedModelRow } from './ai-run';
 import { createAttachmentTextProcessor } from './attachment-text';
 import { createDocumentCoverProcessor } from './document-cover';
+import { repairUnresolvedLinks } from './document-links';
 import { createIndexDocumentProcessor } from './index-document';
 import { createMaintenanceProcessor } from './maintenance';
 import { createMaterializeDocumentProcessor } from './materialize-document';
@@ -3174,7 +3175,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
 
   it('resolves a reference to a page that is only created afterwards', async () => {
     const sourceId = await createLinkingDocument(
-      '# Quelle C\n\nEin Verweis auf [[Spätgeburt]].\n',
+      '# Quelle C\n\nEin Verweis auf [[Spätes Sammelsurium]].\n',
       'Quelle C',
     );
     await materialize(sourceId, 'test-links-3');
@@ -3187,7 +3188,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
     const target = await prisma.document.create({
       data: {
         workspaceId,
-        title: 'Spätgeburt',
+        title: 'Spätes Sammelsurium',
         orderKey: generateOrderKey(null, null),
         createdById: userId,
         updatedById: userId,
@@ -3206,6 +3207,74 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
       where: { sourceDocumentId: sourceId },
     });
     expect(link.targetDocumentId).toBe(target.id);
+  }, 60_000);
+
+  /**
+   * The sweep underneath the event-driven resolution.
+   *
+   * What it repairs is what a bulk import leaves behind: the pages and the
+   * content that references them arrive in separate asynchronous steps, so a
+   * target page's own event can fire while the references to it have not been
+   * extracted yet. It matches nothing, and nothing ever comes back to those
+   * rows. Reproduced here by creating the target *without* running the task
+   * its creation would normally enqueue.
+   */
+  it('repairs references whose target existed all along but which no event revisited', async () => {
+    const sourceId = await createLinkingDocument(
+      '# Quelle R\n\nEin Verweis auf [[Übersehene Seite]].\n',
+      'Quelle R',
+    );
+    await materialize(sourceId, 'test-links-repair');
+    await prisma.document.create({
+      data: {
+        workspaceId,
+        title: 'Übersehene Seite',
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+      },
+    });
+
+    // Exactly the state the Verweise tab reports as "no such page" although
+    // the page is right there.
+    const before = await prisma.documentLink.findFirstOrThrow({
+      where: { sourceDocumentId: sourceId },
+    });
+    expect(before.targetDocumentId).toBeNull();
+
+    await maintenance()(
+      contextFor({
+        correlationId: 'test-links-repair-2',
+        task: 'repair-document-links',
+        workspaceId,
+        documentId: null,
+      }).context,
+    );
+
+    const after = await prisma.documentLink.findFirstOrThrow({
+      where: { sourceDocumentId: sourceId },
+    });
+    expect(after.targetDocumentId).not.toBeNull();
+  }, 60_000);
+
+  it('leaves a reference to a title nobody wrote unresolved, and says how many', async () => {
+    const sourceId = await createLinkingDocument(
+      '# Quelle S\n\nEin Verweis auf [[Diese Seite gibt es wirklich nicht]].\n',
+      'Quelle S',
+    );
+    await materialize(sourceId, 'test-links-unresolvable');
+
+    const result = await repairUnresolvedLinks(prisma, workspaceId);
+    expect(result.unresolvable).toBeGreaterThanOrEqual(1);
+
+    // And a second pass repairs nothing, because there is nothing left it can
+    // reach: the sweep is idempotent and cheap to run on a schedule.
+    expect((await repairUnresolvedLinks(prisma, workspaceId)).repaired).toBe(0);
+    expect(
+      (
+        await prisma.documentLink.findFirstOrThrow({ where: { sourceDocumentId: sourceId } })
+      ).targetDocumentId,
+    ).toBeNull();
   }, 60_000);
 
   it('lets go of a reference when the target is renamed, and hands it to the new namesake', async () => {

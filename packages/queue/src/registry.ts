@@ -236,6 +236,23 @@ export class QueueRegistry {
         data: { correlationId, task: 'reap-stale-ai-runs', workspaceId: null, documentId: null },
       },
     );
+    // Once a day, after the snapshot prune: the net underneath the
+    // event-driven reference resolution, for rows whose target page appeared
+    // in the same import that wrote them and which no later event revisits.
+    // A no-op once every reference that can resolve has.
+    await queue.upsertJobScheduler(
+      'repair-document-links',
+      { pattern: '15 4 * * *' },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: {
+          correlationId,
+          task: 'repair-document-links',
+          workspaceId: null,
+          documentId: null,
+        },
+      },
+    );
     // Every five minutes, a small batch: this is what pulls pages that existed
     // before the reference index into it (issue #19), slowly enough that a
     // running deployment does not notice. Once every content row is marked it

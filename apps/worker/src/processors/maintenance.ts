@@ -13,6 +13,7 @@ import { type ObjectStorage } from '@exocortex/storage';
 
 import {
   asProseMirrorDocument,
+  repairUnresolvedLinks,
   replaceDocumentLinks,
   resolveDocumentLinks,
 } from './document-links';
@@ -509,6 +510,23 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
           return;
         }
         logger.debug('Document links resolved', { documentId: payload.documentId, resolved });
+        return;
+      }
+
+      case 'repair-document-links': {
+        const { repaired, unresolvable } = await repairUnresolvedLinks(
+          prisma,
+          payload.workspaceId,
+        );
+        // Logged at info even when it repairs nothing: "how many references
+        // point at a title no page carries" is the one number that says
+        // whether the reference index is telling the truth, and it is worth
+        // having in the log once a day.
+        logger.info('Unresolved references swept', {
+          repaired,
+          unresolvable,
+          workspaceId: payload.workspaceId ?? undefined,
+        });
         return;
       }
 
