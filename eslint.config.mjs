@@ -47,6 +47,11 @@ export default tseslint.config(
   {
     ignores: [
       '**/node_modules/**',
+      // Agent worktrees are full checkouts of this repository living inside it.
+      // Git ignores them, ESLint does not: without this line every run lints
+      // four extra copies of the whole tree and reports the same finding once
+      // per copy.
+      '.claude/worktrees/**',
       '**/dist/**',
       '**/.next/**',
       '**/.turbo/**',
