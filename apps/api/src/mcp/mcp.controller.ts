@@ -173,7 +173,7 @@ export class McpController {
       return;
     }
 
-    const handler = this.mcp.createHandler(caller, surface);
+    const handler = await this.mcp.createHandler(caller, surface);
     const responses: JsonRpcResponse[] = [];
     for (const message of messages) {
       const response = await this.dispatch(handler, message, caller, surface);

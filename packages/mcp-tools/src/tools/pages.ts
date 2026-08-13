@@ -452,8 +452,6 @@ export const pageWriteTool: AnyToolDefinition = defineTool({
     'Lange Inhalte in mehreren Aufrufen schreiben: den ersten mit mode "replace", die weiteren ' +
     'mit mode "append". Ein einzelner Aufruf mit sehr viel Markdown kann am Ausgabelimit ' +
     'abgeschnitten werden und wird dann gar nicht ausgeführt. ' +
-    'Der Aufruf verändert Daten: der erste Aufruf fragt zurück, erst der identisch wiederholte ' +
-    'schreibt. Umformulieren zwischen den beiden Aufrufen startet die Rückfrage von vorn. ' +
     'Hat jemand die Seite gerade geöffnet, erscheint die Änderung dort sofort.',
   inputSchema: pageWriteInputSchema,
   surfaces: ['mcp', 'ai'],
@@ -663,6 +661,7 @@ export const pageDeleteTool: AnyToolDefinition = defineTool({
   surfaces: ['mcp'],
   mutating: true,
   destructive: true,
+  irreversible: true,
   target: (input) => `document:${input.documentId}`,
   async preview(client, input) {
     const preview = await client.request({

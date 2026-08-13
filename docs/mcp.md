@@ -408,9 +408,29 @@ job, a model distils it, and only the summary is written; see
 
 ## Confirmation gate
 
-Mutating tools go through `WriteConfirmationGate`
-(`packages/mcp-tools/src/confirm.ts`) unless
-`EXOCORTEX_REQUIRE_WRITE_CONFIRMATION=false`. The pending key is derived
+**What the gate covers, since 2026-08-13:** the calls no snapshot brings back,
+and nothing else. Four tools declare `irreversible: true` and a test pins the
+list by name: `exo_page_delete`, `exo_database_property_delete`,
+`exo_comment_delete`, `exo_user_delete`. An ordinary write runs on the first
+call.
+
+It used to cover every mutating tool, and the retirement is deliberate. The
+gate stops no attacker: whoever holds the bearer token sends the call twice,
+which costs a line of code. Its prompt is read by a model, never by a person,
+and both clients this deployment serves already ask their human before a write.
+Meanwhile the cost was real and recurring: a model that rewords its Markdown
+between the two attempts never confirms and loops, and one such loop switched
+from `append` to `replace` and overwrote a page (the pre-write snapshot got it
+back). What actually guards a write is that snapshot, the trash, the token
+scopes and the OAuth consent screen. See `ToolDefinition.irreversible`.
+
+A deployment can have the old behaviour back: `mcp.writeConfirmationRequired`
+(admin area, default off) widens the gate to every mutating tool over HTTP, and
+`EXOCORTEX_REQUIRE_WRITE_CONFIRMATION=true` does the same for a given `apps/mcp`
+subprocess. Neither can *narrow* it below the four irreversible calls.
+
+Gated tools go through `WriteConfirmationGate`
+(`packages/mcp-tools/src/confirm.ts`). The pending key is derived
 **server-side** from `sha256(toolName + '\n' + target + '\n' + stableStringify(payload))`,
 never from a client-supplied token. The first call to a mutating tool records
 a pending entry and returns a German confirmation prompt as a normal (non-error)
@@ -447,15 +467,13 @@ a client cannot fabricate a confirmation for an operation it did not first
 request, and cannot swap the payload between the announcement and the
 confirmation.
 
-To disable the gate for trusted automation (a script driving its own
-workspace, a CI job), set `EXOCORTEX_REQUIRE_WRITE_CONFIRMATION=false` in that
-client's environment. Do this per deployment of `apps/mcp`, not globally.
-
-Over HTTP the gate is always on and there is no switch, because the endpoint is
-shared: one client's convenience would be every other client's missing
-safeguard. The gate lives in the API process and its key includes the user id,
-so the announcement and the confirmation — two unrelated HTTP requests — pair
-up per person and never across people.
+Over HTTP the gate lives in the API process and its key includes the user id,
+so the announcement and the confirmation, two unrelated HTTP requests, pair up
+per person and never across people. `mcp.writeConfirmationRequired` is read on
+every `createHandler`, so widening or narrowing it takes effect on the next
+request; it was written, shown in the admin area and documented on 2026-08-11
+and read by nobody until 2026-08-13, during which the gate ran regardless of
+the switch.
 
 ## Configuring a client
 

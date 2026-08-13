@@ -42,12 +42,31 @@ const writeTool: AnyToolDefinition = defineTool({
   },
 });
 
-function handlerWith(options?: { gate?: WriteConfirmationGate; principal?: string }) {
+const deleteTool: AnyToolDefinition = defineTool({
+  name: 'exo_delete_thing',
+  description: 'Löscht ein Ding endgültig, ohne dass ein Snapshot es zurückholt.',
+  inputSchema: z.object({ id: z.string() }),
+  surfaces: ['mcp'],
+  mutating: true,
+  destructive: true,
+  irreversible: true,
+  target: (input) => `thing:${input.id}`,
+  async execute(_client, input) {
+    return { text: `gelöscht: ${input.id}` };
+  },
+});
+
+function handlerWith(options?: {
+  gate?: WriteConfirmationGate;
+  principal?: string;
+  confirm?: 'irreversible' | 'all';
+}) {
   return createMcpRequestHandler({
     client: CLIENT,
-    tools: [readTool, writeTool],
+    tools: [readTool, writeTool, deleteTool],
     ...(options?.gate === undefined ? {} : { gate: options.gate }),
     ...(options?.principal === undefined ? {} : { principal: options.principal }),
+    ...(options?.confirm === undefined ? {} : { confirm: options.confirm }),
   });
 }
 
@@ -87,7 +106,7 @@ describe('createMcpRequestHandler', () => {
     const names = (response as { result: { tools: { name: string }[] } }).result.tools.map(
       (tool) => tool.name,
     );
-    expect(names).toEqual(['exo_read_thing', 'exo_write_thing']);
+    expect(names).toEqual(['exo_read_thing', 'exo_write_thing', 'exo_delete_thing']);
   });
 
   it('annotates every tool as reading or writing', async () => {
@@ -159,9 +178,47 @@ describe('createMcpRequestHandler', () => {
     expect(result.content[0]?.text).toContain('Ungültige Eingabe');
   });
 
-  it('runs a mutating tool only on the repeated, identical call', async () => {
+  it('runs an irreversible tool only on the repeated, identical call', async () => {
     const gate = new WriteConfirmationGate();
     const handler = handlerWith({ gate });
+    const call = {
+      jsonrpc: '2.0' as const,
+      id: 1,
+      method: 'tools/call',
+      params: { name: 'exo_delete_thing', arguments: { id: 'a' } },
+    };
+
+    const first = await handler(call);
+    const second = await handler(call);
+
+    expect((first as { result: { content: { text: string }[] } }).result.content[0]?.text).toContain(
+      'noch NICHT ausgeführt',
+    );
+    expect((second as { result: { content: { text: string }[] } }).result.content[0]?.text).toBe(
+      'gelöscht: a',
+    );
+  });
+
+  it('lets an ordinary write through on the first call, gate or no gate', async () => {
+    // The gate is spent on what no snapshot undoes. An append that a snapshot
+    // covers, and that the client already asked its human about, does not pay
+    // the two-call price -- that price was what stranded models mid-loop.
+    const handler = handlerWith({ gate: new WriteConfirmationGate() });
+    const response = await handler({
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'tools/call',
+      params: { name: 'exo_write_thing', arguments: { id: 'a', body: 'b' } },
+    });
+
+    expect((response as { result: { content: { text: string }[] } }).result.content[0]?.text).toBe(
+      'geschrieben: a',
+    );
+  });
+
+  it('puts every write behind the gate when the deployment asks for it', async () => {
+    const gate = new WriteConfirmationGate();
+    const handler = handlerWith({ gate, confirm: 'all' });
     const call = {
       jsonrpc: '2.0' as const,
       id: 1,
@@ -175,9 +232,9 @@ describe('createMcpRequestHandler', () => {
     expect((first as { result: { content: { text: string }[] } }).result.content[0]?.text).toContain(
       'noch NICHT ausgeführt',
     );
-    expect(
-      (second as { result: { content: { text: string }[] } }).result.content[0]?.text,
-    ).toBe('geschrieben: a');
+    expect((second as { result: { content: { text: string }[] } }).result.content[0]?.text).toBe(
+      'geschrieben: a',
+    );
   });
 
   it('does not let one caller confirm another caller’s pending write', async () => {
@@ -190,7 +247,7 @@ describe('createMcpRequestHandler', () => {
       jsonrpc: '2.0' as const,
       id: 1,
       method: 'tools/call',
-      params: { name: 'exo_write_thing', arguments: { id: 'a', body: 'b' } },
+      params: { name: 'exo_delete_thing', arguments: { id: 'a' } },
     };
 
     await alice(call);

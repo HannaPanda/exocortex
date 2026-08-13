@@ -28,7 +28,11 @@ export function createRequestHandler(options: {
   return createMcpRequestHandler({
     client: options.client,
     tools: toolsFor('mcp'),
-    gate: options.env.EXOCORTEX_REQUIRE_WRITE_CONFIRMATION ? options.gate : undefined,
+    gate: options.gate,
+    // The variable widens the gate rather than switching it on: the calls no
+    // snapshot undoes are confirmed either way, and a deployment that wants the
+    // old behaviour -- ask twice before every write -- sets it to true.
+    confirm: options.env.EXOCORTEX_REQUIRE_WRITE_CONFIRMATION ? 'all' : 'irreversible',
     logger: options.logger,
   });
 }

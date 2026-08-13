@@ -198,6 +198,7 @@ export const commentDeleteTool: AnyToolDefinition = defineTool({
   surfaces: ['mcp', 'ai'],
   mutating: true,
   destructive: true,
+  irreversible: true,
   target: (input) => `comment:${input.commentId}`,
   async execute(client, input) {
     const result = await client.request({

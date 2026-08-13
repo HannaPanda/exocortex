@@ -108,7 +108,7 @@ first; the admin form and this table follow.
 | `ai.imageModelSlug` | string \| null | `null` | Image-capable model, e.g. `google/gemini-2.5-flash-image`. Null leaves the feature unavailable however the flag above is set. |
 | `mcp.enabled` | boolean | `true` | Master switch for the MCP tool surface. |
 | `mcp.maxSearchResults` | int 1–100 | `20` | Result cap for `exo_search`. |
-| `mcp.writeConfirmationRequired` | boolean | `true` | Two-step, destination-keyed confirmation for mutating MCP tools. |
+| `mcp.writeConfirmationRequired` | boolean | `false` | Widens the two-step, destination-keyed confirmation to *every* mutating MCP tool. Off, it still covers the four calls no snapshot undoes; see `docs/mcp.md`. |
 | `calendar.remindersEnabled` | boolean | `false` | Master switch for appointment reminders. Also requires `CALENDAR_REMINDER_COMMAND` and `CALENDAR_REMINDER_TARGET`; a deployment that mirrors a calendar has not thereby asked to be messaged about it. |
 | `calendar.reminderLeadMinutes` | int 0–1440 | `30` | How long before a timed appointment the reminder goes out. `0` means at the start. |
 | `calendar.reminderAllDayHour` | int 0–23 | `9` | Local hour at which an all-day appointment is announced. It has no start time to count back from. |

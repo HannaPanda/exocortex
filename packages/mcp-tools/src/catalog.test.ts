@@ -100,6 +100,35 @@ describe('EXOCORTEX_TOOLS', () => {
     ]);
   });
 
+  it('reserves the confirmation gate for what no snapshot brings back', () => {
+    // Pinned by name for the same reason the destructive list is: this is the
+    // judgement call, and it is the only list that still costs a caller two
+    // round trips. Everything absent from it is covered by something better --
+    // the pre-write snapshot, the trash, or a second click in the client.
+    //
+    // Archiving is not here: the page is in the trash, and exo_page_restore
+    // takes it back out. Restoring a snapshot is not here either: it takes one
+    // of its own first, so the state it replaced is still reachable.
+    const irreversible = EXOCORTEX_TOOLS.filter((tool) => tool.irreversible)
+      .map((tool) => tool.name)
+      .sort();
+    expect(irreversible).toEqual([
+      'exo_comment_delete',
+      'exo_database_property_delete',
+      'exo_page_delete',
+      'exo_user_delete',
+    ]);
+  });
+
+  it('never calls a reversible tool irreversible, or a read-only one either', () => {
+    for (const tool of EXOCORTEX_TOOLS) {
+      if (tool.irreversible) {
+        expect(tool.mutating).toBe(true);
+        expect(tool.destructive).toBe(true);
+      }
+    }
+  });
+
   it('produces a JSON Schema for every tool input', () => {
     for (const tool of EXOCORTEX_TOOLS) {
       expect(tool.jsonSchema).toBeTypeOf('object');

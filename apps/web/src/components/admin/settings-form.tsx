@@ -187,8 +187,8 @@ const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
     help: 'Obergrenze für die Anzahl Ergebnisse einer MCP-Suche.',
   },
   'mcp.writeConfirmationRequired': {
-    label: 'Schreibzugriffe bestätigen lassen',
-    help: 'Verlangt eine zweistufige Bestätigung, bevor ein MCP-Werkzeug Daten verändert.',
+    label: 'Jeden Schreibzugriff bestätigen lassen',
+    help: 'Aus: Nur was nichts rückgängig macht (Seite endgültig löschen, Datenbankspalte, Kommentar, Konto) verlangt eine zweistufige Bestätigung; alles andere schützt der Snapshot vor jedem Schreibvorgang. An: Jedes MCP-Werkzeug, das Daten verändert, muss zweimal identisch aufgerufen werden. Das bremst Agenten spürbar aus.',
   },
   'calendar.remindersEnabled': {
     label: 'Terminerinnerungen senden',

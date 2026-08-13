@@ -271,6 +271,7 @@ export const userDeleteTool: AnyToolDefinition = defineTool({
   surfaces: ['mcp', 'ai'],
   mutating: true,
   destructive: true,
+  irreversible: true,
   target: (input) => `user:${input.userId}`,
   async execute(client, input) {
     const result = await client.request({

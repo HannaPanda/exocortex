@@ -193,6 +193,7 @@ export const databasePropertyDeleteTool: AnyToolDefinition = defineTool({
   surfaces: ['mcp', 'ai'],
   mutating: true,
   destructive: true,
+  irreversible: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
     const result = await client.request({

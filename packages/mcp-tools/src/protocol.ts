@@ -72,8 +72,18 @@ export interface McpRequestHandlerOptions {
    * cannot reach the rest of it by guessing a name.
    */
   tools: readonly AnyToolDefinition[];
-  /** Two-step confirmation for mutating tools. Omit to run without one. */
+  /** Two-step confirmation. Omit to run without one, whatever `confirm` says. */
   gate?: WriteConfirmationGate;
+  /**
+   * How much of the catalogue the gate covers.
+   *
+   * `irreversible` (the default) spends it on the handful of calls no snapshot
+   * undoes. `all` puts it in front of every mutating tool, which is what this
+   * used to do unconditionally; it is a deployment's choice, not a default,
+   * because the cost lands on every ordinary write and the benefit is thin.
+   * See `ToolDefinition.irreversible`.
+   */
+  confirm?: 'irreversible' | 'all';
   /**
    * Mixed into the gate's key so two callers can never confirm each other's
    * pending write. Irrelevant for stdio, where the gate lives in a subprocess
@@ -110,6 +120,7 @@ function toMcpResult(result: {
  */
 export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpRequestHandler {
   const { client, tools, gate, principal, logger } = options;
+  const confirm = options.confirm ?? 'irreversible';
   const serverInfo = options.serverInfo ?? DEFAULT_SERVER_INFO;
   const byName = new Map(tools.map((tool) => [tool.name, tool]));
 
@@ -117,7 +128,8 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
     tool: AnyToolDefinition,
     rawInput: unknown,
   ): Promise<{ text: string; data?: unknown; isError?: boolean }> {
-    if (tool.mutating && gate !== undefined) {
+    const gated = tool.mutating && (confirm === 'all' || tool.irreversible);
+    if (gated && gate !== undefined) {
       const target = tool.targetOf(rawInput);
       if (target !== null) {
         const check = gate.check({ toolName: tool.name, target, payload: rawInput, principal });

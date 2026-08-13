@@ -184,8 +184,20 @@ export const settingsSchema = z.object({
   'search.semanticWeightPercent': z.number().int().min(0).max(100).default(50),
   'mcp.enabled': z.boolean().default(true),
   'mcp.maxSearchResults': z.number().int().min(1).max(100).default(20),
-  /** Two-step confirmation for mutating MCP tools (destination-keyed). */
-  'mcp.writeConfirmationRequired': z.boolean().default(true),
+  /**
+   * Whether the two-step confirmation covers *every* mutating MCP tool.
+   *
+   * Off by default. The calls nothing undoes (deleting a page for good, a
+   * database column, a comment, an account) are confirmed either way; this
+   * extends it to ordinary writes as well. That was the behaviour until
+   * 2026-08-13, and it earned its retirement: the gate stops no attacker (the
+   * second call costs a line of code), its prompt reaches the model rather than
+   * a person, and both MCP clients here ask their human before a write anyway.
+   * What it did reliably was strand models that reword their Markdown between
+   * the two attempts, one of which switched from append to replace mid-loop and
+   * overwrote a page.
+   */
+  'mcp.writeConfirmationRequired': z.boolean().default(false),
   /**
    * Master switch for appointment reminders. Off by default: a deployment that
    * mirrors a calendar has not thereby asked to be messaged about it.

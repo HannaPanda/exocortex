@@ -20,10 +20,15 @@ export const mcpEnvSchema = z.object({
    */
   EXOCORTEX_BASIC_AUTH: z.string().trim().optional(),
   EXOCORTEX_TIMEOUT_MS: z.coerce.number().int().min(1_000).max(120_000).default(30_000),
+  /**
+   * Widens the confirmation gate from the irreversible calls to every write.
+   * The stdio counterpart of `mcp.writeConfirmationRequired`, and off for the
+   * same reason: the client running this subprocess already asks its human.
+   */
   EXOCORTEX_REQUIRE_WRITE_CONFIRMATION: z
     .union([z.boolean(), z.enum(['true', 'false', '1', '0'])])
     .transform((v) => v === true || v === 'true' || v === '1')
-    .default(true),
+    .default(false),
   EXOCORTEX_LOG_FILE: z.string().trim().optional(),
 });
 export type McpEnv = z.infer<typeof mcpEnvSchema>;

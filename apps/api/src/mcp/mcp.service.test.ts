@@ -5,6 +5,9 @@ import { type ApiEnv, loadApiEnv, loadDotEnv } from '@exocortex/config';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 
+import { OutboxService } from '../common/outbox.service';
+import { SettingsService } from '../platform/settings.service';
+
 import { McpService } from './mcp.service';
 
 /**
@@ -104,7 +107,12 @@ async function oauthToken(
 
 beforeAll(async () => {
   prisma = createPrismaClient({ databaseUrl: process.env.DATABASE_URL });
-  service = new McpService(prisma, env, logger);
+  service = new McpService(
+    prisma,
+    env,
+    logger,
+    new SettingsService(prisma, logger, new OutboxService(prisma, logger)),
+  );
 
   const suffix = Date.now().toString(36);
   const user = await prisma.user.create({
@@ -227,12 +235,12 @@ describe('McpService.createHandler', () => {
     const secret = await apiToken(['write']);
     const caller = await service.authenticate(bearer(secret));
 
-    const full = await service.createHandler(caller, 'mcp')({
+    const full = await (await service.createHandler(caller, 'mcp'))({
       jsonrpc: '2.0',
       id: 1,
       method: 'tools/list',
     });
-    const research = await service.createHandler(caller, 'research')({
+    const research = await (await service.createHandler(caller, 'research'))({
       jsonrpc: '2.0',
       id: 1,
       method: 'tools/list',

@@ -24,6 +24,7 @@ import {
 import { AppError } from '../common/app-error';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
+import { SettingsService } from '../platform/settings.service';
 
 /** How long the loopback credential minted for an OAuth client stays valid. */
 const LOOPBACK_TOKEN_TTL_SECONDS = 120;
@@ -76,6 +77,7 @@ export class McpService {
     @Inject(PRISMA) private readonly prisma: PrismaClient,
     @Inject(API_ENV) private readonly env: ApiEnv,
     @Inject(LOGGER) private readonly logger: Logger,
+    private readonly settings: SettingsService,
   ) {}
 
   /**
@@ -194,7 +196,7 @@ export class McpService {
    * that same list, so a connection to the research endpoint cannot reach a
    * writing tool by naming it.
    */
-  createHandler(caller: McpCaller, surface: ToolSurface): McpRequestHandler {
+  async createHandler(caller: McpCaller, surface: ToolSurface): Promise<McpRequestHandler> {
     const client = createFetchApiClient({
       // Loopback, not the public origin: this call must not leave the machine,
       // must not depend on nginx being up, and must not be counted as external
@@ -208,6 +210,10 @@ export class McpService {
       client,
       tools: toolsFor(surface),
       gate: this.gate,
+      // `mcp.writeConfirmationRequired` widens the gate to every write. It was
+      // written, shown in the admin area and documented, and then read by
+      // nobody: the gate ran unconditionally regardless of the switch.
+      confirm: (await this.settings.getKey('mcp.writeConfirmationRequired')) ? 'all' : 'irreversible',
       principal: caller.session.userId,
       logger: this.logger,
     });

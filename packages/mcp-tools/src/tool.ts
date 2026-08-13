@@ -48,6 +48,19 @@ export interface ToolDefinition<TInput> {
    */
   destructive?: boolean;
   /**
+   * True when nothing brings the data back: no snapshot, no trash, no restore.
+   *
+   * This is the narrow subset of `destructive` that the two-step confirmation
+   * gate still applies to. The distinction matters because the gate is a weak
+   * control: anyone holding the bearer token simply sends the call twice, and
+   * the prompt is read by the model, never by a person -- both MCP clients this
+   * deployment serves already ask their human before a write. What it costs is
+   * real, though: a model that rewords its Markdown between the two attempts
+   * hashes differently, never confirms, and loops. So the gate is spent where
+   * the snapshot cannot save the day afterwards, and nowhere else.
+   */
+  irreversible?: boolean;
+  /**
    * Identifies the write target for the destination-keyed confirmation gate.
    * Required for every mutating tool, absent for read-only tools.
    */
@@ -84,6 +97,8 @@ export interface AnyToolDefinition {
   mutating: boolean;
   /** See `ToolDefinition.destructive`. Always `false` for a read-only tool. */
   destructive: boolean;
+  /** See `ToolDefinition.irreversible`. Always `false` for a read-only tool. */
+  irreversible: boolean;
   jsonSchema: unknown;
   /** True when the underlying `ToolDefinition` declared a `target` function. */
   hasTarget: boolean;
@@ -158,6 +173,7 @@ export function defineTool<TInput>(definition: ToolDefinition<TInput>): AnyToolD
     mutating: definition.mutating,
     // A tool that changes nothing cannot destroy anything, whatever it claims.
     destructive: definition.mutating && (definition.destructive ?? false),
+    irreversible: definition.mutating && (definition.irreversible ?? false),
     jsonSchema,
     hasTarget: definition.target !== undefined,
     targetOf(rawInput: unknown): string | null {
