@@ -173,7 +173,18 @@ export class DocumentContentService {
           proseMirrorJson: imported.proseMirrorJson as unknown as Prisma.InputJsonObject,
           plainText: imported.plainText,
           markdown: effectiveMarkdown,
-          materializedAt: now,
+          /*
+           * `materializedAt` is deliberately *not* moved forward here.
+           *
+           * These three columns are written so the answer to this request is
+           * consistent immediately, but they are not everything materialization
+           * derives: the reference index and the comment anchors come from the
+           * same content and are only produced by the job enqueued below. That
+           * job skips a document whose `materializedAt` has caught up with its
+           * `yjsUpdatedAt`, so stamping it here would have it decide there is
+           * nothing to do -- and every write through the API or MCP would leave
+           * the references of the page it just rewrote exactly as they were.
+           */
         },
       });
 

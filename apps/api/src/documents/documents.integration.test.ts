@@ -1124,6 +1124,28 @@ describe('writing document content', () => {
     expect(Buffer.from(snapshot?.yjsState ?? []).equals(Buffer.from(before.yjsState))).toBe(true);
   });
 
+  /**
+   * The reference index and the comment anchors are derived by the
+   * materialization job, and that job skips a document whose `materializedAt`
+   * has caught up with its `yjsUpdatedAt`. A write that stamps both leaves the
+   * page's references describing the text it used to hold, which is what
+   * happened to 515 pages on this deployment before anyone noticed: nothing
+   * fails, the index just quietly describes the past.
+   */
+  it('leaves materializedAt behind yjsUpdatedAt so the job still has work to do', async () => {
+    const documentId = await createPage('Materialisierung nach dem Schreiben');
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: 'Ein Absatz mit [[Irgendeinem Verweis]].', mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+
+    const after = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+    expect(after.materializedAt === null || after.materializedAt < after.yjsUpdatedAt).toBe(true);
+  });
+
   it('rejects a stale expectedYjsUpdatedAt with a conflict', async () => {
     const documentId = await createPage('Konflikt beim Schreiben');
     const stale = new Date(0).toISOString();
