@@ -103,6 +103,9 @@ function renderTree(nodes: readonly DocumentTreeNode[]): RenderedTree {
     const shown = nodes.slice(0, MAX_TREE_LINES);
     return {
       lines: shown.map((node) => `- ${formatDocumentSummary(node)}`),
+      // Their children were not rendered, so they are not in the structured
+      // half either; the section keeps its own line and its `omitted` count.
+      structured: shown.map((node) => ({ ...summarize(node), children: [] })),
       omitted: total - shown.length,
       truncated: shown
         .filter((node) => node.children.length > 0)
@@ -118,16 +121,20 @@ function renderTree(nodes: readonly DocumentTreeNode[]): RenderedTree {
   });
 
   const lines: string[] = [];
-  const walk = (node: DocumentTreeNode, depth: number): void => {
+  const walk = (node: DocumentTreeNode, depth: number): TreeNodeSummary => {
     lines.push(`${'  '.repeat(depth)}- ${formatDocumentSummary(node)}`);
-    for (const child of node.children) {
-      if (kept.has(child.id)) walk(child, depth + 1);
-    }
+    return {
+      ...summarize(node),
+      children: node.children
+        .filter((child) => kept.has(child.id))
+        .map((child) => walk(child, depth + 1)),
+    };
   };
-  for (const node of nodes) walk(node, 0);
+  const structured = nodes.map((node) => walk(node, 0));
 
   return {
     lines,
+    structured,
     omitted: total - lines.length,
     // Named, with their ids, because "ask via the parent page" is only an
     // instruction a caller can follow if it is told which parents those are.
@@ -143,9 +150,34 @@ function renderTree(nodes: readonly DocumentTreeNode[]): RenderedTree {
 
 interface RenderedTree {
   lines: string[];
+  /** The same pages the lines name, for the clients that read the structure. */
+  structured: TreeNodeSummary[];
   omitted: number;
   /** Sections that lost pages to the cap, largest loss first when rendered. */
   truncated: { id: string; title: string; omitted: number }[];
+}
+
+/**
+ * A page in the structured tree, carrying what the rendered line carries and
+ * nothing else.
+ *
+ * The full `DocumentSummary` is sixteen fields, and cover positions and order
+ * keys are of no use to a reader that is deciding where a page belongs: 737
+ * pages of them are 400 KB, against 26 KB for the same pages as text. ChatGPT's
+ * connector reads this half, and answered three capped trees in a row with
+ * "Sicherheitsstatus der Anfrage konnte nicht bestimmt werden" before it gave
+ * up on the write it was asked for. Whatever else that check weighs, a tool
+ * result that costs fifteen times its own text is not worth sending.
+ */
+interface TreeNodeSummary {
+  id: string;
+  title: string;
+  type: DocumentSummary['type'];
+  children: TreeNodeSummary[];
+}
+
+function summarize(document: DocumentSummary): Omit<TreeNodeSummary, 'children'> {
+  return { id: document.id, title: document.title, type: document.type };
 }
 
 /** How many archived pages the tool names before it falls back to a count. */
@@ -212,7 +244,7 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
       query,
       responseSchema: documentTreeResponseSchema,
     });
-    const { lines, omitted, truncated } = renderTree(result.nodes);
+    const { lines, structured, omitted, truncated } = renderTree(result.nodes);
     const scope =
       result.path.length === 0
         ? []
@@ -263,16 +295,26 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
     ];
     return {
       text: parts.join('\n'),
-      // Mirrored into `structuredContent` as well, because a client that renders
-      // the structured payload instead of the text -- ChatGPT's connector does,
-      // and collapses it to `nodes: Array(20)` -- otherwise sees a tree with no
-      // sign that the rendered answer was capped, and concludes it read
-      // everything. The caveat has to travel with both halves of the result.
-      data:
-        omitted === 0
-          ? result
+      // Both halves of the result answer the same question, so both are capped
+      // the same way: the pages the text names, the archived pages it names,
+      // and the caveat that says the list is not everything. A client that
+      // renders the structured payload instead of the text -- ChatGPT's
+      // connector does, and collapses it to `nodes: Array(20)` -- would
+      // otherwise see a tree with no sign that the rendered answer was capped
+      // and conclude it read everything, at fifteen times the size.
+      //
+      // Written out field by field rather than spread from `result`, so a field
+      // added to the tree response later cannot quietly grow this payload back.
+      data: {
+        nodes: structured,
+        archived: result.archived.slice(0, MAX_ARCHIVED_LINES).map(summarize),
+        /** All of them, including the ones the cap above left out. */
+        archivedTotalCount: result.archived.length,
+        path: result.path,
+        totalCount: result.totalCount,
+        ...(omitted === 0
+          ? {}
           : {
-              ...result,
               truncation: {
                 omitted,
                 shown: lines.length,
@@ -283,7 +325,8 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
                   'Die gerenderte Liste ist gekürzt und beantwortet nicht, was unter einer ' +
                   'Seite hängt. Ruf exo_page_tree mit deren parentId auf.',
               },
-            },
+            }),
+      },
     };
   },
 });

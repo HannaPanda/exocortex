@@ -681,12 +681,80 @@ describe('pageTreeTool', () => {
     expect(truncation.sections[0]?.id).toBe('rrrrrrrr0000');
   });
 
-  it('leaves the structured payload alone when nothing was cut', async () => {
+  it('says nothing about truncation when nothing was cut', async () => {
     const { client } = createFakeClient(treeResponse([node('aaaaaaaa1111aaaa', 'Projekte')]));
 
     const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
 
     expect(result.data).not.toHaveProperty('truncation');
+  });
+
+  it('caps the structured payload to the pages the text names', async () => {
+    // What made ChatGPT's connector refuse the tree: the text was capped at 300
+    // lines and 26 KB, the structured half shipped all 737 pages at 400 KB, and
+    // the connector reads the structured half.
+    const roots = Array.from({ length: 20 }, (_, i) =>
+      node(
+        `rrrrrrrr${String(i).padStart(4, '0')}`,
+        `Abschnitt ${String(i)}`,
+        Array.from({ length: 30 }, (_, j) =>
+          node(`cccccccc${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`, `Kind ${String(i)}-${String(j)}`),
+        ),
+      ),
+    );
+    const { client } = createFakeClient(treeResponse(roots));
+
+    const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+    const { nodes, totalCount } = result.data as {
+      nodes: { id: string; children: unknown[] }[];
+      totalCount: number;
+    };
+    const count = (list: { children: unknown[] }[]): number =>
+      list.reduce((sum, entry) => sum + 1 + count(entry.children as { children: unknown[] }[]), 0);
+
+    expect(count(nodes)).toBe(300);
+    // The count of everything still travels, so the caller can tell that what
+    // it holds is a part and how large a part it is.
+    expect(totalCount).toBe(620);
+    // The same 14 children per section the text shows, not the other 16.
+    expect(nodes[0]?.children).toHaveLength(14);
+  });
+
+  it('carries the fields a rendered line carries and no others', async () => {
+    // A cover position and an order key are of no use to a reader deciding
+    // where a page belongs, and sixteen fields per page is what turned a 26 KB
+    // answer into a 400 KB one.
+    const { client } = createFakeClient(
+      treeResponse([node('aaaaaaaa1111aaaa', 'Projekte', [node('bbbbbbbb2222bbbb', 'Kalender')])]),
+    );
+
+    const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+    const { nodes } = result.data as { nodes: Record<string, unknown>[] };
+
+    expect(Object.keys(nodes[0] ?? {}).sort()).toEqual(['children', 'id', 'title', 'type']);
+    expect(nodes[0]).toMatchObject({ id: 'aaaaaaaa1111aaaa', title: 'Projekte', type: 'PAGE' });
+    expect(nodes[0]?.children).toEqual([
+      { id: 'bbbbbbbb2222bbbb', title: 'Kalender', type: 'PAGE', children: [] },
+    ]);
+  });
+
+  it('caps the archived pages in the structured payload and keeps their count', async () => {
+    const archived = Array.from({ length: 60 }, (_, i) => ({
+      ...node(`zzzzzzzz${String(i).padStart(4, '0')}`, `Alt ${String(i)}`),
+      archivedAt: '2026-08-01T00:00:00.000Z',
+    }));
+    const { client } = createFakeClient(
+      treeResponse([node('aaaaaaaa1111aaaa', 'Projekte')], archived),
+    );
+
+    const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
+    const data = result.data as {
+      archived: { id: string }[];
+      archivedTotalCount: number;
+    };
+
+    expect(data.archived).toHaveLength(40);
+    expect(data.archivedTotalCount).toBe(60);
   });
 
   it('has something to say about an empty workspace', async () => {
