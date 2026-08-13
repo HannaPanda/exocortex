@@ -5,6 +5,8 @@ import {
   type DocumentLinksResponse,
   documentLinksResponseSchema,
   idSchema,
+  type RelatedDocumentsResponse,
+  relatedDocumentsResponseSchema,
 } from '@exocortex/contracts';
 
 import { truncateText } from '../format.js';
@@ -81,4 +83,52 @@ export const pageBacklinksTool: AnyToolDefinition = defineTool({
   },
 });
 
-export const LINK_TOOLS: readonly AnyToolDefinition[] = [pageBacklinksTool];
+function renderRelated(result: RelatedDocumentsResponse): string {
+  if (result.state === 'disabled') {
+    return 'Verwandte Seiten stehen nicht zur Verfügung: die semantische Suche ist abgeschaltet.';
+  }
+  if (result.state === 'pending') {
+    return 'Diese Seite wurde noch nicht für die semantische Suche erfasst. Sobald das passiert ist, lassen sich verwandte Seiten bestimmen.';
+  }
+  if (result.related.length === 0) {
+    return 'Keine andere Seite dieses Arbeitsbereichs ähnelt dieser Seite deutlich genug.';
+  }
+
+  const lines = result.related.map((entry) => {
+    const location = entry.path.map((step) => step.title).join(' / ');
+    return (
+      `- ${entry.document.title} (id: ${entry.document.id}, ` +
+      `Ähnlichkeit ${entry.similarity.toFixed(2)}` +
+      `${entry.linked ? ', bereits verlinkt' : ''})` +
+      `${location.length > 0 ? `\n  Pfad: ${location}` : ''}` +
+      `${entry.snippet.length > 0 ? `\n  ${entry.snippet}` : ''}`
+    );
+  });
+  return [`Verwandte Seiten (${result.related.length}):`, ...lines].join('\n');
+}
+
+export const pageRelatedTool: AnyToolDefinition = defineTool({
+  name: 'exo_page_related',
+  description:
+    'Findet Seiten, die inhaltlich zu einer Seite passen, ohne dass jemand sie verlinkt hat ' +
+    '(semantische Ähnlichkeit über die gespeicherten Embeddings). Ergänzt exo_page_backlinks: ' +
+    'dort stehen die gesetzten Verweise, hier die ungeschriebenen. Seiten, die bereits verlinkt ' +
+    'sind, werden als solche gekennzeichnet statt weggelassen.',
+  inputSchema: z.object({
+    documentId: idSchema,
+  }),
+  surfaces: ['mcp', 'ai'],
+  mutating: false,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'GET',
+      path: `/api/documents/${input.documentId}/related`,
+      responseSchema: relatedDocumentsResponseSchema,
+    });
+
+    const rendered = truncateText(renderRelated(result), MAX_LINKS_TEXT_CHARS);
+    return { text: rendered.text, data: result };
+  },
+});
+
+export const LINK_TOOLS: readonly AnyToolDefinition[] = [pageBacklinksTool, pageRelatedTool];

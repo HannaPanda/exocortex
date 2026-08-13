@@ -101,6 +101,50 @@ interface VectorRow {
   updatedAt: Date;
 }
 
+export interface RelatedQuery {
+  documentId: string;
+  workspaceId: string;
+  limit: number;
+  /**
+   * Floor on cosine similarity. Without one the answer is always full: the
+   * nearest neighbours of a page exist even when the whole workspace is about
+   * something else, and a list of confident-looking unrelated pages is worse
+   * than an empty one.
+   */
+  minSimilarity: number;
+  includeArchived: boolean;
+}
+
+/**
+ * `hits` carries `rank` as the cosine similarity, between 0 and 1.
+ *
+ * `state` says why the list can be empty. `pending` means this page has no
+ * vector yet, which is a different sentence to a reader than "nothing
+ * resembles it" and cannot be told apart from the list alone.
+ */
+export interface RelatedResult {
+  state: 'ready' | 'pending' | 'disabled';
+  hits: SearchHit[];
+}
+
+/**
+ * The part of an adapter that can answer "what resembles this page".
+ *
+ * Kept separate from `SearchAdapter` because it is not something every engine
+ * can do: it needs stored vectors. An adapter without them is not broken, it
+ * simply never reports `ready`, and `supportsRelatedDocuments` is how a caller
+ * finds out without knowing which class it holds.
+ */
+export interface RelatedDocumentsPort {
+  findRelated(query: RelatedQuery): Promise<RelatedResult>;
+}
+
+export function supportsRelatedDocuments(
+  adapter: SearchAdapter,
+): adapter is SearchAdapter & RelatedDocumentsPort {
+  return typeof (adapter as Partial<RelatedDocumentsPort>).findRelated === 'function';
+}
+
 export interface HybridSearchAdapterOptions {
   prisma: PrismaClient;
   /** The full-text half. Every call is delegated to it first. */
@@ -123,7 +167,7 @@ export interface HybridSearchAdapterOptions {
  * search box keeps working; the reverse never happens, because a vector hit
  * without a keyword hit is still a real hit and is merged in.
  */
-export class HybridSearchAdapter implements SearchAdapter {
+export class HybridSearchAdapter implements SearchAdapter, RelatedDocumentsPort {
   public readonly id = 'postgres+pgvector';
 
   constructor(private readonly deps: HybridSearchAdapterOptions) {}
@@ -267,6 +311,66 @@ export class HybridSearchAdapter implements SearchAdapter {
     return written;
   }
 
+  /**
+   * Pages that resemble one page, without anyone having linked them (issue #33).
+   *
+   * Costs nothing at the model: the page's own vector is already stored, so
+   * this is a nearest-neighbour read and not an embedding call. That is what
+   * makes it affordable to answer every time a panel opens, and it is also why
+   * ADR-015 does not apply — no page text reaches a prompt here, the comparison
+   * happens entirely in the database.
+   *
+   * The page itself is excluded, and so is every other vector of the same page:
+   * only whole-document rows (`blockId IS NULL`) take part, so per-block
+   * chunking (issue #36) cannot later fill the list with one page's own
+   * paragraphs.
+   */
+  async findRelated(query: RelatedQuery): Promise<RelatedResult> {
+    const semantic = await this.resolveOptions();
+    if (semantic === null) return { state: 'disabled', hits: [] };
+
+    // Read as text rather than joining against the row in place: pgvector uses
+    // the HNSW index for a bound literal, but not for a vector it has to fetch
+    // from another row in the same statement.
+    const source = await this.deps.prisma.$queryRaw<{ embedding: string }[]>(Prisma.sql`
+      SELECT "embedding"::text AS "embedding"
+      FROM "document_embedding"
+      WHERE "documentId" = ${query.documentId}
+        AND "blockId" IS NULL
+        AND "model" = ${semantic.model}
+      LIMIT 1
+    `);
+    const literal = source[0]?.embedding;
+    if (literal === undefined) return { state: 'pending', hits: [] };
+
+    const rows = await this.deps.prisma.$queryRaw<VectorRow[]>(Prisma.sql`
+      SELECT
+        embedding."documentId"                     AS "documentId",
+        index."workspaceId"                        AS "workspaceId",
+        document."title"                           AS "title",
+        document."icon"                            AS "icon",
+        document."iconColor"                       AS "iconColor",
+        document."type"                            AS "type",
+        left(index."plainText", 200)               AS "snippet",
+        1 - (embedding."embedding" <=> ${literal}::vector) AS "similarity",
+        index."archivedAt"                         AS "archivedAt",
+        index."updatedAt"                          AS "updatedAt"
+      FROM "document_embedding" AS embedding
+      JOIN "document_search_index" AS index ON index."documentId" = embedding."documentId"
+      JOIN "document" AS document ON document."id" = embedding."documentId"
+      WHERE index."workspaceId" = ${query.workspaceId}
+        AND embedding."model" = ${semantic.model}
+        AND embedding."blockId" IS NULL
+        AND embedding."documentId" <> ${query.documentId}
+        AND (${query.includeArchived} OR index."archivedAt" IS NULL)
+        AND 1 - (embedding."embedding" <=> ${literal}::vector) >= ${query.minSimilarity}
+      ORDER BY embedding."embedding" <=> ${literal}::vector
+      LIMIT ${query.limit}
+    `);
+
+    return { state: 'ready', hits: rows.map(toSearchHit) };
+  }
+
   private async resolveOptions(): Promise<SemanticOptions | null> {
     if (this.deps.embeddings === null) return null;
     return this.deps.options();
@@ -306,19 +410,24 @@ export class HybridSearchAdapter implements SearchAdapter {
       LIMIT ${candidateCount(query.limit)}
     `);
 
-    return rows.map((row) => ({
-      documentId: row.documentId,
-      workspaceId: row.workspaceId,
-      title: row.title,
-      icon: row.icon,
-      iconColor: row.iconColor,
-      type: row.type,
-      snippet: row.snippet.replace(/\s+/g, ' ').trim(),
-      rank: Number(row.similarity),
-      archivedAt: row.archivedAt === null ? null : row.archivedAt.toISOString(),
-      updatedAt: row.updatedAt.toISOString(),
-    }));
+    return rows.map(toSearchHit);
   }
+}
+
+/** One vector row as a hit. `rank` carries the cosine similarity. */
+function toSearchHit(row: VectorRow): SearchHit {
+  return {
+    documentId: row.documentId,
+    workspaceId: row.workspaceId,
+    title: row.title,
+    icon: row.icon,
+    iconColor: row.iconColor,
+    type: row.type,
+    snippet: row.snippet.replace(/\s+/g, ' ').trim(),
+    rank: Number(row.similarity),
+    archivedAt: row.archivedAt === null ? null : row.archivedAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
 }
 
 /**

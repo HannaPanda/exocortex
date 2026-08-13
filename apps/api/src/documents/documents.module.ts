@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { AttachmentsModule } from '../attachments/attachments.module';
 import { OutboxService } from '../common/outbox.service';
 import { RealtimeModule } from '../realtime/realtime.module';
+import { SearchModule } from '../search/search.module';
 
 import { CollaborationBridgeService } from './collaboration-bridge.service';
 import { CollaborationTicketService } from './collaboration-ticket.service';
@@ -15,9 +16,12 @@ import { DocumentSnapshotService } from './document-snapshot.service';
 import { DocumentsController, WorkspaceDocumentsController } from './documents.controller';
 import { DocumentsService } from './documents.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
+import { RelatedDocumentsService } from './related-documents.service';
 
 @Module({
-  imports: [RealtimeModule, AttachmentsModule],
+  // `SearchModule` for its search adapter: "verwandte Notizen" is a
+  // nearest-neighbour read over the same vectors the search box uses.
+  imports: [RealtimeModule, AttachmentsModule, SearchModule],
   controllers: [WorkspaceDocumentsController, DocumentsController],
   providers: [
     DocumentsService,
@@ -27,6 +31,7 @@ import { PageLinkIdentityService } from './page-link-identity.service';
     DocumentActivityService,
     DocumentContentService,
     DocumentLinksService,
+    RelatedDocumentsService,
     PageLinkIdentityService,
     CollaborationTicketService,
     CollaborationBridgeService,
@@ -39,6 +44,7 @@ import { PageLinkIdentityService } from './page-link-identity.service';
     DocumentActivityService,
     DocumentContentService,
     DocumentLinksService,
+    RelatedDocumentsService,
   ],
 })
 export class DocumentsModule {}

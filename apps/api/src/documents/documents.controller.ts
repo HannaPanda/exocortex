@@ -73,6 +73,8 @@ import {
   markdownImportResponseSchema,
   type MoveDocumentRequest,
   moveDocumentRequestSchema,
+  type RelatedDocumentsResponse,
+  relatedDocumentsResponseSchema,
   type ResolveDocumentLinkRequest,
   resolveDocumentLinkRequestSchema,
   type ResolveDocumentLinkResponse,
@@ -97,6 +99,7 @@ import { DocumentLinksService } from './document-links.service';
 import { DocumentMarkdownService } from './document-markdown.service';
 import { DocumentSnapshotService } from './document-snapshot.service';
 import { DocumentsService } from './documents.service';
+import { RelatedDocumentsService } from './related-documents.service';
 
 /** Workspace-scoped document routes. */
 @ApiTags('documents')
@@ -249,6 +252,7 @@ export class DocumentsController {
     private readonly content: DocumentContentService,
     private readonly cover: DocumentCoverService,
     private readonly documentLinks: DocumentLinksService,
+    private readonly relatedDocuments: RelatedDocumentsService,
     @Inject(API_ENV) private readonly env: ApiEnv,
   ) {}
 
@@ -325,6 +329,20 @@ export class DocumentsController {
     @Param('documentId') documentId: string,
   ): Promise<DocumentLinksResponse> {
     return this.documentLinks.list(documentId, session.userId);
+  }
+
+  /**
+   * Pages that resemble this one without anyone having linked them (issue #33).
+   * Its own route rather than part of `/links`, because the reference index is
+   * always there while this answer depends on semantic search being switched on.
+   */
+  @Get(':documentId/related')
+  @ApiOkResponse({ schema: openApiResponseSchema(relatedDocumentsResponseSchema) })
+  async related(
+    @CurrentSession() session: VerifiedSession,
+    @Param('documentId') documentId: string,
+  ): Promise<RelatedDocumentsResponse> {
+    return this.relatedDocuments.list(documentId, session.userId);
   }
 
   @Get(':documentId')

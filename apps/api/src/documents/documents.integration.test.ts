@@ -3,7 +3,13 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
 import { loadDotEnv } from '@exocortex/config';
 import { QUEUE_NAMES, resolveSettings, type Settings } from '@exocortex/contracts';
-import { createPrismaClient, type PrismaClient } from '@exocortex/database';
+import {
+  createPrismaClient,
+  type PrismaClient,
+  type RelatedDocumentsPort,
+  type RelatedResult,
+  type SearchAdapter,
+} from '@exocortex/database';
 import { type ProseMirrorDocument, serializePlainText } from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
@@ -24,6 +30,7 @@ import { DocumentCoverService } from './document-cover.service';
 import { DocumentLinksService } from './document-links.service';
 import { DocumentsService } from './documents.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
+import { RelatedDocumentsService } from './related-documents.service';
 
 /**
  * Document domain tests against the real database.
@@ -1560,6 +1567,126 @@ describe('document links', () => {
     const result = await linksService.list(source, ownerId);
     expect(result.outgoing).toHaveLength(1);
     expect(result.outgoing[0]?.target).toBeNull();
+  });
+
+  /**
+   * Pages that resemble the open one although nobody linked them (issue #33).
+   *
+   * The neighbour query itself is a database concern and is covered against
+   * real vectors in `apps/worker`. What the service adds is what is asserted
+   * here: authorization, and the two things it says about a neighbour that the
+   * vector cannot know — where the page sits, and whether it is already linked.
+   */
+  describe('related documents', () => {
+    /** Stands in for the vector half, so these tests need no embedding model. */
+    function adapterReturning(documentIds: readonly string[]): SearchAdapter {
+      return {
+        id: 'stub',
+        search: async () => [],
+        index: async () => {},
+        remove: async () => {},
+        healthCheck: async () => true,
+        findRelated: async (): Promise<RelatedResult> => ({
+          state: 'ready',
+          hits: documentIds.map((documentId, position) => ({
+            documentId,
+            workspaceId,
+            title: 'egal',
+            icon: null,
+            iconColor: null,
+            type: 'PAGE' as const,
+            snippet: 'Ein Auszug.',
+            rank: 0.9 - position / 10,
+            archivedAt: null,
+            updatedAt: new Date().toISOString(),
+          })),
+        }),
+      } satisfies SearchAdapter & RelatedDocumentsPort;
+    }
+
+    it('marks a neighbour that is already linked, and reports its path', async () => {
+      const parent = await createPage('Projekte');
+      const source = await createPage('Segeln');
+      const linkedNeighbour = await service.create({
+        workspaceId,
+        userId: ownerId,
+        request: { title: 'Törnbericht', type: 'PAGE', parentId: parent },
+        correlationId,
+      });
+      const looseNeighbour = await createPage('Hafenhandbuch');
+      await writeLink({
+        sourceDocumentId: source,
+        targetDocumentId: linkedNeighbour.id,
+        targetTitle: 'Törnbericht',
+        workspaceId,
+      });
+
+      const relatedService = new RelatedDocumentsService(
+        prisma,
+        adapterReturning([linkedNeighbour.id, looseNeighbour]),
+        new WorkspaceAccessService(prisma),
+      );
+      const result = await relatedService.list(source, ownerId);
+
+      expect(result.state).toBe('ready');
+      expect(result.related.map((entry) => entry.document.id)).toEqual([
+        linkedNeighbour.id,
+        looseNeighbour,
+      ]);
+      expect(result.related[0]?.linked).toBe(true);
+      expect(result.related[0]?.path.map((step) => step.title)).toEqual(['Projekte']);
+      expect(result.related[1]?.linked).toBe(false);
+    });
+
+    it('counts a reference in the other direction as linked too', async () => {
+      const source = await createPage('Zwiebelkuchen');
+      const neighbour = await createPage('Federweißer');
+      await writeLink({
+        sourceDocumentId: neighbour,
+        targetDocumentId: source,
+        targetTitle: 'Zwiebelkuchen',
+        workspaceId,
+      });
+
+      const relatedService = new RelatedDocumentsService(
+        prisma,
+        adapterReturning([neighbour]),
+        new WorkspaceAccessService(prisma),
+      );
+      expect((await relatedService.list(source, ownerId)).related[0]?.linked).toBe(true);
+    });
+
+    it('refuses a page the caller may not read', async () => {
+      const source = await createPage('Vertraulich');
+      const relatedService = new RelatedDocumentsService(
+        prisma,
+        adapterReturning([]),
+        new WorkspaceAccessService(prisma),
+      );
+      await expect(relatedService.list(source, outsiderId)).rejects.toBeInstanceOf(
+        AuthorizationError,
+      );
+    });
+
+    it('reports an engine that cannot compare vectors as disabled', async () => {
+      const source = await createPage('Ohne Vektoren');
+      const keywordOnly: SearchAdapter = {
+        id: 'stub-keyword',
+        search: async () => [],
+        index: async () => {},
+        remove: async () => {},
+        healthCheck: async () => true,
+      };
+
+      const relatedService = new RelatedDocumentsService(
+        prisma,
+        keywordOnly,
+        new WorkspaceAccessService(prisma),
+      );
+      const result = await relatedService.list(source, ownerId);
+      expect(result.state).toBe('disabled');
+      expect(result.related).toEqual([]);
+    });
   });
 });
 

@@ -129,6 +129,7 @@ change as dangerous only trains people to click past the warnings that matter.
 | `exo_page_generate_cover` | yes | no | `POST /api/documents/:documentId/cover/generate` |
 | `exo_page_resolve_link` | no | no | `GET /api/workspaces/:workspaceId/documents/resolve?documentId=&title=&includeArchived=&limit=` -- identity first, title as the fallback; `resolvedBy` says which answered |
 | `exo_page_backlinks` | no | no | `GET /api/documents/:documentId/links` -- both directions of the reference index, including references to a title no page carries |
+| `exo_page_related` | no | no | `GET /api/documents/:documentId/related` -- pages that resemble this one without being linked to it (issue #33), from the stored embeddings; `state` says whether the answer is `ready`, `pending` (page not embedded yet) or `disabled` (semantic search off) |
 | `exo_comment_list` | no | no | `GET /api/documents/:documentId/comments?includeResolved=` -- threads with their replies, open ones first, and whether an anchored thread has been orphaned |
 | `exo_comment_create` | yes | no | `POST /api/documents/:documentId/comments` -- page-wide without `blockId`, anchored to a block with one, a reply with `parentId` |
 | `exo_comment_update` | yes | yes | `PATCH /api/comments/:commentId` -- the author's own body only |

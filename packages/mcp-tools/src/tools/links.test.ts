@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { type ExocortexApiClient } from '../client.js';
 
-import { pageBacklinksTool } from './links.js';
+import { pageBacklinksTool, pageRelatedTool } from './links.js';
 
 interface RecordedCall {
   method: string;
@@ -103,5 +103,76 @@ describe('pageBacklinksTool', () => {
   it('is a read-only tool on both surfaces', () => {
     expect(pageBacklinksTool.mutating).toBe(false);
     expect([...pageBacklinksTool.surfaces].sort()).toEqual(['ai', 'mcp']);
+  });
+});
+
+const RELATED_RESPONSE = {
+  documentId: 'doc1234567',
+  state: 'ready',
+  related: [
+    {
+      document: {
+        id: 'rel1234567',
+        title: 'Kalender-Plan',
+        type: 'PAGE',
+        icon: null,
+        iconColor: null,
+        archivedAt: null,
+      },
+      path: [{ id: 'par1234567', title: 'Projekte' }],
+      snippet: 'Exocortex führt, Remotes dürfen anlegen.',
+      similarity: 0.7123,
+      linked: false,
+    },
+    {
+      document: {
+        id: 'rel7654321',
+        title: 'Erinnerungen',
+        type: 'PAGE',
+        icon: null,
+        iconColor: null,
+        archivedAt: null,
+      },
+      path: [],
+      snippet: '',
+      similarity: 0.51,
+      linked: true,
+    },
+  ],
+};
+
+describe('pageRelatedTool', () => {
+  it('reads the related endpoint and renders similarity, path and link state', async () => {
+    const { client, calls } = createFakeClient(RELATED_RESPONSE);
+
+    const result = await pageRelatedTool.run(client, { documentId: 'doc1234567' });
+
+    expect(calls).toEqual([{ method: 'GET', path: '/api/documents/doc1234567/related' }]);
+    expect(result.text).toContain('Verwandte Seiten (2)');
+    expect(result.text).toContain('Kalender-Plan (id: rel1234567, Ähnlichkeit 0.71)');
+    expect(result.text).toContain('Pfad: Projekte');
+    expect(result.text).toContain('bereits verlinkt');
+  });
+
+  it('tells the three silences apart', async () => {
+    const empty = createFakeClient({ ...RELATED_RESPONSE, related: [] });
+    expect((await pageRelatedTool.run(empty.client, { documentId: 'doc1234567' })).text).toContain(
+      'ähnelt dieser Seite deutlich genug',
+    );
+
+    const pending = createFakeClient({ ...RELATED_RESPONSE, state: 'pending', related: [] });
+    expect((await pageRelatedTool.run(pending.client, { documentId: 'doc1234567' })).text).toContain(
+      'noch nicht für die semantische Suche erfasst',
+    );
+
+    const disabled = createFakeClient({ ...RELATED_RESPONSE, state: 'disabled', related: [] });
+    expect(
+      (await pageRelatedTool.run(disabled.client, { documentId: 'doc1234567' })).text,
+    ).toContain('semantische Suche ist abgeschaltet');
+  });
+
+  it('is a read-only tool on both surfaces', () => {
+    expect(pageRelatedTool.mutating).toBe(false);
+    expect([...pageRelatedTool.surfaces].sort()).toEqual(['ai', 'mcp']);
   });
 });

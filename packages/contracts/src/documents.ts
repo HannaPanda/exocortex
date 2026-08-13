@@ -428,6 +428,45 @@ export const documentLinksResponseSchema = z.object({
 });
 export type DocumentLinksResponse = z.infer<typeof documentLinksResponseSchema>;
 
+/**
+ * A page that resembles the requested one without referencing it (issue #33).
+ *
+ * `similarity` is cosine similarity between the two stored embeddings, so it is
+ * comparable between rows of one answer but says nothing absolute: it is shown
+ * to let a reader tell a close match from a distant one, not as a percentage of
+ * anything.
+ */
+export const relatedDocumentSchema = z.object({
+  document: documentLinkEndpointSchema,
+  /** Ancestors of the page, root first, so two pages with one title stay apart. */
+  path: z.array(documentPathEntrySchema),
+  /** Opening of the page's text, unhighlighted: there is no query to highlight. */
+  snippet: z.string(),
+  similarity: z.number(),
+  /** True when this page is already referenced from or to the open one. */
+  linked: z.boolean(),
+});
+export type RelatedDocument = z.infer<typeof relatedDocumentSchema>;
+
+/**
+ * Why an answer can be empty, which is most of what this endpoint has to
+ * explain. Three different silences read identically in a list and would
+ * otherwise all look like "nothing resembles this page":
+ *
+ * `disabled`  semantic search is switched off, so no vectors are being written
+ * `pending`   this page has no vector yet (never indexed, or just edited)
+ * `ready`     the comparison ran; an empty list means nothing was close enough
+ */
+export const relatedDocumentsStateSchema = z.enum(['ready', 'pending', 'disabled']);
+export type RelatedDocumentsState = z.infer<typeof relatedDocumentsStateSchema>;
+
+export const relatedDocumentsResponseSchema = z.object({
+  documentId: idSchema,
+  state: relatedDocumentsStateSchema,
+  related: z.array(relatedDocumentSchema),
+});
+export type RelatedDocumentsResponse = z.infer<typeof relatedDocumentsResponseSchema>;
+
 export const documentDetailSchema = documentSummarySchema.extend({
   /** Access level the requesting user has for this document. */
   access: collaborationAccessSchema,

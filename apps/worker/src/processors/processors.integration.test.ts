@@ -650,6 +650,167 @@ describe('semantic search', () => {
 });
 
 /**
+ * Related pages (issue #33).
+ *
+ * Answers a different question to search: not "what matches this text" but
+ * "what else is about this", asked of a page rather than of a query. It reads
+ * the vectors search already wrote, which is why the interesting assertions
+ * below are about what it does *not* do — it never asks the model, and it never
+ * offers the page itself.
+ */
+describe('related documents', () => {
+  async function embeddedPage(title: string, body: string): Promise<string> {
+    const document = await prisma.document.create({
+      data: {
+        workspaceId,
+        title,
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+        content: { create: { yjsState: Buffer.from([]), plainText: body } },
+      },
+    });
+    await createIndexDocumentProcessor({ prisma, search })(
+      contextFor({
+        correlationId: 'related',
+        documentId: document.id,
+        workspaceId,
+        reason: 'materialized' as const,
+      }).context,
+    );
+    return document.id;
+  }
+
+  it('finds the page about the same subject and never the page itself', async () => {
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const subject = 'Segelboot Großsegel Fock Ruder Hafen';
+      const source = await embeddedPage('Segeln', subject);
+      const sibling = await embeddedPage('Törnbericht', `${subject} Wind Welle`);
+      const stranger = await embeddedPage('Buchhaltung', 'Rechnung Umsatzsteuer Beleg Konto.');
+
+      const result = await search.findRelated({
+        documentId: source,
+        workspaceId,
+        limit: 10,
+        minSimilarity: 0.2,
+        includeArchived: false,
+      });
+
+      expect(result.state).toBe('ready');
+      const found = result.hits.map((hit) => hit.documentId);
+      expect(found).toContain(sibling);
+      expect(found).not.toContain(source);
+      // Ordered by closeness, so the page about the same thing outranks the
+      // one that merely shares a language.
+      if (found.includes(stranger)) {
+        expect(found.indexOf(sibling)).toBeLessThan(found.indexOf(stranger));
+      }
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+
+  it('costs no model call, because the vector is already stored', async () => {
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const documentId = await embeddedPage('Ohne Anfrage', 'Ein Text mit einem fertigen Vektor.');
+
+      let requests = 0;
+      const counting = new HybridSearchAdapter({
+        prisma,
+        keyword: new PostgresSearchAdapter(prisma),
+        embeddings: {
+          dimensions: 1536,
+          maxInputChars: 24_000,
+          embed: async () => {
+            requests += 1;
+            throw new Error('findRelated must not ask the model');
+          },
+        },
+        options: async () => ({ model: TEST_EMBEDDING_MODEL, weight: 0.5 }),
+        logger,
+      });
+
+      const result = await counting.findRelated({
+        documentId,
+        workspaceId,
+        limit: 5,
+        minSimilarity: 0.2,
+        includeArchived: false,
+      });
+
+      expect(result.state).toBe('ready');
+      expect(requests).toBe(0);
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+
+  it('reports a page without a vector as pending, not as having no neighbours', async () => {
+    semanticModel = null;
+    const documentId = await embeddedPage('Nie erfasst', 'Dieser Text hat keinen Vektor.');
+
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const result = await search.findRelated({
+        documentId,
+        workspaceId,
+        limit: 5,
+        minSimilarity: 0.2,
+        includeArchived: false,
+      });
+      expect(result.state).toBe('pending');
+      expect(result.hits).toEqual([]);
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+
+  it('reports the whole feature as disabled while semantic search is off', async () => {
+    semanticModel = TEST_EMBEDDING_MODEL;
+    let documentId: string;
+    try {
+      documentId = await embeddedPage('Abgeschaltet', 'Ein Text mit Vektor, aber ohne Schalter.');
+    } finally {
+      semanticModel = null;
+    }
+
+    const result = await search.findRelated({
+      documentId,
+      workspaceId,
+      limit: 5,
+      minSimilarity: 0.2,
+      includeArchived: false,
+    });
+    expect(result.state).toBe('disabled');
+    expect(result.hits).toEqual([]);
+  }, 60_000);
+
+  it('keeps a distant page out through the similarity floor', async () => {
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const source = await embeddedPage('Zwiebelkuchen', 'Zwiebel Speck Hefeteig Federweißer.');
+      await embeddedPage('Quantenfeldtheorie', 'Renormierung Eichfeld Propagator Vakuum.');
+
+      const result = await search.findRelated({
+        documentId: source,
+        workspaceId,
+        limit: 10,
+        // Nothing in this workspace is this close to anything.
+        minSimilarity: 0.999,
+        includeArchived: false,
+      });
+
+      expect(result.state).toBe('ready');
+      expect(result.hits).toEqual([]);
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+});
+
+/**
  * Tidying the agents' memory area (issue #34).
  *
  * The two stages are the point: a note first goes into the trash and is only

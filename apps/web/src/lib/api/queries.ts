@@ -25,6 +25,7 @@ import {
   type MarkdownExportResponse,
   type MarkdownImportResponse,
   type MoveDocumentRequest,
+  type RelatedDocumentsResponse,
   type ResolveDocumentLinkResponse,
   type SearchResponse,
   type TrashResponse,
@@ -50,6 +51,7 @@ export const queryKeys = {
   search: (workspaceId: string, query: string) => ['workspace', workspaceId, 'search', query] as const,
   documentLinks: (documentId: string) => ['document', documentId, 'links'] as const,
   documentActivity: (documentId: string) => ['document', documentId, 'activity'] as const,
+  documentRelated: (documentId: string) => ['document', documentId, 'related'] as const,
   /** Every resolved reference of a workspace; the prefix all of them share. */
   pageLinks: (workspaceId: string) => ['workspace', workspaceId, 'page-link'] as const,
   pageLink: (workspaceId: string, reference: { documentId?: string | null; title?: string }) =>
@@ -171,6 +173,26 @@ export function useDocumentLinks(documentId: string | undefined, enabled = true)
     queryFn: () => apiRequest<DocumentLinksResponse>(`/api/documents/${documentId ?? ''}/links`),
     enabled: documentId !== undefined && enabled,
     staleTime: 10_000,
+  });
+}
+
+/**
+ * Pages that resemble the open one without being linked to it (issue #33).
+ *
+ * Read in the same panel as the references but kept a separate query: the
+ * answer depends on semantic search being on and on the page having been
+ * embedded, so it can be slower, be empty for its own reasons, and fail
+ * without taking the references down with it. Cached longer than the links
+ * because the neighbourhood of a page moves at the pace of the whole
+ * workspace, not at the pace of this page's own edits.
+ */
+export function useRelatedDocuments(documentId: string | undefined, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.documentRelated(documentId ?? 'none'),
+    queryFn: () =>
+      apiRequest<RelatedDocumentsResponse>(`/api/documents/${documentId ?? ''}/related`),
+    enabled: documentId !== undefined && enabled,
+    staleTime: 60_000,
   });
 }
 
