@@ -154,13 +154,15 @@ else
   info "ESLint, whole repository …"
   pnpm exec eslint . || fail "ESLint found problems" "Run 'pnpm exec eslint . --fix' for the mechanical ones."
 
-  # `pnpm format:check` is deliberately NOT here. Prettier disagrees with 314 of
-  # the repository's files today -- it has never been run over the whole tree --
-  # so switching it on as a gate means one commit that rewrites nearly every
-  # file and rewrites the blame with it. That is a decision worth making on its
-  # own, not a side effect of introducing a build script. Until then the check
-  # exists as `pnpm format:check` and says something true about the repository;
-  # it just does not stop a deploy.
+  # A soft check and not a hard gate on purpose: an unformatted file is not a
+  # wrong file, and stopping a deploy over a line break would be out of
+  # proportion. It is only runnable at all since the tree was formatted once in
+  # its own commit -- the config had described the repository since the first
+  # commit without ever having been applied to it. Keep the fix separate from
+  # whatever turned it red: `pnpm format` and its own commit.
+  info "Prettier …"
+  pnpm format:check >/dev/null || fail "Files are not formatted" \
+    "Run 'pnpm format'. If it touches files you did not change, commit that on its own -- a reformat mixed into a real change makes the real change unreadable."
 
   info "Typecheck …"
   pnpm typecheck || fail "Type errors" "Note that apps/api/scripts is outside apps/api/tsconfig.json and is only reached by the ESLint step above."

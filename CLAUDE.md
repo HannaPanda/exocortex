@@ -97,7 +97,7 @@ point rather than four:
 
 ```bash
 bash scripts/build.sh  # working tree, hard gates, sequential build, lint,
-                       # typecheck, gate tests, tests. Starts no service.
+                       # format, typecheck, gate tests, tests. Starts no service.
 bash scripts/deploy.sh # build.sh, then migrations, nginx, the four units,
                        # readiness, and the deploy marker last.
 ```
@@ -114,6 +114,7 @@ The individual commands still exist and are useful while iterating:
 pnpm build
 pnpm lint              # dependency boundaries + ESLint, src/ of each package only
 pnpm exec eslint .     # the whole repository, including scripts/ and e2e/
+pnpm format            # Prettier over the tree; format:check is what build.sh runs
 pnpm typecheck
 pnpm test              # unit and integration tests -- the integration half talks
                        # to the PRODUCTION database on this host

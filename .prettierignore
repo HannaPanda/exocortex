@@ -13,3 +13,9 @@ test-results
 # literal costs seconds and no one reads it.
 **/*.generated.ts
 packages/contracts/src/lucide-icon-names.ts
+
+# Rewritten by `next build` on every run, in Next's own style ("should not be
+# edited" is the second line of the file). Formatting it means the build and the
+# format check undo each other's work forever: the build restores the double
+# quotes, and the next check reports the file as unformatted.
+apps/web/next-env.d.ts

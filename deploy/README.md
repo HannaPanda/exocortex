@@ -290,14 +290,17 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
    a matching marker skips the build.
 6. **Soft checks**, skippable with `--skip-checks`: `eslint .` from the root
    (each package lints `src` only, which leaves the root scripts, `apps/api/scripts`
-   and `e2e` unseen), `pnpm typecheck`, the gate tests, and the tests that need
-   no infrastructure. `--full-tests` adds the rest — those talk to the
-   **production** database and Redis on this host. They create throwaway rows and
-   clean up after themselves, but they are not isolated.
+   and `e2e` unseen), `pnpm format:check`, `pnpm typecheck`, the gate tests, and
+   the tests that need no infrastructure. `--full-tests` adds the rest — those
+   talk to the **production** database and Redis on this host. They create
+   throwaway rows and clean up after themselves, but they are not isolated.
 
-`pnpm format:check` is deliberately not a gate: Prettier disagrees with 314
-files, because it has never been run over the whole tree, and switching it on
-means one commit that rewrites nearly everything.
+   `format:check` is a soft check rather than a hard gate on purpose: an
+   unformatted file is not a wrong file. It only became runnable in `73009f7`,
+   which is `prettier --write .` over 315 files and nothing else — a config had
+   been describing the repository since the first commit without ever having been
+   applied to it. Fix a red one with `pnpm format`, and keep the reformat out of
+   the commit that caused it.
 
 ### What deploy.sh adds
 
