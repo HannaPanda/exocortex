@@ -1,4 +1,4 @@
-import { type JobsOptions, Queue, QueueEvents } from 'bullmq';
+import { type Job, type JobsOptions, Queue, QueueEvents } from 'bullmq';
 
 import {
   JOB_SCHEMAS,
@@ -168,34 +168,56 @@ export class QueueRegistry {
     const queue = this.rawQueue(name);
 
     const existing = await queue.getJob(jobId);
-    if (existing !== undefined) {
-      const state = await existing.getState();
-      if (state === 'delayed' || state === 'waiting') {
-        const firstEnqueuedAt = existing.timestamp;
-        const cap = maxDelayMs ?? MATERIALIZATION_MAX_DELAY_MS;
-        const elapsed = Date.now() - firstEnqueuedAt;
-        if (elapsed + delayMs <= cap) {
-          try {
-            await existing.updateData(parsed);
-            if (state === 'delayed') await existing.changeDelay(delayMs);
-            return existing.id ?? jobId;
-          } catch (error) {
-            // The job may have started between the state check and the update.
-            this.logger.debug('Debounced job could not be postponed, adding a new one', {
-              queue: name,
-              jobId,
-              reason: error instanceof Error ? error.message : String(error),
-            });
-          }
-        } else {
-          // Cap reached: let the pending job run and do not postpone it further.
-          return existing.id ?? jobId;
-        }
-      }
-    }
+    const kept =
+      existing === undefined
+        ? null
+        : await this.keepPendingJob(existing, {
+            queue: name,
+            jobId,
+            data: parsed,
+            delayMs,
+            cap: maxDelayMs ?? MATERIALIZATION_MAX_DELAY_MS,
+          });
+    if (kept !== null) return kept;
 
     const job = await queue.add(name, parsed, { ...rest, jobId, delay: delayMs });
     return job.id ?? jobId;
+  }
+
+  /**
+   * Reuses a job that is already queued under the same id.
+   *
+   * Returns its id when the pending job stands in for the new one -- either
+   * because its delay was extended, or because `cap` was reached and it must be
+   * allowed to run. Returns `null` when the caller has to enqueue a new job.
+   *
+   * Split out of `enqueueDebounced` so neither half has to carry the other's
+   * nesting: the decision here is four independent conditions, not a ladder.
+   */
+  private async keepPendingJob(
+    existing: Job,
+    options: { queue: QueueName; jobId: string; data: unknown; delayMs: number; cap: number },
+  ): Promise<string | null> {
+    const state = await existing.getState();
+    if (state !== 'delayed' && state !== 'waiting') return null;
+
+    // Cap reached: let the pending job run and do not postpone it further.
+    const elapsed = Date.now() - existing.timestamp;
+    if (elapsed + options.delayMs > options.cap) return existing.id ?? options.jobId;
+
+    try {
+      await existing.updateData(options.data);
+      if (state === 'delayed') await existing.changeDelay(options.delayMs);
+      return existing.id ?? options.jobId;
+    } catch (error) {
+      // The job may have started between the state check and the update.
+      this.logger.debug('Debounced job could not be postponed, adding a new one', {
+        queue: options.queue,
+        jobId: options.jobId,
+        reason: error instanceof Error ? error.message : String(error),
+      });
+      return null;
+    }
   }
 
   /** Registers the recurring maintenance jobs. Idempotent. */

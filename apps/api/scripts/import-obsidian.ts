@@ -597,15 +597,16 @@ async function resolveWorkspace(
   return { workspaceId: workspace.id, created: true };
 }
 
-async function importVault(
-  prisma: PrismaClient,
-  queues: QueueRegistry | null,
-  logger: Logger,
-  args: CliArgs,
-  userId: string,
-  workspaceId: string,
-  workspaceCreated: boolean,
-): Promise<ImportStats> {
+async function importVault(context: {
+  prisma: PrismaClient;
+  queues: QueueRegistry | null;
+  logger: Logger;
+  args: CliArgs;
+  userId: string;
+  workspaceId: string;
+  workspaceCreated: boolean;
+}): Promise<ImportStats> {
+  const { prisma, queues, logger, args, userId, workspaceId, workspaceCreated } = context;
   const { notes: allNotes, skipped } = await scanVault(args.vault);
   const notes = args.limit !== null ? allNotes.slice(0, args.limit) : allNotes;
 
@@ -1207,15 +1208,15 @@ async function main(): Promise<void> {
       queues = new QueueRegistry({ redisUrl: process.env.REDIS_URL, logger });
     }
 
-    const stats = await importVault(
+    const stats = await importVault({
       prisma,
       queues,
       logger,
       args,
-      user.id,
+      userId: user.id,
       workspaceId,
       workspaceCreated,
-    );
+    });
     printSummary(args, stats, Date.now() - startedAt);
 
     if (!args.dryRun) {

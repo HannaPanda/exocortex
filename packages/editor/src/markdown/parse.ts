@@ -122,6 +122,29 @@ function markAttributes(tokenPrefix: string): Record<string, unknown> | undefine
 }
 
 /**
+ * Opens or closes an emphasis-style mark and returns the new active set.
+ *
+ * Emphasis-style marks (`strong`, `em`, `s` and the Exocortex additions) all
+ * follow the same `<prefix>_open` / `_close` shape, which is why they share one
+ * branch instead of one case each. Unsupported inline tokens (raw HTML) leave
+ * the set untouched: they are dropped, never crashed on.
+ */
+function applyInlineMarkToken(
+  child: MarkdownItToken,
+  activeMarks: readonly ProseMirrorMark[],
+): ProseMirrorMark[] {
+  const prefix = child.type.replace(/_(open|close)$/, '');
+  const markType = INLINE_MARK_TOKENS[prefix];
+  if (markType === undefined) return [...activeMarks];
+
+  if (!child.type.endsWith('_open')) {
+    return activeMarks.filter((mark) => mark.type !== markType);
+  }
+  const attrs = markAttributes(prefix);
+  return addMarkToSet(activeMarks, attrs === undefined ? { type: markType } : { type: markType, attrs });
+}
+
+/**
  * Parses Markdown into ProseMirror JSON matching the canonical Exocortex schema.
  *
  * Supported syntax: headings, paragraphs, emphasis, inline code, fenced code,
@@ -443,27 +466,9 @@ export function parseMarkdown(
                 },
               });
               break;
-            default: {
-              // Emphasis-style marks (`strong`, `em`, `s` and the Exocortex
-              // additions) all follow the same `<prefix>_open` / `_close` shape.
-              const opening = child.type.endsWith('_open');
-              const prefix = child.type.replace(/_(open|close)$/, '');
-              const markType = INLINE_MARK_TOKENS[prefix];
-              if (markType === undefined) {
-                // Unsupported inline tokens (raw HTML) are dropped, never crashed on.
-                break;
-              }
-              if (opening) {
-                const attrs = markAttributes(prefix);
-                activeMarks = addMarkToSet(
-                  activeMarks,
-                  attrs === undefined ? { type: markType } : { type: markType, attrs },
-                );
-              } else {
-                activeMarks = activeMarks.filter((mark) => mark.type !== markType);
-              }
+            default:
+              activeMarks = applyInlineMarkToken(child, activeMarks);
               break;
-            }
           }
         }
         activeMarks = [];

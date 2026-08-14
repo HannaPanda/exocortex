@@ -217,7 +217,7 @@ export class OpenRouterProvider implements AiProvider {
      * and `function.name`, later chunks append to `function.arguments`.
      * Accumulating by index is the only correct way to reassemble them.
      */
-    const partialToolCalls = new Map<number, { id: string; name: string; args: string }>();
+    const partialToolCalls = new Map<number, PartialToolCall>();
 
     while (true) {
       const { done, value } = await reader.read();
@@ -254,19 +254,7 @@ export class OpenRouterProvider implements AiProvider {
           yield { type: 'delta', text: delta.content, sequence };
         }
         if (delta?.tool_calls !== undefined) {
-          for (const toolCallDelta of delta.tool_calls) {
-            const existing = partialToolCalls.get(toolCallDelta.index) ?? {
-              id: '',
-              name: '',
-              args: '',
-            };
-            if (toolCallDelta.id !== undefined) existing.id = toolCallDelta.id;
-            if (toolCallDelta.function?.name !== undefined) existing.name = toolCallDelta.function.name;
-            if (toolCallDelta.function?.arguments !== undefined) {
-              existing.args += toolCallDelta.function.arguments;
-            }
-            partialToolCalls.set(toolCallDelta.index, existing);
-          }
+          mergeToolCallDeltas(partialToolCalls, delta.tool_calls);
         }
         if (choice?.finish_reason !== undefined) {
           lastFinishReason = mapFinishReason(choice.finish_reason);
@@ -343,13 +331,44 @@ interface OpenRouterStreamChunk {
     delta?: {
       content?: string;
       reasoning?: string;
-      tool_calls?: {
-        index: number;
-        id?: string;
-        type?: string;
-        function?: { name?: string; arguments?: string };
-      }[];
+      tool_calls?: OpenRouterToolCallDelta[];
     };
     finish_reason?: string;
   }[];
+}
+
+interface OpenRouterToolCallDelta {
+  index: number;
+  id?: string;
+  type?: string;
+  function?: { name?: string; arguments?: string };
+}
+
+/** One tool call under construction, assembled from the fragments of a stream. */
+interface PartialToolCall {
+  id: string;
+  name: string;
+  args: string;
+}
+
+/**
+ * Merges the tool-call fragments of a single stream chunk into the accumulator.
+ *
+ * The first chunk for an index carries `id` and `function.name`, later chunks
+ * append to `function.arguments`, so accumulating by index is the only correct
+ * way to reassemble them. Kept out of the stream loop because the merge is
+ * three independent field updates and reads better without four levels of
+ * surrounding control flow.
+ */
+function mergeToolCallDeltas(
+  partialToolCalls: Map<number, PartialToolCall>,
+  deltas: readonly OpenRouterToolCallDelta[],
+): void {
+  for (const delta of deltas) {
+    const existing = partialToolCalls.get(delta.index) ?? { id: '', name: '', args: '' };
+    if (delta.id !== undefined) existing.id = delta.id;
+    if (delta.function?.name !== undefined) existing.name = delta.function.name;
+    if (delta.function?.arguments !== undefined) existing.args += delta.function.arguments;
+    partialToolCalls.set(delta.index, existing);
+  }
 }

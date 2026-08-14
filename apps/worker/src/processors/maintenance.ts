@@ -151,6 +151,34 @@ function isMissingRow(error: unknown): boolean {
 }
 
 /**
+ * Records a failed dispatch and leaves the row unprocessed for a later run; it
+ * is never silently dropped.
+ *
+ * Returns true when the row itself disappeared while its failure was being
+ * written: the same race as in the caller, one step later. Anything else is a
+ * real fault and stays loud.
+ */
+async function recordOutboxFailure(
+  prisma: PrismaClient,
+  outboxEventId: string,
+  error: unknown,
+): Promise<boolean> {
+  try {
+    await prisma.outboxEvent.update({
+      where: { id: outboxEventId },
+      data: {
+        attempts: { increment: 1 },
+        lastError: error instanceof Error ? error.message : String(error),
+      },
+    });
+    return false;
+  } catch (recordingError) {
+    if (!isMissingRow(recordingError)) throw recordingError;
+    return true;
+  }
+}
+
+/**
  * Maintenance processor.
  *
  * `dispatch-outbox` is the reliable half of the event system: the API writes
@@ -222,23 +250,7 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
               outboxEventId: event.id,
               type: event.type,
             });
-            try {
-              // Record the failure and leave the row unprocessed for a later
-              // run; it is never silently dropped.
-              await prisma.outboxEvent.update({
-                where: { id: event.id },
-                data: {
-                  attempts: { increment: 1 },
-                  lastError: error instanceof Error ? error.message : String(error),
-                },
-              });
-            } catch (recordingError) {
-              // Same race, one step later: the row disappeared while its
-              // failure was being written. Anything else is a real fault and
-              // must stay loud.
-              if (!isMissingRow(recordingError)) throw recordingError;
-              vanished += 1;
-            }
+            if (await recordOutboxFailure(prisma, event.id, error)) vanished += 1;
           }
         }
         logger.debug('Outbox dispatched', { dispatched, vanished, batch: events.length });

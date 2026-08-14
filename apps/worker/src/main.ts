@@ -328,7 +328,7 @@ async function bootstrap(): Promise<void> {
    * called for materialization. Cover generation reports its own outcome
    * through `document.cover.generated` instead.
    */
-  const publishProgress = async (
+  const publishProgress = async (event: {
     queue: Exclude<
       (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES],
       | typeof QUEUE_NAMES.attachmentText
@@ -339,14 +339,15 @@ async function bootstrap(): Promise<void> {
       // Nor does memory capture: by the time it runs, the session that
       // triggered it has ended and its editor is gone.
       | typeof QUEUE_NAMES.memoryCapture
-    >,
-    workspaceId: string,
-    correlationId: string,
-    jobId: string,
-    progress: number,
-    label: string,
-    documentId: string | null,
-  ): Promise<void> => {
+    >;
+    workspaceId: string;
+    correlationId: string;
+    jobId: string;
+    progress: number;
+    label: string;
+    documentId: string | null;
+  }): Promise<void> => {
+    const { queue, workspaceId, correlationId, jobId, progress, label, documentId } = event;
     await bus.publish({
       type: 'job.progress',
       workspaceId,
@@ -363,15 +364,15 @@ async function bootstrap(): Promise<void> {
     concurrency: 4,
     handler: createMaterializeDocumentProcessor({ prisma, queues, bus }),
     onProgress: async (payload, progress, label, job) => {
-      await publishProgress(
-        QUEUE_NAMES.documentMaterialization,
-        payload.workspaceId,
-        payload.correlationId,
-        job.id ?? '',
+      await publishProgress({
+        queue: QUEUE_NAMES.documentMaterialization,
+        workspaceId: payload.workspaceId,
+        correlationId: payload.correlationId,
+        jobId: job.id ?? '',
         progress,
         label,
-        payload.documentId,
-      );
+        documentId: payload.documentId,
+      });
     },
     onCompleted: async (payload, job, durationMs) => {
       await bus.publish({
