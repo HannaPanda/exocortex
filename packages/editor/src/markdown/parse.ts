@@ -8,14 +8,13 @@ import {
 } from '../block-id';
 import { CALLOUT_VARIANTS, DEFAULT_CALLOUT_VARIANT } from '../callout';
 import {
-  type MarkdownTokenHandlerContext,
+  type MarkdownToken,
   type ProseMirrorDocument,
   type ProseMirrorMark,
   type ProseMirrorNode,
 } from '../contract';
-import { buildMarkdownRegistry } from '../extensions';
+import { buildMarkdownRegistry, type MarkdownRegistry } from '../extensions';
 import { MARKDOWN_HIGHLIGHT_BACKGROUND } from '../inline-styling';
-import { WIKI_LINK_IDENTITY_ATTRIBUTE } from '../link-target';
 import { getExocortexSchema } from '../schema';
 
 import {
@@ -23,13 +22,13 @@ import {
   CONTAINER_TOKEN,
   readContainerToken,
 } from './container-rule';
+import { BLOCK_ID_SUFFIX_PATTERN, DocumentBuilder } from './document-builder';
 import { type Frontmatter, parseFrontmatter } from './frontmatter';
 import {
   applyExocortexInlineRules,
   EXOCORTEX_INLINE_MARK_TOKENS,
   type MarkdownItInstance,
 } from './inline-rules';
-import { WIKI_LINK_SCHEME } from './serialize';
 
 /**
  * markdown-it token prefixes that map onto an Exocortex mark, including the
@@ -87,16 +86,8 @@ export interface ParsedDocument {
   title: string | null;
 }
 
-interface StackEntry {
-  type: string;
-  attrs: Record<string, unknown>;
-  content: ProseMirrorNode[];
-}
-
-const BLOCK_ID_SUFFIX_PATTERN = /(?:^|\s)\^([a-z0-9]{8,32})$/;
 const CALLOUT_HEADER_PATTERN = /^\[!([A-Za-z]+)\][ \t]*([^\n]*)/;
 const TASK_MARKER_PATTERN = /^\[([ xX])\][ \t]+/;
-const WIKI_LINK_PATTERN = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
 
 function createMarkdownIt(): MarkdownItInstance {
   const md = new MarkdownIt('default', {
@@ -144,6 +135,227 @@ function applyInlineMarkToken(
   return addMarkToSet(activeMarks, attrs === undefined ? { type: markType } : { type: markType, attrs });
 }
 
+// --------------------------------------------------------------------------
+// Token handlers
+//
+// One function per token family rather than one switch over everything. The
+// families are independent: a table token never means anything to the list
+// handler, so the dispatcher below simply offers the token around until someone
+// claims it.
+// --------------------------------------------------------------------------
+
+/** Handles the table tokens; returns `false` when the token is not one. */
+function appendTableToken(token: MarkdownToken, builder: DocumentBuilder): boolean {
+  switch (token.type) {
+    case 'table_open':
+      builder.openNode('table');
+      return true;
+    case 'table_close':
+      builder.closeNode();
+      return true;
+    // `thead` and `tbody` have no counterpart in the schema: whether a row is a
+    // header row is already said by the cell type it contains.
+    case 'thead_open':
+    case 'thead_close':
+    case 'tbody_open':
+    case 'tbody_close':
+      return true;
+    case 'tr_open':
+      builder.openNode('tableRow');
+      return true;
+    case 'tr_close':
+      builder.closeNode();
+      return true;
+    case 'th_open':
+      builder.openNode('tableHeader', { colspan: 1, rowspan: 1, colwidth: null });
+      builder.openNode('paragraph');
+      return true;
+    case 'td_open':
+      builder.openNode('tableCell', { colspan: 1, rowspan: 1, colwidth: null });
+      builder.openNode('paragraph');
+      return true;
+    // A cell always wraps its content in a paragraph, so closing one closes two.
+    case 'th_close':
+    case 'td_close':
+      builder.closeNode();
+      builder.closeNode();
+      return true;
+    default:
+      return false;
+  }
+}
+
+/** Handles the list tokens; returns `false` when the token is not one. */
+function appendListToken(
+  token: MarkdownToken,
+  index: number,
+  tokens: readonly MarkdownToken[],
+  builder: DocumentBuilder,
+): boolean {
+  switch (token.type) {
+    case 'bullet_list_open':
+      builder.openNode(isTaskList(tokens, index) ? 'taskList' : 'bulletList');
+      return true;
+    case 'ordered_list_open': {
+      const start = Number.parseInt(String(token.attrGet('start') ?? '1'), 10);
+      builder.openNode('orderedList', { start: Number.isNaN(start) ? 1 : start });
+      return true;
+    }
+    case 'list_item_open':
+      if (builder.openType === 'taskList') {
+        builder.openNode('taskItem', { checked: readTaskMarker(tokens, index) });
+      } else {
+        builder.openNode('listItem');
+      }
+      return true;
+    case 'bullet_list_close':
+    case 'ordered_list_close':
+    case 'list_item_close':
+      builder.closeNode();
+      return true;
+    default:
+      return false;
+  }
+}
+
+/** Opens a blockquote, or the callout that is written as one. */
+function openBlockquote(
+  tokens: readonly MarkdownToken[],
+  index: number,
+  builder: DocumentBuilder,
+): void {
+  const callout = detectCallout(tokens, index);
+  if (callout === null) {
+    builder.openNode('blockquote');
+    return;
+  }
+  const attrs: Record<string, unknown> = { variant: callout.variant, title: callout.title };
+  if (callout.blockId !== null) attrs[BLOCK_ID_ATTRIBUTE] = callout.blockId;
+  builder.openNode('callout', attrs);
+  if (callout.emptyParagraph) builder.skipNextParagraph();
+}
+
+/** Adds a fenced or indented code block with its language and identifier. */
+function appendCodeBlock(token: MarkdownToken, builder: DocumentBuilder): void {
+  const { language, blockId } = parseFenceInfo(token.info);
+  const attrs: Record<string, unknown> = { language };
+  if (blockId !== null) attrs[BLOCK_ID_ATTRIBUTE] = blockId;
+  builder.openNode('codeBlock', attrs);
+  const text = token.content.replace(/\n$/, '');
+  if (text.length > 0) builder.pushText(text, []);
+  builder.closeNode();
+}
+
+/** Handles everything that is neither a table nor a list token. */
+function appendBlockToken(
+  token: MarkdownToken,
+  index: number,
+  tokens: readonly MarkdownToken[],
+  builder: DocumentBuilder,
+  registry: MarkdownRegistry,
+): void {
+  switch (token.type) {
+    case 'heading_open': {
+      const level = Number.parseInt(token.tag.slice(1), 10);
+      builder.openNode('heading', { level: Number.isNaN(level) ? 1 : level });
+      break;
+    }
+    case 'paragraph_open':
+      // The paragraph a callout header consumed was never opened, so there is
+      // nothing to open here either.
+      if (builder.isSkippingParagraph) break;
+      builder.openNode('paragraph');
+      break;
+    case 'paragraph_close':
+      if (builder.isSkippingParagraph) {
+        builder.consumeSkippedParagraph();
+        break;
+      }
+      builder.closeNode();
+      break;
+
+    case 'blockquote_open':
+      openBlockquote(tokens, index, builder);
+      break;
+
+    case 'heading_close':
+    case 'blockquote_close':
+      builder.closeNode();
+      break;
+
+    case 'fence':
+    case 'code_block':
+      appendCodeBlock(token, builder);
+      break;
+
+    case 'hr':
+      builder.addNode('horizontalRule');
+      break;
+
+    case 'inline':
+      appendInlineTokens(token.children ?? [], builder, registry);
+      break;
+
+    default:
+      break;
+  }
+}
+
+/** Adds the children of one `inline` token, and clears the marks afterwards. */
+function appendInlineTokens(
+  children: readonly MarkdownToken[],
+  builder: DocumentBuilder,
+  registry: MarkdownRegistry,
+): void {
+  for (const child of children) {
+    // Inline nodes contributed by extensions (for example inline maths).
+    const childHandler = registry.tokens[child.type];
+    if (childHandler !== undefined && childHandler(child, builder.tokenContext) === true) continue;
+
+    switch (child.type) {
+      case 'text':
+        builder.addText(child.content);
+        break;
+      case 'softbreak':
+        builder.pushText(' ', builder.activeMarks);
+        break;
+      case 'hardbreak':
+        builder.addNode('hardBreak');
+        break;
+      case 'code_inline':
+        builder.pushText(child.content, addMarkToSet(builder.activeMarks, { type: 'code' }));
+        break;
+      case 'link_open':
+        builder.activeMarks = addMarkToSet(builder.activeMarks, {
+          type: 'link',
+          attrs: {
+            href: String(child.attrGet('href') ?? ''),
+            title: asOptionalString(child.attrGet('title')),
+            target: null,
+          },
+        });
+        break;
+      case 'link_close':
+        builder.activeMarks = builder.activeMarks.filter((mark) => mark.type !== 'link');
+        break;
+      case 'image':
+        builder.addPendingImage({
+          type: 'image',
+          attrs: {
+            src: String(child.attrGet('src') ?? ''),
+            alt: child.content,
+            title: asOptionalString(child.attrGet('title')),
+          },
+        });
+        break;
+      default:
+        builder.activeMarks = applyInlineMarkToken(child, builder.activeMarks);
+        break;
+    }
+  }
+  builder.activeMarks = [];
+}
+
 /**
  * Parses Markdown into ProseMirror JSON matching the canonical Exocortex schema.
  *
@@ -158,122 +370,9 @@ export function parseMarkdown(
 ): ParsedDocument {
   const assignBlockIds = options.assignBlockIds ?? true;
   const { frontmatter, body } = parseFrontmatter(markdown);
-  const tokens = createMarkdownIt().parse(body, {});
+  const tokens: readonly MarkdownToken[] = createMarkdownIt().parse(body, {});
   const registry = buildMarkdownRegistry();
-
-  const root: StackEntry = { type: 'doc', attrs: {}, content: [] };
-  const stack: StackEntry[] = [root];
-  let activeMarks: ProseMirrorMark[] = [];
-  let skipParagraph = 0;
-  /**
-   * Images are block-level in the Exocortex schema, but Markdown places them
-   * inline. They are buffered while an inline container is open and flushed as
-   * siblings once that container closes.
-   */
-  let pendingImages: ProseMirrorNode[] = [];
-
-  const top = (): StackEntry => stack[stack.length - 1] as StackEntry;
-
-  const openNode = (type: string, attrs: Record<string, unknown> = {}): void => {
-    stack.push({ type, attrs, content: [] });
-  };
-
-  const closeNode = (): void => {
-    const entry = stack.pop();
-    if (entry === undefined) return;
-    extractTrailingBlockId(entry);
-    const node: ProseMirrorNode = { type: entry.type };
-    if (Object.keys(entry.attrs).length > 0) node.attrs = entry.attrs;
-    if (entry.content.length > 0) node.content = entry.content;
-
-    const dropEmptyWrapper =
-      entry.type === 'paragraph' && entry.content.length === 0 && pendingImages.length > 0;
-    if (!dropEmptyWrapper) top().content.push(node);
-
-    if (pendingImages.length > 0 && (entry.type === 'paragraph' || entry.type === 'heading')) {
-      top().content.push(...pendingImages);
-      pendingImages = [];
-    }
-  };
-
-  const addNode = (
-    type: string,
-    attrs: Record<string, unknown> = {},
-    content?: ProseMirrorNode[],
-  ): void => {
-    const node: ProseMirrorNode = { type };
-    if (Object.keys(attrs).length > 0) node.attrs = attrs;
-    if (content !== undefined && content.length > 0) node.content = content;
-    top().content.push(node);
-  };
-
-  const pushText = (text: string, marks: ProseMirrorMark[]): void => {
-    if (text.length === 0) return;
-    const node: ProseMirrorNode = { type: 'text', text };
-    if (marks.length > 0) node.marks = marks.map((mark) => ({ ...mark }));
-    top().content.push(node);
-  };
-
-  /** Splits `[[Target|Label]]` occurrences into wiki link marks. */
-  const addText = (text: string): void => {
-    WIKI_LINK_PATTERN.lastIndex = 0;
-    let lastIndex = 0;
-    let match: RegExpExecArray | null;
-    while ((match = WIKI_LINK_PATTERN.exec(text)) !== null) {
-      pushText(text.slice(lastIndex, match.index), activeMarks);
-      const target = (match[1] ?? '').trim();
-      const label = (match[2] ?? target).trim();
-      pushText(label, [
-        ...activeMarks,
-        {
-          type: 'link',
-          // No identity in the file — `[[Titel]]` is an interchange format and
-          // stays free of internal identifiers. `bindPageLinkIdentities` maps
-          // the title back onto a document where the importer has a workspace.
-          attrs: {
-            href: `${WIKI_LINK_SCHEME}${target}`,
-            title: null,
-            target: null,
-            [WIKI_LINK_IDENTITY_ATTRIBUTE]: null,
-          },
-        },
-      ]);
-      lastIndex = match.index + match[0].length;
-    }
-    pushText(text.slice(lastIndex), activeMarks);
-  };
-
-  /** Moves a trailing ` ^id` from the last text node into the block attributes. */
-  const extractTrailingBlockId = (entry: StackEntry): void => {
-    if (!ADDRESSABLE_BLOCK_TYPES_SET.has(entry.type)) return;
-    if (isValidBlockId(entry.attrs[BLOCK_ID_ATTRIBUTE])) return;
-    const last = entry.content[entry.content.length - 1];
-    if (last === undefined || last.type !== 'text' || last.text === undefined) return;
-    const match = BLOCK_ID_SUFFIX_PATTERN.exec(last.text);
-    if (match === null) return;
-    const stripped = last.text.slice(0, match.index);
-    if (stripped.length === 0) {
-      entry.content.pop();
-    } else {
-      last.text = stripped;
-    }
-    entry.attrs[BLOCK_ID_ATTRIBUTE] = match[1] as string;
-  };
-
-  const tokenContext: MarkdownTokenHandlerContext = {
-    openNode,
-    closeNode,
-    addNode,
-    addTextNode: (type, text, attrs = {}) =>
-      addNode(type, attrs, text.length > 0 ? [{ type: 'text', text }] : undefined),
-    addText,
-    openMark: (type, attrs) => {
-      activeMarks = [...activeMarks, attrs === undefined ? { type } : { type, attrs }];
-    },
-    closeMark: (type) => {
-      activeMarks = activeMarks.filter((mark) => mark.type !== type);
-    },
-  };
+  const builder = new DocumentBuilder();
 
   /**
    * How many nodes each open container pushed, so the closing `:::` closes
@@ -285,206 +384,29 @@ export function parseMarkdown(
     const token = tokens[index];
     if (token === undefined) continue;
 
-    // Extensions contribute their own token handlers; the built-in cases below
-    // only cover what markdown-it produces for the CommonMark and GFM syntax.
+    // Extensions contribute their own token handlers; the families below only
+    // cover what markdown-it produces for the CommonMark and GFM syntax.
     const handler = registry.tokens[token.type];
-    if (handler !== undefined && handler(token, tokenContext) === true) continue;
+    if (handler !== undefined && handler(token, builder.tokenContext) === true) continue;
 
     if (token.type === `${CONTAINER_TOKEN}_open`) {
       const { name, params } = readContainerToken(token.info);
       const opener = registry.containers[name];
-      containerDepths.push(opener === undefined ? 0 : opener(params, tokenContext));
+      containerDepths.push(opener === undefined ? 0 : opener(params, builder.tokenContext));
       continue;
     }
     if (token.type === `${CONTAINER_TOKEN}_close`) {
       const depth = containerDepths.pop() ?? 0;
-      for (let closed = 0; closed < depth; closed += 1) closeNode();
+      for (let closed = 0; closed < depth; closed += 1) builder.closeNode();
       continue;
     }
 
-    switch (token.type) {
-      case 'heading_open': {
-        const level = Number.parseInt(token.tag.slice(1), 10);
-        openNode('heading', { level: Number.isNaN(level) ? 1 : level });
-        break;
-      }
-      case 'heading_close':
-        closeNode();
-        break;
-
-      case 'paragraph_open':
-        if (skipParagraph > 0) break;
-        openNode('paragraph');
-        break;
-      case 'paragraph_close':
-        if (skipParagraph > 0) {
-          skipParagraph -= 1;
-          break;
-        }
-        closeNode();
-        break;
-
-      case 'blockquote_open': {
-        const callout = detectCallout(tokens, index);
-        if (callout !== null) {
-          const attrs: Record<string, unknown> = {
-            variant: callout.variant,
-            title: callout.title,
-          };
-          if (callout.blockId !== null) attrs[BLOCK_ID_ATTRIBUTE] = callout.blockId;
-          openNode('callout', attrs);
-          if (callout.emptyParagraph) skipParagraph += 1;
-        } else {
-          openNode('blockquote');
-        }
-        break;
-      }
-      case 'blockquote_close':
-        closeNode();
-        break;
-
-      case 'bullet_list_open':
-        openNode(isTaskList(tokens, index) ? 'taskList' : 'bulletList');
-        break;
-      case 'bullet_list_close':
-        closeNode();
-        break;
-
-      case 'ordered_list_open': {
-        const start = Number.parseInt(String(token.attrGet('start') ?? '1'), 10);
-        openNode('orderedList', { start: Number.isNaN(start) ? 1 : start });
-        break;
-      }
-      case 'ordered_list_close':
-        closeNode();
-        break;
-
-      case 'list_item_open': {
-        const isTask = top().type === 'taskList';
-        if (isTask) {
-          const marker = readTaskMarker(tokens, index);
-          openNode('taskItem', { checked: marker });
-        } else {
-          openNode('listItem');
-        }
-        break;
-      }
-      case 'list_item_close':
-        closeNode();
-        break;
-
-      case 'fence':
-      case 'code_block': {
-        const { language, blockId } = parseFenceInfo(token.info);
-        const attrs: Record<string, unknown> = { language };
-        if (blockId !== null) attrs[BLOCK_ID_ATTRIBUTE] = blockId;
-        openNode('codeBlock', attrs);
-        const text = token.content.replace(/\n$/, '');
-        if (text.length > 0) pushText(text, []);
-        closeNode();
-        break;
-      }
-
-      case 'hr':
-        addNode('horizontalRule');
-        break;
-
-      case 'table_open':
-        openNode('table');
-        break;
-      case 'table_close':
-        closeNode();
-        break;
-      case 'thead_open':
-      case 'thead_close':
-      case 'tbody_open':
-      case 'tbody_close':
-        break;
-      case 'tr_open':
-        openNode('tableRow');
-        break;
-      case 'tr_close':
-        closeNode();
-        break;
-      case 'th_open':
-        openNode('tableHeader', { colspan: 1, rowspan: 1, colwidth: null });
-        openNode('paragraph');
-        break;
-      case 'th_close':
-        closeNode();
-        closeNode();
-        break;
-      case 'td_open':
-        openNode('tableCell', { colspan: 1, rowspan: 1, colwidth: null });
-        openNode('paragraph');
-        break;
-      case 'td_close':
-        closeNode();
-        closeNode();
-        break;
-
-      case 'inline': {
-        const children = token.children ?? [];
-        for (const child of children) {
-          // Inline nodes contributed by extensions (for example inline maths).
-          const childHandler = registry.tokens[child.type];
-          if (childHandler !== undefined && childHandler(child, tokenContext) === true) continue;
-
-          switch (child.type) {
-            case 'text':
-              addText(child.content);
-              break;
-            case 'softbreak':
-              pushText(' ', activeMarks);
-              break;
-            case 'hardbreak':
-              addNode('hardBreak');
-              break;
-            case 'code_inline':
-              pushText(child.content, addMarkToSet(activeMarks, { type: 'code' }));
-              break;
-            case 'link_open':
-              activeMarks = addMarkToSet(activeMarks, {
-                type: 'link',
-                attrs: {
-                  href: String(child.attrGet('href') ?? ''),
-                  title: asOptionalString(child.attrGet('title')),
-                  target: null,
-                },
-              });
-              break;
-            case 'link_close':
-              activeMarks = activeMarks.filter((mark) => mark.type !== 'link');
-              break;
-            case 'image':
-              pendingImages.push({
-                type: 'image',
-                attrs: {
-                  src: String(child.attrGet('src') ?? ''),
-                  alt: child.content,
-                  title: asOptionalString(child.attrGet('title')),
-                },
-              });
-              break;
-            default:
-              activeMarks = applyInlineMarkToken(child, activeMarks);
-              break;
-          }
-        }
-        activeMarks = [];
-        break;
-      }
-
-      default:
-        break;
-    }
+    if (appendTableToken(token, builder)) continue;
+    if (appendListToken(token, index, tokens, builder)) continue;
+    appendBlockToken(token, index, tokens, builder, registry);
   }
 
-  const document: ProseMirrorDocument = {
-    type: 'doc',
-    content: root.content.length > 0 ? root.content : [{ type: 'paragraph' }],
-  };
-
+  const document = builder.finish();
   normalizeTextRuns(document);
   if (assignBlockIds) ensureBlockIds(document);
 

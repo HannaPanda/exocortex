@@ -52,6 +52,54 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+/**
+ * Reads one known key out of the parsed YAML onto the frontmatter.
+ *
+ * A reader that does not recognise the value simply leaves the field unset:
+ * frontmatter comes from files other tools wrote, so a wrong type is an everyday
+ * occurrence and never a reason to reject the document.
+ */
+type FrontmatterReader = (frontmatter: Frontmatter, value: unknown) => void;
+
+/** A timestamp key, which YAML may already have turned into a `Date`. */
+function readTimestamp(key: 'createdAt' | 'updatedAt'): FrontmatterReader {
+  return (frontmatter, value) => {
+    const asString = value instanceof Date ? value.toISOString() : value;
+    if (typeof asString === 'string') frontmatter[key] = asString;
+  };
+}
+
+const FRONTMATTER_READERS: Readonly<Record<string, FrontmatterReader>> = {
+  title: (frontmatter, value) => {
+    if (typeof value === 'string') frontmatter.title = value;
+  },
+  icon: (frontmatter, value) => {
+    if (typeof value === 'string' || value === null) frontmatter.icon = value;
+  },
+  iconColor: (frontmatter, value) => {
+    if (typeof value === 'string' || value === null) frontmatter.iconColor = value;
+  },
+  cover: (frontmatter, value) => {
+    if (typeof value === 'string' || value === null) frontmatter.cover = value;
+  },
+  coverPosition: (frontmatter, value) => {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      frontmatter.coverPosition = Math.min(100, Math.max(0, value));
+    }
+  },
+  exocortexId: (frontmatter, value) => {
+    if (typeof value === 'string') frontmatter.exocortexId = value;
+  },
+  exocortexSchemaVersion: (frontmatter, value) => {
+    if (typeof value === 'number') frontmatter.exocortexSchemaVersion = value;
+  },
+  type: (frontmatter, value) => {
+    if (typeof value === 'string') frontmatter.type = value;
+  },
+  createdAt: readTimestamp('createdAt'),
+  updatedAt: readTimestamp('updatedAt'),
+};
+
 export function parseFrontmatter(markdown: string): ParsedMarkdown {
   const normalized = markdown.replace(/^\uFEFF/, '');
   const match = FRONTMATTER_PATTERN.exec(normalized);
@@ -74,42 +122,14 @@ export function parseFrontmatter(markdown: string): ParsedMarkdown {
   const frontmatter: Frontmatter = { unknown: {} };
 
   for (const [key, value] of Object.entries(data)) {
-    switch (key) {
-      case 'title':
-        if (typeof value === 'string') frontmatter.title = value;
-        break;
-      case 'icon':
-        if (typeof value === 'string' || value === null) frontmatter.icon = value;
-        break;
-      case 'iconColor':
-        if (typeof value === 'string' || value === null) frontmatter.iconColor = value;
-        break;
-      case 'cover':
-        if (typeof value === 'string' || value === null) frontmatter.cover = value;
-        break;
-      case 'coverPosition':
-        if (typeof value === 'number' && Number.isFinite(value)) {
-          frontmatter.coverPosition = Math.min(100, Math.max(0, value));
-        }
-        break;
-      case 'exocortexId':
-        if (typeof value === 'string') frontmatter.exocortexId = value;
-        break;
-      case 'exocortexSchemaVersion':
-        if (typeof value === 'number') frontmatter.exocortexSchemaVersion = value;
-        break;
-      case 'type':
-        if (typeof value === 'string') frontmatter.type = value;
-        break;
-      case 'createdAt':
-      case 'updatedAt': {
-        const asString = value instanceof Date ? value.toISOString() : value;
-        if (typeof asString === 'string') frontmatter[key] = asString;
-        break;
-      }
-      default:
-        frontmatter.unknown[key] = value;
+    const read = FRONTMATTER_READERS[key];
+    // Every key Exocortex does not own is preserved verbatim, so exporting the
+    // document again hands the other tool back exactly what it wrote.
+    if (read === undefined) {
+      frontmatter.unknown[key] = value;
+      continue;
     }
+    read(frontmatter, value);
   }
 
   // Leading blank lines after the closing fence are not content.
