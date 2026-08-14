@@ -67,6 +67,30 @@ const doclingResponseSchema = z.object({
     .default(null),
 });
 
+type DoclingResponse = z.infer<typeof doclingResponseSchema>;
+
+/**
+ * Maps the layout facts docling reports onto the attachment metadata shape.
+ *
+ * Nearly every field is optional on the wire, which is why this reads as a wall
+ * of fallbacks: a document without tables reports no `tables` key at all, and
+ * that is "none", not "unknown".
+ */
+function toExtractionMetadata(payload: DoclingResponse): PdfExtraction['metadata'] {
+  const document = payload.document.json_content;
+  return {
+    ...EMPTY_METADATA,
+    extractor: 'docling',
+    pageCount: document?.pages === null ? null : Object.keys(document?.pages ?? {}).length,
+    tableCount: document?.tables?.length ?? null,
+    pictureCount: document?.pictures?.length ?? null,
+    confidence: payload.confidence?.mean_score ?? null,
+    // `ocr_score` stays null when the pipeline never ran OCR, which is
+    // exactly the signal for "this document had a usable text layer".
+    ocrUsed: payload.confidence === null ? null : payload.confidence.ocr_score !== null,
+  };
+}
+
 export interface DoclingPdfExtractorOptions {
   /** Base URL of docling-serve, e.g. `http://127.0.0.1:5010`. No trailing slash. */
   baseUrl: string;
@@ -152,19 +176,7 @@ export function createDoclingPdfExtractor(options: DoclingPdfExtractorOptions): 
           return { text: null, metadata: null };
         }
 
-        const document = payload.document.json_content;
-        const metadata = {
-          ...EMPTY_METADATA,
-          extractor: 'docling',
-          pageCount: document?.pages === null ? null : Object.keys(document?.pages ?? {}).length,
-          tableCount: document?.tables?.length ?? null,
-          pictureCount: document?.pictures?.length ?? null,
-          confidence: payload.confidence?.mean_score ?? null,
-          // `ocr_score` stays null when the pipeline never ran OCR, which is
-          // exactly the signal for "this document had a usable text layer".
-          ocrUsed: payload.confidence === null ? null : payload.confidence.ocr_score !== null,
-        };
-
+        const metadata = toExtractionMetadata(payload);
         const text = payload.document.md_content ?? '';
         // Layout facts are worth keeping even for a document that yielded no
         // text: "three pages, no content" is a real answer.

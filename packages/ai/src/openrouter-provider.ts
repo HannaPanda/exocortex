@@ -205,19 +205,60 @@ export class OpenRouterProvider implements AiProvider {
       return;
     }
 
+    const state: StreamState = {
+      text: '',
+      sequence: 0,
+      usage: null,
+      finishReason: 'stop',
+      /**
+       * Tool calls arrive as fragments: the first chunk for an index carries
+       * `id` and `function.name`, later chunks append to `function.arguments`.
+       * Accumulating by index is the only correct way to reassemble them.
+       */
+      partialToolCalls: new Map<number, PartialToolCall>(),
+    };
+
+    for await (const chunk of this.readStreamChunks(response.body, request.correlationId)) {
+      yield* this.consumeChunk(chunk, state, request, startedAt);
+    }
+
+    let toolCalls: AiToolCall[] = [];
+    if (state.partialToolCalls.size > 0) {
+      toolCalls = [...state.partialToolCalls.entries()]
+        .sort(([indexA], [indexB]) => indexA - indexB)
+        .map(([, call]) => ({ id: call.id, name: call.name, argumentsJson: call.args }));
+      yield { type: 'tool_calls', toolCalls };
+    }
+
+    if (state.usage !== null) yield { type: 'usage', usage: state.usage };
+    // 'length' must survive: a run that hit the output cap mid-arguments also
+    // carries half-assembled tool calls, and reporting those as a clean
+    // 'tool_calls' finish is exactly what made truncation invisible before.
+    yield {
+      type: 'done',
+      text: state.text,
+      finishReason:
+        toolCalls.length > 0 && state.finishReason !== 'length'
+          ? 'tool_calls'
+          : state.finishReason,
+    };
+  }
+
+  /**
+   * Yields the parsed payload of every `data:` line in a server-sent event body.
+   *
+   * The network decides where a chunk ends, not the protocol, so a `data:` line
+   * routinely arrives in pieces; only whole lines are handed on. A payload that
+   * is not valid JSON is logged and skipped rather than ending the stream: one
+   * broken frame must not cost the answer that came before it.
+   */
+  private async *readStreamChunks(
+    body: ReadableStream<Uint8Array>,
+    correlationId: string | undefined,
+  ): AsyncGenerator<OpenRouterStreamChunk> {
     const decoder = new TextDecoder();
-    const reader = response.body.getReader();
+    const reader = body.getReader();
     let buffer = '';
-    let text = '';
-    let sequence = 0;
-    let usage: AiUsage | null = null;
-    let lastFinishReason: AiGenerateResult['finishReason'] = 'stop';
-    /**
-     * Tool calls arrive as fragments: the first chunk for an index carries `id`
-     * and `function.name`, later chunks append to `function.arguments`.
-     * Accumulating by index is the only correct way to reassemble them.
-     */
-    const partialToolCalls = new Map<number, PartialToolCall>();
 
     while (true) {
       const { done, value } = await reader.read();
@@ -229,59 +270,55 @@ export class OpenRouterProvider implements AiProvider {
         if (!line.startsWith('data:')) continue;
         const data = line.slice(5).trim();
         if (data === '[DONE]') continue;
-        let chunk: OpenRouterStreamChunk;
         try {
-          chunk = JSON.parse(data) as OpenRouterStreamChunk;
+          yield JSON.parse(data) as OpenRouterStreamChunk;
         } catch (error) {
           this.options.logger.warn('Skipping malformed OpenRouter stream chunk', {
-            correlationId: request.correlationId,
+            correlationId,
             reason: error instanceof Error ? error.message : String(error),
           });
-          continue;
-        }
-        const choice = chunk.choices?.[0];
-        const delta = choice?.delta;
-        // Reasoning *text* is still deliberately dropped: it is not the answer
-        // and would corrupt `resultText`. Only its size is passed on, so a
-        // client can tell "the model is thinking" apart from "nothing is
-        // happening" without the thinking itself leaving this adapter.
-        if (typeof delta?.reasoning === 'string' && delta.reasoning.length > 0) {
-          yield { type: 'reasoning', charCount: delta.reasoning.length };
-        }
-        if (typeof delta?.content === 'string' && delta.content.length > 0) {
-          text += delta.content;
-          sequence += 1;
-          yield { type: 'delta', text: delta.content, sequence };
-        }
-        if (delta?.tool_calls !== undefined) {
-          mergeToolCallDeltas(partialToolCalls, delta.tool_calls);
-        }
-        if (choice?.finish_reason !== undefined) {
-          lastFinishReason = mapFinishReason(choice.finish_reason);
-        }
-        if (chunk.usage !== undefined) {
-          usage = this.mapUsage({ usage: chunk.usage, model: chunk.model }, request, Date.now() - startedAt);
         }
       }
     }
+  }
 
-    let toolCalls: AiToolCall[] = [];
-    if (partialToolCalls.size > 0) {
-      toolCalls = [...partialToolCalls.entries()]
-        .sort(([indexA], [indexB]) => indexA - indexB)
-        .map(([, call]) => ({ id: call.id, name: call.name, argumentsJson: call.args }));
-      yield { type: 'tool_calls', toolCalls };
+  /** Folds one chunk into the running state and returns what to emit for it. */
+  private consumeChunk(
+    chunk: OpenRouterStreamChunk,
+    state: StreamState,
+    request: AiGenerateRequest,
+    startedAt: number,
+  ): AiStreamEvent[] {
+    const events: AiStreamEvent[] = [];
+    const choice = chunk.choices?.[0];
+    const delta = choice?.delta;
+
+    // Reasoning *text* is still deliberately dropped: it is not the answer
+    // and would corrupt `resultText`. Only its size is passed on, so a
+    // client can tell "the model is thinking" apart from "nothing is
+    // happening" without the thinking itself leaving this adapter.
+    if (typeof delta?.reasoning === 'string' && delta.reasoning.length > 0) {
+      events.push({ type: 'reasoning', charCount: delta.reasoning.length });
     }
-
-    if (usage !== null) yield { type: 'usage', usage };
-    // 'length' must survive: a run that hit the output cap mid-arguments also
-    // carries half-assembled tool calls, and reporting those as a clean
-    // 'tool_calls' finish is exactly what made truncation invisible before.
-    yield {
-      type: 'done',
-      text,
-      finishReason: toolCalls.length > 0 && lastFinishReason !== 'length' ? 'tool_calls' : lastFinishReason,
-    };
+    if (typeof delta?.content === 'string' && delta.content.length > 0) {
+      state.text += delta.content;
+      state.sequence += 1;
+      events.push({ type: 'delta', text: delta.content, sequence: state.sequence });
+    }
+    if (delta?.tool_calls !== undefined) {
+      mergeToolCallDeltas(state.partialToolCalls, delta.tool_calls);
+    }
+    if (choice?.finish_reason !== undefined) {
+      state.finishReason = mapFinishReason(choice.finish_reason);
+    }
+    if (chunk.usage !== undefined) {
+      state.usage = this.mapUsage(
+        { usage: chunk.usage, model: chunk.model },
+        request,
+        Date.now() - startedAt,
+      );
+    }
+    return events;
   }
 
   private mapUsage(
@@ -342,6 +379,15 @@ interface OpenRouterToolCallDelta {
   id?: string;
   type?: string;
   function?: { name?: string; arguments?: string };
+}
+
+/** Everything a stream accumulates across chunks before it can report a result. */
+interface StreamState {
+  text: string;
+  sequence: number;
+  usage: AiUsage | null;
+  finishReason: AiGenerateResult['finishReason'];
+  partialToolCalls: Map<number, PartialToolCall>;
 }
 
 /** One tool call under construction, assembled from the fragments of a stream. */
