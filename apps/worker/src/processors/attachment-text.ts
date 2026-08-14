@@ -137,49 +137,16 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
       correlationId: payload.correlationId,
     });
 
-    // Each engine gets the whole document. A null `text` means "this engine
-    // found nothing", which is a routine outcome for a scan hitting a text-only
-    // engine, so the next one in the chain is tried before giving up. A thrown
-    // error still bubbles: an unreachable Docling container must be retried,
-    // not silently downgraded to a worse result.
-    //
-    // Metadata is collected from every attempt, not only the winning one, and
-    // joined with the locally read dictionary. The three sources see different
-    // things -- the file carries the title and the dates, Docling reports the
-    // layout and whether OCR ran -- so an attempt that produced no text can
-    // still be the only source of part of the answer.
-    let text: string | null = null;
-    let winner: PdfMetadata | null = null;
-    const attempted: (PdfMetadata | null)[] = [];
-    let firstError: unknown = null;
-
-    for (const candidate of extractors) {
-      let result;
-      try {
-        result = await candidate.extract({
-          data,
-          filename: attachment.filename,
-          correlationId: payload.correlationId,
-        });
-      } catch (error) {
-        // A broken engine must not take the chain down with it: a hosted call
-        // that times out on a long document is exactly when the local one
-        // should get its turn. The error is kept so that a run in which every
-        // engine failed still ends as a retry rather than as "no text layer".
-        firstError ??= error;
-        logger.warn('PDF extraction engine failed, trying the next one', {
-          attachmentId: attachment.id,
-          error: error instanceof Error ? error.message : String(error),
-        });
-        continue;
-      }
-      if (result.text !== null) {
-        text = result.text;
-        winner = result.metadata;
-        break;
-      }
-      attempted.push(result.metadata);
-    }
+    // Each engine gets the whole document, and every attempt's metadata is
+    // joined with the locally read dictionary below: the three sources see
+    // different things (the file carries the title and the dates, Docling
+    // reports the layout and whether OCR ran).
+    const { text, winner, attempted, firstError } = await runExtractorChain(
+      extractors,
+      { data, filename: attachment.filename, correlationId: payload.correlationId },
+      logger,
+      attachment.id,
+    );
 
     // Every engine threw: nothing was learned, so this is a transient problem
     // and BullMQ should try again rather than the attachment being written off.
@@ -228,6 +195,60 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
       pageCount: metadata?.pageCount,
     });
   };
+}
+
+/** What the chain of engines learned, whether or not any of them produced text. */
+interface ExtractorChainResult {
+  text: string | null;
+  /** Metadata of the engine that produced the text, `null` when none did. */
+  winner: PdfMetadata | null;
+  /** Metadata of the engines that ran but found nothing. */
+  attempted: (PdfMetadata | null)[];
+  /** The first thrown error, kept so an all-failed run ends as a retry. */
+  firstError: unknown;
+}
+
+/**
+ * Runs the engines in order and stops at the first one that produces text.
+ *
+ * A null `text` means "this engine found nothing", which is a routine outcome
+ * for a scan hitting a text-only engine, so the next one in the chain is tried
+ * before giving up. Metadata is collected from every attempt, not only the
+ * winning one: the sources see different things, so an attempt that produced no
+ * text can still be the only source of part of the answer.
+ */
+async function runExtractorChain(
+  extractors: readonly PdfTextExtractor[],
+  input: { data: Buffer; filename: string; correlationId: string },
+  logger: JobContext<typeof QUEUE_NAMES.attachmentText>['logger'],
+  attachmentId: string,
+): Promise<ExtractorChainResult> {
+  const attempted: (PdfMetadata | null)[] = [];
+  let firstError: unknown = null;
+
+  for (const candidate of extractors) {
+    let result;
+    try {
+      result = await candidate.extract(input);
+    } catch (error) {
+      // A broken engine must not take the chain down with it: a hosted call
+      // that times out on a long document is exactly when the local one
+      // should get its turn. The error is kept so that a run in which every
+      // engine failed still ends as a retry rather than as "no text layer".
+      firstError ??= error;
+      logger.warn('PDF extraction engine failed, trying the next one', {
+        attachmentId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      continue;
+    }
+    if (result.text !== null) {
+      return { text: result.text, winner: result.metadata, attempted, firstError };
+    }
+    attempted.push(result.metadata);
+  }
+
+  return { text: null, winner: null, attempted, firstError };
 }
 
 /**
