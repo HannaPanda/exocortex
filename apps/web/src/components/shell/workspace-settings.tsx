@@ -52,29 +52,23 @@ const MEMBER_ROLE_LABELS: Record<WorkspaceRole, string> = {
  * it is the one thing already-shared links depend on.
  */
 export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
-  const router = useRouter();
   const detail = useWorkspaceDetail(workspaceId);
   const updateWorkspace = useUpdateWorkspace();
 
   const [name, setName] = React.useState<string | null>(null);
-  const [slug, setSlug] = React.useState<string | null>(null);
-  const [slugConfirming, setSlugConfirming] = React.useState(false);
   const [nameSaved, setNameSaved] = React.useState(false);
-  const [slugSaved, setSlugSaved] = React.useState(false);
 
-  // Initialise the drafts once the query resolves (see SettingsForm for why
+  // Initialise the draft once the query resolves (see SettingsForm for why
   // this runs during render rather than in an effect).
   if (name === null && detail.data !== undefined) setName(detail.data.name);
-  if (slug === null && detail.data !== undefined) setSlug(detail.data.slug);
 
-  if (detail.isPending || detail.data === undefined || name === null || slug === null) {
+  if (detail.isPending || detail.data === undefined || name === null) {
     return <LoadingState label="Arbeitsbereich wird geladen …" />;
   }
 
   const original = detail.data;
   const canEdit = WORKSPACE_ADMIN_ROLES.has(original.role);
   const nameDirty = name.trim().length > 0 && name.trim() !== original.name;
-  const slugDirty = slug.trim().length > 0 && slug.trim() !== original.slug;
 
   const errorCode = updateWorkspace.error instanceof ApiError ? updateWorkspace.error.code : undefined;
 
@@ -84,24 +78,6 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
       { workspaceId, request: { name: name.trim() } },
       { onSuccess: () => setNameSaved(true) },
     );
-    setSlugSaved(false);
-  };
-
-  const saveSlug = (): void => {
-    if (!slugDirty) return;
-    updateWorkspace.mutate(
-      { workspaceId, request: { slug: slug.trim() } },
-      {
-        onSuccess: () => {
-          setSlugSaved(true);
-          setSlugConfirming(false);
-          // The slug can be part of the current URL in a future route; there is
-          // none today, but refreshing keeps this page consistent either way.
-          router.refresh();
-        },
-      },
-    );
-    setNameSaved(false);
   };
 
   return (
@@ -153,52 +129,89 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
             ) : null}
           </section>
 
-          <section className="flex flex-col gap-2 border-t border-border pt-6">
-            <Label htmlFor="workspace-slug">Slug</Label>
-            <p className="text-xs text-muted-foreground">
-              Der Slug steckt in Links, die bereits verschickt oder gespeichert wurden. Anders als der
-              Name wandert er nicht automatisch mit &ndash; und eine Änderung bricht diese Links.
-            </p>
-            <div className="flex max-w-md gap-2">
-              <Input
-                id="workspace-slug"
-                data-testid="workspace-slug-input"
-                value={slug}
-                onChange={(event) => {
-                  setSlug(event.target.value);
-                  setSlugSaved(false);
-                  setSlugConfirming(false);
-                }}
-              />
-              {slugDirty && !slugConfirming ? (
-                <Button
-                  variant="outline"
-                  onClick={() => setSlugConfirming(true)}
-                  data-testid="confirm-workspace-slug-change"
-                >
-                  Trotzdem ändern
-                </Button>
-              ) : (
-                <Button
-                  onClick={saveSlug}
-                  disabled={!slugDirty || !slugConfirming || updateWorkspace.isPending}
-                  data-testid="save-workspace-slug"
-                >
-                  Speichern
-                </Button>
-              )}
-            </div>
-            {slugSaved ? (
-              <p className="text-xs text-success" data-testid="workspace-slug-saved">
-                Slug gespeichert.
-              </p>
-            ) : null}
-          </section>
+          <SlugSection workspace={original} />
 
           <MembersSection workspace={original} />
         </div>
       )}
     </AppPage>
+  );
+}
+
+/**
+ * The slug, with its own draft, its own save button and a confirmation step.
+ *
+ * Separate from the name for the reason the warning gives: renaming never
+ * touches the slug, and the slug is the one thing already-shared links depend
+ * on, so changing it takes a deliberate second click.
+ */
+function SlugSection({ workspace }: { workspace: WorkspaceDetail }) {
+  const router = useRouter();
+  const updateWorkspace = useUpdateWorkspace();
+  const [slug, setSlug] = React.useState(workspace.slug);
+  const [confirming, setConfirming] = React.useState(false);
+  const [saved, setSaved] = React.useState(false);
+
+  const dirty = slug.trim().length > 0 && slug.trim() !== workspace.slug;
+
+  const save = (): void => {
+    if (!dirty) return;
+    updateWorkspace.mutate(
+      { workspaceId: workspace.id, request: { slug: slug.trim() } },
+      {
+        onSuccess: () => {
+          setSaved(true);
+          setConfirming(false);
+          // The slug can be part of the current URL in a future route; there is
+          // none today, but refreshing keeps this page consistent either way.
+          router.refresh();
+        },
+      },
+    );
+  };
+
+  return (
+    <section className="flex flex-col gap-2 border-t border-border pt-6">
+      <Label htmlFor="workspace-slug">Slug</Label>
+      <p className="text-xs text-muted-foreground">
+        Der Slug steckt in Links, die bereits verschickt oder gespeichert wurden. Anders als der Name
+        wandert er nicht automatisch mit &ndash; und eine Änderung bricht diese Links.
+      </p>
+      <div className="flex max-w-md gap-2">
+        <Input
+          id="workspace-slug"
+          data-testid="workspace-slug-input"
+          value={slug}
+          onChange={(event) => {
+            setSlug(event.target.value);
+            setSaved(false);
+            setConfirming(false);
+          }}
+        />
+        {dirty && !confirming ? (
+          <Button
+            variant="outline"
+            onClick={() => setConfirming(true)}
+            data-testid="confirm-workspace-slug-change"
+          >
+            Trotzdem ändern
+          </Button>
+        ) : (
+          <Button
+            onClick={save}
+            disabled={!dirty || !confirming || updateWorkspace.isPending}
+            data-testid="save-workspace-slug"
+          >
+            Speichern
+          </Button>
+        )}
+      </div>
+      {saved ? (
+        <p className="text-xs text-success" data-testid="workspace-slug-saved">
+          Slug gespeichert.
+        </p>
+      ) : null}
+    </section>
   );
 }
 

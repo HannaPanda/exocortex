@@ -12,18 +12,18 @@ import {
 } from 'lucide-react';
 import * as React from 'react';
 
-import { type Comment, type CommentThread } from '@exocortex/contracts';
 import {
-  Badge,
-  Button,
-  cn,
-  EmptyState,
-  ErrorState,
-  LoadingState,
-  Textarea,
-} from '@exocortex/ui';
+  type Comment,
+  type CommentThread,
+  type DocumentDetail,
+  type WorkspaceRole,
+} from '@exocortex/contracts';
+import { Badge, Button, cn, EmptyState, ErrorState, LoadingState, Textarea } from '@exocortex/ui';
 
-import { useCommentAnchor } from '@/components/comments/comment-anchor';
+import {
+  type CommentAnchorRequest,
+  useCommentAnchor,
+} from '@/components/comments/comment-anchor';
 import { initialsOf } from '@/components/shell/document-session';
 import {
   useCommentRealtimeSync,
@@ -482,14 +482,11 @@ export function CommentsPanel({ workspaceId, documentId }: CommentsPanelProps) {
   // already a plain function of the props.
   const [composingPageWide, setComposingPageWide] = React.useState(false);
 
-  const editorRequest = request !== null && request.documentId === documentId ? request : null;
-  const composing =
-    editorRequest?.kind === 'compose'
-      ? { blockId: editorRequest.blockId, quote: editorRequest.quote }
-      : composingPageWide
-        ? { blockId: null, quote: '' }
-        : null;
-  const highlightedBlockId = editorRequest?.kind === 'focus' ? editorRequest.blockId : null;
+  const { editorRequest, composing, highlightedBlockId } = resolveComposerState(
+    request,
+    documentId,
+    composingPageWide,
+  );
 
   const closeComposer = (): void => {
     setComposingPageWide(false);
@@ -519,19 +516,60 @@ export function CommentsPanel({ workspaceId, documentId }: CommentsPanelProps) {
     );
   }
 
-  const detail = document.isSuccess ? document.data : null;
-  // The same bar the API applies: a reader and an archived page may not be
-  // commented on. Asking the server would be a second source of truth.
-  const canWrite = detail !== null && detail.access === 'write' && detail.archivedAt === null;
-  // An ADMIN or OWNER may remove a remark that is not theirs (`canDeleteComment`).
-  // Hiding the button for everybody else keeps the panel from offering an action
-  // the API would refuse; the API stays the one that decides.
-  const role = workspaces.data?.find((workspace) => workspace.id === workspaceId)?.role ?? null;
-  const canModerate = role === 'ADMIN' || role === 'OWNER';
-  const currentUserId = session.data?.user?.id ?? null;
+  const { canWrite, canModerate, currentUserId } = resolvePermissions({
+    detail: document.isSuccess ? document.data : null,
+    role: workspaces.data?.find((workspace) => workspace.id === workspaceId)?.role ?? null,
+    userId: session.data?.user?.id ?? null,
+  });
 
   const { threads, openCount, resolvedCount } = comments.data;
 
+  return (
+    <CommentsList
+      documentId={documentId}
+      threads={threads}
+      openCount={openCount}
+      resolvedCount={resolvedCount}
+      canWrite={canWrite}
+      canModerate={canModerate}
+      currentUserId={currentUserId}
+      highlightedBlockId={highlightedBlockId}
+      composing={composing}
+      composerKey={editorRequest?.requestId ?? 'page'}
+      onStartPageWide={() => setComposingPageWide(true)}
+      onCloseComposer={closeComposer}
+    />
+  );
+}
+
+/** The panel's rendered half, once it is known there is something to render. */
+function CommentsList({
+  documentId,
+  threads,
+  openCount,
+  resolvedCount,
+  canWrite,
+  canModerate,
+  currentUserId,
+  highlightedBlockId,
+  composing,
+  composerKey,
+  onStartPageWide,
+  onCloseComposer,
+}: {
+  documentId: string;
+  threads: CommentThread[];
+  openCount: number;
+  resolvedCount: number;
+  canWrite: boolean;
+  canModerate: boolean;
+  currentUserId: string | null;
+  highlightedBlockId: string | null;
+  composing: { blockId: string | null; quote: string } | null;
+  composerKey: string | number;
+  onStartPageWide: () => void;
+  onCloseComposer: () => void;
+}) {
   return (
     <div className="flex flex-col gap-3" data-testid="comments-panel">
       <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -540,12 +578,7 @@ export function CommentsPanel({ workspaceId, documentId }: CommentsPanelProps) {
           <span className="exocortex-numeric">{resolvedCount}</span> erledigt
         </span>
         {canWrite && composing === null ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            data-testid="comment-new"
-            onClick={() => setComposingPageWide(true)}
-          >
+          <Button variant="ghost" size="sm" data-testid="comment-new" onClick={onStartPageWide}>
             <MessageSquareIcon /> Neu
           </Button>
         ) : null}
@@ -555,10 +588,10 @@ export function CommentsPanel({ workspaceId, documentId }: CommentsPanelProps) {
         <NewThreadComposer
           // Remounting per request empties the field when a different passage
           // is picked, without an effect copying the anchor into state.
-          key={editorRequest?.requestId ?? 'page'}
+          key={composerKey}
           documentId={documentId}
           anchor={composing}
-          onDone={closeComposer}
+          onDone={onCloseComposer}
         />
       )}
 
@@ -581,12 +614,63 @@ export function CommentsPanel({ workspaceId, documentId }: CommentsPanelProps) {
             currentUserId={currentUserId}
             canWrite={canWrite}
             canModerate={canModerate}
-            highlighted={
-              highlightedBlockId !== null && thread.root.blockId === highlightedBlockId
-            }
+            highlighted={highlightedBlockId !== null && thread.root.blockId === highlightedBlockId}
           />
         ))
       )}
     </div>
   );
+}
+
+/**
+ * What this reader may do, decided the way the API decides it.
+ *
+ * The same bar the API applies: a reader and an archived page may not be
+ * commented on, and only an ADMIN or OWNER may remove a remark that is not
+ * theirs (`canDeleteComment`). Hiding a button keeps the panel from offering an
+ * action the API would refuse; the API stays the one that decides.
+ */
+function resolvePermissions(input: {
+  detail: DocumentDetail | null;
+  role: WorkspaceRole | null;
+  userId: string | null;
+}): { canWrite: boolean; canModerate: boolean; currentUserId: string | null } {
+  const { detail } = input;
+  return {
+    canWrite: detail !== null && detail.access === 'write' && detail.archivedAt === null,
+    canModerate: input.role === 'ADMIN' || input.role === 'OWNER',
+    currentUserId: input.userId,
+  };
+}
+
+/**
+ * What the panel should be showing, from the editor's request and its own
+ * "Neu" button.
+ *
+ * The editor's requests are read rather than copied into state: mirroring them
+ * would need an effect, and an effect that calls `setState` is a render cascade
+ * for something that is already a plain function of the props.
+ */
+function resolveComposerState(
+  request: CommentAnchorRequest | null,
+  documentId: string | null,
+  composingPageWide: boolean,
+): {
+  editorRequest: CommentAnchorRequest | null;
+  composing: { blockId: string | null; quote: string } | null;
+  highlightedBlockId: string | null;
+} {
+  const editorRequest = request !== null && request.documentId === documentId ? request : null;
+  if (editorRequest?.kind === 'compose') {
+    return {
+      editorRequest,
+      composing: { blockId: editorRequest.blockId, quote: editorRequest.quote },
+      highlightedBlockId: null,
+    };
+  }
+  return {
+    editorRequest,
+    composing: composingPageWide ? { blockId: null, quote: '' } : null,
+    highlightedBlockId: editorRequest?.kind === 'focus' ? editorRequest.blockId : null,
+  };
 }

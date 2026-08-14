@@ -138,11 +138,15 @@ export default tseslint.config(
       // ------------------------------------------------------------ size policy
       // Nothing in this configuration used to keep anything small, which is how
       // a 626-line function with 81 independent paths got written without a
-      // single warning. These three are the ones the repository already
-      // satisfies, so they are a ceiling that never opens again rather than a
-      // cleanup task. The expensive limits (`max-lines`,
-      // `max-lines-per-function`, `complexity`) follow in their own stage; see
-      // issue #40.
+      // single warning (issue #40).
+      //
+      // 600 lines and 20 paths are not aesthetic numbers: they are roughly the
+      // point past which a file stops being one idea and a function stops
+      // fitting in a reader's head. Every violation was removed by splitting
+      // along a seam the code already had, never by moving lines somewhere else
+      // to get under a number.
+      'max-lines': ['error', { max: 600, skipBlankLines: true, skipComments: true }],
+      'complexity': ['error', 20],
       'max-depth': ['error', 4],
       'max-params': ['error', 5],
       'max-nested-callbacks': ['error', 3],
@@ -237,6 +241,12 @@ export default tseslint.config(
       // `describe` inside `it` inside a `waitFor` is the shape the runners ask
       // for, and counting it says nothing about the code under test.
       'max-nested-callbacks': 'off',
+      // And it is long by construction too. A suite is a list of independent
+      // cases, not one idea that outgrew its file: splitting
+      // `processors.integration.test.ts` at 600 lines would produce five files
+      // that share a fixture and answer the same question. `complexity` stays
+      // on, because a test with twenty branches is testing the wrong thing.
+      'max-lines': 'off',
     },
   },
 

@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
+import { type DocumentDetail } from '@exocortex/contracts';
 import {
   Badge,
   Button,
@@ -70,8 +71,6 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
   const session = useSessionQuery();
   const document = useDocument(documentId);
   const updateDocument = useUpdateDocument(workspaceId);
-  const archiveDocument = useArchiveDocument(workspaceId);
-  const restoreDocument = useRestoreDocument(workspaceId);
   const exportMarkdown = useExportMarkdown();
   const importMarkdown = useImportMarkdown(workspaceId);
 
@@ -122,19 +121,14 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
         readOnly={readOnly}
       />
     );
-  // One row for everything a bare page can be given, so an empty page carries a
-  // single line of controls instead of one line per decoration.
-  const decorations =
-    readOnly || (detail.icon !== null && detail.coverAttachmentId !== null) ? null : (
-      <div className="-ml-3 mb-1 flex flex-wrap items-center">
-        {detail.icon === null ? (
-          <PageIconAddButton workspaceId={workspaceId} document={detail} />
-        ) : null}
-        {detail.coverAttachmentId === null ? (
-          <PageCoverAddButton workspaceId={workspaceId} documentId={documentId} />
-        ) : null}
-      </div>
-    );
+  const decorations = (
+    <PageDecorations
+      workspaceId={workspaceId}
+      documentId={documentId}
+      detail={detail}
+      readOnly={readOnly}
+    />
+  );
 
   const pageIcon =
     detail.icon === null ? null : (
@@ -163,98 +157,15 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex items-center gap-2 border-b border-border px-6 py-2">
-        <nav aria-label="Pfad" className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
-          {detail.breadcrumb.map((entry) => (
-            <React.Fragment key={entry.id}>
-              <Link
-                href={`/arbeitsbereich/${workspaceId}/seite/${entry.id}`}
-                className="flex max-w-32 items-center gap-1 truncate hover:text-foreground"
-              >
-                {/* Only a chosen symbol, never the default one: a path is a line
-                    of text, and a file icon in front of every step would say
-                    nothing the path does not already say. */}
-                {entry.icon === null ? null : (
-                  <DocumentIcon
-                    icon={entry.icon}
-                    iconColor={entry.iconColor}
-                    type="PAGE"
-                    className="size-3.5 text-xs"
-                  />
-                )}
-                <span className="truncate">{entry.title}</span>
-              </Link>
-              <span aria-hidden>/</span>
-            </React.Fragment>
-          ))}
-          <span className="max-w-40 truncate text-foreground">{detail.title}</span>
-        </nav>
-
-        {detail.aiRuleMode !== 'off' ? (
-          <Badge variant="muted" data-testid="ai-rule-badge">
-            {AI_RULE_BADGE_LABEL[detail.aiRuleMode]}
-          </Badge>
-        ) : null}
-
-        <div className="ml-auto flex items-center gap-3">
-          {!archived && detail.access === 'write' ? <SaveIndicator /> : null}
-
-          {archived ? (
-            <Button
-              variant="outline"
-              size="sm"
-              data-testid="restore-document"
-              onClick={() => void restoreDocument.mutateAsync(documentId)}
-            >
-              <RotateCcwIcon /> Wiederherstellen
-            </Button>
-          ) : null}
-
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button variant="ghost" size="icon-sm" aria-label="Seitenaktionen" data-testid="document-actions">
-                  <MoreHorizontalIcon />
-                </Button>
-              }
-            />
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                data-testid="open-page-properties"
-                onClick={() => setPropertiesOpen(true)}
-              >
-                <SlidersHorizontalIcon /> Seiteneigenschaften …
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                data-testid="export-markdown"
-                onClick={() => void downloadMarkdown()}
-              >
-                <DownloadIcon /> Als Markdown exportieren
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                data-testid="open-import"
-                onClick={() => setImportOpen(true)}
-              >
-                <UploadIcon /> Markdown importieren
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                variant="destructive"
-                disabled={archived}
-                data-testid="archive-document"
-                onClick={() => {
-                  void archiveDocument
-                    .mutateAsync(documentId)
-                    .then(() => router.push(`/arbeitsbereich/${workspaceId}`));
-                }}
-              >
-                <ArchiveIcon /> Archivieren
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
+      <DocumentTopBar
+        workspaceId={workspaceId}
+        documentId={documentId}
+        detail={detail}
+        archived={archived}
+        onOpenProperties={() => setPropertiesOpen(true)}
+        onOpenImport={() => setImportOpen(true)}
+        onExport={() => void downloadMarkdown()}
+      />
 
       {archived ? (
         <p
@@ -423,5 +334,152 @@ function DocumentTitleInput({ initialTitle, readOnly, onCommit }: DocumentTitleI
       )}
       placeholder="Unbenannte Seite"
     />
+  );
+}
+
+/** Breadcrumb, rule badge and the page's own actions. */
+function DocumentTopBar({
+  workspaceId,
+  documentId,
+  detail,
+  archived,
+  onOpenProperties,
+  onOpenImport,
+  onExport,
+}: {
+  workspaceId: string;
+  documentId: string;
+  detail: DocumentDetail;
+  archived: boolean;
+  onOpenProperties: () => void;
+  onOpenImport: () => void;
+  onExport: () => void;
+}) {
+  const router = useRouter();
+  const archiveDocument = useArchiveDocument(workspaceId);
+  const restoreDocument = useRestoreDocument(workspaceId);
+
+  return (
+      <div className="flex items-center gap-2 border-b border-border px-6 py-2">
+        <nav aria-label="Pfad" className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+          {detail.breadcrumb.map((entry) => (
+            <React.Fragment key={entry.id}>
+              <Link
+                href={`/arbeitsbereich/${workspaceId}/seite/${entry.id}`}
+                className="flex max-w-32 items-center gap-1 truncate hover:text-foreground"
+              >
+                {/* Only a chosen symbol, never the default one: a path is a line
+                    of text, and a file icon in front of every step would say
+                    nothing the path does not already say. */}
+                {entry.icon === null ? null : (
+                  <DocumentIcon
+                    icon={entry.icon}
+                    iconColor={entry.iconColor}
+                    type="PAGE"
+                    className="size-3.5 text-xs"
+                  />
+                )}
+                <span className="truncate">{entry.title}</span>
+              </Link>
+              <span aria-hidden>/</span>
+            </React.Fragment>
+          ))}
+          <span className="max-w-40 truncate text-foreground">{detail.title}</span>
+        </nav>
+
+        {detail.aiRuleMode !== 'off' ? (
+          <Badge variant="muted" data-testid="ai-rule-badge">
+            {AI_RULE_BADGE_LABEL[detail.aiRuleMode]}
+          </Badge>
+        ) : null}
+
+        <div className="ml-auto flex items-center gap-3">
+          {!archived && detail.access === 'write' ? <SaveIndicator /> : null}
+
+          {archived ? (
+            <Button
+              variant="outline"
+              size="sm"
+              data-testid="restore-document"
+              onClick={() => void restoreDocument.mutateAsync(documentId)}
+            >
+              <RotateCcwIcon /> Wiederherstellen
+            </Button>
+          ) : null}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button variant="ghost" size="icon-sm" aria-label="Seitenaktionen" data-testid="document-actions">
+                  <MoreHorizontalIcon />
+                </Button>
+              }
+            />
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                data-testid="open-page-properties"
+                onClick={onOpenProperties}
+              >
+                <SlidersHorizontalIcon /> Seiteneigenschaften …
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                data-testid="export-markdown"
+                onClick={onExport}
+              >
+                <DownloadIcon /> Als Markdown exportieren
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                data-testid="open-import"
+                onClick={onOpenImport}
+              >
+                <UploadIcon /> Markdown importieren
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                variant="destructive"
+                disabled={archived}
+                data-testid="archive-document"
+                onClick={() => {
+                  void archiveDocument
+                    .mutateAsync(documentId)
+                    .then(() => router.push(`/arbeitsbereich/${workspaceId}`));
+                }}
+              >
+                <ArchiveIcon /> Archivieren
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+  );
+}
+
+/**
+ * One row for everything a bare page can still be given, so an empty page
+ * carries a single line of controls instead of one line per decoration.
+ */
+function PageDecorations({
+  workspaceId,
+  documentId,
+  detail,
+  readOnly,
+}: {
+  workspaceId: string;
+  documentId: string;
+  detail: DocumentDetail;
+  readOnly: boolean;
+}) {
+  if (readOnly) return null;
+  if (detail.icon !== null && detail.coverAttachmentId !== null) return null;
+  return (
+    <div className="-ml-3 mb-1 flex flex-wrap items-center">
+      {detail.icon === null ? (
+        <PageIconAddButton workspaceId={workspaceId} document={detail} />
+      ) : null}
+      {detail.coverAttachmentId === null ? (
+        <PageCoverAddButton workspaceId={workspaceId} documentId={documentId} />
+      ) : null}
+    </div>
   );
 }

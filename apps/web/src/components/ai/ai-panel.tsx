@@ -1,19 +1,16 @@
 'use client';
 
-import { useQueryClient } from '@tanstack/react-query';
 import { PlusIcon, SparklesIcon } from 'lucide-react';
 import * as React from 'react';
 
 import {
-  advanceAiRunSequence,
+  type AiConversation,
   type AiConversationMessage,
+  type AiModel,
+  type AiModelListResponse,
   type AiReasoningLevel,
   type AiRunPhase,
-  type AiRunStatus,
-  INITIAL_AI_RUN_SEQUENCE_STATE,
-  isAiRunQuiet,
-  reconcileAiRun,
-  resolveAiRunElapsedMs,
+  type DocumentDetail,
 } from '@exocortex/contracts';
 import {
   Button,
@@ -27,18 +24,14 @@ import {
 
 import { useDocumentSession } from '@/components/shell/document-session';
 import {
-  aiQueryKeys,
   useAiConversation,
   useAiModels,
-  useAiRun,
-  useCancelAiRun,
   useCreateAiConversation,
   usePostConversationMessage,
   useUpdateAiConversation,
 } from '@/lib/api/ai-queries';
 import { ApiError } from '@/lib/api/client';
 import { useDocument } from '@/lib/api/queries';
-import { useRealtime, useRealtimeEvent } from '@/lib/realtime/realtime-provider';
 import { usePersistentState } from '@/lib/use-persistent-state';
 
 import { useAiSelection } from './ai-selection';
@@ -50,35 +43,12 @@ import { ConversationSwitcher } from './conversation-switcher';
 import { ModelPicker } from './model-picker';
 import { RunActivity } from './run-activity';
 import { Transcript } from './transcript';
+import { type ToolActivityEntry, useAiRunTracker } from './use-ai-run-tracker';
 
 export interface AiPanelProps {
   workspaceId: string | null;
   documentId: string | null;
 }
-
-interface ToolActivityEntry {
-  key: string;
-  toolName: string;
-  status: 'started' | 'succeeded' | 'failed';
-  /** Compact identifier of what the call touched, e.g. `document:<id>`. */
-  target: string | null;
-}
-
-/**
- * Reasons a run can fail that the user can actually do something about. Codes
- * outside this map keep the generic message. `ai_cancelled` is deliberately
- * absent: a user-triggered cancellation is shown as a neutral notice, not an
- * error (see `applyTerminalRunState`).
- */
-const RUN_ERROR_MESSAGES: Record<string, string> = {
-  ai_response_truncated:
-    'Die Antwort wurde am Ausgabelimit abgeschnitten. Frage nach einem kleineren Schritt, ' +
-    'oder erhöhe „Maximale Antwortlänge (Tokens)“ in der Verwaltung.',
-  ai_tool_limit_exceeded: 'Die KI hat zu viele Werkzeugaufrufe gebraucht.',
-  ai_tool_call_invalid: 'Ein Werkzeugaufruf kam unvollständig an und wurde nicht ausgeführt.',
-  ai_budget_exceeded: 'Die Antwort hätte das Kostenlimit dieses Laufs überschritten.',
-  ai_timeout: 'Die KI hat zu lange gebraucht.',
-};
 
 function parseConversationId(raw: string): string | null {
   const parsed: unknown = JSON.parse(raw);
@@ -153,7 +123,6 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   const createConversation = useCreateAiConversation();
   const updateConversation = useUpdateAiConversation();
   const postMessage = usePostConversationMessage();
-  const queryClient = useQueryClient();
   const scrollRef = React.useRef<HTMLDivElement | null>(null);
 
   const [pendingModelSlug, setPendingModelSlug] = React.useState<string | null>(null);
@@ -166,278 +135,45 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   const [pendingPageContextEnabled, setPendingPageContextEnabled] = React.useState<boolean | null>(
     null,
   );
-  const [activeRunId, setActiveRunId] = React.useState<string | null>(null);
-  const [streamText, setStreamText] = React.useState('');
-  const [toolActivity, setToolActivity] = React.useState<ToolActivityEntry[]>([]);
-  const [notice, setNotice] = React.useState<string | null>(null);
-  const [error, setError] = React.useState<string | null>(null);
-  // A single slot, not a list: a command's answer replaces the previous one
-  // instead of piling up below the transcript (issue #25). Only the commands
-  // that answer with a list (`/help`, `/tools`, `/rules`) land here; a one-line
-  // confirmation goes into `notice`, and `/clear` needs neither, because the
-  // boundary drawn in the transcript is its answer.
-  const [commandNotice, setCommandNotice] = React.useState<AiConversationMessage | null>(null);
 
-  // Life-sign tracking for the run's pulse (issue #6): when it started, and
-  // the last time any signal (a delta, a tool-call event) arrived.
-  const [runStartedAt, setRunStartedAt] = React.useState<number | null>(null);
-  const [lastActivityAt, setLastActivityAt] = React.useState<number | null>(null);
-  // `ai.run.progress`'s monotonic `sequence`, and whether a gap in it was ever
-  // seen. Both fields are updated together (a functional `useState` updater,
-  // not a ref) so a burst of events arriving before a render commits can never
-  // compare against a stale `expected` value.
-  const [sequenceState, setSequenceState] = React.useState(INITIAL_AI_RUN_SEQUENCE_STATE);
-  // What the worker last said it is busy with. Null until it says anything.
-  const [runPhase, setRunPhase] = React.useState<AiRunPhase | null>(null);
-  const cancelRun = useCancelAiRun();
-
-  // Switching conversations must not carry the previous one's transient state
-  // along. Adjusted during render (React's documented pattern for resetting
-  // state when a value changes) rather than in an effect, so there is no extra
-  // committed render with stale state in between.
-  const [transientStateKey, setTransientStateKey] = React.useState(activeConversationId);
-  if (transientStateKey !== activeConversationId) {
-    setTransientStateKey(activeConversationId);
-    setActiveRunId(null);
-    setStreamText('');
-    setToolActivity([]);
-    setNotice(null);
-    setError(null);
-    setCommandNotice(null);
-    setRunStartedAt(null);
-    setLastActivityAt(null);
-    setSequenceState(INITIAL_AI_RUN_SEQUENCE_STATE);
-    setRunPhase(null);
-  }
-
-  // The run's own status, polled independently of the realtime channel
-  // (issue #6, point 1). This is the safety net for every event the socket
-  // ever drops: a reconnect, a backgrounded tab, a cancellation the worker
-  // only learns about later. `applyTerminalRunState` below is the single
-  // place that reacts to a run ending, whichever way it finds out.
-  const runQuery = useAiRun(activeRunId);
-
-  const applyTerminalRunState = React.useCallback(
-    (status: AiRunStatus, errorCode: string | null): void => {
-      setActiveRunId(null);
-      setToolActivity([]);
-      setRunStartedAt(null);
-      setLastActivityAt(null);
-      setSequenceState(INITIAL_AI_RUN_SEQUENCE_STATE);
-      setRunPhase(null);
-      if (status === 'completed') {
-        // Keep the streaming bubble on screen (its content is already final)
-        // until the refetched conversation carries the persisted message, so
-        // nothing flickers or disappears in between.
-        if (activeConversationId !== null) {
-          void queryClient
-            .invalidateQueries({ queryKey: aiQueryKeys.conversation(activeConversationId) })
-            .then(() => setStreamText(''));
-        } else {
-          setStreamText('');
-        }
-        return;
-      }
-      setStreamText('');
-      if (status === 'cancelled') {
-        setNotice('Lauf abgebrochen.');
-        return;
-      }
-      setError(RUN_ERROR_MESSAGES[errorCode ?? ''] ?? 'Die KI-Antwort konnte nicht erzeugt werden.');
-    },
-    [activeConversationId, queryClient],
-  );
-
-  // Applies a terminal status the poll (or a focus/reconnect refetch)
-  // revealed before any socket event reported it. Adjusted during render --
-  // the same idiom as the conversation-switch reset above -- guarded by
-  // `reconciledRunResultKey` so it fires exactly once per run outcome rather
-  // than on every render the ticking clock below causes.
-  const [reconciledRunResultKey, setReconciledRunResultKey] = React.useState<string | null>(null);
-  const reconciliation = reconcileAiRun({
+  const run = useAiRunTracker(activeConversationId);
+  const {
     activeRunId,
-    run: runQuery.data ?? null,
-    appliedKey: reconciledRunResultKey,
-  });
-  if (reconciliation !== null) {
-    setReconciledRunResultKey(reconciliation.key);
-    applyTerminalRunState(reconciliation.status, reconciliation.errorCode);
-  }
-
-  // The other half of "abgleichen statt nur zuzuhören": a reconnect of the
-  // realtime socket itself (not just the browser regaining focus, which
-  // `useAiRun`'s `refetchOnWindowFocus` already covers) refetches the run
-  // immediately rather than waiting out the poll interval.
-  const { status: realtimeStatus } = useRealtime();
-  const previousRealtimeStatusRef = React.useRef(realtimeStatus);
-  React.useEffect(() => {
-    const reconnected = previousRealtimeStatusRef.current !== 'connected' && realtimeStatus === 'connected';
-    previousRealtimeStatusRef.current = realtimeStatus;
-    if (reconnected && activeRunId !== null) void runQuery.refetch();
-  }, [realtimeStatus, activeRunId, runQuery]);
-
-  // A ticking clock, captured as state rather than read via `Date.now()`
-  // directly in the render body, so the elapsed-time display in
-  // `RunActivity` keeps moving once a second while a run is active.
-  const [now, setNow] = React.useState(() => Date.now());
-  React.useEffect(() => {
-    if (activeRunId === null) return;
-    const interval = setInterval(() => setNow(Date.now()), 1_000);
-    return () => clearInterval(interval);
-  }, [activeRunId]);
-
-  useRealtimeEvent('ai.run.progress', (event) => {
-    if (event.payload.runId !== activeRunId) return;
-    setSequenceState((current) => advanceAiRunSequence(current, event.payload.sequence));
-    setStreamText((current) => current + event.payload.delta);
-    // Text arriving is itself the end of any named silence before it.
-    setRunPhase('generating');
-    setLastActivityAt(Date.now());
-  });
-
-  // The silence gets a name (issue #6, point 5): reasoning produces no deltas
-  // at all, and compaction used to report itself only once it was over.
-  useRealtimeEvent('ai.run.phase', (event) => {
-    if (event.payload.runId !== activeRunId) return;
-    setRunPhase(event.payload.phase);
-    setLastActivityAt(Date.now());
-  });
-
-  useRealtimeEvent('ai.run.tool_call', (event) => {
-    if (event.payload.runId !== activeRunId) return;
-    setToolActivity((current) => [
-      ...current,
-      {
-        key: `${event.payload.iteration}:${event.payload.toolName}:${event.payload.status}`,
-        toolName: event.payload.toolName,
-        status: event.payload.status,
-        target: event.payload.target,
-      },
-    ]);
-    setLastActivityAt(Date.now());
-  });
-
-  useRealtimeEvent('ai.run.completed', (event) => {
-    if (event.payload.runId !== activeRunId) return;
-    applyTerminalRunState('completed', null);
-  });
-
-  useRealtimeEvent('ai.run.failed', (event) => {
-    if (event.payload.runId !== activeRunId) return;
-    applyTerminalRunState(event.payload.status, event.payload.errorCode);
-  });
-
-  useRealtimeEvent('ai.conversation.compacted', (event) => {
-    if (event.payload.conversationId !== activeConversationId) return;
-    setNotice('Älterer Verlauf wurde zusammengefasst.');
-    void queryClient.invalidateQueries({
-      queryKey: aiQueryKeys.conversation(event.payload.conversationId),
-    });
-  });
-
-  // Elapsed time counts from the latest confirmed sign of life: the run's
-  // own start, the last realtime event this panel received, or -- covering a
-  // dropped socket entirely -- the worker's own heartbeat as last observed by
-  // the poll above. Whichever is most recent wins, so a live heartbeat keeps
-  // the clock honest even if every event this tab would have received was
-  // lost.
-  const heartbeatAtMs =
-    runQuery.data?.id === activeRunId && runQuery.data.heartbeatAt !== null
-      ? new Date(runQuery.data.heartbeatAt).getTime()
-      : null;
-  const elapsedMs =
-    activeRunId === null
-      ? 0
-      : resolveAiRunElapsedMs({
-          startedAtMs: runStartedAt,
-          lastEventAtMs: lastActivityAt,
-          heartbeatAtMs,
-          nowMs: now,
-        });
-  const runQuiet = isAiRunQuiet(elapsedMs);
-
-  // A gap in `ai.run.progress` means the locally stitched preview is missing
-  // something, and no amount of further deltas repairs it. So the answer is
-  // reloaded from the run itself, which the worker keeps current with every
-  // heartbeat, instead of quietly showing an incomplete text (issue #6,
-  // point 6). Repeated on every poll for as long as the gap flag stands, so
-  // the preview keeps catching up while the run continues.
-  const [repairedTextKey, setRepairedTextKey] = React.useState<string | null>(null);
-  const repairKey =
-    sequenceState.gap && activeRunId !== null && runQuery.data?.id === activeRunId
-      ? `${activeRunId}:${String(runQuery.dataUpdatedAt)}`
-      : null;
-  if (repairKey !== null && repairKey !== repairedTextKey) {
-    setRepairedTextKey(repairKey);
-    setStreamText(runQuery.data?.resultText ?? '');
-  }
-
-  // ... and ask for it right away rather than waiting out the poll interval.
-  const gapDetected = sequenceState.gap;
-  React.useEffect(() => {
-    if (gapDetected && activeRunId !== null) void runQuery.refetch();
-    // `runQuery` is deliberately not a dependency: including it would refetch
-    // on every poll result, not on the gap being noticed.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gapDetected, activeRunId]);
-
-  const handleCancelRun = async (): Promise<void> => {
-    if (activeRunId === null) return;
-    const runId = activeRunId;
-    try {
-      await cancelRun.mutateAsync(runId);
-      applyTerminalRunState('cancelled', null);
-    } catch (caught) {
-      if (caught instanceof ApiError && caught.status === 409) {
-        // The run finished by itself just before the cancellation reached the
-        // server; let the next poll (or the socket) reconcile the real
-        // outcome instead of reporting a cancellation that never happened.
-        void runQuery.refetch();
-        return;
-      }
-      setError(caught instanceof ApiError ? caught.message : 'Der Lauf konnte nicht abgebrochen werden.');
-    }
-  };
+    streamText,
+    toolActivity,
+    notice,
+    error,
+    setError,
+    setNotice,
+    commandNotice,
+    setCommandNotice,
+  } = run;
 
   const conversation = conversationQuery.data?.conversation ?? null;
   const messages = conversationQuery.data?.messages ?? [];
-  const conversationLoading = activeConversationId !== null && conversationQuery.isPending;
-  const conversationErrored = activeConversationId !== null && conversationQuery.isError;
-
-  const streamingMessage: AiConversationMessage | null =
-    streamText.length > 0 || activeRunId !== null
-      ? {
-          id: `streaming-${activeRunId ?? 'done'}`,
-          conversationId: activeConversationId ?? '',
-          role: 'assistant',
-          content: streamText,
-          toolName: null,
-          toolCallId: null,
-          isSummary: false,
-          superseded: false,
-          runId: activeRunId,
-          createdAt: new Date().toISOString(),
-        }
-      : null;
-
-  const showIntro =
-    !conversationLoading &&
-    !conversationErrored &&
-    messages.length === 0 &&
-    commandNotice === null &&
-    streamingMessage === null;
+  const streamingMessage = buildStreamingMessage({
+    streamText,
+    activeRunId,
+    conversationId: activeConversationId,
+  });
+  const transcript = describeTranscript({
+    open: activeConversationId !== null,
+    query: { pending: conversationQuery.isPending, errored: conversationQuery.isError },
+    messageCount: messages.length,
+    commandNotice,
+    streamingMessage,
+  });
 
   React.useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages.length, streamText, commandNotice?.id, toolActivity.length, notice]);
 
-  const models = modelsQuery.data?.models ?? [];
-  const defaultModelSlug = modelsQuery.data?.defaultModelSlug ?? null;
-  const effectiveModelSlug = conversation?.modelSlug ?? pendingModelSlug ?? defaultModelSlug;
-  const effectiveReasoningLevel: AiReasoningLevel =
-    conversation?.reasoningLevel ?? pendingReasoningLevel ?? 'none';
-  const effectiveVisionCompanionSlug = conversation?.visionCompanionSlug ?? null;
-  const selectedModel = models.find((model) => model.slug === effectiveModelSlug) ?? null;
+  const modelChoice = resolveModelChoice({
+    registry: modelsQuery.data ?? null,
+    conversation,
+    pendingModelSlug,
+    pendingReasoningLevel,
+  });
 
   const openDocumentQuery = useDocument(documentId ?? undefined);
   const openDocument = openDocumentQuery.data ?? null;
@@ -449,16 +185,12 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   // Only trusted while it names the page the route is on: a database view id
   // left over from the previous page would describe the wrong table.
   const { state: documentSession } = useDocumentSession();
-  const databaseViewId =
-    documentSession.activeDatabaseView?.documentId === documentId
-      ? documentSession.activeDatabaseView.viewId
-      : null;
-
   const { selection: handedOverSelection, clear: clearSelection } = useAiSelection();
-  const selection =
-    handedOverSelection !== null && handedOverSelection.documentId === documentId
-      ? handedOverSelection
-      : null;
+  const { databaseViewId, selection } = resolvePageHandover({
+    documentId,
+    activeDatabaseView: documentSession.activeDatabaseView,
+    handedOverSelection,
+  });
 
   const startNewConversation = React.useCallback(async (): Promise<string> => {
     if (workspaceId === null) throw new Error('A workspace is required to start a conversation');
@@ -578,16 +310,7 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
         }
       }
 
-      if (response.run !== null) {
-        setStreamText('');
-        setToolActivity([]);
-        setSequenceState(INITIAL_AI_RUN_SEQUENCE_STATE);
-        setRunPhase(null);
-        const startedAt = Date.now();
-        setRunStartedAt(startedAt);
-        setLastActivityAt(startedAt);
-        setActiveRunId(response.run.id);
-      }
+      if (response.run !== null) run.beginRun(response.run.id);
     } catch (caught) {
       setError(
         caught instanceof ApiError ? caught.message : 'Die Anfrage konnte nicht gestartet werden.',
@@ -608,129 +331,362 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col" data-testid="ai-panel">
-      <div className="flex items-center justify-between gap-2 border-b border-border px-2 py-1.5">
-        <ConversationSwitcher
-          workspaceId={workspaceId}
-          activeConversationId={activeConversationId}
-          onSelect={setActiveConversationId}
-          onCreateNew={() => void startNewConversation()}
-        />
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label="Neuer Chat"
-                onClick={() => void startNewConversation()}
-              >
-                <PlusIcon />
-              </Button>
-            }
-          />
-          <TooltipContent>Neuer Chat</TooltipContent>
-        </Tooltip>
-      </div>
+      <AiPanelHeader
+        workspaceId={workspaceId}
+        activeConversationId={activeConversationId}
+        onSelect={setActiveConversationId}
+        onCreateNew={() => void startNewConversation()}
+      />
 
-      <div className="flex min-w-0 flex-wrap items-center gap-2 border-b border-border px-2 py-1.5">
-        {modelsQuery.isPending ? (
-          <Skeleton className="h-8 w-40" />
-        ) : (
-          <ModelPicker
-            models={models}
-            defaultModelSlug={defaultModelSlug}
-            modelSlug={effectiveModelSlug}
-            reasoningLevel={effectiveReasoningLevel}
-            visionCompanionSlug={effectiveVisionCompanionSlug}
-            visionCompanionEditable={activeConversationId !== null}
-            onModelChange={handleModelChange}
-            onReasoningLevelChange={handleReasoningLevelChange}
-            onVisionCompanionChange={handleVisionCompanionChange}
-          />
-        )}
-        {conversation !== null ? (
-          <ContextMeter
-            estimatedTokens={conversation.estimatedTokens}
-            contextUsagePercent={conversation.contextUsagePercent}
-            contextWindowTokens={selectedModel?.contextWindowTokens ?? null}
-          />
-        ) : null}
-      </div>
+      <AiPanelModelBar
+        pending={modelsQuery.isPending}
+        choice={modelChoice}
+        visionCompanionEditable={activeConversationId !== null}
+        conversation={conversation}
+        onModelChange={handleModelChange}
+        onReasoningLevelChange={handleReasoningLevelChange}
+        onVisionCompanionChange={handleVisionCompanionChange}
+      />
 
-      <div
-        ref={scrollRef}
-        role="log"
-        aria-live="polite"
-        className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3"
-      >
-        {conversationErrored ? (
-          <ErrorState
-            title="Unterhaltung nicht verfügbar"
-            description="Die Unterhaltung konnte nicht geladen werden."
-            onRetry={() => void conversationQuery.refetch()}
-          />
-        ) : conversationLoading ? (
-          <LoadingState variant="skeleton" rows={4} />
-        ) : (
-          <>
-            {showIntro ? (
-              <div className="flex flex-col items-center gap-2 px-2 py-8 text-center">
-                <SparklesIcon className="size-5 text-muted-foreground" aria-hidden />
-                <p className="text-sm font-medium">KI-Assistenz</p>
-                <p className="text-xs text-muted-foreground">
-                  Stelle eine Frage oder nutze /help für Befehle.
-                </p>
-              </div>
-            ) : null}
-
-            <Transcript messages={messages} />
-            {commandNotice !== null ? <ChatMessage message={commandNotice} /> : null}
-
-            {toolActivity.length > 0 ? (
-              <div className="space-y-0.5 text-xs text-muted-foreground">
-                {toolActivity.map((entry) => (
-                  <p key={entry.key}>{toolActivityLine(entry)}</p>
-                ))}
-              </div>
-            ) : null}
-
-            {streamingMessage !== null ? (
-              <ChatMessage message={streamingMessage} streaming={activeRunId !== null} />
-            ) : null}
-          </>
-        )}
-
-        {notice !== null ? <p className="text-xs text-muted-foreground">{notice}</p> : null}
-        {error !== null ? (
-          <p className="rounded-md border border-destructive-text/40 px-3 py-2 text-xs text-destructive-text">
-            {error}
-          </p>
-        ) : null}
-      </div>
+      <AiTranscriptArea
+        scrollRef={scrollRef}
+        errored={transcript.errored}
+        loading={transcript.loading}
+        onRetry={() => void conversationQuery.refetch()}
+        showIntro={transcript.showIntro}
+        messages={messages}
+        commandNotice={commandNotice}
+        toolActivity={toolActivity}
+        streamingMessage={streamingMessage}
+        streaming={activeRunId !== null}
+        notice={notice}
+        error={error}
+      />
 
       {activeRunId !== null ? (
         <RunActivity
-          phaseLabel={currentPhaseLabel(toolActivity, streamText, runPhase)}
-          elapsedMs={elapsedMs}
-          quiet={runQuiet}
-          gapDetected={sequenceState.gap}
-          onCancel={() => void handleCancelRun()}
-          cancelling={cancelRun.isPending}
+          phaseLabel={currentPhaseLabel(toolActivity, streamText, run.runPhase)}
+          elapsedMs={run.elapsedMs}
+          quiet={run.runQuiet}
+          gapDetected={run.gapDetected}
+          onCancel={() => void run.cancel()}
+          cancelling={run.cancelling}
         />
       ) : null}
 
-      <div className="border-t border-border">
-        <ContextChips
-          documentTitle={openDocument?.title ?? null}
-          isCollection={openDocument?.type === 'COLLECTION'}
-          enabled={pageContextEnabled}
-          onEnabledChange={handlePageContextChange}
-          selectionBlockCount={selection === null ? null : Math.max(1, selection.blockIds.length)}
-          onSelectionRemove={clearSelection}
-          disabled={activeRunId !== null}
-        />
-        <ChatComposer disabled={activeRunId !== null} onSubmit={handleSubmit} />
-      </div>
+      <AiPanelFooter
+        openDocument={openDocument}
+        pageContextEnabled={pageContextEnabled}
+        onEnabledChange={handlePageContextChange}
+        selection={selection}
+        onSelectionRemove={clearSelection}
+        busy={activeRunId !== null}
+        onSubmit={handleSubmit}
+      />
     </div>
   );
+}
+
+/**
+ * The scrolling half of the panel: the transcript, whatever the model is doing
+ * right now, and the two one-line notices below it.
+ */
+function AiTranscriptArea({
+  scrollRef,
+  errored,
+  loading,
+  onRetry,
+  showIntro,
+  messages,
+  commandNotice,
+  toolActivity,
+  streamingMessage,
+  streaming,
+  notice,
+  error,
+}: {
+  scrollRef: React.RefObject<HTMLDivElement | null>;
+  errored: boolean;
+  loading: boolean;
+  onRetry: () => void;
+  showIntro: boolean;
+  messages: AiConversationMessage[];
+  commandNotice: AiConversationMessage | null;
+  toolActivity: ToolActivityEntry[];
+  streamingMessage: AiConversationMessage | null;
+  streaming: boolean;
+  notice: string | null;
+  error: string | null;
+}) {
+  return (
+    <div
+      ref={scrollRef}
+      role="log"
+      aria-live="polite"
+      className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3"
+    >
+      {errored ? (
+        <ErrorState
+          title="Unterhaltung nicht verfügbar"
+          description="Die Unterhaltung konnte nicht geladen werden."
+          onRetry={onRetry}
+        />
+      ) : loading ? (
+        <LoadingState variant="skeleton" rows={4} />
+      ) : (
+        <>
+          {showIntro ? (
+            <div className="flex flex-col items-center gap-2 px-2 py-8 text-center">
+              <SparklesIcon className="size-5 text-muted-foreground" aria-hidden />
+              <p className="text-sm font-medium">KI-Assistenz</p>
+              <p className="text-xs text-muted-foreground">
+                Stelle eine Frage oder nutze /help für Befehle.
+              </p>
+            </div>
+          ) : null}
+
+          <Transcript messages={messages} />
+          {commandNotice !== null ? <ChatMessage message={commandNotice} /> : null}
+
+          {toolActivity.length > 0 ? (
+            <div className="space-y-0.5 text-xs text-muted-foreground">
+              {toolActivity.map((entry) => (
+                <p key={entry.key}>{toolActivityLine(entry)}</p>
+              ))}
+            </div>
+          ) : null}
+
+          {streamingMessage !== null ? (
+            <ChatMessage message={streamingMessage} streaming={streaming} />
+          ) : null}
+        </>
+      )}
+
+      {notice !== null ? <p className="text-xs text-muted-foreground">{notice}</p> : null}
+      {error !== null ? (
+        <p className="rounded-md border border-destructive-text/40 px-3 py-2 text-xs text-destructive-text">
+          {error}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * The model, reasoning level and vision companion this conversation is about to
+ * use.
+ *
+ * The conversation's own choice wins; a pending one (made before the first
+ * message, when there is no row to write it to yet) comes next; the
+ * deployment's default is the floor.
+ */
+interface ModelChoice {
+  models: AiModel[];
+  defaultModelSlug: string | null;
+  modelSlug: string | null;
+  reasoningLevel: AiReasoningLevel;
+  visionCompanionSlug: string | null;
+  selectedModel: AiModel | null;
+}
+
+function resolveModelChoice(input: {
+  registry: AiModelListResponse | null;
+  conversation: AiConversation | null;
+  pendingModelSlug: string | null;
+  pendingReasoningLevel: AiReasoningLevel | null;
+}): ModelChoice {
+  const models = [...(input.registry?.models ?? [])];
+  const defaultModelSlug = input.registry?.defaultModelSlug ?? null;
+  const modelSlug = input.conversation?.modelSlug ?? input.pendingModelSlug ?? defaultModelSlug;
+  return {
+    models,
+    defaultModelSlug,
+    modelSlug,
+    reasoningLevel: input.conversation?.reasoningLevel ?? input.pendingReasoningLevel ?? 'none',
+    visionCompanionSlug: input.conversation?.visionCompanionSlug ?? null,
+    selectedModel: models.find((model) => model.slug === modelSlug) ?? null,
+  };
+}
+
+/**
+ * The assistant bubble for an answer that is still arriving, or `null` when
+ * there is nothing in flight and nothing left over from one.
+ */
+function buildStreamingMessage(input: {
+  streamText: string;
+  activeRunId: string | null;
+  conversationId: string | null;
+}): AiConversationMessage | null {
+  if (input.streamText.length === 0 && input.activeRunId === null) return null;
+  return {
+    id: `streaming-${input.activeRunId ?? 'done'}`,
+    conversationId: input.conversationId ?? '',
+    role: 'assistant',
+    content: input.streamText,
+    toolName: null,
+    toolCallId: null,
+    isSummary: false,
+    superseded: false,
+    runId: input.activeRunId,
+    createdAt: new Date().toISOString(),
+  };
+}
+
+/** Which model answers, how hard it thinks, and how full the context already is. */
+function AiPanelModelBar({
+  pending,
+  choice,
+  visionCompanionEditable,
+  conversation,
+  onModelChange,
+  onReasoningLevelChange,
+  onVisionCompanionChange,
+}: {
+  pending: boolean;
+  choice: ModelChoice;
+  visionCompanionEditable: boolean;
+  conversation: AiConversation | null;
+  onModelChange: (slug: string) => void;
+  onReasoningLevelChange: (level: AiReasoningLevel) => void;
+  onVisionCompanionChange: (value: string | null) => void;
+}) {
+  return (
+    <div className="flex min-w-0 flex-wrap items-center gap-2 border-b border-border px-2 py-1.5">
+      {pending ? (
+        <Skeleton className="h-8 w-40" />
+      ) : (
+        <ModelPicker
+          models={choice.models}
+          defaultModelSlug={choice.defaultModelSlug}
+          modelSlug={choice.modelSlug}
+          reasoningLevel={choice.reasoningLevel}
+          visionCompanionSlug={choice.visionCompanionSlug}
+          visionCompanionEditable={visionCompanionEditable}
+          onModelChange={onModelChange}
+          onReasoningLevelChange={onReasoningLevelChange}
+          onVisionCompanionChange={onVisionCompanionChange}
+        />
+      )}
+      {conversation !== null ? (
+        <ContextMeter
+          estimatedTokens={conversation.estimatedTokens}
+          contextUsagePercent={conversation.contextUsagePercent}
+          contextWindowTokens={choice.selectedModel?.contextWindowTokens ?? null}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+/** The chips that say what the KI will be told, and the box to type into. */
+function AiPanelFooter({
+  openDocument,
+  pageContextEnabled,
+  onEnabledChange,
+  selection,
+  onSelectionRemove,
+  busy,
+  onSubmit,
+}: {
+  openDocument: DocumentDetail | null;
+  pageContextEnabled: boolean;
+  onEnabledChange: (enabled: boolean) => void;
+  selection: { blockIds: string[]; text: string } | null;
+  onSelectionRemove: () => void;
+  busy: boolean;
+  onSubmit: (content: string) => Promise<void>;
+}) {
+  return (
+    <div className="border-t border-border">
+      <ContextChips
+        documentTitle={openDocument?.title ?? null}
+        isCollection={openDocument?.type === 'COLLECTION'}
+        enabled={pageContextEnabled}
+        onEnabledChange={onEnabledChange}
+        selectionBlockCount={selection === null ? null : Math.max(1, selection.blockIds.length)}
+        onSelectionRemove={onSelectionRemove}
+        disabled={busy}
+      />
+      <ChatComposer disabled={busy} onSubmit={onSubmit} />
+    </div>
+  );
+}
+
+/**
+ * What of the open page travels with the next message.
+ *
+ * Both parts are only trusted while they name the page the route is on: a
+ * passage handed over from the editor would otherwise become an unlabelled
+ * quote from somewhere else after navigating away, and a database view id left
+ * over from the previous page would describe the wrong table.
+ */
+function resolvePageHandover(input: {
+  documentId: string | null;
+  activeDatabaseView: { documentId: string; viewId: string } | null;
+  handedOverSelection: { documentId: string; blockIds: string[]; text: string } | null;
+}): {
+  databaseViewId: string | null;
+  selection: { blockIds: string[]; text: string } | null;
+} {
+  const { documentId, activeDatabaseView, handedOverSelection } = input;
+  return {
+    databaseViewId:
+      activeDatabaseView?.documentId === documentId ? activeDatabaseView.viewId : null,
+    selection: handedOverSelection?.documentId === documentId ? handedOverSelection : null,
+  };
+}
+
+/** Which conversation is open, and the one button that starts another. */
+function AiPanelHeader({
+  workspaceId,
+  activeConversationId,
+  onSelect,
+  onCreateNew,
+}: {
+  workspaceId: string;
+  activeConversationId: string | null;
+  onSelect: (conversationId: string | null) => void;
+  onCreateNew: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-2 border-b border-border px-2 py-1.5">
+      <ConversationSwitcher
+        workspaceId={workspaceId}
+        activeConversationId={activeConversationId}
+        onSelect={onSelect}
+        onCreateNew={onCreateNew}
+      />
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <Button variant="ghost" size="icon-sm" aria-label="Neuer Chat" onClick={onCreateNew}>
+              <PlusIcon />
+            </Button>
+          }
+        />
+        <TooltipContent>Neuer Chat</TooltipContent>
+      </Tooltip>
+    </div>
+  );
+}
+
+/**
+ * What the transcript area is showing: a failure, a skeleton, the introduction,
+ * or the conversation itself.
+ *
+ * A conversation that has not been opened yet is neither loading nor failed --
+ * there is nothing to load -- which is why every state hangs off `open`.
+ */
+function describeTranscript(input: {
+  open: boolean;
+  query: { pending: boolean; errored: boolean };
+  messageCount: number;
+  commandNotice: AiConversationMessage | null;
+  streamingMessage: AiConversationMessage | null;
+}): { loading: boolean; errored: boolean; showIntro: boolean } {
+  const loading = input.open && input.query.pending;
+  const errored = input.open && input.query.errored;
+  const empty =
+    input.messageCount === 0 && input.commandNotice === null && input.streamingMessage === null;
+  return { loading, errored, showIntro: !loading && !errored && empty };
 }

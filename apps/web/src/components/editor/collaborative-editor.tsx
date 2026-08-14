@@ -154,23 +154,37 @@ function withLinkIdentity(
  * has to be a plain module function rather than something that closes over
  * component state: `useEditor`'s dependency array must not grow.
  */
+function ignoresClick(view: EditorView, event: MouseEvent, anchor: HTMLAnchorElement | null): boolean {
+  // Left and middle button only: the right button belongs to the context menu,
+  // where "Link in neuem Tab öffnen" is the browser's own affair.
+  if (event.button !== 0 && event.button !== 1) return true;
+  // Alt holds the link still: the caret is meant to land next to it instead.
+  if (event.altKey && view.editable) return true;
+
+  const element = event.target instanceof HTMLElement ? event.target : null;
+  // The page-link block brings its own click handling (a node view).
+  if (element?.closest('[data-page-link]') != null) return true;
+  return anchor !== null && !view.dom.contains(anchor);
+}
+
+/**
+ * Whether this click means "somewhere else", the way it does on every other
+ * anchor in the browser: middle click, Strg-/Cmd-click, or an anchor that says
+ * `_blank` itself (every external link does, see the Link extension).
+ */
+function opensInNewTab(event: MouseEvent, anchor: HTMLAnchorElement | null): boolean {
+  return event.button === 1 || event.ctrlKey || event.metaKey || anchor?.target === '_blank';
+}
+
 function followFromEvent(
   view: EditorView,
   node: PmNode | null,
   event: MouseEvent,
   ref: React.RefObject<FollowLink | null>,
 ): boolean {
-  // Left and middle button only: the right button belongs to the context menu,
-  // where "Link in neuem Tab öffnen" is the browser's own affair.
-  if (event.button !== 0 && event.button !== 1) return false;
-  // Alt holds the link still: the caret is meant to land next to it instead.
-  if (event.altKey && view.editable) return false;
-
   const element = event.target instanceof HTMLElement ? event.target : null;
   const anchor = element?.closest('a') ?? null;
-  // The page-link block brings its own click handling (a node view).
-  if (element?.closest('[data-page-link]') != null) return false;
-  if (anchor !== null && !view.dom.contains(anchor)) return false;
+  if (ignoresClick(view, event, anchor)) return false;
 
   // Prefers the mark on the clicked text node, falling back to the DOM anchor
   // (table of contents, breadcrumb and media blocks render their own anchors
@@ -185,10 +199,7 @@ function followFromEvent(
   event.preventDefault();
   ref.current?.(withLinkIdentity(target, mark, anchor), {
     download: anchor?.hasAttribute('download') === true,
-    // Middle click and Strg-/Cmd-click mean the same thing on every other
-    // anchor in the browser; an anchor of its own that says `_blank` (every
-    // external link does, see the Link extension) keeps saying it.
-    newTab: event.button === 1 || event.ctrlKey || event.metaKey || anchor?.target === '_blank',
+    newTab: opensInNewTab(event, anchor),
   });
   return true;
 }

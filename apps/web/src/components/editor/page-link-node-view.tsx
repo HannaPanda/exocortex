@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
+import { type DocumentLinkMatch } from '@exocortex/contracts';
 import {
   pageLinkDocumentId,
   type PageLinkResolution,
@@ -121,18 +122,11 @@ export function PageLinkNodeView({
   // Built once and put inside whichever element the resolution calls for below.
   const label =
     target.state === 'resolved' ? (
-      <>
-        <DocumentIcon
-          icon={matches[0]?.icon ?? null}
-          iconColor={matches[0]?.iconColor ?? null}
-          type={matches[0]?.type ?? 'PAGE'}
-        />
-        <span className="truncate">{target.target.title}</span>
-        {matches[0]?.archivedAt == null ? null : <Badge variant="muted">Archiviert</Badge>}
-        {target.ambiguous ? (
-          <span className="text-xs text-muted-foreground">Mehrere Seiten mit diesem Titel</span>
-        ) : null}
-      </>
+      <PageLinkLabel
+        match={matches[0] ?? null}
+        title={target.target.title}
+        ambiguous={target.ambiguous}
+      />
     ) : null;
 
   return (
@@ -150,54 +144,123 @@ export function PageLinkNodeView({
           label={title.length > 0 ? `„${title}“ wird gesucht` : 'Verweis wird aufgelöst'}
         />
       ) : target.state === 'unresolved' ? (
-        <div className="flex flex-1 items-center gap-2">
-          <span className="truncate text-muted-foreground">
-            {title.length > 0 ? `${title} — ` : ''}
-            {UNRESOLVED_TEXT[target.reason]}
-          </span>
-          {editor.isEditable && target.reason !== 'empty' ? (
-            <Button variant="outline" size="sm" data-testid="page-link-create" onClick={activate}>
-              Seite anlegen
-            </Button>
-          ) : null}
-          {editor.isEditable ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              data-testid="page-link-retarget"
-              onClick={() => void retarget()}
-            >
-              <PencilIcon aria-hidden /> Seite wählen
-            </Button>
-          ) : null}
-        </div>
+        <UnresolvedPageLink
+          title={title}
+          reason={target.reason}
+          editable={editor.isEditable}
+          onCreate={activate}
+          onRetarget={() => void retarget()}
+        />
       ) : (
-        <div className="flex flex-1 items-center gap-2">
-          {/* An anchor when the target is known, a button when a click can only
-              open the "mehrere Seiten" dialog: the element type says which of
-              the two the click does, and the anchor is left to navigate on its
-              own so a modifier still reaches the browser. */}
-          {href === null ? (
-            <button type="button" className={TARGET_CLASS} onClick={activate}>
-              {label}
-            </button>
-          ) : (
-            <Link href={href} className={TARGET_CLASS} data-testid="page-link-target">
-              {label}
-            </Link>
-          )}
-          {editor.isEditable ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              data-testid="page-link-retarget"
-              onClick={() => void retarget()}
-            >
-              <PencilIcon aria-hidden /> Seite ändern
-            </Button>
-          ) : null}
-        </div>
+        <ResolvedPageLink
+          href={href}
+          label={label}
+          editable={editor.isEditable}
+          onActivate={activate}
+          onRetarget={() => void retarget()}
+        />
       )}
     </NodeViewWrapper>
+  );
+}
+
+/** A reference that points at no page: several carry the title, or none does. */
+function UnresolvedPageLink({
+  title,
+  reason,
+  editable,
+  onCreate,
+  onRetarget,
+}: {
+  title: string;
+  reason: keyof typeof UNRESOLVED_TEXT;
+  editable: boolean;
+  onCreate: () => void;
+  onRetarget: () => void;
+}) {
+  return (
+    <div className="flex flex-1 items-center gap-2">
+      <span className="truncate text-muted-foreground">
+        {title.length > 0 ? `${title} — ` : ''}
+        {UNRESOLVED_TEXT[reason]}
+      </span>
+      {editable && reason !== 'empty' ? (
+        <Button variant="outline" size="sm" data-testid="page-link-create" onClick={onCreate}>
+          Seite anlegen
+        </Button>
+      ) : null}
+      {editable ? (
+        <Button variant="ghost" size="sm" data-testid="page-link-retarget" onClick={onRetarget}>
+          <PencilIcon aria-hidden /> Seite wählen
+        </Button>
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * A reference that found its page.
+ *
+ * An anchor when the target is known, a button when a click can only open the
+ * "mehrere Seiten" dialog: the element type says which of the two the click
+ * does, and the anchor is left to navigate on its own so a modifier still
+ * reaches the browser.
+ */
+function ResolvedPageLink({
+  href,
+  label,
+  editable,
+  onActivate,
+  onRetarget,
+}: {
+  href: string | null;
+  label: React.ReactNode;
+  editable: boolean;
+  onActivate: () => void;
+  onRetarget: () => void;
+}) {
+  return (
+    <div className="flex flex-1 items-center gap-2">
+      {href === null ? (
+        <button type="button" className={TARGET_CLASS} onClick={onActivate}>
+          {label}
+        </button>
+      ) : (
+        <Link href={href} className={TARGET_CLASS} data-testid="page-link-target">
+          {label}
+        </Link>
+      )}
+      {editable ? (
+        <Button variant="ghost" size="sm" data-testid="page-link-retarget" onClick={onRetarget}>
+          <PencilIcon aria-hidden /> Seite ändern
+        </Button>
+      ) : null}
+    </div>
+  );
+}
+
+/** Icon, title, and what else is worth saying about the page a reference found. */
+function PageLinkLabel({
+  match,
+  title,
+  ambiguous,
+}: {
+  match: DocumentLinkMatch | null;
+  title: string;
+  ambiguous: boolean;
+}) {
+  return (
+    <>
+      <DocumentIcon
+        icon={match?.icon ?? null}
+        iconColor={match?.iconColor ?? null}
+        type={match?.type ?? 'PAGE'}
+      />
+      <span className="truncate">{title}</span>
+      {match?.archivedAt == null ? null : <Badge variant="muted">Archiviert</Badge>}
+      {ambiguous ? (
+        <span className="text-xs text-muted-foreground">Mehrere Seiten mit diesem Titel</span>
+      ) : null}
+    </>
   );
 }

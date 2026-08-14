@@ -145,30 +145,32 @@ export function useBlockPrompt({
     needle.length > 0 &&
     !candidates.some((entry) => entry.title.trim().toLowerCase() === needle);
 
+  /** Opens the hidden file input and resolves with whatever it produces. */
+  const askForFile = React.useCallback((): Promise<string | null> => {
+    setError(null);
+    return new Promise<string | null>((resolve) => {
+      fileResolve.current = resolve;
+      // Resetting the value makes picking the same file twice fire `change`.
+      if (fileInput.current === null) {
+        resolve(null);
+        return;
+      }
+      fileInput.current.value = '';
+      fileInput.current.click();
+    });
+  }, []);
+
   const ask = React.useCallback(
     (kind: BlockPromptKind, initialValue?: string): Promise<string | null> => {
       if (kind === 'none') return Promise.resolve(null);
-
-      if (kind === 'file') {
-        setError(null);
-        return new Promise<string | null>((resolve) => {
-          fileResolve.current = resolve;
-          // Resetting the value makes picking the same file twice fire `change`.
-          if (fileInput.current !== null) {
-            fileInput.current.value = '';
-            fileInput.current.click();
-          } else {
-            resolve(null);
-          }
-        });
-      }
+      if (kind === 'file') return askForFile();
 
       return new Promise<string | null>((resolve) => {
         setValue(initialValue ?? '');
         setPending({ kind, ...PROMPT_COPY[kind], resolve });
       });
     },
-    [],
+    [askForFile],
   );
 
   const onFileSelected = async (file: File | undefined): Promise<void> => {
@@ -202,13 +204,11 @@ export function useBlockPrompt({
 
   const submit = (): void => {
     const trimmed = value.trim();
-    if (trimmed.length === 0) {
-      finish(null);
-      return;
-    }
     // A page link may be made for a page that does not exist yet; every other
     // kind answers with the raw string it collected.
-    finish(pending?.kind === 'page' ? JSON.stringify({ documentId: null, title: trimmed }) : trimmed);
+    if (trimmed.length === 0) finish(null);
+    else if (pending?.kind === 'page') finish(JSON.stringify({ documentId: null, title: trimmed }));
+    else finish(trimmed);
   };
 
   const element = (
@@ -228,10 +228,121 @@ export function useBlockPrompt({
           {error}
         </p>
       )}
-      <Dialog
+      <BlockPromptDialog
+        pending={pending}
+        value={value}
+        onValueChange={setValue}
+        isPicker={isPicker}
+        entries={filtered}
+        newTitle={isNewTitle ? value.trim() : null}
+        onChoose={choose}
+        onSubmit={submit}
+        onCancel={() => finish(null)}
+      />
+    </>
+  );
+
+  return { ask, element, error };
+}
+
+/**
+ * The page or database picker's list of candidates.
+ *
+ * `newTitle` is Obsidian's behaviour: naming a page that does not exist yet is
+ * a feature, not a typo, so it gets its own option rather than an empty list.
+ */
+function PickerList({
+  kind,
+  entries,
+  newTitle,
+  onChoose,
+  onCreate,
+}: {
+  kind: BlockPromptKind;
+  entries: readonly DocumentTreeNode[];
+  newTitle: string | null;
+  onChoose: (entry: { id: string; title: string }) => void;
+  onCreate: () => void;
+}) {
+  const isPage = kind === 'page';
+  return (
+    <ul
+      className="max-h-64 overflow-y-auto rounded-md border border-border"
+      data-testid={isPage ? 'page-prompt-list' : 'database-prompt-list'}
+    >
+      {entries.length === 0 && newTitle === null ? (
+        <li>
+          <EmptyState
+            title={isPage ? 'Keine Seite gefunden' : 'Keine Datenbank gefunden'}
+            description={
+              isPage
+                ? 'Tippe einen Titel, um einen Verweis auf eine noch nicht angelegte Seite zu setzen.'
+                : 'Lege zuerst eine Datenbank in diesem Arbeitsbereich an.'
+            }
+          />
+        </li>
+      ) : (
+        entries.map((entry) => (
+          <li key={entry.id}>
+            <button
+              type="button"
+              data-testid={
+                isPage ? `page-prompt-option-${entry.id}` : `database-prompt-option-${entry.id}`
+              }
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
+              onClick={() => onChoose(entry)}
+            >
+              {isPage ? (
+                <DocumentIcon icon={entry.icon} iconColor={entry.iconColor} type={entry.type} />
+              ) : null}
+              <span className="min-w-0 flex-1 truncate">{entry.title}</span>
+            </button>
+          </li>
+        ))
+      )}
+      {newTitle === null ? null : (
+        <li>
+          <button
+            type="button"
+            data-testid="page-prompt-new"
+            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-muted-foreground hover:bg-muted"
+            onClick={onCreate}
+          >
+            „{newTitle}“ als noch nicht angelegte Seite verknüpfen
+          </button>
+        </li>
+      )}
+    </ul>
+  );
+}
+
+/** The dialog half of `useBlockPrompt`: one input, optionally a picker below it. */
+function BlockPromptDialog({
+  pending,
+  value,
+  onValueChange,
+  isPicker,
+  entries,
+  newTitle,
+  onChoose,
+  onSubmit,
+  onCancel,
+}: {
+  pending: PendingPrompt | null;
+  value: string;
+  onValueChange: (next: string) => void;
+  isPicker: boolean;
+  entries: readonly DocumentTreeNode[];
+  newTitle: string | null;
+  onChoose: (entry: { id: string; title: string }) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <Dialog
       open={pending !== null}
       onOpenChange={(open) => {
-        if (!open) finish(null);
+        if (!open) onCancel();
       }}
     >
       <DialogContent>
@@ -252,7 +363,7 @@ export function useBlockPrompt({
               data-testid="block-prompt-input"
               placeholder={pending.placeholder}
               className="font-mono text-sm"
-              onChange={(event) => setValue(event.target.value)}
+              onChange={(event) => onValueChange(event.target.value)}
             />
           ) : (
             <Input
@@ -261,87 +372,36 @@ export function useBlockPrompt({
               value={value}
               data-testid="block-prompt-input"
               placeholder={pending?.placeholder ?? ''}
-              onChange={(event) => setValue(event.target.value)}
+              onChange={(event) => onValueChange(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' && pending?.kind !== 'database') {
                   event.preventDefault();
-                  submit();
+                  onSubmit();
                 }
               }}
             />
           )}
-          {isPicker ? (
-            <ul
-              className="max-h-64 overflow-y-auto rounded-md border border-border"
-              data-testid={pending?.kind === 'page' ? 'page-prompt-list' : 'database-prompt-list'}
-            >
-              {filtered.length === 0 && !isNewTitle ? (
-                <li>
-                  <EmptyState
-                    title={
-                      pending?.kind === 'page' ? 'Keine Seite gefunden' : 'Keine Datenbank gefunden'
-                    }
-                    description={
-                      pending?.kind === 'page'
-                        ? 'Tippe einen Titel, um einen Verweis auf eine noch nicht angelegte Seite zu setzen.'
-                        : 'Lege zuerst eine Datenbank in diesem Arbeitsbereich an.'
-                    }
-                  />
-                </li>
-              ) : (
-                filtered.map((entry) => (
-                  <li key={entry.id}>
-                    <button
-                      type="button"
-                      data-testid={
-                        pending?.kind === 'page'
-                          ? `page-prompt-option-${entry.id}`
-                          : `database-prompt-option-${entry.id}`
-                      }
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
-                      onClick={() => choose(entry)}
-                    >
-                      {pending?.kind === 'page' ? (
-                        <DocumentIcon
-                          icon={entry.icon}
-                          iconColor={entry.iconColor}
-                          type={entry.type}
-                        />
-                      ) : null}
-                      <span className="min-w-0 flex-1 truncate">{entry.title}</span>
-                    </button>
-                  </li>
-                ))
-              )}
-              {isNewTitle ? (
-                <li>
-                  <button
-                    type="button"
-                    data-testid="page-prompt-new"
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-muted-foreground hover:bg-muted"
-                    onClick={submit}
-                  >
-                    „{value.trim()}“ als noch nicht angelegte Seite verknüpfen
-                  </button>
-                </li>
-              ) : null}
-            </ul>
+          {isPicker && pending !== null ? (
+            <PickerList
+              kind={pending.kind}
+              entries={entries}
+              newTitle={newTitle}
+              onChoose={onChoose}
+              onCreate={onSubmit}
+            />
           ) : null}
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => finish(null)}>
+          <Button variant="ghost" onClick={onCancel}>
             Abbrechen
           </Button>
           {pending?.kind === 'database' ? null : (
-            <Button data-testid="block-prompt-submit" onClick={submit}>
+            <Button data-testid="block-prompt-submit" onClick={onSubmit}>
               Einfügen
             </Button>
           )}
         </DialogFooter>
       </DialogContent>
-      </Dialog>
-    </>
+    </Dialog>
   );
-
-  return { ask, element, error };
 }
