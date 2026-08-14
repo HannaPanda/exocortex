@@ -165,6 +165,14 @@ else
   info "Typecheck …"
   pnpm typecheck || fail "Type errors" "Note that apps/api/scripts is outside apps/api/tsconfig.json and is only reached by the ESLint step above."
 
+  # The watchmen. Each gate is run twice, once clean and once with a violation
+  # written into the tree, so a gate that has quietly stopped matching anything
+  # is caught here rather than by the bug it was supposed to prevent. Fifteen
+  # seconds, and without a CI there is nowhere else this could live.
+  info "Gate tests …"
+  pnpm test:gates || fail "A gate does not behave the way it is documented to" \
+    "Read which case failed: a gate that cannot go red is worse than no gate, because it reports success on a question it no longer asks."
+
   if [ "$FULL_TESTS" -eq 1 ]; then
     warn "--full-tests: the integration tests talk to the PRODUCTION database and Redis on this host."
     warn "They create throwaway rows and clean up after themselves, but they are not isolated."
