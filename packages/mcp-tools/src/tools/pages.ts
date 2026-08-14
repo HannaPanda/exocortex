@@ -2,23 +2,16 @@ import { z } from 'zod';
 
 import {
   aiRuleModeSchema,
-  archiveDocumentResponseSchema,
   coverPositionSchema,
-  deleteDocumentsResponseSchema,
   DOCUMENT_ICON_COLORS,
   DOCUMENT_ICON_NAMES,
-  documentActivityResponseSchema,
   documentContentWriteRequestSchema,
   documentContentWriteResponseSchema,
-  documentDeletionPreviewSchema,
   documentIconColorSchema,
   documentIconSchema,
   documentLayoutSchema,
-  documentSnapshotListResponseSchema,
-  type DocumentSummary,
   documentSummarySchema,
   documentTitleSchema,
-  type DocumentTreeNode,
   documentTreeRequestSchema,
   documentTreeResponseSchema,
   documentTypeSchema,
@@ -30,13 +23,21 @@ import {
   moveDocumentRequestSchema,
   resolveDocumentLinkRequestSchema,
   resolveDocumentLinkResponseSchema,
-  type TrashEntry,
-  trashResponseSchema,
 } from '@exocortex/contracts';
 
 import { truncateText } from '../format.js';
-import { restoreSnapshotResultSchema } from '../local-schemas.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
+
+import {
+  pageActivityTool,
+  pageArchiveTool,
+  pageDeleteTool,
+  pageRestoreSnapshotTool,
+  pageRestoreTool,
+  pageSnapshotsTool,
+  pageTrashTool,
+} from './page-lifecycle.js';
+import { formatDocumentSummary, renderTree, summarize } from './page-render.js';
 
 const MAX_PAGE_READ_CHARS = 60_000;
 
@@ -57,175 +58,8 @@ const ICON_COLOR_DESCRIPTION =
   'Wirkt nur auf "lucide:"-Symbole, ein Emoji bringt seine eigenen Farben mit. ' +
   'null bedeutet die Standardfarbe.';
 
-function formatDocumentSummary(document: DocumentSummary): string {
-  return `${document.title} (id: ${document.id}, type: ${document.type})`;
-}
-
-/**
- * How many pages the tree renders before it stops counting them out.
- *
- * A workspace can hold thousands, and a tool result is not a place to put all
- * of them: the reader is a model with a context window. The Second Brain holds
- * 721 pages, so this cap is reached in practice, and what gets dropped matters
- * more than how much.
- */
-const MAX_TREE_LINES = 300;
-
-/**
- * Renders the hierarchy as indented lines, one page per line, each with the id
- * a follow-up call needs.
- *
- * This used to answer with the two counts alone and leave the pages themselves
- * in `structuredContent`. That is invisible to any client that reads the text
- * content, which is most of them: ChatGPT called this tool four times in a row,
- * learned "3 Wurzelseiten" each time, and then guessed a workspace. A tool
- * result has to carry its answer in the text.
- *
- * Which pages the cap keeps is the whole design, and two obvious rules are both
- * wrong. Depth-first spends the budget inside whichever section sorts first and
- * leaves the later ones out entirely, so a reader looking for "Technik"
- * concludes it does not exist. Whole-levels-only is honest but starves: the
- * Second Brain's second level is 700 pages wide, so the answer collapses to
- * eighteen section names and nothing else.
- *
- * So every root section is always listed, and what is left of the budget is
- * shared out among them evenly, one line at a time, with anything a small
- * section does not need flowing to the larger ones. Inside a section the share
- * is spent breadth-first, nearest pages first. Nothing dropped is unreachable:
- * every omitted page still has a visible ancestor to ask about.
- */
-function renderTree(nodes: readonly DocumentTreeNode[]): RenderedTree {
-  const total = countNodes(nodes);
-
-  // Not even the root level fits. Show as much of it as there is room for
-  // rather than nothing: a truncated list of sections is still a map.
-  if (nodes.length >= MAX_TREE_LINES) {
-    const shown = nodes.slice(0, MAX_TREE_LINES);
-    return {
-      lines: shown.map((node) => `- ${formatDocumentSummary(node)}`),
-      // Their children were not rendered, so they are not in the structured
-      // half either; the section keeps its own line and its `omitted` count.
-      structured: shown.map((node) => ({ ...summarize(node), children: [] })),
-      omitted: total - shown.length,
-      truncated: shown
-        .filter((node) => node.children.length > 0)
-        .map((node) => ({ id: node.id, title: node.title, omitted: countNodes(node.children) })),
-    };
-  }
-
-  const demands = nodes.map((node) => countNodes(node.children));
-  const shares = shareEvenly(demands, MAX_TREE_LINES - nodes.length);
-  const kept = new Set<string>();
-  nodes.forEach((node, index) => {
-    for (const id of nearestDescendants(node, shares[index] ?? 0)) kept.add(id);
-  });
-
-  const lines: string[] = [];
-  const walk = (node: DocumentTreeNode, depth: number): TreeNodeSummary => {
-    lines.push(`${'  '.repeat(depth)}- ${formatDocumentSummary(node)}`);
-    return {
-      ...summarize(node),
-      children: node.children
-        .filter((child) => kept.has(child.id))
-        .map((child) => walk(child, depth + 1)),
-    };
-  };
-  const structured = nodes.map((node) => walk(node, 0));
-
-  return {
-    lines,
-    structured,
-    omitted: total - lines.length,
-    // Named, with their ids, because "ask via the parent page" is only an
-    // instruction a caller can follow if it is told which parents those are.
-    truncated: nodes
-      .map((node, index) => ({
-        id: node.id,
-        title: node.title,
-        omitted: (demands[index] ?? 0) - (shares[index] ?? 0),
-      }))
-      .filter((section) => section.omitted > 0),
-  };
-}
-
-interface RenderedTree {
-  lines: string[];
-  /** The same pages the lines name, for the clients that read the structure. */
-  structured: TreeNodeSummary[];
-  omitted: number;
-  /** Sections that lost pages to the cap, largest loss first when rendered. */
-  truncated: { id: string; title: string; omitted: number }[];
-}
-
-/**
- * A page in the structured tree, carrying what the rendered line carries and
- * nothing else.
- *
- * The full `DocumentSummary` is sixteen fields, and cover positions and order
- * keys are of no use to a reader that is deciding where a page belongs: 737
- * pages of them are 400 KB, against 26 KB for the same pages as text. ChatGPT's
- * connector reads this half, and answered three capped trees in a row with
- * "Sicherheitsstatus der Anfrage konnte nicht bestimmt werden" before it gave
- * up on the write it was asked for. Whatever else that check weighs, a tool
- * result that costs fifteen times its own text is not worth sending.
- */
-interface TreeNodeSummary {
-  id: string;
-  title: string;
-  type: DocumentSummary['type'];
-  children: TreeNodeSummary[];
-}
-
-function summarize(document: DocumentSummary): Omit<TreeNodeSummary, 'children'> {
-  return { id: document.id, title: document.title, type: document.type };
-}
-
 /** How many archived pages the tool names before it falls back to a count. */
 const MAX_ARCHIVED_LINES = 40;
-
-/**
- * Hands out `budget` one unit at a time, skipping anyone already satisfied, so
- * a section that wants three lines takes three and the rest goes to the ones
- * that can use it. Equal shares with the leftovers redistributed, without the
- * rounding arguments a proportional split invites.
- */
-function shareEvenly(demands: readonly number[], budget: number): number[] {
-  const grants = demands.map(() => 0);
-  let left = budget;
-  let progress = true;
-  while (left > 0 && progress) {
-    progress = false;
-    for (const [index, demand] of demands.entries()) {
-      if (left === 0) break;
-      if ((grants[index] ?? 0) >= demand) continue;
-      grants[index] = (grants[index] ?? 0) + 1;
-      left -= 1;
-      progress = true;
-    }
-  }
-  return grants;
-}
-
-/** The `limit` descendants closest to `node`, breadth-first, as a set of ids. */
-function nearestDescendants(node: DocumentTreeNode, limit: number): string[] {
-  const chosen: string[] = [];
-  let level: readonly DocumentTreeNode[] = node.children;
-  while (level.length > 0 && chosen.length < limit) {
-    const next: DocumentTreeNode[] = [];
-    for (const child of level) {
-      if (chosen.length >= limit) break;
-      chosen.push(child.id);
-      next.push(...child.children);
-    }
-    level = next;
-  }
-  return chosen;
-}
-
-function countNodes(nodes: readonly DocumentTreeNode[]): number {
-  return nodes.reduce((sum, node) => sum + 1 + countNodes(node.children), 0);
-}
-
 export const pageTreeTool: AnyToolDefinition = defineTool({
   name: 'exo_page_tree',
   description:
@@ -526,280 +360,6 @@ export const pageMoveTool: AnyToolDefinition = defineTool({
   },
 });
 
-export const pageArchiveTool: AnyToolDefinition = defineTool({
-  name: 'exo_page_archive',
-  description:
-    'Verschiebt eine Seite in den Papierkorb (archivieren). Achtung: alle Unterseiten wandern ' +
-    'mit. Wer nur die Seite selbst wegräumen will, verschiebt die Unterseiten vorher mit ' +
-    'exo_page_move woanders hin.',
-  inputSchema: z.object({ documentId: idSchema }),
-  surfaces: ['mcp', 'ai'],
-  mutating: true,
-  destructive: true,
-  target: (input) => `document:${input.documentId}`,
-  async execute(client, input) {
-    const result = await client.request({
-      method: 'POST',
-      path: `/api/documents/${input.documentId}/archive`,
-      responseSchema: archiveDocumentResponseSchema,
-    });
-    const cascade =
-      result.archivedDescendants.length === 0
-        ? []
-        : [
-            `Mit archiviert wurden ${result.archivedDescendants.length} Unterseite(n):`,
-            ...result.archivedDescendants.map((child) => `- ${formatDocumentSummary(child)}`),
-            'Falls das nicht gewollt war: exo_page_restore holt jede einzeln zurück.',
-          ];
-    return {
-      text: [`Seite archiviert: ${formatDocumentSummary(result)}`, ...cascade].join('\n'),
-      data: result,
-    };
-  },
-});
-
-export const pageRestoreTool: AnyToolDefinition = defineTool({
-  name: 'exo_page_restore',
-  description: 'Stellt eine archivierte Seite aus dem Papierkorb wieder her.',
-  inputSchema: z.object({ documentId: idSchema }),
-  surfaces: ['mcp', 'ai'],
-  mutating: true,
-  target: (input) => `document:${input.documentId}`,
-  async execute(client, input) {
-    const result = await client.request({
-      method: 'POST',
-      path: `/api/documents/${input.documentId}/restore`,
-      responseSchema: documentSummarySchema,
-    });
-    return { text: `Seite wiederhergestellt: ${formatDocumentSummary(result)}`, data: result };
-  },
-});
-
-/** Enough to read a trash of a few hundred pages, short of pasting a workspace. */
-const MAX_TRASH_LINES = 200;
-
-/** `2026-08-11T19:22:36.000Z` → `2026-08-11 19:22`. Unambiguous, and short. */
-function formatArchivedAt(iso: string): string {
-  return `${iso.slice(0, 10)} ${iso.slice(11, 16)}`;
-}
-
-function renderTrashEntries(
-  entries: readonly TrashEntry[],
-  depth: number,
-  budget: { left: number },
-): string[] {
-  const lines: string[] = [];
-  for (const entry of entries) {
-    if (budget.left <= 0) break;
-    budget.left -= 1;
-    const cascade = entry.reason === 'cascade' ? ', mit archiviert' : '';
-    const below =
-      entry.descendantCount === 0
-        ? ''
-        : `, ${entry.descendantCount} archivierte Seite(n) darunter`;
-    lines.push(
-      `${'  '.repeat(depth)}- ${entry.title} (id: ${entry.id}, type: ${entry.type}, ` +
-        `archiviert ${formatArchivedAt(entry.archivedAt)}${cascade}${below})`,
-    );
-    lines.push(...renderTrashEntries(entry.children, depth + 1, budget));
-  }
-  return lines;
-}
-
-export const pageTrashTool: AnyToolDefinition = defineTool({
-  name: 'exo_page_trash',
-  description:
-    'Liest den Papierkorb eines Arbeitsbereichs als Baum: was archiviert wurde, was dabei ' +
-    'mitgegangen ist und wann. Eingerückte Einträge hingen unter dem Eintrag darüber. ' +
-    '"mit archiviert" heißt: diese Seite wurde nie selbst gewählt, sie kam mit ihrer ' +
-    'Elternseite mit. exo_page_restore holt eine Seite zurück, exo_page_delete löscht sie ' +
-    'endgültig.',
-  inputSchema: z.object({ workspaceId: idSchema }),
-  surfaces: ['mcp', 'ai'],
-  mutating: false,
-  async execute(client, input) {
-    const result = await client.request({
-      method: 'GET',
-      path: `/api/workspaces/${input.workspaceId}/trash`,
-      responseSchema: trashResponseSchema,
-    });
-    if (result.totalCount === 0) {
-      return { text: 'Der Papierkorb ist leer.', data: result };
-    }
-    const budget = { left: MAX_TRASH_LINES };
-    const lines = renderTrashEntries(result.entries, 0, budget);
-    const omitted = result.totalCount - lines.length;
-    const notice =
-      omitted <= 0
-        ? ''
-        : `\n… ${omitted} weitere archivierte Seite(n) hier nicht angezeigt (gekürzt).`;
-    return {
-      text:
-        `${result.totalCount} archivierte Seite(n), davon ${result.entries.length} eigenständig ` +
-        `archiviert:\n${lines.join('\n')}${notice}`,
-      data: result,
-    };
-  },
-});
-
-export const pageDeleteTool: AnyToolDefinition = defineTool({
-  name: 'exo_page_delete',
-  description:
-    'Löscht eine archivierte Seite endgültig, mit allem, was unter ihr hängt: Inhalt, ' +
-    'Versionsstände, Kommentare, Anhänge und Dateien. Das ist der einzige Vorgang in ' +
-    'eXocortex, den nichts rückgängig macht, auch kein Snapshot. Die Seite muss vorher im ' +
-    'Papierkorb liegen (exo_page_archive), und es braucht Adminrechte im Arbeitsbereich. ' +
-    'Verweise anderer Seiten auf sie bleiben stehen und werden zu unaufgelösten Verweisen. ' +
-    'Der Aufruf verändert Daten: der erste Aufruf sagt, wie viele Seiten mitgehen, und führt ' +
-    'nichts aus; erst der identisch wiederholte löscht.',
-  inputSchema: z.object({ documentId: idSchema }),
-  // `mcp` only, deliberately. The built-in AI's tool loop has no confirmation
-  // gate -- it is governed by the `ai.mutatingToolsEnabled` switch, which is one
-  // decision for every write there is. The single operation nothing can undo
-  // does not belong behind a switch somebody flipped once, so it stays with the
-  // surfaces that ask twice.
-  surfaces: ['mcp'],
-  mutating: true,
-  destructive: true,
-  irreversible: true,
-  target: (input) => `document:${input.documentId}`,
-  async preview(client, input) {
-    const preview = await client.request({
-      method: 'GET',
-      path: `/api/documents/${input.documentId}/deletion-preview`,
-      responseSchema: documentDeletionPreviewSchema,
-    });
-    const names = preview.documents
-      .slice(1, 11)
-      .map((document) => `- ${formatDocumentSummary(document)}`);
-    return [
-      `Endgültig gelöscht würden ${preview.documents.length} Seite(n): „${preview.title}“` +
-        (preview.descendantCount === 0
-          ? ' (keine Unterseiten).'
-          : ` und ${preview.descendantCount} Seite(n) darunter.`),
-      ...(names.length === 0 ? [] : names),
-      ...(preview.descendantCount > names.length
-        ? [`… und ${preview.descendantCount - names.length} weitere.`]
-        : []),
-      ...(preview.attachmentCount === 0
-        ? []
-        : [`Dazu ${preview.attachmentCount} Anhang/Anhänge samt Dateien.`]),
-      ...(preview.incomingLinkCount === 0
-        ? []
-        : [
-            `${preview.incomingLinkCount} Verweis(e) anderer Seiten zeigen darauf und werden ` +
-              'unaufgelöst.',
-          ]),
-      'Das ist nicht rückgängig zu machen.',
-    ].join('\n');
-  },
-  async execute(client, input) {
-    const result = await client.request({
-      method: 'DELETE',
-      path: `/api/documents/${input.documentId}`,
-      responseSchema: deleteDocumentsResponseSchema,
-    });
-    const extras = [
-      result.attachmentCount === 0 ? null : `${result.attachmentCount} Anhang/Anhänge`,
-      result.unresolvedLinkCount === 0
-        ? null
-        : `${result.unresolvedLinkCount} Verweis(e) sind jetzt unaufgelöst`,
-    ].filter((part): part is string => part !== null);
-    return {
-      text:
-        `${result.deletedCount} Seite(n) endgültig gelöscht.` +
-        (extras.length === 0 ? '' : ` ${extras.join(', ')}.`),
-      data: result,
-    };
-  },
-});
-
-export const pageSnapshotsTool: AnyToolDefinition = defineTool({
-  name: 'exo_page_snapshots',
-  description: 'Listet die gespeicherten Snapshots einer Seite (für Wiederherstellung nach einem Schreibvorgang).',
-  inputSchema: z.object({ documentId: idSchema }),
-  surfaces: ['mcp', 'ai'],
-  mutating: false,
-  async execute(client, input) {
-    const result = await client.request({
-      method: 'GET',
-      path: `/api/documents/${input.documentId}/snapshots`,
-      responseSchema: documentSnapshotListResponseSchema,
-    });
-    if (result.snapshots.length === 0) {
-      return { text: 'Keine Snapshots vorhanden.', data: result };
-    }
-    const text = result.snapshots
-      .map((snapshot, i) => `${i + 1}. ${snapshot.id} (${snapshot.reason}, ${snapshot.createdAt})`)
-      .join('\n');
-    return { text, data: result };
-  },
-});
-
-export const pageRestoreSnapshotTool: AnyToolDefinition = defineTool({
-  name: 'exo_page_restore_snapshot',
-  description: 'Stellt eine Seite auf den Stand eines früheren Snapshots zurück.',
-  inputSchema: z.object({ documentId: idSchema, snapshotId: idSchema }),
-  surfaces: ['mcp', 'ai'],
-  mutating: true,
-  destructive: true,
-  target: (input) => `document:${input.documentId}`,
-  async execute(client, input) {
-    const result = await client.request({
-      method: 'POST',
-      path: `/api/documents/${input.documentId}/snapshots/${input.snapshotId}/restore`,
-      responseSchema: restoreSnapshotResultSchema,
-    });
-    return { text: `Seite ${result.documentId} auf Snapshot ${result.restoredFrom} zurückgesetzt.`, data: result };
-  },
-});
-
-/** One-line German summary of an activity entry, for the model's text response. */
-function formatActivityEntry(entry: z.infer<typeof documentActivityResponseSchema>['entries'][number]): string {
-  const who = entry.actorName ?? 'Unbekannt';
-  switch (entry.type) {
-    case 'created':
-      return `${entry.occurredAt}: Seite angelegt von ${who}`;
-    case 'renamed':
-      return `${entry.occurredAt}: umbenannt von ${who} ("${entry.previousTitle ?? '?'}" → "${entry.nextTitle ?? '?'}")`;
-    case 'moved':
-      return `${entry.occurredAt}: verschoben von ${who}${entry.acrossWorkspace ? ' (anderer Workspace)' : ''}`;
-    case 'archived':
-      return `${entry.occurredAt}: archiviert von ${who}`;
-    case 'restored':
-      return `${entry.occurredAt}: wiederhergestellt von ${who}`;
-    case 'snapshotRestored':
-      return `${entry.occurredAt}: auf Snapshot ${entry.restoredFromSnapshotId} zurückgesetzt von ${who}`;
-    case 'snapshot':
-      return `${entry.occurredAt}: Snapshot ${entry.id} (${entry.reason}) von ${who}`;
-    case 'editingSession':
-      return entry.startedAt === entry.endedAt
-        ? `${entry.endedAt}: bearbeitet von ${who}`
-        : `${entry.startedAt} – ${entry.endedAt}: bearbeitet von ${who}`;
-  }
-}
-
-export const pageActivityTool: AnyToolDefinition = defineTool({
-  name: 'exo_page_activity',
-  description:
-    'Liest den Verlauf einer Seite: angelegt, umbenannt, verschoben, archiviert, wiederhergestellt, ' +
-    'Snapshots (mit exo_page_restore_snapshot wiederherstellbar) und verdichtete Bearbeitungssitzungen. ' +
-    'Das ist der Seitenverlauf, kein Prüfprotokoll für die Verwaltung.',
-  inputSchema: z.object({ documentId: idSchema }),
-  surfaces: ['mcp', 'ai'],
-  mutating: false,
-  async execute(client, input) {
-    const result = await client.request({
-      method: 'GET',
-      path: `/api/documents/${input.documentId}/activity`,
-      responseSchema: documentActivityResponseSchema,
-    });
-    if (result.entries.length === 0) {
-      return { text: 'Kein Verlauf vorhanden.', data: result };
-    }
-    return { text: result.entries.map(formatActivityEntry).join('\n'), data: result };
-  },
-});
 
 const pageSetAiRuleInputSchema = z.object({
   documentId: idSchema,

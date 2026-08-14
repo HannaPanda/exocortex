@@ -2,14 +2,12 @@ import { describe, expect, it } from 'vitest';
 
 import { type ExocortexApiClient } from '../client.js';
 
+import { pageArchiveTool, pageDeleteTool, pageTrashTool } from './page-lifecycle.js';
 import {
-  pageArchiveTool,
-  pageDeleteTool,
   pageGenerateCoverTool,
   pageReadTool,
   pageResolveLinkTool,
   pageSetCoverTool,
-  pageTrashTool,
   pageTreeTool,
   pageWriteTool,
 } from './pages.js';
