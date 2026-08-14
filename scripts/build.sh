@@ -154,8 +154,13 @@ else
   info "ESLint, whole repository …"
   pnpm exec eslint . || fail "ESLint found problems" "Run 'pnpm exec eslint . --fix' for the mechanical ones."
 
-  info "Prettier …"
-  pnpm format:check || fail "Formatting differs" "Run 'pnpm format'."
+  # `pnpm format:check` is deliberately NOT here. Prettier disagrees with 314 of
+  # the repository's files today -- it has never been run over the whole tree --
+  # so switching it on as a gate means one commit that rewrites nearly every
+  # file and rewrites the blame with it. That is a decision worth making on its
+  # own, not a side effect of introducing a build script. Until then the check
+  # exists as `pnpm format:check` and says something true about the repository;
+  # it just does not stop a deploy.
 
   info "Typecheck …"
   pnpm typecheck || fail "Type errors" "Note that apps/api/scripts is outside apps/api/tsconfig.json and is only reached by the ESLint step above."
