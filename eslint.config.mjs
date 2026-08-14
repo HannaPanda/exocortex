@@ -147,6 +147,14 @@ export default tseslint.config(
       // to get under a number.
       'max-lines': ['error', { max: 600, skipBlankLines: true, skipComments: true }],
       'complexity': ['error', 20],
+      // A ratchet, not a target. 200 is above everything in the repository
+      // today, so it forbids getting worse without demanding a rewrite; lower
+      // it whenever the worst offender is split up. `.tsx` gets its own,
+      // looser one below.
+      'max-lines-per-function': [
+        'error',
+        { max: 200, skipBlankLines: true, skipComments: true },
+      ],
       'max-depth': ['error', 4],
       'max-params': ['error', 5],
       'max-nested-callbacks': ['error', 3],
@@ -203,6 +211,23 @@ export default tseslint.config(
     },
   },
 
+  // -------------------------------------------------------------------- JSX
+  {
+    // A component's markup is not the same kind of line as a statement: closing
+    // tags, one attribute per line and the wrapping Prettier does mean the same
+    // idea costs two or three times as many lines in JSX as it does in
+    // TypeScript. The looser limit is that difference, not permission to write
+    // a bigger component -- eight of them are already between 200 and 300, and
+    // this number should come down as they are split.
+    files: ['**/*.tsx'],
+    rules: {
+      'max-lines-per-function': [
+        'error',
+        { max: 300, skipBlankLines: true, skipComments: true },
+      ],
+    },
+  },
+
   // --------------------------------------------------------------- NestJS DI
   {
     // Nest resolves constructor dependencies from `emitDecoratorMetadata`, which
@@ -247,6 +272,10 @@ export default tseslint.config(
       // that share a fixture and answer the same question. `complexity` stays
       // on, because a test with twenty branches is testing the wrong thing.
       'max-lines': 'off',
+      // Same reason, one level down: a `describe` block counts as one function
+      // here, so the rule would be measuring the size of the suite rather than
+      // of anything anyone actually wrote.
+      'max-lines-per-function': 'off',
     },
   },
 

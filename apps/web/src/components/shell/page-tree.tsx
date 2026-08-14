@@ -1,19 +1,6 @@
 'use client';
 
-import {
-  ArchiveIcon,
-  ArrowDownIcon,
-  ArrowUpIcon,
-  ChevronRightIcon,
-  FolderInputIcon,
-  IndentDecreaseIcon,
-  IndentIncreaseIcon,
-  PlusIcon,
-  SmilePlusIcon,
-  TableIcon,
-  Trash2Icon,
-} from 'lucide-react';
-import Link from 'next/link';
+import { PlusIcon, TableIcon, Trash2Icon } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
@@ -27,11 +14,6 @@ import {
   AlertDescription,
   Button,
   cn,
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuTrigger,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -53,8 +35,6 @@ import {
   SelectValue,
 } from '@exocortex/ui';
 
-import { DocumentIcon } from '@/components/document/document-icon';
-import { PageIconPicker } from '@/components/document/page-icon-picker';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import {
@@ -67,6 +47,7 @@ import {
 } from '@/lib/api/queries';
 import { usePersistentState } from '@/lib/use-persistent-state';
 
+import { PageTreeRow, type PageTreeRowContext } from './page-tree-row';
 import {
   ancestorsOf,
   type DropZone,
@@ -115,7 +96,6 @@ export function PageTree({ workspaceId }: PageTreeProps) {
   const archiveDocument = useArchiveDocument(workspaceId);
   const updateDocument = useUpdateDocument(workspaceId);
   const moveDocument = useMoveDocument(workspaceId);
-  const workspaces = useWorkspaces();
   // Per workspace, and persisted: which rows are unfolded is orientation, and
   // orientation that a reload throws away is orientation nobody relies on.
   const [expanded, setExpanded] = usePersistentState<ExpandedState>(
@@ -149,7 +129,9 @@ export function PageTree({ workspaceId }: PageTreeProps) {
    * open it. A ref because it changes on every `dragover` — dozens per second —
    * and none of those changes belong on screen.
    */
-  const springOpen = React.useRef<{ id: string; timer: ReturnType<typeof setTimeout> } | null>(null);
+  const springOpen = React.useRef<{ id: string; timer: ReturnType<typeof setTimeout> } | null>(
+    null,
+  );
 
   const cancelSpringOpen = React.useCallback((): void => {
     if (springOpen.current === null) return;
@@ -200,7 +182,10 @@ export function PageTree({ workspaceId }: PageTreeProps) {
     setExpanded({ ...expanded, [documentId]: expanded[documentId] !== true });
   };
 
-  const createChild = async (parentId: string | null, type: DocumentType = 'PAGE'): Promise<void> => {
+  const createChild = async (
+    parentId: string | null,
+    type: DocumentType = 'PAGE',
+  ): Promise<void> => {
     const document = await createDocument.mutateAsync({
       title: type === 'COLLECTION' ? 'Unbenannte Datenbank' : 'Unbenannte Seite',
       type,
@@ -245,7 +230,8 @@ export function PageTree({ workspaceId }: PageTreeProps) {
 
     if (direction === 'up') {
       const previous = siblings[index - 1];
-      if (previous !== undefined) submitMove(documentId, { parentId, beforeSiblingId: previous.id });
+      if (previous !== undefined)
+        submitMove(documentId, { parentId, beforeSiblingId: previous.id });
       return;
     }
     if (direction === 'down') {
@@ -297,7 +283,8 @@ export function PageTree({ workspaceId }: PageTreeProps) {
       setDropTarget({ id: node.id, zone });
     }
 
-    const shouldSpring = zone === 'inside' && node.children.length > 0 && expanded[node.id] !== true;
+    const shouldSpring =
+      zone === 'inside' && node.children.length > 0 && expanded[node.id] !== true;
     if (!shouldSpring) {
       if (springOpen.current?.id === node.id) cancelSpringOpen();
       return;
@@ -324,229 +311,37 @@ export function PageTree({ workspaceId }: PageTreeProps) {
     dropOn(documentId, node.id, zone);
   };
 
-  const nudgeKeys: Readonly<Record<string, 'up' | 'down' | 'in' | 'out'>> = {
-    ArrowUp: 'up',
-    ArrowDown: 'down',
-    ArrowRight: 'in',
-    ArrowLeft: 'out',
-  };
-
-  if (tree.isPending) return <LoadingState variant="skeleton" rows={6} label="Seiten werden geladen" />;
+  if (tree.isPending)
+    return <LoadingState variant="skeleton" rows={6} label="Seiten werden geladen" />;
   if (tree.isError) {
     return <ErrorState onRetry={() => void tree.refetch()} title="Seitenbaum nicht geladen" />;
   }
 
-  const renderNode = (node: DocumentTreeNode, depth: number): React.ReactNode => {
-    const isOpen = expanded[node.id] === true;
-    const hasChildren = node.children.length > 0;
-    const isActive = node.id === activeDocumentId;
-    const zone = dropTarget?.id === node.id ? dropTarget.zone : null;
-    const isDropInside = zone === 'inside';
-    const dropLine = zone === 'inside' ? null : zone;
-
-    return (
-      <li key={node.id}>
-        <ContextMenu>
-          <ContextMenuTrigger
-            render={
-              <div
-                draggable
-                onDragStart={(event) => {
-                  event.dataTransfer.effectAllowed = 'move';
-                  event.dataTransfer.setData('text/plain', node.id);
-                  setDraggedId(node.id);
-                }}
-                onDragEnd={() => {
-                  setDraggedId(null);
-                  setDropTarget(null);
-                  cancelSpringOpen();
-                }}
-                onDragOver={(event) => onRowDragOver(event, node)}
-                onDrop={(event) => onRowDrop(event, node)}
-                onKeyDown={(event) => {
-                  const direction = event.altKey ? nudgeKeys[event.key] : undefined;
-                  if (direction === undefined) return;
-                  event.preventDefault();
-                  nudge(node.id, direction);
-                }}
-                className={cn(
-                  'group relative flex items-center gap-1 rounded-md pr-1 text-sm transition-colors',
-                  // Where you are is the most important state in the tree, so it
-                  // is carried three times over: surface, weight and an amber
-                  // icon. Hover stays a hint and never comes close to it.
-                  isActive
-                    ? 'bg-accent-strong font-medium text-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-foreground',
-                  draggedId === node.id && 'opacity-40',
-                  isDropInside && 'bg-accent ring-1 ring-primary ring-inset',
-                )}
-                style={{ paddingLeft: `${depth * 0.75 + 0.25}rem` }}
-                data-testid={`tree-item-${node.id}`}
-                data-drop-zone={dropTarget?.id === node.id ? dropTarget.zone : undefined}
-              >
-                {/* The line that says "it lands here", drawn on the edge it would
-                    land on. Amber, because in this product amber means the thing
-                    that is about to happen. */}
-                {dropLine !== null ? (
-                  <span
-                    aria-hidden
-                    className={cn(
-                      'pointer-events-none absolute inset-x-1 h-0.5 rounded-full bg-primary',
-                      dropLine === 'before' ? 'top-0' : 'bottom-0',
-                    )}
-                  />
-                ) : null}
-
-                <button
-                  type="button"
-                  aria-label={isOpen ? 'Unterseiten einklappen' : 'Unterseiten ausklappen'}
-                  aria-expanded={isOpen}
-                  onClick={() => toggle(node.id)}
-                  className={cn(
-                    'flex size-5 shrink-0 items-center justify-center rounded text-muted-foreground transition-transform hover:text-foreground',
-                    isOpen && 'rotate-90',
-                    !hasChildren && 'invisible',
-                  )}
-                >
-                  <ChevronRightIcon className="size-3.5" />
-                </button>
-
-                {/* The symbol is its own button and sits outside the link: it is
-                    the shortest way to change it, and inside the link every
-                    click on it would navigate instead. */}
-                <PageIconPicker
-                  icon={node.icon}
-                  iconColor={node.iconColor}
-                  type={node.type}
-                  open={iconPickerFor === node.id}
-                  onOpenChange={(next) => setIconPickerFor(next ? node.id : null)}
-                  onSelect={(selection) => {
-                    void updateDocument.mutateAsync({ documentId: node.id, request: selection });
-                  }}
-                  trigger={
-                    <button
-                      type="button"
-                      aria-label={`Symbol von „${node.title}“ ändern`}
-                      data-testid={`tree-icon-${node.id}`}
-                      className="grid size-5 shrink-0 place-items-center rounded hover:bg-accent-strong"
-                    >
-                      <DocumentIcon
-                        icon={node.icon}
-                        iconColor={node.iconColor}
-                        type={node.type}
-                        className={cn(
-                          'size-3.5 text-xs',
-                          isActive ? 'text-primary-text' : 'text-muted-foreground',
-                        )}
-                      />
-                    </button>
-                  }
-                />
-
-                <Link
-                  href={`/arbeitsbereich/${workspaceId}/seite/${node.id}`}
-                  // A link drags itself by default, which would start a drag of
-                  // its URL instead of the row the pointer is actually on.
-                  draggable={false}
-                  className="flex min-w-0 flex-1 items-center py-1"
-                  data-testid={`tree-link-${node.id}`}
-                >
-                  <span className="truncate">{node.title}</span>
-                </Link>
-
-                <button
-                  type="button"
-                  aria-label={`Unterseite in „${node.title}“ anlegen`}
-                  onClick={() => void createChild(node.id)}
-                  className="invisible size-5 shrink-0 rounded text-muted-foreground group-hover:visible hover:text-foreground"
-                >
-                  <PlusIcon className="size-3.5" />
-                </button>
-              </div>
-            }
-          />
-          <ContextMenuContent>
-            <ContextMenuItem
-              data-testid={`tree-change-icon-${node.id}`}
-              onClick={() => setIconPickerFor(node.id)}
-            >
-              <SmilePlusIcon /> Symbol ändern …
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-            {/* The keyboard half of dragging. Named with their shortcuts, because
-                a command nobody can find is a command that does not exist. */}
-            <ContextMenuItem
-              disabled={!canNudge(node.id, 'up')}
-              data-testid={`tree-move-up-${node.id}`}
-              onClick={() => nudge(node.id, 'up')}
-            >
-              <ArrowUpIcon /> Nach oben
-              <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">
-                Alt ↑
-              </span>
-            </ContextMenuItem>
-            <ContextMenuItem
-              disabled={!canNudge(node.id, 'down')}
-              data-testid={`tree-move-down-${node.id}`}
-              onClick={() => nudge(node.id, 'down')}
-            >
-              <ArrowDownIcon /> Nach unten
-              <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">
-                Alt ↓
-              </span>
-            </ContextMenuItem>
-            <ContextMenuItem
-              disabled={!canNudge(node.id, 'in')}
-              data-testid={`tree-indent-${node.id}`}
-              onClick={() => nudge(node.id, 'in')}
-            >
-              <IndentIncreaseIcon /> Unter die Seite darüber
-              <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">
-                Alt →
-              </span>
-            </ContextMenuItem>
-            <ContextMenuItem
-              disabled={!canNudge(node.id, 'out')}
-              data-testid={`tree-outdent-${node.id}`}
-              onClick={() => nudge(node.id, 'out')}
-            >
-              <IndentDecreaseIcon /> Eine Ebene höher
-              <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">
-                Alt ←
-              </span>
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem onClick={() => void createChild(node.id)}>
-              <PlusIcon /> Unterseite anlegen
-            </ContextMenuItem>
-            <ContextMenuItem onClick={() => void createChild(node.id, 'COLLECTION')}>
-              <TableIcon /> Datenbank anlegen
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem
-              data-testid={`tree-move-workspace-${node.id}`}
-              onClick={() => {
-                setMoveWorkspaceNode(node);
-                setMoveTargetWorkspaceId('');
-              }}
-            >
-              <FolderInputIcon /> In anderen Arbeitsbereich verschieben …
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem
-              variant="destructive"
-              onClick={() => void archiveDocument.mutateAsync(node.id)}
-            >
-              <ArchiveIcon /> Archivieren
-            </ContextMenuItem>
-          </ContextMenuContent>
-        </ContextMenu>
-
-        {isOpen && hasChildren ? (
-          <ul>{node.children.map((child) => renderNode(child, depth + 1))}</ul>
-        ) : null}
-      </li>
-    );
+  const rowContext: PageTreeRowContext = {
+    workspaceId,
+    activeDocumentId,
+    expanded,
+    draggedId,
+    dropTarget,
+    iconPickerFor,
+    setIconPickerFor,
+    setDraggedId,
+    setDropTarget,
+    cancelSpringOpen,
+    onRowDragOver,
+    onRowDrop,
+    toggle,
+    nudge,
+    canNudge,
+    createChild: (parentId, type) => void createChild(parentId, type),
+    setIcon: (documentId, selection) => {
+      void updateDocument.mutateAsync({ documentId, request: selection });
+    },
+    archive: (documentId) => void archiveDocument.mutateAsync(documentId),
+    startWorkspaceMove: (node) => {
+      setMoveWorkspaceNode(node);
+      setMoveTargetWorkspaceId('');
+    },
   };
 
   return (
@@ -558,16 +353,27 @@ export function PageTree({ workspaceId }: PageTreeProps) {
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button variant="ghost" size="icon-sm" aria-label="Anlegen" data-testid="create-root-page">
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Anlegen"
+                data-testid="create-root-page"
+              >
                 <PlusIcon />
               </Button>
             }
           />
           <DropdownMenuContent align="end">
-            <DropdownMenuItem data-testid="create-root-page-item" onClick={() => void createChild(null)}>
+            <DropdownMenuItem
+              data-testid="create-root-page-item"
+              onClick={() => void createChild(null)}
+            >
               <PlusIcon /> Seite anlegen
             </DropdownMenuItem>
-            <DropdownMenuItem data-testid="create-root-database" onClick={() => void createChild(null, 'COLLECTION')}>
+            <DropdownMenuItem
+              data-testid="create-root-database"
+              onClick={() => void createChild(null, 'COLLECTION')}
+            >
               <TableIcon /> Datenbank anlegen
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -582,7 +388,11 @@ export function PageTree({ workspaceId }: PageTreeProps) {
             action={{ label: 'Seite anlegen', onClick: () => void createChild(null) }}
           />
         ) : (
-          <ul data-testid="page-tree">{tree.data.nodes.map((node) => renderNode(node, 0))}</ul>
+          <ul data-testid="page-tree">
+            {tree.data.nodes.map((node) => (
+              <PageTreeRow key={node.id} node={node} depth={0} context={rowContext} />
+            ))}
+          </ul>
         )}
 
         {/* Only while something is being dragged, and only for a page that is not
@@ -636,86 +446,121 @@ export function PageTree({ workspaceId }: PageTreeProps) {
 
       <TrashSheet workspaceId={workspaceId} open={showTrash} onOpenChange={setShowTrash} />
 
-      <Dialog
-        open={moveWorkspaceNode !== null}
-        onOpenChange={(open) => {
-          if (!open) setMoveWorkspaceNode(null);
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>In anderen Arbeitsbereich verschieben</DialogTitle>
-            <DialogDescription>
-              „{moveWorkspaceNode?.title}“ wandert mit allen Unterseiten, Anhängen und eingebetteten
-              Datenbanken in den gewählten Arbeitsbereich. Inhalte, die bisher nur du gesehen hast,
-              sind danach für dessen Mitglieder sichtbar wie jede andere Seite dort auch.
-            </DialogDescription>
-          </DialogHeader>
-
-          {moveDocument.isError ? (
-            <Alert variant="destructive" data-testid="move-workspace-error">
-              <AlertDescription>
-                {messageForCode(
-                  moveDocument.error instanceof ApiError ? moveDocument.error.code : undefined,
-                )}
-              </AlertDescription>
-            </Alert>
-          ) : null}
-
-          <Select
-            value={moveTargetWorkspaceId.length === 0 ? null : moveTargetWorkspaceId}
-            onValueChange={(next) => setMoveTargetWorkspaceId(next ?? '')}
-          >
-            <SelectTrigger data-testid="move-workspace-select">
-              <SelectValue>
-                {() =>
-                  workspaces.data?.find((option) => option.id === moveTargetWorkspaceId)?.name ??
-                  'Zielarbeitsbereich wählen'
-                }
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {(workspaces.data ?? [])
-                .filter((option) => option.id !== workspaceId)
-                .map((option) => (
-                  <SelectItem key={option.id} value={option.id}>
-                    {option.name}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
-
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setMoveWorkspaceNode(null)}>
-              Abbrechen
-            </Button>
-            <Button
-              data-testid="move-workspace-submit"
-              disabled={moveTargetWorkspaceId.length === 0 || moveDocument.isPending}
-              onClick={() => {
-                if (moveWorkspaceNode === null) return;
-                const movedId = moveWorkspaceNode.id;
-                const targetId = moveTargetWorkspaceId;
-                void moveDocument
-                  .mutateAsync({
-                    documentId: movedId,
-                    request: { parentId: null, workspaceId: targetId },
-                  })
-                  .then(() => {
-                    setMoveWorkspaceNode(null);
-                    // The page that just left this workspace can no longer be
-                    // shown under its old workspaceId route.
-                    if (activeDocumentId === movedId) {
-                      router.push(`/arbeitsbereich/${targetId}/seite/${movedId}`);
-                    }
-                  });
-              }}
-            >
-              Verschieben
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <MoveWorkspaceDialog
+        workspaceId={workspaceId}
+        node={moveWorkspaceNode}
+        onClose={() => setMoveWorkspaceNode(null)}
+        targetWorkspaceId={moveTargetWorkspaceId}
+        onTargetChange={setMoveTargetWorkspaceId}
+        activeDocumentId={activeDocumentId}
+      />
     </div>
+  );
+}
+
+/**
+ * Moving a page into another workspace, with the one thing that is not obvious
+ * spelled out: everything under it comes along, and its members can see it.
+ */
+function MoveWorkspaceDialog({
+  workspaceId,
+  node,
+  onClose,
+  targetWorkspaceId,
+  onTargetChange,
+  activeDocumentId,
+}: {
+  workspaceId: string;
+  node: DocumentTreeNode | null;
+  onClose: () => void;
+  targetWorkspaceId: string;
+  onTargetChange: (workspaceId: string) => void;
+  activeDocumentId: string | undefined;
+}) {
+  const router = useRouter();
+  const workspaces = useWorkspaces();
+  const moveDocument = useMoveDocument(workspaceId);
+
+  return (
+    <Dialog
+      open={node !== null}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>In anderen Arbeitsbereich verschieben</DialogTitle>
+          <DialogDescription>
+            „{node?.title}“ wandert mit allen Unterseiten, Anhängen und eingebetteten Datenbanken in
+            den gewählten Arbeitsbereich. Inhalte, die bisher nur du gesehen hast, sind danach für
+            dessen Mitglieder sichtbar wie jede andere Seite dort auch.
+          </DialogDescription>
+        </DialogHeader>
+
+        {moveDocument.isError ? (
+          <Alert variant="destructive" data-testid="move-workspace-error">
+            <AlertDescription>
+              {messageForCode(
+                moveDocument.error instanceof ApiError ? moveDocument.error.code : undefined,
+              )}
+            </AlertDescription>
+          </Alert>
+        ) : null}
+
+        <Select
+          value={targetWorkspaceId.length === 0 ? null : targetWorkspaceId}
+          onValueChange={(next) => onTargetChange(next ?? '')}
+        >
+          <SelectTrigger data-testid="move-workspace-select">
+            <SelectValue>
+              {() =>
+                workspaces.data?.find((option) => option.id === targetWorkspaceId)?.name ??
+                'Zielarbeitsbereich wählen'
+              }
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {(workspaces.data ?? [])
+              .filter((option) => option.id !== workspaceId)
+              .map((option) => (
+                <SelectItem key={option.id} value={option.id}>
+                  {option.name}
+                </SelectItem>
+              ))}
+          </SelectContent>
+        </Select>
+
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose}>
+            Abbrechen
+          </Button>
+          <Button
+            data-testid="move-workspace-submit"
+            disabled={targetWorkspaceId.length === 0 || moveDocument.isPending}
+            onClick={() => {
+              if (node === null) return;
+              const movedId = node.id;
+              const targetId = targetWorkspaceId;
+              void moveDocument
+                .mutateAsync({
+                  documentId: movedId,
+                  request: { parentId: null, workspaceId: targetId },
+                })
+                .then(() => {
+                  onClose();
+                  // The page that just left this workspace can no longer be
+                  // shown under its old workspaceId route.
+                  if (activeDocumentId === movedId) {
+                    router.push(`/arbeitsbereich/${targetId}/seite/${movedId}`);
+                  }
+                });
+            }}
+          >
+            Verschieben
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
