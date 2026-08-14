@@ -51,3 +51,9 @@ e2e/.run-scope
 # Machine-identity credentials for the Infisical -> .env sync
 # (deploy/infisical-sync-env.py). Template: deploy/infisical-sync.env.example
 .infisical-sync.env
+
+# Marker written by scripts/build.sh: the commit the artefacts in dist/ and
+# .next/ belong to. Local state, never shared.
+.build-marker
+# Marker written by scripts/deploy.sh on a fully successful rollout.
+.last-deployed-sha
