@@ -232,97 +232,139 @@ drop live editing sessions for nothing.
 
 ## Deploying a change
 
-**This host has 8 GB of RAM, shared with other services, and the four units keep
-serving during the build. Build sequentially.** A parallel `pnpm build` (or a
-`pnpm build` racing a `pnpm typecheck`) can exhaust memory and take the live
-deployment down with it. The Next.js build is the memory-hungry step, so it goes
-last.
+```bash
+bash scripts/deploy.sh
+```
 
-1. **Check headroom.** `free -m`. If less than ~1 GB is free before you start,
-   find out why first.
+That is the whole of it. This section describes what the script does and why,
+so a failure part-way through is readable; it is not a list to type out. There
+was one until 2026-08-14, and the trouble with a manual is that steps get
+skipped, the order drifts from session to session, and nothing records which
+commit actually went live.
 
-2. **Install.** `pnpm install --frozen-lockfile=false` — new workspace packages
-   need linking. If it wants to change the lockfile in a way you did not expect,
-   stop.
+### Two scripts, one boundary
 
-3. **Build the leaf packages, one at a time:**
+`scripts/build.sh` answers "is this commit healthy" and **starts nothing**. It
+can be run at any time, including on a machine that is serving nothing.
+`scripts/deploy.sh` calls it and then does everything that touches the running
+system. Nothing above that line lives in `deploy.sh`, and nothing below it lives
+in `build.sh`.
 
-   ```bash
-   for pkg in contracts logger config editor ui database storage queue ai auth mcp-tools; do
-     pnpm --filter "@exocortex/$pkg" build || break
-   done
-   ```
+```bash
+bash scripts/build.sh                 # validate and build, touch no service
+bash scripts/build.sh --skip-checks   # hard gates only, no lint/typecheck/tests
+bash scripts/build.sh --full-tests    # also the tests that use the live database
+bash scripts/deploy.sh --dry-run      # everything up to the first change, then stop
+```
 
-4. **Build the apps, still one at a time, web last:**
+### What build.sh does
 
-   ```bash
-   for app in api collaboration worker mcp; do
-     pnpm --filter "@exocortex/$app" build || break
-   done
-   pnpm --filter @exocortex/web build
-   ```
+0. **Working tree must be clean.** Hard, first, and not covered by
+   `--skip-checks`. Everything downstream identifies a deployment by its commit;
+   an uncommitted file changes what gets built without changing what the markers
+   record.
+1. **Headroom.** Under 1 GB available is a refusal, under 2 GB a warning. This
+   host has 16 GB shared with everything else on it, the four units keep serving
+   throughout, and the Next.js build alone can summon the OOM killer — which does
+   not pick its victim carefully and may take a live unit instead.
+2. **`pnpm install --frozen-lockfile`.** A build installs exactly what the commit
+   records. If the lockfile is behind, run `pnpm install` by hand and commit it.
+3. **Prisma client**, before anything type-checks against it.
+4. **The hard gates.** Always on, no bypass, roughly six seconds together:
 
-   If a build is killed, check `dmesg | tail` for the OOM killer. Do not retry in
-   a loop; free memory first.
+   | Gate | Catches |
+   | ---- | ------- |
+   | `check-dependency-boundaries.mjs` | a manifest depending on a package the graph forbids |
+   | `check-env-example.mjs` | a variable the code reads and `.env.example` does not document, or the reverse |
+   | `check-brand-spelling.mjs` | `Exocortex` where a human reads it (rule 10) |
+   | `check-mcp-catalog.mjs` | a REST route with no tool behind it, and a tool calling a route that is gone (rule 11, ADR-014) |
+   | `check-migrations-reproducible.sh` | a migration history that does not rebuild `schema.prisma` from zero |
 
-5. **Check.** `pnpm lint`, then `pnpm typecheck` — sequentially, not together.
-   Note that `pnpm test` includes integration tests that talk to the **production**
-   database and Redis on this host (they create throwaway rows and clean up after
-   themselves, but they are not isolated). On this deployment, prefer the
-   unit-level filters: `pnpm --filter @exocortex/contracts test` and the same for
-   `ai`, `mcp-tools`, `auth`, `config`, `editor`, `logger`, `storage`, `mcp`.
+   Each one prints its findings and one sentence on how to fix them. The
+   migration gate replays the whole history onto a throwaway Postgres container
+   and never touches the live database.
+5. **Build**, one package at a time in dependency order, web last. The order
+   comes out of `scripts/dependency-graph.mjs`, so a new package cannot be
+   forgotten. `.build-marker` records which commit the artefacts belong to, and
+   a matching marker skips the build.
+6. **Soft checks**, skippable with `--skip-checks`: `eslint .` from the root
+   (each package lints `src` only, which leaves the root scripts, `apps/api/scripts`
+   and `e2e` unseen), `pnpm typecheck`, the gate tests, and the tests that need
+   no infrastructure. `--full-tests` adds the rest — those talk to the
+   **production** database and Redis on this host. They create throwaway rows and
+   clean up after themselves, but they are not isolated.
 
-6. **Migrate.** `pnpm db:migrate` (`prisma migrate deploy`). Never `migrate dev`
-   against this database: it can offer a reset when it sees drift. Confirm first
-   with `pnpm --filter @exocortex/database exec prisma migrate status`.
+`pnpm format:check` is deliberately not a gate: Prettier disagrees with 314
+files, because it has never been run over the whole tree, and switching it on
+means one commit that rewrites nearly everything.
 
-7. **Seed the model registry** if it changed:
-   `pnpm --filter @exocortex/database db:seed:ai-models`. Idempotent — it upserts
-   by slug and re-wires vision companions.
+### What deploy.sh adds
 
-8. **Sync nginx** if `deploy/nginx/exocortex.app.conf` changed:
+7. **Where we are.** Refuses when `origin/master` has commits this checkout does
+   not; warns when HEAD is unpushed. No `git pull` — development and deployment
+   are the same host here, so there is nothing to fetch.
+8. **Migrations.** `prisma migrate status` first so the pending list is on screen,
+   then `pnpm db:migrate` (`prisma migrate deploy`). Never `migrate dev` against
+   this database: it offers a reset when it sees drift, and the drift it sees
+   here is the search index it cannot model.
+9. **Model registry**, only when `seed-ai-models.ts` changed since the deployed
+   commit. Idempotent either way — it upserts by slug and re-wires vision
+   companions — but it is still a write against the live database.
+10. **nginx**, only when the configuration changed. The new file is installed,
+    tested with `nginx -t`, and restored from a backup if the test fails: `nginx -t`
+    can only judge what is installed, so without the restore a rejected file
+    would sit in `sites-available` waiting for an unrelated reload days later.
 
-   ```bash
-   sudo cp deploy/nginx/exocortex.app.conf /etc/nginx/sites-available/exocortex
-   sudo nginx -t && sudo systemctl reload nginx
-   ```
+    `/api/` is `proxy_read_timeout 300s` / `proxy_send_timeout 300s` (ADR-017):
+    nothing behind it is allowed to take longer, because an AI run's own time
+    budget (`ai.maxRunMs`) lives in the worker, not in an HTTP request —
+    `POST /api/ai/runs` and `.../conversations/:id/messages` answer as soon as
+    the job is enqueued. `/` stays at 120s; Next.js has no long-running routes.
+11. **Restart**, API first (everything talks to it), web last (it is what people
+    have open):
 
-   `/api/` is `proxy_read_timeout 300s` / `proxy_send_timeout 300s` (ADR-017):
-   nothing behind it is allowed to take longer, because an AI run's own time
-   budget (`ai.maxRunMs`) lives in the worker, not in an HTTP request —
-   `POST /api/ai/runs` and `.../conversations/:id/messages` answer as soon as
-   the job is enqueued. `/` stays at 120s; Next.js has no long-running routes.
+    ```text
+    exocortex-api → exocortex-collaboration → exocortex-worker → exocortex-web
+    ```
 
-9. **Restart**, API first (everything talks to it), web last (it is what users
-   hit):
+    `SIGTERM` is a graceful shutdown everywhere (in-flight jobs finish, pending
+    document stores are flushed) and every process reconnects, so the order is
+    about shrinking the window in which a request meets a stale peer, not about
+    correctness.
 
-   ```bash
-   sudo systemctl restart exocortex-api          # then check /health/ready
-   sudo systemctl restart exocortex-collaboration
-   sudo systemctl restart exocortex-worker       # must log the queue list and tools: true
-   sudo systemctl restart exocortex-web
-   ```
+    Never `pkill -f`: a pattern like `node dist/main.js` matches the live
+    services. Use `systemctl`, or an exact PID.
+12. **Readiness**, `/health/ready` with up to fifteen tries two seconds apart,
+    then `systemctl is-active` for all four.
+13. **The marker.** `.last-deployed-sha` is written last and only on full
+    success, so a rollout that fell over halfway leaves nothing behind claiming
+    it worked, and the next run does everything again rather than believing this
+    one.
 
-   Never `pkill -f`: a pattern like `node dist/main.js` matches the live services.
-   Use `systemctl`, or an exact PID.
+### Expected right after a deploy
 
-   The worker restart is where `reap-stale-ai-runs` first runs against
-   whatever the previous deploy left behind. Right after this restart every
-   run still `RUNNING` from before it has a stale or absent heartbeat, so the
-   reaper (or the AI processor's own idempotency guard, if a job is still
-   queued for it) closes all of them out as `ai_run_abandoned` within a
-   minute — expected, but it is a burst of `ai.run.failed` events. Count
-   first if that matters: `SELECT status, count(*) FROM ai_run GROUP BY
-   status;`.
+The worker restart is where `reap-stale-ai-runs` meets whatever the previous
+deployment left mid-flight. Every run still `RUNNING` from before has a stale or
+absent heartbeat, so the reaper — or the AI processor's own idempotency guard, if
+a job is still queued for it — closes all of them out as `ai_run_abandoned`
+within a minute. That is a burst of `ai.run.failed` events and it is not a
+failure. Count first if it matters:
+`SELECT status, count(*) FROM ai_run GROUP BY status;`.
 
-10. **Verify.** `systemctl is-active` for all four,
-   `curl -s https://exocortex.app/health/ready`, and
-   `journalctl -u <unit> -n 30 --no-pager` for startup errors.
+### When a build is killed rather than failing
 
-`SIGTERM` triggers a graceful shutdown (in-flight jobs finish, pending document
-stores are flushed), and every process reconnects, so the order above is about
-minimizing the window in which a request hits a stale peer — not about
-correctness.
+That is the OOM killer, not a bug in the code. Check `dmesg | tail`, free memory,
+and do not retry in a loop.
+
+### Why there is no CI
+
+One person, always on `master`, no pull requests, and nothing here that has to
+survive a machine going away. A GitHub Actions run would check the same commit a
+second time, slower and somewhere else. The checks belong where the deployment
+happens, which is this host. That changes the moment a second person commits, or
+work moves onto branches, or the deploy stops happening on the machine the code
+is written on — and then the way back is short: one job, one step,
+`bash scripts/build.sh`.
 
 ## Operations
 

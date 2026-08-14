@@ -90,10 +90,34 @@ pnpm infra:up          # PostgreSQL, Redis, MinIO, Mailpit
 pnpm db:migrate
 pnpm db:seed           # prints one-time credentials
 pnpm dev
+```
+
+Before handing work over, and before rolling anything out, there is one entry
+point rather than four:
+
+```bash
+bash scripts/build.sh  # working tree, hard gates, sequential build, lint,
+                       # typecheck, gate tests, tests. Starts no service.
+bash scripts/deploy.sh # build.sh, then migrations, nginx, the four units,
+                       # readiness, and the deploy marker last.
+```
+
+`build.sh` is the one to reach for: it runs the five hard gates that have no
+bypass (package boundaries, `.env.example` sync, brand spelling, MCP catalogue
+completeness, migration reproducibility) as well as the checks below, in the
+right order and without racing the live units for memory. There is deliberately
+no CI; `deploy/README.md` explains why and what each step does.
+
+The individual commands still exist and are useful while iterating:
+
+```bash
 pnpm build
-pnpm lint              # dependency boundaries + ESLint
+pnpm lint              # dependency boundaries + ESLint, src/ of each package only
+pnpm exec eslint .     # the whole repository, including scripts/ and e2e/
 pnpm typecheck
-pnpm test              # unit and integration tests
+pnpm test              # unit and integration tests -- the integration half talks
+                       # to the PRODUCTION database on this host
+pnpm test:gates        # proves each gate can still go red
 pnpm test:e2e          # Playwright (needs a running deployment)
 ```
 
