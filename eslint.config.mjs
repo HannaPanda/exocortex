@@ -240,6 +240,15 @@ export default tseslint.config(
     },
   },
 
+  // ---------------------------------------------------------- service worker
+  {
+    // A service worker runs in neither the window nor Node: its global object is
+    // `ServiceWorkerGlobalScope`, so `self`, `clients` and `caches` are only
+    // undeclared from the point of view of the two environments configured above.
+    files: ['apps/web/public/sw.js'],
+    languageOptions: { globals: { ...globals.serviceworker } },
+  },
+
   // -------------------------------------------------- command line utilities
   {
     // Seeding and maintenance scripts are CLIs: printing to stdout is their

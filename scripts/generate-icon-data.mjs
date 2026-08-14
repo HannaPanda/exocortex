@@ -20,8 +20,8 @@
  *
  * Run after a `lucide-react` upgrade: `pnpm data:generate`.
  */
-import { createRequire } from 'node:module';
 import { mkdir, readdir, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
