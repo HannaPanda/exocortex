@@ -195,14 +195,17 @@ export class DocumentMarkdownService {
     }
 
     const title = input.request.title ?? imported.title ?? 'Importierte Seite';
-    const icon = typeof imported.frontmatter.icon === 'string' ? imported.frontmatter.icon : null;
+    const icon =
+      input.request.icon ??
+      (typeof imported.frontmatter.icon === 'string' ? imported.frontmatter.icon : null);
     // An unknown colour is dropped rather than stored: the field is free text in
     // the database, and only the palette renders.
     const iconColor =
-      typeof imported.frontmatter.iconColor === 'string' &&
+      input.request.iconColor ??
+      (typeof imported.frontmatter.iconColor === 'string' &&
       (DOCUMENT_ICON_COLORS as readonly string[]).includes(imported.frontmatter.iconColor)
         ? imported.frontmatter.iconColor
-        : null;
+        : null);
     const cover = await this.resolveImportedCover(imported.frontmatter, input.workspaceId);
 
     const lastSibling = await this.prisma.document.findFirst({

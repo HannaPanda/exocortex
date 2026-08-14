@@ -28,6 +28,7 @@ import {
 import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
 import { DocumentLinksService } from './document-links.service';
+import { DocumentMarkdownService } from './document-markdown.service';
 import { DocumentMoveService } from './document-move.service';
 import { DocumentTrashService } from './document-trash.service';
 import { DocumentTreeService } from './document-tree.service';
@@ -54,6 +55,7 @@ let treeService: DocumentTreeService;
 let trashService: DocumentTrashService;
 let contentService: DocumentContentService;
 let linksService: DocumentLinksService;
+let markdownService: DocumentMarkdownService;
 let workspaceId: string;
 let otherWorkspaceId: string;
 let ownerId: string;
@@ -141,6 +143,15 @@ beforeAll(async () => {
     new DocumentMoveService(prisma, queues, logger, access, outbox, realtime),
   );
   linksService = new DocumentLinksService(prisma, access);
+  markdownService = new DocumentMarkdownService(
+    prisma,
+    queues,
+    logger,
+    access,
+    outbox,
+    realtime,
+    new PageLinkIdentityService(prisma),
+  );
   contentService = new DocumentContentService(
     prisma,
     queues,
@@ -430,6 +441,50 @@ describe('page icons', () => {
     const detail = await service.getDetail(documentId, ownerId);
     expect(detail.icon).toBe('lucide:star');
     expect(detail.iconColor).toBeNull();
+  });
+});
+
+describe('importing Markdown with an icon (issue #37)', () => {
+  it('keeps the icon the caller sent along with the content', async () => {
+    // The regression: importing content and setting a symbol were two separate
+    // paths, and the import one had no icon field. The page arrived complete,
+    // the call reported success, and the symbol was gone without a word.
+    const imported = await markdownService.import({
+      workspaceId,
+      userId: ownerId,
+      request: { markdown: '# Test\n\nInhalt', icon: 'lucide:cpu', iconColor: 'purple' },
+      correlationId,
+    });
+
+    expect(imported).toMatchObject({ icon: 'lucide:cpu', iconColor: 'purple' });
+    const stored = await service.getDetail(imported.id, ownerId);
+    expect(stored).toMatchObject({ icon: 'lucide:cpu', iconColor: 'purple' });
+  });
+
+  it('still reads the icon out of the frontmatter when the caller sends none', async () => {
+    const imported = await markdownService.import({
+      workspaceId,
+      userId: ownerId,
+      request: { markdown: '---\nicon: lucide:star\niconColor: blue\n---\n\n# Aus der Datei' },
+      correlationId,
+    });
+
+    expect(imported).toMatchObject({ icon: 'lucide:star', iconColor: 'blue' });
+  });
+
+  it('lets the caller overrule the frontmatter, the way the title already does', async () => {
+    const imported = await markdownService.import({
+      workspaceId,
+      userId: ownerId,
+      request: {
+        markdown: '---\nicon: lucide:star\niconColor: blue\n---\n\n# Aus der Datei',
+        icon: 'lucide:cpu',
+        iconColor: 'purple',
+      },
+      correlationId,
+    });
+
+    expect(imported).toMatchObject({ icon: 'lucide:cpu', iconColor: 'purple' });
   });
 });
 

@@ -4,6 +4,7 @@ import { type ExocortexApiClient } from '../client.js';
 
 import { pageArchiveTool, pageDeleteTool, pageTrashTool } from './page-lifecycle.js';
 import {
+  pageCreateTool,
   pageGenerateCoverTool,
   pageReadTool,
   pageResolveLinkTool,
@@ -108,6 +109,75 @@ describe('pageReadTool', () => {
     expect(result.text).toContain('Unterseiten (1):');
     expect(result.text).toContain('- Triple Chocolate Cookies (id: child1234567, type: PAGE)');
     expect(result.text).toContain('Bereiche: DIY, Audio, Rezepte.');
+  });
+});
+
+describe('pageCreateTool', () => {
+  const summary = (icon: string | null, iconColor: string | null) => ({
+    id: 'doc123456',
+    workspaceId: 'ws1234567',
+    parentId: null,
+    type: 'PAGE' as const,
+    title: 'Test',
+    icon,
+    iconColor,
+    layout: 'narrow' as const,
+    coverAttachmentId: null,
+    coverPosition: 50,
+    orderKey: 'a0',
+    createdById: 'user1234',
+    updatedById: 'user1234',
+    createdAt: '2026-08-14T00:00:00.000Z',
+    updatedAt: '2026-08-14T00:00:00.000Z',
+    archivedAt: null,
+  });
+
+  it('carries the icon into the import path, where it used to be dropped', async () => {
+    // The failure this pins: with `markdown` the call goes through the import
+    // endpoint, whose body once had no icon field at all. The page appeared,
+    // the call reported success, and the symbol was silently gone.
+    const { client, calls } = createFakeClient({ document: summary('lucide:cpu', 'purple') });
+
+    const result = await pageCreateTool.run(client, {
+      workspaceId: 'ws1234567',
+      title: 'Test',
+      icon: 'lucide:cpu',
+      iconColor: 'purple',
+      markdown: '# Test\n\nInhalt',
+      type: 'PAGE',
+    });
+
+    expect(calls).toEqual([
+      {
+        kind: 'request',
+        method: 'POST',
+        path: '/api/workspaces/ws1234567/import/markdown',
+        body: {
+          markdown: '# Test\n\nInhalt',
+          parentId: undefined,
+          title: 'Test',
+          icon: 'lucide:cpu',
+          iconColor: 'purple',
+        },
+        query: undefined,
+      },
+    ]);
+    expect(result.text).toContain('Test');
+  });
+
+  it('still posts to the documents endpoint without markdown', async () => {
+    const { client, calls } = createFakeClient(summary('lucide:cpu', 'purple'));
+
+    await pageCreateTool.run(client, {
+      workspaceId: 'ws1234567',
+      title: 'Test',
+      icon: 'lucide:cpu',
+      iconColor: 'purple',
+      type: 'PAGE',
+    });
+
+    expect(calls[0]?.path).toBe('/api/workspaces/ws1234567/documents');
+    expect(calls[0]?.body).toMatchObject({ icon: 'lucide:cpu', iconColor: 'purple' });
   });
 });
 

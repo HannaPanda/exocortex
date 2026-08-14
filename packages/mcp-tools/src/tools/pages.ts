@@ -225,6 +225,8 @@ export const pageCreateTool: AnyToolDefinition = defineTool({
           markdown: input.markdown,
           parentId: input.parentId,
           title: input.title,
+          icon: input.icon,
+          iconColor: input.iconColor,
         } satisfies z.infer<typeof markdownImportRequestSchema>,
         responseSchema: markdownImportResponseSchema,
       });

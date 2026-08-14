@@ -537,6 +537,12 @@ export const markdownImportRequestSchema = z.object({
   parentId: idSchema.nullable().optional(),
   /** Falls back to the frontmatter title, then to the first heading. */
   title: documentTitleSchema.optional(),
+  /**
+   * The caller's icon wins over one in the frontmatter: the request is the more
+   * deliberate of the two, the same way `title` above overrules the file.
+   */
+  icon: documentIconSchema,
+  iconColor: documentIconColorSchema,
 });
 export type MarkdownImportRequest = z.infer<typeof markdownImportRequestSchema>;
 
