@@ -14,7 +14,9 @@ import { type RealtimeService } from '../realtime/realtime.service';
 import { type ApplyToLiveSessionResult, type CollaborationBridgeService } from './collaboration-bridge.service';
 import { DocumentActivityService } from './document-activity.service';
 import { DocumentContentService } from './document-content.service';
+import { DocumentMoveService } from './document-move.service';
 import { DocumentSnapshotService } from './document-snapshot.service';
+import { DocumentTrashService } from './document-trash.service';
 import { DocumentsService } from './documents.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
 
@@ -80,7 +82,7 @@ beforeAll(async () => {
   });
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
-  documents = new DocumentsService(prisma, queues, logger, noopStorage, access, outbox, realtime);
+  documents = new DocumentsService(prisma, queues, logger, noopStorage, access, outbox, realtime, new DocumentTrashService(prisma, queues, logger, noopStorage, access, outbox, realtime), new DocumentMoveService(prisma, queues, logger, access, outbox, realtime));
   snapshots = new DocumentSnapshotService(prisma, queues, logger, access, outbox, realtime, collaboration);
   content = new DocumentContentService(
     prisma,

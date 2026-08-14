@@ -10,6 +10,8 @@ import { type ObjectStorage } from '@exocortex/storage';
 
 import { AppError } from '../common/app-error';
 import { OutboxService } from '../common/outbox.service';
+import { DocumentMoveService } from '../documents/document-move.service';
+import { DocumentTrashService } from '../documents/document-trash.service';
 import { DocumentsService } from '../documents/documents.service';
 import { type RealtimeService } from '../realtime/realtime.service';
 
@@ -58,7 +60,7 @@ beforeAll(async () => {
   });
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
-  documents = new DocumentsService(prisma, queues, logger, noopStorage, access, outbox, realtime);
+  documents = new DocumentsService(prisma, queues, logger, noopStorage, access, outbox, realtime, new DocumentTrashService(prisma, queues, logger, noopStorage, access, outbox, realtime), new DocumentMoveService(prisma, queues, logger, access, outbox, realtime));
   properties = new DatabasePropertiesService(prisma, access, outbox, realtime);
   views = new DatabaseViewsService(prisma, access, realtime);
   rows = new DatabaseRowsService(prisma, access, documents);

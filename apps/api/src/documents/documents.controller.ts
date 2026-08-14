@@ -98,6 +98,8 @@ import { DocumentCoverService } from './document-cover.service';
 import { DocumentLinksService } from './document-links.service';
 import { DocumentMarkdownService } from './document-markdown.service';
 import { DocumentSnapshotService } from './document-snapshot.service';
+import { DocumentTrashService } from './document-trash.service';
+import { DocumentTreeService } from './document-tree.service';
 import { DocumentsService } from './documents.service';
 import { RelatedDocumentsService } from './related-documents.service';
 
@@ -108,6 +110,8 @@ export class WorkspaceDocumentsController {
   constructor(
     private readonly documents: DocumentsService,
     private readonly markdown: DocumentMarkdownService,
+    private readonly treeService: DocumentTreeService,
+    private readonly trashService: DocumentTrashService,
   ) {}
 
   @Get('documents/tree')
@@ -119,7 +123,7 @@ export class WorkspaceDocumentsController {
     @Param('workspaceId') workspaceId: string,
     @Query(zodPipe(documentTreeRequestSchema)) query: DocumentTreeRequest,
   ): Promise<DocumentTreeResponse> {
-    return this.documents.getTree(workspaceId, session.userId, query);
+    return this.treeService.getTree(workspaceId, session.userId, query);
   }
 
   /**
@@ -144,7 +148,7 @@ export class WorkspaceDocumentsController {
     @Param('workspaceId') workspaceId: string,
     @Query(zodPipe(resolveDocumentLinkRequestSchema)) query: ResolveDocumentLinkRequest,
   ): Promise<ResolveDocumentLinkResponse> {
-    return this.documents.resolveLink(workspaceId, session.userId, query);
+    return this.treeService.resolveLink(workspaceId, session.userId, query);
   }
 
   /**
@@ -158,7 +162,7 @@ export class WorkspaceDocumentsController {
     @CurrentSession() session: VerifiedSession,
     @Param('workspaceId') workspaceId: string,
   ): Promise<TrashResponse> {
-    return this.documents.getTrash(workspaceId, session.userId);
+    return this.trashService.getTrash(workspaceId, session.userId);
   }
 
   /** What deleting this selection would take with it, before it is confirmed. */

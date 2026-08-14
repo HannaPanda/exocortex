@@ -2,16 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import {
   assertPolicy,
-  canArchiveDocument,
   canCreateDocument,
-  canDeleteDocument,
   canEditDocument,
-  canMoveDocument,
-  canMoveDocumentAcrossWorkspaces,
   canReadDocument,
   canReadWorkspace,
-  canRestoreDocument,
-  type DocumentAccessContext,
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import {
@@ -19,32 +13,16 @@ import {
   type ArchiveDocumentResponse,
   type CreateDocumentRequest,
   type DeleteDocumentsResponse,
-  DOCUMENT_ICON_COLORS,
   type DocumentDeletionPreview,
   type DocumentDetail,
-  type DocumentIconColor,
-  type DocumentLinkMatch,
   type DocumentSummary,
-  type DocumentTreeNode,
-  type DocumentTreeRequest,
-  type DocumentTreeResponse,
   type MoveDocumentRequest,
   QUEUE_NAMES,
-  type ResolveDocumentLinkRequest,
-  type ResolveDocumentLinkResponse,
-  type TrashEntry,
-  type TrashResponse,
   type UpdateDocumentRequest,
 } from '@exocortex/contracts';
 import {
-  buildTree,
   collectAncestors,
-  collectDescendantIds,
-  generateOrderKey,
-  initialOrderKey,
   type PrismaClient,
-  type PrismaTransactionClient,
-  wouldCreateCycle,
 } from '@exocortex/database';
 import { createEmptyYjsState, EXOCORTEX_SCHEMA_VERSION } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
@@ -57,132 +35,22 @@ import { OutboxService } from '../common/outbox.service';
 import { OBJECT_STORAGE, PRISMA, QUEUES } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
-interface DocumentRow {
-  id: string;
-  workspaceId: string;
-  parentId: string | null;
-  type: 'PAGE' | 'COLLECTION';
-  title: string;
-  icon: string | null;
-  /** Validated by the contract, so the column is a plain string here. */
-  iconColor: string | null;
-  layout: 'NARROW' | 'WIDE' | 'FULL';
-  coverAttachmentId: string | null;
-  coverPosition: number;
-  orderKey: string;
-  createdById: string;
-  updatedById: string;
-  createdAt: Date;
-  updatedAt: Date;
-  archivedAt: Date | null;
-}
+import { DocumentMoveService } from './document-move.service';
+import { resolveOrderKey } from './document-order';
+import {
+  AI_RULE_MODE_TO_CONTRACT,
+  AI_RULE_MODE_TO_DB,
+  DOCUMENT_SELECT,
+  type DocumentRow,
+  LAYOUT_TO_DB,
+  toIconColor,
+  toSummary,
+} from './document-shape';
+import { DocumentTrashService } from './document-trash.service';
 
-/** Row shape of the raw `resolveLink` query; a strict subset of `DocumentRow`. */
-interface ResolveLinkRow {
-  id: string;
-  workspaceId: string;
-  type: 'PAGE' | 'COLLECTION';
-  title: string;
-  icon: string | null;
-  iconColor: string | null;
-  archivedAt: Date | null;
-}
+/** Re-exported so the many callers that import them from here keep working. */
+export { DOCUMENT_SELECT, toIconColor, toSummary } from './document-shape';
 
-/** Exported so every service that hands a row to `toSummary` selects the same columns. */
-export const DOCUMENT_SELECT = {
-  id: true,
-  workspaceId: true,
-  parentId: true,
-  type: true,
-  title: true,
-  icon: true,
-  iconColor: true,
-  layout: true,
-  coverAttachmentId: true,
-  coverPosition: true,
-  orderKey: true,
-  createdById: true,
-  updatedById: true,
-  createdAt: true,
-  updatedAt: true,
-  archivedAt: true,
-} as const;
-
-const AI_RULE_MODE_TO_CONTRACT = {
-  OFF: 'off',
-  ALWAYS: 'always',
-  ON_DEMAND: 'on_demand',
-} as const;
-
-const AI_RULE_MODE_TO_DB = {
-  off: 'OFF',
-  always: 'ALWAYS',
-  on_demand: 'ON_DEMAND',
-} as const;
-
-const LAYOUT_TO_CONTRACT = {
-  NARROW: 'narrow',
-  WIDE: 'wide',
-  FULL: 'full',
-} as const;
-
-const LAYOUT_TO_DB = {
-  narrow: 'NARROW',
-  wide: 'WIDE',
-  full: 'FULL',
-} as const;
-
-/**
- * Narrows the free-text colour column to the palette.
- *
- * The column is deliberately not an enum (adding a colour should not cost a
- * migration), so a value from an older palette can survive in a row. Reading it
- * back as "no colour" renders the icon exactly the way every icon rendered
- * before the field existed, which is the harmless outcome.
- */
-export function toIconColor(value: string | null): DocumentIconColor | null {
-  if (value === null) return null;
-  return (DOCUMENT_ICON_COLORS as readonly string[]).includes(value)
-    ? (value as DocumentIconColor)
-    : null;
-}
-
-export function toSummary(row: DocumentRow): DocumentSummary {
-  return {
-    id: row.id,
-    workspaceId: row.workspaceId,
-    parentId: row.parentId,
-    type: row.type,
-    title: row.title,
-    icon: row.icon,
-    iconColor: toIconColor(row.iconColor),
-    layout: LAYOUT_TO_CONTRACT[row.layout],
-    coverAttachmentId: row.coverAttachmentId,
-    coverPosition: row.coverPosition,
-    orderKey: row.orderKey,
-    createdById: row.createdById,
-    updatedById: row.updatedById,
-    createdAt: row.createdAt.toISOString(),
-    updatedAt: row.updatedAt.toISOString(),
-    archivedAt: row.archivedAt === null ? null : row.archivedAt.toISOString(),
-  };
-}
-
-function toLinkMatch(
-  row: ResolveLinkRow,
-  path: { id: string; title: string }[],
-): DocumentLinkMatch {
-  return {
-    id: row.id,
-    workspaceId: row.workspaceId,
-    type: row.type,
-    title: row.title,
-    icon: row.icon,
-    iconColor: toIconColor(row.iconColor),
-    archivedAt: row.archivedAt === null ? null : row.archivedAt.toISOString(),
-    path,
-  };
-}
 
 /**
  * Document domain service.
@@ -205,185 +73,61 @@ export class DocumentsService {
     private readonly access: WorkspaceAccessService,
     private readonly outbox: OutboxService,
     private readonly realtime: RealtimeService,
+    private readonly trash: DocumentTrashService,
+    private readonly moves: DocumentMoveService,
   ) {}
 
+  // Delegated rather than moved outright: `DocumentsService` is what the
+  // document controller already holds, and splitting the work is not a reason
+  // to make it learn three more names.
+
   /**
-   * The workspace hierarchy, or one branch of it.
+   * Moves a document. Transactional, cycle-safe and audited.
    *
-   * `parentId` narrows the answer to what sits below a single page, which is
-   * what makes a truncated tree usable: a caller told "417 pages were left out"
-   * needs a way to ask about one section instead of the whole workspace.
-   * `depth` cuts the answer off after that many levels below the starting
-   * point. `totalCount` always reports the untruncated size of the scope, so a
-   * renderer knows how much it is not showing.
+   * A `workspaceId` in the request that differs from the document's current
+   * workspace carries the whole subtree into the other workspace instead of
+   * re-parenting a single row.
    */
-  async getTree(
-    workspaceId: string,
-    userId: string,
-    request: DocumentTreeRequest = {},
-  ): Promise<DocumentTreeResponse> {
-    await this.access.requireRole(workspaceId, userId);
-
-    const rows = await this.prisma.document.findMany({
-      where: { workspaceId },
-      select: DOCUMENT_SELECT,
-      orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
-    });
-
-    const parentId = request.parentId;
-    // A `parentId` from another workspace must not silently answer with that
-    // workspace's root level, which is what filtering alone would do.
-    if (parentId !== undefined && !rows.some((row) => row.id === parentId)) {
-      throw AppError.notFound('Document');
-    }
-
-    const scope =
-      parentId === undefined
-        ? rows
-        : (() => {
-            const descendants = collectDescendantIds(rows, parentId);
-            return rows.filter((row) => descendants.has(row.id));
-          })();
-
-    const active = scope.filter((row) => row.archivedAt === null);
-    const archived = scope.filter((row) => row.archivedAt !== null);
-
-    const toNode = (
-      entry: {
-        node: DocumentRow;
-        children: { node: DocumentRow; children: unknown[] }[];
-      },
-      remainingDepth: number,
-    ): DocumentTreeNode => ({
-      ...toSummary(entry.node),
-      children:
-        remainingDepth <= 1
-          ? []
-          : entry.children.map((child) =>
-              toNode(
-                child as {
-                  node: DocumentRow;
-                  children: { node: DocumentRow; children: unknown[] }[];
-                },
-                remainingDepth - 1,
-              ),
-            ),
-    });
-
-    const depth = request.depth ?? Number.POSITIVE_INFINITY;
-
-    return {
-      nodes: buildTree(active).map((entry) =>
-        toNode(
-          entry as unknown as {
-            node: DocumentRow;
-            children: { node: DocumentRow; children: unknown[] }[];
-          },
-          depth,
-        ),
-      ),
-      archived: archived.map(toSummary),
-      path:
-        parentId === undefined
-          ? []
-          : [...collectAncestors(rows, parentId), rows.find((row) => row.id === parentId)]
-              .filter((row): row is DocumentRow => row !== undefined)
-              .map((row) => ({ id: row.id, title: row.title })),
-      totalCount: active.length,
-    };
+  async move(input: {
+    documentId: string;
+    userId: string;
+    request: MoveDocumentRequest;
+    correlationId: string;
+  }): Promise<DocumentSummary> {
+    return this.moves.move(input);
   }
 
-  /**
-   * Resolves a reference to another page to the document(s) it means,
-   * workspace-scoped.
-   *
-   * Identity first: a `pageLink` block stores the target's `documentId`, and
-   * honouring that is what keeps every reference intact when the target is
-   * renamed (issue #14). The title is the fallback — for the notations that
-   * carry nothing else (`[[Titel]]`, a page mention, a link made before
-   * identities existed) and for a target that was deleted and written again
-   * under the same name. A reference must not silently vanish, so `resolvedBy`
-   * reports which of the two answered.
-   *
-   * Raw SQL for the title lookup, not `findMany({ title: { equals, mode:
-   * 'insensitive' } })`: Prisma translates `insensitive` to `ILIKE` without
-   * escaping `%`/`_` in the value, so a page titled e.g. "100%_Plan" would
-   * match unrelated titles. `lower` + `regexp_replace` on both sides keeps the
-   * comparison exact and predictable.
-   */
-  async resolveLink(
-    workspaceId: string,
-    userId: string,
-    request: ResolveDocumentLinkRequest,
-  ): Promise<ResolveDocumentLinkResponse> {
-    await this.access.requireRole(workspaceId, userId);
+  async archive(input: {
+    documentId: string;
+    userId: string;
+    correlationId: string;
+  }): Promise<ArchiveDocumentResponse> {
+    return this.trash.archive(input);
+  }
 
-    const title = (request.title ?? '').trim().replace(/\s+/g, ' ');
+  async restore(input: {
+    documentId: string;
+    userId: string;
+    correlationId: string;
+  }): Promise<DocumentSummary> {
+    return this.trash.restore(input);
+  }
 
-    if (request.documentId !== undefined) {
-      const byId = await this.prisma.document.findFirst({
-        where: {
-          id: request.documentId,
-          workspaceId,
-          ...(request.includeArchived ? {} : { archivedAt: null }),
-        },
-        select: {
-          id: true,
-          workspaceId: true,
-          type: true,
-          title: true,
-          icon: true,
-          iconColor: true,
-          archivedAt: true,
-        },
-      });
-      // The identity is unambiguous by definition, so no path is needed and no
-      // second query runs. Only when it no longer names a document does the
-      // title get its turn below.
-      if (byId !== null) {
-        return { title: byId.title, matches: [toLinkMatch(byId, [])], resolvedBy: 'id' };
-      }
-    }
+  async previewDeletion(input: {
+    documentIds: string[];
+    userId: string;
+  }): Promise<DocumentDeletionPreview[]> {
+    return this.trash.previewDeletion(input);
+  }
 
-    if (title.length === 0) return { title, matches: [], resolvedBy: 'none' };
-
-    const rows = await this.prisma.$queryRaw<ResolveLinkRow[]>`
-      SELECT "id", "workspaceId", "type", "title", "icon", "iconColor", "archivedAt"
-      FROM "document"
-      WHERE "workspaceId" = ${workspaceId}
-        AND lower(btrim(regexp_replace("title", '\\s+', ' ', 'g'))) = lower(${title})
-        AND (${request.includeArchived}::boolean OR "archivedAt" IS NULL)
-      ORDER BY ("archivedAt" IS NOT NULL) ASC, "updatedAt" DESC, "id" ASC
-      LIMIT ${request.limit}
-    `;
-
-    if (rows.length <= 1) {
-      return {
-        title,
-        matches: rows.map((row) => toLinkMatch(row, [])),
-        resolvedBy: rows.length === 0 ? 'none' : 'title',
-      };
-    }
-
-    // Only worth the extra query when the caller actually has to disambiguate.
-    const siblings = await this.prisma.document.findMany({
-      where: { workspaceId },
-      select: { id: true, parentId: true, orderKey: true, title: true },
-    });
-
-    return {
-      title,
-      matches: rows.map((row) =>
-        toLinkMatch(
-          row,
-          collectAncestors(siblings, row.id).map((ancestor) => ({
-            id: ancestor.id,
-            title: ancestor.title,
-          })),
-        ),
-      ),
-      resolvedBy: 'title',
-    };
+  async deletePermanently(input: {
+    documentIds: string[];
+    userId: string;
+    correlationId: string;
+    /** When given, every document must belong to this workspace. */
+    workspaceId?: string;
+  }): Promise<DeleteDocumentsResponse> {
+    return this.trash.deletePermanently(input);
   }
 
   async getDetail(documentId: string, userId: string): Promise<DocumentDetail> {
@@ -477,7 +221,7 @@ export class DocumentsService {
       }
     }
 
-    const orderKey = await this.resolveOrderKey({
+    const orderKey = await resolveOrderKey(this.prisma, {
       workspaceId: input.workspaceId,
       parentId,
       afterSiblingId: input.request.afterSiblingId ?? null,
@@ -652,665 +396,7 @@ export class DocumentsService {
     };
   }
 
-  /**
-   * Moves a document. Transactional, cycle-safe and audited.
-   *
-   * A `workspaceId` in the request that differs from the document's current
-   * workspace switches to the cross-workspace path (`moveAcrossWorkspaces`),
-   * which carries the whole subtree along instead of re-parenting a single row.
-   */
-  async move(input: {
-    documentId: string;
-    userId: string;
-    request: MoveDocumentRequest;
-    correlationId: string;
-  }): Promise<DocumentSummary> {
-    const context = await this.access.requireDocumentContext(input.documentId, input.userId);
 
-    const targetWorkspaceId = input.request.workspaceId ?? context.workspaceId;
-    if (targetWorkspaceId !== context.workspaceId) {
-      return this.moveAcrossWorkspaces({
-        documentId: input.documentId,
-        userId: input.userId,
-        request: input.request,
-        correlationId: input.correlationId,
-        context,
-        targetWorkspaceId,
-      });
-    }
-
-    const targetParent =
-      input.request.parentId === null ? null : await this.loadDocumentOrThrow(input.request.parentId);
-
-    assertPolicy(canMoveDocument(context.role, context.document, targetParent));
-
-    const previousParentId = context.document.parentId;
-
-    const updated = await this.prisma.$transaction(async (tx) => {
-      const siblings = await tx.document.findMany({
-        where: { workspaceId: context.workspaceId },
-        select: { id: true, parentId: true, orderKey: true },
-      });
-
-      if (wouldCreateCycle(siblings, input.documentId, input.request.parentId)) {
-        throw new AppError(
-          'document_move_cycle',
-          'Moving the document there would create a circular hierarchy',
-        );
-      }
-
-      const orderKey = await this.resolveOrderKey({
-        workspaceId: context.workspaceId,
-        parentId: input.request.parentId,
-        afterSiblingId: input.request.afterSiblingId ?? null,
-        beforeSiblingId: input.request.beforeSiblingId ?? null,
-        excludeDocumentId: input.documentId,
-        tx,
-      });
-
-      const document = await tx.document.update({
-        where: { id: input.documentId },
-        data: { parentId: input.request.parentId, orderKey, updatedById: input.userId },
-        select: DOCUMENT_SELECT,
-      });
-
-      await this.outbox.writeAudit(tx, {
-        workspaceId: context.workspaceId,
-        actorId: input.userId,
-        action: 'document.moved',
-        targetType: 'document',
-        targetId: input.documentId,
-        correlationId: input.correlationId,
-        metadata: {
-          previousParentId,
-          nextParentId: input.request.parentId,
-        },
-      });
-      await this.outbox.writeEvent(tx, {
-        workspaceId: context.workspaceId,
-        type: 'document.moved',
-        payload: { documentId: input.documentId },
-        correlationId: input.correlationId,
-      });
-
-      return document;
-    });
-
-    const summary = toSummary(updated);
-    await this.realtime.emit('document.moved', context.workspaceId, input.correlationId, {
-      document: summary,
-      previousParentId,
-    });
-    return summary;
-  }
-
-  /**
-   * Moves a document's whole subtree into a different workspace.
-   *
-   * Runs as one transaction, same as the ordinary move. What has to travel
-   * along with the documents is deliberate, not "everything with a
-   * `workspaceId`" (issue #13):
-   *  - `Document` rows of the moved subtree: their `workspaceId` changes.
-   *  - `DocumentSearchIndex`: it denormalizes `workspaceId` for its own
-   *    `@@index([workspaceId])`, so it has to move even though its `tsvector`
-   *    and `plainText` do not change.
-   *  - `Attachment`: `workspaceId` is what `canDownloadAttachment` checks, so
-   *    leaving it behind would make every file on the moved pages either
-   *    inaccessible or governed by the workspace they left.
-   *  - `DatabaseProperty`/`DatabaseView`/`DocumentPropertyValue`/
-   *    `DocumentEmbedding` carry no `workspaceId` of their own (ADR-011: a
-   *    collection and its rows are ordinary `Document`s); they follow through
-   *    their `documentId` foreign key alone and need no update here.
-   *  - `AiRun`/`AiConversation` deliberately keep their original
-   *    `workspaceId`: a run is a record of the workspace the conversation
-   *    happened in, not a property of the page it was about. Their
-   *    `documentId` reference stays valid (the document still exists), it
-   *    just now points across a workspace boundary, which is accepted rather
-   *    than "fixed".
-   *  - `OutboxEvent`/`AuditLog` history is never rewritten; only the new
-   *    audit entries and outbox events this move itself produces are written,
-   *    once into each of the two workspaces so both audit trails show it.
-   */
-  private async moveAcrossWorkspaces(input: {
-    documentId: string;
-    userId: string;
-    request: MoveDocumentRequest;
-    correlationId: string;
-    context: DocumentAccessContext;
-    targetWorkspaceId: string;
-  }): Promise<DocumentSummary> {
-    const { context, targetWorkspaceId } = input;
-    const previousWorkspaceId = context.workspaceId;
-    const previousParentId = context.document.parentId;
-
-    const targetRole = await this.access.findRole(targetWorkspaceId, input.userId);
-    const targetParent =
-      input.request.parentId === null ? null : await this.loadDocumentOrThrow(input.request.parentId);
-
-    assertPolicy(
-      canMoveDocumentAcrossWorkspaces(
-        context.role,
-        context.document,
-        targetRole,
-        targetParent,
-        targetWorkspaceId,
-      ),
-    );
-
-    const updated = await this.prisma.$transaction(async (tx) => {
-      const sourceRows = await tx.document.findMany({
-        where: { workspaceId: previousWorkspaceId },
-        select: { id: true, parentId: true, orderKey: true },
-      });
-      const subtreeIds = [...collectDescendantIds(sourceRows, input.documentId)];
-      const allIds = [input.documentId, ...subtreeIds];
-
-      const orderKey = await this.resolveOrderKey({
-        workspaceId: targetWorkspaceId,
-        parentId: input.request.parentId,
-        afterSiblingId: input.request.afterSiblingId ?? null,
-        beforeSiblingId: input.request.beforeSiblingId ?? null,
-        tx,
-      });
-
-      // The root of the moved subtree: new workspace, new parent, new order key.
-      const document = await tx.document.update({
-        where: { id: input.documentId },
-        data: {
-          workspaceId: targetWorkspaceId,
-          parentId: input.request.parentId,
-          orderKey,
-          updatedById: input.userId,
-        },
-        select: DOCUMENT_SELECT,
-      });
-
-      // The rest of the subtree keeps its internal shape (parentId/orderKey
-      // relative to each other never change); only the workspace it belongs
-      // to does.
-      if (subtreeIds.length > 0) {
-        await tx.document.updateMany({
-          where: { id: { in: subtreeIds } },
-          data: { workspaceId: targetWorkspaceId },
-        });
-      }
-
-      await tx.documentSearchIndex.updateMany({
-        where: { documentId: { in: allIds } },
-        data: { workspaceId: targetWorkspaceId },
-      });
-
-      await tx.attachment.updateMany({
-        where: { documentId: { in: allIds } },
-        data: { workspaceId: targetWorkspaceId },
-      });
-
-      const auditMetadata = {
-        previousParentId,
-        nextParentId: input.request.parentId,
-        previousWorkspaceId,
-        nextWorkspaceId: targetWorkspaceId,
-        descendantCount: subtreeIds.length,
-      };
-      // Written once per affected workspace, so the move shows up in both
-      // audit trails -- the source workspace lost the page, the target
-      // workspace gained it, and each is entitled to know why.
-      await this.outbox.writeAudit(tx, {
-        workspaceId: previousWorkspaceId,
-        actorId: input.userId,
-        action: 'document.moved_workspace',
-        targetType: 'document',
-        targetId: input.documentId,
-        correlationId: input.correlationId,
-        metadata: auditMetadata,
-      });
-      await this.outbox.writeAudit(tx, {
-        workspaceId: targetWorkspaceId,
-        actorId: input.userId,
-        action: 'document.moved_workspace',
-        targetType: 'document',
-        targetId: input.documentId,
-        correlationId: input.correlationId,
-        metadata: auditMetadata,
-      });
-      await this.outbox.writeEvent(tx, {
-        workspaceId: previousWorkspaceId,
-        type: 'document.moved',
-        payload: { documentId: input.documentId },
-        correlationId: input.correlationId,
-      });
-      await this.outbox.writeEvent(tx, {
-        workspaceId: targetWorkspaceId,
-        type: 'document.moved',
-        payload: { documentId: input.documentId },
-        correlationId: input.correlationId,
-      });
-
-      return document;
-    });
-
-    const summary = toSummary(updated);
-    // Both workspace rooms get told: the source tree has to drop the page,
-    // the target tree has to pick up the whole subtree.
-    await this.realtime.emit('document.moved', previousWorkspaceId, input.correlationId, {
-      document: summary,
-      previousParentId,
-    });
-    await this.realtime.emit('document.moved', targetWorkspaceId, input.correlationId, {
-      document: summary,
-      previousParentId,
-    });
-    return summary;
-  }
-
-  /**
-   * Moves a page and everything under it into the trash.
-   *
-   * The descendants are reported back, not just counted: the caller may be an
-   * agent with no sidebar to watch, and an answer that names only the page the
-   * caller asked about reads like one page was archived when it was eight. A
-   * page that was already in the trash is not listed — it did not move.
-   */
-  async archive(input: {
-    documentId: string;
-    userId: string;
-    correlationId: string;
-  }): Promise<ArchiveDocumentResponse> {
-    const context = await this.access.requireDocumentContext(input.documentId, input.userId);
-    assertPolicy(canArchiveDocument(context.role, context.document));
-
-    const now = new Date();
-    const { updated, descendants } = await this.prisma.$transaction(async (tx) => {
-      // Archiving a page archives its whole subtree, so no editable page can
-      // remain under an archived parent.
-      const all = await tx.document.findMany({
-        where: { workspaceId: context.workspaceId },
-        select: { id: true, parentId: true, orderKey: true },
-      });
-      const subtree = collectSubtree(all, input.documentId);
-
-      // Read before the update: afterwards every one of them carries the same
-      // `archivedAt` and the ones that were already in the trash are
-      // indistinguishable from the ones this call put there.
-      const moving = await tx.document.findMany({
-        where: { id: { in: subtree }, archivedAt: null },
-        select: DOCUMENT_SELECT,
-        orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
-      });
-
-      await tx.document.updateMany({
-        where: { id: { in: [input.documentId, ...subtree] }, archivedAt: null },
-        data: { archivedAt: now, updatedById: input.userId },
-      });
-
-      await this.outbox.writeAudit(tx, {
-        workspaceId: context.workspaceId,
-        actorId: input.userId,
-        action: 'document.archived',
-        targetType: 'document',
-        targetId: input.documentId,
-        correlationId: input.correlationId,
-        metadata: { descendantCount: subtree.length },
-      });
-      await this.outbox.writeEvent(tx, {
-        workspaceId: context.workspaceId,
-        type: 'document.archived',
-        payload: { documentId: input.documentId },
-        correlationId: input.correlationId,
-      });
-
-      return {
-        updated: await tx.document.findUniqueOrThrow({
-          where: { id: input.documentId },
-          select: DOCUMENT_SELECT,
-        }),
-        descendants: moving,
-      };
-    });
-
-    const summary = toSummary(updated);
-    await this.realtime.emit('document.archived', context.workspaceId, input.correlationId, {
-      document: summary,
-    });
-    await this.enqueueIndexing(
-      input.documentId,
-      context.workspaceId,
-      'archived',
-      input.correlationId,
-    );
-    // The descendants left the active tree too, so their index entries have to
-    // follow; otherwise search keeps answering with pages that are in the trash.
-    for (const descendant of descendants) {
-      await this.enqueueIndexing(
-        descendant.id,
-        context.workspaceId,
-        'archived',
-        input.correlationId,
-      );
-    }
-    return {
-      ...summary,
-      archivedDescendants: descendants.map((row) => toSummary({ ...row, archivedAt: now })),
-    };
-  }
-
-  async restore(input: {
-    documentId: string;
-    userId: string;
-    correlationId: string;
-  }): Promise<DocumentSummary> {
-    const context = await this.access.requireDocumentContext(input.documentId, input.userId);
-    assertPolicy(canRestoreDocument(context.role, context.document));
-
-    const updated = await this.prisma.$transaction(async (tx) => {
-      // A restored page must not end up under an archived parent.
-      const parentId = context.document.parentId;
-      if (parentId !== null) {
-        const parent = await tx.document.findUnique({
-          where: { id: parentId },
-          select: { archivedAt: true },
-        });
-        if (parent !== null && parent.archivedAt !== null) {
-          await tx.document.update({
-            where: { id: input.documentId },
-            data: { parentId: null },
-          });
-        }
-      }
-
-      const document = await tx.document.update({
-        where: { id: input.documentId },
-        data: { archivedAt: null, updatedById: input.userId },
-        select: DOCUMENT_SELECT,
-      });
-
-      await this.outbox.writeAudit(tx, {
-        workspaceId: context.workspaceId,
-        actorId: input.userId,
-        action: 'document.restored',
-        targetType: 'document',
-        targetId: input.documentId,
-        correlationId: input.correlationId,
-      });
-      await this.outbox.writeEvent(tx, {
-        workspaceId: context.workspaceId,
-        type: 'document.restored',
-        payload: { documentId: input.documentId },
-        correlationId: input.correlationId,
-      });
-
-      return document;
-    });
-
-    const summary = toSummary(updated);
-    await this.realtime.emit('document.restored', context.workspaceId, input.correlationId, {
-      document: summary,
-    });
-    await this.enqueueIndexing(
-      input.documentId,
-      context.workspaceId,
-      'restored',
-      input.correlationId,
-    );
-    return summary;
-  }
-
-  /**
-   * The trash, with its shape intact (issue #32).
-   *
-   * The tree endpoint hands archived pages back as one flat list, which is
-   * enough to restore a page you can name and useless for deciding what may go
-   * for good: it answers neither "did anything hang under this" nor "did I
-   * throw this away or did it just come along". Both answers are already in the
-   * data -- `parentId` survives archiving, and one archive operation stamps
-   * every page it takes with the same `archivedAt` -- so this is a view, not a
-   * new record.
-   */
-  async getTrash(workspaceId: string, userId: string): Promise<TrashResponse> {
-    const role = await this.access.findRole(workspaceId, userId);
-    assertPolicy(canReadWorkspace(role));
-
-    const rows = await this.prisma.document.findMany({
-      where: { workspaceId, archivedAt: { not: null } },
-      select: DOCUMENT_SELECT,
-      orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
-    });
-
-    const byId = new Map(rows.map((row) => [row.id, row]));
-    const childrenByParent = new Map<string, DocumentRow[]>();
-    const roots: DocumentRow[] = [];
-    for (const row of rows) {
-      // A parent that is *not* in the trash makes this row a root of the trash,
-      // even though it has a parent in the tree. That is the page somebody
-      // archived; everything under it came along.
-      const parent = row.parentId === null ? undefined : byId.get(row.parentId);
-      if (parent === undefined) {
-        roots.push(row);
-        continue;
-      }
-      const siblings = childrenByParent.get(parent.id);
-      if (siblings === undefined) childrenByParent.set(parent.id, [row]);
-      else siblings.push(row);
-    }
-
-    const toEntry = (row: DocumentRow): TrashEntry => {
-      const children = (childrenByParent.get(row.id) ?? []).map(toEntry);
-      const archivedAt = row.archivedAt as Date;
-      const parent = row.parentId === null ? undefined : byId.get(row.parentId);
-      return {
-        ...toSummary(row),
-        archivedAt: archivedAt.toISOString(),
-        // Same instant as the page above it means the same operation took both.
-        // A page archived on its own and only later joined by its parent keeps
-        // `direct`, because it *was* chosen once.
-        reason:
-          parent !== undefined && parent.archivedAt?.getTime() === archivedAt.getTime()
-            ? 'cascade'
-            : 'direct',
-        descendantCount: children.reduce(
-          (total, child) => total + child.descendantCount + 1,
-          0,
-        ),
-        children,
-      };
-    };
-
-    const entries = roots
-      .map(toEntry)
-      .sort((a, b) =>
-        a.archivedAt === b.archivedAt
-          ? a.title.localeCompare(b.title, 'de')
-          : b.archivedAt.localeCompare(a.archivedAt),
-      );
-
-    return { entries, totalCount: rows.length };
-  }
-
-  /**
-   * What deleting these pages for good would take with it.
-   *
-   * Deliberately its own call rather than a number computed by whoever renders
-   * the dialog: the same sentence has to reach a human reading a confirmation
-   * and an agent reading back what it is about to do (`exo_page_delete`), and
-   * only the server can count the subtree, the files and the references.
-   */
-  async previewDeletion(input: {
-    documentIds: string[];
-    userId: string;
-  }): Promise<DocumentDeletionPreview[]> {
-    const previews: DocumentDeletionPreview[] = [];
-    for (const documentId of input.documentIds) {
-      const context = await this.access.requireDocumentContext(documentId, input.userId);
-      assertPolicy(canDeleteDocument(context.role, context.document));
-      const scope = await this.collectDeletionScope(context.workspaceId, [documentId]);
-      previews.push({
-        documentId,
-        title: context.document.title,
-        documents: scope.documents.map(toSummary),
-        descendantCount: scope.documents.length - 1,
-        attachmentCount: scope.attachments.length,
-        incomingLinkCount: scope.incomingLinkCount,
-      });
-    }
-    return previews;
-  }
-
-  /**
-   * Deletes archived pages for good (issue #31).
-   *
-   * The one irreversible operation in the application. Everything that hangs
-   * off a deleted page goes with it through the foreign keys: content, the Yjs
-   * state, snapshots, the search projection, embeddings, comments, property
-   * values and the definitions of a database. Two things deliberately do not
-   * cascade: references *to* the page become unresolved instead of vanishing
-   * (the reader lands on "not found" rather than on a link that was silently
-   * rewritten), and the stored files are removed by hand after the transaction
-   * commits, because object storage has no transaction to join.
-   */
-  async deletePermanently(input: {
-    documentIds: string[];
-    userId: string;
-    correlationId: string;
-    /** When given, every document must belong to this workspace. */
-    workspaceId?: string;
-  }): Promise<DeleteDocumentsResponse> {
-    if (input.documentIds.length === 0) {
-      throw AppError.validation('No documents to delete');
-    }
-
-    let workspaceId: string | null = input.workspaceId ?? null;
-    const titles = new Map<string, string>();
-    for (const documentId of input.documentIds) {
-      const context = await this.access.requireDocumentContext(documentId, input.userId);
-      assertPolicy(canDeleteDocument(context.role, context.document));
-      if (workspaceId === null) workspaceId = context.workspaceId;
-      else if (context.workspaceId !== workspaceId) {
-        throw new AppError(
-          'document_cross_workspace',
-          'One deletion cannot span two workspaces',
-        );
-      }
-      titles.set(documentId, context.document.title);
-    }
-    const scopeWorkspaceId = workspaceId as string;
-
-    const scope = await this.collectDeletionScope(scopeWorkspaceId, input.documentIds);
-    const deletedIds = scope.documents.map((row) => row.id);
-
-    await this.prisma.$transaction(async (tx) => {
-      // Before the documents: the rows would otherwise survive with a dangling
-      // `documentId` (the relation is SetNull), and nothing would ever collect
-      // the objects they point at.
-      if (scope.attachments.length > 0) {
-        await tx.attachment.deleteMany({
-          where: { id: { in: scope.attachments.map((attachment) => attachment.id) } },
-        });
-      }
-
-      await tx.document.deleteMany({ where: { id: { in: deletedIds } } });
-
-      for (const documentId of input.documentIds) {
-        await this.outbox.writeAudit(tx, {
-          workspaceId: scopeWorkspaceId,
-          actorId: input.userId,
-          action: 'document.deleted',
-          targetType: 'document',
-          targetId: documentId,
-          correlationId: input.correlationId,
-          metadata: {
-            title: titles.get(documentId) ?? null,
-            deletedCount: deletedIds.length,
-            attachmentCount: scope.attachments.length,
-          },
-        });
-      }
-      await this.outbox.writeEvent(tx, {
-        workspaceId: scopeWorkspaceId,
-        type: 'document.deleted',
-        payload: { documentId: input.documentIds[0] as string, documentIds: deletedIds },
-        correlationId: input.correlationId,
-      });
-    });
-
-    for (const attachment of scope.attachments) {
-      const keys = [attachment.storageKey, attachment.previewKey].filter(
-        (key): key is string => key !== null,
-      );
-      for (const key of keys) {
-        try {
-          await this.storage.deleteObject({ key });
-        } catch (error) {
-          // The rows are gone either way. A file left behind costs disk space,
-          // which the orphan sweep in the maintenance job is there for; failing
-          // the deletion here would leave the caller unable to finish something
-          // that has already happened.
-          this.logger.error('Failed to delete a stored object of a deleted page', error, {
-            attachmentId: attachment.id,
-            storageKey: key,
-            correlationId: input.correlationId,
-          });
-        }
-      }
-    }
-
-    await this.realtime.emit('document.deleted', scopeWorkspaceId, input.correlationId, {
-      documentId: input.documentIds[0] as string,
-      documentIds: deletedIds,
-    });
-
-    return {
-      deletedIds,
-      deletedCount: deletedIds.length,
-      attachmentCount: scope.attachments.length,
-      unresolvedLinkCount: scope.incomingLinkCount,
-    };
-  }
-
-  /**
-   * Everything a deletion of `documentIds` would touch: the pages themselves
-   * with their subtrees, the files hanging off them, and the references from
-   * pages that stay.
-   */
-  private async collectDeletionScope(
-    workspaceId: string,
-    documentIds: string[],
-  ): Promise<{
-    documents: DocumentRow[];
-    attachments: { id: string; storageKey: string; previewKey: string | null }[];
-    incomingLinkCount: number;
-  }> {
-    const all = await this.prisma.document.findMany({
-      where: { workspaceId },
-      select: { id: true, parentId: true },
-    });
-
-    const ids = new Set<string>();
-    for (const documentId of documentIds) {
-      ids.add(documentId);
-      for (const descendant of collectSubtree(all, documentId)) ids.add(descendant);
-    }
-
-    const documents = await this.prisma.document.findMany({
-      where: { id: { in: [...ids] } },
-      select: DOCUMENT_SELECT,
-      orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
-    });
-    // The page the caller named first, then everything that comes along -- the
-    // order the confirmation is read in.
-    const requested = new Set(documentIds);
-    documents.sort((a, b) => Number(requested.has(b.id)) - Number(requested.has(a.id)));
-
-    const attachments = await this.prisma.attachment.findMany({
-      where: { documentId: { in: [...ids] } },
-      select: { id: true, storageKey: true, previewKey: true },
-    });
-
-    const incomingLinkCount = await this.prisma.documentLink.count({
-      where: { targetDocumentId: { in: [...ids] }, sourceDocumentId: { notIn: [...ids] } },
-    });
-
-    return { documents, attachments, incomingLinkCount };
-  }
 
   /**
    * A cover has to be an image the workspace actually owns. Without this check
@@ -1344,47 +430,6 @@ export class DocumentsService {
    *
    * Clients pass sibling anchors, never a key: the server owns ordering.
    */
-  private async resolveOrderKey(input: {
-    workspaceId: string;
-    parentId: string | null;
-    afterSiblingId: string | null;
-    beforeSiblingId: string | null;
-    excludeDocumentId?: string;
-    tx?: PrismaTransactionClient;
-  }): Promise<string> {
-    const client = input.tx ?? this.prisma;
-    const siblings = await client.document.findMany({
-      where: {
-        workspaceId: input.workspaceId,
-        parentId: input.parentId,
-        ...(input.excludeDocumentId === undefined ? {} : { id: { not: input.excludeDocumentId } }),
-      },
-      select: { id: true, orderKey: true },
-      orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
-    });
-
-    if (siblings.length === 0) return initialOrderKey();
-
-    const indexOf = (id: string | null): number =>
-      id === null ? -1 : siblings.findIndex((sibling) => sibling.id === id);
-
-    const afterIndex = indexOf(input.afterSiblingId);
-    const beforeIndex = indexOf(input.beforeSiblingId);
-
-    if (afterIndex >= 0) {
-      const lower = siblings[afterIndex]?.orderKey ?? null;
-      const upper = siblings[afterIndex + 1]?.orderKey ?? null;
-      return generateOrderKey(lower, upper);
-    }
-    if (beforeIndex >= 0) {
-      const upper = siblings[beforeIndex]?.orderKey ?? null;
-      const lower = beforeIndex > 0 ? (siblings[beforeIndex - 1]?.orderKey ?? null) : null;
-      return generateOrderKey(lower, upper);
-    }
-
-    // Default: append at the end.
-    return generateOrderKey(siblings[siblings.length - 1]?.orderKey ?? null, null);
-  }
 
   async enqueueIndexing(
     documentId: string,
@@ -1424,26 +469,4 @@ export class DocumentsService {
       })),
     };
   }
-}
-
-/** Collects all descendants of a document from a flat list. */
-function collectSubtree(
-  rows: readonly { id: string; parentId: string | null }[],
-  documentId: string,
-): string[] {
-  const childrenByParent = new Map<string, string[]>();
-  for (const row of rows) {
-    if (row.parentId === null) continue;
-    const list = childrenByParent.get(row.parentId);
-    if (list === undefined) childrenByParent.set(row.parentId, [row.id]);
-    else list.push(row.id);
-  }
-  const result: string[] = [];
-  const stack = [...(childrenByParent.get(documentId) ?? [])];
-  while (stack.length > 0) {
-    const current = stack.pop() as string;
-    result.push(current);
-    stack.push(...(childrenByParent.get(current) ?? []));
-  }
-  return result;
 }

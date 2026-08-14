@@ -118,6 +118,22 @@ function reasoningLevelsEqual(a: readonly AiReasoningLevelPrisma[], b: readonly 
   return a.length === b.length && a.every((level, index) => level === b[index]);
 }
 
+/** One `ai_model` row as the registry reads it back. */
+type AiModelRegistryRow = Awaited<ReturnType<PrismaClient['aiModel']['findMany']>>[number];
+
+/** True when a registry row already says exactly what the live entry says. */
+function matchesLiveEntry(row: AiModelRegistryRow, mapped: MappedLiveFields): boolean {
+  return (
+    row.contextWindowTokens === mapped.contextWindowTokens &&
+    row.maxOutputTokens === mapped.maxOutputTokens &&
+    row.supportsVision === mapped.supportsVision &&
+    row.supportsTools === mapped.supportsTools &&
+    reasoningLevelsEqual(row.reasoningLevels, mapped.reasoningLevels) &&
+    row.inputMicroUsdPerMTok === mapped.inputMicroUsdPerMTok &&
+    row.outputMicroUsdPerMTok === mapped.outputMicroUsdPerMTok
+  );
+}
+
 /**
  * Admin CRUD and OpenRouter sync for the AI model registry.
  *
@@ -249,6 +265,32 @@ export class AiModelsService {
   }
 
   async sync(request: SyncAiModelsRequest, actorId: string): Promise<SyncAiModelsResponse> {
+    const liveById = await this.fetchLiveModels();
+
+    const scopeSlugs = request.slugs.length > 0 ? request.slugs : null;
+    const registryRows = await this.prisma.aiModel.findMany({
+      where: scopeSlugs === null ? {} : { slug: { in: scopeSlugs } },
+    });
+
+    const { updated, disabled, unchanged } = await this.refreshRegistryRows(registryRows, liveById);
+    const added =
+      request.addMissing && scopeSlugs !== null
+        ? await this.addMissingRows(scopeSlugs, registryRows, liveById)
+        : [];
+
+    this.logger.info('AI model registry synced', {
+      actorId,
+      updated: updated.length,
+      added: added.length,
+      disabled: disabled.length,
+      unchanged,
+    });
+
+    return { updated, added, disabled, unchanged };
+  }
+
+  /** The provider's current model list, keyed by slug. */
+  private async fetchLiveModels(): Promise<Map<string, OpenRouterModel>> {
     const response = await fetch(`${this.env.OPENROUTER_BASE_URL}/models`, {
       signal: AbortSignal.timeout(15_000),
     });
@@ -262,25 +304,31 @@ export class AiModelsService {
     const body: unknown = await response.json();
     const parsed = openRouterModelListSchema.safeParse(body);
     if (!parsed.success) {
-      throw new AppError('ai_provider_unavailable', 'OpenRouter model list response did not match the expected shape');
+      throw new AppError(
+        'ai_provider_unavailable',
+        'OpenRouter model list response did not match the expected shape',
+      );
     }
-    const liveById = new Map(parsed.data.data.map((entry) => [entry.id, entry]));
+    return new Map(parsed.data.data.map((entry) => [entry.id, entry]));
+  }
 
-    const scopeSlugs = request.slugs.length > 0 ? request.slugs : null;
-    const registryRows = await this.prisma.aiModel.findMany({
-      where: scopeSlugs === null ? {} : { slug: { in: scopeSlugs } },
-    });
-
+  /**
+   * Brings the rows the registry already has in line with the live list.
+   *
+   * A slug missing from the live list is disabled, never deleted: an old
+   * conversation must still be able to resolve the model it ran on.
+   */
+  private async refreshRegistryRows(
+    registryRows: readonly AiModelRegistryRow[],
+    liveById: Map<string, OpenRouterModel>,
+  ): Promise<{ updated: string[]; disabled: string[]; unchanged: number }> {
     const updated: string[] = [];
     const disabled: string[] = [];
-    const added: string[] = [];
     let unchanged = 0;
 
     for (const row of registryRows) {
       const live = liveById.get(row.slug);
       if (live === undefined) {
-        // Missing from the live list: never delete, an old conversation must
-        // still be able to resolve this slug.
         if (row.enabled) {
           await this.prisma.aiModel.update({ where: { id: row.id }, data: { enabled: false } });
           disabled.push(row.slug);
@@ -289,16 +337,7 @@ export class AiModelsService {
       }
 
       const mapped = mapLiveEntry(live, row.contextWindowTokens);
-      const isUnchanged =
-        row.contextWindowTokens === mapped.contextWindowTokens &&
-        row.maxOutputTokens === mapped.maxOutputTokens &&
-        row.supportsVision === mapped.supportsVision &&
-        row.supportsTools === mapped.supportsTools &&
-        reasoningLevelsEqual(row.reasoningLevels, mapped.reasoningLevels) &&
-        row.inputMicroUsdPerMTok === mapped.inputMicroUsdPerMTok &&
-        row.outputMicroUsdPerMTok === mapped.outputMicroUsdPerMTok;
-
-      if (isUnchanged) {
+      if (matchesLiveEntry(row, mapped)) {
         unchanged += 1;
         continue;
       }
@@ -320,47 +359,48 @@ export class AiModelsService {
       updated.push(row.slug);
     }
 
-    if (request.addMissing && scopeSlugs !== null) {
-      const knownSlugs = new Set(registryRows.map((row) => row.slug));
-      for (const slug of scopeSlugs) {
-        if (knownSlugs.has(slug)) continue;
-        const live = liveById.get(slug);
-        if (live === undefined) continue;
+    return { updated, disabled, unchanged };
+  }
 
-        const mapped = mapLiveEntry(live, 0);
-        await this.prisma.aiModel.create({
-          data: {
-            slug,
-            displayName: live.name ?? slug,
-            description: live.description ?? null,
-            contextWindowTokens: mapped.contextWindowTokens,
-            maxOutputTokens: mapped.maxOutputTokens,
-            supportsVision: mapped.supportsVision,
-            supportsTools: mapped.supportsTools,
-            reasoningLevels: mapped.reasoningLevels,
-            inputMicroUsdPerMTok: mapped.inputMicroUsdPerMTok,
-            outputMicroUsdPerMTok: mapped.outputMicroUsdPerMTok,
-            // Disabled and sorted last: an admin must review a freshly added
-            // model before it appears in the picker.
-            enabled: false,
-            sortOrder: 900,
-            metadata: live as unknown as Prisma.InputJsonObject,
-            syncedAt: new Date(),
-          },
-        });
-        added.push(slug);
-      }
+  /** Adds the requested slugs the registry does not know yet, disabled. */
+  private async addMissingRows(
+    scopeSlugs: readonly string[],
+    registryRows: readonly AiModelRegistryRow[],
+    liveById: Map<string, OpenRouterModel>,
+  ): Promise<string[]> {
+    const knownSlugs = new Set(registryRows.map((row) => row.slug));
+    const added: string[] = [];
+
+    for (const slug of scopeSlugs) {
+      if (knownSlugs.has(slug)) continue;
+      const live = liveById.get(slug);
+      if (live === undefined) continue;
+
+      const mapped = mapLiveEntry(live, 0);
+      await this.prisma.aiModel.create({
+        data: {
+          slug,
+          displayName: live.name ?? slug,
+          description: live.description ?? null,
+          contextWindowTokens: mapped.contextWindowTokens,
+          maxOutputTokens: mapped.maxOutputTokens,
+          supportsVision: mapped.supportsVision,
+          supportsTools: mapped.supportsTools,
+          reasoningLevels: mapped.reasoningLevels,
+          inputMicroUsdPerMTok: mapped.inputMicroUsdPerMTok,
+          outputMicroUsdPerMTok: mapped.outputMicroUsdPerMTok,
+          // Disabled and sorted last: an admin must review a freshly added
+          // model before it appears in the picker.
+          enabled: false,
+          sortOrder: 900,
+          metadata: live as unknown as Prisma.InputJsonObject,
+          syncedAt: new Date(),
+        },
+      });
+      added.push(slug);
     }
 
-    this.logger.info('AI model registry synced', {
-      actorId,
-      updated: updated.length,
-      added: added.length,
-      disabled: disabled.length,
-      unchanged,
-    });
-
-    return { updated, added, disabled, unchanged };
+    return added;
   }
 
   /** Resolves a vision-companion slug to an id, refusing a model to be its own companion. */

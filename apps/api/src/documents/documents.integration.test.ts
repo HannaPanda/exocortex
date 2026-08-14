@@ -28,6 +28,9 @@ import {
 import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
 import { DocumentLinksService } from './document-links.service';
+import { DocumentMoveService } from './document-move.service';
+import { DocumentTrashService } from './document-trash.service';
+import { DocumentTreeService } from './document-tree.service';
 import { DocumentsService } from './documents.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
 import { RelatedDocumentsService } from './related-documents.service';
@@ -47,6 +50,8 @@ const logger: Logger = createLogger({ name: 'api-test', level: 'silent' });
 let prisma: PrismaClient;
 let queues: QueueRegistry;
 let service: DocumentsService;
+let treeService: DocumentTreeService;
+let trashService: DocumentTrashService;
 let contentService: DocumentContentService;
 let linksService: DocumentLinksService;
 let workspaceId: string;
@@ -114,7 +119,19 @@ beforeAll(async () => {
   });
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
-  service = new DocumentsService(prisma, queues, logger, storage, access, outbox, realtime);
+  treeService = new DocumentTreeService(prisma, access);
+  trashService = new DocumentTrashService(prisma, queues, logger, storage, access, outbox, realtime);
+  service = new DocumentsService(
+    prisma,
+    queues,
+    logger,
+    storage,
+    access,
+    outbox,
+    realtime,
+    trashService,
+    new DocumentMoveService(prisma, queues, logger, access, outbox, realtime),
+  );
   linksService = new DocumentLinksService(prisma, access);
   contentService = new DocumentContentService(
     prisma,
@@ -367,7 +384,7 @@ describe('page icons', () => {
       iconColor: 'blue',
     });
 
-    const tree = await service.getTree(workspaceId, ownerId);
+    const tree = await treeService.getTree(workspaceId, ownerId);
     const node = tree.nodes.find((entry) => entry.id === parentId);
     expect(node).toMatchObject({ icon: 'lucide:folder', iconColor: 'blue' });
   });
@@ -602,13 +619,13 @@ describe('generating a cover', () => {
 
 describe('document tree', () => {
   it('is not readable for a non-member', async () => {
-    await expect(service.getTree(workspaceId, outsiderId)).rejects.toMatchObject({
+    await expect(treeService.getTree(workspaceId, outsiderId)).rejects.toMatchObject({
       code: 'workspace_access_denied',
     });
   });
 
   it('is readable for a guest', async () => {
-    const tree = await service.getTree(workspaceId, guestId);
+    const tree = await treeService.getTree(workspaceId, guestId);
     expect(Array.isArray(tree.nodes)).toBe(true);
   });
 
@@ -903,7 +920,7 @@ describe('the trash as a view (issue #32)', () => {
     await createPage('Papierkorb-Enkel', child);
 
     await service.archive({ documentId: parent, userId: ownerId, correlationId });
-    const trash = await service.getTrash(workspaceId, ownerId);
+    const trash = await trashService.getTrash(workspaceId, ownerId);
 
     const root = trash.entries.find((entry) => entry.id === parent);
     expect(root).toBeDefined();
@@ -925,7 +942,7 @@ describe('the trash as a view (issue #32)', () => {
     await service.archive({ documentId: child, userId: ownerId, correlationId });
     await service.archive({ documentId: parent, userId: ownerId, correlationId });
 
-    const trash = await service.getTrash(workspaceId, ownerId);
+    const trash = await trashService.getTrash(workspaceId, ownerId);
     const root = trash.entries.find((entry) => entry.id === parent);
     expect(root?.children[0]?.id).toBe(child);
     // Two operations, two timestamps: this one was chosen once.
@@ -1276,7 +1293,7 @@ describe('resolveLink', () => {
     const title = `Ziel ${marker}`;
     const documentId = await createPage(title);
 
-    const result = await service.resolveLink(workspaceId, ownerId, {
+    const result = await treeService.resolveLink(workspaceId, ownerId, {
       title: `  ziel ${marker}  `,
       includeArchived: true,
       limit: 10,
@@ -1295,7 +1312,7 @@ describe('resolveLink', () => {
       correlationId,
     });
 
-    const result = await service.resolveLink(workspaceId, ownerId, {
+    const result = await treeService.resolveLink(workspaceId, ownerId, {
       title,
       includeArchived: true,
       limit: 10,
@@ -1311,14 +1328,14 @@ describe('resolveLink', () => {
     const archivedId = await createPage(title);
     await service.archive({ documentId: archivedId, userId: ownerId, correlationId });
 
-    const withoutArchived = await service.resolveLink(workspaceId, ownerId, {
+    const withoutArchived = await treeService.resolveLink(workspaceId, ownerId, {
       title,
       includeArchived: false,
       limit: 10,
     });
     expect(withoutArchived.matches.map((match) => match.id)).toEqual([activeId]);
 
-    const withArchived = await service.resolveLink(workspaceId, ownerId, {
+    const withArchived = await treeService.resolveLink(workspaceId, ownerId, {
       title,
       includeArchived: true,
       limit: 10,
@@ -1336,7 +1353,7 @@ describe('resolveLink', () => {
     const child = await createPage(title, parent);
     const rootSibling = await createPage(title);
 
-    const result = await service.resolveLink(workspaceId, ownerId, {
+    const result = await treeService.resolveLink(workspaceId, ownerId, {
       title,
       includeArchived: true,
       limit: 10,
@@ -1358,7 +1375,7 @@ describe('resolveLink', () => {
     // raw equality comparison rather than Prisma's `mode: 'insensitive'`.
     await createPage(`100XYQPlan ${marker}`);
 
-    const result = await service.resolveLink(workspaceId, ownerId, {
+    const result = await treeService.resolveLink(workspaceId, ownerId, {
       title,
       includeArchived: true,
       limit: 10,
@@ -1369,7 +1386,7 @@ describe('resolveLink', () => {
 
   it('is not resolvable for a non-member', async () => {
     await expect(
-      service.resolveLink(workspaceId, outsiderId, {
+      treeService.resolveLink(workspaceId, outsiderId, {
         title: 'Irrelevant',
         includeArchived: true,
         limit: 10,
@@ -1389,7 +1406,7 @@ describe('resolveLink', () => {
       correlationId,
     });
 
-    const result = await service.resolveLink(workspaceId, ownerId, {
+    const result = await treeService.resolveLink(workspaceId, ownerId, {
       documentId,
       title: `Alter Name ${marker}`,
       includeArchived: true,
@@ -1407,7 +1424,7 @@ describe('resolveLink', () => {
     const title = `Neu geschrieben ${marker}`;
     const documentId = await createPage(title);
 
-    const result = await service.resolveLink(workspaceId, ownerId, {
+    const result = await treeService.resolveLink(workspaceId, ownerId, {
       documentId: 'doc-that-never-existed',
       title,
       includeArchived: true,
@@ -1419,7 +1436,7 @@ describe('resolveLink', () => {
   });
 
   it('reports an unresolved reference when neither the identity nor the title answers', async () => {
-    const result = await service.resolveLink(workspaceId, ownerId, {
+    const result = await treeService.resolveLink(workspaceId, ownerId, {
       documentId: 'doc-that-never-existed',
       title: `Gibt es nicht ${Math.random().toString(36).slice(2)}`,
       includeArchived: true,
@@ -1438,7 +1455,7 @@ describe('resolveLink', () => {
       correlationId,
     });
 
-    const result = await service.resolveLink(workspaceId, ownerId, {
+    const result = await treeService.resolveLink(workspaceId, ownerId, {
       documentId: foreign.id,
       title: `Fremd ${marker}`,
       includeArchived: true,

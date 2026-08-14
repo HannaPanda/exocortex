@@ -15,6 +15,8 @@ import {
   type CollaborationBridgeService,
 } from '../documents/collaboration-bridge.service';
 import { DocumentContentService } from '../documents/document-content.service';
+import { DocumentMoveService } from '../documents/document-move.service';
+import { DocumentTrashService } from '../documents/document-trash.service';
 import { DocumentsService } from '../documents/documents.service';
 import { PageLinkIdentityService } from '../documents/page-link-identity.service';
 import { type SettingsService } from '../platform/settings.service';
@@ -146,7 +148,7 @@ beforeAll(async () => {
 
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
-  const documents = new DocumentsService(prisma, queues, logger, noopStorage, access, outbox, realtime);
+  const documents = new DocumentsService(prisma, queues, logger, noopStorage, access, outbox, realtime, new DocumentTrashService(prisma, queues, logger, noopStorage, access, outbox, realtime), new DocumentMoveService(prisma, queues, logger, access, outbox, realtime));
   const content = new DocumentContentService(
     prisma,
     queues,

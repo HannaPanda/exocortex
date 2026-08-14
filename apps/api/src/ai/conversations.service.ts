@@ -7,9 +7,6 @@ import {
   type AiConversationDetailResponse,
   type AiConversationListResponse,
   type AiConversationMessage,
-  aiReasoningLevelSchema,
-  CHAT_COMMANDS,
-  type ChatCommandResult,
   type CreateAiConversationRequest,
   type PostConversationMessageRequest,
   type PostConversationMessageResponse,
@@ -23,7 +20,6 @@ import {
   type PrismaClient,
 } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
-import { toolsFor } from '@exocortex/mcp-tools';
 import { QueueRegistry } from '@exocortex/queue';
 
 import { AppError } from '../common/app-error';
@@ -32,7 +28,8 @@ import { PRISMA, QUEUES } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
 import { AiModelResolverService, REASONING_LEVEL_TO_CONTRACT, REASONING_LEVEL_TO_PRISMA } from './ai-model-resolver.service';
-import { parseChatCommand,type ParsedChatCommand } from './chat-commands';
+import { runChatCommand } from './chat-command-runner';
+import { parseChatCommand, type ParsedChatCommand } from './chat-commands';
 import { mapAiRunRow } from './run-mapper';
 
 const CONVERSATION_SELECT = {
@@ -374,18 +371,10 @@ export class ConversationsService {
     // page it is on -- it must only stop telling the model.
     const disclosedDocumentId = conversation.pageContextEnabled ? boundDocumentId : null;
 
-    // Which view was open. Verified against the disclosed page rather than
-    // trusted: a view id belonging to some other database would otherwise put
-    // that database's column names and rows into the prompt.
-    const databaseViewId =
-      disclosedDocumentId === null || (input.request.databaseViewId ?? null) === null
-        ? null
-        : ((
-            await this.prisma.databaseView.findFirst({
-              where: { id: input.request.databaseViewId ?? '', documentId: disclosedDocumentId },
-              select: { id: true },
-            })
-          )?.id ?? null);
+    const databaseViewId = await this.resolveDatabaseViewId(
+      disclosedDocumentId,
+      input.request.databaseViewId ?? null,
+    );
 
     // A conversation outlives the page it started on: the panel keeps the active
     // conversation per workspace, so walking to another page keeps typing into
@@ -514,231 +503,32 @@ export class ConversationsService {
   }): Promise<PostConversationMessageResponse> {
     const { conversation, command } = input;
 
-    const result = await this.runCommand(conversation, command);
+    const result = await runChatCommand({
+      prisma: this.prisma,
+      modelResolver: this.modelResolver,
+      settings: this.settings,
+      conversation,
+      command,
+    });
     return { run: null, command: result, userMessage: null };
   }
 
-  private async runCommand(
-    conversation: ConversationRow,
-    command: ParsedChatCommand,
-  ): Promise<ChatCommandResult> {
-    switch (command.name) {
-      case 'clear': {
-        await this.prisma.aiConversationMessage.updateMany({
-          where: { conversationId: conversation.id, supersededAt: null },
-          data: { supersededAt: new Date() },
-        });
-        await this.prisma.aiConversation.update({
-          where: { id: conversation.id },
-          data: { estimatedTokens: 0 },
-        });
-        return {
-          command: 'clear',
-          message: 'Kontext geleert. Der Verlauf bleibt lesbar.',
-          conversationId: conversation.id,
-          conversationChanged: false,
-        };
-      }
 
-      case 'new': {
-        const title = command.argument ?? PLACEHOLDER_TITLE;
-        const created = await this.prisma.aiConversation.create({
-          data: {
-            workspaceId: conversation.workspaceId,
-            createdById: conversation.createdById,
-            title,
-            modelId: conversation.modelId,
-            reasoningLevel: conversation.reasoningLevel,
-          },
-        });
-        return {
-          command: 'new',
-          message: `Neue Unterhaltung „${title}“ gestartet.`,
-          conversationId: created.id,
-          conversationChanged: true,
-        };
-      }
-
-      case 'model': {
-        if (command.argument === null) {
-          throw AppError.validation('The /model command requires a model slug argument');
-        }
-        const resolved = await this.modelResolver.resolve({ slug: command.argument });
-        await this.prisma.aiConversation.update({
-          where: { id: conversation.id },
-          data: { modelId: resolved.id },
-        });
-        return {
-          command: 'model',
-          message: `Modell gewechselt zu ${await this.displayNameOf(resolved.id)}.`,
-          conversationId: conversation.id,
-          conversationChanged: false,
-        };
-      }
-
-      case 'think': {
-        if (command.argument === null) {
-          throw AppError.validation('The /think command requires a reasoning level argument');
-        }
-        const parsedLevel = aiReasoningLevelSchema.safeParse(command.argument);
-        if (!parsedLevel.success) {
-          throw AppError.validation(`Unknown reasoning level "${command.argument}"`);
-        }
-        const modelRow =
-          conversation.model === null
-            ? await this.modelResolver.resolveDefault()
-            : await this.modelResolver.resolve({ slug: conversation.model.slug, allowDisabled: true });
-        const clamped = this.modelResolver.clampReasoningLevel(modelRow, parsedLevel.data);
-        await this.prisma.aiConversation.update({
-          where: { id: conversation.id },
-          data: { reasoningLevel: REASONING_LEVEL_TO_PRISMA[clamped] },
-        });
-        const message =
-          clamped === parsedLevel.data
-            ? `Denkstufe auf ${clamped} gesetzt.`
-            : `${await this.displayNameOf(modelRow.id)} unterstützt diese Stufe nicht, verwende stattdessen ${clamped}.`;
-        return { command: 'think', message, conversationId: conversation.id, conversationChanged: false };
-      }
-
-      case 'vision': {
-        const argument = command.argument?.toLowerCase() ?? 'auto';
-        if (argument === 'auto') {
-          await this.prisma.aiConversation.update({
-            where: { id: conversation.id },
-            data: { visionCompanionSlug: null },
-          });
-          return {
-            command: 'vision',
-            message: 'Vision-Begleitmodell folgt jetzt der Admin-Voreinstellung.',
-            conversationId: conversation.id,
-            conversationChanged: false,
-          };
-        }
-        if (argument === 'off') {
-          await this.prisma.aiConversation.update({
-            where: { id: conversation.id },
-            data: { visionCompanionSlug: 'off' },
-          });
-          return {
-            command: 'vision',
-            message: 'Vision-Begleitmodell für diese Unterhaltung deaktiviert.',
-            conversationId: conversation.id,
-            conversationChanged: false,
-          };
-        }
-        const resolved = await this.modelResolver.resolve({ slug: argument });
-        await this.prisma.aiConversation.update({
-          where: { id: conversation.id },
-          data: { visionCompanionSlug: resolved.slug },
-        });
-        return {
-          command: 'vision',
-          message: `Vision-Begleitmodell auf ${await this.displayNameOf(resolved.id)} gesetzt.`,
-          conversationId: conversation.id,
-          conversationChanged: false,
-        };
-      }
-
-      case 'compact': {
-        // Compacting synchronously here would call the provider from inside the
-        // API process, which rule 6 forbids. Compaction already runs
-        // automatically in the worker before every provider call once the
-        // context passes its threshold (see compaction.ts); `/clear` is the
-        // only way to force it immediately (docs/ai-architecture.md).
-        return {
-          command: 'compact',
-          message:
-            'Der Kontext wird automatisch zusammengefasst, sobald er das Limit erreicht. Nutze /clear, um ihn sofort zu leeren.',
-          conversationId: conversation.id,
-          conversationChanged: false,
-        };
-      }
-
-      case 'context': {
-        const argument = command.argument?.toLowerCase() ?? null;
-        if (argument !== null && argument !== 'on' && argument !== 'off') {
-          throw AppError.validation('The /context command accepts "on" or "off"');
-        }
-        if (argument !== null) {
-          await this.prisma.aiConversation.update({
-            where: { id: conversation.id },
-            data: { pageContextEnabled: argument === 'on' },
-          });
-        }
-        const enabled = argument === null ? conversation.pageContextEnabled : argument === 'on';
-
-        // Reported from `documentId`, which keeps tracking the page even while
-        // the context is off -- that is what makes `/context on` meaningful
-        // without having to navigate somewhere first.
-        const page =
-          conversation.documentId === null
-            ? null
-            : await this.prisma.document.findFirst({
-                where: { id: conversation.documentId, workspaceId: conversation.workspaceId },
-                select: { title: true },
-              });
-
-        const where =
-          page === null
-            ? 'Es ist gerade keine Seite geöffnet.'
-            : `Geöffnet ist „${page.title}“.`;
-        const what = enabled
-          ? page === null
-            ? 'Sobald du eine Seite öffnest, erfährt die KI Titel und Pfad und kann den Inhalt bei Bedarf selbst laden.'
-            : 'Die KI erfährt Titel und Pfad und kann den Inhalt bei Bedarf selbst laden.'
-          : 'Der Seitenkontext ist aus: die KI erfährt nichts davon.';
-        const how = enabled ? 'Mit /context off schaltest du ihn ab.' : 'Mit /context on schaltest du ihn an.';
-
-        return {
-          command: 'context',
-          message: [where, what, how].join(' '),
-          conversationId: conversation.id,
-          conversationChanged: false,
-        };
-      }
-
-      case 'rules': {
-        const rules = await this.prisma.document.findMany({
-          where: { workspaceId: conversation.workspaceId, archivedAt: null, aiRuleMode: { not: 'OFF' } },
-          orderBy: [{ aiRulePriority: 'asc' }, { title: 'asc' }],
-          select: { title: true, aiRuleMode: true, aiRuleTrigger: true },
-        });
-        const message =
-          rules.length === 0
-            ? 'Keine aktiven KI-Regelseiten in diesem Arbeitsbereich.'
-            : rules
-                .map((rule) => {
-                  const kind = rule.aiRuleMode === 'ALWAYS' ? 'immer aktiv' : 'auf Anfrage';
-                  const trigger = rule.aiRuleTrigger !== null ? `: ${rule.aiRuleTrigger}` : '';
-                  return `- ${rule.title} (${kind})${trigger}`;
-                })
-                .join('\n');
-        return { command: 'rules', message, conversationId: conversation.id, conversationChanged: false };
-      }
-
-      case 'tools': {
-        const includeMutating = await this.settings.getKey('ai.mutatingToolsEnabled');
-        const tools = toolsFor('ai', { includeMutating });
-        const message =
-          tools.length === 0
-            ? 'Keine Werkzeuge verfügbar.'
-            : tools.map((tool) => `- ${tool.name} — ${tool.description}`).join('\n');
-        return { command: 'tools', message, conversationId: conversation.id, conversationChanged: false };
-      }
-
-      case 'help': {
-        const message = CHAT_COMMANDS.map(
-          (entry) => `/${entry.name}${entry.argument !== null ? ` <${entry.argument}>` : ''} — ${entry.description}`,
-        ).join('\n');
-        return { command: 'help', message, conversationId: conversation.id, conversationChanged: false };
-      }
-
-      default: {
-        // Unreachable: `parseChatCommand` only ever returns a name from
-        // `CHAT_COMMANDS`, and every one of those is handled above.
-        throw AppError.internal(`Unhandled chat command "${command.name}"`);
-      }
-    }
+  /**
+   * Which view was open, verified against the disclosed page rather than
+   * trusted: a view id belonging to some other database would otherwise put
+   * that database's column names and rows into the prompt.
+   */
+  private async resolveDatabaseViewId(
+    disclosedDocumentId: string | null,
+    requestedViewId: string | null,
+  ): Promise<string | null> {
+    if (disclosedDocumentId === null || requestedViewId === null) return null;
+    const view = await this.prisma.databaseView.findFirst({
+      where: { id: requestedViewId, documentId: disclosedDocumentId },
+      select: { id: true },
+    });
+    return view?.id ?? null;
   }
 
   private async displayNameOf(modelId: string): Promise<string> {

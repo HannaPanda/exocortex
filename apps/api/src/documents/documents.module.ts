@@ -12,7 +12,10 @@ import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
 import { DocumentLinksService } from './document-links.service';
 import { DocumentMarkdownService } from './document-markdown.service';
+import { DocumentMoveService } from './document-move.service';
 import { DocumentSnapshotService } from './document-snapshot.service';
+import { DocumentTrashService } from './document-trash.service';
+import { DocumentTreeService } from './document-tree.service';
 import { DocumentsController, WorkspaceDocumentsController } from './documents.controller';
 import { DocumentsService } from './documents.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
@@ -25,6 +28,9 @@ import { RelatedDocumentsService } from './related-documents.service';
   controllers: [WorkspaceDocumentsController, DocumentsController],
   providers: [
     DocumentsService,
+    DocumentTreeService,
+    DocumentTrashService,
+    DocumentMoveService,
     DocumentCoverService,
     DocumentMarkdownService,
     DocumentSnapshotService,
