@@ -229,7 +229,7 @@ export function createOpenRouterPdfExtractor(
             Authorization: `Bearer ${options.apiKey}`,
             'Content-Type': 'application/json',
             'HTTP-Referer': options.appUrl,
-            'X-Title': 'Exocortex',
+            'X-Title': 'eXocortex',
           },
           body: JSON.stringify({
             model: options.model,

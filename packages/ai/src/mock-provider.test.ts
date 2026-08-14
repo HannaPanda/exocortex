@@ -5,7 +5,7 @@ import { type AiGenerateRequest, type AiStreamEvent } from './provider';
 import { createAiProvider } from './registry';
 
 const request: AiGenerateRequest = {
-  messages: [{ role: 'user' as const, content: 'Was ist Exocortex?' }],
+  messages: [{ role: 'user' as const, content: 'Was ist eXocortex?' }],
   correlationId: 'corr-test',
 };
 
@@ -83,7 +83,7 @@ describe('MockAiProvider', () => {
 
   it('echoes the user question in the answer', async () => {
     const result = await new MockAiProvider().generate(request);
-    expect(result.text).toContain('Was ist Exocortex?');
+    expect(result.text).toContain('Was ist eXocortex?');
   });
 
   it('requests a tool call when the marker is present and tools were offered', async () => {

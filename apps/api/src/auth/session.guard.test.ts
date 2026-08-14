@@ -32,7 +32,7 @@ const env: ApiEnv = loadApiEnv({
   S3_SECRET_ACCESS_KEY: 'secret',
   SMTP_HOST: '127.0.0.1',
   SMTP_PORT: '1026',
-  SMTP_FROM: 'Exocortex <no-reply@exocortex.app>',
+  SMTP_FROM: 'eXocortex <no-reply@exocortex.app>',
   PUBLIC_API_URL: 'http://localhost:3211',
   PUBLIC_COLLABORATION_URL: 'ws://localhost:3212',
 });

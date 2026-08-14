@@ -35,7 +35,7 @@ test.describe('AI side panel', () => {
     await createPage(page, `KI ${Date.now().toString(36)}`);
 
     await page.getByTestId('context-tab-ai').click();
-    await page.getByTestId('ai-input').fill('Was ist Exocortex?');
+    await page.getByTestId('ai-input').fill('Was ist eXocortex?');
     await page.getByTestId('ai-send').click();
 
     const answer = page.getByTestId('ai-answer').first();
@@ -66,7 +66,7 @@ test.describe('AI side panel', () => {
       // The mock echoes the question back, which proves the payload reached it
       // intact. A declared mock that stops echoing fails here rather than
       // quietly dropping to the weaker assertions above.
-      await expect(answer).toContainText('Was ist Exocortex?', { timeout: 60_000 });
+      await expect(answer).toContainText('Was ist eXocortex?', { timeout: 60_000 });
       await expect(answer).toContainText(MOCK_MARKER, { timeout: 60_000 });
     }
   });

@@ -1,5 +1,5 @@
 ---
-name: Exocortex
+name: eXocortex
 description: Self-hostable collaborative workspace and external brain. Cool graphite, warm light, one amber signal.
 colors:
   background: "oklch(0.17 0.010 275)"
@@ -157,13 +157,13 @@ components:
     textColor: "{colors.foreground}"
 ---
 
-# Design System: Exocortex
+# Design System: eXocortex
 
 ## 1. Overview
 
 **Creative North Star: "Amber Instrument"**
 
-Exocortex is a precision instrument for thinking, not a document product. The
+eXocortex is a precision instrument for thinking, not a document product. The
 surface is cool graphite: dark, slightly violet, deliberately inert. The light on
 it is warm. A single amber signal marks everything that is interactive or
 happening. Nothing else in the interface is allowed to be a colour.

@@ -187,13 +187,13 @@ describe('ConversationsService.postMessage', () => {
     const response = await service.postMessage({
       conversationId,
       userId: ownerId,
-      request: { content: 'Was ist Exocortex?' },
+      request: { content: 'Was ist eXocortex?' },
       correlationId: 'test-post-1',
     });
 
     expect(response.command).toBeNull();
     expect(response.userMessage?.role).toBe('user');
-    expect(response.userMessage?.content).toBe('Was ist Exocortex?');
+    expect(response.userMessage?.content).toBe('Was ist eXocortex?');
     // Asserted on the value `postMessage` returns synchronously at creation
     // time, not on a fresh re-read: the live worker on this shared host also
     // consumes this queue and may have already started or finished the run by

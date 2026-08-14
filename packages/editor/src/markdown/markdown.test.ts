@@ -198,7 +198,7 @@ describe('markdown export', () => {
     expect(markdown).toContain(`exocortexSchemaVersion: ${EXOCORTEX_SCHEMA_VERSION}`);
   });
 
-  it('re-emits callouts using the Exocortex syntax', () => {
+  it('re-emits callouts using the eXocortex syntax', () => {
     const { document } = parseMarkdown(CALLOUT_MARKDOWN);
     expect(serializeMarkdown(document)).toContain('> [!info] Wichtig');
   });

@@ -260,7 +260,7 @@ const WRITE_MODE_DESCRIPTION =
 const WRITE_MARKDOWN_DESCRIPTION =
   'Der zu schreibende Markdown-Text. Bei mode "append" oder "prepend" nur der neue Abschnitt, ' +
   'bei mode "replace" der gesamte Inhalt, den die Seite danach haben soll. ' +
-  'Seitenlinks als [[Seitentitel]] schreiben: Exocortex bindet sie beim Schreiben an die Seite ' +
+  'Seitenlinks als [[Seitentitel]] schreiben: eXocortex bindet sie beim Schreiben an die Seite ' +
   'mit diesem Titel, sodass der Verweis ein späteres Umbenennen dieser Seite übersteht. ' +
   'Ein Titel, den es noch nicht gibt, bleibt als unaufgelöster Verweis stehen und bietet in ' +
   'der Oberfläche an, die Seite anzulegen.';

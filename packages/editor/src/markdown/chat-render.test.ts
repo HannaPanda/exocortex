@@ -71,7 +71,7 @@ describe('pruneForChat', () => {
     }
   });
 
-  it('drops images, horizontal rules and Exocortex-only blocks that survive parsing', () => {
+  it('drops images, horizontal rules and eXocortex-only blocks that survive parsing', () => {
     const pruned = pruneForChat(parseMarkdown(KITCHEN_SINK_MARKDOWN).document);
     const types = collectTypes(pruned);
 
@@ -157,7 +157,7 @@ describe('pruneForChat', () => {
   });
 
   it('keeps an ordinary https link', () => {
-    const pruned = pruneForChat(parseMarkdown('[Exocortex](https://exocortex.app).\n').document);
+    const pruned = pruneForChat(parseMarkdown('[eXocortex](https://exocortex.app).\n').document);
     const hrefs = findLinkMarks(pruned).map((mark) => mark.attrs?.href);
     expect(hrefs).toEqual(['https://exocortex.app']);
   });

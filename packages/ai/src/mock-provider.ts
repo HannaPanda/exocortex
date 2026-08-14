@@ -163,7 +163,7 @@ export class MockAiProvider implements AiProvider {
       '',
       `Deine Frage war: „${shortened}“`,
       '',
-      'In dieser Version von Exocortex ist absichtlich kein externer KI-Anbieter',
+      'In dieser Version von eXocortex ist absichtlich kein externer KI-Anbieter',
       'angebunden. Die Antwort wird aber über dieselbe Streaming-Infrastruktur',
       'ausgeliefert wie später echte Modelle: Der Worker erzeugt die Teilstücke,',
       'die API verteilt sie über den Anwendungs-WebSocket und das Panel rendert',

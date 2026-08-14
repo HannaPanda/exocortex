@@ -2,7 +2,7 @@
   "name": "@exocortex/web",
   "version": "0.1.0",
   "private": true,
-  "description": "Exocortex Next.js frontend",
+  "description": "eXocortex Next.js frontend",
   "scripts": {
     "dev": "next dev --port ${WEB_PORT:-3210}",
     "build": "next build",

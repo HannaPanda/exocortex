@@ -59,7 +59,7 @@ function hit(overrides: Record<string, unknown> = {}) {
     iconColor: null,
     type: 'PAGE' as const,
     path: [],
-    snippet: 'Der <mark>Kalender</mark> läuft über Exocortex.',
+    snippet: 'Der <mark>Kalender</mark> läuft über eXocortex.',
     rank: 0.5,
     archivedAt: null,
     updatedAt: NOW,
@@ -162,7 +162,7 @@ describe('fetch (deep research)', () => {
         '/api/documents/doc1111111/export/markdown': {
           documentId: 'doc1111111',
           filename: 'kalenderplan.md',
-          markdown: '# Kalenderplan\n\nExocortex ist führend.',
+          markdown: '# Kalenderplan\n\neXocortex ist führend.',
           path: [{ id: 'parent11111', title: 'Projekte' }],
           children: [],
         },
@@ -181,7 +181,7 @@ describe('fetch (deep research)', () => {
 
     expect(payload.id).toBe('doc1111111');
     expect(payload.title).toBe('Kalenderplan');
-    expect(payload.text).toContain('Exocortex ist führend.');
+    expect(payload.text).toContain('eXocortex ist führend.');
     expect(payload.url).toBe('https://exocortex.app/arbeitsbereich/ws11111111/seite/doc1111111');
     expect(payload.metadata.truncated).toBe(false);
     expect(payload.metadata.fullLength).toBe(payload.text.length);

@@ -139,7 +139,7 @@ export class OpenRouterProvider implements AiProvider {
       Authorization: `Bearer ${this.options.apiKey}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': this.options.appUrl,
-      'X-Title': 'Exocortex',
+      'X-Title': 'eXocortex',
     };
   }
 

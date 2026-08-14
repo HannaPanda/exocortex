@@ -30,7 +30,7 @@ describe('createMailer transport', () => {
     createMailer({
       host: 'smtp-relay.example.com',
       port: 587,
-      from: 'Exocortex <exocortex@example.com>',
+      from: 'eXocortex <exocortex@example.com>',
       user: 'relay-user',
       password: 'relay-password',
       logger,
@@ -47,7 +47,7 @@ describe('createMailer transport', () => {
     createMailer({
       host: 'smtp-relay.example.com',
       port: 465,
-      from: 'Exocortex <exocortex@example.com>',
+      from: 'eXocortex <exocortex@example.com>',
       user: 'relay-user',
       password: 'relay-password',
       logger,
@@ -60,7 +60,7 @@ describe('createMailer transport', () => {
     createMailer({
       host: 'smtp-relay.example.com',
       port: 587,
-      from: 'Exocortex <exocortex@example.com>',
+      from: 'eXocortex <exocortex@example.com>',
       user: 'relay-user',
       password: 'relay-password',
       logger,
@@ -73,7 +73,7 @@ describe('createMailer transport', () => {
     createMailer({
       host: '127.0.0.1',
       port: 1026,
-      from: 'Exocortex <no-reply@example.com>',
+      from: 'eXocortex <no-reply@example.com>',
       logger,
     });
 
@@ -87,7 +87,7 @@ describe('createMailer transport', () => {
     createMailer({
       host: '127.0.0.1',
       port: 1026,
-      from: 'Exocortex <no-reply@example.com>',
+      from: 'eXocortex <no-reply@example.com>',
       user: 'relay-user',
       password: '',
       logger,

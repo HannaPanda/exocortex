@@ -120,7 +120,7 @@ const RELATED_RESPONSE = {
         archivedAt: null,
       },
       path: [{ id: 'par1234567', title: 'Projekte' }],
-      snippet: 'Exocortex führt, Remotes dürfen anlegen.',
+      snippet: 'eXocortex führt, Remotes dürfen anlegen.',
       similarity: 0.7123,
       linked: false,
     },

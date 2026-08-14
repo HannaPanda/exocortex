@@ -2,7 +2,7 @@
   "name": "@exocortex/mcp",
   "version": "0.1.0",
   "private": true,
-  "description": "Exocortex MCP server (stdio JSON-RPC) for external clients",
+  "description": "eXocortex MCP server (stdio JSON-RPC) for external clients",
   "type": "module",
   "main": "./dist/main.js",
   "bin": { "exocortex-mcp": "./dist/main.js" },

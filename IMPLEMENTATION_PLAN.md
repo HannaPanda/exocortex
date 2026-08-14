@@ -1,4 +1,4 @@
-# Exocortex Implementation Plan
+# eXocortex Implementation Plan
 
 Status legend: `[ ]` open · `[~]` in progress · `[x]` done
 

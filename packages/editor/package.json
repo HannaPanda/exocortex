@@ -2,7 +2,7 @@
   "name": "@exocortex/editor",
   "version": "0.1.0",
   "private": true,
-  "description": "Canonical Exocortex editor schema, stable block identifiers, Markdown interchange and Yjs materialization",
+  "description": "Canonical eXocortex editor schema, stable block identifiers, Markdown interchange and Yjs materialization",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [

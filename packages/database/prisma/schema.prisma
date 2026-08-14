@@ -1234,6 +1234,10 @@ model CalendarAccount {
   links CalendarLink[]
 
   @@unique([workspaceId, provider, username])
+  // Declared here because the migration creates it. Without the declaration the
+  // index exists in the database and not in the model, and the next
+  // `migrate dev` would offer to drop it.
+  @@index([userId])
   @@map("calendar_account")
 }
 

@@ -40,7 +40,7 @@ auf [[Andere Seite]] sowie einem benannten Wiki-Link [[Zielseite|Anderer Text]].
 > Ein normales Zitat.
 
 > [!warning] Achtung
-> Callouts sind eine Exocortex-Erweiterung.
+> Callouts sind eine eXocortex-Erweiterung.
 
 ## Code
 
@@ -185,11 +185,11 @@ export type MarkdownFixtureName = keyof typeof MARKDOWN_FIXTURES;
 /** Nested example pages used by `pnpm db:seed`. */
 export const SEED_PAGES = [
   {
-    title: 'Willkommen bei Exocortex',
+    title: 'Willkommen bei eXocortex',
     icon: '👋',
-    markdown: `# Willkommen bei Exocortex
+    markdown: `# Willkommen bei eXocortex
 
-Exocortex ist dein gemeinsames externes Gehirn: Seiten, Datenbanken, Suche und
+eXocortex ist dein gemeinsames externes Gehirn: Seiten, Datenbanken, Suche und
 KI in einem Werkzeug.
 
 > [!info] Erste Schritte
@@ -218,7 +218,7 @@ KI in einem Werkzeug.
         icon: '📝',
         markdown: `# Markdown-Referenz
 
-Exocortex kann Markdown importieren und exportieren.
+eXocortex kann Markdown importieren und exportieren.
 
 \`\`\`ts
 const beispiel = 'Code-Blöcke funktionieren';
@@ -239,9 +239,9 @@ Sammelseite für laufende Projekte.
 `,
     children: [
       {
-        title: 'Exocortex selbst hosten',
+        title: 'eXocortex selbst hosten',
         icon: '🚀',
-        markdown: `# Exocortex selbst hosten
+        markdown: `# eXocortex selbst hosten
 
 1. Repository klonen
 2. \`pnpm install\`

@@ -1,17 +1,23 @@
 /**
- * Static dependency-boundary check.
+ * Gate: no package depends on one it is not allowed to.
  *
  * Reads every workspace package manifest and asserts that its internal
- * (`@exocortex/*`) dependencies are allowed by `dependency-graph.ts`.
- * Also detects dependency cycles between workspace packages.
+ * (`@exocortex/*`) dependencies are allowed by `dependency-graph.mjs`. Also
+ * detects dependency cycles between workspace packages.
  *
- * Run via `pnpm lint`.
+ * This is the second half of a rule ESLint enforces at the import site
+ * (`no-restricted-imports`, built from the same graph): a manifest can declare
+ * a dependency long before anything imports it, and the import rule would not
+ * see that. Both halves read one list, so they cannot drift apart.
+ *
+ * Run from `scripts/build.sh` alongside the other gates, and from `pnpm lint`.
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { ALLOWED_INTERNAL_DEPENDENCIES, INTERNAL_SCOPE } from './dependency-graph.mjs';
+import { fail, info, ok, step } from './lib/gate-log.mjs';
 
 const repositoryRoot = join(fileURLToPath(new URL('.', import.meta.url)), '..');
 const workspaceGlobs = ['apps', 'packages'];
@@ -100,11 +106,15 @@ for (const name of packages.keys()) {
   walk(name, []);
 }
 
+step('Package boundaries (manifests ↔ scripts/dependency-graph.mjs)');
+
 if (errors.length > 0) {
-  console.error('Dependency boundary violations:\n');
-  for (const error of errors) console.error(`  - ${error}`);
-  console.error('');
-  process.exit(1);
+  fail(
+    `${errors.length} package boundary violation(s)`,
+    errors,
+    'Either the dependency does not belong there, or the graph in scripts/dependency-graph.mjs is out of date. Change the one that is wrong -- eslint.config.mjs reads the same list, so widening it opens the import rule too.',
+  );
 }
 
-console.log(`Dependency boundaries OK (${packages.size} workspace packages).`);
+info(`${packages.size} workspace package(s)`);
+ok('Every internal dependency is allowed by the graph.');

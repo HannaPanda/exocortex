@@ -47,7 +47,7 @@ function main(): void {
   const handler = createRequestHandler({ client, gate, env, logger });
   const server = createStdioServer(handler);
 
-  logger.info('Exocortex MCP server starting', { apiUrl: env.EXOCORTEX_API_URL });
+  logger.info('eXocortex MCP server starting', { apiUrl: env.EXOCORTEX_API_URL });
   server.start();
 
   // Hermes kills MCP subprocesses by closing stdin; `stdio.ts` already exits
