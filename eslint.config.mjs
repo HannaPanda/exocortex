@@ -43,6 +43,47 @@ function boundaryRules(packageName) {
   };
 }
 
+/**
+ * Empty catch blocks are forbidden everywhere. Kept as a constant because
+ * `no-restricted-syntax` is not merged across configuration objects: the
+ * NestJS override below re-declares the rule and would otherwise drop this.
+ */
+const NO_EMPTY_CATCH = {
+  selector: 'CatchClause > BlockStatement:not(:has(*))',
+  message: 'Empty catch blocks are forbidden: log the error or rethrow it (see docs/security.md).',
+};
+
+/**
+ * `max-params`, minus the constructors.
+ *
+ * NestJS resolves a constructor's parameters itself, so nobody ever writes that
+ * argument list out and the usual reason for the limit (call sites become
+ * unreadable and order-dependent) does not apply. What a long injection list
+ * does mean is a class with too many collaborators, and that deserves its own
+ * threshold rather than being folded into the same number.
+ */
+const TOO_MANY_PARAMETERS = {
+  selector: [
+    'FunctionDeclaration[params.length>5]',
+    'ArrowFunctionExpression[params.length>5]',
+    'MethodDefinition[kind!="constructor"] > FunctionExpression[params.length>5]',
+    'Property > FunctionExpression[params.length>5]',
+  ].join(', '),
+  message:
+    'Too many parameters (maximum 5). Pass a single options object instead, so call sites name what they pass.',
+};
+
+/**
+ * The ceiling for constructor injection: ten is what the widest class has today
+ * (`DocumentsController`), so this forbids getting worse without demanding a
+ * rewrite first. Lower it whenever a class is split up.
+ */
+const TOO_MANY_INJECTED_DEPENDENCIES = {
+  selector: 'MethodDefinition[kind="constructor"] > FunctionExpression[params.length>10]',
+  message:
+    'More than 10 injected dependencies: this class has too many collaborators. Split it before adding another.',
+};
+
 export default tseslint.config(
   {
     ignores: [
@@ -93,14 +134,18 @@ export default tseslint.config(
       'simple-import-sort/exports': 'error',
       'no-console': ['error', { allow: ['warn', 'error'] }],
       eqeqeq: ['error', 'always', { null: 'ignore' }],
-      'no-restricted-syntax': [
-        'error',
-        {
-          selector: "CatchClause > BlockStatement:not(:has(*))",
-          message:
-            'Empty catch blocks are forbidden: log the error or rethrow it (see docs/security.md).',
-        },
-      ],
+      'no-restricted-syntax': ['error', NO_EMPTY_CATCH],
+      // ------------------------------------------------------------ size policy
+      // Nothing in this configuration used to keep anything small, which is how
+      // a 626-line function with 81 independent paths got written without a
+      // single warning. These three are the ones the repository already
+      // satisfies, so they are a ceiling that never opens again rather than a
+      // cleanup task. The expensive limits (`max-lines`,
+      // `max-lines-per-function`, `complexity`) follow in their own stage; see
+      // issue #40.
+      'max-depth': ['error', 4],
+      'max-params': ['error', 5],
+      'max-nested-callbacks': ['error', 3],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': [
         'error',
@@ -160,7 +205,19 @@ export default tseslint.config(
     // only exists for *value* imports. Rewriting an injected class to a type-only
     // import silently breaks dependency injection at runtime.
     files: ['apps/api/**/*.ts'],
-    rules: { '@typescript-eslint/consistent-type-imports': 'off' },
+    rules: {
+      '@typescript-eslint/consistent-type-imports': 'off',
+      // Constructor injection inflates the parameter count of every provider in
+      // this app, so the plain rule is replaced by the same limit expressed as
+      // syntax selectors, which can tell a constructor from a function.
+      'max-params': 'off',
+      'no-restricted-syntax': [
+        'error',
+        NO_EMPTY_CATCH,
+        TOO_MANY_PARAMETERS,
+        TOO_MANY_INJECTED_DEPENDENCIES,
+      ],
+    },
   },
 
   // -------------------------------------------------------------- test files
@@ -176,6 +233,10 @@ export default tseslint.config(
     rules: {
       'no-console': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
+      // A test file is nested callbacks by construction: `describe` inside
+      // `describe` inside `it` inside a `waitFor` is the shape the runners ask
+      // for, and counting it says nothing about the code under test.
+      'max-nested-callbacks': 'off',
     },
   },
 
