@@ -9,13 +9,7 @@ import {
   type DatabaseRow,
   type DatabaseRowPropertyValue,
 } from '@exocortex/contracts';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@exocortex/ui';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@exocortex/ui';
 
 import { PropertyCell } from './cells';
 import { PROPERTY_TYPE_LABELS } from './property-types';
@@ -81,7 +75,9 @@ export function RowPeekSheet({
                 </div>
                 <PropertyCell
                   property={property}
-                  value={row.values.find((entry) => entry.propertyId === property.id)?.value ?? null}
+                  value={
+                    row.values.find((entry) => entry.propertyId === property.id)?.value ?? null
+                  }
                   readOnly={readOnly}
                   // The sheet is where a long value must be readable in full,
                   // so it always uses the most generous clamp.

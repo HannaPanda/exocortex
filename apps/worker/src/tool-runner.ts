@@ -48,13 +48,13 @@ export interface CreateToolRunnerInput {
 }
 
 export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
-  const definitions: AiToolDefinition[] = toolsFor('ai', { includeMutating: input.includeMutating }).map(
-    (tool) => ({
-      name: tool.name,
-      description: tool.description,
-      parameters: tool.jsonSchema,
-    }),
-  );
+  const definitions: AiToolDefinition[] = toolsFor('ai', {
+    includeMutating: input.includeMutating,
+  }).map((tool) => ({
+    name: tool.name,
+    description: tool.description,
+    parameters: tool.jsonSchema,
+  }));
 
   let tokenExpiresAt = 0;
   let client: ExocortexApiClient | null = null;

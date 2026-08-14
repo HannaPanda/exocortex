@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { type DatabaseFilterGroup, type DatabaseSort, EMPTY_DATABASE_FILTER_GROUP } from '@exocortex/contracts';
+import {
+  type DatabaseFilterGroup,
+  type DatabaseSort,
+  EMPTY_DATABASE_FILTER_GROUP,
+} from '@exocortex/contracts';
 
 import {
   buildPropertyMap,
@@ -53,7 +57,9 @@ describe('compileFilterGroup', () => {
     const matches = sql.sql.match(rawColumnPattern) ?? [];
     expect(matches.length).toBeGreaterThan(0);
     for (const match of sql.sql.matchAll(/SELECT dpv\."(\w+)"/g)) {
-      expect(['textValue', 'numberValue', 'boolValue', 'dateValue', 'jsonValue']).toContain(match[1]);
+      expect(['textValue', 'numberValue', 'boolValue', 'dateValue', 'jsonValue']).toContain(
+        match[1],
+      );
     }
   });
 
@@ -134,7 +140,10 @@ describe('compileFilterGroup with the overlaps operator', () => {
   });
 
   it('compares both ends of the span and binds the window as parameters', () => {
-    const sql = compileFilterGroup(overlaps(DATE.id, ['2026-08-01T00:00:00.000Z', '2026-09-01T00:00:00.000Z']), properties);
+    const sql = compileFilterGroup(
+      overlaps(DATE.id, ['2026-08-01T00:00:00.000Z', '2026-09-01T00:00:00.000Z']),
+      properties,
+    );
     expect(sql.sql).toContain('EXISTS');
     expect(sql.sql).toContain('"dateEndValue"');
     // The propertyId, plus both window bounds once per CASE branch: the window
@@ -144,7 +153,10 @@ describe('compileFilterGroup with the overlaps operator', () => {
   });
 
   it('treats a value without an end as a point in time, not as an open span', () => {
-    const sql = compileFilterGroup(overlaps(DATE.id, ['2026-08-01T00:00:00.000Z', '2026-09-01T00:00:00.000Z']), properties);
+    const sql = compileFilterGroup(
+      overlaps(DATE.id, ['2026-08-01T00:00:00.000Z', '2026-09-01T00:00:00.000Z']),
+      properties,
+    );
     // The NULL branch is bounded on both sides; the span branch is not.
     expect(sql.sql).toContain('WHEN dpv."dateEndValue" IS NULL');
     expect(sql.sql).toContain('THEN dpv."dateValue" >= ? AND dpv."dateValue" < ?');
@@ -152,9 +164,9 @@ describe('compileFilterGroup with the overlaps operator', () => {
   });
 
   it('rejects the operator on a property type that has no span', () => {
-    expect(() => compileFilterGroup(overlaps(TEXT.id, ['2026-08-01', '2026-09-01']), properties)).toThrow(
-      InvalidDatabaseFilterError,
-    );
+    expect(() =>
+      compileFilterGroup(overlaps(TEXT.id, ['2026-08-01', '2026-09-01']), properties),
+    ).toThrow(InvalidDatabaseFilterError);
   });
 
   it.each([
@@ -164,7 +176,9 @@ describe('compileFilterGroup with the overlaps operator', () => {
     ['an unparsable date', ['not-a-date', '2026-09-01']],
     ['a reversed window', ['2026-09-01', '2026-08-01']],
   ])('rejects %s', (_label, value) => {
-    expect(() => compileFilterGroup(overlaps(DATE.id, value), properties)).toThrow(InvalidDatabaseFilterError);
+    expect(() => compileFilterGroup(overlaps(DATE.id, value), properties)).toThrow(
+      InvalidDatabaseFilterError,
+    );
   });
 });
 

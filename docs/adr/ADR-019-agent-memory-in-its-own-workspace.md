@@ -1,11 +1,11 @@
 # ADR-019: agent memory is a workspace of its own, written through the ordinary domain
 
-* Status: accepted
-* Date: 2026-08-12
+- Status: accepted
+- Date: 2026-08-12
 
 ## Context
 
-Issue #34 asks for eXocortex to be a *memory* for external agents rather than a
+Issue #34 asks for eXocortex to be a _memory_ for external agents rather than a
 place they write pages into: something that records by itself what happened in
 a working session, and plays the relevant part back when the next session
 starts. The alternative on the table was a dedicated memory service
@@ -87,20 +87,20 @@ situation.
 
 ## Consequences
 
-* A deployment without `memory.workspaceId` has no capture destination.
+- A deployment without `memory.workspaceId` has no capture destination.
   `capture` refuses with a reason instead of guessing, and `recall` still works
   across the workspaces the caller can read.
-* Claude Code gets capture and injection from two hooks in
+- Claude Code gets capture and injection from two hooks in
   `tools/claude-code-hooks`, not from the catalogue: a hook is what fires at the
   start and the end of a session. Both fail silently by design.
-* ChatGPT has no `SessionStart` equivalent. Automatic recall there is a line in
+- ChatGPT has no `SessionStart` equivalent. Automatic recall there is a line in
   the custom instructions ("call `recall` before answering when the question
   refers to earlier work"), which is why that text block belongs in
   `docs/mcp.md` rather than in somebody's head.
-* Recall ranks on whatever `SearchService` answers with, plus the boosts above.
+- Recall ranks on whatever `SearchService` answers with, plus the boosts above.
   Since ADR-020 that is full text and vector similarity fused, which changed
   the ranking inside `MemoryService` and nothing about the shape decided here.
-* The memory workspace was chosen so that pruning is allowed to exist, and
+- The memory workspace was chosen so that pruning is allowed to exist, and
   `memory.retentionDays` is that pruning: untouched notes into the trash after
   the period, destroyed after a second one. Zero, the default, keeps
   everything.

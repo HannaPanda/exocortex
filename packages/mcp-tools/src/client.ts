@@ -167,7 +167,11 @@ export function createFetchApiClient(options: FetchClientOptions): ExocortexApiC
       }
       // `Blob` accepts a `BufferSource`; wrapping in a Node `Buffer`-free
       // `Uint8Array` copy keeps this file free of Node-specific globals.
-      form.append('file', new Blob([new Uint8Array(input.bytes)], { type: input.contentType }), input.filename);
+      form.append(
+        'file',
+        new Blob([new Uint8Array(input.bytes)], { type: input.contentType }),
+        input.filename,
+      );
 
       const response = await fetch(url, {
         method: 'POST',

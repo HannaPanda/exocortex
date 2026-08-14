@@ -8,11 +8,7 @@ import {
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import { type DocumentSummary, type MoveDocumentRequest, QUEUE_NAMES } from '@exocortex/contracts';
-import {
-  collectDescendantIds,
-  type PrismaClient,
-  wouldCreateCycle,
-} from '@exocortex/database';
+import { collectDescendantIds, type PrismaClient, wouldCreateCycle } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 
@@ -73,7 +69,9 @@ export class DocumentMoveService {
     }
 
     const targetParent =
-      input.request.parentId === null ? null : await this.loadDocumentOrThrow(input.request.parentId);
+      input.request.parentId === null
+        ? null
+        : await this.loadDocumentOrThrow(input.request.parentId);
 
     assertPolicy(canMoveDocument(context.role, context.document, targetParent));
 
@@ -178,7 +176,9 @@ export class DocumentMoveService {
 
     const targetRole = await this.access.findRole(targetWorkspaceId, input.userId);
     const targetParent =
-      input.request.parentId === null ? null : await this.loadDocumentOrThrow(input.request.parentId);
+      input.request.parentId === null
+        ? null
+        : await this.loadDocumentOrThrow(input.request.parentId);
 
     assertPolicy(
       canMoveDocumentAcrossWorkspaces(

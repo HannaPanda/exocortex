@@ -170,10 +170,16 @@ export class OpenRouterProvider implements AiProvider {
     const text = message?.content ?? '';
     const toolCalls: AiToolCall[] = (message?.tool_calls ?? [])
       .filter(
-        (call): call is OpenRouterToolCallResponse & { function: { name: string; arguments: string } } =>
+        (
+          call,
+        ): call is OpenRouterToolCallResponse & { function: { name: string; arguments: string } } =>
           call.function?.name !== undefined && call.function.arguments !== undefined,
       )
-      .map((call) => ({ id: call.id, name: call.function.name, argumentsJson: call.function.arguments }));
+      .map((call) => ({
+        id: call.id,
+        name: call.function.name,
+        argumentsJson: call.function.arguments,
+      }));
 
     return {
       text,
@@ -238,9 +244,7 @@ export class OpenRouterProvider implements AiProvider {
       type: 'done',
       text: state.text,
       finishReason:
-        toolCalls.length > 0 && state.finishReason !== 'length'
-          ? 'tool_calls'
-          : state.finishReason,
+        toolCalls.length > 0 && state.finishReason !== 'length' ? 'tool_calls' : state.finishReason,
     };
   }
 

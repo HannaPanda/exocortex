@@ -107,9 +107,20 @@ describe('MockAiProvider', () => {
         {
           role: 'assistant' as const,
           content: '',
-          toolCalls: [{ id: 'mock-tool-call-1', type: 'function', function: { name: 'exo_page_get', arguments: '{}' } }],
+          toolCalls: [
+            {
+              id: 'mock-tool-call-1',
+              type: 'function',
+              function: { name: 'exo_page_get', arguments: '{}' },
+            },
+          ],
         },
-        { role: 'tool' as const, content: 'Seiteninhalt', toolCallId: 'mock-tool-call-1', toolName: 'exo_page_get' },
+        {
+          role: 'tool' as const,
+          content: 'Seiteninhalt',
+          toolCallId: 'mock-tool-call-1',
+          toolName: 'exo_page_get',
+        },
       ],
       correlationId: 'corr-test-tool-2',
       tools: [{ name: 'exo_page_get', description: 'Liest eine Seite', parameters: {} }],

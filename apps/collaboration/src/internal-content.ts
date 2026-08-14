@@ -143,7 +143,10 @@ export function createInternalContentHandler(options: InternalContentHandlerOpti
     // Same authorization a WebSocket connection gets: workspace membership is
     // re-read here rather than trusted from the caller, and an archived page
     // resolves to read-only for everybody.
-    const context = await options.access.findDocumentContext(documentId, verification.claims.userId);
+    const context = await options.access.findDocumentContext(
+      documentId,
+      verification.claims.userId,
+    );
     if (context === null) {
       respond(response, 404, { error: 'document_not_found' });
       return true;

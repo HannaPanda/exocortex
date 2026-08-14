@@ -67,7 +67,11 @@ beforeAll(async () => {
       data: { email: `conv-other-${suffix}@exocortex.test`, name: 'Other', emailVerified: true },
     }),
     prisma.user.create({
-      data: { email: `conv-outsider-${suffix}@exocortex.test`, name: 'Outsider', emailVerified: true },
+      data: {
+        email: `conv-outsider-${suffix}@exocortex.test`,
+        name: 'Outsider',
+        emailVerified: true,
+      },
     }),
   ]);
   ownerId = owner.id;
@@ -163,7 +167,11 @@ describe('ConversationsService.create / get / list', () => {
   it('lists only the caller-created conversations, most recent first', async () => {
     const first = await createConversation();
     const second = await createConversation();
-    const { conversations } = await service.list({ workspaceId, userId: ownerId, includeArchived: false });
+    const { conversations } = await service.list({
+      workspaceId,
+      userId: ownerId,
+      includeArchived: false,
+    });
     const ids = conversations.map((entry) => entry.id);
     expect(ids.indexOf(second)).toBeLessThan(ids.indexOf(first));
     expect(conversations.every((entry) => entry.createdById === ownerId)).toBe(true);
@@ -172,12 +180,16 @@ describe('ConversationsService.create / get / list', () => {
   it('rejects a conversation-owning-conversation lookup by another workspace member', async () => {
     const conversationId = await createConversation(ownerId);
     await expect(service.get(conversationId, otherMemberId)).rejects.toBeInstanceOf(AppError);
-    await expect(service.get(conversationId, otherMemberId)).rejects.toMatchObject({ code: 'forbidden' });
+    await expect(service.get(conversationId, otherMemberId)).rejects.toMatchObject({
+      code: 'forbidden',
+    });
   });
 
   it('rejects access for someone outside the workspace entirely', async () => {
     const conversationId = await createConversation(ownerId);
-    await expect(service.get(conversationId, 'not-a-member-id')).rejects.toBeInstanceOf(AuthorizationError);
+    await expect(service.get(conversationId, 'not-a-member-id')).rejects.toBeInstanceOf(
+      AuthorizationError,
+    );
   });
 });
 
@@ -211,10 +223,14 @@ describe('ConversationsService.postMessage', () => {
     await service.postMessage({
       conversationId,
       userId: ownerId,
-      request: { content: 'Wie funktioniert die Auftragsschlüssel-Sortierung im Dokumentbaum genau?' },
+      request: {
+        content: 'Wie funktioniert die Auftragsschlüssel-Sortierung im Dokumentbaum genau?',
+      },
       correlationId: 'test-post-2',
     });
-    const conversation = await prisma.aiConversation.findUniqueOrThrow({ where: { id: conversationId } });
+    const conversation = await prisma.aiConversation.findUniqueOrThrow({
+      where: { id: conversationId },
+    });
     expect(conversation.title).toBe(
       'Wie funktioniert die Auftragsschlüssel-Sortierung im Dokumentbaum genau'.slice(0, 60),
     );
@@ -273,7 +289,9 @@ describe('ConversationsService.postMessage', () => {
 
       const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: response.run?.id } });
       expect(run.documentId).toBe(documentId);
-      const conversation = await prisma.aiConversation.findUniqueOrThrow({ where: { id: conversationId } });
+      const conversation = await prisma.aiConversation.findUniqueOrThrow({
+        where: { id: conversationId },
+      });
       expect(conversation.documentId).toBe(documentId);
     });
 
@@ -288,7 +306,10 @@ describe('ConversationsService.postMessage', () => {
         request: { content: 'Frage auf der ersten Seite', documentId: first },
         correlationId: 'test-context-2a',
       });
-      await prisma.aiRun.updateMany({ where: { conversationId }, data: { status: 'COMPLETED', finishedAt: new Date() } });
+      await prisma.aiRun.updateMany({
+        where: { conversationId },
+        data: { status: 'COMPLETED', finishedAt: new Date() },
+      });
       await service.postMessage({
         conversationId,
         userId: ownerId,
@@ -300,7 +321,9 @@ describe('ConversationsService.postMessage', () => {
         where: { conversationId },
         orderBy: { createdAt: 'asc' },
       });
-      const switchIndex = messages.findIndex((message) => message.content.startsWith('↳ Kontextwechsel'));
+      const switchIndex = messages.findIndex((message) =>
+        message.content.startsWith('↳ Kontextwechsel'),
+      );
       expect(switchIndex).toBeGreaterThanOrEqual(0);
       expect(messages[switchIndex]?.role).toBe('SYSTEM');
       expect(messages[switchIndex]?.content).toContain('Zweite Seite');
@@ -317,7 +340,10 @@ describe('ConversationsService.postMessage', () => {
         request: { content: 'Erste Frage', documentId },
         correlationId: 'test-context-3a',
       });
-      await prisma.aiRun.updateMany({ where: { conversationId }, data: { status: 'COMPLETED', finishedAt: new Date() } });
+      await prisma.aiRun.updateMany({
+        where: { conversationId },
+        data: { status: 'COMPLETED', finishedAt: new Date() },
+      });
       await service.postMessage({
         conversationId,
         userId: ownerId,
@@ -341,7 +367,10 @@ describe('ConversationsService.postMessage', () => {
         request: { content: 'Frage mit Seite', documentId },
         correlationId: 'test-context-4a',
       });
-      await prisma.aiRun.updateMany({ where: { conversationId }, data: { status: 'COMPLETED', finishedAt: new Date() } });
+      await prisma.aiRun.updateMany({
+        where: { conversationId },
+        data: { status: 'COMPLETED', finishedAt: new Date() },
+      });
       const response = await service.postMessage({
         conversationId,
         userId: ownerId,
@@ -388,7 +417,10 @@ describe('ConversationsService.postMessage', () => {
         request: { content: 'Erste Frage', documentId },
         correlationId: 'test-context-7a',
       });
-      await prisma.aiRun.updateMany({ where: { conversationId }, data: { status: 'COMPLETED', finishedAt: new Date() } });
+      await prisma.aiRun.updateMany({
+        where: { conversationId },
+        data: { status: 'COMPLETED', finishedAt: new Date() },
+      });
 
       const response = await service.postMessage({
         conversationId,
@@ -411,7 +443,10 @@ describe('ConversationsService.postMessage', () => {
         request: { content: 'Erste Frage', documentId },
         correlationId: 'test-context-8a',
       });
-      await prisma.aiRun.updateMany({ where: { conversationId }, data: { status: 'COMPLETED', finishedAt: new Date() } });
+      await prisma.aiRun.updateMany({
+        where: { conversationId },
+        data: { status: 'COMPLETED', finishedAt: new Date() },
+      });
 
       await service.postMessage({
         conversationId,
@@ -430,7 +465,9 @@ describe('ConversationsService.postMessage', () => {
       expect(run.documentId).toBeNull();
       // The binding survives, otherwise `/context on` would have nothing to
       // turn back on and the panel would have forgotten where it is.
-      const conversation = await prisma.aiConversation.findUniqueOrThrow({ where: { id: conversationId } });
+      const conversation = await prisma.aiConversation.findUniqueOrThrow({
+        where: { id: conversationId },
+      });
       expect(conversation.documentId).toBe(documentId);
       expect(conversation.pageContextEnabled).toBe(false);
     });
@@ -471,7 +508,10 @@ describe('ConversationsService.postMessage', () => {
         request: { content: 'Erste Frage', documentId: first },
         correlationId: 'test-context-10a',
       });
-      await prisma.aiRun.updateMany({ where: { conversationId }, data: { status: 'COMPLETED', finishedAt: new Date() } });
+      await prisma.aiRun.updateMany({
+        where: { conversationId },
+        data: { status: 'COMPLETED', finishedAt: new Date() },
+      });
       await service.postMessage({
         conversationId,
         userId: ownerId,
@@ -596,7 +636,10 @@ describe('ConversationsService.postMessage', () => {
         request: {
           content: 'Erklär mir das hier',
           documentId,
-          selection: { blockIds: ['abcdefgh1234', 'ijklmnop5678'], text: 'Der ausgewählte Absatz.' },
+          selection: {
+            blockIds: ['abcdefgh1234', 'ijklmnop5678'],
+            text: 'Der ausgewählte Absatz.',
+          },
         },
         correlationId: 'test-selection-1',
       });
@@ -605,7 +648,9 @@ describe('ConversationsService.postMessage', () => {
         where: { conversationId },
         orderBy: { createdAt: 'asc' },
       });
-      const index = messages.findIndex((message) => message.content.startsWith('↳ Ausgewählter Abschnitt'));
+      const index = messages.findIndex((message) =>
+        message.content.startsWith('↳ Ausgewählter Abschnitt'),
+      );
       expect(index).toBeGreaterThanOrEqual(0);
       expect(messages[index]?.role).toBe('SYSTEM');
       expect(messages[index]?.content).toContain('Seite mit Auswahl');
@@ -712,7 +757,9 @@ describe('ConversationsService.postMessage', () => {
       const messages = await prisma.aiConversationMessage.findMany({ where: { conversationId } });
       expect(messages.length).toBeGreaterThan(0);
       expect(messages.every((message) => message.supersededAt !== null)).toBe(true);
-      const conversation = await prisma.aiConversation.findUniqueOrThrow({ where: { id: conversationId } });
+      const conversation = await prisma.aiConversation.findUniqueOrThrow({
+        where: { id: conversationId },
+      });
       expect(conversation.estimatedTokens).toBe(0);
     });
   });
@@ -786,7 +833,9 @@ describe('ConversationsService.postMessage', () => {
       });
       expect(response.command?.message).toContain('unterstützt diese Stufe nicht');
 
-      const conversation = await prisma.aiConversation.findUniqueOrThrow({ where: { id: conversationId } });
+      const conversation = await prisma.aiConversation.findUniqueOrThrow({
+        where: { id: conversationId },
+      });
       expect(conversation.reasoningLevel).toBe('NONE');
     });
   });
@@ -848,7 +897,9 @@ describe('ConversationsService.archive', () => {
     const result = await service.archive(conversationId, ownerId);
     expect(result).toEqual({ archived: true });
 
-    const conversation = await prisma.aiConversation.findUniqueOrThrow({ where: { id: conversationId } });
+    const conversation = await prisma.aiConversation.findUniqueOrThrow({
+      where: { id: conversationId },
+    });
     expect(conversation.archivedAt).not.toBeNull();
   });
 });

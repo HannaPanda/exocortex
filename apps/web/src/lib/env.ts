@@ -23,7 +23,9 @@ const parsed = publicEnvSchema.safeParse({
 if (!parsed.success) {
   throw new Error(
     'Invalid public environment for the web app. Fix these variables:\n' +
-      parsed.error.issues.map((issue) => `  - ${issue.path.join('.')}: ${issue.message}`).join('\n'),
+      parsed.error.issues
+        .map((issue) => `  - ${issue.path.join('.')}: ${issue.message}`)
+        .join('\n'),
   );
 }
 

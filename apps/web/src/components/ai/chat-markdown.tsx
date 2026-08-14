@@ -47,7 +47,10 @@ function parseChatMarkdown(markdown: string): ProseMirrorDocument {
   } catch {
     return {
       type: 'doc',
-      content: markdown.length > 0 ? [{ type: 'paragraph', content: [{ type: 'text', text: markdown }] }] : [],
+      content:
+        markdown.length > 0
+          ? [{ type: 'paragraph', content: [{ type: 'text', text: markdown }] }]
+          : [],
     };
   }
 }
@@ -62,10 +65,15 @@ function useChatMarkdownDocument(content: string, streaming: boolean): ProseMirr
   // The lazy initializer is a pure function of `content`; everything that
   // follows only ever mutates refs from inside an effect or a callback, never
   // synchronously during render (React's rules of components and hooks).
-  const [document, setDocument] = React.useState<ProseMirrorDocument>(() => parseChatMarkdown(content));
+  const [document, setDocument] = React.useState<ProseMirrorDocument>(() =>
+    parseChatMarkdown(content),
+  );
 
   const contentRef = React.useRef(content);
-  const cacheRef = React.useRef<{ content: string; document: ProseMirrorDocument }>({ content, document });
+  const cacheRef = React.useRef<{ content: string; document: ProseMirrorDocument }>({
+    content,
+    document,
+  });
   const timerRef = React.useRef<number | null>(null);
   // `null` until the first parse; an unset "last parsed at" must not throttle
   // that first parse, which is why the effect below treats it as "long ago".
@@ -98,7 +106,9 @@ function useChatMarkdownDocument(content: string, streaming: boolean): ProseMirr
     if (timerRef.current !== null) return;
 
     const elapsed =
-      lastParseAtRef.current === null ? Number.POSITIVE_INFINITY : Date.now() - lastParseAtRef.current;
+      lastParseAtRef.current === null
+        ? Number.POSITIVE_INFINITY
+        : Date.now() - lastParseAtRef.current;
     if (elapsed >= PARSE_THROTTLE_MS) {
       parseNow();
     } else {
@@ -131,7 +141,10 @@ function headingClassName(level: number): string {
     : 'mt-2 mb-1 text-[0.875rem] font-semibold first:mt-0';
 }
 
-function renderInlineChildren(nodes: readonly ProseMirrorNode[] | undefined, keyPrefix: string): React.ReactNode {
+function renderInlineChildren(
+  nodes: readonly ProseMirrorNode[] | undefined,
+  keyPrefix: string,
+): React.ReactNode {
   return (nodes ?? []).map((node, index) => renderInlineNode(node, `${keyPrefix}-${index}`));
 }
 
@@ -157,7 +170,9 @@ function renderText(node: ProseMirrorNode, key: string): React.ReactNode {
     if (mark.type === 'bold') content = <strong className="font-semibold">{content}</strong>;
     else if (mark.type === 'italic') content = <em className="italic">{content}</em>;
     else if (mark.type === 'code') {
-      content = <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">{content}</code>;
+      content = (
+        <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">{content}</code>
+      );
     }
   }
 
@@ -166,7 +181,11 @@ function renderText(node: ProseMirrorNode, key: string): React.ReactNode {
     const href = typeof link.attrs?.href === 'string' ? link.attrs.href : '';
     if (href.startsWith(WIKI_LINK_SCHEME)) {
       return (
-        <span key={key} className="italic text-muted-foreground" title="Seitenverweis (im Chat nicht anklickbar)">
+        <span
+          key={key}
+          className="italic text-muted-foreground"
+          title="Seitenverweis (im Chat nicht anklickbar)"
+        >
           {content}
         </span>
       );
@@ -237,7 +256,10 @@ function ChatCodeBlock({ node, keyPrefix }: { node: ProseMirrorNode; keyPrefix: 
   );
 }
 
-function renderBlockChildren(nodes: readonly ProseMirrorNode[] | undefined, keyPrefix: string): React.ReactNode {
+function renderBlockChildren(
+  nodes: readonly ProseMirrorNode[] | undefined,
+  keyPrefix: string,
+): React.ReactNode {
   return (nodes ?? []).map((node, index) => renderBlock(node, `${keyPrefix}-${index}`));
 }
 

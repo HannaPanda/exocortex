@@ -67,8 +67,8 @@ export function ConnectionSetupPanel({ freshSecret, onForgetSecret }: Connection
           <KeyRoundIcon />
           <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
             <span>
-              Dein neues Token steckt bereits in den Befehlen unten. Es verschwindet, sobald du diese
-              Seite neu lädst.
+              Dein neues Token steckt bereits in den Befehlen unten. Es verschwindet, sobald du
+              diese Seite neu lädst.
             </span>
             <Button variant="outline" size="sm" onClick={onForgetSecret}>
               Token ausblenden

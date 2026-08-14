@@ -38,7 +38,9 @@ function wrap(instance: PinoLogger): Logger {
 /** Builds a `Logger` that never writes to stdout. */
 export function createDiagnosticsLogger(options: { logFile?: string }): Logger {
   const destination =
-    options.logFile !== undefined ? pino.destination({ dest: options.logFile, mkdir: true }) : pino.destination(2);
+    options.logFile !== undefined
+      ? pino.destination({ dest: options.logFile, mkdir: true })
+      : pino.destination(2);
   return wrap(
     pino(
       {

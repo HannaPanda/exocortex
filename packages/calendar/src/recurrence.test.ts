@@ -52,7 +52,9 @@ const WEEKLY_WITH_OVERRIDE = calendar(
 
 describe('resolveOccurrence', () => {
   it('returns the next occurrence of a yearly series, not its first', () => {
-    const occurrence = resolveOccurrence(YEARLY_ALL_DAY, { from: new Date('2026-08-08T10:00:00Z') });
+    const occurrence = resolveOccurrence(YEARLY_ALL_DAY, {
+      from: new Date('2026-08-08T10:00:00Z'),
+    });
 
     // The series starts in 2022; what belongs in the table is 2026.
     expect(occurrence?.start).toBe('2026-08-17T00:00:00.000Z');
@@ -64,7 +66,9 @@ describe('resolveOccurrence', () => {
   it('keeps an all-day occurrence current for the whole day', () => {
     // Late in the evening of the day itself: the exclusive end is the next
     // midnight, so today still wins over next year.
-    const occurrence = resolveOccurrence(YEARLY_ALL_DAY, { from: new Date('2026-08-17T22:00:00Z') });
+    const occurrence = resolveOccurrence(YEARLY_ALL_DAY, {
+      from: new Date('2026-08-17T22:00:00Z'),
+    });
 
     expect(occurrence?.start).toBe('2026-08-17T00:00:00.000Z');
   });
@@ -235,9 +239,7 @@ describe('describeRecurrence', () => {
   });
 
   it('spells out an interval and the weekdays', () => {
-    expect(describeRecurrence('FREQ=WEEKLY;INTERVAL=2;BYDAY=TU,TH')).toBe(
-      'alle 2 Wochen (Di, Do)',
-    );
+    expect(describeRecurrence('FREQ=WEEKLY;INTERVAL=2;BYDAY=TU,TH')).toBe('alle 2 Wochen (Di, Do)');
   });
 
   it('reads an ordinal weekday', () => {
@@ -246,7 +248,9 @@ describe('describeRecurrence', () => {
   });
 
   it('appends the end of the series', () => {
-    expect(describeRecurrence('FREQ=YEARLY;UNTIL=20301231T235959Z')).toBe('jährlich, bis 31.12.2030');
+    expect(describeRecurrence('FREQ=YEARLY;UNTIL=20301231T235959Z')).toBe(
+      'jährlich, bis 31.12.2030',
+    );
     expect(describeRecurrence('FREQ=WEEKLY;COUNT=5')).toBe('wöchentlich, 5 Mal');
   });
 

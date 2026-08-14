@@ -1,6 +1,6 @@
 'use client';
 
-import { cn,Progress, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
+import { cn, Progress, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
 
 export interface ContextMeterProps {
   estimatedTokens: number;

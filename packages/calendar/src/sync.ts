@@ -1,5 +1,10 @@
 import { CalDavError, type DavClient } from './dav-client';
-import { type CalendarObject, type CalendarObjectRef, type SyncDelta, type TimeRange } from './types';
+import {
+  type CalendarObject,
+  type CalendarObjectRef,
+  type SyncDelta,
+  type TimeRange,
+} from './types';
 import { asArray, childNames, isSuccessStatus, nodeAt, statusCode, textAt } from './xml';
 
 /** Multiget is chunked: one request per this many hrefs. */
@@ -117,7 +122,9 @@ export async function listObjects(
       isSuccessStatus(textAt(propstat, 'status')),
     );
     // The collection itself comes back too and is not an object in it.
-    const kinds = propstats.flatMap((propstat) => childNames(nodeAt(propstat, 'prop', 'resourcetype')));
+    const kinds = propstats.flatMap((propstat) =>
+      childNames(nodeAt(propstat, 'prop', 'resourcetype')),
+    );
     if (kinds.includes('collection')) continue;
 
     const etag = propstats

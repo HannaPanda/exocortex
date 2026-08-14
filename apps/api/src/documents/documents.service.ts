@@ -20,10 +20,7 @@ import {
   QUEUE_NAMES,
   type UpdateDocumentRequest,
 } from '@exocortex/contracts';
-import {
-  collectAncestors,
-  type PrismaClient,
-} from '@exocortex/database';
+import { collectAncestors, type PrismaClient } from '@exocortex/database';
 import { createEmptyYjsState, EXOCORTEX_SCHEMA_VERSION } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
@@ -50,7 +47,6 @@ import { DocumentTrashService } from './document-trash.service';
 
 /** Re-exported so the many callers that import them from here keep working. */
 export { DOCUMENT_SELECT, toIconColor, toSummary } from './document-shape';
-
 
 /**
  * Document domain service.
@@ -169,7 +165,10 @@ export class DocumentsService {
     // fetched above rather than a second query: it is what tells the context
     // panel apart a database row (`PAGE` under a `COLLECTION`, ADR-011) from an
     // ordinary sub-page.
-    const parentType = row.parentId === null ? null : (siblings.find((entry) => entry.id === row.parentId)?.type ?? null);
+    const parentType =
+      row.parentId === null
+        ? null
+        : (siblings.find((entry) => entry.id === row.parentId)?.type ?? null);
     // Only a database itself has rows; the count is one extra query, run only
     // when the question actually applies.
     const rowCount =
@@ -299,16 +298,14 @@ export class DocumentsService {
       const effectiveTrigger =
         input.request.aiRuleTrigger !== undefined
           ? input.request.aiRuleTrigger
-          : (
+          : ((
               await this.prisma.document.findUnique({
                 where: { id: input.documentId },
                 select: { aiRuleTrigger: true },
               })
-            )?.aiRuleTrigger ?? null;
+            )?.aiRuleTrigger ?? null);
       if (effectiveTrigger === null || effectiveTrigger.trim().length === 0) {
-        throw AppError.validation(
-          'An ON_DEMAND rule page requires a non-empty aiRuleTrigger',
-        );
+        throw AppError.validation('An ON_DEMAND rule page requires a non-empty aiRuleTrigger');
       }
     }
 
@@ -396,8 +393,6 @@ export class DocumentsService {
     };
   }
 
-
-
   /**
    * A cover has to be an image the workspace actually owns. Without this check
    * the reference alone would leak the existence of another workspace's
@@ -408,7 +403,11 @@ export class DocumentsService {
       where: { id: attachmentId },
       select: { workspaceId: true, mimeType: true, deletedAt: true },
     });
-    if (attachment === null || attachment.deletedAt !== null || attachment.workspaceId !== workspaceId) {
+    if (
+      attachment === null ||
+      attachment.deletedAt !== null ||
+      attachment.workspaceId !== workspaceId
+    ) {
       throw AppError.notFound('Attachment');
     }
     if (!attachment.mimeType.startsWith('image/')) {
@@ -455,7 +454,13 @@ export class DocumentsService {
 
     const rows = await this.prisma.document.findMany({
       where: { workspaceId, archivedAt: null, aiRuleMode: { not: 'OFF' } },
-      select: { id: true, title: true, aiRuleMode: true, aiRuleTrigger: true, aiRulePriority: true },
+      select: {
+        id: true,
+        title: true,
+        aiRuleMode: true,
+        aiRuleTrigger: true,
+        aiRulePriority: true,
+      },
       orderBy: [{ aiRulePriority: 'asc' }, { title: 'asc' }],
     });
 

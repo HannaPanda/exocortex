@@ -33,8 +33,7 @@ export function useComments(
 ): UseQueryResult<CommentListResponse> {
   return useQuery({
     queryKey: commentKeys.list(documentId ?? 'none'),
-    queryFn: () =>
-      apiRequest<CommentListResponse>(`/api/documents/${documentId ?? ''}/comments`),
+    queryFn: () => apiRequest<CommentListResponse>(`/api/documents/${documentId ?? ''}/comments`),
     enabled: documentId !== undefined && enabled,
     staleTime: 10_000,
   });

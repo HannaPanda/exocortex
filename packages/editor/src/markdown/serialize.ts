@@ -27,7 +27,10 @@ function markKey(mark: ProseMirrorMark): string {
   return `${mark.type}:${JSON.stringify(mark.attrs ?? {})}`;
 }
 
-function resolve(value: string | ((mark: ProseMirrorMark) => string), mark: ProseMirrorMark): string {
+function resolve(
+  value: string | ((mark: ProseMirrorMark) => string),
+  mark: ProseMirrorMark,
+): string {
   return typeof value === 'function' ? value(mark) : value;
 }
 

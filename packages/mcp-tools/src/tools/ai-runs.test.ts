@@ -11,7 +11,10 @@ interface RecordedCall {
   path: string;
 }
 
-function createFakeClient(response: unknown): { client: ExocortexApiClient; calls: RecordedCall[] } {
+function createFakeClient(response: unknown): {
+  client: ExocortexApiClient;
+  calls: RecordedCall[];
+} {
   const calls: RecordedCall[] = [];
   const client: ExocortexApiClient = {
     async request(input) {

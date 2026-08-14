@@ -94,9 +94,7 @@ function renderTrashEntries(
     budget.left -= 1;
     const cascade = entry.reason === 'cascade' ? ', mit archiviert' : '';
     const below =
-      entry.descendantCount === 0
-        ? ''
-        : `, ${entry.descendantCount} archivierte Seite(n) darunter`;
+      entry.descendantCount === 0 ? '' : `, ${entry.descendantCount} archivierte Seite(n) darunter`;
     lines.push(
       `${'  '.repeat(depth)}- ${entry.title} (id: ${entry.id}, type: ${entry.type}, ` +
         `archiviert ${formatArchivedAt(entry.archivedAt)}${cascade}${below})`,
@@ -216,7 +214,8 @@ export const pageDeleteTool: AnyToolDefinition = defineTool({
 
 export const pageSnapshotsTool: AnyToolDefinition = defineTool({
   name: 'exo_page_snapshots',
-  description: 'Listet die gespeicherten Snapshots einer Seite (für Wiederherstellung nach einem Schreibvorgang).',
+  description:
+    'Listet die gespeicherten Snapshots einer Seite (für Wiederherstellung nach einem Schreibvorgang).',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
   mutating: false,
@@ -250,12 +249,17 @@ export const pageRestoreSnapshotTool: AnyToolDefinition = defineTool({
       path: `/api/documents/${input.documentId}/snapshots/${input.snapshotId}/restore`,
       responseSchema: restoreSnapshotResultSchema,
     });
-    return { text: `Seite ${result.documentId} auf Snapshot ${result.restoredFrom} zurückgesetzt.`, data: result };
+    return {
+      text: `Seite ${result.documentId} auf Snapshot ${result.restoredFrom} zurückgesetzt.`,
+      data: result,
+    };
   },
 });
 
 /** One-line German summary of an activity entry, for the model's text response. */
-function formatActivityEntry(entry: z.infer<typeof documentActivityResponseSchema>['entries'][number]): string {
+function formatActivityEntry(
+  entry: z.infer<typeof documentActivityResponseSchema>['entries'][number],
+): string {
   const who = entry.actorName ?? 'Unbekannt';
   switch (entry.type) {
     case 'created':

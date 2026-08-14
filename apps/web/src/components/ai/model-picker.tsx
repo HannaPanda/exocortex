@@ -86,17 +86,26 @@ export function ModelPicker({
 
   return (
     <div className="flex min-w-0 flex-wrap items-center gap-2">
-      <Select value={modelSlug ?? undefined} onValueChange={(next) => next !== null && onModelChange(next)}>
+      <Select
+        value={modelSlug ?? undefined}
+        onValueChange={(next) => next !== null && onModelChange(next)}
+      >
         <Tooltip>
           <TooltipTrigger
             render={
-              <SelectTrigger size="sm" className="min-w-0 max-w-[11rem]" data-testid="ai-model-picker">
+              <SelectTrigger
+                size="sm"
+                className="min-w-0 max-w-[11rem]"
+                data-testid="ai-model-picker"
+              >
                 <SelectValue>{() => selectedModel?.displayName ?? 'Modell wählen'}</SelectValue>
               </SelectTrigger>
             }
           />
           {selectedModel !== undefined ? (
-            <TooltipContent className="whitespace-pre-line">{modelTooltip(selectedModel)}</TooltipContent>
+            <TooltipContent className="whitespace-pre-line">
+              {modelTooltip(selectedModel)}
+            </TooltipContent>
           ) : null}
         </Tooltip>
         <SelectContent>
@@ -119,7 +128,11 @@ export function ModelPicker({
         <Tooltip>
           <TooltipTrigger
             render={
-              <SelectTrigger size="sm" className="min-w-0 max-w-[7rem]" data-testid="ai-reasoning-picker">
+              <SelectTrigger
+                size="sm"
+                className="min-w-0 max-w-[7rem]"
+                data-testid="ai-reasoning-picker"
+              >
                 <SelectValue>{() => REASONING_LABELS[reasoningLevel]}</SelectValue>
               </SelectTrigger>
             }

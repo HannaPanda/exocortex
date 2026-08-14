@@ -26,7 +26,12 @@ interface Signature {
 }
 
 const SIGNATURES: Signature[] = [
-  { mimeType: 'image/png', extension: 'png', offset: 0, bytes: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a] },
+  {
+    mimeType: 'image/png',
+    extension: 'png',
+    offset: 0,
+    bytes: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
+  },
   { mimeType: 'image/jpeg', extension: 'jpg', offset: 0, bytes: [0xff, 0xd8, 0xff] },
   { mimeType: 'image/gif', extension: 'gif', offset: 0, bytes: [0x47, 0x49, 0x46, 0x38] },
   {
@@ -43,7 +48,12 @@ const SIGNATURES: Signature[] = [
     bytes: [0x66, 0x74, 0x79, 0x70],
     verify: (buffer) => matches(buffer, 8, [0x61, 0x76, 0x69, 0x66]),
   },
-  { mimeType: 'application/pdf', extension: 'pdf', offset: 0, bytes: [0x25, 0x50, 0x44, 0x46, 0x2d] },
+  {
+    mimeType: 'application/pdf',
+    extension: 'pdf',
+    offset: 0,
+    bytes: [0x25, 0x50, 0x44, 0x46, 0x2d],
+  },
   { mimeType: 'application/zip', extension: 'zip', offset: 0, bytes: [0x50, 0x4b, 0x03, 0x04] },
 
   // Media for the video and audio blocks. The ISO base media container (`ftyp`)
@@ -65,7 +75,11 @@ const SIGNATURES: Signature[] = [
     // `isom`, `iso2`, `mp41`, `mp42` and `avc1` are all MP4 video brands.
     verify: (buffer) =>
       ['isom', 'iso2', 'mp41', 'mp42', 'avc1', 'M4V '].some((brand) =>
-        matches(buffer, 8, [...brand].map((character) => character.charCodeAt(0))),
+        matches(
+          buffer,
+          8,
+          [...brand].map((character) => character.charCodeAt(0)),
+        ),
       ),
   },
   {
@@ -125,7 +139,9 @@ export function detectMimeType(
 
   switch (declaredMimeType) {
     case 'application/json':
-      return isParsableJson(head, buffer) ? { mimeType: 'application/json', extension: 'json' } : null;
+      return isParsableJson(head, buffer)
+        ? { mimeType: 'application/json', extension: 'json' }
+        : null;
     case 'text/markdown':
       return { mimeType: 'text/markdown', extension: 'md' };
     case 'text/plain':
@@ -154,7 +170,8 @@ export function isProbablyText(buffer: Uint8Array): boolean {
 
 function isParsableJson(head: string, buffer: Uint8Array): boolean {
   // Only fully decode small payloads; large JSON is accepted based on its head.
-  if (buffer.length > 4_096) return head.trimStart().startsWith('{') || head.trimStart().startsWith('[');
+  if (buffer.length > 4_096)
+    return head.trimStart().startsWith('{') || head.trimStart().startsWith('[');
   try {
     JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(buffer));
     return true;

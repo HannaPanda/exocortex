@@ -209,14 +209,16 @@ export function useLinkNavigation({
                         router.push(`/arbeitsbereich/${workspaceId}/seite/${match.id}`);
                       }}
                     >
-                      <DocumentIcon icon={match.icon} iconColor={match.iconColor} type={match.type} />
+                      <DocumentIcon
+                        icon={match.icon}
+                        iconColor={match.iconColor}
+                        type={match.type}
+                      />
                       <span className="flex-1 truncate">{match.title}</span>
                       <span className="truncate text-xs text-muted-foreground">
                         {match.path.map((ancestor) => ancestor.title).join(' / ')}
                       </span>
-                      {match.archivedAt === null ? null : (
-                        <Badge variant="muted">Archiviert</Badge>
-                      )}
+                      {match.archivedAt === null ? null : <Badge variant="muted">Archiviert</Badge>}
                     </button>
                   </li>
                 ))

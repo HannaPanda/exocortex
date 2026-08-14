@@ -2,7 +2,7 @@
 
 eXocortex is reachable from external MCP clients (Hermes, Claude Code, ChatGPT,
 any client that speaks stdio or Streamable HTTP) and from its own built-in AI
-tool loop through the *same* tool catalogue. This document covers the
+tool loop through the _same_ tool catalogue. This document covers the
 architecture, the two transports, the tool reference, how to add a tool,
 authentication, the confirmation gate, and how to configure a client.
 
@@ -10,19 +10,19 @@ authentication, the confirmation gate, and how to configure a client.
 
 One catalogue, several surfaces:
 
-* **`packages/mcp-tools`** — the tool catalogue. Each tool is a name, a German
+- **`packages/mcp-tools`** — the tool catalogue. Each tool is a name, a German
   description, a zod input schema, and an `execute(client, input)` that talks
   to the REST API through an injected `ExocortexApiClient`. It also owns the
   MCP method dispatch (`src/protocol.ts`), which is transport-free on purpose:
   both transports below run that same code and add only their own framing.
-* **`apps/mcp`** — a small stdio JSON-RPC bin. It builds a `fetch`-based
+- **`apps/mcp`** — a small stdio JSON-RPC bin. It builds a `fetch`-based
   `ExocortexApiClient` from environment variables and hands messages to the
   shared dispatcher. Started as a subprocess by the client.
-* **`apps/api`, `POST /api/mcp`** — the same protocol over HTTP
+- **`apps/api`, `POST /api/mcp`** — the same protocol over HTTP
   ([ADR-018](adr/ADR-018-remote-mcp-over-http.md)), for clients that connect to
   a URL and cannot start a process. This is the only way ChatGPT can be
   connected.
-* **`apps/worker`** (brief 04) imports the *same* catalogue for the built-in
+- **`apps/worker`** (brief 04) imports the _same_ catalogue for the built-in
   AI's tool loop, authenticated with a short-lived service token instead of a
   persistent API token.
 
@@ -60,7 +60,7 @@ Hermes / Claude Code                        ChatGPT / any remote client
 The HTTP endpoint's arrow back into `apps/api` is a real HTTP call, over
 loopback to `127.0.0.1:3211`. The API answers its own request. That is one
 extra hop per tool call, and it is what keeps the rule below true for the HTTP
-transport as well: a tool cannot skip a policy check, because the check *is*
+transport as well: a tool cannot skip a policy check, because the check _is_
 the same request a browser makes.
 
 The catalogue **only** talks REST. It never imports `@exocortex/database`,
@@ -106,64 +106,64 @@ restoring are not destructive, and neither are the reversible metadata switches
 (layout, cover, AI rule, resolving a comment), because marking a one-click
 change as dangerous only trains people to click past the warnings that matter.
 
-| Tool | Mutating | Destructive | REST call |
-| --- | --- | --- | --- |
-| `exo_list_workspaces` | no | no | `GET /api/workspaces` |
-| `exo_workspace_rename` | yes | yes | `PATCH /api/workspaces/:workspaceId` (name and/or slug, independently) |
-| `exo_page_tree` | no | no | `GET /api/workspaces/:workspaceId/documents/tree` -- the text answer is the indented tree with ids, capped at 300 pages. The cap is spent breadth-first, so an oversized workspace loses its deepest level rather than its last sections; archived pages are counted, not listed |
-| `exo_page_read` | no | no | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars) |
-| `exo_page_create` | yes | no | `POST /api/workspaces/:workspaceId/import/markdown` when `markdown` is given, else `POST /api/workspaces/:workspaceId/documents` |
-| `exo_page_write` | yes | yes | `POST /api/documents/:documentId/content` |
-| `exo_page_rename` | yes | yes | `PATCH /api/documents/:documentId` (title, icon, iconColor) |
-| `exo_page_move` | yes | no | `POST /api/documents/:documentId/move` -- an optional `workspaceId` moves the whole subtree into a different workspace instead of just re-parenting within the current one |
-| `exo_page_archive` | yes | yes | `POST /api/documents/:documentId/archive` |
-| `exo_page_restore` | yes | no | `POST /api/documents/:documentId/restore` |
-| `exo_page_trash` | no | no | `GET /api/workspaces/:workspaceId/trash` (issue #32) -- the trash as a tree: what was archived, what came along with it (`reason: cascade`) and when. Capped at 200 lines |
-| `exo_page_delete` | yes | yes | `DELETE /api/documents/:documentId` (issue #31) -- irreversible, archived pages only, ADMIN or OWNER. Offered on `mcp` only, never to the built-in AI: that surface has no confirmation gate, only the `ai.mutatingToolsEnabled` switch, and the one operation nothing can undo does not belong behind a switch somebody flipped once. The first call answers with what the deletion would take with it (`GET .../deletion-preview`) and executes nothing |
-| `exo_page_snapshots` | no | no | `GET /api/documents/:documentId/snapshots` |
-| `exo_page_restore_snapshot` | yes | yes | `POST /api/documents/:documentId/snapshots/:snapshotId/restore` |
-| `exo_page_activity` | no | no | `GET /api/documents/:documentId/activity` -- the page's own history (issue #20): created, renamed, moved, archived, restored, restorable snapshots and condensed editing sessions, merged server-side. Not a compliance audit trail; see `docs/background-jobs.md`. |
-| `exo_page_set_ai_rule` | yes | no | `PATCH /api/documents/:documentId` (aiRuleMode/Trigger/Priority) |
-| `exo_page_set_layout` | yes | no | `PATCH /api/documents/:documentId` (layout: narrow/wide/full) |
-| `exo_page_set_cover` | yes | no | `PATCH /api/documents/:documentId` (coverAttachmentId/coverPosition) |
-| `exo_page_generate_cover` | yes | no | `POST /api/documents/:documentId/cover/generate` |
-| `exo_page_resolve_link` | no | no | `GET /api/workspaces/:workspaceId/documents/resolve?documentId=&title=&includeArchived=&limit=` -- identity first, title as the fallback; `resolvedBy` says which answered |
-| `exo_page_backlinks` | no | no | `GET /api/documents/:documentId/links` -- both directions of the reference index, including references to a title no page carries |
-| `exo_page_related` | no | no | `GET /api/documents/:documentId/related` -- pages that resemble this one without being linked to it (issue #33), from the stored embeddings; `state` says whether the answer is `ready`, `pending` (page not embedded yet) or `disabled` (semantic search off) |
-| `exo_comment_list` | no | no | `GET /api/documents/:documentId/comments?includeResolved=` -- threads with their replies, open ones first, and whether an anchored thread has been orphaned |
-| `exo_comment_create` | yes | no | `POST /api/documents/:documentId/comments` -- page-wide without `blockId`, anchored to a block with one, a reply with `parentId` |
-| `exo_comment_update` | yes | yes | `PATCH /api/comments/:commentId` -- the author's own body only |
-| `exo_comment_resolve` | yes | no | `POST /api/comments/:commentId/resolve` (`resolved: false` reopens) |
-| `exo_comment_delete` | yes | yes | `DELETE /api/comments/:commentId` -- takes a thread's replies with it |
-| `exo_search` | no | no | `GET /api/workspaces/:workspaceId/search?q=&limit=&includeArchived=` |
-| `exo_database_create` | yes | no | `POST /api/workspaces/:workspaceId/documents` (`type: 'COLLECTION'`) + one `POST .../properties` per requested column |
-| `exo_database_schema` | no | no | `GET /api/documents/:documentId` (for `rowCount`) + `GET .../properties` + `GET .../views` |
-| `exo_database_property_create` | yes | no | `POST /api/documents/:documentId/properties` |
-| `exo_database_property_update` | yes | yes | `PATCH /api/documents/:documentId/properties/:propertyId` |
-| `exo_database_property_delete` | yes | yes | `DELETE /api/documents/:documentId/properties/:propertyId` |
-| `exo_database_option_create` | yes | no | `POST /api/documents/:documentId/properties/:propertyId/options` |
-| `exo_database_view_create` | yes | no | `POST /api/documents/:documentId/views` |
-| `exo_database_view_update` | yes | yes | `PATCH /api/documents/:documentId/views/:viewId` |
-| `exo_database_view_delete` | yes | yes | `DELETE /api/documents/:documentId/views/:viewId` |
-| `exo_database_query` | no | no | `POST /api/documents/:documentId/rows/query` (Markdown table, capped at 50 rows) |
-| `exo_database_row_get` | no | no | `GET /api/documents/:documentId/row` -- values of the row this document id names, or `row: null` if it is not a row |
-| `exo_database_row_create` | yes | no | `POST /api/documents/:documentId/rows` |
-| `exo_database_row_update` | yes | yes | `PATCH /api/documents/:rowId/values` |
-| `exo_attachment_upload` | yes | no | `POST /api/workspaces/:workspaceId/attachments` (multipart, Base64 input) |
-| `exo_attachment_read_text` | no | no | `GET /api/attachments/:attachmentId/text` (text plus PDF metadata), or `…/text/info` with `includeText: false` (metadata only, and no extraction is started). Returns the human correction whenever one exists, never the raw machine text on its own. |
-| `exo_attachment_reextract_text` | yes | yes | `POST /api/attachments/:attachmentId/text/reextract` -- forces a fresh extraction even when the current one is already `ready` (issue #2); a plain `exo_attachment_read_text` never does this |
-| `exo_attachment_correct_text` | yes | yes | `PATCH /api/attachments/:attachmentId/text` -- writes a human correction, or clears one with `text: null` (issue #2) |
-| `exo_rules_list` | no | no | `GET /api/workspaces/:workspaceId/ai-rules` |
-| `exo_rules_load` | no | no | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars) |
-| `exo_ai_run_get` | no | no | `GET /api/ai/runs/:runId` -- status, model, `heartbeatAt`, tool rounds, error code and the answer so far (capped at 2,000 chars) |
-| `exo_ai_run_cancel` | yes | no | `POST /api/ai/runs/:runId/cancel` -- refuses a run that has already finished |
-| `exo_invitation_list` | no | no | `GET /api/admin/invitations`, or `GET /api/workspaces/:workspaceId/invitations` when `workspaceId` is given |
-| `exo_invitation_create` | yes | no | `POST /api/admin/invitations` or `POST /api/workspaces/:workspaceId/invitations`, chosen by `via` -- the link is in the response only, and `emailSent: false` means it has to be handed over by hand |
-| `exo_invitation_resend` | yes | yes | `POST …/invitations/:invitationId/resend` -- rotates the token, so the previous link dies |
-| `exo_invitation_revoke` | yes | yes | `DELETE …/invitations/:invitationId` |
-| `exo_user_list` | no | no | `GET /api/admin/users` |
-| `exo_user_set_disabled` | yes | yes | `PATCH /api/admin/users/:userId/status` -- ends every session and revokes every token of that account |
-| `exo_user_delete` | yes | yes | `DELETE /api/admin/users/:userId` -- only for an account that authored nothing, else `user_has_content` |
+| Tool                            | Mutating | Destructive | REST call                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ------------------------------- | -------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `exo_list_workspaces`           | no       | no          | `GET /api/workspaces`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `exo_workspace_rename`          | yes      | yes         | `PATCH /api/workspaces/:workspaceId` (name and/or slug, independently)                                                                                                                                                                                                                                                                                                                                                                                    |
+| `exo_page_tree`                 | no       | no          | `GET /api/workspaces/:workspaceId/documents/tree` -- the text answer is the indented tree with ids, capped at 300 pages. The cap is spent breadth-first, so an oversized workspace loses its deepest level rather than its last sections; archived pages are counted, not listed                                                                                                                                                                          |
+| `exo_page_read`                 | no       | no          | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars)                                                                                                                                                                                                                                                                                                                                                                                 |
+| `exo_page_create`               | yes      | no          | `POST /api/workspaces/:workspaceId/import/markdown` when `markdown` is given, else `POST /api/workspaces/:workspaceId/documents`                                                                                                                                                                                                                                                                                                                          |
+| `exo_page_write`                | yes      | yes         | `POST /api/documents/:documentId/content`                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `exo_page_rename`               | yes      | yes         | `PATCH /api/documents/:documentId` (title, icon, iconColor)                                                                                                                                                                                                                                                                                                                                                                                               |
+| `exo_page_move`                 | yes      | no          | `POST /api/documents/:documentId/move` -- an optional `workspaceId` moves the whole subtree into a different workspace instead of just re-parenting within the current one                                                                                                                                                                                                                                                                                |
+| `exo_page_archive`              | yes      | yes         | `POST /api/documents/:documentId/archive`                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `exo_page_restore`              | yes      | no          | `POST /api/documents/:documentId/restore`                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `exo_page_trash`                | no       | no          | `GET /api/workspaces/:workspaceId/trash` (issue #32) -- the trash as a tree: what was archived, what came along with it (`reason: cascade`) and when. Capped at 200 lines                                                                                                                                                                                                                                                                                 |
+| `exo_page_delete`               | yes      | yes         | `DELETE /api/documents/:documentId` (issue #31) -- irreversible, archived pages only, ADMIN or OWNER. Offered on `mcp` only, never to the built-in AI: that surface has no confirmation gate, only the `ai.mutatingToolsEnabled` switch, and the one operation nothing can undo does not belong behind a switch somebody flipped once. The first call answers with what the deletion would take with it (`GET .../deletion-preview`) and executes nothing |
+| `exo_page_snapshots`            | no       | no          | `GET /api/documents/:documentId/snapshots`                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `exo_page_restore_snapshot`     | yes      | yes         | `POST /api/documents/:documentId/snapshots/:snapshotId/restore`                                                                                                                                                                                                                                                                                                                                                                                           |
+| `exo_page_activity`             | no       | no          | `GET /api/documents/:documentId/activity` -- the page's own history (issue #20): created, renamed, moved, archived, restored, restorable snapshots and condensed editing sessions, merged server-side. Not a compliance audit trail; see `docs/background-jobs.md`.                                                                                                                                                                                       |
+| `exo_page_set_ai_rule`          | yes      | no          | `PATCH /api/documents/:documentId` (aiRuleMode/Trigger/Priority)                                                                                                                                                                                                                                                                                                                                                                                          |
+| `exo_page_set_layout`           | yes      | no          | `PATCH /api/documents/:documentId` (layout: narrow/wide/full)                                                                                                                                                                                                                                                                                                                                                                                             |
+| `exo_page_set_cover`            | yes      | no          | `PATCH /api/documents/:documentId` (coverAttachmentId/coverPosition)                                                                                                                                                                                                                                                                                                                                                                                      |
+| `exo_page_generate_cover`       | yes      | no          | `POST /api/documents/:documentId/cover/generate`                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `exo_page_resolve_link`         | no       | no          | `GET /api/workspaces/:workspaceId/documents/resolve?documentId=&title=&includeArchived=&limit=` -- identity first, title as the fallback; `resolvedBy` says which answered                                                                                                                                                                                                                                                                                |
+| `exo_page_backlinks`            | no       | no          | `GET /api/documents/:documentId/links` -- both directions of the reference index, including references to a title no page carries                                                                                                                                                                                                                                                                                                                         |
+| `exo_page_related`              | no       | no          | `GET /api/documents/:documentId/related` -- pages that resemble this one without being linked to it (issue #33), from the stored embeddings; `state` says whether the answer is `ready`, `pending` (page not embedded yet) or `disabled` (semantic search off)                                                                                                                                                                                            |
+| `exo_comment_list`              | no       | no          | `GET /api/documents/:documentId/comments?includeResolved=` -- threads with their replies, open ones first, and whether an anchored thread has been orphaned                                                                                                                                                                                                                                                                                               |
+| `exo_comment_create`            | yes      | no          | `POST /api/documents/:documentId/comments` -- page-wide without `blockId`, anchored to a block with one, a reply with `parentId`                                                                                                                                                                                                                                                                                                                          |
+| `exo_comment_update`            | yes      | yes         | `PATCH /api/comments/:commentId` -- the author's own body only                                                                                                                                                                                                                                                                                                                                                                                            |
+| `exo_comment_resolve`           | yes      | no          | `POST /api/comments/:commentId/resolve` (`resolved: false` reopens)                                                                                                                                                                                                                                                                                                                                                                                       |
+| `exo_comment_delete`            | yes      | yes         | `DELETE /api/comments/:commentId` -- takes a thread's replies with it                                                                                                                                                                                                                                                                                                                                                                                     |
+| `exo_search`                    | no       | no          | `GET /api/workspaces/:workspaceId/search?q=&limit=&includeArchived=`                                                                                                                                                                                                                                                                                                                                                                                      |
+| `exo_database_create`           | yes      | no          | `POST /api/workspaces/:workspaceId/documents` (`type: 'COLLECTION'`) + one `POST .../properties` per requested column                                                                                                                                                                                                                                                                                                                                     |
+| `exo_database_schema`           | no       | no          | `GET /api/documents/:documentId` (for `rowCount`) + `GET .../properties` + `GET .../views`                                                                                                                                                                                                                                                                                                                                                                |
+| `exo_database_property_create`  | yes      | no          | `POST /api/documents/:documentId/properties`                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `exo_database_property_update`  | yes      | yes         | `PATCH /api/documents/:documentId/properties/:propertyId`                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `exo_database_property_delete`  | yes      | yes         | `DELETE /api/documents/:documentId/properties/:propertyId`                                                                                                                                                                                                                                                                                                                                                                                                |
+| `exo_database_option_create`    | yes      | no          | `POST /api/documents/:documentId/properties/:propertyId/options`                                                                                                                                                                                                                                                                                                                                                                                          |
+| `exo_database_view_create`      | yes      | no          | `POST /api/documents/:documentId/views`                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `exo_database_view_update`      | yes      | yes         | `PATCH /api/documents/:documentId/views/:viewId`                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `exo_database_view_delete`      | yes      | yes         | `DELETE /api/documents/:documentId/views/:viewId`                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `exo_database_query`            | no       | no          | `POST /api/documents/:documentId/rows/query` (Markdown table, capped at 50 rows)                                                                                                                                                                                                                                                                                                                                                                          |
+| `exo_database_row_get`          | no       | no          | `GET /api/documents/:documentId/row` -- values of the row this document id names, or `row: null` if it is not a row                                                                                                                                                                                                                                                                                                                                       |
+| `exo_database_row_create`       | yes      | no          | `POST /api/documents/:documentId/rows`                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `exo_database_row_update`       | yes      | yes         | `PATCH /api/documents/:rowId/values`                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `exo_attachment_upload`         | yes      | no          | `POST /api/workspaces/:workspaceId/attachments` (multipart, Base64 input)                                                                                                                                                                                                                                                                                                                                                                                 |
+| `exo_attachment_read_text`      | no       | no          | `GET /api/attachments/:attachmentId/text` (text plus PDF metadata), or `…/text/info` with `includeText: false` (metadata only, and no extraction is started). Returns the human correction whenever one exists, never the raw machine text on its own.                                                                                                                                                                                                    |
+| `exo_attachment_reextract_text` | yes      | yes         | `POST /api/attachments/:attachmentId/text/reextract` -- forces a fresh extraction even when the current one is already `ready` (issue #2); a plain `exo_attachment_read_text` never does this                                                                                                                                                                                                                                                             |
+| `exo_attachment_correct_text`   | yes      | yes         | `PATCH /api/attachments/:attachmentId/text` -- writes a human correction, or clears one with `text: null` (issue #2)                                                                                                                                                                                                                                                                                                                                      |
+| `exo_rules_list`                | no       | no          | `GET /api/workspaces/:workspaceId/ai-rules`                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `exo_rules_load`                | no       | no          | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars)                                                                                                                                                                                                                                                                                                                                                                                 |
+| `exo_ai_run_get`                | no       | no          | `GET /api/ai/runs/:runId` -- status, model, `heartbeatAt`, tool rounds, error code and the answer so far (capped at 2,000 chars)                                                                                                                                                                                                                                                                                                                          |
+| `exo_ai_run_cancel`             | yes      | no          | `POST /api/ai/runs/:runId/cancel` -- refuses a run that has already finished                                                                                                                                                                                                                                                                                                                                                                              |
+| `exo_invitation_list`           | no       | no          | `GET /api/admin/invitations`, or `GET /api/workspaces/:workspaceId/invitations` when `workspaceId` is given                                                                                                                                                                                                                                                                                                                                               |
+| `exo_invitation_create`         | yes      | no          | `POST /api/admin/invitations` or `POST /api/workspaces/:workspaceId/invitations`, chosen by `via` -- the link is in the response only, and `emailSent: false` means it has to be handed over by hand                                                                                                                                                                                                                                                      |
+| `exo_invitation_resend`         | yes      | yes         | `POST …/invitations/:invitationId/resend` -- rotates the token, so the previous link dies                                                                                                                                                                                                                                                                                                                                                                 |
+| `exo_invitation_revoke`         | yes      | yes         | `DELETE …/invitations/:invitationId`                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `exo_user_list`                 | no       | no          | `GET /api/admin/users`                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `exo_user_set_disabled`         | yes      | yes         | `PATCH /api/admin/users/:userId/status` -- ends every session and revokes every token of that account                                                                                                                                                                                                                                                                                                                                                     |
+| `exo_user_delete`               | yes      | yes         | `DELETE /api/admin/users/:userId` -- only for an account that authored nothing, else `user_has_content`                                                                                                                                                                                                                                                                                                                                                   |
 
 The seven access tools exist because registration is closed (issue #3): "add a
 person" is something a human can do in the admin area, so the catalogue has to
@@ -230,11 +230,11 @@ contracts is a follow-up for whichever wave next touches `packages/contracts`.
 
 ## Authentication
 
-| Prefix | Who mints it | Lifetime | Used by |
-| --- | --- | --- | --- |
-| `exo_` | A user, via `POST /api/me/api-tokens` | Until revoked or its optional `expiresAt` | `apps/mcp` via `EXOCORTEX_API_TOKEN`, and `POST /api/mcp` directly |
-| `exos_` | The worker, per AI run; the API, per MCP request from an OAuth client | 300 seconds (AI) / 120 seconds (MCP), HMAC-signed with `SERVICE_TOKEN_SECRET` | The built-in AI's tool loop; the HTTP endpoint's loopback calls |
-| *(none)* | The OAuth authorization server, per authorization | 1 hour, refreshable for 30 days | ChatGPT and other remote connectors, against `POST /api/mcp` only |
+| Prefix   | Who mints it                                                          | Lifetime                                                                      | Used by                                                            |
+| -------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `exo_`   | A user, via `POST /api/me/api-tokens`                                 | Until revoked or its optional `expiresAt`                                     | `apps/mcp` via `EXOCORTEX_API_TOKEN`, and `POST /api/mcp` directly |
+| `exos_`  | The worker, per AI run; the API, per MCP request from an OAuth client | 300 seconds (AI) / 120 seconds (MCP), HMAC-signed with `SERVICE_TOKEN_SECRET` | The built-in AI's tool loop; the HTTP endpoint's loopback calls    |
+| _(none)_ | The OAuth authorization server, per authorization                     | 1 hour, refreshable for 30 days                                               | ChatGPT and other remote connectors, against `POST /api/mcp` only  |
 
 A token carries **exactly its issuing user's permissions** — the same workspace
 roles and policies a browser session would have. There is no elevated "MCP"
@@ -304,8 +304,8 @@ PKCE. All of that is served by Better Auth's `mcp` plugin under
 `/api/auth/mcp/*`, with the two discovery documents rewritten to the origin
 root by nginx, where clients look for them:
 
-* `/.well-known/oauth-protected-resource`
-* `/.well-known/oauth-authorization-server`
+- `/.well-known/oauth-protected-resource`
+- `/.well-known/oauth-authorization-server`
 
 In ChatGPT, add a connector with the URL `https://exocortex.app/api/mcp`
 (or `.../api/mcp/research` for deep research) and pick OAuth. The browser lands
@@ -338,11 +338,11 @@ dumped on a connector that works badly with more than a handful of tools.
 `remember` and `fetch`. It is what turns eXocortex from a reference work into a
 memory for a chat client (issue #34, [ADR-019](adr/ADR-019-agent-memory-in-its-own-workspace.md)).
 
-| Tool | Mutating | REST call | Answers with |
-| --- | --- | --- | --- |
-| `recall` | no | `GET /api/memory/recall` | three to five distilled hits with id, source and location, plus one ready-made German text block |
-| `remember` | yes | `POST /api/memory/remember` | where the note landed |
-| `fetch` | no | `GET /api/documents/:id` + `/export/markdown` | the full page (shared with the deep research surface) |
+| Tool       | Mutating | REST call                                     | Answers with                                                                                     |
+| ---------- | -------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `recall`   | no       | `GET /api/memory/recall`                      | three to five distilled hits with id, source and location, plus one ready-made German text block |
+| `remember` | yes      | `POST /api/memory/remember`                   | where the note landed                                                                            |
+| `fetch`    | no       | `GET /api/documents/:id` + `/export/markdown` | the full page (shared with the deep research surface)                                            |
 
 `recall` is not `exo_search` with a smaller limit. It searches every workspace
 the connected account may read, ranks the hits together, and weights the agents'
@@ -392,11 +392,11 @@ The three tools call three ordinary endpoints, and so does everything else that
 remembers (the Claude Code hooks in `tools/claude-code-hooks`, Hermes, a shell
 script):
 
-| Endpoint | Scope | What it does |
-| --- | --- | --- |
-| `GET /api/memory/recall` | `read` | Searches across the readable workspaces. Without `q` it answers with the newest notes for `project`. `maxChars` and `limit` are clamped by `memory.recallMaxChars` / `memory.recallMaxResults`. |
-| `POST /api/memory/remember` | `write` | Writes one distilled note under the project page. `appendToday` adds to today's note instead of starting a page. |
-| `POST /api/memory/capture` | `write` | Hands a finished session over for distillation. Answers `{accepted, jobId, reason}` at once and never throws for something the caller cannot fix. |
+| Endpoint                    | Scope   | What it does                                                                                                                                                                                    |
+| --------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/memory/recall`    | `read`  | Searches across the readable workspaces. Without `q` it answers with the newest notes for `project`. `maxChars` and `limit` are clamped by `memory.recallMaxChars` / `memory.recallMaxResults`. |
+| `POST /api/memory/remember` | `write` | Writes one distilled note under the project page. `appendToday` adds to today's note instead of starting a page.                                                                                |
+| `POST /api/memory/capture`  | `write` | Hands a finished session over for distillation. Answers `{accepted, jobId, reason}` at once and never throws for something the caller cannot fix.                                               |
 
 `recall` is a `GET` deliberately: `requiredScopeForRequest` derives the needed
 scope from the method, so a `POST` would force every client that only ever looks
@@ -427,7 +427,7 @@ scopes and the OAuth consent screen. See `ToolDefinition.irreversible`.
 A deployment can have the old behaviour back: `mcp.writeConfirmationRequired`
 (admin area, default off) widens the gate to every mutating tool over HTTP, and
 `EXOCORTEX_REQUIRE_WRITE_CONFIRMATION=true` does the same for a given `apps/mcp`
-subprocess. Neither can *narrow* it below the four irreversible calls.
+subprocess. Neither can _narrow_ it below the four irreversible calls.
 
 Gated tools go through `WriteConfirmationGate`
 (`packages/mcp-tools/src/confirm.ts`). The pending key is derived
@@ -441,14 +441,14 @@ fresh pending cycle; an unconfirmed entry expires after 5 minutes.
 
 The prompt text spells that out at length on purpose. A model that reads
 "call it again with the same parameters" as "call it again" will reword its
-Markdown between attempts, hash differently every time, conclude the *content*
+Markdown between attempts, hash differently every time, conclude the _content_
 is being rejected, and start changing things that were never the problem — in
 one observed run it switched from `append` to `replace` and overwrote a whole
 page (the automatic pre-write snapshot got it back). So the message states that
 nothing was written, that a single differing character counts as a new
 operation, and that the prompt is not a complaint about the payload.
 
-A tool may also say what its call would *do*, not just that it changes
+A tool may also say what its call would _do_, not just that it changes
 something. `ToolDefinition.preview` is a read-only call the dispatcher makes
 while the gate is pending, and its sentence goes in front of the prompt.
 `exo_page_delete` is what it exists for: "delete page X" hides that X has eleven
@@ -485,12 +485,12 @@ retyped from this document.
 
 Which rights to hand out:
 
-| Client | Scope | Why |
-| --- | --- | --- |
-| ChatGPT (OAuth) | *(none to choose)* | It authenticates as the person; what limits it is the endpoint's tool list |
-| Coding agents (Claude Code, Codex) | `write` | They create and maintain pages, which is the point |
-| Read-only lookups, dashboards | `read` | A token that cannot write cannot be made to write |
-| Anything at all | **not** `admin` | Nothing in the catalogue needs it, and it is the one scope that mints further tokens and cuts connections |
+| Client                             | Scope              | Why                                                                                                       |
+| ---------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------- |
+| ChatGPT (OAuth)                    | _(none to choose)_ | It authenticates as the person; what limits it is the endpoint's tool list                                |
+| Coding agents (Claude Code, Codex) | `write`            | They create and maintain pages, which is the point                                                        |
+| Read-only lookups, dashboards      | `read`             | A token that cannot write cannot be made to write                                                         |
+| Anything at all                    | **not** `admin`    | Nothing in the catalogue needs it, and it is the one scope that mints further tokens and cuts connections |
 
 **ChatGPT does not call anything on its own.** It has no `SessionStart` hook, so
 without an instruction it treats the connector as a reference work it consults
@@ -568,19 +568,19 @@ that nginx rule is added.
 
 ## Known gaps
 
-* **No attachment listing tool.** `apps/api/src/attachments/attachments.controller.ts`
+- **No attachment listing tool.** `apps/api/src/attachments/attachments.controller.ts`
   has no `GET /api/workspaces/:workspaceId/attachments` route (checked against
   the live controller before writing `exo_attachment_*`), so `exo_attachment_list`
   from the original plan was dropped rather than guessed at. Adding the list
   route is a follow-up for whoever next touches `apps/api/src/attachments`.
-* **No download-URL tool.** `GET /api/attachments/:attachmentId/download` streams
+- **No download-URL tool.** `GET /api/attachments/:attachmentId/download` streams
   the file's bytes directly (it is not a JSON response with a presigned URL and
   metadata), which does not fit this catalogue's JSON-only tool-result model.
   The presigned URL is still reachable through `exo_attachment_upload`'s
   response at upload time; fetching a fresh one for an already-uploaded
   attachment requires either a new `apps/api` route or downloading through the
   web app.
-* **No share-links API yet.** Nothing to wrap in a tool until those REST
+- **No share-links API yet.** Nothing to wrap in a tool until those REST
   endpoints exist. (Comments used to stand here too; they exist since issue #18
   and are in the table above.)
 
@@ -593,8 +593,9 @@ that nginx rule is added.
   in prose. An anchored thread whose block is later deleted is **not** deleted
   with it: materialization marks it orphaned and `exo_comment_list` says so,
   along with the quote taken when the thread was opened.
-* **AI conversations are not in the catalogue at all**, by design rather than
-  by omission: the catalogue is what an assistant may do *to a workspace*, and
+
+- **AI conversations are not in the catalogue at all**, by design rather than
+  by omission: the catalogue is what an assistant may do _to a workspace_, and
   a conversation is the assistant's own session. An MCP client has its own
   transcript and its own context; handing it tools to steer eXocortex's side
   panel would be steering a second, unrelated chat. This is why the panel's
@@ -602,7 +603,7 @@ that nginx rule is added.
   If a conversation-management API is ever wanted, it needs its own decision,
   not an incremental tool.
 
-  A run's *lifecycle* is the deliberate exception (issue #6). "Is this run
+  A run's _lifecycle_ is the deliberate exception (issue #6). "Is this run
   still alive, and can I stop it?" is a question about a job, not about
   somebody else's chat, and it is the whole point of that issue that the
   answer must be reachable from outside the browser panel too. Hence
@@ -610,5 +611,6 @@ that nginx rule is added.
   `surfaces: ['mcp']` and are the only tools in the catalogue that the
   built-in AI does not get. A tool loop with a cancel button has, first of
   all, the button that cancels itself.
-* **Two response shapes are defined locally, not in `@exocortex/contracts`.**
+
+- **Two response shapes are defined locally, not in `@exocortex/contracts`.**
   See "Tool reference" above; `packages/contracts` was frozen for this wave.

@@ -87,9 +87,7 @@ export interface CreateImageGeneratorOptions {
  * provider always gets the offline generator, so covers can be generated
  * without an account.
  */
-export function createImageGenerator(
-  options: CreateImageGeneratorOptions,
-): ImageGenerator | null {
+export function createImageGenerator(options: CreateImageGeneratorOptions): ImageGenerator | null {
   if (options.providerId === 'mock') return new MockImageGenerator();
   if (
     options.apiKey.length === 0 ||

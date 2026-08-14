@@ -28,8 +28,7 @@ export interface VerifiedMcpToken {
 export type McpTokenFailure = 'unknown' | 'expired' | 'orphaned' | 'client_disabled';
 
 export type McpTokenVerification =
-  | { valid: true; token: VerifiedMcpToken }
-  | { valid: false; reason: McpTokenFailure };
+  { valid: true; token: VerifiedMcpToken } | { valid: false; reason: McpTokenFailure };
 
 export async function verifyMcpAccessToken(
   prisma: PrismaClient,

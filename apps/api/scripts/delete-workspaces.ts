@@ -126,7 +126,9 @@ async function main(): Promise<void> {
           objectsRemoved += 1;
         } catch (error) {
           objectsFailed += 1;
-          console.warn(`  object ${key}: ${error instanceof Error ? error.message : String(error)}`);
+          console.warn(
+            `  object ${key}: ${error instanceof Error ? error.message : String(error)}`,
+          );
         }
       }
 

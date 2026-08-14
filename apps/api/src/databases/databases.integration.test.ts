@@ -44,7 +44,12 @@ let guestId: string;
 
 const emitted: { type: string; documentId?: string }[] = [];
 const realtime = {
-  emit: async (type: string, _workspaceId: string, _correlationId: string, payload: { documentId?: string }) => {
+  emit: async (
+    type: string,
+    _workspaceId: string,
+    _correlationId: string,
+    payload: { documentId?: string },
+  ) => {
     emitted.push({ type, documentId: payload.documentId });
   },
 } as unknown as RealtimeService;
@@ -60,7 +65,17 @@ beforeAll(async () => {
   });
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
-  documents = new DocumentsService(prisma, queues, logger, noopStorage, access, outbox, realtime, new DocumentTrashService(prisma, queues, logger, noopStorage, access, outbox, realtime), new DocumentMoveService(prisma, queues, logger, access, outbox, realtime));
+  documents = new DocumentsService(
+    prisma,
+    queues,
+    logger,
+    noopStorage,
+    access,
+    outbox,
+    realtime,
+    new DocumentTrashService(prisma, queues, logger, noopStorage, access, outbox, realtime),
+    new DocumentMoveService(prisma, queues, logger, access, outbox, realtime),
+  );
   properties = new DatabasePropertiesService(prisma, access, outbox, realtime);
   views = new DatabaseViewsService(prisma, access, realtime);
   rows = new DatabaseRowsService(prisma, access, documents);
@@ -81,13 +96,22 @@ beforeAll(async () => {
     data: {
       name: `Databases ${suffix}`,
       slug: `databases-${suffix}`,
-      members: { create: [{ userId: ownerId, role: 'OWNER' }, { userId: guestId, role: 'GUEST' }] },
+      members: {
+        create: [
+          { userId: ownerId, role: 'OWNER' },
+          { userId: guestId, role: 'GUEST' },
+        ],
+      },
     },
   });
   workspaceId = workspace.id;
 
   const other = await prisma.workspace.create({
-    data: { name: `Other DB ${suffix}`, slug: `other-db-${suffix}`, members: { create: { userId: ownerId, role: 'OWNER' } } },
+    data: {
+      name: `Other DB ${suffix}`,
+      slug: `other-db-${suffix}`,
+      members: { create: { userId: ownerId, role: 'OWNER' } },
+    },
   });
   otherWorkspaceId = other.id;
 });
@@ -178,7 +202,9 @@ describe('database properties', () => {
 
   it('rejects a property reference from a different workspace document', async () => {
     const foreignCollectionId = await createCollection('Fremd', otherWorkspaceId);
-    await expect(properties.list(foreignCollectionId, guestId)).rejects.toBeInstanceOf(AuthorizationError);
+    await expect(properties.list(foreignCollectionId, guestId)).rejects.toBeInstanceOf(
+      AuthorizationError,
+    );
   });
 
   it('orders new properties after existing ones and supports reorder', async () => {
@@ -290,7 +316,10 @@ describe('database views', () => {
       viewId: view.id,
       userId: ownerId,
       request: {
-        filters: { combinator: 'and', conditions: [{ propertyId: property.id, operator: 'equals', value: false }] },
+        filters: {
+          combinator: 'and',
+          conditions: [{ propertyId: property.id, operator: 'equals', value: false }],
+        },
         sorts: [{ propertyId: property.id, direction: 'asc' }],
       },
       correlationId,
@@ -314,7 +343,12 @@ describe('database views', () => {
       request: { type: 'TABLE', name: 'B' },
       correlationId,
     });
-    await views.reorder({ viewId: b.id, userId: ownerId, request: { afterViewId: null }, correlationId });
+    await views.reorder({
+      viewId: b.id,
+      userId: ownerId,
+      request: { afterViewId: null },
+      correlationId,
+    });
 
     const list = await views.list(collectionId, ownerId);
     expect(list.map((entry) => entry.id)).toEqual([b.id, a.id]);
@@ -387,7 +421,9 @@ describe('database rows', () => {
     expect(row.document.parentId).toBe(collectionId);
     const detail = await documents.getDetail(row.document.id, ownerId);
     expect(detail.title).toBe('Rechnung schreiben');
-    const content = await prisma.documentContent.findUnique({ where: { documentId: row.document.id } });
+    const content = await prisma.documentContent.findUnique({
+      where: { documentId: row.document.id },
+    });
     expect(content?.yjsState.byteLength).toBeGreaterThan(0);
 
     const statusValue = row.values.find((value) => value.propertyId === status.id);
@@ -411,7 +447,9 @@ describe('database rows', () => {
 
     const value = row.values.find((entry) => entry.propertyId === createdBy.id);
     expect(value?.value).toBe(ownerId);
-    expect(await prisma.documentPropertyValue.count({ where: { propertyId: createdBy.id } })).toBe(0);
+    expect(await prisma.documentPropertyValue.count({ where: { propertyId: createdBy.id } })).toBe(
+      0,
+    );
   });
 
   it('rejects writing a computed property directly', async () => {
@@ -463,7 +501,10 @@ describe('database rows', () => {
       const row = await rows.create({
         collectionDocumentId: collectionId,
         userId: ownerId,
-        request: { title: 'Über den Umweg der Zeilen-ID gelesen', values: [{ propertyId: status.id, value: done.id }] },
+        request: {
+          title: 'Über den Umweg der Zeilen-ID gelesen',
+          values: [{ propertyId: status.id, value: done.id }],
+        },
         correlationId,
       });
 
@@ -512,7 +553,9 @@ describe('database rows', () => {
         correlationId,
       });
 
-      await expect(rows.getForDocument(row.document.id, guestId)).rejects.toBeInstanceOf(AuthorizationError);
+      await expect(rows.getForDocument(row.document.id, guestId)).rejects.toBeInstanceOf(
+        AuthorizationError,
+      );
     });
   });
 
@@ -523,7 +566,10 @@ describe('database rows', () => {
       userId: ownerId,
       request: {
         title: 'Wichtig und erledigt',
-        values: [{ propertyId: status.id, value: done.id }, { propertyId: priority.id, value: 5 }],
+        values: [
+          { propertyId: status.id, value: done.id },
+          { propertyId: priority.id, value: 5 },
+        ],
       },
       correlationId,
     });
@@ -601,12 +647,19 @@ describe('database rows', () => {
       viewId: view.id,
       userId: ownerId,
       request: {
-        filters: { combinator: 'and', conditions: [{ propertyId: urgent.id, operator: 'equals', value: true }] },
+        filters: {
+          combinator: 'and',
+          conditions: [{ propertyId: urgent.id, operator: 'equals', value: true }],
+        },
       },
       correlationId,
     });
 
-    const result = await rows.query({ collectionDocumentId: collectionId, userId: ownerId, request: { viewId: view.id, limit: 20 } });
+    const result = await rows.query({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { viewId: view.id, limit: 20 },
+    });
     expect(result.rows.map((row) => row.document.title)).toEqual(['Dringend']);
   });
 
@@ -621,7 +674,11 @@ describe('database rows', () => {
       });
     }
 
-    const firstPage = await rows.query({ collectionDocumentId: collectionId, userId: ownerId, request: { limit: 2 } });
+    const firstPage = await rows.query({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { limit: 2 },
+    });
     expect(firstPage.rows).toHaveLength(2);
     expect(firstPage.nextCursor).not.toBeNull();
 
@@ -649,7 +706,10 @@ describe('database rows', () => {
         collectionDocumentId: collectionId,
         userId: ownerId,
         request: {
-          filters: { combinator: 'and', conditions: [{ propertyId: otherProperty.id, operator: 'is_empty' }] },
+          filters: {
+            combinator: 'and',
+            conditions: [{ propertyId: otherProperty.id, operator: 'is_empty' }],
+          },
           limit: 20,
         },
       }),
@@ -665,9 +725,13 @@ describe('database rows', () => {
       correlationId,
     });
 
-    await expect(rows.query({ collectionDocumentId: foreignCollectionId, userId: guestId, request: { limit: 20 } })).rejects.toBeInstanceOf(
-      AuthorizationError,
-    );
+    await expect(
+      rows.query({
+        collectionDocumentId: foreignCollectionId,
+        userId: guestId,
+        request: { limit: 20 },
+      }),
+    ).rejects.toBeInstanceOf(AuthorizationError);
   });
 });
 
@@ -690,7 +754,13 @@ describe('date spans', () => {
     return { collectionId, whenId: when.id };
   }
 
-  async function addEvent(collectionId: string, whenId: string, title: string, start: string, end: string | null) {
+  async function addEvent(
+    collectionId: string,
+    whenId: string,
+    title: string,
+    start: string,
+    end: string | null,
+  ) {
     return rows.create({
       collectionDocumentId: collectionId,
       userId: ownerId,
@@ -727,12 +797,17 @@ describe('date spans', () => {
     const row = await rows.create({
       collectionDocumentId: collectionId,
       userId: ownerId,
-      request: { title: 'Steuer', values: [{ propertyId: due.id, value: '2026-08-31T00:00:00.000Z' }] },
+      request: {
+        title: 'Steuer',
+        values: [{ propertyId: due.id, value: '2026-08-31T00:00:00.000Z' }],
+      },
       correlationId,
     });
 
     // The shape every existing reader (Hermes, the morning briefing) relies on.
-    expect(row.values.find((value) => value.propertyId === due.id)?.value).toBe('2026-08-31T00:00:00.000Z');
+    expect(row.values.find((value) => value.propertyId === due.id)?.value).toBe(
+      '2026-08-31T00:00:00.000Z',
+    );
   });
 
   it('accepts a bare ISO string on a span property as a start without an end', async () => {
@@ -740,7 +815,10 @@ describe('date spans', () => {
     const row = await rows.create({
       collectionDocumentId: collectionId,
       userId: ownerId,
-      request: { title: 'Offen', values: [{ propertyId: whenId, value: '2026-08-21T10:00:00.000Z' }] },
+      request: {
+        title: 'Offen',
+        values: [{ propertyId: whenId, value: '2026-08-21T10:00:00.000Z' }],
+      },
       correlationId,
     });
 
@@ -766,7 +844,12 @@ describe('date spans', () => {
         userId: ownerId,
         request: {
           title: 'Falsch',
-          values: [{ propertyId: due.id, value: { start: '2026-08-01T00:00:00.000Z', end: null, allDay: false } }],
+          values: [
+            {
+              propertyId: due.id,
+              value: { start: '2026-08-01T00:00:00.000Z', end: null, allDay: false },
+            },
+          ],
         },
         correlationId,
       }),
@@ -776,13 +859,25 @@ describe('date spans', () => {
   it('rejects a span that ends before it starts', async () => {
     const { collectionId, whenId } = await setupCalendar();
     await expect(
-      addEvent(collectionId, whenId, 'Rückwärts', '2026-08-20T10:00:00.000Z', '2026-08-20T09:00:00.000Z'),
+      addEvent(
+        collectionId,
+        whenId,
+        'Rückwärts',
+        '2026-08-20T10:00:00.000Z',
+        '2026-08-20T09:00:00.000Z',
+      ),
     ).rejects.toBeInstanceOf(AppError);
   });
 
   it('refuses to turn the span off while rows still carry an end', async () => {
     const { collectionId, whenId } = await setupCalendar();
-    await addEvent(collectionId, whenId, 'Meeting', '2026-08-20T08:00:00.000Z', '2026-08-20T09:00:00.000Z');
+    await addEvent(
+      collectionId,
+      whenId,
+      'Meeting',
+      '2026-08-20T08:00:00.000Z',
+      '2026-08-20T09:00:00.000Z',
+    );
 
     await expect(
       properties.update({
@@ -801,10 +896,34 @@ describe('date spans', () => {
      */
     async function setupWindow() {
       const { collectionId, whenId } = await setupCalendar();
-      const before = await addEvent(collectionId, whenId, 'Endet genau am Fensteranfang', '2026-08-20T08:00:00.000Z', '2026-08-20T09:00:00.000Z');
-      const inside = await addEvent(collectionId, whenId, 'Mitten im Fenster', '2026-08-20T09:15:00.000Z', '2026-08-20T09:45:00.000Z');
-      const after = await addEvent(collectionId, whenId, 'Beginnt genau am Fensterende', '2026-08-20T10:00:00.000Z', '2026-08-20T11:00:00.000Z');
-      const across = await addEvent(collectionId, whenId, 'Mehrtägig', '2026-08-19T00:00:00.000Z', '2026-08-22T00:00:00.000Z');
+      const before = await addEvent(
+        collectionId,
+        whenId,
+        'Endet genau am Fensteranfang',
+        '2026-08-20T08:00:00.000Z',
+        '2026-08-20T09:00:00.000Z',
+      );
+      const inside = await addEvent(
+        collectionId,
+        whenId,
+        'Mitten im Fenster',
+        '2026-08-20T09:15:00.000Z',
+        '2026-08-20T09:45:00.000Z',
+      );
+      const after = await addEvent(
+        collectionId,
+        whenId,
+        'Beginnt genau am Fensterende',
+        '2026-08-20T10:00:00.000Z',
+        '2026-08-20T11:00:00.000Z',
+      );
+      const across = await addEvent(
+        collectionId,
+        whenId,
+        'Mehrtägig',
+        '2026-08-19T00:00:00.000Z',
+        '2026-08-22T00:00:00.000Z',
+      );
       return { collectionId, whenId, before, inside, after, across };
     }
 
@@ -814,7 +933,10 @@ describe('date spans', () => {
         userId: ownerId,
         request: {
           limit: 50,
-          filters: { combinator: 'and', conditions: [{ propertyId: whenId, operator: 'overlaps', value: [from, to] }] },
+          filters: {
+            combinator: 'and',
+            conditions: [{ propertyId: whenId, operator: 'overlaps', value: [from, to] }],
+          },
         },
       });
       return result.rows.map((row) => row.document.title).sort();
@@ -822,7 +944,12 @@ describe('date spans', () => {
 
     it('excludes a span that only touches the window boundary', async () => {
       const { collectionId, whenId } = await setupWindow();
-      const titles = await titlesInWindow(collectionId, whenId, '2026-08-20T09:00:00.000Z', '2026-08-20T10:00:00.000Z');
+      const titles = await titlesInWindow(
+        collectionId,
+        whenId,
+        '2026-08-20T09:00:00.000Z',
+        '2026-08-20T10:00:00.000Z',
+      );
 
       // The span ending at 09:00 and the one starting at 10:00 are outside a
       // half-open window; the multi-day span covers it.
@@ -834,17 +961,28 @@ describe('date spans', () => {
       await rows.create({
         collectionDocumentId: collectionId,
         userId: ownerId,
-        request: { title: 'Punkt drin', values: [{ propertyId: whenId, value: '2026-09-01T12:00:00.000Z' }] },
+        request: {
+          title: 'Punkt drin',
+          values: [{ propertyId: whenId, value: '2026-09-01T12:00:00.000Z' }],
+        },
         correlationId,
       });
       await rows.create({
         collectionDocumentId: collectionId,
         userId: ownerId,
-        request: { title: 'Punkt draußen', values: [{ propertyId: whenId, value: '2026-09-02T12:00:00.000Z' }] },
+        request: {
+          title: 'Punkt draußen',
+          values: [{ propertyId: whenId, value: '2026-09-02T12:00:00.000Z' }],
+        },
         correlationId,
       });
 
-      const titles = await titlesInWindow(collectionId, whenId, '2026-09-01T00:00:00.000Z', '2026-09-02T00:00:00.000Z');
+      const titles = await titlesInWindow(
+        collectionId,
+        whenId,
+        '2026-09-01T00:00:00.000Z',
+        '2026-09-02T00:00:00.000Z',
+      );
       expect(titles).toEqual(['Punkt drin']);
     });
 
@@ -865,7 +1003,9 @@ describe('date spans', () => {
             limit: 20,
             filters: {
               combinator: 'and',
-              conditions: [{ propertyId: note.id, operator: 'overlaps', value: ['2026-08-01', '2026-08-02'] }],
+              conditions: [
+                { propertyId: note.id, operator: 'overlaps', value: ['2026-08-01', '2026-08-02'] },
+              ],
             },
           },
         }),

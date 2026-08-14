@@ -2,13 +2,13 @@
 
 ## Model
 
-* **One Yjs document per eXocortex document.** Never one per workspace: that would
+- **One Yjs document per eXocortex document.** Never one per workspace: that would
   load unrelated content into memory, leak content across permissions and make
   awareness meaningless.
-* The Yjs `XmlFragment` is named `default` (`YJS_DOCUMENT_FIELD`). Client, server
+- The Yjs `XmlFragment` is named `default` (`YJS_DOCUMENT_FIELD`). Client, server
   and worker import the same constant; a mismatch would silently load an empty
   document.
-* The canonical state is the **binary Yjs update** in `DocumentContent.yjsState`.
+- The canonical state is the **binary Yjs update** in `DocumentContent.yjsState`.
   It is stored and loaded byte for byte and never rebuilt from derived data during
   normal loading (ADR-005).
 
@@ -30,16 +30,16 @@
 
 `@hocuspocus/extension-database` with our `DocumentPersistence`:
 
-* `fetch` returns the stored `Bytes` verbatim, or `null` for a fresh document.
-* `store` refuses unknown and archived documents, writes `yjsState` plus
+- `fetch` returns the stored `Bytes` verbatim, or `null` for a fresh document.
+- `store` refuses unknown and archived documents, writes `yjsState` plus
   `yjsUpdatedAt`, and enqueues a debounced `document-materialization` job.
 
 Two debounce layers:
 
-| Layer | Setting | Purpose |
-| ----- | ------- | ------- |
-| Hocuspocus | `debounce: 2000`, `maxDebounce: 10000` | one database write per burst of edits |
-| BullMQ | `MATERIALIZATION_DEBOUNCE_MS = 2000`, cap `15000` | one materialization job per burst |
+| Layer      | Setting                                           | Purpose                               |
+| ---------- | ------------------------------------------------- | ------------------------------------- |
+| Hocuspocus | `debounce: 2000`, `maxDebounce: 10000`            | one database write per burst of edits |
+| BullMQ     | `MATERIALIZATION_DEBOUNCE_MS = 2000`, cap `15000` | one materialization job per burst     |
 
 The job id is `materialize-<documentId>`, so a stream of keystrokes collapses into
 at most one pending job per document. (BullMQ rejects custom job ids containing
@@ -60,15 +60,15 @@ Authorization: Bearer exos_…            # purpose: collaboration-write
 { "proseMirrorJson": { … }, "mode": "replace|append|prepend", "correlationId": "…" }
 ```
 
-* Loopback only, never proxied. `COLLABORATION_INTERNAL_URL` is the API's side.
-* The token says *who* writes; write access is re-checked here exactly as it is
+- Loopback only, never proxied. `COLLABORATION_INTERNAL_URL` is the API's side.
+- The token says _who_ writes; write access is re-checked here exactly as it is
   for a WebSocket connection, archived pages included.
-* Not loaded here → `applied: false`, and nothing happens: there is no live
+- Not loaded here → `applied: false`, and nothing happens: there is no live
   state to correct.
-* Loaded → the content is applied to the living document in one transaction
+- Loaded → the content is applied to the living document in one transaction
   (`applyProseMirrorDocumentToYDoc`), broadcast to every client, and persisted
   immediately instead of at the end of the next debounce window.
-* `append` and `prepend` insert only the incoming nodes, so concurrent typing
+- `append` and `prepend` insert only the incoming nodes, so concurrent typing
   survives. `replace` replaces.
 
 The plain HTTP routes (these and the health probes) are served ahead of
@@ -85,14 +85,14 @@ editor renders remote carets via `CollaborationCaret`.
 
 ## Offline behaviour
 
-* `y-indexeddb` persists every update locally under `exocortex:<documentId>`.
-* Local edits while disconnected set `pendingSync`, which the connection badge
+- `y-indexeddb` persists every update locally under `exocortex:<documentId>`.
+- Local edits while disconnected set `pendingSync`, which the connection badge
   shows.
-* On reconnect Yjs exchanges state vectors and merges both sides; concurrent edits
+- On reconnect Yjs exchanges state vectors and merges both sides; concurrent edits
   from two clients both survive
   (`packages/editor/src/yjs.test.ts` → "merges concurrent updates from two clients
   without losing content").
-* Applying the same update twice is a no-op ("is idempotent when the same update is
+- Applying the same update twice is a no-op ("is idempotent when the same update is
   applied twice").
 
 ## Restart safety
@@ -126,10 +126,10 @@ each process.
 
 ## Failure modes and behaviour
 
-| Situation | Behaviour |
-| --------- | --------- |
-| ticket expired while connected | the existing connection stays; a reconnect needs a fresh ticket |
-| membership revoked | the next connection attempt is rejected in `onAuthenticate` |
-| document archived while connected | further writes are dropped by `store`; the UI shows the archived banner after the query refreshes |
-| collaboration server down | the editor keeps working on the IndexedDB copy, the badge shows "Verbindung unterbrochen", the provider retries |
-| database down | the store hook throws, Hocuspocus keeps the document in memory and retries |
+| Situation                         | Behaviour                                                                                                       |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| ticket expired while connected    | the existing connection stays; a reconnect needs a fresh ticket                                                 |
+| membership revoked                | the next connection attempt is rejected in `onAuthenticate`                                                     |
+| document archived while connected | further writes are dropped by `store`; the UI shows the archived banner after the query refreshes               |
+| collaboration server down         | the editor keeps working on the IndexedDB copy, the badge shows "Verbindung unterbrochen", the provider retries |
+| database down                     | the store hook throws, Hocuspocus keeps the document in memory and retries                                      |

@@ -26,7 +26,12 @@ import {
 
 import { useUpdateDatabaseView } from '@/lib/api/database-queries';
 
-import { FILTER_OPERATOR_LABELS, filterValueChoices, filterValueLabel, operatorsForType } from './property-types';
+import {
+  FILTER_OPERATOR_LABELS,
+  filterValueChoices,
+  filterValueLabel,
+  operatorsForType,
+} from './property-types';
 import { ViewOptionsMenu } from './view-options-menu';
 
 interface FilterSortBarProps {
@@ -42,7 +47,9 @@ function propertyName(properties: DatabaseProperty[], propertyId: string): strin
 
 /** Flat AND-only conditions: this bar builds `{combinator:'and', conditions: [...leaves]}`, never nested groups. */
 function leafConditions(view: DatabaseView): DatabaseFilterCondition[] {
-  return view.filters.conditions.filter((entry): entry is DatabaseFilterCondition => 'propertyId' in entry);
+  return view.filters.conditions.filter(
+    (entry): entry is DatabaseFilterCondition => 'propertyId' in entry,
+  );
 }
 
 export function FilterSortBar({ documentId, view, properties, readOnly }: FilterSortBarProps) {
@@ -51,7 +58,10 @@ export function FilterSortBar({ documentId, view, properties, readOnly }: Filter
 
   const removeCondition = (index: number) => {
     const next = conditions.filter((_, entryIndex) => entryIndex !== index);
-    updateView.mutate({ viewId: view.id, request: { filters: { combinator: 'and', conditions: next } } });
+    updateView.mutate({
+      viewId: view.id,
+      request: { filters: { combinator: 'and', conditions: next } },
+    });
   };
 
   const addCondition = (condition: DatabaseFilterCondition) => {
@@ -78,7 +88,8 @@ export function FilterSortBar({ documentId, view, properties, readOnly }: Filter
     <div className="flex flex-wrap items-center gap-1.5 border-b border-border px-3 py-1.5">
       {conditions.map((condition, index) => (
         <Badge key={`${condition.propertyId}-${index}`} variant="secondary" className="gap-1">
-          {propertyName(properties, condition.propertyId)} {FILTER_OPERATOR_LABELS[condition.operator]}
+          {propertyName(properties, condition.propertyId)}{' '}
+          {FILTER_OPERATOR_LABELS[condition.operator]}
           {condition.value !== undefined
             ? ` ${filterValueLabel(
                 properties.find((property) => property.id === condition.propertyId),
@@ -86,7 +97,11 @@ export function FilterSortBar({ documentId, view, properties, readOnly }: Filter
               )}`
             : ''}
           {readOnly ? null : (
-            <button type="button" aria-label="Filter entfernen" onClick={() => removeCondition(index)}>
+            <button
+              type="button"
+              aria-label="Filter entfernen"
+              onClick={() => removeCondition(index)}
+            >
               <XIcon className="size-3" />
             </button>
           )}
@@ -94,10 +109,18 @@ export function FilterSortBar({ documentId, view, properties, readOnly }: Filter
       ))}
       {view.sorts.map((sort, index) => (
         <Badge key={`${sort.propertyId}-sort`} variant="secondary" className="gap-1">
-          {sort.direction === 'asc' ? <ArrowUpIcon className="size-3" /> : <ArrowDownIcon className="size-3" />}
+          {sort.direction === 'asc' ? (
+            <ArrowUpIcon className="size-3" />
+          ) : (
+            <ArrowDownIcon className="size-3" />
+          )}
           {propertyName(properties, sort.propertyId)}
           {readOnly ? null : (
-            <button type="button" aria-label="Sortierung entfernen" onClick={() => removeSort(index)}>
+            <button
+              type="button"
+              aria-label="Sortierung entfernen"
+              onClick={() => removeSort(index)}
+            >
               <XIcon className="size-3" />
             </button>
           )}
@@ -160,14 +183,13 @@ function AddFilterPopover({
           className="flex flex-col gap-2"
           onSubmit={(event) => {
             event.preventDefault();
-            const parsedValue: DatabaseFilterCondition['value'] =
-              !needsValue
-                ? undefined
-                : property.type === 'NUMBER'
-                  ? Number(value)
-                  : property.type === 'CHECKBOX'
-                    ? value === 'true'
-                    : value;
+            const parsedValue: DatabaseFilterCondition['value'] = !needsValue
+              ? undefined
+              : property.type === 'NUMBER'
+                ? Number(value)
+                : property.type === 'CHECKBOX'
+                  ? value === 'true'
+                  : value;
             onAdd({ propertyId: property.id, operator, value: parsedValue });
             setOpen(false);
             setValue(defaultFilterValue(property));
@@ -200,7 +222,10 @@ function AddFilterPopover({
               ))}
             </SelectContent>
           </Select>
-          <Select value={operator} onValueChange={(next) => setOperator(next as DatabaseFilterOperator)}>
+          <Select
+            value={operator}
+            onValueChange={(next) => setOperator(next as DatabaseFilterOperator)}
+          >
             <SelectTrigger className="w-full" data-testid="filter-operator">
               <SelectValue>{() => FILTER_OPERATOR_LABELS[operator]}</SelectValue>
             </SelectTrigger>
@@ -215,7 +240,9 @@ function AddFilterPopover({
           {!needsValue ? null : choices.length > 0 ? (
             <Select value={value} onValueChange={(next) => setValue(next ?? '')}>
               <SelectTrigger className="w-full" data-testid="filter-value">
-                <SelectValue>{() => choices.find((choice) => choice.value === value)?.label ?? value}</SelectValue>
+                <SelectValue>
+                  {() => choices.find((choice) => choice.value === value)?.label ?? value}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {choices.map((choice) => (
@@ -228,7 +255,9 @@ function AddFilterPopover({
           ) : (
             <Input
               autoFocus
-              type={property.type === 'NUMBER' ? 'number' : property.type === 'DATE' ? 'date' : 'text'}
+              type={
+                property.type === 'NUMBER' ? 'number' : property.type === 'DATE' ? 'date' : 'text'
+              }
               value={value}
               placeholder="Wert"
               data-testid="filter-value"
@@ -306,4 +335,3 @@ function AddSortPopover({
     </Popover>
   );
 }
-

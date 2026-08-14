@@ -33,9 +33,10 @@ describe('detectMimeType', () => {
   });
 
   it('detects SVG by content', () => {
-    expect(detectMimeType(textBytes('<svg xmlns="http://www.w3.org/2000/svg"></svg>'), 'image/svg+xml')?.mimeType).toBe(
-      'image/svg+xml',
-    );
+    expect(
+      detectMimeType(textBytes('<svg xmlns="http://www.w3.org/2000/svg"></svg>'), 'image/svg+xml')
+        ?.mimeType,
+    ).toBe('image/svg+xml');
   });
 
   it('accepts plain text and Markdown only when declared', () => {

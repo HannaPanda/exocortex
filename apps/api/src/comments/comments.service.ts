@@ -289,9 +289,7 @@ export class CommentsService {
     assertPolicy(canDeleteComment(context.role, context.document, row, input.userId));
 
     const removedReplies =
-      row.parentId === null
-        ? await this.prisma.comment.count({ where: { parentId: row.id } })
-        : 0;
+      row.parentId === null ? await this.prisma.comment.count({ where: { parentId: row.id } }) : 0;
 
     // Replies cascade in the database; counting them first is what lets the
     // answer say how much went away with the root.

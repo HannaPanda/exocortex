@@ -11,7 +11,10 @@ import { PROPERTY_TYPE_LABELS } from '@/components/database/property-types';
 import { VIEW_TYPE_LABELS } from '@/components/database/view-tabs';
 import { DocumentIcon } from '@/components/document/document-icon';
 import { PageIconPicker } from '@/components/document/page-icon-picker';
-import { AI_RULE_MODE_LABELS, PagePropertiesDialog } from '@/components/document/page-properties-dialog';
+import {
+  AI_RULE_MODE_LABELS,
+  PagePropertiesDialog,
+} from '@/components/document/page-properties-dialog';
 import {
   useDatabaseProperties,
   useDatabaseViews,
@@ -47,7 +50,9 @@ function RowPropertiesSection({
     return <LoadingState variant="skeleton" rows={3} label="Eigenschaften werden geladen …" />;
   }
   if (properties.isError) {
-    return <ErrorState title="Eigenschaften nicht verfügbar" onRetry={() => void properties.refetch()} />;
+    return (
+      <ErrorState title="Eigenschaften nicht verfügbar" onRetry={() => void properties.refetch()} />
+    );
   }
   if (row.isError) {
     return <ErrorState title="Eigenschaften nicht verfügbar" onRetry={() => void row.refetch()} />;
@@ -64,7 +69,9 @@ function RowPropertiesSection({
     <section className="flex flex-col gap-2" data-testid="row-properties">
       <h3 className="text-xs font-medium text-muted-foreground">Eigenschaften</h3>
       {properties.data.length === 0 ? (
-        <p className="text-xs text-muted-foreground">Diese Datenbank hat noch keine Eigenschaften.</p>
+        <p className="text-xs text-muted-foreground">
+          Diese Datenbank hat noch keine Eigenschaften.
+        </p>
       ) : (
         properties.data.map((property) => (
           <div key={property.id} className="flex flex-col gap-1">
@@ -91,7 +98,15 @@ function RowPropertiesSection({
 }
 
 /** Compact cover control: a thumbnail plus "Position ändern" and "Entfernen". */
-function CoverSection({ workspaceId, detail, readOnly }: { workspaceId: string; detail: DocumentDetail; readOnly: boolean }) {
+function CoverSection({
+  workspaceId,
+  detail,
+  readOnly,
+}: {
+  workspaceId: string;
+  detail: DocumentDetail;
+  readOnly: boolean;
+}) {
   const updateDocument = useUpdateDocument(workspaceId);
   const [repositioning, setRepositioning] = React.useState(false);
   const [draft, setDraft] = React.useState(detail.coverPosition);
@@ -162,7 +177,12 @@ function CoverSection({ workspaceId, detail, readOnly }: { workspaceId: string; 
             size="sm"
             disabled={updateDocument.isPending}
             data-testid="properties-cover-remove"
-            onClick={() => void updateDocument.mutateAsync({ documentId: detail.id, request: { coverAttachmentId: null } })}
+            onClick={() =>
+              void updateDocument.mutateAsync({
+                documentId: detail.id,
+                request: { coverAttachmentId: null },
+              })
+            }
           >
             <ImageIcon /> Entfernen
           </Button>
@@ -183,11 +203,13 @@ function ProvenanceSection({ detail }: { detail: DocumentDetail }) {
       <dl className="grid grid-cols-[5.5rem_1fr] gap-x-2 gap-y-1.5 text-xs">
         <dt className="text-muted-foreground">Angelegt</dt>
         <dd>
-          <span className="exocortex-numeric">{dateTime(detail.createdAt)}</span> · {detail.createdByName}
+          <span className="exocortex-numeric">{dateTime(detail.createdAt)}</span> ·{' '}
+          {detail.createdByName}
         </dd>
         <dt className="text-muted-foreground">Geändert</dt>
         <dd>
-          <span className="exocortex-numeric">{dateTime(detail.updatedAt)}</span> · {detail.updatedByName}
+          <span className="exocortex-numeric">{dateTime(detail.updatedAt)}</span> ·{' '}
+          {detail.updatedByName}
         </dd>
         <dt className="text-muted-foreground">Pfad</dt>
         <dd className="break-words">
@@ -213,7 +235,9 @@ function TechnicalSection({ detail }: { detail: DocumentDetail }) {
         data-testid="technical-section-toggle"
         onClick={() => setOpen((next) => !next)}
       >
-        <ChevronDownIcon className={cn('size-3.5 transition-transform', open ? 'rotate-180' : undefined)} />
+        <ChevronDownIcon
+          className={cn('size-3.5 transition-transform', open ? 'rotate-180' : undefined)}
+        />
         Technisches
       </button>
       {open ? (
@@ -225,7 +249,9 @@ function TechnicalSection({ detail }: { detail: DocumentDetail }) {
             className={detail.materializedAt === null ? undefined : 'exocortex-numeric'}
             data-testid="materialized-at"
           >
-            {detail.materializedAt === null ? 'noch nicht' : new Date(detail.materializedAt).toLocaleString('de-DE')}
+            {detail.materializedAt === null
+              ? 'noch nicht'
+              : new Date(detail.materializedAt).toLocaleString('de-DE')}
           </dd>
         </dl>
       ) : null}
@@ -290,7 +316,11 @@ function PageProperties({ workspaceId, detail }: { workspaceId: string; detail: 
       </div>
 
       {detail.type === 'PAGE' && detail.parentId !== null && detail.parentType === 'COLLECTION' ? (
-        <RowPropertiesSection collectionDocumentId={detail.parentId} rowId={detail.id} readOnly={readOnly} />
+        <RowPropertiesSection
+          collectionDocumentId={detail.parentId}
+          rowId={detail.id}
+          readOnly={readOnly}
+        />
       ) : null}
 
       <CoverSection workspaceId={workspaceId} detail={detail} readOnly={readOnly} />

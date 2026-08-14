@@ -50,7 +50,10 @@ export async function discoverPrincipal(client: DavClient): Promise<string> {
   return href;
 }
 
-export async function discoverCalendarHome(client: DavClient, principalHref: string): Promise<string> {
+export async function discoverCalendarHome(
+  client: DavClient,
+  principalHref: string,
+): Promise<string> {
   const response = await client.request({
     method: 'PROPFIND',
     url: principalHref,
@@ -72,7 +75,10 @@ export async function discoverCalendarHome(client: DavClient, principalHref: str
  * flagged: they are where invitations arrive, which is what tells an incoming
  * event from a locally created one.
  */
-export async function listCollections(client: DavClient, homeHref: string): Promise<CalendarCollection[]> {
+export async function listCollections(
+  client: DavClient,
+  homeHref: string,
+): Promise<CalendarCollection[]> {
   const response = await client.request({
     method: 'PROPFIND',
     url: homeHref,
@@ -88,12 +94,16 @@ export async function listCollections(client: DavClient, homeHref: string): Prom
     const propstats = asArray(nodeAt(entry, 'propstat')).filter((propstat) =>
       isSuccessStatus(textAt(propstat, 'status')),
     );
-    const kinds = propstats.flatMap((propstat) => childNames(nodeAt(propstat, 'prop', 'resourcetype')));
+    const kinds = propstats.flatMap((propstat) =>
+      childNames(nodeAt(propstat, 'prop', 'resourcetype')),
+    );
     const isScheduleCollection =
       kinds.includes('schedule-inbox') || kinds.includes('schedule-outbox');
     if (!kinds.includes('calendar') && !isScheduleCollection) continue;
 
-    const prop = propstats.map((propstat) => nodeAt(propstat, 'prop')).find((node) => node !== undefined);
+    const prop = propstats
+      .map((propstat) => nodeAt(propstat, 'prop'))
+      .find((node) => node !== undefined);
     const components = asArray(nodeAt(prop, 'supported-calendar-component-set', 'comp'))
       .map((comp) => textAt(comp, '@name'))
       .filter((name): name is string => name !== null);
@@ -120,10 +130,7 @@ export async function listCollections(client: DavClient, homeHref: string): Prom
  * split properties across several propstats with different statuses, so the
  * failing ones are skipped rather than read as empty.
  */
-function firstPropstatText(
-  xml: Record<string, unknown> | null,
-  ...path: string[]
-): string | null {
+function firstPropstatText(xml: Record<string, unknown> | null, ...path: string[]): string | null {
   for (const entry of asArray(nodeAt(xml as never, 'multistatus', 'response'))) {
     for (const propstat of asArray(nodeAt(entry, 'propstat'))) {
       if (!isSuccessStatus(textAt(propstat, 'status'))) continue;

@@ -119,11 +119,17 @@ function valueSubquery(propertyId: string, column: ValueColumn): Prisma.Sql {
 
 function isComputedColumn(type: DatabasePropertyType): boolean {
   return (
-    type === 'CREATED_TIME' || type === 'UPDATED_TIME' || type === 'CREATED_BY' || type === 'UPDATED_BY'
+    type === 'CREATED_TIME' ||
+    type === 'UPDATED_TIME' ||
+    type === 'CREATED_BY' ||
+    type === 'UPDATED_BY'
   );
 }
 
-const COMPUTED_COLUMN: Record<'CREATED_TIME' | 'UPDATED_TIME' | 'CREATED_BY' | 'UPDATED_BY', string> = {
+const COMPUTED_COLUMN: Record<
+  'CREATED_TIME' | 'UPDATED_TIME' | 'CREATED_BY' | 'UPDATED_BY',
+  string
+> = {
   CREATED_TIME: 'createdAt',
   UPDATED_TIME: 'updatedAt',
   CREATED_BY: 'createdById',
@@ -167,7 +173,9 @@ function compileOverlapsCondition(property: DatabasePropertyRef, value: unknown)
     }
     const parsed = new Date(entry);
     if (Number.isNaN(parsed.getTime())) {
-      throw new InvalidDatabaseFilterError(`Operator "overlaps" received an invalid date: ${entry}`);
+      throw new InvalidDatabaseFilterError(
+        `Operator "overlaps" received an invalid date: ${entry}`,
+      );
     }
     return parsed;
   };
@@ -247,12 +255,17 @@ export function compileFilterGroup(
 
   const combinator = group.combinator === 'or' ? ' OR ' : ' AND ';
   const parts = group.conditions.map((entry) =>
-    'combinator' in entry ? Prisma.sql`(${compileFilterGroup(entry, properties)})` : compileCondition(entry, properties),
+    'combinator' in entry
+      ? Prisma.sql`(${compileFilterGroup(entry, properties)})`
+      : compileCondition(entry, properties),
   );
   return Prisma.join(parts, combinator);
 }
 
-export function compileSorts(sorts: readonly DatabaseSort[], properties: DatabasePropertyMap): Prisma.Sql {
+export function compileSorts(
+  sorts: readonly DatabaseSort[],
+  properties: DatabasePropertyMap,
+): Prisma.Sql {
   if (sorts.length === 0) return Prisma.sql`document."orderKey" ASC`;
 
   const parts = sorts.map((sort) => {

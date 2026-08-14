@@ -51,7 +51,10 @@ function bearer(token: string): Record<string, string> {
   return { authorization: `Bearer ${token}` };
 }
 
-async function apiToken(scopes: string[], overrides: { revoked?: boolean; expired?: boolean } = {}) {
+async function apiToken(
+  scopes: string[],
+  overrides: { revoked?: boolean; expired?: boolean } = {},
+) {
   const generated = generateApiToken();
   await prisma.apiToken.create({
     data: {
@@ -235,12 +238,16 @@ describe('McpService.createHandler', () => {
     const secret = await apiToken(['write']);
     const caller = await service.authenticate(bearer(secret));
 
-    const full = await (await service.createHandler(caller, 'mcp'))({
+    const full = await (
+      await service.createHandler(caller, 'mcp')
+    )({
       jsonrpc: '2.0',
       id: 1,
       method: 'tools/list',
     });
-    const research = await (await service.createHandler(caller, 'research'))({
+    const research = await (
+      await service.createHandler(caller, 'research')
+    )({
       jsonrpc: '2.0',
       id: 1,
       method: 'tools/list',

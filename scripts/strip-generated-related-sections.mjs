@@ -111,7 +111,8 @@ async function api(token, method, path, body, attempt = 0) {
     await sleep(pause);
     return api(token, method, path, body, attempt + 1);
   }
-  if (!response.ok) throw new Error(`${method} ${path} -> ${response.status}: ${text.slice(0, 300)}`);
+  if (!response.ok)
+    throw new Error(`${method} ${path} -> ${response.status}: ${text.slice(0, 300)}`);
   return text.length === 0 ? null : JSON.parse(text);
 }
 

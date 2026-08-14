@@ -49,10 +49,7 @@ export function AiSelectionProvider({ children }: { children: React.ReactNode })
 
   const clear = React.useCallback(() => setSelection(null), []);
 
-  const value = React.useMemo(
-    () => ({ selection, handOver, clear }),
-    [selection, handOver, clear],
-  );
+  const value = React.useMemo(() => ({ selection, handOver, clear }), [selection, handOver, clear]);
   return <AiSelectionContext.Provider value={value}>{children}</AiSelectionContext.Provider>;
 }
 

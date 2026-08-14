@@ -69,7 +69,10 @@ export function PropertyMenu({ documentId, property, readOnly }: PropertyMenuPro
 
   if (readOnly) {
     return (
-      <span className="truncate text-xs font-medium text-muted-foreground" title={PROPERTY_TYPE_LABELS[property.type]}>
+      <span
+        className="truncate text-xs font-medium text-muted-foreground"
+        title={PROPERTY_TYPE_LABELS[property.type]}
+      >
         {property.name}
       </span>
     );
@@ -189,7 +192,13 @@ export function PropertyMenu({ documentId, property, readOnly }: PropertyMenuPro
  * end (`database_property_date_range_in_use`), which surfaces here as the
  * mutation's error message rather than as silent data loss.
  */
-function DateFormatEditor({ documentId, property }: { documentId: string; property: DatabaseProperty }) {
+function DateFormatEditor({
+  documentId,
+  property,
+}: {
+  documentId: string;
+  property: DatabaseProperty;
+}) {
   const updateProperty = useUpdateDatabaseProperty(documentId);
   const config = parseDatePropertyConfig(property.config);
 
@@ -225,8 +234,8 @@ function DateFormatEditor({ documentId, property }: { documentId: string; proper
         />
       </div>
       <p className="text-xs text-muted-foreground">
-        Mit Enddatum wird aus der Eigenschaft ein Zeitraum. Erst dann kann eine Kalenderansicht Termine über
-        mehrere Tage zeigen.
+        Mit Enddatum wird aus der Eigenschaft ein Zeitraum. Erst dann kann eine Kalenderansicht
+        Termine über mehrere Tage zeigen.
       </p>
       {updateProperty.isError ? (
         <p className="text-xs text-destructive-text">{updateProperty.error.message}</p>
@@ -235,7 +244,13 @@ function DateFormatEditor({ documentId, property }: { documentId: string; proper
   );
 }
 
-function OptionsManager({ documentId, property }: { documentId: string; property: DatabaseProperty }) {
+function OptionsManager({
+  documentId,
+  property,
+}: {
+  documentId: string;
+  property: DatabaseProperty;
+}) {
   const [label, setLabel] = React.useState('');
   const createOption = useCreateDatabasePropertyOption(documentId);
   const updateOption = useUpdateDatabasePropertyOption(documentId);
@@ -249,7 +264,11 @@ function OptionsManager({ documentId, property }: { documentId: string; property
           <li key={option.id} className="flex items-center gap-1">
             <Badge
               variant="outline"
-              className={cn('flex-1 justify-start border-transparent', OPTION_COLOR_BG_CLASS[option.color], OPTION_COLOR_TEXT_CLASS[option.color])}
+              className={cn(
+                'flex-1 justify-start border-transparent',
+                OPTION_COLOR_BG_CLASS[option.color],
+                OPTION_COLOR_TEXT_CLASS[option.color],
+              )}
             >
               {option.label}
             </Badge>
@@ -266,7 +285,11 @@ function OptionsManager({ documentId, property }: { documentId: string; property
                   <DropdownMenuItem
                     key={color}
                     onClick={() =>
-                      updateOption.mutate({ propertyId: property.id, optionId: option.id, request: { color } })
+                      updateOption.mutate({
+                        propertyId: property.id,
+                        optionId: option.id,
+                        request: { color },
+                      })
                     }
                   >
                     <span className={cn('size-3 rounded-full', OPTION_COLOR_BG_CLASS[color])} />
@@ -293,8 +316,12 @@ function OptionsManager({ documentId, property }: { documentId: string; property
           const trimmed = label.trim();
           if (trimmed.length === 0) return;
           const usedColors = new Set(property.options.map((option) => option.color));
-          const nextColor = OPTION_COLORS.find((color) => !usedColors.has(color)) ?? OPTION_COLORS[0];
-          createOption.mutate({ propertyId: property.id, request: { label: trimmed, color: nextColor! } });
+          const nextColor =
+            OPTION_COLORS.find((color) => !usedColors.has(color)) ?? OPTION_COLORS[0];
+          createOption.mutate({
+            propertyId: property.id,
+            request: { label: trimmed, color: nextColor! },
+          });
           setLabel('');
         }}
       >

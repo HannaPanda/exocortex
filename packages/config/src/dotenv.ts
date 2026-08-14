@@ -10,7 +10,7 @@ import { config as loadDotEnvFile } from 'dotenv';
  */
 export function findRepositoryRoot(startDirectory: string = process.cwd()): string | null {
   let current = resolve(startDirectory);
-   
+
   while (true) {
     if (existsSync(join(current, 'pnpm-workspace.yaml'))) return current;
     const parent = dirname(current);

@@ -227,7 +227,10 @@ export async function runVerification(
   return { checks, allPassed: checks.every((check) => check.passed) };
 }
 
-export function printVerification(result: { checks: VerificationCheck[]; allPassed: boolean }): void {
+export function printVerification(result: {
+  checks: VerificationCheck[];
+  allPassed: boolean;
+}): void {
   console.log('');
   console.log('Verification:');
   for (const check of result.checks) {

@@ -13,16 +13,8 @@ export {
 } from './discovery';
 export { parseCalendarObject, type ParseOptions } from './ics';
 export { buildEventIcs, patchEventIcs, type WriteEventOptions } from './ics-write';
-export {
-  type CalendarEventPayload,
-  hashCalendarEventPayload,
-  newCalendarUid,
-} from './payload';
-export {
-  describeRecurrence,
-  resolveOccurrence,
-  type ResolveOccurrenceOptions,
-} from './recurrence';
+export { type CalendarEventPayload, hashCalendarEventPayload, newCalendarUid } from './payload';
+export { describeRecurrence, resolveOccurrence, type ResolveOccurrenceOptions } from './recurrence';
 export { fetchObjects, fetchObjectsInRange, listObjects, syncCollection, toIcalUtc } from './sync';
 export type {
   CalDavCredentials,

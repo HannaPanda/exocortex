@@ -134,7 +134,11 @@ export async function pullLink(input: PullLinkInput): Promise<PullLinkResult> {
   });
   const unchanged = refs.length - toFetch.length;
 
-  const objects = await fetchObjects(dav, link.remoteHref, toFetch.map((ref) => ref.href));
+  const objects = await fetchObjects(
+    dav,
+    link.remoteHref,
+    toFetch.map((ref) => ref.href),
+  );
 
   const result: PullLinkResult = {
     created: 0,
@@ -433,7 +437,8 @@ function todoValues(
     });
   }
   if (map.status !== null) values.push({ propertyId: map.status, value: todo.status });
-  if (map.description !== null) values.push({ propertyId: map.description, value: todo.description });
+  if (map.description !== null)
+    values.push({ propertyId: map.description, value: todo.description });
   return values;
 }
 
@@ -486,7 +491,13 @@ async function upsertRow(input: {
   };
 
   if (known?.rowDocumentId != null) {
-    const alive = await updateRow(client, known.rowDocumentId, input.title, input.values, input.logger);
+    const alive = await updateRow(
+      client,
+      known.rowDocumentId,
+      input.title,
+      input.values,
+      input.logger,
+    );
     if (alive) {
       await prisma.calendarObjectState.update({ where: { id: known.id }, data: shared });
       input.result.updated += 1;

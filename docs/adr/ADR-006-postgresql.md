@@ -1,7 +1,7 @@
 # ADR-006: PostgreSQL as the application database
 
-* Status: accepted
-* Date: 2026-08-04
+- Status: accepted
+- Date: 2026-08-04
 
 ## Context
 
@@ -17,21 +17,21 @@ initial migration.
 
 Anything Prisma cannot express is written as explicit SQL in the migration:
 
-* a generated, weighted `tsvector` column on `document_search_index` (title weight A,
+- a generated, weighted `tsvector` column on `document_search_index` (title weight A,
   body weight B) with a GIN index,
-* trigram GIN indexes on titles for typo-tolerant search,
-* a `C`-collation index on `(workspaceId, parentId, orderKey)` so the fractional
+- trigram GIN indexes on titles for typo-tolerant search,
+- a `C`-collation index on `(workspaceId, parentId, orderKey)` so the fractional
   index order matches the index order,
-* a partial index on unprocessed outbox rows.
+- a partial index on unprocessed outbox rows.
 
 ## Consequences
 
-* One engine covers relations, blobs, search and future embeddings — a small
+- One engine covers relations, blobs, search and future embeddings — a small
   self-hosted deployment needs no additional service.
-* Search quality is good enough for tens of thousands of pages. Beyond that,
+- Search quality is good enough for tens of thousands of pages. Beyond that,
   `SearchAdapter` allows adding OpenSearch without touching application services.
-* `Unsupported("tsvector")` and `Unsupported("vector(1536)")` columns are invisible to
+- `Unsupported("tsvector")` and `Unsupported("vector(1536)")` columns are invisible to
   the Prisma client, so all search queries use `$queryRaw` with parameter binding.
-* Prisma 6 rather than 7: it is the version the Better Auth Prisma adapter is tested
+- Prisma 6 rather than 7: it is the version the Better Auth Prisma adapter is tested
   against, and its generator output works in both the CommonJS server builds and the
   ESM browser build.

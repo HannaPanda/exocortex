@@ -213,7 +213,9 @@ export class McpService {
       // `mcp.writeConfirmationRequired` widens the gate to every write. It was
       // written, shown in the admin area and documented, and then read by
       // nobody: the gate ran unconditionally regardless of the switch.
-      confirm: (await this.settings.getKey('mcp.writeConfirmationRequired')) ? 'all' : 'irreversible',
+      confirm: (await this.settings.getKey('mcp.writeConfirmationRequired'))
+        ? 'all'
+        : 'irreversible',
       principal: caller.session.userId,
       logger: this.logger,
     });

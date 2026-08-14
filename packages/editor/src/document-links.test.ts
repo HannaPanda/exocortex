@@ -138,10 +138,7 @@ describe('extractDocumentLinks', () => {
     const links = extractDocumentLinks(
       doc({
         type: 'paragraph',
-        content: [
-          { type: 'mention', attrs: { kind: 'page', label: 'Ziel' } },
-          wikiText('ziel'),
-        ],
+        content: [{ type: 'mention', attrs: { kind: 'page', label: 'Ziel' } }, wikiText('ziel')],
       }),
     );
     expect(links.map((link) => link.kind)).toEqual(['mention', 'wikiMark']);
@@ -207,7 +204,9 @@ describe('extractDocumentLinks', () => {
 
   it('returns nothing for a document without references', () => {
     expect(
-      extractDocumentLinks(doc({ type: 'paragraph', content: [{ type: 'text', text: 'nur Text' }] })),
+      extractDocumentLinks(
+        doc({ type: 'paragraph', content: [{ type: 'text', text: 'nur Text' }] }),
+      ),
     ).toEqual([]);
     expect(extractDocumentLinks({ type: 'doc' })).toEqual([]);
   });

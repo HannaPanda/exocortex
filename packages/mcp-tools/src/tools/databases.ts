@@ -42,7 +42,10 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
  * told it can create a property type the API will reject.
  */
 const implementedPropertyTypeSchema = z.enum(
-  IMPLEMENTED_PROPERTY_TYPES as unknown as readonly [DatabasePropertyType, ...DatabasePropertyType[]],
+  IMPLEMENTED_PROPERTY_TYPES as unknown as readonly [
+    DatabasePropertyType,
+    ...DatabasePropertyType[],
+  ],
 );
 
 const createDatabaseRequestPropertySchema = z.object({
@@ -150,7 +153,10 @@ export const databasePropertyCreateTool: AnyToolDefinition = defineTool({
       body,
       responseSchema: databasePropertySchema,
     });
-    return { text: `Spalte erstellt: ${result.name} (${result.type}, id: ${result.id})`, data: result };
+    return {
+      text: `Spalte erstellt: ${result.name} (${result.type}, id: ${result.id})`,
+      data: result,
+    };
   },
 });
 
@@ -188,7 +194,8 @@ export const databasePropertyUpdateTool: AnyToolDefinition = defineTool({
 
 export const databasePropertyDeleteTool: AnyToolDefinition = defineTool({
   name: 'exo_database_property_delete',
-  description: 'Löscht eine Datenbankspalte unwiderruflich, inklusive aller darin gespeicherten Werte.',
+  description:
+    'Löscht eine Datenbankspalte unwiderruflich, inklusive aller darin gespeicherten Werte.',
   inputSchema: z.object({ documentId: idSchema, propertyId: idSchema }),
   surfaces: ['mcp', 'ai'],
   mutating: true,
@@ -234,7 +241,8 @@ const databaseViewCreateInputSchema = z
 
 export const databaseViewCreateTool: AnyToolDefinition = defineTool({
   name: 'exo_database_view_create',
-  description: 'Legt eine neue Ansicht (Tabelle, Board, Galerie oder Kalender) für eine Datenbank an.',
+  description:
+    'Legt eine neue Ansicht (Tabelle, Board, Galerie oder Kalender) für eine Datenbank an.',
   inputSchema: databaseViewCreateInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,
@@ -247,7 +255,10 @@ export const databaseViewCreateTool: AnyToolDefinition = defineTool({
       body,
       responseSchema: databaseViewSchema,
     });
-    return { text: `Ansicht erstellt: ${result.name} (${result.type}, id: ${result.id})`, data: result };
+    return {
+      text: `Ansicht erstellt: ${result.name} (${result.type}, id: ${result.id})`,
+      data: result,
+    };
   },
 });
 
@@ -331,7 +342,8 @@ const databaseQueryInputSchema = z
 
 export const databaseQueryTool: AnyToolDefinition = defineTool({
   name: 'exo_database_query',
-  description: 'Fragt Zeilen einer Datenbank ab, optional über eine gespeicherte Ansicht oder ad-hoc-Filter.',
+  description:
+    'Fragt Zeilen einer Datenbank ab, optional über eine gespeicherte Ansicht oder ad-hoc-Filter.',
   inputSchema: databaseQueryInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: false,
@@ -376,7 +388,9 @@ export const databaseRowGetTool: AnyToolDefinition = defineTool({
     if (result.row === null) {
       return { text: `Seite ${input.documentId} ist keine Datenbankzeile.`, data: result };
     }
-    const lines = result.row.values.map((value) => `- ${value.propertyId}: ${formatCell(value.value)}`);
+    const lines = result.row.values.map(
+      (value) => `- ${value.propertyId}: ${formatCell(value.value)}`,
+    );
     return {
       text: `${result.row.document.title} (id: ${result.row.document.id})\n${lines.join('\n')}`,
       data: result,
@@ -404,7 +418,10 @@ export const databaseRowCreateTool: AnyToolDefinition = defineTool({
       body,
       responseSchema: databaseRowSchema,
     });
-    return { text: `Zeile erstellt: ${result.document.title} (id: ${result.document.id})`, data: result };
+    return {
+      text: `Zeile erstellt: ${result.document.title} (id: ${result.document.id})`,
+      data: result,
+    };
   },
 });
 
@@ -429,7 +446,10 @@ export const databaseRowUpdateTool: AnyToolDefinition = defineTool({
       body,
       responseSchema: databaseRowSchema,
     });
-    return { text: `Zeile aktualisiert: ${result.document.title} (id: ${result.document.id})`, data: result };
+    return {
+      text: `Zeile aktualisiert: ${result.document.title} (id: ${result.document.id})`,
+      data: result,
+    };
   },
 });
 

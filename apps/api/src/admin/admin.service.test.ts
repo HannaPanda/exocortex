@@ -128,9 +128,7 @@ describe('disabling an account', () => {
 
     expect(updated.disabledAt).not.toBeNull();
     expect(await prisma.session.count({ where: { userId: victimId } })).toBe(0);
-    expect(
-      await prisma.apiToken.count({ where: { userId: victimId, revokedAt: null } }),
-    ).toBe(0);
+    expect(await prisma.apiToken.count({ where: { userId: victimId, revokedAt: null } })).toBe(0);
   });
 
   it('re-enables without resurrecting the revoked tokens', async () => {
@@ -144,9 +142,7 @@ describe('disabling an account', () => {
     // Deliberate: a token revoked while the account was off stays revoked. It may
     // have been revoked *because* it leaked, and reactivating a person is not a
     // statement about their old credentials.
-    expect(
-      await prisma.apiToken.count({ where: { userId: victimId, revokedAt: null } }),
-    ).toBe(0);
+    expect(await prisma.apiToken.count({ where: { userId: victimId, revokedAt: null } })).toBe(0);
   });
 
   it('refuses to disable your own account', async () => {

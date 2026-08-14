@@ -138,14 +138,11 @@ export class McpController {
   }
 
   private refuseStream(reply: FastifyReply): void {
-    void reply
-      .status(405)
-      .header('allow', 'POST, DELETE')
-      .send({
-        code: 'validation_failed',
-        message:
-          'This MCP endpoint answers POST only. It sends no server-initiated messages, so there is no stream to open.',
-      });
+    void reply.status(405).header('allow', 'POST, DELETE').send({
+      code: 'validation_failed',
+      message:
+        'This MCP endpoint answers POST only. It sends no server-initiated messages, so there is no stream to open.',
+    });
   }
 
   private async handle(
@@ -209,7 +206,9 @@ export class McpController {
     surface: ToolSurface,
   ): Promise<JsonRpcResponse | null> {
     const toolName =
-      message.method === 'tools/call' && isRecord(message.params) && typeof message.params.name === 'string'
+      message.method === 'tools/call' &&
+      isRecord(message.params) &&
+      typeof message.params.name === 'string'
         ? message.params.name
         : undefined;
 
@@ -231,7 +230,8 @@ export class McpController {
         method: message.method,
         userId: caller.session.userId,
       });
-      const id = typeof message.id === 'string' || typeof message.id === 'number' ? message.id : null;
+      const id =
+        typeof message.id === 'string' || typeof message.id === 'number' ? message.id : null;
       if (id === null) return null;
       return {
         jsonrpc: '2.0',
@@ -252,8 +252,7 @@ export class McpController {
   private unauthorized(reply: FastifyReply, error: unknown): void {
     const challenge = `Bearer resource_metadata="${this.env.APP_URL}/.well-known/oauth-protected-resource"`;
     const status = error instanceof AppError ? error.status : 401;
-    const message =
-      error instanceof AppError ? error.message : 'Authentication is required';
+    const message = error instanceof AppError ? error.message : 'Authentication is required';
     void reply
       .status(status === 401 || status === 403 ? 401 : status)
       .header('www-authenticate', challenge)

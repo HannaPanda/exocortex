@@ -102,19 +102,28 @@ interface MappedLiveFields {
 }
 
 /** Maps one live OpenRouter entry onto the registry's column shape. Prices are integers: never store a float. */
-function mapLiveEntry(entry: OpenRouterModel, fallbackContextWindowTokens: number): MappedLiveFields {
+function mapLiveEntry(
+  entry: OpenRouterModel,
+  fallbackContextWindowTokens: number,
+): MappedLiveFields {
   return {
     contextWindowTokens: entry.context_length ?? fallbackContextWindowTokens,
     maxOutputTokens: entry.top_provider?.max_completion_tokens ?? null,
     supportsVision: (entry.architecture?.input_modalities ?? []).includes('image'),
     supportsTools: entry.supported_parameters.includes('tools'),
-    reasoningLevels: deriveReasoningLevels({ slug: entry.id, supportedParameters: entry.supported_parameters }),
+    reasoningLevels: deriveReasoningLevels({
+      slug: entry.id,
+      supportedParameters: entry.supported_parameters,
+    }),
     inputMicroUsdPerMTok: Math.round(Number(entry.pricing.prompt) * 1e12),
     outputMicroUsdPerMTok: Math.round(Number(entry.pricing.completion) * 1e12),
   };
 }
 
-function reasoningLevelsEqual(a: readonly AiReasoningLevelPrisma[], b: readonly AiReasoningLevelPrisma[]): boolean {
+function reasoningLevelsEqual(
+  a: readonly AiReasoningLevelPrisma[],
+  b: readonly AiReasoningLevelPrisma[],
+): boolean {
   return a.length === b.length && a.every((level, index) => level === b[index]);
 }
 
@@ -168,7 +177,10 @@ export class AiModelsService {
   }
 
   async create(request: CreateAiModelRequest, actorId: string): Promise<AiModel> {
-    const visionCompanionId = await this.resolveCompanionId(request.visionCompanionSlug, request.slug);
+    const visionCompanionId = await this.resolveCompanionId(
+      request.visionCompanionSlug,
+      request.slug,
+    );
 
     const created = await this.prisma.aiModel.create({
       data: {
@@ -180,7 +192,9 @@ export class AiModelsService {
         maxOutputTokens: request.maxOutputTokens ?? null,
         supportsVision: request.supportsVision,
         supportsTools: request.supportsTools,
-        reasoningLevels: (request.reasoningLevels ?? ['none']).map((level) => REASONING_LEVEL_TO_PRISMA[level]),
+        reasoningLevels: (request.reasoningLevels ?? ['none']).map(
+          (level) => REASONING_LEVEL_TO_PRISMA[level],
+        ),
         inputMicroUsdPerMTok: request.inputMicroUsdPerMTok,
         outputMicroUsdPerMTok: request.outputMicroUsdPerMTok,
         enabled: request.enabled ?? true,
@@ -203,15 +217,20 @@ export class AiModelsService {
     if (request.provider !== undefined) data.provider = request.provider;
     if (request.displayName !== undefined) data.displayName = request.displayName;
     if (request.description !== undefined) data.description = request.description;
-    if (request.contextWindowTokens !== undefined) data.contextWindowTokens = request.contextWindowTokens;
+    if (request.contextWindowTokens !== undefined)
+      data.contextWindowTokens = request.contextWindowTokens;
     if (request.maxOutputTokens !== undefined) data.maxOutputTokens = request.maxOutputTokens;
     if (request.supportsVision !== undefined) data.supportsVision = request.supportsVision;
     if (request.supportsTools !== undefined) data.supportsTools = request.supportsTools;
     if (request.reasoningLevels !== undefined) {
-      data.reasoningLevels = request.reasoningLevels.map((level) => REASONING_LEVEL_TO_PRISMA[level]);
+      data.reasoningLevels = request.reasoningLevels.map(
+        (level) => REASONING_LEVEL_TO_PRISMA[level],
+      );
     }
-    if (request.inputMicroUsdPerMTok !== undefined) data.inputMicroUsdPerMTok = request.inputMicroUsdPerMTok;
-    if (request.outputMicroUsdPerMTok !== undefined) data.outputMicroUsdPerMTok = request.outputMicroUsdPerMTok;
+    if (request.inputMicroUsdPerMTok !== undefined)
+      data.inputMicroUsdPerMTok = request.inputMicroUsdPerMTok;
+    if (request.outputMicroUsdPerMTok !== undefined)
+      data.outputMicroUsdPerMTok = request.outputMicroUsdPerMTok;
     if (request.enabled !== undefined) data.enabled = request.enabled;
     if (request.sortOrder !== undefined) data.sortOrder = request.sortOrder;
 
@@ -236,7 +255,11 @@ export class AiModelsService {
       include: AI_MODEL_INCLUDE,
     });
 
-    this.logger.info('AI model updated', { actorId, aiModelId: modelId, keys: Object.keys(request).join(',') });
+    this.logger.info('AI model updated', {
+      actorId,
+      aiModelId: modelId,
+      keys: Object.keys(request).join(','),
+    });
     return mapAiModelRow(updated);
   }
 
@@ -249,7 +272,9 @@ export class AiModelsService {
     const existing = await this.prisma.aiModel.findUnique({ where: { id: modelId } });
     if (existing === null) throw AppError.notFound('AI model');
 
-    const referencedByConversations = await this.prisma.aiConversation.count({ where: { modelId } });
+    const referencedByConversations = await this.prisma.aiConversation.count({
+      where: { modelId },
+    });
     if (referencedByConversations > 0) {
       await this.prisma.aiModel.update({ where: { id: modelId }, data: { enabled: false } });
       this.logger.info('AI model disabled instead of deleted (still referenced by conversations)', {
@@ -412,7 +437,10 @@ export class AiModelsService {
     if (companionSlug === ownSlug) {
       throw AppError.validation('A model cannot be its own vision companion');
     }
-    const companion = await this.prisma.aiModel.findUnique({ where: { slug: companionSlug }, select: { id: true } });
+    const companion = await this.prisma.aiModel.findUnique({
+      where: { slug: companionSlug },
+      select: { id: true },
+    });
     if (companion === null) {
       throw new AppError('ai_model_unknown', `Unknown vision companion slug "${companionSlug}"`);
     }

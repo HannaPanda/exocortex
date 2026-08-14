@@ -27,7 +27,11 @@ import { LOGGER } from '../common/logger.provider';
 import { PRISMA, QUEUES } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
-import { AiModelResolverService, REASONING_LEVEL_TO_CONTRACT, REASONING_LEVEL_TO_PRISMA } from './ai-model-resolver.service';
+import {
+  AiModelResolverService,
+  REASONING_LEVEL_TO_CONTRACT,
+  REASONING_LEVEL_TO_PRISMA,
+} from './ai-model-resolver.service';
 import { runChatCommand } from './chat-command-runner';
 import { parseChatCommand, type ParsedChatCommand } from './chat-commands';
 import { mapAiRunRow } from './run-mapper';
@@ -81,7 +85,10 @@ interface ConversationMessageRow {
   createdAt: Date;
 }
 
-const CONVERSATION_ROLE_TO_CONTRACT: Record<AiConversationRolePrisma, AiConversationMessage['role']> = {
+const CONVERSATION_ROLE_TO_CONTRACT: Record<
+  AiConversationRolePrisma,
+  AiConversationMessage['role']
+> = {
   SYSTEM: 'system',
   USER: 'user',
   ASSISTANT: 'assistant',
@@ -265,7 +272,10 @@ export class ConversationsService {
       data.reasoningLevel = REASONING_LEVEL_TO_PRISMA[input.request.reasoningLevel];
     }
     if (input.request.visionCompanionSlug !== undefined) {
-      if (input.request.visionCompanionSlug !== null && input.request.visionCompanionSlug !== 'off') {
+      if (
+        input.request.visionCompanionSlug !== null &&
+        input.request.visionCompanionSlug !== 'off'
+      ) {
         await this.modelResolver.resolve({ slug: input.request.visionCompanionSlug });
       }
       data.visionCompanionSlug = input.request.visionCompanionSlug;
@@ -331,10 +341,13 @@ export class ConversationsService {
     if (requested !== undefined) {
       throw new AppError('document_access_denied', 'The referenced document is not accessible');
     }
-    this.logger.info('Conversation is bound to a document that is gone; continuing without page context', {
-      conversationId: conversation.id,
-      documentId,
-    });
+    this.logger.info(
+      'Conversation is bound to a document that is gone; continuing without page context',
+      {
+        conversationId: conversation.id,
+        documentId,
+      },
+    );
     return { documentId: null, documentTitle: null };
   }
 
@@ -351,7 +364,10 @@ export class ConversationsService {
       select: { id: true },
     });
     if (pendingRun !== null) {
-      throw new AppError('ai_conversation_locked', 'A run for this conversation is still in progress');
+      throw new AppError(
+        'ai_conversation_locked',
+        'A run for this conversation is still in progress',
+      );
     }
 
     const parsedCommand = parseChatCommand(input.request.content);
@@ -437,7 +453,10 @@ export class ConversationsService {
       },
     });
 
-    const preludeTokens = preludeMessages.reduce((sum, message) => sum + message.estimatedTokens, 0);
+    const preludeTokens = preludeMessages.reduce(
+      (sum, message) => sum + message.estimatedTokens,
+      0,
+    );
 
     const resolvedModel =
       conversation.model === null
@@ -446,7 +465,10 @@ export class ConversationsService {
 
     const requestedReasoning =
       input.request.reasoningLevel ?? REASONING_LEVEL_TO_CONTRACT[conversation.reasoningLevel];
-    const clampedReasoning = this.modelResolver.clampReasoningLevel(resolvedModel, requestedReasoning);
+    const clampedReasoning = this.modelResolver.clampReasoningLevel(
+      resolvedModel,
+      requestedReasoning,
+    );
 
     // `messages` stores only the just-submitted user message for traceability;
     // the worker reads the live transcript from `AiConversationMessage` instead
@@ -473,7 +495,8 @@ export class ConversationsService {
       userId: input.userId,
     });
 
-    const isPlaceholderTitle = conversation.title.trim().length === 0 || conversation.title === PLACEHOLDER_TITLE;
+    const isPlaceholderTitle =
+      conversation.title.trim().length === 0 || conversation.title === PLACEHOLDER_TITLE;
     await this.prisma.aiConversation.update({
       where: { id: conversation.id },
       data: {
@@ -513,7 +536,6 @@ export class ConversationsService {
     return { run: null, command: result, userMessage: null };
   }
 
-
   /**
    * Which view was open, verified against the disclosed page rather than
    * trusted: a view id belonging to some other database would otherwise put
@@ -532,7 +554,10 @@ export class ConversationsService {
   }
 
   private async displayNameOf(modelId: string): Promise<string> {
-    const row = await this.prisma.aiModel.findUnique({ where: { id: modelId }, select: { displayName: true } });
+    const row = await this.prisma.aiModel.findUnique({
+      where: { id: modelId },
+      select: { displayName: true },
+    });
     return row?.displayName ?? modelId;
   }
 
@@ -560,12 +585,19 @@ export class ConversationsService {
     return conversation;
   }
 
-  private toContract(conversation: ConversationRow, fallbackContextWindowTokens: number | null): AiConversation {
-    const contextWindowTokens = conversation.model?.contextWindowTokens ?? fallbackContextWindowTokens;
+  private toContract(
+    conversation: ConversationRow,
+    fallbackContextWindowTokens: number | null,
+  ): AiConversation {
+    const contextWindowTokens =
+      conversation.model?.contextWindowTokens ?? fallbackContextWindowTokens;
     const contextUsagePercent =
       contextWindowTokens === null || contextWindowTokens === 0
         ? 0
-        : Math.min(100, Math.max(0, Math.round((conversation.estimatedTokens / contextWindowTokens) * 100)));
+        : Math.min(
+            100,
+            Math.max(0, Math.round((conversation.estimatedTokens / contextWindowTokens) * 100)),
+          );
 
     return {
       id: conversation.id,

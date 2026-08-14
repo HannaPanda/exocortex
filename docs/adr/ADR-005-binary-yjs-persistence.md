@@ -1,7 +1,7 @@
 # ADR-005: Binary Yjs state is the canonical persistence format
 
-* Status: accepted
-* Date: 2026-08-04
+- Status: accepted
+- Date: 2026-08-04
 
 ## Context
 
@@ -23,13 +23,13 @@ Writes are debounced twice — in Hocuspocus (2 s, cap 10 s) and in the queue (2
 
 ## Consequences
 
-* Concurrent and offline edits merge correctly, and the state survives a full server
+- Concurrent and offline edits merge correctly, and the state survives a full server
   restart (verified by an integration test that destroys and recreates the server).
-* Reconstructing state from JSON would drop the CRDT history and cause duplicated or
+- Reconstructing state from JSON would drop the CRDT history and cause duplicated or
   lost content on the next merge; the code path does not exist.
-* Derived data is eventually consistent by seconds. The UI shows this through the
+- Derived data is eventually consistent by seconds. The UI shows this through the
   job-progress indicator and the "zuletzt verarbeitet" property.
-* Snapshots store the same binary format, so restoring one is a byte-level operation
+- Snapshots store the same binary format, so restoring one is a byte-level operation
   rather than a lossy re-parse.
-* `DocumentContent` carries an extra `yjsUpdatedAt` column beyond the fields in the
+- `DocumentContent` carries an extra `yjsUpdatedAt` column beyond the fields in the
   brief; it is what makes materialization idempotent.

@@ -120,7 +120,15 @@ beforeAll(async () => {
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
   treeService = new DocumentTreeService(prisma, access);
-  trashService = new DocumentTrashService(prisma, queues, logger, storage, access, outbox, realtime);
+  trashService = new DocumentTrashService(
+    prisma,
+    queues,
+    logger,
+    storage,
+    access,
+    outbox,
+    realtime,
+  );
   service = new DocumentsService(
     prisma,
     queues,
@@ -556,7 +564,10 @@ describe('generating a cover', () => {
     const documentId = await createPage('Kein KI-Bild');
 
     await expect(
-      coverService({ 'ai.imageGenerationEnabled': false, 'ai.imageModelSlug': 'a/b' }).requestGeneration({
+      coverService({
+        'ai.imageGenerationEnabled': false,
+        'ai.imageModelSlug': 'a/b',
+      }).requestGeneration({
         documentId,
         userId: ownerId,
         prompt: 'Berge im Morgennebel',
@@ -569,7 +580,10 @@ describe('generating a cover', () => {
     const documentId = await createPage('Kein Bildmodell');
 
     await expect(
-      coverService({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': null }).requestGeneration({
+      coverService({
+        'ai.imageGenerationEnabled': true,
+        'ai.imageModelSlug': null,
+      }).requestGeneration({
         documentId,
         userId: ownerId,
         prompt: 'Berge im Morgennebel',
@@ -582,7 +596,10 @@ describe('generating a cover', () => {
     const documentId = await createPage('Gast will malen lassen');
 
     await expect(
-      coverService({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': 'a/b' }).requestGeneration({
+      coverService({
+        'ai.imageGenerationEnabled': true,
+        'ai.imageModelSlug': 'a/b',
+      }).requestGeneration({
         documentId,
         userId: guestId,
         prompt: 'Berge im Morgennebel',
@@ -640,7 +657,12 @@ describe('moving documents', () => {
   it('rejects moving a document into itself', async () => {
     const documentId = await createPage('Selbstbezug');
     await expect(
-      service.move({ documentId, userId: ownerId, request: { parentId: documentId }, correlationId }),
+      service.move({
+        documentId,
+        userId: ownerId,
+        request: { parentId: documentId },
+        correlationId,
+      }),
     ).rejects.toMatchObject({ code: 'document_move_cycle' });
   });
 
@@ -755,7 +777,11 @@ describe('moving documents across workspaces', () => {
       where: { workspaceId, action: 'document.moved_workspace', targetId: documentId },
     });
     const targetAudit = await prisma.auditLog.findFirst({
-      where: { workspaceId: otherWorkspaceId, action: 'document.moved_workspace', targetId: documentId },
+      where: {
+        workspaceId: otherWorkspaceId,
+        action: 'document.moved_workspace',
+        targetId: documentId,
+      },
     });
     expect(sourceAudit).not.toBeNull();
     expect(targetAudit).not.toBeNull();
@@ -1206,9 +1232,7 @@ describe('reaching an open editing session', () => {
       source: 'ai',
     });
 
-    expect(liveApplications).toEqual([
-      { documentId, mode: 'replace', plainText: 'Alles neu.' },
-    ]);
+    expect(liveApplications).toEqual([{ documentId, mode: 'replace', plainText: 'Alles neu.' }]);
   });
 
   /**
@@ -1341,7 +1365,9 @@ describe('resolveLink', () => {
       limit: 10,
     });
     expect(withArchived.matches.map((match) => match.id)).toEqual([activeId, archivedId]);
-    expect(withArchived.matches.find((match) => match.id === archivedId)?.archivedAt).not.toBeNull();
+    expect(
+      withArchived.matches.find((match) => match.id === archivedId)?.archivedAt,
+    ).not.toBeNull();
     expect(withArchived.matches.find((match) => match.id === activeId)?.archivedAt).toBeNull();
   });
 

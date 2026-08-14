@@ -316,7 +316,9 @@ export function filterBlockCatalog(
       if (entry.keywords.some((keyword) => keyword.includes(needle))) return { entry, score: 3 };
       return null;
     })
-    .filter((candidate): candidate is { entry: BlockCatalogEntry; score: number } => candidate !== null);
+    .filter(
+      (candidate): candidate is { entry: BlockCatalogEntry; score: number } => candidate !== null,
+    );
 
   // Stable sort: equal scores keep the catalog order, so the list never jumps.
   return scored.sort((a, b) => a.score - b.score).map((candidate) => candidate.entry);

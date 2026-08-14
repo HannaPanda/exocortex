@@ -137,10 +137,17 @@ export const attachmentReadTextTool: AnyToolDefinition = defineTool({
       responseSchema: attachmentTextResponseSchema,
     });
     if (result.status === 'pending') {
-      return { text: `Textextraktion für ${result.filename} läuft noch. Bitte gleich erneut versuchen.`, data: result };
+      return {
+        text: `Textextraktion für ${result.filename} läuft noch. Bitte gleich erneut versuchen.`,
+        data: result,
+      };
     }
     if (result.status === 'failed' && result.text === null) {
-      return { text: `Textextraktion für ${result.filename} fehlgeschlagen: ${result.error ?? 'unbekannt'}`, data: result, isError: true };
+      return {
+        text: `Textextraktion für ${result.filename} fehlgeschlagen: ${result.error ?? 'unbekannt'}`,
+        data: result,
+        isError: true,
+      };
     }
     if (result.status === 'not_applicable' && result.text === null) {
       return { text: `${result.filename} hat keine extrahierbare Textebene.`, data: result };

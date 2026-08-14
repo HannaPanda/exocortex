@@ -92,11 +92,7 @@ function IncomingRow({ link, workspaceId }: { link: IncomingDocumentLink; worksp
       title={link.source.title}
       kind={link.kind}
       context={link.context}
-      trailing={
-        link.source.archivedAt === null ? null : (
-          <Badge variant="muted">Archiviert</Badge>
-        )
-      }
+      trailing={link.source.archivedAt === null ? null : <Badge variant="muted">Archiviert</Badge>}
     />
   );
 }
@@ -127,9 +123,7 @@ function OutgoingRow({ link, workspaceId }: { link: OutgoingDocumentLink; worksp
       title={link.target.title}
       kind={link.kind}
       context={link.context}
-      trailing={
-        link.target.archivedAt === null ? null : <Badge variant="muted">Archiviert</Badge>
-      }
+      trailing={link.target.archivedAt === null ? null : <Badge variant="muted">Archiviert</Badge>}
     />
   );
 }

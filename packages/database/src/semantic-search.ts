@@ -452,7 +452,10 @@ export function fuse(
 
   const add = (list: readonly SearchHit[], listWeight: number): void => {
     list.forEach((hit, position) => {
-      scores.set(hit.documentId, (scores.get(hit.documentId) ?? 0) + listWeight / (RRF_K + position + 1));
+      scores.set(
+        hit.documentId,
+        (scores.get(hit.documentId) ?? 0) + listWeight / (RRF_K + position + 1),
+      );
       // The keyword list is added first and its snippet wins: it carries the
       // highlighted `<mark>` fragment around the words the user typed, which is
       // more use to a reader than the first 200 characters of the page.

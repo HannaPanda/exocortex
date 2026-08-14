@@ -1,4 +1,10 @@
-import { type APIRequestContext, type Browser, type BrowserContext, expect, type Page } from '@playwright/test';
+import {
+  type APIRequestContext,
+  type Browser,
+  type BrowserContext,
+  expect,
+  type Page,
+} from '@playwright/test';
 
 import { BASIC_AUTH_CREDENTIALS } from './basic-auth';
 import { loadRepositoryEnv } from './env';
@@ -229,9 +235,7 @@ export async function waitForMaterialization(
   await expect
     .poll(
       async () => {
-        const response = await page.request.get(
-          `/api/documents/${documentId}/export/markdown`,
-        );
+        const response = await page.request.get(`/api/documents/${documentId}/export/markdown`);
         if (!response.ok()) return '';
         return ((await response.json()) as { markdown: string }).markdown;
       },

@@ -1,7 +1,7 @@
 # ADR-002: shadcn/ui components on Base UI primitives
 
-* Status: accepted
-* Date: 2026-08-04
+- Status: accepted
+- Date: 2026-08-04
 
 ## Context
 
@@ -19,17 +19,17 @@ only primitive library.
 The public shadcn registry currently ships Radix-based sources and no Base UI
 registry was reachable, so adaptation is part of the workflow rather than optional:
 
-* `Slot`/`asChild` becomes Base UI's `useRender` with a `render` prop,
-* interactive components (dialog, menu, tooltip, tabs, scroll area, separator,
+- `Slot`/`asChild` becomes Base UI's `useRender` with a `render` prop,
+- interactive components (dialog, menu, tooltip, tabs, scroll area, separator,
   context menu, avatar) are written directly against Base UI,
-* the `radix-ui` dependency the CLI adds is removed again.
+- the `radix-ui` dependency the CLI adds is removed again.
 
 ## Consequences
 
-* The repository owns every component file; nothing is fetched at runtime.
-* One primitive library means one set of accessibility semantics and no duplicated
+- The repository owns every component file; nothing is fetched at runtime.
+- One primitive library means one set of accessibility semantics and no duplicated
   focus-management logic.
-* Upgrading a shadcn component is a deliberate re-install plus re-adaptation, not an
+- Upgrading a shadcn component is a deliberate re-install plus re-adaptation, not an
   automatic dependency bump. The workflow is documented in `docs/ui-system.md`.
-* `Button` uses `render` instead of `asChild`. This differs from upstream shadcn and
+- `Button` uses `render` instead of `asChild`. This differs from upstream shadcn and
   is documented at the call site.

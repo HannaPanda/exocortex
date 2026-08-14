@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  BLOCK_ICON_NAMES,
-  filterBlockCatalog,
-  groupBlockCatalog,
-} from './block-catalog';
+import { BLOCK_ICON_NAMES, filterBlockCatalog, groupBlockCatalog } from './block-catalog';
 import { ADDRESSABLE_BLOCK_TYPES } from './block-id';
 import { EXOCORTEX_SCHEMA_VERSION } from './contract';
 import { isEmbeddableUrl, toEmbedUrl } from './embed';

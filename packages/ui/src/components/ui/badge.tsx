@@ -22,8 +22,7 @@ const badgeVariants = cva(
 );
 
 export interface BadgeProps
-  extends React.ComponentPropsWithoutRef<'span'>,
-    VariantProps<typeof badgeVariants> {
+  extends React.ComponentPropsWithoutRef<'span'>, VariantProps<typeof badgeVariants> {
   render?: useRender.RenderProp<React.ComponentPropsWithRef<'span'>>;
 }
 

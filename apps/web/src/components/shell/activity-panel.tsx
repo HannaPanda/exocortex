@@ -28,7 +28,10 @@ import {
 
 import { useDocument, useDocumentActivity, useRestoreSnapshot } from '@/lib/api/queries';
 
-const dateTimeFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
+const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+});
 const timeFormat = new Intl.DateTimeFormat('de-DE', { timeStyle: 'short' });
 
 function formatDateTime(iso: string): string {
@@ -39,7 +42,10 @@ function formatTime(iso: string): string {
 }
 
 /** German label for a snapshot's `reason`. */
-const SNAPSHOT_REASON_LABEL: Record<Extract<DocumentActivityEntry, { type: 'snapshot' }>['reason'], string> = {
+const SNAPSHOT_REASON_LABEL: Record<
+  Extract<DocumentActivityEntry, { type: 'snapshot' }>['reason'],
+  string
+> = {
   manual: 'Manuell gesichert',
   scheduled: 'Automatisch gesichert',
   pre_restore: 'Vor einer Wiederherstellung gesichert',
@@ -108,7 +114,13 @@ function ActivityEntryRow({
 
   switch (entry.type) {
     case 'created':
-      return <Row type={entry.type} title="Seite angelegt" meta={`${formatDateTime(entry.occurredAt)} · ${who}`} />;
+      return (
+        <Row
+          type={entry.type}
+          title="Seite angelegt"
+          meta={`${formatDateTime(entry.occurredAt)} · ${who}`}
+        />
+      );
     case 'renamed':
       return (
         <Row
@@ -126,9 +138,21 @@ function ActivityEntryRow({
         />
       );
     case 'archived':
-      return <Row type={entry.type} title="Archiviert" meta={`${formatDateTime(entry.occurredAt)} · ${who}`} />;
+      return (
+        <Row
+          type={entry.type}
+          title="Archiviert"
+          meta={`${formatDateTime(entry.occurredAt)} · ${who}`}
+        />
+      );
     case 'restored':
-      return <Row type={entry.type} title="Wiederhergestellt" meta={`${formatDateTime(entry.occurredAt)} · ${who}`} />;
+      return (
+        <Row
+          type={entry.type}
+          title="Wiederhergestellt"
+          meta={`${formatDateTime(entry.occurredAt)} · ${who}`}
+        />
+      );
     case 'snapshotRestored':
       return (
         <Row
@@ -271,7 +295,9 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
                 : null}
             </DialogDescription>
           </DialogHeader>
-          {restoreError !== null ? <p className="text-sm text-destructive-text">{restoreError}</p> : null}
+          {restoreError !== null ? (
+            <p className="text-sm text-destructive-text">{restoreError}</p>
+          ) : null}
           <DialogFooter>
             <Button variant="outline" onClick={() => setPendingRestore(null)}>
               Abbrechen

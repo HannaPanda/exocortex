@@ -259,9 +259,7 @@ export async function verifySessionFromHeaders(
 }
 
 /** Builds a `Headers` object from a Node-style header record. */
-export function toWebHeaders(
-  source: Record<string, string | string[] | undefined>,
-): Headers {
+export function toWebHeaders(source: Record<string, string | string[] | undefined>): Headers {
   const headers = new Headers();
   for (const [key, value] of Object.entries(source)) {
     if (value === undefined) continue;

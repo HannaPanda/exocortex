@@ -51,8 +51,12 @@ export async function compactIfNeeded(input: CompactIfNeededInput): Promise<Comp
 
   const usedTokens =
     input.systemPromptTokens +
-    estimateConversationTokens(active.map((message) => ({ role: message.role, content: message.content })));
-  const budget = Math.floor((input.contextWindowTokens * input.thresholdPercent) / 100) - input.reservedOutputTokens;
+    estimateConversationTokens(
+      active.map((message) => ({ role: message.role, content: message.content })),
+    );
+  const budget =
+    Math.floor((input.contextWindowTokens * input.thresholdPercent) / 100) -
+    input.reservedOutputTokens;
 
   if (usedTokens <= budget) {
     return { compacted: false, summarizedMessages: 0 };
@@ -71,7 +75,9 @@ export async function compactIfNeeded(input: CompactIfNeededInput): Promise<Comp
     return { compacted: false, summarizedMessages: 0 };
   }
 
-  const transcript = toSummarize.map((message) => `${message.role}: ${message.content}`).join('\n\n');
+  const transcript = toSummarize
+    .map((message) => `${message.role}: ${message.content}`)
+    .join('\n\n');
 
   // Announced before the summariser call, not after it: this is the silence
   // that has to be named while it lasts.

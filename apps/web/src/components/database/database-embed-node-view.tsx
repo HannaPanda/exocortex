@@ -84,7 +84,11 @@ export function DatabaseEmbedNodeView({
               ? 'Wähle eine Datenbank, die hier eingebettet werden soll.'
               : 'Diese Datenbank wurde nicht gefunden. Sie wurde möglicherweise gelöscht.'
           }
-          action={editable ? { label: 'Datenbank auswählen', onClick: () => void pickDatabase() } : undefined}
+          action={
+            editable
+              ? { label: 'Datenbank auswählen', onClick: () => void pickDatabase() }
+              : undefined
+          }
         />
       ) : doc.isPending ? (
         <LoadingState variant="skeleton" rows={3} label="Datenbank wird geladen" />

@@ -57,7 +57,9 @@ export class CollaborationAuthenticationError extends Error {
  *  4. the effective access is the *minimum* of the ticket claim and the current
  *     policy decision, so a ticket can never widen permissions
  */
-export function createCollaborationServer(options: CreateCollaborationServerOptions): Server<CollaborationContext> {
+export function createCollaborationServer(
+  options: CreateCollaborationServerOptions,
+): Server<CollaborationContext> {
   const logger = options.logger.child({ component: 'collaboration-server' });
   const access = new WorkspaceAccessService(options.prisma);
   const persistence = new DocumentPersistence({

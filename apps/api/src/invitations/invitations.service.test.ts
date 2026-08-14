@@ -448,7 +448,7 @@ describe('resending and withdrawing', () => {
     ).rejects.toMatchObject({ code: 'invitation_invalid' });
   });
 
-  it('hides another workspace\'s invitation from a workspace-scoped call', async () => {
+  it("hides another workspace's invitation from a workspace-scoped call", async () => {
     const created = await service.createAsAdmin({
       request: {
         email: addressFor('scoped'),

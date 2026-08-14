@@ -40,8 +40,7 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends React.ComponentPropsWithoutRef<'button'>,
-    VariantProps<typeof buttonVariants> {
+  extends React.ComponentPropsWithoutRef<'button'>, VariantProps<typeof buttonVariants> {
   /** Renders the button as another element while keeping its props and styling. */
   render?: useRender.RenderProp<React.ComponentPropsWithRef<'button'>>;
   /**

@@ -102,7 +102,11 @@ export class SettingsService {
       for (const key of changedKeys) {
         await tx.setting.upsert({
           where: { key },
-          create: { key, value: input.patch[key] as Prisma.InputJsonValue, updatedById: input.actorId },
+          create: {
+            key,
+            value: input.patch[key] as Prisma.InputJsonValue,
+            updatedById: input.actorId,
+          },
           update: { value: input.patch[key] as Prisma.InputJsonValue, updatedById: input.actorId },
         });
       }

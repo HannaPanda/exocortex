@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  type AttachmentTextInfoResponse,
-  type AttachmentTextResponse,
-} from '@exocortex/contracts';
+import { type AttachmentTextInfoResponse, type AttachmentTextResponse } from '@exocortex/contracts';
 import {
   type MediaDocumentDetail,
   type MediaDocumentInfo,

@@ -19,7 +19,9 @@ function settingsWith(rows: { key: string; value: unknown }[]): Settings {
   return resolveSettings({ rows, env: {} }).settings;
 }
 
-function job(overrides: Partial<MemoryCaptureJob> = {}): JobContext<typeof QUEUE_NAMES.memoryCapture> {
+function job(
+  overrides: Partial<MemoryCaptureJob> = {},
+): JobContext<typeof QUEUE_NAMES.memoryCapture> {
   const payload: MemoryCaptureJob = {
     correlationId: 'test',
     workspaceId: 'workspace-1234',
@@ -96,7 +98,9 @@ describe('parseNote', () => {
 
 describe('memory capture processor', () => {
   it('writes the distilled note through the API, not the database', async () => {
-    const { written, provider, apiClientFor } = harness('TITEL: Gedächtnis gebaut\n\n- AP1 und AP2 stehen');
+    const { written, provider, apiClientFor } = harness(
+      'TITEL: Gedächtnis gebaut\n\n- AP1 und AP2 stehen',
+    );
     const process = createMemoryCaptureProcessor({
       provider,
       apiClientFor,

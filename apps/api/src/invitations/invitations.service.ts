@@ -341,8 +341,7 @@ export class InvitationsService {
    */
   async preview(token: string): Promise<InvitationPreview> {
     const row = await this.findRedeemable(token);
-    const accountExists =
-      (await this.prisma.user.count({ where: { email: row.email } })) > 0;
+    const accountExists = (await this.prisma.user.count({ where: { email: row.email } })) > 0;
 
     return {
       email: row.email,
@@ -518,10 +517,7 @@ export class InvitationsService {
       select: { id: true },
     });
     if (existingUser !== null) {
-      throw new AppError(
-        'invitation_email_taken',
-        'An account for this address already exists',
-      );
+      throw new AppError('invitation_email_taken', 'An account for this address already exists');
     }
 
     const token = generateInvitationToken();

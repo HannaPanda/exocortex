@@ -253,10 +253,7 @@ export class DocumentTrashService {
           parent !== undefined && parent.archivedAt?.getTime() === archivedAt.getTime()
             ? 'cascade'
             : 'direct',
-        descendantCount: children.reduce(
-          (total, child) => total + child.descendantCount + 1,
-          0,
-        ),
+        descendantCount: children.reduce((total, child) => total + child.descendantCount + 1, 0),
         children,
       };
     };
@@ -331,10 +328,7 @@ export class DocumentTrashService {
       assertPolicy(canDeleteDocument(context.role, context.document));
       if (workspaceId === null) workspaceId = context.workspaceId;
       else if (context.workspaceId !== workspaceId) {
-        throw new AppError(
-          'document_cross_workspace',
-          'One deletion cannot span two workspaces',
-        );
+        throw new AppError('document_cross_workspace', 'One deletion cannot span two workspaces');
       }
       titles.set(documentId, context.document.title);
     }

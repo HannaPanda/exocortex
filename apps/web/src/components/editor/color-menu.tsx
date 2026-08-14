@@ -74,60 +74,57 @@ const SWATCH_BACKGROUND: Readonly<Record<TextColorName, string>> = {
 export function ColorItems({ editor }: { editor: Editor }) {
   return (
     <>
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>Textfarbe</DropdownMenuLabel>
-          {TEXT_COLOR_NAMES.map((name) => (
-            <DropdownMenuItem
-              key={`text-${name}`}
-              data-testid={`text-color-${name}`}
-              onClick={() => {
-                if (name === 'default') editor.chain().focus().setTextColor('default').run();
-                else editor.chain().focus().setTextColor(name).run();
-              }}
+      <DropdownMenuGroup>
+        <DropdownMenuLabel>Textfarbe</DropdownMenuLabel>
+        {TEXT_COLOR_NAMES.map((name) => (
+          <DropdownMenuItem
+            key={`text-${name}`}
+            data-testid={`text-color-${name}`}
+            onClick={() => {
+              if (name === 'default') editor.chain().focus().setTextColor('default').run();
+              else editor.chain().focus().setTextColor(name).run();
+            }}
+          >
+            <span
+              aria-hidden
+              className={cn(
+                'grid size-4 place-items-center rounded-sm border border-border font-semibold',
+                SWATCH_TEXT[name],
+              )}
             >
-              <span
-                aria-hidden
-                className={cn(
-                  'grid size-4 place-items-center rounded-sm border border-border font-semibold',
-                  SWATCH_TEXT[name],
-                )}
-              >
-                A
-              </span>
-              {COLOR_LABELS[name]}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuGroup>
+              A
+            </span>
+            {COLOR_LABELS[name]}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuGroup>
 
-        <DropdownMenuSeparator />
+      <DropdownMenuSeparator />
 
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>Hintergrund</DropdownMenuLabel>
-          {TEXT_COLOR_NAMES.map((name) => (
-            <DropdownMenuItem
-              key={`background-${name}`}
-              data-testid={`text-background-${name}`}
-              onClick={() => editor.chain().focus().setTextBackground(name).run()}
-            >
-              <span
-                aria-hidden
-                className={cn(
-                  'size-4 rounded-sm border border-border',
-                  SWATCH_BACKGROUND[name],
-                )}
-              />
-              {COLOR_LABELS[name]}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuGroup>
+      <DropdownMenuGroup>
+        <DropdownMenuLabel>Hintergrund</DropdownMenuLabel>
+        {TEXT_COLOR_NAMES.map((name) => (
+          <DropdownMenuItem
+            key={`background-${name}`}
+            data-testid={`text-background-${name}`}
+            onClick={() => editor.chain().focus().setTextBackground(name).run()}
+          >
+            <span
+              aria-hidden
+              className={cn('size-4 rounded-sm border border-border', SWATCH_BACKGROUND[name])}
+            />
+            {COLOR_LABELS[name]}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuGroup>
 
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          data-testid="text-color-reset"
-          onClick={() => editor.chain().focus().unsetTextColor().run()}
-        >
-          Farben entfernen
-        </DropdownMenuItem>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem
+        data-testid="text-color-reset"
+        onClick={() => editor.chain().focus().unsetTextColor().run()}
+      >
+        Farben entfernen
+      </DropdownMenuItem>
     </>
   );
 }

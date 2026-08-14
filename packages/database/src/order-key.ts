@@ -103,7 +103,8 @@ function midpoint(lower: string, upper: string | null): string {
   }
 
   const lowerDigit = lower.length > 0 ? ORDER_KEY_DIGITS.indexOf(lower[0] as string) : 0;
-  const upperDigit = upper !== null ? ORDER_KEY_DIGITS.indexOf(upper[0] as string) : ORDER_KEY_DIGITS.length;
+  const upperDigit =
+    upper !== null ? ORDER_KEY_DIGITS.indexOf(upper[0] as string) : ORDER_KEY_DIGITS.length;
 
   if (upperDigit - lowerDigit > 1) {
     const middle = Math.round((lowerDigit + upperDigit) / 2);

@@ -114,7 +114,10 @@ export class MemoryService {
     correlationId: string;
   }): Promise<MemoryRememberResponse> {
     const settings = await this.settings.get();
-    const workspaceId = this.requireMemoryWorkspace(settings['memory.enabled'], settings['memory.workspaceId']);
+    const workspaceId = this.requireMemoryWorkspace(
+      settings['memory.enabled'],
+      settings['memory.workspaceId'],
+    );
 
     const project = normaliseProject(input.request.project);
     const projectPage = await this.findOrCreateProjectPage({
@@ -241,7 +244,10 @@ export class MemoryService {
 
   private requireMemoryWorkspace(enabled: boolean, workspaceId: string | null): string {
     if (!enabled) {
-      throw new AppError('memory_unavailable', 'The memory area is switched off for this deployment');
+      throw new AppError(
+        'memory_unavailable',
+        'The memory area is switched off for this deployment',
+      );
     }
     if (workspaceId === null) {
       throw new AppError(
@@ -252,9 +258,7 @@ export class MemoryService {
     return workspaceId;
   }
 
-  private async readableWorkspaces(
-    userId: string,
-  ): Promise<{ id: string; name: string }[]> {
+  private async readableWorkspaces(userId: string): Promise<{ id: string; name: string }[]> {
     const memberships = await this.prisma.workspaceMember.findMany({
       where: { userId, workspace: { archivedAt: null } },
       select: { workspace: { select: { id: true, name: true } } },
@@ -370,8 +374,7 @@ export class MemoryService {
   ): MemoryHit {
     const isMemory = result.workspaceId === memoryWorkspaceId;
     const inProject =
-      project !== null &&
-      result.path.some((entry) => entry.title === projectLabel(project));
+      project !== null && result.path.some((entry) => entry.title === projectLabel(project));
     const score =
       result.rank * (isMemory ? MEMORY_BOOST : 1) * (isMemory && inProject ? PROJECT_BOOST : 1);
 
@@ -528,7 +531,8 @@ function renderRecall(
   let truncated = false;
 
   for (const hit of hits) {
-    const location = hit.path.length === 0 ? hit.workspaceName : hit.path.map((entry) => entry.title).join(' > ');
+    const location =
+      hit.path.length === 0 ? hit.workspaceName : hit.path.map((entry) => entry.title).join(' > ');
     const block = `- **${hit.title}** (${hit.source === 'memory' ? 'Erinnerung' : 'Wissen'}, ${location}, id: ${hit.documentId})\n  ${hit.snippet}`;
     if (used + block.length > maxChars && kept.length > 0) {
       truncated = true;

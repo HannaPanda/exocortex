@@ -1,4 +1,4 @@
-import { CHAT_COMMANDS, type ChatCommandName,chatCommandNameSchema } from '@exocortex/contracts';
+import { CHAT_COMMANDS, type ChatCommandName, chatCommandNameSchema } from '@exocortex/contracts';
 
 /**
  * Slash commands are parsed on the server so every client behaves identically:

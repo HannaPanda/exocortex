@@ -100,7 +100,7 @@ export async function describeDocumentImages(input: {
     role: 'system',
     content:
       'Image context from the current page, described by a separate vision model -- ' +
-      "you cannot see these images directly, only this description:\n\n" +
+      'you cannot see these images directly, only this description:\n\n' +
       descriptions.map((description, index) => `${index + 1}. ${description}`).join('\n'),
   };
 }

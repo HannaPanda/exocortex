@@ -4,16 +4,16 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 
 ## Queues
 
-| Queue | Producer | Consumer | Status |
-| ----- | -------- | -------- | ------ |
-| `document-materialization` | collaboration server (debounced), API (import, snapshot restore) | `createMaterializeDocumentProcessor` | real |
-| `search-indexing` | materialization, document mutations, outbox dispatch | `createIndexDocumentProcessor` | real |
-| `ai` | `AiService.createRun`, `ConversationsService.postMessage` | `createAiRunProcessor` | real, mock provider |
-| `maintenance` | repeatable schedulers, outbox dispatch | `createMaintenanceProcessor` | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`, `resolve-document-links`, `backfill-document-links`, `snapshot-active-documents`, `backfill-embeddings`, `prune-memories`, `prune-invitations`), documented placeholder (`vacuum-search-index`) |
-| `attachment-text` | attachment upload, `GET /api/attachments/:id/text` (on demand) | `createAttachmentTextProcessor` | real |
-| `document-cover` | `POST /api/documents/:id/cover/generate` | `createDocumentCoverProcessor` | real |
-| `memory-capture` | `POST /api/memory/capture` (Claude Code hook, Hermes, any client) | `createMemoryCaptureProcessor` | real |
-| `calendar-sync` | repeatable schedulers (`calendar-pull` every 5 min, `calendar-remind` every minute, `calendar-discover` daily 05:15) | `createCalendarSyncProcessor` | real (mailbox.org CalDAV); writes outward only for a `PUSH`/`BOTH` link |
+| Queue                      | Producer                                                                                                             | Consumer                             | Status                                                                                                                                                                                                                                                                                       |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `document-materialization` | collaboration server (debounced), API (import, snapshot restore)                                                     | `createMaterializeDocumentProcessor` | real                                                                                                                                                                                                                                                                                         |
+| `search-indexing`          | materialization, document mutations, outbox dispatch                                                                 | `createIndexDocumentProcessor`       | real                                                                                                                                                                                                                                                                                         |
+| `ai`                       | `AiService.createRun`, `ConversationsService.postMessage`                                                            | `createAiRunProcessor`               | real, mock provider                                                                                                                                                                                                                                                                          |
+| `maintenance`              | repeatable schedulers, outbox dispatch                                                                               | `createMaintenanceProcessor`         | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`, `resolve-document-links`, `backfill-document-links`, `snapshot-active-documents`, `backfill-embeddings`, `prune-memories`, `prune-invitations`), documented placeholder (`vacuum-search-index`) |
+| `attachment-text`          | attachment upload, `GET /api/attachments/:id/text` (on demand)                                                       | `createAttachmentTextProcessor`      | real                                                                                                                                                                                                                                                                                         |
+| `document-cover`           | `POST /api/documents/:id/cover/generate`                                                                             | `createDocumentCoverProcessor`       | real                                                                                                                                                                                                                                                                                         |
+| `memory-capture`           | `POST /api/memory/capture` (Claude Code hook, Hermes, any client)                                                    | `createMemoryCaptureProcessor`       | real                                                                                                                                                                                                                                                                                         |
+| `calendar-sync`            | repeatable schedulers (`calendar-pull` every 5 min, `calendar-remind` every minute, `calendar-discover` daily 05:15) | `createCalendarSyncProcessor`        | real (mailbox.org CalDAV); writes outward only for a `PUSH`/`BOTH` link                                                                                                                                                                                                                      |
 
 Queue names and payload schemas live in `packages/contracts/src/jobs.ts`, so
 producers and consumers cannot drift apart.
@@ -47,13 +47,13 @@ the `AiRun` and `AiConversation` rows themselves.
 The `ai` queue is the one queue that overrides the defaults above (ADR-017,
 `QUEUE_JOB_OPTIONS` in `packages/queue/src/registry.ts`):
 
-* **`attempts: 1`**, not the usual 5. `createAiRunProcessor` never throws on a
+- **`attempts: 1`**, not the usual 5. `createAiRunProcessor` never throws on a
   provider or timeout failure — it always writes a terminal status
   (`FAILED`/`TIMED_OUT`/`CANCELLED`) itself — so a retry would only ever fire
   for an infrastructure error, and retrying an agentic run pays for the prompt
   a second time and can duplicate a write made through `exo_page_write`,
   which is not idempotent.
-* **`lockDuration: 300_000` / `stalledInterval: 60_000`**
+- **`lockDuration: 300_000` / `stalledInterval: 60_000`**
   (`AI_QUEUE_LOCK_DURATION_MS` / `AI_QUEUE_STALLED_INTERVAL_MS`,
   `packages/contracts/src/ai-runtime.ts`), well above the default 60 s: a run
   legitimately takes minutes, and both values only exist to catch a worker
@@ -65,7 +65,7 @@ which extracts every `[[Titel]]`, `@[[Titel]]` and page-link block from the
 same ProseMirror JSON it derives Markdown and plain text from and replaces the
 source page's rows wholesale (ADR-007, `apps/worker/src/processors/document-links.ts`).
 
-* `resolve-document-links` carries a `documentId` and runs when a page appears,
+- `resolve-document-links` carries a `documentId` and runs when a page appears,
   is renamed or changes workspace. A reference resolves by identity first
   (`targetHintId`, issue #14) and by title second, and the title half would
   otherwise go stale from the target side without the source page ever
@@ -75,7 +75,7 @@ source page's rows wholesale (ADR-007, `apps/worker/src/processors/document-link
   from firing on every save. The work is one correlated `UPDATE` over the two
   or three title keys involved plus the rows naming this page by identity, so
   it stays an index range rather than a workspace-wide sweep.
-* `backfill-document-links` (every 5 minutes, 50 content rows per run) pulls
+- `backfill-document-links` (every 5 minutes, 50 content rows per run) pulls
   pages that existed before the index did. `DocumentContent.linksIndexedAt` is
   `null` for exactly those rows; once the sweep is done each run costs one
   indexed query and nothing else.
@@ -100,10 +100,10 @@ into an epoch-day or epoch-week index — not real ISO calendar weeks, a
 deterministic index is all thinning needs — and keeps the newest of each
 bucket:
 
-* younger than `activity.snapshotRetentionFullDays`: every snapshot survives.
-* between that and `activity.snapshotRetentionDailyDays`: at most one per day.
-* older than `activity.snapshotRetentionDailyDays`: at most one per week.
-* `MANUAL` snapshots are exempt from all three tiers — a deliberately named
+- younger than `activity.snapshotRetentionFullDays`: every snapshot survives.
+- between that and `activity.snapshotRetentionDailyDays`: at most one per day.
+- older than `activity.snapshotRetentionDailyDays`: at most one per week.
+- `MANUAL` snapshots are exempt from all three tiers — a deliberately named
   version is not "the regular checkpoint" this retention is about.
 
 A bucket with only one snapshot in it loses nothing, which is what keeps a
@@ -115,7 +115,7 @@ cannot silently remove snapshots that already existed on a live deployment.
 
 `snapshot-active-documents` (every 5 min, a no-op unless
 `activity.editSessionSnapshotsEnabled` is on) is what feeds a real session
-*range* into the Aktivität tab rather than the single point
+_range_ into the Aktivität tab rather than the single point
 `Document.updatedAt` alone carries ("Bearbeitungen im Editor verdichten").
 It takes a `SCHEDULED` `DocumentSnapshot` of a page whose `yjsUpdatedAt` moved
 within `activity.editSessionSnapshotIntervalMinutes` and whose last snapshot
@@ -171,7 +171,7 @@ acts on notes that are already written. It does nothing while
 `memory.retentionDays` is `0`, which is the default. With a retention set, it
 works in two stages against the workspace named by `memory.workspaceId` and no
 other: a note untouched for the period goes into the trash, and a note that has
-been *in* the trash for another period is deleted for good. Nothing else in
+been _in_ the trash for another period is deleted for good. Nothing else in
 this application destroys a page outright, so a background sweep is the last
 place that should start doing it without a recoverable step first. Project
 pages (`parentId IS NULL`) are never touched — they are the roots the notes
@@ -266,16 +266,16 @@ would look like a fresh local edit: one write per pass, forever.
 
 Four things the push will never do, and each of them is load-bearing:
 
-* **Touch an object with an ORGANIZER.** It arrived as an invitation, the
+- **Touch an object with an ORGANIZER.** It arrived as an invitation, the
   organizer owns the appointment, and rewriting the time would put an ITIP
   counter-proposal on the wire that nobody asked for.
-* **Touch a recurring object.** The row holds *one occurrence* of the series (see
+- **Touch a recurring object.** The row holds _one occurrence_ of the series (see
   above), so writing the row back would flatten the whole rule onto that date.
-* **Write unconditionally.** A create sends `If-None-Match: *`, a replace and a
+- **Write unconditionally.** A create sends `If-None-Match: *`, a replace and a
   delete send `If-Match` with the etag just read. A refused precondition (412) is
   counted as a conflict and left to the next pull, never retried with the same
   stale body: the calendar is open in a phone and in a mail client too.
-* **Delete an object it did not create.** Only `origin: LOCAL` is removed, and only
+- **Delete an object it did not create.** Only `origin: LOCAL` is removed, and only
   after the row was confirmed archived or gone by a direct lookup rather than
   inferred from its absence in a listing. Archiving a mirrored row is tidying a
   table; cancelling somebody's appointment because of it is not what they asked
@@ -295,7 +295,7 @@ has broken it. It costs one indexed query per tick while nothing is due.
 
 It is a sweep, not a delayed job per appointment, and that is a decision rather
 than a shortcut. A delayed job has to be found and cancelled whenever an
-appointment moves, and a mirrored series moves *by itself* as the clock passes each
+appointment moves, and a mirrored series moves _by itself_ as the clock passes each
 occurrence, so the queue would fill with jobs for times that no longer exist while
 the one job that mattered got lost in a restart. A sweep holds no state that can
 rot: it asks what is due and derives the answer from the mirror every time.
@@ -339,48 +339,48 @@ by hand.
 
 ## Guarantees
 
-* **Runtime-validated payloads.** `QueueRegistry.enqueue` parses with zod before
+- **Runtime-validated payloads.** `QueueRegistry.enqueue` parses with zod before
   writing to Redis; `createTypedWorker` parses again before running. A structurally
   invalid payload throws `UnrecoverableError`, so it is not retried but stays in the
   failed set for inspection.
-* **Retries with explicit backoff.** `attempts: 5`, exponential from 1 s —
+- **Retries with explicit backoff.** `attempts: 5`, exponential from 1 s —
   except the `ai` queue, which gets `attempts: 1` (see above).
-* **Idempotent handlers.**
-  * materialization compares `materializedAt` with `yjsUpdatedAt` and skips when the
+- **Idempotent handlers.**
+  - materialization compares `materializedAt` with `yjsUpdatedAt` and skips when the
     derived data is already fresh
-  * search indexing is a full upsert of the current state
-  * AI runs process a `PENDING` record, or a `RUNNING` one whose heartbeat has
+  - search indexing is a full upsert of the current state
+  - AI runs process a `PENDING` record, or a `RUNNING` one whose heartbeat has
     gone stale (closed as abandoned rather than resumed); a `RUNNING` record
     with a fresh heartbeat is left alone, and every other status is skipped
-  * outbox dispatch sets `processedAt` and increments `attempts`
-  * attachment text extraction returns immediately once `textStatus` is
+  - outbox dispatch sets `processedAt` and increments `attempts`
+  - attachment text extraction returns immediately once `textStatus` is
     `READY`, so a retried job never re-extracts
-* **Progress reporting.** `reportProgress(percent, germanLabel)` updates the BullMQ
+- **Progress reporting.** `reportProgress(percent, germanLabel)` updates the BullMQ
   job and publishes a `job.progress` event, which the UI renders.
-* **Correlation ids.** Every payload carries one; it flows from the HTTP request
+- **Correlation ids.** Every payload carries one; it flows from the HTTP request
   through the queue into the worker log lines.
-* **Graceful shutdown.** `SIGTERM` closes all five workers (waiting for
+- **Graceful shutdown.** `SIGTERM` closes all five workers (waiting for
   in-flight jobs), then the Redis connections, the event bus, the queues and
   Prisma.
-* **No silently ignored failures.** Every handler either succeeds or throws;
+- **No silently ignored failures.** Every handler either succeeds or throws;
   `worker.on('failed')` logs with the attempt count and publishes `job.failed`.
-* **Failed-job inspection.** `removeOnFail: { age: 7 days, count: 5000 }` keeps
+- **Failed-job inspection.** `removeOnFail: { age: 7 days, count: 5000 }` keeps
   failures. Inspect with `Queue.getFailed()` or any BullMQ dashboard against
   `REDIS_URL`.
 
 ## Retention
 
-| Setting | Value |
-| ------- | ----- |
-| completed jobs | 1 hour / 1000 jobs |
-| failed jobs | 7 days / 5000 jobs |
-| snapshots per document | tiered by age, not a flat count: full for `activity.snapshotRetentionFullDays` (default 7d), then one/day until `activity.snapshotRetentionDailyDays` (default 30d), then one/week; `MANUAL` exempt (`prune-snapshots`, daily at 04:00, dry-run by default) |
-| active-document snapshot interval | `activity.editSessionSnapshotIntervalMinutes` (default 15 min), off by default (`activity.editSessionSnapshotsEnabled`) |
-| replaced page covers | deleted 1 hour after they stop being a cover (`collect-orphaned-covers`, daily at 04:30) |
-| outbox dispatch interval | 5 seconds, 100 rows per run |
-| stale AI run reap interval | 60 seconds, 100 runs per pass |
-| reference backfill interval | 5 minutes, 50 documents per run |
-| snapshot-active-documents interval | 5 minutes (scheduler cadence; see `activity.editSessionSnapshotIntervalMinutes` for the per-document minimum) |
+| Setting                            | Value                                                                                                                                                                                                                                                       |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| completed jobs                     | 1 hour / 1000 jobs                                                                                                                                                                                                                                          |
+| failed jobs                        | 7 days / 5000 jobs                                                                                                                                                                                                                                          |
+| snapshots per document             | tiered by age, not a flat count: full for `activity.snapshotRetentionFullDays` (default 7d), then one/day until `activity.snapshotRetentionDailyDays` (default 30d), then one/week; `MANUAL` exempt (`prune-snapshots`, daily at 04:00, dry-run by default) |
+| active-document snapshot interval  | `activity.editSessionSnapshotIntervalMinutes` (default 15 min), off by default (`activity.editSessionSnapshotsEnabled`)                                                                                                                                     |
+| replaced page covers               | deleted 1 hour after they stop being a cover (`collect-orphaned-covers`, daily at 04:30)                                                                                                                                                                    |
+| outbox dispatch interval           | 5 seconds, 100 rows per run                                                                                                                                                                                                                                 |
+| stale AI run reap interval         | 60 seconds, 100 runs per pass                                                                                                                                                                                                                               |
+| reference backfill interval        | 5 minutes, 50 documents per run                                                                                                                                                                                                                             |
+| snapshot-active-documents interval | 5 minutes (scheduler cadence; see `activity.editSessionSnapshotIntervalMinutes` for the per-document minimum)                                                                                                                                               |
 
 ## Adding a background job
 
@@ -406,7 +406,7 @@ by hand.
 Every queue lives under a Redis key prefix: `DEFAULT_QUEUE_PREFIX` (`bull`,
 BullMQ's own default) for the deployment, and `testQueuePrefix('<suite>')` for a
 test suite. Redis is shared with the running deployment on this machine, so a
-queue *name* is not a boundary — whichever worker polls that name gets the job.
+queue _name_ is not a boundary — whichever worker polls that name gets the job.
 Before the prefixes existed, a test's enqueued job was executed by the live
 `exocortex-worker` and then failed there (the run's user is deleted again in
 `afterAll`, so its service token resolved to nobody), and the queue test's
@@ -428,34 +428,34 @@ handler that is never called.
 `apps/worker/src/processors/processors.integration.test.ts` runs the
 processors against the real PostgreSQL and Redis:
 
-* materialization derives JSON, plain text and Markdown
-* "is idempotent: a repeated job does not change the derived data"
-* re-materializes when the canonical state changed again
-* skips a missing document instead of failing
-* search indexing finds the text and does not duplicate the projection
-* removes the projection of a deleted document
-* excludes archived documents by default
-* "dispatches outbox events exactly once"
-* tiered snapshot pruning: keeps everything inside the full-retention window,
+- materialization derives JSON, plain text and Markdown
+- "is idempotent: a repeated job does not change the derived data"
+- re-materializes when the canonical state changed again
+- skips a missing document instead of failing
+- search indexing finds the text and does not duplicate the projection
+- removes the projection of a deleted document
+- excludes archived documents by default
+- "dispatches outbox events exactly once"
+- tiered snapshot pruning: keeps everything inside the full-retention window,
   thins to one/day then one/week outside it, never touches `MANUAL` snapshots,
   and — the edge case that matters most — deletes nothing from a bucket that
   only has one snapshot in it; `activity.snapshotRetentionDryRun` computes the
   same deletions but leaves every row in place
-* `snapshot-active-documents` is a no-op with the setting off, takes exactly
+- `snapshot-active-documents` is a no-op with the setting off, takes exactly
   one `SCHEDULED` snapshot for a page that changed since its last checkpoint,
   and skips a page whose last checkpoint is still inside the configured
   interval even though its content changed again since
-* AI runs: describes a document image and prepends it as context, leaves
+- AI runs: describes a document image and prepends it as context, leaves
   messages untouched without images, completes even when an attachment
   cannot be resolved
-* a conversation-backed run executes a tool call through a stub `ToolRunner`
+- a conversation-backed run executes a tool call through a stub `ToolRunner`
   and completes with the follow-up turn's text; `ai.maxToolIterations: 0`
   fails with `ai_tool_limit_exceeded`
-* `compactIfNeeded` summarizes older messages and leaves the recent tail
+- `compactIfNeeded` summarizes older messages and leaves the recent tail
   active; does nothing when already within budget
-* attachment text extraction: `NOT_APPLICABLE` for a non-PDF, `FAILED` with a
+- attachment text extraction: `NOT_APPLICABLE` for a non-PDF, `FAILED` with a
   clear reason when no extractor is configured
-* references: all three notations are extracted on materialization, a second
+- references: all three notations are extracted on materialization, a second
   materialization replaces them instead of adding to them, a reference to a
   page created later is resolved, a rename releases the old binding and hands
   it to a new namesake, the backfill picks up a content row the index never

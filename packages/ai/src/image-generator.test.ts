@@ -2,11 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createLogger } from '@exocortex/logger';
 
-import {
-  createSolidPng,
-  MockImageGenerator,
-  OpenRouterImageGenerator,
-} from './image-generator';
+import { createSolidPng, MockImageGenerator, OpenRouterImageGenerator } from './image-generator';
 import { AiProviderError } from './provider';
 import { createImageGenerator } from './registry';
 
@@ -103,9 +99,12 @@ describe('OpenRouterImageGenerator', () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue(
-        new Response(JSON.stringify({ choices: [{ message: { content: 'Ich kann das nicht.' } }] }), {
-          status: 200,
-        }),
+        new Response(
+          JSON.stringify({ choices: [{ message: { content: 'Ich kann das nicht.' } }] }),
+          {
+            status: 200,
+          },
+        ),
       ),
     );
 
@@ -120,9 +119,7 @@ describe('OpenRouterImageGenerator', () => {
       vi.fn().mockResolvedValue(new Response('rate limited', { status: 429 })),
     );
 
-    await expect(generator().generate({ prompt: 'x', correlationId: 'c1' })).rejects.toThrow(
-      /429/,
-    );
+    await expect(generator().generate({ prompt: 'x', correlationId: 'c1' })).rejects.toThrow(/429/);
   });
 });
 

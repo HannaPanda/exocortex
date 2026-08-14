@@ -97,9 +97,9 @@ describe('CollaborationBridgeService', () => {
     const token = (call.authorization ?? '').replace(/^Bearer\s+/, '');
     // A token that also opened the API's own service routes would widen this
     // loopback endpoint into a second way in.
-    expect(verifyServiceToken({ secret: SECRET, token, expectedPurpose: 'ai-tools' })).toMatchObject(
-      { valid: false, reason: 'wrong_purpose' },
-    );
+    expect(
+      verifyServiceToken({ secret: SECRET, token, expectedPurpose: 'ai-tools' }),
+    ).toMatchObject({ valid: false, reason: 'wrong_purpose' });
     const verified = verifyServiceToken({
       secret: SECRET,
       token,

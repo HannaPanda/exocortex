@@ -50,7 +50,9 @@ export const recallTool: AnyToolDefinition = defineTool({
       .min(1)
       .max(300)
       .optional()
-      .describe('Projekt oder Arbeitsverzeichnis, falls bekannt. Gewichtet passende Treffer höher.'),
+      .describe(
+        'Projekt oder Arbeitsverzeichnis, falls bekannt. Gewichtet passende Treffer höher.',
+      ),
     limit: z.number().int().min(1).max(20).optional().describe('Höchstzahl der Treffer'),
   }),
   surfaces: ['memory'],

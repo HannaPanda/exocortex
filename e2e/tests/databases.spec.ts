@@ -34,13 +34,18 @@ test.describe('databases', () => {
 
     await page.getByTestId('add-row').click();
     await page.getByTestId('add-row').click();
-    await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(2, { timeout: 15_000 });
+    await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(2, {
+      timeout: 15_000,
+    });
 
     const rows = page.locator('[data-testid^="database-row-"]');
     await rows.nth(0).locator('input[type="number"]').fill('5');
     await rows.nth(0).locator('input[type="number"]').blur();
     await rows.nth(0).locator('button:has-text("Leer")').first().click();
-    await page.locator('[data-slot="popover-content"]').getByRole('button', { name: 'Erledigt' }).click();
+    await page
+      .locator('[data-slot="popover-content"]')
+      .getByRole('button', { name: 'Erledigt' })
+      .click();
 
     await page.getByTestId('add-filter').click();
     await page.getByTestId('filter-property').click();
@@ -51,7 +56,9 @@ test.describe('databases', () => {
     await page.getByRole('button', { name: 'Filter hinzufügen' }).click();
 
     // Only the row with priority 5 matches "greater than 1".
-    await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, { timeout: 15_000 });
+    await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, {
+      timeout: 15_000,
+    });
 
     await page.getByLabel('Filter entfernen').click();
 
@@ -67,7 +74,9 @@ test.describe('databases', () => {
     await page.getByRole('button', { name: 'Filter hinzufügen' }).click();
 
     await expect(page.getByText('Status ist Erledigt')).toBeVisible({ timeout: 15_000 });
-    await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, { timeout: 15_000 });
+    await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, {
+      timeout: 15_000,
+    });
   });
 
   test('switches between Table, Board, Gallery and Calendar on the same data', async ({ page }) => {
@@ -87,7 +96,9 @@ test.describe('databases', () => {
     await page.keyboard.press('Escape');
 
     await page.getByTestId('add-row').click();
-    await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, { timeout: 15_000 });
+    await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, {
+      timeout: 15_000,
+    });
 
     // Board: pick the grouping property, then the row shows up as a card.
     await page.getByTestId('add-view').click();
@@ -113,7 +124,9 @@ test.describe('databases', () => {
     // Back to Table: the same row is still there. By name, not by position --
     // the tab order follows the views' order keys.
     await page.getByRole('tab', { name: 'Tabelle' }).click();
-    await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, { timeout: 15_000 });
+    await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, {
+      timeout: 15_000,
+    });
   });
 
   test('opens a row as a normal, editable page', async ({ page }) => {
@@ -252,7 +265,9 @@ test.describe('databases', () => {
    * row shows the same editable column values the table does, and editing one
    * from the panel has to reach the table too — same data, one editor.
    */
-  test('shows different context panel content for a database and one of its rows', async ({ page }) => {
+  test('shows different context panel content for a database and one of its rows', async ({
+    page,
+  }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
 
@@ -262,7 +277,9 @@ test.describe('databases', () => {
     await addProperty(page, 'Priorität', 'Zahl');
 
     await page.getByTestId('add-row').click();
-    await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, { timeout: 15_000 });
+    await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, {
+      timeout: 15_000,
+    });
 
     // The database itself: row count, its own properties, its own views.
     await page.getByTestId('context-tab-properties').click();

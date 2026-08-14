@@ -44,7 +44,10 @@ describe('formatOpenPageSection', () => {
   });
 
   it('marks a collection as a collection, so it is not treated as prose', () => {
-    const section = formatOpenPageSection({ ...page, type: 'COLLECTION' }, { toolsAvailable: true });
+    const section = formatOpenPageSection(
+      { ...page, type: 'COLLECTION' },
+      { toolsAvailable: true },
+    );
 
     expect(section).toContain('Typ: Sammlung (Datenbank)');
   });
@@ -111,7 +114,10 @@ describe('formatOpenPageSection', () => {
   });
 
   it('falls back to a readable title for an untitled page', () => {
-    const section = formatOpenPageSection({ ...page, title: '   ', ancestorTitles: [] }, { toolsAvailable: true });
+    const section = formatOpenPageSection(
+      { ...page, title: '   ', ancestorTitles: [] },
+      { toolsAvailable: true },
+    );
 
     expect(section).toContain('Titel: Unbenannte Seite');
     expect(section).toContain('Pfad: Unbenannte Seite');

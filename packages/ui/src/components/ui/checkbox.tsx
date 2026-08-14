@@ -12,10 +12,7 @@ import { cn } from '../../lib/utils';
  * `data-checked`/`data-unchecked` presence attributes (see
  * `@base-ui-components/react/checkbox`'s `CheckboxRootDataAttributes`).
  */
-function Checkbox({
-  className,
-  ...props
-}: React.ComponentProps<typeof CheckboxPrimitive.Root>) {
+function Checkbox({ className, ...props }: React.ComponentProps<typeof CheckboxPrimitive.Root>) {
   return (
     <CheckboxPrimitive.Root
       data-slot="checkbox"

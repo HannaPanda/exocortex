@@ -70,7 +70,8 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
   const canEdit = WORKSPACE_ADMIN_ROLES.has(original.role);
   const nameDirty = name.trim().length > 0 && name.trim() !== original.name;
 
-  const errorCode = updateWorkspace.error instanceof ApiError ? updateWorkspace.error.code : undefined;
+  const errorCode =
+    updateWorkspace.error instanceof ApiError ? updateWorkspace.error.code : undefined;
 
   const saveName = (): void => {
     if (!nameDirty) return;
@@ -84,7 +85,8 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
     <AppPage maxWidth="max-w-2xl">
       <h1 className="text-lg font-semibold">Arbeitsbereich-Einstellungen</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        {original.name} · {original.memberCount} {original.memberCount === 1 ? 'Mitglied' : 'Mitglieder'}
+        {original.name} · {original.memberCount}{' '}
+        {original.memberCount === 1 ? 'Mitglied' : 'Mitglieder'}
       </p>
 
       {!canEdit ? (
@@ -174,8 +176,8 @@ function SlugSection({ workspace }: { workspace: WorkspaceDetail }) {
     <section className="flex flex-col gap-2 border-t border-border pt-6">
       <Label htmlFor="workspace-slug">Slug</Label>
       <p className="text-xs text-muted-foreground">
-        Der Slug steckt in Links, die bereits verschickt oder gespeichert wurden. Anders als der Name
-        wandert er nicht automatisch mit &ndash; und eine Änderung bricht diese Links.
+        Der Slug steckt in Links, die bereits verschickt oder gespeichert wurden. Anders als der
+        Name wandert er nicht automatisch mit &ndash; und eine Änderung bricht diese Links.
       </p>
       <div className="flex max-w-md gap-2">
         <Input
@@ -278,9 +280,7 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
               <TableCell>
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{member.name}</span>
-                  {member.userId === currentUserId ? (
-                    <Badge variant="secondary">Du</Badge>
-                  ) : null}
+                  {member.userId === currentUserId ? <Badge variant="secondary">Du</Badge> : null}
                 </div>
               </TableCell>
               <TableCell className="text-muted-foreground">{member.email}</TableCell>

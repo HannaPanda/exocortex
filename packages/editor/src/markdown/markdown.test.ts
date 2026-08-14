@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import { BLOCK_ID_ATTRIBUTE } from '../block-id';
-import { EXOCORTEX_SCHEMA_VERSION, type ProseMirrorDocument, type ProseMirrorNode } from '../contract';
+import {
+  EXOCORTEX_SCHEMA_VERSION,
+  type ProseMirrorDocument,
+  type ProseMirrorNode,
+} from '../contract';
 import {
   BLOCK_ID_MARKDOWN,
   CALLOUT_MARKDOWN,

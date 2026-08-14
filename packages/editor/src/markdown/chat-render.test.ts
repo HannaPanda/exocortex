@@ -163,7 +163,12 @@ describe('pruneForChat', () => {
   });
 
   it('produces an empty document, never a crash, for pages made only of excluded blocks', () => {
-    for (const markdown of [TOGGLE_MARKDOWN, COLUMNS_MARKDOWN, DERIVED_BLOCKS_MARKDOWN, MEDIA_MARKDOWN]) {
+    for (const markdown of [
+      TOGGLE_MARKDOWN,
+      COLUMNS_MARKDOWN,
+      DERIVED_BLOCKS_MARKDOWN,
+      MEDIA_MARKDOWN,
+    ]) {
       const pruned = pruneForChat(parseMarkdown(markdown).document);
       expect(pruned.content).toEqual([]);
     }

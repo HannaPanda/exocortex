@@ -11,7 +11,11 @@ import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type JobContext } from '@exocortex/queue';
 
 import { type ReminderNotifier } from '../calendar/notifier';
-import { createMirrorDatabase, ensureMirrorProperties, mirrorableCollections } from '../calendar/provision';
+import {
+  createMirrorDatabase,
+  ensureMirrorProperties,
+  mirrorableCollections,
+} from '../calendar/provision';
 import { pullLink } from '../calendar/pull';
 import { pushLink } from '../calendar/push';
 import { sendDueReminders } from '../calendar/reminders';
@@ -70,7 +74,10 @@ export interface CalendarSyncDependencies {
 export function createCalendarSyncProcessor(dependencies: CalendarSyncDependencies) {
   const { prisma } = dependencies;
 
-  return async ({ payload, logger }: JobContext<typeof QUEUE_NAMES.calendarSync>): Promise<void> => {
+  return async ({
+    payload,
+    logger,
+  }: JobContext<typeof QUEUE_NAMES.calendarSync>): Promise<void> => {
     if (dependencies.apiClientFor === null) {
       logger.info('Calendar sync unavailable: no service-token secret configured');
       return;
@@ -242,7 +249,10 @@ async function discoverAndProvision(input: {
             client,
             workspaceId: account.workspaceId,
             parentId: null,
-            collection: { ...collection, displayName: mirrorTitle(collection.displayName, component) },
+            collection: {
+              ...collection,
+              displayName: mirrorTitle(collection.displayName, component),
+            },
           }),
           propertyMap: {},
           direction: 'PULL',
@@ -329,7 +339,9 @@ async function pullAllLinks(input: {
           documentId: link.documentId,
           syncToken: link.syncToken,
           supportsSyncCollection: link.supportsSyncCollection,
-          propertyMap: parseCalendarLinkPropertyMap(link.propertyMap as Record<string, unknown> | null),
+          propertyMap: parseCalendarLinkPropertyMap(
+            link.propertyMap as Record<string, unknown> | null,
+          ),
         },
         selfAddresses: [account.username],
         full: input.full,
@@ -394,7 +406,9 @@ async function pushAllLinks(input: {
           remoteHref: link.remoteHref,
           component: link.component,
           documentId: link.documentId,
-          propertyMap: parseCalendarLinkPropertyMap(link.propertyMap as Record<string, unknown> | null),
+          propertyMap: parseCalendarLinkPropertyMap(
+            link.propertyMap as Record<string, unknown> | null,
+          ),
         },
         now: new Date(),
       });

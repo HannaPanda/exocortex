@@ -1,7 +1,7 @@
 # ADR-008: Separate application and collaboration sockets
 
-* Status: accepted
-* Date: 2026-08-04
+- Status: accepted
+- Date: 2026-08-04
 
 ## Context
 
@@ -13,10 +13,10 @@ streaming). Multiplexing both over one connection is possible but couples them.
 
 Two channels:
 
-| Channel | Path | Protocol | Server |
-| ------- | ---- | -------- | ------ |
-| collaboration | `/collab` | Hocuspocus/Yjs | `apps/collaboration` |
-| application | `/realtime` | Socket.IO | `apps/api` |
+| Channel       | Path        | Protocol       | Server               |
+| ------------- | ----------- | -------------- | -------------------- |
+| collaboration | `/collab`   | Hocuspocus/Yjs | `apps/collaboration` |
+| application   | `/realtime` | Socket.IO      | `apps/api`           |
 
 Domain events never travel over the Yjs protocol and awareness never travels over
 the application channel. Cross-process fan-out uses a validated Redis pub/sub bus
@@ -28,12 +28,12 @@ and every subscription is authorized against workspace membership.
 
 ## Consequences
 
-* The Yjs protocol stays a pure CRDT transport, so it can be scaled, replaced or
+- The Yjs protocol stays a pure CRDT transport, so it can be scaled, replaced or
   proxied independently.
-* The worker can publish events to browsers without being a Socket.IO server — the
+- The worker can publish events to browsers without being a Socket.IO server — the
   reason the Redis bus was chosen over the Socket.IO Redis adapter. Using both would
   double-deliver events.
-* Events are validated on publish *and* on receive, so a misbehaving publisher cannot
+- Events are validated on publish _and_ on receive, so a misbehaving publisher cannot
   inject arbitrary payloads into browsers.
-* The browser holds two WebSocket connections per open document. Acceptable, and both
+- The browser holds two WebSocket connections per open document. Acceptable, and both
   are same-origin behind nginx.

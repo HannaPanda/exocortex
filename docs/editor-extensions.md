@@ -9,11 +9,11 @@ define schema-relevant Tiptap extensions.
 export interface ExocortexEditorExtension {
   name: string;
   schemaVersion: number;
-  extensions: Extensions;              // Tiptap nodes/marks/plugins
+  extensions: Extensions; // Tiptap nodes/marks/plugins
   markdown?: MarkdownExtensionAdapter; // serializers, token and container handlers
-  plainText?: PlainTextAdapter;        // search projection
-  migrations?: DocumentMigration[];    // stored-document upgrades
-  blocks?: BlockCatalogEntry[];        // slash menu, turn-into, block menu
+  plainText?: PlainTextAdapter; // search projection
+  migrations?: DocumentMigration[]; // stored-document upgrades
+  blocks?: BlockCatalogEntry[]; // slash menu, turn-into, block menu
 }
 ```
 
@@ -46,7 +46,7 @@ Asserted by `packages/editor/src/schema.test.ts`.
 
 `packages/editor/src/block-catalog.ts` describes every block a writer can insert or
 convert into: a German label and description, search keywords, a group, an icon
-*name* and a `run(editor, value?)`.
+_name_ and a `run(editor, value?)`.
 
 One list, three consumers — the slash menu, the "Umwandeln in" menu and the block
 action menu. Adding a block means adding one catalog entry next to its extension;
@@ -62,29 +62,29 @@ An entry that needs more than the editor declares it with `prompt`:
 
 All of it lives in `apps/web/src/components/editor` and contributes **no** schema:
 
-| File | Purpose |
-| ---- | ------- |
-| `selection-toolbar.tsx` | formatting bar over a selection |
-| `turn-into-menu.tsx` | convert the current block |
-| `color-menu.tsx` | text and background colour |
-| `link-menu.tsx` | link editor: understands `[[Seite]]`, and searches the workspace's pages for anything that does not look like an address |
-| `link-bubble.tsx` | bubble menu over the caret inside a link: open, edit, remove |
-| `follow-link-context.tsx` | ref bridge that hands `EditorSurface`'s click handler and the `pageLink` node view a `follow` function without either holding it as state |
-| `link-navigation.tsx` | `useLinkNavigation`: what following a resolved link *does* (new tab, router push, `wiki:` lookup plus its ambiguous/missing/error dialogs) |
-| `emoji-menu.tsx` | emoji picker (inserts characters) |
-| `slash-menu.tsx` | `/` block menu, reads the catalog |
-| `mention-menu.tsx` | `@` menu for pages, people and dates |
-| `block-handle.tsx` | drag handle in the gutter (see docs/deviations.md) |
-| `block-actions.tsx` | duplicate, copy link, delete — shared by handle and toolbar |
-| `suggestion-menu.tsx` | shared state-driven machinery for `/` and `@` |
-| `code-block-toolbar.tsx` | language picker and copy |
-| `table-toolbar.tsx` | rows, columns, header, merge |
-| `block-prompt.tsx` | value and file collection for catalog entries |
-| `comment-markers.tsx` | ProseMirror **decorations** on the blocks that carry an open comment thread, plus the two-way wiring to the Kommentare panel. Never a mark: a comment is not document content, so it must leave no trace in the Yjs state (issue #18) |
-| `page-link-node-view.tsx` | React node view for `pageLink`, see the exception below |
-| `page-link-context.tsx` | ref bridge that lets the `pageLink` node view reopen the page picker, so a placed link can be re-targeted |
+| File                      | Purpose                                                                                                                                                                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `selection-toolbar.tsx`   | formatting bar over a selection                                                                                                                                                                                                       |
+| `turn-into-menu.tsx`      | convert the current block                                                                                                                                                                                                             |
+| `color-menu.tsx`          | text and background colour                                                                                                                                                                                                            |
+| `link-menu.tsx`           | link editor: understands `[[Seite]]`, and searches the workspace's pages for anything that does not look like an address                                                                                                              |
+| `link-bubble.tsx`         | bubble menu over the caret inside a link: open, edit, remove                                                                                                                                                                          |
+| `follow-link-context.tsx` | ref bridge that hands `EditorSurface`'s click handler and the `pageLink` node view a `follow` function without either holding it as state                                                                                             |
+| `link-navigation.tsx`     | `useLinkNavigation`: what following a resolved link _does_ (new tab, router push, `wiki:` lookup plus its ambiguous/missing/error dialogs)                                                                                            |
+| `emoji-menu.tsx`          | emoji picker (inserts characters)                                                                                                                                                                                                     |
+| `slash-menu.tsx`          | `/` block menu, reads the catalog                                                                                                                                                                                                     |
+| `mention-menu.tsx`        | `@` menu for pages, people and dates                                                                                                                                                                                                  |
+| `block-handle.tsx`        | drag handle in the gutter (see docs/deviations.md)                                                                                                                                                                                    |
+| `block-actions.tsx`       | duplicate, copy link, delete — shared by handle and toolbar                                                                                                                                                                           |
+| `suggestion-menu.tsx`     | shared state-driven machinery for `/` and `@`                                                                                                                                                                                         |
+| `code-block-toolbar.tsx`  | language picker and copy                                                                                                                                                                                                              |
+| `table-toolbar.tsx`       | rows, columns, header, merge                                                                                                                                                                                                          |
+| `block-prompt.tsx`        | value and file collection for catalog entries                                                                                                                                                                                         |
+| `comment-markers.tsx`     | ProseMirror **decorations** on the blocks that carry an open comment thread, plus the two-way wiring to the Kommentare panel. Never a mark: a comment is not document content, so it must leave no trace in the Yjs state (issue #18) |
+| `page-link-node-view.tsx` | React node view for `pageLink`, see the exception below                                                                                                                                                                               |
+| `page-link-context.tsx`   | ref bridge that lets the `pageLink` node view reopen the page picker, so a placed link can be re-targeted                                                                                                                             |
 
-Node views that render *inside* the document (table of contents, breadcrumb, media)
+Node views that render _inside_ the document (table of contents, breadcrumb, media)
 live in `packages/editor` and are plain DOM, not React, so `getExocortexSchema()`
 keeps working without a DOM on the server.
 
@@ -100,11 +100,11 @@ For `databaseEmbed` that is a live `DatabaseShell`, the same component the
 full-page database view uses: reusing it outweighs hand-building filters,
 inline cell editing and four view layouts again in plain DOM.
 
-For `pageLink` (`page-link-node-view.tsx`) it is the block's *resolution
-state*: whether the reference resolves to one page, several, or none, and that
+For `pageLink` (`page-link-node-view.tsx`) it is the block's _resolution
+state_: whether the reference resolves to one page, several, or none, and that
 page's icon, current title and archived status. A plain anchor cannot say any
 of that without a network request, and knowing which page a reference resolves
-to is application knowledge, not schema knowledge. The *rule* it follows is
+to is application knowledge, not schema knowledge. The _rule_ it follows is
 pure and lives in the package (`resolvePageLinkTarget`); only the lookup is
 here. The click itself is handled the same way for both: neither node view
 calls `stopPropagation` as a guard against the editor-wide click handler
@@ -119,10 +119,10 @@ inventing another mechanism.
 
 Two rules hold for this layer, both learned the hard way (docs/deviations.md 17–18):
 
-* **the component that owns `useEditor` must hold no state.** Tiptap re-applies its
+- **the component that owns `useEditor` must hold no state.** Tiptap re-applies its
   options after every render of that component, which makes ProseMirror rebuild
   every plugin view; anything stateful belongs in `EditorChrome`.
-* **suggestion menus render from the plugin state**, never from the suggestion
+- **suggestion menus render from the plugin state**, never from the suggestion
   renderer's `onStart`/`onExit`, because those do not survive a plugin-view rebuild.
 
 ## Stable block identifiers
@@ -132,13 +132,13 @@ Every addressable block carries a `blockId` attribute (rendered as
 
 The `BlockId` extension:
 
-* assigns an id to every newly created block,
-* preserves ids while editing, during collaboration and during Markdown import,
-* detects duplicates (copy/paste, concurrent edits, malformed import) and
+- assigns an id to every newly created block,
+- preserves ids while editing, during collaboration and during Markdown import,
+- detects duplicates (copy/paste, concurrent edits, malformed import) and
   re-assigns the later occurrence,
-* uses `keepOnSplit: false`, so splitting a paragraph produces a *new* id instead of
+- uses `keepOnSplit: false`, so splitting a paragraph produces a _new_ id instead of
   a duplicate,
-* marks its transactions `addToHistory: false`, so bookkeeping never appears in the
+- marks its transactions `addToHistory: false`, so bookkeeping never appears in the
   undo stack.
 
 Identity is **never** derived from document offsets, Markdown line numbers or array
@@ -149,9 +149,9 @@ an HTML round trip.
 
 ## Markdown
 
-* import: `parseMarkdown(markdown)` → ProseMirror JSON (markdown-it token walker)
-* export: `serializeMarkdown(document, options)` → deterministic Markdown
-* Yjs bridge: `markdownToYjsState`, `yjsStateToMarkdown`, `materializeYjsState`
+- import: `parseMarkdown(markdown)` → ProseMirror JSON (markdown-it token walker)
+- export: `serializeMarkdown(document, options)` → deterministic Markdown
+- Yjs bridge: `markdownToYjsState`, `yjsStateToMarkdown`, `materializeYjsState`
 
 Supported: YAML frontmatter (unknown keys preserved), headings, emphasis, inline
 code, fenced code with language, blockquotes, bullet/ordered lists, task lists,
@@ -229,8 +229,12 @@ The `callout` node is the reference implementation. To add, for example, a
      name: 'toggle',
      group: 'block',
      content: 'block+',
-     addAttributes() { return { open: { default: false } }; },
-     parseHTML() { return [{ tag: 'details[data-toggle]' }]; },
+     addAttributes() {
+       return { open: { default: false } };
+     },
+     parseHTML() {
+       return [{ tag: 'details[data-toggle]' }];
+     },
      renderHTML({ HTMLAttributes }) {
        return ['details', mergeAttributes(HTMLAttributes, { 'data-toggle': '' }), 0];
      },
@@ -266,11 +270,11 @@ identifiers, and renaming a page no longer breaks the references to it
 The three pure operations that keep those two halves in step live in
 `packages/editor/src/page-link-identity.ts`:
 
-| Function | Used by | Does |
-| -------- | ------- | ---- |
-| `resolvePageLinkTitles` | Markdown export | rewrites every stored title from its identity, so a file says what the target is called *now*. For a mark it rewrites the address, and the visible text only when that text still *was* the address — `[[Ziel\|siehe dort]]` is a wording the author chose |
-| `bindPageLinkIdentities` | Markdown import, `POST /documents/:id/content` | maps a title back onto a page of the workspace |
-| `resolvePageLinkTarget` | the `pageLink` node view | decides what a reference resolves to, identity first, title as the fallback, `unresolved` when neither answers |
+| Function                 | Used by                                        | Does                                                                                                                                                                                                                                                       |
+| ------------------------ | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `resolvePageLinkTitles`  | Markdown export                                | rewrites every stored title from its identity, so a file says what the target is called _now_. For a mark it rewrites the address, and the visible text only when that text still _was_ the address — `[[Ziel\|siehe dort]]` is a wording the author chose |
+| `bindPageLinkIdentities` | Markdown import, `POST /documents/:id/content` | maps a title back onto a page of the workspace                                                                                                                                                                                                             |
+| `resolvePageLinkTarget`  | the `pageLink` node view                       | decides what a reference resolves to, identity first, title as the fallback, `unresolved` when neither answers                                                                                                                                             |
 
 An unresolved reference is visible in both notations: the block says so on its
 own card, a `[[Titel]]` in prose is marked by a ProseMirror decoration

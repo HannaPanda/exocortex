@@ -8,13 +8,13 @@ and rows that are ordinary `Document`s (`type: 'PAGE'`) underneath it. Read
 
 ## The pieces
 
-| Layer | File |
-| ----- | ---- |
-| Schema | `packages/database/prisma/schema.prisma` — `DatabaseProperty`, `DatabasePropertyOption`, `DatabaseView`, `DocumentPropertyValue` |
-| Query engine | `packages/database/src/database-query.ts` — compiles a validated filter/sort tree to parameterized SQL |
-| Contracts | `packages/contracts/src/database-views.ts` — property/view/filter/row schemas |
-| API | `apps/api/src/databases/` — `database-properties.*`, `database-views.*`, `database-rows.*` (service + controller each) |
-| Frontend | `apps/web/src/components/database/` — `database-shell.tsx` dispatches to `table-view.tsx` / `board-view.tsx` / `gallery-view.tsx` / `calendar-view.tsx`, all reading rows through `use-database-query`-style hooks in `lib/api/database-queries.ts` |
+| Layer        | File                                                                                                                                                                                                                                                |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Schema       | `packages/database/prisma/schema.prisma` — `DatabaseProperty`, `DatabasePropertyOption`, `DatabaseView`, `DocumentPropertyValue`                                                                                                                    |
+| Query engine | `packages/database/src/database-query.ts` — compiles a validated filter/sort tree to parameterized SQL                                                                                                                                              |
+| Contracts    | `packages/contracts/src/database-views.ts` — property/view/filter/row schemas                                                                                                                                                                       |
+| API          | `apps/api/src/databases/` — `database-properties.*`, `database-views.*`, `database-rows.*` (service + controller each)                                                                                                                              |
+| Frontend     | `apps/web/src/components/database/` — `database-shell.tsx` dispatches to `table-view.tsx` / `board-view.tsx` / `gallery-view.tsx` / `calendar-view.tsx`, all reading rows through `use-database-query`-style hooks in `lib/api/database-queries.ts` |
 
 All four view types share one query path (`POST /api/documents/:id/rows/query`
 → `queryDatabaseRows`); they differ only in how they lay the same rows out.
@@ -54,31 +54,31 @@ property's `config`, never by the individual row. `parseDatePropertyConfig`
 (contracts) reads the bag with defaults, so a property created before the field
 existed keeps behaving exactly as it did.
 
-| `config` field | Effect |
-| --- | --- |
-| `includeTime` | The value carries a time of day. Editors switch from `<input type="date">` to `<input type="datetime-local">`, and rendering shows the time. |
-| `isRange` | The value is a span. **This changes the response shape** of every value of that property: `false` returns the bare ISO string, `true` returns `{ start, end, allDay }` (`databaseDateRangeValueSchema`). |
-| `timeZone` | IANA zone the wall-clock parts were authored in. Stored instants are always UTC; this only records the authoring zone. |
+| `config` field | Effect                                                                                                                                                                                                   |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `includeTime`  | The value carries a time of day. Editors switch from `<input type="date">` to `<input type="datetime-local">`, and rendering shows the time.                                                             |
+| `isRange`      | The value is a span. **This changes the response shape** of every value of that property: `false` returns the bare ISO string, `true` returns `{ start, end, allDay }` (`databaseDateRangeValueSchema`). |
+| `timeZone`     | IANA zone the wall-clock parts were authored in. Stored instants are always UTC; this only records the authoring zone.                                                                                   |
 
 Storage is three columns on `DocumentPropertyValue`: `dateValue` (the instant,
 and the start of a span), `dateEndValue` (exclusive end, null = no stated end,
-which is *not* a zero-length span) and `dateAllDay` (per value, because one
+which is _not_ a zero-length span) and `dateAllDay` (per value, because one
 calendar holds birthdays and 14:00 meetings).
 
 Two rules that are easy to get wrong:
 
-* **Writes always accept the bare ISO string**, in both modes, so every existing
+- **Writes always accept the bare ISO string**, in both modes, so every existing
   writer (MCP catalogue, Hermes, the morning briefing) keeps working. The span
   object is accepted only where `isRange` is true; sending it to a non-range
   property is rejected rather than silently truncated.
-* **Turning `isRange` off is refused** while rows still carry an end
+- **Turning `isRange` off is refused** while rows still carry an end
   (`database_property_date_range_in_use`, 409). Clearing those ends first is the
   caller's decision.
 
-An all-day value is a *floating* calendar date stored as UTC midnight. Read it
+An all-day value is a _floating_ calendar date stored as UTC midnight. Read it
 off the ISO string; converting it into the viewer's zone shifts every birthday a
 day for anyone west of Greenwich. A timed value is a real instant and belongs in
-the day the *viewer* sees it in. `dayKeyOf` in `calendar-view.tsx` is the one
+the day the _viewer_ sees it in. `dayKeyOf` in `calendar-view.tsx` is the one
 place that decision lives.
 
 ### The `overlaps` filter operator
@@ -98,7 +98,7 @@ works on both kinds of DATE property. Served by the
 2. Add a renderer in `apps/web/src/components/database/`, taking the same
    props shape the other four use (`workspaceId`, `documentId`, `view`,
    `properties`, `readOnly`) and reading rows via `useDatabaseRows(documentId,
-   { viewId: view.id, limit: 100 })` — **100 is the API's pagination
+{ viewId: view.id, limit: 100 })` — **100 is the API's pagination
    ceiling** (`paginationSchema` in `packages/contracts/src/primitives.ts`);
    requesting more throws `validation_failed`.
 3. Wire it into `database-shell.tsx`'s per-type dispatch and into
@@ -117,19 +117,19 @@ edited through the "Ansicht" popover (`view-options-menu.tsx`) or the resize
 handles in the header, all read through
 `apps/web/src/components/database/table-columns.ts`:
 
-| Field | Meaning |
-| --- | --- |
-| `columnWidths` | Width per property id in CSS pixels, plus the reserved key `title` for the row-title column (a row's title lives on the `Document`, so it has no property id). Missing key means `DATABASE_COLUMN_DEFAULT_WIDTH`. |
-| `rowHeight` | `short`/`medium`/`tall` = 1/3/6 lines per cell. A clamp, never a data limit: the full value is always reachable in the cell overlay and in the row sheet. |
-| `visibleProperties` | Which columns are shown, and in which order. A property **missing** from the list counts as visible, so a newly created property appears without the view having to be updated. |
+| Field               | Meaning                                                                                                                                                                                                           |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `columnWidths`      | Width per property id in CSS pixels, plus the reserved key `title` for the row-title column (a row's title lives on the `Document`, so it has no property id). Missing key means `DATABASE_COLUMN_DEFAULT_WIDTH`. |
+| `rowHeight`         | `short`/`medium`/`tall` = 1/3/6 lines per cell. A clamp, never a data limit: the full value is always reachable in the cell overlay and in the row sheet.                                                         |
+| `visibleProperties` | Which columns are shown, and in which order. A property **missing** from the list counts as visible, so a newly created property appears without the view having to be updated.                                   |
 
 Two related rules follow from `rowHeight` being a clamp:
 
-* A cell never truncates without a way out. Text-ish cells
+- A cell never truncates without a way out. Text-ish cells
   (`ExpandableTextCell` in `cells.tsx`) are a button that opens the complete
   value in an overlay anchored to the cell, and the row sheet
   (`row-peek-sheet.tsx`) stacks every property of one row at full sheet width.
-* The table's own scrollport is the `div` in `table-view.tsx`, not the `Table`
+- The table's own scrollport is the `div` in `table-view.tsx`, not the `Table`
   primitive's container (which is switched to `overflow-visible` through
   `containerClassName`). A sticky `thead` only sticks against the box that
   actually scrolls.
@@ -156,22 +156,22 @@ themselves.
 
 ## Known limitations (deliberate, not bugs)
 
-* **Filters/sorts sent alongside a `viewId` are ignored.** When a request to
+- **Filters/sorts sent alongside a `viewId` are ignored.** When a request to
   `rows/query` includes a `viewId`, the API resolves filters/sorts from that
   saved view and does not merge in request-level `filters`/`sorts` — the two
   are alternatives, not additive. Query without a `viewId` for one-off,
   unsaved filtering.
-* **A row's property type cannot be changed once created.**
+- **A row's property type cannot be changed once created.**
   `updateDatabasePropertyRequestSchema` only allows renaming and `config`
-  changes. Changing what a column *means* (TEXT → NUMBER, say) is
+  changes. Changing what a column _means_ (TEXT → NUMBER, say) is
   delete-and-recreate; there is no coercion path for existing values.
-* **Pagination degrades to offset-based once a view sorts or filters.** See
+- **Pagination degrades to offset-based once a view sorts or filters.** See
   ADR-011's consequences section.
-* **PERSON and FILES are edited as raw, comma-separated ids** in
+- **PERSON and FILES are edited as raw, comma-separated ids** in
   `cells.tsx`'s `IdListCell` — a member picker and a file browser are a
   separate, larger feature; this is the honest minimal editor that still
   round-trips the array completely through the API.
-* **A database embed's Markdown export/import loses the reference.** Markdown
+- **A database embed's Markdown export/import loses the reference.** Markdown
   is interchange-only (ADR-007) and never carries internal ids, so the
   `:::database-embed` container round-trips only the database's title, and
   re-importing such a file produces an embed with no database picked yet.

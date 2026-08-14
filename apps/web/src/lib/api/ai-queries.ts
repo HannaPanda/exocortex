@@ -76,7 +76,9 @@ export function useAiRun(runId: string | null): UseQueryResult<AiRun> {
     enabled: runId !== null,
     refetchInterval: (query) => {
       const status = query.state.data?.status;
-      return status === undefined || TERMINAL_RUN_STATUSES.has(status) ? false : AI_RUN_POLL_INTERVAL_MS;
+      return status === undefined || TERMINAL_RUN_STATUSES.has(status)
+        ? false
+        : AI_RUN_POLL_INTERVAL_MS;
     },
     // Overrides the app-wide default (off): a run the user is watching must
     // reconcile the moment the tab regains focus, not only every poll tick.
@@ -87,7 +89,8 @@ export function useAiRun(runId: string | null): UseQueryResult<AiRun> {
 
 export function useCancelAiRun() {
   return useMutation({
-    mutationFn: (runId: string) => apiRequest<AiRun>(`/api/ai/runs/${runId}/cancel`, { method: 'POST' }),
+    mutationFn: (runId: string) =>
+      apiRequest<AiRun>(`/api/ai/runs/${runId}/cancel`, { method: 'POST' }),
   });
 }
 
@@ -139,10 +142,13 @@ export function useUpdateAiConversation() {
   const client = useQueryClient();
   return useMutation({
     mutationFn: (input: { conversationId: string; request: UpdateAiConversationRequest }) =>
-      apiRequest<{ conversation: AiConversation }>(`/api/ai/conversations/${input.conversationId}`, {
-        method: 'PATCH',
-        body: input.request,
-      }),
+      apiRequest<{ conversation: AiConversation }>(
+        `/api/ai/conversations/${input.conversationId}`,
+        {
+          method: 'PATCH',
+          body: input.request,
+        },
+      ),
     onSuccess: (response) => {
       void client.invalidateQueries({
         queryKey: aiQueryKeys.conversation(response.conversation.id),

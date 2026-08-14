@@ -3,11 +3,7 @@ import { Editor } from '@tiptap/core';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { buildEditorExtensions } from './extensions';
-import {
-  type MediaDocumentDetail,
-  type MediaDocumentInfo,
-  type MediaInfoResolver,
-} from './media';
+import { type MediaDocumentDetail, type MediaDocumentInfo, type MediaInfoResolver } from './media';
 
 let editor: Editor | null = null;
 
@@ -260,9 +256,7 @@ describe('media block details', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     const container = editor.view.dom.querySelector('.exocortex-pdf');
-    expect(container?.querySelector('.exocortex-pdf-name')?.textContent).toBe(
-      'Kontoauszug-Q3.pdf',
-    );
+    expect(container?.querySelector('.exocortex-pdf-name')?.textContent).toBe('Kontoauszug-Q3.pdf');
   });
 
   it('leaves a block that has its own name alone', async () => {

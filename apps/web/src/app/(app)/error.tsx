@@ -21,8 +21,8 @@ export default function AppSegmentError({ retry }: { error: Error; retry: () => 
       <AlertTriangleIcon className="size-7 text-destructive-text" aria-hidden />
       <h1 className="text-lg font-semibold">Diese Seite konnte nicht geladen werden</h1>
       <p className="max-w-md text-sm text-muted-foreground">
-        Der Rest der Anwendung läuft weiter. Ein gestarteter KI-Lauf arbeitet im Hintergrund
-        weiter; sein Verlauf steht nach dem Neuladen vollständig im Chat.
+        Der Rest der Anwendung läuft weiter. Ein gestarteter KI-Lauf arbeitet im Hintergrund weiter;
+        sein Verlauf steht nach dem Neuladen vollständig im Chat.
       </p>
       <Button variant="outline" onClick={() => retry()}>
         Erneut versuchen

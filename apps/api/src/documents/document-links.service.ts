@@ -77,7 +77,10 @@ export class DocumentLinksService {
         // authorization: a reference whose source the caller may not read can
         // never be in the result, and a row left over from a page that has
         // since moved to another workspace is excluded by the same clause.
-        where: { targetDocumentId: documentId, sourceDocument: { workspaceId: context.workspaceId } },
+        where: {
+          targetDocumentId: documentId,
+          sourceDocument: { workspaceId: context.workspaceId },
+        },
         select: {
           id: true,
           kind: true,

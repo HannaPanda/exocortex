@@ -1,8 +1,4 @@
-import {
-  type AiProvider,
-  type AiToolCall,
-  estimateMessageTokens,
-} from '@exocortex/ai';
+import { type AiProvider, type AiToolCall, estimateMessageTokens } from '@exocortex/ai';
 import {
   AI_RUN_PHASE_MIN_INTERVAL_MS,
   type AiMessage,
@@ -324,7 +320,11 @@ class RunExecution {
     const { logger, run, maxOutputTokens, budgetMicroUsd } = this.input;
     const truncatedToolCall = turn.toolCalls.length > 0;
     for (const call of turn.toolCalls) {
-      await this.publishToolCall(call.name, 'failed', toolCallTarget(call.name, call.argumentsJson));
+      await this.publishToolCall(
+        call.name,
+        'failed',
+        toolCallTarget(call.name, call.argumentsJson),
+      );
     }
 
     this.truncationRetries += 1;
@@ -373,9 +373,7 @@ class RunExecution {
     // be executed, and persisting it would produce an assistant message the
     // adapter has to drop again on the next request. Report it instead of
     // dropping it in silence.
-    const runnable = turn.toolCalls.filter(
-      (call) => call.id.length > 0 && call.name.length > 0,
-    );
+    const runnable = turn.toolCalls.filter((call) => call.id.length > 0 && call.name.length > 0);
     await this.reportUndeliveredToolCalls(turn.toolCalls, runnable);
     if (runnable.length === 0) {
       this.failure = {
@@ -482,7 +480,11 @@ class RunExecution {
   ): Promise<void> {
     for (const call of all) {
       if (runnable.includes(call)) continue;
-      await this.publishToolCall(call.name, 'failed', toolCallTarget(call.name, call.argumentsJson));
+      await this.publishToolCall(
+        call.name,
+        'failed',
+        toolCallTarget(call.name, call.argumentsJson),
+      );
       this.input.logger.warn('Discarding a tool call the provider did not deliver completely', {
         runId: this.input.run.id,
         toolName: call.name,

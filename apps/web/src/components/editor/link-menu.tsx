@@ -195,9 +195,7 @@ export function LinkMenu({ editor, workspaceId, trigger }: LinkMenuProps) {
 
 /** Shows an internal link the way it is written in Markdown. */
 export function displayValue(href: string): string {
-  return href.startsWith(WIKI_LINK_SCHEME)
-    ? `[[${href.slice(WIKI_LINK_SCHEME.length)}]]`
-    : href;
+  return href.startsWith(WIKI_LINK_SCHEME) ? `[[${href.slice(WIKI_LINK_SCHEME.length)}]]` : href;
 }
 
 /**

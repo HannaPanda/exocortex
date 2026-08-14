@@ -1,6 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { assertPolicy, canManageDatabaseSchema, canReadDocument, WorkspaceAccessService } from '@exocortex/auth';
+import {
+  assertPolicy,
+  canManageDatabaseSchema,
+  canReadDocument,
+  WorkspaceAccessService,
+} from '@exocortex/auth';
 import {
   type CreateDatabasePropertyOptionRequest,
   type CreateDatabasePropertyRequest,
@@ -101,7 +106,11 @@ export class DatabasePropertiesService {
     const context = await this.requireCollection(input.collectionDocumentId, input.userId);
     assertPolicy(canManageDatabaseSchema(context.role, context.document));
 
-    if (!IMPLEMENTED_PROPERTY_TYPES.includes(input.request.type as (typeof IMPLEMENTED_PROPERTY_TYPES)[number])) {
+    if (
+      !IMPLEMENTED_PROPERTY_TYPES.includes(
+        input.request.type as (typeof IMPLEMENTED_PROPERTY_TYPES)[number],
+      )
+    ) {
       throw new AppError(
         'database_property_reserved',
         `Property type ${input.request.type} is reserved for a later round and cannot be created yet`,
@@ -124,9 +133,14 @@ export class DatabasePropertiesService {
       include: PROPERTY_INCLUDE,
     });
 
-    await this.realtime.emit('database.property.changed', context.workspaceId, input.correlationId, {
-      documentId: input.collectionDocumentId,
-    });
+    await this.realtime.emit(
+      'database.property.changed',
+      context.workspaceId,
+      input.correlationId,
+      {
+        documentId: input.collectionDocumentId,
+      },
+    );
     return toResponse(created);
   }
 
@@ -141,7 +155,11 @@ export class DatabasePropertiesService {
     assertPolicy(canManageDatabaseSchema(context.role, context.document));
 
     if (property.type === 'DATE' && input.request.config !== undefined) {
-      await this.assertDateConfigChangeIsSafe(input.propertyId, property.config, input.request.config);
+      await this.assertDateConfigChangeIsSafe(
+        input.propertyId,
+        property.config,
+        input.request.config,
+      );
     }
 
     const updated = await this.prisma.databaseProperty.update({
@@ -155,9 +173,14 @@ export class DatabasePropertiesService {
       include: PROPERTY_INCLUDE,
     });
 
-    await this.realtime.emit('database.property.changed', context.workspaceId, input.correlationId, {
-      documentId: property.documentId,
-    });
+    await this.realtime.emit(
+      'database.property.changed',
+      context.workspaceId,
+      input.correlationId,
+      {
+        documentId: property.documentId,
+      },
+    );
     return toResponse(updated);
   }
 
@@ -183,7 +206,9 @@ export class DatabasePropertiesService {
         'A DATE property config accepts only { includeTime, isRange, timeZone }',
       );
     }
-    const wasRange = parseDatePropertyConfig(currentConfig as Record<string, unknown> | null).isRange;
+    const wasRange = parseDatePropertyConfig(
+      currentConfig as Record<string, unknown> | null,
+    ).isRange;
     if (!wasRange || parsed.data.isRange) return;
 
     const withEnd = await this.prisma.documentPropertyValue.count({
@@ -220,9 +245,14 @@ export class DatabasePropertiesService {
       include: PROPERTY_INCLUDE,
     });
 
-    await this.realtime.emit('database.property.changed', context.workspaceId, input.correlationId, {
-      documentId: property.documentId,
-    });
+    await this.realtime.emit(
+      'database.property.changed',
+      context.workspaceId,
+      input.correlationId,
+      {
+        documentId: property.documentId,
+      },
+    );
     return toResponse(updated);
   }
 
@@ -232,7 +262,11 @@ export class DatabasePropertiesService {
    * is audited and its cascade (`DocumentPropertyValue`, `DatabasePropertyOption`)
    * runs in the same transaction as the audit write.
    */
-  async delete(input: { propertyId: string; userId: string; correlationId: string }): Promise<{ deleted: true }> {
+  async delete(input: {
+    propertyId: string;
+    userId: string;
+    correlationId: string;
+  }): Promise<{ deleted: true }> {
     const property = await this.loadPropertyOrThrow(input.propertyId);
     const context = await this.requireCollection(property.documentId, input.userId);
     assertPolicy(canManageDatabaseSchema(context.role, context.document));
@@ -250,9 +284,14 @@ export class DatabasePropertiesService {
       await tx.databaseProperty.delete({ where: { id: input.propertyId } });
     });
 
-    await this.realtime.emit('database.property.changed', context.workspaceId, input.correlationId, {
-      documentId: property.documentId,
-    });
+    await this.realtime.emit(
+      'database.property.changed',
+      context.workspaceId,
+      input.correlationId,
+      {
+        documentId: property.documentId,
+      },
+    );
     return { deleted: true };
   }
 
@@ -281,9 +320,14 @@ export class DatabasePropertiesService {
       },
     });
 
-    await this.realtime.emit('database.property.changed', context.workspaceId, input.correlationId, {
-      documentId: property.documentId,
-    });
+    await this.realtime.emit(
+      'database.property.changed',
+      context.workspaceId,
+      input.correlationId,
+      {
+        documentId: property.documentId,
+      },
+    );
     return toOptionResponse(option);
   }
 
@@ -309,9 +353,14 @@ export class DatabasePropertiesService {
       },
     });
 
-    await this.realtime.emit('database.property.changed', context.workspaceId, input.correlationId, {
-      documentId: option.property.documentId,
-    });
+    await this.realtime.emit(
+      'database.property.changed',
+      context.workspaceId,
+      input.correlationId,
+      {
+        documentId: option.property.documentId,
+      },
+    );
     return toOptionResponse(updated);
   }
 
@@ -330,9 +379,14 @@ export class DatabasePropertiesService {
 
     await this.prisma.databasePropertyOption.delete({ where: { id: input.optionId } });
 
-    await this.realtime.emit('database.property.changed', context.workspaceId, input.correlationId, {
-      documentId: option.property.documentId,
-    });
+    await this.realtime.emit(
+      'database.property.changed',
+      context.workspaceId,
+      input.correlationId,
+      {
+        documentId: option.property.documentId,
+      },
+    );
     return { deleted: true };
   }
 
@@ -389,6 +443,9 @@ export class DatabasePropertiesService {
     }
     const index = siblings.findIndex((sibling) => sibling.id === input.afterPropertyId);
     if (index < 0) throw AppError.notFound('Sibling property');
-    return generateOrderKey(siblings[index]?.orderKey ?? null, siblings[index + 1]?.orderKey ?? null);
+    return generateOrderKey(
+      siblings[index]?.orderKey ?? null,
+      siblings[index + 1]?.orderKey ?? null,
+    );
   }
 }

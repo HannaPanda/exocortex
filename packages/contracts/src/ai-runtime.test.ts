@@ -51,7 +51,7 @@ describe('deriveAiRunTimeouts', () => {
     expect(timeouts.reaperDeadlineMs).toBeGreaterThan(timeouts.runBudgetMs);
   });
 
-  it("carries the fixed heartbeat constants through, not derived from settings", () => {
+  it('carries the fixed heartbeat constants through, not derived from settings', () => {
     const timeouts = deriveAiRunTimeouts(defaults);
     expect(timeouts.heartbeatIntervalMs).toBe(AI_RUN_HEARTBEAT_INTERVAL_MS);
     expect(timeouts.heartbeatStaleMs).toBe(AI_RUN_HEARTBEAT_STALE_MS);

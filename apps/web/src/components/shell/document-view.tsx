@@ -360,98 +360,97 @@ function DocumentTopBar({
   const restoreDocument = useRestoreDocument(workspaceId);
 
   return (
-      <div className="flex items-center gap-2 border-b border-border px-6 py-2">
-        <nav aria-label="Pfad" className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
-          {detail.breadcrumb.map((entry) => (
-            <React.Fragment key={entry.id}>
-              <Link
-                href={`/arbeitsbereich/${workspaceId}/seite/${entry.id}`}
-                className="flex max-w-32 items-center gap-1 truncate hover:text-foreground"
-              >
-                {/* Only a chosen symbol, never the default one: a path is a line
+    <div className="flex items-center gap-2 border-b border-border px-6 py-2">
+      <nav
+        aria-label="Pfad"
+        className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground"
+      >
+        {detail.breadcrumb.map((entry) => (
+          <React.Fragment key={entry.id}>
+            <Link
+              href={`/arbeitsbereich/${workspaceId}/seite/${entry.id}`}
+              className="flex max-w-32 items-center gap-1 truncate hover:text-foreground"
+            >
+              {/* Only a chosen symbol, never the default one: a path is a line
                     of text, and a file icon in front of every step would say
                     nothing the path does not already say. */}
-                {entry.icon === null ? null : (
-                  <DocumentIcon
-                    icon={entry.icon}
-                    iconColor={entry.iconColor}
-                    type="PAGE"
-                    className="size-3.5 text-xs"
-                  />
-                )}
-                <span className="truncate">{entry.title}</span>
-              </Link>
-              <span aria-hidden>/</span>
-            </React.Fragment>
-          ))}
-          <span className="max-w-40 truncate text-foreground">{detail.title}</span>
-        </nav>
+              {entry.icon === null ? null : (
+                <DocumentIcon
+                  icon={entry.icon}
+                  iconColor={entry.iconColor}
+                  type="PAGE"
+                  className="size-3.5 text-xs"
+                />
+              )}
+              <span className="truncate">{entry.title}</span>
+            </Link>
+            <span aria-hidden>/</span>
+          </React.Fragment>
+        ))}
+        <span className="max-w-40 truncate text-foreground">{detail.title}</span>
+      </nav>
 
-        {detail.aiRuleMode !== 'off' ? (
-          <Badge variant="muted" data-testid="ai-rule-badge">
-            {AI_RULE_BADGE_LABEL[detail.aiRuleMode]}
-          </Badge>
+      {detail.aiRuleMode !== 'off' ? (
+        <Badge variant="muted" data-testid="ai-rule-badge">
+          {AI_RULE_BADGE_LABEL[detail.aiRuleMode]}
+        </Badge>
+      ) : null}
+
+      <div className="ml-auto flex items-center gap-3">
+        {!archived && detail.access === 'write' ? <SaveIndicator /> : null}
+
+        {archived ? (
+          <Button
+            variant="outline"
+            size="sm"
+            data-testid="restore-document"
+            onClick={() => void restoreDocument.mutateAsync(documentId)}
+          >
+            <RotateCcwIcon /> Wiederherstellen
+          </Button>
         ) : null}
 
-        <div className="ml-auto flex items-center gap-3">
-          {!archived && detail.access === 'write' ? <SaveIndicator /> : null}
-
-          {archived ? (
-            <Button
-              variant="outline"
-              size="sm"
-              data-testid="restore-document"
-              onClick={() => void restoreDocument.mutateAsync(documentId)}
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Seitenaktionen"
+                data-testid="document-actions"
+              >
+                <MoreHorizontalIcon />
+              </Button>
+            }
+          />
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem data-testid="open-page-properties" onClick={onOpenProperties}>
+              <SlidersHorizontalIcon /> Seiteneigenschaften …
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem data-testid="export-markdown" onClick={onExport}>
+              <DownloadIcon /> Als Markdown exportieren
+            </DropdownMenuItem>
+            <DropdownMenuItem data-testid="open-import" onClick={onOpenImport}>
+              <UploadIcon /> Markdown importieren
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              disabled={archived}
+              data-testid="archive-document"
+              onClick={() => {
+                void archiveDocument
+                  .mutateAsync(documentId)
+                  .then(() => router.push(`/arbeitsbereich/${workspaceId}`));
+              }}
             >
-              <RotateCcwIcon /> Wiederherstellen
-            </Button>
-          ) : null}
-
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button variant="ghost" size="icon-sm" aria-label="Seitenaktionen" data-testid="document-actions">
-                  <MoreHorizontalIcon />
-                </Button>
-              }
-            />
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                data-testid="open-page-properties"
-                onClick={onOpenProperties}
-              >
-                <SlidersHorizontalIcon /> Seiteneigenschaften …
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                data-testid="export-markdown"
-                onClick={onExport}
-              >
-                <DownloadIcon /> Als Markdown exportieren
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                data-testid="open-import"
-                onClick={onOpenImport}
-              >
-                <UploadIcon /> Markdown importieren
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                variant="destructive"
-                disabled={archived}
-                data-testid="archive-document"
-                onClick={() => {
-                  void archiveDocument
-                    .mutateAsync(documentId)
-                    .then(() => router.push(`/arbeitsbereich/${workspaceId}`));
-                }}
-              >
-                <ArchiveIcon /> Archivieren
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+              <ArchiveIcon /> Archivieren
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
+    </div>
   );
 }
 

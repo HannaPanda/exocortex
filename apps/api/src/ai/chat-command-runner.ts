@@ -4,13 +4,19 @@ import {
   type ChatCommandName,
   type ChatCommandResult,
 } from '@exocortex/contracts';
-import { type AiReasoningLevel as AiReasoningLevelPrisma, type PrismaClient } from '@exocortex/database';
+import {
+  type AiReasoningLevel as AiReasoningLevelPrisma,
+  type PrismaClient,
+} from '@exocortex/database';
 import { toolsFor } from '@exocortex/mcp-tools';
 
 import { AppError } from '../common/app-error';
 import { type SettingsService } from '../platform/settings.service';
 
-import { type AiModelResolverService, REASONING_LEVEL_TO_PRISMA } from './ai-model-resolver.service';
+import {
+  type AiModelResolverService,
+  REASONING_LEVEL_TO_PRISMA,
+} from './ai-model-resolver.service';
 import { type ParsedChatCommand } from './chat-commands';
 
 const PLACEHOLDER_TITLE = 'Neue Unterhaltung';

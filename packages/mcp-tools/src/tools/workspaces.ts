@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
-import { idSchema, type Workspace, workspaceListResponseSchema, workspaceSchema, workspaceSlugSchema } from '@exocortex/contracts';
+import {
+  idSchema,
+  type Workspace,
+  workspaceListResponseSchema,
+  workspaceSchema,
+  workspaceSlugSchema,
+} from '@exocortex/contracts';
 
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
@@ -23,7 +29,9 @@ export const listWorkspacesTool: AnyToolDefinition = defineTool({
     if (result.workspaces.length === 0) {
       return { text: 'Keine Workspaces gefunden.', data: result };
     }
-    const text = result.workspaces.map((workspace, i) => `${i + 1}. ${formatWorkspace(workspace)}`).join('\n');
+    const text = result.workspaces
+      .map((workspace, i) => `${i + 1}. ${formatWorkspace(workspace)}`)
+      .join('\n');
     return { text, data: result };
   },
 });
@@ -62,4 +70,7 @@ export const workspaceRenameTool: AnyToolDefinition = defineTool({
   },
 });
 
-export const WORKSPACE_TOOLS: readonly AnyToolDefinition[] = [listWorkspacesTool, workspaceRenameTool];
+export const WORKSPACE_TOOLS: readonly AnyToolDefinition[] = [
+  listWorkspacesTool,
+  workspaceRenameTool,
+];

@@ -44,13 +44,15 @@ export function ContextChips({
   const kind = isCollection ? 'Diese Datenbank' : 'Diese Seite';
 
   return (
-    <div className="flex min-w-0 flex-wrap items-center gap-1.5 px-2 pt-2" data-testid="ai-context-chips">
+    <div
+      className="flex min-w-0 flex-wrap items-center gap-1.5 px-2 pt-2"
+      data-testid="ai-context-chips"
+    >
       {selectionBlockCount === null ? null : (
         <Badge variant="outline" className="max-w-full gap-1 py-1 pr-1 pl-1.5">
           <TextQuoteIcon aria-hidden />
           <span className="min-w-0 truncate">
-            Auswahl ({selectionBlockCount}{' '}
-            {selectionBlockCount === 1 ? 'Block' : 'Blöcke'})
+            Auswahl ({selectionBlockCount} {selectionBlockCount === 1 ? 'Block' : 'Blöcke'})
           </span>
           <Tooltip>
             <TooltipTrigger

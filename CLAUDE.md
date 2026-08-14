@@ -62,24 +62,24 @@ file is the contract for automated sessions. Read it before changing code.
 
 ## Repository map
 
-| Path                    | Responsibility |
-| ----------------------- | -------------- |
-| `apps/web`              | Next.js frontend (App Router). No direct database, Redis or storage access. |
-| `apps/api`              | NestJS + Fastify REST API, Better Auth handler, Socket.IO gateway. Owns business logic. |
-| `apps/collaboration`    | Hocuspocus server, binary Yjs persistence, ticket verification. |
-| `apps/worker`           | BullMQ worker: materialization, search indexing, AI runs, maintenance. |
-| `apps/mcp`              | stdio JSON-RPC MCP server for external clients (Hermes, Claude Code). |
-| `packages/mcp-tools`    | The one tool catalogue: shared by `apps/mcp` and the worker's AI tool loop. |
-| `packages/config`       | Runtime-validated environment schemas. |
-| `packages/contracts`    | zod schemas for REST DTOs, WebSocket events, job payloads. |
-| `packages/database`     | Prisma schema, migrations, order keys, tree helpers, search adapter. |
-| `packages/auth`         | Better Auth setup, session verification, authorization policies, collaboration tickets. |
-| `packages/editor`       | Canonical Tiptap schema, block IDs, block catalog, Markdown, Yjs materialization. |
-| `packages/queue`        | Typed BullMQ queues, workers, Redis event bus. |
-| `packages/storage`      | S3-compatible object storage, MIME sniffing, image downscaling. |
-| `packages/ai`           | Provider-neutral AI contracts, mock provider, runner contracts. |
-| `packages/ui`           | Design tokens, shadcn components on Base UI, layout primitives, states. |
-| `e2e`                   | Playwright browser and API tests. |
+| Path                      | Responsibility                                                                                                                |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `apps/web`                | Next.js frontend (App Router). No direct database, Redis or storage access.                                                   |
+| `apps/api`                | NestJS + Fastify REST API, Better Auth handler, Socket.IO gateway. Owns business logic.                                       |
+| `apps/collaboration`      | Hocuspocus server, binary Yjs persistence, ticket verification.                                                               |
+| `apps/worker`             | BullMQ worker: materialization, search indexing, AI runs, maintenance.                                                        |
+| `apps/mcp`                | stdio JSON-RPC MCP server for external clients (Hermes, Claude Code).                                                         |
+| `packages/mcp-tools`      | The one tool catalogue: shared by `apps/mcp` and the worker's AI tool loop.                                                   |
+| `packages/config`         | Runtime-validated environment schemas.                                                                                        |
+| `packages/contracts`      | zod schemas for REST DTOs, WebSocket events, job payloads.                                                                    |
+| `packages/database`       | Prisma schema, migrations, order keys, tree helpers, search adapter.                                                          |
+| `packages/auth`           | Better Auth setup, session verification, authorization policies, collaboration tickets.                                       |
+| `packages/editor`         | Canonical Tiptap schema, block IDs, block catalog, Markdown, Yjs materialization.                                             |
+| `packages/queue`          | Typed BullMQ queues, workers, Redis event bus.                                                                                |
+| `packages/storage`        | S3-compatible object storage, MIME sniffing, image downscaling.                                                               |
+| `packages/ai`             | Provider-neutral AI contracts, mock provider, runner contracts.                                                               |
+| `packages/ui`             | Design tokens, shadcn components on Base UI, layout primitives, states.                                                       |
+| `e2e`                     | Playwright browser and API tests.                                                                                             |
 | `tools/claude-code-hooks` | SessionStart/SessionEnd hooks that make this deployment Claude Code's memory. Plain Node, no dependencies, silent on failure. |
 
 ## Commands
@@ -123,33 +123,33 @@ pnpm test:e2e          # Playwright (needs a running deployment)
 
 ## Architectural decisions you must not silently reverse
 
-* ADR-004/005: one Yjs document per eXocortex document; the binary state is
+- ADR-004/005: one Yjs document per eXocortex document; the binary state is
   canonical and is never rebuilt from JSON on load.
-* ADR-007: Markdown is an interchange format only.
-* ADR-008: application events and Yjs updates travel over **separate** sockets.
-* ADR-010: domain events that need reliable follow-up work go through the
+- ADR-007: Markdown is an interchange format only.
+- ADR-008: application events and Yjs updates travel over **separate** sockets.
+- ADR-010: domain events that need reliable follow-up work go through the
   transactional outbox, not through fire-and-forget calls.
-* ADR-011: a database is a `Document` with `type: 'COLLECTION'`; its rows are
+- ADR-011: a database is a `Document` with `type: 'COLLECTION'`; its rows are
   ordinary `Document`s (`type: 'PAGE'`) underneath it, not a separate model.
-* ADR-013: runtime configuration lives in the `setting` table; the environment is
+- ADR-013: runtime configuration lives in the `setting` table; the environment is
   the bootstrap fallback, never the runtime authority.
-* ADR-014: one tool catalogue (`packages/mcp-tools`) serves external MCP clients
+- ADR-014: one tool catalogue (`packages/mcp-tools`) serves external MCP clients
   and the built-in AI, and it reaches the domain only through the REST API.
-* ADR-016: a write that does not come from the editor must reach the open
+- ADR-016: a write that does not come from the editor must reach the open
   editing session through the collaboration server, never only the database.
-* ADR-018: MCP is served over two transports (stdio bin and `POST /api/mcp`)
+- ADR-018: MCP is served over two transports (stdio bin and `POST /api/mcp`)
   that share one protocol dispatcher; the HTTP one reaches the domain by calling
   the REST API over loopback, never Prisma, and it accepts bearer credentials
   only, never a cookie.
-* ADR-019: agent memory is its own workspace (`memory.workspaceId`), written
+- ADR-019: agent memory is its own workspace (`memory.workspaceId`), written
   through the ordinary domain services; a raw transcript is never stored, and
   authority comes from the agent account's membership, not from its token scope.
-* ADR-020: semantic search sits beside full-text and never replaces it.
+- ADR-020: semantic search sits beside full-text and never replaces it.
   `HybridSearchAdapter` wraps `PostgresSearchAdapter`, fuses the two lists by
   rank, and falls back to full-text alone whenever the embedding call fails.
   `packages/database` reaches the model through a port, never by importing
   `@exocortex/ai`.
-* ADR-015: the open page's *text* reaches the prompt only when
+- ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
 
@@ -159,17 +159,17 @@ Full list: `docs/adr/`.
 
 Each of these has a step-by-step recipe:
 
-| Task | Document |
-| ---- | -------- |
-| new shadcn component, custom primitive | `docs/ui-system.md` |
+| Task                                                     | Document                    |
+| -------------------------------------------------------- | --------------------------- |
+| new shadcn component, custom primitive                   | `docs/ui-system.md`         |
 | new editor node, block catalog entry, document migration | `docs/editor-extensions.md` |
-| new WebSocket event | `docs/architecture.md` |
-| new background job | `docs/background-jobs.md` |
-| new AI provider, agent runner | `docs/ai-architecture.md` |
-| new storage backend | `docs/architecture.md` |
-| new database property type, view type | `docs/database-views.md` |
-| new MCP tool, new AI tool | `docs/mcp.md` |
-| new admin setting, admin page | `docs/admin.md` |
+| new WebSocket event                                      | `docs/architecture.md`      |
+| new background job                                       | `docs/background-jobs.md`   |
+| new AI provider, agent runner                            | `docs/ai-architecture.md`   |
+| new storage backend                                      | `docs/architecture.md`      |
+| new database property type, view type                    | `docs/database-views.md`    |
+| new MCP tool, new AI tool                                | `docs/mcp.md`               |
+| new admin setting, admin page                            | `docs/admin.md`             |
 
 ## Deployment on this machine
 

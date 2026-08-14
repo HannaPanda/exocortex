@@ -100,7 +100,10 @@ function stubToolRunner(responses: readonly { text: string; isError: boolean }[]
   return {
     definitions: [{ name: 'exo_test_tool', description: 'Ein Testwerkzeug', parameters: {} }],
     async run() {
-      const response = responses[callIndex] ?? { text: 'Keine weitere Antwort konfiguriert', isError: true };
+      const response = responses[callIndex] ?? {
+        text: 'Keine weitere Antwort konfiguriert',
+        isError: true,
+      };
       callIndex += 1;
       return response;
     },
@@ -200,8 +203,7 @@ beforeAll(async () => {
     prisma,
     keyword: new PostgresSearchAdapter(prisma),
     embeddings: createEmbeddingClient(new MockEmbeddingProvider()),
-    options: async () =>
-      semanticModel === null ? null : { model: semanticModel, weight: 0.5 },
+    options: async () => (semanticModel === null ? null : { model: semanticModel, weight: 0.5 }),
     logger,
   });
 
@@ -586,11 +588,13 @@ describe('semantic search', () => {
         maxInputChars: 24_000,
         embed: async (input) => {
           requests += 1;
-          return (await new MockEmbeddingProvider().embed({
-            input: input.texts,
-            model: input.model,
-            correlationId: input.correlationId,
-          })).vectors;
+          return (
+            await new MockEmbeddingProvider().embed({
+              input: input.texts,
+              model: input.model,
+              correlationId: input.correlationId,
+            })
+          ).vectors;
         },
       },
       options: async () => ({ model: TEST_EMBEDDING_MODEL, weight: 0.5 }),
@@ -907,9 +911,15 @@ describe('memory retention', () => {
 
     await pruner({ 'memory.retentionDays': 30 })(job.context);
 
-    expect((await prisma.document.findUniqueOrThrow({ where: { id: oldId } })).archivedAt).not.toBeNull();
-    expect((await prisma.document.findUniqueOrThrow({ where: { id: freshId } })).archivedAt).toBeNull();
-    expect((await prisma.document.findUniqueOrThrow({ where: { id: parentId } })).archivedAt).toBeNull();
+    expect(
+      (await prisma.document.findUniqueOrThrow({ where: { id: oldId } })).archivedAt,
+    ).not.toBeNull();
+    expect(
+      (await prisma.document.findUniqueOrThrow({ where: { id: freshId } })).archivedAt,
+    ).toBeNull();
+    expect(
+      (await prisma.document.findUniqueOrThrow({ where: { id: parentId } })).archivedAt,
+    ).toBeNull();
 
     const events = await prisma.outboxEvent.findMany({
       where: { workspaceId, type: 'document.archived' },
@@ -1124,7 +1134,12 @@ describe('maintenance', () => {
     function utcNoon(daysAgo: number, hourOffset = 0): Date {
       const now = new Date();
       return new Date(
-        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - daysAgo, 12 + hourOffset),
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate() - daysAgo,
+          12 + hourOffset,
+        ),
       );
     }
 
@@ -1325,17 +1340,23 @@ describe('maintenance', () => {
     );
 
     expect(deleted).toEqual([`${keyPrefix}/alt.png`, `${keyPrefix}/alt.png.preview.webp`]);
-    expect((await prisma.attachment.findUniqueOrThrow({ where: { id: replaced.id } })).deletedAt)
-      .not.toBeNull();
-    expect((await prisma.attachment.findUniqueOrThrow({ where: { id: current.id } })).deletedAt)
-      .toBeNull();
-    expect((await prisma.attachment.findUniqueOrThrow({ where: { id: inBody.id } })).deletedAt)
-      .toBeNull();
+    expect(
+      (await prisma.attachment.findUniqueOrThrow({ where: { id: replaced.id } })).deletedAt,
+    ).not.toBeNull();
+    expect(
+      (await prisma.attachment.findUniqueOrThrow({ where: { id: current.id } })).deletedAt,
+    ).toBeNull();
+    expect(
+      (await prisma.attachment.findUniqueOrThrow({ where: { id: inBody.id } })).deletedAt,
+    ).toBeNull();
   }, 60_000);
 
   it('reaps a RUNNING run whose heartbeat has gone stale, as ai_run_abandoned', async () => {
     const staleHeartbeat = new Date(Date.now() - 5 * 60_000);
-    const runId = await createAiRunRow('RUNNING', { startedAt: staleHeartbeat, heartbeatAt: staleHeartbeat });
+    const runId = await createAiRunRow('RUNNING', {
+      startedAt: staleHeartbeat,
+      heartbeatAt: staleHeartbeat,
+    });
 
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
@@ -1347,7 +1368,8 @@ describe('maintenance', () => {
       settings: stubSettings(),
     });
     await processor(
-      contextFor({ correlationId: 'test-reap-1', task: 'reap-stale-ai-runs', workspaceId: null }).context,
+      contextFor({ correlationId: 'test-reap-1', task: 'reap-stale-ai-runs', workspaceId: null })
+        .context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -1376,7 +1398,8 @@ describe('maintenance', () => {
       settings: stubSettings(),
     });
     await processor(
-      contextFor({ correlationId: 'test-reap-5', task: 'reap-stale-ai-runs', workspaceId: null }).context,
+      contextFor({ correlationId: 'test-reap-5', task: 'reap-stale-ai-runs', workspaceId: null })
+        .context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -1405,7 +1428,8 @@ describe('maintenance', () => {
       settings: stubSettings(),
     });
     await processor(
-      contextFor({ correlationId: 'test-reap-2', task: 'reap-stale-ai-runs', workspaceId: null }).context,
+      contextFor({ correlationId: 'test-reap-2', task: 'reap-stale-ai-runs', workspaceId: null })
+        .context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -1422,7 +1446,10 @@ describe('maintenance', () => {
   }, 30_000);
 
   it('leaves a healthy run alone', async () => {
-    const runningId = await createAiRunRow('RUNNING', { startedAt: new Date(), heartbeatAt: new Date() });
+    const runningId = await createAiRunRow('RUNNING', {
+      startedAt: new Date(),
+      heartbeatAt: new Date(),
+    });
     const pendingId = await createAiRunRow('PENDING');
 
     const published: { type: string; payload: Record<string, unknown> }[] = [];
@@ -1435,7 +1462,8 @@ describe('maintenance', () => {
       settings: stubSettings(),
     });
     await processor(
-      contextFor({ correlationId: 'test-reap-3', task: 'reap-stale-ai-runs', workspaceId: null }).context,
+      contextFor({ correlationId: 'test-reap-3', task: 'reap-stale-ai-runs', workspaceId: null })
+        .context,
     );
 
     const runningRow = await prisma.aiRun.findUniqueOrThrow({ where: { id: runningId } });
@@ -1443,7 +1471,9 @@ describe('maintenance', () => {
     expect(runningRow.status).toBe('RUNNING');
     expect(pendingRow.status).toBe('PENDING');
     expect(
-      published.some((event) => event.payload.runId === runningId || event.payload.runId === pendingId),
+      published.some(
+        (event) => event.payload.runId === runningId || event.payload.runId === pendingId,
+      ),
     ).toBe(false);
   }, 30_000);
 
@@ -1464,7 +1494,8 @@ describe('maintenance', () => {
       settings: stubSettings(),
     });
     await processor(
-      contextFor({ correlationId: 'test-reap-4', task: 'reap-stale-ai-runs', workspaceId: null }).context,
+      contextFor({ correlationId: 'test-reap-4', task: 'reap-stale-ai-runs', workspaceId: null })
+        .context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -1668,7 +1699,9 @@ describe('maintenance', () => {
       }
 
       expect(
-        await prisma.documentSnapshot.count({ where: { documentId: survivorId, reason: 'SCHEDULED' } }),
+        await prisma.documentSnapshot.count({
+          where: { documentId: survivorId, reason: 'SCHEDULED' },
+        }),
       ).toBe(1);
     }, 30_000);
 
@@ -2096,9 +2129,7 @@ describe('ai runs', () => {
       visionPreprocessorFor: () => fakeVisionPreprocessor('Eine Katze mit Hut.'),
       modelRegistry: async () => null,
     });
-    await processor(
-      contextFor({ correlationId: 'test-ai-1', runId, workspaceId, userId }).context,
-    );
+    await processor(contextFor({ correlationId: 'test-ai-1', runId, workspaceId, userId }).context);
 
     const messages = provider.lastRequest?.messages ?? [];
     expect(messages[0]?.role).toBe('system');
@@ -2126,9 +2157,7 @@ describe('ai runs', () => {
       visionPreprocessorFor: () => fakeVisionPreprocessor('unused'),
       modelRegistry: async () => null,
     });
-    await processor(
-      contextFor({ correlationId: 'test-ai-2', runId, workspaceId, userId }).context,
-    );
+    await processor(contextFor({ correlationId: 'test-ai-2', runId, workspaceId, userId }).context);
 
     expect(provider.lastRequest?.messages).toEqual([
       { role: 'user', content: 'Was zeigt das Bild?' },
@@ -2159,9 +2188,7 @@ describe('ai runs', () => {
       visionPreprocessorFor: () => fakeVisionPreprocessor('unused'),
       modelRegistry: async () => null,
     });
-    await processor(
-      contextFor({ correlationId: 'test-ai-3', runId, workspaceId, userId }).context,
-    );
+    await processor(contextFor({ correlationId: 'test-ai-3', runId, workspaceId, userId }).context);
 
     expect(provider.lastRequest?.messages).toEqual([
       { role: 'user', content: 'Was zeigt das Bild?' },
@@ -2185,7 +2212,9 @@ describe('ai runs', () => {
       visionPreprocessorFor: () => null,
       modelRegistry: async () => null,
     });
-    await processor(contextFor({ correlationId: 'test-ai-limit-1', runId, workspaceId, userId }).context);
+    await processor(
+      contextFor({ correlationId: 'test-ai-limit-1', runId, workspaceId, userId }).context,
+    );
 
     expect(provider.lastRequest?.maxOutputTokens).toBe(12_288);
   }, 60_000);
@@ -2205,7 +2234,9 @@ describe('ai runs', () => {
       visionPreprocessorFor: () => null,
       modelRegistry: async () => ({ ...toolCapableModelRow('test-model'), maxOutputTokens: 8_000 }),
     });
-    await processor(contextFor({ correlationId: 'test-ai-limit-2', runId, workspaceId, userId }).context);
+    await processor(
+      contextFor({ correlationId: 'test-ai-limit-2', runId, workspaceId, userId }).context,
+    );
 
     expect(provider.lastRequest?.maxOutputTokens).toBe(8_000);
   }, 60_000);
@@ -2228,7 +2259,9 @@ describe('ai runs', () => {
       visionPreprocessorFor: () => null,
       modelRegistry: async () => null,
     });
-    await processor(contextFor({ correlationId: 'test-ai-truncation-1', runId, workspaceId, userId }).context);
+    await processor(
+      contextFor({ correlationId: 'test-ai-truncation-1', runId, workspaceId, userId }).context,
+    );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('COMPLETED');
@@ -2248,7 +2281,11 @@ describe('ai runs', () => {
         text: 'Ich schreibe jetzt den strukturierten Inhalt auf die Seite:',
         finishReason: 'length',
         toolCalls: [
-          { id: 'call-1', name: 'exo_page_write', argumentsJson: '{"documentId":"abc","markdown":"# Gami' },
+          {
+            id: 'call-1',
+            name: 'exo_page_write',
+            argumentsJson: '{"documentId":"abc","markdown":"# Gami',
+          },
         ],
       },
     ]);
@@ -2263,7 +2300,9 @@ describe('ai runs', () => {
       visionPreprocessorFor: () => null,
       modelRegistry: async () => null,
     });
-    await processor(contextFor({ correlationId: 'test-ai-truncation-2', runId, workspaceId, userId }).context);
+    await processor(
+      contextFor({ correlationId: 'test-ai-truncation-2', runId, workspaceId, userId }).context,
+    );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('FAILED');
@@ -2276,7 +2315,11 @@ describe('ai runs', () => {
     const documentId = await createDocument();
     const runId = await createRun(documentId);
     const provider = new ScriptedAiProvider([
-      { text: '', finishReason: 'tool_calls', toolCalls: [{ id: '', name: '', argumentsJson: '{}' }] },
+      {
+        text: '',
+        finishReason: 'tool_calls',
+        toolCalls: [{ id: '', name: '', argumentsJson: '{}' }],
+      },
     ]);
 
     const processor = createAiRunProcessor({
@@ -2289,7 +2332,9 @@ describe('ai runs', () => {
       visionPreprocessorFor: () => null,
       modelRegistry: async () => null,
     });
-    await processor(contextFor({ correlationId: 'test-ai-tool-call-1', runId, workspaceId, userId }).context);
+    await processor(
+      contextFor({ correlationId: 'test-ai-tool-call-1', runId, workspaceId, userId }).context,
+    );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('FAILED');
@@ -2314,7 +2359,9 @@ describe('ai runs', () => {
       visionPreprocessorFor: () => null,
       modelRegistry: async () => null,
     });
-    await processor(contextFor({ correlationId: 'test-ai-phase-1', runId, workspaceId, userId }).context);
+    await processor(
+      contextFor({ correlationId: 'test-ai-phase-1', runId, workspaceId, userId }).context,
+    );
 
     const phases = published.filter((event) => event.type === 'ai.run.phase');
     expect(phases.map((event) => event.payload.phase)).toContain('reasoning');
@@ -2375,7 +2422,9 @@ describe('ai runs', () => {
       visionPreprocessorFor: () => null,
       modelRegistry: async () => null,
     });
-    await processor(contextFor({ correlationId: 'test-ai-timeout-1', runId, workspaceId, userId }).context);
+    await processor(
+      contextFor({ correlationId: 'test-ai-timeout-1', runId, workspaceId, userId }).context,
+    );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('TIMED_OUT');
@@ -2442,7 +2491,9 @@ describe('ai runs', () => {
       visionPreprocessorFor: () => null,
       modelRegistry: async () => null,
     });
-    await processor(contextFor({ correlationId: 'test-ai-fresh-1', runId, workspaceId, userId }).context);
+    await processor(
+      contextFor({ correlationId: 'test-ai-fresh-1', runId, workspaceId, userId }).context,
+    );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('RUNNING');
@@ -2470,7 +2521,9 @@ describe('ai runs', () => {
       visionPreprocessorFor: () => null,
       modelRegistry: async () => null,
     });
-    await processor(contextFor({ correlationId: 'test-ai-stale-1', runId, workspaceId, userId }).context);
+    await processor(
+      contextFor({ correlationId: 'test-ai-stale-1', runId, workspaceId, userId }).context,
+    );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('FAILED');
@@ -2496,7 +2549,11 @@ async function createConversation(): Promise<string> {
   return conversation.id;
 }
 
-async function createConversationRun(input: { conversationId: string; content: string; model?: string }): Promise<string> {
+async function createConversationRun(input: {
+  conversationId: string;
+  content: string;
+  model?: string;
+}): Promise<string> {
   await prisma.aiConversationMessage.create({
     data: {
       conversationId: input.conversationId,
@@ -2538,7 +2595,9 @@ describe('conversation-backed tool loop', () => {
       modelRegistry: async () => toolCapableModelRow('test-tool-model'),
     });
 
-    await processor(contextFor({ correlationId: 'test-tool-loop-1', runId, workspaceId, userId }).context);
+    await processor(
+      contextFor({ correlationId: 'test-tool-loop-1', runId, workspaceId, userId }).context,
+    );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('COMPLETED');
@@ -2549,7 +2608,9 @@ describe('conversation-backed tool loop', () => {
       where: { conversationId },
       orderBy: { createdAt: 'asc' },
     });
-    const assistantWithToolCalls = messages.find((message) => message.role === 'ASSISTANT' && message.toolCalls !== null);
+    const assistantWithToolCalls = messages.find(
+      (message) => message.role === 'ASSISTANT' && message.toolCalls !== null,
+    );
     expect(assistantWithToolCalls).toBeDefined();
 
     const toolMessage = messages.find((message) => message.role === 'TOOL');
@@ -2582,7 +2643,9 @@ describe('conversation-backed tool loop', () => {
       modelRegistry: async () => toolCapableModelRow('test-tool-model'),
     });
 
-    await processor(contextFor({ correlationId: 'test-tool-limit-1', runId, workspaceId, userId }).context);
+    await processor(
+      contextFor({ correlationId: 'test-tool-limit-1', runId, workspaceId, userId }).context,
+    );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('FAILED');
@@ -2606,7 +2669,10 @@ describe('compactIfNeeded', () => {
       });
     }
 
-    const provider = new MockAiProvider({ chunkDelayMs: 0, fixedResponse: 'Kurze Zusammenfassung.' });
+    const provider = new MockAiProvider({
+      chunkDelayMs: 0,
+      fixedResponse: 'Kurze Zusammenfassung.',
+    });
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const result = await compactIfNeeded({
       prisma,
@@ -2638,7 +2704,9 @@ describe('compactIfNeeded', () => {
     // The 2 kept recent messages plus 1 new summary message.
     expect(active.length).toBe(3);
     expect(active.some((message) => message.isSummary)).toBe(true);
-    expect(active.find((message) => message.isSummary)?.content).toContain('Kurze Zusammenfassung.');
+    expect(active.find((message) => message.isSummary)?.content).toContain(
+      'Kurze Zusammenfassung.',
+    );
 
     // Issue #6, point 5: the compaction says so while it runs, not only once
     // it is over. Summarising a long transcript is exactly the kind of pause
@@ -2646,7 +2714,9 @@ describe('compactIfNeeded', () => {
     const phases = published.filter((event) => event.type === 'ai.run.phase');
     expect(phases).toHaveLength(1);
     expect(phases[0]?.payload).toEqual({ runId: 'run_compaction_1', phase: 'compacting' });
-    const compactedIndex = published.findIndex((event) => event.type === 'ai.conversation.compacted');
+    const compactedIndex = published.findIndex(
+      (event) => event.type === 'ai.conversation.compacted',
+    );
     expect(published.indexOf(phases[0]!)).toBeLessThan(compactedIndex);
   }, 60_000);
 
@@ -2722,7 +2792,8 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-1', attachmentId, workspaceId, reason: 'upload' }).context,
+      contextFor({ correlationId: 'test-attach-1', attachmentId, workspaceId, reason: 'upload' })
+        .context,
     );
 
     const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
@@ -2740,7 +2811,8 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-2', attachmentId, workspaceId, reason: 'upload' }).context,
+      contextFor({ correlationId: 'test-attach-2', attachmentId, workspaceId, reason: 'upload' })
+        .context,
     );
 
     const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
@@ -2779,7 +2851,8 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-3', attachmentId, workspaceId, reason: 'upload' }).context,
+      contextFor({ correlationId: 'test-attach-3', attachmentId, workspaceId, reason: 'upload' })
+        .context,
     );
 
     expect(calls).toEqual(['text-only', 'ocr']);
@@ -2816,7 +2889,8 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-5', attachmentId, workspaceId, reason: 'upload' }).context,
+      contextFor({ correlationId: 'test-attach-5', attachmentId, workspaceId, reason: 'upload' })
+        .context,
     );
 
     const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
@@ -2842,7 +2916,8 @@ describe('attachment text extraction', () => {
 
     await expect(
       processor(
-        contextFor({ correlationId: 'test-attach-6', attachmentId, workspaceId, reason: 'upload' }).context,
+        contextFor({ correlationId: 'test-attach-6', attachmentId, workspaceId, reason: 'upload' })
+          .context,
       ),
     ).rejects.toThrow('docling unreachable');
 
@@ -2872,7 +2947,8 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-4', attachmentId, workspaceId, reason: 'upload' }).context,
+      contextFor({ correlationId: 'test-attach-4', attachmentId, workspaceId, reason: 'upload' })
+        .context,
     );
 
     expect(secondCalled).toBe(false);
@@ -2916,7 +2992,8 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-7', attachmentId, workspaceId, reason: 'upload' }).context,
+      contextFor({ correlationId: 'test-attach-7', attachmentId, workspaceId, reason: 'upload' })
+        .context,
     );
 
     const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
@@ -2948,7 +3025,8 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-8', attachmentId, workspaceId, reason: 'upload' }).context,
+      contextFor({ correlationId: 'test-attach-8', attachmentId, workspaceId, reason: 'upload' })
+        .context,
     );
 
     const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
@@ -2984,7 +3062,8 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-9', attachmentId, workspaceId, reason: 'retry' }).context,
+      contextFor({ correlationId: 'test-attach-9', attachmentId, workspaceId, reason: 'retry' })
+        .context,
     );
     expect(calls).toBe(0);
     expect(
@@ -3018,7 +3097,9 @@ describe('attachment text extraction', () => {
     const processor = createAttachmentTextProcessor({
       prisma,
       storage: fakeStorage(Buffer.from('%PDF-1.7')),
-      extractors: () => [{ extract: async () => ({ text: 'a fresh machine result', metadata: stubMetadata }) }],
+      extractors: () => [
+        { extract: async () => ({ text: 'a fresh machine result', metadata: stubMetadata }) },
+      ],
       documentInfo: noDocumentInfo,
       settings: stubSettings(),
     });
@@ -3057,7 +3138,9 @@ describe('attachment text extraction', () => {
     const processorShort = createAttachmentTextProcessor({
       prisma,
       storage: fakeStorage(Buffer.from('%PDF-1.7')),
-      extractors: () => [{ extract: async () => ({ text: 'short result', metadata: stubMetadata }) }],
+      extractors: () => [
+        { extract: async () => ({ text: 'short result', metadata: stubMetadata }) },
+      ],
       documentInfo: noDocumentInfo,
       settings: stubSettings(),
     });
@@ -3271,9 +3354,8 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
     // reach: the sweep is idempotent and cheap to run on a schedule.
     expect((await repairUnresolvedLinks(prisma, workspaceId)).repaired).toBe(0);
     expect(
-      (
-        await prisma.documentLink.findFirstOrThrow({ where: { sourceDocumentId: sourceId } })
-      ).targetDocumentId,
+      (await prisma.documentLink.findFirstOrThrow({ where: { sourceDocumentId: sourceId } }))
+        .targetDocumentId,
     ).toBeNull();
   }, 60_000);
 

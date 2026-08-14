@@ -1,7 +1,7 @@
 # ADR-010: Transactional outbox for reliable domain events
 
-* Status: accepted
-* Date: 2026-08-04
+- Status: accepted
+- Date: 2026-08-04
 
 ## Context
 
@@ -25,11 +25,11 @@ the source of truth; outbox rows are delivery instructions.
 
 ## Consequences
 
-* Correctness comes from the outbox, latency from the socket. Both paths exist on
+- Correctness comes from the outbox, latency from the socket. Both paths exist on
   purpose.
-* At-least-once delivery, so every consumer must be idempotent — which they are
+- At-least-once delivery, so every consumer must be idempotent — which they are
   (search indexing is a full upsert, materialization compares timestamps).
-* An extra table and a polling job. Polling is cheap because of the partial index on
+- An extra table and a polling job. Polling is cheap because of the partial index on
   `processedAt IS NULL`.
-* `AuditLog` uses the same in-transaction pattern, so an audit entry can never exist
+- `AuditLog` uses the same in-transaction pattern, so an audit entry can never exist
   for a rolled-back operation.

@@ -124,8 +124,9 @@ function davServer(options: {
       );
       const found = hrefs
         .map((href) => ({ href, object: objects.get(href) }))
-        .filter((entry): entry is { href: string; object: { etag: string; ics: string } } =>
-          entry.object !== undefined,
+        .filter(
+          (entry): entry is { href: string; object: { etag: string; ics: string } } =>
+            entry.object !== undefined,
         );
       return {
         status: 207,
@@ -515,7 +516,14 @@ describe('pushLink', () => {
       span('2026-08-20T08:00:00.000Z', '2026-08-20T09:00:00.000Z'),
     ]);
     const server = davServer({});
-    await pushLink({ prisma, client: fakeApi(rows).client, dav: server.dav, logger, link, now: NOW });
+    await pushLink({
+      prisma,
+      client: fakeApi(rows).client,
+      dav: server.dav,
+      logger,
+      link,
+      now: NOW,
+    });
 
     row.archivedAt = NOW.toISOString();
     await prisma.document.update({ where: { id: row.id }, data: { archivedAt: NOW } });
@@ -558,7 +566,9 @@ describe('pushLink', () => {
       },
     });
     const server = davServer({
-      objects: new Map([['/caldav/main/m.ics', { etag: '"1"', ics: remoteIcs('m@test', 'Fremd') }]]),
+      objects: new Map([
+        ['/caldav/main/m.ics', { etag: '"1"', ics: remoteIcs('m@test', 'Fremd') }],
+      ]),
     });
 
     const result = await pushLink({

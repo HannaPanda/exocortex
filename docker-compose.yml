@@ -93,7 +93,13 @@ services:
     # from pushing the shared host into swap.
     mem_limit: 4g
     healthcheck:
-      test: ['CMD', 'python3', '-c', "import urllib.request; urllib.request.urlopen('http://localhost:5001/health').read()"]
+      test:
+        [
+          'CMD',
+          'python3',
+          '-c',
+          "import urllib.request; urllib.request.urlopen('http://localhost:5001/health').read()",
+        ]
       interval: 15s
       timeout: 10s
       retries: 10

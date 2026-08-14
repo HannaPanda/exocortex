@@ -263,7 +263,9 @@ describe('sendDueReminders', () => {
     expect(notifier.sent[0]).toContain('🔔 In 28 Minuten: Zahnarzt');
     expect(notifier.sent[0]).toContain('16:00 bis 17:00 Uhr · Praxis Mitte');
     // The link points at the row, so the reminder is one tap from the page.
-    expect(notifier.sent[0]).toContain(`https://exocortex.test/arbeitsbereich/${workspaceId}/seite/`);
+    expect(notifier.sent[0]).toContain(
+      `https://exocortex.test/arbeitsbereich/${workspaceId}/seite/`,
+    );
 
     const state = await prisma.calendarObjectState.findUnique({ where: { id: stateId } });
     expect(state?.remindedFor?.toISOString()).toBe(START);

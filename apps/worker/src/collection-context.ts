@@ -90,7 +90,9 @@ interface PropertyRow {
   options: { id: string; label: string }[];
 }
 
-function isFilterGroup(node: DatabaseFilterCondition | DatabaseFilterGroup): node is DatabaseFilterGroup {
+function isFilterGroup(
+  node: DatabaseFilterCondition | DatabaseFilterGroup,
+): node is DatabaseFilterGroup {
   return 'combinator' in node;
 }
 
@@ -224,7 +226,8 @@ export async function describeCollection(input: {
   // The UI falls back to the first view when the selected one is gone, so the
   // description has to fall back the same way or it would describe a view the
   // user cannot see.
-  const view = (viewId === null ? undefined : viewRows.find((row) => row.id === viewId)) ?? viewRows[0];
+  const view =
+    (viewId === null ? undefined : viewRows.find((row) => row.id === viewId)) ?? viewRows[0];
   if (view === undefined) return sections.length === 0 ? null : sections.join('\n\n');
 
   const filters = databaseFilterGroupSchema.safeParse(view.filters);
@@ -238,7 +241,9 @@ export async function describeCollection(input: {
     });
   }
 
-  const filterGroup = filters.success ? filters.data : { combinator: 'and' as const, conditions: [] };
+  const filterGroup = filters.success
+    ? filters.data
+    : { combinator: 'and' as const, conditions: [] };
   const sortList = sorts.success ? sorts.data : [];
 
   const viewLines = [`### Offene Ansicht „${view.name}“ (${VIEW_TYPE_LABEL[view.type]})`];
@@ -298,7 +303,9 @@ async function describeRows(input: {
     rows = await queryDatabaseRows(prisma, {
       workspaceId,
       collectionDocumentId: documentId,
-      properties: buildPropertyMap(properties.map((property) => ({ id: property.id, type: property.type }))),
+      properties: buildPropertyMap(
+        properties.map((property) => ({ id: property.id, type: property.type })),
+      ),
       filters,
       sorts: [...sorts],
       // One more than shown, so "there are further rows" is a fact rather than
@@ -313,7 +320,8 @@ async function describeRows(input: {
     logger.info('Skipping the row sample for the open database view', {
       documentId,
       workspaceId,
-      reason: error instanceof UnknownDatabasePropertyError ? 'unknown property in view' : 'query failed',
+      reason:
+        error instanceof UnknownDatabasePropertyError ? 'unknown property in view' : 'query failed',
     });
     return null;
   }
@@ -450,7 +458,9 @@ function renderValue(
   }
   if (property.type === 'SELECT') {
     if (stored.textValue === null) return '';
-    return property.options.find((option) => option.id === stored.textValue)?.label ?? stored.textValue;
+    return (
+      property.options.find((option) => option.id === stored.textValue)?.label ?? stored.textValue
+    );
   }
   return stored.textValue ?? '';
 }

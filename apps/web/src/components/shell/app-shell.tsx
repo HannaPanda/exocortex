@@ -364,9 +364,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
                 </Button>
               }
             />
-            <TooltipContent>
-              {session.data?.user?.name ?? 'Konto'} · Abmelden
-            </TooltipContent>
+            <TooltipContent>{session.data?.user?.name ?? 'Konto'} · Abmelden</TooltipContent>
           </Tooltip>
         </div>
       </AppHeader>

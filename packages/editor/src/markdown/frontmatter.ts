@@ -107,7 +107,6 @@ export function parseFrontmatter(markdown: string): ParsedMarkdown {
     return { frontmatter: { unknown: {} }, body: normalized };
   }
 
-
   let parsed: unknown;
   try {
     parsed = parseYaml(match[1] as string);

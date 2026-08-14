@@ -4,7 +4,11 @@ import * as React from 'react';
 
 import { EmptyState, LoadingState } from '@exocortex/ui';
 
-import { useCreateDatabaseView, useDatabaseProperties, useDatabaseViews } from '@/lib/api/database-queries';
+import {
+  useCreateDatabaseView,
+  useDatabaseProperties,
+  useDatabaseViews,
+} from '@/lib/api/database-queries';
 
 import { BoardView } from './board-view';
 import { CalendarView } from './calendar-view';
@@ -62,7 +66,8 @@ export function DatabaseShell({
   // Notion never shows a database without a view.
   const ensuredDefaultView = React.useRef(false);
   React.useEffect(() => {
-    if (readOnly || views.data === undefined || views.data.length > 0 || ensuredDefaultView.current) return;
+    if (readOnly || views.data === undefined || views.data.length > 0 || ensuredDefaultView.current)
+      return;
     ensuredDefaultView.current = true;
     createView.mutate({ type: 'TABLE', name: 'Tabelle' });
   }, [readOnly, views.data, createView]);
@@ -87,8 +92,9 @@ export function DatabaseShell({
   // selected one is missing (initial load, or it was just deleted), without an
   // effect to keep the two in sync.
   const activeView =
-    (activeViewId !== undefined ? views.data.find((view) => view.id === activeViewId) : undefined) ??
-    views.data[0];
+    (activeViewId !== undefined
+      ? views.data.find((view) => view.id === activeViewId)
+      : undefined) ?? views.data[0];
 
   if (activeView === undefined) {
     return <LoadingState variant="skeleton" rows={5} label="Ansicht wird angelegt" />;
@@ -103,7 +109,12 @@ export function DatabaseShell({
         onSelect={setActiveViewId}
         readOnly={readOnly}
       />
-      <FilterSortBar documentId={documentId} view={activeView} properties={properties.data} readOnly={readOnly} />
+      <FilterSortBar
+        documentId={documentId}
+        view={activeView}
+        properties={properties.data}
+        readOnly={readOnly}
+      />
 
       {activeView.type === 'TABLE' ? (
         <TableView

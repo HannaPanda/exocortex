@@ -28,14 +28,16 @@ let workspaceId: string;
 let memberId: string;
 let guestId: string;
 
-async function createPdfAttachment(data: Partial<{
-  textStatus: 'NOT_APPLICABLE' | 'PENDING' | 'READY' | 'FAILED';
-  extractedText: string | null;
-  correctedText: string | null;
-  textCorrectedAt: Date | null;
-  textCorrectedById: string | null;
-  textTruncated: boolean;
-}> = {}): Promise<string> {
+async function createPdfAttachment(
+  data: Partial<{
+    textStatus: 'NOT_APPLICABLE' | 'PENDING' | 'READY' | 'FAILED';
+    extractedText: string | null;
+    correctedText: string | null;
+    textCorrectedAt: Date | null;
+    textCorrectedById: string | null;
+    textTruncated: boolean;
+  }> = {},
+): Promise<string> {
   const attachment = await prisma.attachment.create({
     data: {
       workspaceId,
@@ -81,7 +83,11 @@ beforeAll(async () => {
   const suffix = Date.now().toString(36);
   const [member, guest] = await Promise.all([
     prisma.user.create({
-      data: { email: `attach-member-${suffix}@exocortex.test`, name: 'Member', emailVerified: true },
+      data: {
+        email: `attach-member-${suffix}@exocortex.test`,
+        name: 'Member',
+        emailVerified: true,
+      },
     }),
     prisma.user.create({
       data: { email: `attach-guest-${suffix}@exocortex.test`, name: 'Guest', emailVerified: true },
@@ -211,9 +217,9 @@ describe('forcing a re-extraction', () => {
 
   it('denies a guest the right to force a re-extraction', async () => {
     const attachmentId = await createPdfAttachment();
-    await expect(
-      service.forceReextract(attachmentId, guestId, 'test-correlation'),
-    ).rejects.toThrow(AuthorizationError);
+    await expect(service.forceReextract(attachmentId, guestId, 'test-correlation')).rejects.toThrow(
+      AuthorizationError,
+    );
   });
 
   it('reports attachment_text_unavailable for a non-PDF attachment', async () => {

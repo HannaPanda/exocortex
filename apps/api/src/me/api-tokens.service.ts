@@ -70,13 +70,18 @@ export class ApiTokensService {
   async create(userId: string, request: CreateApiTokenRequest): Promise<CreateApiTokenResponse> {
     const activeCount = await this.prisma.apiToken.count({ where: { userId, revokedAt: null } });
     if (activeCount >= MAX_ACTIVE_TOKENS_PER_USER) {
-      throw new AppError('conflict', `You already have the maximum of ${MAX_ACTIVE_TOKENS_PER_USER} active API tokens`);
+      throw new AppError(
+        'conflict',
+        `You already have the maximum of ${MAX_ACTIVE_TOKENS_PER_USER} active API tokens`,
+      );
     }
 
     // The raw secret is returned exactly once, here, and never logged or stored.
     const generated = generateApiToken();
     const expiresAt =
-      request.expiresInDays === null ? null : new Date(Date.now() + request.expiresInDays * MILLISECONDS_PER_DAY);
+      request.expiresInDays === null
+        ? null
+        : new Date(Date.now() + request.expiresInDays * MILLISECONDS_PER_DAY);
 
     const created = await this.prisma.apiToken.create({
       data: {
@@ -100,7 +105,10 @@ export class ApiTokensService {
     if (existing === null) throw AppError.notFound('API token');
 
     if (existing.revokedAt === null) {
-      await this.prisma.apiToken.update({ where: { id: tokenId }, data: { revokedAt: new Date() } });
+      await this.prisma.apiToken.update({
+        where: { id: tokenId },
+        data: { revokedAt: new Date() },
+      });
     }
     return { revoked: true };
   }

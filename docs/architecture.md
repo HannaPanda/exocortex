@@ -25,13 +25,13 @@
 
 Four Node processes, deliberately separate:
 
-* **web** renders the UI. It never touches PostgreSQL, Redis, object storage or any
+- **web** renders the UI. It never touches PostgreSQL, Redis, object storage or any
   secret. Everything goes through the API on the same origin.
-* **api** owns business logic, authentication, authorization and the application
+- **api** owns business logic, authentication, authorization and the application
   realtime channel.
-* **collaboration** serves only the Yjs protocol. A crash in the editing hot path
+- **collaboration** serves only the Yjs protocol. A crash in the editing hot path
   cannot take the REST API down, and it can be scaled independently.
-* **worker** performs everything expensive: materialization, search indexing, AI
+- **worker** performs everything expensive: materialization, search indexing, AI
   runs, maintenance. No request handler ever does this work inline.
 
 ## Request and data flow of an edit
@@ -42,7 +42,7 @@ Four Node processes, deliberately separate:
    signed, short-lived, single-document ticket.
 2. The browser connects to the collaboration server with that ticket. The server
    verifies the signature, the expiry and the document scope, then **re-checks**
-   workspace membership and archival state and takes the *minimum* of the ticket
+   workspace membership and archival state and takes the _minimum_ of the ticket
    claim and the current policy decision.
 3. Edits flow as Yjs updates. `y-indexeddb` keeps a local copy, so the editor works
    offline and resynchronizes on reconnect.
@@ -58,10 +58,10 @@ Four Node processes, deliberately separate:
 
 ## Two sockets, on purpose
 
-| Channel | Path | Transport | Payload |
-| ------- | ---- | --------- | ------- |
-| collaboration | `/collab` | Hocuspocus/Yjs | document updates and awareness |
-| application | `/realtime` | Socket.IO | domain events, job progress, AI streaming |
+| Channel       | Path        | Transport      | Payload                                   |
+| ------------- | ----------- | -------------- | ----------------------------------------- |
+| collaboration | `/collab`   | Hocuspocus/Yjs | document updates and awareness            |
+| application   | `/realtime` | Socket.IO      | domain events, job progress, AI streaming |
 
 Awareness is never persisted. Domain events never travel over the Yjs protocol
 (ADR-008).
@@ -91,30 +91,30 @@ tested (26 tests in `packages/auth/src/policies.test.ts`).
 
 ## Document hierarchy
 
-* `parentId` gives arbitrary nesting.
-* `orderKey` is a base62 fractional index. Inserting between two siblings generates
+- `parentId` gives arbitrary nesting.
+- `orderKey` is a base62 fractional index. Inserting between two siblings generates
   a key strictly between theirs and touches no other row
   (`packages/database/src/order-key.ts`, 11 tests including 500 sequential and 200
   same-position insertions).
-* Cross-workspace parents are rejected (`document_cross_workspace`).
-* Circular moves are rejected (`document_move_cycle`), checked over the whole
+- Cross-workspace parents are rejected (`document_cross_workspace`).
+- Circular moves are rejected (`document_move_cycle`), checked over the whole
   subtree inside the move transaction.
-* Archiving a page archives its subtree, so no editable page can hang under an
+- Archiving a page archives its subtree, so no editable page can hang under an
   archived parent.
-* The trash keeps that subtree (`GET /api/workspaces/:id/trash`, issue #32):
+- The trash keeps that subtree (`GET /api/workspaces/:id/trash`, issue #32):
   `parentId` survives archiving, and one archive operation stamps every page it
   takes with the same `archivedAt`, so "was this chosen or did it come along"
   is derived, never recorded a second time.
-* Deleting a page for good (`DELETE /api/documents/:id`, issue #31) needs the
+- Deleting a page for good (`DELETE /api/documents/:id`, issue #31) needs the
   page to be archived first and the ADMIN role, and it is the only operation in
   the application that nothing undoes. Content, snapshots, the search
   projection, embeddings, comments and property values go with it through the
-  foreign keys; references *to* the page become unresolved rather than
+  foreign keys; references _to_ the page become unresolved rather than
   disappearing, and its files are removed from object storage after the
   transaction commits, because storage has no transaction to join.
-* Moves, archives, restores, snapshot restores, attachment deletions and permission
+- Moves, archives, restores, snapshot restores, attachment deletions and permission
   changes write an `AuditLog` entry. Audit metadata never contains document content.
-* `layout` (`NARROW` / `WIDE` / `FULL`) is the width of the page body: the 68ch
+- `layout` (`NARROW` / `WIDE` / `FULL`) is the width of the page body: the 68ch
   reading measure, roughly twice that, or the whole available width. It is
   presentation, so it lives on the document row and not in the Yjs state, and it
   is edited in the page properties dialog
@@ -122,7 +122,7 @@ tested (26 tests in `packages/auth/src/policies.test.ts`).
   `exo_page_set_layout`. New databases default to `FULL`, new pages to `NARROW`.
   The three values only set `--page-measure` in `globals.css`; blocks that carry
   a layout of their own (a database embed) break out of the measure regardless.
-* `coverAttachmentId` / `coverPosition` are the page's cover image: an ordinary
+- `coverAttachmentId` / `coverPosition` are the page's cover image: an ordinary
   image `Attachment` shown full width above the title at a fixed height, cropped
   with `object-fit: cover`, plus the vertical offset in percent that decides
   which slice of it that is. Presentation again, so it sits on the document row;
@@ -145,7 +145,7 @@ copy, fitted inside 2048 px and stored beside the original at
 `<key>.preview.webp` (`previewKey` / `previewMimeType` / `previewByteSize` on
 `Attachment`, built by `createImagePreview` in `packages/storage`). The
 downscaling happens inside the upload request rather than in a job, because the
-preview exists to make the *first* render cheap and a cover that was just set is
+preview exists to make the _first_ render cheap and a cover that was just set is
 rendered immediately; libvips runs it off the event loop and the input is
 bounded by `MAX_UPLOAD_BYTES`.
 
@@ -183,10 +183,10 @@ hardcoded column-name literals.
 `SearchAdapter` (`packages/database/src/search.ts`) is the only interface the
 application uses. `PostgresSearchAdapter` combines:
 
-* a generated, weighted `tsvector` (title weight A, body weight B) with a GIN index,
-* trigram similarity on the title for typo tolerance,
-* `ts_headline` for highlighted snippets,
-* a hard workspace filter in SQL.
+- a generated, weighted `tsvector` (title weight A, body weight B) with a GIN index,
+- trigram similarity on the title for typo tolerance,
+- `ts_headline` for highlighted snippets,
+- a hard workspace filter in SQL.
 
 Adding OpenSearch means adding a second implementation.
 
@@ -218,11 +218,11 @@ first, which is what makes renaming a page a non-event for every reference
 made through the page picker. `targetTitleKey` carries the normalized title
 and answers for the notations that have nothing else: a `[[Titel]]` link mark,
 an import that has not been bound yet, a link made before identities existed.
-`targetDocumentId` is the *resolved* pointer either produced, and it is
+`targetDocumentId` is the _resolved_ pointer either produced, and it is
 nullable because a reference to a page that does not exist is kept, not
 discarded.
 
-The title half can still go stale from the *target* side — a page renamed while
+The title half can still go stale from the _target_ side — a page renamed while
 nothing about the referencing page changed — so a rename, a creation and a
 workspace move each enqueue a `resolve-document-links` maintenance job through
 the outbox (ADR-010). See `docs/background-jobs.md` for the two jobs and why
@@ -288,22 +288,22 @@ task, not a user action, so it writes through `@exocortex/database` and
 one request each, is neither fast nor deterministic) — the same exemption the
 recipe above would otherwise require for a bulk operation.
 
-* **Transaction shape.** Mirrors
+- **Transaction shape.** Mirrors
   `apps/api/src/documents/document-markdown.service.ts`: `markdownToYjsState`
   produces the canonical Yjs state once, and every derived representation
   (ProseMirror JSON, plain text, re-serialized Markdown) is written alongside
   it. Markdown is never treated as canonical (rule 5, ADR-007); the enqueued
   `document-materialization` job re-derives everything from the Yjs state
   exactly as it would for any other document.
-* **Identity without an import-id column.** The schema is frozen, so a
+- **Identity without an import-id column.** The schema is frozen, so a
   document's identity for idempotency purposes is
   `(workspaceId, parentId, title)`. Every create goes through a find-first on
   that triple, which is what makes the script safely re-runnable — at the cost
   that renaming a note or folder in the vault and re-running creates a second
   page rather than moving the first one.
-* **Wikilinks resolve by title**, exactly like Obsidian: a `[[Target]]` is
+- **Wikilinks resolve by title**, exactly like Obsidian: a `[[Target]]` is
   looked up by filename (case-insensitively) against every other note in the
-  vault, then rewritten to the *native* `[[Titel]]` / `[[Titel|Label]]` wiki
+  vault, then rewritten to the _native_ `[[Titel]]` / `[[Titel|Label]]` wiki
   syntax carrying the resolved note's title — not the
   `[Label](wiki:Titel)` Markdown-link form, because `packages/editor`'s
   Markdown parser only allows a fixed built-in list of link protocols and
@@ -311,7 +311,7 @@ recipe above would otherwise require for a bulk operation.
   that already emits a `wiki:` href and round-trips losslessly. Fenced code
   blocks and inline code spans are never rewritten. An unresolved target
   becomes plain text, never a broken link.
-* **Known limitation.** The two frontmatter shapes the vault uses (bookmarks,
+- **Known limitation.** The two frontmatter shapes the vault uses (bookmarks,
   recipes) are rendered as a leading callout so their content is visible on
   the page, but only the fields the callout renders
   (source/`quelle`, `saved_at`, `portionen`, `tags`) survive past the first
@@ -320,18 +320,18 @@ recipe above would otherwise require for a bulk operation.
   materialization re-derives it purely from the Yjs state. Turning these 14
   notes into a `COLLECTION` with real properties would fix this; that is a
   bigger decision than an import script should make on its own.
-* Batches the materialization enqueue (50 jobs, 100 ms pause) so an 8 GB host
+- Batches the materialization enqueue (50 jobs, 100 ms pause) so an 8 GB host
   serving live traffic is not asked to process 600+ jobs at once, and prints a
   verification pass/fail report (`--verify-only`) covering document counts,
   wikilink resolution rate, spot-checked round trips and full-text search.
 
 ## Observability
 
-* structured JSON logs via `packages/logger` (pino) with a redaction list that
+- structured JSON logs via `packages/logger` (pino) with a redaction list that
   covers passwords, tokens, tickets, cookies and every document payload field
-* a correlation id per request (`x-correlation-id`, propagated into jobs and log
+- a correlation id per request (`x-correlation-id`, propagated into jobs and log
   lines through `AsyncLocalStorage`)
-* `GET /health/live` and `GET /health/ready`; readiness probes PostgreSQL, Redis and
+- `GET /health/live` and `GET /health/ready`; readiness probes PostgreSQL, Redis and
   object storage and answers `503` when degraded
-* an OpenTelemetry-compatible `Tracer` abstraction (`packages/logger/src/tracing.ts`)
+- an OpenTelemetry-compatible `Tracer` abstraction (`packages/logger/src/tracing.ts`)
   with a no-op default; a real SDK can be installed with `setTracer()`

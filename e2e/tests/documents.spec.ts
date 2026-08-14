@@ -31,8 +31,13 @@ test.describe('documents', () => {
     // a `/seite/...` URL, so the wait has to be for a *different* document.
     const parentUrl = page.url();
     await page.getByTestId(`tree-item-${parentId}`).hover();
-    await page.getByTestId(`tree-item-${parentId}`).getByRole('button', { name: /Unterseite/ }).click();
-    await page.waitForURL((url) => url.toString() !== parentUrl && /\/seite\/[a-z0-9]+/.test(url.pathname));
+    await page
+      .getByTestId(`tree-item-${parentId}`)
+      .getByRole('button', { name: /Unterseite/ })
+      .click();
+    await page.waitForURL(
+      (url) => url.toString() !== parentUrl && /\/seite\/[a-z0-9]+/.test(url.pathname),
+    );
 
     const childTitle = `Kind ${Date.now().toString(36)}`;
     await page.getByTestId('document-title').fill(childTitle);
@@ -351,10 +356,9 @@ test.describe('documents', () => {
     await page.getByTestId('properties-icon-button').click();
     await page.getByTestId('page-icon-color-blue').click();
     await page.getByTestId('page-icon-brain').click();
-    await expect(page.getByTestId(`tree-icon-${documentId}`).locator('[data-icon]')).toHaveAttribute(
-      'data-icon',
-      'lucide:brain',
-    );
+    await expect(
+      page.getByTestId(`tree-icon-${documentId}`).locator('[data-icon]'),
+    ).toHaveAttribute('data-icon', 'lucide:brain');
 
     // The AI rule is visible without opening a separate menu, and editing it
     // reuses the existing "Seiteneigenschaften" dialog rather than a second

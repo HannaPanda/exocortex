@@ -144,7 +144,9 @@ export class MockAiProvider implements AiProvider {
     if (request.tools === undefined || request.tools.length === 0) return null;
     if (request.messages.some((message) => message.role === 'tool')) return null;
 
-    const lastUserMessage = [...request.messages].reverse().find((message) => message.role === 'user');
+    const lastUserMessage = [...request.messages]
+      .reverse()
+      .find((message) => message.role === 'user');
     const match = lastUserMessage === undefined ? null : CALL_MARKER.exec(lastUserMessage.content);
     if (match === null) return null;
 
@@ -154,7 +156,9 @@ export class MockAiProvider implements AiProvider {
   private buildResponse(request: AiGenerateRequest): string {
     if (this.fixedResponse !== undefined) return this.fixedResponse;
 
-    const lastUserMessage = [...request.messages].reverse().find((message) => message.role === 'user');
+    const lastUserMessage = [...request.messages]
+      .reverse()
+      .find((message) => message.role === 'user');
     const question = lastUserMessage?.content.trim() ?? '';
     const shortened = question.length > 160 ? `${question.slice(0, 157)}...` : question;
 

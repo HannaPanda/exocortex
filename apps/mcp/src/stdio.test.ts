@@ -2,10 +2,20 @@ import { EventEmitter } from 'node:events';
 
 import { describe, expect, it, vi } from 'vitest';
 
-import { createStdioServer, type JsonRpcRequest, type JsonRpcResponse, type StdioIo } from './stdio.js';
+import {
+  createStdioServer,
+  type JsonRpcRequest,
+  type JsonRpcResponse,
+  type StdioIo,
+} from './stdio.js';
 
 /** A fake `StdioIo`: an EventEmitter standing in for stdin, plus a recording `write`. */
-function createFakeIo(): { io: StdioIo; input: EventEmitter; writes: JsonRpcResponse[]; state: { ended: boolean } } {
+function createFakeIo(): {
+  io: StdioIo;
+  input: EventEmitter;
+  writes: JsonRpcResponse[];
+  state: { ended: boolean };
+} {
   const input = new EventEmitter();
   const writes: JsonRpcResponse[] = [];
   const state = { ended: false };
@@ -56,13 +66,11 @@ describe('createStdioServer', () => {
 
   it('reports an unknown method as -32601 with the request id', async () => {
     const { io, input, writes } = createFakeIo();
-    const handler = vi.fn(
-      async (request: JsonRpcRequest): Promise<JsonRpcResponse | null> => ({
-        jsonrpc: '2.0',
-        id: request.id ?? null,
-        error: { code: -32601, message: `Method not found: ${request.method}` },
-      }),
-    );
+    const handler = vi.fn(async (request: JsonRpcRequest): Promise<JsonRpcResponse | null> => ({
+      jsonrpc: '2.0',
+      id: request.id ?? null,
+      error: { code: -32601, message: `Method not found: ${request.method}` },
+    }));
     createStdioServer(handler, io).start();
 
     feed(input, JSON.stringify({ jsonrpc: '2.0', id: 7, method: 'no/such/method' }));

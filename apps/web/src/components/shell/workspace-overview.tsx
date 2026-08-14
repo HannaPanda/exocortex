@@ -5,7 +5,17 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
-import { AppPage, Button, Card, CardContent, EmptyState, LoadingState, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
+import {
+  AppPage,
+  Button,
+  Card,
+  CardContent,
+  EmptyState,
+  LoadingState,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { useCreateDocument, useDocumentTree } from '@/lib/api/queries';

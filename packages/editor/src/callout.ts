@@ -1,10 +1,7 @@
 import { mergeAttributes, Node } from '@tiptap/core';
 
 import { BLOCK_ID_ATTRIBUTE } from './block-id';
-import {
-  type MarkdownExtensionAdapter,
-  type ProseMirrorNode,
-} from './contract';
+import { type MarkdownExtensionAdapter, type ProseMirrorNode } from './contract';
 
 export const CALLOUT_VARIANTS = ['info', 'note', 'success', 'warning', 'danger'] as const;
 export type CalloutVariant = (typeof CALLOUT_VARIANTS)[number];

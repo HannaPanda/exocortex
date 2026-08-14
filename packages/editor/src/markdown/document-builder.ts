@@ -1,8 +1,4 @@
-import {
-  ADDRESSABLE_BLOCK_TYPES,
-  BLOCK_ID_ATTRIBUTE,
-  isValidBlockId,
-} from '../block-id';
+import { ADDRESSABLE_BLOCK_TYPES, BLOCK_ID_ATTRIBUTE, isValidBlockId } from '../block-id';
 import {
   type MarkdownTokenHandlerContext,
   type ProseMirrorDocument,
@@ -99,11 +95,7 @@ export class DocumentBuilder {
     }
   }
 
-  addNode(
-    type: string,
-    attrs: Record<string, unknown> = {},
-    content?: ProseMirrorNode[],
-  ): void {
+  addNode(type: string, attrs: Record<string, unknown> = {}, content?: ProseMirrorNode[]): void {
     const node: ProseMirrorNode = { type };
     if (Object.keys(attrs).length > 0) node.attrs = attrs;
     if (content !== undefined && content.length > 0) node.content = content;

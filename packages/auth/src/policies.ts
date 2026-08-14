@@ -93,7 +93,9 @@ export function canChangeMemberRole(
   return ALLOW;
 }
 
-export function canPerformDestructiveWorkspaceOperation(role: WorkspaceRole | null): PolicyDecision {
+export function canPerformDestructiveWorkspaceOperation(
+  role: WorkspaceRole | null,
+): PolicyDecision {
   const read = canReadWorkspace(role);
   if (!read.allowed) return read;
   if (role !== 'OWNER') {
@@ -197,10 +199,16 @@ export function canMoveDocumentAcrossWorkspaces(
   const edit = canEditDocument(sourceRole, document);
   if (!edit.allowed) return edit;
   if (targetRole === null) {
-    return deny('workspace_access_denied', 'The acting user is not a member of the target workspace');
+    return deny(
+      'workspace_access_denied',
+      'The acting user is not a member of the target workspace',
+    );
   }
   if (!hasAtLeast(targetRole, 'MEMBER')) {
-    return deny('forbidden', 'Moving a page into a workspace requires at least the MEMBER role there');
+    return deny(
+      'forbidden',
+      'Moving a page into a workspace requires at least the MEMBER role there',
+    );
   }
   if (targetParent !== null) {
     if (targetParent.workspaceId !== targetWorkspaceId) {
@@ -257,10 +265,7 @@ export function canDeleteDocument(
     return deny('forbidden', 'Deleting a page permanently requires the ADMIN or OWNER role');
   }
   if (!isArchived(document)) {
-    return deny(
-      'conflict',
-      'Only an archived page can be deleted permanently; archive it first',
-    );
+    return deny('conflict', 'Only an archived page can be deleted permanently; archive it first');
   }
   return ALLOW;
 }
@@ -420,7 +425,8 @@ export function canDownloadAttachment(
   workspaceId: string,
 ): PolicyDecision {
   const read = canReadWorkspace(role);
-  if (!read.allowed) return { allowed: false, code: 'attachment_access_denied', reason: read.reason };
+  if (!read.allowed)
+    return { allowed: false, code: 'attachment_access_denied', reason: read.reason };
   if (attachment.workspaceId !== workspaceId) {
     return deny('attachment_access_denied', 'Attachment belongs to a different workspace');
   }
@@ -456,7 +462,8 @@ export function canDeleteAttachment(
   actorUserId: string,
 ): PolicyDecision {
   const read = canReadWorkspace(role);
-  if (!read.allowed) return { allowed: false, code: 'attachment_access_denied', reason: read.reason };
+  if (!read.allowed)
+    return { allowed: false, code: 'attachment_access_denied', reason: read.reason };
   const isUploader = attachment.createdById === actorUserId;
   if (!isUploader && !hasAtLeast(role as WorkspaceRole, 'ADMIN')) {
     return deny('forbidden', 'Only the uploader or an ADMIN/OWNER may delete an attachment');

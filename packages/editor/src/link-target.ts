@@ -59,7 +59,10 @@ export function wikiLinkDocumentId(attrs: Record<string, unknown> | undefined): 
  * the import, the reference index and the editor UI all ask the same question
  * and must not each answer it with their own `startsWith`.
  */
-export function wikiLinkTitle(mark: { type: string; attrs?: Record<string, unknown> }): string | null {
+export function wikiLinkTitle(mark: {
+  type: string;
+  attrs?: Record<string, unknown>;
+}): string | null {
   if (mark.type !== 'link') return null;
   const href = mark.attrs?.href;
   const target = parseLinkHref(typeof href === 'string' ? href : null);

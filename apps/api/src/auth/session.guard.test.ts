@@ -21,7 +21,8 @@ const logger: Logger = createLogger({ name: 'api-test', level: 'silent' });
 const env: ApiEnv = loadApiEnv({
   NODE_ENV: 'test',
   APP_URL: 'http://localhost:3210',
-  DATABASE_URL: process.env.DATABASE_URL ?? 'postgresql://exocortex:exocortex@127.0.0.1:5433/exocortex',
+  DATABASE_URL:
+    process.env.DATABASE_URL ?? 'postgresql://exocortex:exocortex@127.0.0.1:5433/exocortex',
   REDIS_URL: process.env.REDIS_URL ?? 'redis://127.0.0.1:6380',
   BETTER_AUTH_SECRET: 'a'.repeat(32),
   BETTER_AUTH_URL: 'http://localhost:3210',
@@ -65,7 +66,11 @@ beforeAll(async () => {
 
   const suffix = Date.now().toString(36);
   const user = await prisma.user.create({
-    data: { email: `token-guard-${suffix}@exocortex.test`, name: 'Token User', emailVerified: true },
+    data: {
+      email: `token-guard-${suffix}@exocortex.test`,
+      name: 'Token User',
+      emailVerified: true,
+    },
   });
   userId = user.id;
 });
@@ -91,7 +96,9 @@ describe('SessionGuard bearer token authentication', () => {
     const result = await guard.canActivate(context);
     expect(result).toBe(true);
 
-    const request = context.switchToHttp().getRequest() as { exocortexSession?: { userId: string } };
+    const request = context.switchToHttp().getRequest() as {
+      exocortexSession?: { userId: string };
+    };
     expect(request.exocortexSession?.userId).toBe(userId);
   });
 
@@ -107,9 +114,11 @@ describe('SessionGuard bearer token authentication', () => {
       },
     });
 
-    await expect(guard.canActivate(contextFor(`Bearer ${generated.secret}`))).rejects.toMatchObject({
-      code: 'api_token_invalid',
-    });
+    await expect(guard.canActivate(contextFor(`Bearer ${generated.secret}`))).rejects.toMatchObject(
+      {
+        code: 'api_token_invalid',
+      },
+    );
   });
 
   it('rejects an expired token', async () => {
@@ -124,9 +133,11 @@ describe('SessionGuard bearer token authentication', () => {
       },
     });
 
-    await expect(guard.canActivate(contextFor(`Bearer ${generated.secret}`))).rejects.toMatchObject({
-      code: 'api_token_expired',
-    });
+    await expect(guard.canActivate(contextFor(`Bearer ${generated.secret}`))).rejects.toMatchObject(
+      {
+        code: 'api_token_expired',
+      },
+    );
   });
 
   it('rejects an unrecognized bearer token format', async () => {

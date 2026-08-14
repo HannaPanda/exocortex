@@ -1,5 +1,10 @@
 import { type AiProvider, type VisionPreprocessor } from '@exocortex/ai';
-import { type AiMessage, deriveAiRunTimeouts, type QUEUE_NAMES, type Settings } from '@exocortex/contracts';
+import {
+  type AiMessage,
+  deriveAiRunTimeouts,
+  type QUEUE_NAMES,
+  type Settings,
+} from '@exocortex/contracts';
 import { type AiRun, type PrismaClient } from '@exocortex/database';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
@@ -11,11 +16,7 @@ import { writeFailure, writeSuccess } from './ai-run/completion';
 import { type ResolvedModelRow } from './ai-run/contract';
 import { executeRun } from './ai-run/execution';
 import { describeDocumentImages, MAX_IMAGES_PER_RUN } from './ai-run/images';
-import {
-  buildRunMessages,
-  resolveModelRow,
-  resolveVisionPreprocessor,
-} from './ai-run/preparation';
+import { buildRunMessages, resolveModelRow, resolveVisionPreprocessor } from './ai-run/preparation';
 
 export { type ResolvedModelRow } from './ai-run/contract';
 export { toolCallTarget } from './ai-run/execution';
@@ -28,7 +29,11 @@ export interface AiRunDependencies {
   settings: () => Promise<Settings>;
   /** `null` when `SERVICE_TOKEN_SECRET` is unset: the AI simply runs without tools. */
   toolRunnerFactory:
-    | ((input: { userId: string; includeMutating: boolean; toolCallTimeoutMs: number }) => ToolRunner)
+    | ((input: {
+        userId: string;
+        includeMutating: boolean;
+        toolCallTimeoutMs: number;
+      }) => ToolRunner)
     | null;
   /**
    * Resolves (and caches) a vision companion preprocessor for a given model

@@ -97,7 +97,11 @@ beforeAll(async () => {
 
   const suffix = Date.now().toString(36);
   const user = await prisma.user.create({
-    data: { email: `scope-guard-${suffix}@exocortex.test`, name: 'Scope User', emailVerified: true },
+    data: {
+      email: `scope-guard-${suffix}@exocortex.test`,
+      name: 'Scope User',
+      emailVerified: true,
+    },
   });
   userId = user.id;
 });

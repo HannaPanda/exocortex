@@ -41,7 +41,9 @@ export const DatabaseEmbed = Node.create({
       documentId: {
         default: '',
         parseHTML: (element) => element.getAttribute('data-document-id') ?? '',
-        renderHTML: (attributes) => ({ 'data-document-id': stringAttribute(attributes.documentId) }),
+        renderHTML: (attributes) => ({
+          'data-document-id': stringAttribute(attributes.documentId),
+        }),
       },
       viewId: {
         default: null,

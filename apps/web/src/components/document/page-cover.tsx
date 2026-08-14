@@ -175,7 +175,11 @@ export interface PageCoverAddButtonProps {
  * page is hovered or the button is focused, so an empty page does not carry a
  * control for something it does not have.
  */
-export function PageCoverAddButton({ workspaceId, documentId, className }: PageCoverAddButtonProps) {
+export function PageCoverAddButton({
+  workspaceId,
+  documentId,
+  className,
+}: PageCoverAddButtonProps) {
   const { input, choose, upload } = useCoverPicker(workspaceId, documentId);
   const generation = useCoverGeneration(documentId);
   const [promptOpen, setPromptOpen] = React.useState(false);
@@ -399,7 +403,12 @@ export function PageCover({
               <Button variant="ghost" size="sm" onClick={() => setDraft(null)}>
                 <XIcon /> Abbrechen
               </Button>
-              <Button size="sm" disabled={busy} data-testid="save-cover-position" onClick={() => void save()}>
+              <Button
+                size="sm"
+                disabled={busy}
+                data-testid="save-cover-position"
+                onClick={() => void save()}
+              >
                 <CheckIcon /> Speichern
               </Button>
             </>
@@ -414,7 +423,13 @@ export function PageCover({
               >
                 <MoveVerticalIcon /> Position ändern
               </Button>
-              <Button variant="ghost" size="sm" disabled={busy} data-testid="replace-cover" onClick={choose}>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={busy}
+                data-testid="replace-cover"
+                onClick={choose}
+              >
                 <ImageIcon /> {upload.isPending ? 'Wird hochgeladen …' : 'Ändern'}
               </Button>
               <Button

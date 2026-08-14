@@ -33,7 +33,11 @@ beforeAll(async () => {
 
   const suffix = Date.now().toString(36);
   const user = await prisma.user.create({
-    data: { email: `collection-${suffix}@exocortex.test`, name: 'Collection Test', emailVerified: true },
+    data: {
+      email: `collection-${suffix}@exocortex.test`,
+      name: 'Collection Test',
+      emailVerified: true,
+    },
   });
   userId = user.id;
   const workspace = await prisma.workspace.create({
@@ -258,7 +262,9 @@ describe('describeCollection', () => {
         orderKey: 'a2',
         filters: {
           combinator: 'and',
-          conditions: [{ propertyId: 'not-a-property-of-this-database', operator: 'equals', value: 'x' }],
+          conditions: [
+            { propertyId: 'not-a-property-of-this-database', operator: 'equals', value: 'x' },
+          ],
         },
         sorts: [],
       },

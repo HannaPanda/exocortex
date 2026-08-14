@@ -148,7 +148,17 @@ beforeAll(async () => {
 
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
-  const documents = new DocumentsService(prisma, queues, logger, noopStorage, access, outbox, realtime, new DocumentTrashService(prisma, queues, logger, noopStorage, access, outbox, realtime), new DocumentMoveService(prisma, queues, logger, access, outbox, realtime));
+  const documents = new DocumentsService(
+    prisma,
+    queues,
+    logger,
+    noopStorage,
+    access,
+    outbox,
+    realtime,
+    new DocumentTrashService(prisma, queues, logger, noopStorage, access, outbox, realtime),
+    new DocumentMoveService(prisma, queues, logger, access, outbox, realtime),
+  );
   const content = new DocumentContentService(
     prisma,
     queues,
@@ -376,10 +386,20 @@ describe('recall', () => {
 
   it('leaves the curated workspaces out when asked to', async () => {
     searchResults.set(memoryWorkspaceId, [
-      hit({ documentId: 'mem-2'.padEnd(10, '0'), workspaceId: memoryWorkspaceId, title: 'Notiz', rank: 0.1 }),
+      hit({
+        documentId: 'mem-2'.padEnd(10, '0'),
+        workspaceId: memoryWorkspaceId,
+        title: 'Notiz',
+        rank: 0.1,
+      }),
     ]);
     searchResults.set(brainWorkspaceId, [
-      hit({ documentId: 'brain-2'.padEnd(10, '0'), workspaceId: brainWorkspaceId, title: 'Wissen', rank: 0.9 }),
+      hit({
+        documentId: 'brain-2'.padEnd(10, '0'),
+        workspaceId: brainWorkspaceId,
+        title: 'Wissen',
+        rank: 0.9,
+      }),
     ]);
 
     const recalled = await service.recall(agentId, {
@@ -395,9 +415,24 @@ describe('recall', () => {
   it('stays inside the character budget and says so', async () => {
     const long = 'x'.repeat(300);
     searchResults.set(memoryWorkspaceId, [
-      hit({ documentId: 'mem-3'.padEnd(10, '0'), workspaceId: memoryWorkspaceId, title: long, rank: 0.9 }),
-      hit({ documentId: 'mem-4'.padEnd(10, '0'), workspaceId: memoryWorkspaceId, title: long, rank: 0.8 }),
-      hit({ documentId: 'mem-5'.padEnd(10, '0'), workspaceId: memoryWorkspaceId, title: long, rank: 0.7 }),
+      hit({
+        documentId: 'mem-3'.padEnd(10, '0'),
+        workspaceId: memoryWorkspaceId,
+        title: long,
+        rank: 0.9,
+      }),
+      hit({
+        documentId: 'mem-4'.padEnd(10, '0'),
+        workspaceId: memoryWorkspaceId,
+        title: long,
+        rank: 0.8,
+      }),
+      hit({
+        documentId: 'mem-5'.padEnd(10, '0'),
+        workspaceId: memoryWorkspaceId,
+        title: long,
+        rank: 0.7,
+      }),
     ]);
 
     const recalled = await service.recall(agentId, {

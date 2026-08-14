@@ -46,9 +46,7 @@ export const CollapsibleHeading = Extension.create({
             keepOnSplit: false,
             parseHTML: (element) => element.getAttribute('data-collapsed') === 'true',
             renderHTML: (attributes) =>
-              attributes[HEADING_COLLAPSED_ATTRIBUTE] === true
-                ? { 'data-collapsed': 'true' }
-                : {},
+              attributes[HEADING_COLLAPSED_ATTRIBUTE] === true ? { 'data-collapsed': 'true' } : {},
           },
         },
       },

@@ -97,7 +97,12 @@ export const settingsSchema = z.object({
   'ai.pdfExtractorFallbackEnabled': z.boolean().default(true),
   /** Model with a PDF file-parser. Null reuses `ai.defaultModelSlug`. */
   'ai.pdfExtractionModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
-  'ai.pdfMaxBytes': z.number().int().min(1_024).max(50 * 1_024 * 1_024).default(10 * 1_024 * 1_024),
+  'ai.pdfMaxBytes': z
+    .number()
+    .int()
+    .min(1_024)
+    .max(50 * 1_024 * 1_024)
+    .default(10 * 1_024 * 1_024),
   /**
    * Generating a page cover from a prompt.
    *
@@ -299,9 +304,7 @@ export function semanticSearchOptions(
 }
 
 export const SETTING_KEYS = Object.keys(settingsSchema.shape) as readonly (keyof Settings)[];
-export const settingKeySchema = z.enum(
-  SETTING_KEYS as [keyof Settings, ...(keyof Settings)[]],
-);
+export const settingKeySchema = z.enum(SETTING_KEYS as [keyof Settings, ...(keyof Settings)[]]);
 export type SettingKey = z.infer<typeof settingKeySchema>;
 
 /** The inclusive bounds of one numeric setting. */

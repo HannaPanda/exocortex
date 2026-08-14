@@ -8,7 +8,10 @@
 const TRUNCATION_NOTE = '… (gekürzt)';
 
 /** Truncates `text` at `maxLength` characters, appending a German note. */
-export function truncateText(text: string, maxLength: number): { text: string; truncated: boolean } {
+export function truncateText(
+  text: string,
+  maxLength: number,
+): { text: string; truncated: boolean } {
   if (text.length <= maxLength) {
     return { text, truncated: false };
   }
@@ -16,7 +19,10 @@ export function truncateText(text: string, maxLength: number): { text: string; t
 }
 
 /** Renders a Markdown table from column headers and row cells. */
-export function renderMarkdownTable(headers: readonly string[], rows: readonly (readonly string[])[]): string {
+export function renderMarkdownTable(
+  headers: readonly string[],
+  rows: readonly (readonly string[])[],
+): string {
   const escape = (cell: string): string => cell.replace(/\|/g, '\\|').replace(/\n/g, ' ');
   const headerLine = `| ${headers.map(escape).join(' | ')} |`;
   const separatorLine = `| ${headers.map(() => '---').join(' | ')} |`;

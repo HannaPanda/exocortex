@@ -248,7 +248,11 @@ function PageIconPickerBody({
                 color === null && 'border-primary bg-accent',
               )}
             >
-              {color === null ? <CheckIcon className="size-3" /> : <span className="text-xs">A</span>}
+              {color === null ? (
+                <CheckIcon className="size-3" />
+              ) : (
+                <span className="text-xs">A</span>
+              )}
             </button>
             {DOCUMENT_ICON_COLORS.map((name) => (
               <button

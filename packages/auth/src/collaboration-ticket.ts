@@ -28,10 +28,7 @@ interface TicketPayload extends CollaborationTicketClaims {
 }
 
 export type TicketVerificationFailure =
-  | 'malformed'
-  | 'bad_signature'
-  | 'expired'
-  | 'document_mismatch';
+  'malformed' | 'bad_signature' | 'expired' | 'document_mismatch';
 
 export type TicketVerificationResult =
   | { valid: true; claims: CollaborationTicketClaims }

@@ -1,7 +1,7 @@
 # ADR-012: Vision preprocessing sends document images to an external provider
 
-* Status: accepted
-* Date: 2026-08-05
+- Status: accepted
+- Date: 2026-08-05
 
 ## Context
 
@@ -37,19 +37,19 @@ API key configured (`createVisionPreprocessor` in `registry.ts`).
 
 ## Consequences
 
-* `ADR-009`'s "no document content is sent to an external provider" is
+- `ADR-009`'s "no document content is sent to an external provider" is
   superseded for document images specifically. Everything else in ADR-009
   (provider-neutral contract, budgets, timeouts, cancellation) is unaffected.
-* Capped at 4 images per `AiRun` (`MAX_IMAGES_PER_RUN` in
+- Capped at 4 images per `AiRun` (`MAX_IMAGES_PER_RUN` in
   `apps/worker/src/processors/ai-run.ts`) to bound cost and latency.
-* No caching: a multi-turn conversation about the same page re-describes its
+- No caching: a multi-turn conversation about the same page re-describes its
   images on every turn, since each `AiRun` is independent and the client
   resends the full visible history each time (`apps/web/src/components/ai/ai-panel.tsx`).
   A future iteration could cache a description per attachment.
-* Best-effort: a document that fails to load, an attachment that cannot be
+- Best-effort: a document that fails to load, an attachment that cannot be
   resolved, or one failed description is logged and skipped. A run never
   fails because of an image; it proceeds with fewer descriptions or none.
-* The image descriptions are never persisted into `AiRun.messages` — only
+- The image descriptions are never persisted into `AiRun.messages` — only
   what the user typed is stored, consistent with the schema comment.
-* Turning this off entirely (falling back to ADR-009's original guarantee)
+- Turning this off entirely (falling back to ADR-009's original guarantee)
   is one env var: leave `OPENROUTER_VISION_MODEL` unset.

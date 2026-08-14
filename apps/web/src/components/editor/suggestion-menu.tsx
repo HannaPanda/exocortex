@@ -174,10 +174,7 @@ export function SuggestionPopup({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className="fixed z-50"
-      style={{ top: `${anchor.top}px`, left: `${anchor.left}px` }}
-    >
+    <div className="fixed z-50" style={{ top: `${anchor.top}px`, left: `${anchor.left}px` }}>
       {children}
     </div>
   );

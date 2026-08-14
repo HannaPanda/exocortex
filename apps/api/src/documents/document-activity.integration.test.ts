@@ -11,7 +11,10 @@ import { type ObjectStorage } from '@exocortex/storage';
 import { OutboxService } from '../common/outbox.service';
 import { type RealtimeService } from '../realtime/realtime.service';
 
-import { type ApplyToLiveSessionResult, type CollaborationBridgeService } from './collaboration-bridge.service';
+import {
+  type ApplyToLiveSessionResult,
+  type CollaborationBridgeService,
+} from './collaboration-bridge.service';
 import { DocumentActivityService } from './document-activity.service';
 import { DocumentContentService } from './document-content.service';
 import { DocumentMoveService } from './document-move.service';
@@ -82,8 +85,26 @@ beforeAll(async () => {
   });
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
-  documents = new DocumentsService(prisma, queues, logger, noopStorage, access, outbox, realtime, new DocumentTrashService(prisma, queues, logger, noopStorage, access, outbox, realtime), new DocumentMoveService(prisma, queues, logger, access, outbox, realtime));
-  snapshots = new DocumentSnapshotService(prisma, queues, logger, access, outbox, realtime, collaboration);
+  documents = new DocumentsService(
+    prisma,
+    queues,
+    logger,
+    noopStorage,
+    access,
+    outbox,
+    realtime,
+    new DocumentTrashService(prisma, queues, logger, noopStorage, access, outbox, realtime),
+    new DocumentMoveService(prisma, queues, logger, access, outbox, realtime),
+  );
+  snapshots = new DocumentSnapshotService(
+    prisma,
+    queues,
+    logger,
+    access,
+    outbox,
+    realtime,
+    collaboration,
+  );
   content = new DocumentContentService(
     prisma,
     queues,
@@ -99,16 +120,32 @@ beforeAll(async () => {
   const suffix = Date.now().toString(36);
   const [owner, member, admin, outsider] = await Promise.all([
     prisma.user.create({
-      data: { email: `activity-owner-${suffix}@exocortex.test`, name: 'Owner', emailVerified: true },
+      data: {
+        email: `activity-owner-${suffix}@exocortex.test`,
+        name: 'Owner',
+        emailVerified: true,
+      },
     }),
     prisma.user.create({
-      data: { email: `activity-member-${suffix}@exocortex.test`, name: 'Member', emailVerified: true },
+      data: {
+        email: `activity-member-${suffix}@exocortex.test`,
+        name: 'Member',
+        emailVerified: true,
+      },
     }),
     prisma.user.create({
-      data: { email: `activity-admin-${suffix}@exocortex.test`, name: 'Admin', emailVerified: true },
+      data: {
+        email: `activity-admin-${suffix}@exocortex.test`,
+        name: 'Admin',
+        emailVerified: true,
+      },
     }),
     prisma.user.create({
-      data: { email: `activity-out-${suffix}@exocortex.test`, name: 'Outsider', emailVerified: true },
+      data: {
+        email: `activity-out-${suffix}@exocortex.test`,
+        name: 'Outsider',
+        emailVerified: true,
+      },
     }),
   ]);
   ownerId = owner.id;
@@ -228,10 +265,22 @@ describe('DocumentActivityService.list: merging sources', () => {
     const start = new Date(Date.now() - 20 * 60 * 1000);
     const end = new Date(Date.now() - 5 * 60 * 1000);
     await prisma.documentSnapshot.create({
-      data: { documentId, yjsState: state, createdById: memberId, reason: 'SCHEDULED', createdAt: start },
+      data: {
+        documentId,
+        yjsState: state,
+        createdById: memberId,
+        reason: 'SCHEDULED',
+        createdAt: start,
+      },
     });
     await prisma.documentSnapshot.create({
-      data: { documentId, yjsState: state, createdById: memberId, reason: 'SCHEDULED', createdAt: end },
+      data: {
+        documentId,
+        yjsState: state,
+        createdById: memberId,
+        reason: 'SCHEDULED',
+        createdAt: end,
+      },
     });
 
     const result = await activity.list(documentId, ownerId);

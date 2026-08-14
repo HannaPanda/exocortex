@@ -46,7 +46,13 @@ const realtime = {
 beforeAll(async () => {
   prisma = createPrismaClient({ databaseUrl: process.env.DATABASE_URL });
   const access = new WorkspaceAccessService(prisma);
-  service = new CommentsService(prisma, logger, access, new OutboxService(prisma, logger), realtime);
+  service = new CommentsService(
+    prisma,
+    logger,
+    access,
+    new OutboxService(prisma, logger),
+    realtime,
+  );
 
   const suffix = Date.now().toString(36);
   const users = await Promise.all(
@@ -290,7 +296,11 @@ describe('editing and deleting', () => {
 
     const second = await comment({ userId: memberId });
     const thirdParty = await prisma.user.create({
-      data: { email: `third-${Date.now().toString(36)}@exocortex.test`, name: 'Dritte', emailVerified: true },
+      data: {
+        email: `third-${Date.now().toString(36)}@exocortex.test`,
+        name: 'Dritte',
+        emailVerified: true,
+      },
     });
     await prisma.workspaceMember.create({
       data: { workspaceId, userId: thirdParty.id, role: 'MEMBER' },

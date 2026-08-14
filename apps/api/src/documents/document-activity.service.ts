@@ -231,7 +231,11 @@ function sortKey(entry: DocumentActivityEntry): number {
  * knowable from a single "current state" column.
  */
 function buildEditingSessions(input: {
-  scheduledSnapshots: { createdAt: string; createdById: string | null; createdByName: string | null }[];
+  scheduledSnapshots: {
+    createdAt: string;
+    createdById: string | null;
+    createdByName: string | null;
+  }[];
   currentEdit: EditPoint;
   knownInstants: ReadonlySet<string>;
 }): Extract<DocumentActivityEntry, { type: 'editingSession' }>[] {

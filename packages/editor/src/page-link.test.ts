@@ -129,8 +129,9 @@ describe('Markdown stays an interchange format', () => {
   });
 
   it("refreshes a page mention's label from its identity too", () => {
-    const resolved = resolvePageLinkTitles(doc(pageMention('Alter Name', 'doc7')), () =>
-      'Neuer Name',
+    const resolved = resolvePageLinkTitles(
+      doc(pageMention('Alter Name', 'doc7')),
+      () => 'Neuer Name',
     );
     expect(serializeMarkdown(resolved)).toBe('@[[Neuer Name]]\n');
   });
@@ -152,7 +153,9 @@ describe('Markdown stays an interchange format', () => {
       { kind: 'mention', documentId: 'doc123', title: 'Andere Seite' },
     ]);
     // Still exactly the file it came from.
-    expect(serializeMarkdown(bound)).toBe(':::page Andere Seite\n:::\n\nSiehe @[[Andere Seite]].\n');
+    expect(serializeMarkdown(bound)).toBe(
+      ':::page Andere Seite\n:::\n\nSiehe @[[Andere Seite]].\n',
+    );
   });
 
   it('leaves an unknown title unbound rather than dropping the reference', () => {

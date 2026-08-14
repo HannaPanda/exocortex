@@ -67,7 +67,11 @@ beforeAll(async () => {
       data: { email: `run-member-${suffix}@exocortex.test`, name: 'Member', emailVerified: true },
     }),
     prisma.user.create({
-      data: { email: `run-outsider-${suffix}@exocortex.test`, name: 'Outsider', emailVerified: true },
+      data: {
+        email: `run-outsider-${suffix}@exocortex.test`,
+        name: 'Outsider',
+        emailVerified: true,
+      },
     }),
   ]);
   ownerId = owner.id;

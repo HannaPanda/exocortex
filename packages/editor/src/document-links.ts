@@ -79,12 +79,14 @@ function windowAround(text: string, needle: string): string {
   const collapsed = text.replace(/\s+/g, ' ').trim();
   if (collapsed.length <= DOCUMENT_LINK_CONTEXT_CHARS) return collapsed;
 
-  const index =
-    needle.length === 0 ? -1 : collapsed.toLowerCase().indexOf(needle.toLowerCase());
+  const index = needle.length === 0 ? -1 : collapsed.toLowerCase().indexOf(needle.toLowerCase());
   if (index < 0) return `${collapsed.slice(0, DOCUMENT_LINK_CONTEXT_CHARS).trimEnd()}…`;
 
   const padding = Math.max(0, Math.floor((DOCUMENT_LINK_CONTEXT_CHARS - needle.length) / 2));
-  const start = Math.max(0, Math.min(index - padding, collapsed.length - DOCUMENT_LINK_CONTEXT_CHARS));
+  const start = Math.max(
+    0,
+    Math.min(index - padding, collapsed.length - DOCUMENT_LINK_CONTEXT_CHARS),
+  );
   const end = Math.min(collapsed.length, start + DOCUMENT_LINK_CONTEXT_CHARS);
   const slice = collapsed.slice(start, end).trim();
   return `${start > 0 ? '…' : ''}${slice}${end < collapsed.length ? '…' : ''}`;
@@ -137,7 +139,7 @@ export function extractDocumentLinks(document: ProseMirrorDocument): ExtractedDo
     // different pages that happen to share one title, inside one block, stay
     // one row: the index is a convenience projection and the unique constraint
     // behind it is on the same triple.
-    const key =`${kind}\u0000${targetTitleKey}\u0000${blockId ?? ''}`;
+    const key = `${kind}\u0000${targetTitleKey}\u0000${blockId ?? ''}`;
     if (seen.has(key)) return;
     seen.add(key);
 
@@ -152,7 +154,11 @@ export function extractDocumentLinks(document: ProseMirrorDocument): ExtractedDo
     });
   };
 
-  const walk = (node: ProseMirrorNode, block: ProseMirrorNode | null, blockId: string | null): void => {
+  const walk = (
+    node: ProseMirrorNode,
+    block: ProseMirrorNode | null,
+    blockId: string | null,
+  ): void => {
     // Two separate "deepest ancestor" rules on purpose. The preview follows the
     // deepest addressable block, because that is the sentence a reader wants to
     // see. The identifier follows the deepest block that actually carries one,

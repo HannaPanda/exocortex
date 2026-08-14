@@ -44,7 +44,10 @@ import { useSessionQuery, useWorkspaces } from '@/lib/api/queries';
 
 const ROLE_LABELS: Record<UserRole, string> = { user: 'Nutzer', admin: 'Administrator' };
 
-const dateTimeFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
+const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+});
 const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium' });
 
 /**
@@ -73,7 +76,10 @@ export function UserTable() {
 
   if (usersQuery.isError) {
     return (
-      <ErrorState title="Nutzerliste konnte nicht geladen werden" onRetry={() => void usersQuery.refetch()} />
+      <ErrorState
+        title="Nutzerliste konnte nicht geladen werden"
+        onRetry={() => void usersQuery.refetch()}
+      />
     );
   }
 

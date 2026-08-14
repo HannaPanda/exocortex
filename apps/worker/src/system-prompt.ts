@@ -156,9 +156,7 @@ export function formatOpenPageSection(page: OpenPage, options: OpenPageSectionOp
           : 'Das ist nur der Anfang der Seite, sie wurde gekürzt. Mehr kannst du in diesem Lauf nicht laden; sage das, statt den Rest zu erraten.',
       );
     } else {
-      lines.push(
-        'Das ist der vollständige Text der Seite, Stand der letzten Materialisierung.',
-      );
+      lines.push('Das ist der vollständige Text der Seite, Stand der letzten Materialisierung.');
     }
     return lines.join('\n');
   }
@@ -232,10 +230,11 @@ async function loadOpenPage(input: {
       pathElided = true;
       break;
     }
-    const parent: { title: string; parentId: string | null } | null = await prisma.document.findFirst({
-      where: { id: parentId, workspaceId },
-      select: { title: true, parentId: true },
-    });
+    const parent: { title: string; parentId: string | null } | null =
+      await prisma.document.findFirst({
+        where: { id: parentId, workspaceId },
+        select: { title: true, parentId: true },
+      });
     if (parent === null) break;
     ancestorTitles.unshift(parent.title);
     parentId = parent.parentId;
@@ -263,7 +262,9 @@ async function loadOpenPage(input: {
  * it is situational: workspace rules say how to behave, the page says where the
  * user is standing.
  */
-export async function buildSystemPrompt(input: BuildSystemPromptInput): Promise<SystemPromptResult> {
+export async function buildSystemPrompt(
+  input: BuildSystemPromptInput,
+): Promise<SystemPromptResult> {
   const {
     prisma,
     workspaceId,
@@ -342,17 +343,24 @@ export async function buildSystemPrompt(input: BuildSystemPromptInput): Promise<
   if (documentId !== null) {
     const openPage = await loadOpenPage({ prisma, workspaceId, documentId });
     if (openPage === null) {
-      logger.info('Run carries a documentId that is not in its workspace; omitting the page context', {
-        documentId,
-        workspaceId,
-      });
+      logger.info(
+        'Run carries a documentId that is not in its workspace; omitting the page context',
+        {
+          documentId,
+          workspaceId,
+        },
+      );
     } else {
       // A collection's own body is empty by construction (its rows are separate
       // documents), so the content switch does not apply to one: the view
       // description above is already the richer answer.
       const content =
         includePageContent && openPage.type === 'PAGE'
-          ? await loadPageContent({ prisma, documentId: openPage.id, maxChars: pageContentMaxChars })
+          ? await loadPageContent({
+              prisma,
+              documentId: openPage.id,
+              maxChars: pageContentMaxChars,
+            })
           : null;
 
       const collectionDescription =

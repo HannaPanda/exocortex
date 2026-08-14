@@ -44,27 +44,27 @@ Self-registration is off, so an invitation is the only way in besides the seed
 script. `docs/security.md` has the token design, the one-use guarantee and the
 rate limits; what matters here is the shape of the routes:
 
-| Route | Who | What |
-| ----- | --- | ---- |
-| `GET /api/admin/invitations` | global admin | every invitation, newest first |
-| `POST /api/admin/invitations` | global admin | invite; `workspaceId` optional, `role: "admin"` allowed |
-| `POST /api/admin/invitations/:id/resend` | global admin | new token, old link dies |
-| `DELETE /api/admin/invitations/:id` | global admin | withdraw |
+| Route                                                             | Who                       | What                                                     |
+| ----------------------------------------------------------------- | ------------------------- | -------------------------------------------------------- |
+| `GET /api/admin/invitations`                                      | global admin              | every invitation, newest first                           |
+| `POST /api/admin/invitations`                                     | global admin              | invite; `workspaceId` optional, `role: "admin"` allowed  |
+| `POST /api/admin/invitations/:id/resend`                          | global admin              | new token, old link dies                                 |
+| `DELETE /api/admin/invitations/:id`                               | global admin              | withdraw                                                 |
 | `GET`/`POST`/`DELETE` `/api/workspaces/:workspaceId/invitations…` | workspace `OWNER`/`ADMIN` | the same, bounded to that workspace, never a global role |
-| `PATCH /api/admin/users/:userId/status` | global admin | `{"disabled":true}` switches the account off |
-| `DELETE /api/admin/users/:userId` | global admin | only if the account authored nothing |
+| `PATCH /api/admin/users/:userId/status`                           | global admin              | `{"disabled":true}` switches the account off             |
+| `DELETE /api/admin/users/:userId`                                 | global admin              | only if the account authored nothing                     |
 
 Three things about this that are easy to get wrong later:
 
-* **The invitation link comes back exactly once**, in the create/resend response,
+- **The invitation link comes back exactly once**, in the create/resend response,
   and is never stored — only its SHA-256 is. If the mail fails, `emailSent` is
   `false` and the dialog stays open with the link, because that is the only
   chance to hand it over.
-* **Disabling is not the same as deleting**, and the UI only offers deletion for
+- **Disabling is not the same as deleting**, and the UI only offers deletion for
   an account with no authored content. `Document.createdById` is a required
   reference; the database would refuse the rest, and rewriting authorship to get
   around that would falsify the history.
-* **Neither route works on your own account**, and neither can remove the last
+- **Neither route works on your own account**, and neither can remove the last
   global admin. Same two guards as `updateUserRole`, for the same reason: a
   locked-out sole administrator cannot repair themselves.
 
@@ -80,44 +80,44 @@ The keys below are generated from `settingsSchema` in
 `packages/contracts/src/settings.ts`, which is the authority. Add a key there
 first; the admin form and this table follow.
 
-| Key | Type | Default | Affects |
-| --- | --- | --- | --- |
-| `ai.enabled` | boolean | `true` | Master switch for the AI pipeline. |
-| `ai.defaultModelSlug` | string \| null | `null` → `OPENROUTER_DEFAULT_MODEL` | Model used when a conversation names none. Must be a slug in the `ai_model` registry. |
-| `ai.systemPrompt` | string (≤ 8000) | `''` | Prepended to every run's system prompt, ahead of any AI rule pages. |
-| `ai.maxOutputTokens` | int 256–200000 | `4096` | Output cap per model call. |
-| `ai.timeoutMs` | int 5000–600000 | `180000` | Timeout for a single model answer, not the whole run — see `ai.maxRunMs`. |
-| `ai.maxRunMs` | int 60000–3600000 | `900000` | Timeout for the whole run, across every turn and tool round-trip. Ends the run as `timed_out`, never `failed` (ADR-017). Can never be shorter than `ai.timeoutMs`. |
-| `ai.budgetMicroUsdPerRun` | int 1000–50000000 | `500000` | Cost ceiling per run (µUSD), checked per tool iteration. |
-| `ai.toolsEnabled` | boolean | `true` | Whether the built-in AI gets tools at all. Also requires `SERVICE_TOKEN_SECRET`. |
-| `ai.mutatingToolsEnabled` | boolean | `true` | Whether the AI may call tools that change data. |
-| `ai.maxToolIterations` | int 0–1000 | `8` | Tool round-trips per run before the loop stops. Deliberately roomy: cost and duration are already bounded by `ai.budgetMicroUsdPerRun` and `ai.maxRunMs`, which know money and time (issue #28). |
-| `ai.visionEnabled` | boolean | `true` | Master switch for vision preprocessing (ADR-012). |
-| `ai.visionMaxImagesPerRun` | int 0–64 | `4` | Images described per run. Each one is a paid vision call, so the run budget is the real limit. |
-| `ai.pageContextEnabled` | boolean | `false` | Puts the open page's text into the system prompt (ADR-015). Off by default: it is the one switch here that sends document content the user did not ask for in that turn. Off, the model gets the page's title and path and fetches the text with `exo_page_read` when a question needs it — enough for a tool-capable model. Turn it on for models without tool support. |
-| `ai.pageContextMaxChars` | int 500–100000 | `12000` | Cap on that text. What is cut is stated in the prompt, so the model knows it has an excerpt. |
-| `ai.compactionThresholdPercent` | int 30–95 | `70` | Share of the context window at which compaction starts. Capped below 100 because at 100 the window has already overflowed. |
-| `ai.compactionKeepRecentMessages` | int 2–200 | `8` | Messages left untouched by a compaction. A tail large enough to fill the window on its own turns compaction into a logged no-op. |
-| `ai.compactionModelSlug` | string \| null | `null` | Model that writes the summary. Null reuses the conversation's model. |
-| `ai.pdfExtractionEnabled` | boolean | `true` | Whether the `attachment-text` queue extracts PDF text. |
-| `ai.pdfExtractor` | `docling` \| `openrouter` | `docling` | Engine tried first. `docling` is local, free per document and reads scans; `openrouter` needs no container but is billed per page. |
-| `ai.pdfExtractorFallbackEnabled` | boolean | `true` | Try the other engine when the one above finds nothing or fails. No effect when only one of the two is configured. |
-| `ai.pdfExtractionModelSlug` | string \| null | `null` | Model with a file parser. Null reuses `ai.defaultModelSlug`. |
-| `ai.pdfMaxBytes` | int 1024–52428800 | `10485760` | Largest PDF that is extracted. |
-| `ai.imageGenerationEnabled` | bool | `false` | Lets a page cover be drawn from a prompt. Off by default: every picture is a paid call. |
-| `ai.imageModelSlug` | string \| null | `null` | Image-capable model, e.g. `google/gemini-2.5-flash-image`. Null leaves the feature unavailable however the flag above is set. |
-| `mcp.enabled` | boolean | `true` | Master switch for the MCP tool surface. |
-| `mcp.maxSearchResults` | int 1–100 | `20` | Result cap for `exo_search`. |
-| `mcp.writeConfirmationRequired` | boolean | `false` | Widens the two-step, destination-keyed confirmation to *every* mutating MCP tool. Off, it still covers the four calls no snapshot undoes; see `docs/mcp.md`. |
-| `calendar.remindersEnabled` | boolean | `false` | Master switch for appointment reminders. Also requires `CALENDAR_REMINDER_COMMAND` and `CALENDAR_REMINDER_TARGET`; a deployment that mirrors a calendar has not thereby asked to be messaged about it. |
-| `calendar.reminderLeadMinutes` | int 0–1440 | `30` | How long before a timed appointment the reminder goes out. `0` means at the start. |
-| `calendar.reminderAllDayHour` | int 0–23 | `9` | Local hour at which an all-day appointment is announced. It has no start time to count back from. |
-| `calendar.timeZone` | string | `Europe/Berlin` | IANA zone the two settings above are read in. Validated against `Intl`, so a typo is refused at the boundary instead of thrown inside the worker every minute. |
-| `activity.editSessionSnapshotsEnabled` | boolean | `false` | Lets `snapshot-active-documents` take periodic `SCHEDULED` snapshots of a page while it is being edited, which is what lets the Aktivität tab show a real session range instead of a single point. Off by default: a new recurring write the deployment has not asked for yet. |
-| `activity.editSessionSnapshotIntervalMinutes` | int 5–1440 | `15` | Minimum time between two `SCHEDULED` snapshots of the same page. Only takes effect with the switch above on. |
-| `activity.snapshotRetentionFullDays` | int 1–365 | `7` | Every snapshot younger than this survives `prune-snapshots` outright, whatever its `reason`. |
-| `activity.snapshotRetentionDailyDays` | int 1–3650 | `30` | Between the full-retention window and this age, at most one snapshot per calendar day survives; older than this, at most one per calendar week. `MANUAL` snapshots are exempt from both tiers. |
-| `activity.snapshotRetentionDryRun` | boolean | `true` | Computes and logs what tiered retention would delete without deleting anything. Defaults on so the first run after this feature ships cannot silently remove existing snapshots; switch off deliberately once the log line looks right. |
+| Key                                           | Type                      | Default                             | Affects                                                                                                                                                                                                                                                                                                                                                                  |
+| --------------------------------------------- | ------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ai.enabled`                                  | boolean                   | `true`                              | Master switch for the AI pipeline.                                                                                                                                                                                                                                                                                                                                       |
+| `ai.defaultModelSlug`                         | string \| null            | `null` → `OPENROUTER_DEFAULT_MODEL` | Model used when a conversation names none. Must be a slug in the `ai_model` registry.                                                                                                                                                                                                                                                                                    |
+| `ai.systemPrompt`                             | string (≤ 8000)           | `''`                                | Prepended to every run's system prompt, ahead of any AI rule pages.                                                                                                                                                                                                                                                                                                      |
+| `ai.maxOutputTokens`                          | int 256–200000            | `4096`                              | Output cap per model call.                                                                                                                                                                                                                                                                                                                                               |
+| `ai.timeoutMs`                                | int 5000–600000           | `180000`                            | Timeout for a single model answer, not the whole run — see `ai.maxRunMs`.                                                                                                                                                                                                                                                                                                |
+| `ai.maxRunMs`                                 | int 60000–3600000         | `900000`                            | Timeout for the whole run, across every turn and tool round-trip. Ends the run as `timed_out`, never `failed` (ADR-017). Can never be shorter than `ai.timeoutMs`.                                                                                                                                                                                                       |
+| `ai.budgetMicroUsdPerRun`                     | int 1000–50000000         | `500000`                            | Cost ceiling per run (µUSD), checked per tool iteration.                                                                                                                                                                                                                                                                                                                 |
+| `ai.toolsEnabled`                             | boolean                   | `true`                              | Whether the built-in AI gets tools at all. Also requires `SERVICE_TOKEN_SECRET`.                                                                                                                                                                                                                                                                                         |
+| `ai.mutatingToolsEnabled`                     | boolean                   | `true`                              | Whether the AI may call tools that change data.                                                                                                                                                                                                                                                                                                                          |
+| `ai.maxToolIterations`                        | int 0–1000                | `8`                                 | Tool round-trips per run before the loop stops. Deliberately roomy: cost and duration are already bounded by `ai.budgetMicroUsdPerRun` and `ai.maxRunMs`, which know money and time (issue #28).                                                                                                                                                                         |
+| `ai.visionEnabled`                            | boolean                   | `true`                              | Master switch for vision preprocessing (ADR-012).                                                                                                                                                                                                                                                                                                                        |
+| `ai.visionMaxImagesPerRun`                    | int 0–64                  | `4`                                 | Images described per run. Each one is a paid vision call, so the run budget is the real limit.                                                                                                                                                                                                                                                                           |
+| `ai.pageContextEnabled`                       | boolean                   | `false`                             | Puts the open page's text into the system prompt (ADR-015). Off by default: it is the one switch here that sends document content the user did not ask for in that turn. Off, the model gets the page's title and path and fetches the text with `exo_page_read` when a question needs it — enough for a tool-capable model. Turn it on for models without tool support. |
+| `ai.pageContextMaxChars`                      | int 500–100000            | `12000`                             | Cap on that text. What is cut is stated in the prompt, so the model knows it has an excerpt.                                                                                                                                                                                                                                                                             |
+| `ai.compactionThresholdPercent`               | int 30–95                 | `70`                                | Share of the context window at which compaction starts. Capped below 100 because at 100 the window has already overflowed.                                                                                                                                                                                                                                               |
+| `ai.compactionKeepRecentMessages`             | int 2–200                 | `8`                                 | Messages left untouched by a compaction. A tail large enough to fill the window on its own turns compaction into a logged no-op.                                                                                                                                                                                                                                         |
+| `ai.compactionModelSlug`                      | string \| null            | `null`                              | Model that writes the summary. Null reuses the conversation's model.                                                                                                                                                                                                                                                                                                     |
+| `ai.pdfExtractionEnabled`                     | boolean                   | `true`                              | Whether the `attachment-text` queue extracts PDF text.                                                                                                                                                                                                                                                                                                                   |
+| `ai.pdfExtractor`                             | `docling` \| `openrouter` | `docling`                           | Engine tried first. `docling` is local, free per document and reads scans; `openrouter` needs no container but is billed per page.                                                                                                                                                                                                                                       |
+| `ai.pdfExtractorFallbackEnabled`              | boolean                   | `true`                              | Try the other engine when the one above finds nothing or fails. No effect when only one of the two is configured.                                                                                                                                                                                                                                                        |
+| `ai.pdfExtractionModelSlug`                   | string \| null            | `null`                              | Model with a file parser. Null reuses `ai.defaultModelSlug`.                                                                                                                                                                                                                                                                                                             |
+| `ai.pdfMaxBytes`                              | int 1024–52428800         | `10485760`                          | Largest PDF that is extracted.                                                                                                                                                                                                                                                                                                                                           |
+| `ai.imageGenerationEnabled`                   | bool                      | `false`                             | Lets a page cover be drawn from a prompt. Off by default: every picture is a paid call.                                                                                                                                                                                                                                                                                  |
+| `ai.imageModelSlug`                           | string \| null            | `null`                              | Image-capable model, e.g. `google/gemini-2.5-flash-image`. Null leaves the feature unavailable however the flag above is set.                                                                                                                                                                                                                                            |
+| `mcp.enabled`                                 | boolean                   | `true`                              | Master switch for the MCP tool surface.                                                                                                                                                                                                                                                                                                                                  |
+| `mcp.maxSearchResults`                        | int 1–100                 | `20`                                | Result cap for `exo_search`.                                                                                                                                                                                                                                                                                                                                             |
+| `mcp.writeConfirmationRequired`               | boolean                   | `false`                             | Widens the two-step, destination-keyed confirmation to _every_ mutating MCP tool. Off, it still covers the four calls no snapshot undoes; see `docs/mcp.md`.                                                                                                                                                                                                             |
+| `calendar.remindersEnabled`                   | boolean                   | `false`                             | Master switch for appointment reminders. Also requires `CALENDAR_REMINDER_COMMAND` and `CALENDAR_REMINDER_TARGET`; a deployment that mirrors a calendar has not thereby asked to be messaged about it.                                                                                                                                                                   |
+| `calendar.reminderLeadMinutes`                | int 0–1440                | `30`                                | How long before a timed appointment the reminder goes out. `0` means at the start.                                                                                                                                                                                                                                                                                       |
+| `calendar.reminderAllDayHour`                 | int 0–23                  | `9`                                 | Local hour at which an all-day appointment is announced. It has no start time to count back from.                                                                                                                                                                                                                                                                        |
+| `calendar.timeZone`                           | string                    | `Europe/Berlin`                     | IANA zone the two settings above are read in. Validated against `Intl`, so a typo is refused at the boundary instead of thrown inside the worker every minute.                                                                                                                                                                                                           |
+| `activity.editSessionSnapshotsEnabled`        | boolean                   | `false`                             | Lets `snapshot-active-documents` take periodic `SCHEDULED` snapshots of a page while it is being edited, which is what lets the Aktivität tab show a real session range instead of a single point. Off by default: a new recurring write the deployment has not asked for yet.                                                                                           |
+| `activity.editSessionSnapshotIntervalMinutes` | int 5–1440                | `15`                                | Minimum time between two `SCHEDULED` snapshots of the same page. Only takes effect with the switch above on.                                                                                                                                                                                                                                                             |
+| `activity.snapshotRetentionFullDays`          | int 1–365                 | `7`                                 | Every snapshot younger than this survives `prune-snapshots` outright, whatever its `reason`.                                                                                                                                                                                                                                                                             |
+| `activity.snapshotRetentionDailyDays`         | int 1–3650                | `30`                                | Between the full-retention window and this age, at most one snapshot per calendar day survives; older than this, at most one per calendar week. `MANUAL` snapshots are exempt from both tiers.                                                                                                                                                                           |
+| `activity.snapshotRetentionDryRun`            | boolean                   | `true`                              | Computes and logs what tiered retention would delete without deleting anything. Defaults on so the first run after this feature ships cannot silently remove existing snapshots; switch off deliberately once the log line looks right.                                                                                                                                  |
 
 The bounds in the table are not repeated in the admin form. `SETTING_NUMBER_RANGES`
 derives them from `settingsSchema`, and the form reads them for the input's
@@ -149,14 +149,14 @@ Secrets are deliberately **not** settings. `OPENROUTER_API_KEY`,
 The agents' memory is off until a workspace is named, and that is deliberately
 the whole switch.
 
-| Setting | Meaning |
-| --- | --- |
-| `memory.enabled` | Master switch for writing. Off: nothing is captured or remembered; recall still answers. |
-| `memory.workspaceId` | Which workspace the agents write into. Empty means there is no destination, and `POST /api/memory/capture` answers `{accepted: false, reason: 'memory_workspace_not_configured'}` instead of guessing one. |
-| `memory.captureModelSlug` | Model that distils a session. Empty falls back to `ai.compactionModelSlug`, then `ai.defaultModelSlug`. |
-| `memory.captureMinChars` | Shortest session worth remembering. The cheap half of the "is this memorable" question; the other half is the model's, which may answer that there is nothing to keep. |
-| `memory.recallMaxChars` / `memory.recallMaxResults` | Hard ceilings on one recall answer, whatever a caller asks for. A memory that eats the context window it is meant to improve is worse than none. |
-| `memory.retentionDays` | How long a session note survives. `0` (the default) never deletes anything. With a period set, `prune-memories` moves an untouched note into the trash after it, and destroys it after a second one — so nothing was ever unrecoverable. Project pages and other workspaces are never touched. |
+| Setting                                             | Meaning                                                                                                                                                                                                                                                                                        |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `memory.enabled`                                    | Master switch for writing. Off: nothing is captured or remembered; recall still answers.                                                                                                                                                                                                       |
+| `memory.workspaceId`                                | Which workspace the agents write into. Empty means there is no destination, and `POST /api/memory/capture` answers `{accepted: false, reason: 'memory_workspace_not_configured'}` instead of guessing one.                                                                                     |
+| `memory.captureModelSlug`                           | Model that distils a session. Empty falls back to `ai.compactionModelSlug`, then `ai.defaultModelSlug`.                                                                                                                                                                                        |
+| `memory.captureMinChars`                            | Shortest session worth remembering. The cheap half of the "is this memorable" question; the other half is the model's, which may answer that there is nothing to keep.                                                                                                                         |
+| `memory.recallMaxChars` / `memory.recallMaxResults` | Hard ceilings on one recall answer, whatever a caller asks for. A memory that eats the context window it is meant to improve is worse than none.                                                                                                                                               |
+| `memory.retentionDays`                              | How long a session note survives. `0` (the default) never deletes anything. With a period set, `prune-memories` moves an untouched note into the trash after it, and destroys it after a second one — so nothing was ever unrecoverable. Project pages and other workspaces are never touched. |
 
 **Do not point `memory.workspaceId` at a curated workspace.** Automatically
 written session notes belong where they may be tidied and expired; a workspace
@@ -170,11 +170,11 @@ scope its token carries ([ADR-019](adr/ADR-019-agent-memory-in-its-own-workspace
 Semantic search is off until somebody turns it on, because switching it on
 turns every indexed page into a paid embedding call.
 
-| Setting | Meaning |
-| --- | --- |
-| `search.semanticEnabled` | Adds vector similarity beside full-text, fused by rank. Off: the search box and `recall` behave exactly as before. On: newly indexed pages are embedded as they are written, and `backfill-embeddings` works through the ones that already exist. |
-| `search.embeddingModelSlug` | An OpenRouter slug that returns 1536 dimensions. `openai/text-embedding-3-small` (the default) does natively; `openai/text-embedding-3-large` shortens to it on request. Anything else is refused rather than stored wrong. Changing it makes the old vectors invisible and the backfill writes new ones. |
-| `search.semanticWeightPercent` | How much the semantic list counts against the full-text list. `0` is pure full-text, `100` pure meaning, `50` weighs them equally. |
+| Setting                        | Meaning                                                                                                                                                                                                                                                                                                   |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `search.semanticEnabled`       | Adds vector similarity beside full-text, fused by rank. Off: the search box and `recall` behave exactly as before. On: newly indexed pages are embedded as they are written, and `backfill-embeddings` works through the ones that already exist.                                                         |
+| `search.embeddingModelSlug`    | An OpenRouter slug that returns 1536 dimensions. `openai/text-embedding-3-small` (the default) does natively; `openai/text-embedding-3-large` shortens to it on request. Anything else is refused rather than stored wrong. Changing it makes the old vectors invisible and the backfill writes new ones. |
+| `search.semanticWeightPercent` | How much the semantic list counts against the full-text list. `0` is pure full-text, `100` pure meaning, `50` weighs them equally.                                                                                                                                                                        |
 
 Cost, so it is not a surprise: `text-embedding-3-small` is about two cents per
 million tokens, one vector per page of up to 24k characters, and a page whose
@@ -240,15 +240,15 @@ and through `GET`/`POST /api/me/api-tokens` and
 That page has three sections, because "which agent may reach my brain" is one
 question, not three:
 
-* **Verbundene Anwendungen** — the OAuth clients this account let in through
+- **Verbundene Anwendungen** — the OAuth clients this account let in through
   `/verbinden`, from `GET /api/me/connections`, each with a button behind
   `DELETE /api/me/connections/:clientId`. That call deletes the account's access
   tokens for the client (each row holds the refresh token too, so renewal stops
   as well), deletes its consent, and switches the `oauth_application` row off
   when nobody else still consents to it. Before this existed, the only way to
   end a connection was an UPDATE against the database.
-* **Token** — the personal API tokens described above.
-* **Einrichten** — one finished command per client, built from
+- **Token** — the personal API tokens described above.
+- **Einrichten** — one finished command per client, built from
   `apps/web/src/lib/connection-snippets.ts` and the browser's own origin. The
   reveal dialog renders the same command with the new secret already inside it:
   a token is shown once, so anything a person has to paste in by hand is a step
@@ -261,8 +261,8 @@ cut the connections watching over it.
 
 Two prefixes exist, and they are different mechanisms:
 
-* **`exo_`** — a user's `ApiToken` row, revocable, optionally expiring.
-* **`exos_`** — a short-lived HMAC service token the worker mints for its own
+- **`exo_`** — a user's `ApiToken` row, revocable, optionally expiring.
+- **`exos_`** — a short-lived HMAC service token the worker mints for its own
   tool calls, signed with `SERVICE_TOKEN_SECRET`, TTL `SERVICE_TOKEN_TTL_SECONDS`
   (default 300). No database row per run. It resolves to the run's own user, so a
   tool call the model makes is authorized exactly as that human would be. With

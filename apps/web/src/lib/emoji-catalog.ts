@@ -159,10 +159,7 @@ export const MAX_EMOJI_SEARCH_RESULTS = 120;
  * over five groups of two, and five headings above five icons is a worse answer
  * than one grid. The label matches first, then the keywords.
  */
-export function searchEmoji(
-  query: string,
-  groups: readonly EmojiGroup[],
-): readonly EmojiEntry[] {
+export function searchEmoji(query: string, groups: readonly EmojiGroup[]): readonly EmojiEntry[] {
   const needle = query.trim().toLowerCase();
   if (needle.length === 0) return [];
 
@@ -172,17 +169,18 @@ export function searchEmoji(
     for (const entry of group.emojis) {
       if (seen.has(entry.char)) continue;
       const label = entry.label.toLowerCase();
-      const score = label === needle
-        ? 0
-        : label.startsWith(needle)
-          ? 1
-          : label.includes(needle)
-            ? 2
-            : entry.keywords.some((keyword) => keyword.startsWith(needle))
-              ? 3
-              : entry.keywords.some((keyword) => keyword.includes(needle))
-                ? 4
-                : null;
+      const score =
+        label === needle
+          ? 0
+          : label.startsWith(needle)
+            ? 1
+            : label.includes(needle)
+              ? 2
+              : entry.keywords.some((keyword) => keyword.startsWith(needle))
+                ? 3
+                : entry.keywords.some((keyword) => keyword.includes(needle))
+                  ? 4
+                  : null;
       if (score === null) continue;
       seen.add(entry.char);
       scored.push({ entry, score });

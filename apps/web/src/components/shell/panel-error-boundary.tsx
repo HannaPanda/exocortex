@@ -12,10 +12,7 @@ import { ErrorState } from '@exocortex/ui';
  * boundary and tear down the whole shell with it. Wrapping the panel itself
  * with `catchError` keeps a failure local to that panel (issue #16).
  */
-function PanelErrorFallback(
-  props: { title: string; description: string },
-  { retry }: ErrorInfo,
-) {
+function PanelErrorFallback(props: { title: string; description: string }, { retry }: ErrorInfo) {
   return (
     <ErrorState
       title={props.title}

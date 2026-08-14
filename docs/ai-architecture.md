@@ -24,9 +24,9 @@ Stream events are typed: `start`, `delta`, `usage`, `done`, `error`.
 
 ## What runs in this version
 
-* `MockAiProvider` — deterministic, streams word by word, echoes the question and
+- `MockAiProvider` — deterministic, streams word by word, echoes the question and
   reports usage. It is the default (`AI_PROVIDER=mock`).
-* `OpenRouterProvider` — request shaping, SSE parsing and usage mapping are
+- `OpenRouterProvider` — request shaping, SSE parsing and usage mapping are
   implemented; the adapter refuses to run without `OPENROUTER_API_KEY` so it can
   never silently start making paid calls. `OPENROUTER_DEFAULT_MODEL` is the main
   driver (currently `z-ai/glm-5.2`, text-only, no vision).
@@ -39,10 +39,10 @@ tools, no streaming and no finish reason. It turns a batch of texts into a batch
 of vectors, in order, and refuses a response that is missing one rather than
 misaligning page A with page B's vector.
 
-* `OpenRouterEmbeddingProvider` — `POST {baseUrl}/embeddings`, OpenAI-shaped,
+- `OpenRouterEmbeddingProvider` — `POST {baseUrl}/embeddings`, OpenAI-shaped,
   the same key and account as everything else. `dimensions` is sent so a model
   with a longer natural output can shorten to the 1536 the column holds.
-* `MockEmbeddingProvider` — hashes vocabulary into a normalised vector. Not
+- `MockEmbeddingProvider` — hashes vocabulary into a normalised vector. Not
   semantics, but it makes the whole pipeline exercisable offline and in tests,
   the same reasoning as `MockImageGenerator`.
 
@@ -79,7 +79,7 @@ conversation about the same page re-describes its images on every turn;
 best-effort throughout — a document that fails to load, an unresolvable
 attachment or one failed description is logged and skipped, never fails the
 run. `ai.visionEnabled: false` turns this off entirely; see "Vision
-companions" below for how the companion *model* is now chosen per run rather
+companions" below for how the companion _model_ is now chosen per run rather
 than fixed to `OPENROUTER_VISION_MODEL`.
 
 ## Image generation (page covers)
@@ -122,12 +122,12 @@ request. The model, title, reasoning level and vision companion override
 live on the conversation; every turn — user, assistant, tool, and compaction
 summaries — is its own `AiConversationMessage` row.
 
-* **`supersededAt`.** Set by `/clear` and by auto-compaction. A superseded
+- **`supersededAt`.** Set by `/clear` and by auto-compaction. A superseded
   message stays in the table and in the UI's history (it is still "what
   actually happened"), but the worker never sends it to the provider again —
   only `supersededAt: null` rows enter the message list a run builds
   (`apps/worker/src/processors/ai-run.ts`).
-* **Why the transcript lives in the database, not on `AiRun.messages`.** A run
+- **Why the transcript lives in the database, not on `AiRun.messages`.** A run
   is one turn; a conversation is many. Keeping the transcript on the
   conversation means the worker always reads the current, possibly-compacted
   state instead of trusting a copy the API embedded at enqueue time —
@@ -135,11 +135,11 @@ summaries — is its own `AiConversationMessage` row.
   stores only the just-submitted user message on the `AiRun` row, for
   traceability, and the worker rebuilds the real message list from
   `AiConversationMessage` every time.
-* **Ownership.** A conversation is personal, not shared, even inside a shared
+- **Ownership.** A conversation is personal, not shared, even inside a shared
   workspace: every route on it, reads included, requires the caller to be its
   own creator (see the class comment on `ConversationsService`) — a
   deliberate widening of "ownership required for writes", documented there.
-* **Slash commands** (`/clear`, `/new`, `/model`, `/think`, `/vision`,
+- **Slash commands** (`/clear`, `/new`, `/model`, `/think`, `/vision`,
   `/compact`, `/context`, `/rules`, `/tools`, `/help`) are parsed server-side
   (`apps/api/src/ai/chat-commands.ts`) so the side panel, MCP and any future
   client behave identically without reimplementing the command set.
@@ -151,59 +151,59 @@ only the vision preprocessor, so a page's images were described to the model
 while its title was not even mentioned; now the run's page is named in the
 system prompt.
 
-* **A pointer, not the content.** `buildSystemPrompt`
+- **A pointer, not the content.** `buildSystemPrompt`
   (`apps/worker/src/system-prompt.ts`) appends a `## Geöffnete Seite` block
   with the title, breadcrumb, `documentId` and type (page or collection), and
   tells the model to fetch the body with `exo_page_read` when the question is
   about "this page". The page's text stays out of the prompt of every
   unrelated turn, and fetching it stays under the user's `ai.toolsEnabled`
   control.
-* **…unless `ai.pageContextEnabled` is on**, which puts the page's materialized
+- **…unless `ai.pageContextEnabled` is on**, which puts the page's materialized
   Markdown into the block as `### Inhalt`. **Default off**, and the only switch
   here that sends document content the user did not ask for in that turn — see
   [ADR-015](adr/ADR-015-page-content-in-the-prompt.md) for why it exists anyway
   (a tool-less model has a pointer it cannot follow). Capped by
-  `ai.pageContextMaxChars`, and a cut says so *in the prompt text*, worded
+  `ai.pageContextMaxChars`, and a cut says so _in the prompt text_, worded
   differently depending on whether the run can fetch the rest: a model that
   cannot tell an excerpt from a whole page answers "the page does not mention
   X" about a page that does. Collections are excluded — their body is empty by
   construction and the view description is the richer answer.
-* **Honest when it cannot follow the pointer.** Tool availability is resolved
-  *before* the prompt is built, so a run without tools (setting off, model
+- **Honest when it cannot follow the pointer.** Tool availability is resolved
+  _before_ the prompt is built, so a run without tools (setting off, model
   without tool support, or a legacy run with no `conversationId`) gets a block
   that tells the model to say it cannot read the page instead of inventing its
   content.
-* **Scoped to the run's workspace.** The lookup is `findFirst` on
+- **Scoped to the run's workspace.** The lookup is `findFirst` on
   `{ id, workspaceId }`: a stale or guessed `documentId` contributes nothing
   and is logged, rather than leaking a title from elsewhere.
-* **The breadcrumb is bounded.** Ancestors are walked up at most
+- **The breadcrumb is bounded.** Ancestors are walked up at most
   `MAX_PATH_DEPTH` (8) levels; a deeper path is rendered with a leading `…`
   so an elided path is not mistaken for a root-level one.
-* **Page switches are recorded in the transcript.** The panel keeps the active
-  conversation per *workspace*, so walking to another page keeps typing into
+- **Page switches are recorded in the transcript.** The panel keeps the active
+  conversation per _workspace_, so walking to another page keeps typing into
   the same transcript. `ConversationsService.postMessage` compares the turn's
   page against `AiConversation.documentId` and, if the conversation already
   has messages, writes a `SYSTEM` message (`↳ Kontextwechsel: …`) immediately
   before the user message that caused it, then rebinds the conversation.
   Without it, everything above the switch would silently refer to a different
   page than everything below.
-* **Absent and `null` mean different things.** An omitted `documentId` in
+- **Absent and `null` mean different things.** An omitted `documentId` in
   `postConversationMessageRequestSchema` means "this client does not track
   pages" and inherits the conversation's binding (MCP, scripts); an explicit
   `null` means "the user is somewhere without a page" and clears it. Treating
   both alike would make leaving a page impossible.
-* **Visible and revocable.** A chip above the composer names the open page, and
+- **Visible and revocable.** A chip above the composer names the open page, and
   removing it is not cosmetic: it flips `AiConversation.pageContextEnabled`, and
   the run then carries no `documentId` at all. `/context` reports the same state
   and `/context on|off` sets it. The rule the panel promises is "what stands in
   the chip row goes out, what does not stand there does not" — which is why the
   switch marker below is suppressed along with everything else while the context
   is off: the marker names the page and is itself a disclosure.
-* **Standing on a page and disclosing it are separate.** `documentId` keeps
+- **Standing on a page and disclosing it are separate.** `documentId` keeps
   recording where the user is even while the context is off, so `/context on`
   has something to turn back on and the panel does not forget its place. Only
   `AiRun.documentId` is emptied.
-* **A database page is described, not pointed at.** A collection is a shape, not
+- **A database page is described, not pointed at.** A collection is a shape, not
   a text: `exo_page_read` on one returns nothing useful. So `describeCollection`
   (`apps/worker/src/collection-context.ts`) renders its columns with their types
   and selectable options, the open view's filters and sorts in German with ids
@@ -211,7 +211,7 @@ system prompt.
   through `queryDatabaseRows`, the same engine the table on screen uses, so the
   description and the screen cannot drift apart. Everything past those rows is
   `exo_database_query`'s job, and the block says so.
-* **The open view travels with the run.** `AiRun.databaseViewId` exists because
+- **The open view travels with the run.** `AiRun.databaseViewId` exists because
   rows only mean something through a view's filters: describing the page without
   the view would describe a different table than the one on screen, and "how
   many are still open" would answer about the wrong set. The full-page database
@@ -219,7 +219,7 @@ system prompt.
   (`onActiveViewResolved`), the panel sends it, and the API verifies it belongs
   to the disclosed page before storing it. An embedded database does not
   publish: it is a block inside a page, not the page.
-* **A selection is handed over, not sent.** The editor's bubble menu has "An KI
+- **A selection is handed over, not sent.** The editor's bubble menu has "An KI
   schicken": it puts the selected text and the block ids the range touches
   (`collectBlockIdsInRange`, `packages/editor/src/block-id.ts`) into a small
   React context (`apps/web/src/components/ai/ai-selection.tsx`), opens the
@@ -227,19 +227,19 @@ system prompt.
   and the chip is cleared afterwards so the passage is not silently attached to
   every following question. A selection taken from another page is dropped
   rather than carried along, because out of context it is an unlabelled quote.
-* **The selection lands in the transcript, not in one run's prompt.** It becomes
+- **The selection lands in the transcript, not in one run's prompt.** It becomes
   a `SYSTEM` message (`↳ Ausgewählter Abschnitt …`) right before the question it
   belongs to, so the user can see exactly what was sent, later turns can refer
   back to it, and `/clear` and auto-compaction treat it like any other message.
-  It is capped at `MAX_SELECTION_CHARS` (4 000) and the cut is stated *in the
-  text*, so the model can tell an excerpt from the whole thing. This is document
+  It is capped at `MAX_SELECTION_CHARS` (4 000) and the cut is stated _in the
+  text_, so the model can tell an excerpt from the whole thing. This is document
   content leaving the system — but content the user picked, saw in a chip and
   sent on purpose, which is why it goes even when the page context is off.
-* **The id is checked.** Because the title and path now reach the prompt, a
+- **The id is checked.** Because the title and path now reach the prompt, a
   `documentId` named by the caller is verified through
   `WorkspaceAccessService.findDocumentContext` and must belong to the
   conversation's workspace; otherwise the request fails with
-  `document_access_denied`. A page the conversation was merely *bound to*
+  `document_access_denied`. A page the conversation was merely _bound to_
   earlier and that has since been deleted degrades to "no page" instead,
   so a dead binding cannot lock a user out of their own transcript.
 
@@ -249,12 +249,12 @@ Conversation-backed runs (never the legacy `messages`-only path) can call the
 same `exo_*` tool catalogue the external MCP server serves
 (`@exocortex/mcp-tools`, see `docs/mcp.md`).
 
-* **Authorization stays in `apps/api`.** The worker mints a short-lived
+- **Authorization stays in `apps/api`.** The worker mints a short-lived
   `exos_`-prefixed service token for the run's own user
   (`packages/auth/src/service-token.ts`, D3) and calls the REST API through it
   (`apps/worker/src/tool-runner.ts`). There is no privileged path: a tool call
   can do exactly what that human could do through the API, nothing more.
-* **The loop.** `createAiRunProcessor` streams a turn, and if the model
+- **The loop.** `createAiRunProcessor` streams a turn, and if the model
   requested tool calls, persists the assistant turn (with `toolCalls`,
   verbatim as the provider returned them) and runs each call **sequentially**
   — never in parallel, so two mutating calls to the same document cannot
@@ -265,11 +265,11 @@ same `exo_*` tool catalogue the external MCP server serves
   as the conversation's closing `ASSISTANT` message, since otherwise the next
   user message would build its context from a transcript silently missing
   the assistant's own reply.
-* **Caps.** `ai.maxToolIterations` (default 8) and `ai.budgetMicroUsdPerRun`
+- **Caps.** `ai.maxToolIterations` (default 8) and `ai.budgetMicroUsdPerRun`
   (summed from every turn's reported usage) stop a runaway loop with
   `ai_tool_limit_exceeded` / `ai_budget_exceeded`. `ai.mutatingToolsEnabled`
   gates whether write tools are offered at all.
-* **A truncated turn is never a finished turn.** The `done` event's
+- **A truncated turn is never a finished turn.** The `done` event's
   `finishReason` reaches `TurnResult`, and `'length'` (the output cap ended the
   turn) is handled explicitly: a cut-off text answer is picked up with a
   continuation prompt and the pieces are joined into one result, a cut-off tool
@@ -278,16 +278,16 @@ same `exo_*` tool catalogue the external MCP server serves
   `MAX_TRUNCATION_RETRIES` (3) the run fails with `ai_response_truncated`.
   Without this a run could announce a write, get cut off mid-arguments, write
   nothing and still be stored as `COMPLETED`.
-* **A tool call that never arrived completely fails loudly.** A call without an
+- **A tool call that never arrived completely fails loudly.** A call without an
   id or a name cannot be executed and would produce an assistant message the
   adapter has to drop on the next request; it is published as
   `ai.run.tool_call` `failed`, and a turn left with no runnable call fails with
   `ai_tool_call_invalid`.
-* **A tool error is never a thrown exception.** `ToolRunner.run` always
+- **A tool error is never a thrown exception.** `ToolRunner.run` always
   returns `{ text, isError }` — an unknown tool, invalid JSON arguments, an
   `ExocortexApiError` or a zod validation failure all become a `tool` message
   the model can see and react to, instead of crashing the run.
-* **Unavailable without a service token.** `SERVICE_TOKEN_SECRET` is optional
+- **Unavailable without a service token.** `SERVICE_TOKEN_SECRET` is optional
   (R2); when unset, tools are simply off and the worker logs one warning per
   process instead of per run.
 
@@ -352,18 +352,18 @@ driver to a vision-capable model stops paying for a second call per image.
 extracted — by `exo_attachment_read_text`.
 
 Two engines implement the same `PdfTextExtractor` interface, and the processor
-is handed an ordered *chain* of them rather than a single one:
+is handed an ordered _chain_ of them rather than a single one:
 
-| Engine | Where | Reads scans | Cost |
-| ------ | ----- | ----------- | ---- |
-| `docling` (`packages/ai/src/docling.ts`) | local `docling-serve` container | yes, via RapidOCR | nothing per document, ~1.5 s CPU per page |
-| `openrouter` (`packages/ai/src/pdf-text.ts`) | hosted, `file-parser` plugin with the free `pdf-text` engine | no | billed per page: the whole document comes back as *output* tokens |
+| Engine                                       | Where                                                        | Reads scans       | Cost                                                              |
+| -------------------------------------------- | ------------------------------------------------------------ | ----------------- | ----------------------------------------------------------------- |
+| `docling` (`packages/ai/src/docling.ts`)     | local `docling-serve` container                              | yes, via RapidOCR | nothing per document, ~1.5 s CPU per page                         |
+| `openrouter` (`packages/ai/src/pdf-text.ts`) | hosted, `file-parser` plugin with the free `pdf-text` engine | no                | billed per page: the whole document comes back as _output_ tokens |
 
 **Docling is the default** (`ai.pdfExtractor`). The `pdf-text` parser itself is
 free, but it runs inside a chat completion, so the transcribed document is
 charged as output tokens — about 4 to 5 cents for a 33-page PDF at
 `z-ai/glm-5.2` rates, growing with document length. The local engine costs
-nothing per document *and* reads scans, so the hosted one is the fallback, not
+nothing per document _and_ reads scans, so the hosted one is the fallback, not
 the first choice. It stays selectable because a deployment without the
 container needs some way to read a PDF at all.
 
@@ -372,15 +372,15 @@ the chosen one, in either direction. That chain is the point of the design: a
 `null` from an engine means "found nothing", which for a scan meeting the
 OpenRouter engine is routine, so the next engine gets the same document before
 the attachment is written off. Measured on the same three-page scan: 0
-characters without OCR, 8 378 with it. A *thrown* error no longer ends the
+characters without OCR, 8 378 with it. A _thrown_ error no longer ends the
 chain either — a hosted call timing out is exactly when the local engine should
-get its turn — but a run in which *every* engine threw rethrows, so BullMQ
+get its turn — but a run in which _every_ engine threw rethrows, so BullMQ
 retries instead of recording "no text layer".
 
 Docling runs with a fixed option set (`do_ocr: true`, `force_ocr: false`,
 markdown plus JSON output). Two reasons it is a constant and not a setting:
 docling-serve caches one pipeline per distinct option set and building one costs
-about 18 seconds, and forcing OCR measurably *loses* text on a document that
+about 18 seconds, and forcing OCR measurably _loses_ text on a document that
 already has a text layer (7 549 vs 9 278 characters over three pages). Verified
 against docling-serve 1.29.0 on 2026-08-06.
 
@@ -388,21 +388,21 @@ against docling-serve 1.29.0 on 2026-08-06.
 
 `Attachment.textMetadata` caches what is known about the document, shaped by
 `pdfMetadataSchema` in `@exocortex/contracts`. Three sources see disjoint parts
-of it, which is why the processor merges *every* attempt rather than only the
+of it, which is why the processor merges _every_ attempt rather than only the
 winning one:
 
-| | title, author, creator, producer, dates | pages | tables, pictures | confidence | OCR used |
-| --- | --- | --- | --- | --- | --- |
-| `pdf-info` (`packages/ai/src/pdf-info.ts`) | yes, from the PDF's own `/Info` dictionary | yes | no | no | no |
-| `docling` | no | yes | yes | yes | yes |
-| `openrouter` | yes, as transcribed by the plugin | yes | no | no | always false |
+|                                            | title, author, creator, producer, dates    | pages | tables, pictures | confidence | OCR used     |
+| ------------------------------------------ | ------------------------------------------ | ----- | ---------------- | ---------- | ------------ |
+| `pdf-info` (`packages/ai/src/pdf-info.ts`) | yes, from the PDF's own `/Info` dictionary | yes   | no               | no         | no           |
+| `docling`                                  | no                                         | yes   | yes              | yes        | yes          |
+| `openrouter`                               | yes, as transcribed by the plugin          | yes   | no               | no         | always false |
 
 **`pdf-info` is not an engine.** It reads the `/Info` dictionary out of the
 file with `pdf-lib`, locally and for free, before any engine runs, and it never
 produces text — so it deliberately does not implement `PdfTextExtractor` and
 does not count towards the processor's "is any engine configured" check.
 
-It exists because the dictionary used to be reachable *only* through the paid
+It exists because the dictionary used to be reachable _only_ through the paid
 engine. Docling returns none of it: verified on 2026-08-06 against the live
 container with a PDF carrying all five entries, where its `origin` is limited
 to `{mimetype, binary_hash, filename}` and not one value appears anywhere in
@@ -419,10 +419,10 @@ no readable content" is a useful answer.
 
 Two read routes:
 
-* `GET /api/attachments/:id/text` returns the text and the metadata, and a read
-  *is* the request to extract — a PDF that was never attempted, or whose last
+- `GET /api/attachments/:id/text` returns the text and the metadata, and a read
+  _is_ the request to extract — a PDF that was never attempted, or whose last
   attempt failed, is (re-)enqueued.
-* `GET /api/attachments/:id/text/info` returns everything except the text and
+- `GET /api/attachments/:id/text/info` returns everything except the text and
   never enqueues. This is what the editor's PDF block reads on render: pulling
   up to 400 000 characters to draw a one-line header would be wasteful, and an
   enqueue on render would mean a page full of failed PDFs re-runs extraction
@@ -452,20 +452,20 @@ limitations").
 
 ## Known limitations
 
-* **`/compact` is advisory only.** Running it from the API process would
+- **`/compact` is advisory only.** Running it from the API process would
   call a provider from inside `apps/api`, which the execution boundary above
   forbids. It reports that auto-compaction happens automatically instead;
   `/clear` covers the case where the user wants the context gone
   immediately.
-* **Reasoning deltas are dropped.** `OpenRouterProvider.stream` deliberately
+- **Reasoning deltas are dropped.** `OpenRouterProvider.stream` deliberately
   discards `delta.reasoning` chunks rather than folding them into
   `resultText` — surfacing model "thinking" is a later feature.
-* **`POST /api/documents/:id/content` can lose against a live Hocuspocus
+- **`POST /api/documents/:id/content` can lose against a live Hocuspocus
   session.** A document being edited collaboratively has its canonical state
   in memory in `apps/collaboration`; a programmatic content write snapshots
   first (revertable) but can still be overwritten by the next debounced
   store. Documented, not fixed, tonight.
-* **`ai.pdfExtractionModelSlug` is not wired into the worker's PDF extractor
+- **`ai.pdfExtractionModelSlug` is not wired into the worker's PDF extractor
   yet.** The extractor is a single boot-time instance built from
   `OPENROUTER_DEFAULT_MODEL`; making the DB setting effective would mean
   rebuilding it per job the way `visionPreprocessorFor` already does.
@@ -474,9 +474,9 @@ limitations").
 
 CLI agents must never run inside a process that serves traffic:
 
-* not in `apps/api`
-* not in `apps/web`
-* not in `apps/collaboration`
+- not in `apps/api`
+- not in `apps/web`
+- not in `apps/collaboration`
 
 `packages/ai/src/agent-runners.ts` defines `AgentRunner` with an isolation
 capability (`container` / `separate-process` / `none`), a sandbox working directory,
@@ -584,10 +584,10 @@ placing one more paid call.
 Two settings, one derivation (`deriveAiRunTimeouts`,
 `packages/contracts/src/ai-runtime.ts`):
 
-| Setting | Default | Governs |
-| --- | --- | --- |
-| `ai.timeoutMs` | 180 000 ms | One model answer (one turn). |
-| `ai.maxRunMs` | 900 000 ms | The whole run: every turn and every tool round-trip. |
+| Setting        | Default    | Governs                                              |
+| -------------- | ---------- | ---------------------------------------------------- |
+| `ai.timeoutMs` | 180 000 ms | One model answer (one turn).                         |
+| `ai.maxRunMs`  | 900 000 ms | The whole run: every turn and every tool round-trip. |
 
 `ai.maxRunMs` can never end up shorter than `ai.timeoutMs` — a run with tools
 enabled could otherwise never finish even its first answer — so an admin
@@ -606,7 +606,7 @@ Three independent mechanisms end a run that overruns its budget, so "stuck on
 1. **The worker's own two `AbortController`s.** A per-turn timer aborts a
    single slow answer; a per-run timer aborts the whole thing once
    `ai.maxRunMs` elapses. Either produces `TIMED_OUT` with `errorCode:
-   'ai_timeout'`.
+'ai_timeout'`.
 2. **The heartbeat as the cancellation channel.** The run writes a
    `heartbeatAt` timestamp every few seconds through a status-filtered
    `updateMany` (`status: 'RUNNING'`); `count === 0` means the row left

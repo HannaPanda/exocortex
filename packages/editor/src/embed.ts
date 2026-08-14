@@ -258,7 +258,10 @@ export const embedPlainTextAdapter: PlainTextAdapter = {
     bookmark: (node) => {
       const title = stringAttribute(node.attrs?.title);
       const description = stringAttribute(node.attrs?.description);
-      return [title, description].filter((part) => part.length > 0).join(' ').concat('\n');
+      return [title, description]
+        .filter((part) => part.length > 0)
+        .join(' ')
+        .concat('\n');
     },
   },
 };

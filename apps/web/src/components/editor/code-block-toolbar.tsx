@@ -73,7 +73,9 @@ export function CodeBlockToolbar({ editor }: { editor: Editor }) {
           <SelectTrigger size="sm" aria-label="Sprache" data-testid="code-language-trigger">
             {/* Base UI shows the raw value without a render function. */}
             <SelectValue>
-              {() => CODE_BLOCK_LANGUAGES.find((entry) => entry.value === language)?.label ?? language}
+              {() =>
+                CODE_BLOCK_LANGUAGES.find((entry) => entry.value === language)?.label ?? language
+              }
             </SelectValue>
           </SelectTrigger>
           <SelectContent>

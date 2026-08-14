@@ -52,9 +52,7 @@ function renderRun(run: AiRun): string {
   }
   if (run.resultText !== null && run.resultText.length > 0) {
     const label =
-      run.status === 'pending' || run.status === 'running'
-        ? 'Antwort bisher'
-        : 'Antwort';
+      run.status === 'pending' || run.status === 'running' ? 'Antwort bisher' : 'Antwort';
     lines.push(`${label}:\n${truncateText(run.resultText, MAX_RESULT_TEXT_CHARS).text}`);
   }
   return lines.join('\n');

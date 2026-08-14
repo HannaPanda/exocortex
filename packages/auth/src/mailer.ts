@@ -177,7 +177,9 @@ export function createMailer(options: MailerOptions): Mailer {
 export function createNoopMailer(logger: Logger): Mailer {
   return {
     async sendVerificationEmail({ to }) {
-      logger.warn('Verification email suppressed (noop mailer)', { recipientDomain: to.split('@')[1] });
+      logger.warn('Verification email suppressed (noop mailer)', {
+        recipientDomain: to.split('@')[1],
+      });
     },
     async sendPasswordResetEmail({ to }) {
       logger.warn('Password reset email suppressed (noop mailer)', {

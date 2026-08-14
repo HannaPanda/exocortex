@@ -6,10 +6,7 @@ import { getExocortexSchema } from './schema';
 
 /** Builds a document from a compact description, so the cases stay readable. */
 function build(
-  blocks: readonly (
-    | { heading: number; collapsed?: boolean; text?: string }
-    | { text: string }
-  )[],
+  blocks: readonly ({ heading: number; collapsed?: boolean; text?: string } | { text: string })[],
 ): ProseMirrorDocument {
   return {
     type: 'doc',
@@ -36,7 +33,11 @@ function build(
  */
 function hiddenTexts(document: ProseMirrorDocument): string[] {
   const doc = getExocortexSchema().nodeFromJSON(document);
-  const hiddenFrom = new Set(collapsedDecorations(doc).find().map((decoration) => decoration.from));
+  const hiddenFrom = new Set(
+    collapsedDecorations(doc)
+      .find()
+      .map((decoration) => decoration.from),
+  );
 
   const hidden: string[] = [];
   let offset = 0;

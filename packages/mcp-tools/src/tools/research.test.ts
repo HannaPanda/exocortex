@@ -75,8 +75,12 @@ describe('search (deep research)', () => {
   it('merges hits from every workspace and ranks them together', async () => {
     const { client, calls } = createFakeClient(
       {
-        '/api/workspaces': { workspaces: [workspace('ws11111111', 'Brain'), workspace('ws22222222', 'Arbeit')] },
-        '/api/workspaces/ws11111111/search': searchResponse([hit({ rank: 0.2, documentId: 'docLow0001' })]),
+        '/api/workspaces': {
+          workspaces: [workspace('ws11111111', 'Brain'), workspace('ws22222222', 'Arbeit')],
+        },
+        '/api/workspaces/ws11111111/search': searchResponse([
+          hit({ rank: 0.2, documentId: 'docLow0001' }),
+        ]),
         '/api/workspaces/ws22222222/search': searchResponse([
           hit({ rank: 0.9, documentId: 'docHigh001', workspaceId: 'ws22222222', title: 'Termine' }),
         ]),

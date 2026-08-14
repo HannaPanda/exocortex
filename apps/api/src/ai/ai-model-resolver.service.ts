@@ -133,7 +133,10 @@ export class AiModelResolverService {
    * conversation may legitimately still point at a retired model). No `slug`
    * resolves the deployment default.
    */
-  async resolve(input: { slug?: string | null; allowDisabled?: boolean }): Promise<ResolvedAiModel> {
+  async resolve(input: {
+    slug?: string | null;
+    allowDisabled?: boolean;
+  }): Promise<ResolvedAiModel> {
     if (input.slug === undefined || input.slug === null) {
       return this.resolveDefault();
     }

@@ -90,7 +90,8 @@ function commitOnEnterOrBlur(onCommit: () => void) {
 }
 
 const CELL_BOX = 'flex min-h-8 w-full items-start px-1.5 py-1.5 text-left text-sm';
-const CELL_INTERACTIVE = 'rounded-md hover:bg-accent-solid focus-visible:ring-1 focus-visible:ring-ring outline-none';
+const CELL_INTERACTIVE =
+  'rounded-md hover:bg-accent-solid focus-visible:ring-1 focus-visible:ring-ring outline-none';
 
 /**
  * A text value that can be longer than its column, in two states.
@@ -171,7 +172,11 @@ function ExpandableTextCell({
     >
       <PopoverTrigger
         render={
-          <button type="button" className={cn(CELL_BOX, CELL_INTERACTIVE)} data-testid="cell-expand">
+          <button
+            type="button"
+            className={cn(CELL_BOX, CELL_INTERACTIVE)}
+            data-testid="cell-expand"
+          >
             {preview}
           </button>
         }
@@ -324,7 +329,8 @@ export function formatDateValue(property: DatabaseProperty, value: CellValue): s
 
   const withTime = config.includeTime && !allDay;
   const day = (iso: string) => new Date(iso).toLocaleDateString('de-DE');
-  const time = (iso: string) => new Date(iso).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  const time = (iso: string) =>
+    new Date(iso).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   const full = (iso: string) => (withTime ? `${day(iso)}, ${time(iso)}` : day(iso));
 
   if (end === null) return full(start);
@@ -383,7 +389,11 @@ function DateCell({ property, value, onChange, readOnly }: PropertyCellProps) {
           const start = inputToIso(event.target.value, includeTime);
           // Clearing the start clears the whole span: an end without a
           // beginning is not a value the API accepts.
-          emit(start === null ? { start: null, end: null, allDay: current.allDay } : { ...current, start });
+          emit(
+            start === null
+              ? { start: null, end: null, allDay: current.allDay }
+              : { ...current, start },
+          );
         }}
       />
       <Input
@@ -406,7 +416,11 @@ function OptionBadge({ optionId, property }: { optionId: string; property: Datab
   return (
     <Badge
       variant="outline"
-      className={cn('border-transparent', OPTION_COLOR_BG_CLASS[option.color], OPTION_COLOR_TEXT_CLASS[option.color])}
+      className={cn(
+        'border-transparent',
+        OPTION_COLOR_BG_CLASS[option.color],
+        OPTION_COLOR_TEXT_CLASS[option.color],
+      )}
     >
       {option.label}
     </Badge>
@@ -418,7 +432,11 @@ function SelectCell({ property, value, onChange, readOnly }: PropertyCellProps) 
   const selected = typeof value === 'string' ? value : null;
 
   if (readOnly) {
-    return <div className="flex min-h-8 items-center px-1.5">{selected !== null ? <OptionBadge optionId={selected} property={property} /> : null}</div>;
+    return (
+      <div className="flex min-h-8 items-center px-1.5">
+        {selected !== null ? <OptionBadge optionId={selected} property={property} /> : null}
+      </div>
+    );
   }
 
   return (
@@ -429,7 +447,11 @@ function SelectCell({ property, value, onChange, readOnly }: PropertyCellProps) 
             type="button"
             className="flex min-h-8 w-full items-center gap-1 rounded-md px-1.5 text-left hover:bg-accent-solid"
           >
-            {selected !== null ? <OptionBadge optionId={selected} property={property} /> : <span className="text-sm text-muted-foreground">Leer</span>}
+            {selected !== null ? (
+              <OptionBadge optionId={selected} property={property} />
+            ) : (
+              <span className="text-sm text-muted-foreground">Leer</span>
+            )}
           </button>
         }
       />
@@ -456,7 +478,11 @@ function SelectCell({ property, value, onChange, readOnly }: PropertyCellProps) 
           >
             <Badge
               variant="outline"
-              className={cn('border-transparent', OPTION_COLOR_BG_CLASS[option.color], OPTION_COLOR_TEXT_CLASS[option.color])}
+              className={cn(
+                'border-transparent',
+                OPTION_COLOR_BG_CLASS[option.color],
+                OPTION_COLOR_TEXT_CLASS[option.color],
+              )}
             >
               {option.label}
             </Badge>
@@ -480,7 +506,9 @@ function MultiSelectCell({
 
   const toggle = (optionId: string) => {
     onChange(
-      selected.includes(optionId) ? selected.filter((entry) => entry !== optionId) : [...selected, optionId],
+      selected.includes(optionId)
+        ? selected.filter((entry) => entry !== optionId)
+        : [...selected, optionId],
     );
   };
 
@@ -507,7 +535,11 @@ function MultiSelectCell({
             type="button"
             className="flex min-h-8 w-full items-center rounded-md px-1.5 py-1 text-left hover:bg-accent-solid"
           >
-            {selected.length > 0 ? badges : <span className="text-sm text-muted-foreground">Leer</span>}
+            {selected.length > 0 ? (
+              badges
+            ) : (
+              <span className="text-sm text-muted-foreground">Leer</span>
+            )}
           </button>
         }
       />
@@ -521,7 +553,11 @@ function MultiSelectCell({
           >
             <Badge
               variant="outline"
-              className={cn('border-transparent', OPTION_COLOR_BG_CLASS[option.color], OPTION_COLOR_TEXT_CLASS[option.color])}
+              className={cn(
+                'border-transparent',
+                OPTION_COLOR_BG_CLASS[option.color],
+                OPTION_COLOR_TEXT_CLASS[option.color],
+              )}
             >
               {option.label}
             </Badge>
@@ -561,7 +597,10 @@ function IdListCell(props: PropertyCellProps) {
 function formatComputed(property: DatabaseProperty, value: CellValue): string {
   if (value === null) return '—';
   if (property.type === 'CREATED_TIME' || property.type === 'UPDATED_TIME') {
-    return new Date(String(value)).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
+    return new Date(String(value)).toLocaleString('de-DE', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
   }
   return String(value);
 }
@@ -577,8 +616,14 @@ function ReadonlyCell({
 }) {
   const text = formatComputed(property, value);
   return (
-    <div className="flex min-h-8 items-start px-1.5 py-1.5 text-sm text-muted-foreground" data-testid="readonly-cell">
-      <span title={text} className={cn('break-words whitespace-normal', ROW_HEIGHT_LINE_CLAMP[rowHeight])}>
+    <div
+      className="flex min-h-8 items-start px-1.5 py-1.5 text-sm text-muted-foreground"
+      data-testid="readonly-cell"
+    >
+      <span
+        title={text}
+        className={cn('break-words whitespace-normal', ROW_HEIGHT_LINE_CLAMP[rowHeight])}
+      >
         {text}
       </span>
     </div>
@@ -596,15 +641,25 @@ export function isArrayProperty(property: DatabaseProperty): boolean {
  * native `<input type="date">` with its browser-locale chrome and calendar
  * icon still showing through.
  */
-export function PropertyValueDisplay({ property, value }: { property: DatabaseProperty; value: CellValue }) {
+export function PropertyValueDisplay({
+  property,
+  value,
+}: {
+  property: DatabaseProperty;
+  value: CellValue;
+}) {
   if (value === null || (Array.isArray(value) && value.length === 0)) return null;
 
   if (property.type === 'CHECKBOX') {
-    return value === true ? <CheckIcon className="size-3.5 text-primary-text" aria-label="Erledigt" /> : null;
+    return value === true ? (
+      <CheckIcon className="size-3.5 text-primary-text" aria-label="Erledigt" />
+    ) : null;
   }
   if (property.type === 'DATE') {
     const formatted = formatDateValue(property, value);
-    return formatted === null ? null : <span className="text-xs text-muted-foreground">{formatted}</span>;
+    return formatted === null ? null : (
+      <span className="text-xs text-muted-foreground">{formatted}</span>
+    );
   }
   if (property.type === 'SELECT' && typeof value === 'string') {
     return <OptionBadge optionId={value} property={property} />;

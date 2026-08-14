@@ -174,13 +174,18 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
       hasId ? { jsonrpc: '2.0', id, result } : null;
     const respondError = (code: number, message: string, data?: unknown): JsonRpcResponse | null =>
       hasId
-        ? { jsonrpc: '2.0', id, error: data === undefined ? { code, message } : { code, message, data } }
+        ? {
+            jsonrpc: '2.0',
+            id,
+            error: data === undefined ? { code, message } : { code, message, data },
+          }
         : null;
 
     switch (request.method) {
       case 'initialize': {
         const params = isRecord(request.params) ? request.params : {};
-        const asked = typeof params.protocolVersion === 'string' ? params.protocolVersion : undefined;
+        const asked =
+          typeof params.protocolVersion === 'string' ? params.protocolVersion : undefined;
         const known = SUPPORTED_PROTOCOL_VERSIONS.find((version) => version === asked);
         return respond({
           protocolVersion: known ?? LATEST_PROTOCOL_VERSION,

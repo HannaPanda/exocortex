@@ -5,59 +5,59 @@ authorization mechanism.
 
 ## Where each rule lives
 
-| Rule | Enforced in | Verified by |
-| ---- | ----------- | ----------- |
-| Workspace access is checked server-side | `WorkspaceAccessService.requireRole`, `canReadWorkspace` | `security.spec.ts` → "a foreign workspace is not readable" |
-| Document access is checked server-side | `WorkspaceAccessService.requireDocumentContext`, `canReadDocument` | "a document from another workspace is not readable" |
-| WebSocket subscriptions are checked server-side | `RealtimeGateway.subscribeWorkspace` + `canSubscribeToWorkspaceRoom` | `policies.test.ts` → "realtime subscriptions"; unauthenticated sockets are disconnected in `handleConnection` |
-| Hocuspocus access is checked server-side | `apps/collaboration/src/server.ts` `onAuthenticate` | `collaboration.integration.test.ts` (4 tests) |
-| Object storage access is checked server-side | `AttachmentsService.download` + `canDownloadAttachment`; the bucket is private, downloads are pre-signed | "an unauthorized attachment download is rejected" |
-| API keys never reach the browser | only `PUBLIC_*` values are exposed (`apps/web/next.config.ts`); `apps/web` may not import `@exocortex/ai` | `scripts/check-dependency-boundaries.mjs` |
-| Collaboration tickets expire quickly | `COLLABORATION_TICKET_TTL_SECONDS` (default 60, max 600) | "a collaboration ticket is scoped to one document and expires quickly", "rejects an expired ticket" |
-| Archived documents cannot be edited | `canEditDocument`, plus a second check in `DocumentPersistence.store` | "an archived document cannot be edited", "rejects a write ticket for an archived document by downgrading to read-only" |
-| Deleting a page for good needs ADMIN, and the trash first | `canDeleteDocument` | "refuses a member without the ADMIN role", "refuses to delete a page that is not archived" |
-| Read-only tickets cannot submit updates | `connectionConfig.readOnly = true` in `onAuthenticate` | "refuses updates from a read-only connection" |
-| Cross-workspace moves are rejected | `canMoveDocument` | "a cross-workspace parent assignment is rejected" |
-| Circular moves are rejected | `wouldCreateCycle` inside the move transaction | "a circular move is rejected" |
-| All user input is validated | `ZodValidationPipe` + `packages/contracts`; job payloads in `createTypedWorker` | "request validation rejects malformed payloads" |
-| Destructive operations are audited | `OutboxService.writeAudit` in the same transaction | `AuditLog` rows; audit metadata never contains content |
-| Secrets are redacted from logs | `packages/logger/src/redaction.ts` | `logger.test.ts` (4 tests) |
-| Document contents are not written to logs | the same redaction list covers `yjsState`, `proseMirrorJson`, `plainText`, `markdown`, `content` | `logger.test.ts` → "redacts document payloads" |
-| Passwords and session tokens are never logged | redaction list + Better Auth stores only hashes | `logger.test.ts` |
-| Upload size is limited | `MAX_UPLOAD_BYTES` in `@fastify/multipart` *and* a second check in the service; `client_max_body_size 32m` in nginx | `AttachmentsService.upload` |
-| MIME types are inspected | `detectMimeType` reads magic bytes; the browser type is only a hint | "uploads reject a file whose real type is not allowed" |
-| Rate limiting is enabled | `ThrottlerGuard` (300 req/min) plus explicit Better Auth limits | `x-ratelimit-*` response headers |
-| Secure headers are configured | `@fastify/helmet` for the API, `headers()` in `next.config.ts`, plus nginx defaults | "security headers and health endpoints are in place" |
+| Rule                                                      | Enforced in                                                                                                         | Verified by                                                                                                            |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Workspace access is checked server-side                   | `WorkspaceAccessService.requireRole`, `canReadWorkspace`                                                            | `security.spec.ts` → "a foreign workspace is not readable"                                                             |
+| Document access is checked server-side                    | `WorkspaceAccessService.requireDocumentContext`, `canReadDocument`                                                  | "a document from another workspace is not readable"                                                                    |
+| WebSocket subscriptions are checked server-side           | `RealtimeGateway.subscribeWorkspace` + `canSubscribeToWorkspaceRoom`                                                | `policies.test.ts` → "realtime subscriptions"; unauthenticated sockets are disconnected in `handleConnection`          |
+| Hocuspocus access is checked server-side                  | `apps/collaboration/src/server.ts` `onAuthenticate`                                                                 | `collaboration.integration.test.ts` (4 tests)                                                                          |
+| Object storage access is checked server-side              | `AttachmentsService.download` + `canDownloadAttachment`; the bucket is private, downloads are pre-signed            | "an unauthorized attachment download is rejected"                                                                      |
+| API keys never reach the browser                          | only `PUBLIC_*` values are exposed (`apps/web/next.config.ts`); `apps/web` may not import `@exocortex/ai`           | `scripts/check-dependency-boundaries.mjs`                                                                              |
+| Collaboration tickets expire quickly                      | `COLLABORATION_TICKET_TTL_SECONDS` (default 60, max 600)                                                            | "a collaboration ticket is scoped to one document and expires quickly", "rejects an expired ticket"                    |
+| Archived documents cannot be edited                       | `canEditDocument`, plus a second check in `DocumentPersistence.store`                                               | "an archived document cannot be edited", "rejects a write ticket for an archived document by downgrading to read-only" |
+| Deleting a page for good needs ADMIN, and the trash first | `canDeleteDocument`                                                                                                 | "refuses a member without the ADMIN role", "refuses to delete a page that is not archived"                             |
+| Read-only tickets cannot submit updates                   | `connectionConfig.readOnly = true` in `onAuthenticate`                                                              | "refuses updates from a read-only connection"                                                                          |
+| Cross-workspace moves are rejected                        | `canMoveDocument`                                                                                                   | "a cross-workspace parent assignment is rejected"                                                                      |
+| Circular moves are rejected                               | `wouldCreateCycle` inside the move transaction                                                                      | "a circular move is rejected"                                                                                          |
+| All user input is validated                               | `ZodValidationPipe` + `packages/contracts`; job payloads in `createTypedWorker`                                     | "request validation rejects malformed payloads"                                                                        |
+| Destructive operations are audited                        | `OutboxService.writeAudit` in the same transaction                                                                  | `AuditLog` rows; audit metadata never contains content                                                                 |
+| Secrets are redacted from logs                            | `packages/logger/src/redaction.ts`                                                                                  | `logger.test.ts` (4 tests)                                                                                             |
+| Document contents are not written to logs                 | the same redaction list covers `yjsState`, `proseMirrorJson`, `plainText`, `markdown`, `content`                    | `logger.test.ts` → "redacts document payloads"                                                                         |
+| Passwords and session tokens are never logged             | redaction list + Better Auth stores only hashes                                                                     | `logger.test.ts`                                                                                                       |
+| Upload size is limited                                    | `MAX_UPLOAD_BYTES` in `@fastify/multipart` _and_ a second check in the service; `client_max_body_size 32m` in nginx | `AttachmentsService.upload`                                                                                            |
+| MIME types are inspected                                  | `detectMimeType` reads magic bytes; the browser type is only a hint                                                 | "uploads reject a file whose real type is not allowed"                                                                 |
+| Rate limiting is enabled                                  | `ThrottlerGuard` (300 req/min) plus explicit Better Auth limits                                                     | `x-ratelimit-*` response headers                                                                                       |
+| Secure headers are configured                             | `@fastify/helmet` for the API, `headers()` in `next.config.ts`, plus nginx defaults                                 | "security headers and health endpoints are in place"                                                                   |
 
 ## Authentication
 
-* Better Auth 1.6 with the Prisma adapter, email and password.
-* Passwords: minimum 12 characters, scrypt-hashed by Better Auth. The seed script
+- Better Auth 1.6 with the Prisma adapter, email and password.
+- Passwords: minimum 12 characters, scrypt-hashed by Better Auth. The seed script
   reproduces the same format so a seeded account can log in normally.
-* Sessions: `httpOnly`, `sameSite=lax`, `Secure` when `APP_URL` is HTTPS, cookie
+- Sessions: `httpOnly`, `sameSite=lax`, `Secure` when `APP_URL` is HTTPS, cookie
   prefix `exocortex`, 30-day lifetime with a 1-day refresh window.
-* Self-registration is **off** (`emailAndPassword.disableSignUp`). This is a
+- Self-registration is **off** (`emailAndPassword.disableSignUp`). This is a
   private deployment for a handful of known people, so an open `/sign-up/email`
   only ever creates accounts nobody asked for, and each one can send a
   verification mail through our SMTP credentials. `/registrieren` does not exist
   in the frontend either. Accounts come from the seed script or from an
   **invitation** (see below); there is no third way in.
-* Email verification and password reset send real mail. The relay is configured
+- Email verification and password reset send real mail. The relay is configured
   through `SMTP_HOST`/`SMTP_PORT`/`SMTP_FROM` plus the optional
   `SMTP_USER`/`SMTP_PASSWORD` pair; supplying credentials switches the transport
   to STARTTLS and makes it **refuse to send** rather than fall back to a
   plaintext session, so the password cannot cross the wire in the clear. Without
   credentials the mailer talks to Mailpit as before.
-* `requireEmailVerification` is `false`. Verification exists to stop someone
+- `requireEmailVerification` is `false`. Verification exists to stop someone
   registering with an address they do not own, and `disableSignUp` already makes
   that impossible: a seeded account is created by whoever runs the deployment,
   and an invited one proves the address by the token arriving there and coming
   back (which is why redemption sets `emailVerified` itself). Turning the flag on
   would add nothing and would still lock out any account whose address was never
   verified, which includes the only administrator.
-* Sign-in, sign-up and password-reset endpoints have explicit per-IP rate limits
+- Sign-in, sign-up and password-reset endpoints have explicit per-IP rate limits
   (10/min, 5/min, 5 per 5 min).
-* Those limits are only worth anything if the client address cannot be chosen by
+- Those limits are only worth anything if the client address cannot be chosen by
   the client. Two things guarantee that, and both are load-bearing: nginx sets
   `X-Forwarded-For` to `$remote_addr` rather than appending to what the caller
   sent, and Fastify runs with `trustProxy: 1` so the address is read from the
@@ -82,36 +82,36 @@ replayed into accounts.
 
 Properties worth stating:
 
-* **The address is not an input.** `POST /api/invitations/accept` takes the token,
+- **The address is not an input.** `POST /api/invitations/accept` takes the token,
   a name and a password. The address comes from the invitation, so a valid token
   cannot be used to register somebody else's address.
-* **One use.** Redemption claims the row with an `updateMany` that only matches
+- **One use.** Redemption claims the row with an `updateMany` that only matches
   while `acceptedAt` is null, inside the same transaction that creates the account
   and the membership. Two simultaneous redemptions produce one account and one
   `invitation_already_used`.
-* **Every wrong token looks the same.** Unknown, revoked and malformed tokens all
+- **Every wrong token looks the same.** Unknown, revoked and malformed tokens all
   answer `invitation_invalid` (404). Only expiry gets its own code, because that
   one is actionable by the person holding it.
-* **The token stays out of URLs on the API side.** Both public routes are POSTs
+- **The token stays out of URLs on the API side.** Both public routes are POSTs
   with the token in the body, so it does not reach nginx's access log twice. Once
   is unavoidable: the link a person clicks is a URL. That is why it expires and
   works once.
-* **Own rate limits.** `preview` 10/min, `accept` 5/min per address, far below the
+- **Own rate limits.** `preview` 10/min, `accept` 5/min per address, far below the
   global 300/min. These are the only routes an anonymous request can use to create
   a row, and a redemption costs a scrypt hash.
-* **Re-sending rotates the token.** The usual reason to re-send is that the first
+- **Re-sending rotates the token.** The usual reason to re-send is that the first
   mail went astray, and a link that went astray should stop working.
-* **A failed mail does not roll the invitation back.** `emailSent: false` comes
+- **A failed mail does not roll the invitation back.** `emailSent: false` comes
   back with a working link to hand over directly. The alternative would leave an
   administrator with a broken relay and no way to invite anybody, which is the
   situation the feature exists to escape.
 
 Who may invite:
 
-| Caller | Where | Global admin rights |
-| ------ | ----- | ------------------- |
-| global `ADMIN` | any workspace, or none | may grant |
-| workspace `OWNER`/`ADMIN` | their own workspace only | never |
+| Caller                    | Where                    | Global admin rights |
+| ------------------------- | ------------------------ | ------------------- |
+| global `ADMIN`            | any workspace, or none   | may grant           |
+| workspace `OWNER`/`ADMIN` | their own workspace only | never               |
 
 The second row does create an instance account as a side effect. That is
 deliberate: in a deployment for a handful of friends, a workspace owner who cannot
@@ -132,12 +132,12 @@ deleting the account would take the pages with it.
 Disabling is not a flag that has to be checked on every request. It takes effect
 by removing what the account can act with, in one transaction:
 
-* every `Session` row is deleted,
-* every unrevoked `ApiToken` is revoked,
-* every `OauthAccessToken` is deleted, so a connector stops working immediately
+- every `Session` row is deleted,
+- every unrevoked `ApiToken` is revoked,
+- every `OauthAccessToken` is deleted, so a connector stops working immediately
   rather than at the end of its hour.
 
-What is left is making a *new* session, and `databaseHooks.session.create.before`
+What is left is making a _new_ session, and `databaseHooks.session.create.before`
 in `packages/auth/src/auth.ts` refuses that while `disabledAt` is set. Every path
 that creates a session goes through it: the sign-in form, the OAuth authorization
 flow, auto-sign-in after verification. So `SessionGuard` needs no per-request
@@ -167,26 +167,26 @@ token — a CI log, a chat message, a stolen laptop — is a full account takeov
 
 Three cumulative scopes, stored in `ApiToken.scopes`:
 
-| Scope | May do |
-| ----- | ------ |
-| `read` | safe requests (`GET`, `HEAD`, `OPTIONS`) |
-| `write` | additionally create, change and delete content |
+| Scope   | May do                                               |
+| ------- | ---------------------------------------------------- |
+| `read`  | safe requests (`GET`, `HEAD`, `OPTIONS`)             |
+| `write` | additionally create, change and delete content       |
 | `admin` | additionally `/api/admin/*` and `/api/me/api-tokens` |
 
-* `TokenScopeGuard` enforces them, running after `SessionGuard` (which resolves
+- `TokenScopeGuard` enforces them, running after `SessionGuard` (which resolves
   the credential and its scopes) and before `AdminGuard` (which checks the
-  *user's* role). Both must pass: an administrator holding a read-only token is
+  _user's_ role). Both must pass: an administrator holding a read-only token is
   still refused the admin API, and an `admin`-scoped token grants nothing to a
   user who is not one.
-* The required scope is **derived** from method and path, not declared per route.
+- The required scope is **derived** from method and path, not declared per route.
   A `@RequiredScope()` decorator would have to be remembered on every new route,
   and the one that gets forgotten is the one a read-only token can reach.
-* Token management needs `admin`, because managing tokens with a token is how a
+- Token management needs `admin`, because managing tokens with a token is how a
   narrow credential widens itself into a broad one.
-* An empty scope list grants **nothing**. Tokens issued before scoping have an
+- An empty scope list grants **nothing**. Tokens issued before scoping have an
   empty array; migration `20260808230000_api_token_scopes` backfills the ones in
   use to `read,write`, and anything left over fails closed.
-* Cookie sessions and `exos_` service tokens are not scoped. A human at a
+- Cookie sessions and `exos_` service tokens are not scoped. A human at a
   browser already is the account, and a service token is minted per AI run, or
   per MCP request from an OAuth client, from a credential that was itself
   authorized.
@@ -197,17 +197,17 @@ Three cumulative scopes, stored in `ApiToken.scopes`:
 route in the API that authenticates itself instead of leaving it to
 `SessionGuard`, and it is stricter, not looser:
 
-* **No cookies.** Only a bearer token opens it. A cookie travels with any
+- **No cookies.** Only a bearer token opens it. A cookie travels with any
   request a page can provoke; accepting one would put every mutating tool one
   cross-site request away, and there is no CSRF token to fall back on because
   MCP clients do not have one.
-* **An `exo_` token is passed through** to the endpoint's loopback calls into
+- **An `exo_` token is passed through** to the endpoint's loopback calls into
   the REST API, so `TokenScopeGuard` narrows a tool exactly as it narrows a
   direct request. A read-scoped token cannot write through a tool.
-* **An OAuth access token** is verified against `oauth_access_token`, then
+- **An OAuth access token** is verified against `oauth_access_token`, then
   exchanged for a 120-second `mcp-tools` service token for the loopback. It
   opens no other route. Its limit is the tool list its endpoint serves.
-* **CORS is `*` on this path only**, which is sound precisely because the path
+- **CORS is `*` on this path only**, which is sound precisely because the path
   refuses cookies: a cross-origin caller has nothing ambient to ride on and
   must present a credential a person handed it.
 
@@ -216,7 +216,7 @@ it is: dynamic client registration is open, as the MCP specification requires,
 so anyone can create a client row. That row is worth nothing on its own. What
 turns it into access is a signed-in person answering the consent screen at
 `/verbinden`, and that screen is unconditional — Better Auth would only show it
-when the *client* asks with `prompt=consent`, so `forceConsentPrompt` in the
+when the _client_ asks with `prompt=consent`, so `forceConsentPrompt` in the
 API adds the parameter before the plugin sees the request. Without that, a
 website could redirect a signed-in visitor to the authorization endpoint and
 collect a token with nothing visible happening.
@@ -230,12 +230,12 @@ client kills every token it holds at once, checked on each use.
 
 The architecture is cookie-based, so CSRF protection matters:
 
-* Better Auth validates the `Origin` header against `baseURL` and `trustedOrigins`
+- Better Auth validates the `Origin` header against `baseURL` and `trustedOrigins`
   for every state-changing request.
-* All cookies are `sameSite=lax`, so cross-site POSTs carry no session.
-* The browser only ever calls its own origin; CORS allows exactly `APP_URL` and
+- All cookies are `sameSite=lax`, so cross-site POSTs carry no session.
+- The browser only ever calls its own origin; CORS allows exactly `APP_URL` and
   `PUBLIC_API_URL` with credentials.
-* The API rejects unknown origins rather than reflecting them.
+- The API rejects unknown origins rather than reflecting them.
 
 ## Collaboration tickets
 
@@ -244,19 +244,19 @@ interface CollaborationTicketClaims {
   userId: string;
   documentId: string;
   access: 'read' | 'write';
-  expiresAt: number;   // unix ms
+  expiresAt: number; // unix ms
 }
 ```
 
-* HMAC-SHA256 over a base64url payload, compared with `timingSafeEqual`.
-* Scoped to exactly one document and one access mode; the access mode is always
+- HMAC-SHA256 over a base64url payload, compared with `timingSafeEqual`.
+- Scoped to exactly one document and one access mode; the access mode is always
   derived from the server-side policy, never from the client.
-* Signed with `COLLABORATION_TICKET_SECRET`, which is **not** the Better Auth
+- Signed with `COLLABORATION_TICKET_SECRET`, which is **not** the Better Auth
   secret. The collaboration server never receives session cookies or the auth
   secret.
-* The Hocuspocus document name is the opaque document id only — no workspace id and
+- The Hocuspocus document name is the opaque document id only — no workspace id and
   no permission data.
-* On connect the server re-checks membership and archival state and takes the
+- On connect the server re-checks membership and archival state and takes the
   minimum of the ticket claim and the current policy, so a ticket can never widen
   permissions and a revoked member cannot keep using a ticket inside its TTL.
 
@@ -267,9 +267,9 @@ Covered by 9 unit tests (`collaboration-ticket.test.ts`) including a tampered
 
 ```ts
 interface ApiErrorResponse {
-  code: string;          // machine-readable, English, from a fixed list
-  message: string;       // developer-facing, English
-  details?: unknown;     // validation details only
+  code: string; // machine-readable, English, from a fixed list
+  message: string; // developer-facing, English
+  details?: unknown; // validation details only
   correlationId: string;
 }
 ```
@@ -280,20 +280,20 @@ codes to German messages in `apps/web/src/lib/api/error-messages.ts`.
 
 ## Deployment hardening
 
-* nginx terminates TLS (Let's Encrypt, auto-renewed) and adds HSTS, `nosniff`,
+- nginx terminates TLS (Let's Encrypt, auto-renewed) and adds HSTS, `nosniff`,
   `X-Frame-Options` and a referrer policy.
-* There is **no** HTTP basic auth in front of the application. One guarded the
+- There is **no** HTTP basic auth in front of the application. One guarded the
   deployment while it was private and was removed on 2026-08-09. It had been
   covering two holes that only became visible when removing it was considered:
   Swagger mounted outside every Nest guard, and per-IP login limits that a forged
   `X-Forwarded-For` reset. Both are fixed above; a shield that hides defects is
   worse than no shield, because nobody looks behind it.
-* Repeated failed logins are banned by the `exocortex-auth` fail2ban jail, which
+- Repeated failed logins are banned by the `exocortex-auth` fail2ban jail, which
   reads the nginx access log (`deploy/README.md`). Rate limiting only slows an
   attacker down; this is what stops one.
-* All four application processes bind to `127.0.0.1` only. PostgreSQL, Redis, MinIO
+- All four application processes bind to `127.0.0.1` only. PostgreSQL, Redis, MinIO
   and Mailpit are published to `127.0.0.1` only.
-* systemd units run with `NoNewPrivileges`, `PrivateTmp`, `ProtectSystem=full`,
+- systemd units run with `NoNewPrivileges`, `PrivateTmp`, `ProtectSystem=full`,
   `ProtectHome=true` and a single `ReadWritePaths` entry.
 
 ## Reporting

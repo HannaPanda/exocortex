@@ -45,10 +45,7 @@ function documentUrl(
   documentId: string,
 ): string | null {
   if (client.appUrl === undefined) return null;
-  return new URL(
-    `/arbeitsbereich/${workspaceId}/seite/${documentId}`,
-    client.appUrl,
-  ).toString();
+  return new URL(`/arbeitsbereich/${workspaceId}/seite/${documentId}`, client.appUrl).toString();
 }
 
 /**

@@ -2,159 +2,159 @@
 name: eXocortex
 description: Self-hostable collaborative workspace and external brain. Cool graphite, warm light, one amber signal.
 colors:
-  background: "oklch(0.17 0.010 275)"
-  surface: "oklch(0.20 0.011 275)"
-  card: "oklch(0.21 0.012 275)"
-  popover: "oklch(0.235 0.013 275)"
-  overlay: "oklch(0.11 0.008 275 / 0.72)"
-  muted: "oklch(0.255 0.012 275)"
-  secondary: "oklch(0.26 0.013 275)"
-  accent-solid: "oklch(0.26 0.025 62)"
-  accent-strong: "oklch(0.33 0.055 62)"
-  border: "oklch(0.32 0.014 275)"
-  border-strong: "oklch(0.53 0.016 275)"
-  input: "oklch(0.53 0.016 275)"
-  foreground: "oklch(0.93 0.008 85)"
-  muted-foreground: "oklch(0.72 0.012 275)"
-  secondary-foreground: "oklch(0.90 0.008 85)"
-  accent-foreground: "oklch(0.94 0.010 75)"
-  primary: "oklch(0.78 0.150 62)"
-  primary-foreground: "oklch(0.20 0.035 62)"
-  primary-text: "oklch(0.78 0.150 62)"
-  ring: "oklch(0.78 0.150 62)"
-  destructive: "oklch(0.53 0.190 25)"
-  destructive-foreground: "oklch(0.97 0.012 25)"
-  destructive-text: "oklch(0.72 0.150 25)"
-  warning: "oklch(0.84 0.140 100)"
-  warning-foreground: "oklch(0.24 0.050 100)"
-  success: "oklch(0.72 0.140 152)"
-  success-foreground: "oklch(0.20 0.040 152)"
-  info: "oklch(0.74 0.110 235)"
-  info-foreground: "oklch(0.19 0.030 235)"
-  presence-1: "oklch(0.82 0.125 62)"
-  presence-2: "oklch(0.75 0.120 245)"
-  presence-3: "oklch(0.78 0.150 340)"
-  presence-4: "oklch(0.86 0.090 200)"
-  presence-5: "oklch(0.70 0.150 295)"
-  presence-6: "oklch(0.66 0.120 30)"
-  presence-foreground: "oklch(0.18 0.020 275)"
+  background: 'oklch(0.17 0.010 275)'
+  surface: 'oklch(0.20 0.011 275)'
+  card: 'oklch(0.21 0.012 275)'
+  popover: 'oklch(0.235 0.013 275)'
+  overlay: 'oklch(0.11 0.008 275 / 0.72)'
+  muted: 'oklch(0.255 0.012 275)'
+  secondary: 'oklch(0.26 0.013 275)'
+  accent-solid: 'oklch(0.26 0.025 62)'
+  accent-strong: 'oklch(0.33 0.055 62)'
+  border: 'oklch(0.32 0.014 275)'
+  border-strong: 'oklch(0.53 0.016 275)'
+  input: 'oklch(0.53 0.016 275)'
+  foreground: 'oklch(0.93 0.008 85)'
+  muted-foreground: 'oklch(0.72 0.012 275)'
+  secondary-foreground: 'oklch(0.90 0.008 85)'
+  accent-foreground: 'oklch(0.94 0.010 75)'
+  primary: 'oklch(0.78 0.150 62)'
+  primary-foreground: 'oklch(0.20 0.035 62)'
+  primary-text: 'oklch(0.78 0.150 62)'
+  ring: 'oklch(0.78 0.150 62)'
+  destructive: 'oklch(0.53 0.190 25)'
+  destructive-foreground: 'oklch(0.97 0.012 25)'
+  destructive-text: 'oklch(0.72 0.150 25)'
+  warning: 'oklch(0.84 0.140 100)'
+  warning-foreground: 'oklch(0.24 0.050 100)'
+  success: 'oklch(0.72 0.140 152)'
+  success-foreground: 'oklch(0.20 0.040 152)'
+  info: 'oklch(0.74 0.110 235)'
+  info-foreground: 'oklch(0.19 0.030 235)'
+  presence-1: 'oklch(0.82 0.125 62)'
+  presence-2: 'oklch(0.75 0.120 245)'
+  presence-3: 'oklch(0.78 0.150 340)'
+  presence-4: 'oklch(0.86 0.090 200)'
+  presence-5: 'oklch(0.70 0.150 295)'
+  presence-6: 'oklch(0.66 0.120 30)'
+  presence-foreground: 'oklch(0.18 0.020 275)'
 typography:
   page-title:
-    fontFamily: "Inter Variable, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif"
-    fontSize: "1.5rem"
+    fontFamily: 'Inter Variable, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif'
+    fontSize: '1.5rem'
     fontWeight: 600
     lineHeight: 1.333
-    letterSpacing: "-0.025em"
+    letterSpacing: '-0.025em'
   section-title:
-    fontFamily: "{typography.page-title.fontFamily}"
-    fontSize: "1.25rem"
+    fontFamily: '{typography.page-title.fontFamily}'
+    fontSize: '1.25rem'
     fontWeight: 600
     lineHeight: 1.4
-    letterSpacing: "-0.025em"
+    letterSpacing: '-0.025em'
   body:
-    fontFamily: "{typography.page-title.fontFamily}"
-    fontSize: "0.9375rem"
+    fontFamily: '{typography.page-title.fontFamily}'
+    fontSize: '0.9375rem'
     fontWeight: 400
     lineHeight: 1.625
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
   ui:
-    fontFamily: "{typography.page-title.fontFamily}"
-    fontSize: "0.875rem"
+    fontFamily: '{typography.page-title.fontFamily}'
+    fontSize: '0.875rem'
     fontWeight: 500
     lineHeight: 1.43
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
   meta:
-    fontFamily: "{typography.page-title.fontFamily}"
-    fontSize: "0.75rem"
+    fontFamily: '{typography.page-title.fontFamily}'
+    fontSize: '0.75rem'
     fontWeight: 400
     lineHeight: 1.333
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
   mono:
-    fontFamily: "JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, monospace"
-    fontSize: "0.85em"
+    fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, monospace'
+    fontSize: '0.85em'
     fontWeight: 400
     lineHeight: 1.5
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
 rounded:
-  sm: "0.3125rem"
-  md: "0.5rem"
-  lg: "0.75rem"
-  xl: "0.875rem"
-  full: "9999px"
+  sm: '0.3125rem'
+  md: '0.5rem'
+  lg: '0.75rem'
+  xl: '0.875rem'
+  full: '9999px'
 spacing:
-  xs: "0.25rem"
-  sm: "0.5rem"
-  md: "0.75rem"
-  lg: "1rem"
-  xl: "1.5rem"
-  2xl: "2rem"
+  xs: '0.25rem'
+  sm: '0.5rem'
+  md: '0.75rem'
+  lg: '1rem'
+  xl: '1.5rem'
+  2xl: '2rem'
 layout:
-  header-height: "3rem"
-  sidebar-width: "17rem"
-  context-panel-width: "21rem"
-  reading-measure: "68ch"
+  header-height: '3rem'
+  sidebar-width: '17rem'
+  context-panel-width: '21rem'
+  reading-measure: '68ch'
 motion:
-  ease: "cubic-bezier(0.22, 1, 0.36, 1)"
-  duration-fast: "120ms"
-  duration-settle: "480ms"
+  ease: 'cubic-bezier(0.22, 1, 0.36, 1)'
+  duration-fast: '120ms'
+  duration-settle: '480ms'
 components:
   button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.primary-foreground}"
-    rounded: "{rounded.md}"
-    padding: "0 1rem"
-    height: "2.25rem"
-    typography: "{typography.ui}"
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.primary-foreground}'
+    rounded: '{rounded.md}'
+    padding: '0 1rem'
+    height: '2.25rem'
+    typography: '{typography.ui}'
   button-secondary:
-    backgroundColor: "{colors.secondary}"
-    textColor: "{colors.secondary-foreground}"
-    rounded: "{rounded.md}"
-    padding: "0 1rem"
-    height: "2.25rem"
-    typography: "{typography.ui}"
+    backgroundColor: '{colors.secondary}'
+    textColor: '{colors.secondary-foreground}'
+    rounded: '{rounded.md}'
+    padding: '0 1rem'
+    height: '2.25rem'
+    typography: '{typography.ui}'
   button-ghost:
-    backgroundColor: "transparent"
-    textColor: "{colors.foreground}"
-    rounded: "{rounded.md}"
-    padding: "0 1rem"
-    height: "2.25rem"
-    typography: "{typography.ui}"
+    backgroundColor: 'transparent'
+    textColor: '{colors.foreground}'
+    rounded: '{rounded.md}'
+    padding: '0 1rem'
+    height: '2.25rem'
+    typography: '{typography.ui}'
   button-ghost-hover:
-    backgroundColor: "{colors.accent-solid}"
-    textColor: "{colors.accent-foreground}"
+    backgroundColor: '{colors.accent-solid}'
+    textColor: '{colors.accent-foreground}'
   button-destructive:
-    backgroundColor: "{colors.destructive}"
-    textColor: "{colors.destructive-foreground}"
-    rounded: "{rounded.md}"
-    padding: "0 1rem"
-    height: "2.25rem"
-    typography: "{typography.ui}"
+    backgroundColor: '{colors.destructive}'
+    textColor: '{colors.destructive-foreground}'
+    rounded: '{rounded.md}'
+    padding: '0 1rem'
+    height: '2.25rem'
+    typography: '{typography.ui}'
   input:
-    backgroundColor: "transparent"
-    textColor: "{colors.foreground}"
-    rounded: "{rounded.md}"
-    padding: "0 0.75rem"
-    height: "2.25rem"
-    typography: "{typography.ui}"
+    backgroundColor: 'transparent'
+    textColor: '{colors.foreground}'
+    rounded: '{rounded.md}'
+    padding: '0 0.75rem'
+    height: '2.25rem'
+    typography: '{typography.ui}'
   card:
-    backgroundColor: "{colors.card}"
-    textColor: "{colors.foreground}"
-    rounded: "{rounded.xl}"
-    padding: "1.5rem"
+    backgroundColor: '{colors.card}'
+    textColor: '{colors.foreground}'
+    rounded: '{rounded.xl}'
+    padding: '1.5rem'
   popover:
-    backgroundColor: "{colors.popover}"
-    textColor: "{colors.foreground}"
-    rounded: "{rounded.lg}"
-    padding: "0.25rem"
+    backgroundColor: '{colors.popover}'
+    textColor: '{colors.foreground}'
+    rounded: '{rounded.lg}'
+    padding: '0.25rem'
   nav-item:
-    backgroundColor: "transparent"
-    textColor: "{colors.muted-foreground}"
-    rounded: "{rounded.sm}"
-    padding: "0.25rem 0.5rem"
-    typography: "{typography.ui}"
+    backgroundColor: 'transparent'
+    textColor: '{colors.muted-foreground}'
+    rounded: '{rounded.sm}'
+    padding: '0.25rem 0.5rem'
+    typography: '{typography.ui}'
   nav-item-active:
-    backgroundColor: "{colors.accent-solid}"
-    textColor: "{colors.foreground}"
+    backgroundColor: '{colors.accent-solid}'
+    textColor: '{colors.foreground}'
 ---
 
 # Design System: eXocortex
@@ -225,7 +225,7 @@ Status colours are a separate system from the brand signal, never decorative:
   from the amber signal so a caution never reads as a primary action.
 - `success` `oklch(0.72 0.140 152)`, `info` `oklch(0.74 0.110 235)`.
 
-`presence-1…6` are the collaboration cursors, spread across hue *and* lightness
+`presence-1…6` are the collaboration cursors, spread across hue _and_ lightness
 (0.66…0.86) so they survive deuteranopia and protanopia, where hue alone
 collapses. Presence 1 is the amber signal: your own cursor is the one you should
 find fastest.
@@ -284,15 +284,15 @@ decoration.
 
 ### Hierarchy
 
-| Role | Size | Weight | Tracking | Use |
-| ---- | ---- | ------ | -------- | --- |
-| Page title | 1.75rem | 600 | -0.02em | the document's own title field |
-| Section title | 1.375rem | 600 | -0.015em | H1 inside documents |
-| Subsection | 1.125rem | 600 | -0.01em | H2 |
-| Sub-subsection | 0.9375rem | 600 | normal | H3 |
-| Body | 0.9375rem | 400 | normal | editor content, prose |
-| UI | 0.875rem | 500 | normal | buttons, labels, nav |
-| Meta | 0.75rem | 400 | normal | timestamps, counts, hints |
+| Role           | Size      | Weight | Tracking | Use                            |
+| -------------- | --------- | ------ | -------- | ------------------------------ |
+| Page title     | 1.75rem   | 600    | -0.02em  | the document's own title field |
+| Section title  | 1.375rem  | 600    | -0.015em | H1 inside documents            |
+| Subsection     | 1.125rem  | 600    | -0.01em  | H2                             |
+| Sub-subsection | 0.9375rem | 600    | normal   | H3                             |
+| Body           | 0.9375rem | 400    | normal   | editor content, prose          |
+| UI             | 0.875rem  | 500    | normal   | buttons, labels, nav           |
+| Meta           | 0.75rem   | 400    | normal   | timestamps, counts, hints      |
 
 The ratio tightens on the way down (1.27 → 1.22 → 1.20) and the last step is
 carried by weight alone, so H3 and body share a size. The page title clears the
@@ -317,7 +317,7 @@ never full-bleed, no matter how wide the window.
 with tabular figures (`.exocortex-numeric`): timestamps, counts, versions, IDs,
 keyboard keys, the search readout. Labels and prose never do. A count that keeps
 its width while it changes is the difference between a readout and a jitter, and
-holding the line at *values only* is what keeps this instrument typography
+holding the line at _values only_ is what keeps this instrument typography
 instead of the terminal costume PRODUCT.md rules out.
 
 ## 3a. Motion

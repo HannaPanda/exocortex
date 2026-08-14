@@ -20,10 +20,7 @@ import {
 } from '@exocortex/contracts';
 import { Badge, Button, cn, EmptyState, ErrorState, LoadingState, Textarea } from '@exocortex/ui';
 
-import {
-  type CommentAnchorRequest,
-  useCommentAnchor,
-} from '@/components/comments/comment-anchor';
+import { type CommentAnchorRequest, useCommentAnchor } from '@/components/comments/comment-anchor';
 import { initialsOf } from '@/components/shell/document-session';
 import {
   useCommentRealtimeSync,

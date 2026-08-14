@@ -14,9 +14,7 @@ export interface JobContext<TName extends QueueName> {
   reportProgress(progress: number, label: string): Promise<void>;
 }
 
-export type JobHandler<TName extends QueueName> = (
-  context: JobContext<TName>,
-) => Promise<void>;
+export type JobHandler<TName extends QueueName> = (context: JobContext<TName>) => Promise<void>;
 
 export interface CreateWorkerOptions<TName extends QueueName> {
   name: TName;

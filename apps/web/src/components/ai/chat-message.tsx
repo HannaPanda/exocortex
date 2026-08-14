@@ -22,9 +22,7 @@ export interface ChatMessageProps {
  * result stays monospace -- neither is prose the model formatted.
  */
 export function ChatMessage({ message, streaming = false }: ChatMessageProps) {
-  const body = (
-    <ChatMessageBody message={message} streaming={streaming} />
-  );
+  const body = <ChatMessageBody message={message} streaming={streaming} />;
 
   if (!message.superseded) return body;
 
@@ -54,7 +52,10 @@ function ChatMessageBody({ message, streaming }: ChatMessageProps) {
       return (
         <div className="group/message flex justify-start">
           <div className="flex max-w-[85%] flex-col items-start gap-1">
-            <div data-testid="ai-answer" className="rounded-md bg-muted px-3 py-2 text-sm break-words">
+            <div
+              data-testid="ai-answer"
+              className="rounded-md bg-muted px-3 py-2 text-sm break-words"
+            >
               <ChatMarkdown content={message.content} streaming={streaming} />
               {streaming ? (
                 <span className="ml-0.5 inline-block h-3.5 w-1 animate-pulse bg-primary align-middle" />
@@ -100,7 +101,11 @@ function SystemMessage({ message }: { message: AiConversationMessage }) {
           className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"
           onClick={() => setExpanded((current) => !current)}
         >
-          {expanded ? <ChevronDownIcon className="size-3" /> : <ChevronRightIcon className="size-3" />}
+          {expanded ? (
+            <ChevronDownIcon className="size-3" />
+          ) : (
+            <ChevronRightIcon className="size-3" />
+          )}
           Verlauf anzeigen
         </button>
         {expanded ? <CopyMarkdownButton markdown={message.content} /> : null}
@@ -124,11 +129,19 @@ function ToolMessage({ message }: { message: AiConversationMessage }) {
         className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"
         onClick={() => setExpanded((current) => !current)}
       >
-        {expanded ? <ChevronDownIcon className="size-3" /> : <ChevronRightIcon className="size-3" />}
+        {expanded ? (
+          <ChevronDownIcon className="size-3" />
+        ) : (
+          <ChevronRightIcon className="size-3" />
+        )}
         {message.toolName ?? 'Werkzeug'}: Werkzeugergebnis anzeigen
       </button>
       {expanded ? (
-        <p className={cn('mt-1 rounded-md border border-border bg-card p-2 whitespace-pre-wrap break-words')}>
+        <p
+          className={cn(
+            'mt-1 rounded-md border border-border bg-card p-2 whitespace-pre-wrap break-words',
+          )}
+        >
           {message.content}
         </p>
       ) : null}

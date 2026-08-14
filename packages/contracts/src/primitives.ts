@@ -26,9 +26,9 @@ export type DocumentType = z.infer<typeof documentTypeSchema>;
 export const collaborationAccessSchema = z.enum(['read', 'write']);
 export type CollaborationAccess = z.infer<typeof collaborationAccessSchema>;
 
-export const isoDateTimeSchema = z.union([z.string(), z.date()]).transform((value) =>
-  value instanceof Date ? value.toISOString() : value,
-);
+export const isoDateTimeSchema = z
+  .union([z.string(), z.date()])
+  .transform((value) => (value instanceof Date ? value.toISOString() : value));
 
 export const paginationSchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),

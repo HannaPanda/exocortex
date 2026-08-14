@@ -38,7 +38,11 @@ export const COMPUTED_PROPERTY_TYPES = new Set<DatabasePropertyType>([
   'UPDATED_BY',
 ]);
 
-export const ARRAY_PROPERTY_TYPES = new Set<DatabasePropertyType>(['MULTI_SELECT', 'PERSON', 'FILES']);
+export const ARRAY_PROPERTY_TYPES = new Set<DatabasePropertyType>([
+  'MULTI_SELECT',
+  'PERSON',
+  'FILES',
+]);
 
 export const FILTER_OPERATOR_LABELS: Record<DatabaseFilterOperator, string> = {
   equals: 'ist',
@@ -75,7 +79,8 @@ export function filterValueChoices(property: DatabaseProperty): { value: string;
 /** The chip's reading of a stored filter value: an option id becomes its label. */
 export function filterValueLabel(property: DatabaseProperty | undefined, value: unknown): string {
   if (property !== undefined) {
-    if (property.type === 'CHECKBOX') return value === true || value === 'true' ? 'angehakt' : 'nicht angehakt';
+    if (property.type === 'CHECKBOX')
+      return value === true || value === 'true' ? 'angehakt' : 'nicht angehakt';
     if (property.type === 'SELECT' || property.type === 'MULTI_SELECT') {
       const option = property.options.find((entry) => entry.id === value);
       if (option !== undefined) return option.label;
@@ -86,12 +91,14 @@ export function filterValueLabel(property: DatabaseProperty | undefined, value: 
 
 /** Which filter operators make sense for a given property type, in menu order. */
 export function operatorsForType(type: DatabasePropertyType): DatabaseFilterOperator[] {
-  if (type === 'NUMBER') return ['equals', 'not_equals', 'greater_than', 'less_than', 'is_empty', 'is_not_empty'];
+  if (type === 'NUMBER')
+    return ['equals', 'not_equals', 'greater_than', 'less_than', 'is_empty', 'is_not_empty'];
   if (type === 'DATE' || type === 'CREATED_TIME' || type === 'UPDATED_TIME') {
     return ['on_or_after', 'on_or_before', 'is_empty', 'is_not_empty'];
   }
   if (type === 'CHECKBOX') return ['equals'];
-  if (ARRAY_PROPERTY_TYPES.has(type)) return ['contains', 'not_contains', 'is_empty', 'is_not_empty'];
+  if (ARRAY_PROPERTY_TYPES.has(type))
+    return ['contains', 'not_contains', 'is_empty', 'is_not_empty'];
   return ['equals', 'not_equals', 'contains', 'not_contains', 'is_empty', 'is_not_empty'];
 }
 

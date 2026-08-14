@@ -40,7 +40,10 @@ import { connectionSnippets } from '@/lib/connection-snippets';
 
 import { CopyBlock } from './copy-block';
 
-const dateTimeFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
+const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+});
 
 const EXPIRY_OPTIONS = [
   { value: '30', label: '30 Tage' },
@@ -103,8 +106,10 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
   const [revokeTarget, setRevokeTarget] = React.useState<ApiToken | null>(null);
   const [copied, setCopied] = React.useState(false);
 
-  const createErrorCode = createToken.error instanceof ApiError ? createToken.error.code : undefined;
-  const revokeErrorCode = revokeToken.error instanceof ApiError ? revokeToken.error.code : undefined;
+  const createErrorCode =
+    createToken.error instanceof ApiError ? createToken.error.code : undefined;
+  const revokeErrorCode =
+    revokeToken.error instanceof ApiError ? revokeToken.error.code : undefined;
 
   function handleCreate(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault();
@@ -146,9 +151,9 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
           Token
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          API-Token erlauben externen Programmen wie dem MCP-Server, in deinem Namen auf
-          eXocortex zuzugreifen. Gib jedem Token nur die Rechte, die es wirklich braucht:
-          Wenn es abhandenkommt, kann jemand genau das damit tun.
+          API-Token erlauben externen Programmen wie dem MCP-Server, in deinem Namen auf eXocortex
+          zuzugreifen. Gib jedem Token nur die Rechte, die es wirklich braucht: Wenn es
+          abhandenkommt, kann jemand genau das damit tun.
         </p>
       </div>
 

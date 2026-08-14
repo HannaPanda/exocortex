@@ -31,7 +31,12 @@ describe('mapAiRunRow', () => {
   });
 
   it('reports both as null before the run has been picked up', () => {
-    const mapped = mapAiRunRow({ ...baseRow, status: 'PENDING', startedAt: null, heartbeatAt: null });
+    const mapped = mapAiRunRow({
+      ...baseRow,
+      status: 'PENDING',
+      startedAt: null,
+      heartbeatAt: null,
+    });
     expect(mapped.startedAt).toBeNull();
     expect(mapped.heartbeatAt).toBeNull();
   });

@@ -49,11 +49,15 @@ describe('toolCallTarget', () => {
   it('reports nothing rather than throwing when the arguments are not valid JSON', () => {
     // Exactly what a run truncated at the output cap produces: a tool call
     // whose arguments stop mid-JSON. Reporting the call still has to work.
-    expect(toolCallTarget('exo_page_write', '{"documentId":"doc12345678","markdown":"# Gam')).toBeNull();
+    expect(
+      toolCallTarget('exo_page_write', '{"documentId":"doc12345678","markdown":"# Gam'),
+    ).toBeNull();
   });
 
   it('reports nothing for an unknown tool name', () => {
-    expect(toolCallTarget('exo_not_a_tool', JSON.stringify({ documentId: 'doc123456789' }))).toBeNull();
+    expect(
+      toolCallTarget('exo_not_a_tool', JSON.stringify({ documentId: 'doc123456789' })),
+    ).toBeNull();
   });
 
   it('reports nothing when the arguments do not satisfy the tool schema', () => {

@@ -46,7 +46,10 @@ let userId: string;
 let documentId: string;
 
 /** Waits until `predicate` holds or the timeout elapses. */
-async function waitFor(predicate: () => boolean | Promise<boolean>, timeoutMs = 15_000): Promise<void> {
+async function waitFor(
+  predicate: () => boolean | Promise<boolean>,
+  timeoutMs = 15_000,
+): Promise<void> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     if (await predicate()) return;
@@ -108,7 +111,12 @@ async function applyContent(input: {
   });
 }
 
-function ticketFor(target: string, access: 'read' | 'write', ttlSeconds = 60, now?: number): string {
+function ticketFor(
+  target: string,
+  access: 'read' | 'write',
+  ttlSeconds = 60,
+  now?: number,
+): string {
   return issueCollaborationTicket({
     secret: TICKET_SECRET,
     userId,
@@ -172,7 +180,11 @@ describe('collaboration server', () => {
     await first.listen();
 
     const documentA = new Y.Doc();
-    const providerA = connect({ ticket: ticketFor(documentId, 'write'), name: documentId, document: documentA });
+    const providerA = connect({
+      ticket: ticketFor(documentId, 'write'),
+      name: documentId,
+      document: documentA,
+    });
     await waitFor(() => providerA.isSynced);
 
     const fragment = documentA.get(YJS_DOCUMENT_FIELD, Y.XmlFragment);
@@ -200,7 +212,11 @@ describe('collaboration server', () => {
     await second.listen();
 
     const documentB = new Y.Doc();
-    const providerB = connect({ ticket: ticketFor(documentId, 'write'), name: documentId, document: documentB });
+    const providerB = connect({
+      ticket: ticketFor(documentId, 'write'),
+      name: documentId,
+      document: documentB,
+    });
     await waitFor(() => providerB.isSynced);
 
     const restored = documentB.get(YJS_DOCUMENT_FIELD, Y.XmlFragment).toJSON();

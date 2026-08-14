@@ -1,8 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import {
-  WorkspaceAccessService,
-} from '@exocortex/auth';
+import { WorkspaceAccessService } from '@exocortex/auth';
 import {
   type DocumentTreeNode,
   type DocumentTreeRequest,
@@ -222,5 +220,4 @@ export class DocumentTreeService {
       resolvedBy: 'title',
     };
   }
-
 }

@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  ArchiveIcon,
-  ChevronDownIcon,
-  PencilIcon,
-  PlusIcon,
-} from 'lucide-react';
+import { ArchiveIcon, ChevronDownIcon, PencilIcon, PlusIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { type AiConversation } from '@exocortex/contracts';
@@ -24,7 +19,11 @@ import {
   Input,
 } from '@exocortex/ui';
 
-import { useAiConversations, useArchiveAiConversation, useUpdateAiConversation } from '@/lib/api/ai-queries';
+import {
+  useAiConversations,
+  useArchiveAiConversation,
+  useUpdateAiConversation,
+} from '@/lib/api/ai-queries';
 
 const RELATIVE_TIME = new Intl.RelativeTimeFormat('de-DE', { numeric: 'auto' });
 
@@ -93,10 +92,13 @@ export function ConversationSwitcher({
       <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <DropdownMenuTrigger
           render={
-            <Button variant="ghost" size="sm" className="min-w-0 gap-1" data-testid="ai-conversation-switcher">
-              <span className="max-w-[14rem] truncate">
-                {active?.title ?? 'Neuer Chat'}
-              </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="min-w-0 gap-1"
+              data-testid="ai-conversation-switcher"
+            >
+              <span className="max-w-[14rem] truncate">{active?.title ?? 'Neuer Chat'}</span>
               <ChevronDownIcon className="size-3.5 shrink-0 text-muted-foreground" />
             </Button>
           }

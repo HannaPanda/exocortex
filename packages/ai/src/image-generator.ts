@@ -185,7 +185,11 @@ function pngChunk(type: string, data: Buffer): Buffer {
 }
 
 /** A real, valid PNG of one solid colour. Small enough to build in memory. */
-export function createSolidPng(width: number, height: number, rgb: [number, number, number]): Buffer {
+export function createSolidPng(
+  width: number,
+  height: number,
+  rgb: [number, number, number],
+): Buffer {
   const raw = Buffer.alloc(height * (1 + width * 3));
   for (let y = 0; y < height; y += 1) {
     const rowStart = y * (1 + width * 3);

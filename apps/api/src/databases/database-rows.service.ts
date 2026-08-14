@@ -1,7 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { z } from 'zod';
 
-import { assertPolicy, canCreateDocument, canEditDocument, canReadDocument, WorkspaceAccessService } from '@exocortex/auth';
+import {
+  assertPolicy,
+  canCreateDocument,
+  canEditDocument,
+  canReadDocument,
+  WorkspaceAccessService,
+} from '@exocortex/auth';
 import {
   type CreateDatabaseRowRequest,
   databaseDateRangeValueSchema,
@@ -35,7 +41,12 @@ import { PRISMA } from '../platform/platform.module';
 
 const sortsArraySchema = z.array(databaseSortSchema);
 
-const COMPUTED_TYPES = new Set<DatabasePropertyType>(['CREATED_TIME', 'UPDATED_TIME', 'CREATED_BY', 'UPDATED_BY']);
+const COMPUTED_TYPES = new Set<DatabasePropertyType>([
+  'CREATED_TIME',
+  'UPDATED_TIME',
+  'CREATED_BY',
+  'UPDATED_BY',
+]);
 const ARRAY_TYPES = new Set<DatabasePropertyType>(['MULTI_SELECT', 'PERSON', 'FILES']);
 
 function computedValue(type: DatabasePropertyType, row: DatabaseQueryRowRecord): string {
@@ -63,7 +74,11 @@ function toPropertyRef(row: {
   type: DatabasePropertyType;
   config: Prisma.JsonValue;
 }): DatabasePropertyRef {
-  return { id: row.id, type: row.type, config: (row.config ?? null) as Record<string, unknown> | null };
+  return {
+    id: row.id,
+    type: row.type,
+    config: (row.config ?? null) as Record<string, unknown> | null,
+  };
 }
 
 interface StoredValueRow {
@@ -97,9 +112,13 @@ function storedToDateResponseValue(
   };
 }
 
-function storedToResponseValue(property: DatabasePropertyRef, stored: StoredValueRow | undefined): DatabaseRowPropertyValue['value'] {
+function storedToResponseValue(
+  property: DatabasePropertyRef,
+  stored: StoredValueRow | undefined,
+): DatabaseRowPropertyValue['value'] {
   if (stored === undefined) return null;
-  if (property.type === 'NUMBER') return stored.numberValue === null ? null : Number(stored.numberValue);
+  if (property.type === 'NUMBER')
+    return stored.numberValue === null ? null : Number(stored.numberValue);
   if (property.type === 'CHECKBOX') return stored.boolValue;
   if (property.type === 'DATE') return storedToDateResponseValue(property, stored);
   if (ARRAY_TYPES.has(property.type)) return (stored.jsonValue as string[] | null) ?? null;
@@ -145,7 +164,9 @@ function toDateColumnData(
     throw AppError.validation(`Property ${property.id} expects an ISO date string or a date span`);
   }
   if (!parseDatePropertyConfig(property.config).isRange) {
-    throw AppError.validation(`Property ${property.id} is not a date span; pass an ISO date string`);
+    throw AppError.validation(
+      `Property ${property.id} is not a date span; pass an ISO date string`,
+    );
   }
   const span = databaseDateRangeValueSchema.safeParse(value);
   if (!span.success) {
@@ -160,7 +181,10 @@ function toDateColumnData(
 }
 
 /** Converts one incoming `{propertyId, value}` write into the correct typed column. */
-function toColumnData(property: DatabasePropertyRef, value: DatabaseRowPropertyValue['value']): ColumnData {
+function toColumnData(
+  property: DatabasePropertyRef,
+  value: DatabaseRowPropertyValue['value'],
+): ColumnData {
   const empty: ColumnData = {
     textValue: null,
     numberValue: null,
@@ -173,21 +197,25 @@ function toColumnData(property: DatabasePropertyRef, value: DatabaseRowPropertyV
   if (value === null) return empty;
 
   if (property.type === 'NUMBER') {
-    if (typeof value !== 'number') throw AppError.validation(`Property ${property.id} expects a number`);
+    if (typeof value !== 'number')
+      throw AppError.validation(`Property ${property.id} expects a number`);
     return { ...empty, numberValue: value };
   }
   if (property.type === 'CHECKBOX') {
-    if (typeof value !== 'boolean') throw AppError.validation(`Property ${property.id} expects a boolean`);
+    if (typeof value !== 'boolean')
+      throw AppError.validation(`Property ${property.id} expects a boolean`);
     return { ...empty, boolValue: value };
   }
   if (property.type === 'DATE') {
     return toDateColumnData(property, value, empty);
   }
   if (ARRAY_TYPES.has(property.type)) {
-    if (!Array.isArray(value)) throw AppError.validation(`Property ${property.id} expects an array of ids`);
+    if (!Array.isArray(value))
+      throw AppError.validation(`Property ${property.id} expects an array of ids`);
     return { ...empty, jsonValue: value };
   }
-  if (typeof value !== 'string') throw AppError.validation(`Property ${property.id} expects a string`);
+  if (typeof value !== 'string')
+    throw AppError.validation(`Property ${property.id} expects a string`);
   return { ...empty, textValue: value };
 }
 
@@ -230,7 +258,10 @@ export class DatabaseRowsService {
     });
     const properties = buildPropertyMap(propertyRows.map(toPropertyRef));
 
-    const { filters, sorts } = await this.resolveFiltersAndSorts(input.collectionDocumentId, input.request);
+    const { filters, sorts } = await this.resolveFiltersAndSorts(
+      input.collectionDocumentId,
+      input.request,
+    );
     const offset = decodeCursor(input.request.cursor);
     const limit = input.request.limit;
 
@@ -246,7 +277,10 @@ export class DatabaseRowsService {
         offset,
       });
     } catch (error) {
-      if (error instanceof UnknownDatabasePropertyError || error instanceof InvalidDatabaseFilterError) {
+      if (
+        error instanceof UnknownDatabasePropertyError ||
+        error instanceof InvalidDatabaseFilterError
+      ) {
         throw AppError.validation(error.message);
       }
       throw error;

@@ -2,10 +2,10 @@
 
 Zwei Hooks, die eine Claude-Code-Sitzung an das Gedächtnis in eXocortex hängen:
 
-| Hook | Wann | Was er tut |
-| --- | --- | --- |
-| `session-start.mjs` | `SessionStart` | Holt die Erinnerungen zum aktuellen Arbeitsverzeichnis und legt sie in den Kontext der neuen Sitzung. |
-| `session-end.mjs` | `SessionEnd` | Schickt die beendete Sitzung an eXocortex. Dort destilliert ein Modell daraus eine Notiz, der Wortlaut wird nicht gespeichert. |
+| Hook                | Wann           | Was er tut                                                                                                                     |
+| ------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `session-start.mjs` | `SessionStart` | Holt die Erinnerungen zum aktuellen Arbeitsverzeichnis und legt sie in den Kontext der neuen Sitzung.                          |
+| `session-end.mjs`   | `SessionEnd`   | Schickt die beendete Sitzung an eXocortex. Dort destilliert ein Modell daraus eine Notiz, der Wortlaut wird nicht gespeichert. |
 
 Beide scheitern leise. Wer keine Konfiguration findet, tut nichts und beendet
 sich mit 0. Eine kaputte Verbindung darf keine Arbeitssitzung blockieren.

@@ -191,9 +191,9 @@ describe('createMcpRequestHandler', () => {
     const first = await handler(call);
     const second = await handler(call);
 
-    expect((first as { result: { content: { text: string }[] } }).result.content[0]?.text).toContain(
-      'noch NICHT ausgeführt',
-    );
+    expect(
+      (first as { result: { content: { text: string }[] } }).result.content[0]?.text,
+    ).toContain('noch NICHT ausgeführt');
     expect((second as { result: { content: { text: string }[] } }).result.content[0]?.text).toBe(
       'gelöscht: a',
     );
@@ -229,9 +229,9 @@ describe('createMcpRequestHandler', () => {
     const first = await handler(call);
     const second = await handler(call);
 
-    expect((first as { result: { content: { text: string }[] } }).result.content[0]?.text).toContain(
-      'noch NICHT ausgeführt',
-    );
+    expect(
+      (first as { result: { content: { text: string }[] } }).result.content[0]?.text,
+    ).toContain('noch NICHT ausgeführt');
     expect((second as { result: { content: { text: string }[] } }).result.content[0]?.text).toBe(
       'geschrieben: a',
     );
@@ -266,9 +266,9 @@ describe('createMcpRequestHandler', () => {
       method: 'tools/call',
       params: { name: 'exo_write_thing', arguments: { id: 'a', body: 'b' } },
     });
-    expect(
-      (response as { result: { content: { text: string }[] } }).result.content[0]?.text,
-    ).toBe('geschrieben: a');
+    expect((response as { result: { content: { text: string }[] } }).result.content[0]?.text).toBe(
+      'geschrieben: a',
+    );
   });
 
   it('answers the capability probes a client sends on connect', async () => {

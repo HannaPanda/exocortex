@@ -42,9 +42,7 @@ function describeAnchor(comment: Comment): string {
 function renderThread(thread: CommentThread): string {
   const { root } = thread;
   const state =
-    root.resolvedAt === null
-      ? 'offen'
-      : `erledigt von ${root.resolvedBy?.name ?? 'unbekannt'}`;
+    root.resolvedAt === null ? 'offen' : `erledigt von ${root.resolvedBy?.name ?? 'unbekannt'}`;
   const lines = [
     `- [${state}] ${root.createdBy.name} (${describeAnchor(root)}, id: ${root.id}): ${root.body}`,
   ];
@@ -106,7 +104,9 @@ export const commentCreateTool: AnyToolDefinition = defineTool({
       .max(240)
       .nullable()
       .default(null)
-      .describe('Zitat der kommentierten Stelle, damit der Faden lesbar bleibt, wenn der Block verschwindet.'),
+      .describe(
+        'Zitat der kommentierten Stelle, damit der Faden lesbar bleibt, wenn der Block verschwindet.',
+      ),
     parentId: idSchema
       .nullable()
       .default(null)

@@ -163,9 +163,7 @@ export function InvitationTable({
                 {dateFormat.format(new Date(invitation.expiresAt))}
               </TableCell>
               <TableCell className="text-muted-foreground">
-                {invitation.lastSentAt === null
-                  ? 'nicht angekommen'
-                  : `${invitation.sentCount}×`}
+                {invitation.lastSentAt === null ? 'nicht angekommen' : `${invitation.sentCount}×`}
               </TableCell>
               <TableCell>
                 <InvitationActions

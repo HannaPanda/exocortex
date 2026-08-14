@@ -7,12 +7,12 @@ No existing architecture had to be preserved, so the plan below is a greenfield 
 
 ## Target runtime
 
-| Concern         | Choice                                          |
-| --------------- | ----------------------------------------------- |
+| Concern         | Choice                                                         |
+| --------------- | -------------------------------------------------------------- |
 | Node            | 24.18.1 (active LTS), pinned via `.nvmrc`, `engines`, Corepack |
-| Package manager | pnpm 11.20.0 via Corepack                       |
-| Build orchestr. | Turborepo 2.10                                  |
-| Language        | TypeScript 5.9.3, strict, no `any`              |
+| Package manager | pnpm 11.20.0 via Corepack                                      |
+| Build orchestr. | Turborepo 2.10                                                 |
+| Language        | TypeScript 5.9.3, strict, no `any`                             |
 
 ## Phases
 
@@ -98,20 +98,20 @@ No existing architecture had to be preserved, so the plan below is a greenfield 
 
 All phases complete. Verified on 2026-08-04:
 
-| Command | Result |
-| ------- | ------ |
-| `pnpm build` | 14 tasks successful |
-| `pnpm lint` | dependency boundaries OK (14 packages) + 25 tasks successful |
-| `pnpm typecheck` | 25 tasks successful |
-| `pnpm test` | 25 tasks successful, 184 tests passed |
-| `pnpm test:e2e` | 28 tests passed against https://exocortex.app |
+| Command          | Result                                                       |
+| ---------------- | ------------------------------------------------------------ |
+| `pnpm build`     | 14 tasks successful                                          |
+| `pnpm lint`      | dependency boundaries OK (14 packages) + 25 tasks successful |
+| `pnpm typecheck` | 25 tasks successful                                          |
+| `pnpm test`      | 25 tasks successful, 184 tests passed                        |
+| `pnpm test:e2e`  | 28 tests passed against https://exocortex.app                |
 
 ## Bugs found and fixed during verification
 
 These were real defects the test suite surfaced, not test problems:
 
 1. **BullMQ rejects `:` in custom job ids.** The collaboration server's debounced
-   materialization enqueue used `materialize:<documentId>`, so *every* Yjs store
+   materialization enqueue used `materialize:<documentId>`, so _every_ Yjs store
    hook threw and nothing was ever persisted. Fixed to `materialize-<documentId>`
    and `QueueRegistry.enqueueDebounced` now fails fast on a colon so the mistake
    cannot hide inside a persistence hook again.

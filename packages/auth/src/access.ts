@@ -96,10 +96,7 @@ export class WorkspaceAccessService {
    * Same as `findDocumentContext` but throws a document-scoped authorization
    * error when the document is missing or invisible to the caller.
    */
-  async requireDocumentContext(
-    documentId: string,
-    userId: string,
-  ): Promise<DocumentAccessContext> {
+  async requireDocumentContext(documentId: string, userId: string): Promise<DocumentAccessContext> {
     const context = await this.findDocumentContext(documentId, userId);
     if (context === null) {
       throw new AuthorizationError(
@@ -110,7 +107,10 @@ export class WorkspaceAccessService {
     return context;
   }
 
-  async findAttachmentContext(attachmentId: string, userId: string): Promise<{
+  async findAttachmentContext(
+    attachmentId: string,
+    userId: string,
+  ): Promise<{
     attachment: AttachmentPolicySubject & {
       storageKey: string;
       filename: string;
@@ -174,7 +174,10 @@ export class WorkspaceAccessService {
 
   /** Global role of a user, or null when the user does not exist. */
   async findGlobalRole(userId: string): Promise<UserRole | null> {
-    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true },
+    });
     return user?.role ?? null;
   }
 

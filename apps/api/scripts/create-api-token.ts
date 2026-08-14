@@ -62,7 +62,10 @@ async function main(): Promise<void> {
 
   const prisma = createPrismaClient();
   try {
-    const user = await prisma.user.findUnique({ where: { email: args.email }, select: { id: true } });
+    const user = await prisma.user.findUnique({
+      where: { email: args.email },
+      select: { id: true },
+    });
     if (user === null) {
       console.error(`No user found with email "${args.email}"`);
       process.exit(1);
@@ -70,7 +73,8 @@ async function main(): Promise<void> {
     }
 
     const generated = generateApiToken();
-    const expiresAt = args.days === null ? null : new Date(Date.now() + args.days * MILLISECONDS_PER_DAY);
+    const expiresAt =
+      args.days === null ? null : new Date(Date.now() + args.days * MILLISECONDS_PER_DAY);
 
     await prisma.apiToken.create({
       data: {
@@ -83,7 +87,9 @@ async function main(): Promise<void> {
     });
 
     // The only line a caller should parse is the last one: the raw secret.
-    console.error(`Created API token "${args.name}" for ${args.email} (prefix ${generated.prefix})`);
+    console.error(
+      `Created API token "${args.name}" for ${args.email} (prefix ${generated.prefix})`,
+    );
     console.log(generated.secret);
   } finally {
     await prisma.$disconnect();

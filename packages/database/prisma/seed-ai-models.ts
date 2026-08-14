@@ -286,7 +286,10 @@ async function upsertModels(prisma: PrismaClient): Promise<{ created: number; up
   let updated = 0;
 
   for (const seed of SEED_MODELS) {
-    const existing = await prisma.aiModel.findUnique({ where: { slug: seed.slug }, select: { id: true } });
+    const existing = await prisma.aiModel.findUnique({
+      where: { slug: seed.slug },
+      select: { id: true },
+    });
 
     const sharedFields = {
       displayName: seed.displayName,
@@ -326,7 +329,9 @@ async function wireVisionCompanions(prisma: PrismaClient): Promise<number> {
       select: { id: true },
     });
     if (companion === null) {
-      console.warn(`  companion slug not found: ${seed.visionCompanionSlug} (referenced by ${seed.slug})`);
+      console.warn(
+        `  companion slug not found: ${seed.visionCompanionSlug} (referenced by ${seed.slug})`,
+      );
       continue;
     }
 

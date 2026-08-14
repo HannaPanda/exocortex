@@ -1,9 +1,5 @@
 import { AiProviderError, type ImageGenerator } from '@exocortex/ai';
-import {
-  documentSummarySchema,
-  type QUEUE_NAMES,
-  type Settings,
-} from '@exocortex/contracts';
+import { documentSummarySchema, type QUEUE_NAMES, type Settings } from '@exocortex/contracts';
 import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 

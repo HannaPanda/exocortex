@@ -72,12 +72,16 @@ export function ModelTable() {
 
   if (modelsQuery.isError) {
     return (
-      <ErrorState title="Modelle konnten nicht geladen werden" onRetry={() => void modelsQuery.refetch()} />
+      <ErrorState
+        title="Modelle konnten nicht geladen werden"
+        onRetry={() => void modelsQuery.refetch()}
+      />
     );
   }
 
   const { models, defaultModelSlug } = modelsQuery.data;
-  const deleteErrorCode = deleteModel.error instanceof ApiError ? deleteModel.error.code : undefined;
+  const deleteErrorCode =
+    deleteModel.error instanceof ApiError ? deleteModel.error.code : undefined;
   const syncErrorCode = syncModels.error instanceof ApiError ? syncModels.error.code : undefined;
 
   return (
@@ -177,7 +181,9 @@ export function ModelTable() {
                   ))}
                 </div>
               </TableCell>
-              <TableCell>{formatPrice(model.inputMicroUsdPerMTok, model.outputMicroUsdPerMTok)}</TableCell>
+              <TableCell>
+                {formatPrice(model.inputMicroUsdPerMTok, model.outputMicroUsdPerMTok)}
+              </TableCell>
               <TableCell>
                 <Switch
                   aria-label={`${model.displayName} aktiv`}
@@ -223,7 +229,12 @@ export function ModelTable() {
         </TableBody>
       </Table>
 
-      <ModelDialog open={dialogOpen} onOpenChange={setDialogOpen} model={editingModel} models={models} />
+      <ModelDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        model={editingModel}
+        models={models}
+      />
     </div>
   );
 }

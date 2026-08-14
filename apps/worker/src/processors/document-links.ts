@@ -1,8 +1,4 @@
-import {
-  Prisma,
-  type PrismaClient,
-  type PrismaTransactionClient,
-} from '@exocortex/database';
+import { Prisma, type PrismaClient, type PrismaTransactionClient } from '@exocortex/database';
 import {
   type DocumentLinkKind,
   documentLinkTitleKey,

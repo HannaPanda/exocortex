@@ -1,7 +1,7 @@
 # ADR-018: MCP over HTTP, with OAuth for clients that cannot hold a token
 
-* Status: accepted
-* Date: 2026-08-11
+- Status: accepted
+- Date: 2026-08-11
 
 ## Context
 
@@ -23,7 +23,7 @@ someone a token.
 **An agent on someone else's machine** can hold a token, and after the basic
 auth in front of the deployment was removed on 2026-08-09 it can already reach
 `https://exocortex.app/api/` and run `apps/mcp` locally. What it cannot do is
-speak MCP *to* this server, which is what a client that only knows a URL needs.
+speak MCP _to_ this server, which is what a client that only knows a URL needs.
 
 The original plan in issue #4 was a tunnel or a VPN, so that a remote client
 could reach `apps/api` and run the stdio bin at its own end. That still works
@@ -44,11 +44,11 @@ same request a browser would make.
 
 **Two credentials open the endpoint, and a cookie is not one of them.**
 
-* An `exo_` API token is passed through unchanged to the loopback call, so
+- An `exo_` API token is passed through unchanged to the loopback call, so
   `TokenScopeGuard` narrows a tool exactly as it narrows a direct call. A
   read-scoped token can list every tool and gets `api_token_insufficient_scope`
   from the writing ones.
-* An OAuth access token, issued by the Better Auth `mcp` plugin, is verified
+- An OAuth access token, issued by the Better Auth `mcp` plugin, is verified
   against `oauth_access_token` and exchanged for a two-minute service token
   (`purpose: 'mcp-tools'`) for the loopback call. Its limit is the tool list it
   was served, not a scope.

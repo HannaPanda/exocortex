@@ -40,17 +40,17 @@ For UI or flow changes also run `pnpm test:e2e` against a running deployment.
 
 ## Where to look first
 
-* `docs/architecture.md` — how the pieces fit together
-* `docs/adr/` — why they fit together that way
-* `IMPLEMENTATION_PLAN.md` — what has been built and in which order
-* `docs/deviations.md` — known gaps and deliberate deviations
+- `docs/architecture.md` — how the pieces fit together
+- `docs/adr/` — why they fit together that way
+- `IMPLEMENTATION_PLAN.md` — what has been built and in which order
+- `docs/deviations.md` — known gaps and deliberate deviations
 
 ## Conventions
 
-* file names `kebab-case.ts`, React components `PascalCase`
-* one exported concern per file where practical; `index.ts` re-exports the
+- file names `kebab-case.ts`, React components `PascalCase`
+- one exported concern per file where practical; `index.ts` re-exports the
   public surface of a package
-* imports are sorted by `simple-import-sort` (`pnpm lint --fix`)
-* database identifiers are `cuid(2)` and generated server-side
-* every workspace-scoped operation resolves the caller's role through
+- imports are sorted by `simple-import-sort` (`pnpm lint --fix`)
+- database identifiers are `cuid(2)` and generated server-side
+- every workspace-scoped operation resolves the caller's role through
   `WorkspaceAccessService` and asserts a policy from `@exocortex/auth`

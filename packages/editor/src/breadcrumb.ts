@@ -31,9 +31,9 @@ export interface BreadcrumbCrumb {
 
 /** Reads and validates the path the host provided. Never throws. */
 export function readBreadcrumbPath(element: HTMLElement | null): BreadcrumbCrumb[] {
-  const raw = element?.closest(`[${BREADCRUMB_PATH_ATTRIBUTE}]`)?.getAttribute(
-    BREADCRUMB_PATH_ATTRIBUTE,
-  );
+  const raw = element
+    ?.closest(`[${BREADCRUMB_PATH_ATTRIBUTE}]`)
+    ?.getAttribute(BREADCRUMB_PATH_ATTRIBUTE);
   if (raw === null || raw === undefined || raw.length === 0) return [];
   try {
     const parsed: unknown = JSON.parse(raw);

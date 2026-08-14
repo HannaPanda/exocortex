@@ -146,15 +146,12 @@ export default tseslint.config(
       // along a seam the code already had, never by moving lines somewhere else
       // to get under a number.
       'max-lines': ['error', { max: 600, skipBlankLines: true, skipComments: true }],
-      'complexity': ['error', 20],
+      complexity: ['error', 20],
       // A ratchet, not a target. 200 is above everything in the repository
       // today, so it forbids getting worse without demanding a rewrite; lower
       // it whenever the worst offender is split up. `.tsx` gets its own,
       // looser one below.
-      'max-lines-per-function': [
-        'error',
-        { max: 200, skipBlankLines: true, skipComments: true },
-      ],
+      'max-lines-per-function': ['error', { max: 200, skipBlankLines: true, skipComments: true }],
       'max-depth': ['error', 4],
       'max-params': ['error', 5],
       'max-nested-callbacks': ['error', 3],
@@ -221,10 +218,7 @@ export default tseslint.config(
     // this number should come down as they are split.
     files: ['**/*.tsx'],
     rules: {
-      'max-lines-per-function': [
-        'error',
-        { max: 300, skipBlankLines: true, skipComments: true },
-      ],
+      'max-lines-per-function': ['error', { max: 300, skipBlankLines: true, skipComments: true }],
     },
   },
 

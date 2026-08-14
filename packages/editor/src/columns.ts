@@ -117,10 +117,7 @@ export const Column = Node.create({
 });
 
 /** Nearest ancestor of `typeName` around the selection, or `null`. */
-function findAncestor(
-  state: EditorState,
-  typeName: string,
-): { node: PmNode; pos: number } | null {
+function findAncestor(state: EditorState, typeName: string): { node: PmNode; pos: number } | null {
   const { $from } = state.selection;
   for (let depth = $from.depth; depth > 0; depth -= 1) {
     const node = $from.node(depth);

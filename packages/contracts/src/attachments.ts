@@ -58,12 +58,7 @@ export const uploadAttachmentFieldsSchema = z.object({
 export type UploadAttachmentFields = z.infer<typeof uploadAttachmentFieldsSchema>;
 
 /** State machine for the cached text extraction of an attachment (D6). */
-export const attachmentTextStatusSchema = z.enum([
-  'not_applicable',
-  'pending',
-  'ready',
-  'failed',
-]);
+export const attachmentTextStatusSchema = z.enum(['not_applicable', 'pending', 'ready', 'failed']);
 export type AttachmentTextStatus = z.infer<typeof attachmentTextStatusSchema>;
 
 /**

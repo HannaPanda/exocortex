@@ -32,7 +32,8 @@ function main(): void {
   if (env.EXOCORTEX_BASIC_AUTH !== undefined) {
     // See docs/mcp.md: this only matters for a remote deployment behind
     // nginx basic auth, since `Authorization` is already the bearer token.
-    headers['x-forwarded-authorization'] = `Basic ${Buffer.from(env.EXOCORTEX_BASIC_AUTH).toString('base64')}`;
+    headers['x-forwarded-authorization'] =
+      `Basic ${Buffer.from(env.EXOCORTEX_BASIC_AUTH).toString('base64')}`;
   }
 
   const client = createFetchApiClient({

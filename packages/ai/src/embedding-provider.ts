@@ -62,7 +62,9 @@ export interface EmbeddingProvider {
 }
 
 const embeddingResponseSchema = z.object({
-  data: z.array(z.object({ index: z.number().int().nonnegative(), embedding: z.array(z.number()) })),
+  data: z.array(
+    z.object({ index: z.number().int().nonnegative(), embedding: z.array(z.number()) }),
+  ),
   model: z.string().optional(),
   usage: z
     .object({

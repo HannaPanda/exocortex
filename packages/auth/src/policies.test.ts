@@ -210,12 +210,16 @@ describe('cross-workspace move policy', () => {
 describe('database schema policy', () => {
   it('behaves exactly like canEditDocument', () => {
     for (const role of allRoles) {
-      expect(canManageDatabaseSchema(role, activeDocument)).toEqual(canEditDocument(role, activeDocument));
+      expect(canManageDatabaseSchema(role, activeDocument)).toEqual(
+        canEditDocument(role, activeDocument),
+      );
       expect(canManageDatabaseSchema(role, archivedDocument)).toEqual(
         canEditDocument(role, archivedDocument),
       );
     }
-    expect(canManageDatabaseSchema(null, activeDocument)).toEqual(canEditDocument(null, activeDocument));
+    expect(canManageDatabaseSchema(null, activeDocument)).toEqual(
+      canEditDocument(null, activeDocument),
+    );
   });
 
   it('denies changing an archived collection schema', () => {
@@ -270,7 +274,11 @@ describe('attachment policies', () => {
   });
 
   it('treats a deleted attachment as not found', () => {
-    const decision = canDownloadAttachment('OWNER', { ...attachment, deletedAt: new Date() }, workspaceId);
+    const decision = canDownloadAttachment(
+      'OWNER',
+      { ...attachment, deletedAt: new Date() },
+      workspaceId,
+    );
     expect(decision.allowed === false && decision.code).toBe('not_found');
   });
 

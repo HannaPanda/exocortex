@@ -40,9 +40,19 @@ export const AI_RULE_MODE_LABELS: Record<AiRuleMode, string> = {
 };
 
 const LAYOUTS: { value: DocumentLayout; label: string; hint: string; bars: string[] }[] = [
-  { value: 'narrow', label: 'Schmal', hint: 'Lesebreite, 68 Zeichen', bars: ['w-1/2', 'w-1/2', 'w-1/3'] },
+  {
+    value: 'narrow',
+    label: 'Schmal',
+    hint: 'Lesebreite, 68 Zeichen',
+    bars: ['w-1/2', 'w-1/2', 'w-1/3'],
+  },
   { value: 'wide', label: 'Breit', hint: 'Text mit Tabellen', bars: ['w-3/4', 'w-3/4', 'w-1/2'] },
-  { value: 'full', label: 'Vollbreite', hint: 'Datenbanken, breite Tabellen', bars: ['w-full', 'w-full', 'w-2/3'] },
+  {
+    value: 'full',
+    label: 'Vollbreite',
+    hint: 'Datenbanken, breite Tabellen',
+    bars: ['w-full', 'w-full', 'w-2/3'],
+  },
 ];
 
 export interface PagePropertiesDialogProps {
@@ -213,11 +223,16 @@ export function PagePropertiesDialog({
                       faster to grasp than the words schmal/breit/voll. */}
                   <span aria-hidden className="flex w-full flex-col items-center gap-1 py-1">
                     {option.bars.map((bar, index) => (
-                      <span key={index} className={cn('h-1 rounded-full bg-muted-foreground/50', bar)} />
+                      <span
+                        key={index}
+                        className={cn('h-1 rounded-full bg-muted-foreground/50', bar)}
+                      />
                     ))}
                   </span>
                   <span className="text-sm font-medium">{option.label}</span>
-                  <span className="text-[0.6875rem] leading-tight text-muted-foreground">{option.hint}</span>
+                  <span className="text-[0.6875rem] leading-tight text-muted-foreground">
+                    {option.hint}
+                  </span>
                 </button>
               ))}
             </div>
@@ -283,9 +298,19 @@ export function PagePropertiesDialog({
             <dt>Typ</dt>
             <dd>{detail.type === 'COLLECTION' ? 'Datenbank' : 'Seite'}</dd>
             <dt>Erstellt</dt>
-            <dd>{new Date(detail.createdAt).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' })}</dd>
+            <dd>
+              {new Date(detail.createdAt).toLocaleString('de-DE', {
+                dateStyle: 'medium',
+                timeStyle: 'short',
+              })}
+            </dd>
             <dt>Zuletzt bearbeitet</dt>
-            <dd>{new Date(detail.updatedAt).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' })}</dd>
+            <dd>
+              {new Date(detail.updatedAt).toLocaleString('de-DE', {
+                dateStyle: 'medium',
+                timeStyle: 'short',
+              })}
+            </dd>
             <dt>Pfad</dt>
             <dd className="break-words">
               {detail.breadcrumb.length === 0
@@ -301,7 +326,13 @@ export function PagePropertiesDialog({
           </Button>
           <Button
             data-testid="save-page-properties"
-            disabled={readOnly || titleInvalid || triggerInvalid || updateDocument.isPending || setAiRule.isPending}
+            disabled={
+              readOnly ||
+              titleInvalid ||
+              triggerInvalid ||
+              updateDocument.isPending ||
+              setAiRule.isPending
+            }
             onClick={() => void save()}
           >
             Speichern

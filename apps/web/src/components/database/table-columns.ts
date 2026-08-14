@@ -49,7 +49,10 @@ export function columnWidthOf(view: DatabaseView, key: string): number {
 }
 
 export function clampColumnWidth(width: number): number {
-  return Math.min(DATABASE_COLUMN_MAX_WIDTH, Math.max(DATABASE_COLUMN_MIN_WIDTH, Math.round(width)));
+  return Math.min(
+    DATABASE_COLUMN_MAX_WIDTH,
+    Math.max(DATABASE_COLUMN_MIN_WIDTH, Math.round(width)),
+  );
 }
 
 /**
@@ -91,11 +94,15 @@ export function toggleColumnVisibility(
 ): DatabaseViewConfig['visibleProperties'] {
   const ordered = visibleTableProperties(view, properties);
   const visibleIds = new Set(ordered.map((property) => property.id));
-  const displayOrder = [...ordered, ...properties.filter((property) => !visibleIds.has(property.id))];
+  const displayOrder = [
+    ...ordered,
+    ...properties.filter((property) => !visibleIds.has(property.id)),
+  ];
 
   return displayOrder.map((property, index) => ({
     propertyId: property.id,
-    visible: property.id === propertyId ? !visibleIds.has(property.id) : visibleIds.has(property.id),
+    visible:
+      property.id === propertyId ? !visibleIds.has(property.id) : visibleIds.has(property.id),
     // Fixed-width index keys: the UI always rewrites the whole list, so a
     // fractional index would buy nothing here.
     orderKey: String(index).padStart(4, '0'),

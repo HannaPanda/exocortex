@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  issueCollaborationTicket,
-  verifyCollaborationTicket,
-} from './collaboration-ticket';
+import { issueCollaborationTicket, verifyCollaborationTicket } from './collaboration-ticket';
 
 const secret = 'a'.repeat(64);
 const otherSecret = 'b'.repeat(64);

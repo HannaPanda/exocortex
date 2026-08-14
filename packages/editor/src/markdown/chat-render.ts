@@ -112,7 +112,9 @@ function pruneNode(node: ProseMirrorNode): ProseMirrorNode | null {
   if (node.type === 'text') {
     if (node.text === undefined || node.text.length === 0) return null;
     const marks = pruneMarks(node.marks);
-    return marks === undefined ? { type: 'text', text: node.text } : { type: 'text', text: node.text, marks };
+    return marks === undefined
+      ? { type: 'text', text: node.text }
+      : { type: 'text', text: node.text, marks };
   }
 
   const fallbackType = TYPE_FALLBACKS[node.type];

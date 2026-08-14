@@ -15,7 +15,10 @@ interface RecordedCall {
 }
 
 /** Hand-written fake client: records every call, answers with a fixed response. */
-function createFakeClient(response: unknown): { client: ExocortexApiClient; calls: RecordedCall[] } {
+function createFakeClient(response: unknown): {
+  client: ExocortexApiClient;
+  calls: RecordedCall[];
+} {
   const calls: RecordedCall[] = [];
   const client: ExocortexApiClient = {
     async request(input) {

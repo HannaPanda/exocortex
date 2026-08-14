@@ -78,9 +78,7 @@ describe('OpenRouterProvider.stream', () => {
             choices: [{ delta: { tool_calls: [{ index: 0, function: { arguments: ':"Term' } }] } }],
           },
           {
-            choices: [
-              { delta: { tool_calls: [{ index: 0, function: { arguments: 'ine"}' } }] } },
-            ],
+            choices: [{ delta: { tool_calls: [{ index: 0, function: { arguments: 'ine"}' } }] } }],
           },
           { choices: [{ delta: {}, finish_reason: 'tool_calls' }] },
         ]),

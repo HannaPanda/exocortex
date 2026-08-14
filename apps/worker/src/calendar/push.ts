@@ -94,8 +94,9 @@ export async function pushLink(input: PushLinkInput): Promise<PushLinkResult> {
   });
   const stateByRow = new Map(
     states
-      .filter((state): state is CalendarObjectState & { rowDocumentId: string } =>
-        state.rowDocumentId !== null,
+      .filter(
+        (state): state is CalendarObjectState & { rowDocumentId: string } =>
+          state.rowDocumentId !== null,
       )
       .map((state) => [state.rowDocumentId, state]),
   );
@@ -115,7 +116,12 @@ export async function pushLink(input: PushLinkInput): Promise<PushLinkResult> {
     await updateRemote({ ...input, payload, state, result });
   }
 
-  await deleteVanished({ ...input, liveRowIds: new Set(rows.map((row) => row.document.id)), states, result });
+  await deleteVanished({
+    ...input,
+    liveRowIds: new Set(rows.map((row) => row.document.id)),
+    states,
+    result,
+  });
 
   return result;
 }

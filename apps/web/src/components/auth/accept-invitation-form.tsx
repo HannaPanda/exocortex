@@ -4,10 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
-import {
-  type AcceptInvitationResponse,
-  type InvitationPreview,
-} from '@exocortex/contracts';
+import { type AcceptInvitationResponse, type InvitationPreview } from '@exocortex/contracts';
 import {
   Alert,
   AlertDescription,
@@ -204,9 +201,7 @@ export function AcceptInvitationForm({ token }: { token: string }) {
           </Button>
 
           {passwordTooShort ? (
-            <p className="text-xs text-muted-foreground">
-              Das Passwort ist noch zu kurz.
-            </p>
+            <p className="text-xs text-muted-foreground">Das Passwort ist noch zu kurz.</p>
           ) : null}
         </form>
       </CardContent>

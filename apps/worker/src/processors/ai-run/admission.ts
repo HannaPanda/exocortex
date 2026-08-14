@@ -1,8 +1,4 @@
-import {
-  AI_RUN_HEARTBEAT_STALE_MS,
-  type QUEUE_NAMES,
-  type Settings,
-} from '@exocortex/contracts';
+import { AI_RUN_HEARTBEAT_STALE_MS, type QUEUE_NAMES, type Settings } from '@exocortex/contracts';
 import { type AiRun, type PrismaClient } from '@exocortex/database';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 

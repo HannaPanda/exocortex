@@ -131,7 +131,6 @@ export function summarize(document: DocumentSummary): Omit<TreeNodeSummary, 'chi
   return { id: document.id, title: document.title, type: document.type };
 }
 
-
 /**
  * Hands out `budget` one unit at a time, skipping anyone already satisfied, so
  * a section that wants three lines takes three and the rest goes to the ones
@@ -174,4 +173,3 @@ function nearestDescendants(node: DocumentTreeNode, limit: number): string[] {
 function countNodes(nodes: readonly DocumentTreeNode[]): number {
   return nodes.reduce((sum, node) => sum + 1 + countNodes(node.children), 0);
 }
-

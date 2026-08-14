@@ -1,11 +1,6 @@
 import { type Job, type JobsOptions, Queue, QueueEvents } from 'bullmq';
 
-import {
-  JOB_SCHEMAS,
-  type JobPayloadMap,
-  QUEUE_NAMES,
-  type QueueName,
-} from '@exocortex/contracts';
+import { JOB_SCHEMAS, type JobPayloadMap, QUEUE_NAMES, type QueueName } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 
 import { createRedisConnection, type Redis } from './connection';
@@ -244,7 +239,12 @@ export class QueueRegistry {
       { pattern: '30 4 * * *' },
       {
         name: QUEUE_NAMES.maintenance,
-        data: { correlationId, task: 'collect-orphaned-covers', workspaceId: null, documentId: null },
+        data: {
+          correlationId,
+          task: 'collect-orphaned-covers',
+          workspaceId: null,
+          documentId: null,
+        },
       },
     );
     // Every minute: the second-line defence for a run whose worker died
@@ -284,7 +284,12 @@ export class QueueRegistry {
       { every: 300_000 },
       {
         name: QUEUE_NAMES.maintenance,
-        data: { correlationId, task: 'backfill-document-links', workspaceId: null, documentId: null },
+        data: {
+          correlationId,
+          task: 'backfill-document-links',
+          workspaceId: null,
+          documentId: null,
+        },
       },
     );
     // Every five minutes, same cadence as the link backfill: the processor
@@ -298,7 +303,12 @@ export class QueueRegistry {
       { every: 300_000 },
       {
         name: QUEUE_NAMES.maintenance,
-        data: { correlationId, task: 'snapshot-active-documents', workspaceId: null, documentId: null },
+        data: {
+          correlationId,
+          task: 'snapshot-active-documents',
+          workspaceId: null,
+          documentId: null,
+        },
       },
     );
     // Every two minutes, a small batch. A no-op while semantic search is off,

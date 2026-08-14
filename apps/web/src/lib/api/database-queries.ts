@@ -168,7 +168,8 @@ export function useCreateDatabaseView(documentId: string) {
         method: 'POST',
         body: request,
       }),
-    onSuccess: () => void client.invalidateQueries({ queryKey: databaseQueryKeys.views(documentId) }),
+    onSuccess: () =>
+      void client.invalidateQueries({ queryKey: databaseQueryKeys.views(documentId) }),
   });
 }
 
@@ -195,7 +196,8 @@ export function useReorderDatabaseView(documentId: string) {
         method: 'POST',
         body: input.request,
       }),
-    onSuccess: () => void client.invalidateQueries({ queryKey: databaseQueryKeys.views(documentId) }),
+    onSuccess: () =>
+      void client.invalidateQueries({ queryKey: databaseQueryKeys.views(documentId) }),
   });
 }
 
@@ -206,7 +208,8 @@ export function useDeleteDatabaseView(documentId: string) {
       apiRequest<{ deleted: true }>(`/api/documents/${documentId}/views/${viewId}`, {
         method: 'DELETE',
       }),
-    onSuccess: () => void client.invalidateQueries({ queryKey: databaseQueryKeys.views(documentId) }),
+    onSuccess: () =>
+      void client.invalidateQueries({ queryKey: databaseQueryKeys.views(documentId) }),
   });
 }
 
@@ -272,7 +275,9 @@ export function useDocumentRow(documentId: string | undefined) {
   return useQuery({
     queryKey: databaseQueryKeys.row(documentId ?? 'none'),
     queryFn: async () => {
-      const response = await apiRequest<DocumentRowResponse>(`/api/documents/${documentId ?? ''}/row`);
+      const response = await apiRequest<DocumentRowResponse>(
+        `/api/documents/${documentId ?? ''}/row`,
+      );
       return response.row;
     },
     enabled: documentId !== undefined,

@@ -40,7 +40,12 @@ export function AddPropertyButton({ documentId }: { documentId: string }) {
     >
       <PopoverTrigger
         render={
-          <Button variant="ghost" size="icon-sm" aria-label="Eigenschaft hinzufügen" data-testid="add-property">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Eigenschaft hinzufügen"
+            data-testid="add-property"
+          >
             <PlusIcon />
           </Button>
         }
@@ -56,7 +61,12 @@ export function AddPropertyButton({ documentId }: { documentId: string }) {
             setOpen(false);
           }}
         >
-          <Input autoFocus placeholder="Name der Eigenschaft" value={name} onChange={(event) => setName(event.target.value)} />
+          <Input
+            autoFocus
+            placeholder="Name der Eigenschaft"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
           <Select value={type} onValueChange={(next) => setType(next as DatabasePropertyType)}>
             <SelectTrigger className="w-full" data-testid="property-type-select">
               {/* Without a render function Base UI shows the raw value, which

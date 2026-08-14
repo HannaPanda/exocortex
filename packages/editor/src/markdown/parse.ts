@@ -17,11 +17,7 @@ import { buildMarkdownRegistry, type MarkdownRegistry } from '../extensions';
 import { MARKDOWN_HIGHLIGHT_BACKGROUND } from '../inline-styling';
 import { getExocortexSchema } from '../schema';
 
-import {
-  applyExocortexBlockRules,
-  CONTAINER_TOKEN,
-  readContainerToken,
-} from './container-rule';
+import { applyExocortexBlockRules, CONTAINER_TOKEN, readContainerToken } from './container-rule';
 import { BLOCK_ID_SUFFIX_PATTERN, DocumentBuilder } from './document-builder';
 import { type Frontmatter, parseFrontmatter } from './frontmatter';
 import {
@@ -132,7 +128,10 @@ function applyInlineMarkToken(
     return activeMarks.filter((mark) => mark.type !== markType);
   }
   const attrs = markAttributes(prefix);
-  return addMarkToSet(activeMarks, attrs === undefined ? { type: markType } : { type: markType, attrs });
+  return addMarkToSet(
+    activeMarks,
+    attrs === undefined ? { type: markType } : { type: markType, attrs },
+  );
 }
 
 // --------------------------------------------------------------------------
@@ -418,7 +417,10 @@ export function parseMarkdown(
 }
 
 function parseFenceInfo(info: string): { language: string; blockId: string | null } {
-  const parts = info.trim().split(/\s+/).filter((part) => part.length > 0);
+  const parts = info
+    .trim()
+    .split(/\s+/)
+    .filter((part) => part.length > 0);
   let blockId: string | null = null;
   const languageParts: string[] = [];
   for (const part of parts) {
@@ -498,9 +500,7 @@ function detectCallout(
   const titleSource = (match[2] ?? '').trim();
   const blockIdMatch = BLOCK_ID_SUFFIX_PATTERN.exec(titleSource);
   const title =
-    blockIdMatch === null
-      ? titleSource
-      : titleSource.slice(0, blockIdMatch.index).trim();
+    blockIdMatch === null ? titleSource : titleSource.slice(0, blockIdMatch.index).trim();
 
   const consumed = match[0].length;
   const emptyParagraph = stripLeadingText(inlineToken, consumed);

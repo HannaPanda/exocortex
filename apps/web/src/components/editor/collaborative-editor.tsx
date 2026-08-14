@@ -140,7 +140,7 @@ function withLinkIdentity(
   const documentId =
     typeof fromMark === 'string' && fromMark.length > 0
       ? fromMark
-      : anchor?.getAttribute('data-document-id') ?? null;
+      : (anchor?.getAttribute('data-document-id') ?? null);
   return documentId === null || documentId.length === 0 ? target : { ...target, documentId };
 }
 
@@ -154,7 +154,11 @@ function withLinkIdentity(
  * has to be a plain module function rather than something that closes over
  * component state: `useEditor`'s dependency array must not grow.
  */
-function ignoresClick(view: EditorView, event: MouseEvent, anchor: HTMLAnchorElement | null): boolean {
+function ignoresClick(
+  view: EditorView,
+  event: MouseEvent,
+  anchor: HTMLAnchorElement | null,
+): boolean {
   // Left and middle button only: the right button belongs to the context menu,
   // where "Link in neuem Tab öffnen" is the browser's own affair.
   if (event.button !== 0 && event.button !== 1) return true;
@@ -191,7 +195,7 @@ function followFromEvent(
   // without a `link` mark).
   const mark = node?.marks.find((candidate) => candidate.type.name === 'link');
   const markHref = mark?.attrs.href;
-  const href = typeof markHref === 'string' ? markHref : anchor?.getAttribute('href') ?? null;
+  const href = typeof markHref === 'string' ? markHref : (anchor?.getAttribute('href') ?? null);
 
   const target = parseLinkHref(href);
   if (target.kind === 'unknown') return false;
@@ -549,9 +553,7 @@ function EditorSurface({
           }),
           Placeholder.configure({
             placeholder: ({ node }) =>
-              node.type.name === 'paragraph'
-                ? 'Schreibe etwas oder tippe „/“ für Befehle …'
-                : '',
+              node.type.name === 'paragraph' ? 'Schreibe etwas oder tippe „/“ für Befehle …' : '',
             // Every empty block gets the hint, not only the first one.
             showOnlyCurrent: true,
             includeChildren: true,
@@ -780,12 +782,7 @@ function EditorChrome({
           <BlockHandle editor={editor} catalog={catalog} />
         </>
       ) : null}
-      <SlashMenu
-        editor={editor}
-        keyboard={slashKeyboard}
-        catalog={catalog}
-        execute={runEntry}
-      />
+      <SlashMenu editor={editor} keyboard={slashKeyboard} catalog={catalog} execute={runEntry} />
       <MentionMenu
         editor={editor}
         keyboard={mentionKeyboard}

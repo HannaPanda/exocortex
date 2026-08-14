@@ -76,7 +76,9 @@ export function BoardView({ workspaceId, documentId, view, properties, readOnly 
               <SelectTrigger className="w-56" data-testid="board-group-by">
                 <SelectValue>
                   {(value: string | null) =>
-                    value === null ? 'Eigenschaft wählen' : selectProperties.find((p) => p.id === value)?.name
+                    value === null
+                      ? 'Eigenschaft wählen'
+                      : selectProperties.find((p) => p.id === value)?.name
                   }
                 </SelectValue>
               </SelectTrigger>
@@ -125,13 +127,18 @@ function BoardColumns({
   const createRow = useCreateDatabaseRow(documentId);
   const updateValues = useUpdateDatabaseRowValues(documentId);
 
-  if (rowsQuery.isPending) return <LoadingState variant="skeleton" rows={4} label="Karten werden geladen" />;
-  if (rowsQuery.isError) return <EmptyState title="Karten nicht geladen" description="Bitte versuche es erneut." />;
+  if (rowsQuery.isPending)
+    return <LoadingState variant="skeleton" rows={4} label="Karten werden geladen" />;
+  if (rowsQuery.isError)
+    return <EmptyState title="Karten nicht geladen" description="Bitte versuche es erneut." />;
 
-  const otherProperties = properties.filter((property) => property.id !== groupProperty.id).slice(0, 3);
+  const otherProperties = properties
+    .filter((property) => property.id !== groupProperty.id)
+    .slice(0, 3);
 
   const columnValue = (row: DatabaseRow): string =>
-    (row.values.find((entry) => entry.propertyId === groupProperty.id)?.value as string | null) ?? NO_VALUE_COLUMN;
+    (row.values.find((entry) => entry.propertyId === groupProperty.id)?.value as string | null) ??
+    NO_VALUE_COLUMN;
 
   const rowsByColumn = new Map<string, DatabaseRow[]>();
   for (const row of rowsQuery.data.rows) {
@@ -142,14 +149,25 @@ function BoardColumns({
   }
 
   const columns = [
-    ...groupProperty.options.map((option) => ({ id: option.id, label: option.label, color: option.color })),
+    ...groupProperty.options.map((option) => ({
+      id: option.id,
+      label: option.label,
+      color: option.color,
+    })),
     { id: NO_VALUE_COLUMN, label: 'Ohne Wert', color: 'gray' as const },
   ];
 
   const moveRow = (row: DatabaseRow, targetOptionId: string) => {
     updateValues.mutate({
       rowId: row.document.id,
-      request: { values: [{ propertyId: groupProperty.id, value: targetOptionId === NO_VALUE_COLUMN ? null : targetOptionId }] },
+      request: {
+        values: [
+          {
+            propertyId: groupProperty.id,
+            value: targetOptionId === NO_VALUE_COLUMN ? null : targetOptionId,
+          },
+        ],
+      },
     });
   };
 
@@ -158,14 +176,21 @@ function BoardColumns({
       {columns.map((column) => {
         const rows = rowsByColumn.get(column.id) ?? [];
         return (
-          <div key={column.id} className="flex w-64 shrink-0 flex-col gap-2 rounded-lg bg-surface p-2">
+          <div
+            key={column.id}
+            className="flex w-64 shrink-0 flex-col gap-2 rounded-lg bg-surface p-2"
+          >
             <div className="flex items-center justify-between px-1">
               {column.id === NO_VALUE_COLUMN ? (
                 <span className="text-xs font-medium text-muted-foreground">{column.label}</span>
               ) : (
                 <Badge
                   variant="outline"
-                  className={cn('border-transparent', OPTION_COLOR_BG_CLASS[column.color], OPTION_COLOR_TEXT_CLASS[column.color])}
+                  className={cn(
+                    'border-transparent',
+                    OPTION_COLOR_BG_CLASS[column.color],
+                    OPTION_COLOR_TEXT_CLASS[column.color],
+                  )}
                 >
                   {column.label}
                 </Badge>
@@ -175,7 +200,10 @@ function BoardColumns({
 
             <div className="flex flex-col gap-1.5">
               {rows.map((row) => (
-                <div key={row.document.id} className="flex flex-col gap-1.5 rounded-md border border-border bg-card p-2">
+                <div
+                  key={row.document.id}
+                  className="flex flex-col gap-1.5 rounded-md border border-border bg-card p-2"
+                >
                   <div className="flex items-start justify-between gap-1">
                     <Link
                       href={`/arbeitsbereich/${workspaceId}/seite/${row.document.id}`}
@@ -196,7 +224,10 @@ function BoardColumns({
                           {columns
                             .filter((target) => target.id !== column.id)
                             .map((target) => (
-                              <DropdownMenuItem key={target.id} onClick={() => moveRow(row, target.id)}>
+                              <DropdownMenuItem
+                                key={target.id}
+                                onClick={() => moveRow(row, target.id)}
+                              >
                                 Verschieben nach „{target.label}“
                               </DropdownMenuItem>
                             ))}
@@ -205,7 +236,8 @@ function BoardColumns({
                     )}
                   </div>
                   {otherProperties.map((property) => {
-                    const value = row.values.find((entry) => entry.propertyId === property.id)?.value ?? null;
+                    const value =
+                      row.values.find((entry) => entry.propertyId === property.id)?.value ?? null;
                     return (
                       <PropertyValueDisplay key={property.id} property={property} value={value} />
                     );
@@ -221,7 +253,10 @@ function BoardColumns({
                   onClick={() =>
                     createRow.mutate({
                       title: 'Unbenannt',
-                      values: column.id === NO_VALUE_COLUMN ? [] : [{ propertyId: groupProperty.id, value: column.id }],
+                      values:
+                        column.id === NO_VALUE_COLUMN
+                          ? []
+                          : [{ propertyId: groupProperty.id, value: column.id }],
                     })
                   }
                 >

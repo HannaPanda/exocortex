@@ -84,7 +84,9 @@ test.afterAll(async () => {
     const body = (await response.json()) as { invitations: { id: string; status: string }[] };
     for (const invitation of body.invitations) {
       if (invitation.status === 'pending') {
-        await ownerApi.delete(`${origin}/api/workspaces/${workspaceId}/invitations/${invitation.id}`);
+        await ownerApi.delete(
+          `${origin}/api/workspaces/${workspaceId}/invitations/${invitation.id}`,
+        );
       }
     }
   }

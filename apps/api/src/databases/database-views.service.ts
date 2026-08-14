@@ -1,7 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { z } from 'zod';
 
-import { assertPolicy, canManageDatabaseSchema, canReadDocument, WorkspaceAccessService } from '@exocortex/auth';
+import {
+  assertPolicy,
+  canManageDatabaseSchema,
+  canReadDocument,
+  WorkspaceAccessService,
+} from '@exocortex/auth';
 import {
   type CreateDatabaseViewRequest,
   databaseFilterGroupSchema,
@@ -125,13 +130,17 @@ export class DatabaseViewsService {
 
     const existingConfig = databaseViewConfigSchema.parse(view.config);
     const nextConfig =
-      input.request.config === undefined ? existingConfig : { ...existingConfig, ...input.request.config };
+      input.request.config === undefined
+        ? existingConfig
+        : { ...existingConfig, ...input.request.config };
 
     const updated = await this.prisma.databaseView.update({
       where: { id: input.viewId },
       data: {
         ...(input.request.name === undefined ? {} : { name: input.request.name }),
-        ...(input.request.filters === undefined ? {} : { filters: toJsonInput(input.request.filters) }),
+        ...(input.request.filters === undefined
+          ? {}
+          : { filters: toJsonInput(input.request.filters) }),
         ...(input.request.sorts === undefined ? {} : { sorts: toJsonInput(input.request.sorts) }),
         ...(input.request.groupByPropertyId === undefined
           ? {}
@@ -168,7 +177,10 @@ export class DatabaseViewsService {
     } else {
       const index = siblings.findIndex((sibling) => sibling.id === input.request.afterViewId);
       if (index < 0) throw AppError.notFound('Sibling view');
-      orderKey = generateOrderKey(siblings[index]?.orderKey ?? null, siblings[index + 1]?.orderKey ?? null);
+      orderKey = generateOrderKey(
+        siblings[index]?.orderKey ?? null,
+        siblings[index + 1]?.orderKey ?? null,
+      );
     }
 
     const updated = await this.prisma.databaseView.update({
@@ -182,7 +194,11 @@ export class DatabaseViewsService {
     return toResponse(updated);
   }
 
-  async delete(input: { viewId: string; userId: string; correlationId: string }): Promise<{ deleted: true }> {
+  async delete(input: {
+    viewId: string;
+    userId: string;
+    correlationId: string;
+  }): Promise<{ deleted: true }> {
     const view = await this.loadViewOrThrow(input.viewId);
     const context = await this.requireCollection(view.documentId, input.userId);
     assertPolicy(canManageDatabaseSchema(context.role, context.document));

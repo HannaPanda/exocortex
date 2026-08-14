@@ -56,7 +56,7 @@ The team layer works when needed and is invisible when not.
   Density over padding when the two conflict.
 - **A spark of cyberpunk** — this is a tool with a point of view, not neutral
   infrastructure. It should read as an instrument: engineered, slightly severe,
-  built for someone who knows what they are doing. The spark is a *spark*, not a
+  built for someone who knows what they are doing. The spark is a _spark_, not a
   theme. It shows up in restraint and edge, not in neon signage.
 
 Voice: German for everything the user reads, direct and warm, second person

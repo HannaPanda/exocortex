@@ -30,9 +30,7 @@ export const collaborationApplyRequestSchema = z.object({
    */
   proseMirrorJson: z.custom<{ type: 'doc' }>(
     (value) =>
-      typeof value === 'object' &&
-      value !== null &&
-      (value as { type?: unknown }).type === 'doc',
+      typeof value === 'object' && value !== null && (value as { type?: unknown }).type === 'doc',
     { message: 'Expected a ProseMirror doc node' },
   ),
   mode: collaborationApplyModeSchema,

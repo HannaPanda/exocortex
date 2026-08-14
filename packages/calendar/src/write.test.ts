@@ -28,7 +28,7 @@ function server(script: { status: number; etag?: string; body?: string }[]): {
     return {
       status: step?.status ?? 204,
       text: async () => step?.body ?? '',
-      headers: { get: (name) => (name.toLowerCase() === 'etag' ? step?.etag ?? null : null) },
+      headers: { get: (name) => (name.toLowerCase() === 'etag' ? (step?.etag ?? null) : null) },
     };
   };
 
@@ -109,9 +109,9 @@ describe('deleteCalendarObject', () => {
   it('sends If-Match and reports success', async () => {
     const { client, calls } = server([{ status: 204 }]);
 
-    expect(await deleteCalendarObject(client, { href: '/caldav/main/x.ics', ifMatch: '"v1"' })).toBe(
-      true,
-    );
+    expect(
+      await deleteCalendarObject(client, { href: '/caldav/main/x.ics', ifMatch: '"v1"' }),
+    ).toBe(true);
     expect(calls[0]?.method).toBe('DELETE');
     expect(calls[0]?.headers['if-match']).toBe('"v1"');
   });
@@ -129,9 +129,9 @@ describe('deleteCalendarObject', () => {
   it('reports a rejected precondition as "not deleted"', async () => {
     const { client } = server([{ status: 412 }]);
 
-    expect(await deleteCalendarObject(client, { href: '/caldav/main/x.ics', ifMatch: '"old"' })).toBe(
-      false,
-    );
+    expect(
+      await deleteCalendarObject(client, { href: '/caldav/main/x.ics', ifMatch: '"old"' }),
+    ).toBe(false);
   });
 });
 

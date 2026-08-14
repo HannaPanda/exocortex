@@ -231,8 +231,10 @@ export function searchIconNames(query: string, data: LucideIconData | null): rea
       (DOCUMENT_ICON_LABELS as Readonly<Record<string, string | undefined>>)[name]
         ?.toLowerCase()
         .includes(needle) === true ||
-      ((DOCUMENT_ICON_KEYWORDS as Readonly<Record<string, readonly string[] | undefined>>)[name] ??
-        []).some((keyword) => keyword.includes(needle));
+      (
+        (DOCUMENT_ICON_KEYWORDS as Readonly<Record<string, readonly string[] | undefined>>)[name] ??
+        []
+      ).some((keyword) => keyword.includes(needle));
 
     const direct = scoreName(name, terms);
     const viaAlias = (aliasesOf.get(name) ?? []).reduce<number | null>((best, alias) => {
@@ -246,6 +248,8 @@ export function searchIconNames(query: string, data: LucideIconData | null): rea
     if (score !== null) scored.push({ name, score });
   }
 
-  scored.sort((a, b) => a.score - b.score || a.name.length - b.name.length || (a.name < b.name ? -1 : 1));
+  scored.sort(
+    (a, b) => a.score - b.score || a.name.length - b.name.length || (a.name < b.name ? -1 : 1),
+  );
   return scored.slice(0, MAX_ICON_SEARCH_RESULTS).map((entry) => entry.name);
 }

@@ -43,15 +43,23 @@ export function RunActivity({
       data-testid="ai-run-activity"
       className={cn(
         'flex flex-col gap-1 border-t px-2 py-1.5 text-xs',
-        quiet ? 'border-warning/40 bg-warning/10 text-warning' : 'border-border text-muted-foreground',
+        quiet
+          ? 'border-warning/40 bg-warning/10 text-warning'
+          : 'border-border text-muted-foreground',
       )}
     >
       <div className="flex items-center gap-2">
         <span
           aria-hidden
-          className={cn('size-1.5 shrink-0 animate-pulse rounded-full', quiet ? 'bg-warning' : 'bg-primary')}
+          className={cn(
+            'size-1.5 shrink-0 animate-pulse rounded-full',
+            quiet ? 'bg-warning' : 'bg-primary',
+          )}
         />
-        <span className={cn('min-w-0 flex-1 truncate', quiet && 'font-medium')} data-testid="ai-run-phase">
+        <span
+          className={cn('min-w-0 flex-1 truncate', quiet && 'font-medium')}
+          data-testid="ai-run-phase"
+        >
           {phaseLabel} · seit {formatElapsed(elapsedMs)}
         </span>
         <Button

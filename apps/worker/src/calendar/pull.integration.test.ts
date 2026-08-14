@@ -448,9 +448,11 @@ describe('pullLink', () => {
     expect(rows.size).toBe(1);
     const row = [...rows.values()][0];
     expect(row?.title).toBe('Neuer Titel');
-    expect(row?.values.find((value) => value.propertyId === propertyMap.date)?.value).toMatchObject({
-      start: '2026-08-20T10:00:00.000Z',
-    });
+    expect(row?.values.find((value) => value.propertyId === propertyMap.date)?.value).toMatchObject(
+      {
+        start: '2026-08-20T10:00:00.000Z',
+      },
+    );
   });
 
   it('archives the row and leaves a tombstone when the object is gone', async () => {
@@ -667,7 +669,11 @@ describe('pullLink', () => {
     rows.get(rowId)!.values = [
       {
         propertyId: propertyMap.date!,
-        value: { start: '2026-06-01T09:00:00.000Z', end: '2026-06-01T10:00:00.000Z', allDay: false },
+        value: {
+          start: '2026-06-01T09:00:00.000Z',
+          end: '2026-06-01T10:00:00.000Z',
+          allDay: false,
+        },
       },
     ];
     await prisma.calendarObjectState.updateMany({

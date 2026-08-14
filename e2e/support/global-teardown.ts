@@ -30,7 +30,9 @@ import { clearRunScope, readRunScope, runScopePath } from './run-scope';
  */
 export default function globalTeardown(): void {
   if (process.env.E2E_SKIP_CLEANUP === '1') {
-    console.log('[teardown] E2E_SKIP_CLEANUP=1, leaving the created workspaces and pages in place.');
+    console.log(
+      '[teardown] E2E_SKIP_CLEANUP=1, leaving the created workspaces and pages in place.',
+    );
     return;
   }
 
@@ -46,7 +48,14 @@ function deleteCreatedWorkspaces(repositoryRoot: string): void {
   try {
     execFileSync(
       'pnpm',
-      ['--filter', '@exocortex/api', 'workspaces:delete', '--', '--ids-file', createdWorkspacesPath()],
+      [
+        '--filter',
+        '@exocortex/api',
+        'workspaces:delete',
+        '--',
+        '--ids-file',
+        createdWorkspacesPath(),
+      ],
       { cwd: repositoryRoot, stdio: 'inherit' },
     );
     clearRecordedWorkspaces();

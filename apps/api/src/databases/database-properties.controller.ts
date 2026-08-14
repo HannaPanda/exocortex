@@ -107,7 +107,8 @@ export class DatabasePropertiesController {
   async createOption(
     @CurrentSession() session: VerifiedSession,
     @Param('propertyId') propertyId: string,
-    @Body(zodPipe(createDatabasePropertyOptionRequestSchema)) body: CreateDatabasePropertyOptionRequest,
+    @Body(zodPipe(createDatabasePropertyOptionRequestSchema))
+    body: CreateDatabasePropertyOptionRequest,
   ): Promise<DatabasePropertyOption> {
     return this.properties.createOption({
       propertyId,
@@ -123,7 +124,8 @@ export class DatabasePropertiesController {
   async updateOption(
     @CurrentSession() session: VerifiedSession,
     @Param('optionId') optionId: string,
-    @Body(zodPipe(updateDatabasePropertyOptionRequestSchema)) body: UpdateDatabasePropertyOptionRequest,
+    @Body(zodPipe(updateDatabasePropertyOptionRequestSchema))
+    body: UpdateDatabasePropertyOptionRequest,
   ): Promise<DatabasePropertyOption> {
     return this.properties.updateOption({
       optionId,

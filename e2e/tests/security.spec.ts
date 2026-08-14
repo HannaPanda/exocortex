@@ -53,10 +53,7 @@ async function createWorkspace(label: string): Promise<string> {
 }
 
 /** Creates a page in a workspace owned by Johanna and returns its id. */
-async function createDocument(
-  workspaceId: string,
-  data: Record<string, unknown>,
-): Promise<string> {
+async function createDocument(workspaceId: string, data: Record<string, unknown>): Promise<string> {
   const response = await johannaApi.post(`${origin}/api/workspaces/${workspaceId}/documents`, {
     data,
     headers: { origin },
@@ -133,9 +130,7 @@ test.describe('security', () => {
       headers: { origin },
     });
     expect(moveResponse.status()).toBe(422);
-    expect(((await moveResponse.json()) as { code: string }).code).toBe(
-      'document_cross_workspace',
-    );
+    expect(((await moveResponse.json()) as { code: string }).code).toBe('document_cross_workspace');
   });
 
   test('a circular move is rejected', async () => {
@@ -241,13 +236,10 @@ test.describe('security', () => {
 
     // An ELF binary announced as a PNG.
     const elf = Buffer.from([0x7f, 0x45, 0x4c, 0x46, 0x02, 0x01, 0x01, 0x00, 0x00, 0x00]);
-    const response = await johannaApi.post(
-      `${origin}/api/workspaces/${workspaceId}/attachments`,
-      {
-        multipart: { file: { name: 'harmless.png', mimeType: 'image/png', buffer: elf } },
-        headers: { origin },
-      },
-    );
+    const response = await johannaApi.post(`${origin}/api/workspaces/${workspaceId}/attachments`, {
+      multipart: { file: { name: 'harmless.png', mimeType: 'image/png', buffer: elf } },
+      headers: { origin },
+    });
     expect(response.status()).toBe(415);
     expect(((await response.json()) as { code: string }).code).toBe('unsupported_media_type');
   });
@@ -255,10 +247,10 @@ test.describe('security', () => {
   test('request validation rejects malformed payloads', async () => {
     const workspaceId = await createWorkspace('Validierung');
 
-    const response = await johannaApi.post(
-      `${origin}/api/workspaces/${workspaceId}/documents`,
-      { data: { title: '', type: 'KANBAN' }, headers: { origin } },
-    );
+    const response = await johannaApi.post(`${origin}/api/workspaces/${workspaceId}/documents`, {
+      data: { title: '', type: 'KANBAN' },
+      headers: { origin },
+    });
     expect(response.status()).toBe(400);
     const body = (await response.json()) as { code: string; details: unknown };
     expect(body.code).toBe('validation_failed');

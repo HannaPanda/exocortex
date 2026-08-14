@@ -2,13 +2,7 @@
 
 import * as React from 'react';
 
-import {
-  Avatar,
-  AvatarFallback,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@exocortex/ui';
+import { Avatar, AvatarFallback, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
 
 import { initialsOf, useDocumentSession } from './document-session';
 

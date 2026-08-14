@@ -1,8 +1,4 @@
-import {
-  mergePdfMetadata,
-  type PdfDocumentInfoReader,
-  type PdfTextExtractor,
-} from '@exocortex/ai';
+import { mergePdfMetadata, type PdfDocumentInfoReader, type PdfTextExtractor } from '@exocortex/ai';
 import {
   ATTACHMENT_TEXT_MAX_CHARS,
   type PdfMetadata,
@@ -74,7 +70,9 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
 
     if (attachment.textStatus === 'READY' && payload.reason !== 'forced') {
       // Idempotency: a retried job must not re-extract, unless it was asked to.
-      logger.info('Skipping attachment text extraction: already ready', { attachmentId: attachment.id });
+      logger.info('Skipping attachment text extraction: already ready', {
+        attachmentId: attachment.id,
+      });
       return;
     }
 
@@ -256,9 +254,7 @@ async function runExtractorChain(
  * one that writes SQL NULL, i.e. "nothing was reported", as opposed to
  * `JsonNull`, which would store the JSON value `null`.
  */
-function toJsonColumn(
-  metadata: PdfMetadata | null,
-): Prisma.InputJsonObject | typeof Prisma.DbNull {
+function toJsonColumn(metadata: PdfMetadata | null): Prisma.InputJsonObject | typeof Prisma.DbNull {
   return metadata === null ? Prisma.DbNull : (metadata as unknown as Prisma.InputJsonObject);
 }
 

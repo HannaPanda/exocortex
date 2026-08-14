@@ -210,7 +210,8 @@ const pageCreateInputSchema = z.object({
 
 export const pageCreateTool: AnyToolDefinition = defineTool({
   name: 'exo_page_create',
-  description: 'Legt eine neue Seite in einem Workspace an, optional mit initialem Markdown-Inhalt.',
+  description:
+    'Legt eine neue Seite in einem Workspace an, optional mit initialem Markdown-Inhalt.',
   inputSchema: pageCreateInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,
@@ -300,7 +301,8 @@ export const pageWriteTool: AnyToolDefinition = defineTool({
       body,
       responseSchema: documentContentWriteResponseSchema,
     });
-    const warningsText = result.warnings.length > 0 ? ` Warnungen: ${result.warnings.join('; ')}` : '';
+    const warningsText =
+      result.warnings.length > 0 ? ` Warnungen: ${result.warnings.join('; ')}` : '';
     const liveText = result.appliedToLiveSession
       ? ' Die Seite war geöffnet; die Änderung ist dort sofort sichtbar.'
       : '';
@@ -360,7 +362,6 @@ export const pageMoveTool: AnyToolDefinition = defineTool({
   },
 });
 
-
 const pageSetAiRuleInputSchema = z.object({
   documentId: idSchema,
   aiRuleMode: aiRuleModeSchema,
@@ -403,7 +404,10 @@ export const pageSetLayoutTool: AnyToolDefinition = defineTool({
       body: { layout: input.layout },
       responseSchema: documentSummarySchema,
     });
-    return { text: `Layout auf ${input.layout} gesetzt: ${formatDocumentSummary(result)}`, data: result };
+    return {
+      text: `Layout auf ${input.layout} gesetzt: ${formatDocumentSummary(result)}`,
+      data: result,
+    };
   },
 });
 
@@ -521,7 +525,9 @@ export const pageResolveLinkTool: AnyToolDefinition = defineTool({
     const lines = result.matches.map(
       (match) =>
         `${match.title} (id: ${match.id}${
-          match.path.length > 0 ? `, Pfad: ${match.path.map((entry) => entry.title).join(' / ')}` : ''
+          match.path.length > 0
+            ? `, Pfad: ${match.path.map((entry) => entry.title).join(' / ')}`
+            : ''
         }${match.archivedAt === null ? '' : ', archiviert'})`,
     );
     const note =

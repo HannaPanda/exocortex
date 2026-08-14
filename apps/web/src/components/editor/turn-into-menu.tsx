@@ -77,10 +77,7 @@ export function TurnIntoMenu({
 }
 
 /** Label of the block the cursor currently sits in, for the toolbar trigger. */
-export function currentBlockLabel(
-  editor: Editor,
-  catalog: readonly BlockCatalogEntry[],
-): string {
+export function currentBlockLabel(editor: Editor, catalog: readonly BlockCatalogEntry[]): string {
   const active = catalog.find((entry) => entry.turnInto && entry.isActive?.(editor) === true);
   return active?.label ?? 'Text';
 }

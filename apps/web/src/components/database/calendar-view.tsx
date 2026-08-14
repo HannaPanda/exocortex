@@ -143,19 +143,26 @@ export function CalendarView({ workspaceId, documentId, view, properties }: Cale
             Wähle eine Datums-Eigenschaft, nach der die Zeilen einsortiert werden.
           </p>
           {dateProperties.length === 0 ? (
-            <p className="text-xs text-muted-foreground">Diese Datenbank hat noch keine Eigenschaft vom Typ „Datum“.</p>
+            <p className="text-xs text-muted-foreground">
+              Diese Datenbank hat noch keine Eigenschaft vom Typ „Datum“.
+            </p>
           ) : (
             <Select
               value={null}
               onValueChange={(propertyId: string | null) => {
                 if (propertyId === null) return;
-                updateView.mutate({ viewId: view.id, request: { config: { datePropertyId: propertyId } } });
+                updateView.mutate({
+                  viewId: view.id,
+                  request: { config: { datePropertyId: propertyId } },
+                });
               }}
             >
               <SelectTrigger className="w-56">
                 <SelectValue>
                   {(value: string | null) =>
-                    value === null ? 'Eigenschaft wählen' : dateProperties.find((p) => p.id === value)?.name
+                    value === null
+                      ? 'Eigenschaft wählen'
+                      : dateProperties.find((p) => p.id === value)?.name
                   }
                 </SelectValue>
               </SelectTrigger>
@@ -174,7 +181,12 @@ export function CalendarView({ workspaceId, documentId, view, properties }: Cale
   }
 
   return (
-    <CalendarMonth workspaceId={workspaceId} documentId={documentId} view={view} dateProperty={dateProperty} />
+    <CalendarMonth
+      workspaceId={workspaceId}
+      documentId={documentId}
+      view={view}
+      dateProperty={dateProperty}
+    />
   );
 }
 
@@ -193,7 +205,10 @@ function CalendarMonth({
   // Local, not UTC: at 00:30 in Berlin the UTC date is still yesterday, which
   // would open the calendar on the wrong month on the first of the month and
   // highlight the wrong cell as today.
-  const [cursor, setCursor] = React.useState(() => ({ year: today.getFullYear(), month: today.getMonth() }));
+  const [cursor, setCursor] = React.useState(() => ({
+    year: today.getFullYear(),
+    month: today.getMonth(),
+  }));
 
   // The API resolves `viewId` to the view's own saved filters/sorts and
   // ignores any inline `filters` alongside it, so rows with no date are
@@ -201,8 +216,10 @@ function CalendarMonth({
   // condition here.
   const rowsQuery = useDatabaseRows(documentId, { viewId: view.id, limit: 100 });
 
-  if (rowsQuery.isPending) return <LoadingState variant="skeleton" rows={4} label="Termine werden geladen" />;
-  if (rowsQuery.isError) return <EmptyState title="Termine nicht geladen" description="Bitte versuche es erneut." />;
+  if (rowsQuery.isPending)
+    return <LoadingState variant="skeleton" rows={4} label="Termine werden geladen" />;
+  if (rowsQuery.isError)
+    return <EmptyState title="Termine nicht geladen" description="Bitte versuche es erneut." />;
 
   // A span occupies every day it touches, not only the day it starts on: a
   // three-day trip that appears in one cell reads as a one-day trip.
@@ -233,7 +250,9 @@ function CalendarMonth({
   return (
     <div className="flex min-h-0 flex-1 flex-col p-3">
       <div className="mb-2 flex items-center justify-between">
-        <p className="text-sm font-medium capitalize">{MONTH_FORMATTER.format(new Date(cursor.year, cursor.month))}</p>
+        <p className="text-sm font-medium capitalize">
+          {MONTH_FORMATTER.format(new Date(cursor.year, cursor.month))}
+        </p>
         <div className="flex gap-1">
           <Button
             variant="ghost"
@@ -256,7 +275,10 @@ function CalendarMonth({
 
       <div className="grid grid-cols-7 border-t border-l border-border text-xs">
         {WEEKDAY_LABELS.map((label) => (
-          <div key={label} className="border-r border-b border-border bg-surface px-2 py-1 text-muted-foreground">
+          <div
+            key={label}
+            className="border-r border-b border-border bg-surface px-2 py-1 text-muted-foreground"
+          >
             {label}
           </div>
         ))}
@@ -269,7 +291,9 @@ function CalendarMonth({
               key={key}
               className={`flex min-h-24 flex-col gap-1 border-r border-b border-border p-1 ${inMonth ? '' : 'bg-surface/50'}`}
             >
-              <span className={`text-[0.6875rem] ${key === todayKey ? 'font-semibold text-primary-text' : 'text-muted-foreground'} ${inMonth ? '' : 'opacity-50'}`}>
+              <span
+                className={`text-[0.6875rem] ${key === todayKey ? 'font-semibold text-primary-text' : 'text-muted-foreground'} ${inMonth ? '' : 'opacity-50'}`}
+              >
                 {day.getUTCDate()}
               </span>
               {rows.slice(0, 3).map((entry) => (
@@ -279,13 +303,17 @@ function CalendarMonth({
                   className="truncate rounded bg-accent-solid px-1 py-0.5 text-[0.6875rem] hover:underline"
                 >
                   {entry.allDay ? null : (
-                    <span className="mr-1 text-muted-foreground">{TIME_FORMATTER.format(new Date(entry.start))}</span>
+                    <span className="mr-1 text-muted-foreground">
+                      {TIME_FORMATTER.format(new Date(entry.start))}
+                    </span>
                   )}
                   {entry.row.document.title}
                 </Link>
               ))}
               {rows.length > 3 ? (
-                <span className="text-[0.6875rem] text-muted-foreground">+{rows.length - 3} weitere</span>
+                <span className="text-[0.6875rem] text-muted-foreground">
+                  +{rows.length - 3} weitere
+                </span>
               ) : null}
             </div>
           );

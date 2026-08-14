@@ -154,10 +154,7 @@ export class AdminService {
     return { settings, invalidKeys: await this.settingsService.invalidKeys() };
   }
 
-  async updateSettings(
-    patch: UpdateSettingsRequest,
-    actorId: string,
-  ): Promise<SettingsResponse> {
+  async updateSettings(patch: UpdateSettingsRequest, actorId: string): Promise<SettingsResponse> {
     const settings = await this.settingsService.update({ patch, actorId });
     // Read after the write: a save that corrected a bad row must not answer with
     // the list from before it.

@@ -118,8 +118,8 @@ export function OAuthConsentForm() {
             <Alert>
               <AlertDescription>
                 Die Anwendung darf danach deine Seiten lesen und schreiben, in allen
-                Arbeitsbereichen, in denen du Mitglied bist. Erlaube das nur, wenn du die
-                Verbindung gerade selbst eingerichtet hast.
+                Arbeitsbereichen, in denen du Mitglied bist. Erlaube das nur, wenn du die Verbindung
+                gerade selbst eingerichtet hast.
               </AlertDescription>
             </Alert>
 

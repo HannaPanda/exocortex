@@ -12,7 +12,7 @@ import {
   moveDocumentRequestSchema,
   updateDocumentRequestSchema,
 } from './documents';
-import { API_ERROR_CODES,API_ERROR_STATUS } from './errors';
+import { API_ERROR_CODES, API_ERROR_STATUS } from './errors';
 import { applicationEventSchema, workspaceRoom } from './events';
 import { JOB_SCHEMAS, QUEUE_NAMES } from './jobs';
 import { WORKSPACE_ROLE_RANK } from './primitives';
@@ -37,9 +37,10 @@ describe('document contracts', () => {
   it('leaves the target workspace optional on move, for backward compatibility', () => {
     const parsed = moveDocumentRequestSchema.parse({ parentId: null });
     expect(parsed.workspaceId).toBeUndefined();
-    expect(moveDocumentRequestSchema.parse({ parentId: null, workspaceId: 'workspace_abcdefgh' }).workspaceId).toBe(
-      'workspace_abcdefgh',
-    );
+    expect(
+      moveDocumentRequestSchema.parse({ parentId: null, workspaceId: 'workspace_abcdefgh' })
+        .workspaceId,
+    ).toBe('workspace_abcdefgh');
   });
 });
 
@@ -61,14 +62,17 @@ describe('page icons', () => {
   // Without this, an unknown name would leave the page with an icon that renders
   // as nothing — and the MCP tools write this field too.
   it('rejects a drawn icon Lucide does not have', () => {
-    expect(() => updateDocumentRequestSchema.parse({ icon: 'lucide:definitely-not-an-icon' })).toThrow();
+    expect(() =>
+      updateDocumentRequestSchema.parse({ icon: 'lucide:definitely-not-an-icon' }),
+    ).toThrow();
   });
 
   // The longest name Lucide has is 35 characters, which the old 32-character
   // limit would have refused before the name was ever looked up.
   it('takes the longest icon name Lucide has', () => {
     expect(
-      updateDocumentRequestSchema.parse({ icon: 'lucide:square-centerline-dashed-horizontal' }).icon,
+      updateDocumentRequestSchema.parse({ icon: 'lucide:square-centerline-dashed-horizontal' })
+        .icon,
     ).toBe('lucide:square-centerline-dashed-horizontal');
   });
 
@@ -231,9 +235,7 @@ describe('database contracts', () => {
   });
 
   it('rejects a filter group deeper than the combinator/condition shape allows', () => {
-    expect(() =>
-      databaseFilterGroupSchema.parse({ combinator: 'xor', conditions: [] }),
-    ).toThrow();
+    expect(() => databaseFilterGroupSchema.parse({ combinator: 'xor', conditions: [] })).toThrow();
   });
 
   it('parses a full TABLE view with defaults applied to config', () => {

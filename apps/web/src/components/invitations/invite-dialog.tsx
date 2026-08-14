@@ -86,7 +86,8 @@ export function InviteDialog({
   const [copied, setCopied] = React.useState(false);
 
   const result = createInvitation.data ?? null;
-  const errorCode = createInvitation.error instanceof ApiError ? createInvitation.error.code : undefined;
+  const errorCode =
+    createInvitation.error instanceof ApiError ? createInvitation.error.code : undefined;
 
   const reset = (): void => {
     setEmail('');
@@ -158,8 +159,8 @@ export function InviteDialog({
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Dieser Link wird nur jetzt angezeigt. Er steht nirgends gespeichert, also kopiere ihn
-                jetzt, wenn du ihn brauchst.
+                Dieser Link wird nur jetzt angezeigt. Er steht nirgends gespeichert, also kopiere
+                ihn jetzt, wenn du ihn brauchst.
               </p>
             </div>
 

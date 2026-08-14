@@ -48,7 +48,8 @@ export const queryKeys = {
   documentTree: (workspaceId: string) => ['workspace', workspaceId, 'tree'] as const,
   trash: (workspaceId: string) => ['workspace', workspaceId, 'trash'] as const,
   document: (documentId: string) => ['document', documentId] as const,
-  search: (workspaceId: string, query: string) => ['workspace', workspaceId, 'search', query] as const,
+  search: (workspaceId: string, query: string) =>
+    ['workspace', workspaceId, 'search', query] as const,
   documentLinks: (documentId: string) => ['document', documentId, 'links'] as const,
   documentActivity: (documentId: string) => ['document', documentId, 'activity'] as const,
   documentRelated: (documentId: string) => ['document', documentId, 'related'] as const,
@@ -84,7 +85,9 @@ export function useWorkspaces(): UseQueryResult<Workspace[]> {
   });
 }
 
-export function useWorkspaceDetail(workspaceId: string | undefined): UseQueryResult<WorkspaceDetail> {
+export function useWorkspaceDetail(
+  workspaceId: string | undefined,
+): UseQueryResult<WorkspaceDetail> {
   return useQuery({
     queryKey: queryKeys.workspaceDetail(workspaceId ?? 'none'),
     queryFn: () => apiRequest<WorkspaceDetail>(`/api/workspaces/${workspaceId ?? ''}`),
@@ -205,7 +208,8 @@ export function useRelatedDocuments(documentId: string | undefined, enabled = tr
 export function useDocumentActivity(documentId: string | undefined, enabled = true) {
   return useQuery({
     queryKey: queryKeys.documentActivity(documentId ?? 'none'),
-    queryFn: () => apiRequest<DocumentActivityResponse>(`/api/documents/${documentId ?? ''}/activity`),
+    queryFn: () =>
+      apiRequest<DocumentActivityResponse>(`/api/documents/${documentId ?? ''}/activity`),
     enabled: documentId !== undefined && enabled,
     staleTime: 10_000,
   });
@@ -286,8 +290,7 @@ export function usePageLinkResolution(
   reference: PageLinkReference,
 ): UseQueryResult<ResolveDocumentLinkResponse> {
   const hasTitle = typeof reference.title === 'string' && reference.title.length > 0;
-  const hasIdentity =
-    typeof reference.documentId === 'string' && reference.documentId.length > 0;
+  const hasIdentity = typeof reference.documentId === 'string' && reference.documentId.length > 0;
   return useQuery({
     ...pageLinkQueryOptions(workspaceId, reference),
     enabled: hasTitle || hasIdentity,

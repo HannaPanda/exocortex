@@ -1,5 +1,9 @@
 import { type WorkerEnv } from '@exocortex/config';
-import { AI_QUEUE_LOCK_DURATION_MS, AI_QUEUE_STALLED_INTERVAL_MS, QUEUE_NAMES } from '@exocortex/contracts';
+import {
+  AI_QUEUE_LOCK_DURATION_MS,
+  AI_QUEUE_STALLED_INTERVAL_MS,
+  QUEUE_NAMES,
+} from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 import { createTypedWorker } from '@exocortex/queue';
 

@@ -41,15 +41,15 @@ sudo ufw allow from 172.18.0.0/16 to 172.17.0.1 port 3213 proto tcp \
 
 ## Files
 
-| File | Installed as |
-| ---- | ------------ |
-| `nginx/exocortex.app.conf` | `/etc/nginx/sites-available/exocortex` (symlinked into `sites-enabled`) |
-| `systemd/exocortex-web.service` | `/etc/systemd/system/exocortex-web.service` |
-| `systemd/exocortex-api.service` | `/etc/systemd/system/exocortex-api.service` |
-| `systemd/exocortex-collaboration.service` | `/etc/systemd/system/exocortex-collaboration.service` |
-| `systemd/exocortex-worker.service` | `/etc/systemd/system/exocortex-worker.service` |
-| `fail2ban/filter.d/exocortex-auth.conf` | `/etc/fail2ban/filter.d/exocortex-auth.conf` |
-| `fail2ban/jail.d/nginx.conf` | `/etc/fail2ban/jail.d/nginx.conf` |
+| File                                      | Installed as                                                            |
+| ----------------------------------------- | ----------------------------------------------------------------------- |
+| `nginx/exocortex.app.conf`                | `/etc/nginx/sites-available/exocortex` (symlinked into `sites-enabled`) |
+| `systemd/exocortex-web.service`           | `/etc/systemd/system/exocortex-web.service`                             |
+| `systemd/exocortex-api.service`           | `/etc/systemd/system/exocortex-api.service`                             |
+| `systemd/exocortex-collaboration.service` | `/etc/systemd/system/exocortex-collaboration.service`                   |
+| `systemd/exocortex-worker.service`        | `/etc/systemd/system/exocortex-worker.service`                          |
+| `fail2ban/filter.d/exocortex-auth.conf`   | `/etc/fail2ban/filter.d/exocortex-auth.conf`                            |
+| `fail2ban/jail.d/nginx.conf`              | `/etc/fail2ban/jail.d/nginx.conf`                                       |
 
 ## Adding a person
 
@@ -78,10 +78,10 @@ Workspaces are isolated by membership alone: a person who is not a member gets
 
 Three fail2ban jails guard the edge, all reading `/var/log/nginx/`:
 
-* `nginx-http-auth` and `nginx-botsearch` watch the error log: HTTP basic auth
+- `nginx-http-auth` and `nginx-botsearch` watch the error log: HTTP basic auth
   failures (the realms still in front of Windmill and Steel) and scanners probing
   for paths that do not exist.
-* `exocortex-auth` watches the **access** log for repeated `401`/`429` answers to
+- `exocortex-auth` watches the **access** log for repeated `401`/`429` answers to
   `/api/auth/sign-in/email` and the password-reset endpoints. This is the one
   that matters now that the basic auth in front of the deployment is gone,
   because the other two see nothing here: Better Auth's per-IP limit slows an
@@ -204,12 +204,12 @@ Some credentials are not edited in `.env` at all. Infisical (project
 `Exocortex`, id `83526c90-de12-446f-afcd-26adc138c01c`, environment `prod`,
 secret path `/`) is the source of truth, and a nightly timer merges them in:
 
-| File | Role |
-| --- | --- |
-| `deploy/infisical-sync-env.py` | Pulls the managed keys and merges them into the root `.env`. **Merge-only**: it never deletes and never rewrites a key Infisical does not manage. Dry run by default, `--apply` writes and backs up first. Never prints a value. |
-| `deploy/infisical-sync-reload.sh` | Runs the sync and restarts `exocortex-worker` **only** if the file actually changed (the script exits 10 for that). A no-change run touches no live unit. |
-| `deploy/systemd/exocortex-infisical-sync.{service,timer}` | Nightly at 03:40, `Persistent=true` so a rotated secret is not missed after a reboot. |
-| `deploy/infisical-sync.env.example` | Template for `/var/www/exocortex/.infisical-sync.env`, which holds the machine-identity credentials and is git-ignored. |
+| File                                                      | Role                                                                                                                                                                                                                             |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `deploy/infisical-sync-env.py`                            | Pulls the managed keys and merges them into the root `.env`. **Merge-only**: it never deletes and never rewrites a key Infisical does not manage. Dry run by default, `--apply` writes and backs up first. Never prints a value. |
+| `deploy/infisical-sync-reload.sh`                         | Runs the sync and restarts `exocortex-worker` **only** if the file actually changed (the script exits 10 for that). A no-change run touches no live unit.                                                                        |
+| `deploy/systemd/exocortex-infisical-sync.{service,timer}` | Nightly at 03:40, `Persistent=true` so a rotated secret is not missed after a reboot.                                                                                                                                            |
+| `deploy/infisical-sync.env.example`                       | Template for `/var/www/exocortex/.infisical-sync.env`, which holds the machine-identity credentials and is git-ignored.                                                                                                          |
 
 Managed today: `MAILBOX_CALDAV_URL`, `MAILBOX_CALDAV_USERNAME`,
 `MAILBOX_CALDAV_PASSWORD`. A secret still sitting at the placeholder
@@ -272,17 +272,18 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
 3. **Prisma client**, before anything type-checks against it.
 4. **The hard gates.** Always on, no bypass, roughly six seconds together:
 
-   | Gate | Catches |
-   | ---- | ------- |
-   | `check-dependency-boundaries.mjs` | a manifest depending on a package the graph forbids |
-   | `check-env-example.mjs` | a variable the code reads and `.env.example` does not document, or the reverse |
-   | `check-brand-spelling.mjs` | `Exocortex` where a human reads it (rule 10) |
-   | `check-mcp-catalog.mjs` | a REST route with no tool behind it, and a tool calling a route that is gone (rule 11, ADR-014) |
-   | `check-migrations-reproducible.sh` | a migration history that does not rebuild `schema.prisma` from zero |
+   | Gate                               | Catches                                                                                         |
+   | ---------------------------------- | ----------------------------------------------------------------------------------------------- |
+   | `check-dependency-boundaries.mjs`  | a manifest depending on a package the graph forbids                                             |
+   | `check-env-example.mjs`            | a variable the code reads and `.env.example` does not document, or the reverse                  |
+   | `check-brand-spelling.mjs`         | `Exocortex` where a human reads it (rule 10)                                                    |
+   | `check-mcp-catalog.mjs`            | a REST route with no tool behind it, and a tool calling a route that is gone (rule 11, ADR-014) |
+   | `check-migrations-reproducible.sh` | a migration history that does not rebuild `schema.prisma` from zero                             |
 
    Each one prints its findings and one sentence on how to fix them. The
    migration gate replays the whole history onto a throwaway Postgres container
    and never touches the live database.
+
 5. **Build**, one package at a time in dependency order, web last. The order
    comes out of `scripts/dependency-graph.mjs`, so a new package cannot be
    forgotten. `.build-marker` records which commit the artefacts belong to, and
@@ -320,6 +321,7 @@ means one commit that rewrites nearly everything.
     budget (`ai.maxRunMs`) lives in the worker, not in an HTTP request —
     `POST /api/ai/runs` and `.../conversations/:id/messages` answer as soon as
     the job is enqueued. `/` stays at 120s; Next.js has no long-running routes.
+
 11. **Restart**, API first (everything talks to it), web last (it is what people
     have open):
 
@@ -334,6 +336,7 @@ means one commit that rewrites nearly everything.
 
     Never `pkill -f`: a pattern like `node dist/main.js` matches the live
     services. Use `systemctl`, or an exact PID.
+
 12. **Readiness**, `/health/ready` with up to fifteen tries two seconds apart,
     then `systemctl is-active` for all four.
 13. **The marker.** `.last-deployed-sha` is written last and only on full
@@ -378,7 +381,7 @@ sudo -u johanna docker compose -f /var/www/exocortex/docker-compose.yml ps
 Readiness reports each dependency individually:
 
 ```json
-{"status":"ok","checks":{"database":"ok","redis":"ok","objectStorage":"ok"}}
+{ "status": "ok", "checks": { "database": "ok", "redis": "ok", "objectStorage": "ok" } }
 ```
 
 and answers `503` when any of them is down.
@@ -393,12 +396,12 @@ by the same machinery, see "The rest of the host" below.
 
 One eXocortex snapshot holds:
 
-| File | Contents |
-| ---- | -------- |
-| `database.dump.gpg` | `pg_dump -Fc` of the whole database, including the canonical `yjsState` blobs, every snapshot, the memory workspace, accounts and API tokens |
-| `uploads.tar.gz.gpg` | the raw `exocortex-minio-data` volume, so object metadata survives |
-| `config.tar.gz.gpg` | `.env`, the systemd units, the nginx site, `~/.claude/exocortex-memory.json` |
-| `MANIFEST.txt` | sizes, SHA-256 sums, versions, git commit — plain text, readable without the passphrase |
+| File                 | Contents                                                                                                                                     |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `database.dump.gpg`  | `pg_dump -Fc` of the whole database, including the canonical `yjsState` blobs, every snapshot, the memory workspace, accounts and API tokens |
+| `uploads.tar.gz.gpg` | the raw `exocortex-minio-data` volume, so object metadata survives                                                                           |
+| `config.tar.gz.gpg`  | `.env`, the systemd units, the nginx site, `~/.claude/exocortex-memory.json`                                                                 |
+| `MANIFEST.txt`       | sizes, SHA-256 sums, versions, git commit — plain text, readable without the passphrase                                                      |
 
 Snapshots are full, not incremental: a run is about 36 MB and takes eight
 seconds, which is cheaper than the machinery an incremental scheme needs, and it
@@ -425,12 +428,12 @@ into `/Backups/automation-stack/<UTC-Zeitstempel>/`. Both scripts share
 `deploy/backup-lib.sh`, so the retention arithmetic exists exactly once: a bug in
 it deletes backups rather than failing loudly.
 
-| File | Contents |
-| ---- | -------- |
-| `windmill.dump.gpg` | scripts, flows, schedules, resources, job history |
+| File                 | Contents                                                                                                                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `windmill.dump.gpg`  | scripts, flows, schedules, resources, job history                                                                                                                   |
 | `infisical.dump.gpg` | the secret store. Useless on its own: every secret in it is encrypted with `INFISICAL_ENCRYPTION_KEY`, which is why the stack's `.env` travels in the same snapshot |
-| `grafana.db.gpg` | the Grafana sqlite database, copied through the sqlite backup API so a running Grafana cannot tear it |
-| `config.tar.gz.gpg` | `/opt/automation-stack` without `data/`: compose files, `.env`, `secrets/`, `helpers/`, `scripts/`, `monitoring/` |
+| `grafana.db.gpg`     | the Grafana sqlite database, copied through the sqlite backup API so a running Grafana cannot tear it                                                               |
+| `config.tar.gz.gpg`  | `/opt/automation-stack` without `data/`: compose files, `.env`, `secrets/`, `helpers/`, `scripts/`, `monitoring/`                                                   |
 
 A run is 8.7 MB. Left out: `data/prometheus` and `data/loki` (425 MB of time
 series that regenerate themselves and describe a past nobody restores),
@@ -452,9 +455,9 @@ MEGA (not the local copy, so the upload path is tested too), checks each file
 against the manifest checksum, restores the dumps into throwaway databases and
 fails unless the tables a restore needs come back populated:
 
-* eXocortex: documents, Yjs states, workspaces, users,
-* Windmill: scripts and schedules,
-* Infisical: secrets, projects, users.
+- eXocortex: documents, Yjs states, workspaces, users,
+- Windmill: scripts and schedules,
+- Infisical: secrets, projects, users.
 
 A failure in any unit triggers `exocortex-backup-alert@.service`, which sends the
 journal tail to Telegram through `hermes send`.

@@ -26,8 +26,11 @@ export type {
   JsonRpcSuccessResponse,
 } from '@exocortex/mcp-tools';
 
-const { parseError: PARSE_ERROR, invalidRequest: INVALID_REQUEST, internalError: INTERNAL_ERROR } =
-  JSON_RPC_ERROR_CODES;
+const {
+  parseError: PARSE_ERROR,
+  invalidRequest: INVALID_REQUEST,
+  internalError: INTERNAL_ERROR,
+} = JSON_RPC_ERROR_CODES;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -41,8 +44,17 @@ function extractId(value: unknown): JsonRpcId {
   return null;
 }
 
-function errorResponse(id: JsonRpcId, code: number, message: string, data?: unknown): JsonRpcErrorResponse {
-  return { jsonrpc: '2.0', id, error: data === undefined ? { code, message } : { code, message, data } };
+function errorResponse(
+  id: JsonRpcId,
+  code: number,
+  message: string,
+  data?: unknown,
+): JsonRpcErrorResponse {
+  return {
+    jsonrpc: '2.0',
+    id,
+    error: data === undefined ? { code, message } : { code, message, data },
+  };
 }
 
 function isValidRequest(value: unknown): value is JsonRpcRequest {

@@ -61,7 +61,9 @@ export function ViewOptionsMenu({ documentId, view, properties }: ViewOptionsMen
               variant={height === rowHeight ? 'default' : 'outline'}
               className="flex-1"
               data-testid={`row-height-${height}`}
-              onClick={() => updateView.mutate({ viewId: view.id, request: { config: { rowHeight: height } } })}
+              onClick={() =>
+                updateView.mutate({ viewId: view.id, request: { config: { rowHeight: height } } })
+              }
             >
               {ROW_HEIGHT_LABELS[height]}
             </Button>
@@ -76,7 +78,10 @@ export function ViewOptionsMenu({ documentId, view, properties }: ViewOptionsMen
           {properties.map((property) => {
             const checkboxId = `column-visible-${property.id}`;
             return (
-              <div key={property.id} className="flex items-center gap-2 rounded-sm px-1 py-1 hover:bg-accent-solid">
+              <div
+                key={property.id}
+                className="flex items-center gap-2 rounded-sm px-1 py-1 hover:bg-accent-solid"
+              >
                 <Checkbox
                   id={checkboxId}
                   checked={visibleIds.has(property.id)}
@@ -91,7 +96,10 @@ export function ViewOptionsMenu({ documentId, view, properties }: ViewOptionsMen
                     })
                   }
                 />
-                <Label htmlFor={checkboxId} className={cn('min-w-0 flex-1 truncate text-sm font-normal')}>
+                <Label
+                  htmlFor={checkboxId}
+                  className={cn('min-w-0 flex-1 truncate text-sm font-normal')}
+                >
                   {property.name}
                 </Label>
               </div>

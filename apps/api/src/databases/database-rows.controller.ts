@@ -42,7 +42,11 @@ export class DatabaseRowsController {
     @Param('documentId') documentId: string,
     @Body(zodPipe(queryDatabaseRowsRequestSchema)) body: QueryDatabaseRowsRequest,
   ): Promise<QueryDatabaseRowsResponse> {
-    return this.rows.query({ collectionDocumentId: documentId, userId: session.userId, request: body });
+    return this.rows.query({
+      collectionDocumentId: documentId,
+      userId: session.userId,
+      request: body,
+    });
   }
 
   @Post(':documentId/rows')

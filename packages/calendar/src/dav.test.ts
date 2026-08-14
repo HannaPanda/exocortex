@@ -163,7 +163,9 @@ describe('syncCollection', () => {
   });
 
   it('asks for a full re-read when the server rejects the token', async () => {
-    const { client: dav } = client([{ status: 403, body: '<error xmlns="DAV:"><valid-sync-token/></error>' }]);
+    const { client: dav } = client([
+      { status: 403, body: '<error xmlns="DAV:"><valid-sync-token/></error>' },
+    ]);
     const delta = await syncCollection(dav, '/caldav/main/', 'ancient');
     // Reported, not thrown: retrying the same token can never succeed, and
     // treating it as "nothing changed" is how a mirror silently drifts.

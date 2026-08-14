@@ -25,22 +25,35 @@ interface GalleryViewProps {
  * download route) — same "honest minimal editor" scope as the FILES cell in
  * `cells.tsx`: no dedicated file picker yet, just the round-trip.
  */
-export function GalleryView({ workspaceId, documentId, view, properties, readOnly }: GalleryViewProps) {
+export function GalleryView({
+  workspaceId,
+  documentId,
+  view,
+  properties,
+  readOnly,
+}: GalleryViewProps) {
   const rowsQuery = useDatabaseRows(documentId, { viewId: view.id, limit: 100 });
   const createRow = useCreateDatabaseRow(documentId);
 
-  if (rowsQuery.isPending) return <LoadingState variant="skeleton" rows={4} label="Karten werden geladen" />;
-  if (rowsQuery.isError) return <EmptyState title="Karten nicht geladen" description="Bitte versuche es erneut." />;
+  if (rowsQuery.isPending)
+    return <LoadingState variant="skeleton" rows={4} label="Karten werden geladen" />;
+  if (rowsQuery.isError)
+    return <EmptyState title="Karten nicht geladen" description="Bitte versuche es erneut." />;
 
   const coverProperty = properties.find((property) => property.id === view.config.coverPropertyId);
-  const otherProperties = properties.filter((property) => property.id !== coverProperty?.id).slice(0, 3);
+  const otherProperties = properties
+    .filter((property) => property.id !== coverProperty?.id)
+    .slice(0, 3);
   const rows = rowsQuery.data.rows;
 
   return (
     <div className="min-h-0 flex-1 overflow-auto p-3">
       <div className="grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-3">
         {rows.map((row) => {
-          const coverValue = coverProperty === undefined ? null : row.values.find((entry) => entry.propertyId === coverProperty.id)?.value;
+          const coverValue =
+            coverProperty === undefined
+              ? null
+              : row.values.find((entry) => entry.propertyId === coverProperty.id)?.value;
           const coverAttachmentId = Array.isArray(coverValue) ? coverValue[0] : undefined;
 
           return (
@@ -66,8 +79,11 @@ export function GalleryView({ workspaceId, documentId, view, properties, readOnl
               <div className="flex flex-col gap-1 p-2.5">
                 <span className="truncate text-sm font-medium">{row.document.title}</span>
                 {otherProperties.map((property) => {
-                  const value = row.values.find((entry) => entry.propertyId === property.id)?.value ?? null;
-                  return <PropertyValueDisplay key={property.id} property={property} value={value} />;
+                  const value =
+                    row.values.find((entry) => entry.propertyId === property.id)?.value ?? null;
+                  return (
+                    <PropertyValueDisplay key={property.id} property={property} value={value} />
+                  );
                 })}
               </div>
             </Link>
@@ -76,7 +92,10 @@ export function GalleryView({ workspaceId, documentId, view, properties, readOnl
       </div>
 
       {rows.length === 0 ? (
-        <EmptyState title="Noch keine Zeilen" description="Lege die erste Karte für diese Galerie an." />
+        <EmptyState
+          title="Noch keine Zeilen"
+          description="Lege die erste Karte für diese Galerie an."
+        />
       ) : null}
 
       {readOnly ? null : (

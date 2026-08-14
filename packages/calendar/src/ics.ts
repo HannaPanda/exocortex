@@ -32,9 +32,7 @@ export function parseCalendarObject(ics: string, options: ParseOptions = {}): Pa
   const root = new ICAL.Component(ICAL.parse(ics));
   registerTimezones(root);
 
-  const self = new Set(
-    (options.selfAddresses ?? []).map((address) => normalizeAddress(address)),
-  );
+  const self = new Set((options.selfAddresses ?? []).map((address) => normalizeAddress(address)));
 
   return {
     events: root.getAllSubcomponents('vevent').map((component) => readEvent(component, self)),
@@ -60,7 +58,7 @@ function readEvent(component: ICAL.Component, self: ReadonlySet<string>): Parsed
     allDay,
     // The parameter, not the resolved zone: this records where the event was
     // authored, which is what a write-back has to reproduce.
-    timeZone: allDay ? null : (startProperty?.getParameter('tzid') as string | undefined) ?? null,
+    timeZone: allDay ? null : ((startProperty?.getParameter('tzid') as string | undefined) ?? null),
     rrule: readRrule(component),
     // RDATE alone makes an event recurring too, and a caller that only looked at
     // RRULE would mirror such a series at its first date forever.
@@ -141,7 +139,10 @@ function numeric(component: ICAL.Component, name: string): number | null {
 }
 
 function normalizeAddress(address: string): string {
-  return address.replace(/^mailto:/i, '').trim().toLowerCase();
+  return address
+    .replace(/^mailto:/i, '')
+    .trim()
+    .toLowerCase();
 }
 
 function normalizeOptionalAddress(value: string | null): string | null {

@@ -13,7 +13,10 @@ interface RecordedCall {
 }
 
 /** Hand-written fake client: records every call, answers with a fixed response. */
-function createFakeClient(response: unknown): { client: ExocortexApiClient; calls: RecordedCall[] } {
+function createFakeClient(response: unknown): {
+  client: ExocortexApiClient;
+  calls: RecordedCall[];
+} {
   const calls: RecordedCall[] = [];
   const client: ExocortexApiClient = {
     async request(input) {
@@ -150,7 +153,13 @@ describe('databaseSchemaTool', () => {
     const calls: RecordedCall[] = [];
     const client: ExocortexApiClient = {
       async request(input) {
-        calls.push({ kind: 'request', method: input.method, path: input.path, body: input.body, query: input.query });
+        calls.push({
+          kind: 'request',
+          method: input.method,
+          path: input.path,
+          body: input.body,
+          query: input.query,
+        });
         return input.responseSchema.parse(responsesByPath[input.path]);
       },
       async upload() {

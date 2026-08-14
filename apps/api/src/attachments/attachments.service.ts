@@ -117,7 +117,8 @@ export class AttachmentsService {
     const filename = sanitizeFilename(input.filename, detected.extension);
 
     const pdfExtractionEnabled =
-      detected.mimeType === 'application/pdf' && (await this.settings.getKey('ai.pdfExtractionEnabled'));
+      detected.mimeType === 'application/pdf' &&
+      (await this.settings.getKey('ai.pdfExtractionEnabled'));
 
     // The row is created first so the object key can embed its identifier.
     const attachment = await this.prisma.attachment.create({

@@ -27,7 +27,11 @@ import {
   Textarea,
 } from '@exocortex/ui';
 
-import { useAdminAiModels, useAdminSettings, useUpdateAdminSettings } from '@/lib/api/admin-queries';
+import {
+  useAdminAiModels,
+  useAdminSettings,
+  useUpdateAdminSettings,
+} from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 
@@ -321,7 +325,9 @@ function SettingRow({ settingKey, value, onChange, models, error }: SettingRowPr
       <Select value={typeof value === 'string' ? value : ''} onValueChange={onChange}>
         <SelectTrigger id={id} className="w-full">
           {/* Base UI shows the raw value without a render function. */}
-          <SelectValue>{() => choices.find((choice) => choice.value === value)?.label ?? ''}</SelectValue>
+          <SelectValue>
+            {() => choices.find((choice) => choice.value === value)?.label ?? ''}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {choices.map((choice) => (
@@ -529,15 +535,15 @@ export function SettingsForm() {
       onError: (caught) => {
         // A rejection the local check did not anticipate still has to land at
         // the field it belongs to rather than only in the summary.
-        const errors =
-          caught instanceof ApiError ? fieldErrorsFromDetails(caught.details) : {};
+        const errors = caught instanceof ApiError ? fieldErrorsFromDetails(caught.details) : {};
         setFieldErrors(errors);
         revealFirstError(errors);
       },
     });
   }
 
-  const errorCode = updateSettings.error instanceof ApiError ? updateSettings.error.code : undefined;
+  const errorCode =
+    updateSettings.error instanceof ApiError ? updateSettings.error.code : undefined;
   const refusedCount = Object.keys(fieldErrors).length;
   const summaryMessage =
     refusedCount > 0
@@ -558,7 +564,9 @@ export function SettingsForm() {
           <AlertDescription>
             {`In der Datenbank steht für ${ignoredKeys.length === 1 ? 'diese Einstellung' : 'diese Einstellungen'} ein unzulässiger Wert: ${ignoredKeys
               .map((key) => SETTING_COPY[key].label)
-              .join(', ')}. Die Installation läuft stattdessen mit der Vorgabe. Einmal speichern ersetzt die fehlerhafte Zeile.`}
+              .join(
+                ', ',
+              )}. Die Installation läuft stattdessen mit der Vorgabe. Einmal speichern ersetzt die fehlerhafte Zeile.`}
           </AlertDescription>
         </Alert>
       ) : null}

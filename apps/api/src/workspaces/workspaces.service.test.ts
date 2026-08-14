@@ -131,7 +131,9 @@ describe('renaming a workspace', () => {
   });
 
   it('reports a taken slug as a speaking conflict, not a 500', async () => {
-    const otherWorkspace = await prisma.workspace.findUniqueOrThrow({ where: { id: otherWorkspaceId } });
+    const otherWorkspace = await prisma.workspace.findUniqueOrThrow({
+      where: { id: otherWorkspaceId },
+    });
 
     await expect(
       service.update({

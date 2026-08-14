@@ -33,17 +33,15 @@ export const aiModelListResponseSchema = z.object({
 });
 export type AiModelListResponse = z.infer<typeof aiModelListResponseSchema>;
 
-export const createAiModelRequestSchema = aiModelSchema
-  .omit({ id: true, syncedAt: true })
-  .partial({
-    provider: true,
-    description: true,
-    enabled: true,
-    sortOrder: true,
-    visionCompanionSlug: true,
-    reasoningLevels: true,
-    maxOutputTokens: true,
-  });
+export const createAiModelRequestSchema = aiModelSchema.omit({ id: true, syncedAt: true }).partial({
+  provider: true,
+  description: true,
+  enabled: true,
+  sortOrder: true,
+  visionCompanionSlug: true,
+  reasoningLevels: true,
+  maxOutputTokens: true,
+});
 export type CreateAiModelRequest = z.infer<typeof createAiModelRequestSchema>;
 
 export const updateAiModelRequestSchema = createAiModelRequestSchema.partial();

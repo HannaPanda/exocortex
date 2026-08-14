@@ -106,7 +106,11 @@ describe('commentListTool', () => {
       resolvedCount: 0,
       threads: [
         {
-          root: comment({ blockId: 'goneblock11', anchorText: 'Der gelöschte Absatz', orphaned: true }),
+          root: comment({
+            blockId: 'goneblock11',
+            anchorText: 'Der gelöschte Absatz',
+            orphaned: true,
+          }),
           replies: [],
         },
       ],

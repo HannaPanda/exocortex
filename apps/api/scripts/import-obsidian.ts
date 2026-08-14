@@ -34,11 +34,7 @@
 import { parseArgs } from 'node:util';
 
 import { loadApiEnv } from '@exocortex/config';
-import {
-  createPrismaClient,
-  type Prisma,
-  type PrismaClient,
-} from '@exocortex/database';
+import { createPrismaClient, type Prisma, type PrismaClient } from '@exocortex/database';
 import {
   EXOCORTEX_SCHEMA_VERSION,
   type Frontmatter,
@@ -144,7 +140,6 @@ function parseCliArgs(argv: readonly string[]): CliArgs {
 // ---------------------------------------------------------------------------
 // Pure helpers (unit tested in import-obsidian.test.ts)
 // ---------------------------------------------------------------------------
-
 
 // ---------------------------------------------------------------------------
 // Workspace slug (duplicated in miniature from
@@ -265,7 +260,6 @@ async function importVault(context: {
   const foldersCreated = folders.created;
   const foldersExisting = folders.existing;
   const notesCreated = stubs.created;
-
 
   // Pass 4, phase B: transform Markdown and write content.
   let notesUpdated = 0;
@@ -458,7 +452,6 @@ function printSummary(args: CliArgs, stats: ImportStats, durationMs: number): vo
     }
   }
 }
-
 
 async function main(): Promise<void> {
   const args = parseCliArgs(process.argv.slice(2));

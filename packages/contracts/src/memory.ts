@@ -22,7 +22,13 @@ import { idSchema, isoDateTimeSchema } from './primitives';
  * learned yesterday. `other` keeps a client that is not in this list from
  * being refused at the boundary.
  */
-export const memoryClientSchema = z.enum(['claude-code', 'hermes', 'chatgpt', 'exocortex', 'other']);
+export const memoryClientSchema = z.enum([
+  'claude-code',
+  'hermes',
+  'chatgpt',
+  'exocortex',
+  'other',
+]);
 export type MemoryClient = z.infer<typeof memoryClientSchema>;
 
 /**

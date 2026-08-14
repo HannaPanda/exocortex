@@ -166,10 +166,7 @@ export class DavClient {
 
     const ok = options.okStatuses ?? READ_OK_STATUSES;
     if (!ok.includes(status)) {
-      throw new CalDavError(
-        `${options.method} ${url} -> HTTP ${status}: ${excerpt(text)}`,
-        status,
-      );
+      throw new CalDavError(`${options.method} ${url} -> HTTP ${status}: ${excerpt(text)}`, status);
     }
 
     return { status, text, xml: parseIfXml(text), etag };

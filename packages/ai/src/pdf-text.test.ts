@@ -33,9 +33,11 @@ function extractor() {
 function respondWith(content: string): void {
   vi.stubGlobal(
     'fetch',
-    vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ choices: [{ message: { content } }] }), { status: 200 }),
-    ),
+    vi
+      .fn()
+      .mockResolvedValue(
+        new Response(JSON.stringify({ choices: [{ message: { content } }] }), { status: 200 }),
+      ),
   );
 }
 
@@ -126,7 +128,7 @@ describe('createOpenRouterPdfExtractor', () => {
 
   it('keeps a zone offset that is not UTC', async () => {
     respondWith(
-      '# document.pdf\n## Metadata\n- CreationDate=D:20260426115610+02\'00\'\n\n' +
+      "# document.pdf\n## Metadata\n- CreationDate=D:20260426115610+02'00'\n\n" +
         '## Contents\n### Page 1\nGenug Text, damit die Seite als Inhalt zählt.',
     );
 

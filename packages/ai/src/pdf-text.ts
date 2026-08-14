@@ -121,7 +121,10 @@ function parsePdfDate(value: string): string | null {
  * this engine reports that Docling does not, so they are worth keeping even
  * when the page text turns out to be empty and another engine wins.
  */
-function parsePdfTextMetadata(metadataBlock: string, pageText: string): Omit<PdfMetadata, 'extractor'> {
+function parsePdfTextMetadata(
+  metadataBlock: string,
+  pageText: string,
+): Omit<PdfMetadata, 'extractor'> {
   const fields = new Map<string, string>();
   for (const line of metadataBlock.split('\n')) {
     const match = /^-\s*([A-Za-z]+)=(.*)$/.exec(line.trim());

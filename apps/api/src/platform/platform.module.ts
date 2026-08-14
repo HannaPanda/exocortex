@@ -1,6 +1,6 @@
-import { Global, Inject, Injectable,Module, type OnApplicationShutdown } from '@nestjs/common';
+import { Global, Inject, Injectable, Module, type OnApplicationShutdown } from '@nestjs/common';
 
-import { type AiProvider,createAiProvider } from '@exocortex/ai';
+import { type AiProvider, createAiProvider } from '@exocortex/ai';
 import { WorkspaceAccessService } from '@exocortex/auth';
 import { type ApiEnv } from '@exocortex/config';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
@@ -11,13 +11,7 @@ import { type ObjectStorage, S3ObjectStorage } from '@exocortex/storage';
 import { API_ENV, apiEnvProvider, LOGGER, loggerProvider } from '../common/logger.provider';
 import { OutboxService } from '../common/outbox.service';
 
-import {
-  AI_DEFAULT_MODEL,
-  AI_PROVIDER,
-  OBJECT_STORAGE,
-  PRISMA,
-  QUEUES,
-} from './platform-tokens';
+import { AI_DEFAULT_MODEL, AI_PROVIDER, OBJECT_STORAGE, PRISMA, QUEUES } from './platform-tokens';
 import { SettingsService } from './settings.service';
 
 export { AI_DEFAULT_MODEL, AI_PROVIDER, OBJECT_STORAGE, PRISMA, QUEUES };
@@ -98,7 +92,8 @@ export class PlatformLifecycle implements OnApplicationShutdown {
       // it ever reads the database. Runtime resolution goes through
       // `SettingsService.getKey('ai.defaultModelSlug')` (D4) -- callers that
       // need the effective model must ask the settings service, not this token.
-      useFactory: (env: ApiEnv): string => env.OPENROUTER_DEFAULT_MODEL ?? 'anthropic/claude-sonnet-4.5',
+      useFactory: (env: ApiEnv): string =>
+        env.OPENROUTER_DEFAULT_MODEL ?? 'anthropic/claude-sonnet-4.5',
     },
     {
       provide: WorkspaceAccessService,

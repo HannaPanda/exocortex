@@ -1,7 +1,7 @@
 # ADR-013: Runtime settings live in the database, the environment bootstraps
 
-* Status: accepted
-* Date: 2026-08-05
+- Status: accepted
+- Date: 2026-08-05
 
 ## Context
 
@@ -44,17 +44,17 @@ preference, never a credential.
 
 ## Consequences
 
-* **An empty table is a valid, fully functional state.** Nothing has to be
+- **An empty table is a valid, fully functional state.** Nothing has to be
   seeded. The deployment behaves exactly as it did before this ADR until an
   admin changes something.
-* **A bad row is dropped, not fatal.** `resolveSettings()` validates each value
+- **A bad row is dropped, not fatal.** `resolveSettings()` validates each value
   individually; one that fails is discarded, its key reported in `invalidKeys`
   and logged as a warning, and the key falls back to env or default. A
   hand-edited row can never stop a process from booting, which is the property
   that makes it safe for the worker to read this table on a hot path.
-* **A patch must be a real partial.** `SettingsService.update` writes one row
+- **A patch must be a real partial.** `SettingsService.update` writes one row
   per key it is given, so the update contract has to keep absent keys absent.
-  `settingsSchema.partial()` does *not*: zod keeps each field's `.default()`
+  `settingsSchema.partial()` does _not_: zod keeps each field's `.default()`
   inside the optional it produces, so a one-key patch parses into all twenty
   keys and the first save would materialize every default as an explicit row —
   pinning `ai.defaultModelSlug` to `null` and shadowing
@@ -62,9 +62,9 @@ preference, never a credential.
   therefore unwraps each default before making the field optional. The tests in
   `packages/contracts/src/settings.test.ts` pin this behaviour; it is the one
   way this ADR can be silently undone.
-* **The env values that are still consulted are a small, explicit list.**
+- **The env values that are still consulted are a small, explicit list.**
   `SETTING_ENV_MAP` names them. A new setting that has no env counterpart simply
   does not appear there, and that is the normal case.
-* **Reads are eventually consistent for up to 15 seconds** across processes. A
+- **Reads are eventually consistent for up to 15 seconds** across processes. A
   setting changed in the admin area can take that long to affect a worker run
   already in flight. Acceptable: none of these values need to change atomically.

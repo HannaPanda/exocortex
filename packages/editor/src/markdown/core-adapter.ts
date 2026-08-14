@@ -112,25 +112,24 @@ function horizontalRule(): string {
 function image(node: ProseMirrorNode): string {
   const src = typeof node.attrs?.src === 'string' ? node.attrs.src : '';
   const alt = typeof node.attrs?.alt === 'string' ? node.attrs.alt : '';
-  const title = typeof node.attrs?.title === 'string' && node.attrs.title.length > 0
-    ? ` "${node.attrs.title}"`
-    : '';
+  const title =
+    typeof node.attrs?.title === 'string' && node.attrs.title.length > 0
+      ? ` "${node.attrs.title}"`
+      : '';
   return `![${alt}](${src}${title})\n\n`;
 }
 
 function cellText(node: ProseMirrorNode, context: MarkdownSerializerContext): string {
-  return context
-    .renderBlockChildren(node)
-    .replace(/\n+/g, ' ')
-    .replace(/\|/g, '\\|')
-    .trim();
+  return context.renderBlockChildren(node).replace(/\n+/g, ' ').replace(/\|/g, '\\|').trim();
 }
 
 function table(node: ProseMirrorNode, context: MarkdownSerializerContext): string {
   const rows = node.content ?? [];
   if (rows.length === 0) return '';
 
-  const renderedRows = rows.map((row) => (row.content ?? []).map((cell) => cellText(cell, context)));
+  const renderedRows = rows.map((row) =>
+    (row.content ?? []).map((cell) => cellText(cell, context)),
+  );
   const columnCount = Math.max(...renderedRows.map((row) => row.length));
   const pad = (row: string[]): string[] => {
     const copy = [...row];
@@ -149,8 +148,7 @@ function table(node: ProseMirrorNode, context: MarkdownSerializerContext): strin
 }
 
 /** Renders children of a table cell without the surrounding block spacing. */
-const passthrough: MarkdownBlockSerializer = (node, context) =>
-  context.renderBlockChildren(node);
+const passthrough: MarkdownBlockSerializer = (node, context) => context.renderBlockChildren(node);
 
 export const coreMarkdownAdapter: MarkdownExtensionAdapter = {
   blocks: {

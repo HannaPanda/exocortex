@@ -32,7 +32,9 @@ export interface TreeNode<TInput extends TreeNodeInput> {
  * the input (for example because it is archived) are treated as roots so the
  * caller never loses documents silently.
  */
-export function buildTree<TInput extends TreeNodeInput>(nodes: readonly TInput[]): TreeNode<TInput>[] {
+export function buildTree<TInput extends TreeNodeInput>(
+  nodes: readonly TInput[],
+): TreeNode<TInput>[] {
   const byId = new Map<string, TreeNode<TInput>>();
   for (const node of nodes) {
     byId.set(node.id, { node, children: [] });

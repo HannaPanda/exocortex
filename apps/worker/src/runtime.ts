@@ -55,7 +55,11 @@ export interface WorkerRuntime {
   search: HybridSearchAdapter;
   readSettings: () => Promise<Settings>;
   toolRunnerFactory:
-    | ((input: { userId: string; includeMutating: boolean; toolCallTimeoutMs: number }) => ToolRunner)
+    | ((input: {
+        userId: string;
+        includeMutating: boolean;
+        toolCallTimeoutMs: number;
+      }) => ToolRunner)
     | null;
   apiClientFor: ((userId: string) => ExocortexApiClient) | null;
   resolveCalendarCredentials: (account: {

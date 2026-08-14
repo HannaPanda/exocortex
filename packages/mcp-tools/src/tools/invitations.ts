@@ -32,7 +32,10 @@ function formatInvitation(invitation: Invitation): string {
     invitation.workspaceName === null
       ? 'ohne Arbeitsbereich'
       : `→ ${invitation.workspaceName} (${invitation.workspaceRole ?? 'MEMBER'})`;
-  const delivery = invitation.lastSentAt === null ? 'Mail nicht angekommen' : `${invitation.sentCount}× verschickt`;
+  const delivery =
+    invitation.lastSentAt === null
+      ? 'Mail nicht angekommen'
+      : `${invitation.sentCount}× verschickt`;
   return `${invitation.email} [${invitation.status}] ${destination}, von ${invitation.invitedByName}, ${delivery} (id: ${invitation.id})`;
 }
 
@@ -80,11 +83,15 @@ export const invitationCreateTool: AnyToolDefinition = defineTool({
     email: z.email().describe('Adresse, an die die Einladung geht'),
     workspaceId: idSchema
       .optional()
-      .describe('Arbeitsbereich, in dem die Person Mitglied wird. Weglassen lädt nur die Installation.'),
+      .describe(
+        'Arbeitsbereich, in dem die Person Mitglied wird. Weglassen lädt nur die Installation.',
+      ),
     workspaceRole: z
       .enum(['ADMIN', 'MEMBER', 'GUEST'])
       .default('MEMBER')
-      .describe('Rolle im Arbeitsbereich. OWNER gibt es hier nicht, Besitz wird bewusst übergeben.'),
+      .describe(
+        'Rolle im Arbeitsbereich. OWNER gibt es hier nicht, Besitz wird bewusst übergeben.',
+      ),
     role: z
       .enum(['user', 'admin'])
       .default('user')

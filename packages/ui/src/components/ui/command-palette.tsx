@@ -143,7 +143,9 @@ export function CommandPalette({
             aria-expanded
             aria-controls={listId}
             aria-autocomplete="list"
-            aria-activedescendant={activeItem !== undefined ? `${listId}-${activeItem.id}` : undefined}
+            aria-activedescendant={
+              activeItem !== undefined ? `${listId}-${activeItem.id}` : undefined
+            }
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
             onKeyDown={handleKeyDown}

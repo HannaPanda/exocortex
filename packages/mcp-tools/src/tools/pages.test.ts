@@ -21,7 +21,10 @@ interface RecordedCall {
 }
 
 /** Hand-written fake client: records every call, answers with a fixed response. */
-function createFakeClient(response: unknown): { client: ExocortexApiClient; calls: RecordedCall[] } {
+function createFakeClient(response: unknown): {
+  client: ExocortexApiClient;
+  calls: RecordedCall[];
+} {
   const calls: RecordedCall[] = [];
   const client: ExocortexApiClient = {
     async request(input) {
@@ -56,7 +59,12 @@ describe('pageReadTool', () => {
     const result = await pageReadTool.run(client, { documentId: 'doc123456' });
 
     expect(calls).toEqual([
-      { kind: 'request', method: 'GET', path: '/api/documents/doc123456/export/markdown', body: undefined },
+      {
+        kind: 'request',
+        method: 'GET',
+        path: '/api/documents/doc123456/export/markdown',
+        body: undefined,
+      },
     ]);
     expect(result.text.length).toBeLessThan(longMarkdown.length);
     expect(result.text.endsWith('… (gekürzt)')).toBe(true);
@@ -160,7 +168,12 @@ describe('pageArchiveTool', () => {
     const result = await pageArchiveTool.run(client, { documentId: 'doc123456' });
 
     expect(calls).toEqual([
-      { kind: 'request', method: 'POST', path: '/api/documents/doc123456/archive', body: undefined },
+      {
+        kind: 'request',
+        method: 'POST',
+        path: '/api/documents/doc123456/archive',
+        body: undefined,
+      },
     ]);
     expect(result.text).toContain('Archivierte Seite');
   });
@@ -226,7 +239,11 @@ describe('pageSetCoverTool', () => {
   });
 
   it('removes the cover without touching the crop', async () => {
-    const { client, calls } = createFakeClient({ ...summary, coverAttachmentId: null, coverPosition: 50 });
+    const { client, calls } = createFakeClient({
+      ...summary,
+      coverAttachmentId: null,
+      coverPosition: 50,
+    });
 
     const result = await pageSetCoverTool.run(client, {
       documentId: 'doc123456',
@@ -248,7 +265,11 @@ describe('pageSetCoverTool', () => {
 
 describe('pageResolveLinkTool', () => {
   it('reports when no page has that title', async () => {
-    const { client, calls } = createFakeClient({ title: 'Nirgendwo', matches: [], resolvedBy: 'none' });
+    const { client, calls } = createFakeClient({
+      title: 'Nirgendwo',
+      matches: [],
+      resolvedBy: 'none',
+    });
 
     const result = await pageResolveLinkTool.run(client, {
       workspaceId: 'ws1234567',
@@ -468,10 +489,7 @@ describe('pageTreeTool', () => {
     path: { id: string; title: string }[] = [],
   ) {
     const count = (list: { children: unknown[] }[]): number =>
-      list.reduce(
-        (sum, entry) => sum + 1 + count(entry.children as { children: unknown[] }[]),
-        0,
-      );
+      list.reduce((sum, entry) => sum + 1 + count(entry.children as { children: unknown[] }[]), 0);
     return { nodes, archived, path, totalCount: count(nodes) };
   }
 
@@ -553,7 +571,10 @@ describe('pageTreeTool', () => {
         `rrrrrrrr${String(i).padStart(4, '0')}`,
         `Abschnitt ${String(i)}`,
         Array.from({ length: 30 }, (_, j) =>
-          node(`cccccccc${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`, `Kind ${String(i)}-${String(j)}`),
+          node(
+            `cccccccc${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`,
+            `Kind ${String(i)}-${String(j)}`,
+          ),
         ),
       ),
     );
@@ -598,12 +619,16 @@ describe('pageTreeTool', () => {
 
   it('spends a section share on the nearest pages, not the deepest branch', async () => {
     const deep = node('ddddddddaaaa', 'Tief', [
-      node('ddddddddbbbb', 'Ebene 1', [node('ddddddddcccc', 'Ebene 2', [node('dddddddddddd', 'Ebene 3')])]),
+      node('ddddddddbbbb', 'Ebene 1', [
+        node('ddddddddcccc', 'Ebene 2', [node('dddddddddddd', 'Ebene 3')]),
+      ]),
     ]);
     const wide = node(
       'wwwwwwwwaaaa',
       'Breit',
-      Array.from({ length: 600 }, (_, j) => node(`wwwwwwww${String(j).padStart(4, '0')}`, `Breit ${String(j)}`)),
+      Array.from({ length: 600 }, (_, j) =>
+        node(`wwwwwwww${String(j).padStart(4, '0')}`, `Breit ${String(j)}`),
+      ),
     );
     const { client } = createFakeClient(treeResponse([deep, wide]));
 
@@ -638,7 +663,10 @@ describe('pageTreeTool', () => {
         `rrrrrrrr${String(i).padStart(4, '0')}`,
         `Abschnitt ${String(i)}`,
         Array.from({ length: 30 }, (_, j) =>
-          node(`cccccccc${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`, `Kind ${String(i)}-${String(j)}`),
+          node(
+            `cccccccc${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`,
+            `Kind ${String(i)}-${String(j)}`,
+          ),
         ),
       ),
     );
@@ -658,7 +686,10 @@ describe('pageTreeTool', () => {
         `rrrrrrrr${String(i).padStart(4, '0')}`,
         `Abschnitt ${String(i)}`,
         Array.from({ length: 30 }, (_, j) =>
-          node(`cccccccc${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`, `Kind ${String(i)}-${String(j)}`),
+          node(
+            `cccccccc${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`,
+            `Kind ${String(i)}-${String(j)}`,
+          ),
         ),
       ),
     );
@@ -666,7 +697,13 @@ describe('pageTreeTool', () => {
 
     const result = await pageTreeTool.run(client, { workspaceId: 'm19i6551nw1eafb88aoisg6x' });
     const { truncation } = result.data as {
-      truncation: { omitted: number; shown: number; totalCount: number; hint: string; sections: { id: string }[] };
+      truncation: {
+        omitted: number;
+        shown: number;
+        totalCount: number;
+        hint: string;
+        sections: { id: string }[];
+      };
     };
 
     expect(truncation.omitted).toBe(320);
@@ -696,7 +733,10 @@ describe('pageTreeTool', () => {
         `rrrrrrrr${String(i).padStart(4, '0')}`,
         `Abschnitt ${String(i)}`,
         Array.from({ length: 30 }, (_, j) =>
-          node(`cccccccc${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`, `Kind ${String(i)}-${String(j)}`),
+          node(
+            `cccccccc${String(i).padStart(2, '0')}${String(j).padStart(2, '0')}`,
+            `Kind ${String(i)}-${String(j)}`,
+          ),
         ),
       ),
     );

@@ -69,13 +69,17 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
    * `<col>` follows the pointer without a round-trip to the server; the commit
    * happens once, on pointer release.
    */
-  const [draggedWidth, setDraggedWidth] = React.useState<{ key: string; width: number } | null>(null);
+  const [draggedWidth, setDraggedWidth] = React.useState<{ key: string; width: number } | null>(
+    null,
+  );
 
   const rowHeight = rowHeightOf(view);
   const columns = visibleTableProperties(view, properties);
 
   const widthOf = (key: string): number =>
-    draggedWidth !== null && draggedWidth.key === key ? draggedWidth.width : columnWidthOf(view, key);
+    draggedWidth !== null && draggedWidth.key === key
+      ? draggedWidth.width
+      : columnWidthOf(view, key);
 
   const commitWidth = (key: string, width: number): void => {
     setDraggedWidth(null);
@@ -86,7 +90,8 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
     });
   };
 
-  if (rowsQuery.isPending) return <LoadingState variant="skeleton" rows={4} label="Zeilen werden geladen" />;
+  if (rowsQuery.isPending)
+    return <LoadingState variant="skeleton" rows={4} label="Zeilen werden geladen" />;
   if (rowsQuery.isError) {
     return <EmptyState title="Zeilen nicht geladen" description="Bitte versuche es erneut." />;
   }
@@ -98,7 +103,11 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
     columns.reduce((sum, property) => sum + widthOf(property.id), 0) +
     TRAILING_COLUMN_WIDTH;
 
-  const setValue = (row: DatabaseRow, propertyId: string, value: DatabaseRow['values'][number]['value']) => {
+  const setValue = (
+    row: DatabaseRow,
+    propertyId: string,
+    value: DatabaseRow['values'][number]['value'],
+  ) => {
     updateValues.mutate({ rowId: row.document.id, request: { values: [{ propertyId, value }] } });
   };
 
@@ -167,7 +176,11 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
         </TableHeader>
         <TableBody>
           {rows.map((row) => (
-            <TableRow key={row.document.id} className="group" data-testid={`database-row-${row.document.id}`}>
+            <TableRow
+              key={row.document.id}
+              className="group"
+              data-testid={`database-row-${row.document.id}`}
+            >
               <TableCell
                 className={cn(
                   'relative sticky left-0 z-10 border-b border-border bg-background p-0 align-top',
@@ -204,7 +217,8 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
                 </div>
               </TableCell>
               {columns.map((property) => {
-                const cellValue = row.values.find((entry) => entry.propertyId === property.id)?.value ?? null;
+                const cellValue =
+                  row.values.find((entry) => entry.propertyId === property.id)?.value ?? null;
                 return (
                   <TableCell key={property.id} className="border-b border-border p-0 align-top">
                     <PropertyCell
@@ -236,7 +250,10 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
       )}
 
       {rows.length === 0 ? (
-        <EmptyState title="Noch keine Zeilen" description="Lege die erste Zeile für diese Datenbank an." />
+        <EmptyState
+          title="Noch keine Zeilen"
+          description="Lege die erste Zeile für diese Datenbank an."
+        />
       ) : null}
 
       <RowPeekSheet

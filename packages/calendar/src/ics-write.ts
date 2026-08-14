@@ -81,11 +81,7 @@ export function patchEventIcs(
  * a zone and a UTC marker on one value, which is not valid iCalendar and which
  * clients resolve in whichever way they please.
  */
-function writeOwnedFields(
-  event: ICAL.Component,
-  payload: CalendarEventPayload,
-  now: Date,
-): void {
+function writeOwnedFields(event: ICAL.Component, payload: CalendarEventPayload, now: Date): void {
   setText(event, 'summary', payload.summary);
   setText(event, 'location', payload.location);
   setText(event, 'description', payload.description);

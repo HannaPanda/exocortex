@@ -161,9 +161,9 @@ describe('pageRelatedTool', () => {
     );
 
     const pending = createFakeClient({ ...RELATED_RESPONSE, state: 'pending', related: [] });
-    expect((await pageRelatedTool.run(pending.client, { documentId: 'doc1234567' })).text).toContain(
-      'noch nicht für die semantische Suche erfasst',
-    );
+    expect(
+      (await pageRelatedTool.run(pending.client, { documentId: 'doc1234567' })).text,
+    ).toContain('noch nicht für die semantische Suche erfasst');
 
     const disabled = createFakeClient({ ...RELATED_RESPONSE, state: 'disabled', related: [] });
     expect(

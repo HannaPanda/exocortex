@@ -16,7 +16,11 @@ import { AppError } from '../common/app-error';
 import { LOGGER } from '../common/logger.provider';
 import { AI_PROVIDER, PRISMA, QUEUES } from '../platform/platform.module';
 
-import { AiModelResolverService, REASONING_LEVEL_TO_PRISMA, type ResolvedAiModel } from './ai-model-resolver.service';
+import {
+  AiModelResolverService,
+  REASONING_LEVEL_TO_PRISMA,
+  type ResolvedAiModel,
+} from './ai-model-resolver.service';
 import { ConversationsService } from './conversations.service';
 import { mapAiRunRow } from './run-mapper';
 
@@ -58,7 +62,9 @@ export class AiService {
     correlationId: string;
   }): Promise<AiRun> {
     if (input.request.conversationId != null) {
-      const lastMessage = [...input.request.messages].reverse().find((message) => message.role === 'user');
+      const lastMessage = [...input.request.messages]
+        .reverse()
+        .find((message) => message.role === 'user');
       if (lastMessage === undefined || lastMessage.content.trim().length === 0) {
         throw AppError.validation('At least one non-empty user message is required');
       }

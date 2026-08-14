@@ -166,8 +166,9 @@ describe('patchEventIcs', () => {
   });
 
   it('returns null when the body holds no event with that UID', () => {
-    expect(patchEventIcs(REMOTE_ICS, payload({ uid: 'somebody-else@example.org' }), { now: NOW }))
-      .toBeNull();
+    expect(
+      patchEventIcs(REMOTE_ICS, payload({ uid: 'somebody-else@example.org' }), { now: NOW }),
+    ).toBeNull();
   });
 
   it('reads back as the payload that went in', () => {

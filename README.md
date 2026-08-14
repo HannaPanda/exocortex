@@ -12,37 +12,37 @@ explicitly out of scope for this stage are listed under
 
 ## What works today
 
-* email/password accounts, sessions, verification and password-reset mail
-* multiple workspaces with `OWNER` / `ADMIN` / `MEMBER` / `GUEST` roles
-* arbitrarily nested pages with stable fractional ordering
-* real-time collaborative editing (Tiptap + Yjs + Hocuspocus) with presence,
+- email/password accounts, sessions, verification and password-reset mail
+- multiple workspaces with `OWNER` / `ADMIN` / `MEMBER` / `GUEST` roles
+- arbitrarily nested pages with stable fractional ordering
+- real-time collaborative editing (Tiptap + Yjs + Hocuspocus) with presence,
   remote cursors, offline editing and resynchronization
-* binary Yjs persistence in PostgreSQL that survives a full server restart
-* derived ProseMirror JSON, plain text and Markdown produced by a background
+- binary Yjs persistence in PostgreSQL that survives a full server restart
+- derived ProseMirror JSON, plain text and Markdown produced by a background
   worker
-* PostgreSQL full-text search with trigram-tolerant titles and highlighted
+- PostgreSQL full-text search with trigram-tolerant titles and highlighted
   snippets
-* deterministic Markdown export and import (frontmatter, task lists, tables,
+- deterministic Markdown export and import (frontmatter, task lists, tables,
   wiki links, callouts, stable block ids)
-* attachments in S3-compatible storage with magic-byte MIME verification
-* an AI side panel that streams from a local mock provider through the real
+- attachments in S3-compatible storage with magic-byte MIME verification
+- an AI side panel that streams from a local mock provider through the real
   realtime pipeline
-* live background-job progress in the UI
-* audit log and transactional outbox for destructive and reliable operations
+- live background-job progress in the UI
+- audit log and transactional outbox for destructive and reliable operations
 
 ## Stack
 
-| Layer | Choice |
-| ----- | ------ |
-| Runtime | Node.js 24 LTS, pnpm 11, Turborepo 2 |
+| Layer    | Choice                                                                                          |
+| -------- | ----------------------------------------------------------------------------------------------- |
+| Runtime  | Node.js 24 LTS, pnpm 11, Turborepo 2                                                            |
 | Frontend | Next.js 16 (App Router), React 19, Tailwind CSS 4, shadcn/ui on Base UI, Lucide, TanStack Query |
-| Editor | Tiptap 3, ProseMirror, Yjs, Hocuspocus, `y-indexeddb` |
-| API | NestJS 11 with the Fastify adapter, REST + OpenAPI, Socket.IO gateway |
-| Data | PostgreSQL 17 (pgvector image), Prisma 6 |
-| Jobs | BullMQ 6 on Redis 8 |
-| Storage | S3-compatible (MinIO locally) |
-| Auth | Better Auth 1.6 with the Prisma adapter |
-| Tests | Vitest 4, Playwright 1.62 |
+| Editor   | Tiptap 3, ProseMirror, Yjs, Hocuspocus, `y-indexeddb`                                           |
+| API      | NestJS 11 with the Fastify adapter, REST + OpenAPI, Socket.IO gateway                           |
+| Data     | PostgreSQL 17 (pgvector image), Prisma 6                                                        |
+| Jobs     | BullMQ 6 on Redis 8                                                                             |
+| Storage  | S3-compatible (MinIO locally)                                                                   |
+| Auth     | Better Auth 1.6 with the Prisma adapter                                                         |
+| Tests    | Vitest 4, Playwright 1.62                                                                       |
 
 ## Quick start
 
@@ -77,18 +77,18 @@ Details, ports and troubleshooting: [`docs/local-development.md`](docs/local-dev
 
 ## Commands
 
-| Command | Purpose |
-| ------- | ------- |
-| `pnpm install` | install all workspace dependencies |
-| `pnpm infra:up` / `pnpm infra:down` | start/stop the Docker infrastructure |
-| `pnpm dev` | run web, api, collaboration and worker in watch mode |
-| `pnpm build` | build every package and application |
-| `pnpm lint` | dependency-boundary check + ESLint |
-| `pnpm typecheck` | TypeScript in strict mode across the monorepo |
-| `pnpm test` | unit and integration tests (needs `pnpm infra:up`) |
-| `pnpm test:e2e` | Playwright suite against a running deployment |
-| `pnpm db:migrate` / `db:seed` / `db:reset` | database lifecycle |
-| `pnpm format` | Prettier |
+| Command                                    | Purpose                                              |
+| ------------------------------------------ | ---------------------------------------------------- |
+| `pnpm install`                             | install all workspace dependencies                   |
+| `pnpm infra:up` / `pnpm infra:down`        | start/stop the Docker infrastructure                 |
+| `pnpm dev`                                 | run web, api, collaboration and worker in watch mode |
+| `pnpm build`                               | build every package and application                  |
+| `pnpm lint`                                | dependency-boundary check + ESLint                   |
+| `pnpm typecheck`                           | TypeScript in strict mode across the monorepo        |
+| `pnpm test`                                | unit and integration tests (needs `pnpm infra:up`)   |
+| `pnpm test:e2e`                            | Playwright suite against a running deployment        |
+| `pnpm db:migrate` / `db:seed` / `db:reset` | database lifecycle                                   |
+| `pnpm format`                              | Prettier                                             |
 
 ## Repository layout
 
@@ -119,36 +119,36 @@ e2e/                Playwright tests
 
 ## Documentation
 
-| Document | Contents |
-| -------- | -------- |
-| [`docs/architecture.md`](docs/architecture.md) | system overview, data flow, extension recipes |
-| [`docs/local-development.md`](docs/local-development.md) | setup, ports, seeding, troubleshooting |
-| [`docs/security.md`](docs/security.md) | every security rule and where it is enforced |
-| [`docs/ui-system.md`](docs/ui-system.md) | design tokens, shadcn workflow, accessibility |
-| [`docs/editor-extensions.md`](docs/editor-extensions.md) | editor schema, adding nodes, migrations |
-| [`docs/collaboration.md`](docs/collaboration.md) | Yjs, Hocuspocus, tickets, offline behaviour |
-| [`docs/ai-architecture.md`](docs/ai-architecture.md) | provider contract, runners, isolation rules |
-| [`docs/background-jobs.md`](docs/background-jobs.md) | queues, idempotency, failure handling |
-| [`docs/deviations.md`](docs/deviations.md) | where the implementation deviates from the brief and why |
-| [`AGENTS.md`](AGENTS.md) | rules for automated agents |
-| [`CLAUDE.md`](CLAUDE.md) | rules for Claude Code sessions |
-| [`deploy/README.md`](deploy/README.md) | production deployment on this host |
+| Document                                                 | Contents                                                 |
+| -------------------------------------------------------- | -------------------------------------------------------- |
+| [`docs/architecture.md`](docs/architecture.md)           | system overview, data flow, extension recipes            |
+| [`docs/local-development.md`](docs/local-development.md) | setup, ports, seeding, troubleshooting                   |
+| [`docs/security.md`](docs/security.md)                   | every security rule and where it is enforced             |
+| [`docs/ui-system.md`](docs/ui-system.md)                 | design tokens, shadcn workflow, accessibility            |
+| [`docs/editor-extensions.md`](docs/editor-extensions.md) | editor schema, adding nodes, migrations                  |
+| [`docs/collaboration.md`](docs/collaboration.md)         | Yjs, Hocuspocus, tickets, offline behaviour              |
+| [`docs/ai-architecture.md`](docs/ai-architecture.md)     | provider contract, runners, isolation rules              |
+| [`docs/background-jobs.md`](docs/background-jobs.md)     | queues, idempotency, failure handling                    |
+| [`docs/deviations.md`](docs/deviations.md)               | where the implementation deviates from the brief and why |
+| [`AGENTS.md`](AGENTS.md)                                 | rules for automated agents                               |
+| [`CLAUDE.md`](CLAUDE.md)                                 | rules for Claude Code sessions                           |
+| [`deploy/README.md`](deploy/README.md)                   | production deployment on this host                       |
 
 ## Deferred work
 
 Deliberately **not** implemented at this stage, while the architecture leaves room
 for each of them:
 
-* Notion-style collections, database views, formulas, rollups, calendar and Kanban
+- Notion-style collections, database views, formulas, rollups, calendar and Kanban
   views (the `COLLECTION` document type exists but has no behaviour)
-* public sharing, billing, subscriptions, native mobile apps
-* semantic embeddings (the `pgvector` extension and `DocumentEmbedding` table
+- public sharing, billing, subscriptions, native mobile apps
+- semantic embeddings (the `pgvector` extension and `DocumentEmbedding` table
   exist; no embeddings are generated)
-* real OpenRouter requests (adapter skeleton only), real Claude Code / Codex
+- real OpenRouter requests (adapter skeleton only), real Claude Code / Codex
   execution (runner contracts only), autonomous agents
-* a complete version-history UI (snapshot services and endpoints exist)
-* granular per-block permissions
-* comments and activity views (the context panel already has the tabs and
+- a complete version-history UI (snapshot services and endpoints exist)
+- granular per-block permissions
+- comments and activity views (the context panel already has the tabs and
   layout for them)
 
 ## Licence

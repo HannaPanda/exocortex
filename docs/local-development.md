@@ -2,9 +2,9 @@
 
 ## Requirements
 
-* Node.js 24 LTS (`nvm use` reads `.nvmrc`)
-* Corepack (`corepack enable`) — pnpm 11 is pinned in `packageManager`
-* Docker with the Compose plugin, and a user in the `docker` group
+- Node.js 24 LTS (`nvm use` reads `.nvmrc`)
+- Corepack (`corepack enable`) — pnpm 11 is pinned in `packageManager`
+- Docker with the Compose plugin, and a user in the `docker` group
 
 ## Setup
 
@@ -34,15 +34,15 @@ pnpm infra:logs
 
 Host ports are non-default so the stack can coexist with other services:
 
-| Service | Host port | Notes |
-| ------- | --------- | ----- |
-| PostgreSQL | `5433` | `pgvector/pgvector:pg17` |
-| Redis | `6380` | append-only, `noeviction` |
-| MinIO API | `9110` | bucket `exocortex` is created automatically |
-| MinIO console | `9111` | |
-| Mailpit SMTP | `1026` | |
-| Mailpit UI | `8026` | verification and reset mails land here |
-| Docling | `5010` | optional, see below |
+| Service       | Host port | Notes                                       |
+| ------------- | --------- | ------------------------------------------- |
+| PostgreSQL    | `5433`    | `pgvector/pgvector:pg17`                    |
+| Redis         | `6380`    | append-only, `noeviction`                   |
+| MinIO API     | `9110`    | bucket `exocortex` is created automatically |
+| MinIO console | `9111`    |                                             |
+| Mailpit SMTP  | `1026`    |                                             |
+| Mailpit UI    | `8026`    | verification and reset mails land here      |
+| Docling       | `5010`    | optional, see below                         |
 
 Application ports: web `3210`, api `3211`, collaboration `3212`.
 
@@ -80,7 +80,7 @@ The schema contains objects Prisma cannot express: the generated column
 `document_search_index.searchVector` and four raw-SQL indexes
 (`document_title_trgm_idx`, `document_property_value_json_gin`,
 `document_search_index_searchVector_idx`, `document_search_index_title_trgm_idx`).
-Prisma reads them as drift, so *every* generated migration tries to drop them,
+Prisma reads them as drift, so _every_ generated migration tries to drop them,
 and the migration then fails halfway on the generated column:
 
 ```
@@ -97,7 +97,7 @@ check with `\d document_search_index` before assuming otherwise.
 ### Seed data and credentials
 
 `pnpm db:seed` creates the users **Johanna** (`OWNER`) and **Stefan** (`MEMBER`),
-the shared workspace *eXocortex Team* and six nested example pages whose content is
+the shared workspace _eXocortex Team_ and six nested example pages whose content is
 real Yjs state.
 
 Passwords are never hardcoded. Either set them yourself:
@@ -131,7 +131,7 @@ It prints the password once. Put it back into `.env` under
 suite reads it from.
 
 **These two accounts are not the person who runs the deployment.** They are
-`johanna@exocortex.app` and `stefan@exocortex.app` in the *eXocortex Team*
+`johanna@exocortex.app` and `stefan@exocortex.app` in the _eXocortex Team_
 workspace, and the suite creates and deletes pages as them; pointing it at a real
 account would let it loose in a real workspace. They are also ordinary users
 globally — `invitations.spec.ts` asserts that a signed-in seed user gets 403 from
@@ -165,7 +165,7 @@ exactly when the mess is made. Interrupted runs had left 21 workspaces by
 2026-08-12, in `Collab`/`Worker` pairs created in the same second, because two
 packages test in parallel and an interrupt takes both.
 
-`pnpm test` therefore sweeps *before* it starts, which is the only moment that
+`pnpm test` therefore sweeps _before_ it starts, which is the only moment that
 catches a run nobody finished:
 
 ```bash
@@ -174,7 +174,7 @@ pnpm --filter @exocortex/api test-data:prune -- [--older-than 2] [--dry-run]
 
 It recognises test data by the accounts: they live at `@exocortex.test`, and
 `.test` is reserved by RFC 6761 so it can never be a real address. A workspace
-whose members are *all* such accounts was made by a test run and by nothing else.
+whose members are _all_ such accounts was made by a test run and by nothing else.
 One real member is enough to spare it, and nothing younger than `--older-than`
 (two hours) is touched, so a suite running in another terminal keeps its ground.
 
@@ -201,10 +201,10 @@ Browsers are installed once with
 The teardown (`e2e/support/global-teardown.ts`) cleans up in two halves, because
 the run leaves two kinds of thing behind:
 
-* **the workspaces it created**, one per scenario, deleted outright. The ids are
+- **the workspaces it created**, one per scenario, deleted outright. The ids are
   in `e2e/.created-workspaces`:
   `pnpm --filter @exocortex/api workspaces:delete -- --ids-file e2e/.created-workspaces`
-* **the pages it created in the seeded workspace it signed in to**, which cannot
+- **the pages it created in the seeded workspace it signed in to**, which cannot
   be deleted with the workspace because that workspace has to survive. The
   teardown removes everything in it that is newer than the moment the run
   started; the window is in `e2e/.run-scope`:
@@ -227,12 +227,12 @@ depend on which provider answered.
 
 ## Troubleshooting
 
-| Symptom | Cause and fix |
-| ------- | ------------- |
-| `EnvironmentValidationError` on startup | a variable is missing; the message lists them. Compare with `.env.example`. |
-| `permission denied … docker.sock` | add your user to the `docker` group and start a new login session. |
-| `Environment variable not found: DATABASE_URL` from the Prisma CLI | the `packages/database/.env` symlink is missing: `ln -s ../../.env packages/database/.env`. |
-| Editor shows "Editor nicht verfügbar" | the collaboration server is not running, or `PUBLIC_COLLABORATION_URL` does not match the deployment. |
-| Search finds nothing right after typing | persistence and materialization are debounced (about 2 s each). Watch the job progress indicator. |
-| `Too many requests` while logging in | the deliberate sign-in rate limit (10/minute per IP). Wait a minute. |
-| Browser bundle points at `localhost` in production | `next build` needs the env file: check the `apps/web/.env` symlink and rebuild. |
+| Symptom                                                            | Cause and fix                                                                                         |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `EnvironmentValidationError` on startup                            | a variable is missing; the message lists them. Compare with `.env.example`.                           |
+| `permission denied … docker.sock`                                  | add your user to the `docker` group and start a new login session.                                    |
+| `Environment variable not found: DATABASE_URL` from the Prisma CLI | the `packages/database/.env` symlink is missing: `ln -s ../../.env packages/database/.env`.           |
+| Editor shows "Editor nicht verfügbar"                              | the collaboration server is not running, or `PUBLIC_COLLABORATION_URL` does not match the deployment. |
+| Search finds nothing right after typing                            | persistence and materialization are debounced (about 2 s each). Watch the job progress indicator.     |
+| `Too many requests` while logging in                               | the deliberate sign-in rate limit (10/minute per IP). Wait a minute.                                  |
+| Browser bundle points at `localhost` in production                 | `next build` needs the env file: check the `apps/web/.env` symlink and rebuild.                       |

@@ -387,7 +387,8 @@ function ModelDialogForm({ model, models, onOpenChange }: ModelDialogFormProps) 
                 {/* Base UI shows the raw value (the slug) without this. */}
                 <SelectValue>
                   {() =>
-                    companionOptions.find((entry) => entry.slug === form.visionCompanionSlug)?.displayName ?? 'Keines'
+                    companionOptions.find((entry) => entry.slug === form.visionCompanionSlug)
+                      ?.displayName ?? 'Keines'
                   }
                 </SelectValue>
               </SelectTrigger>

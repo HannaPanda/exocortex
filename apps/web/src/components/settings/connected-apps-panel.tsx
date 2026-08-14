@@ -31,7 +31,10 @@ import { useConnectedApps, useDisconnectApp } from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 
-const dateTimeFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
+const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+});
 
 /** The host of the first redirect URL, which is the one recognisable part of a claimed identity. */
 function hostOf(app: ConnectedApp): string | null {
@@ -58,7 +61,8 @@ export function ConnectedAppsPanel() {
   const disconnect = useDisconnectApp();
 
   const [target, setTarget] = React.useState<ConnectedApp | null>(null);
-  const disconnectErrorCode = disconnect.error instanceof ApiError ? disconnect.error.code : undefined;
+  const disconnectErrorCode =
+    disconnect.error instanceof ApiError ? disconnect.error.code : undefined;
 
   return (
     <section className="flex flex-col gap-3" aria-labelledby="connected-apps-heading">

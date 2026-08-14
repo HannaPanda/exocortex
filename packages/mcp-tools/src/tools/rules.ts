@@ -1,6 +1,10 @@
 import { z } from 'zod';
 
-import { aiRuleListResponseSchema, idSchema, markdownExportResponseSchema } from '@exocortex/contracts';
+import {
+  aiRuleListResponseSchema,
+  idSchema,
+  markdownExportResponseSchema,
+} from '@exocortex/contracts';
 
 import { truncateText } from '../format.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
@@ -25,7 +29,10 @@ export const rulesListTool: AnyToolDefinition = defineTool({
       return { text: 'Keine KI-Regelseiten vorhanden.', data: result };
     }
     const text = result.rules
-      .map((rule) => `- ${rule.title} (id: ${rule.documentId}, ${rule.mode}): ${rule.trigger ?? '(kein Auslöser)'}`)
+      .map(
+        (rule) =>
+          `- ${rule.title} (id: ${rule.documentId}, ${rule.mode}): ${rule.trigger ?? '(kein Auslöser)'}`,
+      )
       .join('\n');
     return { text, data: result };
   },

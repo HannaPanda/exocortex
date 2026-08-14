@@ -128,7 +128,10 @@ describe('brand spelling (check-brand-spelling.mjs)', () => {
   });
 
   it('goes red for the plain spelling in a string a human reads', () => {
-    writeProbe('packages/ui/src/__gate_probe__.ts', `export const label = 'Willkommen bei ${BRAND}';\n`);
+    writeProbe(
+      'packages/ui/src/__gate_probe__.ts',
+      `export const label = 'Willkommen bei ${BRAND}';\n`,
+    );
     expect(gate('check-brand-spelling.mjs').status).not.toBe(0);
   });
 
@@ -136,7 +139,10 @@ describe('brand spelling (check-brand-spelling.mjs)', () => {
     // The lookbehind has to treat `\n` as a word boundary. Without that, the
     // most common case of all -- a heading followed by a paragraph inside one
     // string -- would pass.
-    writeProbe('packages/ui/src/__gate_probe__.ts', `export const page = '# Titel\\n${BRAND} ist da.';\n`);
+    writeProbe(
+      'packages/ui/src/__gate_probe__.ts',
+      `export const page = '# Titel\\n${BRAND} ist da.';\n`,
+    );
     expect(gate('check-brand-spelling.mjs').status).not.toBe(0);
   });
 
@@ -222,7 +228,7 @@ describe('migration history (check-migrations-reproducible.sh)', () => {
     // away on purpose, so an entry that matches nothing is a hole rather than
     // dead weight.
     editFile('scripts/check-migrations-reproducible.sh', (source) =>
-      source.replace('UNMODELLABLE=(', "UNMODELLABLE=(\n  'DROP INDEX \"gate_probe_idx\";'"),
+      source.replace('UNMODELLABLE=(', 'UNMODELLABLE=(\n  \'DROP INDEX "gate_probe_idx";\''),
     );
     const result = gate('check-migrations-reproducible.sh');
     expect(result.status).not.toBe(0);

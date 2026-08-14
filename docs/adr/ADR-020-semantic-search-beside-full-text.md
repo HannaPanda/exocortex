@@ -1,7 +1,7 @@
 # ADR-020: semantic search sits beside full-text, never instead of it
 
-* Status: accepted
-* Date: 2026-08-12
+- Status: accepted
+- Date: 2026-08-12
 
 ## Context
 
@@ -38,7 +38,7 @@ application.
 **Both halves run and their ranks are fused.** `HybridSearchAdapter` wraps
 `PostgresSearchAdapter` rather than replacing it. The full-text list and the
 nearest-neighbour list are merged by reciprocal rank fusion
-(`score = weight / (60 + position)`), which compares *positions* rather than
+(`score = weight / (60 + position)`), which compares _positions_ rather than
 scores: `ts_rank_cd` and cosine similarity are different units, and normalising
 one onto the other would invent a scale neither has. `search.semanticWeightPercent`
 says how much the semantic list counts; at 0 the answer is the full-text answer.
@@ -70,14 +70,14 @@ no-op once they all have vectors, and a no-op while the setting is off.
 
 ## Consequences
 
-* A page is embedded as `title + plainText`, truncated to 24k characters, one
+- A page is embedded as `title + plainText`, truncated to 24k characters, one
   vector per page. Per-block chunking is what the unused `blockId` column is
   for, and it is not built.
-* Switching the model in `search.embeddingModelSlug` invalidates nothing by
+- Switching the model in `search.embeddingModelSlug` invalidates nothing by
   hand: the vector query filters on the model, so the old rows stop being read,
   the backfill writes new ones, and the next write of a page drops the stale
   row. Two models are never mixed in one ranking.
-* A model that does not return 1536 dimensions is refused rather than stored.
+- A model that does not return 1536 dimensions is refused rather than stored.
   The column is fixed-width and an HNSW index needs it to be.
-* Every search with the feature on costs one embedding call for the query. That
+- Every search with the feature on costs one embedding call for the query. That
   is the price of the second half, and it is why the setting exists.
