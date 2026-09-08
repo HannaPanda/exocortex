@@ -17,6 +17,7 @@ import { ApiExceptionFilter } from './common/exception.filter';
 import { API_ENV } from './common/logger.provider';
 import { DatabasesModule } from './databases/databases.module';
 import { DocumentsModule } from './documents/documents.module';
+import { EntitiesModule } from './entities/entities.module';
 import { HealthModule } from './health/health.module';
 import { InvitationsModule } from './invitations/invitations.module';
 import { McpModule } from './mcp/mcp.module';
@@ -56,6 +57,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     HealthModule,
     MeModule,
     MemoryModule,
+    EntitiesModule,
     McpModule,
     AgentSessionsModule,
   ],

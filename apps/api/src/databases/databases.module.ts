@@ -15,5 +15,9 @@ import { DatabaseViewsService } from './database-views.service';
   imports: [RealtimeModule, DocumentsModule],
   controllers: [DatabasePropertiesController, DatabaseViewsController, DatabaseRowsController],
   providers: [DatabasePropertiesService, DatabaseViewsService, DatabaseRowsService, OutboxService],
+  // The entity layer provisions its own database and its two columns through
+  // the ordinary schema service (issue #47), so the checks are the same ones a
+  // person adding a column passes.
+  exports: [DatabasePropertiesService, DatabaseRowsService],
 })
 export class DatabasesModule {}
