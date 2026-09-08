@@ -195,8 +195,15 @@ export class McpService {
    * The tool list is fixed here and the handler resolves `tools/call` against
    * that same list, so a connection to the research endpoint cannot reach a
    * writing tool by naming it.
+   *
+   * `agentSessionId` is the client's `Mcp-Session-Id`, which is what makes the
+   * write journal group by connection rather than by request.
    */
-  async createHandler(caller: McpCaller, surface: ToolSurface): Promise<McpRequestHandler> {
+  async createHandler(
+    caller: McpCaller,
+    surface: ToolSurface,
+    agentSessionId: string,
+  ): Promise<McpRequestHandler> {
     const client = createFetchApiClient({
       // Loopback, not the public origin: this call must not leave the machine,
       // must not depend on nginx being up, and must not be counted as external
@@ -209,6 +216,10 @@ export class McpService {
     return createMcpRequestHandler({
       client,
       tools: toolsFor(surface),
+      // What groups this connection's writes (ADR-022). It holds no state
+      // here: the id is stamped on the loopback calls and recorded in the
+      // journal, so a second API process serves the same client unchanged.
+      agentSession: { externalId: agentSessionId, transport: 'http' },
       // Resources and prompts only on the full surface. The research and
       // memory endpoints exist because a narrow catalogue is used better than
       // a wide one; handing them an attach menu of every recent page would

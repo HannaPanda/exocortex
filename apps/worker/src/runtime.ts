@@ -59,6 +59,7 @@ export interface WorkerRuntime {
         userId: string;
         includeMutating: boolean;
         toolCallTimeoutMs: number;
+        agentSession: { externalId: string; label: string };
       }) => ToolRunner)
     | null;
   apiClientFor: ((userId: string) => ExocortexApiClient) | null;
@@ -167,7 +168,12 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
   const toolRunnerFactory =
     env.SERVICE_TOKEN_SECRET === undefined
       ? null
-      : (input: { userId: string; includeMutating: boolean; toolCallTimeoutMs: number }) =>
+      : (input: {
+          userId: string;
+          includeMutating: boolean;
+          toolCallTimeoutMs: number;
+          agentSession: { externalId: string; label: string };
+        }) =>
           createToolRunner({
             apiUrl: env.API_URL,
             serviceTokenSecret: env.SERVICE_TOKEN_SECRET!,
@@ -175,6 +181,7 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
             userId: input.userId,
             includeMutating: input.includeMutating,
             toolCallTimeoutMs: input.toolCallTimeoutMs,
+            agentSession: input.agentSession,
             logger,
           });
 

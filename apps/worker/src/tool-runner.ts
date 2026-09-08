@@ -45,6 +45,12 @@ export interface CreateToolRunnerInput {
   logger: Logger;
   /** Ceiling for one tool call; see `AI_TOOL_CALL_TIMEOUT_MS`. */
   toolCallTimeoutMs: number;
+  /**
+   * The run this loop belongs to, recorded with everything it writes
+   * (ADR-022). The built-in AI is an agent like any other: what it changed in
+   * one run has to be findable, and undoable, as one thing.
+   */
+  agentSession: { externalId: string; label: string };
 }
 
 export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
@@ -74,6 +80,7 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
         baseUrl: input.apiUrl,
         token: issued.token,
         timeoutMs: input.toolCallTimeoutMs,
+        agentSession: input.agentSession,
       });
     }
     return client;

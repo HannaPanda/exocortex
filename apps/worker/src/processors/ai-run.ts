@@ -33,6 +33,7 @@ export interface AiRunDependencies {
         userId: string;
         includeMutating: boolean;
         toolCallTimeoutMs: number;
+        agentSession: { externalId: string; label: string };
       }) => ToolRunner)
     | null;
   /**
@@ -174,6 +175,9 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           userId: run.createdById,
           includeMutating: settings['ai.mutatingToolsEnabled'],
           toolCallTimeoutMs: timeouts.toolCallTimeoutMs,
+          // One run, one session (ADR-022): the unit somebody would want back
+          // is "what the assistant did while answering that question".
+          agentSession: { externalId: `ai-run-${run.id}`, label: 'eXocortex KI' },
         })
       : null;
 

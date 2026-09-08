@@ -24,10 +24,16 @@ export function createRequestHandler(options: {
   gate: WriteConfirmationGate;
   env: McpEnv;
   logger: Logger;
+  /** See `McpRequestHandlerOptions.agentSession`. One id per process. */
+  agentSessionId: string;
 }): (request: JsonRpcRequest) => Promise<JsonRpcResponse | null> {
   return createMcpRequestHandler({
     client: options.client,
     tools: toolsFor('mcp'),
+    // A subprocess *is* the session: it is started for one client, serves only
+    // that client, and dies with it. So the identity is minted once here and
+    // needs nothing from the protocol to stay stable (ADR-022).
+    agentSession: { externalId: options.agentSessionId, transport: 'stdio' },
     // This bin serves the full catalogue, so it also serves the half of the
     // protocol a person drives: pages to attach and rule pages as prompts.
     context: true,

@@ -1,8 +1,11 @@
+import { randomUUID } from 'node:crypto';
+
 import { Controller, Delete, Get, Inject, Param, Post, Req, Res } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { type FastifyReply, type FastifyRequest } from 'fastify';
 
 import { type ApiEnv } from '@exocortex/config';
+import { agentSessionExternalIdSchema } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 import {
   JSON_RPC_ERROR_CODES,
@@ -27,9 +30,13 @@ import { type McpCaller, McpService } from './mcp.service';
  * specification also allows answering with an SSE stream, which exists so a
  * server can push notifications and its own requests mid-call; this server
  * never does either, so a stream would only be an idle socket. `GET` is
- * therefore refused rather than upgraded, and no `Mcp-Session-Id` is issued:
- * there is no per-connection state to key, which is what lets two API
- * processes serve the same client interchangeably.
+ * therefore refused rather than upgraded.
+ *
+ * An `Mcp-Session-Id` *is* issued, and it still keys nothing in memory: it
+ * names the connection in the write journal (ADR-022) and nowhere else, so two
+ * API processes go on serving the same client interchangeably. A client that
+ * does not echo it back loses the grouping and keeps everything else -- each
+ * write is then its own one-line session rather than none at all.
  *
  * Routes are `@Public()` so `SessionGuard` steps aside. That is not an
  * exemption from authentication: `McpService.authenticate` runs on every
@@ -160,6 +167,7 @@ export class McpController {
       return;
     }
 
+    const sessionId = agentSessionId(headers['mcp-session-id']);
     const messages = toMessages(request.body);
     if (messages === null) {
       void reply.status(400).send({
@@ -170,7 +178,7 @@ export class McpController {
       return;
     }
 
-    const handler = await this.mcp.createHandler(caller, surface);
+    const handler = await this.mcp.createHandler(caller, surface, sessionId);
     const responses: JsonRpcResponse[] = [];
     for (const message of messages) {
       const response = await this.dispatch(handler, message, caller, surface);
@@ -188,6 +196,10 @@ export class McpController {
       .status(200)
       .header('content-type', 'application/json')
       .header('mcp-protocol-version', LATEST_PROTOCOL_VERSION)
+      // The specification has the client read this off the initialize response
+      // and repeat it. Sent on every response rather than only that one, so a
+      // client that reconnects mid-conversation still finds an id to keep.
+      .header('mcp-session-id', sessionId)
       .send(Array.isArray(request.body) ? responses : responses[0]);
   }
 
@@ -263,6 +275,18 @@ export class McpController {
         error: { code: -32_000, message: `Unauthorized: ${message}` },
       });
   }
+}
+
+/**
+ * The session id this request belongs to: the client's own when it sent one
+ * that survives validation, a fresh one otherwise. Validated because it is
+ * written to the journal and shown to a person, and because a client is free
+ * to put anything in a header.
+ */
+function agentSessionId(header: string | string[] | undefined): string {
+  const value = Array.isArray(header) ? header[0] : header;
+  const parsed = agentSessionExternalIdSchema.safeParse(value);
+  return parsed.success ? parsed.data : `http-${randomUUID()}`;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

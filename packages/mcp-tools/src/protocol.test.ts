@@ -338,3 +338,83 @@ describe('createMcpRequestHandler', () => {
     );
   });
 });
+
+describe('agent session (ADR-022)', () => {
+  /** A client that records the announcement and the stamp it was given. */
+  function recordingClient() {
+    const calls: { path: string; body: unknown }[] = [];
+    let stamped: { externalId: string; label?: string } | null = null;
+    const client: ExocortexApiClient = {
+      async request(input) {
+        calls.push({ path: input.path, body: input.body });
+        return input.responseSchema.parse({ id: 'sess-row', externalId: 'sess-1' });
+      },
+      async upload(input) {
+        return input.responseSchema.parse({ ok: true });
+      },
+      setAgentSession(session) {
+        stamped = session;
+      },
+    };
+    return { client, calls, stamp: () => stamped };
+  }
+
+  it('announces the session at initialize and stamps the client with the label', async () => {
+    const recorder = recordingClient();
+    const handler = createMcpRequestHandler({
+      client: recorder.client,
+      tools: [readTool],
+      agentSession: { externalId: 'sess-1', transport: 'stdio' },
+    });
+
+    await handler({
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'initialize',
+      params: { clientInfo: { name: 'claude-code', version: '1.2' } },
+    });
+
+    expect(recorder.calls[0]?.path).toBe('/api/agent-sessions');
+    expect(recorder.calls[0]?.body).toMatchObject({
+      externalId: 'sess-1',
+      clientLabel: 'claude-code 1.2',
+      transport: 'stdio',
+    });
+    expect(recorder.stamp()).toEqual({ externalId: 'sess-1', label: 'claude-code 1.2' });
+  });
+
+  it('stamps the client even without an initialize, which is what HTTP needs', async () => {
+    const recorder = recordingClient();
+    createMcpRequestHandler({
+      client: recorder.client,
+      tools: [readTool],
+      agentSession: { externalId: 'sess-2', transport: 'http' },
+    });
+
+    expect(recorder.stamp()).toEqual({ externalId: 'sess-2' });
+    expect(recorder.calls).toHaveLength(0);
+  });
+
+  it('completes the handshake even when the announcement fails', async () => {
+    const client: ExocortexApiClient = {
+      async request() {
+        throw new Error('API unreachable');
+      },
+      async upload(input) {
+        return input.responseSchema.parse({ ok: true });
+      },
+    };
+    const warnings: string[] = [];
+    const handler = createMcpRequestHandler({
+      client,
+      tools: [readTool],
+      agentSession: { externalId: 'sess-3', transport: 'stdio' },
+      logger: { warn: (message) => warnings.push(message) },
+    });
+
+    const response = await handler({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {} });
+
+    expect((response as { result: { serverInfo: unknown } }).result.serverInfo).toBeDefined();
+    expect(warnings).toContain('Agent session could not be announced');
+  });
+});

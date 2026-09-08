@@ -27,6 +27,14 @@ export interface ExocortexApiClient {
    * did not configure one, and a tool must then fall back to the id alone.
    */
   readonly appUrl?: string;
+  /**
+   * Names the agent session every subsequent request belongs to (ADR-022).
+   *
+   * Two headers rather than a body field: every tool builds its own request
+   * body and none of them should have to know that provenance exists. Optional
+   * on the interface because a hand-written test client has nothing to record.
+   */
+  setAgentSession?(session: { externalId: string; label?: string }): void;
   /** Multipart upload; separate because the body is not JSON. */
   upload<T>(input: {
     path: string;
@@ -60,7 +68,17 @@ export interface FetchClientOptions {
   headers?: Readonly<Record<string, string>>;
   /** Public origin a human uses, for citation URLs. See `ExocortexApiClient`. */
   appUrl?: string;
+  /** Agent session to stamp on every request from the start. See ADR-022. */
+  agentSession?: { externalId: string; label?: string };
 }
+
+/**
+ * Provenance headers (ADR-022). Their own names rather than a reuse of
+ * `Mcp-Session-Id`: what travels here is the identity of an agent's *working
+ * session*, and the REST API knows nothing about MCP transports.
+ */
+export const AGENT_SESSION_HEADER = 'x-exocortex-agent-session';
+export const AGENT_CLIENT_HEADER = 'x-exocortex-agent-client';
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 
@@ -108,16 +126,29 @@ async function throwForErrorResponse(response: Response): Promise<never> {
  */
 export function createFetchApiClient(options: FetchClientOptions): ExocortexApiClient {
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  let agentSession = options.agentSession;
 
   function baseHeaders(): Record<string, string> {
     return {
       authorization: `Bearer ${options.token}`,
+      ...(agentSession === undefined
+        ? {}
+        : {
+            [AGENT_SESSION_HEADER]: agentSession.externalId,
+            ...(agentSession.label === undefined
+              ? {}
+              : { [AGENT_CLIENT_HEADER]: agentSession.label }),
+          }),
       ...options.headers,
     };
   }
 
   return {
     appUrl: options.appUrl,
+
+    setAgentSession(session: { externalId: string; label?: string }): void {
+      agentSession = session;
+    },
 
     async request<T>(input: {
       method: 'GET' | 'POST' | 'PATCH' | 'DELETE';

@@ -11,7 +11,11 @@ import { createCorrelationId, type Logger } from '@exocortex/logger';
 
 import { AppModule } from './app.module';
 import { AuthService } from './auth/auth.service';
-import { CORRELATION_HEADER, enterRequestContext } from './common/correlation';
+import {
+  CORRELATION_HEADER,
+  enterRequestContext,
+  readAgentSessionHeaders,
+} from './common/correlation';
 import { API_ENV, LOGGER } from './common/logger.provider';
 
 import 'reflect-metadata';
@@ -54,7 +58,15 @@ async function bootstrap(): Promise<void> {
         ? incoming
         : createCorrelationId();
     void reply.header(CORRELATION_HEADER, correlationId);
-    enterRequestContext({ correlationId });
+    enterRequestContext({
+      correlationId,
+      // Provenance travels in headers so no tool has to know it exists
+      // (ADR-022). Read here, next to the correlation id, because both answer
+      // "where did this write come from" at different scales.
+      agentSession: readAgentSessionHeaders(
+        request.headers as Record<string, string | string[] | undefined>,
+      ),
+    });
     done();
   });
 

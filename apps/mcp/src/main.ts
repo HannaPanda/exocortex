@@ -9,6 +9,8 @@ console.info = console.error;
 console.warn = console.error;
 /* eslint-enable no-console */
 
+import { randomUUID } from 'node:crypto';
+
 import { createFetchApiClient, WriteConfirmationGate } from '@exocortex/mcp-tools';
 
 import { mcpEnvSchema } from './env.js';
@@ -45,10 +47,14 @@ function main(): void {
 
   const gate = new WriteConfirmationGate();
 
-  const handler = createRequestHandler({ client, gate, env, logger });
+  const agentSessionId = `stdio-${randomUUID()}`;
+  const handler = createRequestHandler({ client, gate, env, logger, agentSessionId });
   const server = createStdioServer(handler);
 
-  logger.info('eXocortex MCP server starting', { apiUrl: env.EXOCORTEX_API_URL });
+  logger.info('eXocortex MCP server starting', {
+    apiUrl: env.EXOCORTEX_API_URL,
+    agentSessionId,
+  });
   server.start();
 
   // Hermes kills MCP subprocesses by closing stdin; `stdio.ts` already exits

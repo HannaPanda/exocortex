@@ -1,3 +1,4 @@
+import { announceAgentSession, clientLabelFrom } from './agent-session.js';
 import { type ExocortexApiClient, ExocortexApiError } from './client.js';
 import { type WriteConfirmationGate } from './confirm.js';
 import { getMcpPrompt, listMcpPrompts } from './prompts.js';
@@ -106,6 +107,16 @@ export interface McpRequestHandlerOptions {
    * truthfully with an empty array, so no handshake breaks.
    */
   context?: boolean;
+  /**
+   * The working session every write of this connection belongs to (ADR-022).
+   *
+   * Announced at `initialize` and carried on every REST call after it, which
+   * is what lets an administrator later ask what one agent touched and take
+   * all of it back at once. Omit it and the connection writes exactly as
+   * before, unjournalled: the transport that has no stable identity to offer
+   * should not invent one.
+   */
+  agentSession?: { externalId: string; transport: 'stdio' | 'http' };
   serverInfo?: { name: string; version: string };
   logger?: McpProtocolLogger;
 }
@@ -139,6 +150,14 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
   const confirm = options.confirm ?? 'irreversible';
   const serverInfo = options.serverInfo ?? DEFAULT_SERVER_INFO;
   const byName = new Map(tools.map((tool) => [tool.name, tool]));
+
+  // Stamped here rather than only at `initialize`, because over HTTP every
+  // message arrives as its own request with its own handler and its own
+  // client: the handshake happened, but not in this process's memory. The
+  // label is refined below when an `initialize` does pass through.
+  if (options.agentSession !== undefined) {
+    client.setAgentSession?.({ externalId: options.agentSession.externalId });
+  }
 
   async function callTool(
     tool: AnyToolDefinition,
@@ -198,14 +217,21 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
         : null;
 
     switch (request.method) {
-      case 'initialize':
-        return respond(
-          buildInitializeResult(
-            isRecord(request.params) ? request.params : {},
-            context,
-            serverInfo,
-          ),
-        );
+      case 'initialize': {
+        const params = isRecord(request.params) ? request.params : {};
+        if (options.agentSession !== undefined) {
+          await announceAgentSession({
+            client,
+            externalId: options.agentSession.externalId,
+            transport: options.agentSession.transport,
+            label: clientLabelFrom(params),
+            onError: (reason) => {
+              logger?.warn('Agent session could not be announced', { reason });
+            },
+          });
+        }
+        return respond(buildInitializeResult(params, context, serverInfo));
+      }
 
       case 'notifications/initialized':
       case 'notifications/cancelled':
