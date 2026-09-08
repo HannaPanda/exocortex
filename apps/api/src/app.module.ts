@@ -5,6 +5,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { type ApiEnv } from '@exocortex/config';
 
 import { AdminModule } from './admin/admin.module';
+import { AgentSessionsModule } from './agent-sessions/agent-sessions.module';
 import { AiModule } from './ai/ai.module';
 import { AttachmentsModule } from './attachments/attachments.module';
 import { AdminGuard } from './auth/admin.guard';
@@ -56,6 +57,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     MeModule,
     MemoryModule,
     McpModule,
+    AgentSessionsModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: ApiExceptionFilter },

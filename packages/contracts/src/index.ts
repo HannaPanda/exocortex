@@ -1,4 +1,5 @@
 export * from './admin';
+export * from './agent-sessions';
 export * from './ai';
 export * from './ai-conversations';
 export * from './ai-models';
