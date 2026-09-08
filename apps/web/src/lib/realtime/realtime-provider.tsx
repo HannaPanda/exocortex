@@ -11,8 +11,10 @@ import {
   type SubscriptionResult,
 } from '@exocortex/contracts';
 
+import { installConnectionDiagnostics } from '../connection-diagnostics';
+import { logConnection } from '../connection-log';
 import { realtimeOrigin } from '../env';
-import { onWakeSignals } from '../wake-signals';
+import { onWakeSignals, type WakeReason } from '../wake-signals';
 
 export type RealtimeStatus = 'connecting' | 'connected' | 'disconnected';
 
@@ -39,6 +41,32 @@ const RECONNECT_MAX_DELAY_MS = 30_000;
 const RECONNECT_STABLE_AFTER_MS = 3_000;
 
 /**
+ * Writes down what Socket.IO's own reconnect machinery is doing.
+ *
+ * The manager retries underneath the socket, and none of that surfaces on the
+ * socket itself: from the outside a channel that is patiently retrying and one
+ * that has quietly stopped look exactly alike, which is the ambiguity that made
+ * an intermittent outage impossible to read. These five events say which of the
+ * two it is.
+ */
+function recordEngine(socket: Socket): void {
+  const manager = socket.io;
+  manager.on('reconnect_attempt', (attempt: number) =>
+    logConnection('app', 'engine.reconnect_attempt', { attempt }),
+  );
+  manager.on('reconnect', (attempt: number) =>
+    logConnection('app', 'engine.reconnect', { attempt }),
+  );
+  manager.on('reconnect_error', (error: Error) =>
+    logConnection('app', 'engine.reconnect_error', { message: error.message }),
+  );
+  manager.on('reconnect_failed', () => logConnection('app', 'engine.reconnect_failed'));
+  manager.on('error', (error: Error) =>
+    logConnection('app', 'engine.error', { message: error.message }),
+  );
+}
+
+/**
  * Application realtime channel.
  *
  * Separate from the Yjs collaboration socket by design (ADR-008): this socket
@@ -53,6 +81,7 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
   const subscribed = React.useRef(new Set<string>());
 
   React.useEffect(() => {
+    installConnectionDiagnostics();
     /** Backoff for manual reconnects, doubling from 1s to a 30s ceiling. */
     let retryDelay = RECONNECT_BASE_DELAY_MS;
     let retryTimer: ReturnType<typeof setTimeout> | null = null;
@@ -60,9 +89,11 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
 
     const scheduleReconnect = (): void => {
       if (retryTimer !== null) return;
+      logConnection('app', 'backoff.scheduled', { delayMs: retryDelay });
       retryTimer = setTimeout(() => {
         retryTimer = null;
         retryDelay = Math.min(retryDelay * 2, RECONNECT_MAX_DELAY_MS);
+        logConnection('app', 'backoff.fired', { nextDelayMs: retryDelay });
         socketRef.current?.connect();
       }, retryDelay);
     };
@@ -75,8 +106,17 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
       reconnectionDelayMax: 5_000,
     });
     socketRef.current = socket;
+    logConnection('app', 'socket.created', {
+      origin: realtimeOrigin(),
+      path: REALTIME_SOCKET_PATH,
+    });
+    recordEngine(socket);
 
     socket.on('connect', () => {
+      logConnection('app', 'socket.connected', {
+        id: socket.id ?? null,
+        transport: socket.io.engine?.transport?.name ?? null,
+      });
       setStatus('connected');
       setLastError(null);
       // The backoff resets only once the connection has *lasted*, never on the
@@ -97,6 +137,7 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
       }
     });
     socket.on('disconnect', (reason) => {
+      logConnection('app', 'socket.disconnected', { reason });
       setStatus('disconnected');
       if (stableTimer !== null) {
         clearTimeout(stableTimer);
@@ -119,7 +160,13 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
       // wrong way to find that out.
       if (reason === 'io server disconnect') scheduleReconnect();
     });
-    socket.on('connect_error', () => setStatus('disconnected'));
+    socket.on('connect_error', (error: Error) => {
+      logConnection('app', 'socket.connect_error', {
+        message: error.message,
+        active: socket.io.engine !== undefined,
+      });
+      setStatus('disconnected');
+    });
 
     socket.on(REALTIME_EVENT_NAME, (event: ApplicationEvent) => {
       const set = listeners.current.get(event.type);
@@ -138,7 +185,12 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
      * rather than another failure, so it clears the backoff and retries at
      * once. `connect()` on an already open socket is a no-op.
      */
-    const reconnectNow = (): void => {
+    const reconnectNow = (reason: WakeReason): void => {
+      logConnection('app', 'wake', {
+        reason,
+        connected: socket.connected,
+        pendingBackoff: retryTimer !== null,
+      });
       if (retryTimer !== null) {
         clearTimeout(retryTimer);
         retryTimer = null;

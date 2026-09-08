@@ -6,12 +6,14 @@ import { IndexeddbPersistence } from 'y-indexeddb';
 import * as Y from 'yjs';
 
 import {
+  type DocumentSessionState,
   presenceColor,
   type PresenceUser,
   useDocumentSession,
 } from '@/components/shell/document-session';
 import { fetchCollaborationTicket } from '@/lib/api/queries';
-import { onWakeSignals } from '@/lib/wake-signals';
+import { type ConnectionDetailValue, logConnection } from '@/lib/connection-log';
+import { onWakeSignals, type WakeReason } from '@/lib/wake-signals';
 
 /**
  * How long a burst of typing has to be quiet before it counts as settled.
@@ -40,6 +42,91 @@ const REVIVE_DELAY_MS = 20_000;
 
 /** The revive delay doubles per consecutive failure, up to this ceiling. */
 const REVIVE_MAX_DELAY_MS = 120_000;
+
+/**
+ * Writes one collaboration event to the shared connection log.
+ *
+ * At module scope rather than inside the effect so that adding a line costs the
+ * effect one call and not one closure, and so the channel name is written down
+ * exactly once.
+ */
+const record = (event: string, detail?: Record<string, ConnectionDetailValue>): void =>
+  logConnection('collab', event, detail);
+
+/** How the shell is told about a change; the provider's `update`, narrowed. */
+type PublishSession = (patch: Partial<DocumentSessionState>) => void;
+
+/**
+ * Mirrors the awareness states into the shell's presence list.
+ *
+ * At module scope because presence has nothing to do with the connection's
+ * lifecycle: it needs the provider and the current user and nothing else, and
+ * it dies with the provider rather than with a timer of its own.
+ */
+function attachPresence(
+  provider: HocuspocusProvider,
+  currentUser: { id: string; name: string },
+  publish: PublishSession,
+): void {
+  provider.awareness?.setLocalStateField('user', {
+    name: currentUser.name,
+    color: presenceColor(currentUser.id),
+  });
+
+  const readPresence = (): void => {
+    const states = provider.awareness?.getStates();
+    if (states === undefined) return;
+    const users: PresenceUser[] = [];
+    for (const [clientId, state] of states) {
+      const user = (state as { user?: { name?: string; color?: string } }).user;
+      if (user === undefined) continue;
+      users.push({
+        clientId,
+        name: user.name ?? 'Unbekannt',
+        color: user.color ?? presenceColor(String(clientId)),
+        self: clientId === provider.awareness?.clientID,
+      });
+    }
+    publish({ presence: users });
+  };
+
+  provider.awareness?.on('change', readPresence);
+  readPresence();
+}
+
+/**
+ * Drives the offline flag and the save indicator from local edits.
+ *
+ * The shell is told twice per typing burst (once when it starts, once when it
+ * settles) rather than on every keystroke, which would re-render the whole
+ * application shell while the user types. Returns the timer's canceller.
+ */
+function attachSaveIndicator(
+  ydoc: Y.Doc,
+  provider: HocuspocusProvider,
+  live: () => boolean,
+  publish: PublishSession,
+): () => void {
+  let settle: ReturnType<typeof setTimeout> | undefined;
+  let settling = false;
+  ydoc.on('update', (_update: Uint8Array, origin: unknown) => {
+    if (origin === provider) return;
+    if (!live()) {
+      publish({ pendingSync: true });
+      return;
+    }
+    if (!settling) {
+      settling = true;
+      publish({ saveState: 'saving' });
+    }
+    clearTimeout(settle);
+    settle = setTimeout(() => {
+      settling = false;
+      publish({ saveState: 'saved', savedAt: Date.now() });
+    }, SETTLE_DELAY_MS);
+  });
+  return () => clearTimeout(settle);
+}
 
 /** The three objects one open document is made of. */
 export interface Connection {
@@ -81,6 +168,10 @@ export function useCollaborationConnection({
   currentUser,
 }: CollaborationConnectionOptions): CollaborationConnectionState {
   const { update } = useDocumentSession();
+  // Unpacked so the effect depends on the two values rather than on the object:
+  // callers rebuild `currentUser` on every render, and depending on the object
+  // would tear the live connection down and back up on each one.
+  const { id: userId, name: userName } = currentUser;
   const [connection, setConnection] = React.useState<Connection | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [synced, setSynced] = React.useState(false);
@@ -132,8 +223,8 @@ export function useCollaborationConnection({
 
     let disposed = false;
     let active: Connection | null = null;
-    // Debounce for the save indicator; cleared on unmount.
-    let settle: ReturnType<typeof setTimeout> | undefined;
+    // Cancels the save indicator's debounce; set once `connect()` has run.
+    let stopSaveIndicator: (() => void) | undefined;
     // Watchdog for a connection that never came back; cleared on unmount.
     let revive: ReturnType<typeof setTimeout> | undefined;
     // Removes the wake listeners below; set once `connect()` has run.
@@ -152,13 +243,25 @@ export function useCollaborationConnection({
       });
 
       let ticket: Awaited<ReturnType<typeof fetchCollaborationTicket>>;
+      record('ticket.request', { documentId, attempt });
       try {
         ticket = await fetchCollaborationTicket(documentId);
-      } catch {
+      } catch (cause) {
+        record('ticket.failed', {
+          message: cause instanceof Error ? cause.message : String(cause),
+        });
         if (!disposed) setError('Die Live-Bearbeitung konnte nicht gestartet werden.');
         return;
       }
-      if (disposed) return;
+      record('ticket.granted', {
+        url: ticket.collaborationUrl,
+        name: ticket.documentName,
+        access: ticket.access,
+      });
+      if (disposed) {
+        record('ticket.discarded', { reason: 'disposed' });
+        return;
+      }
 
       const ydoc = new Y.Doc();
       // Offline persistence: the local copy is available before the socket opens.
@@ -181,8 +284,24 @@ export function useCollaborationConnection({
       const nextTicket = async (): Promise<string> => {
         const reusable = pendingTicket;
         pendingTicket = null;
-        if (reusable !== null) return reusable;
-        return (await fetchCollaborationTicket(documentId)).ticket;
+        if (reusable !== null) {
+          record('token.reused');
+          return reusable;
+        }
+        // A rejection here never surfaces anywhere: Hocuspocus awaits this
+        // function before it opens the socket, so a failure means no socket and
+        // no event -- exactly the silence this whole log exists to break.
+        record('token.request');
+        try {
+          const fresh = await fetchCollaborationTicket(documentId);
+          record('token.granted');
+          return fresh.ticket;
+        } catch (cause) {
+          record('token.failed', {
+            message: cause instanceof Error ? cause.message : String(cause),
+          });
+          throw cause;
+        }
       };
 
       /**
@@ -209,9 +328,11 @@ export function useCollaborationConnection({
           return;
         }
         const delay = Math.min(REVIVE_DELAY_MS * 2 ** reviveCount.current, REVIVE_MAX_DELAY_MS);
+        record('revive.armed', { delayMs: delay, socket: socketStatus, authenticated });
         revive = setTimeout(() => {
           if (disposed) return;
           reviveCount.current += 1;
+          record('revive.fired', { count: reviveCount.current });
           retry();
         }, delay);
       };
@@ -229,12 +350,16 @@ export function useCollaborationConnection({
         armRevive();
       };
 
+      record('provider.create', { url: ticket.collaborationUrl, name: ticket.documentName });
       const provider = new HocuspocusProvider({
         url: ticket.collaborationUrl,
         name: ticket.documentName,
         document: ydoc,
         token: nextTicket,
+        onOpen: () => record('socket.open'),
+        onClose: ({ event }) => record('socket.close', { code: event.code, reason: event.reason }),
         onStatus: ({ status }) => {
+          record('status', { status });
           socketStatus =
             status === 'connected'
               ? 'connected'
@@ -247,70 +372,30 @@ export function useCollaborationConnection({
           publishStatus();
         },
         onAuthenticated: () => {
+          record('authenticated');
           authenticated = true;
           publishStatus();
         },
         onAuthenticationFailed: () => {
+          record('authentication.failed');
           authenticated = false;
           publishStatus();
         },
         onSynced: () => {
+          record('synced');
           setSynced(true);
           update({ pendingSync: false });
         },
         onDisconnect: () => {
+          record('disconnected');
           socketStatus = 'disconnected';
           authenticated = false;
           publishStatus();
         },
       });
 
-      // Local edits drive both the offline flag and the save indicator. The
-      // shell is only told twice per typing burst (once when it starts, once
-      // when it settles) rather than on every keystroke, which would re-render
-      // the whole application shell while the user types.
-      let settling = false;
-      ydoc.on('update', (_update: Uint8Array, origin: unknown) => {
-        if (origin === provider) return;
-        if (!live()) {
-          update({ pendingSync: true });
-          return;
-        }
-        if (!settling) {
-          settling = true;
-          update({ saveState: 'saving' });
-        }
-        clearTimeout(settle);
-        settle = setTimeout(() => {
-          settling = false;
-          update({ saveState: 'saved', savedAt: Date.now() });
-        }, SETTLE_DELAY_MS);
-      });
-
-      provider.awareness?.setLocalStateField('user', {
-        name: currentUser.name,
-        color: presenceColor(currentUser.id),
-      });
-
-      const readPresence = (): void => {
-        const states = provider.awareness?.getStates();
-        if (states === undefined) return;
-        const users: PresenceUser[] = [];
-        for (const [clientId, state] of states) {
-          const user = (state as { user?: { name?: string; color?: string } }).user;
-          if (user === undefined) continue;
-          users.push({
-            clientId,
-            name: user.name ?? 'Unbekannt',
-            color: user.color ?? presenceColor(String(clientId)),
-            self: clientId === provider.awareness?.clientID,
-          });
-        }
-        update({ presence: users });
-      };
-
-      provider.awareness?.on('change', readPresence);
-      readPresence();
+      stopSaveIndicator = attachSaveIndicator(ydoc, provider, live, update);
+      attachPresence(provider, { id: userId, name: userName }, update);
 
       // A provider that never emits a status change would otherwise never arm
       // the watchdog at all.
@@ -325,7 +410,8 @@ export function useCollaborationConnection({
        * is merely `connecting` is left alone: tearing down an attempt that is
        * still in flight would replace one wait with another.
        */
-      const wakeRevive = (): void => {
+      const wakeRevive = (reason: WakeReason): void => {
+        record('wake', { reason, socket: socketStatus, authenticated, disposed });
         if (disposed || live() || socketStatus === 'connecting') return;
         clearTimeout(revive);
         reviveCount.current = 0;
@@ -347,7 +433,8 @@ export function useCollaborationConnection({
 
     return () => {
       disposed = true;
-      clearTimeout(settle);
+      record('teardown');
+      stopSaveIndicator?.();
       clearTimeout(revive);
       detachWake?.();
       if (active !== null) {
@@ -367,7 +454,7 @@ export function useCollaborationConnection({
     // `update` is stable (useCallback in the provider). `documentTitle` is
     // deliberately absent; see the ref above for why. `attempt` is here so the
     // retry button rebuilds the connection from the ticket up.
-  }, [attempt, currentUser.id, currentUser.name, documentId, retry, update]);
+  }, [attempt, documentId, retry, update, userId, userName]);
 
   return { connection, error, synced, retry };
 }
