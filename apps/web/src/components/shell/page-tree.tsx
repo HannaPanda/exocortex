@@ -346,10 +346,14 @@ export function PageTree({ workspaceId }: PageTreeProps) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex items-center justify-between px-2 py-1.5">
-        <p className="text-[0.6875rem] font-medium tracking-wide text-muted-foreground uppercase">
+      <div className="flex items-center gap-2.5 px-2 py-1.5">
+        {/* The same mark the overview and the context panel use, so "this is a
+            section" looks identical wherever the reader meets it. */}
+        <span className="size-1 shrink-0 bg-signal-line" aria-hidden />
+        <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
           Seiten
         </p>
+        <span className="h-px w-6 shrink-0 bg-signal-line" aria-hidden />
         <DropdownMenu>
           <DropdownMenuTrigger
             render={

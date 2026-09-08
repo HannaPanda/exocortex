@@ -23,6 +23,8 @@ import {
   Button,
   EmptyState,
   ErrorState,
+  Leader,
+  SectionRule,
   Skeleton,
   Tooltip,
   TooltipContent,
@@ -79,21 +81,6 @@ function documentHref(workspaceId: string, documentId: string): string {
   return `/arbeitsbereich/${workspaceId}/seite/${documentId}`;
 }
 
-/**
- * A hairline rule with a small label riding on it. The instrument-panel
- * alternative to a card header: it separates without enclosing.
- */
-function SectionRule({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mb-3 flex items-center gap-3">
-      <h2 className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
-        {children}
-      </h2>
-      <span className="h-px flex-1 bg-border" aria-hidden />
-    </div>
-  );
-}
-
 /** "Technik › Server". Empty at top level, and then it renders nothing. */
 function DocumentPath({ path }: { path: OverviewDocument['path'] }) {
   if (path.length === 0) return null;
@@ -116,29 +103,34 @@ function RecentRow({
       <Link
         href={documentHref(workspaceId, document.id)}
         data-testid={`overview-page-${document.id}`}
-        className="-mx-2 flex items-center gap-3 rounded-md px-2 py-1.5 transition-colors hover:bg-accent-solid"
+        className="-mx-2 flex items-start gap-3 rounded-md px-2 py-1.5 transition-colors hover:bg-accent-solid"
       >
         <DocumentIcon
           icon={document.icon}
           iconColor={document.iconColor}
           type={document.type}
-          className="size-4 shrink-0 text-sm text-muted-foreground"
+          className="size-4 shrink-0 translate-y-0.5 text-sm text-muted-foreground"
         />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-medium">{document.title}</span>
+          {/* Title and time share one baseline with the leader between them; the
+              path hangs underneath, so the leader never runs through it. */}
+          <span className="flex items-baseline gap-2">
+            <span className="truncate text-sm font-medium">{document.title}</span>
+            <Leader />
+            <time
+              dateTime={document.editedAt}
+              title={
+                document.editedByName === null
+                  ? undefined
+                  : `Zuletzt bearbeitet von ${document.editedByName}`
+              }
+              className="exocortex-numeric shrink-0 text-xs text-muted-foreground"
+            >
+              {formatRelativeTime(document.editedAt)}
+            </time>
+          </span>
           <DocumentPath path={document.path} />
         </span>
-        <time
-          dateTime={document.editedAt}
-          title={
-            document.editedByName === null
-              ? undefined
-              : `Zuletzt bearbeitet von ${document.editedByName}`
-          }
-          className="exocortex-numeric shrink-0 text-xs text-muted-foreground"
-        >
-          {formatRelativeTime(document.editedAt)}
-        </time>
       </Link>
     </li>
   );
@@ -239,10 +231,7 @@ function SectionRow({
           className="size-4 shrink-0 translate-y-0.5 text-sm text-muted-foreground"
         />
         <span className="truncate text-sm">{section.title}</span>
-        <span
-          className="min-w-4 flex-1 translate-y-[-0.25em] border-b border-dashed border-border"
-          aria-hidden
-        />
+        <Leader />
         <span className="exocortex-numeric shrink-0 text-xs text-muted-foreground">
           {NUMBER.format(section.descendantCount)}
         </span>
@@ -274,11 +263,9 @@ export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
 
   return (
     <AppPage maxWidth="max-w-4xl">
-      <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
+      <header className="mb-10 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="truncate text-2xl font-semibold tracking-tight">
-            {data?.workspaceName ?? 'Übersicht'}
-          </h1>
+          <h1 className="exocortex-page-title truncate">{data?.workspaceName ?? 'Übersicht'}</h1>
           {data === undefined ? (
             <Skeleton className="mt-2 h-4 w-72" />
           ) : (
@@ -353,16 +340,19 @@ function WorkspaceOverviewBody({
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    /* The rhythm is deliberately uneven: 2.5rem between sections, 0.75rem
+       between a rule and the rows under it. Even spacing reads as a list of
+       equals; this reads as groups (DESIGN.md, Typography). */
+    <div className="flex flex-col gap-10">
       {/* Two columns only when the second one has something in it. An empty
           column would leave the recency list stopping halfway across the page
           while every rule below it runs the full width. */}
       <div
         className={
-          hasAttention ? 'grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]' : 'grid gap-8'
+          hasAttention ? 'grid gap-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]' : 'grid gap-10'
         }
       >
-        <section aria-labelledby="overview-recent">
+        <section className="flex flex-col gap-3" aria-labelledby="overview-recent">
           <SectionRule>
             <span id="overview-recent">Weitermachen</span>
           </SectionRule>
@@ -374,7 +364,7 @@ function WorkspaceOverviewBody({
         </section>
 
         {hasAttention ? (
-          <section aria-labelledby="overview-attention">
+          <section className="flex flex-col gap-3" aria-labelledby="overview-attention">
             <SectionRule>
               <span id="overview-attention">Liegen geblieben</span>
             </SectionRule>
@@ -403,7 +393,7 @@ function WorkspaceOverviewBody({
       </div>
 
       {data.databases.length > 0 ? (
-        <section aria-labelledby="overview-databases">
+        <section className="flex flex-col gap-3" aria-labelledby="overview-databases">
           <SectionRule>
             <span id="overview-databases">Datenbanken</span>
           </SectionRule>
@@ -416,7 +406,7 @@ function WorkspaceOverviewBody({
       ) : null}
 
       {data.sections.length > 0 ? (
-        <section aria-labelledby="overview-sections">
+        <section className="flex flex-col gap-3" aria-labelledby="overview-sections">
           <SectionRule>
             <span id="overview-sections">Bereiche</span>
           </SectionRule>

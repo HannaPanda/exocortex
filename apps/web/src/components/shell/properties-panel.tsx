@@ -4,7 +4,16 @@ import { ChevronDownIcon, ImageIcon, MoveVerticalIcon, SettingsIcon, XIcon } fro
 import * as React from 'react';
 
 import { type DocumentDetail } from '@exocortex/contracts';
-import { Badge, Button, cn, EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
+import {
+  Badge,
+  Button,
+  cn,
+  EmptyState,
+  ErrorState,
+  Leader,
+  LoadingState,
+  SectionRule,
+} from '@exocortex/ui';
 
 import { PropertyCell } from '@/components/database/cells';
 import { PROPERTY_TYPE_LABELS } from '@/components/database/property-types';
@@ -67,7 +76,7 @@ function RowPropertiesSection({
 
   return (
     <section className="flex flex-col gap-2" data-testid="row-properties">
-      <h3 className="text-xs font-medium text-muted-foreground">Eigenschaften</h3>
+      <SectionRule as="h3">Eigenschaften</SectionRule>
       {properties.data.length === 0 ? (
         <p className="text-xs text-muted-foreground">
           Diese Datenbank hat noch keine Eigenschaften.
@@ -116,7 +125,7 @@ function CoverSection({
 
   return (
     <section className="flex flex-col gap-1.5" data-testid="properties-cover">
-      <h3 className="text-xs font-medium text-muted-foreground">Titelbild</h3>
+      <SectionRule as="h3">Titelbild</SectionRule>
       <div className="h-16 w-full overflow-hidden rounded-md bg-surface">
         {/* eslint-disable-next-line @next/next/no-img-element -- attachment ids are arbitrary user uploads, not build-time-known assets next/image can optimize. */}
         <img
@@ -199,7 +208,7 @@ function ProvenanceSection({ detail }: { detail: DocumentDetail }) {
 
   return (
     <section className="flex flex-col gap-1.5" data-testid="provenance">
-      <h3 className="text-xs font-medium text-muted-foreground">Herkunft</h3>
+      <SectionRule as="h3">Herkunft</SectionRule>
       <dl className="grid grid-cols-[5.5rem_1fr] gap-x-2 gap-y-1.5 text-xs">
         <dt className="text-muted-foreground">Angelegt</dt>
         <dd>
@@ -230,7 +239,7 @@ function TechnicalSection({ detail }: { detail: DocumentDetail }) {
     <section className="flex flex-col gap-1.5 border-t border-border pt-3">
       <button
         type="button"
-        className="flex items-center gap-1 text-xs font-medium text-muted-foreground"
+        className="flex items-center gap-2 text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:text-foreground"
         aria-expanded={open}
         data-testid="technical-section-toggle"
         onClick={() => setOpen((next) => !next)}
@@ -239,20 +248,33 @@ function TechnicalSection({ detail }: { detail: DocumentDetail }) {
           className={cn('size-3.5 transition-transform', open ? 'rotate-180' : undefined)}
         />
         Technisches
+        <span className="h-px w-6 shrink-0 bg-signal-line" aria-hidden />
       </button>
+      {/* Leaders rather than a two-column grid: both values are short and
+          right-aligned, which is the case a table of contents solved long ago
+          and a grid solves badly at panel width. */}
       {open ? (
-        <dl className="grid grid-cols-[8rem_1fr] gap-x-2 gap-y-1.5 text-xs text-muted-foreground">
-          <dt>Schema-Version</dt>
-          <dd className="exocortex-numeric">{detail.schemaVersion}</dd>
-          <dt>Zuletzt verarbeitet</dt>
-          <dd
-            className={detail.materializedAt === null ? undefined : 'exocortex-numeric'}
-            data-testid="materialized-at"
-          >
-            {detail.materializedAt === null
-              ? 'noch nicht'
-              : new Date(detail.materializedAt).toLocaleString('de-DE')}
-          </dd>
+        <dl className="flex flex-col gap-1.5 text-xs text-muted-foreground">
+          <div className="flex items-baseline gap-2">
+            <dt className="shrink-0">Schema-Version</dt>
+            <Leader />
+            <dd className="exocortex-numeric shrink-0">{detail.schemaVersion}</dd>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <dt className="shrink-0">Zuletzt verarbeitet</dt>
+            <Leader />
+            <dd
+              className={cn(
+                'shrink-0',
+                detail.materializedAt === null ? undefined : 'exocortex-numeric',
+              )}
+              data-testid="materialized-at"
+            >
+              {detail.materializedAt === null
+                ? 'noch nicht'
+                : new Date(detail.materializedAt).toLocaleString('de-DE')}
+            </dd>
+          </div>
         </dl>
       ) : null}
     </section>
@@ -326,7 +348,7 @@ function PageProperties({ workspaceId, detail }: { workspaceId: string; detail: 
       <CoverSection workspaceId={workspaceId} detail={detail} readOnly={readOnly} />
 
       <section className="flex flex-col gap-1.5">
-        <h3 className="text-xs font-medium text-muted-foreground">KI-Regel</h3>
+        <SectionRule as="h3">KI-Regel</SectionRule>
         {detail.aiRuleMode === 'off' ? (
           <p className="text-xs text-muted-foreground">
             Diese Seite steuert die KI nicht.{' '}
@@ -428,16 +450,16 @@ function CollectionProperties({ detail }: { detail: DocumentDetail }) {
       </div>
 
       <section className="flex flex-col gap-1.5">
-        <h3 className="text-xs font-medium text-muted-foreground">
-          Eigenschaften {properties.data === undefined ? '' : `(${properties.data.length})`}
-        </h3>
+        <SectionRule as="h3" trailing={properties.data?.length}>
+          Eigenschaften
+        </SectionRule>
         {propertiesSection}
       </section>
 
       <section className="flex flex-col gap-1.5">
-        <h3 className="text-xs font-medium text-muted-foreground">
-          Ansichten {views.data === undefined ? '' : `(${views.data.length})`}
-        </h3>
+        <SectionRule as="h3" trailing={views.data?.length}>
+          Ansichten
+        </SectionRule>
         {viewsSection}
       </section>
 

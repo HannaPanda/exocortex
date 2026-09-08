@@ -222,7 +222,18 @@ export function PageTreeRow({
       </ContextMenu>
 
       {isOpen && hasChildren ? (
-        <ul>
+        // The guide runs down the parent's own chevron column, so an unfolded
+        // branch reads as a branch rather than as rows that happen to start
+        // further right. It matters most exactly where the tree is hardest:
+        // several levels deep, where indentation alone stops being countable.
+        // `--signal-line`, because it describes the shape of the screen and is
+        // not something you can act on.
+        <ul className="relative">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 w-px bg-signal-line"
+            style={{ left: `${depth * 0.75 + 0.875}rem` }}
+          />
           {node.children.map((child) => (
             <PageTreeRow key={child.id} node={child} depth={depth + 1} context={context} />
           ))}
