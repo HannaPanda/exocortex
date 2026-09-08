@@ -3,8 +3,9 @@
 eXocortex is reachable from external MCP clients (Hermes, Claude Code, ChatGPT,
 any client that speaks stdio or Streamable HTTP) and from its own built-in AI
 tool loop through the _same_ tool catalogue. This document covers the
-architecture, the two transports, the tool reference, how to add a tool,
-authentication, the confirmation gate, and how to configure a client.
+architecture, the two transports, the tool reference, the resources and prompts
+served beside it, how to add a tool, authentication, the confirmation gate, and
+how to configure a client.
 
 ## What it is
 
@@ -15,6 +16,8 @@ One catalogue, several surfaces:
   to the REST API through an injected `ExocortexApiClient`. It also owns the
   MCP method dispatch (`src/protocol.ts`), which is transport-free on purpose:
   both transports below run that same code and add only their own framing.
+  `src/resources.ts` and `src/prompts.ts` sit beside it and serve the halves of
+  the protocol a person drives rather than the model.
 - **`apps/mcp`** — a small stdio JSON-RPC bin. It builds a `fetch`-based
   `ExocortexApiClient` from environment variables and hands messages to the
   shared dispatcher. Started as a subprocess by the client.
@@ -79,9 +82,10 @@ The catalogue **only** talks REST. It never imports `@exocortex/database`,
    second place to keep in sync.
 
 `apps/mcp` hand-rolls the stdio JSON-RPC transport (`src/stdio.ts`) instead of
-depending on `@modelcontextprotocol/sdk`: the protocol surface needed is three
-methods plus `initialize`/`ping`, and owning the transport means owning stdout
-discipline completely, which the SDK does not guarantee out of the box.
+depending on `@modelcontextprotocol/sdk`: the protocol surface needed is a
+handful of methods around `initialize`/`ping`, and owning the transport means
+owning stdout discipline completely, which the SDK does not guarantee out of
+the box.
 
 ## Tool reference
 
@@ -197,6 +201,57 @@ endpoints, the `DELETE` `{ deleted: true }` shape) have no named export in
 `@exocortex/contracts` yet — it is frozen for this wave. They are defined
 locally in `packages/mcp-tools/src/local-schemas.ts`; folding them back into
 contracts is a follow-up for whichever wave next touches `packages/contracts`.
+
+## Resources and prompts
+
+Tools are what the _model_ calls. The other two halves of the protocol belong
+to the person in front of the client, and both are served since issue #48.
+
+**Resources** are what a client lets someone attach to a conversation before
+the model thinks at all. Until they existed, putting a page in front of a model
+meant describing it in prose and hoping the model reached for `exo_page_read`
+with the right argument.
+
+| URI                                        | What it returns                                                      |
+| ------------------------------------------ | -------------------------------------------------------------------- |
+| `exocortex://page/{documentId}`            | the page as Markdown, with its path and its direct children above it |
+| `exocortex://workspace/{workspaceId}/tree` | the page hierarchy as indented lines, each with its id               |
+
+`resources/list` names one tree per readable workspace plus the pages that
+workspace was last edited in (the overview endpoint answers with six per
+workspace, which is what caps the list). That listing is short on purpose;
+`resources/templates/list` is what makes the other several hundred pages
+addressable, with an id from `exo_search` or `exo_page_tree`.
+
+**Prompts** are how an MCP server gives a client slash commands. `prompts/list`
+answers with this deployment's AI rule pages — the same pages behind
+`exo_rules_list` — named after their title (`schreibstil-fuer-johanna`), and
+`prompts/get` returns the page as one `user` message. Rules with mode `off` are
+not offered. The content was already reachable as a tool; what this adds is
+that a _person_ can pick it, which is usually what a rule page wants.
+
+Three things about how this is built:
+
+- **The access check is the same one tools get.** Everything goes through the
+  REST API with the caller's own credential, so `/api/workspaces` already
+  answers with the readable workspaces and nothing else. A page somebody may
+  not read is not refused, it is absent: a listing must not leak a title, and
+  `resources/read` answers `-32002` for "you may not" and "does not exist"
+  alike, so the method cannot be used to probe for ids.
+- **Only the full surface serves them** (`context: true` in
+  `createMcpRequestHandler`). The research and memory endpoints exist because a
+  narrow catalogue is used better than a wide one; an attach menu of every
+  recent page would hand back the breadth they were carved out to avoid. A
+  surface without them still answers `resources/list` and `prompts/list` with
+  an empty array, because clients probe those on connect regardless.
+- **Both transports have them**, because both run the same dispatcher. That is
+  the whole point of ADR-018.
+
+Not built: `resources/subscribe` and `notifications/resources/updated`. They
+need a server-initiated channel that neither transport opens today (stdio has
+the connection but no notifier; Streamable HTTP would need the SSE return leg
+this server deliberately does not open), so `initialize` announces
+`subscribe: false`. Part 3 of issue #48, separately.
 
 ## Recipe: adding a tool
 

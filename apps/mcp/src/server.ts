@@ -28,6 +28,9 @@ export function createRequestHandler(options: {
   return createMcpRequestHandler({
     client: options.client,
     tools: toolsFor('mcp'),
+    // This bin serves the full catalogue, so it also serves the half of the
+    // protocol a person drives: pages to attach and rule pages as prompts.
+    context: true,
     gate: options.gate,
     // The variable widens the gate rather than switching it on: the calls no
     // snapshot undoes are confirmed either way, and a deployment that wants the

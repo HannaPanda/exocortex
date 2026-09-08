@@ -1,5 +1,7 @@
 import { type ExocortexApiClient, ExocortexApiError } from './client.js';
 import { type WriteConfirmationGate } from './confirm.js';
+import { getMcpPrompt, listMcpPrompts } from './prompts.js';
+import { listMcpResources, listMcpResourceTemplates, readMcpResource } from './resources.js';
 import { type AnyToolDefinition, ToolInputValidationError } from './tool.js';
 
 /**
@@ -41,6 +43,8 @@ export const JSON_RPC_ERROR_CODES = {
   methodNotFound: -32601,
   invalidParams: -32602,
   internalError: -32603,
+  /** MCP's own code for `resources/read` on a URI this caller cannot have. */
+  resourceNotFound: -32002,
 } as const;
 
 /**
@@ -91,6 +95,17 @@ export interface McpRequestHandlerOptions {
    * gate instance serves every user of the deployment.
    */
   principal?: string;
+  /**
+   * Whether this connection also serves resources and prompts, the two halves
+   * of the protocol a *person* drives rather than the model.
+   *
+   * Off unless asked for, and asked for only on the full catalogue: the
+   * research and memory surfaces exist because a client handed everything
+   * reaches for the wrong thing, and an attach menu full of pages would undo
+   * exactly that. A surface that offers neither still answers both list calls
+   * truthfully with an empty array, so no handshake breaks.
+   */
+  context?: boolean;
   serverInfo?: { name: string; version: string };
   logger?: McpProtocolLogger;
 }
@@ -120,6 +135,7 @@ function toMcpResult(result: {
  */
 export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpRequestHandler {
   const { client, tools, gate, principal, logger } = options;
+  const context = options.context ?? false;
   const confirm = options.confirm ?? 'irreversible';
   const serverInfo = options.serverInfo ?? DEFAULT_SERVER_INFO;
   const byName = new Map(tools.map((tool) => [tool.name, tool]));
@@ -189,7 +205,20 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
         const known = SUPPORTED_PROTOCOL_VERSIONS.find((version) => version === asked);
         return respond({
           protocolVersion: known ?? LATEST_PROTOCOL_VERSION,
-          capabilities: { tools: { listChanged: false } },
+          // A client asks for nothing it was not offered here, so an
+          // unannounced capability is an unreachable one however well it works.
+          capabilities: {
+            tools: { listChanged: false },
+            ...(context
+              ? {
+                  // `subscribe: false`: change notifications are the third part
+                  // of issue #48 and need a server-initiated channel neither
+                  // transport opens today.
+                  resources: { subscribe: false, listChanged: false },
+                  prompts: { listChanged: false },
+                }
+              : {}),
+          },
           serverInfo,
         });
       }
@@ -215,17 +244,37 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
         return respond(toMcpResult(result));
       }
 
-      // Answered rather than refused: a client that advertises no capability
-      // for these still probes them on connect, and an empty list is a truthful
-      // answer that keeps the handshake from failing.
+      // Answered rather than refused even where this connection offers none:
+      // a client that advertises no capability for these still probes them on
+      // connect, and an empty list keeps the handshake from failing.
       case 'resources/list':
-        return respond({ resources: [] });
+        return respond({ resources: context ? await listMcpResources(client) : [] });
 
       case 'resources/templates/list':
-        return respond({ resourceTemplates: [] });
+        return respond({ resourceTemplates: context ? listMcpResourceTemplates() : [] });
+
+      case 'resources/read': {
+        const params = isRecord(request.params) ? request.params : {};
+        const uri = typeof params.uri === 'string' ? params.uri : '';
+        const contents = context ? await readMcpResource(client, uri) : null;
+        if (contents === null) {
+          return respondError(JSON_RPC_ERROR_CODES.resourceNotFound, `Resource not found: ${uri}`);
+        }
+        return respond(contents);
+      }
 
       case 'prompts/list':
-        return respond({ prompts: [] });
+        return respond({ prompts: context ? await listMcpPrompts(client) : [] });
+
+      case 'prompts/get': {
+        const params = isRecord(request.params) ? request.params : {};
+        const name = typeof params.name === 'string' ? params.name : '';
+        const prompt = context ? await getMcpPrompt(client, name) : null;
+        if (prompt === null) {
+          return respondError(JSON_RPC_ERROR_CODES.invalidParams, `Unknown prompt: ${name}`);
+        }
+        return respond(prompt);
+      }
 
       default:
         logger?.warn('Unknown MCP method', { method: request.method });

@@ -60,6 +60,7 @@ function handlerWith(options?: {
   gate?: WriteConfirmationGate;
   principal?: string;
   confirm?: 'irreversible' | 'all';
+  context?: boolean;
 }) {
   return createMcpRequestHandler({
     client: CLIENT,
@@ -67,6 +68,7 @@ function handlerWith(options?: {
     ...(options?.gate === undefined ? {} : { gate: options.gate }),
     ...(options?.principal === undefined ? {} : { principal: options.principal }),
     ...(options?.confirm === undefined ? {} : { confirm: options.confirm }),
+    ...(options?.context === undefined ? {} : { context: options.context }),
   });
 }
 
@@ -271,7 +273,7 @@ describe('createMcpRequestHandler', () => {
     );
   });
 
-  it('answers the capability probes a client sends on connect', async () => {
+  it('answers the capability probes a surface without them still gets', async () => {
     const handler = handlerWith();
     for (const [method, key] of [
       ['resources/list', 'resources'],
@@ -281,6 +283,51 @@ describe('createMcpRequestHandler', () => {
       const response = await handler({ jsonrpc: '2.0', id: 1, method });
       expect((response as { result: Record<string, unknown[]> }).result[key]).toEqual([]);
     }
+  });
+
+  it('announces resources and prompts only where it serves them', async () => {
+    const initialize = { jsonrpc: '2.0', id: 1, method: 'initialize' } as const;
+    const capabilitiesOf = async (context: boolean): Promise<Record<string, unknown>> => {
+      const response = await handlerWith({ context })(initialize);
+      return (response as { result: { capabilities: Record<string, unknown> } }).result
+        .capabilities;
+    };
+
+    // An unannounced capability is an unreachable one: no client asks for
+    // what the handshake did not offer.
+    expect(await capabilitiesOf(false)).toEqual({ tools: { listChanged: false } });
+    expect(await capabilitiesOf(true)).toEqual({
+      tools: { listChanged: false },
+      resources: { subscribe: false, listChanged: false },
+      prompts: { listChanged: false },
+    });
+  });
+
+  it('serves the URI templates once resources are switched on', async () => {
+    const response = await handlerWith({ context: true })({
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'resources/templates/list',
+    });
+    const { resourceTemplates } = (
+      response as { result: { resourceTemplates: { uriTemplate: string }[] } }
+    ).result;
+    expect(resourceTemplates.map((template) => template.uriTemplate)).toEqual([
+      'exocortex://page/{documentId}',
+      'exocortex://workspace/{workspaceId}/tree',
+    ]);
+  });
+
+  it('refuses a resource URI it does not own, without reaching the API', async () => {
+    const response = await handlerWith({ context: true })({
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'resources/read',
+      params: { uri: 'file:///etc/passwd' },
+    });
+    expect((response as { error: { code: number } }).error.code).toBe(
+      JSON_RPC_ERROR_CODES.resourceNotFound,
+    );
   });
 
   it('reports an unknown method as method-not-found', async () => {

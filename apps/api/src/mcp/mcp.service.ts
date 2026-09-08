@@ -209,6 +209,11 @@ export class McpService {
     return createMcpRequestHandler({
       client,
       tools: toolsFor(surface),
+      // Resources and prompts only on the full surface. The research and
+      // memory endpoints exist because a narrow catalogue is used better than
+      // a wide one; handing them an attach menu of every recent page would
+      // give back exactly the breadth they were carved out to avoid.
+      context: surface === 'mcp',
       gate: this.gate,
       // `mcp.writeConfirmationRequired` widens the gate to every write. It was
       // written, shown in the admin area and documented, and then read by

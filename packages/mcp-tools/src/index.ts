@@ -1,5 +1,7 @@
 export * from './catalog.js';
 export * from './client.js';
 export * from './confirm.js';
+export * from './prompts.js';
 export * from './protocol.js';
+export * from './resources.js';
 export * from './tool.js';
