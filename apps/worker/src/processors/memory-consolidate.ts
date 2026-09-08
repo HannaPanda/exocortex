@@ -254,35 +254,49 @@ export function parseVerdicts(answer: string, noteIds: ReadonlySet<string>): Mem
   const touched = new Set<string>();
 
   for (const rawLine of answer.split('\n')) {
-    const parts = rawLine.split('|').map((part) => part.trim());
-    if (parts.length < 4) continue;
+    const verdict = readVerdictLine(rawLine);
+    if (verdict === null || !noteIds.has(verdict.noteId)) continue;
+    if ((perNote.get(verdict.noteId) ?? 0) >= MAX_VERDICTS_PER_NOTE) continue;
+    if (verdict.factId !== null && touched.has(verdict.factId)) continue;
 
-    const [rawKind, noteId, rawFactId, rawStatement] = parts as [string, string, string, string];
-    const kind = VERDICT_KINDS[rawKind.toUpperCase()];
-    if (kind === undefined) continue;
-    if (!noteIds.has(noteId)) continue;
-    if ((perNote.get(noteId) ?? 0) >= MAX_VERDICTS_PER_NOTE) continue;
-
-    const factId = rawFactId === '-' || rawFactId.length === 0 ? null : rawFactId;
-    const statement = rawStatement === '-' || rawStatement.length === 0 ? null : rawStatement;
-
-    if (kind === 'discard') continue;
-    if ((kind === 'new' || kind === 'supersedes') && statement === null) continue;
-    if (kind !== 'new' && factId === null) continue;
-    if (factId !== null && touched.has(factId)) continue;
-
-    if (factId !== null) touched.add(factId);
-    perNote.set(noteId, (perNote.get(noteId) ?? 0) + 1);
-    verdicts.push({
-      kind,
-      noteId,
-      factId,
-      statement: statement === null ? null : trimStatement(statement),
-      detail: '',
-    });
+    if (verdict.factId !== null) touched.add(verdict.factId);
+    perNote.set(verdict.noteId, (perNote.get(verdict.noteId) ?? 0) + 1);
+    verdicts.push(verdict);
   }
 
   return verdicts;
+}
+
+/**
+ * One line, as far as it can be read on its own.
+ *
+ * Everything decidable from the line alone happens here: the shape, the
+ * vocabulary, and whether the verdict carries what its kind needs. What the
+ * line cannot know, whether the note is real and whether something was already
+ * said about this fact, stays with the caller.
+ */
+function readVerdictLine(rawLine: string): MemoryFactVerdict | null {
+  const parts = rawLine.split('|').map((part) => part.trim());
+  if (parts.length < 4) return null;
+
+  const [rawKind, noteId, rawFactId, rawStatement] = parts as [string, string, string, string];
+  const kind = VERDICT_KINDS[rawKind.toUpperCase()];
+  // `discard` is read and then dropped: it is the model saying there is nothing
+  // here, and the note is marked as read by the batch, not by a verdict.
+  if (kind === undefined || kind === 'discard') return null;
+
+  const factId = rawFactId === '-' || rawFactId.length === 0 ? null : rawFactId;
+  const statement = rawStatement === '-' || rawStatement.length === 0 ? null : rawStatement;
+  if ((kind === 'new' || kind === 'supersedes') && statement === null) return null;
+  if (kind !== 'new' && factId === null) return null;
+
+  return {
+    kind,
+    noteId,
+    factId,
+    statement: statement === null ? null : trimStatement(statement),
+    detail: '',
+  };
 }
 
 /**
