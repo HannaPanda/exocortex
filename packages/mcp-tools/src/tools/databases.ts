@@ -14,6 +14,8 @@ import {
   databaseRowSchema,
   databaseViewSchema,
   documentDetailSchema,
+  documentIconColorSchema,
+  documentIconSchema,
   type DocumentRowResponse,
   documentRowResponseSchema,
   documentSummarySchema,
@@ -34,6 +36,8 @@ import {
   deletedResultSchema,
 } from '../local-schemas.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
+
+import { ICON_COLOR_DESCRIPTION, ICON_DESCRIPTION } from './pages.js';
 
 /**
  * The query engine and property-write endpoint only implement a subset of the
@@ -57,6 +61,15 @@ const databaseCreateInputSchema = z.object({
   workspaceId: idSchema,
   title: documentTitleSchema.optional(),
   parentId: idSchema.nullable().optional(),
+  /**
+   * A database carries a symbol like any other page. It is here because
+   * `exo_page_create` stopped taking a `type` (issue #41): a caller that used
+   * to reach a database through that tool would otherwise have lost the symbol
+   * on the way over, and would need a second call to `exo_page_rename` to put
+   * it back.
+   */
+  icon: documentIconSchema.describe(ICON_DESCRIPTION),
+  iconColor: documentIconColorSchema.describe(ICON_COLOR_DESCRIPTION),
   properties: z.array(createDatabaseRequestPropertySchema).default([]),
 });
 
@@ -71,7 +84,13 @@ export const databaseCreateTool: AnyToolDefinition = defineTool({
     const document = await client.request({
       method: 'POST',
       path: `/api/workspaces/${input.workspaceId}/documents`,
-      body: { title: input.title, parentId: input.parentId, type: 'COLLECTION' },
+      body: {
+        title: input.title,
+        parentId: input.parentId,
+        type: 'COLLECTION',
+        icon: input.icon,
+        iconColor: input.iconColor,
+      },
       responseSchema: documentSummarySchema,
     });
 

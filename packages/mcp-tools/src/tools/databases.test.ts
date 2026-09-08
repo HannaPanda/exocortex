@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { type ExocortexApiClient } from '../client.js';
 
-import { databaseRowGetTool, databaseSchemaTool } from './databases.js';
+import { databaseCreateTool, databaseRowGetTool, databaseSchemaTool } from './databases.js';
 
 interface RecordedCall {
   kind: 'request' | 'upload';
@@ -178,5 +178,40 @@ describe('databaseSchemaTool', () => {
     expect(result.text).toContain('Titel');
     expect(result.text).toContain('Tabelle');
     expect((result.data as { rowCount: number | null }).rowCount).toBe(3);
+  });
+});
+
+describe('databaseCreateTool', () => {
+  it('creates the collection with its symbol, so no second call is needed', async () => {
+    // `exo_page_create` used to be the way to a database with a symbol, via a
+    // `type` it silently ignored (issue #41). The symbol has to arrive here
+    // now, in the one call that also creates the columns.
+    const { client, calls } = createFakeClient({
+      ...rowDocument,
+      id: 'col1234567',
+      parentId: null,
+      type: 'COLLECTION' as const,
+      title: 'Aufgaben',
+      icon: 'lucide:list-todo',
+      iconColor: 'yellow',
+    });
+
+    const result = await databaseCreateTool.run(client, {
+      workspaceId: 'ws1234567',
+      title: 'Aufgaben',
+      icon: 'lucide:list-todo',
+      iconColor: 'yellow',
+    });
+
+    expect(calls).toHaveLength(1);
+    expect(calls[0]?.path).toBe('/api/workspaces/ws1234567/documents');
+    expect(calls[0]?.body).toEqual({
+      title: 'Aufgaben',
+      parentId: undefined,
+      type: 'COLLECTION',
+      icon: 'lucide:list-todo',
+      iconColor: 'yellow',
+    });
+    expect(result.text).toContain('Aufgaben');
   });
 });

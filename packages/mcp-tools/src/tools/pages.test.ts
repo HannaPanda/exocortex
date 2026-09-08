@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { type ExocortexApiClient } from '../client.js';
+import { ToolInputValidationError } from '../tool.js';
 
 import { pageArchiveTool, pageDeleteTool, pageTrashTool } from './page-lifecycle.js';
 import {
@@ -144,7 +145,6 @@ describe('pageCreateTool', () => {
       icon: 'lucide:cpu',
       iconColor: 'purple',
       markdown: '# Test\n\nInhalt',
-      type: 'PAGE',
     });
 
     expect(calls).toEqual([
@@ -173,11 +173,48 @@ describe('pageCreateTool', () => {
       title: 'Test',
       icon: 'lucide:cpu',
       iconColor: 'purple',
-      type: 'PAGE',
     });
 
     expect(calls[0]?.path).toBe('/api/workspaces/ws1234567/documents');
-    expect(calls[0]?.body).toMatchObject({ icon: 'lucide:cpu', iconColor: 'purple' });
+    expect(calls[0]?.body).toMatchObject({
+      icon: 'lucide:cpu',
+      iconColor: 'purple',
+      type: 'PAGE',
+    });
+  });
+
+  it('refuses a database instead of quietly making a page of it', async () => {
+    // The failure this pins: `type: 'COLLECTION'` together with `markdown` went
+    // through the import endpoint, which hardcodes `PAGE`. The call reported
+    // success and the database was an ordinary page. Dropping the field would
+    // have kept the silence -- zod strips what it does not know -- so the
+    // schema refuses the key and the caller is sent to `exo_database_create`.
+    const { client, calls } = createFakeClient({ document: summary(null, null) });
+
+    await expect(
+      pageCreateTool.run(client, {
+        workspaceId: 'ws1234567',
+        title: 'Aufgaben',
+        type: 'COLLECTION',
+        markdown: '# Aufgaben',
+      }),
+    ).rejects.toThrow(ToolInputValidationError);
+    expect(calls).toEqual([]);
+  });
+
+  it('refuses an invented field instead of creating an empty page', async () => {
+    // Same silence, other key: a model that sends the content as `content`
+    // used to get a page with nothing in it and a success message.
+    const { client, calls } = createFakeClient(summary(null, null));
+
+    await expect(
+      pageCreateTool.run(client, {
+        workspaceId: 'ws1234567',
+        title: 'Test',
+        content: '# Test\n\nInhalt',
+      }),
+    ).rejects.toThrow(ToolInputValidationError);
+    expect(calls).toEqual([]);
   });
 });
 

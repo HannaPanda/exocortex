@@ -14,7 +14,6 @@ import {
   documentTitleSchema,
   documentTreeRequestSchema,
   documentTreeResponseSchema,
-  documentTypeSchema,
   generateDocumentCoverResponseSchema,
   idSchema,
   markdownExportResponseSchema,
@@ -47,13 +46,13 @@ const MAX_PAGE_READ_CHARS = 60_000;
  * so a name added to it reaches the model in the same commit, and the sentence
  * before it tells a caller that the shortlist is not the limit.
  */
-const ICON_DESCRIPTION =
+export const ICON_DESCRIPTION =
   'Symbol der Seite: entweder ein Emoji als Zeichen ("🧠") oder ein gezeichnetes Symbol ' +
   'als "lucide:<name>", wobei jeder Icon-Name von lucide.dev erlaubt ist ' +
   '(kebab-case, z. B. "lucide:rocket"). Gebräuchlich sind: ' +
   `${DOCUMENT_ICON_NAMES.join(', ')}. null entfernt das Symbol.`;
 
-const ICON_COLOR_DESCRIPTION =
+export const ICON_COLOR_DESCRIPTION =
   `Farbe eines gezeichneten Symbols: ${DOCUMENT_ICON_COLORS.join(', ')}. ` +
   'Wirkt nur auf "lucide:"-Symbole, ein Emoji bringt seine eigenen Farben mit. ' +
   'null bedeutet die Standardfarbe.';
@@ -197,11 +196,25 @@ export const pageReadTool: AnyToolDefinition = defineTool({
   },
 });
 
-const pageCreateInputSchema = z.object({
+/**
+ * Strict on purpose, and the one tool in the catalogue that is (issue #41).
+ *
+ * This tool used to take a `type`, which the Markdown branch below then dropped
+ * on the floor: the call reported success and made an ordinary page where a
+ * database was asked for. Deleting the field alone would not have ended that,
+ * it would only have moved it one layer up -- zod strips a key it does not
+ * know, so `type: 'COLLECTION'` would still have produced a page without a
+ * word. Refusing unknown keys is what actually makes the loss impossible, and
+ * it catches the same silence for every field a caller invents: `content`,
+ * `body`, `emoji`. Those create an empty page today.
+ *
+ * Databases are created by `exo_database_create`, which also gives them their
+ * first columns -- a bare `COLLECTION` document is only half a database.
+ */
+const pageCreateInputSchema = z.strictObject({
   workspaceId: idSchema,
   title: documentTitleSchema.optional(),
   parentId: idSchema.nullable().optional(),
-  type: documentTypeSchema.default('PAGE'),
   icon: documentIconSchema.describe(ICON_DESCRIPTION),
   iconColor: documentIconColorSchema.describe(ICON_COLOR_DESCRIPTION),
   /** When given, the page is created from Markdown via the import path. */
@@ -211,7 +224,9 @@ const pageCreateInputSchema = z.object({
 export const pageCreateTool: AnyToolDefinition = defineTool({
   name: 'exo_page_create',
   description:
-    'Legt eine neue Seite in einem Workspace an, optional mit initialem Markdown-Inhalt.',
+    'Legt eine neue Seite in einem Workspace an, optional mit initialem Markdown-Inhalt. ' +
+    'Nur gewöhnliche Seiten: eine Datenbank (Notion-artige Tabelle) legt exo_database_create an, ' +
+    'samt Startspalten.',
   inputSchema: pageCreateInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,
@@ -242,7 +257,7 @@ export const pageCreateTool: AnyToolDefinition = defineTool({
       body: {
         title: input.title,
         parentId: input.parentId,
-        type: input.type,
+        type: 'PAGE',
         icon: input.icon,
         iconColor: input.iconColor,
       },
