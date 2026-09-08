@@ -57,17 +57,48 @@ describe('parseVerdicts', () => {
     expect(parsed).toEqual([]);
   });
 
-  it('keeps only the first line about a note', () => {
+  it('lets one note say several things', () => {
+    // A distilled note holds three to eight bullet points. Forcing it into one
+    // statement is what produced the 200-character run-on sentences the first
+    // live run wrote.
+    const parsed = parseVerdicts(
+      [
+        'NEU | note1 | - | Der Dienst hört auf Port 3211.',
+        'NEU | note1 | - | Die Backups laufen alle sechs Stunden.',
+      ].join('\n'),
+      NOTES,
+    );
+    expect(parsed).toHaveLength(2);
+  });
+
+  it('caps one note at four statements', () => {
+    const parsed = parseVerdicts(
+      Array.from({ length: 6 }, (_, index) => `NEU | note1 | - | Aussage ${index}.`).join('\n'),
+      NOTES,
+    );
+    expect(parsed).toHaveLength(4);
+  });
+
+  it('keeps only the first line about any one fact', () => {
     // A model that both confirms and replaces the same thing has lost the
     // thread; applying both would leave the memory holding two answers.
     const parsed = parseVerdicts(
-      ['BESTAETIGT | note1 | fact1 | -', 'ERSETZT | note1 | fact1 | Etwas anderes gilt.'].join(
+      ['BESTAETIGT | note1 | fact1 | -', 'ERSETZT | note2 | fact1 | Etwas anderes gilt.'].join(
         '\n',
       ),
       NOTES,
     );
     expect(parsed).toHaveLength(1);
     expect(parsed[0]?.kind).toBe('confirms');
+  });
+
+  it('cuts an over-long statement at a word boundary', () => {
+    const long = `Die Anwendung ${'sehr '.repeat(40)}lang.`;
+    const parsed = parseVerdicts(`NEU | note1 | - | ${long}`, NOTES);
+    const statement = parsed[0]?.statement ?? '';
+    expect(statement.length).toBeLessThanOrEqual(161);
+    // "sehr…" rather than "se…": half a word in a page title reads as a bug.
+    expect(statement.endsWith('sehr…')).toBe(true);
   });
 
   it('ignores prose the model wrapped its answer in', () => {

@@ -25,24 +25,44 @@ import { type JobContext } from '@exocortex/queue';
 const JUDGE_PROMPT = [
   'Du pflegst das Faktenwissen eines Agenten über ein Projekt.',
   'Du bekommst bekannte Fakten mit ihrer Id und neue Sitzungsnotizen mit ihrer Id.',
-  'Entscheide für jede Notiz, was sie mit dem Faktenwissen macht.',
+  'Eine Notiz erzählt, was jemand getan hat. Du destillierst daraus, was seitdem gilt.',
   '',
-  'Antworte ausschließlich mit Zeilen in diesem Format, eine Zeile je Entscheidung:',
-  'NEU | <notizId> | - | <Aussage in einem Satz>',
+  'Antworte ausschließlich mit Zeilen in diesem Format, eine Zeile je Aussage:',
+  'NEU | <notizId> | - | <eine Aussage>',
   'BESTAETIGT | <notizId> | <faktId> | -',
-  'ERSETZT | <notizId> | <faktId> | <neue Aussage in einem Satz>',
+  'ERSETZT | <notizId> | <faktId> | <neue Aussage>',
   'WIDERSPRUCH | <notizId> | <faktId> | -',
   'NICHTS | <notizId> | - | -',
   '',
+  'So sieht eine Aussage aus:',
+  '- Ein kurzer Satz im Präsens über den jetzigen Zustand, höchstens 120 Zeichen.',
+  '- Genau eine Sache je Aussage. Steckt ein zweites Thema hinter einem "und" oder',
+  '  einem Komma, sind es zwei Aussagen und gehören in zwei Zeilen.',
+  '- Kein Arbeitsbericht. Nicht "Issue 33 ist umgesetzt", sondern was seitdem gilt:',
+  '  "Die Nachbarsuche liegt auf GET /api/documents/:id/related und schreibt nichts."',
+  '- Ohne Datum, ohne "wir haben", ohne "wurde".',
+  '',
   'Regeln:',
+  '- Eine Notiz darf mehrere Zeilen ergeben, höchstens vier. Nimm die haltbarsten.',
   '- Sagt eine Notiz etwas, das ein bekannter Fakt schon sagt: BESTAETIGT, niemals NEU.',
   '- Sagt sie, dass ein bekannter Fakt nicht mehr gilt und was stattdessen gilt: ERSETZT.',
   '- Steht sie im Widerspruch zu einem Fakt, ohne dass klar ist, was gilt: WIDERSPRUCH.',
-  '- Beschreibt sie nur, was jemand getan hat, statt was gilt: NICHTS.',
-  '- Eine Aussage ist ein Satz im Präsens, ohne Datum, ohne "wir haben".',
-  '- Höchstens eine Zeile je Notiz. Erfinde keine Ids.',
+  '- Enthält sie nichts, das über die Sitzung hinaus gilt: NICHTS, eine Zeile, sonst nichts.',
+  '- Erfinde keine Ids.',
   '- Keine Gedankenstriche: Punkt, Komma, Doppelpunkt oder Klammern.',
 ].join('\n');
+
+/**
+ * Statements one note may produce.
+ *
+ * A distilled note holds three to eight bullet points and rarely says only one
+ * thing. Forcing it into a single statement is how the first run produced
+ * 200-character run-on sentences that answer nothing; four is enough for a
+ * session and few enough that a chatty model cannot flood the memory.
+ */
+const MAX_VERDICTS_PER_NOTE = 4;
+/** Longest statement kept. Beyond this it is a paragraph, not a claim. */
+const MAX_STATEMENT_CHARS = 160;
 
 /** Characters of one note handed to the judge. Enough for a distilled note. */
 const MAX_NOTE_CHARS = 2_000;
@@ -220,15 +240,18 @@ function renderJudgeInput(
 /**
  * Reads the judge's answer back into verdicts.
  *
- * Strict where a mistake would be silent and forgiving where it would not: a
+ * Strict where a mistake would be silent and forgiving where it would not. A
  * line naming a note outside the batch is dropped here rather than sent on to
- * be counted as rejected, and a second line about the same note is dropped
- * because a note that both confirms and replaces something is a model that has
- * lost the thread.
+ * be counted as rejected, because nothing downstream can tell it from a real
+ * one. A note may say several things, up to `MAX_VERDICTS_PER_NOTE`, but only
+ * one of them about any single fact: a model that confirms and replaces the
+ * same fact in one breath has lost the thread, and applying both would leave
+ * the memory holding two answers.
  */
 export function parseVerdicts(answer: string, noteIds: ReadonlySet<string>): MemoryFactVerdict[] {
   const verdicts: MemoryFactVerdict[] = [];
-  const seen = new Set<string>();
+  const perNote = new Map<string, number>();
+  const touched = new Set<string>();
 
   for (const rawLine of answer.split('\n')) {
     const parts = rawLine.split('|').map((part) => part.trim());
@@ -237,29 +260,44 @@ export function parseVerdicts(answer: string, noteIds: ReadonlySet<string>): Mem
     const [rawKind, noteId, rawFactId, rawStatement] = parts as [string, string, string, string];
     const kind = VERDICT_KINDS[rawKind.toUpperCase()];
     if (kind === undefined) continue;
-    if (!noteIds.has(noteId) || seen.has(noteId)) continue;
+    if (!noteIds.has(noteId)) continue;
+    if ((perNote.get(noteId) ?? 0) >= MAX_VERDICTS_PER_NOTE) continue;
 
     const factId = rawFactId === '-' || rawFactId.length === 0 ? null : rawFactId;
     const statement = rawStatement === '-' || rawStatement.length === 0 ? null : rawStatement;
 
-    if (kind === 'discard') {
-      seen.add(noteId);
-      continue;
-    }
+    if (kind === 'discard') continue;
     if ((kind === 'new' || kind === 'supersedes') && statement === null) continue;
     if (kind !== 'new' && factId === null) continue;
+    if (factId !== null && touched.has(factId)) continue;
 
-    seen.add(noteId);
+    if (factId !== null) touched.add(factId);
+    perNote.set(noteId, (perNote.get(noteId) ?? 0) + 1);
     verdicts.push({
       kind,
       noteId,
       factId,
-      statement: statement?.slice(0, 200) ?? null,
+      statement: statement === null ? null : trimStatement(statement),
       detail: '',
     });
   }
 
   return verdicts;
+}
+
+/**
+ * A statement, cut at a word boundary if it has to be cut at all.
+ *
+ * The first run produced sentences ending in "sowie gemeinsa", because a hard
+ * slice lands wherever it lands. A statement is a page title and a person reads
+ * it; half a word is worse than a missing clause.
+ */
+function trimStatement(statement: string): string {
+  if (statement.length <= MAX_STATEMENT_CHARS) return statement;
+  const cut = statement.slice(0, MAX_STATEMENT_CHARS);
+  const lastSpace = cut.lastIndexOf(' ');
+  const kept = lastSpace > MAX_STATEMENT_CHARS / 2 ? cut.slice(0, lastSpace) : cut;
+  return `${kept.trimEnd()}…`;
 }
 
 const VERDICT_KINDS: Record<string, MemoryFactVerdict['kind'] | undefined> = {
