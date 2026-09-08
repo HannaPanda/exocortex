@@ -217,6 +217,40 @@ model then reasons about (ADR-012). Resolution order, in
 
 The seeded companion for the text-only models is `qwen/qwen3.7-flash`.
 
+## AI usage: what it costs and how reliably it answers
+
+`/admin/nutzung`, behind `GET /api/admin/ai-usage?from=…&to=…` and the MCP tool
+`exo_ai_usage` (issue #10). Everything on it is derived from `ai_run` over the
+requested window: run counts per status, success rate, cost, tokens in and out,
+median and 95th-percentile duration, a breakdown per model, an error-code table
+and a daily series stacked by outcome. The range defaults to thirty days and may
+not exceed a year.
+
+Three decisions are worth knowing before reading the numbers.
+
+**Cost is two figures, never one.** `providerCostMicroUsd` is what the provider
+reported; `estimatedCostMicroUsd` is what the model registry's prices say the
+run cost, and it is written only when the provider reported nothing. They are
+kept in separate columns and shown separately, because a total made only of
+reported costs counts every unreported run as free — which was the state before
+this view existed. A run that names a model the registry does not hold appears
+as `unpricedRuns`: no price from either side, and no invented one.
+
+**A cancelled run is not a failure.** It counts in neither half of the success
+rate and does not appear in the error table. Somebody pressing stop says nothing
+about whether the AI works, and counting it would make a deployment look worse
+the more its users change their minds.
+
+**The figures are columns, not JSON.** Before issue #10 everything lived inside
+`AiRun.usage`, where each question needed a cast and no index helped. The five
+figures are columns now; `usage` stays for provider-specific extras. Old rows
+were carried over by the migration, except for the estimate, which needs the
+price at the time of the run and cannot be recovered after the fact.
+
+Retention: `ai.runPayloadRetentionDays` empties the prompt and answer of old
+runs while keeping their figures, so the history stays cheap. See
+`prune-ai-run-payloads` in `docs/background-jobs.md`.
+
 ## Connections: API tokens and connected applications
 
 Long-lived bearer credentials for external clients (the MCP server, scripts,

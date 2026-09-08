@@ -162,6 +162,7 @@ change as dangerous only trains people to click past the warnings that matter.
 | `exo_rules_load`                | no       | no          | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars)                                                                                                                                                                                                                                                                                                                                                                                 |
 | `exo_ai_run_get`                | no       | no          | `GET /api/ai/runs/:runId` -- status, model, `heartbeatAt`, tool rounds, error code and the answer so far (capped at 2,000 chars)                                                                                                                                                                                                                                                                                                                          |
 | `exo_ai_run_cancel`             | yes      | no          | `POST /api/ai/runs/:runId/cancel` -- refuses a run that has already finished                                                                                                                                                                                                                                                                                                                                                                              |
+| `exo_ai_usage`                  | no       | no          | `GET /api/admin/ai-usage` -- the deployment's AI usage over a range: runs by status, success rate, cost with the reported and estimated halves kept apart, tokens, duration percentiles, per model and per error code (issue #10). Needs admin rights                                                                                                                                                                                                     |
 | `exo_invitation_list`           | no       | no          | `GET /api/admin/invitations`, or `GET /api/workspaces/:workspaceId/invitations` when `workspaceId` is given                                                                                                                                                                                                                                                                                                                                               |
 | `exo_invitation_create`         | yes      | no          | `POST /api/admin/invitations` or `POST /api/workspaces/:workspaceId/invitations`, chosen by `via` -- the link is in the response only, and `emailSent: false` means it has to be handed over by hand                                                                                                                                                                                                                                                      |
 | `exo_invitation_resend`         | yes      | yes         | `POST …/invitations/:invitationId/resend` -- rotates the token, so the previous link dies                                                                                                                                                                                                                                                                                                                                                                 |
@@ -685,9 +686,13 @@ that nginx rule is added.
   somebody else's chat, and it is the whole point of that issue that the
   answer must be reachable from outside the browser panel too. Hence
   `exo_ai_run_get` and `exo_ai_run_cancel` — and hence both are declared
-  `surfaces: ['mcp']` and are the only tools in the catalogue that the
+  `surfaces: ['mcp']` and are among the tools in the catalogue that the
   built-in AI does not get. A tool loop with a cancel button has, first of
   all, the button that cancels itself.
+
+  `exo_ai_usage` (issue #10) is `mcp`-only for the neighbouring reason: what it
+  reports on is the built-in AI itself, and a model able to read its own cost
+  ledger mid-run will spend tokens reasoning about the tokens it is spending.
 
 - **Two response shapes are defined locally, not in `@exocortex/contracts`.**
   See "Tool reference" above; `packages/contracts` was frozen for this wave.

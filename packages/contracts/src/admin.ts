@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { aiRunStatusSchema } from './ai';
 import { idSchema, isoDateTimeSchema } from './primitives';
 
 /**
@@ -53,6 +54,114 @@ export const adminOverviewResponseSchema = z.object({
   apiTokenCount: z.number().int(),
 });
 export type AdminOverviewResponse = z.infer<typeof adminOverviewResponseSchema>;
+
+/**
+ * The AI usage view (issue #10).
+ *
+ * Everything below is derived from `ai_run` alone, over a time range the caller
+ * picks. The overview above keeps its two 24-hour counters; this is the
+ * separate question of what the AI actually costs and how reliably it answers.
+ */
+export const aiUsageQuerySchema = z.object({
+  /** Inclusive lower bound. Defaults to thirty days back. */
+  from: isoDateTimeSchema.optional(),
+  /** Exclusive upper bound. Defaults to now. */
+  to: isoDateTimeSchema.optional(),
+});
+export type AiUsageQuery = z.infer<typeof aiUsageQuerySchema>;
+
+/**
+ * Money, split by where the figure came from.
+ *
+ * `measured` is what providers reported; `estimated` is what the price list
+ * says the rest of the runs cost. They are never added up silently, because a
+ * total that mixes the two hides the fact that half of it is arithmetic --
+ * and a total made only of `measured` quietly counts unreported runs as free,
+ * which is the bug this split exists to prevent.
+ */
+export const aiUsageCostSchema = z.object({
+  measuredMicroUsd: z.number().int().nonnegative(),
+  estimatedMicroUsd: z.number().int().nonnegative(),
+  /** Runs whose cost the provider reported. */
+  measuredRuns: z.number().int().nonnegative(),
+  /** Runs priced from the model registry instead. */
+  estimatedRuns: z.number().int().nonnegative(),
+  /** Runs with usage but no price anywhere -- neither reported nor estimable. */
+  unpricedRuns: z.number().int().nonnegative(),
+});
+export type AiUsageCost = z.infer<typeof aiUsageCostSchema>;
+
+export const aiUsageTokensSchema = z.object({
+  input: z.number().int().nonnegative(),
+  output: z.number().int().nonnegative(),
+  /** Subset of `input` the provider served from its prompt cache. */
+  cachedInput: z.number().int().nonnegative(),
+});
+export type AiUsageTokens = z.infer<typeof aiUsageTokensSchema>;
+
+/** Run counts per terminal (and non-terminal) status, all six of them. */
+export const aiUsageStatusCountsSchema = z.record(
+  aiRunStatusSchema,
+  z.number().int().nonnegative(),
+);
+export type AiUsageStatusCounts = z.infer<typeof aiUsageStatusCountsSchema>;
+
+export const aiUsageModelRowSchema = z.object({
+  model: z.string(),
+  provider: z.string(),
+  /** The registry's display name, or null for a model the registry no longer holds. */
+  displayName: z.string().nullable(),
+  runs: z.number().int().nonnegative(),
+  completedRuns: z.number().int().nonnegative(),
+  failedRuns: z.number().int().nonnegative(),
+  tokens: aiUsageTokensSchema,
+  cost: aiUsageCostSchema,
+  /** Milliseconds, over the runs that recorded a duration. Null when none did. */
+  medianDurationMs: z.number().int().nonnegative().nullable(),
+  toolIterations: z.number().int().nonnegative(),
+});
+export type AiUsageModelRow = z.infer<typeof aiUsageModelRowSchema>;
+
+export const aiUsageErrorRowSchema = z.object({
+  /** Null groups the runs that ended badly without naming a code. */
+  errorCode: z.string().nullable(),
+  runs: z.number().int().nonnegative(),
+  lastSeenAt: isoDateTimeSchema,
+});
+export type AiUsageErrorRow = z.infer<typeof aiUsageErrorRowSchema>;
+
+export const aiUsageDaySchema = z.object({
+  /** Calendar day in the server's timezone, `YYYY-MM-DD`. */
+  date: z.string(),
+  runs: z.number().int().nonnegative(),
+  byStatus: aiUsageStatusCountsSchema,
+  costMicroUsd: z.number().int().nonnegative(),
+});
+export type AiUsageDay = z.infer<typeof aiUsageDaySchema>;
+
+export const aiUsageResponseSchema = z.object({
+  from: isoDateTimeSchema,
+  to: isoDateTimeSchema,
+  runs: z.number().int().nonnegative(),
+  byStatus: aiUsageStatusCountsSchema,
+  /**
+   * Completed runs over runs that reached a terminal status. Cancelled runs
+   * are excluded from both halves: somebody pressing stop is not the system
+   * failing. Null when nothing finished in the range.
+   */
+  successRate: z.number().min(0).max(1).nullable(),
+  tokens: aiUsageTokensSchema,
+  cost: aiUsageCostSchema,
+  medianDurationMs: z.number().int().nonnegative().nullable(),
+  p95DurationMs: z.number().int().nonnegative().nullable(),
+  toolIterations: z.number().int().nonnegative(),
+  /** Runs whose prompt and answer the retention sweep has emptied. */
+  prunedRuns: z.number().int().nonnegative(),
+  byModel: z.array(aiUsageModelRowSchema),
+  byErrorCode: z.array(aiUsageErrorRowSchema),
+  daily: z.array(aiUsageDaySchema),
+});
+export type AiUsageResponse = z.infer<typeof aiUsageResponseSchema>;
 
 /**
  * What an API token is allowed to do. A token is a credential handed to a

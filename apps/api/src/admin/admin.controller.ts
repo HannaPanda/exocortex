@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
-import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
+import { ApiBody, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { type VerifiedSession } from '@exocortex/auth';
 import {
@@ -9,6 +9,10 @@ import {
   type AdminUserListResponse,
   adminUserListResponseSchema,
   adminUserSchema,
+  type AiUsageQuery,
+  aiUsageQuerySchema,
+  type AiUsageResponse,
+  aiUsageResponseSchema,
   type DeleteUserResponse,
   deleteUserResponseSchema,
   type SettingsResponse,
@@ -26,6 +30,7 @@ import { CurrentSession } from '../auth/session.guard';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
 import { AdminService } from './admin.service';
+import { AiUsageService } from './ai-usage.service';
 
 /**
  * Deployment-wide administration. `@AdminOnly()` on the class so no future
@@ -36,12 +41,32 @@ import { AdminService } from './admin.service';
 @AdminOnly()
 @Controller('api/admin')
 export class AdminController {
-  constructor(private readonly admin: AdminService) {}
+  constructor(
+    private readonly admin: AdminService,
+    private readonly aiUsage: AiUsageService,
+  ) {}
 
   @Get('overview')
   @ApiOkResponse({ schema: openApiResponseSchema(adminOverviewResponseSchema) })
   async overview(): Promise<AdminOverviewResponse> {
     return this.admin.overview();
+  }
+
+  /**
+   * The usage view's one endpoint (issue #10).
+   *
+   * Deliberately not folded into `overview`: that one is a handful of counters
+   * every admin page load asks for, this one aggregates a time range and is
+   * asked for only when somebody opens the page.
+   */
+  @Get('ai-usage')
+  @ApiQuery({ name: 'from', required: false, type: String })
+  @ApiQuery({ name: 'to', required: false, type: String })
+  @ApiOkResponse({ schema: openApiResponseSchema(aiUsageResponseSchema) })
+  async aiUsageReport(
+    @Query(zodPipe(aiUsageQuerySchema)) query: AiUsageQuery,
+  ): Promise<AiUsageResponse> {
+    return this.aiUsage.usage(query);
   }
 
   @Get('settings')

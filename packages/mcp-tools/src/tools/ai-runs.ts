@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
-import { type AiRun, aiRunSchema, idSchema } from '@exocortex/contracts';
+import {
+  type AiRun,
+  aiRunSchema,
+  type AiUsageCost,
+  type AiUsageResponse,
+  aiUsageResponseSchema,
+  idSchema,
+} from '@exocortex/contracts';
 
 import { truncateText } from '../format.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
@@ -97,4 +104,128 @@ export const aiRunCancelTool: AnyToolDefinition = defineTool({
   },
 });
 
-export const AI_RUN_TOOLS: readonly AnyToolDefinition[] = [aiRunGetTool, aiRunCancelTool];
+/** `$1,2345`, from the micro-USD integers the API deals in. */
+function formatMicroUsd(microUsd: number): string {
+  return `$${(microUsd / 1_000_000).toFixed(4)}`;
+}
+
+/**
+ * Money in one line, with the calculated part named.
+ *
+ * Same rule as the admin page: never silently add a reported figure to an
+ * estimated one. A model reading this should be able to say "about four
+ * dollars, half of it estimated" rather than quoting a total it cannot defend.
+ */
+function renderCost(cost: AiUsageCost): string {
+  const total = cost.measuredMicroUsd + cost.estimatedMicroUsd;
+  const notes: string[] = [];
+  if (cost.estimatedMicroUsd > 0) {
+    notes.push(`davon ${formatMicroUsd(cost.estimatedMicroUsd)} aus der Preisliste geschätzt`);
+  }
+  if (cost.unpricedRuns > 0) notes.push(`${String(cost.unpricedRuns)} Läufe ohne jeden Preis`);
+  return notes.length === 0
+    ? formatMicroUsd(total)
+    : `${formatMicroUsd(total)} (${notes.join(', ')})`;
+}
+
+function renderUsage(usage: AiUsageResponse): string {
+  const sections: string[] = [
+    [
+      `KI-Nutzung von ${usage.from} bis ${usage.to}`,
+      `Läufe: ${String(usage.runs)} (${String(usage.byStatus.completed)} erfolgreich, ` +
+        `${String(usage.byStatus.failed)} fehlgeschlagen, ` +
+        `${String(usage.byStatus.timed_out)} Zeitüberschreitung, ` +
+        `${String(usage.byStatus.cancelled)} abgebrochen)`,
+      `Erfolgsquote: ${usage.successRate === null ? 'keine beendeten Läufe' : `${(usage.successRate * 100).toFixed(1)} %`}`,
+      `Kosten: ${renderCost(usage.cost)}`,
+      `Tokens: ${String(usage.tokens.input)} hinein (davon ${String(usage.tokens.cachedInput)} ` +
+        `zwischengespeichert), ${String(usage.tokens.output)} hinaus`,
+      `Dauer: Median ${usage.medianDurationMs === null ? 'unbekannt' : `${String(usage.medianDurationMs)} ms`}, ` +
+        `95. Perzentil ${usage.p95DurationMs === null ? 'unbekannt' : `${String(usage.p95DurationMs)} ms`}`,
+      `Werkzeugrunden insgesamt: ${String(usage.toolIterations)}`,
+    ].join('\n'),
+  ];
+
+  if (usage.byModel.length > 0) {
+    sections.push(
+      ['Nach Modell:']
+        .concat(
+          usage.byModel.map((row) => {
+            const finished = row.completedRuns + row.failedRuns;
+            const rate =
+              finished === 0
+                ? 'keine beendeten'
+                : `${((row.completedRuns / finished) * 100).toFixed(0)} % erfolgreich`;
+            return (
+              `- ${row.displayName ?? row.model} (${row.model}): ${String(row.runs)} Läufe, ` +
+              `${rate}, ${renderCost(row.cost)}, ` +
+              `Median ${row.medianDurationMs === null ? 'unbekannt' : `${String(row.medianDurationMs)} ms`}`
+            );
+          }),
+        )
+        .join('\n'),
+    );
+  }
+
+  if (usage.byErrorCode.length > 0) {
+    sections.push(
+      ['Fehler:']
+        .concat(
+          usage.byErrorCode.map(
+            (row) =>
+              `- ${row.errorCode ?? 'ohne Code'}: ${String(row.runs)} Läufe, zuletzt ${row.lastSeenAt}`,
+          ),
+        )
+        .join('\n'),
+    );
+  }
+
+  if (usage.prunedRuns > 0) {
+    sections.push(
+      `Hinweis: bei ${String(usage.prunedRuns)} Läufen wurden Frage und Antwort durch die ` +
+        'Aufbewahrungsfrist geleert. Die Zahlen oben sind davon unberührt.',
+    );
+  }
+
+  return sections.join('\n\n');
+}
+
+/**
+ * The usage report as a tool (issue #10, CLAUDE.md rule 11).
+ *
+ * Read-only and `mcp`-only. The built-in AI does not get it for the same
+ * reason it does not get `exo_ai_run_cancel`: what this reports on is the
+ * built-in AI itself, and a model that can read its own cost ledger mid-run
+ * will spend tokens reasoning about the tokens it is spending.
+ */
+export const aiUsageTool: AnyToolDefinition = defineTool({
+  name: 'exo_ai_usage',
+  description:
+    'Wertet die KI-Nutzung des Deployments über einen Zeitraum aus: Läufe nach Status, ' +
+    'Erfolgsquote, Kosten (gemeldet und geschätzt getrennt), Tokens rein/raus, Dauer als ' +
+    'Median und 95. Perzentil, Aufschlüsselung nach Modell und die Fehlercodes mit ihrer ' +
+    'Häufigkeit. Ohne Angabe die letzten 30 Tage. Braucht Administratorrechte.',
+  inputSchema: z.object({
+    from: z.string().datetime().optional().describe('ISO-Zeitpunkt, Beginn des Zeitraums'),
+    to: z.string().datetime().optional().describe('ISO-Zeitpunkt, Ende des Zeitraums (exklusiv)'),
+  }),
+  surfaces: ['mcp'],
+  mutating: false,
+  async execute(client, input) {
+    const usage = await client.request({
+      method: 'GET',
+      path: '/api/admin/ai-usage',
+      // Undefined entries are dropped by the client, so an omitted bound simply
+      // lets the API apply its own default of thirty days.
+      query: { from: input.from, to: input.to },
+      responseSchema: aiUsageResponseSchema,
+    });
+    return { text: renderUsage(usage), data: usage };
+  },
+});
+
+export const AI_RUN_TOOLS: readonly AnyToolDefinition[] = [
+  aiRunGetTool,
+  aiRunCancelTool,
+  aiUsageTool,
+];

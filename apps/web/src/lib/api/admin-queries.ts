@@ -8,6 +8,7 @@ import {
   type AdminUserListResponse,
   type AiModel,
   type AiModelListResponse,
+  type AiUsageResponse,
   type ApiToken,
   type ApiTokenListResponse,
   type ConnectedApp,
@@ -39,6 +40,7 @@ export const adminQueryKeys = {
   settings: ['admin', 'settings'] as const,
   users: ['admin', 'users'] as const,
   aiModels: ['admin', 'ai-models'] as const,
+  aiUsage: (days: number) => ['admin', 'ai-usage', days] as const,
   apiTokens: ['me', 'api-tokens'] as const,
   connections: ['me', 'connections'] as const,
 };
@@ -54,6 +56,29 @@ export function useAdminOverview(): UseQueryResult<AdminOverviewResponse> {
     // A forbidden/admin_required response never resolves on retry, and
     // AdminGuard uses this same query to decide access, so it should fail fast.
     retry: false,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// AI usage
+// ---------------------------------------------------------------------------
+
+/**
+ * The usage report for the last `days` days (issue #10).
+ *
+ * The window is computed here rather than sent as a bare day count so the
+ * endpoint stays a plain from/to range: the same route answers the page's four
+ * presets and any range an agent asks for through the MCP tool.
+ */
+export function useAdminAiUsage(days: number): UseQueryResult<AiUsageResponse> {
+  return useQuery({
+    queryKey: adminQueryKeys.aiUsage(days),
+    queryFn: () => {
+      const to = new Date();
+      const from = new Date(to.getTime() - days * 24 * 60 * 60 * 1000);
+      const params = new URLSearchParams({ from: from.toISOString(), to: to.toISOString() });
+      return apiRequest<AiUsageResponse>(`/api/admin/ai-usage?${params.toString()}`);
+    },
   });
 }
 
