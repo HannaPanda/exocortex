@@ -2,22 +2,23 @@
 name: eXocortex
 description: Self-hostable collaborative workspace and external brain. Cool graphite, warm light, one amber signal.
 colors:
-  background: 'oklch(0.17 0.010 275)'
-  surface: 'oklch(0.20 0.011 275)'
-  card: 'oklch(0.21 0.012 275)'
-  popover: 'oklch(0.235 0.013 275)'
-  overlay: 'oklch(0.11 0.008 275 / 0.72)'
-  muted: 'oklch(0.255 0.012 275)'
-  secondary: 'oklch(0.26 0.013 275)'
-  accent-solid: 'oklch(0.26 0.025 62)'
-  accent-strong: 'oklch(0.33 0.055 62)'
-  border: 'oklch(0.32 0.014 275)'
-  border-strong: 'oklch(0.53 0.016 275)'
-  input: 'oklch(0.53 0.016 275)'
-  foreground: 'oklch(0.93 0.008 85)'
-  muted-foreground: 'oklch(0.72 0.012 275)'
-  secondary-foreground: 'oklch(0.90 0.008 85)'
-  accent-foreground: 'oklch(0.94 0.010 75)'
+  background: 'oklch(0.145 0.012 275)'
+  surface: 'oklch(0.195 0.013 275)'
+  card: 'oklch(0.235 0.014 275)'
+  popover: 'oklch(0.275 0.015 275)'
+  overlay: 'oklch(0.075 0.010 275 / 0.76)'
+  muted: 'oklch(0.305 0.015 275)'
+  secondary: 'oklch(0.31 0.015 275)'
+  accent-solid: 'oklch(0.315 0.038 62)'
+  accent-strong: 'oklch(0.37 0.070 62)'
+  border: 'oklch(0.355 0.016 275)'
+  signal-line: 'oklch(0.44 0.050 62)'
+  border-strong: 'oklch(0.56 0.016 275)'
+  input: 'oklch(0.56 0.016 275)'
+  foreground: 'oklch(0.94 0.016 85)'
+  muted-foreground: 'oklch(0.74 0.012 275)'
+  secondary-foreground: 'oklch(0.91 0.016 85)'
+  accent-foreground: 'oklch(0.95 0.018 75)'
   primary: 'oklch(0.78 0.150 62)'
   primary-foreground: 'oklch(0.20 0.035 62)'
   primary-text: 'oklch(0.78 0.150 62)'
@@ -41,10 +42,10 @@ colors:
 typography:
   page-title:
     fontFamily: 'Inter Variable, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif'
-    fontSize: '1.5rem'
-    fontWeight: 600
-    lineHeight: 1.333
-    letterSpacing: '-0.025em'
+    fontSize: '1.75rem'
+    fontWeight: 720
+    lineHeight: 1.15
+    letterSpacing: '-0.035em'
   section-title:
     fontFamily: '{typography.page-title.fontFamily}'
     fontSize: '1.25rem'
@@ -203,17 +204,31 @@ background.
 
 ### Secondary
 
-There is no second brand colour, and that is the point. `secondary`
-`oklch(0.26 0.013 275)` is a neutral graphite chip. `accent-solid`
-`oklch(0.26 0.025 62)` is the hover surface: the same amber hue at a chroma low
-enough to be felt rather than seen, so that "warm" reads as "interactive"
-everywhere, not only on the primary button.
+There is no second brand colour, and that is the point. What there is instead is
+a **four-step scale of the one colour**, because amber used as an on/off switch
+left the interface with a single amber element per screen and no warmth
+anywhere else:
 
-`accent-strong` `oklch(0.33 0.055 62)` is the selected surface, and it is a
-separate token rather than a stronger opacity of the hover. Selection answers
-"where am I", which in a retrieval-first product is the state the user reads most
-often; it has to survive a glance from across the desk. Foreground text sits on
-it at 10.1:1, `primary-text` at 6.0:1.
+| Token           | Value                   | Job                                                     |
+| --------------- | ----------------------- | ------------------------------------------------------- |
+| `signal-line`   | `oklch(0.44 0.050 62)`  | structure: rules, leader dots, tree guides. Never text. |
+| `accent-solid`  | `oklch(0.315 0.038 62)` | hover                                                   |
+| `accent-strong` | `oklch(0.37 0.070 62)`  | selection, "you are here"                               |
+| `primary`       | `oklch(0.78 0.150 62)`  | action, focus, live                                     |
+
+Only the last of the four is a colour you notice. The first three are warmth you
+feel, which is what keeps the scale inside the One Signal Rule: amber still
+means "interactive or happening", and a rule is neither.
+
+`secondary` `oklch(0.31 0.015 275)` remains a neutral graphite chip.
+`accent-solid` has to clear `popover`, not just `surface`: menus and the command
+palette are where hover is read most often, and a hover tint that sits below the
+floating surface it appears on is invisible exactly where it matters.
+
+`accent-strong` is a separate token rather than a stronger opacity of the hover.
+Selection answers "where am I", which in a retrieval-first product is the state
+the user reads most often; it has to survive a glance from across the desk.
+Foreground text sits on it at 8.9:1, `primary-text` at 5.1:1.
 
 ### Tertiary
 
@@ -232,10 +247,21 @@ find fastest.
 
 ### Neutral
 
-A six-step surface ramp, all at hue 275 and chroma ≤ 0.016:
-`background` 0.17 → `surface` 0.20 → `card` 0.21 → `popover` 0.235 →
-`muted` 0.255 / `secondary` 0.26 → `border` 0.32. Elevation is this ramp. The
-foreground is warm off-white `oklch(0.93 0.008 85)` at 15.6:1.
+A six-step surface ramp, all at hue 275 and chroma <= 0.016:
+`background` 0.145 -> `surface` 0.195 -> `card` 0.235 -> `popover` 0.275 ->
+`muted` 0.305 / `secondary` 0.31 -> `border` 0.355. The foreground is warm
+off-white `oklch(0.94 0.016 85)` at 16.6:1.
+
+The ramp used to span 0.17 to 0.32 and pack its four surface steps into 0.065 of
+lightness. On a screen that is one flat sheet: the sidebar, the header, the page
+and a popover were indistinguishable, and "elevation is the surface ramp" was
+true in the tokens and false in front of the user. Each step is now a clear 0.04
+apart, which is the smallest difference that reads as a layer without a shadow
+having to say so.
+
+The foreground moved with it. At chroma 0.008 the "warm off-white" was warm only
+by measurement; at 0.016 the temperature contrast against the cool graphite is
+the thing the whole system is built on, and it finally shows.
 
 ### Named Rules
 
@@ -247,9 +273,17 @@ the element is wrong, not the rule.
 sized for dark text on top of them. `primary-text` and `destructive-text` are
 their text and icon counterparts. A fill colour used as a text colour is a bug.
 
-**The Border Weight Rule.** `border` (1.5:1) separates; it never delimits a
-control. Anything the user must perceive as a boundary uses `input` or
-`border-strong` (3.4:1 on card, WCAG 1.4.11).
+**The Border Weight Rule.** `border` (1.5:1 on card) separates; it never
+delimits a control. Anything the user must perceive as a boundary uses `input`
+or `border-strong` (3.2:1 on popover, the lightest surface a form field ever
+sits on, WCAG 1.4.11). `signal-line` (2.1:1 on card) sits between the two and is
+neither: it is warm, so a structural rule reads as drawn rather than as a seam,
+and it is never a boundary you can act on.
+
+**The Structure-Is-Not-Signal Rule.** A line that describes the shape of a
+screen wears `signal-line`; a thing you can act on wears `primary`. The two are
+the same hue on purpose and are never interchangeable. If a rule, a leader or a
+tree guide turns bright amber, it has started claiming to be a control.
 
 **The Never-Only-Colour Rule.** Status, validation, presence and diff state each
 carry an icon or text as well. Remove all colour and the interface still works.
@@ -284,15 +318,15 @@ decoration.
 
 ### Hierarchy
 
-| Role           | Size      | Weight | Tracking | Use                            |
-| -------------- | --------- | ------ | -------- | ------------------------------ |
-| Page title     | 1.75rem   | 600    | -0.02em  | the document's own title field |
-| Section title  | 1.375rem  | 600    | -0.015em | H1 inside documents            |
-| Subsection     | 1.125rem  | 600    | -0.01em  | H2                             |
-| Sub-subsection | 0.9375rem | 600    | normal   | H3                             |
-| Body           | 0.9375rem | 400    | normal   | editor content, prose          |
-| UI             | 0.875rem  | 500    | normal   | buttons, labels, nav           |
-| Meta           | 0.75rem   | 400    | normal   | timestamps, counts, hints      |
+| Role           | Size      | Weight | Tracking | Use                                     |
+| -------------- | --------- | ------ | -------- | --------------------------------------- |
+| Page title     | 1.75rem   | 720    | -0.035em | the name of whatever you are looking at |
+| Section title  | 1.375rem  | 600    | -0.015em | H1 inside documents                     |
+| Subsection     | 1.125rem  | 600    | -0.01em  | H2                                      |
+| Sub-subsection | 0.9375rem | 600    | normal   | H3                                      |
+| Body           | 0.9375rem | 400    | normal   | editor content, prose                   |
+| UI             | 0.875rem  | 500    | normal   | buttons, labels, nav                    |
+| Meta           | 0.75rem   | 400    | normal   | timestamps, counts, hints               |
 
 The ratio tightens on the way down (1.27 → 1.22 → 1.20) and the last step is
 carried by weight alone, so H3 and body share a size. The page title clears the
@@ -300,6 +334,17 @@ document's own H1 by a full step, because the two are different things: one name
 the page, the other opens a section. A knowledge tool with 3rem headings wastes
 the vertical space the content needs, but a ladder whose top two rungs are the
 same size has no hierarchy at all.
+
+**Weight carries the top of the ladder, not size.** The whole ladder used to run
+between 400 and 600, which is not a contrast but a gradient: nothing on the
+screen was heavy, so nothing read as first. The page title is now 720, and the
+tracking tightens with it, because letterforms that heavy set loose look unset
+rather than airy. Inter Variable has the axis; this is the one place worth
+spending it. The treatment lives in `.exocortex-page-title`
+(`packages/ui/src/styles.css`) and is used by every page title in the product:
+the document's own title field, the workspace name on the overview, the heading
+of an administration page. Those used to be two different sizes for the same
+question.
 
 Vertical space is part of the ladder. Space above a heading is several times the
 paragraph gap; space below it is nearly nothing. The gap groups the section,
@@ -355,8 +400,13 @@ graphite; shadows only confirm what the colour already said.
 
 `background` (page) → `surface` (shell chrome) → `card` (raised block) →
 `popover` (floating: menus, dialogs, command palette) → `overlay` (modal scrim,
-`oklch(0.11 0.008 275 / 0.72)`, darker than the page so the dimmed content reads
-as pushed back rather than covered in black).
+`oklch(0.075 0.010 275 / 0.76)`, darker than the page so the dimmed content
+reads as pushed back rather than covered in black).
+
+Each step is 0.04 of lightness apart, and that number is the whole rule. Below
+about 0.03 the eye stops resolving the step on a dark surface, and the ramp
+becomes a claim the tokens make and the screen does not keep. A new surface that
+cannot afford a clear step is not a new surface.
 
 ### Shadow Vocabulary
 
@@ -402,6 +452,14 @@ internal gap. Used for genuinely separable blocks: a workspace in a list, an
 empty state, an error state. **Never nested.** A card inside a card means the
 hierarchy is wrong.
 
+**And never as a list row.** The references and activity panels each drew a
+bordered box per entry, which turned a list into a stack of identical outlined
+cards -- the card grid this system rules out, at panel scale. A row needs a
+section rule above it and a hover fill under the pointer; it does not need
+chrome of its own. A row also never paints its own background: a row that knows
+which surface it is on gets it wrong the moment it is reused, and paints a hole
+into the panel.
+
 ### Inputs / Fields
 
 `rounded-md`, transparent fill, 1px `input` border (3.4:1, perceivable),
@@ -418,6 +476,35 @@ current page can come forward: it is `accent-strong` with full-strength
 never approaches it. The same three-part treatment marks the active row in the
 command palette and the selected tab in the context panel, so "this one" looks
 identical wherever the user meets it.
+
+### The instrument marks
+
+Two primitives in `packages/ui/src/components/instrument.tsx` carry the
+structure of every dense screen. Both are drawn in `signal-line`, and the
+difference between them is mass, not colour: a solid square against a hairline.
+
+**`SectionRule`** is a label riding on a short rule, opened by a small square.
+It is the alternative to a card header: it separates without enclosing. The rule
+is fixed and short rather than full width, because a rule that crosses the whole
+column competes with the leaders in the rows beneath it, and two systems of
+horizontal line on one screen read as stripes. It appears at the same treatment
+everywhere a section is announced -- the workspace overview, the page tree
+header, the properties, references and activity panels -- so "this is a section"
+is learned once. Its optional `trailing` slot takes a count, and a count of zero
+is never passed: a section that says its own emptiness in a sentence would
+otherwise report the absence twice.
+
+**`Leader`** is the dotted rule that carries the eye from a label across to its
+value. A two-column list of a name and a number fails at exactly the width where
+it becomes useful, and a table of contents solved that a long time ago. Dotted
+rather than dashed and held to 70%: a dash long enough to read as a dash stops
+leading the eye and starts being a rule. It expects to sit between two items in
+a `flex items-baseline` row.
+
+The same hairline device runs vertically as a **tree guide**: an unfolded branch
+in the page tree draws a `signal-line` rule down its parent's chevron column, so
+a branch reads as a branch several levels deep, where indentation alone stops
+being countable.
 
 ### Signature Component: the save heartbeat
 
@@ -444,7 +531,10 @@ tooltip are always the same hue.
 - Reach for `packages/ui/src/components/ui` before the registry, and the registry
   before a new primitive.
 - Use the surface ramp for elevation and let shadow only confirm it.
-- Let amber mean one thing. Focus, active, primary, live.
+- Let amber mean one thing. Focus, active, primary, live. Use `signal-line` for
+  the lines that describe a screen, and never the other way round.
+- Announce a section with `SectionRule`, and carry a label to its value with
+  `Leader`. Both live in `@exocortex/ui`.
 - Carry every status with an icon or text as well as colour.
 - Keep German for everything the user reads; English for code, logs, identifiers
   and API error codes.
@@ -456,7 +546,10 @@ tooltip are always the same hue.
 - Don't hardcode a colour. Every colour is a semantic token.
 - Don't use a fill colour (`primary`, `destructive`) as a text colour.
 - Don't add a second accent colour. The palette is restrained on purpose.
-- Don't nest cards, and don't wrap something in a card just to group it.
+- Don't nest cards, don't wrap something in a card just to group it, and don't
+  give a list row a border of its own.
+- Don't let a row paint its own background. It does not know which surface it
+  is on, and a wrong guess punches a hole into the panel around it.
 - Don't use a coloured left or right border as an accent on cards, list items,
   callouts or alerts.
 - Don't use gradient text, backdrop blur as decoration, or a hero-metric block.

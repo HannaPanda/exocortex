@@ -12,27 +12,36 @@ graphite surfaces, a warm off-white foreground, and a single amber signal.
 `DESIGN.md` at the repository root explains the system; this table is the
 lookup.
 
-| Token                         | Value                                              | Use                                     |
-| ----------------------------- | -------------------------------------------------- | --------------------------------------- |
-| `--background`                | `oklch(0.17 0.010 275)`                            | app background                          |
-| `--foreground`                | `oklch(0.93 0.008 85)`                             | body text (15.6:1)                      |
-| `--card` / `--popover`        | `oklch(0.21 0.012 275)` / `oklch(0.235 0.013 275)` | raised surfaces                         |
-| `--overlay`                   | `oklch(0.11 0.008 275 / 0.72)`                     | modal scrim                             |
-| `--primary`                   | `oklch(0.78 0.150 62)`                             | primary actions, filled                 |
-| `--primary-text`              | `oklch(0.78 0.150 62)`                             | amber as _text_ and icons (9.2:1)       |
-| `--secondary`                 | `oklch(0.26 0.013 275)`                            | secondary actions, deliberately neutral |
-| `--accent-solid`              | `oklch(0.26 0.025 62)`                             | hover surfaces, faintly warm            |
-| `--accent-strong`             | `oklch(0.33 0.055 62)`                             | the selected surface (10.1:1)           |
-| `--muted-foreground`          | `oklch(0.72 0.012 275)`                            | secondary text (7.7:1)                  |
-| `--border`                    | `oklch(0.32 0.014 275)`                            | separation only (1.5:1)                 |
-| `--border-strong` / `--input` | `oklch(0.53 0.016 275)`                            | perceivable boundaries (3.4:1)          |
-| `--ring`                      | `oklch(0.78 0.150 62)`                             | focus ring (9.2:1)                      |
+| Token                         | Value                                               | Use                                       |
+| ----------------------------- | --------------------------------------------------- | ----------------------------------------- |
+| `--background`                | `oklch(0.145 0.012 275)`                            | app background                            |
+| `--foreground`                | `oklch(0.94 0.016 85)`                              | body text (16.6:1)                        |
+| `--surface`                   | `oklch(0.195 0.013 275)`                            | shell chrome: header, sidebar, panel      |
+| `--card` / `--popover`        | `oklch(0.235 0.014 275)` / `oklch(0.275 0.015 275)` | raised and floating surfaces              |
+| `--overlay`                   | `oklch(0.075 0.010 275 / 0.76)`                     | modal scrim                               |
+| `--primary`                   | `oklch(0.78 0.150 62)`                              | primary actions, filled                   |
+| `--primary-text`              | `oklch(0.78 0.150 62)`                              | amber as _text_ and icons (9.6:1)         |
+| `--secondary`                 | `oklch(0.31 0.015 275)`                             | secondary actions, deliberately neutral   |
+| `--signal-line`               | `oklch(0.44 0.050 62)`                              | structural rules, leaders, tree guides    |
+| `--accent-solid`              | `oklch(0.315 0.038 62)`                             | hover surfaces, faintly warm              |
+| `--accent-strong`             | `oklch(0.37 0.070 62)`                              | the selected surface (8.9:1)              |
+| `--muted-foreground`          | `oklch(0.74 0.012 275)`                             | secondary text (8.6:1)                    |
+| `--border`                    | `oklch(0.355 0.016 275)`                            | separation only (1.5:1 on card)           |
+| `--border-strong` / `--input` | `oklch(0.56 0.016 275)`                             | perceivable boundaries (3.2:1 on popover) |
+| `--ring`                      | `oklch(0.78 0.150 62)`                              | focus ring (9.6:1)                        |
 
 Rules that fall out of the system:
 
 - **Amber means "interactive or happening".** Focus, the active page, the primary
   action and your own cursor. Nothing decorative is amber. Keep it under roughly
   10% of any screen or it stops meaning anything.
+- **Amber is a scale, not a switch.** `--signal-line` → `--accent-solid` →
+  `--accent-strong` → `--primary`: structure, hover, selection, action. Only the
+  last one is a colour you notice. A structural line never wears `--primary`,
+  and a control never wears `--signal-line`.
+- **Each surface step is 0.04 of lightness.** Below about 0.03 the eye stops
+  resolving the step on a dark surface, and the ramp stops doing the work
+  shadows are not allowed to do here.
 - **Selected is not a stronger hover.** Hover is `--accent-solid`, selection is
   `--accent-strong`, and selection always changes something besides the surface
   as well (weight, or an amber icon). The page tree, the command palette and the
@@ -139,6 +148,7 @@ owns the code and nothing is fetched at runtime.
 | `src/components/ui/*`           | installed and adapted shadcn components                                                         |
 | `src/components/ui/toolbar.tsx` | custom primitive: `role="toolbar"` with a roving tabindex, on Base UI                           |
 | `src/components/layout.tsx`     | `AppShell`, `AppHeader`, `AppBody`, `AppMain`, `AppPage`, `ResizablePanel`, `SkipToContentLink` |
+| `src/components/instrument.tsx` | `SectionRule` (the section mark), `Leader` (the dotted leader)                                  |
 | `src/components/states.tsx`     | `LoadingState`, `EmptyState`, `ErrorState`                                                      |
 | `src/components/logo.tsx`       | `ExocortexLogo` (square mark), `ExocortexWordmark` (full lockup)                                |
 | `src/assets/*.svg`              | the brand assets the two components are inlined from                                            |
