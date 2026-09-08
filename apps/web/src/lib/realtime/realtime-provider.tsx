@@ -12,6 +12,7 @@ import {
 } from '@exocortex/contracts';
 
 import { realtimeOrigin } from '../env';
+import { onWakeSignals } from '../wake-signals';
 
 export type RealtimeStatus = 'connecting' | 'connected' | 'disconnected';
 
@@ -126,9 +127,31 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
       for (const listener of set) listener(event);
     });
 
+    /**
+     * A tab the user just came back to must not sit out a grown backoff.
+     *
+     * The delay above doubles towards half a minute, and a deploy that restarts
+     * the API refuses several attempts in a row, so by the time the unit is
+     * back the tab may be most of a minute away from trying again. That is the
+     * exact window in which someone looks at the header, sees "getrennt", and
+     * reloads. Returning to the tab or regaining the network is a fresh signal
+     * rather than another failure, so it clears the backoff and retries at
+     * once. `connect()` on an already open socket is a no-op.
+     */
+    const reconnectNow = (): void => {
+      if (retryTimer !== null) {
+        clearTimeout(retryTimer);
+        retryTimer = null;
+      }
+      retryDelay = RECONNECT_BASE_DELAY_MS;
+      if (!socket.connected) socket.connect();
+    };
+    const detachWake = onWakeSignals(reconnectNow);
+
     return () => {
       if (retryTimer !== null) clearTimeout(retryTimer);
       if (stableTimer !== null) clearTimeout(stableTimer);
+      detachWake();
       socket.close();
       socketRef.current = null;
     };

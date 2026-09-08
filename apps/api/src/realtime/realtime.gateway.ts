@@ -139,14 +139,22 @@ export class RealtimeGateway
 
     data.userId = session.userId;
     await client.join(userRoom(session.userId));
-    this.logger.debug('Realtime connection established', {
+    // `info`, not `debug`: this line and its counterpart in `handleDisconnect`
+    // are the only server-side record of a socket's lifetime, and a deployment
+    // runs at `info`. Without them an outage looks identical to a browser that
+    // never called -- the nginx access log shows a 101 either way, because it
+    // logs a websocket only once it has already closed. (2026-09-08)
+    this.logger.info('Realtime connection established', {
       socketId: client.id,
       userId: session.userId,
     });
   }
 
   handleDisconnect(client: Socket): void {
-    this.logger.debug('Realtime connection closed', { socketId: client.id });
+    this.logger.info('Realtime connection closed', {
+      socketId: client.id,
+      userId: socketData(client).userId,
+    });
   }
 
   @SubscribeMessage('workspace.subscribe')

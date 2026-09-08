@@ -11,6 +11,7 @@ import {
   useDocumentSession,
 } from '@/components/shell/document-session';
 import { fetchCollaborationTicket } from '@/lib/api/queries';
+import { onWakeSignals } from '@/lib/wake-signals';
 
 /**
  * How long a burst of typing has to be quiet before it counts as settled.
@@ -135,6 +136,8 @@ export function useCollaborationConnection({
     let settle: ReturnType<typeof setTimeout> | undefined;
     // Watchdog for a connection that never came back; cleared on unmount.
     let revive: ReturnType<typeof setTimeout> | undefined;
+    // Removes the wake listeners below; set once `connect()` has run.
+    let detachWake: (() => void) | undefined;
 
     const connect = async (): Promise<void> => {
       setError(null);
@@ -313,6 +316,23 @@ export function useCollaborationConnection({
       // the watchdog at all.
       armRevive();
 
+      /**
+       * Coming back to the tab is a fresh signal, not another failure.
+       *
+       * The backoff above grows to two minutes, which is the right pace for a
+       * page nobody is looking at but the wrong one for the moment someone
+       * returns to it and finds the header saying "getrennt". A connection that
+       * is merely `connecting` is left alone: tearing down an attempt that is
+       * still in flight would replace one wait with another.
+       */
+      const wakeRevive = (): void => {
+        if (disposed || live() || socketStatus === 'connecting') return;
+        clearTimeout(revive);
+        reviveCount.current = 0;
+        retry();
+      };
+      detachWake = onWakeSignals(wakeRevive);
+
       active = { provider, ydoc, persistence };
       if (disposed) {
         provider.destroy();
@@ -329,6 +349,7 @@ export function useCollaborationConnection({
       disposed = true;
       clearTimeout(settle);
       clearTimeout(revive);
+      detachWake?.();
       if (active !== null) {
         active.provider.destroy();
         void active.persistence.destroy();
