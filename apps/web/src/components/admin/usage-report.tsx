@@ -7,6 +7,7 @@ import {
   type AiUsageCost,
   type AiUsageDay,
   type AiUsageResponse,
+  type AiUsageStatusCounts,
 } from '@exocortex/contracts';
 import {
   Button,
@@ -74,6 +75,33 @@ function formatDuration(ms: number | null): string {
 function formatDayLabel(date: string): string {
   const [, month, day] = date.split('-');
   return `${day}.${month}.`;
+}
+
+/**
+ * The run count broken into groups that add up to it.
+ *
+ * Naming only the successes and the failures left the subtitle short but wrong:
+ * a cancelled or still-running run is in the number above and was in neither
+ * half below, so the two lines did not agree and nothing on the page said why.
+ * Every run is in exactly one group here.
+ *
+ * A timeout sits with the failures because both are the system not delivering.
+ * A cancellation is its own group because somebody chose it, which is also the
+ * reason it stays out of the success rate and the error table. Groups at zero
+ * are left out: "0 abgebrochen" is noise on a page about the figures that are
+ * not zero.
+ */
+function runBreakdown(byStatus: AiUsageStatusCounts): string | undefined {
+  const groups: readonly (readonly [number, string])[] = [
+    [byStatus.completed, 'erfolgreich'],
+    [byStatus.failed + byStatus.timed_out, 'fehlgeschlagen'],
+    [byStatus.cancelled, 'abgebrochen'],
+    [byStatus.pending + byStatus.running, 'noch offen'],
+  ];
+  const parts = groups
+    .filter(([count]) => count > 0)
+    .map(([count, label]) => `${numberFormat.format(count)} ${label}`);
+  return parts.length === 0 ? undefined : parts.join(', ');
 }
 
 /**
@@ -333,9 +361,7 @@ export function UsageReport() {
         <MetricCard
           label="Läufe"
           value={numberFormat.format(usage.runs)}
-          subtitle={`${numberFormat.format(usage.byStatus.completed)} erfolgreich, ${numberFormat.format(
-            usage.byStatus.failed + usage.byStatus.timed_out,
-          )} fehlgeschlagen`}
+          subtitle={runBreakdown(usage.byStatus)}
         />
         <MetricCard
           label="Erfolgsquote"
