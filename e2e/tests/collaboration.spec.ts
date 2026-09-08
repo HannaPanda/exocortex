@@ -1,11 +1,17 @@
 import { expect, test } from '@playwright/test';
 
+import { loadRepositoryEnv } from '../support/env';
 import {
   createPage,
   createSignedInContext,
   requireSeedCredentials,
   workspaceIdFrom,
 } from '../support/fixtures';
+
+loadRepositoryEnv();
+
+/** The lifetime of a collaboration ticket, as the API issues them. */
+const TICKET_TTL_SECONDS = Number(process.env.COLLABORATION_TICKET_TTL_SECONDS ?? '60');
 
 /**
  * The collaboration suite.
@@ -15,6 +21,7 @@ import {
  *  * "two browser contexts show live presence"         -> awareness
  *  * "edits survive going offline and reconnecting"    -> y-indexeddb + resync
  *  * "the page tree updates in a second session"       -> application WebSocket
+ *  * "an outage longer than the ticket lifetime"       -> ticket renewal
  */
 test.beforeAll(() => {
   requireSeedCredentials();
@@ -125,6 +132,72 @@ test.describe('collaborative editing', () => {
     } finally {
       await first.context.close();
       await second.context.close();
+    }
+  });
+
+  /**
+   * Regression: the ticket used to be fetched once, at mount, and replayed on
+   * every reconnect. A single outage longer than the ticket's lifetime therefore
+   * poisoned the session for good — every retry was rejected as `expired`, every
+   * 32 seconds, until the tab was reloaded.
+   *
+   * It stayed invisible on a page the browser had opened before, because
+   * y-indexeddb still had that one and rendered it from the local copy. A page
+   * written from outside and never opened here has nothing to fall back on, so
+   * it is the case this test uses.
+   */
+  test('a page opened during an outage longer than the ticket lifetime still arrives', async ({
+    browser,
+    baseURL,
+  }) => {
+    // The outage alone outlasts the default test timeout.
+    test.setTimeout((TICKET_TTL_SECONDS + 120) * 1_000);
+    const origin = baseURL as string;
+    const first = await createSignedInContext(browser, 'johanna', origin);
+
+    try {
+      const workspaceId = workspaceIdFrom(first.page);
+      const marker = `Von aussen ${Date.now().toString(36)}`;
+      // Written entirely through the API, the way an MCP client writes it: this
+      // browser has never had the document open and holds no local copy.
+      const created = await first.page.request.post(
+        `/api/workspaces/${workspaceId}/import/markdown`,
+        { data: { markdown: `# Ticket-Erneuerung\n\n${marker}\n`, title: marker } },
+      );
+      expect(created.ok(), await created.text()).toBe(true);
+      const documentId = ((await created.json()) as { document: { id: string } }).document.id;
+
+      // The collaboration socket is unreachable while the page is opened, and
+      // stays unreachable for longer than a ticket lives.
+      let socketBlocked = true;
+      await first.page.routeWebSocket(/\/collab/, (ws) => {
+        if (socketBlocked) {
+          ws.close({ code: 1006 });
+          return;
+        }
+        ws.connectToServer();
+      });
+
+      await first.page.goto(`/arbeitsbereich/${workspaceId}/seite/${documentId}`);
+      await expect(first.page.getByTestId('editor-surface')).toBeVisible({ timeout: 30_000 });
+      // Nothing can have arrived: the socket is down and there is no local copy.
+      await expect(first.page.getByTestId('editor-surface')).not.toContainText(marker);
+
+      await first.page.waitForTimeout((TICKET_TTL_SECONDS + 15) * 1_000);
+      socketBlocked = false;
+
+      // Without a reload, and without any help from the user, the reconnect must
+      // carry a ticket the server still accepts.
+      await expect(first.page.getByTestId('editor-surface')).toContainText(marker, {
+        timeout: 90_000,
+      });
+      await expect(first.page.getByTestId('connection-status')).toHaveAttribute(
+        'data-collaboration',
+        'connected',
+        { timeout: 30_000 },
+      );
+    } finally {
+      await first.context.close();
     }
   });
 

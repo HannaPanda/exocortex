@@ -238,6 +238,13 @@ export function CollaborativeEditor({
   const [connection, setConnection] = React.useState<Connection | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [synced, setSynced] = React.useState(false);
+  /**
+   * Bumped by the error state's retry button. The first ticket request is the
+   * one thing here with no retry of its own — the provider retries the socket
+   * for ever, but a failed `fetchCollaborationTicket` used to end the attempt
+   * and leave a dead panel behind until the whole page was reloaded.
+   */
+  const [attempt, setAttempt] = React.useState(0);
 
   /**
    * The title is a label, not part of the connection.
@@ -291,35 +298,82 @@ export function CollaborativeEditor({
       // Offline persistence: the local copy is available before the socket opens.
       const persistence = new IndexeddbPersistence(`exocortex:${documentId}`, ydoc);
 
-      // The provider does not expose a connection flag, so the last reported
-      // status is tracked locally to decide whether local edits are pending.
-      let connected = false;
+      /**
+       * A ticket lives about a minute (`COLLABORATION_TICKET_TTL_SECONDS`), and
+       * the provider reconnects on its own for as long as the page is open.
+       * Handing over the ticket as a *string* meant every reconnect replayed the
+       * one minted at mount: once a single outage outlasted the TTL — a waking
+       * laptop, a wifi blip, a deploy restarting the collaboration unit — every
+       * attempt from then on was rejected as `expired`, every 32 seconds, for
+       * ever, and only F5 recovered. Hocuspocus calls this function on every
+       * socket open, so each attempt carries a ticket that is actually valid.
+       *
+       * The first call reuses the ticket fetched above rather than asking for a
+       * second one for the very same connection.
+       */
+      let pendingTicket: string | null = ticket.ticket;
+      const nextTicket = async (): Promise<string> => {
+        const reusable = pendingTicket;
+        pendingTicket = null;
+        if (reusable !== null) return reusable;
+        return (await fetchCollaborationTicket(documentId)).ticket;
+      };
+
+      /**
+       * An open socket is not a usable document. The two used to be reported as
+       * one, so a connection whose ticket was refused showed "Verbunden" in the
+       * header while nothing was being synchronized at all. Both halves are
+       * tracked, and only both together count as live — which is also what
+       * decides whether a local edit is still pending.
+       */
+      let socketStatus: 'connected' | 'connecting' | 'disconnected' = 'connecting';
+      let authenticated = false;
+      const live = (): boolean => socketStatus === 'connected' && authenticated;
+      const publishStatus = (): void => {
+        update({
+          collaboration: live()
+            ? ticket.access === 'read'
+              ? 'read-only'
+              : 'connected'
+            : socketStatus === 'disconnected'
+              ? 'disconnected'
+              : 'connecting',
+        });
+      };
 
       const provider = new HocuspocusProvider({
         url: ticket.collaborationUrl,
         name: ticket.documentName,
         document: ydoc,
-        token: ticket.ticket,
+        token: nextTicket,
         onStatus: ({ status }) => {
-          connected = status === 'connected';
-          update({
-            collaboration:
-              status === 'connected'
-                ? ticket.access === 'read'
-                  ? 'read-only'
-                  : 'connected'
-                : status === 'connecting'
-                  ? 'connecting'
-                  : 'disconnected',
-          });
+          socketStatus =
+            status === 'connected'
+              ? 'connected'
+              : status === 'connecting'
+                ? 'connecting'
+                : 'disconnected';
+          // Every new socket re-authenticates; until it has, the document is not
+          // usable even though the socket may already be open.
+          if (socketStatus !== 'connected') authenticated = false;
+          publishStatus();
+        },
+        onAuthenticated: () => {
+          authenticated = true;
+          publishStatus();
+        },
+        onAuthenticationFailed: () => {
+          authenticated = false;
+          publishStatus();
         },
         onSynced: () => {
           setSynced(true);
           update({ pendingSync: false });
         },
         onDisconnect: () => {
-          connected = false;
-          update({ collaboration: 'disconnected' });
+          socketStatus = 'disconnected';
+          authenticated = false;
+          publishStatus();
         },
       });
 
@@ -330,7 +384,7 @@ export function CollaborativeEditor({
       let settling = false;
       ydoc.on('update', (_update: Uint8Array, origin: unknown) => {
         if (origin === provider) return;
-        if (!connected) {
+        if (!live()) {
           update({ pendingSync: true });
           return;
         }
@@ -400,11 +454,18 @@ export function CollaborativeEditor({
       });
     };
     // `update` is stable (useCallback in the provider). `documentTitle` is
-    // deliberately absent; see the ref above for why.
-  }, [currentUser.id, currentUser.name, documentId, update]);
+    // deliberately absent; see the ref above for why. `attempt` is here so the
+    // retry button below rebuilds the connection from the ticket up.
+  }, [attempt, currentUser.id, currentUser.name, documentId, update]);
 
   if (error !== null) {
-    return <ErrorState title="Editor nicht verfügbar" description={error} />;
+    return (
+      <ErrorState
+        title="Editor nicht verfügbar"
+        description={error}
+        onRetry={() => setAttempt((previous) => previous + 1)}
+      />
+    );
   }
   if (connection === null) {
     return <LoadingState label="Editor wird verbunden …" />;
