@@ -89,7 +89,7 @@ the box.
 
 ## Tool reference
 
-All 53 tools below are namespaced `exo_` so they cannot collide with the other
+All 60 tools below are namespaced `exo_` so they cannot collide with the other
 MCP servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`). Four
 further tools live on surfaces of their own and are the only ones in the
 catalogue without the prefix: `search` and `fetch` for deep research, which
@@ -170,6 +170,8 @@ change as dangerous only trains people to click past the warnings that matter.
 | `exo_user_list`                 | no       | no          | `GET /api/admin/users`                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `exo_user_set_disabled`         | yes      | yes         | `PATCH /api/admin/users/:userId/status` -- ends every session and revokes every token of that account                                                                                                                                                                                                                                                                                                                                                     |
 | `exo_user_delete`               | yes      | yes         | `DELETE /api/admin/users/:userId` -- only for an account that authored nothing, else `user_has_content`                                                                                                                                                                                                                                                                                                                                                   |
+| `exo_agent_session_list`        | no       | no          | `GET /api/agent-sessions` -- the caller's own agent sessions, or all of them for a global admin (ADR-022)                                                                                                                                                                                                                                                                                                                                                 |
+| `exo_agent_session_get`         | no       | no          | `GET /api/agent-sessions/:sessionId` -- what one session wrote, and whether each write left a state to go back to                                                                                                                                                                                                                                                                                                                                         |
 
 The seven access tools exist because registration is closed (issue #3): "add a
 person" is something a human can do in the admin area, so the catalogue has to
@@ -253,6 +255,30 @@ need a server-initiated channel that neither transport opens today (stdio has
 the connection but no notifier; Streamable HTTP would need the SSE return leg
 this server deliberately does not open), so `initialize` announces
 `subscribe: false`. Part 3 of issue #48, separately.
+
+## Provenance: which session wrote what
+
+Every connection announces a session id at `initialize`
+(`POST /api/agent-sessions`), and `ExocortexApiClient` then stamps it on every
+REST call as `x-exocortex-agent-session`, next to `x-exocortex-agent-client`
+carrying the client's own `clientInfo` string. The API records one journal row
+per mutation against that session, pointing at the snapshot taken before the
+write (issue #49, ADR-022).
+
+Where the id comes from depends on the transport. The stdio bin mints one per
+process, because a subprocess is started for one client and dies with it. The
+HTTP endpoint uses the client's `Mcp-Session-Id` and issues one when the client
+brought none; it still keys nothing in memory, so two API processes go on
+serving the same client interchangeably. A client that does not echo the header
+back loses the grouping and keeps everything else.
+
+Announcing is best-effort by design: if the call fails, the handshake proceeds
+and the API creates the session row on the first write it journals. Provenance
+is bookkeeping around the work and must never be able to stop it.
+
+What this buys is in `/admin/agenten`: what one agent touched, and a button that
+takes all of it back. `exo_agent_session_list` and `exo_agent_session_get` read
+that record; the revert is deliberately not a tool (see `docs/admin.md`).
 
 ## Recipe: adding a tool
 

@@ -155,6 +155,12 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   against it and the API applies the judgement; confidence fades with silence
   instead of notes expiring by age; a contradiction is marked, never resolved by
   weight; promotion into a curated workspace stays a human act.
+- ADR-022: an agent's writes are grouped by a session id announced at
+  `initialize` and carried in a header; the journal is written from the outbox
+  and points at the snapshot before each write, never at content. A bulk revert
+  is a series of ordinary snapshot restores, partial by nature, and it names
+  every page it skipped. Listing a session is a tool; reverting one is
+  deliberately not.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

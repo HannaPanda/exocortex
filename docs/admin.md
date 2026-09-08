@@ -307,6 +307,31 @@ Usage: `Authorization: Bearer exo_…` against `http://127.0.0.1:3211`, which
 bypasses nginx and its HTTP basic auth on purpose. Through the public host, the
 basic-auth credentials are needed as well.
 
+## Agenten: what an agent wrote, and taking it back
+
+`/admin/agenten` lists every agent session this deployment has recorded: which
+client, which account, over what period, how many writes on how many pages
+(issue #49, ADR-022). "Details" shows the writes themselves, newest first, with
+one column that matters more than the rest — whether the write left a state to
+go back to.
+
+"Zurücknehmen" sets every page of that session back to the state before its
+first write there. It is partial by nature and reports as such: a page somebody
+else has written since is skipped and named, never overwritten, and so is a page
+whose only change was a rename or a move, because those leave no snapshot to
+return to. The revert itself snapshots the current state of each page first, so
+the step is undoable in turn.
+
+The page exists so that giving an agent write access stops being a decision one
+has to be brave about. That is also why the revert is **not** an MCP tool: an
+agent that could take back an afternoon in one call would be a new way to lose
+work. Listing and reading a session are tools
+(`exo_agent_session_list`, `exo_agent_session_get`); pressing the button is a
+human act.
+
+`agents.journalRetentionDays` under Einstellungen decides how long the list
+reaches back. See `prune-agent-journal` in `docs/background-jobs.md`.
+
 ## Adding a setting
 
 1. Add the field with a `.default()` to `settingsSchema`
