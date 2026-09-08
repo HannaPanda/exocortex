@@ -19,6 +19,27 @@ import { fetchCollaborationTicket } from '@/lib/api/queries';
  */
 const SETTLE_DELAY_MS = 700;
 
+/**
+ * How long the connection may stay unusable before it is built again from a
+ * fresh ticket.
+ *
+ * The provider reconnects on its own and never gives up, but that only covers
+ * a socket that was open once and then closed: `onOpen` is what clears its
+ * retry canceller. A handshake refused outright never reaches `onOpen`, so the
+ * retry loop is the only thing left holding the connection, and when it ends
+ * the tab is simply dead. On 2026-09-08 a deploy restarted the collaboration
+ * unit under an open page, nginx answered the upgrade with 502, and the tab sat
+ * disconnected for eight minutes without one further attempt reaching the
+ * server. Only F5 brought it back.
+ *
+ * Rebuilding is cheap and lossless: the Yjs document merges rather than
+ * replaces, and the offline copy carries whatever was typed in the meantime.
+ */
+const REVIVE_DELAY_MS = 20_000;
+
+/** The revive delay doubles per consecutive failure, up to this ceiling. */
+const REVIVE_MAX_DELAY_MS = 120_000;
+
 /** The three objects one open document is made of. */
 export interface Connection {
   provider: HocuspocusProvider;
@@ -70,6 +91,14 @@ export function useCollaborationConnection({
    */
   const [attempt, setAttempt] = React.useState(0);
   const retry = React.useCallback(() => setAttempt((previous) => previous + 1), []);
+  /**
+   * Consecutive revivals, for the backoff below. A ref rather than state: a
+   * revival re-runs the effect, so the count has to survive that, and it must
+   * never cause a render of its own.
+   */
+  const reviveCount = React.useRef(0);
+  /** The document the backoff above belongs to; see the effect. */
+  const reviveDocument = React.useRef(documentId);
 
   /**
    * The title is a label, not part of the connection.
@@ -93,10 +122,19 @@ export function useCollaborationConnection({
 
   // Connection setup. Re-runs only when the document or the user changes.
   React.useEffect(() => {
+    // Opening a different document is not a failed attempt at this one, so it
+    // starts over with the short delay rather than inheriting a grown backoff.
+    if (reviveDocument.current !== documentId) {
+      reviveDocument.current = documentId;
+      reviveCount.current = 0;
+    }
+
     let disposed = false;
     let active: Connection | null = null;
     // Debounce for the save indicator; cleared on unmount.
     let settle: ReturnType<typeof setTimeout> | undefined;
+    // Watchdog for a connection that never came back; cleared on unmount.
+    let revive: ReturnType<typeof setTimeout> | undefined;
 
     const connect = async (): Promise<void> => {
       setError(null);
@@ -154,6 +192,30 @@ export function useCollaborationConnection({
       let socketStatus: 'connected' | 'connecting' | 'disconnected' = 'connecting';
       let authenticated = false;
       const live = (): boolean => socketStatus === 'connected' && authenticated;
+      /**
+       * Rebuilds the connection once it has been unusable for too long.
+       *
+       * Armed on every status change: a live connection disarms it and clears
+       * the backoff, anything else gives the provider a window to recover on
+       * its own before the connection is thrown away and built again.
+       */
+      const armRevive = (): void => {
+        clearTimeout(revive);
+        if (live()) {
+          reviveCount.current = 0;
+          return;
+        }
+        const delay = Math.min(
+          REVIVE_DELAY_MS * 2 ** reviveCount.current,
+          REVIVE_MAX_DELAY_MS,
+        );
+        revive = setTimeout(() => {
+          if (disposed) return;
+          reviveCount.current += 1;
+          retry();
+        }, delay);
+      };
+
       const publishStatus = (): void => {
         update({
           collaboration: live()
@@ -164,6 +226,7 @@ export function useCollaborationConnection({
               ? 'disconnected'
               : 'connecting',
         });
+        armRevive();
       };
 
       const provider = new HocuspocusProvider({
@@ -249,6 +312,10 @@ export function useCollaborationConnection({
       provider.awareness?.on('change', readPresence);
       readPresence();
 
+      // A provider that never emits a status change would otherwise never arm
+      // the watchdog at all.
+      armRevive();
+
       active = { provider, ydoc, persistence };
       if (disposed) {
         provider.destroy();
@@ -264,6 +331,7 @@ export function useCollaborationConnection({
     return () => {
       disposed = true;
       clearTimeout(settle);
+      clearTimeout(revive);
       if (active !== null) {
         active.provider.destroy();
         void active.persistence.destroy();
@@ -281,7 +349,7 @@ export function useCollaborationConnection({
     // `update` is stable (useCallback in the provider). `documentTitle` is
     // deliberately absent; see the ref above for why. `attempt` is here so the
     // retry button rebuilds the connection from the ticket up.
-  }, [attempt, currentUser.id, currentUser.name, documentId, update]);
+  }, [attempt, currentUser.id, currentUser.name, documentId, retry, update]);
 
   return { connection, error, synced, retry };
 }
