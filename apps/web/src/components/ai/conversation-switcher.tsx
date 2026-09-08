@@ -24,18 +24,7 @@ import {
   useArchiveAiConversation,
   useUpdateAiConversation,
 } from '@/lib/api/ai-queries';
-
-const RELATIVE_TIME = new Intl.RelativeTimeFormat('de-DE', { numeric: 'auto' });
-
-function formatRelative(iso: string): string {
-  const deltaMs = new Date(iso).getTime() - Date.now();
-  const deltaMinutes = Math.round(deltaMs / 60_000);
-  if (Math.abs(deltaMinutes) < 60) return RELATIVE_TIME.format(deltaMinutes, 'minute');
-  const deltaHours = Math.round(deltaMinutes / 60);
-  if (Math.abs(deltaHours) < 24) return RELATIVE_TIME.format(deltaHours, 'hour');
-  const deltaDays = Math.round(deltaHours / 24);
-  return RELATIVE_TIME.format(deltaDays, 'day');
-}
+import { formatRelativeTime } from '@/lib/relative-time';
 
 export interface ConversationSwitcherProps {
   workspaceId: string;
@@ -125,7 +114,7 @@ export function ConversationSwitcher({
               >
                 <span className="min-w-0 flex-1 truncate">{conversation.title}</span>
                 <span className="shrink-0 text-xs text-muted-foreground">
-                  {formatRelative(conversation.lastMessageAt)}
+                  {formatRelativeTime(conversation.lastMessageAt)}
                 </span>
               </DropdownMenuItem>
               <button

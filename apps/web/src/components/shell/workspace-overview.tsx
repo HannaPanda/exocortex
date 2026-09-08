@@ -1,40 +1,279 @@
 'use client';
 
-import { FileTextIcon, PlusIcon, SettingsIcon } from 'lucide-react';
+import {
+  FileTextIcon,
+  Link2OffIcon,
+  type LucideIcon,
+  MessageSquareIcon,
+  PaperclipIcon,
+  PlusIcon,
+  SettingsIcon,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
+import type {
+  AttentionItem,
+  OverviewDocument,
+  WorkspaceOverviewResponse,
+} from '@exocortex/contracts';
 import {
   AppPage,
   Button,
-  Card,
-  CardContent,
   EmptyState,
-  LoadingState,
+  ErrorState,
+  Skeleton,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
-import { useCreateDocument, useDocumentTree } from '@/lib/api/queries';
+import { useCreateDocument, useWorkspaceOverview } from '@/lib/api/queries';
+import { formatRelativeTime } from '@/lib/relative-time';
 
-/** Landing view of a workspace: recent pages and the entry point to create one. */
+/**
+ * The landing view of a workspace.
+ *
+ * It deliberately does not list pages: the sidebar tree already does that, and
+ * better. What the tree cannot show is *time* — it is sorted by structure — so
+ * this view is a readout of recency and loose ends instead. No cards: a card
+ * around a list is a box around information that already had a shape.
+ */
+
+const NUMBER = new Intl.NumberFormat('de-DE');
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${NUMBER.format(bytes)} B`;
+  const units = ['kB', 'MB', 'GB', 'TB'];
+  let value = bytes / 1024;
+  let unit = 0;
+  while (value >= 1024 && unit < units.length - 1) {
+    value /= 1024;
+    unit += 1;
+  }
+  return `${NUMBER.format(Math.round(value * 10) / 10)} ${units[unit]}`;
+}
+
+function documentHref(workspaceId: string, documentId: string): string {
+  return `/arbeitsbereich/${workspaceId}/seite/${documentId}`;
+}
+
+/**
+ * A hairline rule with a small label riding on it. The instrument-panel
+ * alternative to a card header: it separates without enclosing.
+ */
+function SectionRule({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mb-3 flex items-center gap-3">
+      <h2 className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+        {children}
+      </h2>
+      <span className="h-px flex-1 bg-border" aria-hidden />
+    </div>
+  );
+}
+
+/** "Technik › Server". Empty at top level, and then it renders nothing. */
+function DocumentPath({ path }: { path: OverviewDocument['path'] }) {
+  if (path.length === 0) return null;
+  return (
+    <span className="block truncate text-xs text-muted-foreground">
+      {path.map((entry) => entry.title).join(' › ')}
+    </span>
+  );
+}
+
+function RecentRow({
+  workspaceId,
+  document,
+}: {
+  workspaceId: string;
+  document: WorkspaceOverviewResponse['recentlyEdited'][number];
+}) {
+  return (
+    <li>
+      <Link
+        href={documentHref(workspaceId, document.id)}
+        data-testid={`overview-page-${document.id}`}
+        className="-mx-2 flex items-center gap-3 rounded-md px-2 py-1.5 transition-colors hover:bg-accent-solid"
+      >
+        <DocumentIcon
+          icon={document.icon}
+          iconColor={document.iconColor}
+          type={document.type}
+          className="size-4 shrink-0 text-sm text-muted-foreground"
+        />
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-sm font-medium">{document.title}</span>
+          <DocumentPath path={document.path} />
+        </span>
+        <time
+          dateTime={document.editedAt}
+          title={
+            document.editedByName === null
+              ? undefined
+              : `Zuletzt bearbeitet von ${document.editedByName}`
+          }
+          className="exocortex-numeric shrink-0 text-xs text-muted-foreground"
+        >
+          {formatRelativeTime(document.editedAt)}
+        </time>
+      </Link>
+    </li>
+  );
+}
+
+/**
+ * One kind of loose end: how many, and the first few places to go.
+ *
+ * The count wears amber because it is the one thing on this screen that is
+ * *happening*; everything else is a place. A count of zero is never drawn, so
+ * the block stays empty until it has something to say.
+ */
+function AttentionRow({
+  workspaceId,
+  icon: Icon,
+  label,
+  item,
+}: {
+  workspaceId: string;
+  icon: LucideIcon;
+  label: string;
+  item: AttentionItem;
+}) {
+  if (item.count === 0) return null;
+  return (
+    <li>
+      <span className="flex items-center gap-2">
+        <Icon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+        <span className="exocortex-numeric text-sm font-medium text-primary-text">
+          {NUMBER.format(item.count)}
+        </span>
+        <span className="text-sm">{label}</span>
+      </span>
+      <span className="mt-0.5 ml-6 flex flex-wrap gap-x-3 gap-y-0.5">
+        {item.documents.map((document) => (
+          <Link
+            key={document.id}
+            href={documentHref(workspaceId, document.id)}
+            className="truncate text-xs text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline"
+          >
+            {document.title}
+          </Link>
+        ))}
+      </span>
+    </li>
+  );
+}
+
+/** A database as a control, not a card: a chip you press to open the table. */
+function DatabaseChip({
+  workspaceId,
+  database,
+}: {
+  workspaceId: string;
+  database: WorkspaceOverviewResponse['databases'][number];
+}) {
+  return (
+    <Link
+      href={documentHref(workspaceId, database.id)}
+      className="inline-flex max-w-full items-center gap-2 rounded-md border border-border px-2.5 py-1.5 transition-colors hover:border-border-strong hover:bg-accent-solid"
+    >
+      <DocumentIcon
+        icon={database.icon}
+        iconColor={database.iconColor}
+        type={database.type}
+        className="size-4 shrink-0 text-sm text-muted-foreground"
+      />
+      <span className="truncate text-sm font-medium">{database.title}</span>
+      <span className="exocortex-numeric shrink-0 text-xs text-muted-foreground">
+        {NUMBER.format(database.rowCount)}
+      </span>
+    </Link>
+  );
+}
+
+/**
+ * A top-level page with the size of its branch, set like a table of contents:
+ * the dotted leader carries the eye across to the number, which is what a
+ * two-column list of counts otherwise fails to do.
+ */
+function SectionRow({
+  workspaceId,
+  section,
+}: {
+  workspaceId: string;
+  section: WorkspaceOverviewResponse['sections'][number];
+}) {
+  return (
+    <li>
+      <Link
+        href={documentHref(workspaceId, section.id)}
+        className="-mx-2 flex items-baseline gap-2 rounded-md px-2 py-1 transition-colors hover:bg-accent-solid"
+      >
+        <DocumentIcon
+          icon={section.icon}
+          iconColor={section.iconColor}
+          type={section.type}
+          className="size-4 shrink-0 translate-y-0.5 text-sm text-muted-foreground"
+        />
+        <span className="truncate text-sm">{section.title}</span>
+        <span
+          className="min-w-4 flex-1 translate-y-[-0.25em] border-b border-dashed border-border"
+          aria-hidden
+        />
+        <span className="exocortex-numeric shrink-0 text-xs text-muted-foreground">
+          {NUMBER.format(section.descendantCount)}
+        </span>
+      </Link>
+    </li>
+  );
+}
+
 export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
   const router = useRouter();
-  const tree = useDocumentTree(workspaceId);
+  const overview = useWorkspaceOverview(workspaceId);
   const createDocument = useCreateDocument(workspaceId);
 
-  if (tree.isPending) return <LoadingState label="Seiten werden geladen …" />;
+  const createPage = React.useCallback(() => {
+    void createDocument
+      .mutateAsync({ title: 'Unbenannte Seite', type: 'PAGE', parentId: null })
+      .then((document) => router.push(documentHref(workspaceId, document.id)));
+  }, [createDocument, router, workspaceId]);
 
-  const flat = (tree.data?.nodes ?? []).flatMap((node) => [node, ...node.children]);
+  if (overview.isError) {
+    return (
+      <AppPage maxWidth="max-w-4xl">
+        <ErrorState onRetry={() => void overview.refetch()} />
+      </AppPage>
+    );
+  }
+
+  const data = overview.data;
 
   return (
-    <AppPage maxWidth="max-w-3xl">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-lg font-semibold">Übersicht</h1>
-        <div className="flex items-center gap-2">
+    <AppPage maxWidth="max-w-4xl">
+      <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="truncate text-2xl font-semibold tracking-tight">
+            {data?.workspaceName ?? 'Übersicht'}
+          </h1>
+          {data === undefined ? (
+            <Skeleton className="mt-2 h-4 w-72" />
+          ) : (
+            <p className="exocortex-numeric mt-1 text-xs text-muted-foreground">
+              {[
+                `${NUMBER.format(data.stats.pageCount)} Seiten`,
+                `${NUMBER.format(data.stats.databaseCount)} Datenbanken`,
+                `${NUMBER.format(data.stats.editedThisWeek)} diese Woche bearbeitet`,
+                formatBytes(data.stats.attachmentBytes),
+              ].join(' · ')}
+            </p>
+          )}
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
           <Tooltip>
             <TooltipTrigger
               render={
@@ -51,57 +290,122 @@ export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
             />
             <TooltipContent>Einstellungen</TooltipContent>
           </Tooltip>
-          <Button
-            size="sm"
-            data-testid="overview-create-page"
-            onClick={() => {
-              void createDocument
-                .mutateAsync({ title: 'Unbenannte Seite', type: 'PAGE', parentId: null })
-                .then((document) =>
-                  router.push(`/arbeitsbereich/${workspaceId}/seite/${document.id}`),
-                );
-            }}
-          >
+          <Button size="sm" data-testid="overview-create-page" onClick={createPage}>
             <PlusIcon /> Neue Seite
           </Button>
         </div>
-      </div>
+      </header>
 
-      {flat.length === 0 ? (
-        <EmptyState
-          title="Noch keine Seiten"
-          description="Lege deine erste Seite an."
-          icon={FileTextIcon}
-        />
-      ) : (
-        <ul className="grid gap-2 sm:grid-cols-2">
-          {flat.slice(0, 12).map((document) => (
-            <li key={document.id}>
-              <Card className="transition-colors hover:border-border-strong">
-                <CardContent className="flex items-center gap-2 py-3">
-                  <DocumentIcon
-                    icon={document.icon}
-                    iconColor={document.iconColor}
-                    type={document.type}
-                    className="size-5 text-base text-muted-foreground"
-                  />
-                  {/* An anchor, not a button: the card goes somewhere, so
-                      middle click, Strg-/Cmd-click and „Link in neuem Tab
-                      öffnen“ have to work without this component doing
-                      anything for it (issue #29). */}
-                  <Link
-                    href={`/arbeitsbereich/${workspaceId}/seite/${document.id}`}
-                    className="min-w-0 flex-1 cursor-pointer truncate text-left text-sm"
-                    data-testid={`overview-page-${document.id}`}
-                  >
-                    {document.title}
-                  </Link>
-                </CardContent>
-              </Card>
-            </li>
+      {data === undefined ? (
+        <div className="flex flex-col gap-3" role="status" aria-label="Übersicht wird geladen …">
+          {Array.from({ length: 6 }, (_, index) => (
+            <Skeleton key={index} className="h-8 w-full" />
           ))}
-        </ul>
+        </div>
+      ) : (
+        <WorkspaceOverviewBody workspaceId={workspaceId} data={data} onCreatePage={createPage} />
       )}
     </AppPage>
+  );
+}
+
+/**
+ * The four blocks. Split out from the shell above so the loading and error
+ * paths stay readable, and so this half never renders without data.
+ */
+function WorkspaceOverviewBody({
+  workspaceId,
+  data,
+  onCreatePage,
+}: {
+  workspaceId: string;
+  data: WorkspaceOverviewResponse;
+  onCreatePage: () => void;
+}) {
+  const hasAttention =
+    data.attention.openComments.count > 0 ||
+    data.attention.brokenLinks.count > 0 ||
+    data.attention.stalledAttachments.count > 0;
+
+  if (data.recentlyEdited.length === 0) {
+    return (
+      <EmptyState
+        title="Noch keine Seiten"
+        description="Lege deine erste Seite an. Alles Weitere wächst daran."
+        icon={FileTextIcon}
+        action={{ label: 'Seite anlegen', onClick: onCreatePage }}
+      />
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <section aria-labelledby="overview-recent">
+          <SectionRule>
+            <span id="overview-recent">Weitermachen</span>
+          </SectionRule>
+          <ul className="flex flex-col">
+            {data.recentlyEdited.map((document) => (
+              <RecentRow key={document.id} workspaceId={workspaceId} document={document} />
+            ))}
+          </ul>
+        </section>
+
+        {hasAttention ? (
+          <section aria-labelledby="overview-attention">
+            <SectionRule>
+              <span id="overview-attention">Liegen geblieben</span>
+            </SectionRule>
+            <ul className="flex flex-col gap-3">
+              <AttentionRow
+                workspaceId={workspaceId}
+                icon={MessageSquareIcon}
+                label="offene Kommentare"
+                item={data.attention.openComments}
+              />
+              <AttentionRow
+                workspaceId={workspaceId}
+                icon={Link2OffIcon}
+                label="Verweise ins Leere"
+                item={data.attention.brokenLinks}
+              />
+              <AttentionRow
+                workspaceId={workspaceId}
+                icon={PaperclipIcon}
+                label="Texte noch nicht gelesen"
+                item={data.attention.stalledAttachments}
+              />
+            </ul>
+          </section>
+        ) : null}
+      </div>
+
+      {data.databases.length > 0 ? (
+        <section aria-labelledby="overview-databases">
+          <SectionRule>
+            <span id="overview-databases">Datenbanken</span>
+          </SectionRule>
+          <div className="flex flex-wrap gap-2">
+            {data.databases.map((database) => (
+              <DatabaseChip key={database.id} workspaceId={workspaceId} database={database} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {data.sections.length > 0 ? (
+        <section aria-labelledby="overview-sections">
+          <SectionRule>
+            <span id="overview-sections">Bereiche</span>
+          </SectionRule>
+          <ul className="grid gap-x-8 sm:grid-cols-2">
+            {data.sections.map((section) => (
+              <SectionRow key={section.id} workspaceId={workspaceId} section={section} />
+            ))}
+          </ul>
+        </section>
+      ) : null}
+    </div>
   );
 }

@@ -19,4 +19,5 @@ export * from './memory';
 export * from './primitives';
 export * from './search';
 export * from './settings';
+export * from './workspace-overview';
 export * from './workspaces';

@@ -2,8 +2,10 @@ import { z } from 'zod';
 
 import {
   idSchema,
+  type OverviewDocument,
   type Workspace,
   workspaceListResponseSchema,
+  workspaceOverviewResponseSchema,
   workspaceSchema,
   workspaceSlugSchema,
 } from '@exocortex/contracts';
@@ -70,7 +72,97 @@ export const workspaceRenameTool: AnyToolDefinition = defineTool({
   },
 });
 
+/** "Technik › Server › nginx" — the path is what makes a title an address. */
+function formatDocumentLine(document: OverviewDocument): string {
+  const where = document.path.map((entry) => entry.title).join(' › ');
+  const suffix = where === '' ? '' : ` (in ${where})`;
+  return `${document.title}${suffix} [id: ${document.id}]`;
+}
+
+export const workspaceOverviewTool: AnyToolDefinition = defineTool({
+  name: 'exo_workspace_overview',
+  description:
+    'Zeigt den Einstieg in einen Arbeitsbereich: zuletzt bearbeitete Seiten, Datenbanken, ' +
+    'die obersten Bereiche und was liegen geblieben ist (offene Kommentare, ins Leere ' +
+    'zeigende Verweise, hängende Textextraktionen). Gut als erster Aufruf, um zu sehen, ' +
+    'woran zuletzt gearbeitet wurde, ohne den ganzen Seitenbaum zu laden.',
+  inputSchema: z.object({ workspaceId: idSchema }),
+  surfaces: ['mcp', 'ai'],
+  mutating: false,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'GET',
+      path: `/api/workspaces/${input.workspaceId}/overview`,
+      responseSchema: workspaceOverviewResponseSchema,
+    });
+
+    const sections: string[] = [
+      `${result.workspaceName}: ${result.stats.pageCount} Seiten, ` +
+        `${result.stats.databaseCount} Datenbanken, ${result.stats.editedThisWeek} davon ` +
+        'in den letzten sieben Tagen bearbeitet.',
+    ];
+
+    if (result.recentlyEdited.length > 0) {
+      sections.push(
+        ['Zuletzt bearbeitet:']
+          .concat(
+            result.recentlyEdited.map(
+              (document) => `- ${formatDocumentLine(document)} — ${document.editedAt}`,
+            ),
+          )
+          .join('\n'),
+      );
+    }
+    if (result.databases.length > 0) {
+      sections.push(
+        ['Datenbanken:']
+          .concat(
+            result.databases.map(
+              (database) => `- ${formatDocumentLine(database)}, ${database.rowCount} Zeilen`,
+            ),
+          )
+          .join('\n'),
+      );
+    }
+    if (result.sections.length > 0) {
+      sections.push(
+        ['Bereiche:']
+          .concat(
+            result.sections.map(
+              (section) =>
+                `- ${section.title} [id: ${section.id}], ` +
+                `${section.descendantCount} Unterseiten`,
+            ),
+          )
+          .join('\n'),
+      );
+    }
+
+    const attention = [
+      ['Offene Kommentare', result.attention.openComments] as const,
+      ['Verweise ins Leere', result.attention.brokenLinks] as const,
+      ['Hängende Textextraktionen', result.attention.stalledAttachments] as const,
+    ].filter(([, item]) => item.count > 0);
+    if (attention.length > 0) {
+      sections.push(
+        ['Liegen geblieben:']
+          .concat(
+            attention.map(
+              ([label, item]) =>
+                `- ${label}: ${item.count} (u. a. ` +
+                `${item.documents.map((document) => document.title).join(', ')})`,
+            ),
+          )
+          .join('\n'),
+      );
+    }
+
+    return { text: sections.join('\n\n'), data: result };
+  },
+});
+
 export const WORKSPACE_TOOLS: readonly AnyToolDefinition[] = [
   listWorkspacesTool,
+  workspaceOverviewTool,
   workspaceRenameTool,
 ];

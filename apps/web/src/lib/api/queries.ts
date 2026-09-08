@@ -35,6 +35,7 @@ import {
   type Workspace,
   type WorkspaceDetail,
   type WorkspaceListResponse,
+  type WorkspaceOverviewResponse,
 } from '@exocortex/contracts';
 
 import { ApiError, apiRequest } from './client';
@@ -46,6 +47,7 @@ export const queryKeys = {
   workspaces: ['workspaces'] as const,
   workspaceDetail: (workspaceId: string) => ['workspace', workspaceId, 'detail'] as const,
   documentTree: (workspaceId: string) => ['workspace', workspaceId, 'tree'] as const,
+  workspaceOverview: (workspaceId: string) => ['workspace', workspaceId, 'overview'] as const,
   trash: (workspaceId: string) => ['workspace', workspaceId, 'trash'] as const,
   document: (documentId: string) => ['document', documentId] as const,
   search: (workspaceId: string, query: string) =>
@@ -92,6 +94,23 @@ export function useWorkspaceDetail(
     queryKey: queryKeys.workspaceDetail(workspaceId ?? 'none'),
     queryFn: () => apiRequest<WorkspaceDetail>(`/api/workspaces/${workspaceId ?? ''}`),
     enabled: workspaceId !== undefined,
+  });
+}
+
+/**
+ * The landing view's read model: recency, databases, sections and what is
+ * lying around. Its own request rather than a slice of the tree, because the
+ * tree cannot answer any of it -- a body edit never touches the document row.
+ */
+export function useWorkspaceOverview(
+  workspaceId: string | undefined,
+): UseQueryResult<WorkspaceOverviewResponse> {
+  return useQuery({
+    queryKey: queryKeys.workspaceOverview(workspaceId ?? 'none'),
+    queryFn: () =>
+      apiRequest<WorkspaceOverviewResponse>(`/api/workspaces/${workspaceId ?? ''}/overview`),
+    enabled: workspaceId !== undefined,
+    staleTime: 30_000,
   });
 }
 

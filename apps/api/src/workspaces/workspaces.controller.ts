@@ -16,6 +16,8 @@ import {
   workspaceListResponseSchema,
   type WorkspaceMember,
   workspaceMemberSchema,
+  type WorkspaceOverviewResponse,
+  workspaceOverviewResponseSchema,
   workspaceSchema,
 } from '@exocortex/contracts';
 
@@ -23,13 +25,17 @@ import { CurrentSession } from '../auth/session.guard';
 import { currentCorrelationId } from '../common/correlation';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
+import { WorkspaceOverviewService } from './workspace-overview.service';
 import { WorkspacesService } from './workspaces.service';
 
 /** Thin controller: validation and delegation only. */
 @ApiTags('workspaces')
 @Controller('api/workspaces')
 export class WorkspacesController {
-  constructor(private readonly workspaces: WorkspacesService) {}
+  constructor(
+    private readonly workspaces: WorkspacesService,
+    private readonly overview: WorkspaceOverviewService,
+  ) {}
 
   @Get()
   @ApiOkResponse({ schema: openApiResponseSchema(workspaceListResponseSchema) })
@@ -45,6 +51,16 @@ export class WorkspacesController {
     @Body(zodPipe(createWorkspaceRequestSchema)) body: CreateWorkspaceRequest,
   ): Promise<Workspace> {
     return this.workspaces.create(session.userId, body);
+  }
+
+  /** Everything the landing view draws, in one answer. */
+  @Get(':workspaceId/overview')
+  @ApiOkResponse({ schema: openApiResponseSchema(workspaceOverviewResponseSchema) })
+  async overviewFor(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+  ): Promise<WorkspaceOverviewResponse> {
+    return this.overview.get(workspaceId, session.userId);
   }
 
   @Get(':workspaceId')
