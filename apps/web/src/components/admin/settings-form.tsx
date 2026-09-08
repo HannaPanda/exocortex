@@ -170,6 +170,34 @@ const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
     label: 'Notizen aufbewahren (Tage)',
     help: 'Ältere Sitzungsnotizen werden im Gedächtnis-Arbeitsbereich gelöscht. 0 bedeutet: nie aufräumen. Projektseiten bleiben immer stehen, andere Arbeitsbereiche werden nie angefasst.',
   },
+  'memory.consolidationEnabled': {
+    label: 'Erinnerungen verdichten',
+    help: 'Fasst nachts wiederkehrende Aussagen aus den Sitzungsnotizen zu Fakten zusammen, die ein Abruf voranstellt. Kostet einen Modellaufruf je Projekt und Nacht. Aus: es bleibt beim reinen Mitschrieb.',
+  },
+  'memory.consolidationModelSlug': {
+    label: 'Modell fürs Verdichten zu Fakten',
+    help: 'Urteilt, ob eine Notiz einen bekannten Fakt bestätigt, ersetzt oder ihm widerspricht. Ohne Eintrag wird das Modell fürs Verdichten von Sitzungen genommen.',
+  },
+  'memory.consolidationProjectsPerRun': {
+    label: 'Projekte je Durchlauf',
+    help: 'Wie viele Projekte eine Nacht abarbeitet. Begrenzt, was ein Durchlauf höchstens kostet; der Rest kommt in der nächsten Nacht dran.',
+  },
+  'memory.consolidationNotesPerProject': {
+    label: 'Notizen je Projekt',
+    help: 'Wie viele noch ungelesene Notizen ein Projektdurchlauf dem Modell vorlegt.',
+  },
+  'memory.factHalfLifeDays': {
+    label: 'Halbwertszeit eines Fakts (Tage)',
+    help: 'Ein Fakt, den niemand mehr bestätigt, verliert über diese Spanne die Hälfte seines Gewichts, dann wieder die Hälfte. Er verschwindet nicht, er wird leiser. 0 schaltet den Verfall ab.',
+  },
+  'memory.factConfidenceFloor': {
+    label: 'Untere Schwelle für Fakten',
+    help: 'Unter diesem Gewicht gilt ein Fakt nicht mehr als aktuell und wandert in den Papierkorb. Zwischen 0 und 1.',
+  },
+  'memory.recallFactLimit': {
+    label: 'Fakten vor der Trefferliste',
+    help: 'Wie viele verdichtete Fakten ein Abruf dem Rest voranstellt. 0 stellt keine voran.',
+  },
   'search.semanticEnabled': {
     label: 'Semantische Suche',
     help: 'Sucht zusätzlich nach Bedeutung statt nur nach Wörtern, damit eine Seite auch dann auftaucht, wenn niemand mehr weiß, wie sie formuliert war. Jede indexierte Seite wird dafür einmal von einem Modell in einen Vektor übersetzt, das kostet ein paar Cent pro Arbeitsbereich.',

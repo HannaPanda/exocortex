@@ -24,21 +24,21 @@ datasource db {
 // ---------------------------------------------------------------------------
 
 model User {
-  id            String   @id @default(cuid(2))
+  id            String    @id @default(cuid(2))
   name          String
-  email         String   @unique
-  emailVerified Boolean  @default(false)
+  email         String    @unique
+  emailVerified Boolean   @default(false)
   image         String?
   /// Global (cross-workspace) role. Distinct from WorkspaceRole: a global admin
   /// administers the deployment, a workspace ADMIN administers one workspace.
-  role          UserRole @default(USER)
+  role          UserRole  @default(USER)
   /// When set, the account exists but may not act: sign-in is refused and every
   /// credential is rejected. Deliberately not a deletion -- documents point at
   /// their author through `createdById`/`updatedById`, so removing the row would
   /// take the history with it. Reversible by clearing the field.
   disabledAt    DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   sessions                 Session[]
   accounts                 Account[]
@@ -261,11 +261,11 @@ model ApiToken {
 /// the person is expected to land in, because memberships are explicit: without
 /// one, an invited friend signs up and stares at an empty application.
 model Invitation {
-  id    String @id @default(cuid(2))
+  id        String @id @default(cuid(2))
   /// Lowercased at write time. The address the token was sent to, and the only
   /// address the invitation can create an account for -- the person redeeming it
   /// cannot substitute another one.
-  email String
+  email     String
   /// SHA-256 of the raw token, exactly like `ApiToken.tokenHash`. The raw value
   /// travels in the invitation link and is never stored, so a database dump
   /// cannot be replayed into accounts.
@@ -287,22 +287,22 @@ model Invitation {
   /// to ADMIN; a workspace admin inviting into their own workspace cannot.
   role UserRole @default(USER)
 
-  expiresAt DateTime
+  expiresAt    DateTime
   /// Set once, when the invitation was redeemed. A second redemption is refused.
-  acceptedAt DateTime?
+  acceptedAt   DateTime?
   /// The account that came out of this invitation, so an admin can see what an
   /// invitation turned into. Unique: one invitation, one account.
-  acceptedById String? @unique
-  acceptedBy   User?   @relation("InvitationAcceptedBy", fields: [acceptedById], references: [id], onDelete: SetNull)
+  acceptedById String?   @unique
+  acceptedBy   User?     @relation("InvitationAcceptedBy", fields: [acceptedById], references: [id], onDelete: SetNull)
   revokedAt    DateTime?
   /// How often the invitation mail was sent, including the first time. Visible
   /// in the admin list so "did it arrive?" has an answer.
-  sentCount Int @default(1)
+  sentCount    Int       @default(1)
   /// When the mail last went out, or null when sending failed every time. That
   /// case is the reason "Link kopieren" exists in the UI.
-  lastSentAt DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  lastSentAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@index([email])
   @@index([workspaceId])
@@ -486,21 +486,27 @@ model Document {
 
   /// Present when `type` is COLLECTION: the property and view definitions of
   /// this database.
-  databaseProperties DatabaseProperty[]      @relation("CollectionProperties")
-  databaseViews      DatabaseView[]          @relation("CollectionViews")
+  databaseProperties  DatabaseProperty[]      @relation("CollectionProperties")
+  databaseViews       DatabaseView[]          @relation("CollectionViews")
   /// Present when this document is a row (a PAGE child of a COLLECTION).
-  propertyValues     DocumentPropertyValue[] @relation("RowPropertyValues")
+  propertyValues      DocumentPropertyValue[] @relation("RowPropertyValues")
   /// Page a conversation was opened from. Context only.
-  aiConversations    AiConversation[]        @relation("AiConversationDocument")
+  aiConversations     AiConversation[]        @relation("AiConversationDocument")
   /// References this page makes, and references other pages make to it.
-  outgoingLinks      DocumentLink[]          @relation("DocumentLinkSource")
-  incomingLinks      DocumentLink[]          @relation("DocumentLinkTarget")
+  outgoingLinks       DocumentLink[]          @relation("DocumentLinkSource")
+  incomingLinks       DocumentLink[]          @relation("DocumentLinkTarget")
   /// Present when this COLLECTION mirrors a remote calendar.
-  calendarLinks      CalendarLink[]          @relation("CalendarLinkTarget")
+  calendarLinks       CalendarLink[]          @relation("CalendarLinkTarget")
   /// Present when this row mirrors one remote calendar object.
-  calendarObject     CalendarObjectState[]   @relation("CalendarRow")
+  calendarObject      CalendarObjectState[]   @relation("CalendarRow")
   /// Remarks about this page. Not part of its content (see `Comment`).
-  comments           Comment[]               @relation("DocumentComments")
+  comments            Comment[]               @relation("DocumentComments")
+  /// Present when this page *is* a distilled memory fact (issue #46).
+  memoryFact          MemoryFact?             @relation("MemoryFactPage")
+  /// Present when this page is a session note a consolidation run has read.
+  memoryConsolidation MemoryConsolidation?    @relation("MemoryConsolidationNote")
+  /// Facts this session note is evidence for.
+  memoryFactSources   MemoryFactSource[]      @relation("MemoryFactSourceNote")
 
   @@index([workspaceId, parentId, orderKey])
   @@index([workspaceId, archivedAt])
@@ -1344,4 +1350,127 @@ model CalendarObjectState {
   /// The reminder sweep asks for "appointments around now", once a minute.
   @@index([occurrenceStart])
   @@map("calendar_object_state")
+}
+
+/// What a consolidation run decided about one fact.
+///
+/// `CURRENT` is what a recall answers with. `SUPERSEDED` is kept rather than
+/// deleted because "this used to be true until the 14th" is itself an answer,
+/// and because a superseded fact is the only evidence that the newer one is a
+/// correction rather than a first sighting. `CONFLICTED` is the honest third
+/// state: two notes disagree and nothing in the system knows which wins, so it
+/// is marked and left for a human instead of resolved by coin toss.
+enum MemoryFactStatus {
+  CURRENT
+  SUPERSEDED
+  CONFLICTED
+}
+
+/// One distilled statement the agents' memory holds to be true (issue #46).
+///
+/// The wording lives in an ordinary page (`documentId`), which is what makes a
+/// fact searchable, embeddable, versioned and readable by a human without a
+/// single line of new rendering. This row is the metadata that a page cannot
+/// carry: how sure we are, when it was last confirmed, and what replaced it.
+///
+/// It is deliberately *not* a database row in the ADR-011 sense. A `Document`
+/// with `type: 'COLLECTION'` is a thing a person designs and rearranges; this
+/// schema is fixed, written only by a background job, and read on the hot path
+/// of every recall. A typed table is the honest shape for that.
+model MemoryFact {
+  id String @id @default(cuid(2))
+
+  /// The page carrying the statement. One page, one fact: deleting the page
+  /// deletes the fact, which is what makes the trash the undo button here too.
+  documentId String   @unique
+  document   Document @relation("MemoryFactPage", fields: [documentId], references: [id], onDelete: Cascade)
+
+  /// Denormalized from the page. Facts are always read workspace-scoped, and
+  /// resolving the workspace through the page on every recall would cost a join
+  /// on the hot path. No relation: the row dies with its page anyway.
+  workspaceId String
+  /// Normalized project key, the same one `POST /api/memory/remember` files
+  /// notes under. The unit a consolidation run works on.
+  projectKey  String
+
+  status MemoryFactStatus @default(CURRENT)
+
+  /// Between 0 and 1. Raised by a confirmation, lowered by time (the
+  /// `decay-memory-facts` sweep). Not a probability, a ranking weight: it
+  /// decides what a recall shows first and what it stops showing at all.
+  confidence      Float    @default(0.5)
+  /// How many separate notes have said this. The reason a fact seen ten times
+  /// outlives one seen once, whatever their ages.
+  confirmations   Int      @default(1)
+  firstSeenAt     DateTime @default(now())
+  /// Last time a note said this again. What the decay measures against.
+  lastConfirmedAt DateTime @default(now())
+
+  /// The fact that replaced this one. Set together with `SUPERSEDED`.
+  supersededById String?
+  supersededBy   MemoryFact?  @relation("MemoryFactSuccession", fields: [supersededById], references: [id], onDelete: SetNull)
+  supersedes     MemoryFact[] @relation("MemoryFactSuccession")
+
+  /// Page in the curated brain this fact was promoted into, and when. A plain
+  /// pointer rather than a relation: the brain is somebody's to reorganize and
+  /// to delete from, and a dangling pointer there is a smaller problem than a
+  /// cascade reaching out of the memory workspace into curated pages (ADR-019).
+  promotedDocumentId String?
+  promotedAt         DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sources MemoryFactSource[]
+
+  /// "The current facts of this project, best first" -- the recall query.
+  @@index([workspaceId, projectKey, status, confidence])
+  /// The decay sweep, which asks for facts nobody has confirmed in a while.
+  @@index([status, lastConfirmedAt])
+  @@index([supersededById])
+  @@map("memory_fact")
+}
+
+/// A note that a consolidation run has already looked at.
+///
+/// The cursor of the whole mechanism, and the reason it needs no timestamp
+/// bookkeeping of its own: a note without a row here is unread, a note with one
+/// is done. A run that produced nothing still writes a row, or an unremarkable
+/// note would be re-read, and re-paid for, every single night.
+model MemoryConsolidation {
+  id String @id @default(cuid(2))
+
+  noteId String   @unique
+  note   Document @relation("MemoryConsolidationNote", fields: [noteId], references: [id], onDelete: Cascade)
+
+  /// How many facts this note produced or confirmed. Zero is a normal answer.
+  factsProduced  Int      @default(0)
+  consolidatedAt DateTime @default(now())
+
+  @@map("memory_consolidation")
+}
+
+/// The note a fact was distilled from. Its evidence.
+///
+/// Kept as rows rather than as `[[wiki links]]` in the fact's body: a reference
+/// addresses a title (issue #14) and two sessions on the same afternoon can
+/// easily produce two notes called the same thing. Evidence has to point at an
+/// identity or it is not evidence.
+model MemoryFactSource {
+  id String @id @default(cuid(2))
+
+  factId String     @map("factId")
+  fact   MemoryFact @relation(fields: [factId], references: [id], onDelete: Cascade)
+
+  noteId String   @map("noteId")
+  note   Document @relation("MemoryFactSourceNote", fields: [noteId], references: [id], onDelete: Cascade)
+
+  /// Whether this note created the fact or repeated it. A first sighting and a
+  /// confirmation weigh differently when a human asks where a claim came from.
+  confirming Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@unique([factId, noteId])
+  @@index([noteId])
+  @@map("memory_fact_source")
 }

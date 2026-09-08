@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { type VerifiedSession } from '@exocortex/auth';
@@ -7,6 +7,18 @@ import {
   memoryCaptureRequestSchema,
   type MemoryCaptureResponse,
   memoryCaptureResponseSchema,
+  type MemoryConsolidateRequest,
+  memoryConsolidateRequestSchema,
+  type MemoryConsolidateResponse,
+  memoryConsolidateResponseSchema,
+  type MemoryFactListQuery,
+  memoryFactListQuerySchema,
+  type MemoryFactListResponse,
+  memoryFactListResponseSchema,
+  type MemoryFactPromoteRequest,
+  memoryFactPromoteRequestSchema,
+  type MemoryFactPromoteResponse,
+  memoryFactPromoteResponseSchema,
   type MemoryRecallRequest,
   memoryRecallRequestSchema,
   type MemoryRecallResponse,
@@ -21,6 +33,7 @@ import { CurrentSession } from '../auth/session.guard';
 import { currentCorrelationId } from '../common/correlation';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
+import { MemoryFactsService } from './memory-facts.service';
 import { MemoryService } from './memory.service';
 
 /**
@@ -34,7 +47,10 @@ import { MemoryService } from './memory.service';
 @ApiTags('memory')
 @Controller('api/memory')
 export class MemoryController {
-  constructor(private readonly memory: MemoryService) {}
+  constructor(
+    private readonly memory: MemoryService,
+    private readonly facts: MemoryFactsService,
+  ) {}
 
   @Get('recall')
   @ApiQuery({ name: 'q', required: false })
@@ -73,6 +89,58 @@ export class MemoryController {
   ): Promise<MemoryCaptureResponse> {
     return this.memory.capture({
       userId: session.userId,
+      request: body,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  /**
+   * The distilled facts of a project (issue #46).
+   *
+   * A GET for the same reason `recall` is one: reading what is known must not
+   * require a `write` token.
+   */
+  @Get('facts')
+  @ApiQuery({ name: 'project', required: false })
+  @ApiQuery({ name: 'status', required: false })
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiOkResponse({ schema: openApiResponseSchema(memoryFactListResponseSchema) })
+  async listFacts(
+    @CurrentSession() session: VerifiedSession,
+    @Query(zodPipe(memoryFactListQuerySchema)) query: MemoryFactListQuery,
+  ): Promise<MemoryFactListResponse> {
+    return this.facts.list(session.userId, query);
+  }
+
+  /**
+   * Applies one consolidation run. The worker's only way in: it decides what a
+   * note means, the API decides what that does to the memory.
+   */
+  @Post('facts')
+  @ApiBody({ schema: openApiSchema(memoryConsolidateRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(memoryConsolidateResponseSchema) })
+  async consolidate(
+    @CurrentSession() session: VerifiedSession,
+    @Body(zodPipe(memoryConsolidateRequestSchema)) body: MemoryConsolidateRequest,
+  ): Promise<MemoryConsolidateResponse> {
+    return this.facts.consolidate({
+      userId: session.userId,
+      request: body,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  @Post('facts/:factId/promote')
+  @ApiBody({ schema: openApiSchema(memoryFactPromoteRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(memoryFactPromoteResponseSchema) })
+  async promote(
+    @CurrentSession() session: VerifiedSession,
+    @Param('factId') factId: string,
+    @Body(zodPipe(memoryFactPromoteRequestSchema)) body: MemoryFactPromoteRequest,
+  ): Promise<MemoryFactPromoteResponse> {
+    return this.facts.promote({
+      userId: session.userId,
+      factId,
       request: body,
       correlationId: currentCorrelationId(),
     });

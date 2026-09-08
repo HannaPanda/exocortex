@@ -85,6 +85,7 @@ export interface JobProgressEvent {
     | typeof QUEUE_NAMES.documentCover
     | typeof QUEUE_NAMES.calendarSync
     | typeof QUEUE_NAMES.memoryCapture
+    | typeof QUEUE_NAMES.memoryConsolidate
   >;
   workspaceId: string;
   correlationId: string;
@@ -286,6 +287,8 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
       // Nor does memory capture: by the time it runs, the session that
       // triggered it has ended and its editor is gone.
       | typeof QUEUE_NAMES.memoryCapture
+      // Nor does consolidation, which runs in the middle of the night.
+      | typeof QUEUE_NAMES.memoryConsolidate
     >;
     workspaceId: string;
     correlationId: string;

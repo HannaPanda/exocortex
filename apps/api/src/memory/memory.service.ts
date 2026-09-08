@@ -5,6 +5,7 @@ import {
   type MemoryCaptureRequest,
   type MemoryCaptureResponse,
   type MemoryHit,
+  type MemoryRecallFact,
   type MemoryRecallRequest,
   type MemoryRecallResponse,
   type MemoryRememberRequest,
@@ -30,6 +31,14 @@ const PER_WORKSPACE_LIMIT = 10;
 const MAX_SNIPPET_CHARS = 400;
 /** How many recent notes a recall without a query falls back to. */
 const RECENT_FALLBACK_LIMIT = 20;
+/**
+ * Share of a recall's character budget the distilled facts may take.
+ *
+ * A third, not more: facts are the better answer but the thinner one, and a
+ * recall that is nothing but standing statements has lost the detail an agent
+ * actually works from.
+ */
+const FACT_BUDGET_SHARE = 1 / 3;
 
 /**
  * A hit from the agents' own area is worth more than an equally ranked hit from
@@ -87,17 +96,76 @@ export class MemoryService {
             project,
           });
 
+    const facts =
+      project === null || memoryWorkspaceId === null
+        ? []
+        : await this.currentFacts({
+            workspaceId: memoryWorkspaceId,
+            projectKey: project,
+            readable: workspaces,
+            limit: settings['memory.recallFactLimit'],
+          });
+
     const ranked = hits.sort((a, b) => b.score - a.score).slice(0, limit);
-    const { text, kept, truncated } = renderRecall(ranked, maxChars);
+    const factsText = renderFacts(facts, Math.floor(maxChars * FACT_BUDGET_SHARE));
+    const { text, kept, truncated } = renderRecall(ranked, maxChars - factsText.length);
 
     return {
       query: request.q ?? null,
       project,
+      facts,
       hits: kept,
-      text,
+      text: factsText.length === 0 ? text : `${factsText}\n\n${text}`,
       truncated,
       tookMs: Date.now() - startedAt,
     };
+  }
+
+  /**
+   * What the memory holds to be true for this project (issue #46).
+   *
+   * Ahead of the hits and independent of the query on purpose. A session that
+   * has just started asks nothing yet, and the answer it needs is not "here are
+   * five notes that mention this directory" but "here is what is true here".
+   *
+   * Reads the memory workspace directly rather than through the search index:
+   * these are not search results, there is no query to rank them against, and
+   * they are already the answer.
+   */
+  private async currentFacts(input: {
+    workspaceId: string;
+    projectKey: string;
+    readable: readonly { id: string }[];
+    limit: number;
+  }): Promise<MemoryRecallFact[]> {
+    if (input.limit === 0) return [];
+    if (!input.readable.some((workspace) => workspace.id === input.workspaceId)) return [];
+
+    const rows = await this.prisma.memoryFact.findMany({
+      where: {
+        workspaceId: input.workspaceId,
+        projectKey: input.projectKey,
+        status: 'CURRENT',
+        document: { archivedAt: null },
+      },
+      orderBy: [{ confidence: 'desc' }, { lastConfirmedAt: 'desc' }],
+      take: input.limit,
+      select: {
+        id: true,
+        documentId: true,
+        confirmations: true,
+        lastConfirmedAt: true,
+        document: { select: { title: true } },
+      },
+    });
+
+    return rows.map((row) => ({
+      id: row.id,
+      documentId: row.documentId,
+      statement: row.document.title,
+      confirmations: row.confirmations,
+      lastConfirmedAt: row.lastConfirmedAt.toISOString(),
+    }));
   }
 
   /**
@@ -544,4 +612,28 @@ function renderRecall(
   }
 
   return { text: lines.join('\n'), kept, truncated };
+}
+
+/**
+ * The facts as one block of German text, inside its own budget.
+ *
+ * Headed rather than merged into the list of hits: an agent reading this needs
+ * to be able to tell "this is held to be true" from "this was written down
+ * once", and the heading is the whole distinction.
+ */
+function renderFacts(facts: readonly MemoryRecallFact[], maxChars: number): string {
+  if (facts.length === 0 || maxChars <= 0) return '';
+
+  const lines: string[] = ['Stand der Dinge (verdichtet aus früheren Sitzungen):'];
+  let used = lines[0]!.length;
+
+  for (const fact of facts) {
+    const confirmed = fact.lastConfirmedAt.slice(0, 10);
+    const line = `- ${fact.statement} (${fact.confirmations}× bestätigt, zuletzt ${confirmed}, id: ${fact.documentId})`;
+    if (used + line.length > maxChars) break;
+    lines.push(line);
+    used += line.length + 1;
+  }
+
+  return lines.length === 1 ? '' : lines.join('\n');
 }

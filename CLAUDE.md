@@ -150,6 +150,11 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   rank, and falls back to full-text alone whenever the embedding call fails.
   `packages/database` reaches the model through a port, never by importing
   `@exocortex/ai`.
+- ADR-021: the memory keeps distilled facts above its session notes. A fact is
+  an ordinary page plus a `MemoryFact` sidecar row; a nightly job judges notes
+  against it and the API applies the judgement; confidence fades with silence
+  instead of notes expiring by age; a contradiction is marked, never resolved by
+  weight; promotion into a curated workspace stays a human act.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

@@ -87,14 +87,36 @@ export const memoryHitSchema = z.object({
 });
 export type MemoryHit = z.infer<typeof memoryHitSchema>;
 
+/**
+ * A distilled fact as a recall shows it (issue #46).
+ *
+ * Deliberately thinner than the full fact: a recall answers "what holds here",
+ * and the bookkeeping that decides which facts hold is nobody's business at
+ * that moment. `GET /api/memory/facts` has the rest.
+ */
+export const memoryRecallFactSchema = z.object({
+  id: idSchema,
+  documentId: idSchema,
+  statement: z.string(),
+  confirmations: z.number().int().nonnegative(),
+  lastConfirmedAt: isoDateTimeSchema,
+});
+export type MemoryRecallFact = z.infer<typeof memoryRecallFactSchema>;
+
 export const memoryRecallResponseSchema = z.object({
   query: z.string().nullable(),
   project: z.string().nullable(),
+  /**
+   * What the memory holds to be true for this project, before the hits and
+   * regardless of the query. Empty unless a project was named and something has
+   * been consolidated for it.
+   */
+  facts: z.array(memoryRecallFactSchema).default([]),
   hits: z.array(memoryHitSchema),
   /**
-   * The same hits as one block of German text, already inside `maxChars`.
-   * The injection hook pastes exactly this and needs no formatting logic of
-   * its own; a model client can ignore it and read `hits` instead.
+   * The facts and the hits as one block of German text, already inside
+   * `maxChars`. The injection hook pastes exactly this and needs no formatting
+   * logic of its own; a model client can ignore it and read the fields instead.
    */
   text: z.string(),
   /** True when hits were dropped to stay inside `maxChars`. */

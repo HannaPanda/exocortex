@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { DocumentsModule } from '../documents/documents.module';
 import { SearchModule } from '../search/search.module';
 
+import { MemoryFactsService } from './memory-facts.service';
 import { MemoryController } from './memory.controller';
 import { MemoryService } from './memory.service';
 
@@ -15,7 +16,7 @@ import { MemoryService } from './memory.service';
 @Module({
   imports: [SearchModule, DocumentsModule],
   controllers: [MemoryController],
-  providers: [MemoryService],
-  exports: [MemoryService],
+  providers: [MemoryService, MemoryFactsService],
+  exports: [MemoryService, MemoryFactsService],
 })
 export class MemoryModule {}

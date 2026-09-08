@@ -5,6 +5,7 @@ import { COMMENT_TOOLS } from './tools/comments.js';
 import { DATABASE_TOOLS } from './tools/databases.js';
 import { INVITATION_TOOLS } from './tools/invitations.js';
 import { LINK_TOOLS } from './tools/links.js';
+import { MEMORY_FACT_TOOLS } from './tools/memory-facts.js';
 import { MEMORY_TOOLS } from './tools/memory.js';
 import { PAGE_TOOLS } from './tools/pages.js';
 import { RESEARCH_TOOLS } from './tools/research.js';
@@ -24,6 +25,7 @@ export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...AI_RUN_TOOLS,
   ...RESEARCH_TOOLS,
   ...MEMORY_TOOLS,
+  ...MEMORY_FACT_TOOLS,
   ...INVITATION_TOOLS,
 ];
 

@@ -15,6 +15,7 @@ export const QUEUE_NAMES = {
   documentCover: 'document-cover',
   calendarSync: 'calendar-sync',
   memoryCapture: 'memory-capture',
+  memoryConsolidate: 'memory-consolidate',
 } as const;
 
 export const queueNameSchema = z.enum([
@@ -26,6 +27,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.documentCover,
   QUEUE_NAMES.calendarSync,
   QUEUE_NAMES.memoryCapture,
+  QUEUE_NAMES.memoryConsolidate,
 ]);
 export type QueueName = z.infer<typeof queueNameSchema>;
 
@@ -118,6 +120,20 @@ export const maintenanceJobSchema = jobBase.extend({
      * account came from, and that is worth keeping.
      */
     'prune-invitations',
+    /**
+     * Finds the projects whose memory holds notes nobody has consolidated yet
+     * and hands each one to the `memory-consolidate` queue (issue #46). The
+     * fan-out only: the model call and the writing happen there, because this
+     * sweep has neither an AI provider nor an API client.
+     */
+    'consolidate-memories',
+    /**
+     * Lowers the confidence of facts nobody has confirmed lately and archives
+     * the ones that fall through `memory.factConfidenceFloor` (issue #46).
+     * A fact does not expire on a birthday, it gets quieter; this is the sweep
+     * that turns the volume down.
+     */
+    'decay-memory-facts',
   ]),
   /** Optional scope; `null` means all workspaces. */
   workspaceId: idSchema.nullable().default(null),
@@ -214,6 +230,28 @@ export const memoryCaptureJobSchema = jobBase.extend({
 });
 export type MemoryCaptureJob = z.infer<typeof memoryCaptureJobSchema>;
 
+/**
+ * A nightly consolidation run (issue #46).
+ *
+ * Carries no content at all, unlike capture: the notes it works on are already
+ * pages, and reading them is the job's own first step. One job is one project,
+ * fanned out by the `consolidate-memories` maintenance sweep, which is also
+ * where `projectDocumentId` is resolved: matching a project page by title in
+ * two places is how two places end up disagreeing about which page it is.
+ *
+ * `userId` is the account the writes are made as, exactly as in capture: the
+ * facts are ordinary pages and must pass the checks a hand-typed page passes.
+ */
+export const memoryConsolidateJobSchema = jobBase.extend({
+  workspaceId: idSchema,
+  userId: idSchema,
+  /** Stable key of the project, as `remember` files its notes under. */
+  projectKey: z.string().min(1).max(300),
+  /** The project's page in the memory workspace. Its children are the notes. */
+  projectDocumentId: idSchema,
+});
+export type MemoryConsolidateJob = z.infer<typeof memoryConsolidateJobSchema>;
+
 export const JOB_SCHEMAS = {
   [QUEUE_NAMES.documentMaterialization]: materializeDocumentJobSchema,
   [QUEUE_NAMES.searchIndexing]: indexDocumentJobSchema,
@@ -223,6 +261,7 @@ export const JOB_SCHEMAS = {
   [QUEUE_NAMES.documentCover]: documentCoverJobSchema,
   [QUEUE_NAMES.calendarSync]: calendarSyncJobSchema,
   [QUEUE_NAMES.memoryCapture]: memoryCaptureJobSchema,
+  [QUEUE_NAMES.memoryConsolidate]: memoryConsolidateJobSchema,
 } as const;
 
 export type JobPayloadMap = {
@@ -234,4 +273,5 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.documentCover]: DocumentCoverJob;
   [QUEUE_NAMES.calendarSync]: CalendarSyncJob;
   [QUEUE_NAMES.memoryCapture]: MemoryCaptureJob;
+  [QUEUE_NAMES.memoryConsolidate]: MemoryConsolidateJob;
 };

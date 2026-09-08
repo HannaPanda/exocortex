@@ -335,7 +335,7 @@ dumped on a connector that works badly with more than a handful of tools.
 
 ### The memory surface
 
-`POST /api/mcp/memory` serves three tools instead of fifty-three: `recall`,
+`POST /api/mcp/memory` serves three tools instead of fifty-five: `recall`,
 `remember` and `fetch`. It is what turns eXocortex from a reference work into a
 memory for a chat client (issue #34, [ADR-019](adr/ADR-019-agent-memory-in-its-own-workspace.md)).
 
@@ -398,6 +398,9 @@ script):
 | `GET /api/memory/recall`    | `read`  | Searches across the readable workspaces. Without `q` it answers with the newest notes for `project`. `maxChars` and `limit` are clamped by `memory.recallMaxChars` / `memory.recallMaxResults`. |
 | `POST /api/memory/remember` | `write` | Writes one distilled note under the project page. `appendToday` adds to today's note instead of starting a page.                                                                                |
 | `POST /api/memory/capture`  | `write` | Hands a finished session over for distillation. Answers `{accepted, jobId, reason}` at once and never throws for something the caller cannot fix.                                               |
+| `GET /api/memory/facts`     | `read`  | The distilled facts of a project, best first. `status` picks between `current` (the default), `superseded` and `conflicted`.                                                                    |
+| `POST /api/memory/facts`    | `write` | Applies one consolidation run. Not a tool: see below.                                                                                                                                          |
+| `POST /api/memory/facts/:id/promote` | `write` | Copies a fact into a curated workspace somebody names.                                                                                                                             |
 
 `recall` is a `GET` deliberately: `requiredScopeForRequest` derives the needed
 scope from the method, so a `POST` would force every client that only ever looks
@@ -406,6 +409,24 @@ things up to hold a `write` token.
 `capture` stores nothing itself. The transcript goes into a `memory-capture`
 job, a model distils it, and only the summary is written; see
 `docs/background-jobs.md`.
+
+### The facts above the notes
+
+Since issue #46 ([ADR-021](adr/ADR-021-facts-above-notes.md)) the memory keeps a
+second layer: statements that hold until a later note replaces them, distilled
+nightly from the notes themselves. `recall` puts the current ones in front of
+its hits, so a session that has just started is told what is true before it is
+told what happened.
+
+Two of the three endpoints are tools. `exo_memory_facts` reads them, including
+the contradictions somebody has to resolve, and `exo_memory_fact_promote` moves
+one into a curated workspace.
+
+The third, `POST /api/memory/facts`, deliberately is not, and it is the one
+exemption in `scripts/check-mcp-catalog.mjs` worth understanding: it rewrites
+what the memory believes in a single call, and it exists for the job that has
+just read the notes it is judging. A model able to reach it directly could
+rewrite its own past without any note saying so.
 
 ## Confirmation gate
 

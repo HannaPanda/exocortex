@@ -346,6 +346,37 @@ export class QueueRegistry {
         data: { correlationId, task: 'prune-invitations', workspaceId: null, documentId: null },
       },
     );
+    // Daily, before the note prune: facts are distilled from notes, so the
+    // distilling has to happen while the notes are still there. A no-op while
+    // `memory.consolidationEnabled` is off, which is the default.
+    await queue.upsertJobScheduler(
+      'consolidate-memories',
+      { pattern: '0 3 * * *' },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: {
+          correlationId,
+          task: 'consolidate-memories',
+          workspaceId: null,
+          documentId: null,
+        },
+      },
+    );
+    // Daily, after the consolidation: a fact confirmed tonight should not lose
+    // weight in the same hour it gained it.
+    await queue.upsertJobScheduler(
+      'decay-memory-facts',
+      { pattern: '45 3 * * *' },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: {
+          correlationId,
+          task: 'decay-memory-facts',
+          workspaceId: null,
+          documentId: null,
+        },
+      },
+    );
     this.logger.info('Maintenance schedulers registered');
   }
 

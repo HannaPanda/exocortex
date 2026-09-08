@@ -212,6 +212,11 @@ const EXEMPT = [
     reason:
       'The SessionEnd hook posts a whole transcript here to be condensed (ADR-019). `remember` is the deliberate half and is a tool; capture is machinery.',
   },
+  {
+    route: 'POST /api/memory/facts',
+    reason:
+      'Applies one nightly consolidation run (issue #46). It rewrites what the memory believes in a single call, for a job that has just read the notes it is judging; a model able to call it directly could rewrite its own past without a note saying so. Reading is `exo_memory_facts`, promoting is `exo_memory_fact_promote`.',
+  },
 ];
 
 // ---------------------------------------------------------------------------

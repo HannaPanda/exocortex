@@ -158,6 +158,43 @@ export const settingsSchema = z.object({
    */
   'memory.retentionDays': z.number().int().min(0).max(3_650).default(0),
   /**
+   * Consolidation: turning repeated session notes into distilled facts
+   * (issue #46).
+   *
+   * Off by default, because switching it on means a paid model call per project
+   * per night. Once on, a nightly run reads the notes nobody has consolidated
+   * yet and decides, per note, whether it confirms, replaces or contradicts
+   * something the memory already holds.
+   */
+  'memory.consolidationEnabled': z.boolean().default(false),
+  /**
+   * Model that judges notes against existing facts. Null falls back to
+   * `memory.captureModelSlug`, then to the compaction and default models: this
+   * is the same kind of reading work distillation already does.
+   */
+  'memory.consolidationModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
+  /** Projects one nightly run may work through. Bounds the spend per night. */
+  'memory.consolidationProjectsPerRun': z.number().int().min(1).max(100).default(10),
+  /** Notes handed to the model in one project's run. */
+  'memory.consolidationNotesPerProject': z.number().int().min(1).max(100).default(25),
+  /**
+   * Half-life of an unconfirmed fact, in days. A fact nobody repeats loses half
+   * its ranking weight over this span, then half again. Zero switches the decay
+   * off, which leaves a fact from March answering as loudly as one from
+   * yesterday.
+   *
+   * Decay is the whole reason this is not `memory.retentionDays` a second time:
+   * age is not the question, "has anybody said this lately" is.
+   */
+  'memory.factHalfLifeDays': z.number().int().min(0).max(3_650).default(90),
+  /**
+   * Confidence below which a fact stops being current. It is archived, not
+   * deleted: everything in the memory workspace goes through the trash first.
+   */
+  'memory.factConfidenceFloor': z.number().min(0).max(1).default(0.15),
+  /** Facts a recall may put in front of the hits. Kept small; the hits need room. */
+  'memory.recallFactLimit': z.number().int().min(0).max(20).default(5),
+  /**
    * Semantic search over `document_embedding` (issue #34, AP4).
    *
    * Off by default, because switching it on means every indexed page becomes a

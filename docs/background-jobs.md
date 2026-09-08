@@ -9,10 +9,11 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `document-materialization` | collaboration server (debounced), API (import, snapshot restore)                                                     | `createMaterializeDocumentProcessor` | real                                                                                                                                                                                                                                                                                         |
 | `search-indexing`          | materialization, document mutations, outbox dispatch                                                                 | `createIndexDocumentProcessor`       | real                                                                                                                                                                                                                                                                                         |
 | `ai`                       | `AiService.createRun`, `ConversationsService.postMessage`                                                            | `createAiRunProcessor`               | real, mock provider                                                                                                                                                                                                                                                                          |
-| `maintenance`              | repeatable schedulers, outbox dispatch                                                                               | `createMaintenanceProcessor`         | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`, `resolve-document-links`, `backfill-document-links`, `snapshot-active-documents`, `backfill-embeddings`, `prune-memories`, `prune-invitations`), documented placeholder (`vacuum-search-index`) |
+| `maintenance`              | repeatable schedulers, outbox dispatch                                                                               | `createMaintenanceProcessor`         | real (`dispatch-outbox`, `prune-snapshots`, `collect-orphaned-covers`, `reap-stale-ai-runs`, `resolve-document-links`, `backfill-document-links`, `snapshot-active-documents`, `backfill-embeddings`, `prune-memories`, `prune-invitations`, `consolidate-memories`, `decay-memory-facts`), documented placeholder (`vacuum-search-index`) |
 | `attachment-text`          | attachment upload, `GET /api/attachments/:id/text` (on demand)                                                       | `createAttachmentTextProcessor`      | real                                                                                                                                                                                                                                                                                         |
 | `document-cover`           | `POST /api/documents/:id/cover/generate`                                                                             | `createDocumentCoverProcessor`       | real                                                                                                                                                                                                                                                                                         |
 | `memory-capture`           | `POST /api/memory/capture` (Claude Code hook, Hermes, any client)                                                    | `createMemoryCaptureProcessor`       | real                                                                                                                                                                                                                                                                                         |
+| `memory-consolidate`       | `consolidate-memories` (nightly fan-out, one job per project)                                                        | `createMemoryConsolidateProcessor`   | real                                                                                                                                                                                                                                                                                         |
 | `calendar-sync`            | repeatable schedulers (`calendar-pull` every 5 min, `calendar-remind` every minute, `calendar-discover` daily 05:15) | `createCalendarSyncProcessor`        | real (mailbox.org CalDAV); writes outward only for a `PUSH`/`BOTH` link                                                                                                                                                                                                                      |
 
 Queue names and payload schemas live in `packages/contracts/src/jobs.ts`, so
@@ -175,10 +176,65 @@ been _in_ the trash for another period is deleted for good. Nothing else in
 this application destroys a page outright, so a background sweep is the last
 place that should start doing it without a recoverable step first. Project
 pages (`parentId IS NULL`) are never touched — they are the roots the notes
+hang under. Since issue #46 two more things are kept: a page carrying a
+distilled fact, which was distilled precisely so it would outlive its evidence,
+and a page with children, which is what protects the `Fakten` page the facts
 hang under. The archive stage writes `document.archived` outbox rows so the
 search projection follows the same path an archive from the API takes
 (ADR-010); the delete stage needs no follow-up, because the cascades take the
 content, the projection, the embeddings and the snapshots with them.
+
+### `memory-consolidate`: notes become facts
+
+`memoryConsolidateJobSchema`: `{ correlationId, workspaceId, userId,
+projectKey, projectDocumentId }`. Carries no content at all, unlike capture:
+the notes it works on are already pages (issue #46, ADR-021).
+
+Two pieces, because the sweep that finds the work and the job that does it need
+very different things. `consolidate-memories` (daily at 03:00) groups the notes
+nobody has consolidated yet by their project page, takes up to
+`memory.consolidationProjectsPerRun` of them, oldest backlog first, and enqueues
+one `memory-consolidate` job each. It has no AI provider and no API client, and
+should not: what a note *means* is a model's judgement and belongs in a job that
+can be timed out and paid for on its own.
+
+The processor reads up to `memory.consolidationNotesPerProject` unread notes,
+asks `GET /api/memory/facts` what is already held, and asks the model for one
+line per note: `NEU`, `BESTAETIGT`, `ERSETZT`, `WIDERSPRUCH` or `NICHTS`. The
+verdicts go to `POST /api/memory/facts`, which is the only thing that writes.
+Concurrency 1 and `attempts: 1` for the same reason capture has them.
+
+Three details carry the weight:
+
+- **A note is read exactly once.** Every note in the batch gets a
+  `MemoryConsolidation` row, verdicts or not. Without it the unremarkable notes,
+  which are the majority, would be re-read and re-paid for every night.
+- **`BESTAETIGT` is the interesting answer.** A note that repeats a known fact
+  must confirm it, never create a second one; get that wrong and consolidation
+  is a more expensive way of writing the same thing down again.
+- **Ids are checked, not trusted.** A verdict naming a note outside the batch or
+  a fact that does not exist is dropped and counted as `rejected`, which is the
+  shape a hallucinated id arrives in.
+
+Off entirely while `memory.consolidationEnabled` is `false`, which is the
+default.
+
+### `decay-memory-facts`: what nobody repeats gets quieter
+
+Daily at 03:45, after the consolidation, so a fact confirmed tonight does not
+lose weight in the same hour it gained some.
+
+One multiplication: every `CURRENT` fact not confirmed in the last day has its
+confidence multiplied by `0.5 ** (1 / memory.factHalfLifeDays)`. Over a
+half-life of silence that is exactly one halving; a missed run only slows the
+decay, which is the safe direction to fail in. Facts that fall below
+`memory.factConfidenceFloor` have their page archived, with `document.archived`
+outbox rows so the search projection follows the same path an archive from the
+API takes (ADR-010).
+
+This is `prune-memories` for facts, except that it measures the right thing. A
+note ages because it records a moment; a fact does not, because it claims
+something about now. What ages is the evidence, so what falls is the weight.
 
 ### `prune-invitations`: the guest list stops growing
 

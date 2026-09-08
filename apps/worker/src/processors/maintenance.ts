@@ -12,6 +12,7 @@ import {
 } from './maintenance-tasks/cleanup';
 import { type MaintenanceTask } from './maintenance-tasks/context';
 import { backfillLinks, repairLinks, resolveLinks } from './maintenance-tasks/links';
+import { consolidateMemories, decayMemoryFacts } from './maintenance-tasks/memory-facts';
 import { dispatchOutbox } from './maintenance-tasks/outbox';
 import { backfillEmbeddings, vacuumSearchIndex } from './maintenance-tasks/search-index';
 import { pruneSnapshots, snapshotActiveDocuments } from './maintenance-tasks/snapshots';
@@ -73,12 +74,14 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'backfill-embeddings': backfillEmbeddings,
   'prune-memories': pruneMemories,
   'prune-invitations': pruneInvitations,
+  'consolidate-memories': consolidateMemories,
+  'decay-memory-facts': decayMemoryFacts,
 };
 
 /**
  * Maintenance processor.
  *
- * Twelve unrelated sweeps share one queue and one schedule; what they have in
+ * Fourteen unrelated sweeps share one queue and one schedule; what they have in
  * common is that nobody is waiting for them. The work itself lives one per
  * function in `maintenance-tasks/`, grouped by what it touches.
  */

@@ -15,6 +15,7 @@ import { createIndexDocumentProcessor } from './processors/index-document';
 import { createMaintenanceProcessor } from './processors/maintenance';
 import { createMaterializeDocumentProcessor } from './processors/materialize-document';
 import { createMemoryCaptureProcessor } from './processors/memory-capture';
+import { createMemoryConsolidateProcessor } from './processors/memory-consolidate';
 import { type WorkerRuntime } from './runtime';
 
 /**
@@ -306,5 +307,21 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     }),
   });
 
-  return [attachmentText, documentCover, calendarSync, memoryCapture];
+  // Concurrency 1 for the same reason: a nightly fan-out over ten projects is
+  // ten paid calls, and they should be ten in a row rather than ten at once.
+  const memoryConsolidate = createTypedWorker({
+    name: QUEUE_NAMES.memoryConsolidate,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 1,
+    handler: createMemoryConsolidateProcessor({
+      prisma,
+      provider,
+      apiClientFor,
+      settings: readSettings,
+      defaultModel: env.OPENROUTER_DEFAULT_MODEL ?? null,
+    }),
+  });
+
+  return [attachmentText, documentCover, calendarSync, memoryCapture, memoryConsolidate];
 }

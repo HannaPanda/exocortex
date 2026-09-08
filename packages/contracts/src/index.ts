@@ -16,6 +16,7 @@ export * from './invitations';
 export * from './jobs';
 export * from './lucide-icon-names';
 export * from './memory';
+export * from './memory-facts';
 export * from './primitives';
 export * from './search';
 export * from './settings';

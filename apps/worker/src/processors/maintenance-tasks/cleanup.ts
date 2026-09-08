@@ -141,6 +141,13 @@ export const reapStaleAiRuns: MaintenanceTask = async (context) => {
  *
  * `parentId: { not: null }` is what keeps the project pages: they are the roots
  * of the memory workspace and hold the notes that are still current.
+ *
+ * Two more things are kept, both since issue #46. A page carrying a distilled
+ * fact survives its own evidence on purpose: a fact was distilled precisely so
+ * that it would outlive the notes it came from, and ageing it out on the notes'
+ * schedule would undo the whole mechanism. A page with children survives too,
+ * which is what protects the `Fakten` page the facts hang under, and anything
+ * else somebody has built structure out of down here.
  */
 export const pruneMemories: MaintenanceTask = async (context) => {
   const { prisma, payload, logger, reportProgress } = context;
@@ -153,7 +160,14 @@ export const pruneMemories: MaintenanceTask = async (context) => {
   await reportProgress(10, 'Altes Gedächtnis wird aufgeräumt');
 
   const expiring = await prisma.document.findMany({
-    where: { workspaceId, parentId: { not: null }, archivedAt: null, updatedAt: { lt: cutoff } },
+    where: {
+      workspaceId,
+      parentId: { not: null },
+      archivedAt: null,
+      updatedAt: { lt: cutoff },
+      memoryFact: { is: null },
+      children: { none: {} },
+    },
     select: { id: true },
   });
 
