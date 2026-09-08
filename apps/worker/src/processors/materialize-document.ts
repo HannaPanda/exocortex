@@ -1,4 +1,4 @@
-import { type MaterializeDocumentJob, QUEUE_NAMES } from '@exocortex/contracts';
+import { type MaterializeDocumentJob, QUEUE_NAMES, type Settings } from '@exocortex/contracts';
 import { type Prisma, type PrismaClient } from '@exocortex/database';
 import { materializeYjsState } from '@exocortex/editor';
 import { createCorrelationId } from '@exocortex/logger';
@@ -6,11 +6,14 @@ import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocor
 
 import { sweepCommentAnchors } from './comment-anchors';
 import { replaceDocumentLinks } from './document-links';
+import { extractEntities } from './entity-extraction';
 
 export interface MaterializationDependencies {
   prisma: PrismaClient;
   queues: QueueRegistry;
   bus: RedisEventBus;
+  /** Runtime configuration (ADR-013). Read per job: the entity layer is a switch. */
+  settings: () => Promise<Settings>;
 }
 
 /**
@@ -23,7 +26,7 @@ export interface MaterializationDependencies {
  * debounced enqueue safe.
  */
 export function createMaterializeDocumentProcessor(dependencies: MaterializationDependencies) {
-  const { prisma, queues, bus } = dependencies;
+  const { prisma, queues, bus, settings } = dependencies;
 
   return async ({
     payload,
@@ -87,6 +90,28 @@ export function createMaterializeDocumentProcessor(dependencies: Materialization
       indexedAt: materializedAt,
     });
 
+    // Which entities the page talks about is derived from the same content, in
+    // the same way (issue #47). Failing here must not fail the materialization:
+    // the Markdown, the plain text and the references are already written, and
+    // losing the entity edges of one save costs one save's worth of edges,
+    // which the next one restores.
+    let entityMentions = 0;
+    try {
+      const extracted = await extractEntities(prisma, {
+        documentId: job.documentId,
+        workspaceId: job.workspaceId,
+        plainText: materialized.plainText,
+        settings: await settings(),
+        logger,
+      });
+      entityMentions = extracted.mentions;
+    } catch (error) {
+      logger.warn('Entity extraction failed', {
+        documentId: job.documentId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+
     // Anchored comments belong in this pass too: whether the block a thread
     // names still exists is derived from the same content. A deleted block
     // orphans its thread, it never removes it (issue #18).
@@ -122,6 +147,7 @@ export function createMaterializeDocumentProcessor(dependencies: Materialization
       documentId: job.documentId,
       plainTextLength: materialized.plainText.length,
       linkCount,
+      entityMentions,
       orphanedComments: commentAnchors.orphaned,
       restoredComments: commentAnchors.restored,
       reason: job.reason,

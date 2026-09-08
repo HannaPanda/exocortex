@@ -87,6 +87,7 @@ export interface JobProgressEvent {
     | typeof QUEUE_NAMES.calendarSync
     | typeof QUEUE_NAMES.memoryCapture
     | typeof QUEUE_NAMES.memoryConsolidate
+    | typeof QUEUE_NAMES.entityRescan
   >;
   workspaceId: string;
   correlationId: string;
@@ -298,6 +299,9 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
       | typeof QUEUE_NAMES.memoryCapture
       // Nor does consolidation, which runs in the middle of the night.
       | typeof QUEUE_NAMES.memoryConsolidate
+      // Nor does an entity rescan: nobody is waiting on it, and the page it
+      // would report about is not the page anybody has open.
+      | typeof QUEUE_NAMES.entityRescan
     >;
     workspaceId: string;
     correlationId: string;

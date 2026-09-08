@@ -11,6 +11,7 @@ import { createAiRunProcessor } from './processors/ai-run';
 import { createAttachmentTextProcessor } from './processors/attachment-text';
 import { createCalendarSyncProcessor } from './processors/calendar-sync';
 import { createDocumentCoverProcessor } from './processors/document-cover';
+import { createEntityRescanProcessor } from './processors/entity-rescan';
 import { createIndexDocumentProcessor } from './processors/index-document';
 import { createMaintenanceProcessor } from './processors/maintenance';
 import { createMaterializeDocumentProcessor } from './processors/materialize-document';
@@ -71,7 +72,12 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
     redisUrl: env.REDIS_URL,
     logger,
     concurrency: 4,
-    handler: createMaterializeDocumentProcessor({ prisma, queues, bus }),
+    handler: createMaterializeDocumentProcessor({
+      prisma,
+      queues,
+      bus,
+      settings: readSettings,
+    }),
     onProgress: async (payload, progress, label, job) => {
       await publishProgress({
         queue: QUEUE_NAMES.documentMaterialization,
@@ -323,5 +329,22 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     }),
   });
 
-  return [attachmentText, documentCover, calendarSync, memoryCapture, memoryConsolidate];
+  // Concurrency 1 because a rescan is a full-text scan of the deployment, and
+  // two of them at once is the one way this cheap job becomes expensive.
+  const entityRescan = createTypedWorker({
+    name: QUEUE_NAMES.entityRescan,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 1,
+    handler: createEntityRescanProcessor({ prisma, settings: readSettings }),
+  });
+
+  return [
+    attachmentText,
+    documentCover,
+    calendarSync,
+    memoryCapture,
+    memoryConsolidate,
+    entityRescan,
+  ];
 }
