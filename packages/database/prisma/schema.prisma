@@ -61,6 +61,8 @@ model User {
   oauthConsents            OauthConsent[]
   sentInvitations          Invitation[]       @relation("InvitationInvitedBy")
   acceptedInvitation       Invitation?        @relation("InvitationAcceptedBy")
+  agentSessions            AgentSession[]
+  agentWrites              AgentWriteJournal[]
 
   @@map("user")
 }
@@ -340,6 +342,7 @@ model Workspace {
   calendarAccounts CalendarAccount[]
   comments         Comment[]
   invitations      Invitation[]
+  agentWrites      AgentWriteJournal[]
 
   @@map("workspace")
 }
@@ -1499,4 +1502,88 @@ model MemoryFactSource {
   @@unique([factId, noteId])
   @@index([noteId])
   @@map("memory_fact_source")
+}
+
+// ---------------------------------------------------------------------------
+// Agent provenance (ADR-022, issue #49)
+// ---------------------------------------------------------------------------
+
+/// One connection an agent held, for as long as it held it.
+///
+/// Snapshots and the activity trail are per page, and the question a person
+/// asks about an agent is not: it is "what did this thing touch this
+/// afternoon, and take all of it back". That question needs an identity that
+/// outlives a single call, which no correlation id provides -- one request,
+/// one correlation id, by design.
+///
+/// The id is chosen by the client and only ever trusted within one account:
+/// `externalId` is unique *per user*, so naming somebody else's session id
+/// lands in a row of one's own rather than in theirs.
+model AgentSession {
+  id String @id @default(cuid(2))
+
+  /// The session id as the client knows it: minted by the stdio bin per
+  /// process, or the `Mcp-Session-Id` of an HTTP connection.
+  externalId String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// `clientInfo` from `initialize`, verbatim and unverified. Shown so a person
+  /// recognises the agent that wrote, never used for a decision.
+  clientLabel String?
+  /// 'stdio' or 'http'. Which transport carried the connection.
+  transport   String?
+  /// The API token or OAuth client behind it, for the admin view's "who".
+  credentialId String?
+
+  startedAt DateTime @default(now())
+  /// Moved forward by every journalled write, which is the only heartbeat
+  /// there is: nothing tells this deployment that an agent has gone away.
+  lastSeenAt DateTime @default(now())
+
+  writes AgentWriteJournal[]
+
+  @@unique([userId, externalId])
+  @@index([lastSeenAt])
+  @@map("agent_session")
+}
+
+/// One mutation, as it happened.
+///
+/// Deliberately no content: the snapshot the write already created holds the
+/// previous state, and this row points at it. Duplicating bytes here would
+/// double the cost of every write to buy nothing the snapshot does not have.
+model AgentWriteJournal {
+  id String @id @default(cuid(2))
+
+  sessionId String
+  session   AgentSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  /// The page that was written. Kept as a plain column with no foreign key:
+  /// a page deleted for good must not take the record of its deletion with it.
+  documentId String
+  /// Its title at the time of the write, so a deleted page still has a name.
+  documentTitle String?
+
+  actorId String?
+  actor   User?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  /// The application event type that produced this row, e.g. `document.updated`.
+  action String
+
+  /// The snapshot holding the state *before* this write, when the write made
+  /// one. Absent for mutations that snapshot nothing (a rename, a move), which
+  /// is exactly why those cannot be reverted in bulk.
+  snapshotBeforeId String?
+
+  correlationId String
+  createdAt     DateTime @default(now())
+
+  @@index([sessionId, createdAt])
+  @@index([documentId, createdAt])
+  @@map("agent_write_journal")
 }
