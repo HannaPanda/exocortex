@@ -168,7 +168,7 @@ export function JobProgressIndicator() {
       {active.map((job) => (
         <div
           key={job.jobId}
-          className="rounded-md border border-border bg-card p-2 shadow-lg"
+          className="rounded-md border border-border bg-popover p-2 shadow-lg"
           data-job-state={job.state}
         >
           <p className="mb-1 truncate text-xs text-muted-foreground">{job.label}</p>

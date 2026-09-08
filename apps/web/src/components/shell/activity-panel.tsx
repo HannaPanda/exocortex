@@ -24,6 +24,7 @@ import {
   EmptyState,
   ErrorState,
   LoadingState,
+  SectionRule,
 } from '@exocortex/ui';
 
 import { useDocument, useDocumentActivity, useRestoreSnapshot } from '@/lib/api/queries';
@@ -90,7 +91,12 @@ function Row({
   trailing?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start gap-2 rounded-md border border-border px-2 py-2 text-sm">
+    // Borderless: a boxed row per event turned a history into a stack of
+    // identical cards. The aligned icon column and the monospaced timestamps
+    // carry the sequence; a box around each one only added chrome. No painted
+    // background either -- a row that paints itself has to know which surface
+    // it is on, and gets it wrong the moment it is reused.
+    <div className="flex items-start gap-2 rounded-md px-2 py-1.5 text-sm">
       <EntryIcon type={type} />
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="truncate font-medium">{title}</span>
@@ -256,7 +262,10 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
   const entries = activity.data.entries;
 
   return (
-    <div className="flex flex-col gap-2" data-testid="activity-panel">
+    <div className="flex flex-col gap-3" data-testid="activity-panel">
+      <SectionRule as="h3" trailing={entries.length === 0 ? undefined : entries.length}>
+        Verlauf
+      </SectionRule>
       {entries.length === 0 ? (
         <EmptyState
           title="Noch keine Aktivität"
@@ -264,17 +273,19 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
           icon={ActivityIcon}
         />
       ) : (
-        entries.map((entry) => (
-          <ActivityEntryRow
-            key={entry.id}
-            entry={entry}
-            readOnly={readOnly}
-            onRequestRestore={(target) => {
-              setRestoreError(null);
-              setPendingRestore(target);
-            }}
-          />
-        ))
+        <div className="flex flex-col gap-1">
+          {entries.map((entry) => (
+            <ActivityEntryRow
+              key={entry.id}
+              entry={entry}
+              readOnly={readOnly}
+              onRequestRestore={(target) => {
+                setRestoreError(null);
+                setPendingRestore(target);
+              }}
+            />
+          ))}
+        </div>
       )}
 
       <Dialog

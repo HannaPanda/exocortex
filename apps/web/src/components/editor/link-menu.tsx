@@ -128,7 +128,7 @@ export function LinkMenu({ editor, workspaceId, trigger }: LinkMenuProps) {
                 <button
                   type="button"
                   data-testid={`link-page-option-${page.id}`}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
                   // The editor loses its selection when a button takes focus,
                   // and the link would then be set on nothing.
                   onMouseDown={(event) => event.preventDefault()}

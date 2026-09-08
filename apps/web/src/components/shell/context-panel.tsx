@@ -70,6 +70,14 @@ function ContextTab({
  * Aktivität. The tab bar is controlled rather than uncontrolled so the editor
  * can bring a tab forward — commenting a passage has to land where the composer
  * is (issue #18).
+ *
+ * Four of the five describe a page, so on a screen that is not a page — the
+ * workspace overview — they have nothing to describe and the bar is four
+ * controls that answer "nothing here" when pressed. The panel drops to the
+ * assistant alone there, and drops the bar with it: a single tab is not a
+ * choice. Same reasoning as `formatPulse` in the overview, which omits a zero
+ * rather than printing one; an interface that reports absences makes the reader
+ * filter them out every time.
  */
 export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
   const [tab, setTab] = React.useState('ai');
@@ -86,6 +94,19 @@ export function ContextPanel({ workspaceId, documentId }: ContextPanelProps) {
     handledCommentRequest.current = commentRequest.requestId;
     setTab('comments');
   }, [commentRequest]);
+
+  if (documentId === null) {
+    return (
+      <div className="flex min-h-0 flex-1 flex-col pt-2">
+        <PanelErrorBoundary
+          title="KI-Panel nicht verfügbar"
+          description="Der Chat konnte nicht angezeigt werden. Ein laufender KI-Lauf arbeitet weiter; nach dem Neuladen ist der Verlauf vollständig."
+        >
+          <AiPanel workspaceId={workspaceId} documentId={null} />
+        </PanelErrorBoundary>
+      </div>
+    );
+  }
 
   return (
     <Tabs

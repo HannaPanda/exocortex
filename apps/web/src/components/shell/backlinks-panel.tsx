@@ -10,7 +10,7 @@ import {
   type OutgoingDocumentLink,
   type RelatedDocument,
 } from '@exocortex/contracts';
-import { Badge, EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
+import { Badge, EmptyState, ErrorState, LoadingState, SectionRule } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { useDocumentLinks, useRelatedDocuments } from '@/lib/api/queries';
@@ -27,12 +27,19 @@ const KIND_LABEL: Record<DocumentLinkKind, string> = {
   wikiMark: 'Wiki-Link',
 };
 
+/**
+ * The shared instrument rule, at the panel's own scale. Using the same mark the
+ * workspace overview uses is the point: "this is a section" should look
+ * identical wherever the reader meets it.
+ */
 function SectionHeading({ children, count }: { children: React.ReactNode; count: number }) {
+  // A zero is dropped rather than printed: each of these sections says its own
+  // emptiness in a sentence underneath, so the count would report the absence
+  // twice. Same rule as `formatPulse` in the workspace overview.
   return (
-    <h3 className="flex items-center gap-2 px-1 text-xs font-medium text-muted-foreground">
+    <SectionRule as="h3" className="px-1" trailing={count === 0 ? undefined : count}>
       {children}
-      <span className="exocortex-numeric">{count}</span>
-    </h3>
+    </SectionRule>
   );
 }
 
@@ -66,8 +73,11 @@ function LinkRow({
     </>
   );
 
-  const className =
-    'flex w-full flex-col gap-1 rounded-md border border-border px-2 py-2 text-left';
+  // No resting border. A panel of six of these was six identical outlined
+  // boxes stacked, which is the card grid this design system rules out; the
+  // section rules above them already say where one group ends and the next
+  // begins, and hover says which row the pointer is on.
+  const className = 'flex w-full flex-col gap-1 rounded-md px-2 py-1.5 text-left';
 
   return href === null ? (
     <div className={className}>{body}</div>
@@ -142,7 +152,7 @@ function RelatedRow({ entry, workspaceId }: { entry: RelatedDocument; workspaceI
   return (
     <Link
       href={`/arbeitsbereich/${workspaceId}/seite/${entry.document.id}`}
-      className="flex w-full flex-col gap-1 rounded-md border border-border px-2 py-2 text-left hover:bg-accent"
+      className="flex w-full flex-col gap-1 rounded-md px-2 py-1.5 text-left hover:bg-accent"
     >
       <span className="flex items-center gap-2">
         <DocumentIcon
@@ -194,7 +204,7 @@ function RelatedSection({ workspaceId, documentId }: { workspaceId: string; docu
   if (state === 'disabled') return null;
 
   return (
-    <section className="flex flex-col gap-2" data-testid="related-documents">
+    <section className="flex flex-col gap-1.5" data-testid="related-documents">
       <SectionHeading count={entries.length}>Verwandte Notizen</SectionHeading>
       {state === 'pending' ? (
         <p className="px-1 text-xs text-muted-foreground">
@@ -257,7 +267,7 @@ export function BacklinksPanel({ workspaceId, documentId }: BacklinksPanelProps)
   // empty state keeps it rather than replacing the whole panel with a sentence.
   if (incoming.length === 0 && outgoing.length === 0) {
     return (
-      <div className="flex flex-col gap-4" data-testid="backlinks-panel">
+      <div className="flex flex-col gap-5" data-testid="backlinks-panel">
         <EmptyState
           title="Keine Verweise"
           description={
@@ -273,8 +283,8 @@ export function BacklinksPanel({ workspaceId, documentId }: BacklinksPanelProps)
   }
 
   return (
-    <div className="flex flex-col gap-4" data-testid="backlinks-panel">
-      <section className="flex flex-col gap-2">
+    <div className="flex flex-col gap-5" data-testid="backlinks-panel">
+      <section className="flex flex-col gap-1.5">
         <SectionHeading count={incoming.length}>Verweise auf diese Seite</SectionHeading>
         {incoming.length === 0 ? (
           <p className="px-1 text-xs text-muted-foreground">
@@ -287,7 +297,7 @@ export function BacklinksPanel({ workspaceId, documentId }: BacklinksPanelProps)
         )}
       </section>
 
-      <section className="flex flex-col gap-2">
+      <section className="flex flex-col gap-1.5">
         <SectionHeading count={outgoing.length}>Diese Seite verweist auf</SectionHeading>
         {unresolved > 0 ? (
           <p className="px-1 text-xs text-muted-foreground">

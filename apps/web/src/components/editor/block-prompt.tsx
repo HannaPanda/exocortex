@@ -289,7 +289,7 @@ function PickerList({
               data-testid={
                 isPage ? `page-prompt-option-${entry.id}` : `database-prompt-option-${entry.id}`
               }
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-accent"
               onClick={() => onChoose(entry)}
             >
               {isPage ? (
@@ -305,7 +305,7 @@ function PickerList({
           <button
             type="button"
             data-testid="page-prompt-new"
-            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-muted-foreground hover:bg-muted"
+            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-muted-foreground hover:bg-accent"
             onClick={onCreate}
           >
             „{newTitle}“ als noch nicht angelegte Seite verknüpfen
