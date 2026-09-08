@@ -16,6 +16,7 @@ export const QUEUE_NAMES = {
   calendarSync: 'calendar-sync',
   memoryCapture: 'memory-capture',
   memoryConsolidate: 'memory-consolidate',
+  entityRescan: 'entity-rescan',
 } as const;
 
 export const queueNameSchema = z.enum([
@@ -28,6 +29,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.calendarSync,
   QUEUE_NAMES.memoryCapture,
   QUEUE_NAMES.memoryConsolidate,
+  QUEUE_NAMES.entityRescan,
 ]);
 export type QueueName = z.infer<typeof queueNameSchema>;
 
@@ -268,6 +270,26 @@ export const memoryConsolidateJobSchema = jobBase.extend({
 });
 export type MemoryConsolidateJob = z.infer<typeof memoryConsolidateJobSchema>;
 
+/**
+ * Looks for one entity's names in pages that already exist (issue #47).
+ *
+ * The materialization pass only ever sees the page being saved, so an entity
+ * created today would be invisible on every page written before it, which is
+ * most of them. This is the other direction: one name, every page.
+ *
+ * Enqueued when an entity is created and when its aliases change, never on a
+ * schedule. A rescan is a full-text scan of the deployment; it is cheap enough
+ * to run on a deliberate act and far too expensive to run nightly for nothing.
+ */
+export const entityRescanJobSchema = jobBase.extend({
+  entityDocumentId: idSchema,
+  /** The user whose readable workspaces bound the scan. */
+  userId: idSchema,
+  /** Why it ran, for the log. */
+  reason: z.enum(['created', 'aliases_changed', 'candidate_confirmed']),
+});
+export type EntityRescanJob = z.infer<typeof entityRescanJobSchema>;
+
 export const JOB_SCHEMAS = {
   [QUEUE_NAMES.documentMaterialization]: materializeDocumentJobSchema,
   [QUEUE_NAMES.searchIndexing]: indexDocumentJobSchema,
@@ -278,6 +300,7 @@ export const JOB_SCHEMAS = {
   [QUEUE_NAMES.calendarSync]: calendarSyncJobSchema,
   [QUEUE_NAMES.memoryCapture]: memoryCaptureJobSchema,
   [QUEUE_NAMES.memoryConsolidate]: memoryConsolidateJobSchema,
+  [QUEUE_NAMES.entityRescan]: entityRescanJobSchema,
 } as const;
 
 export type JobPayloadMap = {
@@ -290,4 +313,5 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.calendarSync]: CalendarSyncJob;
   [QUEUE_NAMES.memoryCapture]: MemoryCaptureJob;
   [QUEUE_NAMES.memoryConsolidate]: MemoryConsolidateJob;
+  [QUEUE_NAMES.entityRescan]: EntityRescanJob;
 };

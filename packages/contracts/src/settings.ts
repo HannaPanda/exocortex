@@ -206,6 +206,48 @@ export const settingsSchema = z.object({
   /** Facts a recall may put in front of the hits. Kept small; the hits need room. */
   'memory.recallFactLimit': z.number().int().min(0).max(20).default(5),
   /**
+   * The entity layer (issue #47).
+   *
+   * Off until a database is named, and that is the whole switch: without
+   * `entities.databaseId` the matcher has no names to look for, so the
+   * materialization pass skips the extraction entirely and costs nothing.
+   */
+  'entities.enabled': z.boolean().default(true),
+  /**
+   * The ADR-011 database whose rows are the entities. One per deployment: an
+   * entity is a thing in the world, and the same host known under two names in
+   * two workspaces is the failure this layer exists to prevent.
+   */
+  'entities.databaseId': z.string().trim().min(8).max(64).nullable().default(null),
+  /**
+   * Shortest alias the matcher accepts, in characters. Three, because a
+   * two-letter name matches half of every German page and the noise that
+   * produces is indistinguishable from the layer being broken.
+   */
+  'entities.minAliasLength': z.number().int().min(2).max(20).default(3),
+  /** Entities one page may be linked to. Bounds the damage a glossary page does. */
+  'entities.maxMentionsPerDocument': z.number().int().min(1).max(200).default(40),
+  /**
+   * Whether the pass also collects names that are *not* entities yet.
+   *
+   * Separate from the switch above because it is the half that can go wrong:
+   * suggestions are cheap to produce and expensive to read, and a deployment
+   * that only wants its own curated list should be able to say so.
+   */
+  'entities.candidatesEnabled': z.boolean().default(true),
+  /**
+   * Separate pages a name must appear on before it is offered as a candidate.
+   * A threshold rather than automatic creation: a list nobody pruned is worse
+   * than no list, and one page saying a name once is not evidence of anything.
+   */
+  'entities.candidateThreshold': z.number().int().min(2).max(100).default(3),
+  /**
+   * Whether a recall puts the profile of a named entity in front of its hits.
+   * The reason the layer exists, and still a switch: it costs one more query on
+   * the hot path of every session start.
+   */
+  'entities.recallProfileEnabled': z.boolean().default(true),
+  /**
    * Semantic search over `document_embedding` (issue #34, AP4).
    *
    * Off by default, because switching it on means every indexed page becomes a

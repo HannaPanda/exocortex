@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { documentPathEntrySchema } from './documents';
+import { entityTypeSchema } from './entities';
 import { idSchema, isoDateTimeSchema } from './primitives';
 
 /**
@@ -103,6 +104,23 @@ export const memoryRecallFactSchema = z.object({
 });
 export type MemoryRecallFact = z.infer<typeof memoryRecallFactSchema>;
 
+/**
+ * An entity the recall's question named (issue #47).
+ *
+ * The reason the entity layer exists: a session that asks about a host should
+ * get what is known about that host, not five pages that happen to contain its
+ * name. Carries the rendered block rather than the full profile, because a
+ * recall is a prompt and `GET /api/entities/:id` is the place to read the rest.
+ */
+export const memoryRecallEntitySchema = z.object({
+  id: idSchema,
+  title: z.string(),
+  type: entityTypeSchema,
+  /** The profile as German text, already inside the recall's budget. */
+  text: z.string(),
+});
+export type MemoryRecallEntity = z.infer<typeof memoryRecallEntitySchema>;
+
 export const memoryRecallResponseSchema = z.object({
   query: z.string().nullable(),
   project: z.string().nullable(),
@@ -112,6 +130,11 @@ export const memoryRecallResponseSchema = z.object({
    * been consolidated for it.
    */
   facts: z.array(memoryRecallFactSchema).default([]),
+  /**
+   * Entities the question named, ahead of everything else. Empty when the
+   * layer is off, when nothing matched, or when the recall carried no query.
+   */
+  entities: z.array(memoryRecallEntitySchema).default([]),
   hits: z.array(memoryHitSchema),
   /**
    * The facts and the hits as one block of German text, already inside

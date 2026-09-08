@@ -43,24 +43,24 @@ model User {
   sessions                 Session[]
   accounts                 Account[]
   memberships              WorkspaceMember[]
-  createdDocuments         Document[]         @relation("DocumentCreatedBy")
-  updatedDocuments         Document[]         @relation("DocumentUpdatedBy")
+  createdDocuments         Document[]          @relation("DocumentCreatedBy")
+  updatedDocuments         Document[]          @relation("DocumentUpdatedBy")
   createdSnapshots         DocumentSnapshot[]
   createdAttachments       Attachment[]
-  correctedAttachmentTexts Attachment[]       @relation("AttachmentTextCorrectedBy")
+  correctedAttachmentTexts Attachment[]        @relation("AttachmentTextCorrectedBy")
   auditEntries             AuditLog[]
   aiRuns                   AiRun[]
   apiTokens                ApiToken[]
-  updatedSettings          Setting[]          @relation("SettingUpdatedBy")
-  aiConversations          AiConversation[]   @relation("AiConversationCreatedBy")
-  calendarAccounts         CalendarAccount[]  @relation("CalendarAccountOwner")
-  comments                 Comment[]          @relation("CommentCreatedBy")
-  resolvedComments         Comment[]          @relation("CommentResolvedBy")
+  updatedSettings          Setting[]           @relation("SettingUpdatedBy")
+  aiConversations          AiConversation[]    @relation("AiConversationCreatedBy")
+  calendarAccounts         CalendarAccount[]   @relation("CalendarAccountOwner")
+  comments                 Comment[]           @relation("CommentCreatedBy")
+  resolvedComments         Comment[]           @relation("CommentResolvedBy")
   oauthApplications        OauthApplication[]
   oauthAccessTokens        OauthAccessToken[]
   oauthConsents            OauthConsent[]
-  sentInvitations          Invitation[]       @relation("InvitationInvitedBy")
-  acceptedInvitation       Invitation?        @relation("InvitationAcceptedBy")
+  sentInvitations          Invitation[]        @relation("InvitationInvitedBy")
+  acceptedInvitation       Invitation?         @relation("InvitationAcceptedBy")
   agentSessions            AgentSession[]
   agentWrites              AgentWriteJournal[]
 
@@ -489,27 +489,34 @@ model Document {
 
   /// Present when `type` is COLLECTION: the property and view definitions of
   /// this database.
-  databaseProperties  DatabaseProperty[]      @relation("CollectionProperties")
-  databaseViews       DatabaseView[]          @relation("CollectionViews")
+  databaseProperties  DatabaseProperty[]        @relation("CollectionProperties")
+  databaseViews       DatabaseView[]            @relation("CollectionViews")
   /// Present when this document is a row (a PAGE child of a COLLECTION).
-  propertyValues      DocumentPropertyValue[] @relation("RowPropertyValues")
+  propertyValues      DocumentPropertyValue[]   @relation("RowPropertyValues")
   /// Page a conversation was opened from. Context only.
-  aiConversations     AiConversation[]        @relation("AiConversationDocument")
+  aiConversations     AiConversation[]          @relation("AiConversationDocument")
   /// References this page makes, and references other pages make to it.
-  outgoingLinks       DocumentLink[]          @relation("DocumentLinkSource")
-  incomingLinks       DocumentLink[]          @relation("DocumentLinkTarget")
+  outgoingLinks       DocumentLink[]            @relation("DocumentLinkSource")
+  incomingLinks       DocumentLink[]            @relation("DocumentLinkTarget")
   /// Present when this COLLECTION mirrors a remote calendar.
-  calendarLinks       CalendarLink[]          @relation("CalendarLinkTarget")
+  calendarLinks       CalendarLink[]            @relation("CalendarLinkTarget")
   /// Present when this row mirrors one remote calendar object.
-  calendarObject      CalendarObjectState[]   @relation("CalendarRow")
+  calendarObject      CalendarObjectState[]     @relation("CalendarRow")
   /// Remarks about this page. Not part of its content (see `Comment`).
-  comments            Comment[]               @relation("DocumentComments")
+  comments            Comment[]                 @relation("DocumentComments")
   /// Present when this page *is* a distilled memory fact (issue #46).
-  memoryFact          MemoryFact?             @relation("MemoryFactPage")
+  memoryFact          MemoryFact?               @relation("MemoryFactPage")
   /// Present when this page is a session note a consolidation run has read.
-  memoryConsolidation MemoryConsolidation?    @relation("MemoryConsolidationNote")
+  memoryConsolidation MemoryConsolidation?      @relation("MemoryConsolidationNote")
   /// Facts this session note is evidence for.
-  memoryFactSources   MemoryFactSource[]      @relation("MemoryFactSourceNote")
+  memoryFactSources   MemoryFactSource[]        @relation("MemoryFactSourceNote")
+  /// Present when this page is an entity row: the pages that talk about it
+  /// (issue #47).
+  entityMentions      EntityMention[]           @relation("EntityMentionEntity")
+  /// Entities this page talks about.
+  mentionedEntities   EntityMention[]           @relation("EntityMentionPage")
+  /// Names on this page that no entity answers to yet.
+  entitySightings     EntityCandidateSighting[] @relation("EntityCandidateSightingPage")
 
   @@index([workspaceId, parentId, orderKey])
   @@index([workspaceId, archivedAt])
@@ -1531,13 +1538,13 @@ model AgentSession {
 
   /// `clientInfo` from `initialize`, verbatim and unverified. Shown so a person
   /// recognises the agent that wrote, never used for a decision.
-  clientLabel String?
+  clientLabel  String?
   /// 'stdio' or 'http'. Which transport carried the connection.
-  transport   String?
+  transport    String?
   /// The API token or OAuth client behind it, for the admin view's "who".
   credentialId String?
 
-  startedAt DateTime @default(now())
+  startedAt  DateTime @default(now())
   /// Moved forward by every journalled write, which is the only heartbeat
   /// there is: nothing tells this deployment that an agent has gone away.
   lastSeenAt DateTime @default(now())
@@ -1565,7 +1572,7 @@ model AgentWriteJournal {
 
   /// The page that was written. Kept as a plain column with no foreign key:
   /// a page deleted for good must not take the record of its deletion with it.
-  documentId String
+  documentId    String
   /// Its title at the time of the write, so a deleted page still has a name.
   documentTitle String?
 
@@ -1586,4 +1593,136 @@ model AgentWriteJournal {
   @@index([sessionId, createdAt])
   @@index([documentId, createdAt])
   @@map("agent_write_journal")
+}
+
+// ---------------------------------------------------------------------------
+// Entities (issue #47)
+// ---------------------------------------------------------------------------
+
+/// Where a mention came from.
+///
+/// The distinction decides what a re-extraction is allowed to touch: the pass
+/// replaces every `EXTRACTED` row of a page and never a `MANUAL` one, so a
+/// person who linked a page to an entity by hand does not have to do it again
+/// after the next edit.
+enum EntityMentionSource {
+  EXTRACTED
+  MANUAL
+}
+
+/// One page talks about one entity (issue #47).
+///
+/// The entity itself is *not* a model: it is a row in an ordinary ADR-011
+/// database, so it has a title, a body, properties, references and a place in
+/// the tree without a line of new rendering. This table is only the edge, and
+/// an edge is exactly the thing a row cannot carry.
+///
+/// A typed table rather than a relation property, for the same reason
+/// `MemoryFact` is one: the schema is fixed, it is written by the
+/// materialization pass and never by a person, and the entity profile reads it
+/// on the hot path of every recall.
+model EntityMention {
+  id String @id @default(cuid(2))
+
+  /// The entity row this mention points at.
+  entityDocumentId String
+  entity           Document @relation("EntityMentionEntity", fields: [entityDocumentId], references: [id], onDelete: Cascade)
+
+  /// The page doing the talking.
+  documentId String
+  document   Document @relation("EntityMentionPage", fields: [documentId], references: [id], onDelete: Cascade)
+
+  /// Denormalized from the page. A profile is always filtered down to the
+  /// workspaces the caller may read, and resolving that through the page on
+  /// every read would join the document table for every row.
+  workspaceId String
+
+  /// The alias that matched, as written on the page. Which of an entity's
+  /// names a page uses is itself information: "fpb2" and "der Hetzner-Server"
+  /// are the same host addressed by two different kinds of reader.
+  alias    String
+  /// `alias` normalized the way the matcher normalizes. Not a lookup key here,
+  /// it only makes "which spelling won" answerable without re-normalizing.
+  aliasKey String
+
+  /// How often the alias appears on the page. The difference between a page
+  /// that is *about* the entity and one that name-drops it once.
+  occurrences Int    @default(1)
+  /// The sentence around the first occurrence, for the profile's preview.
+  context     String
+
+  source EntityMentionSource @default(EXTRACTED)
+
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+
+  /// One row per pair. A page mentioning an entity twelve times is one edge
+  /// with `occurrences: 12`, not twelve edges.
+  @@unique([entityDocumentId, documentId])
+  /// "What does this page talk about?" -- and the delete before a re-extraction.
+  @@index([documentId])
+  /// The profile query: the pages about this entity, most recent first.
+  @@index([entityDocumentId, lastSeenAt])
+  @@map("entity_mention")
+}
+
+/// A name that keeps turning up and that no entity answers to yet (issue #47).
+///
+/// The reason the extraction does not simply create entities: a list nobody
+/// pruned is worse than no list, and a matcher that invents rows from every
+/// capitalized word fills it in a week. A candidate is therefore evidence, not
+/// a decision -- it becomes an entity when a person or an agent confirms it, or
+/// once it has been seen on enough separate pages to have earned the doubt.
+///
+/// No model is asked. Counting is deterministic, free and repeatable, and the
+/// expensive half of the mechanism was the part the issue warned about.
+model EntityCandidate {
+  id String @id @default(cuid(2))
+
+  /// The phrase as most recently written. Display only.
+  phrase    String
+  /// Normalized. The identity of the candidate.
+  phraseKey String @unique
+
+  /// Set when somebody decided this is not a thing. Kept rather than deleted:
+  /// without it the next materialization pass proposes it again that evening.
+  dismissedAt        DateTime?
+  /// The entity row this candidate turned into, once confirmed.
+  promotedDocumentId String?
+
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+
+  sightings EntityCandidateSighting[]
+
+  @@index([dismissedAt, lastSeenAt])
+  @@map("entity_candidate")
+}
+
+/// One page on which a candidate phrase was seen.
+///
+/// The reason the threshold is honest: without a row per page, re-materializing
+/// the same page four times would look like four separate pages saying the same
+/// name, and every phrase on a page somebody keeps editing would cross any
+/// threshold on its own.
+model EntityCandidateSighting {
+  id String @id @default(cuid(2))
+
+  candidateId String
+  candidate   EntityCandidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+
+  documentId String
+  document   Document @relation("EntityCandidateSightingPage", fields: [documentId], references: [id], onDelete: Cascade)
+
+  /// Denormalized from the page, for the same reason as on the mention: the
+  /// candidate list is filtered to what the caller may read.
+  workspaceId String
+
+  occurrences Int      @default(1)
+  context     String
+  seenAt      DateTime @default(now())
+
+  @@unique([candidateId, documentId])
+  @@index([documentId])
+  @@map("entity_candidate_sighting")
 }

@@ -12,6 +12,7 @@ export * from './database-embed';
 export * from './document-links';
 export * from './document-nodes';
 export * from './embed';
+export * from './entity-matching';
 export * from './extensions';
 export * from './fixtures';
 export * from './inline-styling';

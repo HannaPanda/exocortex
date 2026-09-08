@@ -11,6 +11,7 @@ export * from './collaboration';
 export * from './comments';
 export * from './database-views';
 export * from './documents';
+export * from './entities';
 export * from './errors';
 export * from './events';
 export * from './invitations';

@@ -22,7 +22,10 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
     '@exocortex/config',
     '@exocortex/logger',
     '@exocortex/contracts',
-    // Dev-only: the seed script builds real Yjs state from Markdown fixtures.
+    // Two uses: the seed script builds real Yjs state from Markdown fixtures,
+    // and the entity helpers (issue #47) share one alias matcher with the
+    // worker, because a matcher that disagrees with itself between the two
+    // would link a page here and not there.
     '@exocortex/editor',
   ],
   '@exocortex/storage': ['@exocortex/config', '@exocortex/logger'],

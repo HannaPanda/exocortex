@@ -45,6 +45,9 @@ export const API_ERROR_CODES = [
   'attachment_text_unavailable',
   'setting_unknown',
   'memory_unavailable',
+  'entity_layer_unavailable',
+  'entity_exists',
+  'entity_candidate_promoted',
   'workspace_slug_taken',
   'invitation_invalid',
   'invitation_expired',
@@ -115,6 +118,16 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // The deployment has no memory area configured, or switched it off. 503,
   // not 404: the route exists and will work once somebody names a workspace.
   memory_unavailable: 503,
+  // No entity database is configured, or the layer is switched off. 503 for
+  // the same reason as above: the route works the moment somebody names one.
+  entity_layer_unavailable: 503,
+  // An entity with this name is already there. 409 rather than a silent reuse:
+  // adding a spelling to the existing one is almost always what was meant, and
+  // quietly returning the other row would hide the collision.
+  entity_exists: 409,
+  // The candidate has already become an entity. Confirming it twice would
+  // create a second row for the same name.
+  entity_candidate_promoted: 409,
   workspace_slug_taken: 409,
   // Unknown token, or one that was revoked. 404, not 401: there is nothing to
   // authenticate as, and every wrong token has to look identical -- a 401 here
