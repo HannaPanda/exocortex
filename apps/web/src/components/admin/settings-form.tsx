@@ -262,6 +262,10 @@ const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
     label: 'Ausdünnung nur simulieren (Trockenlauf)',
     help: 'An: die tägliche Aufräumung berechnet und protokolliert, was sie löschen würde, löscht aber nichts. Vor dem ersten scharfen Lauf empfohlen; danach bewusst ausschalten.',
   },
+  'agents.journalRetentionDays': {
+    label: 'Agenten-Sitzungen aufbewahren (Tage)',
+    help: 'So lange bleibt im Bereich „Agenten“ nachvollziehbar, welche Sitzung was geschrieben hat, und so lange lässt sich eine Sitzung am Stück zurücknehmen. Danach verschwindet nur die Zuordnung; die gesicherten Stände der Seiten bleiben davon unberührt. 0 bedeutet: für immer.',
+  },
 };
 
 /** Sentinel for "no model chosen"; distinct from every real slug. */

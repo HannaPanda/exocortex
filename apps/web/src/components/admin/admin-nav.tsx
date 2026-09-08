@@ -12,9 +12,10 @@ const NAV_ITEMS = [
   { href: '/admin/ki-modelle', label: 'KI-Modelle' },
   { href: '/admin/nutzung', label: 'Nutzung' },
   { href: '/admin/nutzer', label: 'Nutzer' },
+  { href: '/admin/agenten', label: 'Agenten' },
 ] as const;
 
-/** Horizontal navigation between the five admin tabs. */
+/** Horizontal navigation between the six admin tabs. */
 export function AdminNav() {
   const pathname = usePathname();
 

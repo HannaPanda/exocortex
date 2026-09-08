@@ -170,6 +170,13 @@ const EXEMPT = [
     reason: "Changes someone's role. Granting access is not delegated to agents.",
   },
 
+  // -- agent provenance ----------------------------------------------------
+  {
+    route: 'POST /api/agent-sessions/:x/revert',
+    reason:
+      'Takes back everything one agent session wrote. Listing and reading a session are tools (`exo_agent_session_list`, `exo_agent_session_get`); undoing it is not, because an agent that can revert an afternoon in one call is a new way to lose work, and whether a session was a mistake is not a judgement the agent that made it can make. A person presses this in the admin area (ADR-022).',
+  },
+
   // -- covered through another route ---------------------------------------
   {
     route: 'POST /api/workspaces/:x/trash/deletion-preview',

@@ -6,6 +6,10 @@ import {
   type AdminOverviewResponse,
   type AdminUser,
   type AdminUserListResponse,
+  type AgentSession,
+  type AgentSessionDetailResponse,
+  type AgentSessionListResponse,
+  type AgentSessionRevertResponse,
   type AiModel,
   type AiModelListResponse,
   type AiUsageResponse,
@@ -43,6 +47,8 @@ export const adminQueryKeys = {
   aiUsage: (days: number) => ['admin', 'ai-usage', days] as const,
   apiTokens: ['me', 'api-tokens'] as const,
   connections: ['me', 'connections'] as const,
+  agentSessions: ['admin', 'agent-sessions'] as const,
+  agentSession: (sessionId: string) => ['admin', 'agent-sessions', sessionId] as const,
 };
 
 // ---------------------------------------------------------------------------
@@ -275,5 +281,45 @@ export function useDisconnectApp() {
         method: 'DELETE',
       }),
     onSuccess: () => void client.invalidateQueries({ queryKey: adminQueryKeys.connections }),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Agent sessions (issue #49): what an agent touched, and taking it back
+// ---------------------------------------------------------------------------
+
+export function useAgentSessions(): UseQueryResult<AgentSession[]> {
+  return useQuery({
+    queryKey: adminQueryKeys.agentSessions,
+    queryFn: async () => {
+      const response = await apiRequest<AgentSessionListResponse>('/api/agent-sessions');
+      return response.sessions;
+    },
+  });
+}
+
+export function useAgentSession(
+  sessionId: string | null,
+): UseQueryResult<AgentSessionDetailResponse> {
+  return useQuery({
+    queryKey: adminQueryKeys.agentSession(sessionId ?? ''),
+    queryFn: () => apiRequest<AgentSessionDetailResponse>(`/api/agent-sessions/${sessionId ?? ''}`),
+    enabled: sessionId !== null,
+  });
+}
+
+/**
+ * Takes a whole session back. Answers 200 with two lists -- reverted and
+ * skipped -- because the operation is partial by nature, so the caller has to
+ * read the result rather than only its success.
+ */
+export function useRevertAgentSession() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (sessionId: string) =>
+      apiRequest<AgentSessionRevertResponse>(`/api/agent-sessions/${sessionId}/revert`, {
+        method: 'POST',
+      }),
+    onSuccess: () => void client.invalidateQueries({ queryKey: adminQueryKeys.agentSessions }),
   });
 }

@@ -1,4 +1,5 @@
 import { type AnyToolDefinition, type ToolSurface } from './tool.js';
+import { AGENT_SESSION_TOOLS } from './tools/agent-sessions.js';
 import { AI_RUN_TOOLS } from './tools/ai-runs.js';
 import { ATTACHMENT_TOOLS } from './tools/attachments.js';
 import { COMMENT_TOOLS } from './tools/comments.js';
@@ -27,6 +28,7 @@ export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...MEMORY_TOOLS,
   ...MEMORY_FACT_TOOLS,
   ...INVITATION_TOOLS,
+  ...AGENT_SESSION_TOOLS,
 ];
 
 /** Tools offered on a given surface, optionally excluding mutating ones. */
