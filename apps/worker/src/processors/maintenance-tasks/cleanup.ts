@@ -288,3 +288,40 @@ export const pruneAiRunPayloads: MaintenanceTask = async (context) => {
     logger.info('AI run payloads pruned', { pruned: pruned.count, retentionDays });
   }
 };
+
+/**
+ * Ages out the agents' write journal (issue #49, ADR-022).
+ *
+ * The journal is bookkeeping about writes, never the writes themselves: what a
+ * revert actually restores are the snapshots, and those age out on their own,
+ * longer schedule. So this deletes the grouping and nothing recoverable -- an
+ * old session simply stops being one thing you can take back in one press.
+ *
+ * Sessions go with their last row rather than on a clock of their own. A
+ * session row with no writes left says nothing anybody can act on, and keeping
+ * it would turn the list into a graveyard of empty connections; a session still
+ * holding one recent write survives, however long ago it started.
+ */
+export const pruneAgentJournal: MaintenanceTask = async (context) => {
+  const { prisma, logger, reportProgress } = context;
+  const retentionDays = (await context.settings())['agents.journalRetentionDays'];
+  if (retentionDays === 0) return;
+
+  await reportProgress(10, 'Agenten-Journal wird aufgeräumt');
+  const cutoff = new Date(Date.now() - retentionDays * DAY_MS);
+  const removedWrites = await prisma.agentWriteJournal.deleteMany({
+    where: { createdAt: { lt: cutoff } },
+  });
+  const removedSessions = await prisma.agentSession.deleteMany({
+    where: { lastSeenAt: { lt: cutoff }, writes: { none: {} } },
+  });
+
+  await reportProgress(100, 'Agenten-Journal aufgeräumt');
+  if (removedWrites.count > 0 || removedSessions.count > 0) {
+    logger.info('Agent write journal pruned', {
+      writes: removedWrites.count,
+      sessions: removedSessions.count,
+      retentionDays,
+    });
+  }
+};

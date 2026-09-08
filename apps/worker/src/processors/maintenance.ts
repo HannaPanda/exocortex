@@ -6,6 +6,7 @@ import { type ObjectStorage } from '@exocortex/storage';
 
 import {
   collectOrphanedCovers,
+  pruneAgentJournal,
   pruneAiRunPayloads,
   pruneInvitations,
   pruneMemories,
@@ -78,12 +79,13 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'consolidate-memories': consolidateMemories,
   'decay-memory-facts': decayMemoryFacts,
   'prune-ai-run-payloads': pruneAiRunPayloads,
+  'prune-agent-journal': pruneAgentJournal,
 };
 
 /**
  * Maintenance processor.
  *
- * Fifteen unrelated sweeps share one queue and one schedule; what they have in
+ * Sixteen unrelated sweeps share one queue and one schedule; what they have in
  * common is that nobody is waiting for them. The work itself lives one per
  * function in `maintenance-tasks/`, grouped by what it touches.
  */

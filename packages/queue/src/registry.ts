@@ -346,6 +346,23 @@ export class QueueRegistry {
         data: { correlationId, task: 'prune-invitations', workspaceId: null, documentId: null },
       },
     );
+    // Daily, with the other sweeps. Two indexed DELETEs that usually match
+    // nothing: the journal is kept for ninety days by default, so this only has
+    // work once a deployment has been letting agents write for a season
+    // (issue #49).
+    await queue.upsertJobScheduler(
+      'prune-agent-journal',
+      { pattern: '50 4 * * *' },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: {
+          correlationId,
+          task: 'prune-agent-journal',
+          workspaceId: null,
+          documentId: null,
+        },
+      },
+    );
     // Daily, before the note prune: facts are distilled from notes, so the
     // distilling has to happen while the notes are still there. A no-op while
     // `memory.consolidationEnabled` is off, which is the default.

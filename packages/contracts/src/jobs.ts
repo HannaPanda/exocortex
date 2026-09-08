@@ -142,6 +142,14 @@ export const maintenanceJobSchema = jobBase.extend({
      * that the run happened.
      */
     'prune-ai-run-payloads',
+    /**
+     * Removes agent write journal rows, and the sessions left holding none,
+     * once they are older than `agents.journalRetentionDays` (issue #49).
+     * Off while that setting is zero. The snapshots the rows point at are not
+     * touched: they age out on the snapshot schedule, and a page's own history
+     * must not shorten because the agent bookkeeping around it did.
+     */
+    'prune-agent-journal',
   ]),
   /** Optional scope; `null` means all workspaces. */
   workspaceId: idSchema.nullable().default(null),

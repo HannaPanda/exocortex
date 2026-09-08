@@ -315,6 +315,20 @@ export const settingsSchema = z.object({
    * deliberately, once the dry-run log line looks right.
    */
   'activity.snapshotRetentionDryRun': z.boolean().default(true),
+  /**
+   * Days an agent's write journal is kept (issue #49, ADR-022).
+   *
+   * The journal is bookkeeping *about* writes, not the writes themselves:
+   * every state it points at lives in the snapshots, which age out on their own
+   * schedule above. So this may be shorter than snapshot retention without
+   * losing anything recoverable -- what expires is the grouping, and the
+   * grouping stops being useful long before a snapshot does.
+   *
+   * Ninety days rather than the "0 means for ever" default the other retention
+   * settings use: nobody reverts a session from last spring, and a journal that
+   * only grows is a table that quietly becomes the largest one here.
+   */
+  'agents.journalRetentionDays': z.number().int().min(0).max(3_650).default(90),
 });
 
 /** Whether the runtime knows the zone. `Intl` is the only authority available. */
