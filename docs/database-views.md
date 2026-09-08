@@ -154,6 +154,49 @@ and forcing the whole page to `full` just for one embed would stretch the prose
 around it. See `Document.layout` in `docs/architecture.md` for the page widths
 themselves.
 
+## Entities: a database whose rows are things in the world
+
+The entity layer (issue #47) adds no model. An entity is a row in an ordinary
+database — one `Document` with `type: 'COLLECTION'`, its rows `PAGE`s
+underneath ([ADR-011](adr/ADR-011-databases-are-documents.md)) — and that is
+the whole point: a row already has a title, a body, references, a place in the
+tree and a view a person can sort, filter and prune. A typed `Entity` table
+would have needed all of that built again.
+
+Two columns are read by machinery and are therefore matched **by name**, never
+by id (`ENTITY_PROPERTY_NAMES` in `@exocortex/contracts`):
+
+| Column    | Type     | What reads it                                                                    |
+| --------- | -------- | -------------------------------------------------------------------------------- |
+| `Typ`     | `SELECT` | Mapped to the closed `EntityType` vocabulary by option label; unknown → `other`. |
+| `Aliasse` | `TEXT`   | Comma-, semicolon- or newline-separated spellings the matcher answers to.        |
+
+By name, because a person may delete and re-add a column in the browser and an
+id stored in the settings would quietly stop matching. Everything else on the
+database is free: add a `Betreiber` column, a board view by type, whatever the
+list needs. `POST /api/entities/database` creates one with the two columns and
+writes `entities.databaseId`; after that it is an ordinary database.
+
+**What is not a row** is the edge from an entity to a page that talks about it.
+That is `entity_mention`, a typed table written by the materialization pass, for
+the same reason `memory_fact` is one: the schema is fixed, no person edits it,
+and the entity profile reads it on the hot path of every recall. The matcher
+lives in `packages/editor/src/entity-matching.ts` so the API and the worker
+cannot disagree about which names exist.
+
+**Relations between entities are ordinary references.** Writing `[[fpb2]]` on
+the Orielle page is how somebody already says "runs on", and the reference index
+(issue #33) already resolves it. `GET /api/entities/:id` reads the relations off
+that index rather than off a `RELATION` column — which is also why the reserved
+`RELATION` property type staying unimplemented did not block this feature.
+
+**New names are proposed, never created.** A phrase that looks like a name,
+appears at least twice on a page and on at least `entities.candidateThreshold`
+separate pages becomes an `entity_candidate`. Confirming one is a call
+(`exo_entity_candidate_confirm`); dismissing it is recorded, so it does not come
+back the next time somebody saves a page carrying it. No model is asked at any
+point: counting is deterministic, free, and gives the same answer tomorrow.
+
 ## Known limitations (deliberate, not bugs)
 
 - **Filters/sorts sent alongside a `viewId` are ignored.** When a request to

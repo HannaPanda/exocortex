@@ -74,6 +74,11 @@ describe('EXOCORTEX_TOOLS', () => {
     // invitation kills a link somebody may be about to click, and switching an
     // account off or deleting it ends a session mid-sentence. A client that asks
     // before destructive calls should ask before those too.
+    //
+    // The three entity entries (issue #47) are the same stretch a third time:
+    // an alias list is replaced wholesale rather than added to, unlinking a page
+    // removes an edge somebody may have drawn by hand, and dismissing a
+    // candidate deletes the evidence along with the decision.
     const destructive = EXOCORTEX_TOOLS.filter((tool) => tool.destructive)
       .map((tool) => tool.name)
       .sort();
@@ -87,6 +92,9 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_database_row_update',
       'exo_database_view_delete',
       'exo_database_view_update',
+      'exo_entity_candidate_dismiss',
+      'exo_entity_unlink_page',
+      'exo_entity_update',
       'exo_invitation_resend',
       'exo_invitation_revoke',
       'exo_page_archive',

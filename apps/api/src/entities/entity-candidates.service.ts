@@ -50,10 +50,7 @@ export class EntityCandidatesService {
     query: EntityCandidateListQuery,
   ): Promise<EntityCandidateListResponse> {
     const settings = await this.settings.get();
-    const threshold = Math.max(
-      settings['entities.candidateThreshold'],
-      query.minDocuments ?? 0,
-    );
+    const threshold = Math.max(settings['entities.candidateThreshold'], query.minDocuments ?? 0);
     const readable = await this.registry.readableWorkspaceIds(userId);
     if (readable.size === 0 || !settings['entities.candidatesEnabled']) {
       return { threshold, candidates: [] };
@@ -241,7 +238,9 @@ export class EntityCandidatesService {
       // The evidence goes with the decision: it is only ever read to decide,
       // and keeping it would mean carrying rows for every word somebody
       // rejected for as long as the deployment lives.
-      await this.prisma.entityCandidateSighting.deleteMany({ where: { candidateId: candidate.id } });
+      await this.prisma.entityCandidateSighting.deleteMany({
+        where: { candidateId: candidate.id },
+      });
     }
 
     return {

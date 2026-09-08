@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { DocumentsModule } from '../documents/documents.module';
+import { EntitiesModule } from '../entities/entities.module';
 import { SearchModule } from '../search/search.module';
 
 import { MemoryController } from './memory.controller';
@@ -14,7 +15,9 @@ import { MemoryFactsService } from './memory-facts.service';
  * through the same collaboration bridge (ADR-016).
  */
 @Module({
-  imports: [SearchModule, DocumentsModule],
+  // The entity layer, so a recall can answer "what do I know about X" before it
+  // searches (issue #47). One-way: the entity module knows nothing of memory.
+  imports: [SearchModule, DocumentsModule, EntitiesModule],
   controllers: [MemoryController],
   providers: [MemoryService, MemoryFactsService],
   exports: [MemoryService, MemoryFactsService],

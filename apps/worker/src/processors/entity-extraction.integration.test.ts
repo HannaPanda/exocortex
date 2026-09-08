@@ -282,6 +282,8 @@ describe('extractEntities', () => {
       logger,
     });
     expect(result.candidates).toBe(0);
-    expect(await prisma.entityCandidate.findUnique({ where: { phraseKey: 'hocuspocus' } })).toBeNull();
+    expect(
+      await prisma.entityCandidate.findUnique({ where: { phraseKey: 'hocuspocus' } }),
+    ).toBeNull();
   });
 });

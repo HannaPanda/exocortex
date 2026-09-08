@@ -48,10 +48,7 @@ export function invalidateEntityRegistryCache(): void {
   cache = null;
 }
 
-async function registryFor(
-  prisma: PrismaClient,
-  databaseId: string,
-): Promise<CachedRegistry> {
+async function registryFor(prisma: PrismaClient, databaseId: string): Promise<CachedRegistry> {
   const now = Date.now();
   if (cache !== null && cache.databaseId === databaseId && now - cache.loadedAt < REGISTRY_TTL_MS) {
     return cache;

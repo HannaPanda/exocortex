@@ -1,4 +1,4 @@
-import { type EntityRescanJob, QUEUE_NAMES, type Settings } from '@exocortex/contracts';
+import { type EntityRescanJob, type QUEUE_NAMES, type Settings } from '@exocortex/contracts';
 import { loadEntityRegistry, type PrismaClient, replaceEntityMentions } from '@exocortex/database';
 import { matchEntityAliases, sentenceAround } from '@exocortex/editor';
 import { type JobContext } from '@exocortex/queue';

@@ -220,6 +220,11 @@ const EXEMPT = [
       'The SessionEnd hook posts a whole transcript here to be condensed (ADR-019). `remember` is the deliberate half and is a tool; capture is machinery.',
   },
   {
+    route: 'POST /api/entities/database',
+    reason:
+      'Creates the entity database and writes `entities.databaseId`, a deployment-wide setting that decides what every entity tool then reads (issue #47). Administrator-only and done once, like the rest of `/api/admin/settings`. The nine `exo_entity_*` tools cover everything past that point.',
+  },
+  {
     route: 'POST /api/memory/facts',
     reason:
       'Applies one nightly consolidation run (issue #46). It rewrites what the memory believes in a single call, for a job that has just read the notes it is judging; a model able to call it directly could rewrite its own past without a note saying so. Reading is `exo_memory_facts`, promoting is `exo_memory_fact_promote`.',

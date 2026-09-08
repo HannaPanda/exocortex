@@ -5,6 +5,7 @@ import {
   type MemoryCaptureRequest,
   type MemoryCaptureResponse,
   type MemoryHit,
+  type MemoryRecallEntity,
   type MemoryRecallFact,
   type MemoryRecallRequest,
   type MemoryRecallResponse,
@@ -14,6 +15,7 @@ import {
   type SearchResult,
 } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
+import { matchEntityAliases } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 
@@ -21,6 +23,8 @@ import { AppError } from '../common/app-error';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { DocumentContentService } from '../documents/document-content.service';
 import { DocumentsService } from '../documents/documents.service';
+import { EntityProfileService } from '../entities/entity-profile.service';
+import { EntityRegistryService } from '../entities/entity-registry.service';
 import { PRISMA, QUEUES } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 import { SearchService } from '../search/search.service';
@@ -39,6 +43,17 @@ const RECENT_FALLBACK_LIMIT = 20;
  * actually works from.
  */
 const FACT_BUDGET_SHARE = 1 / 3;
+/**
+ * Share of the budget an entity profile may take (issue #47).
+ *
+ * A quarter, and only when the question actually named an entity. A profile is
+ * the best answer a recall has when it applies, and applies to a minority of
+ * questions; giving it a standing share would shrink every other recall for a
+ * block that is usually empty.
+ */
+const ENTITY_BUDGET_SHARE = 1 / 4;
+/** Entities one recall names. Two, because a question rarely means three. */
+const MAX_RECALL_ENTITIES = 2;
 
 /**
  * A hit from the agents' own area is worth more than an equally ranked hit from
@@ -70,6 +85,8 @@ export class MemoryService {
     private readonly search: SearchService,
     private readonly documents: DocumentsService,
     private readonly content: DocumentContentService,
+    private readonly entityRegistry: EntityRegistryService,
+    private readonly entityProfiles: EntityProfileService,
   ) {}
 
   async recall(userId: string, request: MemoryRecallRequest): Promise<MemoryRecallResponse> {
@@ -106,24 +123,83 @@ export class MemoryService {
             limit: settings['memory.recallFactLimit'],
           });
 
+    const entities = await this.namedEntities({
+      userId,
+      query: request.q ?? null,
+      enabled: settings['entities.recallProfileEnabled'],
+      maxChars: Math.floor(maxChars * ENTITY_BUDGET_SHARE),
+    });
+
     // A fact already answered in full above must not take a slot again below.
-    const stated = new Set(facts.map((fact) => fact.documentId));
+    // The same goes for an entity's own page: it is the answer, not a hit.
+    const stated = new Set([
+      ...facts.map((fact) => fact.documentId),
+      ...entities.map((entity) => entity.id),
+    ]);
     const ranked = hits
       .filter((hit) => !stated.has(hit.documentId))
       .sort((a, b) => b.score - a.score)
       .slice(0, limit);
+    const entitiesText = entities.map((entity) => entity.text).join('\n\n');
     const factsText = renderFacts(facts, Math.floor(maxChars * FACT_BUDGET_SHARE));
-    const { text, kept, truncated } = renderRecall(ranked, maxChars - factsText.length);
+    const { text, kept, truncated } = renderRecall(
+      ranked,
+      maxChars - factsText.length - entitiesText.length,
+    );
 
     return {
       query: request.q ?? null,
       project,
       facts,
+      entities,
       hits: kept,
-      text: factsText.length === 0 ? text : `${factsText}\n\n${text}`,
+      text: [entitiesText, factsText, text].filter((block) => block.length > 0).join('\n\n'),
       truncated,
       tookMs: Date.now() - startedAt,
     };
+  }
+
+  /**
+   * Profiles for the entities the question named (issue #47).
+   *
+   * Matched against the query text, not against the hits: the point is to
+   * answer "what do we know about fpb2" before any searching happens, and a
+   * profile assembled from what the search already found would only repeat it.
+   *
+   * Never throws. A recall that cannot answer with a profile still answers.
+   */
+  private async namedEntities(input: {
+    userId: string;
+    query: string | null;
+    enabled: boolean;
+    maxChars: number;
+  }): Promise<MemoryRecallEntity[]> {
+    if (!input.enabled || input.query === null || input.maxChars <= 0) return [];
+    try {
+      const registry = await this.entityRegistry.loadReadable(input.userId);
+      const named = registry
+        .filter((entity) => queryNamesEntity(input.query ?? '', entity.title, entity.aliases))
+        // The longest name first: a question naming both "Exocortex" and
+        // "Exocortex-Worker" means the more specific of the two.
+        .sort((a, b) => b.title.length - a.title.length)
+        .slice(0, MAX_RECALL_ENTITIES);
+
+      const profiles: MemoryRecallEntity[] = [];
+      let budget = input.maxChars;
+      for (const entity of named) {
+        const profile = await this.entityProfiles.profile(input.userId, entity.id);
+        const text = profile.text.slice(0, budget);
+        if (text.length === 0) break;
+        budget -= text.length;
+        profiles.push({ id: entity.id, title: entity.title, type: entity.type, text });
+      }
+      return profiles;
+    } catch (error) {
+      this.logger.warn('Recall could not resolve entities', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return [];
+    }
   }
 
   /**
@@ -532,6 +608,27 @@ export class MemoryService {
       return null;
     }
   }
+}
+
+/**
+ * Does this question name that entity?
+ *
+ * Word-bounded containment, not a substring test: `api` must not match inside
+ * `rapide`, and a recall that prepends the wrong profile has spent a quarter of
+ * its budget on the wrong subject. Reuses the matcher the extraction uses, so
+ * "the query names it" and "the page mentions it" can never drift apart.
+ */
+export function queryNamesEntity(
+  query: string,
+  title: string,
+  aliases: readonly string[],
+): boolean {
+  return (
+    matchEntityAliases(
+      query,
+      [title, ...aliases].map((alias) => ({ entityId: 'q', alias })),
+    ).length > 0
+  );
 }
 
 /**

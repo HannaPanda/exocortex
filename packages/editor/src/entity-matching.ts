@@ -71,10 +71,7 @@ function escapeForRegExp(value: string): string {
 const NAME_CHARACTER = '[\\p{L}\\p{N}_\\-]';
 
 function aliasPattern(alias: string): RegExp {
-  return new RegExp(
-    `(?<!${NAME_CHARACTER})${escapeForRegExp(alias)}(?!${NAME_CHARACTER})`,
-    'giu',
-  );
+  return new RegExp(`(?<!${NAME_CHARACTER})${escapeForRegExp(alias)}(?!${NAME_CHARACTER})`, 'giu');
 }
 
 export interface EntityAliasCandidate {
@@ -252,9 +249,11 @@ const SENTENCE_STARTERS = new Set([
  * Something that looks like a proper name: a capitalized word, or a run of them,
  * optionally with a lowercase connector in the middle ("Bank für Gemeinwohl").
  */
-const PROPER_NAME = /\p{Lu}[\p{L}\p{N}_-]+(?:\s+(?:von|van|de|für|und|der|am)?\s*\p{Lu}[\p{L}\p{N}_-]+)*/gu;
+const PROPER_NAME =
+  /\p{Lu}[\p{L}\p{N}_-]+(?:\s+(?:von|van|de|für|und|der|am)?\s*\p{Lu}[\p{L}\p{N}_-]+)*/gu;
 /** A bare identifier: `fpb2`, `exocortex-api`, `pgvector`. Lowercase and digits or dashes. */
-const IDENTIFIER = /(?<![\p{L}\p{N}_-])[a-z][a-z0-9]*(?:[-_][a-z0-9]+)+(?![\p{L}\p{N}_-])|(?<![\p{L}\p{N}_-])[a-z]{3,}\d+(?![\p{L}\p{N}_-])/gu;
+const IDENTIFIER =
+  /(?<![\p{L}\p{N}_-])[a-z][a-z0-9]*(?:[-_][a-z0-9]+)+(?![\p{L}\p{N}_-])|(?<![\p{L}\p{N}_-])[a-z]{3,}\d+(?![\p{L}\p{N}_-])/gu;
 
 /**
  * Names on a page that no entity answers to yet.
@@ -296,16 +295,18 @@ export function findEntityPhrases(
     }
   }
 
-  return [...found.entries()]
-    // Once is a mention, twice on the same page is somebody talking about a
-    // thing. The page threshold on top of this is what makes it evidence.
-    .filter(([, value]) => value.occurrences >= 2)
-    .sort((a, b) => b[1].occurrences - a[1].occurrences)
-    .slice(0, limit)
-    .map(([phraseKey, value]) => ({
-      phrase: value.phrase,
-      phraseKey,
-      occurrences: value.occurrences,
-      context: sentenceAround(text, value.firstIndex),
-    }));
+  return (
+    [...found.entries()]
+      // Once is a mention, twice on the same page is somebody talking about a
+      // thing. The page threshold on top of this is what makes it evidence.
+      .filter(([, value]) => value.occurrences >= 2)
+      .sort((a, b) => b[1].occurrences - a[1].occurrences)
+      .slice(0, limit)
+      .map(([phraseKey, value]) => ({
+        phrase: value.phrase,
+        phraseKey,
+        occurrences: value.occurrences,
+        context: sentenceAround(text, value.firstIndex),
+      }))
+  );
 }

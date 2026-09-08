@@ -280,6 +280,4 @@ export const provisionEntityDatabaseResponseSchema = z.object({
   /** True when the deployment already had one and this returned it unchanged. */
   alreadyExisted: z.boolean(),
 });
-export type ProvisionEntityDatabaseResponse = z.infer<
-  typeof provisionEntityDatabaseResponseSchema
->;
+export type ProvisionEntityDatabaseResponse = z.infer<typeof provisionEntityDatabaseResponseSchema>;

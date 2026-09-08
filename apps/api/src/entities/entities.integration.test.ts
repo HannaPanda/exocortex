@@ -15,10 +15,10 @@ import { type ObjectStorage } from '@exocortex/storage';
 
 import { OutboxService } from '../common/outbox.service';
 import { DatabasePropertiesService } from '../databases/database-properties.service';
+import { type DocumentContentService } from '../documents/document-content.service';
 import { DocumentMoveService } from '../documents/document-move.service';
 import { DocumentTrashService } from '../documents/document-trash.service';
 import { DocumentsService } from '../documents/documents.service';
-import { type DocumentContentService } from '../documents/document-content.service';
 import { type SettingsService } from '../platform/settings.service';
 import { type RealtimeService } from '../realtime/realtime.service';
 
@@ -396,8 +396,6 @@ describe('entity candidates', () => {
 
     const listed = await candidates.list(ownerId, { limit: 25 });
     expect(listed.candidates.map((entry) => entry.phrase)).not.toContain('Turbo');
-    expect(
-      await prisma.entityCandidateSighting.count({ where: { candidateId } }),
-    ).toBe(0);
+    expect(await prisma.entityCandidateSighting.count({ where: { candidateId } })).toBe(0);
   });
 });

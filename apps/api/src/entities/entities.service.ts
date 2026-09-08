@@ -336,7 +336,10 @@ export class EntitiesService {
     request: LinkEntityPageRequest;
   }): Promise<{ entityId: string; documentId: string; created: boolean }> {
     const entity = await this.registry.findReadable(input.userId, input.entityId);
-    const context = await this.access.requireDocumentContext(input.request.documentId, input.userId);
+    const context = await this.access.requireDocumentContext(
+      input.request.documentId,
+      input.userId,
+    );
 
     const existing = await this.prisma.entityMention.findUnique({
       where: {

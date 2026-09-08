@@ -152,10 +152,7 @@ export class EntityProfileService {
    * worth knowing; where, and under what heading, is exactly what the
    * membership check exists to withhold.
    */
-  private async hiddenMentions(
-    entityId: string,
-    readable: ReadonlySet<string>,
-  ): Promise<number> {
+  private async hiddenMentions(entityId: string, readable: ReadonlySet<string>): Promise<number> {
     return this.prisma.entityMention.count({
       where: {
         entityDocumentId: entityId,

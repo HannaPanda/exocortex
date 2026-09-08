@@ -4,11 +4,7 @@ import {
   type EntityType,
   entityTypeSchema,
 } from '@exocortex/contracts';
-import {
-  entityAliasKey,
-  type EntityAliasCandidate,
-  parseEntityAliases,
-} from '@exocortex/editor';
+import { type EntityAliasCandidate, entityAliasKey, parseEntityAliases } from '@exocortex/editor';
 
 import { type PrismaClient, type PrismaTransactionClient } from './client';
 
@@ -145,9 +141,7 @@ async function selectOptionLabels(
 }
 
 /** The registry flattened into what the matcher takes: one row per spelling. */
-export function toAliasCandidates(
-  entities: readonly EntityRecord[],
-): EntityAliasCandidate[] {
+export function toAliasCandidates(entities: readonly EntityRecord[]): EntityAliasCandidate[] {
   return entities.flatMap((entity) => [
     { entityId: entity.id, alias: entity.title },
     ...entity.aliases.map((alias) => ({ entityId: entity.id, alias })),

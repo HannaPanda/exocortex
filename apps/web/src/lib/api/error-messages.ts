@@ -47,6 +47,11 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   setting_unknown: 'Diese Einstellung gibt es nicht.',
   memory_unavailable:
     'Für das Gedächtnis der Agenten ist noch kein Arbeitsbereich hinterlegt. Das lässt sich im Administrationsbereich nachholen.',
+  entity_layer_unavailable:
+    'Für Entitäten ist noch keine Datenbank hinterlegt. Das lässt sich im Administrationsbereich nachholen.',
+  entity_exists:
+    'Eine Entität mit diesem Namen gibt es schon. Trag die neue Schreibweise dort als Alias ein.',
+  entity_candidate_promoted: 'Aus diesem Vorschlag wurde bereits eine Entität.',
   workspace_slug_taken: 'Dieser Slug wird bereits von einem anderen Arbeitsbereich verwendet.',
   invitation_invalid: 'Diese Einladung gibt es nicht oder sie wurde zurückgezogen.',
   invitation_expired: 'Diese Einladung ist abgelaufen. Bitte lass dir eine neue schicken.',

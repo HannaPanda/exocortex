@@ -238,7 +238,12 @@ afterAll(async () => {
 describe('document materialization', () => {
   it('derives ProseMirror JSON, plain text and Markdown from the canonical state', async () => {
     const documentId = await createDocument();
-    const processor = createMaterializeDocumentProcessor({ prisma, queues, bus, settings: stubSettings() });
+    const processor = createMaterializeDocumentProcessor({
+      prisma,
+      queues,
+      bus,
+      settings: stubSettings(),
+    });
     const { context, progress } = contextFor({
       correlationId: 'test-1',
       documentId,
@@ -263,7 +268,12 @@ describe('document materialization', () => {
 
   it('is idempotent: a repeated job does not change the derived data', async () => {
     const documentId = await createDocument();
-    const processor = createMaterializeDocumentProcessor({ prisma, queues, bus, settings: stubSettings() });
+    const processor = createMaterializeDocumentProcessor({
+      prisma,
+      queues,
+      bus,
+      settings: stubSettings(),
+    });
     const payload = {
       correlationId: 'test-2',
       documentId,
@@ -293,7 +303,12 @@ describe('document materialization', () => {
 
   it('re-materializes when the canonical state changed again', async () => {
     const documentId = await createDocument();
-    const processor = createMaterializeDocumentProcessor({ prisma, queues, bus, settings: stubSettings() });
+    const processor = createMaterializeDocumentProcessor({
+      prisma,
+      queues,
+      bus,
+      settings: stubSettings(),
+    });
     const payload = {
       correlationId: 'test-3',
       documentId,
@@ -319,7 +334,12 @@ describe('document materialization', () => {
   }, 60_000);
 
   it('skips a document without content instead of failing', async () => {
-    const processor = createMaterializeDocumentProcessor({ prisma, queues, bus, settings: stubSettings() });
+    const processor = createMaterializeDocumentProcessor({
+      prisma,
+      queues,
+      bus,
+      settings: stubSettings(),
+    });
     await expect(
       processor(
         contextFor({
@@ -3358,7 +3378,12 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
   }
 
   async function materialize(documentId: string, correlationId: string): Promise<void> {
-    const processor = createMaterializeDocumentProcessor({ prisma, queues, bus, settings: stubSettings() });
+    const processor = createMaterializeDocumentProcessor({
+      prisma,
+      queues,
+      bus,
+      settings: stubSettings(),
+    });
     await processor(
       contextFor({
         correlationId,

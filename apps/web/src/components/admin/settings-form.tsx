@@ -38,6 +38,7 @@ import { messageForCode } from '@/lib/api/error-messages';
 const GROUP_LABELS: Record<string, string> = {
   ai: 'KI',
   memory: 'Gedächtnis',
+  entities: 'Entitäten',
   search: 'Suche',
   mcp: 'MCP',
   calendar: 'Kalender',
@@ -201,6 +202,34 @@ const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
   'memory.recallFactLimit': {
     label: 'Fakten vor der Trefferliste',
     help: 'Wie viele verdichtete Fakten ein Abruf dem Rest voranstellt. 0 stellt keine voran.',
+  },
+  'entities.enabled': {
+    label: 'Entitäten aktiviert',
+    help: 'Erfasst beim Speichern einer Seite, über welche bekannten Personen, Hosts, Dienste oder Projekte sie spricht. Aus: es wird nichts erfasst, vorhandene Verknüpfungen bleiben lesbar.',
+  },
+  'entities.databaseId': {
+    label: 'Datenbank der Entitäten',
+    help: 'Die Id der Datenbank, deren Zeilen die Entitäten sind. Sie steht in der Adresszeile hinter /seite/. Ohne Eintrag gibt es keine Namen, nach denen gesucht werden könnte. Eine je Installation: eine Entität ist ein Ding in der Welt und soll nicht in jedem Arbeitsbereich neu erfunden werden.',
+  },
+  'entities.minAliasLength': {
+    label: 'Kürzester Aliasname (Zeichen)',
+    help: 'Kürzere Namen werden beim Abgleich übersprungen. Ein Name aus zwei Buchstaben steckt in jeder zweiten Seite, und das Ergebnis sieht aus wie ein Defekt.',
+  },
+  'entities.maxMentionsPerDocument': {
+    label: 'Entitäten je Seite',
+    help: 'Mit wie vielen Entitäten eine einzelne Seite höchstens verknüpft wird. Begrenzt, was eine Glossarseite anrichtet, auf der jeder Name einmal vorkommt.',
+  },
+  'entities.candidatesEnabled': {
+    label: 'Neue Namen vorschlagen',
+    help: 'Sammelt Namen, die wiederholt vorkommen und zu denen es noch keine Entität gibt. Angelegt wird nichts von allein, nur vorgeschlagen. Aus: es bleibt bei der gepflegten Liste.',
+  },
+  'entities.candidateThreshold': {
+    label: 'Schwelle für einen Vorschlag (Seiten)',
+    help: 'Auf so vielen verschiedenen Seiten muss ein Name stehen, bevor er als Vorschlag auftaucht. Eine Seite, die einen Namen einmal nennt, ist kein Beleg.',
+  },
+  'entities.recallProfileEnabled': {
+    label: 'Profil beim Abruf voranstellen',
+    help: 'Erkennt ein Abruf einen Entitätsnamen in der Frage, kommt zuerst das Profil und danach erst die Treffer. Das ist der eigentliche Zweck der Entitäten; es kostet eine zusätzliche Abfrage je Abruf.',
   },
   'search.semanticEnabled': {
     label: 'Semantische Suche',
