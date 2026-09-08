@@ -393,14 +393,14 @@ The three tools call three ordinary endpoints, and so does everything else that
 remembers (the Claude Code hooks in `tools/claude-code-hooks`, Hermes, a shell
 script):
 
-| Endpoint                    | Scope   | What it does                                                                                                                                                                                    |
-| --------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /api/memory/recall`    | `read`  | Searches across the readable workspaces. Without `q` it answers with the newest notes for `project`. `maxChars` and `limit` are clamped by `memory.recallMaxChars` / `memory.recallMaxResults`. |
-| `POST /api/memory/remember` | `write` | Writes one distilled note under the project page. `appendToday` adds to today's note instead of starting a page.                                                                                |
-| `POST /api/memory/capture`  | `write` | Hands a finished session over for distillation. Answers `{accepted, jobId, reason}` at once and never throws for something the caller cannot fix.                                               |
-| `GET /api/memory/facts`     | `read`  | The distilled facts of a project, best first. `status` picks between `current` (the default), `superseded` and `conflicted`.                                                                    |
-| `POST /api/memory/facts`    | `write` | Applies one consolidation run. Not a tool: see below.                                                                                                                                          |
-| `POST /api/memory/facts/:id/promote` | `write` | Copies a fact into a curated workspace somebody names.                                                                                                                             |
+| Endpoint                             | Scope   | What it does                                                                                                                                                                                    |
+| ------------------------------------ | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/memory/recall`             | `read`  | Searches across the readable workspaces. Without `q` it answers with the newest notes for `project`. `maxChars` and `limit` are clamped by `memory.recallMaxChars` / `memory.recallMaxResults`. |
+| `POST /api/memory/remember`          | `write` | Writes one distilled note under the project page. `appendToday` adds to today's note instead of starting a page.                                                                                |
+| `POST /api/memory/capture`           | `write` | Hands a finished session over for distillation. Answers `{accepted, jobId, reason}` at once and never throws for something the caller cannot fix.                                               |
+| `GET /api/memory/facts`              | `read`  | The distilled facts of a project, best first. `status` picks between `current` (the default), `superseded` and `conflicted`.                                                                    |
+| `POST /api/memory/facts`             | `write` | Applies one consolidation run. Not a tool: see below.                                                                                                                                           |
+| `POST /api/memory/facts/:id/promote` | `write` | Copies a fact into a curated workspace somebody names.                                                                                                                                          |
 
 `recall` is a `GET` deliberately: `requiredScopeForRequest` derives the needed
 scope from the method, so a `POST` would force every client that only ever looks

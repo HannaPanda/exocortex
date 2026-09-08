@@ -68,7 +68,11 @@ export const memoryFactsTool: AnyToolDefinition = defineTool({
       const marks = [
         `${Math.round(fact.confidence * 100)} %`,
         `${fact.confirmations}× bestätigt`,
-        fact.status === 'current' ? null : fact.status === 'superseded' ? 'überholt' : 'Widerspruch',
+        fact.status === 'current'
+          ? null
+          : fact.status === 'superseded'
+            ? 'überholt'
+            : 'Widerspruch',
       ].filter((mark): mark is string => mark !== null);
       return `- ${fact.statement} (${marks.join(', ')}, id: ${fact.id})`;
     });

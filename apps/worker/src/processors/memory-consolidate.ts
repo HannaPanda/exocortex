@@ -250,7 +250,13 @@ export function parseVerdicts(answer: string, noteIds: ReadonlySet<string>): Mem
     if (kind !== 'new' && factId === null) continue;
 
     seen.add(noteId);
-    verdicts.push({ kind, noteId, factId, statement: statement?.slice(0, 200) ?? null, detail: '' });
+    verdicts.push({
+      kind,
+      noteId,
+      factId,
+      statement: statement?.slice(0, 200) ?? null,
+      detail: '',
+    });
   }
 
   return verdicts;

@@ -46,7 +46,7 @@ on the hot path of every recall; a typed table is the honest shape.
 unread notes; that job asks a model, per note, whether it confirms, replaces or
 contradicts something already held, or says nothing worth keeping. The verdicts
 go back through `POST /api/memory/facts`. The split is the one capture already
-uses: the worker decides what a note *means*, the API decides what that does to
+uses: the worker decides what a note _means_, the API decides what that does to
 the memory (ADR-014).
 
 **A note is read exactly once.** `MemoryConsolidation` is one row per note,

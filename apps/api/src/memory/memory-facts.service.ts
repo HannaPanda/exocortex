@@ -239,7 +239,10 @@ export class MemoryFactsService {
     await this.content.write({
       documentId: created.id,
       userId: input.userId,
-      request: { markdown: promotedBody(fact.document.content?.markdown ?? '', fact), mode: 'replace' },
+      request: {
+        markdown: promotedBody(fact.document.content?.markdown ?? '', fact),
+        mode: 'replace',
+      },
       correlationId: input.correlationId,
       source: 'ai',
     });
@@ -399,7 +402,12 @@ export class MemoryFactsService {
   }): Promise<string> {
     const projectTitle = projectLabel(input.projectKey);
     const projectPage = await this.prisma.document.findFirst({
-      where: { workspaceId: input.workspaceId, parentId: null, title: projectTitle, archivedAt: null },
+      where: {
+        workspaceId: input.workspaceId,
+        parentId: null,
+        title: projectTitle,
+        archivedAt: null,
+      },
       select: { id: true },
       orderBy: { createdAt: 'asc' },
     });
@@ -445,7 +453,10 @@ export class MemoryFactsService {
   private async requireReadableMemoryWorkspace(userId: string): Promise<string> {
     const settings = await this.settings.get();
     if (!settings['memory.enabled']) {
-      throw new AppError('memory_unavailable', 'The memory area is switched off for this deployment');
+      throw new AppError(
+        'memory_unavailable',
+        'The memory area is switched off for this deployment',
+      );
     }
     const workspaceId = settings['memory.workspaceId'];
     if (workspaceId === null) {
@@ -466,7 +477,10 @@ export class MemoryFactsService {
 
   private documentUrl(workspaceId: string, documentId: string): string | null {
     try {
-      return new URL(`/arbeitsbereich/${workspaceId}/seite/${documentId}`, this.env.APP_URL).toString();
+      return new URL(
+        `/arbeitsbereich/${workspaceId}/seite/${documentId}`,
+        this.env.APP_URL,
+      ).toString();
     } catch {
       return null;
     }
