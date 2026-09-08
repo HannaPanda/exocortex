@@ -328,8 +328,10 @@ function DocumentTitleInput({ initialTitle, readOnly, onCommit }: DocumentTitleI
       }}
       className={cn(
         // The page title is the top of the ladder and must clear the editor's own
-        // h1 (1.375rem); at the old text-2xl the two were identical.
-        'mb-5 w-full bg-transparent text-[1.75rem] leading-tight font-semibold tracking-[-0.02em] outline-none',
+        // h1 (1.375rem); at the old text-2xl the two were identical. Size alone
+        // was not enough -- see `.exocortex-page-title` for why the weight jump
+        // carries the step.
+        'exocortex-page-title mb-5 w-full bg-transparent outline-none',
         'placeholder:text-muted-foreground',
       )}
       placeholder="Unbenannte Seite"

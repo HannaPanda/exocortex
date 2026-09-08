@@ -62,6 +62,10 @@
 
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
+  /* The structural step of the amber scale: rules, leader dots, indent guides.
+     A line colour only -- `border-signal-line` and `text-signal-line` on an
+     icon are the intended uses, a fill is not. */
+  --color-signal-line: var(--signal-line);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
@@ -210,6 +214,26 @@
    * IDs, versions. Never for labels, never for prose. That boundary is what
    * separates this from a terminal costume, which PRODUCT.md rules out.
    */
+  /*
+   * The page title: the name of the thing you are looking at, wherever you are.
+   * The document's own title field, the workspace name on the overview, the
+   * heading of an administration page. One treatment for all of them, because
+   * they answer the same question and used to answer it at two different sizes.
+   *
+   * Weight 720 rather than 600 is the point of the class. The old ladder ran
+   * 400 / 500 / 600 from body to page title, which is not a contrast, it is a
+   * gradient: nothing on the screen was heavy, so nothing read as first. Inter
+   * Variable has the axis; the title is where it is worth spending. Tracking
+   * tightens with the weight, because letterforms this heavy set loose look
+   * unset rather than airy.
+   */
+  .exocortex-page-title {
+    font-size: 1.75rem;
+    line-height: 1.15;
+    font-weight: 720;
+    letter-spacing: -0.035em;
+  }
+
   .exocortex-numeric {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;

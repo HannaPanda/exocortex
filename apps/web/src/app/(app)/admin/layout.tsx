@@ -7,7 +7,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <AdminGuard>
       <AppPage maxWidth="max-w-5xl">
-        <h1 className="text-2xl font-semibold tracking-tight">Verwaltung</h1>
+        <h1 className="exocortex-page-title">Verwaltung</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Einstellungen, KI-Modelle und Nutzerverwaltung dieser Installation.
         </p>

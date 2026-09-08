@@ -6,44 +6,59 @@
  * place. See DESIGN.md for the reasoning behind the system.
  *
  * Colour model: OKLCH throughout. Lightness is perceptually uniform, which is
- * what makes the surface ramp below (0.17 -> 0.32) read as evenly spaced steps.
- * Chroma stays low at the extremes; high chroma near black or white is garish.
+ * what makes the surface ramp below read as evenly spaced steps. Chroma stays
+ * low at the extremes; high chroma near black or white is garish.
  *
  * The system:
  *   Neutrals    cool graphite, tinted toward violet (hue 275) at chroma <= 0.016.
  *               Never a pure grey, never #000. The tint is what keeps large dark
  *               surfaces from looking dead.
- *   Foreground  warm off-white (hue 85). The temperature contrast against the
- *               cool surfaces is the whole trick: it reads as light falling on
- *               metal rather than as grey-on-grey.
- *   Signal      one amber (hue 62) and nothing else. It marks focus, the active
- *               page, the primary action and your own cursor. If amber appears,
- *               something is interactive or is happening. Keeping it under
- *               roughly 10% of any screen is what makes it mean something.
+ *   Foreground  warm off-white (hue 85) at chroma 0.016. The temperature
+ *               contrast against the cool surfaces is the whole trick: it reads
+ *               as light falling on metal rather than as grey-on-grey. The
+ *               chroma used to be 0.008, which was too little to read as warm at
+ *               all; the surfaces were cold and the light was merely not-cold.
+ *   Signal      one amber (hue 62) and nothing else, but as a four-step scale
+ *               rather than an on/off switch: --signal-line for structure,
+ *               --accent-solid for hover, --accent-strong for selection,
+ *               --primary for action. Only the last of the four is a colour you
+ *               notice; the first three are warmth you feel. That is what keeps
+ *               the "under roughly 10% of any screen" rule intact while giving
+ *               the interface warmth outside the primary button.
+ *
+ * The ramp spans 0.145 -> 0.355 in lightness. It used to span 0.17 -> 0.32, and
+ * the four surface steps inside it sat within 0.065 of each other -- close
+ * enough that sidebar, header, page and popover all read as one flat sheet, and
+ * "elevation is the surface ramp" was true in the tokens and false on the
+ * screen. Each step is now a clear 0.04 apart.
  *
  * Status colours are deliberately a separate concern from the brand signal and
  * are never the only carrier of meaning; every status also has an icon and text
  * (PRODUCT.md, Accessibility & Inclusion).
  *
  * Contrast (WCAG 2.1, computed against the surface each colour appears on):
- *   --foreground on --background              15.6:1
- *   --foreground on --card                    14.4:1
- *   --muted-foreground on --background         7.7:1
- *   --muted-foreground on --muted              6.4:1
- *   --primary-text on --background             9.2:1
+ *   --foreground on --background              16.6:1
+ *   --foreground on --surface                 15.3:1
+ *   --foreground on --card                    14.0:1
+ *   --foreground on --popover                 12.5:1
+ *   --foreground on --accent-strong            8.9:1
+ *   --muted-foreground on --background         8.6:1
+ *   --muted-foreground on --muted              5.8:1
+ *   --primary-text on --background             9.6:1
+ *   --primary-text on --accent-strong          5.1:1
  *   --primary-foreground on --primary          8.8:1
  *   --destructive-foreground on --destructive  5.3:1
- *   --destructive-text on --background         7.2:1
+ *   --destructive-text on --background         7.5:1
  *   --warning-foreground on --warning         10.1:1
  *   --success-foreground on --success          7.7:1
  *   --info-foreground on --info                8.1:1
- *   --input / --border-strong on --card        3.4:1  (WCAG 1.4.11, boundaries)
- *   --ring on --background                     9.2:1
- *   --foreground on --accent-strong           10.1:1
- *   --primary-text on --accent-strong          6.0:1
- * `--border` sits at 1.5:1 on purpose: it separates, it does not delimit a
- * control. Anything a user must perceive as a boundary uses `--input` or
- * `--border-strong`.
+ *   --input / --border-strong on --popover     3.2:1  (WCAG 1.4.11, boundaries)
+ *   --input / --border-strong on --card        3.6:1
+ *   --ring on --background                     9.6:1
+ * `--border` sits at 1.5:1 on --card on purpose: it separates, it does not
+ * delimit a control. Anything a user must perceive as a boundary uses `--input`
+ * or `--border-strong`. `--signal-line` sits at 2.1:1 on --card: brighter than
+ * --border and warm, so a structural rule reads as drawn rather than as a seam.
  *
  * Fill vs. text: `--primary` and `--destructive` are fill colours, sized for
  * dark text on top of them. `--primary-text` and `--destructive-text` are their
@@ -54,24 +69,26 @@
 :root {
   color-scheme: dark;
 
-  /* Surface ramp. Each step is a perceptual +0.02..0.05 in lightness, which is
-     enough to read as a layer without needing a shadow. */
-  --background: oklch(0.17 0.01 275);
-  --foreground: oklch(0.93 0.008 85);
+  /* Surface ramp. Four steps, each a clear +0.04 in lightness, which is what
+     lets a layer read as raised without a shadow having to say so. The previous
+     ramp packed the same four steps into a third of that distance and the
+     screen showed one flat sheet. */
+  --background: oklch(0.145 0.012 275);
+  --foreground: oklch(0.94 0.016 85);
 
-  --surface: oklch(0.2 0.011 275);
-  --surface-foreground: oklch(0.93 0.008 85);
+  --surface: oklch(0.195 0.013 275);
+  --surface-foreground: oklch(0.94 0.016 85);
 
-  --card: oklch(0.21 0.012 275);
-  --card-foreground: oklch(0.93 0.008 85);
+  --card: oklch(0.235 0.014 275);
+  --card-foreground: oklch(0.94 0.016 85);
 
-  --popover: oklch(0.235 0.013 275);
-  --popover-foreground: oklch(0.93 0.008 85);
+  --popover: oklch(0.275 0.015 275);
+  --popover-foreground: oklch(0.94 0.016 85);
 
   /* Scrim behind modal surfaces. Darker than --background and carrying the same
      violet tint, so the dimmed page reads as pushed back rather than as covered
      by a black sheet. */
-  --overlay: oklch(0.11 0.008 275 / 0.72);
+  --overlay: oklch(0.075 0.01 275 / 0.76);
 
   /* The single signal colour. */
   --primary: oklch(0.78 0.15 62);
@@ -79,25 +96,35 @@
   /* Same amber, used as text and icon colour on dark surfaces. */
   --primary-text: oklch(0.78 0.15 62);
 
+  /* The structural step of the amber scale. Haarlinien, leader dots, tree indent
+     guides, section rules: everything that draws the shape of a screen rather
+     than an element you can act on. It is warm but dark enough (2.1:1 on --card)
+     that it is felt and not seen, which is what keeps it inside the one-signal
+     rule. Never text, never an icon, never a fill -- those are --primary's job,
+     and a line that starts carrying meaning has stopped being structure. */
+  --signal-line: oklch(0.44 0.05 62);
+
   /* Neutral chip / secondary control. Deliberately colourless: a second tinted
      control would compete with the amber signal. */
-  --secondary: oklch(0.26 0.013 275);
-  --secondary-foreground: oklch(0.9 0.008 85);
+  --secondary: oklch(0.31 0.015 275);
+  --secondary-foreground: oklch(0.91 0.016 85);
 
   /* Hover surfaces carry a faint warm tint, so that "warm" reads as
-     "interactive" everywhere in the product, not only on the primary action. */
-  --accent-solid: oklch(0.26 0.025 62);
-  --accent-foreground: oklch(0.94 0.01 75);
+     "interactive" everywhere in the product, not only on the primary action.
+     It has to clear --popover, not just --surface: menus and the command
+     palette are where hover is read most often. */
+  --accent-solid: oklch(0.315 0.038 62);
+  --accent-foreground: oklch(0.95 0.018 75);
 
   /* Selection is a state of its own, not a stronger hover. Where you are (the
      open page, the highlighted command, the active tab) has to be readable from
      across the room, so this sits a clear step above both the panel surface and
      the hover tint, and carries more chroma with it. Selected elements always
      add weight or an amber icon as well; the surface is never the only signal. */
-  --accent-strong: oklch(0.33 0.055 62);
+  --accent-strong: oklch(0.37 0.07 62);
 
-  --muted: oklch(0.255 0.012 275);
-  --muted-foreground: oklch(0.72 0.012 275);
+  --muted: oklch(0.305 0.015 275);
+  --muted-foreground: oklch(0.74 0.012 275);
 
   --destructive: oklch(0.53 0.19 25);
   --destructive-foreground: oklch(0.97 0.012 25);
@@ -115,10 +142,12 @@
   --info-foreground: oklch(0.19 0.03 235);
 
   /* Separation only, not a control boundary. */
-  --border: oklch(0.32 0.014 275);
-  /* Perceivable boundaries: form fields, scrollbar thumbs, structural rules. */
-  --border-strong: oklch(0.53 0.016 275);
-  --input: oklch(0.53 0.016 275);
+  --border: oklch(0.355 0.016 275);
+  /* Perceivable boundaries: form fields, scrollbar thumbs, structural rules.
+     Lifted with the ramp so it still clears 3:1 on --popover, the lightest
+     surface a form field ever sits on. */
+  --border-strong: oklch(0.56 0.016 275);
+  --input: oklch(0.56 0.016 275);
   --ring: oklch(0.78 0.15 62);
 
   --radius: 0.5rem;
