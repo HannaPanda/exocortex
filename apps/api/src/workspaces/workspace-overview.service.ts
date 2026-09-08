@@ -160,8 +160,11 @@ export class WorkspaceOverviewService {
           ...toOverviewDocument(row, byId),
           rowCount: children.get(row.id)?.length ?? 0,
         })),
+      // Databases have their own block above. A top-level database listed in
+      // both would be the same entry twice, once with the size of its table and
+      // once with the size of its branch, which are the same number.
       sections: rows
-        .filter((row) => row.parentId === null)
+        .filter((row) => row.parentId === null && row.type !== 'COLLECTION')
         .sort((a, b) => a.orderKey.localeCompare(b.orderKey))
         .map((row) => ({
           ...toOverviewDocument(row, byId),

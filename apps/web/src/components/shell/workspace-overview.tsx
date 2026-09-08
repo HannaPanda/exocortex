@@ -56,6 +56,25 @@ function formatBytes(bytes: number): string {
   return `${NUMBER.format(Math.round(value * 10) / 10)} ${units[unit]}`;
 }
 
+/**
+ * The one-line readout under the title.
+ *
+ * A zero is dropped rather than printed: "0 Datenbanken · 0 B" is four words
+ * that say nothing happened, and a readout that reports absences is noise a
+ * reader has to filter every single time they open the workspace.
+ */
+function formatPulse(stats: WorkspaceOverviewResponse['stats']): string {
+  const parts = [`${NUMBER.format(stats.pageCount)} Seiten`];
+  if (stats.databaseCount > 0) {
+    parts.push(`${NUMBER.format(stats.databaseCount)} Datenbanken`);
+  }
+  if (stats.editedThisWeek > 0) {
+    parts.push(`${NUMBER.format(stats.editedThisWeek)} diese Woche bearbeitet`);
+  }
+  if (stats.attachmentBytes > 0) parts.push(formatBytes(stats.attachmentBytes));
+  return parts.join(' · ');
+}
+
 function documentHref(workspaceId: string, documentId: string): string {
   return `/arbeitsbereich/${workspaceId}/seite/${documentId}`;
 }
@@ -264,12 +283,7 @@ export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
             <Skeleton className="mt-2 h-4 w-72" />
           ) : (
             <p className="exocortex-numeric mt-1 text-xs text-muted-foreground">
-              {[
-                `${NUMBER.format(data.stats.pageCount)} Seiten`,
-                `${NUMBER.format(data.stats.databaseCount)} Datenbanken`,
-                `${NUMBER.format(data.stats.editedThisWeek)} diese Woche bearbeitet`,
-                formatBytes(data.stats.attachmentBytes),
-              ].join(' · ')}
+              {formatPulse(data.stats)}
             </p>
           )}
         </div>
@@ -340,7 +354,14 @@ function WorkspaceOverviewBody({
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      {/* Two columns only when the second one has something in it. An empty
+          column would leave the recency list stopping halfway across the page
+          while every rule below it runs the full width. */}
+      <div
+        className={
+          hasAttention ? 'grid gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]' : 'grid gap-8'
+        }
+      >
         <section aria-labelledby="overview-recent">
           <SectionRule>
             <span id="overview-recent">Weitermachen</span>
