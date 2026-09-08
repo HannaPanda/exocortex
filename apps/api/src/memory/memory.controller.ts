@@ -33,8 +33,8 @@ import { CurrentSession } from '../auth/session.guard';
 import { currentCorrelationId } from '../common/correlation';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
-import { MemoryFactsService } from './memory-facts.service';
 import { MemoryService } from './memory.service';
+import { MemoryFactsService } from './memory-facts.service';
 
 /**
  * The memory surface for agents (issue #34).

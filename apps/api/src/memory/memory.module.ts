@@ -3,9 +3,9 @@ import { Module } from '@nestjs/common';
 import { DocumentsModule } from '../documents/documents.module';
 import { SearchModule } from '../search/search.module';
 
-import { MemoryFactsService } from './memory-facts.service';
 import { MemoryController } from './memory.controller';
 import { MemoryService } from './memory.service';
+import { MemoryFactsService } from './memory-facts.service';
 
 /**
  * The memory surface reuses the ordinary domain services rather than reaching

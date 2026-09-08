@@ -28,8 +28,8 @@ import { type SettingsService } from '../platform/settings.service';
 import { type RealtimeService } from '../realtime/realtime.service';
 import { type SearchService } from '../search/search.service';
 
-import { MemoryFactsService } from './memory-facts.service';
 import { MemoryService } from './memory.service';
+import { MemoryFactsService } from './memory-facts.service';
 
 /**
  * The distilled layer, against the real database (issue #46, ADR-021).
