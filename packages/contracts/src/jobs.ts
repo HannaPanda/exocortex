@@ -134,6 +134,14 @@ export const maintenanceJobSchema = jobBase.extend({
      * that turns the volume down.
      */
     'decay-memory-facts',
+    /**
+     * Empties `messages` and `resultText` on AI runs older than
+     * `ai.runPayloadRetentionDays` and marks them `payloadsPrunedAt`
+     * (issue #10). Off while that setting is zero. The usage columns are left
+     * alone: the point is to keep the statistics affordable, not to forget
+     * that the run happened.
+     */
+    'prune-ai-run-payloads',
   ]),
   /** Optional scope; `null` means all workspaces. */
   workspaceId: idSchema.nullable().default(null),

@@ -114,6 +114,10 @@ const SETTING_COPY: Record<SettingKey, { label: string; help: string }> = {
     label: 'Modell für Zusammenfassungen',
     help: 'Automatisch verwendet dasselbe Modell wie die Unterhaltung.',
   },
+  'ai.runPayloadRetentionDays': {
+    label: 'KI-Texte aufbewahren (Tage)',
+    help: 'Bei älteren KI-Läufen werden Frage und Antwort geleert, die Zahlen für die Nutzungsansicht bleiben stehen. 0 bedeutet: nie aufräumen. Verläufe in Unterhaltungen bleiben davon unberührt.',
+  },
   'ai.pdfExtractionEnabled': {
     label: 'PDF-Text extrahieren',
     help: 'Extrahiert den Text aus hochgeladenen PDF-Dateien, damit die KI ihn lesen kann.',

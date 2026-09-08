@@ -1,4 +1,5 @@
 import { AI_RUN_PICKUP_GRACE_MS, deriveAiRunTimeouts } from '@exocortex/contracts';
+import { type Prisma } from '@exocortex/database';
 
 import { DAY_MS, type MaintenanceTask } from './context';
 
@@ -236,5 +237,54 @@ export const pruneInvitations: MaintenanceTask = async ({ prisma, logger, report
   await reportProgress(100, 'Einladungen aufgeräumt');
   if (removed.count > 0) {
     logger.info('Expired invitations pruned', { removed: removed.count });
+  }
+};
+
+/**
+ * Empties the two fat columns on old AI runs (issue #10).
+ *
+ * The usage view is meant to answer questions about months, and the only
+ * reason keeping months of runs would be expensive is `messages` and
+ * `resultText` -- a prompt and an answer, in full, per run. The figures a usage
+ * question actually groups over are small integer columns, so this drops the
+ * text and keeps the row.
+ *
+ * Deliberately not a rollup table. A daily rollup would make the history
+ * smaller still, but it fixes the breakdowns at the moment it is written: a
+ * question nobody thought of when the table was designed can never be asked
+ * about the past again. Keeping one thin row per run costs a few dozen bytes
+ * and keeps every breakdown open, which is the better trade for a deployment
+ * this size.
+ *
+ * Only finished runs are touched -- a PENDING or RUNNING row still needs its
+ * prompt to be executed at all -- and `payloadsPrunedAt` records that the texts
+ * were removed, so nothing has to infer it from an empty column.
+ */
+export const pruneAiRunPayloads: MaintenanceTask = async (context) => {
+  const { prisma, logger, reportProgress } = context;
+  const retentionDays = (await context.settings())['ai.runPayloadRetentionDays'];
+  if (retentionDays === 0) return;
+
+  await reportProgress(10, 'Alte KI-Texte werden aufgeräumt');
+  const cutoff = new Date(Date.now() - retentionDays * DAY_MS);
+  const pruned = await prisma.aiRun.updateMany({
+    where: {
+      status: { notIn: ['PENDING', 'RUNNING'] },
+      createdAt: { lt: cutoff },
+      payloadsPrunedAt: null,
+    },
+    data: {
+      // An empty array rather than JSON null: `messages` is not nullable, and
+      // "this run submitted no messages" is at least a shape every reader
+      // already handles.
+      messages: [] as unknown as Prisma.InputJsonArray,
+      resultText: null,
+      payloadsPrunedAt: new Date(),
+    },
+  });
+
+  await reportProgress(100, 'KI-Texte aufgeräumt');
+  if (pruned.count > 0) {
+    logger.info('AI run payloads pruned', { pruned: pruned.count, retentionDays });
   }
 };

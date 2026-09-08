@@ -264,6 +264,8 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
       supportsTools: row.supportsTools,
       reasoningLevels: row.reasoningLevels,
       visionCompanionSlug: row.visionCompanion?.slug ?? null,
+      inputMicroUsdPerMTok: row.inputMicroUsdPerMTok,
+      outputMicroUsdPerMTok: row.outputMicroUsdPerMTok,
     };
   };
 

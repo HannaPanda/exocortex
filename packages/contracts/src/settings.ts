@@ -70,6 +70,17 @@ export const settingsSchema = z.object({
   'ai.compactionKeepRecentMessages': z.number().int().min(2).max(200).default(8),
   /** Model used to write the summary. Null reuses the conversation's model. */
   'ai.compactionModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
+  /**
+   * Days after which a finished run's prompt and answer text are emptied
+   * (issue #10). The metric columns survive it, so the usage history stays
+   * complete for as long as the rows do; what goes is the two fat columns,
+   * which are the only reason keeping months of runs would be expensive.
+   *
+   * Zero means "keep the texts for ever", and that is the default: dropping
+   * text somebody wrote is not something an update should quietly start doing.
+   * The conversation transcript is a separate table and is never touched here.
+   */
+  'ai.runPayloadRetentionDays': z.number().int().min(0).max(3_650).default(0),
   'ai.pdfExtractionEnabled': z.boolean().default(true),
   /**
    * Engine used first.

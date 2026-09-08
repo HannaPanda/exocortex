@@ -61,6 +61,8 @@ export async function resolveModelRow(input: {
     supportsTools: false,
     reasoningLevels: ['NONE'],
     visionCompanionSlug: null,
+    inputMicroUsdPerMTok: null,
+    outputMicroUsdPerMTok: null,
   };
 }
 

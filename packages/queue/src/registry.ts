@@ -377,6 +377,22 @@ export class QueueRegistry {
         },
       },
     );
+    // Daily, last of the nightly sweeps. A no-op while
+    // `ai.runPayloadRetentionDays` is zero, which is the default; once it is
+    // set, one indexed UPDATE that finds a handful of rows a day (issue #10).
+    await queue.upsertJobScheduler(
+      'prune-ai-run-payloads',
+      { pattern: '30 5 * * *' },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: {
+          correlationId,
+          task: 'prune-ai-run-payloads',
+          workspaceId: null,
+          documentId: null,
+        },
+      },
+    );
     this.logger.info('Maintenance schedulers registered');
   }
 

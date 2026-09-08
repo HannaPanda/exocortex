@@ -1161,8 +1161,34 @@ model AiRun {
   /// Number of tool round-trips this run performed.
   toolIterations Int              @default(0)
 
+  /// The usage figures as columns rather than only inside `usage` (issue #10).
+  /// The JSON stays for provider-specific extras; these are what every usage
+  /// question groups over, and a JSON cast per row is neither pleasant to write
+  /// nor fast enough for a breakdown by model, day and status. Nullable
+  /// throughout: a run that never reached the provider reports no usage at all,
+  /// and zero would claim it did.
+  inputTokens           Int?
+  outputTokens          Int?
+  cachedInputTokens     Int?
+  /// Cost exactly as the provider reported it. Null means it reported none,
+  /// which is not the same as free -- see `estimatedCostMicroUsd`.
+  providerCostMicroUsd  Int?
+  /// Cost computed from the model registry's prices at the time of the run,
+  /// filled only when the provider reported nothing. Deliberately a second
+  /// column rather than a fallback written into the first one, so a total can
+  /// still say how much of it was measured and how much was arithmetic.
+  estimatedCostMicroUsd Int?
+  durationMs            Int?
+  /// When the retention sweep emptied `messages` and `resultText`. The metric
+  /// columns above survive it, so a pruned run still counts in the statistics
+  /// and the API can say the texts are gone instead of implying there were none.
+  payloadsPrunedAt      DateTime?
+
   @@index([workspaceId, createdAt])
   @@index([conversationId, createdAt])
+  /// The deployment-wide usage view filters on time alone, across every
+  /// workspace, so neither index above can serve it.
+  @@index([createdAt])
   /// Not for querying runs by view -- so deleting a view does not have to scan
   /// every run to apply the SET NULL.
   @@index([databaseViewId])

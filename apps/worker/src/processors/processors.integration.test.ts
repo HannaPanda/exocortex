@@ -91,6 +91,10 @@ function toolCapableModelRow(slug: string): ResolvedModelRow {
     supportsTools: true,
     reasoningLevels: ['NONE'],
     visionCompanionSlug: null,
+    // Priced, so the tool-loop tests also cover the estimate that fills in when
+    // the mock provider reports no cost of its own (issue #10).
+    inputMicroUsdPerMTok: 3_000_000,
+    outputMicroUsdPerMTok: 15_000_000,
   };
 }
 
@@ -1118,6 +1122,118 @@ describe('maintenance', () => {
     expect(survivorRow?.processedAt).not.toBeNull();
   }, 60_000);
 
+  /**
+   * Issue #10: months of usage history are only affordable if the two fat
+   * columns go. What has to survive the sweep is the row itself, because the
+   * usage view still counts it.
+   */
+  it('empties the texts of old AI runs and keeps their figures', async () => {
+    const [old, recent, unfinished] = await Promise.all([
+      prisma.aiRun.create({
+        data: {
+          workspaceId,
+          createdById: userId,
+          provider: 'mock',
+          model: 'mock/a',
+          messages: [{ role: 'user', content: 'alte Frage' }],
+          resultText: 'alte Antwort',
+          status: 'COMPLETED',
+          createdAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000),
+          inputTokens: 120,
+          providerCostMicroUsd: 900,
+        },
+      }),
+      prisma.aiRun.create({
+        data: {
+          workspaceId,
+          createdById: userId,
+          provider: 'mock',
+          model: 'mock/a',
+          messages: [{ role: 'user', content: 'neue Frage' }],
+          resultText: 'neue Antwort',
+          status: 'COMPLETED',
+        },
+      }),
+      // Old, but never finished: its prompt is still the thing a worker would
+      // have to execute, so the sweep has no business emptying it.
+      prisma.aiRun.create({
+        data: {
+          workspaceId,
+          createdById: userId,
+          provider: 'mock',
+          model: 'mock/a',
+          messages: [{ role: 'user', content: 'hängende Frage' }],
+          status: 'PENDING',
+          createdAt: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000),
+        },
+      }),
+    ]);
+
+    const processor = createMaintenanceProcessor({
+      search,
+      prisma,
+      queues,
+      storage: recordingStorage(),
+      bus,
+      settings: stubSettings({ 'ai.runPayloadRetentionDays': 30 }),
+    });
+    await processor(
+      contextFor({
+        correlationId: 'test-prune-ai-payloads',
+        task: 'prune-ai-run-payloads',
+        workspaceId: null,
+      }).context,
+    );
+
+    const prunedRow = await prisma.aiRun.findUniqueOrThrow({ where: { id: old.id } });
+    expect(prunedRow.resultText).toBeNull();
+    expect(prunedRow.messages).toEqual([]);
+    expect(prunedRow.payloadsPrunedAt).not.toBeNull();
+    // The figures the usage view groups over are untouched.
+    expect(prunedRow.inputTokens).toBe(120);
+    expect(prunedRow.providerCostMicroUsd).toBe(900);
+
+    const recentRow = await prisma.aiRun.findUniqueOrThrow({ where: { id: recent.id } });
+    expect(recentRow.resultText).toBe('neue Antwort');
+    const unfinishedRow = await prisma.aiRun.findUniqueOrThrow({ where: { id: unfinished.id } });
+    expect(unfinishedRow.messages).toEqual([{ role: 'user', content: 'hängende Frage' }]);
+  }, 60_000);
+
+  it('leaves every AI run alone while the retention is zero', async () => {
+    const run = await prisma.aiRun.create({
+      data: {
+        workspaceId,
+        createdById: userId,
+        provider: 'mock',
+        model: 'mock/a',
+        messages: [{ role: 'user', content: 'bleibt stehen' }],
+        resultText: 'bleibt auch stehen',
+        status: 'COMPLETED',
+        createdAt: new Date(Date.now() - 400 * 24 * 60 * 60 * 1000),
+      },
+    });
+
+    const processor = createMaintenanceProcessor({
+      search,
+      prisma,
+      queues,
+      storage: recordingStorage(),
+      bus,
+      settings: stubSettings(),
+    });
+    await processor(
+      contextFor({
+        correlationId: 'test-prune-ai-payloads-off',
+        task: 'prune-ai-run-payloads',
+        workspaceId: null,
+      }).context,
+    );
+
+    const row = await prisma.aiRun.findUniqueOrThrow({ where: { id: run.id } });
+    expect(row.resultText).toBe('bleibt auch stehen');
+    expect(row.payloadsPrunedAt).toBeNull();
+  }, 60_000);
+
   describe('prune-snapshots (tiered retention, issue #20)', () => {
     const state = markdownToYjsState('# Snapshot\n').yjsState;
 
@@ -1908,6 +2024,21 @@ class CapturingAiProvider implements AiProvider {
     this.lastRequest = request;
     yield { type: 'start', model: request.model ?? 'test-model', provider: this.id };
     yield { type: 'delta', text: 'ok', sequence: 1 };
+    // A real provider reports its usage on the stream, and the run's usage
+    // columns are filled from it (issue #10). Without this event the streamed
+    // path would silently record no usage at all.
+    yield {
+      type: 'usage',
+      usage: {
+        inputTokens: 1,
+        outputTokens: 1,
+        cachedInputTokens: 0,
+        provider: this.id,
+        model: request.model ?? 'test-model',
+        providerCostMicroUsd: null,
+        durationMs: 1,
+      },
+    };
     yield { type: 'done', text: 'ok', finishReason: 'stop' };
   }
 }
@@ -2140,6 +2271,44 @@ describe('ai runs', () => {
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('COMPLETED');
     expect(run.resultText).toBe('ok');
+  }, 60_000);
+
+  /**
+   * Issue #10: the usage view groups over columns, not over the JSON, and the
+   * cost column it groups over has to distinguish a price a provider named from
+   * one this deployment worked out itself.
+   *
+   * `CapturingAiProvider` reports one token in, one token out and no cost, so
+   * the estimate is the registry's price for two tokens: 3 + 15 micro-USD per
+   * million, times one token each, rounded.
+   */
+  it('writes the usage columns and estimates the cost the provider did not name', async () => {
+    const documentId = await createDocument();
+    const runId = await createRun(documentId);
+    const provider = new CapturingAiProvider();
+
+    const processor = createAiRunProcessor({
+      prisma,
+      provider,
+      bus,
+      storage: fakeStorage(Buffer.from('unused')),
+      settings: stubSettings(),
+      toolRunnerFactory: null,
+      visionPreprocessorFor: () => null,
+      modelRegistry: async () => toolCapableModelRow('priced-model'),
+    });
+    await processor(contextFor({ correlationId: 'test-ai-1', runId, workspaceId, userId }).context);
+
+    const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
+    expect(run.status).toBe('COMPLETED');
+    expect(run.inputTokens).toBe(1);
+    expect(run.outputTokens).toBe(1);
+    expect(run.cachedInputTokens).toBe(0);
+    // Nothing reported, so the reported column stays empty rather than zero:
+    // a zero here would count the run as free in every cost total.
+    expect(run.providerCostMicroUsd).toBeNull();
+    expect(run.estimatedCostMicroUsd).toBe(18);
+    expect(run.payloadsPrunedAt).toBeNull();
   }, 60_000);
 
   it('does not inject a system message when the page has no images', async () => {

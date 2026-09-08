@@ -3,7 +3,7 @@ import { type AiUsage, type QUEUE_NAMES } from '@exocortex/contracts';
 import { type AiRun, Prisma, type PrismaClient } from '@exocortex/database';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
-import { type RunFailure } from './contract';
+import { type ResolvedModelRow, type RunFailure } from './contract';
 
 type AiJob = JobContext<typeof QUEUE_NAMES.ai>;
 
@@ -12,6 +12,61 @@ interface RunOutcome {
   text: string;
   usage: AiUsage | null;
   toolIterations: number;
+}
+
+const MICRO_USD_PER_MTOK_DIVISOR = 1_000_000;
+
+/**
+ * What the run cost according to the price list, for the case where the
+ * provider named no price itself.
+ *
+ * Returns null whenever the answer would be a guess rather than a calculation:
+ * no usage at all, or a model the registry does not price. Cached input tokens
+ * are billed here at the full input price -- OpenRouter counts them inside
+ * `prompt_tokens` and the registry holds no separate cache rate, so this
+ * slightly overstates a heavily cached run. That direction is the safe one for
+ * a figure that is already flagged as an estimate.
+ */
+function estimateCostMicroUsd(usage: AiUsage | null, modelRow: ResolvedModelRow): number | null {
+  if (usage === null) return null;
+  const { inputMicroUsdPerMTok, outputMicroUsdPerMTok } = modelRow;
+  if (inputMicroUsdPerMTok === null || outputMicroUsdPerMTok === null) return null;
+  return Math.round(
+    (usage.inputTokens * inputMicroUsdPerMTok + usage.outputTokens * outputMicroUsdPerMTok) /
+      MICRO_USD_PER_MTOK_DIVISOR,
+  );
+}
+
+/**
+ * The usage figures as the columns want them (issue #10).
+ *
+ * Written beside `usage`, not instead of it: the JSON keeps whatever a
+ * provider reports on top of these, the columns are what the usage view groups
+ * over. `estimatedCostMicroUsd` is filled only when the provider reported no
+ * cost, so the two columns never both describe the same money.
+ */
+function usageColumns(
+  usage: AiUsage | null,
+  modelRow: ResolvedModelRow,
+): {
+  usage: Prisma.InputJsonObject | typeof Prisma.JsonNull;
+  inputTokens: number | null;
+  outputTokens: number | null;
+  cachedInputTokens: number | null;
+  providerCostMicroUsd: number | null;
+  estimatedCostMicroUsd: number | null;
+  durationMs: number | null;
+} {
+  const reported = usage?.providerCostMicroUsd ?? null;
+  return {
+    usage: usage === null ? Prisma.JsonNull : (usage as unknown as Prisma.InputJsonObject),
+    inputTokens: usage?.inputTokens ?? null,
+    outputTokens: usage?.outputTokens ?? null,
+    cachedInputTokens: usage?.cachedInputTokens ?? null,
+    providerCostMicroUsd: reported,
+    estimatedCostMicroUsd: reported === null ? estimateCostMicroUsd(usage, modelRow) : null,
+    durationMs: usage?.durationMs ?? null,
+  };
 }
 
 /**
@@ -29,6 +84,7 @@ export async function writeFailure(input: {
   logger: AiJob['logger'];
   failure: RunFailure;
   outcome: RunOutcome;
+  modelRow: ResolvedModelRow;
 }): Promise<void> {
   const { prisma, bus, run, payload, logger, failure, outcome } = input;
   const terminalStatus: 'CANCELLED' | 'TIMED_OUT' | 'FAILED' =
@@ -45,10 +101,7 @@ export async function writeFailure(input: {
       errorCode: failure.code,
       finishedAt: new Date(),
       resultText: outcome.text.length > 0 ? outcome.text : null,
-      usage:
-        outcome.usage === null
-          ? Prisma.JsonNull
-          : (outcome.usage as unknown as Prisma.InputJsonObject),
+      ...usageColumns(outcome.usage, input.modelRow),
       toolIterations: outcome.toolIterations,
     },
   });
@@ -91,6 +144,7 @@ export async function writeSuccess(input: {
   logger: AiJob['logger'];
   reportProgress: AiJob['reportProgress'];
   outcome: RunOutcome;
+  modelRow: ResolvedModelRow;
 }): Promise<void> {
   const { prisma, bus, run, payload, logger, reportProgress, outcome } = input;
   const written = await prisma.aiRun.updateMany({
@@ -98,10 +152,7 @@ export async function writeSuccess(input: {
     data: {
       status: 'COMPLETED',
       resultText: outcome.text,
-      usage:
-        outcome.usage === null
-          ? Prisma.JsonNull
-          : (outcome.usage as unknown as Prisma.InputJsonObject),
+      ...usageColumns(outcome.usage, input.modelRow),
       finishedAt: new Date(),
       toolIterations: outcome.toolIterations,
     },

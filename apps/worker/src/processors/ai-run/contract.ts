@@ -14,6 +14,13 @@ export interface ResolvedModelRow {
   reasoningLevels: readonly AiReasoningLevelPrisma[];
   /** Slug of the vision companion, or null when the model sees images itself or none is configured. */
   visionCompanionSlug: string | null;
+  /**
+   * Micro-USD per million tokens, as the registry has them. Null when this run
+   * names a model the registry does not know: an unknown model has no price,
+   * and guessing one would put invented money into the usage view (issue #10).
+   */
+  inputMicroUsdPerMTok: number | null;
+  outputMicroUsdPerMTok: number | null;
 }
 
 /** Why a run ended without an answer. */

@@ -217,9 +217,10 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         logger,
         failure: outcome.failure,
         outcome,
+        modelRow,
       });
       return;
     }
-    await writeSuccess({ prisma, bus, run, payload, logger, reportProgress, outcome });
+    await writeSuccess({ prisma, bus, run, payload, logger, reportProgress, outcome, modelRow });
   };
 }
