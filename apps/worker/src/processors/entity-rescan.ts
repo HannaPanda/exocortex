@@ -35,12 +35,35 @@ export function createEntityRescanProcessor(dependencies: EntityRescanDependenci
   }: JobContext<typeof QUEUE_NAMES.entityRescan>): Promise<void> => {
     const job: EntityRescanJob = payload;
     const current = await settings();
-    const databaseId = current['entities.databaseId'];
-    if (!current['entities.enabled'] || databaseId === null) return;
+    if (!current['entities.enabled']) {
+      logger.info('Entity rescan skipped: the layer is switched off', {
+        entityDocumentId: job.entityDocumentId,
+      });
+      return;
+    }
 
     // The aliases changed, which is usually why this job exists. The cached
     // registry in the extraction pass is now wrong for up to half a minute.
     invalidateEntityRegistryCache();
+
+    // The database is the row's parent, not `entities.databaseId`.
+    //
+    // Not a shortcut: settings are cached for fifteen seconds here, and the very
+    // first entity somebody creates is created seconds after the database was
+    // provisioned and the setting written. Reading the setting made that first
+    // rescan -- the one covering every page that already exists -- silently do
+    // nothing. The row knows which database it is in without asking anybody.
+    const row = await prisma.document.findUnique({
+      where: { id: job.entityDocumentId },
+      select: { parentId: true, archivedAt: true },
+    });
+    if (row === null || row.parentId === null || row.archivedAt !== null) {
+      logger.warn('Entity rescan skipped: the entity is gone', {
+        entityDocumentId: job.entityDocumentId,
+      });
+      return;
+    }
+    const databaseId = row.parentId;
 
     const entity = (await loadEntityRegistry(prisma, databaseId)).find(
       (record) => record.id === job.entityDocumentId,
@@ -55,7 +78,12 @@ export function createEntityRescanProcessor(dependencies: EntityRescanDependenci
     const names = [entity.title, ...entity.aliases].filter(
       (name) => name.length >= current['entities.minAliasLength'],
     );
-    if (names.length === 0) return;
+    if (names.length === 0) {
+      logger.info('Entity rescan skipped: every name is shorter than the minimum', {
+        entityDocumentId: job.entityDocumentId,
+      });
+      return;
+    }
 
     // Narrowed in the database first, verified in JavaScript after: `contains`
     // has no idea what a word boundary is, so it answers with every page where

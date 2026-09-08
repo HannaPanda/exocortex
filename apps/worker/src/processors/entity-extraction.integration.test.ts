@@ -9,8 +9,10 @@ import {
 } from '@exocortex/contracts';
 import { createPrismaClient, generateOrderKey, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
+import { type JobContext } from '@exocortex/queue';
 
 import { extractEntities, invalidateEntityRegistryCache } from './entity-extraction';
+import { createEntityRescanProcessor } from './entity-rescan';
 
 /**
  * The extraction half of the entity layer (issue #47), against the real
@@ -285,5 +287,93 @@ describe('extractEntities', () => {
     expect(
       await prisma.entityCandidate.findUnique({ where: { phraseKey: 'hocuspocus' } }),
     ).toBeNull();
+  });
+});
+
+describe('the rescan job', () => {
+  async function runRescan(entityDocumentId: string, settings: Settings): Promise<void> {
+    const processor = createEntityRescanProcessor({ prisma, settings: async () => settings });
+    await processor({
+      payload: {
+        correlationId: 'rescan-test',
+        entityDocumentId,
+        userId,
+        reason: 'created',
+      },
+      job: { id: 'test-job', attemptsMade: 0 },
+      logger,
+      reportProgress: async () => {},
+    } as unknown as JobContext<'entity-rescan'>);
+  }
+
+  it('finds the name on pages that already existed', async () => {
+    const page = await createDocument({
+      title: 'Ältere Notiz',
+      parentId: null,
+      // Both spellings, to prove the rescan counts every alias into one edge.
+      plainText: 'Damals lief das noch auf fpb2. der Hetzner-Server stand in Falkenstein.',
+    });
+
+    await runRescan(hostId, settingsWith());
+
+    const mention = await prisma.entityMention.findFirst({
+      where: { documentId: page, entityDocumentId: hostId },
+      select: { occurrences: true },
+    });
+    expect(mention?.occurrences).toBe(2);
+  });
+
+  it("keeps the page's other entities instead of replacing them", async () => {
+    const page = await createDocument({ title: 'Beides', parentId: null });
+    await extractEntities(prisma, {
+      documentId: page,
+      workspaceId,
+      plainText: 'Orielle läuft dort.',
+      settings: settingsWith(),
+      logger,
+    });
+    await prisma.documentContent.update({
+      where: { documentId: page },
+      data: { plainText: 'Orielle läuft auf fpb2.' },
+    });
+
+    await runRescan(hostId, settingsWith());
+
+    const linked = await prisma.entityMention.findMany({
+      where: { documentId: page },
+      select: { entityDocumentId: true },
+    });
+    expect(linked.map((mention) => mention.entityDocumentId).sort()).toEqual(
+      [hostId, serviceId].sort(),
+    );
+  });
+
+  it('works even when the settings still say no database is configured', async () => {
+    // The exact window that broke the very first rescan on this deployment: the
+    // worker caches settings for fifteen seconds, and the first entity is
+    // created seconds after the database was provisioned.
+    const page = await createDocument({
+      title: 'Trotzdem',
+      parentId: null,
+      plainText: 'Auch hier steht fpb2.',
+    });
+
+    await runRescan(hostId, settingsWith({ 'entities.databaseId': null }));
+
+    expect(
+      await prisma.entityMention.count({ where: { documentId: page, entityDocumentId: hostId } }),
+    ).toBe(1);
+  });
+
+  it('does nothing when the layer is switched off', async () => {
+    const page = await createDocument({
+      title: 'Abgeschaltet',
+      parentId: null,
+      plainText: 'Und hier fpb2.',
+    });
+
+    await runRescan(hostId, settingsWith({ 'entities.enabled': false }));
+
+    expect(await prisma.entityMention.count({ where: { documentId: page } })).toBe(0);
   });
 });
