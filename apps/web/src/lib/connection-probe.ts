@@ -109,9 +109,15 @@ function probeSocket(label: string, url: string): Promise<ProbeStep> {
   });
 }
 
-/** The plain HTTPS request, so a dead socket can be told from a dead host. */
+/**
+ * The plain HTTPS request, so a dead socket can be told from a dead host.
+ *
+ * `/health/live` without the `/api` prefix: nginx gives liveness a location of
+ * its own and passes the path through untouched, so `/api/health/live` reaches
+ * the API as `/api/health/live` and answers 404.
+ */
 async function probeHttp(): Promise<ProbeStep> {
-  const url = `${realtimeOrigin()}/api/health/live`;
+  const url = `${realtimeOrigin()}/health/live`;
   const started = Date.now();
   try {
     const response = await fetch(url, { credentials: 'include', cache: 'no-store' });
