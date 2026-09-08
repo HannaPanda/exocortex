@@ -382,6 +382,12 @@ describe('recall', () => {
       'Der Schlüssel liegt in der Umgebung.',
     ]);
     expect(recalled.text.startsWith('Stand der Dinge')).toBe(true);
+
+    // The fact page and the `Fakten` page it hangs under are answered above,
+    // so neither may take one of the five slots below as well.
+    const titles = recalled.hits.map((hit) => hit.title);
+    expect(titles).not.toContain('Fakten');
+    expect(titles).not.toContain('Der Schlüssel liegt in der Umgebung.');
   });
 });
 

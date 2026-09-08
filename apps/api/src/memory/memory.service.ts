@@ -106,7 +106,12 @@ export class MemoryService {
             limit: settings['memory.recallFactLimit'],
           });
 
-    const ranked = hits.sort((a, b) => b.score - a.score).slice(0, limit);
+    // A fact already answered in full above must not take a slot again below.
+    const stated = new Set(facts.map((fact) => fact.documentId));
+    const ranked = hits
+      .filter((hit) => !stated.has(hit.documentId))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit);
     const factsText = renderFacts(facts, Math.floor(maxChars * FACT_BUDGET_SHARE));
     const { text, kept, truncated } = renderRecall(ranked, maxChars - factsText.length);
 
@@ -408,6 +413,11 @@ export class MemoryService {
         workspaceId: memoryWorkspaceId,
         archivedAt: null,
         ...(projectPage === null ? { parentId: { not: null } } : { parentId: projectPage.id }),
+        // The distilled layer answers above the notes, never among them
+        // (issue #46). Without this a recall spends two of its five slots on
+        // the `Fakten` page and on a fact it has already stated in full.
+        memoryFact: { is: null },
+        children: { none: { memoryFact: { isNot: null } } },
       },
       select: {
         id: true,
