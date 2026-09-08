@@ -163,7 +163,7 @@ export class DocumentSnapshotService {
       });
       if (current === null) throw AppError.notFound('Document content');
 
-      await tx.documentSnapshot.create({
+      const before = await tx.documentSnapshot.create({
         data: {
           documentId: snapshot.documentId,
           yjsState: current.yjsState,
@@ -197,6 +197,9 @@ export class DocumentSnapshotService {
         type: 'document.updated',
         payload: { documentId: snapshot.documentId },
         correlationId: input.correlationId,
+        // A restore is itself a write an agent may have made, and the
+        // safety-net snapshot above is what takes it back (ADR-022).
+        snapshotBeforeId: before.id,
       });
     });
 

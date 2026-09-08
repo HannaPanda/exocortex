@@ -198,6 +198,10 @@ export class DocumentContentService {
         type: 'document.updated',
         payload: { documentId: input.documentId },
         correlationId: input.correlationId,
+        // What a bulk revert of this agent's session would go back to
+        // (ADR-022). The snapshot exists either way; naming it here is what
+        // turns "an agent wrote here" into "and here is the way back".
+        snapshotBeforeId: snapshot.id,
       });
 
       return { snapshotId: snapshot.id };
