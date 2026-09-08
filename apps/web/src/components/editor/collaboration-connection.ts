@@ -53,6 +53,55 @@ const REVIVE_MAX_DELAY_MS = 120_000;
 const record = (event: string, detail?: Record<string, ConnectionDetailValue>): void =>
   logConnection('collab', event, detail);
 
+/**
+ * How many providers currently exist in this tab.
+ *
+ * One page can only ever need one. A count that climbs is the signature of a
+ * connection that is being rebuilt faster than it is being torn down, and every
+ * surviving provider holds a socket the browser counts against its per-host
+ * limit -- so a number above one here is the fault, not a symptom of it. Logged
+ * on both sides of the lifecycle so a dump shows the climb.
+ */
+let providerCount = 0;
+
+/**
+ * The `token` callback Hocuspocus calls on every socket open.
+ *
+ * A ticket lives about a minute (`COLLABORATION_TICKET_TTL_SECONDS`), and the
+ * provider reconnects on its own for as long as the page is open. Handing over
+ * the ticket as a *string* meant every reconnect replayed the one minted at
+ * mount: once a single outage outlasted the TTL -- a waking laptop, a wifi blip,
+ * a deploy restarting the collaboration unit -- every attempt from then on was
+ * rejected as `expired`, every 32 seconds, for ever, and only F5 recovered.
+ * Asking again per open means each attempt carries a ticket that is valid.
+ *
+ * The first call reuses `first` rather than asking for a second ticket for the
+ * very same connection.
+ */
+function ticketSource(documentId: string, first: string): () => Promise<string> {
+  let pending: string | null = first;
+  return async () => {
+    const reusable = pending;
+    pending = null;
+    if (reusable !== null) {
+      record('token.reused');
+      return reusable;
+    }
+    // A rejection here never surfaces anywhere: Hocuspocus awaits this function
+    // before it opens the socket, so a failure means no socket and no event --
+    // exactly the silence the connection log exists to break.
+    record('token.request');
+    try {
+      const fresh = await fetchCollaborationTicket(documentId);
+      record('token.granted');
+      return fresh.ticket;
+    } catch (cause) {
+      record('token.failed', { message: cause instanceof Error ? cause.message : String(cause) });
+      throw cause;
+    }
+  };
+}
+
 /** How the shell is told about a change; the provider's `update`, narrowed. */
 type PublishSession = (patch: Partial<DocumentSessionState>) => void;
 
@@ -227,8 +276,27 @@ export function useCollaborationConnection({
     let stopSaveIndicator: (() => void) | undefined;
     // Watchdog for a connection that never came back; cleared on unmount.
     let revive: ReturnType<typeof setTimeout> | undefined;
-    // Removes the wake listeners below; set once `connect()` has run.
-    let detachWake: (() => void) | undefined;
+
+    /**
+     * What a wake signal should do, once there is a connection to do it to.
+     *
+     * The listeners are attached here, in the effect body, and not inside
+     * `connect()` where the handler is written. That distinction was a real
+     * defect for a few hours on 2026-09-08: `connect()` is async, so a `retry()`
+     * arriving while it was still awaiting its ticket ran this cleanup *first*,
+     * found nothing attached yet, and `connect()` then attached listeners that
+     * nothing would ever remove. Each orphan called `retry()` on the next tab
+     * switch, which mounted another effect, which left another orphan. Providers
+     * doubled with every visit to the tab until the browser refused to open any
+     * further socket -- a refusal that never reaches the server, which is why
+     * nginx saw nothing at all while the tab was dead.
+     *
+     * Attaching them to the effect's own lifetime makes that impossible: the
+     * cleanup below always detaches exactly what the effect attached, however
+     * far `connect()` got.
+     */
+    let onWake: ((reason: WakeReason) => void) | null = null;
+    const detachWake = onWakeSignals((reason) => onWake?.(reason));
 
     const connect = async (): Promise<void> => {
       setError(null);
@@ -267,42 +335,7 @@ export function useCollaborationConnection({
       // Offline persistence: the local copy is available before the socket opens.
       const persistence = new IndexeddbPersistence(`exocortex:${documentId}`, ydoc);
 
-      /**
-       * A ticket lives about a minute (`COLLABORATION_TICKET_TTL_SECONDS`), and
-       * the provider reconnects on its own for as long as the page is open.
-       * Handing over the ticket as a *string* meant every reconnect replayed the
-       * one minted at mount: once a single outage outlasted the TTL — a waking
-       * laptop, a wifi blip, a deploy restarting the collaboration unit — every
-       * attempt from then on was rejected as `expired`, every 32 seconds, for
-       * ever, and only F5 recovered. Hocuspocus calls this function on every
-       * socket open, so each attempt carries a ticket that is actually valid.
-       *
-       * The first call reuses the ticket fetched above rather than asking for a
-       * second one for the very same connection.
-       */
-      let pendingTicket: string | null = ticket.ticket;
-      const nextTicket = async (): Promise<string> => {
-        const reusable = pendingTicket;
-        pendingTicket = null;
-        if (reusable !== null) {
-          record('token.reused');
-          return reusable;
-        }
-        // A rejection here never surfaces anywhere: Hocuspocus awaits this
-        // function before it opens the socket, so a failure means no socket and
-        // no event -- exactly the silence this whole log exists to break.
-        record('token.request');
-        try {
-          const fresh = await fetchCollaborationTicket(documentId);
-          record('token.granted');
-          return fresh.ticket;
-        } catch (cause) {
-          record('token.failed', {
-            message: cause instanceof Error ? cause.message : String(cause),
-          });
-          throw cause;
-        }
-      };
+      const nextTicket = ticketSource(documentId, ticket.ticket);
 
       /**
        * An open socket is not a usable document. The two used to be reported as
@@ -350,7 +383,12 @@ export function useCollaborationConnection({
         armRevive();
       };
 
-      record('provider.create', { url: ticket.collaborationUrl, name: ticket.documentName });
+      providerCount += 1;
+      record('provider.create', {
+        url: ticket.collaborationUrl,
+        name: ticket.documentName,
+        live: providerCount,
+      });
       const provider = new HocuspocusProvider({
         url: ticket.collaborationUrl,
         name: ticket.documentName,
@@ -410,17 +448,18 @@ export function useCollaborationConnection({
        * is merely `connecting` is left alone: tearing down an attempt that is
        * still in flight would replace one wait with another.
        */
-      const wakeRevive = (reason: WakeReason): void => {
+      onWake = (reason: WakeReason): void => {
         record('wake', { reason, socket: socketStatus, authenticated, disposed });
         if (disposed || live() || socketStatus === 'connecting') return;
         clearTimeout(revive);
         reviveCount.current = 0;
         retry();
       };
-      detachWake = onWakeSignals(wakeRevive);
 
       active = { provider, ydoc, persistence };
       if (disposed) {
+        providerCount -= 1;
+        record('provider.discarded', { reason: 'disposed', live: providerCount });
         provider.destroy();
         void persistence.destroy();
         ydoc.destroy();
@@ -434,10 +473,13 @@ export function useCollaborationConnection({
     return () => {
       disposed = true;
       record('teardown');
+      onWake = null;
       stopSaveIndicator?.();
       clearTimeout(revive);
-      detachWake?.();
+      detachWake();
       if (active !== null) {
+        providerCount -= 1;
+        record('provider.destroy', { live: providerCount });
         active.provider.destroy();
         void active.persistence.destroy();
         active.ydoc.destroy();
