@@ -205,10 +205,7 @@ export function useCollaborationConnection({
           reviveCount.current = 0;
           return;
         }
-        const delay = Math.min(
-          REVIVE_DELAY_MS * 2 ** reviveCount.current,
-          REVIVE_MAX_DELAY_MS,
-        );
+        const delay = Math.min(REVIVE_DELAY_MS * 2 ** reviveCount.current, REVIVE_MAX_DELAY_MS);
         revive = setTimeout(() => {
           if (disposed) return;
           reviveCount.current += 1;
