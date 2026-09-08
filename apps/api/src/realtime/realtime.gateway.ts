@@ -29,6 +29,20 @@ import { API_ENV, LOGGER } from '../common/logger.provider';
 
 interface SocketData {
   userId?: string;
+  /**
+   * Resolves once `handleConnection` has finished deciding who this socket is.
+   *
+   * Socket.IO does not wait for an asynchronous connection handler before it
+   * delivers the first message, so a `workspace.subscribe` that arrives while
+   * the session is still being verified used to find `userId` unset and be
+   * answered `unauthenticated`. The socket stayed open and connected, the
+   * client had no reason to try again, and that browser was deaf to every
+   * workspace event until the tab was reloaded: a page created from MCP never
+   * appeared in the tree, a rename never arrived. The window is small and opens
+   * whenever session verification is slow, which is exactly when the server is
+   * busy.
+   */
+  authenticated?: Promise<void>;
   subscribedWorkspaces: Set<string>;
 }
 
@@ -98,9 +112,20 @@ export class RealtimeGateway
   }
 
   async handleConnection(client: Socket): Promise<void> {
-    const session = await this.authService.verifySession(
+    // Published *before* the first await, so a message that arrives during
+    // verification has something to wait for. See `SocketData.authenticated`.
+    const data = socketData(client);
+    const verification = this.authService.verifySession(
       client.handshake.headers as Record<string, string | string[] | undefined>,
     );
+    // Never a rejected promise: a waiting subscription must fall through to the
+    // `userId === undefined` check below, not blow up in the message handler.
+    data.authenticated = verification.then(
+      () => undefined,
+      () => undefined,
+    );
+
+    const session = await verification;
 
     if (session === null) {
       this.logger.warn('Rejected unauthenticated realtime connection', { socketId: client.id });
@@ -112,7 +137,6 @@ export class RealtimeGateway
       return;
     }
 
-    const data = socketData(client);
     data.userId = session.userId;
     await client.join(userRoom(session.userId));
     this.logger.debug('Realtime connection established', {
@@ -136,6 +160,9 @@ export class RealtimeGateway
     }
 
     const data = socketData(client);
+    // A subscription that overtook the handshake waits for it rather than being
+    // turned away; only a socket that really carries no session is refused.
+    await data.authenticated;
     if (data.userId === undefined) {
       return { ok: false, code: 'unauthenticated', message: 'Socket is not authenticated' };
     }
