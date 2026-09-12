@@ -22,5 +22,6 @@ export * from './memory-facts';
 export * from './primitives';
 export * from './search';
 export * from './settings';
+export * from './workspace-credentials';
 export * from './workspace-overview';
 export * from './workspaces';

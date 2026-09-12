@@ -136,6 +136,29 @@ export function canManageWorkspaceSettings(role: WorkspaceRole | null): PolicyDe
   return ALLOW;
 }
 
+/**
+ * Storing, replacing or removing this workspace's own provider key (issue #52,
+ * AP7, ADR-023).
+ *
+ * OWNER only, and this is the line `canManageWorkspaceSettings` said it was
+ * keeping clear. A prompt or a model is how the people here work; a provider
+ * key is a paying relationship with a third party, entered by whoever answers
+ * for the bill. An ADMIN administers a workspace, which is not the same as
+ * being able to bind its owner to spending.
+ *
+ * The same bar guards reading, even though the value never leaves the server:
+ * `hint` plus `lastUsedAt` says which key is in use and whether it is being
+ * used, and that is the owner's business.
+ */
+export function canManageWorkspaceCredentials(role: WorkspaceRole | null): PolicyDecision {
+  const read = canReadWorkspace(role);
+  if (!read.allowed) return read;
+  if (role !== 'OWNER') {
+    return deny('forbidden', 'Managing workspace credentials requires the OWNER role');
+  }
+  return ALLOW;
+}
+
 // --------------------------------------------------------------------------
 // Documents
 // --------------------------------------------------------------------------

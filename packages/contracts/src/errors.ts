@@ -46,6 +46,7 @@ export const API_ERROR_CODES = [
   'setting_unknown',
   'setting_not_overridable',
   'setting_above_deployment_ceiling',
+  'credential_storage_unavailable',
   'memory_unavailable',
   'entity_layer_unavailable',
   'entity_exists',
@@ -125,6 +126,10 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // the form can say what happened; resolving clamps as well, and that is the
   // half that still holds when the ceiling is lowered afterwards.
   setting_above_deployment_ceiling: 400,
+  // This deployment has no `CREDENTIAL_ENCRYPTION_KEY`, so a workspace's own
+  // provider key cannot be stored (ADR-023). 503 rather than 400: the request
+  // was fine, the deployment is missing a line in its environment.
+  credential_storage_unavailable: 503,
   // The deployment has no memory area configured, or switched it off. 503,
   // not 404: the route exists and will work once somebody names a workspace.
   memory_unavailable: 503,

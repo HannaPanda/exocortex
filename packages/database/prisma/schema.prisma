@@ -40,30 +40,31 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  sessions                 Session[]
-  accounts                 Account[]
-  memberships              WorkspaceMember[]
-  createdDocuments         Document[]          @relation("DocumentCreatedBy")
-  updatedDocuments         Document[]          @relation("DocumentUpdatedBy")
-  createdSnapshots         DocumentSnapshot[]
-  createdAttachments       Attachment[]
-  correctedAttachmentTexts Attachment[]        @relation("AttachmentTextCorrectedBy")
-  auditEntries             AuditLog[]
-  aiRuns                   AiRun[]
-  apiTokens                ApiToken[]
-  updatedSettings          Setting[]           @relation("SettingUpdatedBy")
-  updatedWorkspaceSettings WorkspaceSetting[]  @relation("WorkspaceSettingUpdatedBy")
-  aiConversations          AiConversation[]    @relation("AiConversationCreatedBy")
-  calendarAccounts         CalendarAccount[]   @relation("CalendarAccountOwner")
-  comments                 Comment[]           @relation("CommentCreatedBy")
-  resolvedComments         Comment[]           @relation("CommentResolvedBy")
-  oauthApplications        OauthApplication[]
-  oauthAccessTokens        OauthAccessToken[]
-  oauthConsents            OauthConsent[]
-  sentInvitations          Invitation[]        @relation("InvitationInvitedBy")
-  acceptedInvitation       Invitation?         @relation("InvitationAcceptedBy")
-  agentSessions            AgentSession[]
-  agentWrites              AgentWriteJournal[]
+  sessions                    Session[]
+  accounts                    Account[]
+  memberships                 WorkspaceMember[]
+  createdDocuments            Document[]            @relation("DocumentCreatedBy")
+  updatedDocuments            Document[]            @relation("DocumentUpdatedBy")
+  createdSnapshots            DocumentSnapshot[]
+  createdAttachments          Attachment[]
+  correctedAttachmentTexts    Attachment[]          @relation("AttachmentTextCorrectedBy")
+  auditEntries                AuditLog[]
+  aiRuns                      AiRun[]
+  apiTokens                   ApiToken[]
+  updatedSettings             Setting[]             @relation("SettingUpdatedBy")
+  updatedWorkspaceSettings    WorkspaceSetting[]    @relation("WorkspaceSettingUpdatedBy")
+  createdWorkspaceCredentials WorkspaceCredential[] @relation("WorkspaceCredentialCreatedBy")
+  aiConversations             AiConversation[]      @relation("AiConversationCreatedBy")
+  calendarAccounts            CalendarAccount[]     @relation("CalendarAccountOwner")
+  comments                    Comment[]             @relation("CommentCreatedBy")
+  resolvedComments            Comment[]             @relation("CommentResolvedBy")
+  oauthApplications           OauthApplication[]
+  oauthAccessTokens           OauthAccessToken[]
+  oauthConsents               OauthConsent[]
+  sentInvitations             Invitation[]          @relation("InvitationInvitedBy")
+  acceptedInvitation          Invitation?           @relation("InvitationAcceptedBy")
+  agentSessions               AgentSession[]
+  agentWrites                 AgentWriteJournal[]
 
   @@map("user")
 }
@@ -355,6 +356,7 @@ model Workspace {
   invitations      Invitation[]
   agentWrites      AgentWriteJournal[]
   settings         WorkspaceSetting[]
+  credentials      WorkspaceCredential[]
 
   @@index([isMemory])
   @@map("workspace")
@@ -383,6 +385,48 @@ model WorkspaceSetting {
 
   @@id([workspaceId, key])
   @@map("workspace_setting")
+}
+
+/// What a stored credential is for. One purpose today; the column is an enum
+/// so a second one (a workspace's own image model, a webhook secret) is a
+/// migration and not a free-form string nobody validates.
+enum WorkspaceCredentialPurpose {
+  AI_OPENROUTER
+}
+
+/// A workspace's own third-party credential, encrypted at rest (issue #52,
+/// ADR-023).
+///
+/// Deliberately not a setting: ADR-013 says a setting is a preference and
+/// never a credential, and `setting` is a plaintext JSON column that the
+/// administration area reads back to the browser. The value here never leaves
+/// the server: the API answers with `configured`, `hint` and `updatedAt`, and
+/// only the worker decrypts, once per run, to make the provider call.
+model WorkspaceCredential {
+  id          String                     @id @default(cuid(2))
+  workspaceId String
+  workspace   Workspace                  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  purpose     WorkspaceCredentialPurpose
+  /// AES-256-GCM output, all three parts base64 (packages/auth/src/credential-cipher.ts).
+  ciphertext  String
+  iv          String
+  authTag     String
+  /// Which deployment key encrypted this, so a later rotation can re-encrypt
+  /// row by row instead of invalidating the table.
+  keyVersion  Int                        @default(1)
+  /// The last four characters, the only part ever shown again. Empty for a
+  /// secret too short to survive showing any of it.
+  hint        String
+  createdById String?
+  createdBy   User?                      @relation("WorkspaceCredentialCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime                   @default(now())
+  updatedAt   DateTime                   @updatedAt
+  /// Renewed when a run actually paid with this key, so "configured" and "in
+  /// use" can be told apart on screen.
+  lastUsedAt  DateTime?
+
+  @@unique([workspaceId, purpose])
+  @@map("workspace_credential")
 }
 
 model WorkspaceMember {
@@ -1227,10 +1271,16 @@ model AiRun {
   /// still say how much of it was measured and how much was arithmetic.
   estimatedCostMicroUsd Int?
   durationMs            Int?
+  /// Whether this run was paid for with the workspace's own provider key
+  /// rather than the deployment's (issue #52, ADR-023). A column and not a
+  /// join, because the credential may be replaced or removed later and the
+  /// usage report still has to say whose money this run spent.
+  usedOwnKey            Boolean @default(false)
+
   /// When the retention sweep emptied `messages` and `resultText`. The metric
   /// columns above survive it, so a pruned run still counts in the statistics
   /// and the API can say the texts are gone instead of implying there were none.
-  payloadsPrunedAt      DateTime?
+  payloadsPrunedAt DateTime?
 
   @@index([workspaceId, createdAt])
   @@index([conversationId, createdAt])
