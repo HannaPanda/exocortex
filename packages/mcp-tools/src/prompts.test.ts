@@ -6,7 +6,16 @@ import { getMcpPrompt, listMcpPrompts } from './prompts.js';
 const NOW = '2026-09-08T10:00:00.000Z';
 
 function workspace(id: string, name: string, slug: string): unknown {
-  return { id, name, slug, createdAt: NOW, updatedAt: NOW, role: 'OWNER', memberCount: 1 };
+  return {
+    id,
+    name,
+    slug,
+    createdAt: NOW,
+    updatedAt: NOW,
+    role: 'OWNER',
+    memberCount: 1,
+    isMemory: false,
+  };
 }
 
 function rule(documentId: string, title: string, mode: string, trigger: string | null): unknown {

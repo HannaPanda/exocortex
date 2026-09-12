@@ -47,6 +47,7 @@ function workspace(id: string, name: string) {
     memberCount: 1,
     createdAt: NOW,
     updatedAt: NOW,
+    isMemory: false,
   };
 }
 

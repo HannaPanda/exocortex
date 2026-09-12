@@ -39,7 +39,9 @@ live in the curated workspace.
 ## Decision
 
 **Memory is one workspace, named by a setting, shared by every client.**
-`memory.workspaceId` (ADR-013) says which one. All agents write into it, not one
+`Workspace.isMemory` says which one; it was `memory.workspaceId` until ADR-023
+moved it onto the row, because recall is handed a user and never a workspace.
+All agents of one account write into it, not one
 area per client and not one per project: the point is a memory across sessions,
 clients and models, and separate areas would be separate memories. Which client
 wrote a note and which project it belongs to are properties of the note (a
@@ -87,7 +89,7 @@ situation.
 
 ## Consequences
 
-- A deployment without `memory.workspaceId` has no capture destination.
+- An account with no memory workspace has no capture destination.
   `capture` refuses with a reason instead of guessing, and `recall` still works
   across the workspaces the caller can read.
 - Claude Code gets capture and injection from two hooks in

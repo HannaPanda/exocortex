@@ -449,7 +449,7 @@ shape changes; what changes is that a question phrased in words the note does
 not contain can still find it, which is the ordinary case when an agent asks
 "what did we do here last time".
 
-`remember` writes into the workspace named by `memory.workspaceId`, under a page
+`remember` writes into the caller's own memory workspace (`Workspace.isMemory`), under a page
 per project, appending to today's note. It is the same endpoint the capture job
 uses, so a note a person dictated and a note distilled from a session look the
 same afterwards.

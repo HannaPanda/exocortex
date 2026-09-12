@@ -80,6 +80,38 @@ The keys below are generated from `settingsSchema` in
 `packages/contracts/src/settings.ts`, which is the authority. Add a key there
 first; the admin form and this table follow.
 
+### Scopes: deployment-wide or per workspace (issue #52)
+
+Every key carries a scope in `SETTING_SCOPES`, and `satisfies` makes a new key
+a type error until somebody classifies it. `deployment` is what this page
+edits. `workspace` means a workspace OWNER or ADMIN may override it for their
+own area, under `/arbeitsbereich/:id/einstellungen`, and resolution becomes
+four layers: defaults < environment < `setting` < `workspace_setting`.
+
+The line is "who can answer this", not "how risky is it":
+
+| Scope        | What lives there                                                                                                                                                                                                |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `workspace`  | Prompt, model choice, budgets and timeouts, vision, compaction, PDF and cover switches, the memory regulators, the calendar reminder schedule.                                                                  |
+| `deployment` | `ai.enabled`, data retention, which PDF engine exists, `search.*` (ADR-020 wants one vector space), `entities.*` (one entity database per deployment), `mcp.*` and `agents.*` (they decide what agents may do). |
+
+Two things about overrides that are easy to get wrong later:
+
+- **An absent row means inherit.** There is no third state and no tombstone.
+  Unsetting an override is a `DELETE`, sent as `reset: ["ai.systemPrompt"]` in
+  the patch, because `null` is already a real value for several keys.
+- **`SETTING_CEILINGS` clamps while resolving, not while writing.** A workspace
+  may go below the deployment value for budget, timeouts, output tokens, PDF
+  size and recall size, never above. Lowering the deployment value therefore
+  pulls every workspace down on the next read, without rewriting a single row.
+
+`GET /api/workspaces/:id/settings` answers with the effective values, the
+deployment values to fall back to, the keys this workspace has set and the keys
+it may set. Both routes are deliberately absent from the MCP catalogue: the
+overridable keys include `ai.toolsEnabled`, `ai.mutatingToolsEnabled` and
+`ai.budgetMicroUsdPerRun`, so a tool for them would let an agent widen its own
+permissions and raise its own spending limit.
+
 | Key                                           | Type                      | Default                             | Affects                                                                                                                                                                                                                                                                                                                                                                  |
 | --------------------------------------------- | ------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `ai.enabled`                                  | boolean                   | `true`                              | Master switch for the AI pipeline.                                                                                                                                                                                                                                                                                                                                       |
@@ -146,19 +178,23 @@ Secrets are deliberately **not** settings. `OPENROUTER_API_KEY`,
 
 ### Memory settings (issue #34)
 
-The agents' memory is off until a workspace is named, and that is deliberately
-the whole switch.
+The agents' memory is off until a workspace is marked as one, and that is
+deliberately the whole switch. Since issue #52 the marking is a property of the
+workspace (`Workspace.isMemory`, set in the workspace's own settings page), not
+a key here: `recall`, `remember` and `capture` are handed a user and a project
+and never a workspace, so a deployment-wide pointer meant every account shared
+one memory. Everything below resolves against the caller's own memory area, and
+the regulators are workspace-scoped ([ADR-023](adr/ADR-023-settings-have-a-scope.md)).
 
 | Setting                                             | Meaning                                                                                                                                                                                                                                                                                        |
 | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `memory.enabled`                                    | Master switch for writing. Off: nothing is captured or remembered; recall still answers.                                                                                                                                                                                                       |
-| `memory.workspaceId`                                | Which workspace the agents write into. Empty means there is no destination, and `POST /api/memory/capture` answers `{accepted: false, reason: 'memory_workspace_not_configured'}` instead of guessing one.                                                                                     |
 | `memory.captureModelSlug`                           | Model that distils a session. Empty falls back to `ai.compactionModelSlug`, then `ai.defaultModelSlug`.                                                                                                                                                                                        |
 | `memory.captureMinChars`                            | Shortest session worth remembering. The cheap half of the "is this memorable" question; the other half is the model's, which may answer that there is nothing to keep.                                                                                                                         |
 | `memory.recallMaxChars` / `memory.recallMaxResults` | Hard ceilings on one recall answer, whatever a caller asks for. A memory that eats the context window it is meant to improve is worse than none.                                                                                                                                               |
 | `memory.retentionDays`                              | How long a session note survives. `0` (the default) never deletes anything. With a period set, `prune-memories` moves an untouched note into the trash after it, and destroys it after a second one — so nothing was ever unrecoverable. Project pages and other workspaces are never touched. |
 
-**Do not point `memory.workspaceId` at a curated workspace.** Automatically
+**Do not mark a curated workspace as the memory area.** Automatically
 written session notes belong where they may be tidied and expired; a workspace
 somebody reads as a document is not that. The permission model does the rest:
 give the agent account a writing role in the memory workspace and a reading role

@@ -123,6 +123,11 @@ const EXEMPT = [
       'Runtime configuration of the deployment (ADR-013). Deliberately out of reach of an agent: these keys decide what agents may do.',
   },
   {
+    route: '* /api/workspaces/:x/settings*',
+    reason:
+      "One workspace's overrides of the runtime configuration (issue #52, ADR-023). Same reason as the deployment-wide form above, and it bites harder here: `ai.toolsEnabled`, `ai.mutatingToolsEnabled` and `ai.budgetMicroUsdPerRun` are among the overridable keys, so a tool for this would let an agent widen its own permissions and raise its own spending limit. A human sets this in the workspace settings.",
+  },
+  {
     route: '* /api/admin/ai-models*',
     reason:
       'The model registry. Same reason, and it is edited once in a while by a human in the admin area.',

@@ -142,7 +142,7 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   that share one protocol dispatcher; the HTTP one reaches the domain by calling
   the REST API over loopback, never Prisma, and it accepts bearer credentials
   only, never a cookie.
-- ADR-019: agent memory is its own workspace (`memory.workspaceId`), written
+- ADR-019: agent memory is its own workspace (`Workspace.isMemory`, ADR-023), written
   through the ordinary domain services; a raw transcript is never stored, and
   authority comes from the agent account's membership, not from its token scope.
 - ADR-020: semantic search sits beside full-text and never replaces it.
@@ -161,6 +161,12 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   is a series of ordinary snapshot restores, partial by nature, and it names
   every page it skipped. Listing a session is a tool; reverting one is
   deliberately not.
+- ADR-023: a setting carries a scope. `SETTING_SCOPES` splits the keys into
+  deployment-wide and workspace-overridable; `workspace_setting` is a fourth
+  resolution layer where an absent row means inherit; `SETTING_CEILINGS` clamps
+  while resolving so lowering a deployment value pulls every workspace down.
+  The agent memory is `Workspace.isMemory` on the row, not a settings key, and
+  credentials never become settings.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

@@ -21,6 +21,7 @@ function workspace(id: string, name: string, slug: string): unknown {
     updatedAt: NOW,
     role: 'OWNER',
     memberCount: 1,
+    isMemory: false,
   };
 }
 

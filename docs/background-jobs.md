@@ -170,7 +170,8 @@ the API, before a model is ever paid; and the prompt allows the model to answer
 `prune-memories` (daily at 04:15) is the third filter, and the only one that
 acts on notes that are already written. It does nothing while
 `memory.retentionDays` is `0`, which is the default. With a retention set, it
-works in two stages against the workspace named by `memory.workspaceId` and no
+works in two stages against every workspace marked `isMemory`, each with its
+own `memory.retentionDays`, and no
 other: a note untouched for the period goes into the trash, and a note that has
 been _in_ the trash for another period is deleted for good. Nothing else in
 this application destroys a page outright, so a background sweep is the last
