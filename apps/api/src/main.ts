@@ -15,6 +15,7 @@ import {
   CORRELATION_HEADER,
   enterRequestContext,
   readAgentSessionHeaders,
+  readAutomationOriginHeader,
 } from './common/correlation';
 import { API_ENV, LOGGER } from './common/logger.provider';
 
@@ -64,6 +65,12 @@ async function bootstrap(): Promise<void> {
       // (ADR-022). Read here, next to the correlation id, because both answer
       // "where did this write come from" at different scales.
       agentSession: readAgentSessionHeaders(
+        request.headers as Record<string, string | string[] | undefined>,
+      ),
+      // Read here too, and confirmed by `SessionGuard`: unlike the two above
+      // this one is acted on, so it counts only when a service token carried
+      // it (issue #50, ADR-024).
+      automation: readAutomationOriginHeader(
         request.headers as Record<string, string | string[] | undefined>,
       ),
     });

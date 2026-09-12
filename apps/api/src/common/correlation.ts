@@ -12,6 +12,21 @@ export interface RequestContext {
    * what did it touch all afternoon.
    */
   agentSession?: AgentSessionContext;
+  /**
+   * The automation rule whose action is making this write, when one is
+   * (issue #50, ADR-024). Unlike `agentSession` this *is* read for a decision:
+   * it is what stops a rule from triggering itself for ever. So it is accepted
+   * only from a service token -- `SessionGuard` clears it for every other
+   * credential -- and a caller who forges it can at worst silence an automation
+   * on a request they were making anyway.
+   */
+  automation?: AutomationOriginContext;
+}
+
+export interface AutomationOriginContext {
+  ruleId: string;
+  /** How many automations deep this write already is. */
+  depth: number;
 }
 
 export interface AgentSessionContext {
@@ -61,6 +76,24 @@ export function currentAgentSession(): AgentSessionContext | undefined {
   return storage.getStore()?.agentSession;
 }
 
+/** The automation whose action is writing, or `undefined` when none is. */
+export function currentAutomation(): AutomationOriginContext | undefined {
+  return storage.getStore()?.automation;
+}
+
+/**
+ * Forgets the automation origin of the current request.
+ *
+ * Called by `SessionGuard` whenever the credential is not a service token. The
+ * header is read before authentication runs -- that is where the request
+ * context is built -- so the confirmation has to happen afterwards, and
+ * forgetting is how it is confirmed.
+ */
+export function clearAutomationOrigin(): void {
+  const context = storage.getStore();
+  if (context !== undefined) context.automation = undefined;
+}
+
 export const CORRELATION_HEADER = 'x-correlation-id';
 
 /**
@@ -72,6 +105,15 @@ export const CORRELATION_HEADER = 'x-correlation-id';
  */
 export const AGENT_SESSION_HEADER = 'x-exocortex-agent-session';
 export const AGENT_CLIENT_HEADER = 'x-exocortex-agent-client';
+
+/**
+ * Automation origin (issue #50, ADR-024), written as `<ruleId>:<depth>`.
+ *
+ * Mirrored from `@exocortex/contracts` for the same reason as the two above:
+ * the value travels as a header so no tool and no service has to know it
+ * exists.
+ */
+export const AUTOMATION_ORIGIN_HEADER_NAME = 'x-exocortex-automation';
 
 function headerValue(value: string | string[] | undefined): string | undefined {
   const first = Array.isArray(value) ? value[0] : value;
@@ -92,4 +134,28 @@ export function readAgentSessionHeaders(
   if (externalId === undefined || externalId.length > 100) return undefined;
   const clientLabel = headerValue(headers[AGENT_CLIENT_HEADER])?.slice(0, 200);
   return { externalId, clientLabel };
+}
+
+/**
+ * Reads the automation origin header.
+ *
+ * Bounded and parsed strictly: a rule id that is not an id, or a depth that is
+ * not a small number, is treated as no origin at all rather than as an origin
+ * with surprising values. The decision this feeds -- whether a chain has gone
+ * on long enough -- is one where "unparseable" and "zero" must not be the same
+ * answer, so an unparseable depth means the header is ignored entirely and the
+ * write counts as a fresh one.
+ */
+export function readAutomationOriginHeader(
+  headers: Record<string, string | string[] | undefined>,
+): AutomationOriginContext | undefined {
+  const raw = headerValue(headers[AUTOMATION_ORIGIN_HEADER_NAME]);
+  if (raw === undefined || raw.length > 120) return undefined;
+  const separator = raw.lastIndexOf(':');
+  if (separator <= 0) return undefined;
+  const ruleId = raw.slice(0, separator);
+  const depth = Number(raw.slice(separator + 1));
+  if (!/^[A-Za-z0-9_-]{1,60}$/.test(ruleId)) return undefined;
+  if (!Number.isInteger(depth) || depth < 0 || depth > 100) return undefined;
+  return { ruleId, depth };
 }

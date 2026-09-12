@@ -36,8 +36,10 @@ import {
 } from '@exocortex/database';
 
 import { AppError } from '../common/app-error';
+import { OutboxService } from '../common/outbox.service';
 import { DocumentsService, toSummary } from '../documents/documents.service';
 import { PRISMA } from '../platform/platform.module';
+import { RealtimeService } from '../realtime/realtime.service';
 
 const sortsArraySchema = z.array(databaseSortSchema);
 
@@ -242,6 +244,8 @@ export class DatabaseRowsService {
     @Inject(PRISMA) private readonly prisma: PrismaClient,
     private readonly access: WorkspaceAccessService,
     private readonly documents: DocumentsService,
+    private readonly outbox: OutboxService,
+    private readonly realtime: RealtimeService,
   ) {}
 
   async query(input: {
@@ -333,7 +337,18 @@ export class DatabaseRowsService {
     });
 
     if (input.request.values.length > 0) {
-      await this.writeValues(input.collectionDocumentId, row.id, input.request.values);
+      // No realtime emit and no second event beside it: `documents.create`
+      // already announced the row, and the values are part of the same act of
+      // creating it. What the outbox row here buys is that a rule watching for
+      // filled-in values sees a row created with them, exactly as it sees one
+      // filled in afterwards.
+      await this.writeValues({
+        collectionDocumentId: input.collectionDocumentId,
+        rowId: row.id,
+        values: input.request.values,
+        workspaceId: context.workspaceId,
+        correlationId: input.correlationId,
+      });
     }
 
     return this.toRowResponse(input.collectionDocumentId, row.id);
@@ -379,38 +394,84 @@ export class DatabaseRowsService {
       throw AppError.validation('Document is not a database row');
     }
 
-    await this.writeValues(collectionDocumentId, input.rowId, input.request.values);
+    await this.writeValues({
+      collectionDocumentId,
+      rowId: input.rowId,
+      values: input.request.values,
+      workspaceId: rowContext.workspaceId,
+      correlationId: input.correlationId,
+    });
+
+    // Best-effort and after the commit, like every realtime emit here: a client
+    // that misses it refetches on its own schedule, and the reliable half of the
+    // same news is the outbox row written inside the transaction (ADR-010).
+    await this.realtime.emit('database.row.updated', rowContext.workspaceId, input.correlationId, {
+      documentId: collectionDocumentId,
+      rowId: input.rowId,
+    });
+
     return this.toRowResponse(collectionDocumentId, input.rowId);
   }
 
-  private async writeValues(
-    collectionDocumentId: string,
-    rowId: string,
-    values: DatabaseRowPropertyValue[],
-  ): Promise<void> {
+  /**
+   * Writes a row's property values, and records that they changed.
+   *
+   * An interactive transaction rather than an array of upserts, because the
+   * outbox row has to be written inside the same transaction as the values it
+   * describes (ADR-010). Without that event nothing downstream can react to a
+   * row changing: an automation scoped to a database would only ever see rows
+   * being created and renamed, never filled in, which is most of what happens
+   * to a row (issue #50).
+   *
+   * `workspaceId` is threaded through rather than looked up here: every caller
+   * has already resolved the row's access context, and a second lookup would be
+   * a second chance to disagree about which workspace this is.
+   */
+  private async writeValues(input: {
+    collectionDocumentId: string;
+    rowId: string;
+    values: DatabaseRowPropertyValue[];
+    workspaceId: string;
+    correlationId: string;
+  }): Promise<void> {
     const propertyRows = await this.prisma.databaseProperty.findMany({
-      where: { documentId: collectionDocumentId },
+      where: { documentId: input.collectionDocumentId },
       select: { id: true, type: true, config: true },
     });
     const properties = buildPropertyMap(propertyRows.map(toPropertyRef));
 
-    await this.prisma.$transaction(
-      values.map((entry) => {
-        const property = properties.get(entry.propertyId);
-        if (property === undefined) {
-          throw AppError.validation(`Unknown property in this database: ${entry.propertyId}`);
-        }
-        if (COMPUTED_TYPES.has(property.type)) {
-          throw AppError.validation(`${property.type} is computed and cannot be written directly`);
-        }
-        const columns = toColumnData(property, entry.value);
-        return this.prisma.documentPropertyValue.upsert({
-          where: { documentId_propertyId: { documentId: rowId, propertyId: entry.propertyId } },
-          create: { documentId: rowId, propertyId: entry.propertyId, ...columns },
-          update: columns,
+    // Resolved before the transaction opens: a validation failure here is the
+    // caller's mistake, and finding it out with a transaction held open would
+    // hold a connection for the length of the check.
+    const writes = input.values.map((entry) => {
+      const property = properties.get(entry.propertyId);
+      if (property === undefined) {
+        throw AppError.validation(`Unknown property in this database: ${entry.propertyId}`);
+      }
+      if (COMPUTED_TYPES.has(property.type)) {
+        throw AppError.validation(`${property.type} is computed and cannot be written directly`);
+      }
+      return { propertyId: entry.propertyId, columns: toColumnData(property, entry.value) };
+    });
+
+    await this.prisma.$transaction(async (tx) => {
+      for (const write of writes) {
+        await tx.documentPropertyValue.upsert({
+          where: {
+            documentId_propertyId: { documentId: input.rowId, propertyId: write.propertyId },
+          },
+          create: { documentId: input.rowId, propertyId: write.propertyId, ...write.columns },
+          update: write.columns,
         });
-      }),
-    );
+      }
+
+      await this.outbox.writeEvent(tx, {
+        workspaceId: input.workspaceId,
+        type: 'database.row.updated',
+        payload: { documentId: input.collectionDocumentId, rowId: input.rowId },
+        correlationId: input.correlationId,
+      });
+    });
   }
 
   private async toRowResponse(collectionDocumentId: string, rowId: string): Promise<DatabaseRow> {

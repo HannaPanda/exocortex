@@ -6,7 +6,7 @@ import { type Logger } from '@exocortex/logger';
 
 import { PRISMA } from '../platform/platform-tokens';
 
-import { currentAgentSession, getRequestContext } from './correlation';
+import { currentAgentSession, currentAutomation, getRequestContext } from './correlation';
 import { LOGGER } from './logger.provider';
 
 /** Actions recorded in the audit log. English identifiers, snake_case. */
@@ -114,12 +114,20 @@ export class OutboxService {
 
   /** Writes an outbox row inside an existing transaction. */
   async writeEvent(tx: PrismaTransactionClient, input: WriteOutboxInput): Promise<void> {
+    // The automation origin is stamped onto the row rather than looked up
+    // later, because "later" is the outbox dispatcher, running minutes after
+    // the request has gone. Without it the dispatcher cannot tell a page a
+    // person wrote from a page an automation wrote, and a rule whose action
+    // writes would trigger itself for ever (issue #50, ADR-024).
+    const automation = currentAutomation();
     await tx.outboxEvent.create({
       data: {
         workspaceId: input.workspaceId,
         type: input.type,
         payload: input.payload as Prisma.InputJsonObject,
         correlationId: input.correlationId,
+        automationRuleId: automation?.ruleId ?? null,
+        automationDepth: automation?.depth ?? 0,
       },
     });
     await this.writeAgentJournal(tx, input);

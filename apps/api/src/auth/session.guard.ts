@@ -22,7 +22,7 @@ import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 
 import { AppError } from '../common/app-error';
-import { setRequestUser } from '../common/correlation';
+import { clearAutomationOrigin, setRequestUser } from '../common/correlation';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
 
@@ -96,6 +96,7 @@ export class SessionGuard implements CanActivate {
       request.exocortexSession = cookieSession;
       request.exocortexCredential = 'session';
       setRequestUser(cookieSession.userId);
+      clearAutomationOrigin();
       return true;
     }
 
@@ -109,6 +110,11 @@ export class SessionGuard implements CanActivate {
     request.exocortexCredential = credential;
     request.exocortexTokenScopes = scopes;
     setRequestUser(session.userId);
+    // The automation origin header is read before authentication runs, because
+    // that is where the request context is built. Only the worker may assert
+    // it, and a service token is the only way the worker speaks to this API
+    // (issue #50, ADR-024) -- so for everybody else it is forgotten here.
+    if (credential !== 'service_token') clearAutomationOrigin();
     return true;
   }
 

@@ -12,6 +12,7 @@ import { AdminGuard } from './auth/admin.guard';
 import { AuthModule } from './auth/auth.module';
 import { SessionGuard } from './auth/session.guard';
 import { TokenScopeGuard } from './auth/token-scope.guard';
+import { AutomationsModule } from './automations/automations.module';
 import { CommentsModule } from './comments/comments.module';
 import { ApiExceptionFilter } from './common/exception.filter';
 import { API_ENV } from './common/logger.provider';
@@ -60,6 +61,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     EntitiesModule,
     McpModule,
     AgentSessionsModule,
+    AutomationsModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: ApiExceptionFilter },

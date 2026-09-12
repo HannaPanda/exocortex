@@ -78,7 +78,7 @@ beforeAll(async () => {
   );
   properties = new DatabasePropertiesService(prisma, access, outbox, realtime);
   views = new DatabaseViewsService(prisma, access, realtime);
-  rows = new DatabaseRowsService(prisma, access, documents);
+  rows = new DatabaseRowsService(prisma, access, documents, outbox, realtime);
 
   const suffix = Date.now().toString(36);
   const [owner, guest] = await Promise.all([
