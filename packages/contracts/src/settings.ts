@@ -129,17 +129,19 @@ export const settingsSchema = z.object({
    */
   'ai.imageModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
   /**
-   * The agents' memory area (issue #34).
+   * The agents' memory area (issue #34, #52).
    *
-   * Off until a workspace is named, and that is the whole switch: without
-   * `memory.workspaceId` there is nowhere to write, so `recall` answers from
-   * the readable workspaces only and `capture` refuses politely instead of
-   * guessing a destination. The area is deliberately *not* the curated brain:
-   * automatically written notes must never land in what a human curates.
+   * Master switch for the whole feature. *Which* workspace an account writes
+   * its notes into is deliberately not a setting any more: it is
+   * `Workspace.isMemory` on the row itself (ADR-023). `recall` and `remember`
+   * are handed a user and a project, never a workspace, so there was never a
+   * context to resolve a per-workspace override against -- and one pointer for
+   * the whole deployment meant one memory for everybody. Off here, capture
+   * refuses politely and `recall` answers from the readable workspaces only.
+   * The area is deliberately *not* the curated brain: automatically written
+   * notes must never land in what a human curates.
    */
   'memory.enabled': z.boolean().default(true),
-  /** Workspace the agents write their notes into. Null means no capture destination. */
-  'memory.workspaceId': z.string().trim().min(8).max(64).nullable().default(null),
   /**
    * Model that turns a session into a handful of bullet points. Null falls
    * back to `ai.compactionModelSlug`, then to `ai.defaultModelSlug`: distilling
@@ -411,6 +413,147 @@ export const SETTING_KEYS = Object.keys(settingsSchema.shape) as readonly (keyof
 export const settingKeySchema = z.enum(SETTING_KEYS as [keyof Settings, ...(keyof Settings)[]]);
 export type SettingKey = z.infer<typeof settingKeySchema>;
 
+/**
+ * Where a setting may be set (issue #52, ADR-023).
+ *
+ * `deployment` is the old behaviour and stays the default reading of a key:
+ * one value for the installation, changed by a global admin. `workspace` marks
+ * a key a workspace OWNER or ADMIN may override for their own area, because it
+ * describes a way of working rather than a property of the deployment.
+ *
+ * The line between the two is not "how risky is it" but "who can answer it".
+ * A prompt, a model, a budget: the person running that workspace knows what
+ * they want and lives with the result. Whether semantic search is on, which
+ * PDF engine exists, how long the agent journal is kept: nobody working inside
+ * a single workspace can answer that, because it is a fact about the machine.
+ */
+export type SettingScope = 'deployment' | 'workspace';
+
+/**
+ * The scope of every key. Exhaustive by construction: `satisfies` makes a new
+ * key in `settingsSchema` a type error here until somebody decides what it is,
+ * which is the whole point -- an unclassified key silently defaulting to
+ * "overridable" is how a budget ceiling gets handed to the wrong person.
+ *
+ * Three groups are deployment-wide for reasons that are written down elsewhere
+ * and must not be quietly reversed here:
+ *
+ * - `search.*`: ADR-020 wants one vector space. Index and query have to agree
+ *   on the model, so splitting this group across scopes would produce empty
+ *   result lists that look exactly like a healthy deployment.
+ * - `entities.*`: `entities.databaseId` is documented as one per deployment,
+ *   because an entity is a thing in the world and the same host known under
+ *   two names in two workspaces is the failure that layer exists to prevent.
+ * - `mcp.*` and `agents.*`: these decide what agents may do and how long the
+ *   evidence of what they did is kept. Same reason `/api/admin/settings` is
+ *   out of reach of a tool.
+ */
+export const SETTING_SCOPES = {
+  'ai.enabled': 'deployment',
+  'ai.defaultModelSlug': 'workspace',
+  'ai.systemPrompt': 'workspace',
+  'ai.maxOutputTokens': 'workspace',
+  'ai.timeoutMs': 'workspace',
+  'ai.maxRunMs': 'workspace',
+  'ai.budgetMicroUsdPerRun': 'workspace',
+  'ai.toolsEnabled': 'workspace',
+  'ai.mutatingToolsEnabled': 'workspace',
+  'ai.maxToolIterations': 'workspace',
+  'ai.visionEnabled': 'workspace',
+  'ai.visionMaxImagesPerRun': 'workspace',
+  'ai.pageContextEnabled': 'workspace',
+  'ai.pageContextMaxChars': 'workspace',
+  'ai.compactionThresholdPercent': 'workspace',
+  'ai.compactionKeepRecentMessages': 'workspace',
+  'ai.compactionModelSlug': 'workspace',
+  // Data retention is a promise the deployment makes, not a preference.
+  'ai.runPayloadRetentionDays': 'deployment',
+  'ai.pdfExtractionEnabled': 'workspace',
+  // Which engine exists is a fact about the machine (a container or not).
+  'ai.pdfExtractor': 'deployment',
+  'ai.pdfExtractorFallbackEnabled': 'deployment',
+  'ai.pdfExtractionModelSlug': 'workspace',
+  'ai.pdfMaxBytes': 'workspace',
+  'ai.imageGenerationEnabled': 'workspace',
+  'ai.imageModelSlug': 'workspace',
+  'memory.enabled': 'deployment',
+  'memory.captureModelSlug': 'workspace',
+  'memory.captureMinChars': 'workspace',
+  'memory.recallMaxChars': 'workspace',
+  'memory.recallMaxResults': 'workspace',
+  'memory.retentionDays': 'workspace',
+  'memory.consolidationEnabled': 'workspace',
+  'memory.consolidationModelSlug': 'workspace',
+  // How much work one nightly run does is load on this host, not a preference.
+  'memory.consolidationProjectsPerRun': 'deployment',
+  'memory.consolidationNotesPerProject': 'deployment',
+  'memory.factHalfLifeDays': 'workspace',
+  'memory.factConfidenceFloor': 'workspace',
+  'memory.recallFactLimit': 'workspace',
+  'entities.enabled': 'deployment',
+  'entities.databaseId': 'deployment',
+  'entities.minAliasLength': 'deployment',
+  'entities.maxMentionsPerDocument': 'deployment',
+  'entities.candidatesEnabled': 'deployment',
+  'entities.candidateThreshold': 'deployment',
+  'entities.recallProfileEnabled': 'deployment',
+  'search.semanticEnabled': 'deployment',
+  'search.embeddingModelSlug': 'deployment',
+  'search.semanticWeightPercent': 'deployment',
+  'mcp.enabled': 'deployment',
+  'mcp.maxSearchResults': 'deployment',
+  'mcp.writeConfirmationRequired': 'deployment',
+  'calendar.remindersEnabled': 'workspace',
+  'calendar.reminderLeadMinutes': 'workspace',
+  'calendar.reminderAllDayHour': 'workspace',
+  'calendar.timeZone': 'workspace',
+  'activity.editSessionSnapshotsEnabled': 'deployment',
+  'activity.editSessionSnapshotIntervalMinutes': 'deployment',
+  'activity.snapshotRetentionFullDays': 'deployment',
+  'activity.snapshotRetentionDailyDays': 'deployment',
+  'activity.snapshotRetentionDryRun': 'deployment',
+  'agents.journalRetentionDays': 'deployment',
+} satisfies Record<SettingKey, SettingScope>;
+
+/** A key a workspace may override. Derived from `SETTING_SCOPES`, not repeated. */
+export type WorkspaceSettingKey = {
+  [K in SettingKey]: (typeof SETTING_SCOPES)[K] extends 'workspace' ? K : never;
+}[SettingKey];
+
+export const WORKSPACE_SETTING_KEYS = SETTING_KEYS.filter(
+  (key) => SETTING_SCOPES[key] === 'workspace',
+) as readonly WorkspaceSettingKey[];
+
+export const workspaceSettingKeySchema = z.enum(
+  WORKSPACE_SETTING_KEYS as [WorkspaceSettingKey, ...WorkspaceSettingKey[]],
+);
+
+/**
+ * Numeric keys where the deployment value is a ceiling, not a starting point.
+ *
+ * Every one of these buys something that costs money, time or memory on this
+ * host. A workspace may spend less than the deployment allows, never more.
+ *
+ * The clamp happens while resolving, not while writing, and that ordering is
+ * the point: when a global admin lowers the ceiling later, every workspace
+ * follows on the next read. Writing also rejects an over-value, but only so
+ * the form can say so -- the resolve-time clamp is what actually holds.
+ */
+export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
+  'ai.maxOutputTokens',
+  'ai.timeoutMs',
+  'ai.maxRunMs',
+  'ai.budgetMicroUsdPerRun',
+  'ai.maxToolIterations',
+  'ai.visionMaxImagesPerRun',
+  'ai.pageContextMaxChars',
+  'ai.pdfMaxBytes',
+  'memory.recallMaxChars',
+  'memory.recallMaxResults',
+];
+
+const CEILING_KEYS = new Set<string>(SETTING_CEILINGS);
+
 /** The inclusive bounds of one numeric setting. */
 export interface SettingNumberRange {
   readonly min: number;
@@ -445,7 +588,13 @@ export const SETTING_ENV_MAP: Readonly<Partial<Record<SettingKey, string>>> = {
 };
 
 /**
- * Merges defaults, environment and database rows into one validated object.
+ * Merges defaults, environment, deployment rows and workspace rows into one
+ * validated object (ADR-013, extended for scopes by ADR-023).
+ *
+ * Four layers now, in this order: zod defaults < environment < `setting` rows <
+ * `workspace_setting` rows. The fourth is optional and is the only one that
+ * ever depends on who is asking; without it this behaves exactly as it did
+ * before, which is what every deployment-wide caller still wants.
  *
  * A row whose value fails validation is dropped with the key reported in
  * `invalidKeys` rather than throwing, so one bad hand-edited row can never stop
@@ -454,7 +603,14 @@ export const SETTING_ENV_MAP: Readonly<Partial<Record<SettingKey, string>>> = {
 export function resolveSettings(input: {
   rows: readonly { key: string; value: unknown }[];
   env?: Readonly<Record<string, string | undefined>>;
-}): { settings: Settings; invalidKeys: SettingKey[] } {
+  /**
+   * The workspace's own overrides. A key that is absent here is inherited --
+   * there is deliberately no third state in the table, because "set to the
+   * same value as the deployment" and "not set" have to stay distinguishable
+   * without a sentinel nobody remembers the meaning of.
+   */
+  workspaceRows?: readonly { key: string; value: unknown }[];
+}): { settings: Settings; invalidKeys: SettingKey[]; overriddenKeys: WorkspaceSettingKey[] } {
   const candidate: Record<string, unknown> = {};
 
   for (const [settingKey, envVariable] of Object.entries(SETTING_ENV_MAP)) {
@@ -470,28 +626,80 @@ export function resolveSettings(input: {
     }
   }
 
-  const parsed = settingsSchema.safeParse(candidate);
-  if (parsed.success) {
-    return { settings: parsed.data, invalidKeys: [] };
-  }
-
   const invalidKeys: SettingKey[] = [];
-  for (const key of Object.keys(candidate)) {
-    if (!(SETTING_KEYS as readonly string[]).includes(key)) continue;
-    const shape = settingsSchema.shape[key as SettingKey];
-    const fieldResult = shape.safeParse(candidate[key]);
-    if (!fieldResult.success) {
-      // Narrowed by the guard above: only a known key ever gets this far, which
-      // is what lets the admin API report these as settings rather than strings.
-      invalidKeys.push(key as SettingKey);
-      delete candidate[key];
+  const parsed = settingsSchema.safeParse(candidate);
+  let settings: Settings;
+  if (parsed.success) {
+    settings = parsed.data;
+  } else {
+    for (const key of Object.keys(candidate)) {
+      if (!(SETTING_KEYS as readonly string[]).includes(key)) continue;
+      const shape = settingsSchema.shape[key as SettingKey];
+      const fieldResult = shape.safeParse(candidate[key]);
+      if (!fieldResult.success) {
+        // Narrowed by the guard above: only a known key ever gets this far, which
+        // is what lets the admin API report these as settings rather than strings.
+        invalidKeys.push(key as SettingKey);
+        delete candidate[key];
+      }
     }
+    // Every remaining value has already been validated individually, so this
+    // second parse can only fail if `settingsSchema` itself is inconsistent.
+    settings = settingsSchema.parse(candidate);
   }
 
-  // Every remaining value has already been validated individually, so this
-  // second parse can only fail if `settingsSchema` itself is inconsistent.
-  const retried = settingsSchema.parse(candidate);
-  return { settings: retried, invalidKeys };
+  const overriddenKeys = applyWorkspaceOverrides({
+    settings,
+    rows: input.workspaceRows ?? [],
+    invalidKeys,
+  });
+
+  return { settings, invalidKeys, overriddenKeys };
+}
+
+/**
+ * Lays a workspace's rows over an already resolved deployment configuration.
+ *
+ * Applied key by key onto the finished object rather than merged into the
+ * candidate and re-parsed, for two reasons. The deployment value has to survive
+ * as the ceiling to clamp against, which a merge would have thrown away. And
+ * every field of `settingsSchema` validates independently, so a per-key parse
+ * is exactly as strict as a whole-object one while letting a single bad row be
+ * dropped the same way a bad deployment row is.
+ *
+ * Mutates `settings` and `invalidKeys` and returns what it actually changed.
+ */
+function applyWorkspaceOverrides(input: {
+  settings: Settings;
+  rows: readonly { key: string; value: unknown }[];
+  invalidKeys: SettingKey[];
+}): WorkspaceSettingKey[] {
+  const overriddenKeys: WorkspaceSettingKey[] = [];
+  const writable = input.settings as Record<string, unknown>;
+
+  for (const row of input.rows) {
+    // A key that lost its `workspace` scope since the row was written is
+    // ignored rather than reported: the row is stale, not wrong, and the
+    // deployment value is the right answer for it now.
+    if (!(WORKSPACE_SETTING_KEYS as readonly string[]).includes(row.key)) continue;
+    const key = row.key as WorkspaceSettingKey;
+    const result = settingsSchema.shape[key].safeParse(row.value);
+    if (!result.success) {
+      input.invalidKeys.push(key);
+      continue;
+    }
+
+    const value = result.data;
+    const ceiling = writable[key];
+    const clamped =
+      CEILING_KEYS.has(key) && typeof value === 'number' && typeof ceiling === 'number'
+        ? Math.min(value, ceiling)
+        : value;
+    writable[key] = clamped;
+    overriddenKeys.push(key);
+  }
+
+  return overriddenKeys;
 }
 
 export const settingsResponseSchema = z.object({
@@ -539,3 +747,54 @@ const updateSettingsShape = Object.fromEntries(
 
 export const updateSettingsRequestSchema = z.object(updateSettingsShape);
 export type UpdateSettingsRequest = z.infer<typeof updateSettingsRequestSchema>;
+
+/**
+ * A workspace's own patch: the overridable keys, plus the list to unset.
+ *
+ * `reset` exists because "no override" cannot be expressed as a value. Several
+ * keys are nullable, so `null` already means something (`ai.defaultModelSlug:
+ * null` is "fall back to the env default"), and sending a key at all creates
+ * the row. Unsetting is therefore a separate verb over a separate list, which
+ * is also the shape the delete has in the database.
+ *
+ * Same real-partial construction as `updateSettingsRequestSchema` above, and
+ * for the same reason: `settingsSchema.partial()` would fill every absent key
+ * with its default and write a full set of override rows on the first save.
+ */
+type UpdateWorkspaceSettingsShape = {
+  [K in WorkspaceSettingKey]: z.ZodOptional<ReturnType<(typeof settingsSchema.shape)[K]['unwrap']>>;
+};
+
+const updateWorkspaceSettingsShape = Object.fromEntries(
+  WORKSPACE_SETTING_KEYS.map((key) => [key, settingsSchema.shape[key].unwrap().optional()]),
+) as unknown as UpdateWorkspaceSettingsShape;
+
+export const updateWorkspaceSettingsRequestSchema = z
+  .object({
+    ...updateWorkspaceSettingsShape,
+    reset: z.array(workspaceSettingKeySchema).max(WORKSPACE_SETTING_KEYS.length).optional(),
+  })
+  .refine((patch) => (patch.reset ?? []).every((key) => !Object.hasOwn(patch, key)), {
+    message: 'Ein Schlüssel kann nicht gleichzeitig gesetzt und zurückgesetzt werden',
+  });
+export type UpdateWorkspaceSettingsRequest = z.infer<typeof updateWorkspaceSettingsRequestSchema>;
+
+/**
+ * What a workspace sees of its own configuration.
+ *
+ * Three lists rather than one object, because "what is in force here" and
+ * "what did we decide here" are different questions and the form needs both:
+ * `settings` is the effective answer after the four layers and the ceilings,
+ * `overriddenKeys` is what this workspace has actually set, and
+ * `deploymentSettings` is what it would fall back to on reset. Without the
+ * third, a reset button cannot say what it would do.
+ */
+export const workspaceSettingsResponseSchema = z.object({
+  settings: settingsSchema,
+  deploymentSettings: settingsSchema,
+  overriddenKeys: z.array(workspaceSettingKeySchema),
+  /** The keys this workspace is allowed to touch at all. Derived, but sent so the form cannot drift. */
+  editableKeys: z.array(workspaceSettingKeySchema),
+  invalidKeys: z.array(settingKeySchema),
+});
+export type WorkspaceSettingsResponse = z.infer<typeof workspaceSettingsResponseSchema>;

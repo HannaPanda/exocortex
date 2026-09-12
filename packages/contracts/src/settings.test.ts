@@ -2,11 +2,15 @@ import { describe, expect, it } from 'vitest';
 
 import {
   resolveSettings,
+  SETTING_CEILINGS,
   SETTING_KEYS,
   SETTING_NUMBER_RANGES,
+  SETTING_SCOPES,
   settingsResponseSchema,
   settingsSchema,
   updateSettingsRequestSchema,
+  updateWorkspaceSettingsRequestSchema,
+  WORKSPACE_SETTING_KEYS,
 } from './settings';
 
 describe('resolveSettings', () => {
@@ -138,5 +142,131 @@ describe('settingsResponseSchema', () => {
         invalidKeys: ['not.a.real.setting'],
       }).success,
     ).toBe(false);
+  });
+});
+
+describe('workspace overrides', () => {
+  it('lets a workspace row win over the deployment row', () => {
+    const { settings, overriddenKeys } = resolveSettings({
+      rows: [{ key: 'ai.systemPrompt', value: 'deployment' }],
+      workspaceRows: [{ key: 'ai.systemPrompt', value: 'workspace' }],
+    });
+    expect(settings['ai.systemPrompt']).toBe('workspace');
+    expect(overriddenKeys).toEqual(['ai.systemPrompt']);
+  });
+
+  it('inherits every key the workspace did not set', () => {
+    const { settings, overriddenKeys } = resolveSettings({
+      rows: [{ key: 'ai.systemPrompt', value: 'deployment' }],
+      workspaceRows: [{ key: 'ai.toolsEnabled', value: false }],
+    });
+    expect(settings['ai.systemPrompt']).toBe('deployment');
+    expect(overriddenKeys).toEqual(['ai.toolsEnabled']);
+  });
+
+  it('behaves exactly as before when no workspace rows are given', () => {
+    const without = resolveSettings({ rows: [{ key: 'ai.enabled', value: false }] });
+    const empty = resolveSettings({
+      rows: [{ key: 'ai.enabled', value: false }],
+      workspaceRows: [],
+    });
+    expect(without.settings).toEqual(empty.settings);
+    expect(without.overriddenKeys).toEqual([]);
+  });
+
+  it('clamps a ceiling key to the deployment value instead of raising it', () => {
+    const { settings, overriddenKeys } = resolveSettings({
+      rows: [{ key: 'ai.budgetMicroUsdPerRun', value: 100_000 }],
+      workspaceRows: [{ key: 'ai.budgetMicroUsdPerRun', value: 5_000_000 }],
+    });
+    expect(settings['ai.budgetMicroUsdPerRun']).toBe(100_000);
+    // Still reported as set: the workspace has a row, the ceiling just bites.
+    expect(overriddenKeys).toEqual(['ai.budgetMicroUsdPerRun']);
+  });
+
+  it('lets a ceiling key go below the deployment value', () => {
+    const { settings } = resolveSettings({
+      rows: [{ key: 'ai.budgetMicroUsdPerRun', value: 100_000 }],
+      workspaceRows: [{ key: 'ai.budgetMicroUsdPerRun', value: 20_000 }],
+    });
+    expect(settings['ai.budgetMicroUsdPerRun']).toBe(20_000);
+  });
+
+  it('follows a lowered ceiling without rewriting the workspace row', () => {
+    const stored = [{ key: 'ai.maxRunMs', value: 800_000 }];
+    const before = resolveSettings({ rows: [], workspaceRows: stored });
+    expect(before.settings['ai.maxRunMs']).toBe(800_000);
+    const after = resolveSettings({
+      rows: [{ key: 'ai.maxRunMs', value: 120_000 }],
+      workspaceRows: stored,
+    });
+    expect(after.settings['ai.maxRunMs']).toBe(120_000);
+  });
+
+  it('ignores a workspace row for a deployment-scoped key', () => {
+    const { settings, overriddenKeys, invalidKeys } = resolveSettings({
+      rows: [],
+      workspaceRows: [{ key: 'search.semanticEnabled', value: true }],
+    });
+    expect(settings['search.semanticEnabled']).toBe(false);
+    expect(overriddenKeys).toEqual([]);
+    expect(invalidKeys).toEqual([]);
+  });
+
+  it('drops an invalid workspace row and keeps the deployment value', () => {
+    const { settings, invalidKeys, overriddenKeys } = resolveSettings({
+      rows: [{ key: 'ai.maxOutputTokens', value: 8_192 }],
+      workspaceRows: [{ key: 'ai.maxOutputTokens', value: 'not-a-number' }],
+    });
+    expect(settings['ai.maxOutputTokens']).toBe(8_192);
+    expect(invalidKeys).toEqual(['ai.maxOutputTokens']);
+    expect(overriddenKeys).toEqual([]);
+  });
+});
+
+describe('SETTING_SCOPES', () => {
+  it('classifies every key exactly once', () => {
+    expect(Object.keys(SETTING_SCOPES).sort()).toEqual([...SETTING_KEYS].sort());
+  });
+
+  it('never puts a deployment-scoped key on the workspace list', () => {
+    for (const key of WORKSPACE_SETTING_KEYS) {
+      expect(SETTING_SCOPES[key]).toBe('workspace');
+    }
+  });
+
+  it('keeps every ceiling key overridable and numeric', () => {
+    for (const key of SETTING_CEILINGS) {
+      expect(WORKSPACE_SETTING_KEYS).toContain(key);
+      expect(SETTING_NUMBER_RANGES[key]).toBeDefined();
+    }
+  });
+});
+
+describe('updateWorkspaceSettingsRequestSchema', () => {
+  it('keeps absent keys absent', () => {
+    const parsed = updateWorkspaceSettingsRequestSchema.parse({ 'ai.toolsEnabled': false });
+    expect(Object.keys(parsed)).toEqual(['ai.toolsEnabled']);
+  });
+
+  it('refuses a deployment-scoped key', () => {
+    const result = updateWorkspaceSettingsRequestSchema.safeParse({ 'mcp.enabled': false });
+    // Unknown keys are stripped rather than rejected, which is what keeps a
+    // patch forward-compatible -- what matters is that it never reaches the row.
+    expect(result.success).toBe(true);
+    expect(result.success && Object.hasOwn(result.data, 'mcp.enabled')).toBe(false);
+  });
+
+  it('refuses setting and resetting the same key in one request', () => {
+    const result = updateWorkspaceSettingsRequestSchema.safeParse({
+      'ai.systemPrompt': 'x',
+      reset: ['ai.systemPrompt'],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts a reset-only request', () => {
+    const parsed = updateWorkspaceSettingsRequestSchema.parse({ reset: ['ai.systemPrompt'] });
+    expect(parsed.reset).toEqual(['ai.systemPrompt']);
   });
 });

@@ -24,6 +24,14 @@ export const workspaceSchema = z.object({
   /** Role of the requesting user inside this workspace. */
   role: workspaceRoleSchema,
   memberCount: z.number().int().nonnegative(),
+  /**
+   * Whether this workspace is an agent memory area (issue #52, ADR-023).
+   *
+   * On the workspace rather than in the settings because `recall` and
+   * `remember` are handed a user and a project, never a workspace: there is no
+   * context a per-workspace setting could have been resolved against.
+   */
+  isMemory: z.boolean(),
 });
 export type Workspace = z.infer<typeof workspaceSchema>;
 
@@ -65,6 +73,12 @@ export const updateWorkspaceRequestSchema = z
   .object({
     name: z.string().trim().min(1).max(120).optional(),
     slug: workspaceSlugSchema.optional(),
+    /**
+     * Marks this workspace as the caller's agent memory area, or clears it.
+     * Switching it on changes what agents write here without anybody editing a
+     * page, which is why it sits behind the same ADMIN bar as the slug.
+     */
+    isMemory: z.boolean().optional(),
   })
   .refine((value) => value.name !== undefined || value.slug !== undefined, {
     message: 'At least one field must be provided',

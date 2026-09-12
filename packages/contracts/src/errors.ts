@@ -44,6 +44,8 @@ export const API_ERROR_CODES = [
   'document_content_lossy',
   'attachment_text_unavailable',
   'setting_unknown',
+  'setting_not_overridable',
+  'setting_above_deployment_ceiling',
   'memory_unavailable',
   'entity_layer_unavailable',
   'entity_exists',
@@ -115,6 +117,14 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   document_content_lossy: 422,
   attachment_text_unavailable: 409,
   setting_unknown: 400,
+  // A deployment-wide key arrived in a workspace patch (ADR-023). 400 rather
+  // than 403: the caller may well administer this workspace, the key is simply
+  // not one a workspace gets to answer.
+  setting_not_overridable: 400,
+  // An override above the deployment ceiling. Refused rather than clamped, so
+  // the form can say what happened; resolving clamps as well, and that is the
+  // half that still holds when the ceiling is lowered afterwards.
+  setting_above_deployment_ceiling: 400,
   // The deployment has no memory area configured, or switched it off. 503,
   // not 404: the route exists and will work once somebody names a workspace.
   memory_unavailable: 503,
