@@ -52,6 +52,7 @@ model User {
   aiRuns                   AiRun[]
   apiTokens                ApiToken[]
   updatedSettings          Setting[]           @relation("SettingUpdatedBy")
+  updatedWorkspaceSettings WorkspaceSetting[]  @relation("WorkspaceSettingUpdatedBy")
   aiConversations          AiConversation[]    @relation("AiConversationCreatedBy")
   calendarAccounts         CalendarAccount[]   @relation("CalendarAccountOwner")
   comments                 Comment[]           @relation("CommentCreatedBy")
@@ -331,6 +332,16 @@ model Workspace {
   updatedAt  DateTime  @updatedAt
   archivedAt DateTime?
 
+  /// Whether this workspace is an agent memory area (issue #52, ADR-019,
+  /// ADR-023). A property of the row rather than a deployment setting,
+  /// because `recall` and `remember` are handed a user and a project and
+  /// never a workspace: there is no context a per-workspace override could
+  /// have been resolved against, and one pointer for the whole installation
+  /// meant every account shared one memory. Resolution for a user is "the
+  /// memory workspace among their memberships"; several is legal and the
+  /// oldest membership wins, deterministically.
+  isMemory Boolean @default(false)
+
   members          WorkspaceMember[]
   documents        Document[]
   attachments      Attachment[]
@@ -343,8 +354,35 @@ model Workspace {
   comments         Comment[]
   invitations      Invitation[]
   agentWrites      AgentWriteJournal[]
+  settings         WorkspaceSetting[]
 
+  @@index([isMemory])
   @@map("workspace")
+}
+
+/// One workspace's override of a runtime setting (issue #52, ADR-023).
+///
+/// The fourth resolution layer: defaults < environment < `setting` <
+/// `workspace_setting`. An absent row means "inherit", which is why there is
+/// no nullable value column and no tombstone: unsetting an override deletes
+/// the row, and the two states stay distinguishable without a sentinel.
+///
+/// Only keys whose `SETTING_SCOPES` entry is `workspace` may appear here. A
+/// row for any other key is ignored while resolving rather than rejected, so
+/// a key that loses its scope later cannot brick a workspace.
+model WorkspaceSetting {
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  /// Raw JSON value, validated field by field against `settingsSchema` while
+  /// resolving, exactly like the deployment-wide `setting` table.
+  key         String
+  value       Json
+  updatedAt   DateTime  @updatedAt
+  updatedById String?
+  updatedBy   User?     @relation("WorkspaceSettingUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@id([workspaceId, key])
+  @@map("workspace_setting")
 }
 
 model WorkspaceMember {
