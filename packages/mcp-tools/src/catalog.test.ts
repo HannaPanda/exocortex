@@ -79,12 +79,18 @@ describe('EXOCORTEX_TOOLS', () => {
     // an alias list is replaced wholesale rather than added to, unlinking a page
     // removes an edge somebody may have drawn by hand, and dismissing a
     // candidate deletes the evidence along with the decision.
+    //
+    // Deleting an automation (issue #50) takes its run log with it, which is
+    // the only record of what that rule ever did. Changing a rule is not here:
+    // the rule is small, visible in full in the list, and a wrong change is one
+    // more call away from being right again.
     const destructive = EXOCORTEX_TOOLS.filter((tool) => tool.destructive)
       .map((tool) => tool.name)
       .sort();
     expect(destructive).toEqual([
       'exo_attachment_correct_text',
       'exo_attachment_reextract_text',
+      'exo_automation_delete',
       'exo_comment_delete',
       'exo_comment_update',
       'exo_database_property_delete',
@@ -117,10 +123,14 @@ describe('EXOCORTEX_TOOLS', () => {
     // Archiving is not here: the page is in the trash, and exo_page_restore
     // takes it back out. Restoring a snapshot is not here either: it takes one
     // of its own first, so the state it replaced is still reachable.
+    // An automation rule is: nothing snapshots it, and its run log goes with
+    // it. Switching it off is the reversible act, and that is a separate call
+    // on purpose.
     const irreversible = EXOCORTEX_TOOLS.filter((tool) => tool.irreversible)
       .map((tool) => tool.name)
       .sort();
     expect(irreversible).toEqual([
+      'exo_automation_delete',
       'exo_comment_delete',
       'exo_database_property_delete',
       'exo_page_delete',
