@@ -1,7 +1,12 @@
 import { AI_RUN_PICKUP_GRACE_MS, deriveAiRunTimeouts } from '@exocortex/contracts';
 import { type Prisma } from '@exocortex/database';
 
-import { DAY_MS, type MaintenanceTask } from './context';
+import {
+  DAY_MS,
+  type MaintenanceContext,
+  type MaintenanceTask,
+  memoryWorkspaceIds,
+} from './context';
 
 /**
  * How long an expired, unredeemed invitation stays in the list before the sweep
@@ -143,6 +148,10 @@ export const reapStaleAiRuns: MaintenanceTask = async (context) => {
  * `parentId: { not: null }` is what keeps the project pages: they are the roots
  * of the memory workspace and hold the notes that are still current.
  *
+ * One pass per memory area since issue #52, each with its own retention: the
+ * memory is a property of a workspace now, not one id in the settings, so a
+ * deployment can hold several and they age out on their own schedules.
+ *
  * Two more things are kept, both since issue #46. A page carrying a distilled
  * fact survives its own evidence on purpose: a fact was distilled precisely so
  * that it would outlive the notes it came from, and ageing it out on the notes'
@@ -151,14 +160,28 @@ export const reapStaleAiRuns: MaintenanceTask = async (context) => {
  * else somebody has built structure out of down here.
  */
 export const pruneMemories: MaintenanceTask = async (context) => {
-  const { prisma, payload, logger, reportProgress } = context;
-  const settings = await context.settings();
-  const retentionDays = settings['memory.retentionDays'];
-  const workspaceId = settings['memory.workspaceId'];
-  if (retentionDays === 0 || workspaceId === null) return;
+  const workspaceIds = await memoryWorkspaceIds(context.prisma);
+  if (workspaceIds.length === 0) return;
 
+  await context.reportProgress(10, 'Altes Gedächtnis wird aufgeräumt');
+  for (const workspaceId of workspaceIds) {
+    const settings = await context.settings(workspaceId);
+    const retentionDays = settings['memory.retentionDays'];
+    if (retentionDays === 0) continue;
+    await pruneOneMemory({ context, workspaceId, retentionDays });
+  }
+  await context.reportProgress(100, 'Gedächtnis aufgeräumt');
+};
+
+/** The sweep itself, for one memory area. */
+async function pruneOneMemory(input: {
+  context: MaintenanceContext;
+  workspaceId: string;
+  retentionDays: number;
+}): Promise<void> {
+  const { prisma, payload, logger } = input.context;
+  const { workspaceId, retentionDays } = input;
   const cutoff = new Date(Date.now() - retentionDays * DAY_MS);
-  await reportProgress(10, 'Altes Gedächtnis wird aufgeräumt');
 
   const expiring = await prisma.document.findMany({
     where: {
@@ -205,14 +228,13 @@ export const pruneMemories: MaintenanceTask = async (context) => {
           where: { id: { in: purgeable.map((row) => row.id) } },
         });
 
-  await reportProgress(100, 'Gedächtnis aufgeräumt');
   logger.info('Memory notes pruned', {
     archived: expiring.length,
     purged: purged.count,
     retentionDays,
     workspaceId,
   });
-};
+}
 
 /**
  * Removes invitations that expired long ago and were never taken up (issue #3).

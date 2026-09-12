@@ -46,7 +46,7 @@ export interface CalendarSyncDependencies {
    */
   notifier: ReminderNotifier | null;
   /** Runtime settings, read per job so an admin's change takes effect at once. */
-  settings: () => Promise<Settings>;
+  settings: (workspaceId?: string) => Promise<Settings>;
   /** Public base URL, so a reminder can link back to the page it came from. */
   appUrl: string;
 }
@@ -157,26 +157,33 @@ async function runReminders(input: {
   prisma: PrismaClient;
   apiClientFor: (userId: string) => ExocortexApiClient;
   notifier: ReminderNotifier | null;
-  settings: () => Promise<Settings>;
+  settings: (workspaceId?: string) => Promise<Settings>;
   appUrl: string;
   logger: Logger;
 }): Promise<void> {
-  const settings = await input.settings();
-  if (!settings['calendar.remindersEnabled']) return;
   if (input.notifier === null) {
-    input.logger.debug('Calendar reminders are on but no sender is configured');
+    input.logger.debug('Calendar reminders need a sender, and none is configured');
     return;
   }
 
+  // No deployment-wide gate here any more (issue #52). `calendar.remindersEnabled`
+  // is workspace-scoped and defaults to off, so a global check would have
+  // silenced exactly the workspace that switched it on. The decision moves into
+  // the resolver, one appointment at a time; the sweep itself is one bounded
+  // query over a window and costs nothing when nothing is due.
   const result = await sendDueReminders({
     prisma: input.prisma,
     apiClientFor: input.apiClientFor,
     notifier: input.notifier,
     logger: input.logger,
-    schedule: {
-      leadMinutes: settings['calendar.reminderLeadMinutes'],
-      allDayHour: settings['calendar.reminderAllDayHour'],
-      timeZone: settings['calendar.timeZone'],
+    scheduleFor: async (workspaceId) => {
+      const settings = await input.settings(workspaceId);
+      if (!settings['calendar.remindersEnabled']) return null;
+      return {
+        leadMinutes: settings['calendar.reminderLeadMinutes'],
+        allDayHour: settings['calendar.reminderAllDayHour'],
+        timeZone: settings['calendar.timeZone'],
+      };
     },
     appUrl: input.appUrl,
     now: new Date(),

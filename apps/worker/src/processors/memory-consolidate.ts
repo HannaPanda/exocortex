@@ -76,7 +76,7 @@ export interface MemoryConsolidateDependencies {
   provider: AiProvider;
   /** Acts as the user in the payload, like capture does. Null disables the job. */
   apiClientFor: ((userId: string) => ExocortexApiClient) | null;
-  settings: () => Promise<Settings>;
+  settings: (workspaceId?: string) => Promise<Settings>;
   defaultModel: string | null;
 }
 
@@ -97,7 +97,7 @@ export function createMemoryConsolidateProcessor(dependencies: MemoryConsolidate
     payload,
     logger,
   }: JobContext<typeof QUEUE_NAMES.memoryConsolidate>): Promise<void> => {
-    const settings = await dependencies.settings();
+    const settings = await dependencies.settings(payload.workspaceId);
     if (!settings['ai.enabled'] || !settings['memory.enabled']) return;
     if (!settings['memory.consolidationEnabled']) return;
     if (dependencies.apiClientFor === null) {

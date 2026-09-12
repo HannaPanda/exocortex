@@ -48,7 +48,7 @@ export interface MemoryCaptureDependencies {
    * service-token secret, which is the same seam that disables the tool loop.
    */
   apiClientFor: ((userId: string) => ExocortexApiClient) | null;
-  settings: () => Promise<Settings>;
+  settings: (workspaceId?: string) => Promise<Settings>;
   /**
    * Fallback model when no setting names one, usually `OPENROUTER_DEFAULT_MODEL`.
    * `null` leaves the choice to the provider, which has a default of its own.
@@ -75,7 +75,7 @@ export function createMemoryCaptureProcessor(dependencies: MemoryCaptureDependen
     payload,
     logger,
   }: JobContext<typeof QUEUE_NAMES.memoryCapture>): Promise<void> => {
-    const settings = await dependencies.settings();
+    const settings = await dependencies.settings(payload.workspaceId);
 
     if (!settings['ai.enabled'] || !settings['memory.enabled']) {
       logger.info('Memory capture skipped: the feature is switched off', {

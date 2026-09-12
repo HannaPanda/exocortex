@@ -18,7 +18,14 @@ export interface MaintenanceContext {
   storage: ObjectStorage;
   search: HybridSearchAdapter;
   bus: RedisEventBus;
-  settings: () => Promise<Settings>;
+  /**
+   * The configuration in force, deployment-wide or inside one workspace.
+   *
+   * A sweep that acts on one workspace at a time has to pass its id (ADR-023),
+   * or it will apply somebody else's retention to it. A sweep that genuinely
+   * spans the installation calls this with nothing, which is the old behaviour.
+   */
+  settings: (workspaceId?: string) => Promise<Settings>;
   /** Outbox rows dispatched per run. */
   outboxBatchSize: number;
   /** How long a cover-only upload is kept after it stops being a cover. */
@@ -34,6 +41,21 @@ export interface MaintenanceContext {
 
 /** One scheduled housekeeping job. */
 export type MaintenanceTask = (context: MaintenanceContext) => Promise<void>;
+
+/**
+ * Every active agent memory area (issue #52, ADR-023).
+ *
+ * Three nightly sweeps used to read one configured id. They iterate now: the
+ * memory is a property of a workspace, so a deployment has as many of them as
+ * there are accounts that wanted one, each with its own retention.
+ */
+export async function memoryWorkspaceIds(prisma: PrismaClient): Promise<string[]> {
+  const rows = await prisma.workspace.findMany({
+    where: { isMemory: true, archivedAt: null },
+    select: { id: true },
+  });
+  return rows.map((row) => row.id);
+}
 
 export const DAY_MS = 24 * 60 * 60 * 1000;
 export const WEEK_MS = 7 * DAY_MS;

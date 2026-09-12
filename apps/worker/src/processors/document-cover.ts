@@ -15,7 +15,7 @@ export interface DocumentCoverDependencies {
    */
   apiClientFor: ((userId: string) => ExocortexApiClient) | null;
   bus: RedisEventBus;
-  settings: () => Promise<Settings>;
+  settings: (workspaceId?: string) => Promise<Settings>;
 }
 
 /**
@@ -52,7 +52,7 @@ export function createDocumentCoverProcessor(dependencies: DocumentCoverDependen
       });
     };
 
-    const settings = await dependencies.settings();
+    const settings = await dependencies.settings(payload.workspaceId);
     const generator =
       settings['ai.enabled'] && settings['ai.imageGenerationEnabled']
         ? dependencies.imageGeneratorFor(settings['ai.imageModelSlug'])

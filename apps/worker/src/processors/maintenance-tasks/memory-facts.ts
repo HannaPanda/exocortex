@@ -1,6 +1,11 @@
 import { QUEUE_NAMES } from '@exocortex/contracts';
 
-import { DAY_MS, type MaintenanceTask } from './context';
+import {
+  DAY_MS,
+  type MaintenanceContext,
+  type MaintenanceTask,
+  memoryWorkspaceIds,
+} from './context';
 
 /**
  * Hands each project with unread notes to the consolidation queue (issue #46).
@@ -14,13 +19,31 @@ import { DAY_MS, type MaintenanceTask } from './context';
  * same user a note was, and passes the same permission checks.
  */
 export const consolidateMemories: MaintenanceTask = async (context) => {
-  const { prisma, queues, payload, logger, reportProgress } = context;
-  const settings = await context.settings();
-  const workspaceId = settings['memory.workspaceId'];
-  if (!settings['memory.enabled'] || !settings['memory.consolidationEnabled']) return;
-  if (!settings['ai.enabled'] || workspaceId === null) return;
+  const workspaceIds = await memoryWorkspaceIds(context.prisma);
+  if (workspaceIds.length === 0) return;
 
-  await reportProgress(10, 'Projekte mit neuen Notizen werden gesucht');
+  await context.reportProgress(10, 'Projekte mit neuen Notizen werden gesucht');
+  for (const workspaceId of workspaceIds) {
+    const settings = await context.settings(workspaceId);
+    if (!settings['memory.enabled'] || !settings['memory.consolidationEnabled']) continue;
+    if (!settings['ai.enabled']) continue;
+    await consolidateOneMemory({
+      context,
+      workspaceId,
+      projectsPerRun: settings['memory.consolidationProjectsPerRun'],
+    });
+  }
+  await context.reportProgress(100, 'Verdichtung angestoßen');
+};
+
+/** The fan-out for one memory area. */
+async function consolidateOneMemory(input: {
+  context: MaintenanceContext;
+  workspaceId: string;
+  projectsPerRun: number;
+}): Promise<void> {
+  const { prisma, queues, payload, logger } = input.context;
+  const { workspaceId } = input;
 
   // Grouped rather than listed: one project can hold hundreds of unread notes,
   // and all this needs is which projects have any.
@@ -39,7 +62,7 @@ export const consolidateMemories: MaintenanceTask = async (context) => {
     // Oldest backlog first, so a project that has been waiting does not stay
     // behind a project that produces a note every day.
     orderBy: { _min: { createdAt: 'asc' } },
-    take: settings['memory.consolidationProjectsPerRun'],
+    take: input.projectsPerRun,
   });
 
   let queued = 0;
@@ -67,9 +90,8 @@ export const consolidateMemories: MaintenanceTask = async (context) => {
     queued += 1;
   }
 
-  await reportProgress(100, 'Verdichtung angestoßen');
   logger.info('Memory consolidation fanned out', { workspaceId, projects: queued });
-};
+}
 
 /**
  * Turns the volume down on facts nobody confirms any more (issue #46).
@@ -84,14 +106,33 @@ export const consolidateMemories: MaintenanceTask = async (context) => {
  * slows the decay down, which is the safe direction to fail in.
  */
 export const decayMemoryFacts: MaintenanceTask = async (context) => {
-  const { prisma, payload, logger, reportProgress } = context;
-  const settings = await context.settings();
-  const halfLifeDays = settings['memory.factHalfLifeDays'];
-  const floor = settings['memory.factConfidenceFloor'];
-  const workspaceId = settings['memory.workspaceId'];
-  if (halfLifeDays === 0 || workspaceId === null) return;
+  const workspaceIds = await memoryWorkspaceIds(context.prisma);
+  if (workspaceIds.length === 0) return;
 
-  await reportProgress(10, 'Fakten werden gewichtet');
+  await context.reportProgress(10, 'Fakten werden gewichtet');
+  for (const workspaceId of workspaceIds) {
+    const settings = await context.settings(workspaceId);
+    const halfLifeDays = settings['memory.factHalfLifeDays'];
+    if (halfLifeDays === 0) continue;
+    await decayOneMemory({
+      context,
+      workspaceId,
+      halfLifeDays,
+      floor: settings['memory.factConfidenceFloor'],
+    });
+  }
+  await context.reportProgress(100, 'Fakten gewichtet');
+};
+
+/** Decay and archival for one memory area. */
+async function decayOneMemory(input: {
+  context: MaintenanceContext;
+  workspaceId: string;
+  halfLifeDays: number;
+  floor: number;
+}): Promise<void> {
+  const { prisma, payload, logger } = input.context;
+  const { workspaceId, halfLifeDays, floor } = input;
 
   const factor = Math.pow(0.5, 1 / halfLifeDays);
   // Confirmed within the last day: left alone, so a fact does not lose weight
@@ -105,7 +146,7 @@ export const decayMemoryFacts: MaintenanceTask = async (context) => {
       AND "lastConfirmedAt" < ${cutoff}
   `;
 
-  await reportProgress(60, 'Verklungene Fakten werden weggeräumt');
+  await input.context.reportProgress(60, 'Verklungene Fakten werden weggeräumt');
 
   const sunk = await prisma.memoryFact.findMany({
     where: {
@@ -137,7 +178,6 @@ export const decayMemoryFacts: MaintenanceTask = async (context) => {
     });
   }
 
-  await reportProgress(100, 'Fakten gewichtet');
   logger.info('Memory facts decayed', {
     workspaceId,
     faded,
@@ -145,4 +185,4 @@ export const decayMemoryFacts: MaintenanceTask = async (context) => {
     halfLifeDays,
     floor,
   });
-};
+}

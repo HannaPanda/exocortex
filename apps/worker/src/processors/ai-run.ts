@@ -26,7 +26,7 @@ export interface AiRunDependencies {
   provider: AiProvider;
   bus: RedisEventBus;
   storage: ObjectStorage;
-  settings: () => Promise<Settings>;
+  settings: (workspaceId?: string) => Promise<Settings>;
   /** `null` when `SERVICE_TOKEN_SECRET` is unset: the AI simply runs without tools. */
   toolRunnerFactory:
     | ((input: {

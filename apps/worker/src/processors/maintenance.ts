@@ -39,7 +39,7 @@ export interface MaintenanceDependencies {
    * (`activity.*`, ADR-013) rather than from a constructor option, so an
    * admin can change retention without a redeploy.
    */
-  settings: () => Promise<Settings>;
+  settings: (workspaceId?: string) => Promise<Settings>;
   /** Outbox rows dispatched per run. */
   outboxBatchSize?: number;
   /**

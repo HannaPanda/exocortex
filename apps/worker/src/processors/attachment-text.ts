@@ -30,7 +30,7 @@ export interface AttachmentTextDependencies {
    * dictionary, which used to make the free local engine the expensive choice.
    */
   documentInfo: PdfDocumentInfoReader;
-  settings: () => Promise<Settings>;
+  settings: (workspaceId?: string) => Promise<Settings>;
 }
 
 /**
@@ -76,7 +76,7 @@ export function createAttachmentTextProcessor(dependencies: AttachmentTextDepend
       return;
     }
 
-    const settings = await dependencies.settings();
+    const settings = await dependencies.settings(payload.workspaceId);
 
     const extractors = dependencies.extractors(settings);
 

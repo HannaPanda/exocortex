@@ -23,7 +23,7 @@ const MAX_DOCUMENTS = 2_000;
 
 export interface EntityRescanDependencies {
   prisma: PrismaClient;
-  settings: () => Promise<Settings>;
+  settings: (workspaceId?: string) => Promise<Settings>;
 }
 
 export function createEntityRescanProcessor(dependencies: EntityRescanDependencies) {

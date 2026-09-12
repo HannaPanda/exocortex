@@ -50,9 +50,29 @@ import { createMaintenanceProcessor } from './maintenance';
 import { createMaterializeDocumentProcessor } from './materialize-document';
 
 /** A fully-defaulted `Settings` object with just the given keys overridden. */
-function stubSettings(overrides: Partial<Settings> = {}): () => Promise<Settings> {
+function stubSettings(
+  overrides: Partial<Settings> = {},
+): (workspaceId?: string) => Promise<Settings> {
   const settings = settingsSchema.parse(overrides);
   return async () => settings;
+}
+
+/**
+ * Settings that only apply inside one workspace, defaults everywhere else.
+ *
+ * This suite runs against the deployment's own database, and since issue #52
+ * the memory sweeps iterate over *every* workspace marked `isMemory` rather
+ * than over one configured id. A flat stub would therefore hand a test's
+ * `memory.retentionDays` to the real memory area and prune somebody's notes.
+ * Anything that exercises a per-workspace sweep has to use this.
+ */
+function stubSettingsForWorkspace(
+  onlyForWorkspaceId: string,
+  overrides: Partial<Settings>,
+): (workspaceId?: string) => Promise<Settings> {
+  const scoped = settingsSchema.parse(overrides);
+  const untouched = settingsSchema.parse({});
+  return async (workspaceId?: string) => (workspaceId === onlyForWorkspaceId ? scoped : untouched);
 }
 
 /**
@@ -63,7 +83,9 @@ function stubSettings(overrides: Partial<Settings> = {}): () => Promise<Settings
  * row can reach. It is what lets a test exercise the run-budget mechanism
  * itself in milliseconds instead of minutes.
  */
-function stubSettingsUnchecked(overrides: Partial<Settings>): () => Promise<Settings> {
+function stubSettingsUnchecked(
+  overrides: Partial<Settings>,
+): (workspaceId?: string) => Promise<Settings> {
   const settings = { ...settingsSchema.parse({}), ...overrides } as Settings;
   return async () => settings;
 }
@@ -220,6 +242,8 @@ beforeAll(async () => {
     data: {
       name: `Worker ${suffix}`,
       slug: `worker-${suffix}`,
+      // The memory sweeps look for this flag now, not for a settings key.
+      isMemory: true,
       members: { create: { userId, role: 'OWNER' } },
     },
   });
@@ -896,10 +920,9 @@ describe('memory retention', () => {
       storage: recordingStorage(),
       bus,
       search,
-      settings: stubSettings({
-        'memory.workspaceId': workspaceId,
-        ...overrides,
-      }),
+      // Scoped to this suite's workspace on purpose: `prune-memories` sweeps
+      // every memory area on the deployment, and the real one is next door.
+      settings: stubSettingsForWorkspace(workspaceId, overrides),
     });
   }
 

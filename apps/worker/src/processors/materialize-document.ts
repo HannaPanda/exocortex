@@ -13,7 +13,7 @@ export interface MaterializationDependencies {
   queues: QueueRegistry;
   bus: RedisEventBus;
   /** Runtime configuration (ADR-013). Read per job: the entity layer is a switch. */
-  settings: () => Promise<Settings>;
+  settings: (workspaceId?: string) => Promise<Settings>;
 }
 
 /**

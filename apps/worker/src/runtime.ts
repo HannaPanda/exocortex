@@ -53,7 +53,15 @@ export interface WorkerRuntime {
   provider: AiProvider;
   storage: ObjectStorage;
   search: HybridSearchAdapter;
-  readSettings: () => Promise<Settings>;
+  /**
+   * The configuration in force, optionally inside one workspace (ADR-023).
+   *
+   * A processor that has a `workspaceId` must pass it: without it the answer
+   * is the deployment's, and a workspace that set its own system prompt would
+   * silently be run with somebody else's. Jobs that genuinely span the
+   * installation (snapshot pruning, index maintenance) call it with nothing.
+   */
+  readSettings: (workspaceId?: string) => Promise<Settings>;
   toolRunnerFactory:
     | ((input: {
         userId: string;
@@ -97,6 +105,70 @@ export interface JobProgressEvent {
   documentId: string | null;
 }
 
+/**
+ * Settings for the worker: DB rows override env, env stays the bootstrap
+ * fallback (D4), and a workspace's own rows override both (ADR-023).
+ *
+ * The same `resolveSettings()` the API's `SettingsService` uses, cached for the
+ * same 15 seconds so the tool loop does not re-query per turn. A module-level
+ * factory rather than a closure inside `createWorkerRuntime`, which is long
+ * enough already: this is a self-contained piece of state with one entry point.
+ */
+function createSettingsReader(
+  prisma: PrismaClient,
+  logger: Logger,
+): (workspaceId?: string) => Promise<Settings> {
+  const SETTINGS_CACHE_TTL_MS = 15_000;
+  let settingsCache: {
+    rows: { key: string; value: unknown }[];
+    settings: Settings;
+    expiresAt: number;
+  } | null = null;
+  const workspaceSettingsCache = new Map<string, { settings: Settings; expiresAt: number }>();
+
+  const readDeploymentRows = async (): Promise<{
+    rows: { key: string; value: unknown }[];
+    settings: Settings;
+  }> => {
+    const now = Date.now();
+    if (settingsCache !== null && settingsCache.expiresAt > now) return settingsCache;
+    const rows = await prisma.setting.findMany({ select: { key: true, value: true } });
+    const { settings, invalidKeys } = resolveSettings({ rows, env: process.env });
+    if (invalidKeys.length > 0) {
+      logger.warn('Dropped invalid setting rows while resolving settings', { invalidKeys });
+    }
+    settingsCache = { rows, settings, expiresAt: now + SETTINGS_CACHE_TTL_MS };
+    return settingsCache;
+  };
+
+  return async (workspaceId?: string): Promise<Settings> => {
+    const base = await readDeploymentRows();
+    if (workspaceId === undefined) return base.settings;
+
+    const now = Date.now();
+    const cached = workspaceSettingsCache.get(workspaceId);
+    if (cached !== undefined && cached.expiresAt > now) return cached.settings;
+
+    const workspaceRows = await prisma.workspaceSetting.findMany({
+      where: { workspaceId },
+      select: { key: true, value: true },
+    });
+    const { settings, invalidKeys } = resolveSettings({
+      rows: base.rows,
+      env: process.env,
+      workspaceRows,
+    });
+    if (invalidKeys.length > 0) {
+      logger.warn('Dropped invalid setting rows while resolving workspace settings', {
+        workspaceId,
+        invalidKeys,
+      });
+    }
+    workspaceSettingsCache.set(workspaceId, { settings, expiresAt: now + SETTINGS_CACHE_TTL_MS });
+    return settings;
+  };
+}
+
 export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRuntime {
   const prisma = createPrismaClient({ databaseUrl: env.DATABASE_URL });
   const queues = new QueueRegistry({ redisUrl: env.REDIS_URL, logger });
@@ -121,25 +193,7 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
     logger,
   });
 
-  // Settings: DB rows override env, env stays the bootstrap fallback (D4). The
-  // worker reads the `setting` table directly through Prisma with the same
-  // `resolveSettings()` helper the API's `SettingsService` uses, cached for the
-  // same 15s so the tool loop does not re-query per turn.
-  const SETTINGS_CACHE_TTL_MS = 15_000;
-  let settingsCache: { settings: Settings; expiresAt: number } | null = null;
-  const readSettings = async (): Promise<Settings> => {
-    const now = Date.now();
-    if (settingsCache !== null && settingsCache.expiresAt > now) {
-      return settingsCache.settings;
-    }
-    const rows = await prisma.setting.findMany({ select: { key: true, value: true } });
-    const { settings, invalidKeys } = resolveSettings({ rows, env: process.env });
-    if (invalidKeys.length > 0) {
-      logger.warn('Dropped invalid setting rows while resolving settings', { invalidKeys });
-    }
-    settingsCache = { settings, expiresAt: now + SETTINGS_CACHE_TTL_MS };
-    return settings;
-  };
+  const readSettings = createSettingsReader(prisma, logger);
 
   /**
    * The search projection, both halves of it (issue #34, AP4).

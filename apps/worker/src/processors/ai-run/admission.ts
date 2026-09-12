@@ -19,7 +19,7 @@ export async function admitRun(input: {
   bus: RedisEventBus;
   payload: AiJob['payload'];
   logger: AiJob['logger'];
-  settings: () => Promise<Settings>;
+  settings: (workspaceId?: string) => Promise<Settings>;
 }): Promise<{ run: AiRun; settings: Settings } | null> {
   const { prisma, bus, payload, logger } = input;
 
@@ -44,7 +44,7 @@ export async function admitRun(input: {
 
   // Resolved only once the run is otherwise admissible: a job that has nothing
   // to do should not go looking for settings first.
-  const settings = await input.settings();
+  const settings = await input.settings(run.workspaceId);
   if (!settings['ai.enabled']) {
     await failDisabledRun({ prisma, bus, run, payload, logger });
     return null;

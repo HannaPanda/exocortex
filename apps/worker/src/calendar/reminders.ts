@@ -15,7 +15,15 @@ export interface SendRemindersInput {
   apiClientFor: (userId: string) => ExocortexApiClient;
   notifier: ReminderNotifier;
   logger: Logger;
-  schedule: ReminderSchedule;
+  /**
+   * The schedule in force for one workspace (issue #52, ADR-023).
+   *
+   * A resolver rather than a value: lead time, all-day hour and time zone are
+   * workspace-scoped keys now, and this sweep spans every account on the
+   * deployment. Two people in two time zones would otherwise be reminded on
+   * whichever one the administrator happened to type in.
+   */
+  scheduleFor: (workspaceId: string) => Promise<ReminderSchedule | null>;
   /** Public base URL, so a reminder can link back to the page. */
   appUrl: string;
   now: Date;
@@ -109,7 +117,11 @@ export async function sendDueReminders(input: SendRemindersInput): Promise<SendR
       end: cell.end === null ? null : new Date(cell.end),
       allDay: cell.allDay,
     };
-    if (!isDue(reminderWindowFor(span, input.schedule), input.now)) {
+    // Null means this workspace has reminders switched off. Skipped silently
+    // and not counted as pending: nothing is waiting to happen here.
+    const schedule = await input.scheduleFor(state.link.account.workspaceId);
+    if (schedule === null) continue;
+    if (!isDue(reminderWindowFor(span, schedule), input.now)) {
       result.pending += 1;
       continue;
     }
@@ -118,7 +130,7 @@ export async function sendDueReminders(input: SendRemindersInput): Promise<SendR
       title: row.document.title,
       location: readText(valueOf(row, map.location)),
       url: `${input.appUrl.replace(/\/$/, '')}/arbeitsbereich/${state.link.account.workspaceId}/seite/${state.rowDocumentId}`,
-      timeZone: input.schedule.timeZone,
+      timeZone: schedule.timeZone,
       now: input.now,
     });
 

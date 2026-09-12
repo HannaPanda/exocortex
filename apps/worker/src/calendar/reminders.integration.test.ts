@@ -246,7 +246,8 @@ function run(
     apiClientFor: fakeApi(rows),
     notifier,
     logger,
-    schedule: SCHEDULE,
+    // Resolved per workspace since issue #52; this suite has exactly one.
+    scheduleFor: async () => SCHEDULE,
     appUrl: 'https://exocortex.test',
     now,
   });
