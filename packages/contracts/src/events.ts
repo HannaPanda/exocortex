@@ -101,6 +101,18 @@ export const databaseChangedPayloadSchema = z.object({
   documentId: idSchema,
 });
 
+/**
+ * A row's property values changed (issue #50).
+ *
+ * Carries the row as well as the collection, because the two answer different
+ * questions: a client invalidates its query for the collection, and an
+ * automation scoped to that database has to know *which* row changed in order
+ * to act on it.
+ */
+export const databaseRowUpdatedPayloadSchema = databaseChangedPayloadSchema.extend({
+  rowId: idSchema,
+});
+
 export const aiRunProgressPayloadSchema = z.object({
   runId: idSchema,
   status: aiRunStatusSchema,
@@ -226,7 +238,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('ai.run.failed', aiRunFailedPayloadSchema),
   envelope('database.property.changed', databaseChangedPayloadSchema),
   envelope('database.view.changed', databaseChangedPayloadSchema),
-  envelope('database.row.updated', databaseChangedPayloadSchema),
+  envelope('database.row.updated', databaseRowUpdatedPayloadSchema),
   envelope('ai.conversation.compacted', aiConversationCompactedPayloadSchema),
   envelope('ai.run.tool_call', aiRunToolCallPayloadSchema),
   envelope('ai.run.phase', aiRunPhasePayloadSchema),

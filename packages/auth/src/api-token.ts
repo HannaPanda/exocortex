@@ -64,6 +64,15 @@ export function requiredScopeForRequest(method: string, path: string): ApiTokenS
   ) {
     return 'admin';
   }
+  // Writing an automation rule is not an ordinary write (issue #50, ADR-024):
+  // it is a standing instruction that keeps sending this workspace's data
+  // outward, or keeps spending money on a model, long after the token that
+  // created it has been forgotten about. Reading the rules and their run log is
+  // an ordinary read, because what an automation has been doing is exactly what
+  // the people it acts on should be able to check.
+  if (path.includes('/automations') && !SAFE_METHODS.has(method.toUpperCase())) {
+    return 'admin';
+  }
   return SAFE_METHODS.has(method.toUpperCase()) ? 'read' : 'write';
 }
 

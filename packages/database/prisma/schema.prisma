@@ -65,6 +65,7 @@ model User {
   acceptedInvitation          Invitation?           @relation("InvitationAcceptedBy")
   agentSessions               AgentSession[]
   agentWrites                 AgentWriteJournal[]
+  automationRules             AutomationRule[]      @relation("AutomationRuleCreatedBy")
 
   @@map("user")
 }
@@ -357,6 +358,8 @@ model Workspace {
   agentWrites      AgentWriteJournal[]
   settings         WorkspaceSetting[]
   credentials      WorkspaceCredential[]
+  automations      AutomationRule[]
+  automationRuns   AutomationRun[]
 
   @@index([isMemory])
   @@map("workspace")
@@ -599,6 +602,10 @@ model Document {
   mentionedEntities   EntityMention[]           @relation("EntityMentionPage")
   /// Names on this page that no entity answers to yet.
   entitySightings     EntityCandidateSighting[] @relation("EntityCandidateSightingPage")
+  /// Present when a rule is scoped to this page's subtree or database.
+  automationScopes    AutomationRule[]          @relation("AutomationScopeDocument")
+  /// Automation runs this page triggered.
+  automationRuns      AutomationRun[]           @relation("AutomationRunDocument")
 
   @@index([workspaceId, parentId, orderKey])
   @@index([workspaceId, archivedAt])
@@ -1040,6 +1047,18 @@ model OutboxEvent {
   processedAt   DateTime?
   attempts      Int       @default(0)
   lastError     String?
+
+  /// The automation rule whose action caused this write, when one did
+  /// (issue #50, ADR-024). Set from a header the API accepts only on a service
+  /// token, so a rule cannot be silenced by anybody who can reach the API.
+  ///
+  /// A plain column rather than a relation: the whole point is that the
+  /// dispatcher can read the origin of an event whose rule has since been
+  /// deleted, and a cascade would take exactly those rows away.
+  automationRuleId String?
+  /// How many automations deep the write was. `AUTOMATION_MAX_DEPTH` is where
+  /// the chain stops firing further rules.
+  automationDepth  Int     @default(0)
 
   @@index([processedAt, createdAt])
   @@map("outbox_event")
@@ -1813,4 +1832,210 @@ model EntityCandidateSighting {
   @@unique([candidateId, documentId])
   @@index([documentId])
   @@map("entity_candidate_sighting")
+}
+
+// ---------------------------------------------------------------------------
+// Automations (issue #50, ADR-024)
+// ---------------------------------------------------------------------------
+
+/// What a rule listens for.
+///
+/// Deliberately a small enum rather than the raw `ApplicationEventType` string:
+/// the event list is an internal transport vocabulary that grows whenever the
+/// realtime channel needs a new message, and a rule stored against one of those
+/// would start or stop firing because somebody renamed a socket event. These are
+/// the changes a person can describe without knowing how the system is built.
+enum AutomationTrigger {
+  /// A page appeared in scope.
+  DOCUMENT_CREATED
+  /// Title, icon or another property of the page itself changed.
+  DOCUMENT_UPDATED
+  /// The page's *text* changed, i.e. materialization finished. Separate from
+  /// `DOCUMENT_UPDATED` because these are the two questions people ask apart:
+  /// "somebody renamed it" and "somebody wrote in it".
+  DOCUMENT_CONTENT_CHANGED
+  DOCUMENT_MOVED
+  DOCUMENT_ARCHIVED
+  DOCUMENT_DELETED
+  /// A row's property value changed inside a database in scope.
+  DATABASE_ROW_CHANGED
+}
+
+/// How far a rule reaches.
+enum AutomationScope {
+  /// Everything in the workspace.
+  WORKSPACE
+  /// One page and everything under it, at any depth.
+  SUBTREE
+  /// One COLLECTION and its rows (ADR-011), which is a subtree with a narrower
+  /// trigger set but a very different thing to explain, so it is its own scope.
+  DATABASE
+}
+
+/// What a rule does when it fires.
+enum AutomationAction {
+  /// A signed POST to a URL on the deployment's allowlist.
+  WEBHOOK
+  /// One prompt against the changed page, written back as a remark.
+  AI_RUN
+}
+
+/// Where an `AI_RUN` rule puts its answer.
+///
+/// There is no "replace the page" member and there is not meant to be one: an
+/// automation that rewrites content nobody asked it to rewrite is how a page
+/// gets quietly destroyed by a rule somebody set up in March.
+enum AutomationOutput {
+  /// An unresolved comment on the page that triggered the rule.
+  COMMENT
+  /// A new page underneath the page that triggered the rule.
+  CHILD_PAGE
+}
+
+enum AutomationRunStatus {
+  PENDING
+  RUNNING
+  SUCCEEDED
+  FAILED
+  /// Nothing was attempted, and why is in `error`: the rule was off, the
+  /// feature was off, the page had gone, or the loop guard stopped it.
+  SKIPPED
+}
+
+/// "When something changes here, do that" (issue #50, ADR-024).
+///
+/// The trigger side is the outbox (ADR-010) and nothing else: the dispatcher
+/// already sees every domain event exactly once, in order, with at-least-once
+/// delivery, so a rule needs no second event path and cannot miss a change
+/// because Redis blinked.
+///
+/// The action side deliberately holds its two shapes in columns rather than in
+/// one `config` blob. A webhook URL is the single most security-relevant value
+/// in this table -- it is where data leaves the deployment -- and a column can
+/// be indexed, audited and read at a glance, which a JSON key cannot.
+model AutomationRule {
+  id          String    @id @default(cuid(2))
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  /// Shown to people. German, like every other name a person types.
+  name    String
+  /// The per-rule half of the emergency stop. The deployment-wide half is the
+  /// `automations.enabled` setting, and the automatic half is
+  /// `consecutiveFailures` below.
+  enabled Boolean @default(true)
+
+  scope           AutomationScope @default(WORKSPACE)
+  /// The root of a `SUBTREE` scope or the COLLECTION of a `DATABASE` one. Null
+  /// for `WORKSPACE`, and required for the other two.
+  scopeDocumentId String?
+  scopeDocument   Document?       @relation("AutomationScopeDocument", fields: [scopeDocumentId], references: [id], onDelete: Cascade)
+
+  triggers AutomationTrigger[]
+
+  /// How long a page has to stay quiet before the rule runs, in seconds.
+  ///
+  /// Not a refinement. A page being typed into produces a materialization every
+  /// couple of seconds, and a rule with an AI action and no debounce would pay
+  /// for a model call per paragraph. The floor is enforced in the contract, not
+  /// here, so raising it later does not require a migration.
+  debounceSeconds Int @default(60)
+
+  action AutomationAction
+
+  /// `WEBHOOK`: where the POST goes. Checked against the allowlist on write
+  /// *and* on use, because the allowlist can be narrowed after a rule exists.
+  webhookUrl       String?
+  /// `WEBHOOK`: the signing secret, AES-256-GCM under `CREDENTIAL_ENCRYPTION_KEY`
+  /// exactly like a workspace's provider key (ADR-023). The plaintext is shown
+  /// once, when the rule is created, and never again: the receiving end needs it
+  /// to verify the signature, and this deployment needs never to be able to
+  /// hand it back.
+  secretCiphertext String?
+  secretIv         String?
+  secretAuthTag    String?
+  secretKeyVersion Int?
+
+  /// `AI_RUN`: what the model is asked, with the changed page as its material.
+  prompt    String?
+  /// `AI_RUN`: which model, or null for the workspace's default.
+  modelSlug String?
+  /// `AI_RUN`: where the answer is written.
+  output    AutomationOutput @default(COMMENT)
+
+  /// Failures since the last success. The rule switches itself off when this
+  /// reaches `automations.maxConsecutiveFailures`, and the reason lands in
+  /// `disabledReason` so the list can say why instead of just showing a rule
+  /// that stopped working.
+  consecutiveFailures Int       @default(0)
+  disabledReason      String?
+  disabledAt          DateTime?
+  lastTriggeredAt     DateTime?
+
+  /// Whose authority the action runs with: a webhook carries this workspace's
+  /// data, an AI run writes as this person. Kept when the account goes, so a
+  /// rule left behind by a departing colleague is visible rather than orphaned
+  /// -- but a rule without an owner cannot act, and the processor skips it.
+  createdById String?
+  createdBy   User?    @relation("AutomationRuleCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  runs AutomationRun[]
+
+  /// The dispatcher's query: every enabled rule of one workspace, on every
+  /// event. It is the hot path of this whole feature.
+  @@index([workspaceId, enabled])
+  @@index([scopeDocumentId])
+  @@map("automation_rule")
+}
+
+/// One firing of one rule, with what came of it (issue #50).
+///
+/// "Ohne das ist eine Automation ein Gerücht": a rule that runs invisibly is
+/// indistinguishable from a rule that does not run, and the first question
+/// anybody asks about an automation is what it did last night.
+model AutomationRun {
+  id     String         @id @default(cuid(2))
+  ruleId String
+  rule   AutomationRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+
+  /// Denormalized from the rule so the log survives a workspace query without
+  /// a join, and so a run keeps saying where it happened.
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  /// The page that triggered it. Null once that page is deleted for good, which
+  /// is why the title is copied rather than joined.
+  documentId    String?
+  document      Document? @relation("AutomationRunDocument", fields: [documentId], references: [id], onDelete: SetNull)
+  documentTitle String?
+
+  trigger AutomationTrigger
+  status  AutomationRunStatus @default(PENDING)
+
+  /// How many automations deep this run is. Zero means a human or an agent
+  /// caused the change; anything higher means an automation did, and
+  /// `AUTOMATION_MAX_DEPTH` is where the chain stops.
+  depth Int @default(0)
+
+  startedAt  DateTime?
+  finishedAt DateTime?
+  durationMs Int?
+
+  /// English, developer-facing. The UI shows its own German sentence.
+  error  String?
+  /// Small, non-sensitive result metadata: the HTTP status of a webhook, the id
+  /// of the comment or page an AI run wrote. Never the response body, never the
+  /// prompt, never the answer -- the answer is a page or a comment and has a
+  /// home already.
+  detail Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([ruleId, createdAt])
+  @@index([workspaceId, createdAt])
+  /// The retention sweep, which has no workspace to narrow by.
+  @@index([createdAt])
+  @@map("automation_run")
 }

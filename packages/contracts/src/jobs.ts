@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { automationTriggerSchema } from './automations';
 import { idSchema } from './primitives';
 
 /**
@@ -17,6 +18,7 @@ export const QUEUE_NAMES = {
   memoryCapture: 'memory-capture',
   memoryConsolidate: 'memory-consolidate',
   entityRescan: 'entity-rescan',
+  automation: 'automation',
 } as const;
 
 export const queueNameSchema = z.enum([
@@ -30,6 +32,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.memoryCapture,
   QUEUE_NAMES.memoryConsolidate,
   QUEUE_NAMES.entityRescan,
+  QUEUE_NAMES.automation,
 ]);
 export type QueueName = z.infer<typeof queueNameSchema>;
 
@@ -152,6 +155,13 @@ export const maintenanceJobSchema = jobBase.extend({
      * must not shorten because the agent bookkeeping around it did.
      */
     'prune-agent-journal',
+    /**
+     * Deletes automation runs older than `automations.runRetentionDays`
+     * (issue #50). Off while that is zero. The rules themselves are never
+     * touched: what ages out is the record of what they did, and a rule with
+     * no recent runs is a rule that had nothing to do.
+     */
+    'prune-automation-runs',
   ]),
   /** Optional scope; `null` means all workspaces. */
   workspaceId: idSchema.nullable().default(null),
@@ -290,6 +300,32 @@ export const entityRescanJobSchema = jobBase.extend({
 });
 export type EntityRescanJob = z.infer<typeof entityRescanJobSchema>;
 
+/**
+ * One firing of one automation rule (issue #50, ADR-024).
+ *
+ * Carries the rule and the page rather than the event: by the time the job
+ * runs, the debounce window has swallowed every event after the first, and
+ * re-reading the page is the only way to act on what it says *now* instead of
+ * on what it said when the first keystroke landed.
+ *
+ * `runId` is optional, and which producer sets it is the whole design of the run
+ * log. A manual firing creates the row first, because a caller is waiting for a
+ * handle to it. The event-driven path does not, because a debounce window
+ * collapses many events into one job: creating a row per event would fill the
+ * log with entries that never get a result, so the worker creates exactly one
+ * when it starts, and one job is one run.
+ */
+export const automationJobSchema = jobBase.extend({
+  ruleId: idSchema,
+  runId: idSchema.nullable().default(null),
+  workspaceId: idSchema,
+  documentId: idSchema,
+  trigger: automationTriggerSchema,
+  /** How many automations deep the change that caused this was. */
+  depth: z.number().int().min(0).max(10).default(0),
+});
+export type AutomationJob = z.infer<typeof automationJobSchema>;
+
 export const JOB_SCHEMAS = {
   [QUEUE_NAMES.documentMaterialization]: materializeDocumentJobSchema,
   [QUEUE_NAMES.searchIndexing]: indexDocumentJobSchema,
@@ -301,6 +337,7 @@ export const JOB_SCHEMAS = {
   [QUEUE_NAMES.memoryCapture]: memoryCaptureJobSchema,
   [QUEUE_NAMES.memoryConsolidate]: memoryConsolidateJobSchema,
   [QUEUE_NAMES.entityRescan]: entityRescanJobSchema,
+  [QUEUE_NAMES.automation]: automationJobSchema,
 } as const;
 
 export type JobPayloadMap = {
@@ -314,4 +351,5 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.memoryCapture]: MemoryCaptureJob;
   [QUEUE_NAMES.memoryConsolidate]: MemoryConsolidateJob;
   [QUEUE_NAMES.entityRescan]: EntityRescanJob;
+  [QUEUE_NAMES.automation]: AutomationJob;
 };

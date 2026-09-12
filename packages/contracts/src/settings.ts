@@ -373,6 +373,50 @@ export const settingsSchema = z.object({
    * only grows is a table that quietly becomes the largest one here.
    */
   'agents.journalRetentionDays': z.number().int().min(0).max(3_650).default(90),
+
+  /**
+   * Whether automation rules run at all (issue #50, ADR-024).
+   *
+   * The deployment-wide emergency stop, and the reason it exists as a setting
+   * rather than only as a per-rule switch: when something is firing that should
+   * not be, the person at the keyboard needs one place to stop all of it, not a
+   * list of rules to work through while it keeps going.
+   *
+   * Defaults **off**. An automation sends data out of the deployment or spends
+   * money on a model; neither should start happening because a version was
+   * deployed.
+   */
+  'automations.enabled': z.boolean().default(false),
+  /**
+   * The hosts a webhook rule may point at, comma-separated, without scheme or
+   * port (`hooks.example.org, 127.0.0.1`).
+   *
+   * Empty means no webhook rule can be created or can fire, which is the
+   * default: "a webhook to any URL is a data leak", and an allowlist that ships
+   * open is not an allowlist. Checked both when a rule is written and when it
+   * fires, because narrowing this list has to stop the rules that already exist.
+   *
+   * A host matches exactly or as a subdomain (`example.org` covers
+   * `hooks.example.org`), and nothing here is a wildcard: `*` is a value, not a
+   * pattern, and it will simply never match a host.
+   */
+  'automations.webhookAllowedHosts': z.string().max(2_000).default(''),
+  /**
+   * Consecutive failures after which a rule switches itself off.
+   *
+   * A rule pointing at a host that has gone away does not get better by being
+   * retried every minute for a week; it fills the run log, and the one signal
+   * that something is wrong drowns in it.
+   */
+  'automations.maxConsecutiveFailures': z.number().int().min(1).max(100).default(5),
+  /**
+   * Seconds a webhook POST may take before it counts as failed. Short on
+   * purpose: the receiving end is somebody else's server, and a rule that waits
+   * a minute for it holds a worker slot the whole time.
+   */
+  'automations.webhookTimeoutSeconds': z.number().int().min(1).max(60).default(10),
+  /** Days an automation run is kept. Zero keeps them for ever. */
+  'automations.runRetentionDays': z.number().int().min(0).max(3_650).default(30),
 });
 
 /** Whether the runtime knows the zone. `Intl` is the only authority available. */
@@ -513,6 +557,18 @@ export const SETTING_SCOPES = {
   'activity.snapshotRetentionDailyDays': 'deployment',
   'activity.snapshotRetentionDryRun': 'deployment',
   'agents.journalRetentionDays': 'deployment',
+  /**
+   * A workspace may switch its own automations off, and a deployment that
+   * switches them off switches every workspace off with it (`SETTING_CEILINGS`
+   * below). It may not switch them *on* against a deployment that said no,
+   * which is the whole point of a ceiling on a boolean.
+   */
+  'automations.enabled': 'workspace',
+  /** Where data may leave the deployment is never a workspace's decision. */
+  'automations.webhookAllowedHosts': 'deployment',
+  'automations.maxConsecutiveFailures': 'deployment',
+  'automations.webhookTimeoutSeconds': 'deployment',
+  'automations.runRetentionDays': 'deployment',
 } satisfies Record<SettingKey, SettingScope>;
 
 /** A key a workspace may override. Derived from `SETTING_SCOPES`, not repeated. */
@@ -529,7 +585,7 @@ export const workspaceSettingKeySchema = z.enum(
 );
 
 /**
- * Numeric keys where the deployment value is a ceiling, not a starting point.
+ * Keys where the deployment value is a ceiling, not a starting point.
  *
  * Every one of these buys something that costs money, time or memory on this
  * host. A workspace may spend less than the deployment allows, never more.
@@ -538,8 +594,14 @@ export const workspaceSettingKeySchema = z.enum(
  * the point: when a global admin lowers the ceiling later, every workspace
  * follows on the next read. Writing also rejects an over-value, but only so
  * the form can say so -- the resolve-time clamp is what actually holds.
+ *
+ * A boolean is clamped the same way, with `false` as the floor: a workspace may
+ * switch a capability off for itself, and a deployment that switched it off
+ * switches it off everywhere. Without that, the deployment-wide emergency stop
+ * for automations would be one a workspace could simply override.
  */
 export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
+  'automations.enabled',
   'ai.maxOutputTokens',
   'ai.timeoutMs',
   'ai.maxRunMs',
@@ -691,15 +753,26 @@ function applyWorkspaceOverrides(input: {
 
     const value = result.data;
     const ceiling = writable[key];
-    const clamped =
-      CEILING_KEYS.has(key) && typeof value === 'number' && typeof ceiling === 'number'
-        ? Math.min(value, ceiling)
-        : value;
+    const clamped = CEILING_KEYS.has(key) ? clampToCeiling(value, ceiling) : value;
     writable[key] = clamped;
     overriddenKeys.push(key);
   }
 
   return overriddenKeys;
+}
+
+/**
+ * A workspace value held under the deployment's.
+ *
+ * Numbers take the smaller of the two; booleans take the conjunction, which is
+ * the same statement for a value that is only ever "allowed" or "not". Any
+ * other type passes through: a ceiling on a string would have to mean something
+ * before it could be enforced, and none of them do.
+ */
+function clampToCeiling(value: unknown, ceiling: unknown): unknown {
+  if (typeof value === 'number' && typeof ceiling === 'number') return Math.min(value, ceiling);
+  if (typeof value === 'boolean' && typeof ceiling === 'boolean') return value && ceiling;
+  return value;
 }
 
 export const settingsResponseSchema = z.object({

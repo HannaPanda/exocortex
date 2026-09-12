@@ -184,6 +184,23 @@ describe('workspace overrides', () => {
     expect(overriddenKeys).toEqual(['ai.budgetMicroUsdPerRun']);
   });
 
+  it('refuses to let a workspace switch a capability the deployment switched off back on', () => {
+    const { settings, overriddenKeys } = resolveSettings({
+      rows: [{ key: 'automations.enabled', value: false }],
+      workspaceRows: [{ key: 'automations.enabled', value: true }],
+    });
+    expect(settings['automations.enabled']).toBe(false);
+    expect(overriddenKeys).toEqual(['automations.enabled']);
+  });
+
+  it('lets a workspace switch off what the deployment allows', () => {
+    const { settings } = resolveSettings({
+      rows: [{ key: 'automations.enabled', value: true }],
+      workspaceRows: [{ key: 'automations.enabled', value: false }],
+    });
+    expect(settings['automations.enabled']).toBe(false);
+  });
+
   it('lets a ceiling key go below the deployment value', () => {
     const { settings } = resolveSettings({
       rows: [{ key: 'ai.budgetMicroUsdPerRun', value: 100_000 }],
@@ -235,10 +252,17 @@ describe('SETTING_SCOPES', () => {
     }
   });
 
-  it('keeps every ceiling key overridable and numeric', () => {
+  it('keeps every ceiling key overridable and clampable', () => {
+    const defaults = settingsSchema.parse({});
     for (const key of SETTING_CEILINGS) {
       expect(WORKSPACE_SETTING_KEYS).toContain(key);
-      expect(SETTING_NUMBER_RANGES[key]).toBeDefined();
+      // A ceiling only means something on a value that can be held down: a
+      // number takes the smaller of the two, a boolean the conjunction.
+      // Anything else would pass through the clamp unchanged and the entry
+      // would be a promise the resolver does not keep.
+      const clampable =
+        SETTING_NUMBER_RANGES[key] !== undefined || typeof defaults[key] === 'boolean';
+      expect(clampable).toBe(true);
     }
   });
 });

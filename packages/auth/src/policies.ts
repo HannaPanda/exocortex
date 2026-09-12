@@ -159,6 +159,30 @@ export function canManageWorkspaceCredentials(role: WorkspaceRole | null): Polic
   return ALLOW;
 }
 
+/**
+ * Creating, changing, deleting or firing an automation rule (issue #50,
+ * ADR-024).
+ *
+ * OWNER only, the same bar as a provider key and for the same reason. A rule is
+ * a standing instruction that keeps acting after the person who wrote it has
+ * closed the tab: it sends this workspace's data to a third party, or it spends
+ * money on a model, on every change to every page in its scope. An ADMIN
+ * administers how the people here work together; committing the workspace to an
+ * outbound relationship is the owner's act.
+ *
+ * Reading the rules and their run log needs only membership. What an automation
+ * has been doing is not a secret from the people it has been doing it to, and a
+ * run log nobody but the owner can see is a run log nobody reads.
+ */
+export function canManageAutomations(role: WorkspaceRole | null): PolicyDecision {
+  const read = canReadWorkspace(role);
+  if (!read.allowed) return read;
+  if (role !== 'OWNER') {
+    return deny('forbidden', 'Managing automations requires the OWNER role');
+  }
+  return ALLOW;
+}
+
 // --------------------------------------------------------------------------
 // Documents
 // --------------------------------------------------------------------------

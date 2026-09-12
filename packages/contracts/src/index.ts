@@ -6,6 +6,7 @@ export * from './ai-models';
 export * from './ai-runtime';
 export * from './attachments';
 export * from './auth';
+export * from './automations';
 export * from './calendar';
 export * from './collaboration';
 export * from './comments';
