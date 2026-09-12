@@ -83,16 +83,42 @@ an override could have been resolved against.
 The three nightly sweeps (`pruneMemories`, `consolidateMemories`,
 `decayMemoryFacts`) iterate over every memory area and read its own regulators.
 
-### Credentials get their own table, later
+### Credentials get their own table
 
 BYOK does not go in `setting` or in `workspace_setting`. ADR-013's rule stands:
-a setting is a preference, never a credential. When it lands it will be a
-separate table of encrypted values with its own resolution seam
-(`aiKeyFor(workspaceId)`, falling back to the deployment key), never returned
-in plaintext through the API. Embeddings deliberately stay on the deployment
-key: ADR-020 needs index and query in one vector space, and two accounts
-embedding under two keys against one index is the failure mode that looks
-exactly like a healthy deployment returning nothing.
+a setting is a preference, never a credential. `workspace_credential` holds one
+row per `(workspaceId, purpose)`, and everything in it is AES-256-GCM output
+from `packages/auth/src/credential-cipher.ts`. The purpose is bound in as
+additional authenticated data, so a row moved between purposes fails to decrypt
+rather than being handed to a service it was never meant for, and `keyVersion`
+sits on the row so a later rotation can re-encrypt row by row instead of
+invalidating the table.
+
+The value never travels back out. The API answers with `configured`, `hint`
+(the last four characters) and two timestamps; the plaintext exists only in the
+worker, for the length of one provider call. `CREDENTIAL_ENCRYPTION_KEY` is
+optional like `SERVICE_TOKEN_SECRET`: unset means no workspace can bring a key,
+and nothing refuses to boot.
+
+Resolution is `aiKeyFor(workspaceId)` in the worker: the workspace's key if it
+has a usable one, the deployment's otherwise. A stored row that cannot be
+decrypted falls back rather than failing the run, and the run is then recorded
+as deployment-paid, because a usage report that guesses is worse than one that
+undercounts BYOK.
+
+The boundary is **what a run spends**. An `AiRun` and the vision companion
+calls inside it are paid for by the workspace's key; the deployment-wide
+machinery around them (cover images, memory capture and consolidation, search
+embeddings) stays on the deployment key. Embeddings must: ADR-020 needs index
+and query in one vector space, and two accounts embedding under two keys
+against one index is the failure mode that looks exactly like a healthy
+deployment returning nothing.
+
+Storing a key is OWNER-only (`canManageWorkspaceCredentials`), a rung above the
+ADMIN bar for settings. A prompt or a model is how the people here work; a
+provider key is a paying relationship with a third party, and it belongs to
+whoever answers for the bill. `AiRun.usedOwnKey` records which of the two paid,
+so the usage report can say how much of one total was somebody else's money.
 
 ## Consequences
 
@@ -116,6 +142,15 @@ exactly like a healthy deployment returning nothing.
   workspace beside the deployment object, both on the same 15 second TTL. A
   deployment-wide write clears all of them, because those values are the floor
   and the ceiling of every workspace answer.
+- **A workspace key buys the runs and nothing else.** Covers, memory jobs and
+  embeddings stay on the deployment key, so a workspace with its own key still
+  costs the deployment something. This is a stated boundary and not an
+  oversight: the alternatives are a second key per purpose or a vector index
+  that quietly splits in two.
+- **Losing `CREDENTIAL_ENCRYPTION_KEY` loses the stored keys, not the service.**
+  Every workspace falls back to the deployment key and keeps working; the rows
+  become unreadable and have to be entered again. That is the price of not
+  keeping a second copy of the key anywhere.
 - **This is not multi-tenancy.** The admin area stays deployment-wide: users,
   the model registry, AI usage, agent sessions. A global admin still sees
   everything. What this ADR buys is configuration per workspace, which is the

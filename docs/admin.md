@@ -112,6 +112,33 @@ overridable keys include `ai.toolsEnabled`, `ai.mutatingToolsEnabled` and
 `ai.budgetMicroUsdPerRun`, so a tool for them would let an agent widen its own
 permissions and raise its own spending limit.
 
+### A workspace's own provider key (issue #52, AP7)
+
+A key is not a setting, and ADR-013 says so: a setting is a preference, never a
+credential. `workspace_credential` is a separate table of AES-256-GCM
+ciphertext, and nothing reads it back out to a browser. The routes are
+`GET`, `PUT` and `DELETE /api/workspaces/:id/credentials[/:purpose]`, OWNER
+only, and they answer with `configured`, `hint` (the last four characters),
+`updatedAt` and `lastUsedAt`.
+
+Setting it up takes one line in `.env`:
+
+```bash
+CREDENTIAL_ENCRYPTION_KEY=$(openssl rand -base64 32)
+```
+
+Without it the feature is simply off: the form says so, every workspace runs on
+`OPENROUTER_API_KEY`, and nothing refuses to boot. Losing the value later makes
+the stored rows unreadable; every workspace falls back to the deployment key
+and the owners enter theirs again.
+
+What a workspace key pays for is **runs**: the model call and the vision
+companion calls inside it. Cover images, memory capture and consolidation, and
+above all search embeddings stay on the deployment key. Embeddings have to
+(ADR-020: one vector space for index and query), the rest is a boundary worth
+knowing about when a bill arrives. `AiRun.usedOwnKey` records which key paid,
+and the usage report shows the share under "Kosten".
+
 | Key                                           | Type                      | Default                             | Affects                                                                                                                                                                                                                                                                                                                                                                  |
 | --------------------------------------------- | ------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `ai.enabled`                                  | boolean                   | `true`                              | Master switch for the AI pipeline.                                                                                                                                                                                                                                                                                                                                       |

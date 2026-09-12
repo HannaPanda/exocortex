@@ -128,6 +128,11 @@ const EXEMPT = [
       "One workspace's overrides of the runtime configuration (issue #52, ADR-023). Same reason as the deployment-wide form above, and it bites harder here: `ai.toolsEnabled`, `ai.mutatingToolsEnabled` and `ai.budgetMicroUsdPerRun` are among the overridable keys, so a tool for this would let an agent widen its own permissions and raise its own spending limit. A human sets this in the workspace settings.",
   },
   {
+    route: '* /api/workspaces/:x/credentials*',
+    reason:
+      "A workspace's own provider key (issue #52, ADR-023). Same reason as `/api/me/api-tokens*`: a credential is entered by a human in a browser, and a tool that could store one would let an agent point the deployment's spending at a key nobody chose. Reading is no better -- the route answers with a hint and a date, which is exactly what an agent has no use for and an owner does.",
+  },
+  {
     route: '* /api/admin/ai-models*',
     reason:
       'The model registry. Same reason, and it is edited once in a while by a human in the admin area.',
