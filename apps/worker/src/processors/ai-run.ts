@@ -9,6 +9,7 @@ import { type AiRun, type PrismaClient } from '@exocortex/database';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
+import { type ResolvedAiKey } from '../ai-key';
 import { type ToolRunner } from '../tool-runner';
 
 import { admitRun } from './ai-run/admission';
@@ -23,7 +24,14 @@ export { toolCallTarget } from './ai-run/execution';
 
 export interface AiRunDependencies {
   prisma: PrismaClient;
-  provider: AiProvider;
+  /**
+   * The provider this run should use, and whose key is paying (ADR-023).
+   *
+   * Resolved per run rather than injected once, because a workspace may have
+   * brought its own provider key. A workspace without one gets the
+   * deployment's provider, which is the object that used to be passed here.
+   */
+  providerFor: (workspaceId: string) => Promise<{ provider: AiProvider; key: ResolvedAiKey }>;
   bus: RedisEventBus;
   storage: ObjectStorage;
   settings: (workspaceId?: string) => Promise<Settings>;
@@ -45,7 +53,7 @@ export interface AiRunDependencies {
    * left no way to express the "use the env default" branch of the
    * conversation → model-row → env fallback chain it also specifies.
    */
-  visionPreprocessorFor: (modelSlug: string | null) => VisionPreprocessor | null;
+  visionPreprocessorFor: (modelSlug: string | null, apiKey?: string) => VisionPreprocessor | null;
   modelRegistry: (slug: string) => Promise<ResolvedModelRow | null>;
 }
 
@@ -83,7 +91,7 @@ function resolveToolAvailability(input: {
  * provider loop and the terminal write each live in `ai-run/`.
  */
 export function createAiRunProcessor(dependencies: AiRunDependencies) {
-  const { prisma, provider, bus, storage } = dependencies;
+  const { prisma, bus, storage } = dependencies;
   let loggedMissingServiceTokenWarning = false;
 
   return async ({
@@ -100,6 +108,11 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     });
     if (admitted === null) return;
     const { run, settings } = admitted;
+
+    // Whose key pays for this run, and therefore which provider makes the
+    // call. Resolved before anything is asked of the provider, so the vision
+    // companion below is paid for by the same key as the answer itself.
+    const { provider, key } = await dependencies.providerFor(run.workspaceId);
 
     const modelRow = await resolveModelRow({
       modelRegistry: dependencies.modelRegistry,
@@ -141,7 +154,8 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       settings,
       modelRow,
       conversationCompanionSlug: conversation?.visionCompanionSlug ?? null,
-      visionPreprocessorFor: dependencies.visionPreprocessorFor,
+      visionPreprocessorFor: (modelSlug) =>
+        dependencies.visionPreprocessorFor(modelSlug, key.apiKey),
       run,
       logger,
     });
@@ -192,7 +206,14 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
 
     await prisma.aiRun.update({
       where: { id: run.id },
-      data: { status: 'RUNNING', startedAt: new Date(), heartbeatAt: new Date() },
+      data: {
+        status: 'RUNNING',
+        startedAt: new Date(),
+        heartbeatAt: new Date(),
+        // Written when the run starts, not when it finishes: a run that fails
+        // halfway still spent whoever's money it was spending.
+        usedOwnKey: key.usedOwnKey,
+      },
     });
     await reportProgress(5, 'Antwort wird erzeugt');
 

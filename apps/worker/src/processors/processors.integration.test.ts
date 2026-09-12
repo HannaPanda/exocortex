@@ -49,6 +49,18 @@ import { createIndexDocumentProcessor } from './index-document';
 import { createMaintenanceProcessor } from './maintenance';
 import { createMaterializeDocumentProcessor } from './materialize-document';
 
+/**
+ * The provider an AI run should use, wrapped the way the runtime hands it over
+ * (issue #52): these tests are about what a run does, not about whose key paid
+ * for it, so every one of them runs on the deployment's.
+ */
+function providerFor(provider: AiProvider): (workspaceId: string) => Promise<{
+  provider: AiProvider;
+  key: { apiKey: string; usedOwnKey: boolean };
+}> {
+  return async () => ({ provider, key: { apiKey: 'test-key', usedOwnKey: false } });
+}
+
 /** A fully-defaulted `Settings` object with just the given keys overridden. */
 function stubSettings(
   overrides: Partial<Settings> = {},
@@ -2295,7 +2307,7 @@ describe('ai runs', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider,
+      providerFor: providerFor(provider),
       bus,
       storage: fakeStorage(Buffer.from('fake-image-bytes')),
       settings: stubSettings(),
@@ -2332,7 +2344,7 @@ describe('ai runs', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider,
+      providerFor: providerFor(provider),
       bus,
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettings(),
@@ -2361,7 +2373,7 @@ describe('ai runs', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider,
+      providerFor: providerFor(provider),
       bus,
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettings(),
@@ -2392,7 +2404,7 @@ describe('ai runs', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider,
+      providerFor: providerFor(provider),
       bus,
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettings(),
@@ -2416,7 +2428,7 @@ describe('ai runs', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider,
+      providerFor: providerFor(provider),
       bus,
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettings({ 'ai.maxOutputTokens': 12_288 }),
@@ -2438,7 +2450,7 @@ describe('ai runs', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider,
+      providerFor: providerFor(provider),
       bus,
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettings({ 'ai.maxOutputTokens': 100_000 }),
@@ -2463,7 +2475,7 @@ describe('ai runs', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider,
+      providerFor: providerFor(provider),
       bus,
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettings(),
@@ -2504,7 +2516,7 @@ describe('ai runs', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider,
+      providerFor: providerFor(provider),
       bus,
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettings(),
@@ -2536,7 +2548,7 @@ describe('ai runs', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider,
+      providerFor: providerFor(provider),
       bus,
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettings(),
@@ -2563,7 +2575,7 @@ describe('ai runs', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider,
+      providerFor: providerFor(provider),
       bus: recordingEventBus(published),
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettings(),
@@ -2596,7 +2608,7 @@ describe('ai runs', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider: new SlowStreamingAiProvider(7_000),
+      providerFor: providerFor(new SlowStreamingAiProvider(7_000)),
       bus,
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettings(),
@@ -2626,7 +2638,7 @@ describe('ai runs', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider: new HangingAiProvider(),
+      providerFor: providerFor(new HangingAiProvider()),
       bus: recordingEventBus(published),
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettingsUnchecked({ 'ai.timeoutMs': 150, 'ai.maxRunMs': 150 }),
@@ -2655,7 +2667,7 @@ describe('ai runs', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider: new HangingAiProvider(),
+      providerFor: providerFor(new HangingAiProvider()),
       bus: recordingEventBus(published),
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettings(),
@@ -2695,7 +2707,7 @@ describe('ai runs', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider: new CapturingAiProvider(),
+      providerFor: providerFor(new CapturingAiProvider()),
       bus: recordingEventBus(published),
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettings(),
@@ -2725,7 +2737,7 @@ describe('ai runs', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider,
+      providerFor: providerFor(provider),
       bus: recordingEventBus(published),
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettings(),
@@ -2798,7 +2810,7 @@ describe('conversation-backed tool loop', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider: new MockAiProvider({ chunkDelayMs: 0 }),
+      providerFor: providerFor(new MockAiProvider({ chunkDelayMs: 0 })),
       bus,
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettings({ 'ai.maxToolIterations': 4 }),
@@ -2846,7 +2858,7 @@ describe('conversation-backed tool loop', () => {
 
     const processor = createAiRunProcessor({
       prisma,
-      provider: new MockAiProvider({ chunkDelayMs: 0 }),
+      providerFor: providerFor(new MockAiProvider({ chunkDelayMs: 0 })),
       bus,
       storage: fakeStorage(Buffer.from('unused')),
       settings: stubSettings({ 'ai.maxToolIterations': 0 }),

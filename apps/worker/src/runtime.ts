@@ -32,6 +32,7 @@ import { createFetchApiClient, type ExocortexApiClient } from '@exocortex/mcp-to
 import { QueueRegistry, RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage, S3ObjectStorage } from '@exocortex/storage';
 
+import { type AiKeyResolver, createAiKeyResolver, type ResolvedAiKey } from './ai-key';
 import { createCommandNotifier } from './calendar/notifier';
 import { type ResolvedModelRow } from './processors/ai-run';
 import { type ToolRunner } from './tool-runner';
@@ -50,7 +51,22 @@ export interface WorkerRuntime {
   prisma: PrismaClient;
   queues: QueueRegistry;
   bus: RedisEventBus;
+  /**
+   * The deployment's provider, built once at boot.
+   *
+   * Right for everything the deployment pays for itself: memory capture,
+   * consolidation, compaction. An AI run asks `providerFor` instead, because
+   * the workspace may be paying with its own key (ADR-023).
+   */
   provider: AiProvider;
+  /**
+   * The provider one run should use, plus who is paying for it (issue #52).
+   *
+   * Built per run rather than once at boot: `createAiProvider` allocates an
+   * object around a fetch client, which is cheap enough to do per run and the
+   * only way a workspace's own key can reach the call at all.
+   */
+  providerFor: (workspaceId: string) => Promise<{ provider: AiProvider; key: ResolvedAiKey }>;
   storage: ObjectStorage;
   search: HybridSearchAdapter;
   /**
@@ -79,7 +95,13 @@ export interface WorkerRuntime {
   }) => { baseUrl: string; username: string; password: string } | null;
   reminderNotifier: ReturnType<typeof createCommandNotifier> | null;
   imageGeneratorFor: (modelSlug: string | null) => ImageGenerator | null;
-  visionPreprocessorFor: (modelSlug: string | null) => VisionPreprocessor | null;
+  /**
+   * A vision companion for one model slug, optionally paid for with a
+   * workspace's own key. Without a key it is the deployment's, cached per
+   * slug; with one it is built fresh, because a cache keyed by a secret is not
+   * a cache worth having.
+   */
+  visionPreprocessorFor: (modelSlug: string | null, apiKey?: string) => VisionPreprocessor | null;
   pdfDocumentInfo: PdfDocumentInfoReader;
   pdfExtractorChain: (settings: Settings) => readonly PdfTextExtractor[];
   modelRegistry: (slug: string) => Promise<ResolvedModelRow | null>;
@@ -194,6 +216,26 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
   });
 
   const readSettings = createSettingsReader(prisma, logger);
+  const aiKeyFor: AiKeyResolver = createAiKeyResolver({ prisma, env, logger });
+  const providerFor = async (
+    workspaceId: string,
+  ): Promise<{ provider: AiProvider; key: ResolvedAiKey }> => {
+    const key = await aiKeyFor(workspaceId);
+    if (!key.usedOwnKey) return { provider, key };
+    return {
+      provider: createAiProvider({
+        providerId: env.AI_PROVIDER,
+        logger,
+        appUrl: env.APP_URL,
+        openRouter: {
+          apiKey: key.apiKey,
+          baseUrl: env.OPENROUTER_BASE_URL,
+          defaultModel: env.OPENROUTER_DEFAULT_MODEL,
+        },
+      }),
+      key,
+    };
+  };
 
   /**
    * The search projection, both halves of it (issue #34, AP4).
@@ -378,6 +420,7 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
     queues,
     bus,
     provider,
+    providerFor,
     storage,
     search,
     readSettings,
@@ -407,7 +450,7 @@ function createMediaFactories(
   logger: Logger,
 ): {
   imageGeneratorFor: (modelSlug: string | null) => ImageGenerator | null;
-  visionPreprocessorFor: (modelSlug: string | null) => VisionPreprocessor | null;
+  visionPreprocessorFor: (modelSlug: string | null, apiKey?: string) => VisionPreprocessor | null;
   pdfDocumentInfo: PdfDocumentInfoReader;
   pdfExtractorChain: (settings: Settings) => readonly PdfTextExtractor[];
 } {
@@ -437,9 +480,24 @@ function createMediaFactories(
   // its own companion slug (conversation override, or the model row's admin
   // default) instead of only ever the one env-configured model.
   const visionPreprocessorCache = new Map<string, VisionPreprocessor | null>();
-  const visionPreprocessorFor = (modelSlug: string | null): VisionPreprocessor | null => {
+  const visionPreprocessorFor = (
+    modelSlug: string | null,
+    apiKey?: string,
+  ): VisionPreprocessor | null => {
     const effectiveModel = modelSlug ?? env.OPENROUTER_VISION_MODEL;
     const cacheKey = effectiveModel ?? '';
+    // A run that pays with its own key gets its own preprocessor. Not cached:
+    // the cache is keyed by model, and holding secrets in it would either leak
+    // one workspace's key into another's call or need the key in the cache key.
+    if (apiKey !== undefined && apiKey !== (env.OPENROUTER_API_KEY ?? '')) {
+      return createVisionPreprocessor({
+        logger,
+        appUrl: env.APP_URL,
+        apiKey,
+        baseUrl: env.OPENROUTER_BASE_URL,
+        model: effectiveModel,
+      });
+    }
     if (!visionPreprocessorCache.has(cacheKey)) {
       visionPreprocessorCache.set(
         cacheKey,

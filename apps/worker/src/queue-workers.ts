@@ -57,7 +57,7 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
     prisma,
     queues,
     bus,
-    provider,
+    providerFor,
     storage,
     search,
     readSettings,
@@ -146,7 +146,7 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
     stalledInterval: AI_QUEUE_STALLED_INTERVAL_MS,
     handler: createAiRunProcessor({
       prisma,
-      provider,
+      providerFor,
       bus,
       storage,
       settings: readSettings,
