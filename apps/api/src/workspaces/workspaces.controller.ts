@@ -9,6 +9,8 @@ import {
   updateWorkspaceMemberRequestSchema,
   type UpdateWorkspaceRequest,
   updateWorkspaceRequestSchema,
+  type UpdateWorkspaceSettingsRequest,
+  updateWorkspaceSettingsRequestSchema,
   type Workspace,
   type WorkspaceDetail,
   workspaceDetailSchema,
@@ -19,6 +21,8 @@ import {
   type WorkspaceOverviewResponse,
   workspaceOverviewResponseSchema,
   workspaceSchema,
+  type WorkspaceSettingsResponse,
+  workspaceSettingsResponseSchema,
 } from '@exocortex/contracts';
 
 import { CurrentSession } from '../auth/session.guard';
@@ -61,6 +65,35 @@ export class WorkspacesController {
     @Param('workspaceId') workspaceId: string,
   ): Promise<WorkspaceOverviewResponse> {
     return this.overview.get(workspaceId, session.userId);
+  }
+
+  /**
+   * The configuration in force in this workspace, plus what it would fall back
+   * to. Declared before `:workspaceId` so the literal segment is not eaten by
+   * the parameter route above it.
+   */
+  @Get(':workspaceId/settings')
+  @ApiOkResponse({ schema: openApiResponseSchema(workspaceSettingsResponseSchema) })
+  async settings(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+  ): Promise<WorkspaceSettingsResponse> {
+    return this.workspaces.getSettings(workspaceId, session.userId);
+  }
+
+  @Patch(':workspaceId/settings')
+  @ApiBody({ schema: openApiSchema(updateWorkspaceSettingsRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(workspaceSettingsResponseSchema) })
+  async updateSettings(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+    @Body(zodPipe(updateWorkspaceSettingsRequestSchema)) body: UpdateWorkspaceSettingsRequest,
+  ): Promise<WorkspaceSettingsResponse> {
+    return this.workspaces.updateSettings({
+      workspaceId,
+      actorUserId: session.userId,
+      request: body,
+    });
   }
 
   @Get(':workspaceId')

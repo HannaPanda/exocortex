@@ -131,14 +131,16 @@ export class AiModelResolverService {
    * `slug` unknown to the registry throws `ai_model_unknown`. Known but
    * disabled throws `ai_model_disabled`, unless `allowDisabled` is set (an old
    * conversation may legitimately still point at a retired model). No `slug`
-   * resolves the deployment default.
+   * resolves the default, which depends on where the request came from:
+   * `ai.defaultModelSlug` is workspace-scoped (ADR-023).
    */
   async resolve(input: {
     slug?: string | null;
     allowDisabled?: boolean;
+    workspaceId?: string;
   }): Promise<ResolvedAiModel> {
     if (input.slug === undefined || input.slug === null) {
-      return this.resolveDefault();
+      return this.resolveDefault(input.workspaceId);
     }
 
     const row = await this.prisma.aiModel.findUnique({
@@ -154,9 +156,19 @@ export class AiModelResolverService {
     return toResolved(row);
   }
 
-  /** The effective default: settings, then env, then the first enabled row. */
-  async resolveDefault(): Promise<ResolvedAiModel> {
-    const settingSlug = await this.settings.getKey('ai.defaultModelSlug');
+  /**
+   * The effective default: settings, then env, then the first enabled row.
+   *
+   * Without a workspace this is the deployment's answer, which is right for
+   * the admin area and wrong for a run: a workspace that picked its own model
+   * has to get it, and only the caller knows which workspace that is.
+   */
+  async resolveDefault(workspaceId?: string): Promise<ResolvedAiModel> {
+    const settings =
+      workspaceId === undefined
+        ? await this.settings.get()
+        : await this.settings.getForWorkspace(workspaceId);
+    const settingSlug = settings['ai.defaultModelSlug'];
     const candidateSlug = settingSlug ?? this.envDefaultModel;
 
     if (candidateSlug.length > 0) {

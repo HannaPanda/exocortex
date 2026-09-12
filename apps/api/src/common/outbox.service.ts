@@ -31,6 +31,8 @@ export const AUDIT_ACTIONS = [
   'workspace.deleted',
   'database.property.deleted',
   'setting.updated',
+  'workspace.setting.updated',
+  'workspace.memory_flag_changed',
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];

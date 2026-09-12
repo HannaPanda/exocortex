@@ -108,12 +108,15 @@ export class AiService {
     let resolvedModel: ResolvedAiModel | null = null;
     let modelSlug: string;
     if (input.request.model !== undefined) {
-      resolvedModel = await this.modelResolver.resolve({ slug: input.request.model });
+      resolvedModel = await this.modelResolver.resolve({
+        slug: input.request.model,
+        workspaceId: input.request.workspaceId,
+      });
       modelSlug = resolvedModel.slug;
     } else if (fixedProviderModel !== undefined) {
       modelSlug = fixedProviderModel;
     } else {
-      resolvedModel = await this.modelResolver.resolveDefault();
+      resolvedModel = await this.modelResolver.resolveDefault(input.request.workspaceId);
       modelSlug = resolvedModel.slug;
     }
 

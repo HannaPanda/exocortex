@@ -23,6 +23,7 @@ import { PRISMA } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
 import { normaliseProject, projectLabel } from './memory.service';
+import { memoryWorkspaceFor } from './memory-workspace';
 
 /** Title of the page every project's facts hang under, inside the memory workspace. */
 const FACTS_PAGE_TITLE = 'Fakten';
@@ -450,6 +451,13 @@ export class MemoryFactsService {
     return created.id;
   }
 
+  /**
+   * The caller's memory area, or a refusal they can act on.
+   *
+   * No separate membership check any more: resolution goes through the
+   * caller's own memberships (issue #52), so an id that comes back is by
+   * construction one they may write to.
+   */
   private async requireReadableMemoryWorkspace(userId: string): Promise<string> {
     const settings = await this.settings.get();
     if (!settings['memory.enabled']) {
@@ -458,19 +466,12 @@ export class MemoryFactsService {
         'The memory area is switched off for this deployment',
       );
     }
-    const workspaceId = settings['memory.workspaceId'];
+    const workspaceId = await memoryWorkspaceFor(this.prisma, userId);
     if (workspaceId === null) {
       throw new AppError(
         'memory_unavailable',
-        'No memory workspace is configured; set memory.workspaceId in the admin settings',
+        'This account has no memory workspace; mark one of its workspaces as the memory area',
       );
-    }
-    const membership = await this.prisma.workspaceMember.findFirst({
-      where: { workspaceId, userId, workspace: { archivedAt: null } },
-      select: { id: true },
-    });
-    if (membership === null) {
-      throw new AppError('workspace_access_denied', 'You are not a member of the memory workspace');
     }
     return workspaceId;
   }

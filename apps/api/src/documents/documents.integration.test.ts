@@ -603,6 +603,8 @@ describe('generating a cover', () => {
     const resolved = resolveSettings({ rows: [], env: {} }).settings;
     const settingsStub = {
       get: async (): Promise<Settings> => ({ ...resolved, ...settings }),
+      // Cover generation resolves against the page's workspace since issue #52.
+      getForWorkspace: async (): Promise<Settings> => ({ ...resolved, ...settings }),
     } as unknown as SettingsService;
 
     return new DocumentCoverService(

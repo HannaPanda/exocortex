@@ -123,6 +123,7 @@ beforeAll(async () => {
     data: {
       name: `Memory ${suffix}`,
       slug: `memory-facts-${suffix}`,
+      isMemory: true,
       members: { create: { userId: agentId, role: 'MEMBER' } },
     },
   });
@@ -160,7 +161,10 @@ beforeAll(async () => {
     collaboration,
     new PageLinkIdentityService(prisma),
   );
-  const settingsService = { get: async () => settings } as unknown as SettingsService;
+  const settingsService = {
+    get: async () => settings,
+    getForWorkspace: async () => settings,
+  } as unknown as SettingsService;
   const env = { APP_URL: 'https://exocortex.test' } as never;
 
   memory = new MemoryService(
@@ -178,7 +182,7 @@ beforeAll(async () => {
 
 beforeEach(() => {
   settings = resolveSettings({
-    rows: [{ key: 'memory.workspaceId', value: memoryWorkspaceId }],
+    rows: [],
     env: {},
   }).settings;
 });

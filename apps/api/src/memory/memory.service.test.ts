@@ -132,6 +132,9 @@ beforeAll(async () => {
     data: {
       name: `Memory ${suffix}`,
       slug: `memory-${suffix}`,
+      // The memory area is a property of the row since issue #52, and the
+      // agent's MEMBER role is what makes it *this* account's memory.
+      isMemory: true,
       members: { create: { userId: agentId, role: 'MEMBER' } },
     },
   });
@@ -172,6 +175,7 @@ beforeAll(async () => {
 
   const settingsService = {
     get: async () => settings,
+    getForWorkspace: async () => settings,
   } as unknown as SettingsService;
 
   service = new MemoryService(
@@ -188,10 +192,7 @@ beforeAll(async () => {
 
 beforeEach(() => {
   searchResults = new Map();
-  settings = resolveSettings({
-    rows: [{ key: 'memory.workspaceId', value: memoryWorkspaceId }],
-    env: {},
-  }).settings;
+  settings = resolveSettings({ rows: [], env: {} }).settings;
 });
 
 afterAll(async () => {
@@ -284,11 +285,10 @@ describe('remember', () => {
     expect(content?.plainText).toContain('zweiter Gedanke');
   });
 
-  it('refuses to write when no memory workspace is configured', async () => {
-    settings = resolveSettings({ rows: [], env: {} }).settings;
+  it('refuses to write when the account has no memory workspace', async () => {
     await expect(
       service.remember({
-        userId: agentId,
+        userId: strangerId,
         request: {
           project: 'irgendwas',
           text: '- etwas',
@@ -488,10 +488,11 @@ describe('capture', () => {
     expect(response.reason).toBe('transcript_too_short');
   });
 
-  it('refuses politely when no memory workspace is configured', async () => {
-    settings = resolveSettings({ rows: [], env: {} }).settings;
+  it('refuses politely when the account has no memory workspace', async () => {
+    // Since issue #52 this is a property of the caller, not of the deployment:
+    // the stranger is a member of nothing, so there is nowhere to write.
     const response = await service.capture({
-      userId: agentId,
+      userId: strangerId,
       request: {
         project: '/var/www/capture',
         client: 'claude-code',

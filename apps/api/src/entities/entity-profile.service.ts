@@ -9,6 +9,7 @@ import {
 import { type EntityRecord, type PrismaClient } from '@exocortex/database';
 import { entityAliasKey } from '@exocortex/editor';
 
+import { memoryWorkspacesAmong } from '../memory/memory-workspace';
 import { PRISMA } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
@@ -221,14 +222,15 @@ export class EntityProfileService {
     entity: EntityRecord,
     readable: ReadonlySet<string>,
   ): Promise<EntityProfile['facts']> {
-    const settings = await this.settings.get();
-    const workspaceId = settings['memory.workspaceId'];
-    if (workspaceId === null || !readable.has(workspaceId)) return [];
+    // Every memory area the caller may read, not one configured id (issue #52):
+    // a profile should carry what this account knows, wherever it wrote it down.
+    const workspaceIds = await memoryWorkspacesAmong(this.prisma, [...readable]);
+    if (workspaceIds.length === 0) return [];
 
     const names = [entity.title, ...entity.aliases];
     const rows = await this.prisma.memoryFact.findMany({
       where: {
-        workspaceId,
+        workspaceId: { in: workspaceIds },
         status: 'CURRENT',
         document: {
           archivedAt: null,

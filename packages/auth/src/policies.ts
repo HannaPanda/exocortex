@@ -118,6 +118,24 @@ export function canUpdateWorkspace(role: WorkspaceRole | null): PolicyDecision {
   return ALLOW;
 }
 
+/**
+ * Overriding a runtime setting for this workspace (issue #52, ADR-023).
+ *
+ * The same ADMIN bar as renaming, and a separate function on purpose: these
+ * two will not stay the same question. A prompt, a model and a budget are the
+ * workspace's own business, but the moment a key here costs somebody else
+ * money (an own provider key, a raised ceiling) this is where that line gets
+ * drawn, and it must not have to be cut out of the rename policy first.
+ */
+export function canManageWorkspaceSettings(role: WorkspaceRole | null): PolicyDecision {
+  const read = canReadWorkspace(role);
+  if (!read.allowed) return read;
+  if (!hasAtLeast(role as WorkspaceRole, 'ADMIN')) {
+    return deny('forbidden', 'Changing workspace settings requires the ADMIN or OWNER role');
+  }
+  return ALLOW;
+}
+
 // --------------------------------------------------------------------------
 // Documents
 // --------------------------------------------------------------------------

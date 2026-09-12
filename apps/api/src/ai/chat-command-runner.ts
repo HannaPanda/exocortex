@@ -129,7 +129,7 @@ const setReasoning: ChatCommandHandler = async (context) => {
   }
   const modelRow =
     conversation.model === null
-      ? await modelResolver.resolveDefault()
+      ? await modelResolver.resolveDefault(conversation.workspaceId)
       : await modelResolver.resolve({ slug: conversation.model.slug, allowDisabled: true });
   const clamped = modelResolver.clampReasoningLevel(modelRow, parsedLevel.data);
   await prisma.aiConversation.update({
@@ -253,7 +253,8 @@ const listRules: ChatCommandHandler = async (context) => {
 
 /** Lists the tools the AI may call right now. */
 const listTools: ChatCommandHandler = async (context) => {
-  const includeMutating = await context.settings.getKey('ai.mutatingToolsEnabled');
+  const settings = await context.settings.getForWorkspace(context.conversation.workspaceId);
+  const includeMutating = settings['ai.mutatingToolsEnabled'];
   const tools = toolsFor('ai', { includeMutating });
   const message =
     tools.length === 0

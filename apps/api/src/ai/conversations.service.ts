@@ -460,7 +460,7 @@ export class ConversationsService {
 
     const resolvedModel =
       conversation.model === null
-        ? await this.modelResolver.resolveDefault()
+        ? await this.modelResolver.resolveDefault(conversation.workspaceId)
         : await this.modelResolver.resolve({ slug: conversation.model.slug, allowDisabled: true });
 
     const requestedReasoning =

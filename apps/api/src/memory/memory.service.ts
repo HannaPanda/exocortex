@@ -29,6 +29,8 @@ import { PRISMA, QUEUES } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 import { SearchService } from '../search/search.service';
 
+import { memoryWorkspaceFor } from './memory-workspace';
+
 /** How many hits one workspace may contribute before merging and re-ranking. */
 const PER_WORKSPACE_LIMIT = 10;
 /** Longest snippet a single hit may add to the recall text. */
@@ -91,8 +93,14 @@ export class MemoryService {
 
   async recall(userId: string, request: MemoryRecallRequest): Promise<MemoryRecallResponse> {
     const startedAt = Date.now();
-    const settings = await this.settings.get();
-    const memoryWorkspaceId = settings['memory.workspaceId'];
+    // The caller's own memory area decides the regulators below: how many hits
+    // a recall answers with and how long it may be are workspace-scoped keys
+    // now (ADR-023), and the workspace they belong to is this one.
+    const memoryWorkspaceId = await memoryWorkspaceFor(this.prisma, userId);
+    const settings =
+      memoryWorkspaceId === null
+        ? await this.settings.get()
+        : await this.settings.getForWorkspace(memoryWorkspaceId);
     const limit = Math.min(request.limit, settings['memory.recallMaxResults']);
     const maxChars = Math.min(request.maxChars, settings['memory.recallMaxChars']);
     const project = request.project === undefined ? null : normaliseProject(request.project);
@@ -262,10 +270,9 @@ export class MemoryService {
     request: MemoryRememberRequest;
     correlationId: string;
   }): Promise<MemoryRememberResponse> {
-    const settings = await this.settings.get();
     const workspaceId = this.requireMemoryWorkspace(
-      settings['memory.enabled'],
-      settings['memory.workspaceId'],
+      (await this.settings.get())['memory.enabled'],
+      await memoryWorkspaceFor(this.prisma, input.userId),
     );
 
     const project = normaliseProject(input.request.project);
@@ -346,8 +353,11 @@ export class MemoryService {
     request: MemoryCaptureRequest;
     correlationId: string;
   }): Promise<MemoryCaptureResponse> {
-    const settings = await this.settings.get();
-    const workspaceId = settings['memory.workspaceId'];
+    const workspaceId = await memoryWorkspaceFor(this.prisma, input.userId);
+    const settings =
+      workspaceId === null
+        ? await this.settings.get()
+        : await this.settings.getForWorkspace(workspaceId);
 
     if (!settings['memory.enabled']) {
       return { accepted: false, jobId: null, reason: 'memory_disabled' };
@@ -401,7 +411,7 @@ export class MemoryService {
     if (workspaceId === null) {
       throw new AppError(
         'memory_unavailable',
-        'No memory workspace is configured; set memory.workspaceId in the admin settings',
+        'This account has no memory workspace; mark one of its workspaces as the memory area',
       );
     }
     return workspaceId;

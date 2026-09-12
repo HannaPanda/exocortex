@@ -6,6 +6,7 @@ import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 
 import { OutboxService } from '../common/outbox.service';
+import { SettingsService } from '../platform/settings.service';
 import { type RealtimeService } from '../realtime/realtime.service';
 
 import { WorkspacesService } from './workspaces.service';
@@ -26,6 +27,7 @@ let ownerId: string;
 let adminId: string;
 let memberId: string;
 let workspaceId: string;
+let settings: SettingsService;
 let otherWorkspaceId: string;
 
 const emitted: { type: string; workspaceId: string }[] = [];
@@ -41,7 +43,8 @@ beforeAll(async () => {
   prisma = createPrismaClient({ databaseUrl: process.env.DATABASE_URL });
   const access = new WorkspaceAccessService(prisma);
   const outbox = new OutboxService(prisma, logger);
-  service = new WorkspacesService(prisma, access, outbox, realtime);
+  settings = new SettingsService(prisma, logger, outbox);
+  service = new WorkspacesService(prisma, access, outbox, realtime, settings);
 
   const suffix = Date.now().toString(36);
   const [owner, admin, member] = await Promise.all([
@@ -174,5 +177,99 @@ describe('renaming a workspace', () => {
     expect(audit).not.toBeNull();
     expect(audit?.actorId).toBe(ownerId);
     expect(emitted.some((event) => event.type === 'workspace.updated')).toBe(true);
+  });
+});
+
+describe('workspace settings (issue #52, ADR-023)', () => {
+  it('inherits everything while the workspace has set nothing', async () => {
+    const response = await service.getSettings(workspaceId, memberId);
+
+    expect(response.overriddenKeys).toEqual([]);
+    expect(response.settings).toEqual(response.deploymentSettings);
+    expect(response.editableKeys).toContain('ai.systemPrompt');
+    expect(response.editableKeys).not.toContain('mcp.enabled');
+  });
+
+  it('lets an ADMIN override a key and reports it as set', async () => {
+    const saved = await service.updateSettings({
+      workspaceId,
+      actorUserId: adminId,
+      request: { 'ai.systemPrompt': 'Antworte knapp.' },
+    });
+
+    expect(saved.settings['ai.systemPrompt']).toBe('Antworte knapp.');
+    expect(saved.overriddenKeys).toEqual(['ai.systemPrompt']);
+    // The neighbouring workspace is untouched: an override belongs to one area.
+    const other = await service.getSettings(otherWorkspaceId, ownerId);
+    expect(other.settings['ai.systemPrompt']).toBe(other.deploymentSettings['ai.systemPrompt']);
+  });
+
+  it('refuses an override for a MEMBER', async () => {
+    await expect(
+      service.updateSettings({
+        workspaceId,
+        actorUserId: memberId,
+        request: { 'ai.systemPrompt': 'darf nicht' },
+      }),
+    ).rejects.toBeInstanceOf(AuthorizationError);
+  });
+
+  it('refuses a value above the deployment ceiling', async () => {
+    const deployment = (await service.getSettings(workspaceId, ownerId)).deploymentSettings;
+    await expect(
+      service.updateSettings({
+        workspaceId,
+        actorUserId: ownerId,
+        request: { 'ai.budgetMicroUsdPerRun': deployment['ai.budgetMicroUsdPerRun'] + 1 },
+      }),
+    ).rejects.toMatchObject({ code: 'setting_above_deployment_ceiling' });
+  });
+
+  it('accepts a value below the ceiling and takes it back on reset', async () => {
+    const deployment = (await service.getSettings(workspaceId, ownerId)).deploymentSettings;
+    const lower = Math.floor(deployment['ai.budgetMicroUsdPerRun'] / 2);
+
+    const saved = await service.updateSettings({
+      workspaceId,
+      actorUserId: ownerId,
+      request: { 'ai.budgetMicroUsdPerRun': lower },
+    });
+    expect(saved.settings['ai.budgetMicroUsdPerRun']).toBe(lower);
+
+    const reset = await service.updateSettings({
+      workspaceId,
+      actorUserId: ownerId,
+      request: { reset: ['ai.budgetMicroUsdPerRun'] },
+    });
+    expect(reset.settings['ai.budgetMicroUsdPerRun']).toBe(deployment['ai.budgetMicroUsdPerRun']);
+    expect(reset.overriddenKeys).not.toContain('ai.budgetMicroUsdPerRun');
+  });
+
+  it('refuses a deployment-scoped key that was built by hand', async () => {
+    await expect(
+      service.updateSettings({
+        workspaceId,
+        actorUserId: ownerId,
+        // Cast, because the request schema would already have stripped this.
+        request: { 'mcp.enabled': false } as never,
+      }),
+    ).rejects.toMatchObject({ code: 'setting_not_overridable' });
+  });
+
+  it('marks a workspace as the memory area through the ordinary update path', async () => {
+    const updated = await service.update({
+      workspaceId: otherWorkspaceId,
+      actorUserId: ownerId,
+      request: { isMemory: true },
+      correlationId,
+    });
+    expect(updated.isMemory).toBe(true);
+
+    await service.update({
+      workspaceId: otherWorkspaceId,
+      actorUserId: ownerId,
+      request: { isMemory: false },
+      correlationId,
+    });
   });
 });

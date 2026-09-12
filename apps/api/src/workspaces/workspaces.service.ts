@@ -4,22 +4,27 @@ import {
   assertPolicy,
   canChangeMemberRole,
   canManageWorkspaceMembers,
+  canManageWorkspaceSettings,
+  canReadWorkspace,
   canUpdateWorkspace,
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import {
   type CreateWorkspaceRequest,
   type UpdateWorkspaceRequest,
+  type UpdateWorkspaceSettingsRequest,
   type Workspace,
   type WorkspaceDetail,
   type WorkspaceMember,
   type WorkspaceRole,
+  type WorkspaceSettingsResponse,
 } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 
 import { AppError } from '../common/app-error';
 import { OutboxService } from '../common/outbox.service';
 import { PRISMA } from '../platform/platform.module';
+import { SettingsService } from '../platform/settings.service';
 import { RealtimeService } from '../realtime/realtime.service';
 
 function slugify(name: string): string {
@@ -51,6 +56,7 @@ export class WorkspacesService {
     private readonly access: WorkspaceAccessService,
     private readonly outbox: OutboxService,
     private readonly realtime: RealtimeService,
+    private readonly settings: SettingsService,
   ) {}
 
   async listForUser(userId: string): Promise<Workspace[]> {
@@ -70,6 +76,7 @@ export class WorkspacesService {
       updatedAt: membership.workspace.updatedAt.toISOString(),
       role: membership.role,
       memberCount: membership.workspace._count.members,
+      isMemory: membership.workspace.isMemory,
     }));
   }
 
@@ -97,6 +104,7 @@ export class WorkspacesService {
       updatedAt: workspace.updatedAt.toISOString(),
       role: 'OWNER',
       memberCount: 1,
+      isMemory: workspace.isMemory,
     };
   }
 
@@ -130,6 +138,7 @@ export class WorkspacesService {
       updatedAt: workspace.updatedAt.toISOString(),
       role,
       memberCount: members.length,
+      isMemory: workspace.isMemory,
       members,
     };
   }
@@ -170,6 +179,7 @@ export class WorkspacesService {
         data: {
           ...(input.request.name === undefined ? {} : { name: input.request.name }),
           ...(input.request.slug === undefined ? {} : { slug: input.request.slug }),
+          ...(input.request.isMemory === undefined ? {} : { isMemory: input.request.isMemory }),
         },
         include: { _count: { select: { members: true } } },
       });
@@ -184,6 +194,9 @@ export class WorkspacesService {
         metadata: {
           ...(input.request.name === undefined ? {} : { name: input.request.name }),
           ...(input.request.slug === undefined ? {} : { slug: input.request.slug }),
+          ...(input.request.isMemory === undefined
+            ? {}
+            : { isMemory: String(input.request.isMemory) }),
         },
       });
       await this.outbox.writeEvent(tx, {
@@ -208,6 +221,7 @@ export class WorkspacesService {
       updatedAt: updated.updatedAt.toISOString(),
       role: role as WorkspaceRole,
       memberCount: updated._count.members,
+      isMemory: updated.isMemory,
     };
   }
 
@@ -279,5 +293,36 @@ export class WorkspacesService {
       if (existing === null) return candidate;
     }
     throw AppError.conflict('Could not derive a free workspace slug');
+  }
+
+  /**
+   * This workspace's runtime configuration (issue #52, ADR-023).
+   *
+   * Readable by every member, not only by an administrator: what prompt and
+   * what model a workspace runs under is not a secret from the people working
+   * in it, and hiding it would make the AI behave differently here than
+   * elsewhere with nothing on screen to explain why. Changing it is the
+   * administrator's job, and that is a separate policy.
+   */
+  async getSettings(workspaceId: string, userId: string): Promise<WorkspaceSettingsResponse> {
+    const role = await this.access.findRole(workspaceId, userId);
+    assertPolicy(canReadWorkspace(role));
+    const resolved = await this.settings.forWorkspace(workspaceId);
+    return { ...resolved, editableKeys: [...this.settings.editableKeys()] };
+  }
+
+  async updateSettings(input: {
+    workspaceId: string;
+    actorUserId: string;
+    request: UpdateWorkspaceSettingsRequest;
+  }): Promise<WorkspaceSettingsResponse> {
+    const role = await this.access.findRole(input.workspaceId, input.actorUserId);
+    assertPolicy(canManageWorkspaceSettings(role));
+    const resolved = await this.settings.updateForWorkspace({
+      workspaceId: input.workspaceId,
+      patch: input.request,
+      actorId: input.actorUserId,
+    });
+    return { ...resolved, editableKeys: [...this.settings.editableKeys()] };
   }
 }

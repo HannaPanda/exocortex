@@ -107,7 +107,9 @@ export class DocumentCoverService {
     const context = await this.access.requireDocumentContext(input.documentId, input.userId);
     assertPolicy(canEditDocument(context.role, context.document));
 
-    const settings = await this.settings.get();
+    // This workspace's configuration, not the deployment's: whether covers may
+    // be drawn and which model draws them are workspace-scoped (ADR-023).
+    const settings = await this.settings.getForWorkspace(context.document.workspaceId);
     if (!settings['ai.enabled'] || !settings['ai.imageGenerationEnabled']) {
       throw new AppError(
         'ai_image_unavailable',
