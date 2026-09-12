@@ -143,6 +143,19 @@ export const serviceTokenSchema = z.object({
   SERVICE_TOKEN_TTL_SECONDS: z.coerce.number().int().min(30).max(3_600).default(300),
 });
 
+/**
+ * Key that encrypts the stored third-party credentials in `workspace_credential`
+ * (issue #52, ADR-023): 32 bytes, base64, e.g. `openssl rand -base64 32`.
+ *
+ * Optional like `SERVICE_TOKEN_SECRET`, and for the same reason: an unset line
+ * in `.env` must never stop a process from booting. Unset means a workspace
+ * cannot bring its own provider key, and every AI run is paid for with the
+ * deployment's key, which is exactly how the deployment behaved before BYOK.
+ */
+export const credentialEncryptionSchema = z.object({
+  CREDENTIAL_ENCRYPTION_KEY: z.string().trim().optional(),
+});
+
 export const internalApiSchema = z.object({
   /** Internal base URL of the REST API, used by the worker's tool loop. */
   API_URL: z.url().default('http://127.0.0.1:3211'),
@@ -189,6 +202,7 @@ export const apiEnvSchema = baseSchema
   .extend(apiProcessSchema.shape)
   .extend(publicSchema.shape)
   .extend(serviceTokenSchema.shape)
+  .extend(credentialEncryptionSchema.shape)
   .extend(internalCollaborationSchema.shape);
 
 export const workerEnvSchema = baseSchema
@@ -198,6 +212,7 @@ export const workerEnvSchema = baseSchema
   .extend(aiSchema.shape)
   .extend(calendarSchema.shape)
   .extend(serviceTokenSchema.shape)
+  .extend(credentialEncryptionSchema.shape)
   .extend(internalApiSchema.shape);
 
 export const collaborationEnvSchema = baseSchema
