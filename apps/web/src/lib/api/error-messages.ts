@@ -49,6 +49,8 @@ const MESSAGES: Record<ApiErrorCode, string> = {
     'Diese Einstellung gilt für die ganze Installation und lässt sich nicht je Arbeitsbereich setzen.',
   setting_above_deployment_ceiling:
     'Dieser Wert liegt über dem, was die Installation erlaubt. Ein Arbeitsbereich darf darunter bleiben, nicht darüber.',
+  credential_storage_unavailable:
+    'Diese Installation kann keine eigenen Schlüssel speichern. Dafür fehlt der Schlüssel zum Verschlüsseln (CREDENTIAL_ENCRYPTION_KEY).',
   memory_unavailable:
     'Für dieses Konto ist noch kein Gedächtnisbereich festgelegt. In den Einstellungen eines Arbeitsbereichs lässt sich einer dazu erklären.',
   entity_layer_unavailable:

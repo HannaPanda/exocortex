@@ -28,12 +28,15 @@ import {
   type RelatedDocumentsResponse,
   type ResolveDocumentLinkResponse,
   type SearchResponse,
+  type SetWorkspaceCredentialRequest,
   type TrashResponse,
   type UpdateDocumentRequest,
   type UpdateWorkspaceRequest,
   type UpdateWorkspaceSettingsRequest,
   type UploadAttachmentResponse,
   type Workspace,
+  type WorkspaceCredentialListResponse,
+  type WorkspaceCredentialPurpose,
   type WorkspaceDetail,
   type WorkspaceListResponse,
   type WorkspaceOverviewResponse,
@@ -51,6 +54,7 @@ export const queryKeys = {
   documentTree: (workspaceId: string) => ['workspace', workspaceId, 'tree'] as const,
   workspaceOverview: (workspaceId: string) => ['workspace', workspaceId, 'overview'] as const,
   workspaceSettings: (workspaceId: string) => ['workspace', workspaceId, 'settings'] as const,
+  workspaceCredentials: (workspaceId: string) => ['workspace', workspaceId, 'credentials'] as const,
   trash: (workspaceId: string) => ['workspace', workspaceId, 'trash'] as const,
   document: (documentId: string) => ['document', documentId] as const,
   search: (workspaceId: string, query: string) =>
@@ -374,6 +378,60 @@ export function useUpdateWorkspaceSettings(workspaceId: string | undefined) {
       // is the resolved answer the form has to redraw from, including the
       // ceilings it may have clamped.
       client.setQueryData(queryKeys.workspaceSettings(workspaceId), response);
+    },
+  });
+}
+
+/**
+ * A workspace's own provider keys (issue #52, ADR-023).
+ *
+ * The response never carries a secret: it says whether one is stored, what it
+ * ends in, and when it was last used. Owner-only on the server, so this query
+ * is only mounted where that is already known.
+ */
+export function useWorkspaceCredentials(
+  workspaceId: string | undefined,
+  enabled: boolean,
+): UseQueryResult<WorkspaceCredentialListResponse> {
+  return useQuery({
+    queryKey: queryKeys.workspaceCredentials(workspaceId ?? 'none'),
+    queryFn: () =>
+      apiRequest<WorkspaceCredentialListResponse>(
+        `/api/workspaces/${workspaceId ?? ''}/credentials`,
+      ),
+    enabled: workspaceId !== undefined && enabled,
+  });
+}
+
+export function useSetWorkspaceCredential(workspaceId: string | undefined) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: {
+      purpose: WorkspaceCredentialPurpose;
+      request: SetWorkspaceCredentialRequest;
+    }) =>
+      apiRequest<WorkspaceCredentialListResponse>(
+        `/api/workspaces/${workspaceId ?? ''}/credentials/${input.purpose}`,
+        { method: 'PUT', body: input.request },
+      ),
+    onSuccess: (response) => {
+      if (workspaceId === undefined) return;
+      client.setQueryData(queryKeys.workspaceCredentials(workspaceId), response);
+    },
+  });
+}
+
+export function useRemoveWorkspaceCredential(workspaceId: string | undefined) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (purpose: WorkspaceCredentialPurpose) =>
+      apiRequest<WorkspaceCredentialListResponse>(
+        `/api/workspaces/${workspaceId ?? ''}/credentials/${purpose}`,
+        { method: 'DELETE' },
+      ),
+    onSuccess: (response) => {
+      if (workspaceId === undefined) return;
+      client.setQueryData(queryKeys.workspaceCredentials(workspaceId), response);
     },
   });
 }

@@ -20,7 +20,9 @@ export class ApiError extends Error {
 }
 
 export interface RequestOptions {
-  method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
+  // PUT joins the four for the one endpoint that replaces a value whole
+  // rather than patching it: a workspace's own provider key (ADR-023).
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: unknown;
   signal?: AbortSignal;
 }

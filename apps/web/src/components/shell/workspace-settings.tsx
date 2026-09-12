@@ -30,6 +30,7 @@ import {
 
 import { InvitationTable } from '@/components/invitations/invitation-table';
 import { InviteDialog } from '@/components/invitations/invite-dialog';
+import { WorkspaceCredentialsForm } from '@/components/settings/workspace-credentials-form';
 import { WorkspaceSettingsForm } from '@/components/settings/workspace-settings-form';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
@@ -153,6 +154,21 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
           </p>
         </div>
         <WorkspaceSettingsForm workspaceId={workspaceId} canEdit={canEdit} />
+      </section>
+
+      {/* Separate from the configuration above, and that is the point of
+          ADR-023: a key is not a preference. It is stored encrypted, in its
+          own table, and it is the owner's to enter because it is the owner
+          who pays. */}
+      <section className="mt-10 flex flex-col gap-4 border-t border-border pt-8">
+        <div>
+          <h2 className="text-base font-semibold">Eigener Schlüssel für die KI</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Ohne eigenen Schlüssel laufen die Anfragen dieses Arbeitsbereichs über den der
+            Installation.
+          </p>
+        </div>
+        <WorkspaceCredentialsForm workspaceId={workspaceId} isOwner={original.role === 'OWNER'} />
       </section>
     </AppPage>
   );

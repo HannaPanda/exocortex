@@ -120,6 +120,12 @@ function CostSummary({ cost }: { cost: AiUsageCost }) {
   if (cost.unpricedRuns > 0) {
     parts.push(`${numberFormat.format(cost.unpricedRuns)} ohne Preis`);
   }
+  // Whose money this was. Only shown once a workspace actually brought its own
+  // key: on a deployment without BYOK the line would say "0 fremd bezahlt"
+  // forever, which is noise and not information.
+  if (cost.ownKeyRuns > 0) {
+    parts.push(`${formatMicroUsd(cost.ownKeyMicroUsd)} über eigene Schlüssel`);
+  }
   return (
     <MetricCard
       label="Kosten"
