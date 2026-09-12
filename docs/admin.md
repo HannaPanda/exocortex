@@ -395,6 +395,24 @@ human act.
 `agents.journalRetentionDays` under Einstellungen decides how long the list
 reaches back. See `prune-agent-journal` in `docs/background-jobs.md`.
 
+## Automationen: the two switches only a global admin has
+
+Rules live in a workspace and are written by its OWNER, but two of the things
+that decide whether they can run at all are deployment-wide (issue #50,
+ADR-024):
+
+- `automations.enabled` is the main switch and defaults to **off**. It is
+  workspace-overridable with this value as a ceiling, so switching it off here
+  switches it off everywhere and no workspace can switch it back on.
+- `automations.webhookAllowedHosts` starts **empty**, which means no webhook
+  rule can be created and none can fire. Hosts are comma-separated, without
+  scheme or port; a subdomain of an allowed host counts. It is checked when a
+  rule is saved and again every time one fires, so shortening this list stops
+  the rules that already exist.
+
+Neither is reachable from a workspace's own settings. Everything else about
+automations is, including the run log: `docs/automations.md`.
+
 ## Adding a setting
 
 1. Add the field with a `.default()` to `settingsSchema`

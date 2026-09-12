@@ -167,6 +167,10 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   while resolving so lowering a deployment value pulls every workspace down.
   The agent memory is `Workspace.isMemory` on the row, not a settings key, and
   credentials never become settings.
+- ADR-024: automations are triggered from the outbox and nowhere else; a rule
+  never fires on its own action and a chain stops at depth three; an AI rule
+  writes a comment or a child page and never overwrites content; the webhook
+  allowlist and `automations.enabled` both default to refusing.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -188,6 +192,7 @@ Each of these has a step-by-step recipe:
 | new database property type, view type                    | `docs/database-views.md`    |
 | new MCP tool, new AI tool                                | `docs/mcp.md`               |
 | new admin setting, admin page                            | `docs/admin.md`             |
+| new automation trigger or action                         | `docs/automations.md`       |
 
 ## Deployment on this machine
 
