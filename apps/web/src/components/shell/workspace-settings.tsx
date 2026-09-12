@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
@@ -169,6 +170,26 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
           </p>
         </div>
         <WorkspaceCredentialsForm workspaceId={workspaceId} isOwner={original.role === 'OWNER'} />
+      </section>
+
+      {/* A link rather than a panel: automations have a run log beside them,
+          and a log is the half people come back for. It belongs on a page of
+          its own, not folded into a settings form (issue #50). */}
+      <section className="mt-10 flex flex-col gap-4 border-t border-border pt-8">
+        <div>
+          <h2 className="text-base font-semibold">Automationen</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Regeln, die auf Änderungen an Seiten reagieren, und das Protokoll dessen, was sie getan
+            haben.
+          </p>
+        </div>
+        <Button
+          render={<Link href={`/arbeitsbereich/${workspaceId}/automationen`} />}
+          variant="outline"
+          className="self-start"
+        >
+          Automationen öffnen
+        </Button>
       </section>
     </AppPage>
   );

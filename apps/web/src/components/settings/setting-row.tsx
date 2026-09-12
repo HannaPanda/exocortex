@@ -38,6 +38,7 @@ export const GROUP_LABELS: Record<string, string> = {
   mcp: 'MCP',
   calendar: 'Kalender',
   activity: 'Aktivität',
+  automations: 'Automationen',
 };
 
 /** German label and help text for every setting key. Written in the same voice. */
@@ -285,6 +286,26 @@ export const SETTING_COPY: Record<SettingKey, { label: string; help: string }> =
   'agents.journalRetentionDays': {
     label: 'Agenten-Sitzungen aufbewahren (Tage)',
     help: 'So lange bleibt im Bereich „Agenten“ nachvollziehbar, welche Sitzung was geschrieben hat, und so lange lässt sich eine Sitzung am Stück zurücknehmen. Danach verschwindet nur die Zuordnung; die gesicherten Stände der Seiten bleiben davon unberührt. 0 bedeutet: für immer.',
+  },
+  'automations.enabled': {
+    label: 'Automationen aktiviert',
+    help: 'Der Hauptschalter für Regeln, die auf Änderungen an Seiten reagieren. Standardmäßig aus: eine Automation schickt Daten nach außen oder gibt Geld für ein Modell aus, und das soll nicht durch eine Aktualisierung anfangen. Ein Arbeitsbereich darf sie für sich abschalten, aber nicht gegen diese Einstellung wieder einschalten.',
+  },
+  'automations.webhookAllowedHosts': {
+    label: 'Erlaubte Webhook-Hosts',
+    help: 'Kommagetrennt, ohne Schema und Port (etwa „hooks.example.org, 127.0.0.1“). Ein Unterbereich zählt mit. Leer bedeutet: keine Webhook-Regel kann angelegt werden und keine bestehende läuft. Geprüft wird beim Speichern und noch einmal beim Auslösen, damit ein Kürzen dieser Liste auch die Regeln stoppt, die es schon gibt.',
+  },
+  'automations.maxConsecutiveFailures': {
+    label: 'Fehlschläge bis zur Selbstabschaltung',
+    help: 'So oft darf eine Regel hintereinander scheitern, bevor sie sich selbst abschaltet. Eine Regel, die ins Leere zeigt, wird durch Wiederholen nicht besser, sie füllt nur das Protokoll.',
+  },
+  'automations.webhookTimeoutSeconds': {
+    label: 'Zeitlimit für einen Webhook (Sekunden)',
+    help: 'So lange darf der empfangende Server brauchen. Danach gilt der Lauf als fehlgeschlagen.',
+  },
+  'automations.runRetentionDays': {
+    label: 'Lauf-Protokoll aufbewahren (Tage)',
+    help: 'So lange bleibt sichtbar, was die Automationen getan haben. Die Regeln selbst bleiben unberührt. 0 bedeutet: für immer.',
   },
 };
 
