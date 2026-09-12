@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { type VerifiedSession } from '@exocortex/auth';
 import {
   type CreateWorkspaceRequest,
   createWorkspaceRequestSchema,
+  type SetWorkspaceCredentialRequest,
+  setWorkspaceCredentialRequestSchema,
   type UpdateWorkspaceMemberRequest,
   updateWorkspaceMemberRequestSchema,
   type UpdateWorkspaceRequest,
@@ -12,6 +14,10 @@ import {
   type UpdateWorkspaceSettingsRequest,
   updateWorkspaceSettingsRequestSchema,
   type Workspace,
+  type WorkspaceCredentialListResponse,
+  workspaceCredentialListResponseSchema,
+  type WorkspaceCredentialPurpose,
+  workspaceCredentialPurposeSchema,
   type WorkspaceDetail,
   workspaceDetailSchema,
   type WorkspaceListResponse,
@@ -26,9 +32,11 @@ import {
 } from '@exocortex/contracts';
 
 import { CurrentSession } from '../auth/session.guard';
+import { AppError } from '../common/app-error';
 import { currentCorrelationId } from '../common/correlation';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
+import { WorkspaceCredentialsService } from './workspace-credentials.service';
 import { WorkspaceOverviewService } from './workspace-overview.service';
 import { WorkspacesService } from './workspaces.service';
 
@@ -39,6 +47,7 @@ export class WorkspacesController {
   constructor(
     private readonly workspaces: WorkspacesService,
     private readonly overview: WorkspaceOverviewService,
+    private readonly credentials: WorkspaceCredentialsService,
   ) {}
 
   @Get()
@@ -94,6 +103,61 @@ export class WorkspacesController {
       actorUserId: session.userId,
       request: body,
     });
+  }
+
+  /**
+   * This workspace's own provider keys (issue #52, AP7, ADR-023).
+   *
+   * Never the value: a stored secret leaves the server only as a provider
+   * call, made by the worker. Declared above `:workspaceId` for the same
+   * reason the settings routes are.
+   */
+  @Get(':workspaceId/credentials')
+  @ApiOkResponse({ schema: openApiResponseSchema(workspaceCredentialListResponseSchema) })
+  async credentialList(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+  ): Promise<WorkspaceCredentialListResponse> {
+    return this.credentials.list(workspaceId, session.userId);
+  }
+
+  /** PUT, not PATCH: a key is replaced whole or not at all. */
+  @Put(':workspaceId/credentials/:purpose')
+  @ApiBody({ schema: openApiSchema(setWorkspaceCredentialRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(workspaceCredentialListResponseSchema) })
+  async setCredential(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+    @Param('purpose') purpose: string,
+    @Body(zodPipe(setWorkspaceCredentialRequestSchema)) body: SetWorkspaceCredentialRequest,
+  ): Promise<WorkspaceCredentialListResponse> {
+    return this.credentials.set({
+      workspaceId,
+      actorUserId: session.userId,
+      purpose: this.parsePurpose(purpose),
+      request: body,
+    });
+  }
+
+  @Delete(':workspaceId/credentials/:purpose')
+  @ApiOkResponse({ schema: openApiResponseSchema(workspaceCredentialListResponseSchema) })
+  async removeCredential(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+    @Param('purpose') purpose: string,
+  ): Promise<WorkspaceCredentialListResponse> {
+    return this.credentials.remove({
+      workspaceId,
+      actorUserId: session.userId,
+      purpose: this.parsePurpose(purpose),
+    });
+  }
+
+  /** A path segment is a string until something says which one it is. */
+  private parsePurpose(raw: string): WorkspaceCredentialPurpose {
+    const result = workspaceCredentialPurposeSchema.safeParse(raw);
+    if (!result.success) throw AppError.notFound(`Credential purpose "${raw}"`);
+    return result.data;
   }
 
   @Get(':workspaceId')

@@ -33,6 +33,12 @@ export const AUDIT_ACTIONS = [
   'setting.updated',
   'workspace.setting.updated',
   'workspace.memory_flag_changed',
+  /**
+   * A workspace's own provider key was stored, replaced or removed (ADR-023).
+   * The entry carries the purpose and the hint, never the value.
+   */
+  'workspace.credential.set',
+  'workspace.credential.removed',
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -49,6 +55,7 @@ export interface WriteAuditInput {
     | 'document_snapshot'
     | 'database_property'
     | 'setting'
+    | 'workspace_credential'
     | 'invitation';
   targetId: string;
   correlationId: string;

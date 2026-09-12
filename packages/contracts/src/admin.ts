@@ -88,6 +88,14 @@ export const aiUsageCostSchema = z.object({
   estimatedRuns: z.number().int().nonnegative(),
   /** Runs with usage but no price anywhere -- neither reported nor estimable. */
   unpricedRuns: z.number().int().nonnegative(),
+  /**
+   * Runs paid for with a workspace's own provider key, and what they cost
+   * (issue #52, ADR-023). Subsets of the figures above rather than additions
+   * to them: the report still shows one total, and these say how much of it
+   * was somebody else's money. Both stay zero on a deployment without BYOK.
+   */
+  ownKeyRuns: z.number().int().nonnegative(),
+  ownKeyMicroUsd: z.number().int().nonnegative(),
 });
 export type AiUsageCost = z.infer<typeof aiUsageCostSchema>;
 

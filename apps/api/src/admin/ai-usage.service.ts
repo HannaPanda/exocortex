@@ -47,6 +47,8 @@ function toNullableInt(value: number | null): number | null {
 /** The aggregate columns every total-shaped query below selects, in one shape. */
 interface AggregateRow {
   runs: bigint;
+  ownKeyRuns: bigint;
+  ownKeyMicroUsd: bigint | null;
   inputTokens: bigint | null;
   outputTokens: bigint | null;
   cachedInputTokens: bigint | null;
@@ -73,6 +75,8 @@ function toCost(row: AggregateRow): AiUsageCost {
     measuredRuns: toInt(row.measuredRuns),
     estimatedRuns: toInt(row.estimatedRuns),
     unpricedRuns: toInt(row.unpricedRuns),
+    ownKeyRuns: toInt(row.ownKeyRuns),
+    ownKeyMicroUsd: toInt(row.ownKeyMicroUsd),
   };
 }
 
@@ -182,6 +186,10 @@ export class AiUsageService {
             AND "providerCostMicroUsd" IS NULL
             AND "estimatedCostMicroUsd" IS NULL
         ) AS "unpricedRuns",
+        COUNT(*) FILTER (WHERE "usedOwnKey") AS "ownKeyRuns",
+        COALESCE(SUM(
+          COALESCE("providerCostMicroUsd", "estimatedCostMicroUsd", 0)
+        ) FILTER (WHERE "usedOwnKey"), 0) AS "ownKeyMicroUsd",
         COUNT(*) FILTER (WHERE "payloadsPrunedAt" IS NOT NULL) AS "prunedRuns",
         COALESCE(SUM("toolIterations"), 0) AS "toolIterations"
       FROM "ai_run"
@@ -252,6 +260,10 @@ export class AiUsageService {
             AND r."providerCostMicroUsd" IS NULL
             AND r."estimatedCostMicroUsd" IS NULL
         ) AS "unpricedRuns",
+        COUNT(*) FILTER (WHERE r."usedOwnKey") AS "ownKeyRuns",
+        COALESCE(SUM(
+          COALESCE(r."providerCostMicroUsd", r."estimatedCostMicroUsd", 0)
+        ) FILTER (WHERE r."usedOwnKey"), 0) AS "ownKeyMicroUsd",
         COALESCE(SUM(r."toolIterations"), 0) AS "toolIterations",
         PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY r."durationMs") AS "medianDurationMs"
       FROM "ai_run" r
