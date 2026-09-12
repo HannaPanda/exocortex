@@ -347,3 +347,30 @@ export const pruneAgentJournal: MaintenanceTask = async (context) => {
     });
   }
 };
+
+/**
+ * Deletes automation runs older than `automations.runRetentionDays`
+ * (issue #50, ADR-024).
+ *
+ * The rules are never touched. What ages out is the record of what they did, and
+ * a rule with no recent runs is a rule that had nothing to do -- which the list
+ * shows as `lastTriggeredAt`, a column on the rule itself and not something this
+ * sweep can take away.
+ *
+ * One indexed DELETE that matches nothing on a deployment quieter than its
+ * retention window, which is most of them.
+ */
+export const pruneAutomationRuns: MaintenanceTask = async (context) => {
+  const { prisma, logger, reportProgress } = context;
+  const retentionDays = (await context.settings())['automations.runRetentionDays'];
+  if (retentionDays === 0) return;
+
+  await reportProgress(10, 'Automationsprotokoll wird aufgeräumt');
+  const cutoff = new Date(Date.now() - retentionDays * DAY_MS);
+  const removed = await prisma.automationRun.deleteMany({ where: { createdAt: { lt: cutoff } } });
+
+  await reportProgress(100, 'Automationsprotokoll aufgeräumt');
+  if (removed.count > 0) {
+    logger.info('Automation runs pruned', { runs: removed.count, retentionDays });
+  }
+};

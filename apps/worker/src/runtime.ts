@@ -13,7 +13,7 @@ import {
   type PdfTextExtractor,
   type VisionPreprocessor,
 } from '@exocortex/ai';
-import { issueServiceToken } from '@exocortex/auth';
+import { issueServiceToken, parseCredentialKey } from '@exocortex/auth';
 import { type WorkerEnv } from '@exocortex/config';
 import {
   type QUEUE_NAMES,
@@ -86,7 +86,8 @@ export interface WorkerRuntime {
         agentSession: { externalId: string; label: string };
       }) => ToolRunner)
     | null;
-  apiClientFor: ((userId: string) => ExocortexApiClient) | null;
+  apiClientFor:
+    ((userId: string, headers?: Readonly<Record<string, string>>) => ExocortexApiClient) | null;
   resolveCalendarCredentials: (account: {
     provider: string;
     username: string;
@@ -106,6 +107,16 @@ export interface WorkerRuntime {
   pdfExtractorChain: (settings: Settings) => readonly PdfTextExtractor[];
   modelRegistry: (slug: string) => Promise<ResolvedModelRow | null>;
   publishProgress: (event: JobProgressEvent) => Promise<void>;
+  /**
+   * The deployment's `CREDENTIAL_ENCRYPTION_KEY`, parsed once at boot, or null
+   * when it has none or it is unusable.
+   *
+   * Only the automation processor takes it from here; the AI key resolver
+   * parses its own, because it was written before there was a second reader.
+   * A malformed key must never stop the worker from booting (R2), so a parse
+   * failure is logged and becomes `null`.
+   */
+  credentialKey: Buffer | null;
 }
 
 /** The shape `publishProgress` accepts; see its doc comment below. */
@@ -118,6 +129,9 @@ export interface JobProgressEvent {
     | typeof QUEUE_NAMES.memoryCapture
     | typeof QUEUE_NAMES.memoryConsolidate
     | typeof QUEUE_NAMES.entityRescan
+    // An automation's progress is its run log, not a toast in a browser: it
+    // runs for a rule somebody set up weeks ago, usually with nobody watching.
+    | typeof QUEUE_NAMES.automation
   >;
   workspaceId: string;
   correlationId: string;
@@ -294,7 +308,7 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
   const apiClientFor =
     env.SERVICE_TOKEN_SECRET === undefined
       ? null
-      : (userId: string) =>
+      : (userId: string, headers?: Readonly<Record<string, string>>) =>
           createFetchApiClient({
             baseUrl: env.API_URL,
             token: issueServiceToken({
@@ -303,6 +317,11 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
               purpose: 'ai-tools',
               ttlSeconds: env.SERVICE_TOKEN_TTL_SECONDS,
             }).token,
+            // The one caller that passes headers is the automation processor,
+            // stamping the rule its write came from so the write cannot trigger
+            // that rule again (issue #50, ADR-024). The API accepts that header
+            // only on a service token, which is the only kind minted here.
+            headers,
           });
 
   /**
@@ -398,6 +417,9 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
       // Nor does an entity rescan: nobody is waiting on it, and the page it
       // would report about is not the page anybody has open.
       | typeof QUEUE_NAMES.entityRescan
+      // Nor does an automation: its progress is its run log, because it runs
+      // for a rule somebody set up weeks ago, usually with nobody watching.
+      | typeof QUEUE_NAMES.automation
     >;
     workspaceId: string;
     correlationId: string;
@@ -415,6 +437,13 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
       payload: { jobId, queue, progress, label, documentId },
     });
   };
+  let credentialKey: Buffer | null = null;
+  try {
+    credentialKey = parseCredentialKey(env.CREDENTIAL_ENCRYPTION_KEY);
+  } catch (error: unknown) {
+    logger.error('Ignoring CREDENTIAL_ENCRYPTION_KEY: it is not usable', error);
+  }
+
   return {
     prisma,
     queues,
@@ -434,6 +463,7 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
     pdfExtractorChain,
     modelRegistry,
     publishProgress,
+    credentialKey,
   };
 }
 

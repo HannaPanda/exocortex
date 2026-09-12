@@ -9,6 +9,7 @@ import { createTypedWorker } from '@exocortex/queue';
 
 import { createAiRunProcessor } from './processors/ai-run';
 import { createAttachmentTextProcessor } from './processors/attachment-text';
+import { createAutomationProcessor } from './processors/automation';
 import { createCalendarSyncProcessor } from './processors/calendar-sync';
 import { createDocumentCoverProcessor } from './processors/document-cover';
 import { createEntityRescanProcessor } from './processors/entity-rescan';
@@ -20,7 +21,7 @@ import { createMemoryConsolidateProcessor } from './processors/memory-consolidat
 import { type WorkerRuntime } from './runtime';
 
 /**
- * The eight queues this process listens on.
+ * The eleven queues this process listens on.
  *
  * Concurrency is per queue and deliberately uneven: materialization is cheap
  * and parallel, PDF extraction is CPU-bound and runs one at a time.
@@ -29,7 +30,7 @@ import { type WorkerRuntime } from './runtime';
  * What the shutdown path needs from a started worker, and nothing else.
  *
  * Structural rather than `ReturnType<typeof createTypedWorker>`: each queue has
- * its own payload type, so the eight of them only share this much.
+ * its own payload type, so the eleven of them only share this much.
  */
 export interface QueueWorker {
   worker: { close: () => Promise<void> };
@@ -37,7 +38,7 @@ export interface QueueWorker {
 }
 
 /**
- * The eight queues this process listens on, in two groups.
+ * The eleven queues this process listens on, in two groups.
  *
  * Concurrency is per queue and deliberately uneven: materialization is cheap
  * and parallel, PDF extraction is an external call and runs one at a time so it
@@ -221,6 +222,7 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     imageGeneratorFor,
     pdfDocumentInfo,
     pdfExtractorChain,
+    credentialKey,
   } = runtime;
 
   // Concurrency 1: PDF extraction is an external call and must not crowd out
@@ -339,6 +341,25 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     handler: createEntityRescanProcessor({ prisma, settings: readSettings }),
   });
 
+  // Concurrency 2: an automation is either a short POST to somebody else's
+  // server or one paid model call, and a page tree somebody reorganised can
+  // fire a handful at once. Two keeps that moving without turning a burst of
+  // rules into a burst of spending.
+  const automation = createTypedWorker({
+    name: QUEUE_NAMES.automation,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 2,
+    handler: createAutomationProcessor({
+      prisma,
+      provider,
+      apiClientFor,
+      settings: readSettings,
+      defaultModel: env.OPENROUTER_DEFAULT_MODEL ?? null,
+      credentialKey,
+    }),
+  });
+
   return [
     attachmentText,
     documentCover,
@@ -346,5 +367,6 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     memoryCapture,
     memoryConsolidate,
     entityRescan,
+    automation,
   ];
 }

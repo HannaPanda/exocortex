@@ -410,6 +410,23 @@ export class QueueRegistry {
         },
       },
     );
+    // Daily, after the journal prune. A no-op while
+    // `automations.runRetentionDays` is zero; once it is set, one indexed
+    // DELETE that finds nothing on a deployment quieter than its retention
+    // window (issue #50).
+    await queue.upsertJobScheduler(
+      'prune-automation-runs',
+      { pattern: '55 4 * * *' },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: {
+          correlationId,
+          task: 'prune-automation-runs',
+          workspaceId: null,
+          documentId: null,
+        },
+      },
+    );
     this.logger.info('Maintenance schedulers registered');
   }
 

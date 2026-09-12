@@ -8,6 +8,7 @@ import {
   collectOrphanedCovers,
   pruneAgentJournal,
   pruneAiRunPayloads,
+  pruneAutomationRuns,
   pruneInvitations,
   pruneMemories,
   reapStaleAiRuns,
@@ -80,6 +81,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'decay-memory-facts': decayMemoryFacts,
   'prune-ai-run-payloads': pruneAiRunPayloads,
   'prune-agent-journal': pruneAgentJournal,
+  'prune-automation-runs': pruneAutomationRuns,
 };
 
 /**

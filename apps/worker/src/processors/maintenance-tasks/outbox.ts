@@ -1,6 +1,7 @@
 import { QUEUE_NAMES as QUEUES } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 
+import { fireMatchingAutomations } from './automations';
 import { isMissingRow, type MaintenanceTask } from './context';
 
 /**
@@ -53,6 +54,27 @@ export const dispatchOutbox: MaintenanceTask = async (context) => {
           documentId,
         });
       }
+      // Automations hang off the outbox for the same reason everything else
+      // here does: this is the one place every domain event passes exactly
+      // once (issue #50, ADR-024). A deployment with no rules pays for one
+      // cached settings read per event and nothing more.
+      await fireMatchingAutomations(
+        {
+          prisma,
+          queues,
+          logger,
+          enabledFor: async (workspaceId) =>
+            (await context.settings(workspaceId))['automations.enabled'],
+        },
+        {
+          workspaceId: event.workspaceId,
+          type: event.type,
+          payload: event.payload,
+          correlationId: event.correlationId,
+          automationRuleId: event.automationRuleId,
+          automationDepth: event.automationDepth,
+        },
+      );
       await prisma.outboxEvent.update({
         where: { id: event.id },
         data: { processedAt: new Date(), attempts: { increment: 1 } },
