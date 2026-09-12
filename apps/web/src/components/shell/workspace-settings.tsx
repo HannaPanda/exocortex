@@ -18,6 +18,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Switch,
   Table,
   TableBody,
   TableCaption,
@@ -29,6 +30,7 @@ import {
 
 import { InvitationTable } from '@/components/invitations/invitation-table';
 import { InviteDialog } from '@/components/invitations/invite-dialog';
+import { WorkspaceSettingsForm } from '@/components/settings/workspace-settings-form';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import { useUpdateWorkspaceMember } from '@/lib/api/invitation-queries';
@@ -133,9 +135,25 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
 
           <SlugSection workspace={original} />
 
+          <MemorySection workspace={original} />
+
           <MembersSection workspace={original} />
         </div>
       )}
+
+      {/* Outside the administrator branch on purpose: what prompt and what
+          model this workspace runs under is not a secret from the people
+          working in it, and a configuration nobody can see is one nobody can
+          explain. Editing stays behind the same bar as the rest. */}
+      <section className="mt-10 flex flex-col gap-4">
+        <div>
+          <h2 className="text-base font-semibold">Konfiguration dieses Arbeitsbereichs</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Diese Werte gelten nur hier. Alles andere kommt aus der Installation.
+          </p>
+        </div>
+        <WorkspaceSettingsForm workspaceId={workspaceId} canEdit={canEdit} />
+      </section>
     </AppPage>
   );
 }
@@ -226,6 +244,54 @@ function SlugSection({ workspace }: { workspace: WorkspaceDetail }) {
  * in this workspace", and splitting that across two screens means the owner has
  * to guess which one they wanted.
  */
+/**
+ * Marks this workspace as the agent memory area (issue #52, ADR-023).
+ *
+ * A switch rather than a setting, because the memory is a property of the
+ * workspace now: `recall` and `remember` are handed a user and a project, so
+ * the only place the question can be answered is the row itself.
+ *
+ * The warning is not decoration. Switching this on means agents start writing
+ * session notes here by themselves, and that notes age out on the retention
+ * this workspace has configured -- which is exactly what a curated area must
+ * never have done to it.
+ */
+function MemorySection({ workspace }: { workspace: WorkspaceDetail }) {
+  const updateWorkspace = useUpdateWorkspace();
+  const [saved, setSaved] = React.useState(false);
+
+  return (
+    <section className="flex flex-col gap-2">
+      <Label htmlFor="workspace-is-memory">Gedächtnis der Agenten</Label>
+      <div className="flex items-start gap-3">
+        <Switch
+          id="workspace-is-memory"
+          data-testid="workspace-is-memory"
+          checked={workspace.isMemory}
+          disabled={updateWorkspace.isPending}
+          onCheckedChange={(next) => {
+            setSaved(false);
+            updateWorkspace.mutate(
+              { workspaceId: workspace.id, request: { isMemory: next } },
+              { onSuccess: () => setSaved(true) },
+            );
+          }}
+        />
+        <p className="text-xs text-muted-foreground">
+          Agenten legen ihre Sitzungsnotizen in diesem Arbeitsbereich ab und finden sie beim
+          nächsten Start wieder. Notizen verfallen hier nach der eingestellten Frist. Für einen
+          Bereich, den du selbst pflegst, ist das nichts.
+        </p>
+      </div>
+      {saved ? (
+        <p className="text-xs text-success" data-testid="workspace-is-memory-saved">
+          Gespeichert.
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
 function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
   const sessionQuery = useSessionQuery();
   const updateMember = useUpdateWorkspaceMember(workspace.id);

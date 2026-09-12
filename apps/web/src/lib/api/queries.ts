@@ -31,11 +31,13 @@ import {
   type TrashResponse,
   type UpdateDocumentRequest,
   type UpdateWorkspaceRequest,
+  type UpdateWorkspaceSettingsRequest,
   type UploadAttachmentResponse,
   type Workspace,
   type WorkspaceDetail,
   type WorkspaceListResponse,
   type WorkspaceOverviewResponse,
+  type WorkspaceSettingsResponse,
 } from '@exocortex/contracts';
 
 import { ApiError, apiRequest } from './client';
@@ -48,6 +50,7 @@ export const queryKeys = {
   workspaceDetail: (workspaceId: string) => ['workspace', workspaceId, 'detail'] as const,
   documentTree: (workspaceId: string) => ['workspace', workspaceId, 'tree'] as const,
   workspaceOverview: (workspaceId: string) => ['workspace', workspaceId, 'overview'] as const,
+  workspaceSettings: (workspaceId: string) => ['workspace', workspaceId, 'settings'] as const,
   trash: (workspaceId: string) => ['workspace', workspaceId, 'trash'] as const,
   document: (documentId: string) => ['document', documentId] as const,
   search: (workspaceId: string, query: string) =>
@@ -338,6 +341,39 @@ export function useUpdateWorkspace() {
     onSuccess: (_workspace, variables) => {
       void client.invalidateQueries({ queryKey: queryKeys.workspaces });
       void client.invalidateQueries({ queryKey: queryKeys.workspaceDetail(variables.workspaceId) });
+    },
+  });
+}
+
+/**
+ * This workspace's configuration: what is in force, what it set itself, and
+ * what it would fall back to (issue #52).
+ */
+export function useWorkspaceSettings(
+  workspaceId: string | undefined,
+): UseQueryResult<WorkspaceSettingsResponse> {
+  return useQuery({
+    queryKey: queryKeys.workspaceSettings(workspaceId ?? 'none'),
+    queryFn: () =>
+      apiRequest<WorkspaceSettingsResponse>(`/api/workspaces/${workspaceId ?? ''}/settings`),
+    enabled: workspaceId !== undefined,
+  });
+}
+
+export function useUpdateWorkspaceSettings(workspaceId: string | undefined) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (request: UpdateWorkspaceSettingsRequest) =>
+      apiRequest<WorkspaceSettingsResponse>(`/api/workspaces/${workspaceId ?? ''}/settings`, {
+        method: 'PATCH',
+        body: request,
+      }),
+    onSuccess: (response) => {
+      if (workspaceId === undefined) return;
+      // Written straight into the cache rather than invalidated: the response
+      // is the resolved answer the form has to redraw from, including the
+      // ceilings it may have clamped.
+      client.setQueryData(queryKeys.workspaceSettings(workspaceId), response);
     },
   });
 }

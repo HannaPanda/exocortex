@@ -45,8 +45,12 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   document_content_lossy: 'Anhängen würde eingebettete Datenbanken auf dieser Seite verlieren.',
   attachment_text_unavailable: 'Der Text dieser Datei liegt noch nicht vor.',
   setting_unknown: 'Diese Einstellung gibt es nicht.',
+  setting_not_overridable:
+    'Diese Einstellung gilt für die ganze Installation und lässt sich nicht je Arbeitsbereich setzen.',
+  setting_above_deployment_ceiling:
+    'Dieser Wert liegt über dem, was die Installation erlaubt. Ein Arbeitsbereich darf darunter bleiben, nicht darüber.',
   memory_unavailable:
-    'Für das Gedächtnis der Agenten ist noch kein Arbeitsbereich hinterlegt. Das lässt sich im Administrationsbereich nachholen.',
+    'Für dieses Konto ist noch kein Gedächtnisbereich festgelegt. In den Einstellungen eines Arbeitsbereichs lässt sich einer dazu erklären.',
   entity_layer_unavailable:
     'Für Entitäten ist noch keine Datenbank hinterlegt. Das lässt sich im Administrationsbereich nachholen.',
   entity_exists:
