@@ -20,6 +20,7 @@ export const QUEUE_NAMES = {
   entityRescan: 'entity-rescan',
   automation: 'automation',
   render: 'render',
+  projectBuild: 'project-build',
 } as const;
 
 export const queueNameSchema = z.enum([
@@ -35,6 +36,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.entityRescan,
   QUEUE_NAMES.automation,
   QUEUE_NAMES.render,
+  QUEUE_NAMES.projectBuild,
 ]);
 export type QueueName = z.infer<typeof queueNameSchema>;
 
@@ -170,6 +172,13 @@ export const maintenanceJobSchema = jobBase.extend({
      * produced are ordinary attachments and are never touched.
      */
     'reap-render-jobs',
+    /**
+     * The same two jobs for project builds (issue #43, ADR-027): closes builds
+     * whose worker never came back, and deletes finished ones older than
+     * `projects.buildRetentionDays`. The PDFs and SyncTeX maps they produced
+     * are ordinary attachments and are never touched.
+     */
+    'reap-project-builds',
   ]),
   /** Optional scope; `null` means all workspaces. */
   workspaceId: idSchema.nullable().default(null),
@@ -350,6 +359,21 @@ export const renderJobPayloadSchema = jobBase.extend({
 });
 export type RenderJobPayload = z.infer<typeof renderJobPayloadSchema>;
 
+/**
+ * One build of one project (issue #43, ADR-027).
+ *
+ * Carries only the build id, for the same reason the render payload does:
+ * everything the build needs was written onto the `ProjectBuild` row when the
+ * API accepted the request, and that row is what the status route reads. A
+ * payload repeating any of it could disagree with what a person is looking at.
+ */
+export const projectBuildJobSchema = jobBase.extend({
+  buildId: idSchema,
+  workspaceId: idSchema,
+  userId: idSchema,
+});
+export type ProjectBuildJob = z.infer<typeof projectBuildJobSchema>;
+
 export const JOB_SCHEMAS = {
   [QUEUE_NAMES.documentMaterialization]: materializeDocumentJobSchema,
   [QUEUE_NAMES.searchIndexing]: indexDocumentJobSchema,
@@ -363,6 +387,7 @@ export const JOB_SCHEMAS = {
   [QUEUE_NAMES.entityRescan]: entityRescanJobSchema,
   [QUEUE_NAMES.automation]: automationJobSchema,
   [QUEUE_NAMES.render]: renderJobPayloadSchema,
+  [QUEUE_NAMES.projectBuild]: projectBuildJobSchema,
 } as const;
 
 export type JobPayloadMap = {
@@ -378,4 +403,5 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.entityRescan]: EntityRescanJob;
   [QUEUE_NAMES.automation]: AutomationJob;
   [QUEUE_NAMES.render]: RenderJobPayload;
+  [QUEUE_NAMES.projectBuild]: ProjectBuildJob;
 };

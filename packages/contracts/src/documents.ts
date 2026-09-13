@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import {
   collaborationAccessSchema,
+  creatableDocumentTypeSchema,
   DOCUMENT_ICON_COLORS,
   documentIconColorSchema,
   documentIconSchema,
@@ -22,7 +23,7 @@ export type DocumentLayout = z.infer<typeof documentLayoutSchema>;
 export const createDocumentRequestSchema = z.object({
   title: documentTitleSchema.default('Unbenannte Seite'),
   parentId: idSchema.nullable().optional(),
-  type: documentTypeSchema.default('PAGE'),
+  type: creatableDocumentTypeSchema.default('PAGE'),
   icon: documentIconSchema,
   iconColor: documentIconColorSchema,
   /**

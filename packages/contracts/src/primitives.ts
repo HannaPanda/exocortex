@@ -20,8 +20,20 @@ export const WORKSPACE_ROLE_RANK: Record<WorkspaceRole, number> = {
   OWNER: 3,
 };
 
-export const documentTypeSchema = z.enum(['PAGE', 'COLLECTION']);
+/**
+ * What a document row is.
+ *
+ * `PROJECT` (issue #43, ADR-027) is a file tree rather than prose: its Yjs
+ * state holds paths and sources, and it is created through the project routes
+ * rather than the generic one, which is why `createDocumentRequestSchema`
+ * narrows the type it accepts.
+ */
+export const documentTypeSchema = z.enum(['PAGE', 'COLLECTION', 'PROJECT']);
 export type DocumentType = z.infer<typeof documentTypeSchema>;
+
+/** The types the generic create route accepts. See `documentTypeSchema`. */
+export const creatableDocumentTypeSchema = z.enum(['PAGE', 'COLLECTION']);
+export type CreatableDocumentType = z.infer<typeof creatableDocumentTypeSchema>;
 
 export const collaborationAccessSchema = z.enum(['read', 'write']);
 export type CollaborationAccess = z.infer<typeof collaborationAccessSchema>;

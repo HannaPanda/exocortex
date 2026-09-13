@@ -94,7 +94,7 @@ interface VectorRow {
   title: string;
   icon: string | null;
   iconColor: SearchHit['iconColor'];
-  type: 'PAGE' | 'COLLECTION';
+  type: 'PAGE' | 'COLLECTION' | 'PROJECT';
   snippet: string;
   similarity: number;
   archivedAt: Date | null;

@@ -50,7 +50,7 @@ interface SearchRow {
   title: string;
   icon: string | null;
   iconColor: SearchResult['iconColor'];
-  type: 'PAGE' | 'COLLECTION';
+  type: 'PAGE' | 'COLLECTION' | 'PROJECT';
   snippet: string;
   rank: number;
   archivedAt: Date | null;

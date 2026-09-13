@@ -58,3 +58,85 @@ export function collaborationApplyPath(documentId: string): string {
 }
 
 export const collaborationApplyParamsSchema = z.object({ documentId: idSchema });
+
+/**
+ * The same bridge for a project's file tree (issue #43, ADR-027).
+ *
+ * `POST /internal/projects/:projectId/apply`, beside the document endpoint and
+ * with the same guards: loopback only, a short-lived service token, and the
+ * caller's own write access re-checked by the receiver.
+ *
+ * One thing differs, and it is deliberate. A page write goes to the database
+ * first and is *mirrored* to an open session; a project write goes here and
+ * nowhere else. The collaboration server opens the document (loading it from
+ * storage when nobody has it open), applies the operation to the CRDT and lets
+ * the ordinary persistence hook write it back. Two writers for one Yjs state
+ * would mean the API rebuilding a project's binary state from the rows it
+ * derived from that same state, which is exactly what ADR-005 forbids.
+ */
+export const collaborationProjectOperationSchema = z.discriminatedUnion('op', [
+  z.object({
+    op: z.literal('write'),
+    path: z.string(),
+    content: z.string(),
+    createOnly: z.boolean().default(false),
+  }),
+  z.object({
+    op: z.literal('patch'),
+    path: z.string(),
+    oldText: z.string(),
+    newText: z.string(),
+    replaceAll: z.boolean().default(false),
+  }),
+  z.object({
+    op: z.literal('asset'),
+    path: z.string(),
+    attachmentId: idSchema,
+    byteSize: z.number().int().nonnegative(),
+    mimeType: z.string().nullable(),
+  }),
+  z.object({
+    op: z.literal('move'),
+    from: z.string(),
+    to: z.string(),
+    recursive: z.boolean().default(false),
+  }),
+  z.object({
+    op: z.literal('delete'),
+    path: z.string(),
+    recursive: z.boolean().default(false),
+  }),
+]);
+export type CollaborationProjectOperation = z.infer<typeof collaborationProjectOperationSchema>;
+
+export const collaborationProjectApplyRequestSchema = z.object({
+  operation: collaborationProjectOperationSchema,
+  /**
+   * Refuse the write when the project would end up with more paths than this.
+   * Checked where the tree actually is, because the row projection may be a
+   * materialization behind and a limit enforced against stale rows is not one.
+   */
+  maxFiles: z.number().int().positive(),
+  correlationId: z.string(),
+});
+export type CollaborationProjectApplyRequest = z.infer<
+  typeof collaborationProjectApplyRequestSchema
+>;
+
+export const collaborationProjectApplyResponseSchema = z.object({
+  /** The paths the operation touched, after it was applied. */
+  paths: z.array(z.string()),
+  /** Editors connected to the project, excluding this internal call. */
+  clientsCount: z.number().int().nonnegative(),
+  /** True when somebody had the project open, so the change was seen live. */
+  live: z.boolean(),
+  yjsUpdatedAt: isoDateTimeSchema.nullable(),
+});
+export type CollaborationProjectApplyResponse = z.infer<
+  typeof collaborationProjectApplyResponseSchema
+>;
+
+/** Path of the internal project endpoint, so caller and server cannot drift. */
+export function collaborationProjectApplyPath(projectId: string): string {
+  return `/internal/projects/${projectId}/apply`;
+}

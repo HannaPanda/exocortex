@@ -285,7 +285,7 @@ export interface DatabaseQueryRowRecord {
   id: string;
   workspaceId: string;
   parentId: string | null;
-  type: 'PAGE' | 'COLLECTION';
+  type: 'PAGE' | 'COLLECTION' | 'PROJECT';
   title: string;
   icon: string | null;
   iconColor: string | null;

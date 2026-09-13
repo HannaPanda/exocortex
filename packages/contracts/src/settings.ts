@@ -448,6 +448,47 @@ export const settingsSchema = z.object({
   'render.maxArtifactBytes': z.number().int().min(100_000).max(500_000_000).default(50_000_000),
   /** Days a finished render job is kept. Zero keeps them for ever. */
   'render.jobRetentionDays': z.number().int().min(0).max(3_650).default(30),
+
+  /**
+   * Whether this workspace may build its projects (issue #43, ADR-027).
+   *
+   * Defaults on, and for the same reason as `render.enabled`: a build sends
+   * nothing out of the deployment and spends no money. Editing a project keeps
+   * working when it is off; only the compiler stops.
+   */
+  'projects.enabled': z.boolean().default(true),
+  /**
+   * The container image a project build runs in. TeX Live, `latexmk`, `biber`
+   * and the fonts are inside it; nothing is installed on the host.
+   *
+   * The same image the page renderer uses, which is not a coincidence worth
+   * saving on: `pandoc/extra` already carries a full TeX Live with `latexmk`,
+   * all three engines and `biber`, so a deployment that can publish a page as a
+   * PDF can build a project with nothing further to pull. A `texlive/texlive`
+   * is a perfectly good value here for somebody who wants the distribution
+   * without Pandoc.
+   *
+   * Deployment-wide for the same reason as `render.image`: which images exist
+   * on this machine is a fact about the machine. A build's input hash cannot
+   * see it, which is what `force` on a build request is for.
+   */
+  'projects.image': z.string().min(1).max(300).default('pandoc/extra:latest'),
+  /**
+   * Seconds one build may take before it is killed.
+   *
+   * Higher than the render default because a real thesis with a bibliography
+   * runs `latexmk` through several passes, and because the first build of a
+   * project has no `.aux` files to shorten the second.
+   */
+  'projects.timeoutSeconds': z.number().int().min(10).max(1_800).default(300),
+  /** The largest PDF a build may produce, in bytes. */
+  'projects.maxArtifactBytes': z.number().int().min(100_000).max(500_000_000).default(100_000_000),
+  /** The largest a single text file in a project may be, in characters. */
+  'projects.maxFileChars': z.number().int().min(1_000).max(5_000_000).default(2_000_000),
+  /** How many paths one project may hold, assets included. */
+  'projects.maxFiles': z.number().int().min(1).max(5_000).default(500),
+  /** Days a finished build is kept. Zero keeps them for ever. */
+  'projects.buildRetentionDays': z.number().int().min(0).max(3_650).default(30),
 });
 
 /** Whether the runtime knows the zone. `Intl` is the only authority available. */
@@ -610,6 +651,18 @@ export const SETTING_SCOPES = {
   'render.timeoutSeconds': 'deployment',
   'render.maxArtifactBytes': 'deployment',
   'render.jobRetentionDays': 'deployment',
+  /**
+   * A workspace may switch its own project builds off, and a deployment that
+   * switches them off switches every workspace off with it.
+   */
+  'projects.enabled': 'workspace',
+  /** Which container images exist is a fact about the machine. */
+  'projects.image': 'deployment',
+  'projects.timeoutSeconds': 'deployment',
+  'projects.maxArtifactBytes': 'deployment',
+  'projects.maxFileChars': 'deployment',
+  'projects.maxFiles': 'deployment',
+  'projects.buildRetentionDays': 'deployment',
 } satisfies Record<SettingKey, SettingScope>;
 
 /** A key a workspace may override. Derived from `SETTING_SCOPES`, not repeated. */
@@ -644,6 +697,7 @@ export const workspaceSettingKeySchema = z.enum(
 export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
   'automations.enabled',
   'render.enabled',
+  'projects.enabled',
   'ai.maxOutputTokens',
   'ai.timeoutMs',
   'ai.maxRunMs',

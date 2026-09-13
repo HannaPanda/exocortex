@@ -58,6 +58,14 @@ export const API_ERROR_CODES = [
   'invitation_email_taken',
   'user_disabled',
   'user_has_content',
+  'project_file_not_found',
+  'project_file_exists',
+  'project_not_a_text_file',
+  'project_patch_not_found',
+  'project_patch_not_unique',
+  'project_too_many_files',
+  'project_write_failed',
+  'collaboration_unavailable',
 ] as const;
 
 export const apiErrorCodeSchema = z.enum(API_ERROR_CODES);
@@ -159,4 +167,23 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // The account authored pages, comments or uploads, so it cannot be deleted
   // without taking that history with it. Disabling is the way out.
   user_has_content: 409,
+  // The project refusals (issue #43, ADR-027). Each one is its own code rather
+  // than one `project_write_refused`, because an agent recovers from them
+  // differently: a missing file is created, an occupied path is renamed, an
+  // ambiguous patch is re-anchored with more context. One code would force it
+  // to parse a German sentence to find out which.
+  project_file_not_found: 404,
+  project_file_exists: 409,
+  project_not_a_text_file: 409,
+  project_patch_not_found: 409,
+  // The anchor matched more than once. 409, and the message says how often.
+  project_patch_not_unique: 409,
+  project_too_many_files: 409,
+  // The collaboration server took the write and could not apply it. 502: this
+  // deployment's own downstream failed, and the caller did nothing wrong.
+  project_write_failed: 502,
+  // The collaboration server could not be reached at all, so a project write
+  // did not happen. 503 rather than 500: it is a service that is down, and
+  // trying again in a moment is the right response.
+  collaboration_unavailable: 503,
 };

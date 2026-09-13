@@ -55,6 +55,7 @@ model User {
   updatedWorkspaceSettings    WorkspaceSetting[]    @relation("WorkspaceSettingUpdatedBy")
   createdWorkspaceCredentials WorkspaceCredential[] @relation("WorkspaceCredentialCreatedBy")
   aiConversations             AiConversation[]      @relation("AiConversationCreatedBy")
+  projectBuilds               ProjectBuild[]        @relation("ProjectBuildCreatedBy")
   calendarAccounts            CalendarAccount[]     @relation("CalendarAccountOwner")
   comments                    Comment[]             @relation("CommentCreatedBy")
   resolvedComments            Comment[]             @relation("CommentResolvedBy")
@@ -364,6 +365,7 @@ model Workspace {
   automationRuns   AutomationRun[]
   renderTemplates  RenderTemplate[]
   renderJobs       RenderJob[]
+  projectBuilds    ProjectBuild[]
 
   @@index([isMemory])
   @@map("workspace")
@@ -458,6 +460,10 @@ model WorkspaceMember {
 enum DocumentType {
   PAGE
   COLLECTION
+  /// A project workspace (issue #43, ADR-027): a file tree, not prose. Its Yjs
+  /// state holds paths and sources rather than a ProseMirror document, which is
+  /// why materialization, the search index and the embeddings all branch here.
+  PROJECT
 }
 
 /// How wide the page body is rendered. Presentation, not content: it changes no
@@ -593,6 +599,9 @@ model Document {
   calendarObject      CalendarObjectState[]     @relation("CalendarRow")
   /// Remarks about this page. Not part of its content (see `Comment`).
   comments            Comment[]                 @relation("DocumentComments")
+  /// Present when `type` is PROJECT: the project's settings, files and builds
+  /// (issue #43, ADR-027).
+  project             Project?                  @relation("ProjectDocument")
   /// Present when this page *is* a distilled memory fact (issue #46).
   memoryFact          MemoryFact?               @relation("MemoryFactPage")
   /// Present when this page is a session note a consolidation run has read.
@@ -1026,9 +1035,15 @@ model Attachment {
   correctedText     String?
   textCorrectedAt   DateTime?
   textCorrectedById String?
-  textCorrectedBy   User?       @relation("AttachmentTextCorrectedBy", fields: [textCorrectedById], references: [id], onDelete: SetNull)
+  textCorrectedBy   User?          @relation("AttachmentTextCorrectedBy", fields: [textCorrectedById], references: [id], onDelete: SetNull)
   /// Present when this file is the artifact of a render (issue #44).
-  renderJobs        RenderJob[] @relation("RenderJobArtifact")
+  renderJobs        RenderJob[]    @relation("RenderJobArtifact")
+  /// Present when this file sits in a project's file tree (issue #43).
+  projectFiles      ProjectFile[]
+  /// Present when this file is the PDF a project build produced.
+  projectBuildPdfs  ProjectBuild[] @relation("ProjectBuildArtifact")
+  /// Present when this file is the SyncTeX map a project build produced.
+  projectBuildMaps  ProjectBuild[] @relation("ProjectBuildSourceMap")
 
   @@index([workspaceId, createdAt])
   @@index([documentId])
@@ -2185,4 +2200,199 @@ model RenderJob {
   @@index([createdAt])
   @@index([status, heartbeatAt])
   @@map("render_job")
+}
+
+// ---------------------------------------------------------------------------
+// Projects (issue #43, ADR-027)
+// ---------------------------------------------------------------------------
+
+/// What a project is made of. The value, not a model, is what keeps the domain
+/// generic: `TYPST` and `QUARTO` are a runner and a set of defaults, and
+/// nothing above the runner knows what a `.tex` file is.
+enum ProjectType {
+  LATEX
+}
+
+/// Which TeX binary `latexmk` drives.
+enum ProjectEngine {
+  PDFLATEX
+  XELATEX
+  LUALATEX
+}
+
+/// How the bibliography is produced. `AUTO` lets `latexmk` decide from what the
+/// document actually loads, which is right nearly always and wrong loudly when
+/// it is wrong -- hence the three explicit values beside it.
+enum ProjectBibliography {
+  AUTO
+  BIBTEX
+  BIBER
+  NONE
+}
+
+/// A path in a project is one of two things, and the difference is where the
+/// bytes live: a `TEXT` file's source is in the project's Yjs state and is
+/// collaboratively editable, an `ASSET`'s bytes are an ordinary `Attachment` in
+/// object storage and only its path is in the tree.
+enum ProjectFileKind {
+  TEXT
+  ASSET
+}
+
+enum ProjectBuildStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+/// The project-specific half of a `Document` with `type: PROJECT`.
+///
+/// A sidecar rather than a model of its own: the tree position, the title, the
+/// icon, the permissions, the trash, the snapshots and the comments are a
+/// document's, and a project that reimplemented them would be a second tree
+/// (ADR-011 took the same decision for databases). What is here is only what a
+/// page does not have.
+model Project {
+  documentId String   @id
+  document   Document @relation("ProjectDocument", fields: [documentId], references: [id], onDelete: Cascade)
+
+  type ProjectType @default(LATEX)
+
+  /// The file a build starts from. A path into the tree, validated on write:
+  /// a root file that does not exist produces a build failure nobody can read.
+  rootFile     String              @default("main.tex")
+  engine       ProjectEngine       @default(PDFLATEX)
+  bibliography ProjectBibliography @default(AUTO)
+
+  /// When `ProjectFile` was last rebuilt from the Yjs state. `null` marks a
+  /// project the materialization has never seen.
+  materializedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  files  ProjectFile[]
+  builds ProjectBuild[]
+
+  @@map("project")
+}
+
+/// One path in a project's file tree.
+///
+/// Derived, in the ADR-007 sense: the canonical tree is the project document's
+/// Yjs state and these rows are the projection the materialization job rebuilds
+/// from it, so that reading a project does not mean decoding a Yjs document and
+/// so that a path can be queried. Writing here instead of through the
+/// collaboration server writes a lie the next materialization erases.
+model ProjectFile {
+  id        String  @id @default(cuid(2))
+  projectId String
+  project   Project @relation(fields: [projectId], references: [documentId], onDelete: Cascade)
+
+  /// Relative, `/`-separated, no leading slash, no `..`. Directories are not
+  /// rows: a directory is the prefix of the paths under it, which is what makes
+  /// an empty directory impossible and a rename a prefix substitution.
+  path String
+  kind ProjectFileKind
+
+  /// `TEXT` only: the file's source as of the last materialization.
+  content String?
+
+  /// `ASSET` only: where the bytes are. `SetNull` rather than cascade, so
+  /// deleting the attachment leaves a visible hole in the tree instead of
+  /// silently changing what the next build compiles.
+  attachmentId String?
+  attachment   Attachment? @relation(fields: [attachmentId], references: [id], onDelete: SetNull)
+
+  /// UTF-8 length for a text file, the attachment's size for an asset. Kept so
+  /// a file tree can be drawn and a quota checked without reading the content.
+  byteSize Int @default(0)
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, path])
+  @@index([projectId, kind])
+  @@map("project_file")
+}
+
+/// One build of one project, and what came of it.
+///
+/// Shaped after `RenderJob` on purpose (ADR-026): the artifact is an ordinary
+/// attachment, the log is kept for failures and successes alike, a heartbeat is
+/// what lets a lost worker be reaped, and the input hash is both the cache key
+/// and the staleness comparison.
+model ProjectBuild {
+  id          String    @id @default(cuid(2))
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  /// Null once the project is deleted for good. The build stays: what was built
+  /// and what it said is exactly the question somebody asks about an old PDF,
+  /// which is also why the title is copied rather than joined.
+  projectId    String?
+  project      Project? @relation(fields: [projectId], references: [documentId], onDelete: SetNull)
+  projectTitle String?
+
+  /// The configuration this build actually used, copied from the project when
+  /// the request was accepted. Changing the project afterwards must not change
+  /// what an old build says it was.
+  rootFile     String
+  engine       ProjectEngine
+  bibliography ProjectBibliography
+
+  status ProjectBuildStatus @default(PENDING)
+
+  /// Fingerprint of every input: each path with its content or its attachment
+  /// checksum, plus the root file, the engine and the bibliography mode. Two
+  /// builds with the same hash produce the same PDF, which is what lets an
+  /// unchanged project hand back the file it already has and what lets a
+  /// finished build report itself out of date without an invalidation flag.
+  inputHash String
+
+  /// English, developer-facing; the API turns it into a German sentence.
+  errorCode   String?
+  /// stdout and stderr of the whole run, capped. A TeX log is the only place a
+  /// broken document explains itself in full.
+  log         String?
+  /// The parsed errors and warnings, shaped by `projectDiagnosticSchema`: what
+  /// an agent acts on, where the log is what it falls back to. A Json column
+  /// because it is a list read as a whole and never filtered on.
+  diagnostics Json    @default("[]")
+
+  /// The finished PDF.
+  attachmentId          String?
+  attachment            Attachment? @relation("ProjectBuildArtifact", fields: [attachmentId], references: [id], onDelete: SetNull)
+  /// The SyncTeX map, gzipped, as produced by the engine. What resolves a
+  /// position in the PDF back to a file and a line -- for the person clicking
+  /// in the viewer and for the agent asking where page 17 comes from.
+  sourceMapAttachmentId String?
+  sourceMapAttachment   Attachment? @relation("ProjectBuildSourceMap", fields: [sourceMapAttachmentId], references: [id], onDelete: SetNull)
+
+  /// Pages the finished PDF has. Read from the artifact, so an agent can ask
+  /// for a page range without downloading the file first.
+  pageCount Int?
+
+  createdById String?
+  createdBy   User?     @relation("ProjectBuildCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  durationMs  Int?
+  /// Set the moment a cancel is asked for, before the worker notices.
+  cancelledAt DateTime?
+  /// Last sign of life from the worker. A RUNNING job without a recent one lost
+  /// its worker, and `reap-stale-project-builds` closes it as failed.
+  heartbeatAt DateTime?
+
+  @@index([workspaceId, createdAt])
+  @@index([projectId, createdAt])
+  /// The cache lookup: has this exact input already been built successfully?
+  @@index([inputHash, status])
+  /// The retention sweep and the stale-build reaper, neither of which has a
+  /// workspace to narrow by.
+  @@index([createdAt])
+  @@index([status, heartbeatAt])
+  @@map("project_build")
 }

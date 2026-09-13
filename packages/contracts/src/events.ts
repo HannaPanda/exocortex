@@ -4,6 +4,7 @@ import { aiRunPhaseSchema, aiRunStatusSchema, aiUsageSchema } from './ai';
 import { commentSchema } from './comments';
 import { documentSummarySchema } from './documents';
 import { idSchema, isoDateTimeSchema } from './primitives';
+import { projectBuildStatusSchema } from './projects';
 import { renderJobStatusSchema } from './render';
 import { workspaceSchema } from './workspaces';
 
@@ -42,6 +43,8 @@ export const APPLICATION_EVENT_TYPES = [
   'comment.resolved',
   'comment.deleted',
   'render.job.updated',
+  'project.files.changed',
+  'project.build.updated',
 ] as const;
 
 export const applicationEventTypeSchema = z.enum(APPLICATION_EVENT_TYPES);
@@ -239,6 +242,34 @@ export const renderJobUpdatedPayloadSchema = z.object({
 });
 export type RenderJobUpdatedPayload = z.infer<typeof renderJobUpdatedPayloadSchema>;
 
+/**
+ * A project's file tree was rebuilt from its Yjs state (issue #43, ADR-027).
+ *
+ * Carries the paths rather than the contents: what the file tree in the browser
+ * needs is which paths exist now, and the open editor already has the text over
+ * its own socket.
+ */
+export const projectFilesChangedPayloadSchema = z.object({
+  projectId: idSchema,
+  paths: z.array(z.string()),
+});
+export type ProjectFilesChangedPayload = z.infer<typeof projectFilesChangedPayloadSchema>;
+
+/**
+ * A project build changed state (issue #43, ADR-027).
+ *
+ * Same shape and same reason as `render.job.updated`: whoever is watching
+ * refetches, because a TeX log is not something a progress line asked for.
+ */
+export const projectBuildUpdatedPayloadSchema = z.object({
+  buildId: idSchema,
+  projectId: idSchema.nullable(),
+  status: projectBuildStatusSchema,
+  /** German, user-facing. Null unless the build failed. */
+  error: z.string().nullable().default(null),
+});
+export type ProjectBuildUpdatedPayload = z.infer<typeof projectBuildUpdatedPayloadSchema>;
+
 export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('workspace.updated', z.object({ workspace: workspaceSchema.partial() })),
   envelope('document.created', z.object({ document: documentSummarySchema })),
@@ -267,6 +298,8 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('comment.resolved', commentEventPayloadSchema),
   envelope('comment.deleted', commentDeletedPayloadSchema),
   envelope('render.job.updated', renderJobUpdatedPayloadSchema),
+  envelope('project.files.changed', projectFilesChangedPayloadSchema),
+  envelope('project.build.updated', projectBuildUpdatedPayloadSchema),
 ]);
 export type ApplicationEvent = z.infer<typeof applicationEventSchema>;
 

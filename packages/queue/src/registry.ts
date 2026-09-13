@@ -36,6 +36,11 @@ export const QUEUE_JOB_OPTIONS: Partial<Record<QueueName, JobsOptions>> = {
   [QUEUE_NAMES.render]: {
     attempts: 1,
   },
+  // A project build, for exactly the same reason (issue #43, ADR-027): LaTeX
+  // that does not compile does not compile the second time either.
+  [QUEUE_NAMES.projectBuild]: {
+    attempts: 1,
+  },
 };
 
 /** Debounce window for document materialization. */
@@ -446,6 +451,20 @@ export class QueueRegistry {
         data: {
           correlationId,
           task: 'reap-render-jobs',
+          workspaceId: null,
+          documentId: null,
+        },
+      },
+    );
+    // And the same cadence for project builds, for the same reason (issue #43).
+    await queue.upsertJobScheduler(
+      'reap-project-builds',
+      { every: 120_000 },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: {
+          correlationId,
+          task: 'reap-project-builds',
           workspaceId: null,
           documentId: null,
         },

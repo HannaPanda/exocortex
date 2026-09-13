@@ -221,6 +221,23 @@ export function canStartRender(role: WorkspaceRole | null): PolicyDecision {
   return ALLOW;
 }
 
+/**
+ * Starting a project build, or cancelling one (issue #43, ADR-027).
+ *
+ * The same reasoning as `canStartRender`, and deliberately the same threshold:
+ * a build costs CPU on this host and produces an attachment in the workspace,
+ * which is a thing a GUEST may not create. Reading a project, its files and its
+ * build log is an ordinary document read and needs no policy of its own.
+ */
+export function canBuildProject(role: WorkspaceRole | null): PolicyDecision {
+  const read = canReadWorkspace(role);
+  if (!read.allowed) return read;
+  if (!hasAtLeast(role as WorkspaceRole, 'MEMBER')) {
+    return deny('forbidden', 'Building a project requires at least the MEMBER role');
+  }
+  return ALLOW;
+}
+
 // --------------------------------------------------------------------------
 // Documents
 // --------------------------------------------------------------------------
