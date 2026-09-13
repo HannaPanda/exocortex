@@ -41,20 +41,25 @@ function shorten(text) {
 }
 
 /**
- * Reads the JSONL transcript into a plain conversation.
+ * Reads the JSONL transcript into a plain conversation and the moment it ended.
  *
  * Every line is parsed on its own and a broken one is skipped: a transcript is
  * appended to while the session runs, so the last line can be half written.
+ *
+ * The end is read from the transcript rather than taken from the clock, so that
+ * replaying an old transcript dates its memory by the session instead of by the
+ * replay. For a hook firing normally the two are seconds apart.
  */
 function readTranscript(path) {
   let raw;
   try {
     raw = readFileSync(path, 'utf8');
   } catch {
-    return '';
+    return { text: '', endedAt: null };
   }
 
   const parts = [];
+  let endedAt = null;
   for (const line of raw.split('\n')) {
     if (line.trim().length === 0) continue;
     let entry;
@@ -63,6 +68,9 @@ function readTranscript(path) {
     } catch {
       continue;
     }
+    // Every entry carries the clock forward, including the ones dropped below:
+    // the last thing to happen in a session is rarely the last thing said.
+    if (typeof entry.timestamp === 'string') endedAt = entry.timestamp;
     if (entry.isMeta === true) continue;
     const role = entry.message?.role;
     if (role !== 'user' && role !== 'assistant') continue;
@@ -76,10 +84,13 @@ function readTranscript(path) {
   }
 
   const joined = parts.join('\n\n');
-  if (joined.length <= MAX_TRANSCRIPT_CHARS) return joined;
   // The end of a session is the part worth remembering: what was decided, what
   // was left open.
-  return joined.slice(joined.length - MAX_TRANSCRIPT_CHARS);
+  const text =
+    joined.length <= MAX_TRANSCRIPT_CHARS
+      ? joined
+      : joined.slice(joined.length - MAX_TRANSCRIPT_CHARS);
+  return { text, endedAt };
 }
 
 async function main() {
@@ -97,7 +108,7 @@ async function main() {
   const path = typeof input.transcript_path === 'string' ? input.transcript_path : null;
   if (path === null) return;
 
-  const transcript = readTranscript(path);
+  const { text: transcript, endedAt } = readTranscript(path);
   if (transcript.length === 0) return;
 
   const project = typeof input.cwd === 'string' && input.cwd.length > 0 ? input.cwd : process.cwd();
@@ -109,6 +120,7 @@ async function main() {
       project,
       client: 'claude-code',
       ...(typeof input.session_id === 'string' ? { sessionId: input.session_id } : {}),
+      ...(endedAt === null ? {} : { endedAt }),
       transcript,
     },
     timeoutMs: TIMEOUT_MS,

@@ -32,7 +32,7 @@ function job(
     sessionId: null,
     transcript: 'user: Was war noch mal mit den Hooks?\n\nassistant: Die liegen in tools/.',
     hint: null,
-    startedAt: null,
+    endedAt: null,
     ...overrides,
   };
   return { payload, logger } as unknown as JobContext<typeof QUEUE_NAMES.memoryCapture>;

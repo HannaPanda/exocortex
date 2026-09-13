@@ -147,6 +147,10 @@ export function createMemoryCaptureProcessor(dependencies: MemoryCaptureDependen
           // person recognises again, and its bullet points only make sense
           // together.
           appendToday: false,
+          // Dates the note by the session, not by the moment it was distilled.
+          // They are the same thing for a live hook and days apart for a
+          // transcript replayed after the fact.
+          ...(payload.endedAt === null ? {} : { occurredAt: payload.endedAt }),
         },
         responseSchema: memoryRememberResponseSchema,
       });

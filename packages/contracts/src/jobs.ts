@@ -271,7 +271,8 @@ export const memoryCaptureJobSchema = jobBase.extend({
   sessionId: z.string().max(200).nullable().default(null),
   transcript: z.string().min(1),
   hint: z.string().max(500).nullable().default(null),
-  startedAt: z.string().nullable().default(null),
+  /** When the session ended, so a replayed transcript is dated by the session. */
+  endedAt: z.string().nullable().default(null),
 });
 export type MemoryCaptureJob = z.infer<typeof memoryCaptureJobSchema>;
 

@@ -283,7 +283,10 @@ export class MemoryService {
       correlationId: input.correlationId,
     });
 
-    const now = new Date();
+    // A live caller means now; a capture replayed from a stored transcript
+    // hands over the day the session actually ended.
+    const now =
+      input.request.occurredAt === undefined ? new Date() : new Date(input.request.occurredAt);
     const day = formatDay(now);
     const existing = input.request.appendToday
       ? await this.findTodaysNote(projectPage.id, day)
@@ -382,7 +385,7 @@ export class MemoryService {
         sessionId: input.request.sessionId ?? null,
         transcript: input.request.transcript,
         hint: input.request.hint ?? null,
-        startedAt: input.request.startedAt ?? null,
+        endedAt: input.request.endedAt ?? null,
       },
       // One attempt: distilling costs a model call, and the processor reports
       // its own failures instead of throwing, so a retry would only ever repeat

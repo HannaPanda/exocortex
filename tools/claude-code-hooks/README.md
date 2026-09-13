@@ -101,3 +101,7 @@ Sitzung war.
 
 Wer viel und kurz `/clear` drückt, dreht `memory.captureMinChars` hoch: alles
 darunter wird gar nicht erst angenommen.
+
+Das Datum der Notiz kommt aus dem Mitschrieb (`endedAt`), nicht aus der Uhr.
+Wer eine alte Mitschrift von Hand nachspielt, bekommt sie deshalb unter dem Tag
+der Sitzung abgelegt und nicht unter dem des Nachlaufs.

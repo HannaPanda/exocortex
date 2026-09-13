@@ -162,6 +162,14 @@ export const memoryRememberRequestSchema = z.object({
    * and one page per thought would bury the project page in stubs.
    */
   appendToday: z.boolean().default(false),
+  /**
+   * When the remembered thing happened. Defaults to now, which is right for
+   * every live caller. It matters for a capture that arrives late: a session
+   * distilled from a stored transcript weeks afterwards would otherwise be
+   * dated the day it was replayed, and a memory that lies about when something
+   * happened is worse than no memory.
+   */
+  occurredAt: isoDateTimeSchema.optional(),
 });
 export type MemoryRememberRequest = z.infer<typeof memoryRememberRequestSchema>;
 
@@ -192,7 +200,12 @@ export const memoryCaptureRequestSchema = z.object({
   transcript: z.string().trim().min(1).max(400_000),
   /** What the caller believes the session was about. Used as a hint, not as the title. */
   hint: z.string().trim().max(500).optional(),
-  startedAt: isoDateTimeSchema.optional(),
+  /**
+   * When the session ended, which is when a live hook fires. Defaults to now.
+   * A client replaying an old transcript sends the real one, so the note is
+   * dated by the session rather than by the replay.
+   */
+  endedAt: isoDateTimeSchema.optional(),
 });
 export type MemoryCaptureRequest = z.infer<typeof memoryCaptureRequestSchema>;
 

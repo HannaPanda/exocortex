@@ -285,6 +285,29 @@ describe('remember', () => {
     expect(content?.plainText).toContain('zweiter Gedanke');
   });
 
+  it('dates a replayed session by the session, not by the replay', async () => {
+    const written = await service.remember({
+      userId: agentId,
+      request: {
+        project: '/var/www/nachlauf',
+        title: 'Alte Sitzung',
+        text: '- lange her',
+        client: 'claude-code',
+        tags: [],
+        appendToday: false,
+        occurredAt: '2026-08-14T13:19:00.000Z',
+      },
+      correlationId,
+    });
+
+    expect(written.title).toBe('2026-08-14 Alte Sitzung');
+    const content = await prisma.documentContent.findUnique({
+      where: { documentId: written.documentId },
+      select: { plainText: true },
+    });
+    expect(content?.plainText).toContain('2026-08-14 13:19');
+  });
+
   it('refuses to write when the account has no memory workspace', async () => {
     await expect(
       service.remember({
