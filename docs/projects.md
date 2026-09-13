@@ -146,11 +146,12 @@ The container image is not in the hash, which is what `force: true` is for.
 ## What is not there yet
 
 **SyncTeX in the viewer.** The build produces the SyncTeX map and hands it out
-through `exo_project_build_artifacts`, but the PDF is shown in the browser's own
-viewer, which cannot be asked where a click landed. Clicking a place in the PDF
-to jump to its source line needs pdf.js rendering the pages itself. Until then,
-the map is available to whoever wants to read it, and the error list is what
-navigates from the result back to the source.
+through `exo_project_build_artifacts` -- stored uncompressed as `text/plain`, so
+`exo_attachment_read_text` reads the mapping itself rather than a blob. What is
+missing is the other half: the PDF is shown in the browser's own viewer, which
+cannot be asked where a click landed, so clicking a place in the PDF to jump to
+its source line needs pdf.js rendering the pages. Until then the error list is
+what navigates from the result back to the source.
 
 **Git and ZIP import/export.** A project can be filled through the tools, one
 file at a time. A `.zip` of an existing thesis has to be unpacked by hand.

@@ -1,3 +1,5 @@
+import { gunzipSync } from 'node:zlib';
+
 import {
   PROJECT_MAX_LOG_CHARS,
   projectBuildErrorMessage,
@@ -43,6 +45,15 @@ const HEARTBEAT_INTERVAL_MS = 5_000;
 
 /** The largest single asset that is worth carrying into a build. */
 const MAX_ASSET_BYTES = 50_000_000;
+
+/**
+ * The largest SyncTeX map worth keeping, uncompressed.
+ *
+ * A map is roughly proportional to the document, and a thesis produces a few
+ * megabytes. Past this it stops being something anybody reads and starts being
+ * something the text extraction has to chew through on every build.
+ */
+const MAX_SOURCE_MAP_BYTES = 20_000_000;
 
 /**
  * Builds one project into one PDF (issue #43, ADR-027).
@@ -226,26 +237,15 @@ async function run(context: {
       responseSchema: uploadAttachmentResponseSchema,
     });
 
-    // The SyncTeX map is stored the same way and is what resolves a position in
-    // the PDF back to a file and a line -- for the viewer and for an agent
-    // asking where page 17 comes from. A failure to store it is not a failed
-    // build: the PDF is the thing that was asked for.
-    let sourceMapId: string | null = null;
-    if (result.sourceMap !== null) {
-      try {
-        const map = await client.upload({
-          path: `/api/workspaces/${build.workspaceId}/attachments`,
-          filename: `${base}.synctex.gz`,
-          contentType: 'application/gzip',
-          bytes: result.sourceMap,
-          fields: { documentId: build.projectId },
-          responseSchema: uploadAttachmentResponseSchema,
-        });
-        sourceMapId = map.attachment.id;
-      } catch {
-        // See above: the PDF stands, the map is a convenience.
-      }
-    }
+    const sourceMapId = await storeSourceMap({
+      client,
+      sourceMap: result.sourceMap,
+      workspaceId: build.workspaceId,
+      projectId: build.projectId,
+      filename: `${base}.synctex`,
+      logger,
+      buildId: build.id,
+    });
 
     await finish(prisma, bus, build.id, {
       status: 'COMPLETED',
@@ -253,7 +253,7 @@ async function run(context: {
       diagnostics,
       attachmentId: uploaded.attachment.id,
       sourceMapAttachmentId: sourceMapId,
-      pageCount: countPdfPages(result.pdf),
+      pageCount: readPageCount(log),
       durationMs: Date.now() - startedAt,
       workspaceId: build.workspaceId,
       projectId: build.projectId,
@@ -364,19 +364,89 @@ function classify(
 }
 
 /**
- * How many pages the PDF has.
+ * How many pages the PDF has, according to the engine that wrote it.
  *
- * Counted from the file rather than asked of a library: `/Type /Page` appears
- * once per page object in every PDF a TeX engine writes, and pulling in a PDF
- * parser to learn one number would be a dependency for a regular expression.
- * Null when the count cannot be trusted, which the API reports as unknown
- * rather than as zero.
+ * Read out of the log rather than out of the file. Counting `/Type /Page` in
+ * the bytes is the obvious thing and it is wrong: every current TeX engine
+ * writes its page objects into a compressed object stream, so the pattern does
+ * not appear at all and the count comes back as zero for every document. The
+ * engine states the number in one line, and that line is already in the log the
+ * build keeps.
+ *
+ * Null when the log does not say, which the API reports as unknown rather than
+ * as zero.
  */
-export function countPdfPages(pdf: Buffer): number | null {
-  const text = pdf.toString('latin1');
-  const matches = text.match(/\/Type\s*\/Page[^s]/g);
-  const count = matches?.length ?? 0;
-  return count > 0 ? count : null;
+export function readPageCount(log: string): number | null {
+  // `Output written on .exocortex-out/main.pdf (12 pages, 340991 bytes).`
+  const matches = [...log.matchAll(/Output written on .*?\((\d+) pages?,/g)];
+  const last = matches.at(-1);
+  if (last === undefined) return null;
+  const count = Number.parseInt(last[1] as string, 10);
+  return Number.isFinite(count) && count > 0 ? count : null;
+}
+
+/**
+ * Stores the SyncTeX map beside the PDF, uncompressed.
+ *
+ * Uncompressed on purpose. The map is what resolves a position in the PDF back
+ * to a file and a line, and a `.gz` is a blob nobody can look inside: stored as
+ * text it is an ordinary attachment whose *content* an agent can read with
+ * `exo_attachment_read_text`, which is the only reason exposing it is worth
+ * anything. It also sidesteps the attachment allowlist, which does not accept
+ * `application/gzip` -- and should not start to, to carry one derived file.
+ *
+ * A failure here is logged and does not fail the build: the PDF is the thing
+ * that was asked for. It is *logged*, though. The first version swallowed the
+ * error, and the upload was rejected for its content type on every single build
+ * while the log said nothing at all.
+ */
+async function storeSourceMap(input: {
+  client: ExocortexApiClient;
+  sourceMap: Buffer | null;
+  workspaceId: string;
+  projectId: string;
+  filename: string;
+  logger: { info: (message: string, meta?: Record<string, unknown>) => void };
+  buildId: string;
+}): Promise<string | null> {
+  if (input.sourceMap === null) return null;
+
+  let text: Buffer;
+  try {
+    text = gunzipSync(input.sourceMap);
+  } catch (error) {
+    input.logger.info('SyncTeX map could not be read', {
+      buildId: input.buildId,
+      reason: error instanceof Error ? error.message : String(error),
+    });
+    return null;
+  }
+
+  if (text.byteLength > MAX_SOURCE_MAP_BYTES) {
+    input.logger.info('SyncTeX map is too large to store', {
+      buildId: input.buildId,
+      byteSize: text.byteLength,
+    });
+    return null;
+  }
+
+  try {
+    const stored = await input.client.upload({
+      path: `/api/workspaces/${input.workspaceId}/attachments`,
+      filename: input.filename,
+      contentType: 'text/plain',
+      bytes: text,
+      fields: { documentId: input.projectId },
+      responseSchema: uploadAttachmentResponseSchema,
+    });
+    return stored.attachment.id;
+  } catch (error) {
+    input.logger.info('SyncTeX map could not be stored', {
+      buildId: input.buildId,
+      reason: error instanceof Error ? error.message : String(error),
+    });
+    return null;
+  }
 }
 
 /** A file name a person recognises in their downloads folder. */
