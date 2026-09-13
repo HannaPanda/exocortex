@@ -88,6 +88,13 @@ describe('EXOCORTEX_TOOLS', () => {
     // Deleting a render template (issue #44) is the same judgement: the PDFs
     // built from it survive, but nothing can rebuild them. Starting a build is
     // deliberately not destructive -- it adds a file and changes no page.
+    //
+    // The three project entries (issue #43) each discard something: an
+    // overwrite loses the previous text, a move breaks every `\input` that
+    // named the old path, and a delete takes a file out of the tree. None of
+    // them is irreversible, because a project's document takes the same session
+    // snapshots a page does. Patching is not here for the reason a patch is
+    // safer than a write: it either matches what is there now or refuses.
     const destructive = EXOCORTEX_TOOLS.filter((tool) => tool.destructive)
       .map((tool) => tool.name)
       .sort();
@@ -114,6 +121,9 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_page_rename',
       'exo_page_restore_snapshot',
       'exo_page_write',
+      'exo_project_delete_file',
+      'exo_project_move_file',
+      'exo_project_write_file',
       'exo_render_template_delete',
       'exo_user_delete',
       'exo_user_set_disabled',

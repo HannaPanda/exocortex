@@ -263,6 +263,10 @@ export const projectWriteFileTool: AnyToolDefinition = defineTool({
   }),
   surfaces: ['mcp', 'ai'],
   mutating: true,
+  // Overwriting a file discards what was in it, the way `exo_page_write` does.
+  // Not irreversible: a project's document takes the same session snapshots a
+  // page does, so the previous text is still reachable.
+  destructive: true,
   target: (input) => `project:${input.projectId}:${input.path}`,
   async execute(client, input) {
     const { projectId, ...body } = input;
@@ -319,6 +323,9 @@ export const projectMoveFileTool: AnyToolDefinition = defineTool({
   }),
   surfaces: ['mcp', 'ai'],
   mutating: true,
+  // A path is an address: `\\input{kapitel/intro}` stops resolving the moment
+  // the file moves, which is the same reason `exo_page_rename` is destructive.
+  destructive: true,
   target: (input) => `project:${input.projectId}:${input.from}`,
   async execute(client, input) {
     const { projectId, ...body } = input;
