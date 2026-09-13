@@ -66,6 +66,17 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   user_disabled: 'Dieses Konto ist deaktiviert.',
   user_has_content:
     'Dieses Konto hat Seiten, Kommentare oder Dateien angelegt und lässt sich deshalb nicht löschen. Deaktiviere es stattdessen.',
+  project_file_not_found: 'Diese Datei gibt es im Projekt nicht.',
+  project_file_exists: 'An dieser Stelle liegt schon eine Datei.',
+  project_not_a_text_file:
+    'Diese Datei ist keine Textdatei. Bilder, Schriften und PDFs kommen als Anhang ins Projekt.',
+  project_patch_not_found: 'Der zu ersetzende Text kommt in der Datei nicht vor.',
+  project_patch_not_unique:
+    'Der zu ersetzende Text kommt mehrfach vor. Mit mehr Kontext eindeutig machen oder alle ersetzen.',
+  project_too_many_files: 'Das Projekt hat die erlaubte Anzahl Dateien erreicht.',
+  project_write_failed: 'Die Änderung am Projekt konnte nicht angewendet werden.',
+  collaboration_unavailable:
+    'Der Kollaborationsdienst ist gerade nicht erreichbar. Die Änderung wurde nicht gespeichert.',
 };
 
 export function messageForCode(code: string | undefined): string {

@@ -672,7 +672,7 @@ export async function uploadAttachment(input: {
   workspaceId: string;
   documentId: string;
   file: File;
-}): Promise<{ src: string; name: string }> {
+}): Promise<{ id: string; src: string; name: string }> {
   const form = new FormData();
   form.append('documentId', input.documentId);
   form.append('file', input.file, input.file.name);
@@ -692,6 +692,9 @@ export async function uploadAttachment(input: {
 
   const { attachment } = payload as UploadAttachmentResponse;
   return {
+    // The id as well as the URL: a project asset is bound to a path by id
+    // (issue #43), where the editor only ever needs something to put in a src.
+    id: attachment.id,
     src: `/api/attachments/${attachment.id}/download`,
     name: attachment.filename,
   };

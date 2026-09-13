@@ -9,6 +9,7 @@ import { type CommandItem, CommandPalette } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { useCreateDocument, useSearch } from '@/lib/api/queries';
+import { documentHref } from '@/lib/document-href';
 
 export interface SearchCommandProps {
   workspaceId: string | null;
@@ -48,7 +49,7 @@ export function SearchCommand({ workspaceId, open, onOpenChange }: SearchCommand
     }
 
     const results = (search.data?.results ?? []).map<CommandItem>((result) => {
-      const href = `/arbeitsbereich/${result.workspaceId}/seite/${result.documentId}`;
+      const href = documentHref(result.workspaceId, result.documentId, result.type);
       return {
         id: result.documentId,
         group: 'Seiten',

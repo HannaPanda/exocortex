@@ -1,12 +1,12 @@
 'use client';
 
-import { PlusIcon, TableIcon, Trash2Icon } from 'lucide-react';
+import { FolderCodeIcon, PlusIcon, TableIcon, Trash2Icon } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
 import {
+  type CreatableDocumentType,
   type DocumentTreeNode,
-  type DocumentType,
   type MoveDocumentRequest,
 } from '@exocortex/contracts';
 import {
@@ -37,6 +37,7 @@ import {
 
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
+import { useCreateProject } from '@/lib/api/project-queries';
 import {
   useArchiveDocument,
   useCreateDocument,
@@ -45,6 +46,7 @@ import {
   useUpdateDocument,
   useWorkspaces,
 } from '@/lib/api/queries';
+import { documentHref } from '@/lib/document-href';
 import { usePersistentState } from '@/lib/use-persistent-state';
 
 import { PageTreeRow, type PageTreeRowContext } from './page-tree-row';
@@ -93,6 +95,7 @@ export function PageTree({ workspaceId }: PageTreeProps) {
   const router = useRouter();
   const tree = useDocumentTree(workspaceId);
   const createDocument = useCreateDocument(workspaceId);
+  const createProjectMutation = useCreateProject(workspaceId);
   const archiveDocument = useArchiveDocument(workspaceId);
   const updateDocument = useUpdateDocument(workspaceId);
   const moveDocument = useMoveDocument(workspaceId);
@@ -184,7 +187,7 @@ export function PageTree({ workspaceId }: PageTreeProps) {
 
   const createChild = async (
     parentId: string | null,
-    type: DocumentType = 'PAGE',
+    type: CreatableDocumentType = 'PAGE',
   ): Promise<void> => {
     const document = await createDocument.mutateAsync({
       title: type === 'COLLECTION' ? 'Unbenannte Datenbank' : 'Unbenannte Seite',
@@ -192,7 +195,21 @@ export function PageTree({ workspaceId }: PageTreeProps) {
       parentId,
     });
     if (parentId !== null) setExpanded({ ...expanded, [parentId]: true });
-    router.push(`/arbeitsbereich/${workspaceId}/seite/${document.id}`);
+    router.push(documentHref(workspaceId, document.id, type));
+  };
+
+  /**
+   * A project is created through its own route, not the generic one: it needs a
+   * sidecar row and a compilable first file, and a `PROJECT` that arrived
+   * through `POST /api/documents` would have neither (issue #43, ADR-027).
+   */
+  const createProject = async (parentId: string | null): Promise<void> => {
+    const { project } = await createProjectMutation.mutateAsync({
+      title: 'Unbenanntes Projekt',
+      parentId,
+    });
+    if (parentId !== null) setExpanded({ ...expanded, [parentId]: true });
+    router.push(documentHref(workspaceId, project.id, 'PROJECT'));
   };
 
   const submitMove = (documentId: string, request: MoveDocumentRequest): void => {
@@ -334,6 +351,7 @@ export function PageTree({ workspaceId }: PageTreeProps) {
     nudge,
     canNudge,
     createChild: (parentId, type) => void createChild(parentId, type),
+    createProject: (parentId) => void createProject(parentId),
     setIcon: (documentId, selection) => {
       void updateDocument.mutateAsync({ documentId, request: selection });
     },
@@ -346,43 +364,11 @@ export function PageTree({ workspaceId }: PageTreeProps) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex items-center gap-2.5 px-2 py-1.5">
-        {/* The same mark the overview and the context panel use, so "this is a
-            section" looks identical wherever the reader meets it. */}
-        <span className="size-1 shrink-0 bg-signal-line" aria-hidden />
-        <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
-          Seiten
-        </p>
-        <span className="h-px w-6 shrink-0 bg-signal-line" aria-hidden />
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label="Anlegen"
-                data-testid="create-root-page"
-              >
-                <PlusIcon />
-              </Button>
-            }
-          />
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              data-testid="create-root-page-item"
-              onClick={() => void createChild(null)}
-            >
-              <PlusIcon /> Seite anlegen
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              data-testid="create-root-database"
-              onClick={() => void createChild(null, 'COLLECTION')}
-            >
-              <TableIcon /> Datenbank anlegen
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      <TreeHeader
+        onCreatePage={() => void createChild(null)}
+        onCreateDatabase={() => void createChild(null, 'COLLECTION')}
+        onCreateProject={() => void createProject(null)}
+      />
 
       <ScrollArea className="min-h-0 flex-1" viewportClassName="px-1 pb-2">
         {tree.data.nodes.length === 0 ? (
@@ -566,5 +552,59 @@ function MoveWorkspaceDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+/**
+ * The "Seiten" label and the menu that creates things under it.
+ *
+ * Its own component because the three entries each carry a test id, an icon and
+ * a label, and forty lines of that in the middle of the tree makes the tree
+ * harder to read than the menu is worth.
+ */
+function TreeHeader({
+  onCreatePage,
+  onCreateDatabase,
+  onCreateProject,
+}: {
+  onCreatePage: () => void;
+  onCreateDatabase: () => void;
+  onCreateProject: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-2.5 px-2 py-1.5">
+      {/* The same mark the overview and the context panel use, so "this is a
+          section" looks identical wherever the reader meets it. */}
+      <span className="size-1 shrink-0 bg-signal-line" aria-hidden />
+      <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+        Seiten
+      </p>
+      <span className="h-px w-6 shrink-0 bg-signal-line" aria-hidden />
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Anlegen"
+              data-testid="create-root-page"
+            >
+              <PlusIcon />
+            </Button>
+          }
+        />
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem data-testid="create-root-page-item" onClick={onCreatePage}>
+            <PlusIcon /> Seite anlegen
+          </DropdownMenuItem>
+          <DropdownMenuItem data-testid="create-root-database" onClick={onCreateDatabase}>
+            <TableIcon /> Datenbank anlegen
+          </DropdownMenuItem>
+          <DropdownMenuItem data-testid="create-root-project" onClick={onCreateProject}>
+            <FolderCodeIcon /> LaTeX-Projekt anlegen
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }

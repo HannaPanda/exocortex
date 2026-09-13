@@ -3,6 +3,7 @@ import {
   ArrowDownIcon,
   ArrowUpIcon,
   ChevronRightIcon,
+  FolderCodeIcon,
   FolderInputIcon,
   IndentDecreaseIcon,
   IndentIncreaseIcon,
@@ -25,6 +26,7 @@ import {
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { PageIconPicker, type PageIconSelection } from '@/components/document/page-icon-picker';
+import { documentHref } from '@/lib/document-href';
 
 import { type DropZone, type ExpandedState } from './page-tree-state';
 
@@ -53,6 +55,7 @@ export interface PageTreeRowContext {
   nudge: (documentId: string, direction: 'up' | 'down' | 'in' | 'out') => void;
   canNudge: (documentId: string, direction: 'up' | 'down' | 'in' | 'out') => boolean;
   createChild: (parentId: string, type?: 'PAGE' | 'COLLECTION') => void;
+  createProject: (parentId: string) => void;
   setIcon: (documentId: string, selection: PageIconSelection) => void;
   archive: (documentId: string) => void;
   startWorkspaceMove: (node: DocumentTreeNode) => void;
@@ -197,7 +200,7 @@ export function PageTreeRow({
               />
 
               <Link
-                href={`/arbeitsbereich/${workspaceId}/seite/${node.id}`}
+                href={documentHref(workspaceId, node.id, node.type)}
                 // A link drags itself by default, which would start a drag of
                 // its URL instead of the row the pointer is actually on.
                 draggable={false}
@@ -256,7 +259,15 @@ function PageTreeRowMenu({
   node: DocumentTreeNode;
   context: PageTreeRowContext;
 }) {
-  const { canNudge, nudge, createChild, archive, setIconPickerFor, startWorkspaceMove } = context;
+  const {
+    canNudge,
+    nudge,
+    createChild,
+    createProject,
+    archive,
+    setIconPickerFor,
+    startWorkspaceMove,
+  } = context;
   return (
     <ContextMenuContent>
       <ContextMenuItem
@@ -306,6 +317,9 @@ function PageTreeRowMenu({
       </ContextMenuItem>
       <ContextMenuItem onClick={() => createChild(node.id, 'COLLECTION')}>
         <TableIcon /> Datenbank anlegen
+      </ContextMenuItem>
+      <ContextMenuItem onClick={() => createProject(node.id)}>
+        <FolderCodeIcon /> LaTeX-Projekt anlegen
       </ContextMenuItem>
       <ContextMenuSeparator />
       <ContextMenuItem

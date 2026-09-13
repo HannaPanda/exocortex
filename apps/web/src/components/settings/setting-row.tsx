@@ -328,6 +328,34 @@ export const SETTING_COPY: Record<SettingKey, { label: string; help: string }> =
     label: 'Bau-Protokoll aufbewahren (Tage)',
     help: 'So lange bleiben abgeschlossene Bauten samt Protokoll sichtbar. Die erzeugten PDFs bleiben als Anhänge erhalten. 0 bedeutet: für immer.',
   },
+  'projects.enabled': {
+    label: 'Projekte bauen',
+    help: 'Ob dieser Arbeitsbereich seine LaTeX-Projekte übersetzen darf. Bearbeiten geht weiter, wenn das aus ist; nur der Übersetzer schweigt.',
+  },
+  'projects.image': {
+    label: 'Container-Abbild für Projekt-Bauten',
+    help: 'Darin stecken TeX Live, latexmk, biber und die Schriften. Ohne dieses Abbild schlägt jeder Bau mit einer klaren Meldung fehl.',
+  },
+  'projects.timeoutSeconds': {
+    label: 'Zeitgrenze je Bau (Sekunden)',
+    help: 'Danach wird der Container abgebrochen. Eine Abschlussarbeit mit Literaturverzeichnis braucht mehrere Durchläufe.',
+  },
+  'projects.maxArtifactBytes': {
+    label: 'Größtes erzeugtes PDF (Bytes)',
+    help: 'Ein größeres Ergebnis lässt den Bau scheitern, statt die Platte zu füllen.',
+  },
+  'projects.maxFileChars': {
+    label: 'Größte Textdatei im Projekt (Zeichen)',
+    help: 'Gilt je Datei, nicht für das ganze Projekt.',
+  },
+  'projects.maxFiles': {
+    label: 'Dateien je Projekt',
+    help: 'Pfade insgesamt, Anhänge eingerechnet.',
+  },
+  'projects.buildRetentionDays': {
+    label: 'Bau-Protokolle aufbewahren (Tage)',
+    help: 'So lange bleiben abgeschlossene Bauten samt Protokoll und Fehlerliste sichtbar. Die PDFs bleiben als Anhänge erhalten. 0 bedeutet: für immer.',
+  },
 };
 
 /** Sentinel for "no model chosen"; distinct from every real slug. */
