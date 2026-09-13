@@ -117,10 +117,10 @@ export function useCreateRenderTemplate(workspaceId: string | undefined) {
   const client = useQueryClient();
   return useMutation({
     mutationFn: (request: CreateRenderTemplateRequest) =>
-      apiRequest<RenderTemplateResponse>(
-        `/api/workspaces/${workspaceId ?? ''}/render/templates`,
-        { method: 'POST', body: request },
-      ),
+      apiRequest<RenderTemplateResponse>(`/api/workspaces/${workspaceId ?? ''}/render/templates`, {
+        method: 'POST',
+        body: request,
+      }),
     onSuccess: () => {
       if (workspaceId === undefined) return;
       void client.invalidateQueries({ queryKey: renderKeys.templates(workspaceId) });

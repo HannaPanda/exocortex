@@ -445,12 +445,7 @@ export const settingsSchema = z.object({
    */
   'render.timeoutSeconds': z.number().int().min(10).max(900).default(180),
   /** The largest artifact a build may produce, in bytes. */
-  'render.maxArtifactBytes': z
-    .number()
-    .int()
-    .min(100_000)
-    .max(500_000_000)
-    .default(50_000_000),
+  'render.maxArtifactBytes': z.number().int().min(100_000).max(500_000_000).default(50_000_000),
   /** Days a finished render job is kept. Zero keeps them for ever. */
   'render.jobRetentionDays': z.number().int().min(0).max(3_650).default(30),
 });
