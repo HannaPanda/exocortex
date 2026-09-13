@@ -34,7 +34,7 @@ interface EndpointRow {
   id: string;
   workspaceId: string;
   title: string;
-  type: 'PAGE' | 'COLLECTION';
+  type: 'PAGE' | 'COLLECTION' | 'PROJECT';
   icon: string | null;
   iconColor: string | null;
   archivedAt: Date | null;

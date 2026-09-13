@@ -25,6 +25,7 @@ import { McpModule } from './mcp/mcp.module';
 import { MeModule } from './me/me.module';
 import { MemoryModule } from './memory/memory.module';
 import { PlatformModule } from './platform/platform.module';
+import { ProjectsModule } from './projects/projects.module';
 import { RealtimeModule } from './realtime/realtime.module';
 import { RenderModule } from './render/render.module';
 import { SearchModule } from './search/search.module';
@@ -63,6 +64,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     McpModule,
     AgentSessionsModule,
     AutomationsModule,
+    ProjectsModule,
     RenderModule,
   ],
   providers: [

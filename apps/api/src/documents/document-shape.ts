@@ -17,7 +17,7 @@ export interface DocumentRow {
   id: string;
   workspaceId: string;
   parentId: string | null;
-  type: 'PAGE' | 'COLLECTION';
+  type: 'PAGE' | 'COLLECTION' | 'PROJECT';
   title: string;
   icon: string | null;
   /** Validated by the contract, so the column is a plain string here. */
@@ -37,7 +37,7 @@ export interface DocumentRow {
 export interface ResolveLinkRow {
   id: string;
   workspaceId: string;
-  type: 'PAGE' | 'COLLECTION';
+  type: 'PAGE' | 'COLLECTION' | 'PROJECT';
   title: string;
   icon: string | null;
   iconColor: string | null;
