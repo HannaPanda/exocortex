@@ -14,6 +14,7 @@ import { type Logger } from '@exocortex/logger';
 import { type QueueRegistry } from '@exocortex/queue';
 
 import { createInternalContentHandler } from './internal-content';
+import { createInternalProjectHandler } from './internal-projects';
 import { DocumentPersistence } from './persistence';
 
 /** Context attached to every authenticated collaboration connection. */
@@ -68,6 +69,12 @@ export function createCollaborationServer(
     logger: options.logger,
   });
   const handleInternalContent = createInternalContentHandler({
+    prisma: options.prisma,
+    access,
+    logger: options.logger,
+    secret: options.ticketSecret,
+  });
+  const handleInternalProject = createInternalProjectHandler({
     prisma: options.prisma,
     access,
     logger: options.logger,
@@ -184,6 +191,7 @@ export function createCollaborationServer(
 
         if (url.startsWith('/internal/')) {
           if (await handleInternalContent(request, response, server.hocuspocus)) return;
+          if (await handleInternalProject(request, response, server.hocuspocus)) return;
         } else if (url.startsWith('/health/live')) {
           response.writeHead(200, { 'content-type': 'application/json' });
           response.end(JSON.stringify({ status: 'ok' }));
