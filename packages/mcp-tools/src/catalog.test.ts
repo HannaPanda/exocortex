@@ -93,6 +93,8 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_automation_delete',
       'exo_comment_delete',
       'exo_comment_update',
+      'exo_database_option_delete',
+      'exo_database_option_update',
       'exo_database_property_delete',
       'exo_database_property_update',
       'exo_database_row_update',
@@ -125,13 +127,15 @@ describe('EXOCORTEX_TOOLS', () => {
     // of its own first, so the state it replaced is still reachable.
     // An automation rule is: nothing snapshots it, and its run log goes with
     // it. Switching it off is the reversible act, and that is a separate call
-    // on purpose.
+    // on purpose. A select option is, for the same reason its column is: making
+    // it again gives it a new id, and the rows that had it stay empty.
     const irreversible = EXOCORTEX_TOOLS.filter((tool) => tool.irreversible)
       .map((tool) => tool.name)
       .sort();
     expect(irreversible).toEqual([
       'exo_automation_delete',
       'exo_comment_delete',
+      'exo_database_option_delete',
       'exo_database_property_delete',
       'exo_page_delete',
       'exo_user_delete',

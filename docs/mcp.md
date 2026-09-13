@@ -539,10 +539,10 @@ rewrite its own past without any note saying so.
 ## Confirmation gate
 
 **What the gate covers, since 2026-08-13:** the calls no snapshot brings back,
-and nothing else. Four tools declare `irreversible: true` and a test pins the
+and nothing else. Six tools declare `irreversible: true` and a test pins the
 list by name: `exo_page_delete`, `exo_database_property_delete`,
-`exo_comment_delete`, `exo_user_delete`. An ordinary write runs on the first
-call.
+`exo_database_option_delete`, `exo_comment_delete`, `exo_automation_delete`,
+`exo_user_delete`. An ordinary write runs on the first call.
 
 It used to cover every mutating tool, and the retirement is deliberate. The
 gate stops no attacker: whoever holds the bearer token sends the call twice,
@@ -557,7 +557,7 @@ scopes and the OAuth consent screen. See `ToolDefinition.irreversible`.
 A deployment can have the old behaviour back: `mcp.writeConfirmationRequired`
 (admin area, default off) widens the gate to every mutating tool over HTTP, and
 `EXOCORTEX_REQUIRE_WRITE_CONFIRMATION=true` does the same for a given `apps/mcp`
-subprocess. Neither can _narrow_ it below the four irreversible calls.
+subprocess. Neither can _narrow_ it below the six irreversible calls.
 
 Gated tools go through `WriteConfirmationGate`
 (`packages/mcp-tools/src/confirm.ts`). The pending key is derived

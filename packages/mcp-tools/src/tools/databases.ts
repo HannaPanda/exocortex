@@ -296,6 +296,11 @@ export const databaseOptionDeleteTool: AnyToolDefinition = defineTool({
   surfaces: ['mcp', 'ai'],
   mutating: true,
   destructive: true,
+  // Same standing as deleting the column it belongs to. Creating the option
+  // again gives it a new id, so the rows that pointed at the old one stay empty;
+  // a document snapshot holds the page's Yjs state and not these rows, so there
+  // is nothing that brings the values back.
+  irreversible: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
     const result = await client.request({
