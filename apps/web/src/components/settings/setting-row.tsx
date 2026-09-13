@@ -39,6 +39,7 @@ export const GROUP_LABELS: Record<string, string> = {
   calendar: 'Kalender',
   activity: 'Aktivität',
   automations: 'Automationen',
+  render: 'Veröffentlichen',
 };
 
 /** German label and help text for every setting key. Written in the same voice. */
@@ -306,6 +307,26 @@ export const SETTING_COPY: Record<SettingKey, { label: string; help: string }> =
   'automations.runRetentionDays': {
     label: 'Lauf-Protokoll aufbewahren (Tage)',
     help: 'So lange bleibt sichtbar, was die Automationen getan haben. Die Regeln selbst bleiben unberührt. 0 bedeutet: für immer.',
+  },
+  'render.enabled': {
+    label: 'PDF-Ausgabe aktiviert',
+    help: 'Erlaubt, bestehende Seiten mit einer Vorlage als PDF zu erzeugen. Standardmäßig an: dabei verlassen keine Daten die Installation und es kostet kein Geld, nur Rechenzeit auf diesem Rechner. Ein Arbeitsbereich darf die Ausgabe für sich abschalten, aber nicht gegen diese Einstellung wieder einschalten.',
+  },
+  'render.image': {
+    label: 'Container-Abbild für den Bau',
+    help: 'Darin stecken Pandoc, TeX Live und die Schriften; auf dem Rechner selbst wird nichts installiert. Ein anderes Abbild ändert, worauf sich jede Vorlage verlassen kann, und wird von der Wiederverwendung fertiger PDFs nicht bemerkt: danach einmal mit „neu erzeugen“ bauen.',
+  },
+  'render.timeoutSeconds': {
+    label: 'Zeitlimit für einen Bau (Sekunden)',
+    help: 'Danach wird der Container abgebrochen. Ein LaTeX-Lauf, der nach drei Minuten nicht fertig ist, wartet meist auf eine Eingabe, die niemand machen kann.',
+  },
+  'render.maxArtifactBytes': {
+    label: 'Größtes erzeugtes PDF (Bytes)',
+    help: 'Obergrenze für die Datei, die ein Bau abliefern darf. Darüber gilt der Lauf als fehlgeschlagen, statt den Speicher zu füllen.',
+  },
+  'render.jobRetentionDays': {
+    label: 'Bau-Protokoll aufbewahren (Tage)',
+    help: 'So lange bleiben abgeschlossene Bauten samt Protokoll sichtbar. Die erzeugten PDFs bleiben als Anhänge erhalten. 0 bedeutet: für immer.',
   },
 };
 

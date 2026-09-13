@@ -19,6 +19,7 @@ export const QUEUE_NAMES = {
   memoryConsolidate: 'memory-consolidate',
   entityRescan: 'entity-rescan',
   automation: 'automation',
+  render: 'render',
 } as const;
 
 export const queueNameSchema = z.enum([
@@ -33,6 +34,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.memoryConsolidate,
   QUEUE_NAMES.entityRescan,
   QUEUE_NAMES.automation,
+  QUEUE_NAMES.render,
 ]);
 export type QueueName = z.infer<typeof queueNameSchema>;
 
@@ -162,6 +164,12 @@ export const maintenanceJobSchema = jobBase.extend({
      * no recent runs is a rule that had nothing to do.
      */
     'prune-automation-runs',
+    /**
+     * Closes builds whose worker never came back and deletes finished ones
+     * older than `render.jobRetentionDays` (issue #44, ADR-026). The PDFs they
+     * produced are ordinary attachments and are never touched.
+     */
+    'reap-render-jobs',
   ]),
   /** Optional scope; `null` means all workspaces. */
   workspaceId: idSchema.nullable().default(null),
@@ -326,6 +334,22 @@ export const automationJobSchema = jobBase.extend({
 });
 export type AutomationJob = z.infer<typeof automationJobSchema>;
 
+/**
+ * One build of one document into one file (issue #44, ADR-026).
+ *
+ * Carries only the job id: everything the build needs -- template, source,
+ * resolved variables -- was written onto the `RenderJob` row when the API
+ * accepted the request, and the row is what the status route reads. A payload
+ * that repeated any of it would be a second copy able to disagree with the one
+ * a human is looking at.
+ */
+export const renderJobPayloadSchema = jobBase.extend({
+  jobId: idSchema,
+  workspaceId: idSchema,
+  userId: idSchema,
+});
+export type RenderJobPayload = z.infer<typeof renderJobPayloadSchema>;
+
 export const JOB_SCHEMAS = {
   [QUEUE_NAMES.documentMaterialization]: materializeDocumentJobSchema,
   [QUEUE_NAMES.searchIndexing]: indexDocumentJobSchema,
@@ -338,6 +362,7 @@ export const JOB_SCHEMAS = {
   [QUEUE_NAMES.memoryConsolidate]: memoryConsolidateJobSchema,
   [QUEUE_NAMES.entityRescan]: entityRescanJobSchema,
   [QUEUE_NAMES.automation]: automationJobSchema,
+  [QUEUE_NAMES.render]: renderJobPayloadSchema,
 } as const;
 
 export type JobPayloadMap = {
@@ -352,4 +377,5 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.memoryConsolidate]: MemoryConsolidateJob;
   [QUEUE_NAMES.entityRescan]: EntityRescanJob;
   [QUEUE_NAMES.automation]: AutomationJob;
+  [QUEUE_NAMES.render]: RenderJobPayload;
 };

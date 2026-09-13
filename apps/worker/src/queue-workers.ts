@@ -3,6 +3,8 @@ import {
   AI_QUEUE_LOCK_DURATION_MS,
   AI_QUEUE_STALLED_INTERVAL_MS,
   QUEUE_NAMES,
+  RENDER_QUEUE_LOCK_DURATION_MS,
+  RENDER_QUEUE_STALLED_INTERVAL_MS,
 } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 import { createTypedWorker } from '@exocortex/queue';
@@ -18,10 +20,11 @@ import { createMaintenanceProcessor } from './processors/maintenance';
 import { createMaterializeDocumentProcessor } from './processors/materialize-document';
 import { createMemoryCaptureProcessor } from './processors/memory-capture';
 import { createMemoryConsolidateProcessor } from './processors/memory-consolidate';
+import { createRenderProcessor } from './processors/render';
 import { type WorkerRuntime } from './runtime';
 
 /**
- * The eleven queues this process listens on.
+ * The twelve queues this process listens on.
  *
  * Concurrency is per queue and deliberately uneven: materialization is cheap
  * and parallel, PDF extraction is CPU-bound and runs one at a time.
@@ -30,7 +33,7 @@ import { type WorkerRuntime } from './runtime';
  * What the shutdown path needs from a started worker, and nothing else.
  *
  * Structural rather than `ReturnType<typeof createTypedWorker>`: each queue has
- * its own payload type, so the eleven of them only share this much.
+ * its own payload type, so the twelve of them only share this much.
  */
 export interface QueueWorker {
   worker: { close: () => Promise<void> };
@@ -38,7 +41,7 @@ export interface QueueWorker {
 }
 
 /**
- * The eleven queues this process listens on, in two groups.
+ * The twelve queues this process listens on, in two groups.
  *
  * Concurrency is per queue and deliberately uneven: materialization is cheap
  * and parallel, PDF extraction is an external call and runs one at a time so it
@@ -360,6 +363,28 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     }),
   });
 
+  // Concurrency 1: a LaTeX run is CPU-bound and this host shares its cores with
+  // everything else on it. Two builds at once would not finish a single PDF any
+  // sooner and would take the machine down with them on a big document.
+  const render = createTypedWorker({
+    name: QUEUE_NAMES.render,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 1,
+    // `render.timeoutSeconds` allows a build up to fifteen minutes, so the lock
+    // has to outlast it or BullMQ declares the job stalled and hands it to a
+    // second worker while the first one is still holding a container open.
+    lockDuration: RENDER_QUEUE_LOCK_DURATION_MS,
+    stalledInterval: RENDER_QUEUE_STALLED_INTERVAL_MS,
+    handler: createRenderProcessor({
+      prisma,
+      storage,
+      apiClientFor,
+      settings: readSettings,
+      bus,
+    }),
+  });
+
   return [
     attachmentText,
     documentCover,
@@ -368,5 +393,6 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     memoryConsolidate,
     entityRescan,
     automation,
+    render,
   ];
 }

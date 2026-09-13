@@ -183,6 +183,44 @@ export function canManageAutomations(role: WorkspaceRole | null): PolicyDecision
   return ALLOW;
 }
 
+/**
+ * Writing a render template (issue #44, ADR-026).
+ *
+ * ADMIN, one step below an automation and one above a page. A template is not
+ * a standing instruction -- it acts only when somebody asks for a PDF, it
+ * sends nothing anywhere and it spends no money -- so the OWNER bar would be
+ * theatre. But it is workspace-wide furniture: changing one silently changes
+ * how every document rendered with it comes out, which is not something one
+ * member should be able to do to everybody else's letterhead.
+ *
+ * Starting a render is deliberately not this: that needs only MEMBER, because
+ * producing a PDF of a page you may read is reading, elaborately.
+ */
+export function canManageRenderTemplates(role: WorkspaceRole | null): PolicyDecision {
+  const read = canReadWorkspace(role);
+  if (!read.allowed) return read;
+  if (!hasAtLeast(role as WorkspaceRole, 'ADMIN')) {
+    return deny('forbidden', 'Managing render templates requires the ADMIN or OWNER role');
+  }
+  return ALLOW;
+}
+
+/**
+ * Starting a build, or cancelling one (issue #44, ADR-026).
+ *
+ * MEMBER: it costs CPU on this host and nothing else, and the result is a file
+ * of a page the caller may already read. A GUEST is kept out because a build
+ * writes an attachment into the workspace, and a guest may not upload files.
+ */
+export function canStartRender(role: WorkspaceRole | null): PolicyDecision {
+  const read = canReadWorkspace(role);
+  if (!read.allowed) return read;
+  if (!hasAtLeast(role as WorkspaceRole, 'MEMBER')) {
+    return deny('forbidden', 'Rendering requires at least the MEMBER role');
+  }
+  return ALLOW;
+}
+
 // --------------------------------------------------------------------------
 // Documents
 // --------------------------------------------------------------------------

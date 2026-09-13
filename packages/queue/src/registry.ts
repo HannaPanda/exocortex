@@ -28,6 +28,14 @@ export const QUEUE_JOB_OPTIONS: Partial<Record<QueueName, JobsOptions>> = {
   [QUEUE_NAMES.ai]: {
     attempts: 1,
   },
+  // A build is deterministic: a template that does not compile does not
+  // compile the second time either, and the processor writes a terminal status
+  // with the log itself rather than throwing (issue #44, ADR-026). A retry
+  // would only start a second container for a PDF nobody is waiting for any
+  // more -- asking again is the human's decision, and there is a button for it.
+  [QUEUE_NAMES.render]: {
+    attempts: 1,
+  },
 };
 
 /** Debounce window for document materialization. */
@@ -422,6 +430,22 @@ export class QueueRegistry {
         data: {
           correlationId,
           task: 'prune-automation-runs',
+          workspaceId: null,
+          documentId: null,
+        },
+      },
+    );
+    // Every two minutes: this one is not a nightly sweep. Half of it closes
+    // builds whose worker is gone, and a person watching a spinner should not
+    // have to wait until tomorrow to be told that nothing is coming (issue #44).
+    await queue.upsertJobScheduler(
+      'reap-render-jobs',
+      { every: 120_000 },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: {
+          correlationId,
+          task: 'reap-render-jobs',
           workspaceId: null,
           documentId: null,
         },

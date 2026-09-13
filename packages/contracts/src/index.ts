@@ -21,6 +21,7 @@ export * from './lucide-icon-names';
 export * from './memory';
 export * from './memory-facts';
 export * from './primitives';
+export * from './render';
 export * from './search';
 export * from './settings';
 export * from './workspace-credentials';

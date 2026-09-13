@@ -417,6 +417,42 @@ export const settingsSchema = z.object({
   'automations.webhookTimeoutSeconds': z.number().int().min(1).max(60).default(10),
   /** Days an automation run is kept. Zero keeps them for ever. */
   'automations.runRetentionDays': z.number().int().min(0).max(3_650).default(30),
+
+  /**
+   * Whether this workspace may render pages into files (issue #44, ADR-026).
+   *
+   * Defaults **on**, unlike automations: a render sends nothing out of the
+   * deployment and spends no money. It costs CPU on this host and nothing else,
+   * and a deployment that cannot afford that turns it off in one place.
+   */
+  'render.enabled': z.boolean().default(true),
+  /**
+   * The container image the build runs in. Pandoc, TeX Live and the fonts are
+   * all inside it; nothing is installed on the host.
+   *
+   * Deployment-wide and not workspace-overridable: which images exist on this
+   * machine is a fact about the machine, the same reason `ai.pdfExtractor` sits
+   * here. Changing it changes what every template can rely on, so a build's
+   * input hash cannot see it -- that is what `force` on a render request is for.
+   */
+  'render.image': z.string().min(1).max(300).default('pandoc/extra:latest'),
+  /**
+   * Seconds one build may take before it is killed.
+   *
+   * A LaTeX run that has not finished in three minutes is usually a template
+   * waiting for input on a terminal nobody can type into, and the honest
+   * outcome for that is a failed job with the log attached.
+   */
+  'render.timeoutSeconds': z.number().int().min(10).max(900).default(180),
+  /** The largest artifact a build may produce, in bytes. */
+  'render.maxArtifactBytes': z
+    .number()
+    .int()
+    .min(100_000)
+    .max(500_000_000)
+    .default(50_000_000),
+  /** Days a finished render job is kept. Zero keeps them for ever. */
+  'render.jobRetentionDays': z.number().int().min(0).max(3_650).default(30),
 });
 
 /** Whether the runtime knows the zone. `Intl` is the only authority available. */
@@ -569,6 +605,16 @@ export const SETTING_SCOPES = {
   'automations.maxConsecutiveFailures': 'deployment',
   'automations.webhookTimeoutSeconds': 'deployment',
   'automations.runRetentionDays': 'deployment',
+  /**
+   * A workspace may switch its own rendering off, and a deployment that
+   * switches it off switches every workspace off with it.
+   */
+  'render.enabled': 'workspace',
+  /** Which container images exist is a fact about the machine. */
+  'render.image': 'deployment',
+  'render.timeoutSeconds': 'deployment',
+  'render.maxArtifactBytes': 'deployment',
+  'render.jobRetentionDays': 'deployment',
 } satisfies Record<SettingKey, SettingScope>;
 
 /** A key a workspace may override. Derived from `SETTING_SCOPES`, not repeated. */
@@ -602,6 +648,7 @@ export const workspaceSettingKeySchema = z.enum(
  */
 export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
   'automations.enabled',
+  'render.enabled',
   'ai.maxOutputTokens',
   'ai.timeoutMs',
   'ai.maxRunMs',

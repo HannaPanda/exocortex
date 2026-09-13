@@ -374,3 +374,56 @@ export const pruneAutomationRuns: MaintenanceTask = async (context) => {
     logger.info('Automation runs pruned', { runs: removed.count, retentionDays });
   }
 };
+
+/**
+ * Closes out builds whose worker never came back, and deletes old ones
+ * (issue #44, ADR-026).
+ *
+ * One sweep for both because they are the same question asked at two ages: a
+ * `RUNNING` job whose heartbeat stopped has lost its container and will never
+ * finish, and a finished job older than `render.jobRetentionDays` is a log
+ * nobody is going to read. The produced PDFs are not touched -- they are
+ * ordinary attachments on the page and deleting them is the page's business.
+ */
+export const reapRenderJobs: MaintenanceTask = async (context) => {
+  const { prisma, logger, reportProgress } = context;
+  const settings = await context.settings();
+
+  await reportProgress(10, 'Bau-Protokoll wird aufgeräumt');
+  const abandonedBefore = new Date(Date.now() - RENDER_HEARTBEAT_STALE_MS);
+  const abandoned = await prisma.renderJob.updateMany({
+    where: {
+      status: 'RUNNING',
+      OR: [
+        { heartbeatAt: { lt: abandonedBefore } },
+        { heartbeatAt: null, startedAt: { lt: abandonedBefore } },
+      ],
+    },
+    data: { status: 'FAILED', errorCode: 'worker_lost', finishedAt: new Date() },
+  });
+
+  const retentionDays = settings['render.jobRetentionDays'];
+  const removed =
+    retentionDays === 0
+      ? { count: 0 }
+      : await prisma.renderJob.deleteMany({
+          where: {
+            createdAt: { lt: new Date(Date.now() - retentionDays * DAY_MS) },
+            status: { in: ['COMPLETED', 'FAILED', 'CANCELLED'] },
+          },
+        });
+
+  await reportProgress(100, 'Bau-Protokoll aufgeräumt');
+  if (abandoned.count > 0 || removed.count > 0) {
+    logger.info('Render jobs reaped', { abandoned: abandoned.count, removed: removed.count });
+  }
+};
+
+/**
+ * How long a build may go without a sign of life before it counts as lost.
+ *
+ * Five times the worker's heartbeat interval: a machine under load can miss a
+ * couple, and killing a build that is merely slow is the one failure mode this
+ * sweep must not have.
+ */
+const RENDER_HEARTBEAT_STALE_MS = 25_000;

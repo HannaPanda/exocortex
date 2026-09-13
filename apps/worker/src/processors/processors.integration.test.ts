@@ -48,6 +48,7 @@ import { repairUnresolvedLinks } from './document-links';
 import { createIndexDocumentProcessor } from './index-document';
 import { createMaintenanceProcessor } from './maintenance';
 import { createMaterializeDocumentProcessor } from './materialize-document';
+import { createRenderProcessor } from './render';
 
 /**
  * The provider an AI run should use, wrapped the way the runtime hands it over
@@ -3883,4 +3884,146 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
     );
     expect(resolution).toBeDefined();
   }, 60_000);
+});
+
+describe('rendering', () => {
+  /**
+   * The build processor, without ever starting a container (issue #44,
+   * ADR-026).
+   *
+   * What is worth testing here is everything around the container: a job that
+   * has already been claimed, a job somebody cancelled while it waited, and the
+   * deployment where rendering is switched off. All three have to end as a
+   * terminal status with a reason -- a render that leaves a row RUNNING for ever
+   * is the one failure the dialog cannot recover from.
+   */
+  async function createRenderJob(
+    overrides: Partial<{ status: 'PENDING' | 'RUNNING'; cancelledAt: Date | null }> = {},
+  ): Promise<{ jobId: string; documentId: string }> {
+    const documentId = await createDocument();
+    const template = await prisma.renderTemplate.create({
+      data: { workspaceId, name: 'Test', renderer: 'LATEX_PDF', source: null, createdById: userId },
+    });
+    const job = await prisma.renderJob.create({
+      data: {
+        workspaceId,
+        documentId,
+        documentTitle: 'Testseite',
+        templateId: template.id,
+        templateName: 'Test',
+        renderer: 'LATEX_PDF',
+        source: 'DOCUMENT',
+        status: overrides.status ?? 'PENDING',
+        variables: {},
+        inputHash: `hash-${Date.now().toString(36)}`,
+        cancelledAt: overrides.cancelledAt ?? null,
+        createdById: userId,
+      },
+    });
+    return { jobId: job.id, documentId };
+  }
+
+  function renderProcessor(settings: (workspaceId?: string) => Promise<Settings>) {
+    return createRenderProcessor({
+      prisma,
+      storage: recordingStorage(),
+      apiClientFor: null,
+      settings,
+      bus,
+    });
+  }
+
+  it('leaves a job alone that another worker already picked up', async () => {
+    const { jobId } = await createRenderJob({ status: 'RUNNING' });
+
+    await renderProcessor(stubSettings({ 'render.enabled': true }))(
+      contextFor({ correlationId: 'render-1', jobId, workspaceId, userId }).context,
+    );
+
+    const row = await prisma.renderJob.findUniqueOrThrow({ where: { id: jobId } });
+    expect(row.status).toBe('RUNNING');
+    expect(row.startedAt).toBeNull();
+  });
+
+  it('closes a job that was cancelled before it started', async () => {
+    const { jobId } = await createRenderJob({ cancelledAt: new Date() });
+
+    await renderProcessor(stubSettings({ 'render.enabled': true }))(
+      contextFor({ correlationId: 'render-2', jobId, workspaceId, userId }).context,
+    );
+
+    const row = await prisma.renderJob.findUniqueOrThrow({ where: { id: jobId } });
+    expect(row.status).toBe('CANCELLED');
+    expect(row.finishedAt).not.toBeNull();
+  });
+
+  it('fails with a reason when rendering is switched off, instead of building', async () => {
+    const { jobId } = await createRenderJob();
+
+    await renderProcessor(stubSettings({ 'render.enabled': false }))(
+      contextFor({ correlationId: 'render-3', jobId, workspaceId, userId }).context,
+    );
+
+    const row = await prisma.renderJob.findUniqueOrThrow({ where: { id: jobId } });
+    expect(row.status).toBe('FAILED');
+    expect(row.errorCode).toBe('renderer_unavailable');
+    expect(row.log).not.toBeNull();
+    expect(row.finishedAt).not.toBeNull();
+  });
+
+  it('says so when the page has no materialized content to build from', async () => {
+    const { jobId, documentId } = await createRenderJob();
+    await prisma.documentContent.update({
+      where: { documentId },
+      data: { markdown: null },
+    });
+
+    await renderProcessor(stubSettings({ 'render.enabled': true }))(
+      contextFor({ correlationId: 'render-4', jobId, workspaceId, userId }).context,
+    );
+
+    const row = await prisma.renderJob.findUniqueOrThrow({ where: { id: jobId } });
+    expect(row.status).toBe('FAILED');
+    expect(row.errorCode).toBe('source_missing');
+  });
+
+  it('closes a build whose worker never came back, and keeps the recent one', async () => {
+    const abandoned = await createRenderJob({ status: 'RUNNING' });
+    await prisma.renderJob.update({
+      where: { id: abandoned.jobId },
+      data: {
+        heartbeatAt: new Date(Date.now() - 120_000),
+        startedAt: new Date(Date.now() - 120_000),
+      },
+    });
+    const alive = await createRenderJob({ status: 'RUNNING' });
+    await prisma.renderJob.update({
+      where: { id: alive.jobId },
+      data: { heartbeatAt: new Date(), startedAt: new Date() },
+    });
+
+    const maintenance = createMaintenanceProcessor({
+      prisma,
+      queues,
+      storage: recordingStorage(),
+      search,
+      bus,
+      settings: stubSettings({ 'render.jobRetentionDays': 0 }),
+    });
+    await maintenance(
+      contextFor({
+        correlationId: 'render-reap',
+        task: 'reap-render-jobs',
+        workspaceId: null,
+        documentId: null,
+      }).context,
+    );
+
+    expect(
+      (await prisma.renderJob.findUniqueOrThrow({ where: { id: abandoned.jobId } })).status,
+    ).toBe('FAILED');
+    expect((await prisma.renderJob.findUniqueOrThrow({ where: { id: alive.jobId } })).status).toBe(
+      'RUNNING',
+    );
+  });
 });

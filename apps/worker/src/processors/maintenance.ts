@@ -11,6 +11,7 @@ import {
   pruneAutomationRuns,
   pruneInvitations,
   pruneMemories,
+  reapRenderJobs,
   reapStaleAiRuns,
 } from './maintenance-tasks/cleanup';
 import { type MaintenanceTask } from './maintenance-tasks/context';
@@ -82,12 +83,13 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'prune-ai-run-payloads': pruneAiRunPayloads,
   'prune-agent-journal': pruneAgentJournal,
   'prune-automation-runs': pruneAutomationRuns,
+  'reap-render-jobs': reapRenderJobs,
 };
 
 /**
  * Maintenance processor.
  *
- * Sixteen unrelated sweeps share one queue and one schedule; what they have in
+ * Seventeen unrelated sweeps share one queue and one schedule; what they have in
  * common is that nobody is waiting for them. The work itself lives one per
  * function in `maintenance-tasks/`, grouped by what it touches.
  */

@@ -4,6 +4,7 @@ import { aiRunPhaseSchema, aiRunStatusSchema, aiUsageSchema } from './ai';
 import { commentSchema } from './comments';
 import { documentSummarySchema } from './documents';
 import { idSchema, isoDateTimeSchema } from './primitives';
+import { renderJobStatusSchema } from './render';
 import { workspaceSchema } from './workspaces';
 
 /**
@@ -40,6 +41,7 @@ export const APPLICATION_EVENT_TYPES = [
   'comment.updated',
   'comment.resolved',
   'comment.deleted',
+  'render.job.updated',
 ] as const;
 
 export const applicationEventTypeSchema = z.enum(APPLICATION_EVENT_TYPES);
@@ -221,6 +223,22 @@ export const documentDeletedPayloadSchema = z.object({
   documentIds: z.array(idSchema),
 });
 
+/**
+ * A build changed state (issue #44, ADR-026).
+ *
+ * Carries the status rather than the whole job: the dialog that is watching
+ * refetches the job when this lands, and a build's log can be tens of kilobytes
+ * that nobody looking at a progress line has asked for.
+ */
+export const renderJobUpdatedPayloadSchema = z.object({
+  jobId: idSchema,
+  documentId: idSchema.nullable(),
+  status: renderJobStatusSchema,
+  /** German, user-facing. Null unless the build failed. */
+  error: z.string().nullable().default(null),
+});
+export type RenderJobUpdatedPayload = z.infer<typeof renderJobUpdatedPayloadSchema>;
+
 export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('workspace.updated', z.object({ workspace: workspaceSchema.partial() })),
   envelope('document.created', z.object({ document: documentSummarySchema })),
@@ -248,6 +266,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('comment.updated', commentEventPayloadSchema),
   envelope('comment.resolved', commentEventPayloadSchema),
   envelope('comment.deleted', commentDeletedPayloadSchema),
+  envelope('render.job.updated', renderJobUpdatedPayloadSchema),
 ]);
 export type ApplicationEvent = z.infer<typeof applicationEventSchema>;
 

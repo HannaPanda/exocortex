@@ -132,6 +132,9 @@ export interface JobProgressEvent {
     // An automation's progress is its run log, not a toast in a browser: it
     // runs for a rule somebody set up weeks ago, usually with nobody watching.
     | typeof QUEUE_NAMES.automation
+    // A render reports through `render.job.updated`; a percentage would be a
+    // guess, because nothing inside a LaTeX run says how far along it is.
+    | typeof QUEUE_NAMES.render
   >;
   workspaceId: string;
   correlationId: string;
@@ -420,6 +423,10 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
       // Nor does an automation: its progress is its run log, because it runs
       // for a rule somebody set up weeks ago, usually with nobody watching.
       | typeof QUEUE_NAMES.automation
+      // Nor does a render: a build reports through `render.job.updated`, which
+      // carries the status the dialog is actually waiting for, and a percentage
+      // would be a guess -- nothing inside a LaTeX run says how far along it is.
+      | typeof QUEUE_NAMES.render
     >;
     workspaceId: string;
     correlationId: string;

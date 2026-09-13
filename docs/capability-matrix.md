@@ -14,7 +14,7 @@ editor. A `·` under AI or MCP where the browser has a `✓` is the one that
 needs a reason, and every one of them has an entry in the exemption list of
 `scripts/check-mcp-catalog.mjs` or in `SURFACE_EXEMPT` here.
 
-127 routes are reachable from at least one client; 59 from all three.
+138 routes are reachable from at least one client; 68 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -31,6 +31,7 @@ needs a reason, and every one of them has an entry in the exemption list of
 | `DELETE /api/entities/:x/pages/:x` | · | ✓ | ✓ | `exo_entity_unlink_page` |
 | `DELETE /api/me/api-tokens/:x` | ✓ | · | · | — |
 | `DELETE /api/me/connections/:x` | ✓ | · | · | — |
+| `DELETE /api/render/templates/:x` | ✓ | ✓ | ✓ | `exo_render_template_delete` |
 | `DELETE /api/workspaces/:x/credentials/:x` | ✓ | · | · | — |
 | `DELETE /api/workspaces/:x/invitations/:x` | · | ✓ | ✓ | `exo_invitation_revoke` |
 | `GET /api/admin/ai-models` | ✓ | · | · | — |
@@ -66,6 +67,10 @@ needs a reason, and every one of them has an entry in the exemption list of
 | `GET /api/me/connections` | ✓ | · | · | — |
 | `GET /api/memory/facts` | · | ✓ | ✓ | `exo_memory_facts` |
 | `GET /api/memory/recall` | · | · | · | `recall` |
+| `GET /api/render/jobs/:x` | ✓ | ✓ | ✓ | `exo_render_status` |
+| `GET /api/render/jobs/:x/artifact` | · | ✓ | ✓ | `exo_render_artifact` |
+| `GET /api/render/jobs/:x/log` | ✓ | ✓ | ✓ | `exo_render_log` |
+| `GET /api/render/templates/:x` | · | ✓ | ✓ | `exo_render_template_read` |
 | `GET /api/session` | ✓ | · | · | — |
 | `GET /api/workspaces` | ✓ | ✓ | ✓ | `exo_list_workspaces`, `search` |
 | `GET /api/workspaces/:x` | ✓ | · | · | — |
@@ -77,6 +82,8 @@ needs a reason, and every one of them has an entry in the exemption list of
 | `GET /api/workspaces/:x/documents/tree` | ✓ | ✓ | ✓ | `exo_page_tree` |
 | `GET /api/workspaces/:x/invitations` | · | ✓ | ✓ | `exo_invitation_list` |
 | `GET /api/workspaces/:x/overview` | ✓ | ✓ | ✓ | `exo_workspace_overview` |
+| `GET /api/workspaces/:x/render/jobs` | ✓ | ✓ | ✓ | `exo_render_jobs` |
+| `GET /api/workspaces/:x/render/templates` | ✓ | ✓ | ✓ | `exo_render_template_list` |
 | `GET /api/workspaces/:x/search` | ✓ | ✓ | ✓ | `exo_search`, `search` |
 | `GET /api/workspaces/:x/settings` | ✓ | · | · | — |
 | `GET /api/workspaces/:x/trash` | ✓ | ✓ | ✓ | `exo_page_trash` |
@@ -94,6 +101,7 @@ needs a reason, and every one of them has an entry in the exemption list of
 | `PATCH /api/documents/:x/values` | ✓ | ✓ | ✓ | `exo_database_row_update` |
 | `PATCH /api/documents/:x/views/:x` | ✓ | ✓ | ✓ | `exo_database_view_update` |
 | `PATCH /api/entities/:x` | · | ✓ | ✓ | `exo_entity_update` |
+| `PATCH /api/render/templates/:x` | ✓ | ✓ | ✓ | `exo_render_template_update` |
 | `PATCH /api/workspaces/:x` | ✓ | ✓ | ✓ | `exo_workspace_rename` |
 | `PATCH /api/workspaces/:x/members/:x` | ✓ | · | · | — |
 | `PATCH /api/workspaces/:x/settings` | ✓ | · | · | — |
@@ -120,6 +128,7 @@ needs a reason, and every one of them has an entry in the exemption list of
 | `POST /api/documents/:x/properties` | ✓ | ✓ | ✓ | `exo_database_create`, `exo_database_property_create` |
 | `POST /api/documents/:x/properties/:x/options` | ✓ | ✓ | ✓ | `exo_database_option_create` |
 | `POST /api/documents/:x/properties/:x/reorder` | ✓ | ✓ | ✓ | `exo_database_property_reorder` |
+| `POST /api/documents/:x/render` | ✓ | ✓ | ✓ | `exo_render_start` |
 | `POST /api/documents/:x/restore` | ✓ | ✓ | ✓ | `exo_page_restore` |
 | `POST /api/documents/:x/rows` | ✓ | ✓ | ✓ | `exo_database_row_create` |
 | `POST /api/documents/:x/rows/query` | ✓ | ✓ | ✓ | `exo_database_query` |
@@ -135,6 +144,7 @@ needs a reason, and every one of them has an entry in the exemption list of
 | `POST /api/me/api-tokens` | ✓ | · | · | — |
 | `POST /api/memory/facts/:x/promote` | · | ✓ | ✓ | `exo_memory_fact_promote` |
 | `POST /api/memory/remember` | · | · | · | `remember` |
+| `POST /api/render/jobs/:x/cancel` | ✓ | ✓ | ✓ | `exo_render_cancel` |
 | `POST /api/workspaces` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/attachments` | ✓ | ✓ | ✓ | `exo_attachment_upload` |
 | `POST /api/workspaces/:x/automations` | ✓ | ✓ | ✓ | `exo_automation_create` |
@@ -142,6 +152,7 @@ needs a reason, and every one of them has an entry in the exemption list of
 | `POST /api/workspaces/:x/import/markdown` | ✓ | ✓ | ✓ | `exo_page_create` |
 | `POST /api/workspaces/:x/invitations` | · | ✓ | ✓ | `exo_invitation_create` |
 | `POST /api/workspaces/:x/invitations/:x/resend` | · | ✓ | ✓ | `exo_invitation_resend` |
+| `POST /api/workspaces/:x/render/templates` | ✓ | ✓ | ✓ | `exo_render_template_create` |
 | `POST /api/workspaces/:x/trash/delete` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/trash/deletion-preview` | ✓ | · | · | — |
 | `PUT /api/workspaces/:x/credentials/:x` | ✓ | · | · | — |

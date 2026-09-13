@@ -66,6 +66,8 @@ model User {
   agentSessions               AgentSession[]
   agentWrites                 AgentWriteJournal[]
   automationRules             AutomationRule[]      @relation("AutomationRuleCreatedBy")
+  renderTemplates             RenderTemplate[]      @relation("RenderTemplateCreatedBy")
+  renderJobs                  RenderJob[]           @relation("RenderJobCreatedBy")
 
   @@map("user")
 }
@@ -360,6 +362,8 @@ model Workspace {
   credentials      WorkspaceCredential[]
   automations      AutomationRule[]
   automationRuns   AutomationRun[]
+  renderTemplates  RenderTemplate[]
+  renderJobs       RenderJob[]
 
   @@index([isMemory])
   @@map("workspace")
@@ -606,6 +610,8 @@ model Document {
   automationScopes    AutomationRule[]          @relation("AutomationScopeDocument")
   /// Automation runs this page triggered.
   automationRuns      AutomationRun[]           @relation("AutomationRunDocument")
+  /// Builds of this page into a file (issue #44).
+  renderJobs          RenderJob[]               @relation("RenderJobDocument")
 
   @@index([workspaceId, parentId, orderKey])
   @@index([workspaceId, archivedAt])
@@ -1020,7 +1026,9 @@ model Attachment {
   correctedText     String?
   textCorrectedAt   DateTime?
   textCorrectedById String?
-  textCorrectedBy   User?     @relation("AttachmentTextCorrectedBy", fields: [textCorrectedById], references: [id], onDelete: SetNull)
+  textCorrectedBy   User?       @relation("AttachmentTextCorrectedBy", fields: [textCorrectedById], references: [id], onDelete: SetNull)
+  /// Present when this file is the artifact of a render (issue #44).
+  renderJobs        RenderJob[] @relation("RenderJobArtifact")
 
   @@index([workspaceId, createdAt])
   @@index([documentId])
@@ -2038,4 +2046,143 @@ model AutomationRun {
   /// The retention sweep, which has no workspace to narrow by.
   @@index([createdAt])
   @@map("automation_run")
+}
+
+// ---------------------------------------------------------------------------
+// Rendering: an existing page published as a file (issue #44, ADR-026)
+// ---------------------------------------------------------------------------
+
+/// How a job turns a document into a file. One value today; the enum exists so
+/// the second renderer is a value, not a second set of tables.
+enum Renderer {
+  /// Pandoc into a LaTeX template into xelatex, all inside one container.
+  LATEX_PDF
+}
+
+/// What goes into one render: the page alone, or the page and its descendants.
+enum RenderSource {
+  DOCUMENT
+  SUBTREE
+}
+
+enum RenderJobStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+/// A way of turning pages into files, belonging to one workspace.
+///
+/// The template body is Pandoc's own template language, not a second one of
+/// ours: `$title$`, `$body$`, `$for(...)$`. That is the whole reason this model
+/// carries a string rather than a structure -- eXocortex does not own the
+/// syntax, Pandoc does, and a template written here can be pasted into a Pandoc
+/// invocation anywhere else and still work.
+model RenderTemplate {
+  id          String    @id @default(cuid(2))
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String @default("")
+
+  renderer Renderer @default(LATEX_PDF)
+
+  /// The Pandoc template. Null means the renderer's built-in one (Eisvogel for
+  /// `LATEX_PDF`), which is what makes the first render possible without
+  /// anybody writing LaTeX first.
+  source String?
+
+  /// The variables the template declares, shaped by `renderVariableSchema`.
+  /// A Json column because it is a small list read as a whole, never filtered
+  /// on, and its shape belongs to the contracts package.
+  variables Json @default("[]")
+
+  /// Kept when the account goes: a template outlives the colleague who wrote it.
+  createdById String?
+  createdBy   User?    @relation("RenderTemplateCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  jobs RenderJob[]
+
+  @@index([workspaceId, name])
+  @@map("render_template")
+}
+
+/// One build, and what came of it.
+///
+/// The artifact is an ordinary `Attachment` rather than a table of its own.
+/// That is deliberate: a PDF produced here has to be downloadable, deletable,
+/// quota-counted and text-extractable exactly like a PDF somebody dragged in,
+/// and a parallel artifact store would have to grow all four of those again --
+/// and would then be the place where the text extraction that lets an agent
+/// inspect a rendered page does *not* run.
+model RenderJob {
+  id          String    @id @default(cuid(2))
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  /// The page that was rendered. Null once it is deleted for good, which is why
+  /// the title is copied rather than joined.
+  documentId    String?
+  document      Document? @relation("RenderJobDocument", fields: [documentId], references: [id], onDelete: SetNull)
+  documentTitle String?
+
+  /// Null once the template is deleted. The job stays: what was built, and from
+  /// what, is exactly the question somebody asks about an old PDF.
+  templateId   String?
+  template     RenderTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  templateName String?
+
+  renderer Renderer        @default(LATEX_PDF)
+  source   RenderSource    @default(DOCUMENT)
+  status   RenderJobStatus @default(PENDING)
+
+  /// The resolved variable values this build used, `{ name: value }`.
+  variables Json @default("{}")
+
+  /// Fingerprint of everything that went in: the source text, the template, the
+  /// renderer and the resolved variables. Two builds with the same hash produce
+  /// the same file, which is what lets an unchanged page hand back the PDF it
+  /// already has -- and what lets a page say its PDF is out of date without any
+  /// invalidation logic.
+  inputHash String
+
+  /// English, developer-facing; the API turns it into a German sentence.
+  errorCode String?
+  /// stdout and stderr of the build, capped. The only place a broken template
+  /// explains itself, so it is kept for failures and successes alike.
+  log       String?
+
+  /// The finished file. `SetNull` rather than cascade: deleting the attachment
+  /// leaves a job that says it succeeded and has nothing to show, which is the
+  /// truth, where a deleted job would silently lose the log as well.
+  attachmentId String?
+  attachment   Attachment? @relation("RenderJobArtifact", fields: [attachmentId], references: [id], onDelete: SetNull)
+
+  createdById String?
+  createdBy   User?     @relation("RenderJobCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  durationMs  Int?
+  /// Set the moment a cancel is asked for, before the worker notices. The
+  /// worker checks it between its steps and kills the container.
+  cancelledAt DateTime?
+  /// Last sign of life from the worker. A RUNNING job without a recent one lost
+  /// its worker, and `reap-stale-render-jobs` closes it as failed.
+  heartbeatAt DateTime?
+
+  @@index([workspaceId, createdAt])
+  @@index([documentId, createdAt])
+  /// The cache lookup: has this exact input already been built successfully?
+  @@index([inputHash, status])
+  /// The retention sweep and the stale-job reaper, neither of which has a
+  /// workspace to narrow by.
+  @@index([createdAt])
+  @@index([status, heartbeatAt])
+  @@map("render_job")
 }

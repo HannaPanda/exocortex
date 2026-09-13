@@ -187,6 +187,12 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   and reach the same capabilities. The exceptions are two lists with written
   reasons, both of which go red when an entry stops matching;
   `docs/capability-matrix.md` is generated from the source, never authored.
+- ADR-026: a rendered file is a derived view, never a second canonical state.
+  Markdown goes through Pandoc into a Pandoc template and xelatex inside a
+  container fed by a pipe (no bind mounts, no network); the artifact is an
+  ordinary `Attachment`, so it is downloadable, deletable and text-extractable
+  like any other file -- which is how an agent inspects a visual result. The
+  input hash is both the build cache and the staleness comparison.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -209,6 +215,7 @@ Each of these has a step-by-step recipe:
 | new MCP tool, new AI tool                                | `docs/mcp.md`               |
 | new admin setting, admin page                            | `docs/admin.md`             |
 | new automation trigger or action                         | `docs/automations.md`       |
+| new render template, new renderer                        | `docs/render.md`            |
 
 ## Deployment on this machine
 

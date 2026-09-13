@@ -11,6 +11,7 @@ import { LINK_TOOLS } from './tools/links.js';
 import { MEMORY_TOOLS } from './tools/memory.js';
 import { MEMORY_FACT_TOOLS } from './tools/memory-facts.js';
 import { PAGE_TOOLS } from './tools/pages.js';
+import { RENDER_TOOLS } from './tools/render.js';
 import { RESEARCH_TOOLS } from './tools/research.js';
 import { RULES_TOOLS } from './tools/rules.js';
 import { SEARCH_TOOLS } from './tools/search.js';
@@ -33,6 +34,7 @@ export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...INVITATION_TOOLS,
   ...AGENT_SESSION_TOOLS,
   ...AUTOMATION_TOOLS,
+  ...RENDER_TOOLS,
 ];
 
 /** Tools offered on a given surface, optionally excluding mutating ones. */

@@ -84,6 +84,10 @@ describe('EXOCORTEX_TOOLS', () => {
     // the only record of what that rule ever did. Changing a rule is not here:
     // the rule is small, visible in full in the list, and a wrong change is one
     // more call away from being right again.
+    //
+    // Deleting a render template (issue #44) is the same judgement: the PDFs
+    // built from it survive, but nothing can rebuild them. Starting a build is
+    // deliberately not destructive -- it adds a file and changes no page.
     const destructive = EXOCORTEX_TOOLS.filter((tool) => tool.destructive)
       .map((tool) => tool.name)
       .sort();
@@ -110,6 +114,7 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_page_rename',
       'exo_page_restore_snapshot',
       'exo_page_write',
+      'exo_render_template_delete',
       'exo_user_delete',
       'exo_user_set_disabled',
       'exo_workspace_rename',
@@ -128,7 +133,10 @@ describe('EXOCORTEX_TOOLS', () => {
     // An automation rule is: nothing snapshots it, and its run log goes with
     // it. Switching it off is the reversible act, and that is a separate call
     // on purpose. A select option is, for the same reason its column is: making
-    // it again gives it a new id, and the rows that had it stay empty.
+    // it again gives it a new id, and the rows that had it stay empty. A render
+    // template is: the PDFs built from it stay, but nothing can rebuild them,
+    // and a LaTeX preamble somebody spent an afternoon on is not something the
+    // trash holds a copy of.
     const irreversible = EXOCORTEX_TOOLS.filter((tool) => tool.irreversible)
       .map((tool) => tool.name)
       .sort();
@@ -138,6 +146,7 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_database_option_delete',
       'exo_database_property_delete',
       'exo_page_delete',
+      'exo_render_template_delete',
       'exo_user_delete',
     ]);
   });

@@ -3,6 +3,7 @@
 import {
   ArchiveIcon,
   DownloadIcon,
+  FileTextIcon,
   MoreHorizontalIcon,
   RotateCcwIcon,
   SlidersHorizontalIcon,
@@ -39,6 +40,7 @@ import { PageCover, PageCoverAddButton } from '@/components/document/page-cover'
 import { PageIconAddButton, PageIconButton } from '@/components/document/page-icon-picker';
 import { PagePropertiesDialog } from '@/components/document/page-properties-dialog';
 import { CollaborativeEditor } from '@/components/editor/collaborative-editor';
+import { PageRenderDialog } from '@/components/render/page-render-dialog';
 import {
   useArchiveDocument,
   useDocument,
@@ -77,6 +79,7 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
   const [importOpen, setImportOpen] = React.useState(false);
   const [importText, setImportText] = React.useState('');
   const [propertiesOpen, setPropertiesOpen] = React.useState(false);
+  const [renderOpen, setRenderOpen] = React.useState(false);
 
   // Published for the AI panel: a database page means nothing without the view
   // its rows are being read through. Only the full-page database does this; an
@@ -165,6 +168,7 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
         onOpenProperties={() => setPropertiesOpen(true)}
         onOpenImport={() => setImportOpen(true)}
         onExport={() => void downloadMarkdown()}
+        onOpenRender={() => setRenderOpen(true)}
       />
 
       {archived ? (
@@ -253,6 +257,13 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
         detail={detail}
         open={propertiesOpen}
         onOpenChange={setPropertiesOpen}
+      />
+
+      <PageRenderDialog
+        workspaceId={workspaceId}
+        documentId={documentId}
+        open={renderOpen}
+        onOpenChange={setRenderOpen}
       />
 
       <Dialog open={importOpen} onOpenChange={setImportOpen}>
@@ -348,6 +359,7 @@ function DocumentTopBar({
   onOpenProperties,
   onOpenImport,
   onExport,
+  onOpenRender,
 }: {
   workspaceId: string;
   documentId: string;
@@ -356,6 +368,7 @@ function DocumentTopBar({
   onOpenProperties: () => void;
   onOpenImport: () => void;
   onExport: () => void;
+  onOpenRender: () => void;
 }) {
   const router = useRouter();
   const archiveDocument = useArchiveDocument(workspaceId);
@@ -432,6 +445,9 @@ function DocumentTopBar({
             <DropdownMenuSeparator />
             <DropdownMenuItem data-testid="export-markdown" onClick={onExport}>
               <DownloadIcon /> Als Markdown exportieren
+            </DropdownMenuItem>
+            <DropdownMenuItem data-testid="open-render" onClick={onOpenRender}>
+              <FileTextIcon /> Als PDF veröffentlichen …
             </DropdownMenuItem>
             <DropdownMenuItem data-testid="open-import" onClick={onOpenImport}>
               <UploadIcon /> Markdown importieren
