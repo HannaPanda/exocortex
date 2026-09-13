@@ -28,6 +28,12 @@ It carries Pandoc, TeX Live, the fonts and the Eisvogel template. The worker
 starts it per build with `--network none`, hands it a tar archive on stdin and
 reads the PDF back from stdout.
 
+A template that names a font the image does not have cannot fetch it -- the
+container has no network. `deploy/render-image` derives an image with the faces
+this deployment's templates use; build it, then point `render.image` at the tag.
+A template that wants to survive either image asks with `\IfFileExists` and
+falls back to what the base image has.
+
 Four settings, all deployment-wide except the first:
 
 | Setting                   | Scope      | Default               | Why                                                                         |
