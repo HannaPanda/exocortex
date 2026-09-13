@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 
-import { createTar } from './tar';
 import {
   bindAssetName,
   buildMetadataYaml,
@@ -8,6 +7,7 @@ import {
   dropAsset,
   flattenWikiLinks,
 } from './prepare';
+import { createTar } from './tar';
 
 /**
  * Everything that happens to a document before it reaches the container
