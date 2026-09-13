@@ -87,10 +87,12 @@ async function main() {
   if (config === null || config.disabled) return;
 
   const input = await readHookInput();
-  // `clear` ends a session the person is not finished with, and `logout` ends
-  // one nobody was in. Both would produce a memory of a session that did not
-  // happen as a session.
-  if (input.reason === 'clear' || input.reason === 'logout') return;
+  // `logout` ends a session nobody was in, so there is nothing to look back on.
+  // `clear` is not in this list on purpose: it looks like an interruption but is
+  // how most people finish one piece of work and start the next, which is
+  // exactly the boundary a memory wants. A cleared session that carried nothing
+  // is turned away later anyway, by `memory.captureMinChars`.
+  if (input.reason === 'logout') return;
 
   const path = typeof input.transcript_path === 'string' ? input.transcript_path : null;
   if (path === null) return;

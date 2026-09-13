@@ -82,10 +82,22 @@ Eingriff in `settings.json`.
 Der Mitschrieb geht ausschließlich in den **Memory-Arbeitsbereich**, nie ins
 Second Brain: das eine ist Werkzeug der Agenten und darf aufgeräumt werden, das
 andere ist ein gepflegtes Gedächtnis für Menschen. Welcher Arbeitsbereich das
-ist, steht in der Einstellung `memory.workspaceId` im Administrationsbereich.
+ist, entscheidet `isMemory` an der Arbeitsbereichszeile selbst (ADR-023), nicht
+eine Einstellung.
 
 Vor dem Senden fallen Werkzeugaufrufe und deren Ausgaben raus. Was ankommt,
 wird nicht gespeichert, sondern von einem Modell zu wenigen Stichpunkten
 verdichtet; nur die landen als Seite. Sitzungen unterhalb von
 `memory.captureMinChars` Zeichen werden gar nicht erst angenommen, und das
 Modell darf antworten, dass es nichts zu merken gibt.
+
+## Wann mitgeschrieben wird
+
+Bei jedem Ende einer Sitzung, `/clear` eingeschlossen. Das ist Absicht: `/clear`
+sieht nach Unterbrechung aus, ist aber für die meisten der Punkt, an dem ein
+Stück Arbeit fertig ist und das nächste anfängt, also genau die Grenze, die eine
+Erinnerung haben will. Ausgenommen ist nur `logout`, weil dort niemand in einer
+Sitzung war.
+
+Wer viel und kurz `/clear` drückt, dreht `memory.captureMinChars` hoch: alles
+darunter wird gar nicht erst angenommen.
