@@ -272,13 +272,14 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
 3. **Prisma client**, before anything type-checks against it.
 4. **The hard gates.** Always on, no bypass, roughly six seconds together:
 
-   | Gate                               | Catches                                                                                         |
-   | ---------------------------------- | ----------------------------------------------------------------------------------------------- |
-   | `check-dependency-boundaries.mjs`  | a manifest depending on a package the graph forbids                                             |
-   | `check-env-example.mjs`            | a variable the code reads and `.env.example` does not document, or the reverse                  |
-   | `check-brand-spelling.mjs`         | `Exocortex` where a human reads it (rule 10)                                                    |
-   | `check-mcp-catalog.mjs`            | a REST route with no tool behind it, and a tool calling a route that is gone (rule 11, ADR-014) |
-   | `check-migrations-reproducible.sh` | a migration history that does not rebuild `schema.prisma` from zero                             |
+   | Gate                               | Catches                                                                                             |
+   | ---------------------------------- | --------------------------------------------------------------------------------------------------- |
+   | `check-dependency-boundaries.mjs`  | a manifest depending on a package the graph forbids                                                 |
+   | `check-env-example.mjs`            | a variable the code reads and `.env.example` does not document, or the reverse                      |
+   | `check-brand-spelling.mjs`         | `Exocortex` where a human reads it (rule 10)                                                        |
+   | `check-mcp-catalog.mjs`            | a REST route with no tool behind it, and a tool calling a route that is gone (rule 11, ADR-014)     |
+   | `check-capability-parity.mjs`      | a tool the built-in AI does not get, a screen no agent can reach, a stale matrix (rule 12, ADR-025) |
+   | `check-migrations-reproducible.sh` | a migration history that does not rebuild `schema.prisma` from zero                                 |
 
    Each one prints its findings and one sentence on how to fix them. The
    migration gate replays the whole history onto a throwaway Postgres container

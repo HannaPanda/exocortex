@@ -1,8 +1,17 @@
 import { describe, expect, it } from 'vitest';
 
 import { type ExocortexApiClient } from '../client.js';
+import { ToolInputValidationError } from '../tool.js';
 
-import { databaseCreateTool, databaseRowGetTool, databaseSchemaTool } from './databases.js';
+import {
+  databaseCreateTool,
+  databaseOptionDeleteTool,
+  databaseOptionUpdateTool,
+  databasePropertyReorderTool,
+  databaseRowGetTool,
+  databaseSchemaTool,
+  databaseViewReorderTool,
+} from './databases.js';
 
 interface RecordedCall {
   kind: 'request' | 'upload';
@@ -213,5 +222,119 @@ describe('databaseCreateTool', () => {
       iconColor: 'yellow',
     });
     expect(result.text).toContain('Aufgaben');
+  });
+});
+
+/**
+ * The four capabilities the browser had on its own until ADR-025: renaming and
+ * removing a select option, and moving a column or a view. Each is checked for
+ * the path it builds, because a wrong one fails at runtime against the API and
+ * nowhere earlier -- the catalogue talks HTTP and the type checker never sees
+ * the join.
+ */
+describe('the capabilities that used to be drag-and-drop only', () => {
+  it('renames one option without touching the others', async () => {
+    const { client, calls } = createFakeClient({
+      id: 'opt123456',
+      label: 'Erledigt',
+      color: 'green',
+      orderKey: 'a0',
+    });
+
+    const result = await databaseOptionUpdateTool.run(client, {
+      documentId: 'col1234567',
+      propertyId: 'prop123456',
+      optionId: 'opt123456',
+      label: 'Erledigt',
+    });
+
+    expect(calls).toEqual([
+      {
+        kind: 'request',
+        method: 'PATCH',
+        path: '/api/documents/col1234567/properties/prop123456/options/opt123456',
+        body: { label: 'Erledigt' },
+        query: undefined,
+      },
+    ]);
+    expect(result.text).toContain('Erledigt');
+  });
+
+  it('refuses an option update that changes nothing', async () => {
+    const { client, calls } = createFakeClient({});
+
+    // The refine that `.extend()` drops has to be re-applied by hand, so this
+    // is the assertion that the copy in the tool is still there.
+    await expect(
+      databaseOptionUpdateTool.run(client, {
+        documentId: 'col1234567',
+        propertyId: 'prop123456',
+        optionId: 'opt123456',
+      }),
+    ).rejects.toThrow(ToolInputValidationError);
+    expect(calls).toHaveLength(0);
+  });
+
+  it('removes one option', async () => {
+    const { client, calls } = createFakeClient({ deleted: true });
+
+    await databaseOptionDeleteTool.run(client, {
+      documentId: 'col1234567',
+      propertyId: 'prop123456',
+      optionId: 'opt123456',
+    });
+
+    expect(calls[0]?.method).toBe('DELETE');
+    expect(calls[0]?.path).toBe('/api/documents/col1234567/properties/prop123456/options/opt123456');
+  });
+
+  it('moves a column to the front with a null anchor', async () => {
+    const { client, calls } = createFakeClient({
+      id: 'prop123456',
+      documentId: 'col1234567',
+      name: 'Status',
+      type: 'SELECT',
+      config: {},
+      options: [],
+      orderKey: 'a0',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+
+    const result = await databasePropertyReorderTool.run(client, {
+      documentId: 'col1234567',
+      propertyId: 'prop123456',
+      afterPropertyId: null,
+    });
+
+    expect(calls[0]?.method).toBe('POST');
+    expect(calls[0]?.path).toBe('/api/documents/col1234567/properties/prop123456/reorder');
+    expect(calls[0]?.body).toEqual({ afterPropertyId: null, beforePropertyId: undefined });
+    expect(result.text).toContain('Status');
+  });
+
+  it('moves a view behind another one', async () => {
+    const { client, calls } = createFakeClient({
+      id: 'view123456',
+      documentId: 'col1234567',
+      name: 'Board',
+      type: 'BOARD',
+      filters: { combinator: 'and', conditions: [] },
+      sorts: [],
+      groupByPropertyId: null,
+      config: {},
+      orderKey: 'a1',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+
+    await databaseViewReorderTool.run(client, {
+      documentId: 'col1234567',
+      viewId: 'view123456',
+      afterViewId: 'view000000',
+    });
+
+    expect(calls[0]?.path).toBe('/api/documents/col1234567/views/view123456/reorder');
+    expect(calls[0]?.body).toEqual({ afterViewId: 'view000000' });
   });
 });

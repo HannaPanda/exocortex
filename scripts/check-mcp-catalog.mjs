@@ -26,18 +26,17 @@
  *
  * Route matching is by method and shape, with every parameter segment
  * flattened to `:x` -- the two sides name their parameters independently, and
- * position is what has to agree.
+ * position is what has to agree. Both sides are read by `lib/api-surface.mjs`,
+ * shared with the capability-parity gate so the two cannot come to disagree
+ * about what a route is.
  */
 
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { dirname, join, relative } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
+import {
+  collectApiRoutes,
+  collectCatalogueCalls,
+  matchesRoutePattern,
+} from './lib/api-surface.mjs';
 import { fail, info, ok, step } from './lib/gate-log.mjs';
-
-const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
-const API_SRC = join(repoRoot, 'apps/api/src');
-const CATALOGUE_SRC = join(repoRoot, 'packages/mcp-tools/src');
 
 /**
  * Routes that are deliberately not tools, each with the reason.
@@ -208,23 +207,6 @@ const EXEMPT = [
       'Deleting an attachment is only reachable from the block that shows it; removing the block from the page is what `exo_page_write` does.',
   },
   {
-    route: 'PATCH /api/documents/:x/properties/:x/options/:x',
-    reason:
-      'Renames or recolours one select option. `exo_database_option_create` adds them; editing one is a two-second job in the view that shows it.',
-  },
-  {
-    route: 'DELETE /api/documents/:x/properties/:x/options/:x',
-    reason: 'Same, for removing an option.',
-  },
-  {
-    route: 'POST /api/documents/:x/properties/:x/reorder',
-    reason: 'Column order in a database view. Presentation, and drag-and-drop in the browser.',
-  },
-  {
-    route: 'POST /api/documents/:x/views/:x/reorder',
-    reason: 'Order of the views themselves. Same reason.',
-  },
-  {
     route: 'POST /api/memory/capture',
     reason:
       'The SessionEnd hook posts a whole transcript here to be condensed (ADR-019). `remember` is the deliberate half and is a tool; capture is machinery.',
@@ -242,101 +224,8 @@ const EXEMPT = [
 ];
 
 // ---------------------------------------------------------------------------
-// Collecting the two sides
-// ---------------------------------------------------------------------------
-
-const SKIP_DIRS = new Set(['node_modules', 'dist', 'generated', '.turbo', 'coverage']);
-
-function walk(dir, acc = []) {
-  if (!existsSync(dir)) return acc;
-  for (const entry of readdirSync(dir)) {
-    if (SKIP_DIRS.has(entry)) continue;
-    const abs = join(dir, entry);
-    if (statSync(abs).isDirectory()) walk(abs, acc);
-    else if (/\.tsx?$/.test(entry)) acc.push(abs);
-  }
-  return acc;
-}
-
-/** `/api/documents/:documentId/x` and `/api/documents/${id}/x` both become `/api/documents/:x/x`. */
-function normalizePath(path) {
-  const segments = path
-    .split('/')
-    .filter((segment) => segment.length > 0)
-    .map((segment) => (segment.startsWith(':') || segment.includes('${') ? ':x' : segment));
-  return `/${segments.join('/')}`;
-}
-
-/** Every route a NestJS controller declares, as `METHOD /path`. */
-function collectApiRoutes() {
-  const routes = new Map();
-  const files = walk(API_SRC).filter((file) => file.endsWith('.controller.ts'));
-  for (const file of files) {
-    const rel = relative(repoRoot, file);
-    let prefix = null;
-    const lines = readFileSync(file, 'utf8').split('\n');
-    for (const [index, line] of lines.entries()) {
-      const controller = line.match(/^@Controller\(\s*(?:'([^']*)')?\s*\)/);
-      if (controller !== null) prefix = controller[1] ?? '';
-      const handler = line.match(/^\s*@(Get|Post|Patch|Put|Delete|All)\(\s*(?:'([^']*)')?\s*\)/);
-      if (handler === null || prefix === null) continue;
-      const method = handler[1] === 'All' ? '*' : handler[1].toUpperCase();
-      const suffix = (handler[2] ?? '').replace(/\*$/, '');
-      const key = `${method} ${normalizePath(`${prefix}/${suffix}`)}`;
-      if (!routes.has(key)) routes.set(key, `${rel}:${index + 1}`);
-    }
-  }
-  return routes;
-}
-
-/**
- * Every route the catalogue calls.
- *
- * Reads the object literal handed to `client.request` / `client.upload` and
- * takes every `/api/…` string literal in it, rather than only the one on the
- * line after `method:`. Several tools choose their path with a ternary (the
- * invitation tools switch between the workspace route and the admin one), and
- * both branches are calls that really happen.
- */
-function collectCatalogueCalls() {
-  const calls = new Map();
-  for (const file of walk(CATALOGUE_SRC).filter((file) => !file.includes('.test.'))) {
-    const rel = relative(repoRoot, file);
-    const source = readFileSync(file, 'utf8');
-    const opener = /\bclient\.(request|upload)\s*(?:<[^>]*>)?\s*\(\s*\{/g;
-    let match;
-    while ((match = opener.exec(source)) !== null) {
-      let depth = 1;
-      let cursor = opener.lastIndex;
-      while (cursor < source.length && depth > 0) {
-        if (source[cursor] === '{') depth += 1;
-        else if (source[cursor] === '}') depth -= 1;
-        cursor += 1;
-      }
-      const block = source.slice(opener.lastIndex, cursor - 1);
-      const method =
-        match[1] === 'upload' ? 'POST' : (block.match(/method:\s*'(\w+)'/)?.[1] ?? 'UNKNOWN');
-      const paths = [...block.matchAll(/[`'"](\/(?:api|health)\/[^`'"]*)[`'"]/g)];
-      for (const path of paths) {
-        const key = `${method} ${normalizePath(path[1])}`;
-        if (!calls.has(key)) calls.set(key, rel);
-      }
-    }
-  }
-  return calls;
-}
-
-// ---------------------------------------------------------------------------
 // Comparing them
 // ---------------------------------------------------------------------------
-
-function matchesExemption(route, pattern) {
-  const [patternMethod, patternPath] = pattern.split(' ');
-  const [routeMethod, routePath] = route.split(' ');
-  if (patternMethod !== '*' && patternMethod !== routeMethod) return false;
-  if (patternPath.endsWith('*')) return routePath.startsWith(patternPath.slice(0, -1));
-  return patternPath === routePath;
-}
 
 step('MCP catalogue completeness (apps/api routes ↔ packages/mcp-tools)');
 
@@ -359,7 +248,7 @@ for (const [route, where] of apiRoutes) {
     coveredByTool += 1;
     continue;
   }
-  if (EXEMPT.some((entry) => matchesExemption(route, entry.route))) {
+  if (EXEMPT.some((entry) => matchesRoutePattern(route, entry.route))) {
     coveredByExemption += 1;
     continue;
   }
@@ -367,7 +256,7 @@ for (const [route, where] of apiRoutes) {
 }
 
 const stale = EXEMPT.filter(
-  (entry) => ![...apiRoutes.keys()].some((route) => matchesExemption(route, entry.route)),
+  (entry) => ![...apiRoutes.keys()].some((route) => matchesRoutePattern(route, entry.route)),
 ).map((entry) => `${entry.route} — matches no route any more`);
 
 const dangling = [...catalogueCalls]

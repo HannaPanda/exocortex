@@ -59,6 +59,18 @@ file is the contract for automated sessions. Read it before changing code.
     the catalogue in the same commit series — with a REST endpoint behind it,
     because the catalogue only ever calls the API. A pull request that extends the
     UI without extending the catalogue is incomplete. Recipe: `docs/mcp.md`.
+12. **The browser, the built-in AI and MCP reach the same capabilities.**
+    ADR-025: if the product can do it, all three can do it. A tool goes on both
+    agent surfaces (`surfaces: ['mcp', 'ai']`) unless there is a reason in
+    `SURFACE_EXEMPT` in `scripts/check-capability-parity.mjs`, and a route the
+    browser calls that no tool reaches needs a reason in `EXEMPT` in
+    `scripts/check-mcp-catalog.mjs`. Parity is semantic: a drag is not a
+    feature, `move` is. Read-side parity counts too — status, errors and
+    results have to be machine-readable, and an asynchronous feature offers the
+    whole loop (start, status, diagnostics, result, retry, cancel).
+    Regenerate `docs/capability-matrix.md` with
+    `node scripts/check-capability-parity.mjs --write` in the same commit
+    series.
 
 ## Repository map
 
@@ -102,9 +114,9 @@ bash scripts/deploy.sh # build.sh, then migrations, nginx, the four units,
                        # readiness, and the deploy marker last.
 ```
 
-`build.sh` is the one to reach for: it runs the five hard gates that have no
+`build.sh` is the one to reach for: it runs the six hard gates that have no
 bypass (package boundaries, `.env.example` sync, brand spelling, MCP catalogue
-completeness, migration reproducibility) as well as the checks below, in the
+completeness, capability parity, migration reproducibility) as well as the checks below, in the
 right order and without racing the live units for memory. There is deliberately
 no CI; `deploy/README.md` explains why and what each step does.
 
@@ -171,6 +183,10 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   never fires on its own action and a chain stops at depth three; an AI rule
   writes a comment or a child page and never overwrites content; the webhook
   allowlist and `automations.enabled` both default to refusing.
+- ADR-025: the browser, the built-in AI and MCP are three clients of one API
+  and reach the same capabilities. The exceptions are two lists with written
+  reasons, both of which go red when an entry stops matching;
+  `docs/capability-matrix.md` is generated from the source, never authored.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

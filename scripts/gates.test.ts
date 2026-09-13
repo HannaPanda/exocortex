@@ -208,6 +208,95 @@ describe('MCP catalogue completeness (check-mcp-catalog.mjs)', () => {
   });
 });
 
+describe('capability parity (check-capability-parity.mjs)', () => {
+  it('is green on the repository as it stands', () => {
+    expect(gate('check-capability-parity.mjs').status).toBe(0);
+  });
+
+  it('goes red for a tool the built-in AI does not get', () => {
+    editFile('packages/mcp-tools/src/tools/search.ts', (source) =>
+      source.replace("surfaces: ['mcp', 'ai']", "surfaces: ['mcp']"),
+    );
+    const result = gate('check-capability-parity.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('exo_search');
+  });
+
+  it('goes red for a screen the agents cannot reach', () => {
+    writeProbe(
+      'apps/api/src/__gate_probe__.controller.ts',
+      [
+        "import { Controller, Post } from '@nestjs/common';",
+        '',
+        "@Controller('api/gate-probe')",
+        'export class GateProbeController {',
+        "  @Post('thing')",
+        "  thing(): string { return 'probe'; }",
+        '}',
+        '',
+      ].join('\n'),
+    );
+    writeProbe(
+      'apps/web/src/lib/api/__gate_probe__.ts',
+      [
+        "import { apiRequest } from './client';",
+        '',
+        'export async function probe(): Promise<unknown> {',
+        "  return apiRequest<unknown>(`/api/gate-probe/thing`, { method: 'POST' });",
+        '}',
+        '',
+      ].join('\n'),
+    );
+    const result = gate('check-capability-parity.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('POST /api/gate-probe/thing');
+  });
+
+  it('goes red for a surface exemption that no longer explains anything', () => {
+    editFile('scripts/check-capability-parity.mjs', (source) =>
+      source.replace(
+        'const SURFACE_EXEMPT = [',
+        "const SURFACE_EXEMPT = [\n  { tool: 'exo_gate_probe_stale', reason: 'probe' },",
+      ),
+    );
+    const result = gate('check-capability-parity.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('exo_gate_probe_stale');
+  });
+
+  it('goes red when the committed matrix no longer matches the code', () => {
+    editFile('docs/capability-matrix.md', (source) => `${source}\n<!-- probe -->\n`);
+    const result = gate('check-capability-parity.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('capability-matrix.md is out of date');
+  });
+
+  /**
+   * The scanner in `lib/api-surface.mjs` reads paths out of source, and the way
+   * it failed before was not by missing a route but by producing a mangled one:
+   * a character class shared across the three quote styles ends
+   * `/api/x/${id ?? ''}/y` at the wrong quote. A wrong route matches nothing and
+   * reports a gap that is not there, so the shapes that used to break it are
+   * asserted directly rather than through a gate's exit code.
+   */
+  it('reads paths through interpolations that contain quotes and nested templates', async () => {
+    const surface: {
+      normalizePath: (path: string) => string;
+      readStringLiteral: (source: string, open: number) => { text: string } | null;
+    } = await import('./lib/api-surface.mjs');
+    const read = (literal: string): string =>
+      surface.normalizePath(surface.readStringLiteral(literal, 0)?.text ?? '');
+
+    expect(read("`/api/workspaces/${workspaceId ?? ''}/settings`")).toBe(
+      '/api/workspaces/:x/settings',
+    );
+    expect(read("`/api/workspaces/${id}/automations/runs${x ? `?r=${r}` : ''}`")).toBe(
+      '/api/workspaces/:x/automations/runs',
+    );
+    expect(read("'/api/admin/settings'")).toBe('/api/admin/settings');
+  });
+});
+
 describe('migration history (check-migrations-reproducible.sh)', () => {
   it('is green: a fresh database built from migrations equals schema.prisma', () => {
     expect(gate('check-migrations-reproducible.sh').status).toBe(0);

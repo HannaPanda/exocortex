@@ -24,6 +24,9 @@ import {
   IMPLEMENTED_PROPERTY_TYPES,
   queryDatabaseRowsRequestSchema,
   queryDatabaseRowsResponseSchema,
+  reorderDatabasePropertyRequestSchema,
+  reorderDatabaseViewRequestSchema,
+  updateDatabasePropertyOptionRequestSchema,
   updateDatabasePropertyRequestSchema,
   updateDatabaseRowValuesRequestSchema,
   updateDatabaseViewRequestSchema,
@@ -254,6 +257,89 @@ export const databaseOptionCreateTool: AnyToolDefinition = defineTool({
   },
 });
 
+/** See the comment on `databasePropertyUpdateInputSchema` about re-applying the refine. */
+const databaseOptionUpdateInputSchema = z
+  .object({ documentId: idSchema, propertyId: idSchema, optionId: idSchema })
+  .extend(updateDatabasePropertyOptionRequestSchema.shape)
+  .refine((value) => value.label !== undefined || value.color !== undefined, {
+    message: 'At least one of "label" or "color" must be provided',
+  });
+
+export const databaseOptionUpdateTool: AnyToolDefinition = defineTool({
+  name: 'exo_database_option_update',
+  description:
+    'Benennt eine Option einer Auswahl-Spalte um oder färbt sie neu. Zeilen, die die Option ' +
+    'gesetzt haben, behalten sie: die Option bleibt dieselbe, nur ihre Beschriftung ändert sich.',
+  inputSchema: databaseOptionUpdateInputSchema,
+  surfaces: ['mcp', 'ai'],
+  mutating: true,
+  destructive: true,
+  target: (input) => `document:${input.documentId}`,
+  async execute(client, input) {
+    const { documentId, propertyId, optionId, ...body } = input;
+    const result = await client.request({
+      method: 'PATCH',
+      path: `/api/documents/${documentId}/properties/${propertyId}/options/${optionId}`,
+      body,
+      responseSchema: databasePropertyOptionSchema,
+    });
+    return { text: `Option aktualisiert: ${result.label} (id: ${result.id})`, data: result };
+  },
+});
+
+export const databaseOptionDeleteTool: AnyToolDefinition = defineTool({
+  name: 'exo_database_option_delete',
+  description:
+    'Entfernt eine Option aus einer Auswahl-Spalte. Zeilen, die sie gesetzt hatten, verlieren ' +
+    'den Wert. Vorher exo_database_schema lesen, um zu sehen, welche Option gemeint ist.',
+  inputSchema: z.object({ documentId: idSchema, propertyId: idSchema, optionId: idSchema }),
+  surfaces: ['mcp', 'ai'],
+  mutating: true,
+  destructive: true,
+  target: (input) => `document:${input.documentId}`,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'DELETE',
+      path: `/api/documents/${input.documentId}/properties/${input.propertyId}/options/${input.optionId}`,
+      responseSchema: deletedResultSchema,
+    });
+    return { text: `Option ${input.optionId} entfernt.`, data: result };
+  },
+});
+
+/**
+ * Moving a column, which the browser does by dragging its header.
+ *
+ * The gesture is not the capability (ADR-025): what a person does with the
+ * mouse, an agent has to be able to do with a call, and the position of a
+ * column is part of how a database reads.
+ */
+const databasePropertyReorderInputSchema = z
+  .object({ documentId: idSchema, propertyId: idSchema })
+  .extend(reorderDatabasePropertyRequestSchema.shape);
+
+export const databasePropertyReorderTool: AnyToolDefinition = defineTool({
+  name: 'exo_database_property_reorder',
+  description:
+    'Verschiebt eine Spalte an eine andere Stelle. afterPropertyId ist die Spalte, hinter die ' +
+    'sie rutscht, oder null für ganz nach vorne; beforePropertyId ist optional und macht die ' +
+    'Position eindeutig, wenn parallel jemand anders sortiert.',
+  inputSchema: databasePropertyReorderInputSchema,
+  surfaces: ['mcp', 'ai'],
+  mutating: true,
+  target: (input) => `document:${input.documentId}`,
+  async execute(client, input) {
+    const { documentId, propertyId, ...body } = input;
+    const result = await client.request({
+      method: 'POST',
+      path: `/api/documents/${documentId}/properties/${propertyId}/reorder`,
+      body,
+      responseSchema: databasePropertySchema,
+    });
+    return { text: `Spalte verschoben: ${result.name} (id: ${result.id})`, data: result };
+  },
+});
+
 const databaseViewCreateInputSchema = z
   .object({ documentId: idSchema })
   .extend(createDatabaseViewRequestSchema.shape);
@@ -312,6 +398,32 @@ export const databaseViewUpdateTool: AnyToolDefinition = defineTool({
       responseSchema: databaseViewSchema,
     });
     return { text: `Ansicht aktualisiert: ${result.name} (id: ${result.id})`, data: result };
+  },
+});
+
+const databaseViewReorderInputSchema = z
+  .object({ documentId: idSchema, viewId: idSchema })
+  .extend(reorderDatabaseViewRequestSchema.shape);
+
+export const databaseViewReorderTool: AnyToolDefinition = defineTool({
+  name: 'exo_database_view_reorder',
+  description:
+    'Verschiebt eine Ansicht in der Leiste über der Datenbank. afterViewId ist die Ansicht, ' +
+    'hinter die sie rutscht, oder null für ganz nach vorne. Die erste Ansicht ist die, die ' +
+    'beim Öffnen der Datenbank gezeigt wird.',
+  inputSchema: databaseViewReorderInputSchema,
+  surfaces: ['mcp', 'ai'],
+  mutating: true,
+  target: (input) => `document:${input.documentId}`,
+  async execute(client, input) {
+    const { documentId, viewId, ...body } = input;
+    const result = await client.request({
+      method: 'POST',
+      path: `/api/documents/${documentId}/views/${viewId}/reorder`,
+      body,
+      responseSchema: databaseViewSchema,
+    });
+    return { text: `Ansicht verschoben: ${result.name} (id: ${result.id})`, data: result };
   },
 });
 
@@ -478,9 +590,13 @@ export const DATABASE_TOOLS: readonly AnyToolDefinition[] = [
   databasePropertyCreateTool,
   databasePropertyUpdateTool,
   databasePropertyDeleteTool,
+  databasePropertyReorderTool,
   databaseOptionCreateTool,
+  databaseOptionUpdateTool,
+  databaseOptionDeleteTool,
   databaseViewCreateTool,
   databaseViewUpdateTool,
+  databaseViewReorderTool,
   databaseViewDeleteTool,
   databaseQueryTool,
   databaseRowGetTool,
