@@ -288,7 +288,7 @@ function RenderForm({
   template: RenderTemplate | null;
   source: RenderSource;
   values: Readonly<Record<string, string>>;
-  onTemplateChange: (templateId: string) => void;
+  onTemplateChange: (templateId: string | null) => void;
   onSourceChange: (source: RenderSource) => void;
   onValueChange: (name: string, value: string) => void;
 }) {
