@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 
+import { OutboxService } from '../common/outbox.service';
+
 import { ProjectBridgeService } from './project-bridge.service';
 import { ProjectBuildsService } from './project-builds.service';
 import {
@@ -18,7 +20,7 @@ import { ProjectsService } from './projects.service';
  */
 @Module({
   controllers: [WorkspaceProjectsController, ProjectsController, ProjectBuildsController],
-  providers: [ProjectsService, ProjectBuildsService, ProjectBridgeService],
+  providers: [ProjectsService, ProjectBuildsService, ProjectBridgeService, OutboxService],
   exports: [ProjectsService, ProjectBuildsService],
 })
 export class ProjectsModule {}
