@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 
-import { createTar, type TarEntry } from './tar';
+import { createTar, type TarEntry } from '../tar';
 
 /**
  * The one place a LaTeX build happens (issue #44, ADR-026).

@@ -135,6 +135,9 @@ export interface JobProgressEvent {
     // A render reports through `render.job.updated`; a percentage would be a
     // guess, because nothing inside a LaTeX run says how far along it is.
     | typeof QUEUE_NAMES.render
+    // A project build says the same through `project.build.updated`, and
+    // latexmk says nothing about how far through its passes it is either.
+    | typeof QUEUE_NAMES.projectBuild
   >;
   workspaceId: string;
   correlationId: string;
@@ -427,6 +430,10 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
       // carries the status the dialog is actually waiting for, and a percentage
       // would be a guess -- nothing inside a LaTeX run says how far along it is.
       | typeof QUEUE_NAMES.render
+      // Nor does a project build, for the same reason (issue #43, ADR-027):
+      // `project.build.updated` carries the status, and latexmk says nothing
+      // about how far through its passes it is.
+      | typeof QUEUE_NAMES.projectBuild
     >;
     workspaceId: string;
     correlationId: string;

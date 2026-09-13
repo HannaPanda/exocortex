@@ -427,3 +427,45 @@ export const reapRenderJobs: MaintenanceTask = async (context) => {
  * sweep must not have.
  */
 const RENDER_HEARTBEAT_STALE_MS = 25_000;
+
+/**
+ * The same two sweeps for project builds (issue #43, ADR-027).
+ *
+ * Separate from `reapRenderJobs` rather than generalised over both tables: the
+ * two share a shape and nothing else -- their own settings, their own retention
+ * and their own idea of what a lost worker leaves behind -- and a helper taking
+ * a table name would have to be told all three anyway.
+ */
+export const reapProjectBuilds: MaintenanceTask = async (context) => {
+  const { prisma, logger, reportProgress } = context;
+  const settings = await context.settings();
+
+  await reportProgress(10, 'Projekt-Bauten werden aufgeräumt');
+  const abandonedBefore = new Date(Date.now() - RENDER_HEARTBEAT_STALE_MS);
+  const abandoned = await prisma.projectBuild.updateMany({
+    where: {
+      status: 'RUNNING',
+      OR: [
+        { heartbeatAt: { lt: abandonedBefore } },
+        { heartbeatAt: null, startedAt: { lt: abandonedBefore } },
+      ],
+    },
+    data: { status: 'FAILED', errorCode: 'worker_lost', finishedAt: new Date() },
+  });
+
+  const retentionDays = settings['projects.buildRetentionDays'];
+  const removed =
+    retentionDays === 0
+      ? { count: 0 }
+      : await prisma.projectBuild.deleteMany({
+          where: {
+            createdAt: { lt: new Date(Date.now() - retentionDays * DAY_MS) },
+            status: { in: ['COMPLETED', 'FAILED', 'CANCELLED'] },
+          },
+        });
+
+  await reportProgress(100, 'Projekt-Bauten aufgeräumt');
+  if (abandoned.count > 0 || removed.count > 0) {
+    logger.info('Project builds reaped', { abandoned: abandoned.count, removed: removed.count });
+  }
+};

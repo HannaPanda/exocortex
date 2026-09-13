@@ -7,6 +7,7 @@ import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocor
 import { sweepCommentAnchors } from './comment-anchors';
 import { replaceDocumentLinks } from './document-links';
 import { extractEntities } from './entity-extraction';
+import { materializeProject } from './materialize-project';
 
 export interface MaterializationDependencies {
   prisma: PrismaClient;
@@ -43,6 +44,10 @@ export function createMaterializeDocumentProcessor(dependencies: Materialization
         yjsUpdatedAt: true,
         materializedAt: true,
         schemaVersion: true,
+        // Which of the two shapes the state has (issue #43, ADR-027). A
+        // `PROJECT` document holds a file tree, and reading it as a ProseMirror
+        // document would throw rather than produce nonsense.
+        document: { select: { type: true } },
       },
     });
 
@@ -59,6 +64,35 @@ export function createMaterializeDocumentProcessor(dependencies: Materialization
         documentId: job.documentId,
       });
       await reportProgress(100, 'Bereits aktuell');
+      return;
+    }
+
+    if (content.document.type === 'PROJECT') {
+      await reportProgress(30, 'Projektdateien werden ausgewertet');
+      const materializedAt = new Date();
+      const project = await materializeProject(prisma, {
+        documentId: job.documentId,
+        yjsState: content.yjsState,
+        materializedAt,
+      });
+      await prisma.documentContent.update({
+        where: { documentId: job.documentId },
+        data: { materializedAt },
+      });
+      await bus.publish({
+        type: 'project.files.changed',
+        workspaceId: job.workspaceId,
+        correlationId: job.correlationId,
+        emittedAt: materializedAt.toISOString(),
+        payload: { projectId: job.documentId, paths: project.paths },
+      });
+      await reportProgress(100, 'Projekt verarbeitet');
+      logger.info('Project materialized', {
+        documentId: job.documentId,
+        textFiles: project.textFiles,
+        assets: project.assets,
+        reason: job.reason,
+      });
       return;
     }
 

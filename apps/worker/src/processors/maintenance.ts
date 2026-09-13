@@ -11,6 +11,7 @@ import {
   pruneAutomationRuns,
   pruneInvitations,
   pruneMemories,
+  reapProjectBuilds,
   reapRenderJobs,
   reapStaleAiRuns,
 } from './maintenance-tasks/cleanup';
@@ -84,6 +85,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'prune-agent-journal': pruneAgentJournal,
   'prune-automation-runs': pruneAutomationRuns,
   'reap-render-jobs': reapRenderJobs,
+  'reap-project-builds': reapProjectBuilds,
 };
 
 /**

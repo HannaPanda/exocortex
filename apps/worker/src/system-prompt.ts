@@ -62,6 +62,7 @@ const CHAT_FORMATTING_SECTION = [
 const DOCUMENT_TYPE_LABEL: Record<DocumentType, string> = {
   PAGE: 'Seite',
   COLLECTION: 'Sammlung (Datenbank)',
+  PROJECT: 'Projekt (Dateibaum, z. B. LaTeX)',
 };
 
 export interface OpenPage {

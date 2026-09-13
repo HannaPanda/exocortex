@@ -2,6 +2,8 @@ import { type WorkerEnv } from '@exocortex/config';
 import {
   AI_QUEUE_LOCK_DURATION_MS,
   AI_QUEUE_STALLED_INTERVAL_MS,
+  PROJECT_BUILD_QUEUE_LOCK_DURATION_MS,
+  PROJECT_BUILD_QUEUE_STALLED_INTERVAL_MS,
   QUEUE_NAMES,
   RENDER_QUEUE_LOCK_DURATION_MS,
   RENDER_QUEUE_STALLED_INTERVAL_MS,
@@ -20,6 +22,7 @@ import { createMaintenanceProcessor } from './processors/maintenance';
 import { createMaterializeDocumentProcessor } from './processors/materialize-document';
 import { createMemoryCaptureProcessor } from './processors/memory-capture';
 import { createMemoryConsolidateProcessor } from './processors/memory-consolidate';
+import { createProjectBuildProcessor } from './processors/project-build';
 import { createRenderProcessor } from './processors/render';
 import { type WorkerRuntime } from './runtime';
 
@@ -385,6 +388,24 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     }),
   });
 
+  // Concurrency 1 for the same reason as the render queue: latexmk is
+  // CPU-bound and this host shares its cores with everything else on it.
+  const projectBuild = createTypedWorker({
+    name: QUEUE_NAMES.projectBuild,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 1,
+    lockDuration: PROJECT_BUILD_QUEUE_LOCK_DURATION_MS,
+    stalledInterval: PROJECT_BUILD_QUEUE_STALLED_INTERVAL_MS,
+    handler: createProjectBuildProcessor({
+      prisma,
+      storage,
+      apiClientFor,
+      settings: readSettings,
+      bus,
+    }),
+  });
+
   return [
     attachmentText,
     documentCover,
@@ -394,5 +415,6 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     entityRescan,
     automation,
     render,
+    projectBuild,
   ];
 }
