@@ -193,6 +193,12 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   ordinary `Attachment`, so it is downloadable, deletable and text-extractable
   like any other file -- which is how an agent inspects a visual result. The
   input hash is both the build cache and the staleness comparison.
+- ADR-027: a project is a `Document` with `type: PROJECT` whose Yjs state holds
+  a file tree, not prose; `ProjectFile` rows are the derived projection and a
+  write reaches the tree through the collaboration server, never the rows. The
+  compiler is `latexmk` in a container, on the server, because there is no
+  permissively licensed in-browser TeX -- no AGPL package may enter this
+  repository or its bundle.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -216,6 +222,7 @@ Each of these has a step-by-step recipe:
 | new admin setting, admin page                            | `docs/admin.md`             |
 | new automation trigger or action                         | `docs/automations.md`       |
 | new render template, new renderer                        | `docs/render.md`            |
+| new project type, project build runner                   | `docs/projects.md`          |
 
 ## Deployment on this machine
 
