@@ -285,7 +285,9 @@ describe('the capabilities that used to be drag-and-drop only', () => {
     });
 
     expect(calls[0]?.method).toBe('DELETE');
-    expect(calls[0]?.path).toBe('/api/documents/col1234567/properties/prop123456/options/opt123456');
+    expect(calls[0]?.path).toBe(
+      '/api/documents/col1234567/properties/prop123456/options/opt123456',
+    );
   });
 
   it('moves a column to the front with a null anchor', async () => {
