@@ -12,6 +12,7 @@ import {
   Button,
   cn,
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -154,7 +155,7 @@ export function PagePropertiesDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4 overflow-y-auto">
+        <DialogBody className="flex flex-col gap-4">
           <div className="flex gap-2">
             <div className="flex flex-col gap-1.5">
               <Label>Symbol</Label>
@@ -318,7 +319,7 @@ export function PagePropertiesDialog({
                 : detail.breadcrumb.map((entry) => entry.title).join(' / ')}
             </dd>
           </dl>
-        </div>
+        </DialogBody>
 
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>

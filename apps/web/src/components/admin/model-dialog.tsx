@@ -130,7 +130,7 @@ export function ModelDialog({ open, onOpenChange, model, models }: ModelDialogPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+      <DialogContent className="sm:max-w-xl">
         <ModelDialogForm key={formKey} model={model} models={models} onOpenChange={onOpenChange} />
       </DialogContent>
     </Dialog>

@@ -16,6 +16,7 @@ import {
   Button,
   Checkbox,
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -195,7 +196,7 @@ export function AutomationRuleDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{isNew ? 'Neue Automation' : 'Automation ändern'}</DialogTitle>
           <DialogDescription>
@@ -204,49 +205,51 @@ export function AutomationRuleDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {secret !== null ? (
-          <SecretHandover secret={secret} onDone={() => onOpenChange(false)} />
-        ) : (
-          <div className="flex flex-col gap-5" data-testid="automation-form">
-            {error !== null ? (
-              <Alert variant="destructive" data-testid="automation-form-error">
-                <AlertDescription>{messageForCode(errorCode)}</AlertDescription>
-              </Alert>
-            ) : null}
+        <DialogBody>
+          {secret !== null ? (
+            <SecretHandover secret={secret} onDone={() => onOpenChange(false)} />
+          ) : (
+            <div className="flex flex-col gap-5" data-testid="automation-form">
+              {error !== null ? (
+                <Alert variant="destructive" data-testid="automation-form-error">
+                  <AlertDescription>{messageForCode(errorCode)}</AlertDescription>
+                </Alert>
+              ) : null}
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="automation-name">Name</Label>
-              <Input
-                id="automation-name"
-                data-testid="automation-name-input"
-                value={draft.name}
-                onChange={(event) => set('name', event.target.value)}
-                placeholder="Hermes über neue Sitzungsnotizen informieren"
-              />
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="automation-name">Name</Label>
+                <Input
+                  id="automation-name"
+                  data-testid="automation-name-input"
+                  value={draft.name}
+                  onChange={(event) => set('name', event.target.value)}
+                  placeholder="Hermes über neue Sitzungsnotizen informieren"
+                />
+              </div>
+
+              <ScopeFields draft={draft} set={set} />
+              <TriggerFields draft={draft} onToggle={toggleTrigger} />
+
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="automation-debounce">Entprellung (Sekunden)</Label>
+                <Input
+                  id="automation-debounce"
+                  type="number"
+                  min={AUTOMATION_MIN_DEBOUNCE_SECONDS}
+                  value={draft.debounceSeconds}
+                  onChange={(event) => set('debounceSeconds', Number(event.target.value))}
+                  className="max-w-32"
+                />
+                <p className="text-xs text-muted-foreground">
+                  So lange muss eine Seite ruhig sein, bevor die Regel läuft. Ohne das löst jeder
+                  Tastendruck einen Lauf aus, und bei einem KI-Lauf kostet jeder davon Geld.
+                </p>
+              </div>
+
+              <ActionFields draft={draft} set={set} allowedHosts={allowedHosts} isNew={isNew} />
             </div>
-
-            <ScopeFields draft={draft} set={set} />
-            <TriggerFields draft={draft} onToggle={toggleTrigger} />
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="automation-debounce">Entprellung (Sekunden)</Label>
-              <Input
-                id="automation-debounce"
-                type="number"
-                min={AUTOMATION_MIN_DEBOUNCE_SECONDS}
-                value={draft.debounceSeconds}
-                onChange={(event) => set('debounceSeconds', Number(event.target.value))}
-                className="max-w-32"
-              />
-              <p className="text-xs text-muted-foreground">
-                So lange muss eine Seite ruhig sein, bevor die Regel läuft. Ohne das löst jeder
-                Tastendruck einen Lauf aus, und bei einem KI-Lauf kostet jeder davon Geld.
-              </p>
-            </div>
-
-            <ActionFields draft={draft} set={set} allowedHosts={allowedHosts} isNew={isNew} />
-          </div>
-        )}
+          )}
+        </DialogBody>
 
         {secret === null ? (
           <DialogFooter>

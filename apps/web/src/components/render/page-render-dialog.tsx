@@ -15,6 +15,7 @@ import {
   Badge,
   Button,
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -112,41 +113,45 @@ export function PageRenderDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <RenderNotices
-          loaded={model.loaded}
-          enabled={model.enabled}
-          templateCount={model.templates.length}
-        />
-
-        <RenderForm
-          templates={model.templates}
-          templateId={model.templateId}
-          template={model.template}
-          source={source}
-          values={values}
-          onTemplateChange={(value) => {
-            setTemplateId(value);
-            setValues({});
-          }}
-          onSourceChange={setSource}
-          onValueChange={(name, value) => setValues((previous) => ({ ...previous, [name]: value }))}
-        />
-
-        {error === null ? null : (
-          <Alert variant="destructive">
-            <AlertDescription data-testid="render-error">{error}</AlertDescription>
-          </Alert>
-        )}
-
-        {model.job === null ? null : (
-          <JobPanel
-            job={model.job}
-            workspaceId={workspaceId}
-            log={model.visibleLog}
-            onToggleLog={() => setShowLog((previous) => !previous)}
-            onCancel={() => void cancel.mutateAsync(model.job?.id ?? '')}
+        <DialogBody className="flex flex-col gap-4">
+          <RenderNotices
+            loaded={model.loaded}
+            enabled={model.enabled}
+            templateCount={model.templates.length}
           />
-        )}
+
+          <RenderForm
+            templates={model.templates}
+            templateId={model.templateId}
+            template={model.template}
+            source={source}
+            values={values}
+            onTemplateChange={(value) => {
+              setTemplateId(value);
+              setValues({});
+            }}
+            onSourceChange={setSource}
+            onValueChange={(name, value) =>
+              setValues((previous) => ({ ...previous, [name]: value }))
+            }
+          />
+
+          {error === null ? null : (
+            <Alert variant="destructive">
+              <AlertDescription data-testid="render-error">{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {model.job === null ? null : (
+            <JobPanel
+              job={model.job}
+              workspaceId={workspaceId}
+              log={model.visibleLog}
+              onToggleLog={() => setShowLog((previous) => !previous)}
+              onCancel={() => void cancel.mutateAsync(model.job?.id ?? '')}
+            />
+          )}
+        </DialogBody>
 
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>

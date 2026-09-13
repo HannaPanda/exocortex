@@ -14,6 +14,7 @@ import {
   Button,
   Checkbox,
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -132,7 +133,7 @@ function TemplateForm({
         </DialogDescription>
       </DialogHeader>
 
-      <div className="flex max-h-[60vh] flex-col gap-4 overflow-y-auto">
+      <DialogBody className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="template-name">Name</Label>
           <Input
@@ -272,7 +273,7 @@ function TemplateForm({
             </div>
           ))}
         </div>
-      </div>
+      </DialogBody>
 
       {error === null ? null : (
         <Alert variant="destructive">
