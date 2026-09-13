@@ -191,8 +191,7 @@ export function collectWebCalls() {
     const rel = relative(repoRoot, file);
     const source = readFileSync(file, 'utf8');
     const opener = /\b(apiRequest|fetch)\s*(?:<[^>]*>)?\s*\(\s*/g;
-    let match;
-    while ((match = opener.exec(source)) !== null) {
+    while (opener.exec(source) !== null) {
       const literal = readStringLiteral(source, opener.lastIndex);
       if (literal === null || !literal.text.startsWith('/api/')) continue;
       const rest = source.slice(literal.end).match(/^\s*,\s*\{/);
