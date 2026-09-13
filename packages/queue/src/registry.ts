@@ -188,6 +188,14 @@ export class QueueRegistry {
           });
     if (kept !== null) return kept;
 
+    // A finished job still holding this id has to go before a new one can take
+    // it. `Queue.add` with an id that already exists returns the existing job
+    // and adds nothing -- silently, with no error and no second run -- so
+    // without this the *first* save of a document materializes and every
+    // further save inside `removeOnComplete.age` does not. See the note on
+    // `releaseFinishedJob`.
+    if (existing !== undefined) await this.releaseFinishedJob(existing, name, jobId);
+
     const job = await queue.add(name, parsed, { ...rest, jobId, delay: delayMs });
     return job.id ?? jobId;
   }
@@ -225,6 +233,34 @@ export class QueueRegistry {
         reason: error instanceof Error ? error.message : String(error),
       });
       return null;
+    }
+  }
+
+  /**
+   * Frees a debounce id whose job has already run.
+   *
+   * BullMQ keeps a completed job under its custom id until `removeOnComplete`
+   * ages it out, and an `add` under an id that is still taken is a no-op that
+   * reports success: it hands back the finished job, with its old data and its
+   * `completed` state, and nothing runs. For a fixed id like
+   * `materialize-<documentId>` that means exactly one materialization per
+   * document per retention window -- the first one -- while every caller sees a
+   * job id come back and assumes the work is queued.
+   *
+   * Removing it is safe in both directions. A job that another process removed
+   * first throws, and that throw means the id is free, which is what we wanted;
+   * a job that has meanwhile been re-added as pending is not in a finished
+   * state and is left alone by the guard above.
+   */
+  private async releaseFinishedJob(job: Job, queue: QueueName, jobId: string): Promise<void> {
+    try {
+      await job.remove();
+    } catch (error) {
+      this.logger.debug('Finished debounced job was already gone', {
+        queue,
+        jobId,
+        reason: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 

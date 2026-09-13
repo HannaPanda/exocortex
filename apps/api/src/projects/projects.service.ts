@@ -139,6 +139,14 @@ export class ProjectsService {
           // The project shape, not the editor's: a project's state is versioned
           // by this module and never migrated by the ProseMirror migrations.
           schemaVersion: 1,
+          // Both stamps, and deliberately the same value. `yjsUpdatedAt`
+          // defaults to the database's `now()`, which is a few milliseconds
+          // later than this one -- enough for `materializedAt < yjsUpdatedAt`
+          // to be true the moment the row is written, so a brand-new project
+          // reported its file tree out of date for ever and the browser polled
+          // it every one and a half seconds waiting for a job that had nothing
+          // to do.
+          yjsUpdatedAt: materializedAt,
           materializedAt,
         },
       });

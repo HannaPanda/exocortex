@@ -43,6 +43,15 @@ beforeAll(() => {
   queues = new QueueRegistry({ redisUrl, logger, prefix });
 });
 
+/** Waits for a condition, so a test never sleeps longer than it has to. */
+async function waitFor(condition: () => boolean, timeoutMs = 5_000): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  while (!condition()) {
+    if (Date.now() > deadline) throw new Error('Timed out waiting for the queue');
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
+}
+
 afterAll(async () => {
   await queues.obliterateAll();
   await queues.close();
@@ -115,6 +124,50 @@ describe('QueueRegistry', () => {
     expect(job?.data.yjsUpdatedAt).toBe(2_000);
     await job?.remove();
   });
+
+  it('enqueues again once the debounced job has already run', async () => {
+    // The case the two tests above do not reach, and the one that was wrong:
+    // BullMQ keeps a *completed* job under its custom id until
+    // `removeOnComplete` ages it out, and `add` under a taken id hands back the
+    // finished job and adds nothing -- no error, no second run. With a fixed id
+    // like `materialize-<documentId>` that meant one materialization per
+    // document per retention window: the first save of a page derived its
+    // Markdown, its references and its search projection, and every save for
+    // the next hour derived nothing while every caller saw a job id come back.
+    const documentId = `doc-rerun-${Date.now().toString(36)}`;
+    const jobId = `materialize-${documentId}`;
+    const ran: number[] = [];
+
+    const { worker, connection } = createTypedWorker({
+      name: QUEUE_NAMES.documentMaterialization,
+      redisUrl,
+      logger,
+      prefix,
+      concurrency: 1,
+      handler: ({ payload }) => {
+        // This worker consumes the whole queue while it is up, so it only
+        // counts the document this test enqueued.
+        if (payload.documentId === documentId) ran.push(payload.yjsUpdatedAt);
+        return Promise.resolve();
+      },
+    });
+
+    try {
+      for (const [index, yjsUpdatedAt] of [1_000, 2_000, 3_000].entries()) {
+        await queues.enqueueDebounced(
+          QUEUE_NAMES.documentMaterialization,
+          { ...materializePayload(documentId), yjsUpdatedAt },
+          { jobId, delayMs: 10 },
+        );
+        await waitFor(() => ran.length === index + 1);
+      }
+    } finally {
+      await worker.close();
+      await connection.quit();
+    }
+
+    expect(ran).toEqual([1_000, 2_000, 3_000]);
+  }, 20_000);
 
   it('answers a Redis ping', async () => {
     expect(await queues.ping()).toBe(true);
