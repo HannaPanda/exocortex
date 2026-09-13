@@ -58,6 +58,9 @@ export interface LatexRunResult {
   unavailable: boolean;
 }
 
+/** See the `env` note in `runLatexPdf`. Deliberately a path with nothing in it. */
+const DOCKER_CONFIG_DIR = '/nonexistent/exocortex-docker';
+
 /** Log kept from one build. A TeX log is long and the interesting part is the end. */
 const MAX_LOG_BYTES = 200_000;
 
@@ -128,6 +131,11 @@ export function buildInputArchive(request: LatexRunRequest): Buffer {
 export async function runLatexPdf(request: LatexRunRequest): Promise<LatexRunResult> {
   const child = spawn('docker', buildRunArguments(request), {
     stdio: ['pipe', 'pipe', 'pipe'],
+    // The unit runs with `ProtectHome`, so the CLI's default config path is
+    // unreadable and it says so on stderr -- in the build log, above whatever
+    // LaTeX actually complained about. Pointing it at a path that simply does
+    // not exist is silent, and there is no registry to log in to anyway.
+    env: { ...process.env, DOCKER_CONFIG: DOCKER_CONFIG_DIR },
   });
 
   const stdout: Buffer[] = [];
