@@ -1,11 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import {
-  createPage,
-  requireSeedCredentials,
-  waitForMaterialization,
-  workspaceIdFrom,
-} from '../support/fixtures';
+import { createPage, requireSeedCredentials, workspaceIdFrom } from '../support/fixtures';
 import { storageStatePath } from '../support/global-setup';
 
 test.use({ storageState: storageStatePath('johanna') });
@@ -40,6 +35,10 @@ const MINIMAL_TEMPLATE = [
  * only the way to it is gone.
  */
 test.describe('PDF-Verlauf einer Seite', () => {
+  // Materialization, search indexing and a container build in sequence; the
+  // 90 s default is for a test that only clicks.
+  test.setTimeout(240_000);
+
   test('bietet ein fertiges PDF nach dem Schließen wieder an', async ({ page }) => {
     const stamp = Date.now().toString(36);
     const marker = `Verlaufsprobe ${stamp}`;
@@ -56,13 +55,10 @@ test.describe('PDF-Verlauf einer Seite', () => {
     const templateId = ((await created.json()) as { template: { id: string } }).template.id;
 
     try {
-      const documentId = await createPage(page, `Render ${stamp}`);
+      await createPage(page, `Render ${stamp}`);
       await expect(page.getByTestId('editor-surface')).toBeVisible();
       await page.getByTestId('editor-surface').click();
       await page.keyboard.type(marker);
-      // The build reads the derived Markdown, not the Yjs state (ADR-007), so
-      // starting one before materialization has run would publish an empty page.
-      await waitForMaterialization(page, documentId, marker);
 
       await page.getByTestId('document-actions').click();
       await page.getByTestId('open-render').click();
@@ -73,10 +69,22 @@ test.describe('PDF-Verlauf einer Seite', () => {
       await page.getByTestId('render-template').click();
       await page.getByRole('option', { name: templateName, exact: true }).click();
 
-      await page.getByTestId('render-start').click();
-      await expect(page.getByTestId('render-job')).toContainText('fertig', { timeout: 180_000 });
+      // Retried rather than preceded by a wait, because there is no signal to
+      // wait for. A build reads `DocumentContent.markdown` (ADR-007), the
+      // materialization job that writes it is debounced, and no endpoint
+      // reports whether it has run: the Markdown export re-derives its answer
+      // from the Yjs state on every call, and search fuses in semantic hits
+      // that match a marker nobody has indexed yet. So the test does what a
+      // person does when the dialog says the input is not valid yet: press the
+      // button again.
+      await expect(async () => {
+        await page.getByTestId('render-start').click();
+        await expect(page.getByTestId('render-job')).toBeVisible({ timeout: 3_000 });
+      }).toPass({ timeout: 90_000, intervals: [2_000] });
 
-      await page.getByRole('button', { name: 'Schließen' }).click();
+      await expect(page.getByTestId('render-job')).toContainText('fertig', { timeout: 120_000 });
+
+      await page.getByRole('button', { name: 'Schließen', exact: true }).click();
       await expect(page.getByTestId('render-job')).toBeHidden();
 
       await page.getByTestId('document-actions').click();
