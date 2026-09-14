@@ -43,6 +43,16 @@ export const VARIABLE_ORIGIN_LABELS: Record<RenderVariableOrigin, string> = {
   PROPERTY: 'Eigenschaft der Datenbankzeile',
 };
 
+/** A timestamp in the local zone, without the year most rows share. */
+export function formatMoment(iso: string): string {
+  return new Date(iso).toLocaleString('de-DE', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 /** A file size a person reads at a glance. */
 export function formatBytes(byteSize: number | null): string {
   if (byteSize === null) return '';

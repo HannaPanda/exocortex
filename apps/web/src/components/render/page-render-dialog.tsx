@@ -1,5 +1,6 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import * as React from 'react';
 
@@ -14,6 +15,7 @@ import {
   AlertDescription,
   Badge,
   Button,
+  cn,
   Dialog,
   DialogBody,
   DialogContent,
@@ -33,6 +35,7 @@ import {
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import {
+  renderKeys,
   useCancelRender,
   useRenderJob,
   useRenderJobLog,
@@ -43,6 +46,7 @@ import {
 
 import {
   formatBytes,
+  formatMoment,
   RENDER_SOURCE_LABELS,
   RENDER_STATUS_LABELS,
   renderStatusVariant,
@@ -81,6 +85,17 @@ export function PageRenderDialog({
   const model = useRenderModel({ workspaceId, documentId, open, jobId, templateId, showLog });
   const start = useStartRender(workspaceId);
   const cancel = useCancelRender();
+  const client = useQueryClient();
+
+  // The list is invalidated when a build starts, which is enough to make the
+  // new row appear -- but it appears as `wartet`, and nothing would ever
+  // correct it. Only the single-job query is polled, so the moment it reaches
+  // a terminal status is the moment the list is stale.
+  const settled = model.job !== null && !model.running ? model.job.status : null;
+  React.useEffect(() => {
+    if (settled === null) return;
+    void client.invalidateQueries({ queryKey: renderKeys.jobs(workspaceId, documentId) });
+  }, [client, documentId, settled, workspaceId]);
 
   const build = async (): Promise<void> => {
     if (model.templateId === null) return;
@@ -151,6 +166,17 @@ export function PageRenderDialog({
               onCancel={() => void cancel.mutateAsync(model.job?.id ?? '')}
             />
           )}
+
+          {model.history.length === 0 ? null : (
+            <HistoryPanel
+              jobs={model.history}
+              selectedJobId={model.job?.id ?? null}
+              onSelect={(id) => {
+                setJobId(id);
+                setShowLog(false);
+              }}
+            />
+          )}
         </DialogBody>
 
         <DialogFooter>
@@ -183,6 +209,8 @@ interface RenderModel {
   running: boolean;
   /** A finished build is on screen, so the button offers to build it again. */
   rebuilding: boolean;
+  /** Every build this page has had, newest first. */
+  history: readonly RenderJob[];
 }
 
 /**
@@ -206,7 +234,8 @@ function useRenderModel(input: {
   const log = useRenderJobLog(input.jobId, input.showLog);
 
   const list = templates.data?.templates ?? [];
-  const templateId = input.templateId ?? preferredTemplateId(list, history.data?.jobs[0] ?? null);
+  const jobs = history.data?.jobs ?? [];
+  const templateId = input.templateId ?? preferredTemplateId(list, jobs[0] ?? null);
   const current = job.data?.job ?? null;
   const running =
     current !== null && (current.status === 'PENDING' || current.status === 'RUNNING');
@@ -221,6 +250,7 @@ function useRenderModel(input: {
     enabled: templates.data?.enabledForWorkspace ?? false,
     running,
     rebuilding: current !== null && !running,
+    history: jobs,
   };
 }
 
@@ -350,6 +380,81 @@ function RenderForm({
           />
         </div>
       ))}
+    </div>
+  );
+}
+
+/**
+ * The builds this page already had, newest first.
+ *
+ * The dialog always fetched this list -- it needs the newest job to remember
+ * which template was used last -- but never showed it, so closing the dialog
+ * put every finished PDF out of reach: the artifact is an ordinary attachment
+ * with a stable download path and nothing in the browser led back to it. That
+ * is a read-side gap in ADR-025, because `exo_render_jobs` hands an agent
+ * exactly these rows.
+ *
+ * A row selects the build into the panel above rather than opening it, so the
+ * log, the staleness badge and the cancel button stay in the one place that
+ * already knows how to show them. The download link sits on the row as well,
+ * because fetching an old PDF is the reason somebody opens this list.
+ */
+function HistoryPanel({
+  jobs,
+  selectedJobId,
+  onSelect,
+}: {
+  jobs: readonly RenderJob[];
+  selectedJobId: string | null;
+  onSelect: (jobId: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <h3 className="text-sm font-medium">Bisherige PDFs</h3>
+      <ul className="flex max-h-56 flex-col gap-1 overflow-y-auto" data-testid="render-history">
+        {jobs.map((job) => {
+          const selected = job.id === selectedJobId;
+          return (
+            <li
+              key={job.id}
+              data-testid="render-history-entry"
+              className={cn(
+                'flex flex-wrap items-center gap-2 rounded-md border p-2',
+                selected ? 'border-primary bg-accent' : 'border-border',
+              )}
+            >
+              <button
+                type="button"
+                className="text-sm underline-offset-2 hover:underline"
+                aria-current={selected ? 'true' : undefined}
+                onClick={() => onSelect(job.id)}
+                data-testid="render-history-select"
+              >
+                {formatMoment(job.createdAt)}
+              </button>
+              <Badge variant={renderStatusVariant(job.status)}>
+                {RENDER_STATUS_LABELS[job.status]}
+              </Badge>
+              {job.stale ? <Badge variant="outline">Seite hat sich geändert</Badge> : null}
+              <span className="text-xs text-muted-foreground">
+                {job.templateName ?? '(gelöschte Vorlage)'}
+                {job.attachmentByteSize === null ? '' : ` · ${formatBytes(job.attachmentByteSize)}`}
+              </span>
+              {job.attachmentId === null ? null : (
+                <Link
+                  href={`/api/attachments/${job.attachmentId}/download`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="ml-auto text-xs underline"
+                  data-testid="render-history-open"
+                >
+                  PDF öffnen
+                </Link>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
