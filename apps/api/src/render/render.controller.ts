@@ -5,6 +5,8 @@ import { type VerifiedSession } from '@exocortex/auth';
 import {
   type CreateRenderTemplateRequest,
   createRenderTemplateRequestSchema,
+  type DeleteRenderJobResponse,
+  deleteRenderJobResponseSchema,
   type DeleteRenderTemplateResponse,
   deleteRenderTemplateResponseSchema,
   type RenderArtifactResponse,
@@ -150,6 +152,16 @@ export class RenderController {
     @Param('jobId') jobId: string,
   ): Promise<RenderArtifactResponse> {
     return this.jobs.artifact(jobId, session.userId);
+  }
+
+  @Delete('jobs/:jobId')
+  @ApiOkResponse({ schema: openApiResponseSchema(deleteRenderJobResponseSchema) })
+  async deleteJob(
+    @CurrentSession() session: VerifiedSession,
+    @Param('jobId') jobId: string,
+  ): Promise<DeleteRenderJobResponse> {
+    await this.jobs.remove(jobId, session.userId);
+    return { deleted: true };
   }
 
   @Post('jobs/:jobId/cancel')

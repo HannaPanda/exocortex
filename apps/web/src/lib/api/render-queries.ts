@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tan
 
 import {
   type CreateRenderTemplateRequest,
+  type DeleteRenderJobResponse,
   type RenderJobListResponse,
   type RenderJobLogResponse,
   type RenderJobResponse,
@@ -98,6 +99,25 @@ export function useStartRender(workspaceId: string | undefined) {
     onSuccess: (_response, input) => {
       if (workspaceId === undefined) return;
       void client.invalidateQueries({ queryKey: renderKeys.jobs(workspaceId, input.documentId) });
+    },
+  });
+}
+
+/**
+ * Deletes one finished build and the PDF it produced.
+ *
+ * Invalidates the list rather than the single job: the row has to disappear,
+ * and the panel that may still be showing the job is told by the caller, which
+ * is the only place that knows whether it was looking at this one.
+ */
+export function useDeleteRender(workspaceId: string | undefined, documentId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (jobId: string) =>
+      apiRequest<DeleteRenderJobResponse>(`/api/render/jobs/${jobId}`, { method: 'DELETE' }),
+    onSuccess: () => {
+      if (workspaceId === undefined) return;
+      void client.invalidateQueries({ queryKey: renderKeys.jobs(workspaceId, documentId) });
     },
   });
 }

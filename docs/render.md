@@ -65,7 +65,12 @@ exo_attachment_read_text    → read back what the PDF actually says
 ```
 
 `exo_render_cancel` stops a build; `exo_render_jobs` lists what a workspace has
-built.
+built; `exo_render_delete` removes a finished build and its PDF.
+
+The list is also where a person gets back to a PDF. The publish dialog shows
+every build this page has had under **Bisherige PDFs**: a row opens its file,
+loads the build back into the panel above, or deletes it. Nothing about a
+finished PDF lives only in the dialog that made it.
 
 **Scope.** `DOCUMENT` is the page alone. `SUBTREE` takes the descendants with
 it, each one a heading level deeper than its parent, and adds a table of

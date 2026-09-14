@@ -103,6 +103,12 @@ test.describe('PDF-Verlauf einer Seite', () => {
       await entry.getByTestId('render-history-select').click();
       await expect(page.getByTestId('render-job')).toContainText('fertig');
       await expect(page.getByTestId('render-open')).toBeVisible();
+
+      // And the row can be taken back out again. The panel above has to let go
+      // of it too, or it keeps polling a build that no longer exists.
+      await entry.getByTestId('render-history-delete').click();
+      await expect(page.getByTestId('render-history-entry')).toHaveCount(0);
+      await expect(page.getByTestId('render-job')).toBeHidden();
     } finally {
       await page.request.delete(`/api/render/templates/${templateId}`);
     }

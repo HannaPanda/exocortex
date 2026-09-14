@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import {
+  deleteRenderJobResponseSchema,
   deleteRenderTemplateResponseSchema,
   idSchema,
   RENDER_MAX_TEMPLATE_CHARS,
@@ -382,6 +383,27 @@ export const renderCancelTool: AnyToolDefinition = defineTool({
   },
 });
 
+export const renderDeleteTool: AnyToolDefinition = defineTool({
+  name: 'exo_render_delete',
+  description:
+    'Löscht einen abgeschlossenen Bau samt dem PDF, das er erzeugt hat. Ein laufender Bau muss ' +
+    'erst mit exo_render_cancel abgebrochen werden. Rückgängig macht das nichts, aber die ' +
+    'Eingaben sind unverändert: derselbe Bau lässt sich mit exo_render_start erneut anfordern.',
+  inputSchema: z.object({ jobId: idSchema }),
+  surfaces: ['mcp', 'ai'],
+  mutating: true,
+  destructive: true,
+  target: (input) => `render-job:${input.jobId}`,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'DELETE',
+      path: `/api/render/jobs/${input.jobId}`,
+      responseSchema: deleteRenderJobResponseSchema,
+    });
+    return { text: 'Bau und PDF gelöscht.', data: result };
+  },
+});
+
 export const RENDER_TOOLS: readonly AnyToolDefinition[] = [
   renderTemplateListTool,
   renderTemplateReadTool,
@@ -394,4 +416,5 @@ export const RENDER_TOOLS: readonly AnyToolDefinition[] = [
   renderLogTool,
   renderArtifactTool,
   renderCancelTool,
+  renderDeleteTool,
 ];

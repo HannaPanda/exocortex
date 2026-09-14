@@ -37,6 +37,7 @@ import { messageForCode } from '@/lib/api/error-messages';
 import {
   renderKeys,
   useCancelRender,
+  useDeleteRender,
   useRenderJob,
   useRenderJobLog,
   useRenderJobs,
@@ -85,6 +86,7 @@ export function PageRenderDialog({
   const model = useRenderModel({ workspaceId, documentId, open, jobId, templateId, showLog });
   const start = useStartRender(workspaceId);
   const cancel = useCancelRender();
+  const remove = useDeleteRender(workspaceId, documentId);
   const client = useQueryClient();
 
   // The list is invalidated when a build starts, which is enough to make the
@@ -171,9 +173,19 @@ export function PageRenderDialog({
             <HistoryPanel
               jobs={model.history}
               selectedJobId={model.job?.id ?? null}
+              busy={remove.isPending}
               onSelect={(id) => {
                 setJobId(id);
                 setShowLog(false);
+              }}
+              onDelete={(id) => {
+                // Clear the panel first when it is showing the row being
+                // removed, or it keeps polling a job that no longer exists.
+                if (id === jobId) {
+                  setJobId(null);
+                  setShowLog(false);
+                }
+                void remove.mutateAsync(id);
               }}
             />
           )}
@@ -402,11 +414,15 @@ function RenderForm({
 function HistoryPanel({
   jobs,
   selectedJobId,
+  busy,
   onSelect,
+  onDelete,
 }: {
   jobs: readonly RenderJob[];
   selectedJobId: string | null;
+  busy: boolean;
   onSelect: (jobId: string) => void;
+  onDelete: (jobId: string) => void;
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -440,17 +456,32 @@ function HistoryPanel({
                 {job.templateName ?? '(gelöschte Vorlage)'}
                 {job.attachmentByteSize === null ? '' : ` · ${formatBytes(job.attachmentByteSize)}`}
               </span>
-              {job.attachmentId === null ? null : (
-                <Link
-                  href={`/api/attachments/${job.attachmentId}/download`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="ml-auto text-xs underline"
-                  data-testid="render-history-open"
-                >
-                  PDF öffnen
-                </Link>
-              )}
+              <div className="ml-auto flex items-center gap-2">
+                {job.attachmentId === null ? null : (
+                  <Link
+                    href={`/api/attachments/${job.attachmentId}/download`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs underline"
+                    data-testid="render-history-open"
+                  >
+                    PDF öffnen
+                  </Link>
+                )}
+                {/* A running build is cancelled, not deleted: the container is
+                    still going and the row is about to change under the reader. */}
+                {job.status === 'PENDING' || job.status === 'RUNNING' ? null : (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    disabled={busy}
+                    onClick={() => onDelete(job.id)}
+                    data-testid="render-history-delete"
+                  >
+                    Löschen
+                  </Button>
+                )}
+              </div>
             </li>
           );
         })}

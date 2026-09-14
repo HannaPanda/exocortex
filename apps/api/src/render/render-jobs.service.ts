@@ -28,6 +28,7 @@ import {
 import { type Logger } from '@exocortex/logger';
 import { type QueueRegistry } from '@exocortex/queue';
 
+import { AttachmentsService } from '../attachments/attachments.service';
 import { AppError } from '../common/app-error';
 import { currentCorrelationId } from '../common/correlation';
 import { LOGGER } from '../common/logger.provider';
@@ -68,6 +69,7 @@ export class RenderJobsService {
     @Inject(LOGGER) private readonly logger: Logger,
     private readonly access: WorkspaceAccessService,
     private readonly settings: SettingsService,
+    private readonly attachments: AttachmentsService,
   ) {}
 
   async start(input: {
@@ -246,6 +248,44 @@ export class RenderJobsService {
       select: RENDER_JOB_SELECT,
     });
     return mapRenderJob(updated, { stale: false });
+  }
+
+  /**
+   * Removes one build and the file it produced.
+   *
+   * Deliberately the whole row rather than only the artifact. A job whose file
+   * is gone is a truthful record and that is why `attachmentId` is `SetNull`
+   * rather than a cascade -- but it is not what somebody means when they point
+   * at an entry in the list and say this one should go, and a list of tombstones
+   * is worse than a short list. `retention` already deletes finished jobs
+   * wholesale, so a job is not a thing this deployment promises to keep.
+   *
+   * The file goes through `AttachmentsService`, not through Prisma here: it
+   * owns the stored objects, the audit entry and the uploader check, and a
+   * second implementation would be the one that forgets the object in MinIO.
+   *
+   * Not irreversible in the sense the confirmation gate means: the inputs are
+   * still there, so the same build can be asked for again. What it costs is the
+   * log of a failure, and that comes back by failing again.
+   */
+  async remove(jobId: string, userId: string): Promise<void> {
+    const row = await this.requireJob(jobId, userId);
+    const role = await this.access.findRole(row.workspaceId, userId);
+    assertPolicy(canStartRender(role));
+
+    if (row.status === 'PENDING' || row.status === 'RUNNING') {
+      throw AppError.conflict('Dieser Bau läuft noch; brich ihn erst ab');
+    }
+
+    if (row.attachmentId !== null) {
+      await this.attachments.delete({
+        attachmentId: row.attachmentId,
+        userId,
+        correlationId: currentCorrelationId(),
+      });
+    }
+
+    await this.prisma.renderJob.delete({ where: { id: jobId } });
   }
 
   async artifact(jobId: string, userId: string): Promise<RenderArtifactResponse> {

@@ -201,6 +201,9 @@ export type RenderTemplateListResponse = z.infer<typeof renderTemplateListRespon
 export const deleteRenderTemplateResponseSchema = z.object({ deleted: z.literal(true) });
 export type DeleteRenderTemplateResponse = z.infer<typeof deleteRenderTemplateResponseSchema>;
 
+export const deleteRenderJobResponseSchema = z.object({ deleted: z.literal(true) });
+export type DeleteRenderJobResponse = z.infer<typeof deleteRenderJobResponseSchema>;
+
 export const startRenderRequestSchema = z.object({
   templateId: idSchema,
   source: renderSourceSchema.default('DOCUMENT'),

@@ -124,6 +124,7 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_project_delete_file',
       'exo_project_move_file',
       'exo_project_write_file',
+      'exo_render_delete',
       'exo_render_template_delete',
       'exo_user_delete',
       'exo_user_set_disabled',

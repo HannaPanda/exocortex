@@ -14,7 +14,7 @@ editor. A `·` under AI or MCP where the browser has a `✓` is the one that
 needs a reason, and every one of them has an entry in the exemption list of
 `scripts/check-mcp-catalog.mjs` or in `SURFACE_EXEMPT` here.
 
-156 routes are reachable from at least one client; 84 from all three.
+157 routes are reachable from at least one client; 85 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -32,6 +32,7 @@ needs a reason, and every one of them has an entry in the exemption list of
 | `DELETE /api/me/api-tokens/:x` | ✓ | · | · | — |
 | `DELETE /api/me/connections/:x` | ✓ | · | · | — |
 | `DELETE /api/projects/:x/files` | ✓ | ✓ | ✓ | `exo_project_delete_file` |
+| `DELETE /api/render/jobs/:x` | ✓ | ✓ | ✓ | `exo_render_delete` |
 | `DELETE /api/render/templates/:x` | ✓ | ✓ | ✓ | `exo_render_template_delete` |
 | `DELETE /api/workspaces/:x/credentials/:x` | ✓ | · | · | — |
 | `DELETE /api/workspaces/:x/invitations/:x` | · | ✓ | ✓ | `exo_invitation_revoke` |

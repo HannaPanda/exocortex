@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 
+import { AttachmentsModule } from '../attachments/attachments.module';
+
 import {
   DocumentRenderController,
   RenderController,
@@ -15,6 +17,9 @@ import { RenderTemplatesService } from './render-templates.service';
  * Pandoc and TeX Live live in a container the worker starts (CLAUDE.md rule 6).
  */
 @Module({
+  // The artifact is an ordinary attachment, so deleting a build deletes it
+  // through the service that owns stored objects and the audit trail.
+  imports: [AttachmentsModule],
   controllers: [WorkspaceRenderController, RenderController, DocumentRenderController],
   providers: [RenderTemplatesService, RenderJobsService],
   exports: [RenderTemplatesService, RenderJobsService],
