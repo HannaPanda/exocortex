@@ -2,8 +2,10 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import {
+  BrainIcon,
   KeyIcon,
   LogOutIcon,
+  NetworkIcon,
   PanelLeftIcon,
   PanelRightIcon,
   SearchIcon,
@@ -307,44 +309,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
             <TooltipContent>Kontextbereich (Strg + .)</TooltipContent>
           </Tooltip>
 
-          {/*
-            The role is not yet part of `CurrentSessionResponse` (see
-            AdminGuard's TODO), so these entries render for every signed-in
-            user; `/admin` gates itself against the API's admin check.
-          */}
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="Verwaltung"
-                  data-testid="open-admin"
-                  render={<Link href="/admin" />}
-                >
-                  <ShieldIcon />
-                </Button>
-              }
-            />
-            <TooltipContent>Verwaltung</TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="Verbindungen"
-                  data-testid="open-api-tokens"
-                  render={<Link href="/einstellungen/verbindungen" />}
-                >
-                  <KeyIcon />
-                </Button>
-              }
-            />
-            <TooltipContent>Verbindungen</TooltipContent>
-          </Tooltip>
+          <GlobalLinks />
 
           <Separator orientation="vertical" className="h-5" />
 
@@ -430,5 +395,55 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       <SearchCommand workspaceId={workspaceId} open={searchOpen} onOpenChange={setSearchOpen} />
       <JobProgressIndicator />
     </AppShellFrame>
+  );
+}
+
+/**
+ * The four places that belong to the deployment rather than to a workspace.
+ *
+ * Its own component only because the shell had grown past its line limit, and
+ * a row of four identical tooltip links is the part of it that reads as one
+ * thing. The two reading rooms are first: an entity's mentions are gathered
+ * out of every workspace the reader may see, and a fact belongs to a project
+ * rather than to a workspace, so neither fits under `/arbeitsbereich`.
+ *
+ * The role is not yet part of `CurrentSessionResponse` (see `AdminGuard`'s
+ * TODO), so all four render for every signed-in user; `/admin` gates itself
+ * against the API's admin check.
+ */
+function GlobalLinks() {
+  const links: { href: string; label: string; testId: string; icon: typeof KeyIcon }[] = [
+    { href: '/entitaeten', label: 'Entitäten', testId: 'open-entities', icon: NetworkIcon },
+    { href: '/gedaechtnis', label: 'Gedächtnis', testId: 'open-memory', icon: BrainIcon },
+    { href: '/admin', label: 'Verwaltung', testId: 'open-admin', icon: ShieldIcon },
+    {
+      href: '/einstellungen/verbindungen',
+      label: 'Verbindungen',
+      testId: 'open-api-tokens',
+      icon: KeyIcon,
+    },
+  ];
+
+  return (
+    <>
+      {links.map((link) => (
+        <Tooltip key={link.href}>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label={link.label}
+                data-testid={link.testId}
+                render={<Link href={link.href} />}
+              >
+                <link.icon />
+              </Button>
+            }
+          />
+          <TooltipContent>{link.label}</TooltipContent>
+        </Tooltip>
+      ))}
+    </>
   );
 }

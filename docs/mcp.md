@@ -203,6 +203,13 @@ change as dangerous only trains people to click past the warnings that matter.
 | `exo_entity_candidate_confirm`  | yes      | no          | `POST /api/entities/candidates/:candidateId/confirm` -- turns a proposal into an entity and adopts the pages that produced it                                                                                                                                                                                                                                                                                                                             |
 | `exo_entity_candidate_dismiss`  | yes      | yes         | `POST /api/entities/candidates/:candidateId/dismiss` -- permanently; the evidence is deleted with the decision                                                                                                                                                                                                                                                                                                                                            |
 
+The nine `exo_entity_*` tools are also a screen, at `/entitaeten`: the list with
+its search and type filter, one entity's profile with its facts, connections and
+pages, the two edits (type and aliases), a manual edge, and the candidate
+proposals with **Anlegen** / **Verwerfen**. The proposals are the half that
+needed it most -- the extraction pass fills that list on its own, so every one
+of them used to wait for somebody to call a tool by hand (ADR-025).
+
 The seven access tools exist because registration is closed (issue #3): "add a
 person" is something a human can do in the admin area, so the catalogue has to
 carry it too, or the MCP surface quietly stops matching the application. All but
@@ -540,6 +547,11 @@ told what happened.
 Two of the three endpoints are tools. `exo_memory_facts` reads them, including
 the contradictions somebody has to resolve, and `exo_memory_fact_promote` moves
 one into a curated workspace.
+
+Both are also a screen, at `/gedaechtnis`: the list with its project and status
+filters, and the **Übernehmen** button. ADR-021 calls promotion a human act,
+and until that page existed it was the one human act with no human surface --
+the person whose judgement it is had to ask an agent to press it.
 
 The third, `POST /api/memory/facts`, deliberately is not, and it is the one
 exemption in `scripts/check-mcp-catalog.mjs` worth understanding: it rewrites

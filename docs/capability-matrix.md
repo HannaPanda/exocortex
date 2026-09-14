@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-157 routes are reachable from at least one client; 86 from all three.
+158 routes are reachable from at least one client; 97 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -34,7 +34,7 @@ reorder routes shipped with no way to them in the browser.
 | `DELETE /api/documents/:x/properties/:x` | ✓ | ✓ | ✓ | `exo_database_property_delete` |
 | `DELETE /api/documents/:x/properties/:x/options/:x` | ✓ | ✓ | ✓ | `exo_database_option_delete` |
 | `DELETE /api/documents/:x/views/:x` | ✓ | ✓ | ✓ | `exo_database_view_delete` |
-| `DELETE /api/entities/:x/pages/:x` | · | ✓ | ✓ | `exo_entity_unlink_page` |
+| `DELETE /api/entities/:x/pages/:x` | ✓ | ✓ | ✓ | `exo_entity_unlink_page` |
 | `DELETE /api/me/api-tokens/:x` | ✓ | · | · | — |
 | `DELETE /api/me/connections/:x` | ✓ | · | · | — |
 | `DELETE /api/project-builds/:x` | ✓ | ✓ | ✓ | `exo_project_build_delete` |
@@ -68,13 +68,13 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/documents/:x/row` | ✓ | ✓ | ✓ | `exo_database_row_get` |
 | `GET /api/documents/:x/snapshots` | · | ✓ | ✓ | `exo_page_snapshots` |
 | `GET /api/documents/:x/views` | ✓ | ✓ | ✓ | `exo_database_schema` |
-| `GET /api/entities` | · | ✓ | ✓ | `exo_entity_list` |
-| `GET /api/entities/:x` | · | ✓ | ✓ | `exo_entity_profile` |
-| `GET /api/entities/candidates` | · | ✓ | ✓ | `exo_entity_candidates` |
+| `GET /api/entities` | ✓ | ✓ | ✓ | `exo_entity_list` |
+| `GET /api/entities/:x` | ✓ | ✓ | ✓ | `exo_entity_profile` |
+| `GET /api/entities/candidates` | ✓ | ✓ | ✓ | `exo_entity_candidates` |
 | `GET /api/mcp/clients/:x` | ✓ | · | · | — |
 | `GET /api/me/api-tokens` | ✓ | · | · | — |
 | `GET /api/me/connections` | ✓ | · | · | — |
-| `GET /api/memory/facts` | · | ✓ | ✓ | `exo_memory_facts` |
+| `GET /api/memory/facts` | ✓ | ✓ | ✓ | `exo_memory_facts` |
 | `GET /api/memory/recall` | · | · | · | `recall` |
 | `GET /api/project-builds/:x` | ✓ | ✓ | ✓ | `exo_project_build_status` |
 | `GET /api/project-builds/:x/artifacts` | ✓ | ✓ | ✓ | `exo_project_build_artifacts` |
@@ -118,7 +118,7 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/documents/:x/properties/:x/options/:x` | ✓ | ✓ | ✓ | `exo_database_option_update` |
 | `PATCH /api/documents/:x/values` | ✓ | ✓ | ✓ | `exo_database_row_update` |
 | `PATCH /api/documents/:x/views/:x` | ✓ | ✓ | ✓ | `exo_database_view_update` |
-| `PATCH /api/entities/:x` | · | ✓ | ✓ | `exo_entity_update` |
+| `PATCH /api/entities/:x` | ✓ | ✓ | ✓ | `exo_entity_update` |
 | `PATCH /api/projects/:x` | ✓ | ✓ | ✓ | `exo_project_update` |
 | `PATCH /api/render/templates/:x` | ✓ | ✓ | ✓ | `exo_render_template_update` |
 | `PATCH /api/workspaces/:x` | ✓ | ✓ | ✓ | `exo_workspace_rename` |
@@ -153,14 +153,15 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/documents/:x/snapshots/:x/restore` | ✓ | ✓ | ✓ | `exo_page_restore_snapshot` |
 | `POST /api/documents/:x/views` | ✓ | ✓ | ✓ | `exo_database_view_create` |
 | `POST /api/documents/:x/views/:x/reorder` | ✓ | ✓ | ✓ | `exo_database_view_reorder` |
-| `POST /api/entities` | · | ✓ | ✓ | `exo_entity_create` |
-| `POST /api/entities/:x/pages` | · | ✓ | ✓ | `exo_entity_link_page` |
-| `POST /api/entities/candidates/:x/confirm` | · | ✓ | ✓ | `exo_entity_candidate_confirm` |
-| `POST /api/entities/candidates/:x/dismiss` | · | ✓ | ✓ | `exo_entity_candidate_dismiss` |
+| `POST /api/entities` | ✓ | ✓ | ✓ | `exo_entity_create` |
+| `POST /api/entities/:x/pages` | ✓ | ✓ | ✓ | `exo_entity_link_page` |
+| `POST /api/entities/candidates/:x/confirm` | ✓ | ✓ | ✓ | `exo_entity_candidate_confirm` |
+| `POST /api/entities/candidates/:x/dismiss` | ✓ | ✓ | ✓ | `exo_entity_candidate_dismiss` |
+| `POST /api/entities/database` | ✓ | · | · | — |
 | `POST /api/invitations/accept` | ✓ | · | · | — |
 | `POST /api/invitations/preview` | ✓ | · | · | — |
 | `POST /api/me/api-tokens` | ✓ | · | · | — |
-| `POST /api/memory/facts/:x/promote` | · | ✓ | ✓ | `exo_memory_fact_promote` |
+| `POST /api/memory/facts/:x/promote` | ✓ | ✓ | ✓ | `exo_memory_fact_promote` |
 | `POST /api/memory/remember` | · | · | · | `remember` |
 | `POST /api/project-builds/:x/cancel` | ✓ | ✓ | ✓ | `exo_project_build_cancel` |
 | `POST /api/projects/:x/assets` | ✓ | ✓ | ✓ | `exo_project_add_asset` |
@@ -184,7 +185,7 @@ reorder routes shipped with no way to them in the browser.
 
 ## Routes the browser reaches and agents do not
 
-42 of them. Each is covered by a documented exemption; the reasons
+43 of them. Each is covered by a documented exemption; the reasons
 are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 - `DELETE /api/admin/ai-models/:x`
@@ -222,6 +223,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `POST /api/auth/oauth2/consent`
 - `POST /api/documents/:x/collaboration-ticket`
 - `POST /api/documents/:x/cover`
+- `POST /api/entities/database`
 - `POST /api/invitations/accept`
 - `POST /api/invitations/preview`
 - `POST /api/me/api-tokens`
