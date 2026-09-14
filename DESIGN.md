@@ -1,44 +1,45 @@
 ---
 name: eXocortex
-description: Self-hostable collaborative workspace and external brain. Cool graphite, warm light, one amber signal.
+description: Self-hostable collaborative workspace and external brain. A slate sheet, light ink, one amber signal.
 colors:
-  background: 'oklch(0.145 0.012 275)'
-  surface: 'oklch(0.195 0.013 275)'
-  card: 'oklch(0.235 0.014 275)'
-  popover: 'oklch(0.275 0.015 275)'
-  overlay: 'oklch(0.075 0.010 275 / 0.76)'
-  muted: 'oklch(0.305 0.015 275)'
-  secondary: 'oklch(0.31 0.015 275)'
-  accent-solid: 'oklch(0.315 0.038 62)'
-  accent-strong: 'oklch(0.37 0.070 62)'
-  border: 'oklch(0.355 0.016 275)'
-  signal-line: 'oklch(0.44 0.050 62)'
-  border-strong: 'oklch(0.56 0.016 275)'
-  input: 'oklch(0.56 0.016 275)'
-  foreground: 'oklch(0.94 0.016 85)'
-  muted-foreground: 'oklch(0.74 0.012 275)'
-  secondary-foreground: 'oklch(0.91 0.016 85)'
-  accent-foreground: 'oklch(0.95 0.018 75)'
-  primary: 'oklch(0.78 0.150 62)'
-  primary-foreground: 'oklch(0.20 0.035 62)'
-  primary-text: 'oklch(0.78 0.150 62)'
-  ring: 'oklch(0.78 0.150 62)'
-  destructive: 'oklch(0.53 0.190 25)'
-  destructive-foreground: 'oklch(0.97 0.012 25)'
-  destructive-text: 'oklch(0.72 0.150 25)'
-  warning: 'oklch(0.84 0.140 100)'
-  warning-foreground: 'oklch(0.24 0.050 100)'
-  success: 'oklch(0.72 0.140 152)'
-  success-foreground: 'oklch(0.20 0.040 152)'
-  info: 'oklch(0.74 0.110 235)'
-  info-foreground: 'oklch(0.19 0.030 235)'
-  presence-1: 'oklch(0.82 0.125 62)'
-  presence-2: 'oklch(0.75 0.120 245)'
-  presence-3: 'oklch(0.78 0.150 340)'
-  presence-4: 'oklch(0.86 0.090 200)'
-  presence-5: 'oklch(0.70 0.150 295)'
-  presence-6: 'oklch(0.66 0.120 30)'
-  presence-foreground: 'oklch(0.18 0.020 275)'
+  overlay: 'oklch(0.160 0.020 234 / 0.78)'
+  sunken: 'oklch(0.270 0.029 234)'
+  surface: 'oklch(0.320 0.031 234)'
+  popover: 'oklch(0.355 0.032 234)'
+  background: 'oklch(0.393 0.033 234)'
+  card: 'oklch(0.437 0.034 234)'
+  muted: 'oklch(0.478 0.030 234)'
+  secondary: 'oklch(0.478 0.030 234)'
+  accent-solid: 'oklch(0.445 0.045 72)'
+  accent-strong: 'oklch(0.505 0.080 72)'
+  border: 'oklch(0.510 0.024 234)'
+  signal-line: 'oklch(0.585 0.065 72)'
+  border-strong: 'oklch(0.725 0.022 234)'
+  input: 'oklch(0.725 0.022 234)'
+  foreground: 'oklch(0.933 0.003 248)'
+  muted-foreground: 'oklch(0.832 0.013 240)'
+  secondary-foreground: 'oklch(0.933 0.003 248)'
+  accent-foreground: 'oklch(0.960 0.010 80)'
+  primary: 'oklch(0.796 0.155 72)'
+  primary-foreground: 'oklch(0.255 0.040 234)'
+  primary-text: 'oklch(0.860 0.145 74)'
+  ring: 'oklch(0.796 0.155 72)'
+  destructive: 'oklch(0.545 0.195 25)'
+  destructive-foreground: 'oklch(0.975 0.012 25)'
+  destructive-text: 'oklch(0.855 0.130 25)'
+  warning: 'oklch(0.870 0.135 100)'
+  warning-foreground: 'oklch(0.255 0.050 100)'
+  success: 'oklch(0.795 0.135 155)'
+  success-foreground: 'oklch(0.235 0.045 155)'
+  info: 'oklch(0.815 0.105 235)'
+  info-foreground: 'oklch(0.230 0.035 235)'
+  presence-1: 'oklch(0.875 0.125 72)'
+  presence-2: 'oklch(0.820 0.115 250)'
+  presence-3: 'oklch(0.845 0.135 340)'
+  presence-4: 'oklch(0.915 0.085 195)'
+  presence-5: 'oklch(0.795 0.140 300)'
+  presence-6: 'oklch(0.775 0.130 30)'
+  presence-foreground: 'oklch(0.200 0.025 234)'
 typography:
   page-title:
     fontFamily: 'Inter Variable, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif'
@@ -162,45 +163,58 @@ components:
 
 ## 1. Overview
 
-**Creative North Star: "Amber Instrument"**
+**Creative North Star: "Schiefer & Signal"**
 
 eXocortex is a precision instrument for thinking, not a document product. The
-surface is cool graphite: dark, slightly violet, deliberately inert. The light on
-it is warm. A single amber signal marks everything that is interactive or
+page is slate: `#344955`, a deep blue-grey that carries light rather than
+swallowing it. Around it the shell is the same slate, darker, and it recedes. A
+single amber signal, `#F9AA33`, marks everything that is interactive or
 happening. Nothing else in the interface is allowed to be a colour.
 
-That split does the work. Because the surfaces are cold and the text is warm, the
-screen reads as material with light on it rather than as grey boxes. Because
-amber appears only where something is live, the eye has exactly one thing to
-track. This matters more here than in most products: the primary user has ADHD
-and works in long sessions, so every competing call to attention is a defect, not
-a feature.
+Two things do the work here. The first is that the sheet is the brightest large
+surface in the product and the chrome around it is not, so the eye lands on the
+writing before anyone decides to look there. The second is that amber appears
+only where something is live, so the eye has exactly one thing to track. That
+matters more here than in most products: the primary user has ADHD and works in
+long sessions, so every competing call to attention is a defect, not a feature.
 
-The lineage is the amber-phosphor terminal and the cockpit instrument panel, not
-the neon street sign. It is terminal-adjacent without being a terminal costume.
-The previous palette, saturated green on near-black, was exactly that costume and
-was removed.
+The lineage is the lit instrument panel: a slate housing, a readout that glows,
+one warm indicator. Not the neon street sign, and not the terminal costume. Two
+earlier palettes were exactly that costume -- saturated green on near-black,
+then near-black graphite with an amber terminal glow -- and both were removed.
+This one is a mid-tone: the interface is dark, but it is not hiding.
+
+The three colours are the logo's, not a scheme laid over it. `#344955` is its
+ground, `#F9AA33` is its ink, `#E7E9EB` is the rule between the mark and the
+wordmark. The product wears its own logo rather than the other way round.
 
 Register: **product**. Design serves the work. See `PRODUCT.md` for users, voice
 and strategic principles.
 
-## 2. Colors: The Amber Instrument Palette
+## 2. Colors: Slate and Signal
 
 Authored in OKLCH throughout, because the perceptually uniform lightness axis is
 what makes the surface ramp read as evenly spaced steps. Values live in
 `packages/ui/src/tokens.css` and are exposed to Tailwind through
 `packages/ui/src/styles.css`. Frontmatter carries OKLCH rather than hex on
 purpose: the project has an OKLCH-only doctrine and there is one source of truth.
+The three brand hexes appear exactly twice each, in `tokens.css` as the anchors
+of the system and in `logo.tsx` as the logo's own ink.
 
 ### Primary
 
-`primary` `oklch(0.78 0.150 62)` — amber. The only brand colour. It marks the
-focus ring, the active page in the tree, the primary action, live job progress
-and your own collaboration cursor.
+`primary` `oklch(0.796 0.155 72)`, which is `#F9AA33`. The only brand colour. It
+marks the focus ring, the active page in the tree, the primary action, live job
+progress and your own collaboration cursor.
 
-`primary-foreground` `oklch(0.20 0.035 62)` sits on it at 8.8:1. `primary-text`
-is the same amber used as text and icon colour on dark surfaces, at 9.2:1 on the
-background.
+`primary-foreground` `oklch(0.255 0.040 234)` sits on it at 8.1:1, and it is
+slate rather than black: the brand blue appears inside the brand amber, which is
+what keeps a primary button looking like part of the product.
+
+`primary-text` `oklch(0.860 0.145 74)` is the same amber lifted for use as text
+and as an icon colour, at 5.9:1 on the page and 4.9:1 on a card. The lift is not
+cosmetic. On this palette `primary` used as text measures 4.0:1 on a card and
+fails; the Fill-Is-Not-Text Rule below is enforced by arithmetic, not taste.
 
 ### Secondary
 
@@ -211,57 +225,90 @@ anywhere else:
 
 | Token           | Value                   | Job                                                     |
 | --------------- | ----------------------- | ------------------------------------------------------- |
-| `signal-line`   | `oklch(0.44 0.050 62)`  | structure: rules, leader dots, tree guides. Never text. |
-| `accent-solid`  | `oklch(0.315 0.038 62)` | hover                                                   |
-| `accent-strong` | `oklch(0.37 0.070 62)`  | selection, "you are here"                               |
-| `primary`       | `oklch(0.78 0.150 62)`  | action, focus, live                                     |
+| `accent-solid`  | `oklch(0.445 0.045 72)` | hover                                                   |
+| `accent-strong` | `oklch(0.505 0.080 72)` | selection, "you are here"                               |
+| `signal-line`   | `oklch(0.585 0.065 72)` | structure: rules, leader dots, tree guides. Never text. |
+| `primary`       | `oklch(0.796 0.155 72)` | action, focus, live                                     |
 
 Only the last of the four is a colour you notice. The first three are warmth you
 feel, which is what keeps the scale inside the One Signal Rule: amber still
-means "interactive or happening", and a rule is neither.
+means "interactive or happening", and a rule is neither. Note that the four are
+listed by lightness and not by loudness: `signal-line` is lighter than the
+selection tint and still quieter, because it is a hairline and the tint is a
+field. Area is half of how loud a colour is.
 
-`secondary` `oklch(0.31 0.015 275)` remains a neutral graphite chip.
-`accent-solid` has to clear `popover`, not just `surface`: menus and the command
-palette are where hover is read most often, and a hover tint that sits below the
-floating surface it appears on is invisible exactly where it matters.
+`secondary` `oklch(0.478 0.030 234)` is a neutral slate chip, deliberately
+untinted: a second warm control would compete with the signal.
+
+`accent-solid` has to clear `background`, not just `surface`. A hover lands on a
+tree item in the dark chrome, on a menu row, and on a table row on the open page,
+and the page is the lightest of the three. A hover tint calibrated against the
+sidebar alone is invisible exactly where the density is highest.
 
 `accent-strong` is a separate token rather than a stronger opacity of the hover.
 Selection answers "where am I", which in a retrieval-first product is the state
 the user reads most often; it has to survive a glance from across the desk.
-Foreground text sits on it at 8.9:1, `primary-text` at 5.1:1.
+Foreground text sits on it at 4.9:1. `primary-text` sits on it at 3.7:1, which is
+enough for the amber file icon on a selected row (WCAG 1.4.11) and not enough for
+running text, so a selected row never carries amber prose.
 
 ### Tertiary
 
-Status colours are a separate system from the brand signal, never decorative:
+Status colours are a separate system from the brand signal, never decorative.
+All of them are pitched brighter than they were under the near-black palette,
+because they now have to carry against a mid-tone page:
 
-- `destructive` `oklch(0.53 0.190 25)` — fill. `destructive-text`
-  `oklch(0.72 0.150 25)` — the same red as text and icons.
-- `warning` `oklch(0.84 0.140 100)` — yellow-gold, held 38 degrees of hue away
+- `destructive` `oklch(0.545 0.195 25)` -- fill. `destructive-text`
+  `oklch(0.855 0.130 25)` -- the same red as text and icons, at 4.4:1 on a card.
+- `warning` `oklch(0.870 0.135 100)` -- yellow-gold, held 28 degrees of hue away
   from the amber signal so a caution never reads as a primary action.
-- `success` `oklch(0.72 0.140 152)`, `info` `oklch(0.74 0.110 235)`.
+- `success` `oklch(0.795 0.135 155)`, `info` `oklch(0.815 0.105 235)`.
 
 `presence-1…6` are the collaboration cursors, spread across hue _and_ lightness
-(0.66…0.86) so they survive deuteranopia and protanopia, where hue alone
-collapses. Presence 1 is the amber signal: your own cursor is the one you should
+(0.775…0.915) so they survive deuteranopia and protanopia, where hue alone
+collapses. The whole band sits high for the same reason as the status colours:
+every one of them has to clear 3:1 on `card`, the lightest surface a cursor can
+land on. Presence 1 is the amber signal: your own cursor is the one you should
 find fastest.
 
 ### Neutral
 
-A six-step surface ramp, all at hue 275 and chroma <= 0.016:
-`background` 0.145 -> `surface` 0.195 -> `card` 0.235 -> `popover` 0.275 ->
-`muted` 0.305 / `secondary` 0.31 -> `border` 0.355. The foreground is warm
-off-white `oklch(0.94 0.016 85)` at 16.6:1.
+Six steps, all at hue 234 and chroma <= 0.034, with the page near the top rather
+than at the bottom:
 
-The ramp used to span 0.17 to 0.32 and pack its four surface steps into 0.065 of
-lightness. On a screen that is one flat sheet: the sidebar, the header, the page
-and a popover were indistinguishable, and "elevation is the surface ramp" was
-true in the tokens and false in front of the user. Each step is now a clear 0.04
-apart, which is the smallest difference that reads as a layer without a shadow
-having to say so.
+| Token        |     L | Role                                           |
+| ------------ | ----: | ---------------------------------------------- |
+| `sunken`     | 0.270 | wells: code blocks, readouts cut into the page |
+| `surface`    | 0.320 | the housing: sidebar, header, context panel    |
+| `popover`    | 0.355 | floating: menus, dialogs, the command palette  |
+| `background` | 0.393 | the page. `#344955`                            |
+| `card`       | 0.437 | a block raised off the page                    |
+| `border`     | 0.510 | separation                                     |
 
-The foreground moved with it. At chroma 0.008 the "warm off-white" was warm only
-by measurement; at 0.016 the temperature contrast against the cool graphite is
-the thing the whole system is built on, and it finally shows.
+The foreground is `#E7E9EB` at 7.7:1 on the page and 6.4:1 on a card.
+
+Three things about this ramp are worth stating, because each of them looks like
+a mistake until the arithmetic is on the table.
+
+**The page is not the bottom.** A brand colour at lightness 0.393 is a mid-tone,
+and a mid-tone canvas has room above it and below it. Putting the shell below
+the page is what makes the sheet read as lit; putting it above would have made
+the writing the darkest thing on screen.
+
+**`popover` sits below `background`.** This is the one break in the monotone
+ramp and it is deliberate. A menu, a dialog and the command palette belong to the
+housing, not to the sheet, and they are marked as floating by a `border-strong`
+outline and a shadow rather than by out-lightening the page. Letting them climb
+instead would push the lightest surface past 0.47, and past 0.47 neither the
+amber signal nor the muted text clears 4.5:1 any more. That is the bill a
+mid-tone canvas hands you, and this is the cheapest place to pay it: a menu that
+is a shade darker than the page still reads as a menu, which is how every
+desktop has drawn one for thirty years.
+
+**The ink moved up, not down.** `muted-foreground` is 0.832 where it used to be
+0.740, `destructive-text` 0.855 where it was 0.815, and the content colours are
+all at a single 0.865. On a near-black background those values would have been
+glare. On this one they are the floor.
 
 ### Named Rules
 
@@ -271,12 +318,13 @@ the element is wrong, not the rule.
 
 **The Fill-Is-Not-Text Rule.** `primary` and `destructive` are fill colours,
 sized for dark text on top of them. `primary-text` and `destructive-text` are
-their text and icon counterparts. A fill colour used as a text colour is a bug.
+their text and icon counterparts. A fill colour used as a text colour is a bug,
+and on this palette it is a measurable one: 4.0:1 against 4.9:1 on a card.
 
-**The Border Weight Rule.** `border` (1.5:1 on card) separates; it never
+**The Border Weight Rule.** `border` (1.4:1 on card) separates; it never
 delimits a control. Anything the user must perceive as a boundary uses `input`
-or `border-strong` (3.2:1 on popover, the lightest surface a form field ever
-sits on, WCAG 1.4.11). `signal-line` (2.1:1 on card) sits between the two and is
+or `border-strong` (3.2:1 on card, the lightest surface a form field ever sits
+on, WCAG 1.4.11). `signal-line` (1.9:1 on card) sits between the two and is
 neither: it is warm, so a structural rule reads as drawn rather than as a seam,
 and it is never a boundary you can act on.
 
@@ -292,6 +340,11 @@ carry an icon or text as well. Remove all colour and the interface still works.
 `accent-strong`, and selection additionally changes weight or turns an icon
 amber. A selected element that differs from a hovered one only in opacity is a
 bug: pointer feedback and "you are here" are different questions.
+
+**The Code-Is-A-Well Rule.** Code, identifiers and machine readouts sit on
+`sunken`, below the page, never on `muted` above it. A code block is something
+the sheet is cut into, not a card stacked on top of it, and on a mid-tone page
+the difference is the whole legibility of the block.
 
 ## 3. Typography
 
@@ -315,6 +368,16 @@ fallback chain, not the primary, so a machine that somehow fails to load the
 bundled font still gets something legible. Monospace is reserved for code,
 IDs and anything the user might copy verbatim; it is a semantic signal, not
 decoration.
+
+**Logo Font:** Neuropol, and only in the logo. The wordmark in
+`packages/ui/src/components/logo.tsx` is set in it and then converted to
+outlines, so the face is never loaded at runtime, never appears in a UI label,
+and cannot be picked by accident. That is the deal a display face gets here: it
+carries the name, Inter carries everything else. The typeface (Ray Larabie,
+1996, CC0 since 2024) sits in `packages/ui/src/assets/` so the wordmark can be
+reset; `packages/ui/src/assets/README.md` has the recipe and the licence note.
+Neuropol X, the commercial expansion, is a different font and is not in this
+repository.
 
 ### Hierarchy
 
@@ -395,18 +458,25 @@ place (the save heartbeat), it brightens instantly and decays over
 
 ## 4. Elevation
 
-Elevation is the surface ramp, not shadow. A raised surface is a lighter step of
-graphite; shadows only confirm what the colour already said.
+Elevation is the surface ramp, not shadow. A step of the slate says where a
+layer sits; shadows only confirm what the colour already said.
 
-`background` (page) → `surface` (shell chrome) → `card` (raised block) →
-`popover` (floating: menus, dialogs, command palette) → `overlay` (modal scrim,
-`oklch(0.075 0.010 275 / 0.76)`, darker than the page so the dimmed content
-reads as pushed back rather than covered in black).
+`sunken` (a well cut into the page) → `surface` (the housing: sidebar, header,
+panels) → `background` (the page) → `card` (a block raised off it) → `overlay`
+(modal scrim, `oklch(0.160 0.020 234 / 0.78)`, far below the ramp so the dimmed
+content reads as pushed back rather than covered in black).
 
-Each step is 0.04 of lightness apart, and that number is the whole rule. Below
-about 0.03 the eye stops resolving the step on a dark surface, and the ramp
-becomes a claim the tokens make and the screen does not keep. A new surface that
-cannot afford a clear step is not a new surface.
+`popover` is the exception, and it is the only one. Menus, dialogs and the
+command palette sit at 0.355, between the housing and the page, because they
+belong to the housing rather than to the sheet. They are read as floating from
+their `border-strong` outline and their shadow. Section 2 has the arithmetic:
+climbing instead would push the ramp past the point where the amber signal still
+clears 4.5:1.
+
+Each step is at least 0.035 of lightness apart, and that number is the whole
+rule. Below about 0.03 the eye stops resolving the step, and the ramp becomes a
+claim the tokens make and the screen does not keep. A new surface that cannot
+afford a clear step is not a new surface.
 
 ### Shadow Vocabulary
 
@@ -434,7 +504,7 @@ shadcn registry and adapted. One primitive library, no exceptions.
 - **Primary** — `bg-primary` / `text-primary-foreground`, `rounded-md`, height
   2.25rem, hover `bg-primary/90`. One per screen region. If a screen has two
   primary buttons, one of them is not primary.
-- **Secondary** — neutral graphite fill, for the second-most-likely action.
+- **Secondary** — neutral slate fill, for the second-most-likely action.
 - **Outline** — 1px `border`, transparent fill, hover to `accent-solid`.
 - **Ghost** — no chrome at rest, hover to `accent-solid`. The default for
   toolbar and icon actions; the app shell is mostly ghost buttons.

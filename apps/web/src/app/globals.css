@@ -131,11 +131,11 @@
   }
 
   .exocortex-editor code {
-    @apply rounded bg-muted px-1 py-0.5 font-mono text-[0.85em];
+    @apply rounded bg-sunken px-1 py-0.5 font-mono text-[0.85em];
   }
 
   .exocortex-editor pre {
-    @apply overflow-x-auto rounded-md border border-border bg-muted p-3 font-mono text-sm;
+    @apply overflow-x-auto rounded-md border border-border bg-sunken p-3 font-mono text-sm;
   }
 
   .exocortex-editor pre code {

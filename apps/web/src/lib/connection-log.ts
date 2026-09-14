@@ -153,7 +153,7 @@ export function logConnection(
   if (entries.length > MAX_ENTRIES) entries = entries.slice(-MAX_ENTRIES);
   if (consoleEnabled && browser()) {
     // eslint-disable-next-line no-console -- this module is the console output.
-    console.info(`%c[exo]%c ${formatEntry(entry)}`, 'color:#d97706;font-weight:600', '');
+    console.info(`%c[exo]%c ${formatEntry(entry)}`, 'color:#F9AA33;font-weight:600', '');
   }
   schedulePersist();
 }

@@ -42,7 +42,7 @@ export function CopyBlock({ value, label, className }: CopyBlockProps) {
 
   return (
     <div className={cn('relative', className)}>
-      <pre className="overflow-x-auto rounded-md border border-border bg-muted p-3 pr-12 font-mono text-xs leading-relaxed whitespace-pre-wrap break-all select-all">
+      <pre className="overflow-x-auto rounded-md border border-border bg-sunken p-3 pr-12 font-mono text-xs leading-relaxed whitespace-pre-wrap break-all select-all">
         {value}
       </pre>
       <Button

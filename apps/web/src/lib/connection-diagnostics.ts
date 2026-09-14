@@ -89,7 +89,7 @@ export function installConnectionDiagnostics(): void {
   // eslint-disable-next-line no-console -- the one line that makes the rest discoverable.
   console.info(
     '%c[exo]%c Verbindungsdiagnose bereit: exocortex.dump(), exocortex.probe()',
-    'color:#d97706;font-weight:600',
+    'color:#F9AA33;font-weight:600',
     '',
   );
 }

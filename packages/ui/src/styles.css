@@ -30,6 +30,10 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
 
+  /* The deepest step of the ramp: a well cut into the page rather than a layer
+     raised above it. Code blocks and read-only readouts, not panels. */
+  --color-sunken: var(--sunken);
+
   --color-overlay: var(--overlay);
 
   --color-primary: var(--primary);
