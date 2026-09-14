@@ -146,7 +146,7 @@ export function useCreateProject(workspaceId: string) {
     mutationFn: (request: CreateProjectInput) =>
       apiRequest<ProjectResponse>(`/api/workspaces/${workspaceId}/projects`, {
         method: 'POST',
-        body: JSON.stringify(request),
+        body: request,
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: projectKeys.list(workspaceId) });
@@ -162,7 +162,7 @@ export function useUpdateProject(projectId: string) {
     mutationFn: (request: UpdateProjectRequest) =>
       apiRequest<ProjectResponse>(`/api/projects/${projectId}`, {
         method: 'PATCH',
-        body: JSON.stringify(request),
+        body: request,
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: projectKeys.project(projectId) });
@@ -188,7 +188,7 @@ export function useProjectFileMutation(projectId: string) {
     mutationFn: (request: { path: string; content: string; createOnly?: boolean }) =>
       apiRequest<ProjectMutationResponse>(`/api/projects/${projectId}/files`, {
         method: 'POST',
-        body: JSON.stringify(request),
+        body: request,
       }),
     onSuccess: invalidate,
   });
@@ -197,7 +197,7 @@ export function useProjectFileMutation(projectId: string) {
     mutationFn: (request: PatchProjectFileRequest) =>
       apiRequest<ProjectMutationResponse>(`/api/projects/${projectId}/files/patch`, {
         method: 'POST',
-        body: JSON.stringify(request),
+        body: request,
       }),
     onSuccess: invalidate,
   });
@@ -206,7 +206,7 @@ export function useProjectFileMutation(projectId: string) {
     mutationFn: (request: MoveProjectFileRequest) =>
       apiRequest<ProjectMutationResponse>(`/api/projects/${projectId}/files/move`, {
         method: 'POST',
-        body: JSON.stringify(request),
+        body: request,
       }),
     onSuccess: invalidate,
   });
@@ -215,7 +215,7 @@ export function useProjectFileMutation(projectId: string) {
     mutationFn: (request: DeleteProjectFileRequest) =>
       apiRequest<ProjectMutationResponse>(`/api/projects/${projectId}/files`, {
         method: 'DELETE',
-        body: JSON.stringify(request),
+        body: request,
       }),
     onSuccess: invalidate,
   });
@@ -224,7 +224,7 @@ export function useProjectFileMutation(projectId: string) {
     mutationFn: (request: AddProjectAssetRequest) =>
       apiRequest<ProjectMutationResponse>(`/api/projects/${projectId}/assets`, {
         method: 'POST',
-        body: JSON.stringify(request),
+        body: request,
       }),
     onSuccess: invalidate,
   });
@@ -238,7 +238,7 @@ export function useStartProjectBuild(projectId: string) {
     mutationFn: (request: StartProjectBuildRequest) =>
       apiRequest<StartProjectBuildResponse>(`/api/projects/${projectId}/builds`, {
         method: 'POST',
-        body: JSON.stringify(request),
+        body: request,
       }),
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: projectKeys.build(result.build.id) });
