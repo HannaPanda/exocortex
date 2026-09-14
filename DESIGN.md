@@ -576,6 +576,21 @@ in the page tree draws a `signal-line` rule down its parent's chevron column, so
 a branch reads as a branch several levels deep, where indentation alone stops
 being countable.
 
+### The logo
+
+Two components, and which one you reach for is a rule rather than a preference.
+
+`ExocortexLogo` is the mark in a square box, and it is what the product chrome
+wears: the header, an avatar, a tab, a launcher tile. `ExocortexWordmark` is the
+full lockup, and it appears at the front door and nowhere inside the
+application: the login and invitation screens, a rendered cover page, anything
+that has to name the product to someone who does not yet know it.
+
+The reason is the One Signal Rule. The lockup is 8.3:1 and every part of it
+except the rule is brand amber, so at header height it is a 17rem block of
+signal colour parked where the interface should be quiet, before the user has
+done anything at all. The mark at `size-6` says the same thing in 1.5rem.
+
 ### Signature Component: the save heartbeat
 
 `SaveIndicator` sits in the document toolbar and is the only place in the product

@@ -22,7 +22,7 @@ import {
   AppShell as AppShellFrame,
   Button,
   cn,
-  ExocortexWordmark,
+  ExocortexLogo,
   ResizablePanel,
   Separator,
   Sheet,
@@ -251,7 +251,12 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       <SkipToContentLink />
 
       <AppHeader>
-        <ExocortexWordmark className="mr-1 hidden sm:block" />
+        {/* The chrome wears the mark, not the lockup. The lockup is 8.3:1 and
+            all brand amber; at header height it is a 17rem block of signal
+            colour sitting where the interface should be quiet, and it breaks
+            the One Signal Rule before the user has done anything. The full
+            lockup lives at the front door instead (app/(auth)/layout.tsx). */}
+        <ExocortexLogo className="mr-1 hidden size-6 sm:block" />
 
         <Tooltip>
           <TooltipTrigger
