@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import {
   addProjectAssetRequestSchema,
+  deleteProjectBuildResponseSchema,
   idSchema,
   type Project,
   PROJECT_MAX_TEXT_CHARS,
@@ -569,6 +570,27 @@ export const projectBuildCancelTool: AnyToolDefinition = defineTool({
   },
 });
 
+export const projectBuildDeleteTool: AnyToolDefinition = defineTool({
+  name: 'exo_project_build_delete',
+  description:
+    'Löscht einen abgeschlossenen Bau samt PDF und SyncTeX-Datei. Ein laufender Bau muss erst ' +
+    'mit exo_project_build_cancel abgebrochen werden. Die Quellen bleiben unberührt: derselbe ' +
+    'Bau lässt sich mit exo_project_build erneut anfordern.',
+  inputSchema: z.object({ buildId: idSchema }),
+  surfaces: ['mcp', 'ai'],
+  mutating: true,
+  destructive: true,
+  target: (input) => `project-build:${input.buildId}`,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'DELETE',
+      path: `/api/project-builds/${input.buildId}`,
+      responseSchema: deleteProjectBuildResponseSchema,
+    });
+    return { text: 'Bau, PDF und SyncTeX-Datei gelöscht.', data: result };
+  },
+});
+
 export const PROJECT_TOOLS: readonly AnyToolDefinition[] = [
   projectListTool,
   projectCreateTool,
@@ -588,4 +610,5 @@ export const PROJECT_TOOLS: readonly AnyToolDefinition[] = [
   projectBuildLogTool,
   projectBuildArtifactsTool,
   projectBuildCancelTool,
+  projectBuildDeleteTool,
 ];

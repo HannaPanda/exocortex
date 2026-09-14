@@ -71,7 +71,13 @@ export function ProjectView({ workspaceId, projectId }: ProjectViewProps) {
         </div>
 
         <div className="min-h-0">
-          <ProjectBuildPanel build={workspace.build} onOpenDiagnostic={workspace.openFile} />
+          <ProjectBuildPanel
+            build={workspace.build}
+            builds={workspace.builds}
+            onOpenDiagnostic={workspace.openFile}
+            onSelectBuild={workspace.selectBuild}
+            onDeleteBuild={workspace.actions.deleteBuild}
+          />
         </div>
       </div>
 

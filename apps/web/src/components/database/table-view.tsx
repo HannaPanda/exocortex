@@ -157,7 +157,13 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
                 className="group/head relative sticky top-0 z-20 border-b border-border bg-background"
               >
                 <div className="flex items-center justify-between gap-1">
-                  <PropertyMenu documentId={documentId} property={property} readOnly={readOnly} />
+                  <PropertyMenu
+                    documentId={documentId}
+                    property={property}
+                    view={view}
+                    columns={columns}
+                    readOnly={readOnly}
+                  />
                   {readOnly ? null : (
                     <ColumnResizeHandle
                       width={widthOf(property.id)}

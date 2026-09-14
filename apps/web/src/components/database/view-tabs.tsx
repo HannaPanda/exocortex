@@ -1,6 +1,8 @@
 'use client';
 
 import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
   CalendarIcon,
   ImageIcon,
   KanbanSquareIcon,
@@ -17,6 +19,7 @@ import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuSeparator,
   ContextMenuTrigger,
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +27,13 @@ import {
   DropdownMenuTrigger,
 } from '@exocortex/ui';
 
-import { useCreateDatabaseView, useDeleteDatabaseView } from '@/lib/api/database-queries';
+import {
+  useCreateDatabaseView,
+  useDeleteDatabaseView,
+  useReorderDatabaseView,
+} from '@/lib/api/database-queries';
+
+import { type MoveDirection } from './table-columns';
 
 /** Also reused by the context panel's "Sammlung" tab (issue #17). */
 export const VIEW_TYPE_LABELS: Record<DatabaseViewType, string> = {
@@ -54,6 +63,31 @@ interface ViewTabsProps {
 export function ViewTabs({ documentId, views, activeViewId, onSelect, readOnly }: ViewTabsProps) {
   const createView = useCreateDatabaseView(documentId);
   const deleteView = useDeleteDatabaseView(documentId);
+  const reorderView = useReorderDatabaseView(documentId);
+
+  /**
+   * One step along the row of tabs. `afterViewId: null` is the front.
+   *
+   * The tabs were the only place in the application where the order of
+   * something was fixed at the moment it was created: `exo_database_view_*`
+   * has had this since the catalogue was written, and the browser had the
+   * route and no button (ADR-025).
+   */
+  const moveView = (index: number, direction: MoveDirection): void => {
+    const view = views[index];
+    if (view === undefined) return;
+    if (direction === 'left') {
+      if (index === 0) return;
+      reorderView.mutate({
+        viewId: view.id,
+        request: { afterViewId: views[index - 2]?.id ?? null },
+      });
+      return;
+    }
+    const next = views[index + 1];
+    if (next === undefined) return;
+    reorderView.mutate({ viewId: view.id, request: { afterViewId: next.id } });
+  };
 
   return (
     <div
@@ -61,7 +95,7 @@ export function ViewTabs({ documentId, views, activeViewId, onSelect, readOnly }
       role="tablist"
       aria-label="Ansichten"
     >
-      {views.map((view) => {
+      {views.map((view, index) => {
         const Icon = VIEW_TYPE_ICONS[view.type];
         return (
           <ContextMenu key={view.id}>
@@ -85,6 +119,21 @@ export function ViewTabs({ documentId, views, activeViewId, onSelect, readOnly }
             />
             {readOnly || views.length <= 1 ? null : (
               <ContextMenuContent>
+                <ContextMenuItem
+                  disabled={index === 0}
+                  onClick={() => moveView(index, 'left')}
+                  data-testid={`view-move-left-${view.id}`}
+                >
+                  <ArrowLeftIcon /> Nach links
+                </ContextMenuItem>
+                <ContextMenuItem
+                  disabled={index === views.length - 1}
+                  onClick={() => moveView(index, 'right')}
+                  data-testid={`view-move-right-${view.id}`}
+                >
+                  <ArrowRightIcon /> Nach rechts
+                </ContextMenuItem>
+                <ContextMenuSeparator />
                 <ContextMenuItem variant="destructive" onClick={() => deleteView.mutate(view.id)}>
                   <TrashIcon /> Ansicht löschen
                 </ContextMenuItem>

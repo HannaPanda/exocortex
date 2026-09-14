@@ -123,6 +123,15 @@ handles in the header, all read through
 | `rowHeight`         | `short`/`medium`/`tall` = 1/3/6 lines per cell. A clamp, never a data limit: the full value is always reachable in the cell overlay and in the row sheet.                                                         |
 | `visibleProperties` | Which columns are shown, and in which order. A property **missing** from the list counts as visible, so a newly created property appears without the view having to be updated.                                   |
 
+Moving a column one step is in the column header menu ("Nach links" / "Nach
+rechts"), and it writes to one of two places, which is the part worth knowing:
+a view that already has a `visibleProperties` list of its own is rewritten in
+place, and a view that has none follows the database's property order, so the
+property itself moves through `POST /api/documents/:id/properties/:id/reorder`.
+Picking the wrong one would not look like a failure -- the click would simply
+do nothing -- so `hasOwnColumnOrder()` decides, not the reader. The view tabs
+move the same way through their context menu, which is `reorder` on the view.
+
 Two related rules follow from `rowHeight` being a clamp:
 
 - A cell never truncates without a way out. Text-ish cells

@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tan
 import {
   type AddProjectAssetRequest,
   type CreateProjectInput,
+  type DeleteProjectBuildResponse,
   type DeleteProjectFileRequest,
   type MoveProjectFileRequest,
   type PatchProjectFileRequest,
@@ -242,6 +243,26 @@ export function useStartProjectBuild(projectId: string) {
       }),
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: projectKeys.build(result.build.id) });
+    },
+  });
+}
+
+/**
+ * Deletes one finished build, its PDF and its SyncTeX map.
+ *
+ * Invalidates the list rather than the single build: the row has to disappear,
+ * and the panel that may still be showing it is told by the caller, which is
+ * the only place that knows whether it was looking at this one.
+ */
+export function useDeleteProjectBuild(workspaceId: string, projectId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (buildId: string) =>
+      apiRequest<DeleteProjectBuildResponse>(`/api/project-builds/${buildId}`, {
+        method: 'DELETE',
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: projectKeys.builds(workspaceId, projectId) });
     },
   });
 }

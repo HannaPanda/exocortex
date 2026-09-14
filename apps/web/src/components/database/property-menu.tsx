@@ -1,11 +1,20 @@
 'use client';
 
-import { MoreVerticalIcon, PlusIcon, SettingsIcon, TrashIcon, XIcon } from 'lucide-react';
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  MoreVerticalIcon,
+  PlusIcon,
+  SettingsIcon,
+  TrashIcon,
+  XIcon,
+} from 'lucide-react';
 import * as React from 'react';
 
 import {
   type DatabaseDatePropertyConfig,
   type DatabaseProperty,
+  type DatabaseView,
   parseDatePropertyConfig,
 } from '@exocortex/contracts';
 import {
@@ -35,8 +44,10 @@ import {
   useCreateDatabasePropertyOption,
   useDeleteDatabaseProperty,
   useDeleteDatabasePropertyOption,
+  useReorderDatabaseProperty,
   useUpdateDatabaseProperty,
   useUpdateDatabasePropertyOption,
+  useUpdateDatabaseView,
 } from '@/lib/api/database-queries';
 
 import {
@@ -47,15 +58,24 @@ import {
   OPTION_COLORS,
   PROPERTY_TYPE_LABELS,
 } from './property-types';
+import {
+  columnMoveAfter,
+  hasOwnColumnOrder,
+  moveColumnInView,
+  type MoveDirection,
+} from './table-columns';
 
 interface PropertyMenuProps {
   documentId: string;
   property: DatabaseProperty;
+  /** The view this header belongs to, and the columns it shows, in order. */
+  view: DatabaseView;
+  columns: DatabaseProperty[];
   readOnly: boolean;
 }
 
 /** Column header: name, icon-labelled type, and the manage/delete menu. */
-export function PropertyMenu({ documentId, property, readOnly }: PropertyMenuProps) {
+export function PropertyMenu({ documentId, property, view, columns, readOnly }: PropertyMenuProps) {
   const [renaming, setRenaming] = React.useState(false);
   const [managingOptions, setManagingOptions] = React.useState(false);
   const [editingDateFormat, setEditingDateFormat] = React.useState(false);
@@ -64,6 +84,7 @@ export function PropertyMenu({ documentId, property, readOnly }: PropertyMenuPro
 
   const updateProperty = useUpdateDatabaseProperty(documentId);
   const deleteProperty = useDeleteDatabaseProperty(documentId);
+  const move = useColumnMove(documentId, view, columns);
 
   const hasOptions = ARRAY_PROPERTY_TYPES.has(property.type) || property.type === 'SELECT';
 
@@ -95,6 +116,20 @@ export function PropertyMenu({ documentId, property, readOnly }: PropertyMenuPro
         />
         <DropdownMenuContent align="start">
           <DropdownMenuItem onClick={() => setRenaming(true)}>Umbenennen</DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={!move.can(property.id, 'left')}
+            onClick={() => move.run(property.id, 'left')}
+            data-testid={`property-move-left-${property.id}`}
+          >
+            <ArrowLeftIcon /> Nach links
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={!move.can(property.id, 'right')}
+            onClick={() => move.run(property.id, 'right')}
+            data-testid={`property-move-right-${property.id}`}
+          >
+            <ArrowRightIcon /> Nach rechts
+          </DropdownMenuItem>
           {hasOptions ? (
             <DropdownMenuItem onClick={() => setManagingOptions(true)}>
               <SettingsIcon /> Optionen verwalten
@@ -181,6 +216,41 @@ export function PropertyMenu({ documentId, property, readOnly }: PropertyMenuPro
       </Dialog>
     </>
   );
+}
+
+/**
+ * Moving a column one step, through whichever order actually decides this view.
+ *
+ * Two routes, one gesture: a view that has its own column order (hiding a
+ * column writes one) is rewritten in place, and a view that has none follows
+ * the database's property order, so the property itself moves. Picking the
+ * wrong one of the two is not a failure anybody would see -- the click would
+ * simply do nothing -- which is why the choice is made here and not by the
+ * reader.
+ */
+function useColumnMove(documentId: string, view: DatabaseView, columns: DatabaseProperty[]) {
+  const reorderProperty = useReorderDatabaseProperty(documentId);
+  const updateView = useUpdateDatabaseView(documentId);
+  const ownOrder = hasOwnColumnOrder(view);
+
+  const can = (propertyId: string, direction: MoveDirection): boolean =>
+    ownOrder
+      ? moveColumnInView(view, columns, propertyId, direction) !== null
+      : columnMoveAfter(columns, propertyId, direction) !== null;
+
+  const run = (propertyId: string, direction: MoveDirection): void => {
+    if (ownOrder) {
+      const visibleProperties = moveColumnInView(view, columns, propertyId, direction);
+      if (visibleProperties === null) return;
+      updateView.mutate({ viewId: view.id, request: { config: { visibleProperties } } });
+      return;
+    }
+    const target = columnMoveAfter(columns, propertyId, direction);
+    if (target === null) return;
+    reorderProperty.mutate({ propertyId, request: target });
+  };
+
+  return { can, run };
 }
 
 /**

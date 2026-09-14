@@ -23,7 +23,14 @@
  *      listed below,
  *   2. a route the browser calls that no `ai` tool and no `mcp` tool reaches,
  *      with no reason in `check-mcp-catalog.mjs`,
- *   3. `docs/capability-matrix.md` no longer matching the code. It is
+ *   3. a query hook in `apps/web/src/lib/api` that calls the API and that no
+ *      screen reaches. The UI column is about what a person can do, so a hook
+ *      nobody renders is a capability nobody has -- and it used to read as
+ *      browser coverage here, which is how a build history and two reorder
+ *      routes sat in the client for a day with no way to them. Either render
+ *      it or delete it; there is deliberately no exemption list, because
+ *      "later" is what this failure mode is made of.
+ *   4. `docs/capability-matrix.md` no longer matching the code. It is
  *      generated from this script (`--write`), so the audit the issue asks for
  *      is a file in the repository rather than a spreadsheet that ages.
  *
@@ -40,6 +47,7 @@ import {
   collectApiRoutes,
   collectTools,
   collectWebCalls,
+  deadClientExports,
   matchesRoutePattern,
   repoRoot,
 } from './lib/api-surface.mjs';
@@ -151,6 +159,12 @@ function renderMatrix(rows, exemptions, surfaceGaps) {
     'needs a reason, and every one of them has an entry in the exemption list of',
     '`scripts/check-mcp-catalog.mjs` or in `SURFACE_EXEMPT` here.',
     '',
+    'A `✓` in the UI column means a screen reaches the route, not that a hook',
+    'exists for it: a query hook in `apps/web/src/lib/api` that nothing imports',
+    'counts for nothing here, and the gate goes red until it is rendered or',
+    'deleted. It used to count, which is how a project build history and two',
+    'reorder routes shipped with no way to them in the browser.',
+    '',
     `${rows.length} routes are reachable from at least one client; ${full} from all three.`,
     '',
     '| Route | UI | AI | MCP | Tools |',
@@ -251,7 +265,11 @@ const uiOnly = rows
   .filter((row) => !exemptions.some((pattern) => matchesRoutePattern(row.route, pattern)))
   .map((row) => `${row.route}  (${row.where ?? 'route not found in apps/api'})`);
 
-// -- 3. the matrix in the repository -----------------------------------------
+// -- 3. a client hook no screen reaches -------------------------------------
+
+const dead = [...deadClientExports().entries()].map(([name, file]) => `${name}  (${file})`);
+
+// -- 4. the matrix in the repository -----------------------------------------
 
 const rendered = renderMatrix(rows, exemptions.length, surfaceGaps);
 let current = null;
@@ -289,6 +307,14 @@ if (uiOnly.length > 0) {
     `${uiOnly.length} route(s) the browser calls cannot be reached by both kinds of agent`,
     uiOnly,
     'Add the tool in packages/mcp-tools on both surfaces (recipe: docs/mcp.md), or add the route to EXEMPT in scripts/check-mcp-catalog.mjs with the reason a person has to do this by hand.',
+  );
+}
+
+if (dead.length > 0) {
+  fail(
+    `${dead.length} client hook(s) call the API and no screen reaches them`,
+    dead,
+    'Render it where a person would look for it, or delete it. A hook in lib/api that nothing imports is a capability the browser was given and never offered to anybody, and it used to count as browser coverage in the matrix.',
   );
 }
 

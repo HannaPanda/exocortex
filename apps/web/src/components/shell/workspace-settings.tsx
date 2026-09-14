@@ -29,6 +29,7 @@ import {
   TableRow,
 } from '@exocortex/ui';
 
+import { AiRulesPanel } from '@/components/ai/ai-rules-panel';
 import { InvitationTable } from '@/components/invitations/invitation-table';
 import { InviteDialog } from '@/components/invitations/invite-dialog';
 import { WorkspaceCredentialsForm } from '@/components/settings/workspace-credentials-form';
@@ -190,6 +191,20 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
         >
           Automationen öffnen
         </Button>
+      </section>
+
+      {/* A list rather than a link: a rule is a page that already has its own
+          screen, and what is missing is the overview of which pages are
+          steering the assistant right now (D5). */}
+      <section className="mt-10 flex flex-col gap-4 border-t border-border pt-8">
+        <div>
+          <h2 className="text-base font-semibold">KI-Regeln</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Seiten, die die KI als Anweisung behandelt. Gesetzt wird das in den Eigenschaften der
+            jeweiligen Seite.
+          </p>
+        </div>
+        <AiRulesPanel workspaceId={workspaceId} />
       </section>
 
       {/* Same shape as the automations link above, and for the same reason: a

@@ -575,6 +575,9 @@ export const projectBuildArtifactsResponseSchema = z.object({
 });
 export type ProjectBuildArtifactsResponse = z.infer<typeof projectBuildArtifactsResponseSchema>;
 
+export const deleteProjectBuildResponseSchema = z.object({ deleted: z.literal(true) });
+export type DeleteProjectBuildResponse = z.infer<typeof deleteProjectBuildResponseSchema>;
+
 /**
  * German for what went wrong, from the English code the worker wrote.
  *

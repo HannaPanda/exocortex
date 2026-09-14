@@ -121,6 +121,7 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_page_rename',
       'exo_page_restore_snapshot',
       'exo_page_write',
+      'exo_project_build_delete',
       'exo_project_delete_file',
       'exo_project_move_file',
       'exo_project_write_file',

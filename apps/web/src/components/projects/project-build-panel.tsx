@@ -18,6 +18,8 @@ import {
 
 import { useProjectBuildDiagnostics, useProjectBuildLog } from '@/lib/api/project-queries';
 
+import { ProjectBuildHistory } from './project-build-history';
+
 /**
  * The right-hand half of a project: the PDF, the errors and the log
  * (issue #43, ADR-027).
@@ -44,10 +46,19 @@ const STATUS_LABEL: Record<ProjectBuild['status'], string> = {
 
 interface ProjectBuildPanelProps {
   build: ProjectBuild | null;
+  builds: readonly ProjectBuild[];
   onOpenDiagnostic: (file: string, line: number | null) => void;
+  onSelectBuild: (buildId: string) => void;
+  onDeleteBuild: (buildId: string) => void;
 }
 
-export function ProjectBuildPanel({ build, onOpenDiagnostic }: ProjectBuildPanelProps) {
+export function ProjectBuildPanel({
+  build,
+  builds,
+  onOpenDiagnostic,
+  onSelectBuild,
+  onDeleteBuild,
+}: ProjectBuildPanelProps) {
   if (build === null) {
     return (
       <EmptyState
@@ -57,16 +68,32 @@ export function ProjectBuildPanel({ build, onOpenDiagnostic }: ProjectBuildPanel
     );
   }
   // Keyed on the build, so the tab a previous run ended on does not carry over
-  // to the next one -- it says nothing about it.
-  return <BuildPanel key={build.id} build={build} onOpenDiagnostic={onOpenDiagnostic} />;
+  // to the next one -- it says nothing about it. Picking a build out of the
+  // history is the same move: it lands on that build's own first tab.
+  return (
+    <BuildPanel
+      key={build.id}
+      build={build}
+      builds={builds}
+      onOpenDiagnostic={onOpenDiagnostic}
+      onSelectBuild={onSelectBuild}
+      onDeleteBuild={onDeleteBuild}
+    />
+  );
 }
 
 function BuildPanel({
   build,
+  builds,
   onOpenDiagnostic,
+  onSelectBuild,
+  onDeleteBuild,
 }: {
   build: ProjectBuild;
+  builds: readonly ProjectBuild[];
   onOpenDiagnostic: (file: string, line: number | null) => void;
+  onSelectBuild: (buildId: string) => void;
+  onDeleteBuild: (buildId: string) => void;
 }) {
   /**
    * `null` means "whatever the build's state suggests".
@@ -100,6 +127,9 @@ function BuildPanel({
             Fehler{entries.length === 0 ? '' : ` (${String(entries.length)})`}
           </TabsTrigger>
           <TabsTrigger value="log">Protokoll</TabsTrigger>
+          <TabsTrigger value="history" data-testid="project-build-history-tab">
+            Verlauf
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="pdf" className="min-h-0 flex-1 p-3 pt-2">
@@ -112,6 +142,15 @@ function BuildPanel({
 
         <TabsContent value="log" className="min-h-0 flex-1 overflow-auto p-3 pt-2">
           <LogPane buildId={build.id} enabled={tab === 'log'} />
+        </TabsContent>
+
+        <TabsContent value="history" className="min-h-0 flex-1 overflow-y-auto p-3 pt-2">
+          <ProjectBuildHistory
+            builds={builds}
+            selectedBuildId={build.id}
+            onSelect={onSelectBuild}
+            onDelete={onDeleteBuild}
+          />
         </TabsContent>
       </Tabs>
     </div>

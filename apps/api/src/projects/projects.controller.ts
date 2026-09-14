@@ -7,6 +7,8 @@ import {
   addProjectAssetRequestSchema,
   type CreateProjectRequest,
   createProjectRequestSchema,
+  type DeleteProjectBuildResponse,
+  deleteProjectBuildResponseSchema,
   type DeleteProjectFileRequest,
   deleteProjectFileRequestSchema,
   type MoveProjectFileRequest,
@@ -262,6 +264,16 @@ export class ProjectBuildsController {
     @Param('buildId') buildId: string,
   ): Promise<ProjectBuildArtifactsResponse> {
     return this.builds.artifacts(buildId, session.userId);
+  }
+
+  @Delete()
+  @ApiOkResponse({ schema: openApiResponseSchema(deleteProjectBuildResponseSchema) })
+  async remove(
+    @CurrentSession() session: VerifiedSession,
+    @Param('buildId') buildId: string,
+  ): Promise<DeleteProjectBuildResponse> {
+    await this.builds.remove(buildId, session.userId);
+    return { deleted: true };
   }
 
   @Post('cancel')

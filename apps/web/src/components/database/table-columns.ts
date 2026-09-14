@@ -109,4 +109,73 @@ export function toggleColumnVisibility(
   }));
 }
 
+/** One step left or right, for a column and for a view tab alike. */
+export type MoveDirection = 'left' | 'right';
+
+/**
+ * Where a column lands when it moves one step, in the database's own order.
+ *
+ * `afterPropertyId: null` means the front of the row. Used for the views that
+ * have no order of their own, which is every view until somebody hides a
+ * column: `visibleTableProperties` falls back to the property order, so moving
+ * the property is what a person sees happen.
+ */
+export function columnMoveAfter(
+  columns: DatabaseProperty[],
+  propertyId: string,
+  direction: MoveDirection,
+): { afterPropertyId: string | null } | null {
+  const index = columns.findIndex((property) => property.id === propertyId);
+  if (index === -1) return null;
+  if (direction === 'left') {
+    if (index === 0) return null;
+    return { afterPropertyId: columns[index - 2]?.id ?? null };
+  }
+  const next = columns[index + 1];
+  if (next === undefined) return null;
+  return { afterPropertyId: next.id };
+}
+
+/**
+ * The same move inside one view's own column order.
+ *
+ * Once a view has an explicit order -- hiding a column writes one -- the
+ * database's property order no longer decides what that view shows, so moving
+ * the property would change nothing visible. This rewrites the view's list
+ * instead, and leaves every other view where it was.
+ */
+export function moveColumnInView(
+  view: DatabaseView,
+  properties: DatabaseProperty[],
+  propertyId: string,
+  direction: MoveDirection,
+): DatabaseViewConfig['visibleProperties'] | null {
+  const ordered = visibleTableProperties(view, properties);
+  const index = ordered.findIndex((property) => property.id === propertyId);
+  const target = direction === 'left' ? index - 1 : index + 1;
+  const moving = ordered[index];
+  const displaced = ordered[target];
+  if (moving === undefined || displaced === undefined) return null;
+
+  const swapped = [...ordered];
+  swapped[index] = displaced;
+  swapped[target] = moving;
+
+  const visibleIds = new Set(ordered.map((property) => property.id));
+  const displayOrder = [
+    ...swapped,
+    ...properties.filter((property) => !visibleIds.has(property.id)),
+  ];
+  return displayOrder.map((property, position) => ({
+    propertyId: property.id,
+    visible: visibleIds.has(property.id),
+    orderKey: String(position).padStart(4, '0'),
+  }));
+}
+
+/** Whether this view carries a column order of its own. */
+export function hasOwnColumnOrder(view: DatabaseView): boolean {
+  return view.config.visibleProperties.length > 0;
+}
+
 export { DATABASE_TITLE_COLUMN_KEY };

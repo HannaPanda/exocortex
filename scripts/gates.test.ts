@@ -247,9 +247,45 @@ describe('capability parity (check-capability-parity.mjs)', () => {
         '',
       ].join('\n'),
     );
+    // Imported by a probe screen, or the hook would be unreachable and this
+    // would go red for the other reason -- which is the next test.
+    writeProbe(
+      'apps/web/src/components/__gate_probe__.tsx',
+      [
+        "import { probe } from '@/lib/api/__gate_probe__';",
+        '',
+        'export function GateProbe() {',
+        '  void probe;',
+        '  return null;',
+        '}',
+        '',
+      ].join('\n'),
+    );
     const result = gate('check-capability-parity.mjs');
     expect(result.status).not.toBe(0);
     expect(result.output).toContain('POST /api/gate-probe/thing');
+  });
+
+  /**
+   * The failure the matrix used to hide: a hook that calls the API and that no
+   * screen imports counted as browser coverage, so a build history and two
+   * reorder routes could sit in `lib/api` with nothing rendering them.
+   */
+  it('goes red for a client hook no screen reaches', () => {
+    writeProbe(
+      'apps/web/src/lib/api/__gate_probe__.ts',
+      [
+        "import { apiRequest } from './client';",
+        '',
+        'export async function probeNobodyCalls(): Promise<unknown> {',
+        "  return apiRequest<unknown>(`/api/documents/probe`, { method: 'GET' });",
+        '}',
+        '',
+      ].join('\n'),
+    );
+    const result = gate('check-capability-parity.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('probeNobodyCalls');
   });
 
   it('goes red for a surface exemption that no longer explains anything', () => {

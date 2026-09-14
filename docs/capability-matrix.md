@@ -14,7 +14,13 @@ editor. A `·` under AI or MCP where the browser has a `✓` is the one that
 needs a reason, and every one of them has an entry in the exemption list of
 `scripts/check-mcp-catalog.mjs` or in `SURFACE_EXEMPT` here.
 
-157 routes are reachable from at least one client; 85 from all three.
+A `✓` in the UI column means a screen reaches the route, not that a hook
+exists for it: a query hook in `apps/web/src/lib/api` that nothing imports
+counts for nothing here, and the gate goes red until it is rendered or
+deleted. It used to count, which is how a project build history and two
+reorder routes shipped with no way to them in the browser.
+
+157 routes are reachable from at least one client; 86 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -31,6 +37,7 @@ needs a reason, and every one of them has an entry in the exemption list of
 | `DELETE /api/entities/:x/pages/:x` | · | ✓ | ✓ | `exo_entity_unlink_page` |
 | `DELETE /api/me/api-tokens/:x` | ✓ | · | · | — |
 | `DELETE /api/me/connections/:x` | ✓ | · | · | — |
+| `DELETE /api/project-builds/:x` | ✓ | ✓ | ✓ | `exo_project_build_delete` |
 | `DELETE /api/projects/:x/files` | ✓ | ✓ | ✓ | `exo_project_delete_file` |
 | `DELETE /api/render/jobs/:x` | ✓ | ✓ | ✓ | `exo_render_delete` |
 | `DELETE /api/render/templates/:x` | ✓ | ✓ | ✓ | `exo_render_template_delete` |
@@ -124,7 +131,6 @@ needs a reason, and every one of them has an entry in the exemption list of
 | `POST /api/agent-sessions/:x/revert` | ✓ | · | · | — |
 | `POST /api/ai/conversations` | ✓ | · | · | — |
 | `POST /api/ai/conversations/:x/messages` | ✓ | · | · | — |
-| `POST /api/ai/runs` | ✓ | · | · | — |
 | `POST /api/ai/runs/:x/cancel` | ✓ | · | ✓ | `exo_ai_run_cancel` |
 | `POST /api/attachments/:x/text/reextract` | ✓ | ✓ | ✓ | `exo_attachment_reextract_text` |
 | `POST /api/auth/oauth2/consent` | ✓ | · | · | — |
@@ -178,7 +184,7 @@ needs a reason, and every one of them has an entry in the exemption list of
 
 ## Routes the browser reaches and agents do not
 
-43 of them. Each is covered by a documented exemption; the reasons
+42 of them. Each is covered by a documented exemption; the reasons
 are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 - `DELETE /api/admin/ai-models/:x`
@@ -212,7 +218,6 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `POST /api/agent-sessions/:x/revert`
 - `POST /api/ai/conversations`
 - `POST /api/ai/conversations/:x/messages`
-- `POST /api/ai/runs`
 - `POST /api/ai/runs/:x/cancel` (reachable from MCP)
 - `POST /api/auth/oauth2/consent`
 - `POST /api/documents/:x/collaboration-ticket`

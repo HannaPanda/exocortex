@@ -69,6 +69,14 @@ project's Yjs document over the same socket a page uses, so two people typing in
 **Bauen** starts a build. When it fails, the **Fehler** tab lists what LaTeX
 objected to with the file and line; clicking one opens that file at that line.
 
+**Verlauf** is every build this project has had, newest first: status, root
+file, page count, size, the PDF, and the SyncTeX map of whichever one is
+selected. Picking a row brings that build back into the panel, which is how a
+finished PDF stays reachable after a reload -- before that tab existed the id
+lived in React state only, so the file was there and the way to it was not
+(ADR-025 counts that as a missing capability). **Löschen** takes a build out
+along with its PDF and its map; a running one is cancelled first.
+
 **Datei hochladen** puts an image, a font or a PDF into the project. The bytes
 become an ordinary attachment and the tree gets the path.
 
@@ -92,6 +100,8 @@ exo_project_build_diagnostics   → the errors, with file and line
 exo_project_build_log           → everything LaTeX said
 exo_project_build_artifacts     → the PDF and the SyncTeX map, as attachments
 exo_project_build_cancel        → stop a build
+exo_project_builds              → every build of a project, newest first
+exo_project_build_delete        → remove a finished build, its PDF and its map
 exo_attachment_read_text        → read back what the PDF actually printed
 ```
 

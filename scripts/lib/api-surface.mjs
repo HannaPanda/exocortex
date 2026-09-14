@@ -177,6 +177,9 @@ export function collectApiRoutes() {
   return routes;
 }
 
+/** Where the query hooks live. A call here only counts once a screen reaches it. */
+const WEB_CLIENT_DIR = join(WEB_SRC, 'lib/api');
+
 /**
  * Every route the browser calls, as `METHOD /path` -> the file that calls it.
  *
@@ -184,16 +187,28 @@ export function collectApiRoutes() {
  * the whole app talks to the API, and the two bare `fetch('/api/…')` calls that
  * upload multipart bodies the JSON wrapper cannot carry. A call without a
  * `method` is a GET, which is the wrapper's own default.
+ *
+ * A call inside `lib/api` only counts when a screen actually reaches the hook
+ * that makes it -- see `reachableClientNames`. The whole point of the UI column
+ * is what a person can do, and a hook nobody renders is a capability nobody
+ * has: `useProjectBuilds` sat in the client for a day reporting a build history
+ * the project view never showed, and the matrix called that browser coverage.
  */
 export function collectWebCalls() {
   const calls = new Map();
+  const reachable = reachableClientNames();
   for (const file of walk(WEB_SRC).filter((file) => !file.includes('.test.'))) {
     const rel = relative(repoRoot, file);
     const source = readFileSync(file, 'utf8');
+    const declarations = file.startsWith(WEB_CLIENT_DIR) ? topLevelDeclarations(source) : null;
     const opener = /\b(apiRequest|fetch)\s*(?:<[^>]*>)?\s*\(\s*/g;
     while (opener.exec(source) !== null) {
       const literal = readStringLiteral(source, opener.lastIndex);
       if (literal === null || !literal.text.startsWith('/api/')) continue;
+      if (declarations !== null) {
+        const owner = declarationAt(declarations, opener.lastIndex);
+        if (owner !== null && !reachable.has(owner)) continue;
+      }
       const rest = source.slice(literal.end).match(/^\s*,\s*\{/);
       const options = rest === null ? '' : readBlock(source, literal.end + rest[0].length - 1).text;
       const method = options.match(/(?:^|[\s,{])method:\s*'(\w+)'/)?.[1] ?? 'GET';
@@ -202,6 +217,124 @@ export function collectWebCalls() {
     }
   }
   return calls;
+}
+
+/**
+ * Every export of `lib/api` that no screen imports, as name -> the file.
+ *
+ * The dead half of the same question `collectWebCalls` asks, kept here so the
+ * two answers come from one scan: a hook in this list is a capability the
+ * browser was given and never offered to anybody.
+ */
+export function deadClientExports() {
+  const reachable = reachableClientNames();
+  const dead = new Map();
+  for (const file of walk(WEB_CLIENT_DIR).filter((file) => !file.includes('.test.'))) {
+    const source = readFileSync(file, 'utf8');
+    for (const declaration of topLevelDeclarations(source)) {
+      if (!declaration.exported || reachable.has(declaration.name)) continue;
+      // Only the ones that talk to the API: a type, a query-key map or a label
+      // table is scaffolding, and an unused one is a lint concern rather than a
+      // missing screen.
+      if (!/\b(apiRequest|fetch)\s*(?:<[^>]*>)?\s*\(\s*['"`]\/api\//.test(declaration.body)) {
+        continue;
+      }
+      dead.set(declaration.name, relative(repoRoot, file));
+    }
+  }
+  return dead;
+}
+
+/**
+ * The names in `lib/api` a screen can reach, directly or through each other.
+ *
+ * A screen is any file outside `lib/api`: a route, a component, a hook of its
+ * own. What it imports from the client is the entry point, and from there the
+ * set grows through the client's own calls -- `useProjectFileMutation` is one
+ * hook wrapping five mutations, and reachability has to survive that.
+ *
+ * Import names rather than every identifier in the file, because an identifier
+ * scan makes everything reachable: `useProjectBuilds` appears in a comment in
+ * the very component that fails to call it.
+ */
+function reachableClientNames() {
+  const declarations = new Map();
+  for (const file of walk(WEB_CLIENT_DIR).filter((file) => !file.includes('.test.'))) {
+    for (const declaration of topLevelDeclarations(readFileSync(file, 'utf8'))) {
+      declarations.set(declaration.name, declaration.body);
+    }
+  }
+
+  const reachable = new Set();
+  const queue = [];
+  for (const file of walk(WEB_SRC).filter((file) => !file.startsWith(WEB_CLIENT_DIR))) {
+    for (const name of importedFromClient(readFileSync(file, 'utf8'))) {
+      if (declarations.has(name) && !reachable.has(name)) {
+        reachable.add(name);
+        queue.push(name);
+      }
+    }
+  }
+
+  while (queue.length > 0) {
+    const body = declarations.get(queue.pop()) ?? '';
+    for (const match of body.matchAll(/\b[A-Za-z_$][\w$]*\b/g)) {
+      const name = match[0];
+      if (declarations.has(name) && !reachable.has(name)) {
+        reachable.add(name);
+        queue.push(name);
+      }
+    }
+  }
+  return reachable;
+}
+
+/** The names a file imports out of `lib/api`, by any spelling of the path. */
+function importedFromClient(source) {
+  const names = [];
+  for (const match of source.matchAll(/import\s*\{([^}]*)\}\s*from\s*'([^']+)'/g)) {
+    if (!/(^|\/)lib\/api\//.test(match[2]) && !/^\.\.?\/api\//.test(match[2])) continue;
+    for (const part of match[1].split(',')) {
+      const name = part
+        .replace(/^\s*type\s+/, '')
+        .split(/\s+as\s+/)[0]
+        .trim();
+      if (name.length > 0) names.push(name);
+    }
+  }
+  return names;
+}
+
+/**
+ * The top-level declarations of one file, each with the source that follows it.
+ *
+ * A declaration runs to the start of the next one, which is what "the body" has
+ * to mean here: the point is which call belongs to which export, and a brace
+ * counter that has to survive JSX, template literals and type parameters would
+ * be a parser. The last declaration runs to the end of the file.
+ */
+function topLevelDeclarations(source) {
+  const found = [];
+  for (const match of source.matchAll(
+    /^(export\s+)?(?:async\s+)?(?:function|const|class)\s+(\w+)/gm,
+  )) {
+    found.push({ name: match[2], exported: match[1] !== undefined, start: match.index, body: '' });
+  }
+  for (const [index, declaration] of found.entries()) {
+    const end = index + 1 < found.length ? found[index + 1].start : source.length;
+    declaration.body = source.slice(declaration.start, end);
+  }
+  return found;
+}
+
+/** Which declaration an offset falls in, or `null` above the first one. */
+function declarationAt(declarations, offset) {
+  let owner = null;
+  for (const declaration of declarations) {
+    if (declaration.start > offset) break;
+    owner = declaration.name;
+  }
+  return owner;
 }
 
 /**

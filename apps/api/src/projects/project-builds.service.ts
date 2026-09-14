@@ -23,6 +23,7 @@ import { loadProjectBuildInput, type PrismaClient, projectInputHash } from '@exo
 import { type Logger } from '@exocortex/logger';
 import { type QueueRegistry } from '@exocortex/queue';
 
+import { AttachmentsService } from '../attachments/attachments.service';
 import { AppError } from '../common/app-error';
 import { currentCorrelationId } from '../common/correlation';
 import { LOGGER } from '../common/logger.provider';
@@ -60,6 +61,7 @@ export class ProjectBuildsService {
     @Inject(LOGGER) private readonly logger: Logger,
     private readonly access: WorkspaceAccessService,
     private readonly settings: SettingsService,
+    private readonly attachments: AttachmentsService,
   ) {}
 
   async start(input: {
@@ -287,6 +289,39 @@ export class ProjectBuildsService {
       select: PROJECT_BUILD_SELECT,
     });
     return mapProjectBuild(updated, { stale: false });
+  }
+
+  /**
+   * Removes one build, the PDF it produced and its source map.
+   *
+   * The same decision `RenderJobsService.remove` makes, for the same reason: a
+   * row whose file is gone is a truthful record, and it is still not what
+   * somebody means when they point at a line in the list. Both attachments go,
+   * because a SyncTeX map without the PDF it maps into is nothing on its own.
+   *
+   * Not irreversible: the sources are untouched, so the same build can be asked
+   * for again. What it costs is the log of a failure, and that comes back by
+   * failing again.
+   */
+  async remove(buildId: string, userId: string): Promise<void> {
+    const row = await this.requireBuild(buildId, userId);
+    const role = await this.access.findRole(row.workspaceId, userId);
+    assertPolicy(canBuildProject(role));
+
+    if (row.status === 'PENDING' || row.status === 'RUNNING') {
+      throw AppError.conflict('Dieser Bau läuft noch; brich ihn erst ab');
+    }
+
+    for (const attachmentId of [row.attachmentId, row.sourceMapAttachmentId]) {
+      if (attachmentId === null) continue;
+      await this.attachments.delete({
+        attachmentId,
+        userId,
+        correlationId: currentCorrelationId(),
+      });
+    }
+
+    await this.prisma.projectBuild.delete({ where: { id: buildId } });
   }
 
   private async requireBuild(buildId: string, userId: string): Promise<ProjectBuildRow> {

@@ -9,7 +9,6 @@ import {
 } from '@tanstack/react-query';
 
 import {
-  type AiRun,
   type ApiErrorResponse,
   type CollaborationTicketResponse,
   type CreateDocumentRequest,
@@ -648,16 +647,6 @@ export async function fetchCollaborationTicket(
     `/api/documents/${documentId}/collaboration-ticket`,
     { method: 'POST' },
   );
-}
-
-export function useCreateAiRun() {
-  return useMutation({
-    mutationFn: (input: {
-      workspaceId: string;
-      documentId: string | null;
-      messages: { role: 'user' | 'assistant' | 'system'; content: string }[];
-    }) => apiRequest<{ run: AiRun }>('/api/ai/runs', { method: 'POST', body: input }),
-  });
 }
 
 /**
