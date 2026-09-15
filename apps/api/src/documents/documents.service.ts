@@ -40,6 +40,7 @@ import {
   DOCUMENT_SELECT,
   type DocumentRow,
   LAYOUT_TO_DB,
+  OVERVIEW_MODE_TO_DB,
   toIconColor,
   toSummary,
 } from './document-shape';
@@ -370,6 +371,21 @@ export class DocumentsService {
         input.correlationId,
       );
     }
+    // Marking a page as an overview is what starts composing it (ADR-028).
+    // Without this the page would stay blank until somebody happened to edit
+    // one of its children, which is the wrong moment to find out whether the
+    // feature works. A repeated request costs one job that finds its input
+    // hash unchanged and returns.
+    if (input.request.overviewMode === 'auto') {
+      await this.queues.enqueue(QUEUE_NAMES.documentOverview, {
+        correlationId: input.correlationId,
+        documentId: input.documentId,
+        workspaceId: context.workspaceId,
+        reason: 'marked',
+        force: false,
+        depth: 0,
+      });
+    }
     return summary;
   }
 
@@ -389,6 +405,9 @@ export class DocumentsService {
         : { aiRuleMode: AI_RULE_MODE_TO_DB[request.aiRuleMode] }),
       ...(request.aiRuleTrigger === undefined ? {} : { aiRuleTrigger: request.aiRuleTrigger }),
       ...(request.aiRulePriority === undefined ? {} : { aiRulePriority: request.aiRulePriority }),
+      ...(request.overviewMode === undefined
+        ? {}
+        : { overviewMode: OVERVIEW_MODE_TO_DB[request.overviewMode] }),
       updatedById: userId,
     };
   }

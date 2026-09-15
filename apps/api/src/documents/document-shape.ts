@@ -23,6 +23,7 @@ export interface DocumentRow {
   /** Validated by the contract, so the column is a plain string here. */
   iconColor: string | null;
   layout: 'NARROW' | 'WIDE' | 'FULL';
+  overviewMode: 'OFF' | 'AUTO';
   coverAttachmentId: string | null;
   coverPosition: number;
   orderKey: string;
@@ -54,6 +55,7 @@ export const DOCUMENT_SELECT = {
   icon: true,
   iconColor: true,
   layout: true,
+  overviewMode: true,
   coverAttachmentId: true,
   coverPosition: true,
   orderKey: true,
@@ -74,6 +76,16 @@ export const AI_RULE_MODE_TO_DB = {
   off: 'OFF',
   always: 'ALWAYS',
   on_demand: 'ON_DEMAND',
+} as const;
+
+export const OVERVIEW_MODE_TO_CONTRACT = {
+  OFF: 'off',
+  AUTO: 'auto',
+} as const;
+
+export const OVERVIEW_MODE_TO_DB = {
+  off: 'OFF',
+  auto: 'AUTO',
 } as const;
 
 export const LAYOUT_TO_CONTRACT = {
@@ -113,6 +125,7 @@ export function toSummary(row: DocumentRow): DocumentSummary {
     icon: row.icon,
     iconColor: toIconColor(row.iconColor),
     layout: LAYOUT_TO_CONTRACT[row.layout],
+    overviewMode: OVERVIEW_MODE_TO_CONTRACT[row.overviewMode],
     coverAttachmentId: row.coverAttachmentId,
     coverPosition: row.coverPosition,
     orderKey: row.orderKey,
