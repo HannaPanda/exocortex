@@ -32,6 +32,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
   Toolbar,
+  ToolbarButton,
   ToolbarSeparator,
 } from '@exocortex/ui';
 
@@ -217,46 +218,47 @@ export function SelectionToolbar({
           editor={editor}
           catalog={catalog}
           trigger={
-            <Button
-              variant="ghost"
-              size="sm"
-              aria-label={`Blocktyp: ${active.blockLabel}. In anderen Block umwandeln`}
-              data-testid="turn-into-trigger"
+            <ToolbarButton
+              render={
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label={`Blocktyp: ${active.blockLabel}. In anderen Block umwandeln`}
+                  data-testid="turn-into-trigger"
+                />
+              }
             >
               <TurnIntoTriggerLabel label={active.blockLabel} />
-            </Button>
+            </ToolbarButton>
           }
         />
 
         <ToolbarSeparator />
 
-        {/*
-          Plain buttons, not `ToolbarButton`s. Base UI 1.0.0-rc.0's toolbar button
-          swallows the click it receives — the control renders and reports the right
-          state, and nothing happens (verified in a browser, see docs/deviations.md).
-          The toolbar root still provides `role="toolbar"`; the cost is one Tab stop
-          per control instead of one for the whole bar.
-        */}
         {MARK_BUTTONS.map((button) => (
-          <Button
+          <ToolbarButton
             key={button.id}
-            variant="ghost"
-            size="icon-sm"
-            aria-label={`${button.label} (${button.shortcut})`}
-            // The accessible name never shows on screen; a pointer user needs the
-            // tooltip to learn which icon does what, and the shortcut with it.
-            title={`${button.label} (${button.shortcut})`}
-            aria-pressed={active.marks[button.id] === true}
-            data-pressed={active.marks[button.id] === true ? '' : undefined}
-            data-testid={`mark-${button.id}`}
-            className="data-pressed:bg-accent-strong data-pressed:text-foreground"
-            // Without this the button takes the focus on mousedown and ProseMirror
-            // drops the selection, so the command runs against nothing.
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => button.toggle(editor)}
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label={`${button.label} (${button.shortcut})`}
+                // The accessible name never shows on screen; a pointer user needs the
+                // tooltip to learn which icon does what, and the shortcut with it.
+                title={`${button.label} (${button.shortcut})`}
+                aria-pressed={active.marks[button.id] === true}
+                data-pressed={active.marks[button.id] === true ? '' : undefined}
+                data-testid={`mark-${button.id}`}
+                className="data-pressed:bg-accent-strong data-pressed:text-foreground"
+                // Without this the button takes the focus on mousedown and ProseMirror
+                // drops the selection, so the command runs against nothing.
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => button.toggle(editor)}
+              />
+            }
           >
             <button.icon />
-          </Button>
+          </ToolbarButton>
         ))}
 
         <ToolbarSeparator />
@@ -266,80 +268,100 @@ export function SelectionToolbar({
           editor={editor}
           workspaceId={workspaceId}
           trigger={
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label="Link"
-              title="Link"
-              aria-pressed={active.link}
-              data-pressed={active.link ? '' : undefined}
-              data-testid="mark-link"
-              className="data-pressed:bg-accent-strong data-pressed:text-foreground"
+            <ToolbarButton
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label="Link"
+                  title="Link"
+                  aria-pressed={active.link}
+                  data-pressed={active.link ? '' : undefined}
+                  data-testid="mark-link"
+                  className="data-pressed:bg-accent-strong data-pressed:text-foreground"
+                />
+              }
             >
               <LinkIcon />
-            </Button>
+            </ToolbarButton>
           }
         />
 
         <ColorMenu
           editor={editor}
           trigger={
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label="Farbe"
-              title="Textfarbe"
-              data-testid="color-trigger"
+            <ToolbarButton
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label="Farbe"
+                  title="Textfarbe"
+                  data-testid="color-trigger"
+                />
+              }
             >
               <BaselineIcon />
-            </Button>
+            </ToolbarButton>
           }
         />
 
         <EmojiMenu
           editor={editor}
           trigger={
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label="Emoji"
-              title="Emoji"
-              data-testid="emoji-trigger"
+            <ToolbarButton
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label="Emoji"
+                  title="Emoji"
+                  data-testid="emoji-trigger"
+                />
+              }
             >
               <SmileIcon />
-            </Button>
+            </ToolbarButton>
           }
         />
 
         <ToolbarSeparator />
 
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          aria-label="Kommentieren"
-          title="Kommentieren"
-          data-testid="selection-to-comment"
-          // Same reason as the mark buttons: taking the focus on mousedown drops
-          // the ProseMirror selection, and the quote would be empty.
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={commentOnSelection}
+        <ToolbarButton
+          render={
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Kommentieren"
+              title="Kommentieren"
+              data-testid="selection-to-comment"
+              // Same reason as the mark buttons: taking the focus on mousedown drops
+              // the ProseMirror selection, and the quote would be empty.
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={commentOnSelection}
+            />
+          }
         >
           <MessageSquarePlusIcon />
-        </Button>
+        </ToolbarButton>
 
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          aria-label="An KI schicken"
-          title="An KI schicken"
-          data-testid="selection-to-ai"
-          // Same reason as the mark buttons: focus on mousedown would drop the
-          // ProseMirror selection, and there would be nothing left to hand over.
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={sendSelectionToAi}
+        <ToolbarButton
+          render={
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="An KI schicken"
+              title="An KI schicken"
+              data-testid="selection-to-ai"
+              // Same reason as the mark buttons: focus on mousedown would drop the
+              // ProseMirror selection, and there would be nothing left to hand over.
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={sendSelectionToAi}
+            />
+          }
         >
           <SparklesIcon />
-        </Button>
+        </ToolbarButton>
 
         <ToolbarSeparator />
 
@@ -349,15 +371,19 @@ export function SelectionToolbar({
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label="Blockaktionen"
-                title="Blockaktionen"
-                data-testid="block-actions-trigger"
+              <ToolbarButton
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label="Blockaktionen"
+                    title="Blockaktionen"
+                    data-testid="block-actions-trigger"
+                  />
+                }
               >
                 <MoreHorizontalIcon />
-              </Button>
+              </ToolbarButton>
             }
           />
           <DropdownMenuContent align="end">

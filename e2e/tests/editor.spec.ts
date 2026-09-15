@@ -54,6 +54,36 @@ test.describe('editor', () => {
     await expect(page.getByTestId('mark-bold')).toHaveAttribute('data-pressed', '');
   });
 
+  /**
+   * The formatting bar is one Tab stop, not fourteen.
+   *
+   * This is what `role="toolbar"` promises a screen reader and a keyboard user,
+   * and for a long time this bar could not keep the promise: Base UI 1.0.0-rc.0
+   * swallowed the click of a `Toolbar.Button` that rendered our own `Button`, so
+   * every control was a plain button outside the roving tabindex
+   * (`docs/deviations.md` 17). The workaround is gone since 1.8.0, and this test
+   * is what stops it coming back unnoticed: a roving tabindex means exactly one
+   * control is reachable by Tab and the arrow keys move between them.
+   */
+  test('the selection toolbar is a single tab stop with arrow-key navigation', async ({ page }) => {
+    await openEditor(page);
+    await page.keyboard.type('Tastaturbedienung');
+    await page.keyboard.press('Home');
+    await page.keyboard.press('Shift+End');
+
+    const toolbar = page.getByTestId('selection-toolbar');
+    await expect(toolbar).toBeVisible();
+
+    const controls = toolbar.locator('button');
+    await expect(controls.filter({ has: page.locator(':scope[tabindex="0"]') })).toHaveCount(1);
+    expect(await controls.count()).toBeGreaterThan(1);
+
+    // Arrow keys move the roving focus; Tab would leave the bar altogether.
+    await page.getByTestId('mark-bold').focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.getByTestId('mark-italic')).toBeFocused();
+  });
+
   test('applies a text colour from the toolbar', async ({ page }) => {
     await openEditor(page);
     await page.keyboard.type('Farbiger Text');

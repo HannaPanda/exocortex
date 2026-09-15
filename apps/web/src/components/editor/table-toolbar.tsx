@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import * as React from 'react';
 
-import { Button, Toolbar, ToolbarSeparator } from '@exocortex/ui';
+import { Button, Toolbar, ToolbarButton, ToolbarSeparator } from '@exocortex/ui';
 
 interface TableAction {
   id: string;
@@ -91,38 +91,45 @@ export function TableToolbar({ editor }: { editor: Editor }) {
       shouldShow={({ editor: instance }) => instance.isEditable && instance.isActive('table')}
     >
       <Toolbar aria-label="Tabelle" data-testid="table-toolbar">
-        {/* Plain buttons; see the note in `selection-toolbar.tsx`. `title` because
-            an icon-only control is otherwise unnamed for a pointer user: the
-            accessible name alone never appears on screen. */}
+        {/* `title` because an icon-only control is otherwise unnamed for a pointer
+            user: the accessible name alone never appears on screen. */}
         {[...TABLE_ACTIONS, ...TABLE_REMOVALS].map((action, index) => (
           <React.Fragment key={action.id}>
             {index === TABLE_ACTIONS.length ? <ToolbarSeparator /> : null}
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label={action.label}
-              title={action.label}
-              data-testid={`table-${action.id}`}
-              className={action.destructive === true ? 'text-destructive-text' : undefined}
-              // Keeps the cell selection; see the note in `selection-toolbar.tsx`.
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => action.run(editor)}
+            <ToolbarButton
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label={action.label}
+                  title={action.label}
+                  data-testid={`table-${action.id}`}
+                  className={action.destructive === true ? 'text-destructive-text' : undefined}
+                  // Keeps the cell selection; see the note in `selection-toolbar.tsx`.
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => action.run(editor)}
+                />
+              }
             >
               <action.icon />
-            </Button>
+            </ToolbarButton>
           </React.Fragment>
         ))}
 
-        <Button
-          variant="ghost"
-          size="sm"
-          data-testid="table-delete"
-          className="text-destructive-text"
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={() => editor.chain().focus().deleteTable().run()}
+        <ToolbarButton
+          render={
+            <Button
+              variant="ghost"
+              size="sm"
+              data-testid="table-delete"
+              className="text-destructive-text"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => editor.chain().focus().deleteTable().run()}
+            />
+          }
         >
           <Trash2Icon /> Tabelle löschen
-        </Button>
+        </ToolbarButton>
       </Toolbar>
     </BubbleMenu>
   );

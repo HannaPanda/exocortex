@@ -6,7 +6,7 @@ import { ExternalLinkIcon, PencilIcon, UnlinkIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { parseLinkHref, wikiLinkDocumentId } from '@exocortex/editor';
-import { Button, Toolbar, ToolbarSeparator } from '@exocortex/ui';
+import { Button, Toolbar, ToolbarButton, ToolbarSeparator } from '@exocortex/ui';
 
 import { FollowLinkContext } from './follow-link-context';
 import { displayValue, LinkMenu } from './link-menu';
@@ -66,52 +66,60 @@ export function LinkBubble({ editor, workspaceId }: LinkBubbleProps) {
 
         <ToolbarSeparator />
 
-        <Button
-          variant="ghost"
-          size="sm"
-          data-testid="link-bubble-open"
-          // Keeps the caret inside the link mark so a later "Bearbeiten" or
-          // "Entfernen" click still acts on it, same reasoning as the mark
-          // buttons in `SelectionToolbar`.
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={() => {
-            const parsed = parseLinkHref(href);
-            const target = parsed.kind === 'wiki' ? { ...parsed, documentId } : parsed;
-            // An explicit "Öffnen" while editing must not take the editor away:
-            // a target that leaves the application gets its own tab, an
-            // internal one is a normal in-app navigation.
-            if (target.kind !== 'unknown') {
-              followLinkRef?.current?.(target, {
-                download: false,
-                newTab: target.kind === 'external',
-              });
-            }
-          }}
+        <ToolbarButton
+          render={
+            <Button
+              variant="ghost"
+              size="sm"
+              data-testid="link-bubble-open"
+              // Keeps the caret inside the link mark so a later "Bearbeiten" or
+              // "Entfernen" click still acts on it, same reasoning as the mark
+              // buttons in `SelectionToolbar`.
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => {
+                const parsed = parseLinkHref(href);
+                const target = parsed.kind === 'wiki' ? { ...parsed, documentId } : parsed;
+                // An explicit "Öffnen" while editing must not take the editor away:
+                // a target that leaves the application gets its own tab, an
+                // internal one is a normal in-app navigation.
+                if (target.kind !== 'unknown') {
+                  followLinkRef?.current?.(target, {
+                    download: false,
+                    newTab: target.kind === 'external',
+                  });
+                }
+              }}
+            />
+          }
         >
           <ExternalLinkIcon /> Öffnen
-        </Button>
+        </ToolbarButton>
 
-        {/* The trigger owns its own click, like the other popover triggers in
-            `SelectionToolbar` (`LinkMenu`, `ColorMenu`, `EmojiMenu`). */}
         <LinkMenu
           editor={editor}
           workspaceId={workspaceId}
           trigger={
-            <Button variant="ghost" size="sm" data-testid="link-bubble-edit">
+            <ToolbarButton
+              render={<Button variant="ghost" size="sm" data-testid="link-bubble-edit" />}
+            >
               <PencilIcon /> Bearbeiten
-            </Button>
+            </ToolbarButton>
           }
         />
 
-        <Button
-          variant="ghost"
-          size="sm"
-          data-testid="link-bubble-remove"
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={() => editor.chain().focus().extendMarkRange('link').unsetLink().run()}
+        <ToolbarButton
+          render={
+            <Button
+              variant="ghost"
+              size="sm"
+              data-testid="link-bubble-remove"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => editor.chain().focus().extendMarkRange('link').unsetLink().run()}
+            />
+          }
         >
           <UnlinkIcon /> Entfernen
-        </Button>
+        </ToolbarButton>
       </Toolbar>
     </BubbleMenu>
   );
