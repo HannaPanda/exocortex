@@ -370,7 +370,7 @@ export function PageTree({ workspaceId }: PageTreeProps) {
         onCreateProject={() => void createProject(null)}
       />
 
-      <ScrollArea className="min-h-0 flex-1" viewportClassName="px-1 pb-2">
+      <ScrollArea className="min-h-0 flex-1" viewportClassName="px-1 pb-2" clampContentWidth>
         {tree.data.nodes.length === 0 ? (
           <EmptyState
             title="Noch keine Seiten"
