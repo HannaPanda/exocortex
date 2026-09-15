@@ -217,26 +217,42 @@ are meant to be framed; anything else becomes a bookmark card, which loses nothi
 a reader needs. Framed content is sandboxed without `allow-same-origin`, so it
 cannot reach this origin's cookies or storage.
 
-## 17. Base UI 1.0.0-rc.0: two interaction primitives swallow clicks
+## 17. Toolbar buttons keep one workaround of the two they had
 
-Found while getting the editor toolbars to work in a browser, and both cost real
-debugging time, so they are recorded here.
+Two faults were recorded here while getting the editor toolbars to work in a
+browser, both against Base UI 1.0.0-rc.0. Both were re-measured on 2026-09-15
+against 1.8.0, the first stable release after the package rename (issue #60),
+and they did not age the same way.
 
-**`Toolbar.Button` with a `render` element does not fire the element's `onClick`.**
-`<ToolbarButton render={<Button onClick={…} />} />` renders correctly, reports the
-right `aria-*`, and does nothing when clicked. The same is true of
-`<ToolbarButton render={<Toggle onPressedChange={…} />} />`. The editor toolbars
-therefore use plain `Button`s inside the `Toolbar` root: `role="toolbar"` and the
-orientation still come from the primitive, and the cost is one Tab stop per control
-instead of one for the whole bar. `ToolbarButton` is still used where a menu or
-popover trigger owns the click, which works.
+**Fixed: `Toolbar.Button` with a `render` element swallowed the click.**
+`<ToolbarButton render={<Button onClick={…} />} />` rendered correctly, reported
+the right `aria-*`, and did nothing when pressed. Under 1.8.0 it fires, which the
+e2e case `formats a selection through the toolbar` proves in a real browser. The
+workaround is gone: the selection toolbar, the table toolbar and the link bubble
+are back on `ToolbarButton`, menu and popover triggers included.
 
-**A toolbar button steals the ProseMirror selection on `mousedown`.** Every editor
-toolbar button calls `event.preventDefault()` on `onMouseDown`, otherwise the
-button takes the focus, the selection collapses, and the command runs against
-nothing.
+**Still needed: a toolbar button steals the ProseMirror selection on `mousedown`.**
+Every command button still calls `event.preventDefault()` in `onMouseDown`,
+otherwise the button takes the focus, the selection collapses, and the command
+runs against nothing. This was never Base UI's to fix and 1.8.0 does not pretend
+otherwise: `useButton` forwards `onMouseDown` untouched and prevents nothing. The
+default it would have to suppress is the browser's own focus-on-press, and a
+primitive that suppressed it for everyone would break text selection inside a
+toolbar.
 
-Both are worth re-testing when Base UI reaches a stable release.
+**New, and the reason the first fix alone bought nothing:** a `Toolbar` inside
+Tiptap's `BubbleMenu` gets no roving tabindex at all. `CompositeList` builds the
+order from the items' document position and skips every registration whose node
+is not connected, which is the only sane reading of a node that has no position.
+`BubbleMenu` portals its children into a `document.createElement('div')` and
+appends that div when its ProseMirror plugin view is created, one effect after
+the children mounted and the composite had already flushed. Every control then
+renders `tabindex="-1"` and `role="toolbar"` promises a Tab stop it does not
+have. `packages/ui/src/components/ui/toolbar.tsx` remounts its children once its
+root is connected, which re-runs the item ref callbacks and flushes the composite
+against nodes it will not skip; a toolbar that is already in the document when it
+mounts never enters that loop. The e2e case `the selection toolbar is a single
+tab stop with arrow-key navigation` is what keeps it honest.
 
 ## 18. The suggestion menus render from the plugin state, not from the renderer
 
