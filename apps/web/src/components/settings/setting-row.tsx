@@ -41,6 +41,8 @@ export const GROUP_LABELS: Record<string, string> = {
   automations: 'Automationen',
   overview: 'Übersichtsseiten',
   render: 'Veröffentlichen',
+  projects: 'Projekte',
+  agents: 'Agenten',
 };
 
 /** German label and help text for every setting key. Written in the same voice. */

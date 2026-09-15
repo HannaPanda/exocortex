@@ -8,7 +8,17 @@ import {
   type WorkspaceSettingKey,
   type WorkspaceSettingsResponse,
 } from '@exocortex/contracts';
-import { Alert, AlertDescription, Badge, Button, LoadingState } from '@exocortex/ui';
+import {
+  Alert,
+  AlertDescription,
+  Badge,
+  Button,
+  LoadingState,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@exocortex/ui';
 
 import { GROUP_LABELS, groupOf, SettingRow } from '@/components/settings/setting-row';
 import { useAiModels } from '@/lib/api/ai-queries';
@@ -39,6 +49,10 @@ export function WorkspaceSettingsForm({
   const [draft, setDraft] = React.useState<Settings | null>(null);
   const [reset, setReset] = React.useState<WorkspaceSettingKey[]>([]);
   const [saved, setSaved] = React.useState(false);
+  // Which group of rows is on screen. Over forty rows in one column is a
+  // scroll no one reads to the end of; the draft lives above this, so
+  // switching groups never loses an edit and one save covers all of them.
+  const [group, setGroup] = React.useState<string | null>(null);
 
   // Same pattern as the admin form: seed the draft during render, once, rather
   // than from an effect.
@@ -62,6 +76,12 @@ export function WorkspaceSettingsForm({
     list.push(key);
     groups.set(groupOf(key), list);
   }
+
+  const groupNames = [...groups.keys()];
+  const activeGroup = group !== null && groups.has(group) ? group : (groupNames[0] ?? '');
+  // A pending edit in a group that is not on screen is invisible otherwise, and
+  // the save button below covers every group at once.
+  const pending = new Set([...changed, ...reset].map((key) => groupOf(key)));
 
   function updateField(key: WorkspaceSettingKey, value: Settings[WorkspaceSettingKey]): void {
     setDraft((previous) =>
@@ -116,16 +136,34 @@ export function WorkspaceSettingsForm({
         setzt, gilt nur in diesem Arbeitsbereich.
       </p>
 
-      <fieldset
-        disabled={!canEdit || update.isPending}
-        className="flex flex-col gap-8 border-0 p-0"
+      <Tabs
+        value={activeGroup}
+        onValueChange={(next) => setGroup(typeof next === 'string' ? next : null)}
+        orientation="vertical"
+        className="flex flex-col gap-6 md:flex-row md:gap-8"
       >
-        {[...groups.entries()].map(([group, keys]) => (
-          <section key={group} className="flex flex-col gap-4">
-            <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
-              {GROUP_LABELS[group] ?? group}
-            </h3>
-            <div className="flex flex-col gap-4">
+        <TabsList className="h-auto w-full flex-row flex-wrap items-stretch gap-0.5 overflow-visible bg-transparent p-0 md:w-48 md:shrink-0 md:flex-col">
+          {groupNames.map((name) => (
+            <TabsTrigger
+              key={name}
+              value={name}
+              data-testid={`workspace-setting-group-${name}`}
+              className="flex-none justify-start gap-2 px-2.5 py-1.5 text-sm"
+            >
+              <span className="truncate">{GROUP_LABELS[name] ?? name}</span>
+              {pending.has(name) ? (
+                <span
+                  aria-label="ungespeicherte Änderung"
+                  className="ms-auto size-1.5 shrink-0 rounded-full bg-primary"
+                />
+              ) : null}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        <fieldset disabled={!canEdit || update.isPending} className="min-w-0 flex-1 border-0 p-0">
+          {[...groups.entries()].map(([name, keys]) => (
+            <TabsContent key={name} value={name} className="flex flex-col gap-4">
               {keys.map((key) => (
                 <div key={key} className="flex flex-col gap-1">
                   <SettingRow
@@ -159,10 +197,10 @@ export function WorkspaceSettingsForm({
                   </div>
                 </div>
               ))}
-            </div>
-          </section>
-        ))}
-      </fieldset>
+            </TabsContent>
+          ))}
+        </fieldset>
+      </Tabs>
 
       {saved ? (
         <Alert data-testid="workspace-settings-saved">

@@ -27,6 +27,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '@exocortex/ui';
 
 import { AiRulesPanel } from '@/components/ai/ai-rules-panel';
@@ -49,12 +53,13 @@ const MEMBER_ROLE_LABELS: Record<WorkspaceRole, string> = {
 };
 
 /**
- * Workspace settings: rename and, separately, change the slug.
+ * Workspace settings, split into tabs.
  *
- * The two fields are deliberately independent, each with its own draft state
- * and its own save button: renaming never touches the slug (`findFreeSlug()`
- * only runs once, at creation), and the slug carries its own warning because
- * it is the one thing already-shared links depend on.
+ * Everything on this screen answers "how does this workspace work", but not at
+ * the same moment: renaming it, deciding who is in it, handing it its own API
+ * key and overriding forty settings are four errands, and stacking them made
+ * one page several screens tall in which the thing you came for was always
+ * below the fold. The tabs are those four errands; nothing was removed.
  */
 export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
   const detail = useWorkspaceDetail(workspaceId);
@@ -62,6 +67,7 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
 
   const [name, setName] = React.useState<string | null>(null);
   const [nameSaved, setNameSaved] = React.useState(false);
+  const [tab, setTab] = React.useState('allgemein');
 
   // Initialise the draft once the query resolves (see SettingsForm for why
   // this runs during render rather than in an effect).
@@ -87,145 +93,179 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
   };
 
   return (
-    <AppPage maxWidth="max-w-2xl">
+    <AppPage maxWidth="max-w-4xl">
       <h1 className="text-lg font-semibold">Arbeitsbereich-Einstellungen</h1>
       <p className="mt-1 text-sm text-muted-foreground">
         {original.name} · {original.memberCount}{' '}
         {original.memberCount === 1 ? 'Mitglied' : 'Mitglieder'}
       </p>
 
-      {!canEdit ? (
-        <Alert className="mt-6" data-testid="workspace-settings-readonly">
-          <AlertDescription>
-            Nur Besitzer und Administratoren dieses Arbeitsbereichs können ihn umbenennen oder den
-            Slug ändern.
-          </AlertDescription>
-        </Alert>
-      ) : (
-        <div className="mt-6 flex flex-col gap-8">
-          {updateWorkspace.isError ? (
-            <Alert variant="destructive" data-testid="workspace-settings-error">
-              <AlertDescription>{messageForCode(errorCode)}</AlertDescription>
-            </Alert>
+      <Tabs
+        value={tab}
+        onValueChange={(next) => setTab(typeof next === 'string' ? next : 'allgemein')}
+        className="mt-6 flex flex-col gap-8"
+      >
+        <TabsList className="h-10 gap-1 p-1" data-testid="workspace-settings-tabs">
+          <TabsTrigger value="allgemein" className="py-1.5 text-sm">
+            Allgemein
+          </TabsTrigger>
+          {canEdit ? (
+            <TabsTrigger value="mitglieder" className="py-1.5 text-sm">
+              Mitglieder
+            </TabsTrigger>
           ) : null}
+          <TabsTrigger value="ki" className="py-1.5 text-sm">
+            KI
+          </TabsTrigger>
+          <TabsTrigger value="einstellungen" className="py-1.5 text-sm">
+            Einstellungen
+          </TabsTrigger>
+        </TabsList>
 
-          <section className="flex flex-col gap-2">
-            <Label htmlFor="workspace-name">Name</Label>
-            <div className="flex max-w-md gap-2">
-              <Input
-                id="workspace-name"
-                data-testid="workspace-name-input"
-                value={name}
-                onChange={(event) => {
-                  setName(event.target.value);
-                  setNameSaved(false);
-                }}
-              />
-              <Button
-                onClick={saveName}
-                disabled={!nameDirty || updateWorkspace.isPending}
-                data-testid="save-workspace-name"
-              >
-                Speichern
-              </Button>
-            </div>
-            {nameSaved ? (
-              <p className="text-xs text-success" data-testid="workspace-name-saved">
-                Name gespeichert.
+        <TabsContent value="allgemein" className="flex flex-col gap-8">
+          {!canEdit ? (
+            <Alert data-testid="workspace-settings-readonly">
+              <AlertDescription>
+                Nur Besitzer und Administratoren dieses Arbeitsbereichs können ihn umbenennen oder
+                den Slug ändern.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <>
+              {updateWorkspace.isError ? (
+                <Alert variant="destructive" data-testid="workspace-settings-error">
+                  <AlertDescription>{messageForCode(errorCode)}</AlertDescription>
+                </Alert>
+              ) : null}
+
+              <section className="flex flex-col gap-2">
+                <Label htmlFor="workspace-name">Name</Label>
+                <div className="flex max-w-md gap-2">
+                  <Input
+                    id="workspace-name"
+                    data-testid="workspace-name-input"
+                    value={name}
+                    onChange={(event) => {
+                      setName(event.target.value);
+                      setNameSaved(false);
+                    }}
+                  />
+                  <Button
+                    onClick={saveName}
+                    disabled={!nameDirty || updateWorkspace.isPending}
+                    data-testid="save-workspace-name"
+                  >
+                    Speichern
+                  </Button>
+                </div>
+                {nameSaved ? (
+                  <p className="text-xs text-success" data-testid="workspace-name-saved">
+                    Name gespeichert.
+                  </p>
+                ) : null}
+              </section>
+
+              <SlugSection workspace={original} />
+
+              <MemorySection workspace={original} />
+            </>
+          )}
+
+          <MoreSection workspaceId={workspaceId} />
+        </TabsContent>
+
+        {canEdit ? (
+          <TabsContent value="mitglieder">
+            <MembersSection workspace={original} />
+          </TabsContent>
+        ) : null}
+
+        {/* The key and the rule pages belong together: both answer "under what
+            terms does the assistant run here". A key is not a preference
+            though (ADR-023) -- it is stored encrypted, in its own table, and
+            it is the owner's to enter because it is the owner who pays. */}
+        <TabsContent value="ki" className="flex flex-col gap-10">
+          <section className="flex flex-col gap-4">
+            <div>
+              <h2 className="text-base font-semibold">Eigener Schlüssel für die KI</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Ohne eigenen Schlüssel laufen die Anfragen dieses Arbeitsbereichs über den der
+                Installation.
               </p>
-            ) : null}
+            </div>
+            <WorkspaceCredentialsForm
+              workspaceId={workspaceId}
+              isOwner={original.role === 'OWNER'}
+            />
           </section>
 
-          <SlugSection workspace={original} />
+          {/* A list rather than a link: a rule is a page that already has its
+              own screen, and what is missing is the overview of which pages are
+              steering the assistant right now (D5). */}
+          <section className="flex flex-col gap-4 border-t border-border pt-8">
+            <div>
+              <h2 className="text-base font-semibold">KI-Regeln</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Seiten, die die KI als Anweisung behandelt. Gesetzt wird das in den Eigenschaften
+                der jeweiligen Seite.
+              </p>
+            </div>
+            <AiRulesPanel workspaceId={workspaceId} />
+          </section>
+        </TabsContent>
 
-          <MemorySection workspace={original} />
+        {/* Outside the administrator branch on purpose: what prompt and what
+            model this workspace runs under is not a secret from the people
+            working in it, and a configuration nobody can see is one nobody can
+            explain. Editing stays behind the same bar as the rest. */}
+        <TabsContent value="einstellungen" className="flex flex-col gap-4">
+          <div>
+            <h2 className="text-base font-semibold">Konfiguration dieses Arbeitsbereichs</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Diese Werte gelten nur hier. Alles andere kommt aus der Installation.
+            </p>
+          </div>
+          <WorkspaceSettingsForm workspaceId={workspaceId} canEdit={canEdit} />
+        </TabsContent>
+      </Tabs>
+    </AppPage>
+  );
+}
 
-          <MembersSection workspace={original} />
-        </div>
-      )}
-
-      {/* Outside the administrator branch on purpose: what prompt and what
-          model this workspace runs under is not a secret from the people
-          working in it, and a configuration nobody can see is one nobody can
-          explain. Editing stays behind the same bar as the rest. */}
-      <section className="mt-10 flex flex-col gap-4">
-        <div>
-          <h2 className="text-base font-semibold">Konfiguration dieses Arbeitsbereichs</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Diese Werte gelten nur hier. Alles andere kommt aus der Installation.
-          </p>
-        </div>
-        <WorkspaceSettingsForm workspaceId={workspaceId} canEdit={canEdit} />
-      </section>
-
-      {/* Separate from the configuration above, and that is the point of
-          ADR-023: a key is not a preference. It is stored encrypted, in its
-          own table, and it is the owner's to enter because it is the owner
-          who pays. */}
-      <section className="mt-10 flex flex-col gap-4 border-t border-border pt-8">
-        <div>
-          <h2 className="text-base font-semibold">Eigener Schlüssel für die KI</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Ohne eigenen Schlüssel laufen die Anfragen dieses Arbeitsbereichs über den der
-            Installation.
-          </p>
-        </div>
-        <WorkspaceCredentialsForm workspaceId={workspaceId} isOwner={original.role === 'OWNER'} />
-      </section>
-
-      {/* A link rather than a panel: automations have a run log beside them,
-          and a log is the half people come back for. It belongs on a page of
-          its own, not folded into a settings form (issue #50). */}
-      <section className="mt-10 flex flex-col gap-4 border-t border-border pt-8">
-        <div>
-          <h2 className="text-base font-semibold">Automationen</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Regeln, die auf Änderungen an Seiten reagieren, und das Protokoll dessen, was sie getan
-            haben.
-          </p>
-        </div>
+/**
+ * The two areas that are pages of their own rather than panels.
+ *
+ * Automations have a run log beside them and a log is the half people come
+ * back for (issue #50); a PDF template has a LaTeX preamble somebody edits
+ * (issue #44). Neither fits in a row of a settings form, so both stay links --
+ * but a link nobody finds is no better than no link, which is why they sit in
+ * the first tab rather than at the bottom of a long page.
+ */
+function MoreSection({ workspaceId }: { workspaceId: string }) {
+  return (
+    <section className="flex flex-col gap-3 border-t border-border pt-8">
+      <h2 className="text-base font-semibold">Weitere Bereiche</h2>
+      <div className="flex flex-col gap-3 sm:flex-row">
         <Button
           render={<Link href={`/arbeitsbereich/${workspaceId}/automationen`} />}
           variant="outline"
-          className="self-start"
+          className="justify-start"
         >
           Automationen öffnen
         </Button>
-      </section>
-
-      {/* A list rather than a link: a rule is a page that already has its own
-          screen, and what is missing is the overview of which pages are
-          steering the assistant right now (D5). */}
-      <section className="mt-10 flex flex-col gap-4 border-t border-border pt-8">
-        <div>
-          <h2 className="text-base font-semibold">KI-Regeln</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Seiten, die die KI als Anweisung behandelt. Gesetzt wird das in den Eigenschaften der
-            jeweiligen Seite.
-          </p>
-        </div>
-        <AiRulesPanel workspaceId={workspaceId} />
-      </section>
-
-      {/* Same shape as the automations link above, and for the same reason: a
-          template has a body somebody edits, and a LaTeX preamble does not fit
-          in a row of a settings form (issue #44). */}
-      <section className="mt-10 flex flex-col gap-4 border-t border-border pt-8">
-        <div>
-          <h2 className="text-base font-semibold">Vorlagen für PDF</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Womit sich Seiten dieses Arbeitsbereichs als PDF veröffentlichen lassen.
-          </p>
-        </div>
         <Button
           render={<Link href={`/arbeitsbereich/${workspaceId}/vorlagen`} />}
           variant="outline"
-          className="self-start"
+          className="justify-start"
         >
-          Vorlagen öffnen
+          Vorlagen für PDF öffnen
         </Button>
-      </section>
-    </AppPage>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Regeln, die auf Änderungen an Seiten reagieren, mit dem Protokoll dessen, was sie getan
+        haben. Und womit sich Seiten dieses Arbeitsbereichs als PDF veröffentlichen lassen.
+      </p>
+    </section>
   );
 }
 
