@@ -1,9 +1,28 @@
 import { type Job, type JobsOptions, Queue, QueueEvents } from 'bullmq';
 
-import { JOB_SCHEMAS, type JobPayloadMap, QUEUE_NAMES, type QueueName } from '@exocortex/contracts';
+import {
+  JOB_SCHEMAS,
+  type JobPayloadMap,
+  type MaintenanceJob,
+  QUEUE_NAMES,
+  type QueueName,
+} from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 
 import { createRedisConnection, type Redis } from './connection';
+
+/** The housekeeping jobs, by name; see `scheduleMaintenance`. */
+type MaintenanceTaskName = MaintenanceJob['task'];
+
+/** A cadence in milliseconds, for the sweeps that run far more often than daily. */
+interface RepeatEvery {
+  every: number;
+}
+
+/** A cron expression, for the ones that belong at a time of day. */
+interface RepeatPattern {
+  pattern: string;
+}
 
 /** Default retry policy. Every queue retries with exponential backoff. */
 export const DEFAULT_JOB_OPTIONS: JobsOptions = {
@@ -264,265 +283,92 @@ export class QueueRegistry {
     }
   }
 
-  /** Registers the recurring maintenance jobs. Idempotent. */
+  /**
+   * Registers the recurring maintenance jobs. Idempotent.
+   *
+   * Every one of them has the same shape -- the scheduler is named after the
+   * task it runs, and a scheduled sweep is never scoped to one workspace or one
+   * page -- so `schedule` below carries that shape and this stays a list of
+   * cadences and the reasons for them.
+   */
   async scheduleMaintenance(correlationId: string): Promise<void> {
     const queue = this.rawQueue(QUEUE_NAMES.maintenance);
-    await queue.upsertJobScheduler(
-      'dispatch-outbox',
-      { every: 5_000 },
-      {
+    const schedule = (task: MaintenanceTaskName, repeat: RepeatEvery | RepeatPattern) =>
+      queue.upsertJobScheduler(task, repeat, {
         name: QUEUE_NAMES.maintenance,
-        data: { correlationId, task: 'dispatch-outbox', workspaceId: null, documentId: null },
-      },
-    );
-    await queue.upsertJobScheduler(
-      'prune-snapshots',
-      { pattern: '0 4 * * *' },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: { correlationId, task: 'prune-snapshots', workspaceId: null, documentId: null },
-      },
-    );
-    await queue.upsertJobScheduler(
-      'collect-orphaned-covers',
-      { pattern: '30 4 * * *' },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: {
-          correlationId,
-          task: 'collect-orphaned-covers',
-          workspaceId: null,
-          documentId: null,
-        },
-      },
-    );
+        data: { correlationId, task, workspaceId: null, documentId: null },
+      });
+
+    await schedule('dispatch-outbox', { every: 5_000 });
+    await schedule('prune-snapshots', { pattern: '0 4 * * *' });
+    await schedule('collect-orphaned-covers', { pattern: '30 4 * * *' });
     // Every minute: the second-line defence for a run whose worker died
     // without a chance to close it out itself (issue #16). See
     // `apps/worker/src/processors/maintenance.ts`.
-    await queue.upsertJobScheduler(
-      'reap-stale-ai-runs',
-      { every: 60_000 },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: { correlationId, task: 'reap-stale-ai-runs', workspaceId: null, documentId: null },
-      },
-    );
+    await schedule('reap-stale-ai-runs', { every: 60_000 });
     // Once a day, after the snapshot prune: the net underneath the
     // event-driven reference resolution, for rows whose target page appeared
     // in the same import that wrote them and which no later event revisits.
     // A no-op once every reference that can resolve has.
-    await queue.upsertJobScheduler(
-      'repair-document-links',
-      { pattern: '15 4 * * *' },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: {
-          correlationId,
-          task: 'repair-document-links',
-          workspaceId: null,
-          documentId: null,
-        },
-      },
-    );
+    await schedule('repair-document-links', { pattern: '15 4 * * *' });
     // Every five minutes, a small batch: this is what pulls pages that existed
     // before the reference index into it (issue #19), slowly enough that a
     // running deployment does not notice. Once every content row is marked it
     // costs one indexed query per run and nothing else.
-    await queue.upsertJobScheduler(
-      'backfill-document-links',
-      { every: 300_000 },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: {
-          correlationId,
-          task: 'backfill-document-links',
-          workspaceId: null,
-          documentId: null,
-        },
-      },
-    );
+    await schedule('backfill-document-links', { every: 300_000 });
     // Every five minutes, same cadence as the link backfill: the processor
     // itself is a no-op unless `activity.editSessionSnapshotsEnabled` is on,
     // and even then only takes a snapshot for a page whose content is both
     // new since its last checkpoint and due for the next one
     // (`activity.editSessionSnapshotIntervalMinutes`, minimum 5) -- the
     // scheduler's own cadence only has to be at least that fine (issue #20).
-    await queue.upsertJobScheduler(
-      'snapshot-active-documents',
-      { every: 300_000 },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: {
-          correlationId,
-          task: 'snapshot-active-documents',
-          workspaceId: null,
-          documentId: null,
-        },
-      },
-    );
+    await schedule('snapshot-active-documents', { every: 300_000 });
     // Every two minutes, a small batch. A no-op while semantic search is off,
     // and the only thing that ever fills the vector index for pages that
     // existed before it was switched on (issue #34, AP4). Faster than the link
     // backfill because a deployment that just enabled the feature is waiting
     // for it, and each batch is bounded by a paid call it pays for once.
-    await queue.upsertJobScheduler(
-      'backfill-embeddings',
-      { every: 120_000 },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: { correlationId, task: 'backfill-embeddings', workspaceId: null, documentId: null },
-      },
-    );
+    await schedule('backfill-embeddings', { every: 120_000 });
     // Daily, after the snapshot sweep. Does nothing while
     // `memory.retentionDays` is zero, which is the default.
-    await queue.upsertJobScheduler(
-      'prune-memories',
-      { pattern: '15 4 * * *' },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: { correlationId, task: 'prune-memories', workspaceId: null, documentId: null },
-      },
-    );
+    await schedule('prune-memories', { pattern: '15 4 * * *' });
     // Daily, after the other sweeps. One indexed DELETE that matches nothing on
     // almost every run: invitations expire in a week and are kept for a month
     // after that, so this only ever has work in a deployment that invites people
     // and gets ignored (issue #3).
-    await queue.upsertJobScheduler(
-      'prune-invitations',
-      { pattern: '45 4 * * *' },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: { correlationId, task: 'prune-invitations', workspaceId: null, documentId: null },
-      },
-    );
+    await schedule('prune-invitations', { pattern: '45 4 * * *' });
     // Daily, with the other sweeps. Two indexed DELETEs that usually match
     // nothing: the journal is kept for ninety days by default, so this only has
     // work once a deployment has been letting agents write for a season
     // (issue #49).
-    await queue.upsertJobScheduler(
-      'prune-agent-journal',
-      { pattern: '50 4 * * *' },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: {
-          correlationId,
-          task: 'prune-agent-journal',
-          workspaceId: null,
-          documentId: null,
-        },
-      },
-    );
+    await schedule('prune-agent-journal', { pattern: '50 4 * * *' });
     // Daily, before the note prune: facts are distilled from notes, so the
     // distilling has to happen while the notes are still there. A no-op while
     // `memory.consolidationEnabled` is off, which is the default.
-    await queue.upsertJobScheduler(
-      'consolidate-memories',
-      { pattern: '0 3 * * *' },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: {
-          correlationId,
-          task: 'consolidate-memories',
-          workspaceId: null,
-          documentId: null,
-        },
-      },
-    );
+    await schedule('consolidate-memories', { pattern: '0 3 * * *' });
     // Daily, after the consolidation: a fact confirmed tonight should not lose
     // weight in the same hour it gained it.
-    await queue.upsertJobScheduler(
-      'decay-memory-facts',
-      { pattern: '45 3 * * *' },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: {
-          correlationId,
-          task: 'decay-memory-facts',
-          workspaceId: null,
-          documentId: null,
-        },
-      },
-    );
+    await schedule('decay-memory-facts', { pattern: '45 3 * * *' });
     // Daily, last of the nightly sweeps. A no-op while
     // `ai.runPayloadRetentionDays` is zero, which is the default; once it is
     // set, one indexed UPDATE that finds a handful of rows a day (issue #10).
-    await queue.upsertJobScheduler(
-      'prune-ai-run-payloads',
-      { pattern: '30 5 * * *' },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: {
-          correlationId,
-          task: 'prune-ai-run-payloads',
-          workspaceId: null,
-          documentId: null,
-        },
-      },
-    );
+    await schedule('prune-ai-run-payloads', { pattern: '30 5 * * *' });
     // Daily, after the journal prune. A no-op while
     // `automations.runRetentionDays` is zero; once it is set, one indexed
     // DELETE that finds nothing on a deployment quieter than its retention
     // window (issue #50).
-    await queue.upsertJobScheduler(
-      'prune-automation-runs',
-      { pattern: '55 4 * * *' },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: {
-          correlationId,
-          task: 'prune-automation-runs',
-          workspaceId: null,
-          documentId: null,
-        },
-      },
-    );
+    await schedule('prune-automation-runs', { pattern: '55 4 * * *' });
     // Every two minutes: this one is not a nightly sweep. Half of it closes
     // builds whose worker is gone, and a person watching a spinner should not
     // have to wait until tomorrow to be told that nothing is coming (issue #44).
-    await queue.upsertJobScheduler(
-      'reap-render-jobs',
-      { every: 120_000 },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: {
-          correlationId,
-          task: 'reap-render-jobs',
-          workspaceId: null,
-          documentId: null,
-        },
-      },
-    );
+    await schedule('reap-render-jobs', { every: 120_000 });
     // And the same cadence for project builds, for the same reason (issue #43).
-    await queue.upsertJobScheduler(
-      'reap-project-builds',
-      { every: 120_000 },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: {
-          correlationId,
-          task: 'reap-project-builds',
-          workspaceId: null,
-          documentId: null,
-        },
-      },
-    );
+    await schedule('reap-project-builds', { every: 120_000 });
     // Hourly, off the hour so it never lands with the nightly sweeps. The
     // safety net under materialization: whoever writes the canonical state
     // enqueues the job that derives everything else, and a lost enqueue is
     // lost in silence. A run costs one indexed query while nothing is behind.
-    await queue.upsertJobScheduler(
-      'rematerialize-stale-content',
-      { pattern: '25 * * * *' },
-      {
-        name: QUEUE_NAMES.maintenance,
-        data: {
-          correlationId,
-          task: 'rematerialize-stale-content',
-          workspaceId: null,
-          documentId: null,
-        },
-      },
-    );
+    await schedule('rematerialize-stale-content', { pattern: '25 * * * *' });
     this.logger.info('Maintenance schedulers registered');
   }
 
