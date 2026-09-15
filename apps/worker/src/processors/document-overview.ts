@@ -110,6 +110,13 @@ async function refreshPage(input: {
   if (!page.isOverview && !page.parentIsOverview) return null;
 
   const children = page.isOverview ? await readOverviewChildren(prisma, page.id) : [];
+  // Before anything is composed: the children that have never been digested.
+  // Nothing else would ever ask for them. A page is digested because its parent
+  // is an overview, and the day a parent becomes one, no event touches its
+  // children -- so without this the first composition would be written from
+  // titles alone and would stay that way until somebody edited every child.
+  await digestMissingChildren({ dependencies, page, children, settings, payload });
+
   const plan = planWork({ page, children, force: payload.force });
   if (!plan.needSummary && !plan.needIntro) {
     await offerCover({ dependencies, page, settings, correlationId: payload.correlationId });
@@ -320,6 +327,54 @@ async function writeDigest(
     create: { documentId, ...write },
     update: write,
   });
+}
+
+/**
+ * Asks for a digest for every child that has none yet.
+ *
+ * Debounced under the child's own job id, so a child that is also being edited
+ * is refreshed once. Bounded by `overview.maxChildren`: marking a page as an
+ * overview is what starts the spending, and it should cost a known number of
+ * small calls rather than an unbounded one.
+ *
+ * Each finished digest cascades back up and the parent is recomposed once,
+ * because the cascade shares this page's debounce window.
+ */
+async function digestMissingChildren(input: {
+  dependencies: DocumentOverviewDependencies;
+  page: OverviewPage;
+  children: readonly OverviewChild[];
+  settings: Settings;
+  payload: JobContext<typeof QUEUE_NAMES.documentOverview>['payload'];
+}): Promise<void> {
+  if (!input.page.isOverview) return;
+  const missing = input.children
+    .filter((child) => child.summaryInputHash === null)
+    .slice(0, input.settings['overview.maxChildren']);
+  if (missing.length === 0) return;
+
+  const windowMs = input.settings['overview.debounceSeconds'] * 1_000;
+  for (const child of missing) {
+    await input.dependencies.queues.enqueueDebounced(
+      QUEUE_NAMES.documentOverview,
+      {
+        correlationId: input.payload.correlationId,
+        documentId: child.id,
+        workspaceId: input.payload.workspaceId,
+        reason: 'child_changed',
+        force: false,
+        depth: input.payload.depth,
+      },
+      {
+        jobId: `overview-${child.id}`,
+        // A short window rather than the full one: these are not reacting to
+        // somebody typing, they are the backlog of a page that was just marked,
+        // and the overview above them is bare until they arrive.
+        delayMs: Math.min(windowMs, 30_000),
+        maxDelayMs: windowMs,
+      },
+    );
+  }
 }
 
 /**

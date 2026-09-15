@@ -60,6 +60,12 @@ own `summary`, which changes its parent's input, which recomposes the parent.
 Only pages under an overview are digested. A page whose parent is an ordinary
 page never reaches a model, which is what keeps the whole feature affordable.
 
+Marking a page is therefore what starts the spending, and it starts with a
+backlog: the refresh asks for a digest for every child that has none yet, up to
+`overview.maxChildren`. Nothing else would ever ask for them, because no event
+touches a child on the day its parent becomes an overview. They arrive within
+the debounce window and the page is recomposed once, with the digests in it.
+
 ## What triggers a refresh
 
 `dispatchOutbox` (`apps/worker/src/processors/maintenance-tasks/overviews.ts`),
