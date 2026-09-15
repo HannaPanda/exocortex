@@ -61,20 +61,50 @@ const MARK_SHARE = 0.72;
 /** The same, for a maskable icon, where a launcher crops towards the centre. */
 const MASKABLE_MARK_SHARE = 0.52;
 
-/** A pixel counts as part of the mark once it is more than faintly opaque. */
-const ALPHA_THRESHOLD = 10;
+/** The height the mark is normalised to for `packages/ui`. */
+const MARK_HEIGHT = 1000;
+
+/** A pixel is part of the mark as soon as it is not fully transparent. */
+const ALPHA_THRESHOLD = 0;
+
+/** How many device pixels one side of a measuring render gets. */
+const PROBE = 2400;
+
+/** Reads "x y w h" off a viewBox attribute. */
+function viewBoxOf(svg) {
+  const parts = /viewBox="([^"]+)"/
+    .exec(svg)?.[1]
+    .trim()
+    .split(/[\s,]+/)
+    .map(Number);
+  if (parts?.length !== 4 || parts.some(Number.isNaN)) {
+    throw new Error('the source has no usable viewBox');
+  }
+  return { x: parts[0], y: parts[1], width: parts[2], height: parts[3] };
+}
 
 /**
- * Renders a mark on its own and returns the box it really occupies, expressed
- * as a fraction of the rendered square. Measuring beats trusting the viewBox:
- * an exported mark almost always carries whitespace of its own, and that
- * whitespace is exactly the "too much bacon on the left" that centring by
- * viewBox leaves behind.
+ * Renders a mark on its own and returns the box its ink really occupies, in the
+ * mark's own viewBox units. Measuring beats trusting the viewBox: an exported
+ * mark almost always carries whitespace of its own, and that whitespace is
+ * exactly the "too much bacon on the left" that centring by viewBox leaves.
+ *
+ * The probe is given explicit pixel dimensions matching the viewBox's own
+ * proportions. An SVG with nothing but a viewBox has no intrinsic size, and
+ * letting the renderer guess one and then fitting the result into a square adds
+ * padding that is indistinguishable from the mark's own whitespace -- which is
+ * a quiet way to move a logo a few units off and only find out when someone
+ * notices its chin is clipped.
  */
 async function measure(svg) {
-  const probe = 1000;
-  const { data, info } = await sharp(Buffer.from(svg), { density: 72 })
-    .resize(probe, probe, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+  const view = viewBoxOf(svg);
+  const scale = PROBE / Math.max(view.width, view.height);
+  const sized = svg.replace(
+    /<svg\b/,
+    `<svg width="${Math.round(view.width * scale)}" height="${Math.round(view.height * scale)}"`,
+  );
+
+  const { data, info } = await sharp(Buffer.from(sized), { density: 72 })
     .raw()
     .toBuffer({ resolveWithObject: true });
 
@@ -91,13 +121,16 @@ async function measure(svg) {
       if (y > maxY) maxY = y;
     }
   }
-  if (maxX < 0) throw new Error(`${path.relative(ROOT, SOURCE)} renders nothing`);
+  if (maxX < 0) throw new Error('the mark renders nothing');
 
+  const unitsX = view.width / info.width;
+  const unitsY = view.height / info.height;
   return {
-    x: minX / probe,
-    y: minY / probe,
-    width: (maxX - minX + 1) / probe,
-    height: (maxY - minY + 1) / probe,
+    view,
+    x: view.x + minX * unitsX,
+    y: view.y + minY * unitsY,
+    width: (maxX - minX + 1) * unitsX,
+    height: (maxY - minY + 1) * unitsY,
   };
 }
 
@@ -109,16 +142,19 @@ async function measure(svg) {
  * artboard.
  */
 function compose(source, box, { share, radius }) {
-  const viewBox = /viewBox="([^"]+)"/.exec(source)?.[1];
-  if (!viewBox) throw new Error(`${path.relative(ROOT, SOURCE)} has no viewBox`);
-
+  const { view } = box;
   const inner = source.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
-  const target = PLATE_SIZE * share;
-  const scale = target / Math.max(box.width, box.height);
-  const width = scale;
-  const height = scale;
-  const x = (PLATE_SIZE - box.width * scale) / 2 - box.x * scale;
-  const y = (PLATE_SIZE - box.height * scale) / 2 - box.y * scale;
+
+  /* `scale` is plate units per source unit: enough that the mark's longer side
+     fills its share of the plate. The nested viewport is the whole artboard at
+     that scale, whitespace included, and it is then slid so the ink -- not the
+     artboard -- ends up in the middle. */
+  const scale = (PLATE_SIZE * share) / Math.max(box.width, box.height);
+  const width = view.width * scale;
+  const height = view.height * scale;
+  const x = (PLATE_SIZE - box.width * scale) / 2 - (box.x - view.x) * scale;
+  const y = (PLATE_SIZE - box.height * scale) / 2 - (box.y - view.y) * scale;
+  const viewBox = `${view.x} ${view.y} ${view.width} ${view.height}`;
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${PLATE_SIZE} ${PLATE_SIZE}" role="img" aria-label="eXocortex">
   <title>eXocortex</title>
@@ -144,27 +180,21 @@ function compose(source, box, { share, radius }) {
  * when nesting is exactly what the attribute is for.
  */
 function toLogoModule(source, box) {
-  const viewBox = /viewBox="([^"]+)"/.exec(source)?.[1].trim().split(/\s+/).map(Number);
-  if (viewBox?.length !== 4 || viewBox[0] !== 0 || viewBox[1] !== 0) {
-    throw new Error('the source viewBox is not "0 0 w h"');
-  }
-  const artboard = viewBox[3];
-
   const inner = /<g\s+transform="([^"]+)"/.exec(source)?.[1] ?? '';
-  const flip = /translate\(([\d.]+),([\d.]+)\)\s*scale\(([-\d.]+),([-\d.]+)\)/.exec(inner);
-
-  const scale = 1000 / (box.height * artboard);
-  const left = box.x * artboard;
-  const top = box.y * artboard;
-
-  /* Composing `translate(-left -top) scale(scale)` with the source's own
-     `translate(tx ty) scale(sx sy)` keeps it to a single attribute. */
-  const [tx, ty, sx, sy] = flip
-    ? [Number(flip[1]), Number(flip[2]), Number(flip[3]), Number(flip[4])]
+  const own = /translate\(([-\d.]+),\s*([-\d.]+)\)\s*scale\(([-\d.]+),\s*([-\d.]+)\)/.exec(inner);
+  const [tx, ty, sx, sy] = own
+    ? [Number(own[1]), Number(own[2]), Number(own[3]), Number(own[4])]
     : [0, 0, 1, 1];
+
+  /* The wanted mapping is `scale(k)` about the ink's top left corner, that is
+     `p -> (p - box) * k`. Composing it with the source's own
+     `p -> (t + s * p)` gives `p -> (t - box) * k + (s * k) * p`, which is one
+     translate and one scale. The `- box` belongs inside the scaling: leaving it
+     outside is what once pushed the mark 52 units down and clipped its chin. */
+  const k = MARK_HEIGHT / box.height;
   const transform =
-    `translate(${(tx * scale - left).toFixed(4)} ${(ty * scale - top).toFixed(4)}) ` +
-    `scale(${(sx * scale).toFixed(6)} ${(sy * scale).toFixed(6)})`;
+    `translate(${((tx - box.x) * k).toFixed(4)} ${((ty - box.y) * k).toFixed(4)}) ` +
+    `scale(${(sx * k).toFixed(6)} ${(sy * k).toFixed(6)})`;
 
   /* A traced export wraps its `d` across lines. A newline inside a JavaScript
      string literal is a syntax error, so the whitespace is flattened. */
@@ -181,13 +211,20 @@ export const MARK_PATHS = [
 ${paths.map((d) => `  '${d}',`).join('\n')}
 ] as const;
 
-/** Puts those paths on a ${PLATE_SIZE}-unit height with their ink starting at 0,0. */
+/** Puts those paths on a ${MARK_HEIGHT}-unit height with their ink at 0,0. */
 export const MARK_TRANSFORM = '${transform}';
 
 /** How wide the mark is once transformed. The lockup spaces itself from this. */
-export const MARK_WIDTH = ${((box.width / box.height) * 1000).toFixed(1)};
+export const MARK_WIDTH = ${((box.width / box.height) * MARK_HEIGHT).toFixed(1)};
 `;
 }
+
+/* The checks below read the emitted module back rather than recomputing it, so
+   what is verified is what `packages/ui` will actually draw. */
+const logoTransform = (module) => /MARK_TRANSFORM = '([^']+)'/.exec(module)[1];
+const logoWidth = (module) => Number(/MARK_WIDTH = ([\d.]+)/.exec(module)[1]);
+const markPaths = (module) =>
+  [...module.matchAll(/^ {2}'([^']+)',$/gm)].map((m) => `<path d="${m[1]}"/>`).join('');
 
 async function render(svg, size, target) {
   await sharp(Buffer.from(svg), { density: 600 }).resize(size, size).png().toFile(target);
@@ -197,8 +234,8 @@ async function render(svg, size, target) {
 const source = await readFile(SOURCE, 'utf8');
 const box = await measure(source);
 console.log(
-  `${path.relative(ROOT, SOURCE)}: ink covers ` +
-    `${(box.width * 100).toFixed(0)}% x ${(box.height * 100).toFixed(0)}% of its artboard.`,
+  `${path.relative(ROOT, SOURCE)}: ink is ${box.width.toFixed(1)}x${box.height.toFixed(1)} ` +
+    `at ${box.x.toFixed(1)},${box.y.toFixed(1)} in a ${box.view.width}x${box.view.height} artboard.`,
 );
 
 const icon = compose(source, box, { share: MARK_SHARE, radius: PLATE_RADIUS });
@@ -213,18 +250,44 @@ await render(icon, 512, path.join(ROOT, 'apps/web/public/icons/icon-512.png'));
 await render(maskable, 512, path.join(ROOT, 'apps/web/public/icons/icon-maskable-512.png'));
 
 const logoModule = path.join(ROOT, 'packages/ui/src/components/logo-mark.generated.ts');
-await writeFile(logoModule, toLogoModule(source, box), 'utf8');
+const logo = toLogoModule(source, box);
+await writeFile(logoModule, logo, 'utf8');
 console.log(`  ${path.relative(ROOT, logoModule)}`);
 
 /* The whole point of generating these is that nobody has to eyeball them, so
    the last word is a measurement of what was actually written. */
-const check = await measure(icon.replace(/<rect\b[^>]*\/>/, ''));
-const offX = Math.abs(check.x + check.width / 2 - 0.5) * PLATE_SIZE;
-const offY = Math.abs(check.y + check.height / 2 - 0.5) * PLATE_SIZE;
+const centred = await measure(icon.replace(/<rect\b[^>]*\/>/, ''));
+const offX = Math.abs(centred.x + centred.width / 2 - PLATE_SIZE / 2);
+const offY = Math.abs(centred.y + centred.height / 2 - PLATE_SIZE / 2);
 if (offX > 2 || offY > 2) {
-  console.error(`icon.svg is off centre by ${offX.toFixed(0)}x${offY.toFixed(0)} units`);
+  console.error(`icon.svg is off centre by ${offX.toFixed(1)}x${offY.toFixed(1)} units`);
   process.exit(1);
 }
 console.log(
-  `icon.svg: mark ${(check.width * PLATE_SIZE).toFixed(0)}x${(check.height * PLATE_SIZE).toFixed(0)} of ${PLATE_SIZE}, centred.`,
+  `icon.svg: mark ${centred.width.toFixed(0)}x${centred.height.toFixed(0)} of ${PLATE_SIZE}, centred.`,
+);
+
+/* And the same for the logo mark, which is checked against a generous frame so
+   that ink spilling past its own box shows up as a number rather than as a
+   clipped chin in the corner of the application. */
+const framed = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -200 ${MARK_HEIGHT + 400} ${MARK_HEIGHT + 400}"><g transform="${logoTransform(logo)}">${markPaths(logo)}</g></svg>`;
+const placed = await measure(framed);
+const spill = Math.max(
+  -placed.x,
+  -placed.y,
+  placed.x + placed.width - logoWidth(logo),
+  placed.y + placed.height - MARK_HEIGHT,
+);
+if (spill > 1) {
+  console.error(
+    `the logo mark spills ${spill.toFixed(1)} units out of its box: ` +
+      `ink runs ${placed.x.toFixed(1)}..${(placed.x + placed.width).toFixed(1)} by ` +
+      `${placed.y.toFixed(1)}..${(placed.y + placed.height).toFixed(1)}, ` +
+      `box is 0..${logoWidth(logo)} by 0..${MARK_HEIGHT}.`,
+  );
+  process.exit(1);
+}
+console.log(
+  `logo mark: ink ${placed.width.toFixed(1)}x${placed.height.toFixed(1)} at ` +
+    `${placed.x.toFixed(1)},${placed.y.toFixed(1)}, inside its box.`,
 );

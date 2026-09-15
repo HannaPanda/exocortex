@@ -6,7 +6,7 @@
        XML, SVG is parsed as XML, and a browser drops the whole favicon rather
        than ignoring the comment. -->
   <rect width="1000" height="1000" rx="220" fill="#182933"/>
-  <svg x="-57.83" y="-57.28" width="1114.55" height="1114.55" viewBox="0 0 1254 1254" overflow="visible">
+  <svg x="-57.88" y="-57.42" width="1114.84" height="1114.84" viewBox="0 0 1254 1254" overflow="visible">
   <title>eXocortex</title>
 <g transform="translate(0.000000,1254.000000) scale(0.100000,-0.100000)"
 fill="#F9AA33" stroke="none">
