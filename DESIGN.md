@@ -498,7 +498,7 @@ a flat tinted colour.
 
 ## 5. Components
 
-Built on Base UI primitives (`@base-ui-components/react`), sourced through the
+Built on Base UI primitives (`@base-ui/react`), sourced through the
 shadcn registry and adapted. One primitive library, no exceptions.
 
 ### Buttons

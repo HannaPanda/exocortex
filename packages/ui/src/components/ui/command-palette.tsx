@@ -1,6 +1,6 @@
 'use client';
 
-import { useRender } from '@base-ui-components/react/use-render';
+import { useRender } from '@base-ui/react/use-render';
 import { SearchIcon } from 'lucide-react';
 import * as React from 'react';
 

@@ -13,8 +13,10 @@ the primitive layer.
 ## Decision
 
 shadcn/ui is the source-code supplier; components are installed with the official
-CLI into `packages/ui` and then adapted. Base UI (`@base-ui-components/react`) is the
-only primitive library.
+CLI into `packages/ui` and then adapted. Base UI is the only primitive library.
+It was published as `@base-ui-components/react` when this record was written; the
+library renamed itself to `@base-ui/react` with its 1.0.0 release, and the
+repository moved with it on 2026-09-15. The decision is unchanged.
 
 The public shadcn registry currently ships Radix-based sources and no Base UI
 registry was reachable, so adaptation is part of the workflow rather than optional:

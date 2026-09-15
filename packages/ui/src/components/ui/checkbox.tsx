@@ -1,6 +1,6 @@
 'use client';
 
-import { Checkbox as CheckboxPrimitive } from '@base-ui-components/react/checkbox';
+import { Checkbox as CheckboxPrimitive } from '@base-ui/react/checkbox';
 import { CheckIcon } from 'lucide-react';
 import * as React from 'react';
 
@@ -10,7 +10,7 @@ import { cn } from '../../lib/utils';
  * Installed with the official shadcn CLI (`shadcn add checkbox`) and adapted:
  * Radix's `data-[state=checked]` selector became Base UI's boolean
  * `data-checked`/`data-unchecked` presence attributes (see
- * `@base-ui-components/react/checkbox`'s `CheckboxRootDataAttributes`).
+ * `@base-ui/react/checkbox`'s `CheckboxRootDataAttributes`).
  */
 function Checkbox({ className, ...props }: React.ComponentProps<typeof CheckboxPrimitive.Root>) {
   return (

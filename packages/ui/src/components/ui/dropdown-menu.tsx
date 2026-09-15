@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu } from '@base-ui-components/react/menu';
+import { Menu } from '@base-ui/react/menu';
 import { CheckIcon } from 'lucide-react';
 import * as React from 'react';
 

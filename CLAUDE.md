@@ -18,7 +18,7 @@ file is the contract for automated sessions. Read it before changing code.
    `packages/ui/src/components/ui` and `packages/ui/src/components` first,
    the shadcn registry second, a new primitive last.
 3. **Never introduce a second UI framework.** No Material UI, Chakra, Ant Design,
-   Mantine or Bootstrap. Primitives come from `@base-ui-components/react`.
+   Mantine or Bootstrap. Primitives come from `@base-ui/react`.
    The public shadcn registry ships Radix-based sources; adapt them to Base UI
    (see `packages/ui/src/components/ui/button.tsx` for the pattern) and remove the
    `radix-ui` dependency again.

@@ -20,7 +20,7 @@ Radix-based sources today; no Base UI registry was reachable
   element is used
 - every interactive component (`dialog`, `dropdown-menu`, `tooltip`, `tabs`,
   `scroll-area`, `separator`, `context-menu`, `avatar`) is written directly against
-  `@base-ui-components/react`
+  `@base-ui/react`
 - the `radix-ui` dependency the CLI added was removed again
 
 The result contains no Radix code. See `docs/ui-system.md`.

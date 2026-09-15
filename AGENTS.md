@@ -19,7 +19,7 @@ This file applies to any coding agent (Claude Code, Codex CLI, or another).
 6. Never run Claude Code, Codex CLI or any other agent process inside `apps/api`,
    `apps/web` or `apps/collaboration`. Use `apps/worker` with an isolated sandbox.
 7. Never add a second general-purpose UI component framework. Primitives come from
-   `@base-ui-components/react`; components come from the shadcn registry and are
+   `@base-ui/react`; components come from the shadcn registry and are
    adapted.
 8. Never commit secrets. `.env` is ignored; `.env.example` documents every
    variable.

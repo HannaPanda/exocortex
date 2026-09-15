@@ -120,7 +120,7 @@ under `:root[data-theme='light']` without touching components.
    pnpm dlx shadcn@4.16.1 add <component>
    ```
 5. **Adapt the installed source:**
-   - replace Radix primitives with `@base-ui-components/react`
+   - replace Radix primitives with `@base-ui/react`
    - replace the `asChild`/`Slot` pattern with Base UI's `useRender` and a
      `render` prop
    - drop `dark:` variants (the tokens already encode the dark theme)
