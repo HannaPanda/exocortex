@@ -8,10 +8,11 @@ import {
 } from '@exocortex/contracts';
 import { type Prisma, type PrismaClient } from '@exocortex/database';
 import {
+  type AppliedDocumentState,
+  applyProseMirrorDocumentToState,
   bindPageLinkIdentities,
   EXOCORTEX_SCHEMA_VERSION,
   leadingTitleHeading,
-  markdownToYjsState,
   parseMarkdown,
   type ProseMirrorDocument,
   type ProseMirrorNode,
@@ -203,7 +204,7 @@ export class DocumentContentService {
           ? `${currentMarkdown}\n\n${incoming.markdown}`
           : `${incoming.markdown}\n\n${currentMarkdown}`;
 
-    let imported: ReturnType<typeof markdownToYjsState>;
+    let applied: AppliedDocumentState;
     /**
      * What an open session has to be told. For `replace` that is the finished
      * document; for `append` and `prepend` it is only the incoming Markdown, so
@@ -214,11 +215,21 @@ export class DocumentContentService {
     try {
       const bind = (document: ProseMirrorDocument): ProseMirrorDocument =>
         bindPageLinkIdentities(document, (title) => identities.identityFor(title));
-      imported = markdownToYjsState(effectiveMarkdown, { transformDocument: bind });
-      liveUpdate =
-        input.request.mode === 'replace'
-          ? imported.proseMirrorJson
-          : bind(parseMarkdown(incoming.markdown).document);
+      liveUpdate = bind(parseMarkdown(incoming.markdown).document);
+      /*
+       * The stored state is *edited*, never rebuilt from the Markdown: the same
+       * edit the open session is handed below is applied to the same document
+       * here, so both sides stay one document with one history (ADR-004/005).
+       * Storing freshly built state instead would read back correctly and still
+       * lose the page later -- a copy of the previous document merges as an
+       * unrelated one and Yjs keeps both halves. See
+       * `applyProseMirrorDocumentToState`.
+       */
+      applied = applyProseMirrorDocumentToState(
+        existing.yjsState,
+        liveUpdate,
+        input.request.mode,
+      );
     } catch (error) {
       this.logger.warn('Document content write rejected: markdown could not be parsed', {
         documentId: input.documentId,
@@ -243,11 +254,11 @@ export class DocumentContentService {
       await tx.documentContent.update({
         where: { documentId: input.documentId },
         data: {
-          yjsState: Buffer.from(imported.yjsState),
+          yjsState: Buffer.from(applied.yjsState),
           schemaVersion: EXOCORTEX_SCHEMA_VERSION,
           yjsUpdatedAt: now,
-          proseMirrorJson: imported.proseMirrorJson as unknown as Prisma.InputJsonObject,
-          plainText: imported.plainText,
+          proseMirrorJson: applied.proseMirrorJson as unknown as Prisma.InputJsonObject,
+          plainText: applied.plainText,
           markdown: effectiveMarkdown,
           /*
            * `materializedAt` is deliberately *not* moved forward here.

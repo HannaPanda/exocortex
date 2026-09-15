@@ -148,6 +148,50 @@ export function applyProseMirrorDocumentToYDoc(
   }
 }
 
+/** What a write leaves behind: the new state and the two views derived from it. */
+export interface AppliedDocumentState {
+  /** The stored state with the write applied as an edit, history intact. */
+  yjsState: Uint8Array;
+  /** ProseMirror JSON derived from that state, not from the input. */
+  proseMirrorJson: ProseMirrorDocument;
+  /** Plain text derived from the same state. */
+  plainText: string;
+}
+
+/**
+ * Applies a ProseMirror document to *stored* binary state and returns the new
+ * state.
+ *
+ * This is what a write that does not come from the editor must use. Building
+ * fresh state with `proseMirrorJsonToYjsState` and storing that instead looks
+ * equivalent -- the page reads back exactly the same -- but it throws the
+ * document's identity away: the new state shares no history with the old one,
+ * so the old content is not *deleted*, it is merely absent. Any copy of the
+ * previous document that shows up afterwards (a browser tab holding it in
+ * memory, an `y-indexeddb` store, a collaboration session that loaded before
+ * the write) merges as an unrelated document, and Yjs keeps both sides: the
+ * page ends up carrying its content twice.
+ *
+ * Editing the stored state instead leaves tombstones for everything `replace`
+ * removed, which is what makes a late-arriving copy converge on the write
+ * rather than resurrect what it replaced.
+ */
+export function applyProseMirrorDocumentToState(
+  state: Uint8Array,
+  document: ProseMirrorDocument,
+  mode: YjsApplyMode = 'replace',
+): AppliedDocumentState {
+  const doc = yjsStateToDocument(state);
+  try {
+    applyProseMirrorDocumentToYDoc(doc, document, mode);
+    const yjsState = Y.encodeStateAsUpdate(doc);
+    const proseMirrorJson = yjsStateToProseMirrorJson(yjsState);
+    return { yjsState, proseMirrorJson, plainText: serializePlainText(proseMirrorJson) };
+  } finally {
+    doc.destroy();
+  }
+}
+
 export interface TrimStrayParagraphsResult {
   /** Empty paragraphs removed from the top of the document. */
   leading: number;

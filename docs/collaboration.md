@@ -49,10 +49,23 @@ hiding inside a persistence hook.)
 ## Writes that do not come from an editor
 
 `POST /api/documents/:documentId/content` (humans, MCP, the built-in AI) and a
-snapshot restore write the database directly. That is only the whole story while
-nobody has the page open — an open session holds its own copy in memory and
-would autosave it back over the change. So the API hands the same change to this
-process afterwards, over a private route (ADR-016):
+snapshot restore write the database directly.
+
+That database write **edits the stored state**
+(`applyProseMirrorDocumentToState`); it never stores freshly built state from
+the incoming Markdown. Both produce a page that reads back correctly, and only
+one of them survives contact with a copy: fresh state shares no history with
+what it replaced, so the old content is absent rather than deleted, and the
+first copy that reconnects — a tab that still holds the document, its
+`y-indexeddb` store, a session that loaded before the write — merges as an
+unrelated document and Yjs keeps both halves. Pages written that way came back
+carrying their content twice (2026-09-15). Editing the stored state leaves
+tombstones, which is what makes a late copy converge on the write.
+
+Writing the database is only the whole story while nobody has the page open — an
+open session holds its own copy in memory and would autosave it back over the
+change. So the API hands the same change to this process afterwards, over a
+private route (ADR-016):
 
 ```
 POST http://127.0.0.1:3212/internal/documents/:documentId/content

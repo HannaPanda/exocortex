@@ -8,6 +8,7 @@ import { serializeMarkdown } from './markdown/serialize';
 import { collectBlockIds, serializePlainText } from './plain-text';
 import { createEmptyDocument } from './schema';
 import {
+  applyProseMirrorDocumentToState,
   applyProseMirrorDocumentToYDoc,
   createEmptyYjsState,
   markdownToYjsState,
@@ -153,6 +154,68 @@ describe('applying content to a live document', () => {
 
     editor.destroy();
     server.destroy();
+  });
+
+  /**
+   * The defect this guards against, seen on live pages: a write stored freshly
+   * built state instead of editing the stored document. Every copy of the page
+   * that was still around -- a tab holding it in memory, the `y-indexeddb`
+   * store behind it -- then merged as an unrelated document, and the page came
+   * back carrying its content twice.
+   */
+  it('cannot be undone by a stale copy of the document it replaced', () => {
+    const stored = markdownToYjsState('Alter Absatz.\n').yjsState;
+
+    // What a browser tab that loaded the page before the write still holds.
+    // Two identical copies: one syncs against the fixed write, the other shows
+    // what the same copy did to the write this replaced.
+    const stale = new Y.Doc();
+    Y.applyUpdate(stale, stored);
+    const staleAgain = new Y.Doc();
+    Y.applyUpdate(staleAgain, stored);
+
+    const applied = applyProseMirrorDocumentToState(
+      stored,
+      parseMarkdown('Neuer Absatz.\n').document,
+      'replace',
+    );
+    expect(applied.plainText).toBe('Neuer Absatz.');
+
+    // The stale copy reconnects and both sides sync, as Hocuspocus would.
+    const server = new Y.Doc();
+    Y.applyUpdate(server, applied.yjsState);
+    Y.applyUpdate(server, Y.encodeStateAsUpdate(stale, Y.encodeStateVector(server)));
+    Y.applyUpdate(stale, Y.encodeStateAsUpdate(server, Y.encodeStateVector(stale)));
+
+    expect(markdownOf(server)).not.toContain('Alter Absatz.');
+    expect(markdownOf(stale)).toBe(markdownOf(server));
+
+    // And the same write built as fresh state is what used to double the page.
+    const rebuilt = new Y.Doc();
+    Y.applyUpdate(rebuilt, proseMirrorJsonToYjsState(parseMarkdown('Neuer Absatz.\n').document));
+    Y.applyUpdate(rebuilt, Y.encodeStateAsUpdate(staleAgain, Y.encodeStateVector(rebuilt)));
+    expect(markdownOf(rebuilt)).toContain('Alter Absatz.');
+    expect(markdownOf(rebuilt)).toContain('Neuer Absatz.');
+
+    stale.destroy();
+    staleAgain.destroy();
+    server.destroy();
+    rebuilt.destroy();
+  });
+
+  it('inserts without touching the rest when appending to stored state', () => {
+    const stored = markdownToYjsState('Erster Absatz.\n').yjsState;
+    const applied = applyProseMirrorDocumentToState(
+      stored,
+      parseMarkdown('Zweiter Absatz.\n').document,
+      'append',
+    );
+    expect(applied.plainText).toBe('Erster Absatz.\nZweiter Absatz.');
+
+    // The block ids of what was already there survive, because those nodes were
+    // never rewritten: comment anchors and references point at them.
+    const before = collectBlockIds(yjsStateToProseMirrorJson(stored));
+    expect(collectBlockIds(applied.proseMirrorJson)).toEqual(expect.arrayContaining(before));
   });
 
   it('refuses an invalid document instead of clearing the live one', () => {
