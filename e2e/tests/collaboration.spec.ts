@@ -180,9 +180,12 @@ test.describe('collaborative editing', () => {
       });
 
       await first.page.goto(`/arbeitsbereich/${workspaceId}/seite/${documentId}`);
-      await expect(first.page.getByTestId('editor-surface')).toBeVisible({ timeout: 30_000 });
       // Nothing can have arrived: the socket is down and there is no local copy.
-      await expect(first.page.getByTestId('editor-surface')).not.toContainText(marker);
+      // The editor does not even mount in that state -- it waits for the stored
+      // document rather than building itself over an empty one, which is what
+      // used to leave a stray paragraph behind on every visit.
+      await expect(first.page.getByText('Editor wird verbunden')).toBeVisible({ timeout: 30_000 });
+      await expect(first.page.getByTestId('editor-surface')).toHaveCount(0);
 
       await first.page.waitForTimeout((TICKET_TTL_SECONDS + 15) * 1_000);
       socketBlocked = false;
