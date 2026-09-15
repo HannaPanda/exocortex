@@ -2,6 +2,7 @@ export * from './client';
 export * from './database-query';
 export * from './entities';
 export * from './order-key';
+export * from './overview-source';
 export * from './project-source';
 export * from './render-source';
 export * from './search';

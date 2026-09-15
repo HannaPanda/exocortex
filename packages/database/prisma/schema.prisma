@@ -520,6 +520,17 @@ enum AiRuleMode {
   ON_DEMAND
 }
 
+/// Overview pages (issue #53, ADR-028): a page whose text about its sub-pages is
+/// composed rather than written. The mode sits on the document because being an
+/// overview is a property of the page, not a rule somebody configured beside it.
+enum OverviewMode {
+  /// An ordinary page. Nothing is composed and nothing is digested.
+  OFF
+  /// The page lists its children and, when a model is available, opens with a
+  /// composed paragraph. Its children get a digest so it can quote them.
+  AUTO
+}
+
 model Document {
   id          String         @id @default(cuid(2))
   workspaceId String
@@ -575,7 +586,12 @@ model Document {
   /// Lower runs first when several ALWAYS rule pages exist.
   aiRulePriority Int        @default(100)
 
+  /// Whether this page is an overview of its sub-pages (issue #53, ADR-028).
+  /// `OFF` is the default, so no existing page starts composing by accident.
+  overviewMode   OverviewMode @default(OFF)
+
   content     DocumentContent?
+  digest      DocumentDigest?
   snapshots   DocumentSnapshot[]
   searchIndex DocumentSearchIndex?
   embeddings  DocumentEmbedding[]
@@ -625,6 +641,7 @@ model Document {
   @@index([workspaceId, parentId, orderKey])
   @@index([workspaceId, archivedAt])
   @@index([workspaceId, aiRuleMode])
+  @@index([workspaceId, overviewMode])
   @@index([coverAttachmentId])
   @@map("document")
 }
@@ -652,6 +669,56 @@ model DocumentContent {
 
   @@index([linksIndexedAt])
   @@map("document_content")
+}
+
+/// Derived text about one page (issue #53, ADR-028).
+///
+/// Two halves that are produced together and kept apart. `summary` is what the
+/// overview page above this one quotes; `intro` is what this page says about
+/// its own children, and it is null unless the page is an overview.
+///
+/// Both carry the hash of what produced them, which is the whole staleness
+/// mechanism: a refresh whose input hash is unchanged does nothing and costs
+/// nothing, and a row whose hash no longer matches the live input is shown with
+/// a "veraltet" badge rather than hidden. Nothing here is canonical; the row can
+/// be deleted at any time and the next refresh rebuilds it.
+model DocumentDigest {
+  documentId String   @id
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  /// Two or three sentences about this page. Null until a run produced one.
+  summary          String?
+  /// Hash of the material `summary` was composed from: this page's text.
+  summaryInputHash String?
+  summaryAt        DateTime?
+
+  /// The paragraph this page's overview opens with. Null unless the page is an
+  /// overview, and null on an overview whose composition has not run yet, which
+  /// is the state that renders as the plain child list.
+  intro          String?
+  /// Hash of the material `intro` was composed from: the ordered child ids,
+  /// titles and summary hashes. A deleted child changes this the same way an
+  /// edited one does, which is the point.
+  introInputHash String?
+  introAt        DateTime?
+
+  /// Model slug of the last successful run, for the footer and for debugging a
+  /// composition that reads oddly.
+  model String?
+
+  /// Why the last run did not produce anything, cleared by the next one that
+  /// does. A failure is never a reason to drop what is already there: an
+  /// overview from yesterday beats an empty page.
+  lastError  String?
+  failedAt   DateTime?
+  /// Whether a cover has already been offered for this page, so an overview
+  /// gets its picture once rather than on every refresh (ADR-028).
+  coverAskedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("document_digest")
 }
 
 enum SnapshotReason {

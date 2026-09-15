@@ -44,6 +44,17 @@ export const aiRuleModeSchema = z.enum(['off', 'always', 'on_demand']);
 export type AiRuleMode = z.infer<typeof aiRuleModeSchema>;
 
 /**
+ * Whether a page is an overview of its sub-pages (issue #53, ADR-028).
+ *
+ * `auto` means the page lists its children and, when a model is available,
+ * opens with a composed paragraph. Neither is written into the page body: the
+ * composition is a derived view beside it, so switching this back to `off`
+ * takes nothing away that a human wrote.
+ */
+export const overviewModeSchema = z.enum(['off', 'auto']);
+export type OverviewMode = z.infer<typeof overviewModeSchema>;
+
+/**
  * Vertical crop of the cover image, in percent of its height: 0 shows the top
  * edge, 100 the bottom, 50 the middle. The cover is always full width at a
  * fixed height, so this is the only framing decision a page offers.
@@ -79,6 +90,7 @@ const updateDocumentFieldsSchema = z.object({
   aiRuleMode: aiRuleModeSchema.optional(),
   aiRuleTrigger: z.string().trim().max(300).nullable().optional(),
   aiRulePriority: z.number().int().optional(),
+  overviewMode: overviewModeSchema.optional(),
 });
 export const updateDocumentRequestSchema = updateDocumentFieldsSchema.refine(
   (value) =>
@@ -90,7 +102,8 @@ export const updateDocumentRequestSchema = updateDocumentFieldsSchema.refine(
     value.coverPosition !== undefined ||
     value.aiRuleMode !== undefined ||
     value.aiRuleTrigger !== undefined ||
-    value.aiRulePriority !== undefined,
+    value.aiRulePriority !== undefined ||
+    value.overviewMode !== undefined,
   { message: 'At least one field must be provided' },
 );
 export type UpdateDocumentRequest = z.infer<typeof updateDocumentRequestSchema>;
@@ -119,6 +132,8 @@ export const documentSummarySchema = z.object({
   icon: z.string().nullable(),
   iconColor: z.enum(DOCUMENT_ICON_COLORS).nullable(),
   layout: documentLayoutSchema,
+  /** See `overviewModeSchema`. In the summary so a tree can mark one. */
+  overviewMode: overviewModeSchema,
   coverAttachmentId: idSchema.nullable(),
   coverPosition: coverPositionSchema,
   orderKey: z.string(),

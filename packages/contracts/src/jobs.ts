@@ -14,6 +14,7 @@ export const QUEUE_NAMES = {
   maintenance: 'maintenance',
   attachmentText: 'attachment-text',
   documentCover: 'document-cover',
+  documentOverview: 'document-overview',
   calendarSync: 'calendar-sync',
   memoryCapture: 'memory-capture',
   memoryConsolidate: 'memory-consolidate',
@@ -30,6 +31,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.maintenance,
   QUEUE_NAMES.attachmentText,
   QUEUE_NAMES.documentCover,
+  QUEUE_NAMES.documentOverview,
   QUEUE_NAMES.calendarSync,
   QUEUE_NAMES.memoryCapture,
   QUEUE_NAMES.memoryConsolidate,
@@ -192,6 +194,17 @@ export const maintenanceJobSchema = jobBase.extend({
      * costs one query.
      */
     'rematerialize-stale-content',
+    /**
+     * Hands every overview page whose composition is behind its children back
+     * to the `document-overview` queue, in small batches (issue #53, ADR-028).
+     *
+     * The same net `rematerialize-stale-content` is under materialization, and
+     * for the same reason: a refresh is enqueued by whoever changed a page, and
+     * an enqueue lost in silence leaves an overview describing a tree that has
+     * moved on. A run costs one indexed query while nothing is behind, and the
+     * job itself does nothing when the input hash is unchanged.
+     */
+    'refresh-stale-overviews',
   ]),
   /** Optional scope; `null` means all workspaces. */
   workspaceId: idSchema.nullable().default(null),
@@ -227,6 +240,33 @@ export const documentCoverJobSchema = jobBase.extend({
   prompt: z.string().trim().min(1).max(1_000),
 });
 export type DocumentCoverJob = z.infer<typeof documentCoverJobSchema>;
+
+/**
+ * Refreshing one page's derived text (issue #53, ADR-028).
+ *
+ * One job is one page and does both halves of its `DocumentDigest` row: the
+ * summary the overview above it quotes, and, when the page is an overview
+ * itself, the paragraph it opens with. They share a job because they share a
+ * model call.
+ *
+ * Carries no user. Nothing here is written through the REST API: a digest is a
+ * derived projection beside the page, the same kind of row materialization and
+ * the search index write directly (ADR-028). The one act that does need a human
+ * is the cover, and that goes through the cover job, which has one.
+ *
+ * `depth` bounds the walk up the tree. A composition changes the page's own
+ * summary, which changes its parent's input, and the chain has to stop
+ * somewhere even if the tree has a cycle nothing else noticed.
+ */
+export const documentOverviewJobSchema = jobBase.extend({
+  documentId: idSchema,
+  workspaceId: idSchema,
+  reason: z.enum(['page_changed', 'child_changed', 'marked', 'requested', 'cascade', 'sweep']),
+  /** Recomposes even when the input hash says nothing changed. The button. */
+  force: z.boolean().default(false),
+  depth: z.number().int().min(0).max(16).default(0),
+});
+export type DocumentOverviewJob = z.infer<typeof documentOverviewJobSchema>;
 
 /**
  * One pass over the calendar links of one account, or of every account.
@@ -395,6 +435,7 @@ export const JOB_SCHEMAS = {
   [QUEUE_NAMES.maintenance]: maintenanceJobSchema,
   [QUEUE_NAMES.attachmentText]: attachmentTextJobSchema,
   [QUEUE_NAMES.documentCover]: documentCoverJobSchema,
+  [QUEUE_NAMES.documentOverview]: documentOverviewJobSchema,
   [QUEUE_NAMES.calendarSync]: calendarSyncJobSchema,
   [QUEUE_NAMES.memoryCapture]: memoryCaptureJobSchema,
   [QUEUE_NAMES.memoryConsolidate]: memoryConsolidateJobSchema,
@@ -411,6 +452,7 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.maintenance]: MaintenanceJob;
   [QUEUE_NAMES.attachmentText]: AttachmentTextJob;
   [QUEUE_NAMES.documentCover]: DocumentCoverJob;
+  [QUEUE_NAMES.documentOverview]: DocumentOverviewJob;
   [QUEUE_NAMES.calendarSync]: CalendarSyncJob;
   [QUEUE_NAMES.memoryCapture]: MemoryCaptureJob;
   [QUEUE_NAMES.memoryConsolidate]: MemoryConsolidateJob;

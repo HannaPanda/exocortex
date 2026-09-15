@@ -60,6 +60,13 @@ export const QUEUE_JOB_OPTIONS: Partial<Record<QueueName, JobsOptions>> = {
   [QUEUE_NAMES.projectBuild]: {
     attempts: 1,
   },
+  // A composition is a paid call whose failures the processor records itself
+  // (issue #53, ADR-028), and whose input is unchanged on a retry: the second
+  // attempt would buy the same paragraph twice. The next change to the page
+  // enqueues another run anyway, and the hourly sweep is underneath that.
+  [QUEUE_NAMES.documentOverview]: {
+    attempts: 1,
+  },
 };
 
 /** Debounce window for document materialization. */
@@ -369,6 +376,11 @@ export class QueueRegistry {
     // enqueues the job that derives everything else, and a lost enqueue is
     // lost in silence. A run costs one indexed query while nothing is behind.
     await schedule('rematerialize-stale-content', { pattern: '25 * * * *' });
+    // Hourly, twenty minutes after the materialization net so the two never
+    // run together: the same kind of safety net one layer further out. An
+    // overview is composed from digests that materialization produces, and a
+    // sweep that ran first would compose from yesterday's text (issue #53).
+    await schedule('refresh-stale-overviews', { pattern: '45 * * * *' });
     this.logger.info('Maintenance schedulers registered');
   }
 

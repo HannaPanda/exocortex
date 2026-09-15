@@ -419,6 +419,51 @@ export const settingsSchema = z.object({
   'automations.runRetentionDays': z.number().int().min(0).max(3_650).default(30),
 
   /**
+   * Whether overview pages compose their text (issue #53, ADR-028).
+   *
+   * Defaults **on**, and what it switches is only the composing: an overview
+   * page always lists its children, because that list is read from the tree and
+   * costs nothing. Off means no digest and no paragraph is produced, which is
+   * the setting for a deployment that wants the navigation without the spend.
+   */
+  'overview.enabled': z.boolean().default(true),
+  /**
+   * Model that writes the digests and the compositions. Null falls back to the
+   * deployment's default model.
+   *
+   * Worth setting to something small: the work is two or three sentences at a
+   * time, hundreds of times, and it never needs the model that answers
+   * questions about a codebase.
+   */
+  'overview.modelSlug': z.string().trim().min(1).max(120).nullable().default(null),
+  /**
+   * How long a page has to stay quiet before its overview is recomposed.
+   *
+   * Much longer than an automation's debounce, on purpose: nobody is waiting
+   * for an overview paragraph, and a page being worked on for an afternoon
+   * should cost one composition rather than one per pause for coffee.
+   */
+  'overview.debounceSeconds': z.number().int().min(30).max(3_600).default(300),
+  /**
+   * Children a composition may quote. Beyond it the page still lists every
+   * child, and the model is not asked: a prompt with two hundred digests in it
+   * is expensive, and the paragraph it produces says nothing a list does not.
+   */
+  'overview.maxChildren': z.number().int().min(5).max(200).default(40),
+  /** Characters of a page's own text that reach its digest prompt. */
+  'overview.maxPageChars': z.number().int().min(500).max(40_000).default(6_000),
+  /**
+   * Whether an overview page with no cover gets one drawn from its own
+   * composition (ADR-028).
+   *
+   * Defaults on, but it can do nothing on its own: image generation is off by
+   * default and needs a model slug, so this only takes effect in a deployment
+   * that has already decided to pay for pictures. Offered once per page, never
+   * again, so a removed cover stays removed.
+   */
+  'overview.generateCovers': z.boolean().default(true),
+
+  /**
    * Whether this workspace may render pages into files (issue #44, ADR-026).
    *
    * Defaults **on**, unlike automations: a render sends nothing out of the
@@ -642,6 +687,17 @@ export const SETTING_SCOPES = {
   'automations.webhookTimeoutSeconds': 'deployment',
   'automations.runRetentionDays': 'deployment',
   /**
+   * A workspace may switch its own overviews off, and a deployment that
+   * switches them off switches every workspace off with it.
+   */
+  'overview.enabled': 'workspace',
+  'overview.modelSlug': 'workspace',
+  /** How often this host pays for a composition is load on the host. */
+  'overview.debounceSeconds': 'deployment',
+  'overview.maxChildren': 'deployment',
+  'overview.maxPageChars': 'deployment',
+  'overview.generateCovers': 'workspace',
+  /**
    * A workspace may switch its own rendering off, and a deployment that
    * switches it off switches every workspace off with it.
    */
@@ -696,6 +752,7 @@ export const workspaceSettingKeySchema = z.enum(
  */
 export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
   'automations.enabled',
+  'overview.enabled',
   'render.enabled',
   'projects.enabled',
   'ai.maxOutputTokens',

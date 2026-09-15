@@ -38,6 +38,7 @@ export const APPLICATION_EVENT_TYPES = [
   'ai.run.phase',
   'document.content.replaced',
   'document.cover.generated',
+  'document.overview.updated',
   'comment.created',
   'comment.updated',
   'comment.resolved',
@@ -197,6 +198,23 @@ export const documentCoverGeneratedPayloadSchema = z.object({
 });
 
 /**
+ * An overview page's composition was rebuilt, or tried to be (issue #53).
+ *
+ * Carries no text. The page reads the composition through its own route, which
+ * also carries the entries and the staleness the panel renders; an event that
+ * repeated the paragraph would be a second copy able to disagree with it.
+ *
+ * `unchanged` is the common case and still travels: it is what turns the
+ * "wird aktualisiert …" state off after a refresh that found nothing to do.
+ */
+export const documentOverviewUpdatedPayloadSchema = z.object({
+  documentId: idSchema,
+  status: z.enum(['ready', 'unchanged', 'failed']),
+  /** German, user-facing. Null unless it failed. */
+  error: z.string().nullable().default(null),
+});
+
+/**
  * A comment appeared, changed or was resolved (issue #18).
  *
  * The whole comment travels, not just its id: the panel would otherwise refetch
@@ -293,6 +311,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('ai.run.phase', aiRunPhasePayloadSchema),
   envelope('document.content.replaced', documentContentReplacedPayloadSchema),
   envelope('document.cover.generated', documentCoverGeneratedPayloadSchema),
+  envelope('document.overview.updated', documentOverviewUpdatedPayloadSchema),
   envelope('comment.created', commentEventPayloadSchema),
   envelope('comment.updated', commentEventPayloadSchema),
   envelope('comment.resolved', commentEventPayloadSchema),

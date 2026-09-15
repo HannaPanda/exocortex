@@ -290,6 +290,7 @@ export interface DatabaseQueryRowRecord {
   icon: string | null;
   iconColor: string | null;
   layout: 'NARROW' | 'WIDE' | 'FULL';
+  overviewMode: 'OFF' | 'AUTO';
   coverAttachmentId: string | null;
   coverPosition: number;
   orderKey: string;
@@ -328,6 +329,7 @@ export async function queryDatabaseRows(
     SELECT
       document.id, document."workspaceId", document."parentId", document."type"::text AS "type",
       document.title, document.icon, document."iconColor", document."layout"::text AS "layout",
+      document."overviewMode"::text AS "overviewMode",
       document."coverAttachmentId", document."coverPosition",
       document."orderKey", document."createdById", document."updatedById",
       document."createdAt", document."updatedAt", document."archivedAt"
