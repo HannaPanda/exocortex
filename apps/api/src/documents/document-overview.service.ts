@@ -78,9 +78,12 @@ export class DocumentOverviewService {
     const children = await readOverviewChildren(this.prisma, documentId);
     const settings = await this.settings.getForWorkspace(context.workspaceId);
     const composable = settings['ai.enabled'] && settings['overview.enabled'];
+    // Capped exactly as the worker caps it. The hash is compared against one
+    // the worker wrote, and a page longer than the cap would otherwise hash
+    // differently here and show as stale for ever.
     const liveHash = overviewInputHash({
       title: row.title,
-      ownText: row.content?.markdown ?? '',
+      ownText: (row.content?.markdown ?? '').slice(0, settings['overview.maxPageChars']),
       children,
     });
 
