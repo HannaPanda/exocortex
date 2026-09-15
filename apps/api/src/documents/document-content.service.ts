@@ -333,7 +333,7 @@ export class DocumentContentService {
     this.logger.info('Document content written', {
       documentId: input.documentId,
       mode: input.request.mode,
-      byteSize: imported.yjsState.byteLength,
+      byteSize: applied.yjsState.byteLength,
       snapshotId,
       appliedToLiveSession: live.applied,
       correlationId: input.correlationId,
@@ -347,7 +347,7 @@ export class DocumentContentService {
       // `expectedYjsUpdatedAt` on the next write.
       yjsUpdatedAt: live.yjsUpdatedAt ?? now.toISOString(),
       schemaVersion: EXOCORTEX_SCHEMA_VERSION,
-      byteSize: imported.yjsState.byteLength,
+      byteSize: applied.yjsState.byteLength,
       appliedToLiveSession: live.applied,
       warnings,
     };
