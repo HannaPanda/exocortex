@@ -179,6 +179,19 @@ export const maintenanceJobSchema = jobBase.extend({
      * are ordinary attachments and are never touched.
      */
     'reap-project-builds',
+    /**
+     * Hands every content row whose derived data is behind its canonical Yjs
+     * state back to the materialization queue, in small batches.
+     *
+     * Materialization is enqueued by whoever wrote the state, and an enqueue
+     * that is lost is lost silently: the page keeps its old Markdown, plain
+     * text and reference index for ever, and nothing reads those more than the
+     * search index and the built-in AI's page context. This is the sweep that
+     * notices. It is a no-op once every row has caught up, and the
+     * materialization job skips a row that is already current, so a duplicate
+     * costs one query.
+     */
+    'rematerialize-stale-content',
   ]),
   /** Optional scope; `null` means all workspaces. */
   workspaceId: idSchema.nullable().default(null),

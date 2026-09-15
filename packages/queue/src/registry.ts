@@ -506,6 +506,23 @@ export class QueueRegistry {
         },
       },
     );
+    // Hourly, off the hour so it never lands with the nightly sweeps. The
+    // safety net under materialization: whoever writes the canonical state
+    // enqueues the job that derives everything else, and a lost enqueue is
+    // lost in silence. A run costs one indexed query while nothing is behind.
+    await queue.upsertJobScheduler(
+      'rematerialize-stale-content',
+      { pattern: '25 * * * *' },
+      {
+        name: QUEUE_NAMES.maintenance,
+        data: {
+          correlationId,
+          task: 'rematerialize-stale-content',
+          workspaceId: null,
+          documentId: null,
+        },
+      },
+    );
     this.logger.info('Maintenance schedulers registered');
   }
 

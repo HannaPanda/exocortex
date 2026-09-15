@@ -21,7 +21,7 @@ import { loadWorkerEnv } from '@exocortex/config';
 import {
   AI_RUN_HEARTBEAT_STALE_MS,
   type PdfMetadata,
-  type QUEUE_NAMES,
+  QUEUE_NAMES,
   type Settings,
   settingsSchema,
 } from '@exocortex/contracts';
@@ -389,6 +389,74 @@ describe('document materialization', () => {
       ),
     ).resolves.toBeUndefined();
   }, 30_000);
+
+  /**
+   * The sweep underneath the enqueue.
+   *
+   * Materialization is enqueued by whoever writes the canonical state, and a
+   * lost enqueue is lost silently: the page keeps its old projection for ever,
+   * and the search index and the AI's page context read the projection. This
+   * reproduces that by writing a state without enqueuing anything.
+   */
+  describe('rematerialize-stale-content', () => {
+    async function enqueuedDocumentIds(): Promise<string[]> {
+      const queue = queues.getQueue(QUEUE_NAMES.documentMaterialization);
+      const jobs = await queue.getJobs(['waiting', 'delayed', 'prioritized', 'active']);
+      return jobs.map((job) => job.data.documentId);
+    }
+
+    it('hands a page whose derived data is behind back to the queue', async () => {
+      const documentId = await createDocument();
+      await prisma.documentContent.update({
+        where: { documentId },
+        data: { materializedAt: new Date(Date.now() - 60_000) },
+      });
+
+      await createMaintenanceProcessor({
+        search,
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        settings: stubSettings(),
+      })(
+        contextFor({
+          correlationId: 'test-rematerialize-1',
+          task: 'rematerialize-stale-content',
+          workspaceId,
+          documentId: null,
+        }).context,
+      );
+
+      expect(await enqueuedDocumentIds()).toContain(documentId);
+    }, 60_000);
+
+    it('leaves a page alone whose derived data is current', async () => {
+      const documentId = await createDocument();
+      await prisma.documentContent.update({
+        where: { documentId },
+        data: { materializedAt: new Date(Date.now() + 60_000) },
+      });
+
+      await createMaintenanceProcessor({
+        search,
+        prisma,
+        queues,
+        storage: recordingStorage(),
+        bus,
+        settings: stubSettings(),
+      })(
+        contextFor({
+          correlationId: 'test-rematerialize-2',
+          task: 'rematerialize-stale-content',
+          workspaceId,
+          documentId: null,
+        }).context,
+      );
+
+      expect(await enqueuedDocumentIds()).not.toContain(documentId);
+    }, 60_000);
+  });
 });
 
 describe('search indexing', () => {

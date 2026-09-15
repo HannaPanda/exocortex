@@ -15,6 +15,7 @@ import {
   reapRenderJobs,
   reapStaleAiRuns,
 } from './maintenance-tasks/cleanup';
+import { rematerializeStaleContent } from './maintenance-tasks/content';
 import { type MaintenanceTask } from './maintenance-tasks/context';
 import { backfillLinks, repairLinks, resolveLinks } from './maintenance-tasks/links';
 import { consolidateMemories, decayMemoryFacts } from './maintenance-tasks/memory-facts';
@@ -76,6 +77,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'resolve-document-links': resolveLinks,
   'repair-document-links': repairLinks,
   'backfill-document-links': backfillLinks,
+  'rematerialize-stale-content': rematerializeStaleContent,
   'backfill-embeddings': backfillEmbeddings,
   'prune-memories': pruneMemories,
   'prune-invitations': pruneInvitations,
