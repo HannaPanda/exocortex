@@ -51,6 +51,7 @@ import {
   useRestoreDocument,
   useSessionQuery,
   useUpdateDocument,
+  useWorkspaces,
 } from '@/lib/api/queries';
 
 import { useDocumentSession } from './document-session';
@@ -401,6 +402,8 @@ function DocumentTopBar({
   const router = useRouter();
   const archiveDocument = useArchiveDocument(workspaceId);
   const restoreDocument = useRestoreDocument(workspaceId);
+  const workspaces = useWorkspaces();
+  const workspaceName = workspaces.data?.find((workspace) => workspace.id === workspaceId)?.name;
 
   return (
     <div className="flex items-center gap-2 border-b border-border px-6 py-2">
@@ -408,6 +411,21 @@ function DocumentTopBar({
         aria-label="Pfad"
         className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground"
       >
+        {/* The workspace starts the path, so its overview is one click away
+            instead of two through the switcher. It is skipped while the list
+            is still loading rather than shown under a placeholder name. */}
+        {workspaceName === undefined ? null : (
+          <>
+            <Link
+              href={`/arbeitsbereich/${workspaceId}`}
+              className="flex max-w-32 items-center gap-1 truncate hover:text-foreground"
+              data-testid="breadcrumb-workspace"
+            >
+              <TruncatedText text={workspaceName} side="bottom" />
+            </Link>
+            <span aria-hidden>/</span>
+          </>
+        )}
         {detail.breadcrumb.map((entry) => (
           <React.Fragment key={entry.id}>
             <Link
