@@ -74,9 +74,8 @@ test.describe('editor', () => {
     const toolbar = page.getByTestId('selection-toolbar');
     await expect(toolbar).toBeVisible();
 
-    const controls = toolbar.locator('button');
-    await expect(controls.filter({ has: page.locator(':scope[tabindex="0"]') })).toHaveCount(1);
-    expect(await controls.count()).toBeGreaterThan(1);
+    await expect(toolbar.locator('button[tabindex="0"]')).toHaveCount(1);
+    expect(await toolbar.locator('button[tabindex="-1"]').count()).toBeGreaterThan(1);
 
     // Arrow keys move the roving focus; Tab would leave the bar altogether.
     await page.getByTestId('mark-bold').focus();
