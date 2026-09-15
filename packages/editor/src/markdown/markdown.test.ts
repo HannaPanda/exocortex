@@ -239,6 +239,44 @@ describe('markdown round trip', () => {
     }
   });
 
+  /**
+   * The page that found this read „*Text nach *[[Ziel]]*.*“: a wiki link owns
+   * its whole span, so the emphasis around it was closed right after a space.
+   * Markdown does not accept a closer there, the run reopened somewhere else,
+   * and the text came back carrying `italic` twice -- which the schema refuses,
+   * so the page could not be written back at all.
+   */
+  it('closes emphasis around a wiki link without leaving a space in front of it', () => {
+    const document: ProseMirrorDocument = {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            { type: 'text', text: 'Rezepte sind umgezogen nach ', marks: [{ type: 'italic' }] },
+            {
+              type: 'text',
+              text: 'Kochen und Backen',
+              marks: [
+                { type: 'italic' },
+                { type: 'link', attrs: { href: 'wiki:Kochen und Backen' } },
+              ],
+            },
+            { type: 'text', text: '.', marks: [{ type: 'italic' }] },
+          ],
+        },
+      ],
+    };
+
+    const markdown = serializeMarkdown(document);
+    expect(markdown).toContain('*Rezepte sind umgezogen nach* [[Kochen und Backen]]');
+    expect(() => parseMarkdown(markdown)).not.toThrow();
+    const marks = parseMarkdown(markdown).document.content?.[0]?.content?.map((child) =>
+      (child.marks ?? []).map((mark) => mark.type).join(','),
+    );
+    expect(marks?.every((entry) => entry !== 'italic,italic')).toBe(true);
+  });
+
   it('is stable across a second round trip', () => {
     const once = serializeMarkdown(parseMarkdown(KITCHEN_SINK_MARKDOWN).document);
     const twice = serializeMarkdown(parseMarkdown(once).document);

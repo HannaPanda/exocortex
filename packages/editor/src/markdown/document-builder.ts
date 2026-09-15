@@ -156,7 +156,12 @@ export class DocumentBuilder {
       this.addNode(type, attrs, text.length > 0 ? [{ type: 'text', text }] : undefined),
     addText: (text) => this.addText(text),
     openMark: (type, attrs) => {
-      this.marks = [...this.marks, attrs === undefined ? { type } : { type, attrs }];
+      // At most one mark of a type per text node: ProseMirror's schema refuses
+      // `italic,italic` outright, and Markdown nests the same emphasis easily
+      // enough (`*a *b* c*`) that a file can ask for it. The innermost one
+      // wins, which is the one a reader would see anyway.
+      const mark = attrs === undefined ? { type } : { type, attrs };
+      this.marks = [...this.marks.filter((open) => open.type !== type), mark];
     },
     closeMark: (type) => {
       this.marks = this.marks.filter((mark) => mark.type !== type);

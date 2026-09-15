@@ -180,8 +180,22 @@ async function main() {
   const prisma = createPrismaClient();
 
   try {
+    /*
+     * Even `--all-workspaces` means "all of them this token can open". The
+     * database knows about workspaces the token's user is not a member of, and
+     * a sweep that walks into one only finds out when the API refuses it.
+     */
+    const reachable = (await api(token, 'GET', '/api/workspaces')).workspaces.map(
+      (workspace) => workspace.id,
+    );
+    const requested = args.all ? reachable : args.workspaces;
+    const unreachable = requested.filter((id) => !reachable.includes(id));
+    if (unreachable.length > 0) {
+      throw new Error(`Kein Zugriff auf ${unreachable.join(', ')}.`);
+    }
+
     const { candidates, embeds, total } = await collectCandidates(prisma, {
-      workspaceIds: args.all || args.only !== null ? null : args.workspaces,
+      workspaceIds: args.only === null ? requested : null,
       only: args.only,
     });
     console.log(
@@ -190,6 +204,7 @@ async function main() {
     );
 
     const changed = [];
+    const unparsable = [];
     for (const document of candidates) {
       if (changed.length >= args.limit) break;
 
@@ -202,10 +217,25 @@ async function main() {
       console.log(`${args.apply ? '✓' : '·'} ${document.title}  (${document.id})`);
       if (!args.apply) continue;
 
-      const written = await api(token, 'POST', `/api/documents/${document.id}/content`, {
-        markdown: next,
-        mode: 'replace',
-      });
+      /*
+       * A page whose own content does not survive the Markdown round trip is
+       * left alone rather than allowed to stop the sweep. That is a defect in
+       * the serializer, not in this page's heading, and the run is more useful
+       * finishing and naming those pages than dying on the first one.
+       */
+      let written;
+      try {
+        written = await api(token, 'POST', `/api/documents/${document.id}/content`, {
+          markdown: next,
+          mode: 'replace',
+        });
+      } catch (error) {
+        if (!String(error.message).includes('-> 400')) throw error;
+        changed.pop();
+        unparsable.push(`${document.title} (${document.id})`);
+        console.log('    … nicht schreibbar, Markdown lässt sich nicht zurücklesen. Übersprungen.');
+        continue;
+      }
       console.log(`    Snapshot davor: ${written.snapshotId}`);
 
       const after = await api(token, 'GET', `/api/documents/${document.id}/export/markdown`);
@@ -222,6 +252,10 @@ async function main() {
         ? `\n${changed.length} Seiten bereinigt.`
         : `\n${changed.length} Seiten würden bereinigt. Mit --apply ausführen.`,
     );
+    if (unparsable.length > 0) {
+      console.log(`\n${unparsable.length} Seiten übersprungen, Markdown nicht zurücklesbar:`);
+      for (const entry of unparsable) console.log(`  · ${entry}`);
+    }
   } finally {
     await prisma.$disconnect();
   }

@@ -95,12 +95,27 @@ export function serializeMarkdown(
     const open: ProseMirrorMark[] = [];
     let result = '';
 
+    /*
+     * Closes marks down to `depth`, with any trailing space moved out of the
+     * way first.
+     *
+     * Markdown does not accept a closing delimiter that follows a space:
+     * `*kursiv und *` is literal text, and what comes back in is an emphasis
+     * run that opens somewhere else entirely -- on the page that found this,
+     * `*Text nach *[[Ziel]]*.*` reparsed into a text node carrying `italic`
+     * twice, which the schema refuses outright. So the space moves behind the
+     * delimiter, where it means the same thing and closes cleanly.
+     */
     const closeDownTo = (depth: number): void => {
+      if (open.length <= depth) return;
+      const trailing = /[ \t]+$/.exec(result)?.[0] ?? '';
+      if (trailing.length > 0) result = result.slice(0, -trailing.length);
       while (open.length > depth) {
         const mark = open.pop() as ProseMirrorMark;
         const serializer = registry.marks[mark.type] as MarkdownMarkSerializer;
         result += resolve(serializer.close, mark);
       }
+      result += trailing;
     };
 
     for (const child of children) {
