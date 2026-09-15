@@ -68,11 +68,24 @@ export interface AppPageProps extends React.ComponentPropsWithoutRef<'div'> {
  * is required alongside `flex-1 overflow-y-auto`: without it a flex child
  * never shrinks below its content height, so the `overflow-y-auto` never
  * actually engages (see docs/ui-system.md and issue #15).
+ *
+ * `relative` is load-bearing too, and less obvious. A visually hidden element
+ * (`sr-only`, a screen-reader-only label or table caption) is `position:
+ * absolute`; with no positioned ancestor its containing block is the document
+ * itself, so the browser places it at its static position measured from the
+ * top of the *page*. Deep inside a long scroll area that lands thousands of
+ * pixels below the viewport and stretches the document's scroll height, which
+ * reads as the page scrolling far past its own content into nothing. Making
+ * the scroll container the containing block keeps such elements inside it.
  */
 export function AppPage({ maxWidth, className, ...props }: AppPageProps) {
   return (
     <div
-      className={cn('mx-auto min-h-0 w-full flex-1 overflow-y-auto px-6 py-8', maxWidth, className)}
+      className={cn(
+        'relative mx-auto min-h-0 w-full flex-1 overflow-y-auto px-6 py-8',
+        maxWidth,
+        className,
+      )}
       {...props}
     />
   );
