@@ -580,16 +580,21 @@ being countable.
 
 Two components, and which one you reach for is a rule rather than a preference.
 
-`ExocortexLogo` is the mark in a square box, and it is what the product chrome
-wears: the header, an avatar, a tab, a launcher tile. `ExocortexWordmark` is the
-full lockup, and it appears at the front door and nowhere inside the
-application: the login and invitation screens, a rendered cover page, anything
-that has to name the product to someone who does not yet know it.
+`ExocortexWordmark` is the full lockup: mark, rule, name. It appears exactly
+once per screen and always in the top-left corner, at `h-7` in the application
+header and `h-10` at the front door (login, invitation). `ExocortexLogo` is the
+mark alone, and it is for the places where a name will not fit or is not being
+asked for: an avatar, a browser tab, a launcher tile, a favicon.
 
-The reason is the One Signal Rule. The lockup is 8.3:1 and every part of it
-except the rule is brand amber, so at header height it is a 17rem block of
-signal colour parked where the interface should be quiet, before the user has
-done anything at all. The mark at `size-6` says the same thing in 1.5rem.
+The lockup is the one deliberate exemption from the One Signal Rule. It is 8.3:1
+and everything but its rule is brand amber, which is why the header carries it
+one step below its default height rather than at `h-8`: 1.75rem of lockup in a
+3rem bar is a signature, 2rem is a banner. The exemption is worth taking because
+the alternative was tested and lost. A bare mark in the corner obeys the rule
+and reads as a product that has not finished naming itself, and the corner is
+the one place in the interface where the user is not being asked to do anything,
+so the signal colour there costs nothing. Everywhere else the rule stands: the
+name is never repeated inside the page, in a panel, or beside a control.
 
 ### Signature Component: the save heartbeat
 

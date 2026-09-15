@@ -22,7 +22,7 @@ import {
   AppShell as AppShellFrame,
   Button,
   cn,
-  ExocortexLogo,
+  ExocortexWordmark,
   ResizablePanel,
   Separator,
   Sheet,
@@ -251,12 +251,13 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       <SkipToContentLink />
 
       <AppHeader>
-        {/* The chrome wears the mark, not the lockup. The lockup is 8.3:1 and
-            all brand amber; at header height it is a 17rem block of signal
-            colour sitting where the interface should be quiet, and it breaks
-            the One Signal Rule before the user has done anything. The full
-            lockup lives at the front door instead (app/(auth)/layout.tsx). */}
-        <ExocortexLogo className="mr-1 hidden size-6 sm:block" />
+        {/* The full lockup, one step below its default height: 1.75rem in a
+            3rem header leaves the name room to breathe instead of filling the
+            bar. The mark alone was correct by the One Signal Rule and wrong by
+            eye -- a bare icon in the corner reads as an unfinished product. The
+            lockup earns its amber here because it is the one place the product
+            says its own name, and it never repeats inside the page. */}
+        <ExocortexWordmark className="mr-1 hidden h-7 sm:block" />
 
         <Tooltip>
           <TooltipTrigger
