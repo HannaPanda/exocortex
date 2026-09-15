@@ -15,7 +15,15 @@ const NAV_ITEMS = [
   { href: '/admin/agenten', label: 'Agenten' },
 ] as const;
 
-/** Horizontal navigation between the six admin tabs. */
+/**
+ * Horizontal navigation between the six admin tabs.
+ *
+ * The active area used to be painted in `--accent-solid`, which is the *hover*
+ * tint: pointing at one area and standing in it looked the same, so after a
+ * click there was nothing on screen that said where you had landed. Selection
+ * is `--accent-strong` (tokens.css), and because the surface is never the only
+ * signal there is an amber bar under the active item as well.
+ */
 export function AdminNav() {
   const pathname = usePathname();
 
@@ -33,7 +41,9 @@ export function AdminNav() {
             aria-current={active ? 'page' : undefined}
             className={cn(
               buttonVariants({ variant: 'ghost', size: 'sm' }),
-              active && 'bg-accent text-accent-foreground',
+              'relative',
+              active &&
+                'bg-accent-strong text-foreground after:absolute after:inset-x-2 after:bottom-0.5 after:h-0.5 after:rounded-full after:bg-primary',
             )}
           >
             {item.label}
