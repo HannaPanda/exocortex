@@ -6,8 +6,11 @@ name: exocortex
 
 services:
   postgres:
-    # pgvector image so the `vector` extension is available for future semantic
-    # search (ADR-006). No embeddings are generated yet.
+    # pgvector image: the `vector` extension carries the embeddings behind
+    # semantic search (ADR-006, ADR-020). `HybridSearchAdapter` writes one
+    # vector per document as it indexes and fuses nearest neighbours with the
+    # full-text result; `search.semanticEnabled` decides per call whether that
+    # second half runs at all.
     image: pgvector/pgvector:pg17
     container_name: exocortex-postgres
     restart: unless-stopped

@@ -18,9 +18,17 @@ Docker bridge ──► nginx 172.17.0.1:3213 (no TLS)
                └─ /api/, /health/  → 127.0.0.1:3211   exocortex-api
 
 Docker (127.0.0.1 only): PostgreSQL 5433 · Redis 6380 · MinIO 9110/9111 · Mailpit 1026/8026
+Docker (per job, no network, fed by a pipe): render and project builds
 ```
 
 Nothing except nginx listens on a public interface.
+
+The last line is not a long-running container. `exocortex-worker` starts one per
+render job and per project build, hands it the input through a pipe and takes the
+artifact back the same way: no bind mounts, no network, gone when the job ends
+(ADR-026, ADR-027). Which image it uses is the `render.image` and
+`projects.image` settings; `deploy/render-image` builds the one this deployment
+points them at.
 
 There is no HTTP basic auth in front of the application. There was one while the
 deployment was private; it came off on 2026-08-09, once the things it had been
@@ -41,15 +49,21 @@ sudo ufw allow from 172.18.0.0/16 to 172.17.0.1 port 3213 proto tcp \
 
 ## Files
 
-| File                                      | Installed as                                                            |
-| ----------------------------------------- | ----------------------------------------------------------------------- |
-| `nginx/exocortex.app.conf`                | `/etc/nginx/sites-available/exocortex` (symlinked into `sites-enabled`) |
-| `systemd/exocortex-web.service`           | `/etc/systemd/system/exocortex-web.service`                             |
-| `systemd/exocortex-api.service`           | `/etc/systemd/system/exocortex-api.service`                             |
-| `systemd/exocortex-collaboration.service` | `/etc/systemd/system/exocortex-collaboration.service`                   |
-| `systemd/exocortex-worker.service`        | `/etc/systemd/system/exocortex-worker.service`                          |
-| `fail2ban/filter.d/exocortex-auth.conf`   | `/etc/fail2ban/filter.d/exocortex-auth.conf`                            |
-| `fail2ban/jail.d/nginx.conf`              | `/etc/fail2ban/jail.d/nginx.conf`                                       |
+| File                                               | Installed as                                                            |
+| -------------------------------------------------- | ----------------------------------------------------------------------- |
+| `nginx/exocortex.app.conf`                         | `/etc/nginx/sites-available/exocortex` (symlinked into `sites-enabled`) |
+| `systemd/exocortex-web.service`                    | `/etc/systemd/system/exocortex-web.service`                             |
+| `systemd/exocortex-api.service`                    | `/etc/systemd/system/exocortex-api.service`                             |
+| `systemd/exocortex-collaboration.service`          | `/etc/systemd/system/exocortex-collaboration.service`                   |
+| `systemd/exocortex-worker.service`                 | `/etc/systemd/system/exocortex-worker.service`                          |
+| `systemd/exocortex-backup.{service,timer}`         | `/etc/systemd/system/` — encrypted full snapshots to MEGA every 6 h     |
+| `systemd/exocortex-backup-verify.{service,timer}`  | `/etc/systemd/system/` — the weekly restore test                        |
+| `systemd/exocortex-backup-alert@.service`          | `/etc/systemd/system/` — `OnFailure` for the three above                |
+| `systemd/exocortex-infisical-sync.{service,timer}` | `/etc/systemd/system/` — pulls secrets into `.env`                      |
+| `systemd/automation-stack-backup.{service,timer}`  | `/etc/systemd/system/` — the rest of the host, see Backups              |
+| `render-image/Dockerfile`                          | built by hand into the image `render.image` names                       |
+| `fail2ban/filter.d/exocortex-auth.conf`            | `/etc/fail2ban/filter.d/exocortex-auth.conf`                            |
+| `fail2ban/jail.d/nginx.conf`                       | `/etc/fail2ban/jail.d/nginx.conf`                                       |
 
 ## Adding a person
 
@@ -272,14 +286,15 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
 3. **Prisma client**, before anything type-checks against it.
 4. **The hard gates.** Always on, no bypass, roughly six seconds together:
 
-   | Gate                               | Catches                                                                                             |
-   | ---------------------------------- | --------------------------------------------------------------------------------------------------- |
-   | `check-dependency-boundaries.mjs`  | a manifest depending on a package the graph forbids                                                 |
-   | `check-env-example.mjs`            | a variable the code reads and `.env.example` does not document, or the reverse                      |
-   | `check-brand-spelling.mjs`         | `Exocortex` where a human reads it (rule 10)                                                        |
-   | `check-mcp-catalog.mjs`            | a REST route with no tool behind it, and a tool calling a route that is gone (rule 11, ADR-014)     |
-   | `check-capability-parity.mjs`      | a tool the built-in AI does not get, a screen no agent can reach, a stale matrix (rule 12, ADR-025) |
-   | `check-migrations-reproducible.sh` | a migration history that does not rebuild `schema.prisma` from zero                                 |
+   | Gate                               | Catches                                                                                                                                   |
+   | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+   | `check-dependency-boundaries.mjs`  | a manifest depending on a package the graph forbids                                                                                       |
+   | `check-env-example.mjs`            | a variable the code reads and `.env.example` does not document, or the reverse                                                            |
+   | `check-brand-spelling.mjs`         | `Exocortex` where a human reads it (rule 10)                                                                                              |
+   | `check-mcp-catalog.mjs`            | a REST route with no tool behind it, and a tool calling a route that is gone (rule 11, ADR-014)                                           |
+   | `check-capability-parity.mjs`      | a tool the built-in AI does not get, a screen no agent can reach, a stale matrix (rule 12, ADR-025)                                       |
+   | `check-docs-current.mjs`           | a package, queue, maintenance task, compose service or unit no central document names, and claims the tree disproves (rule 13, issue #58) |
+   | `check-migrations-reproducible.sh` | a migration history that does not rebuild `schema.prisma` from zero                                                                       |
 
    Each one prints its findings and one sentence on how to fix them. The
    migration gate replays the whole history onto a throwaway Postgres container

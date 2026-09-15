@@ -95,8 +95,8 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
 /**
  * Maintenance processor.
  *
- * Seventeen unrelated sweeps share one queue and one schedule; what they have in
- * common is that nobody is waiting for them. The work itself lives one per
+ * Twenty-one unrelated sweeps share one queue and one schedule; what they have
+ * in common is that nobody is waiting for them. The work itself lives one per
  * function in `maintenance-tasks/`, grouped by what it touches.
  */
 export function createMaintenanceProcessor(dependencies: MaintenanceDependencies) {

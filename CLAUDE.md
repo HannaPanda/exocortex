@@ -71,6 +71,18 @@ file is the contract for automated sessions. Read it before changing code.
     Regenerate `docs/capability-matrix.md` with
     `node scripts/check-capability-parity.mjs --write` in the same commit
     series.
+13. **Documentation moves with the code, in the same commit series.**
+    The central documents are what the next session believes about this system
+    before it reads a line of code, so a stale one produces wrong work rather
+    than a cosmetic blemish (issue #58). `AGENTS.md` carries the table of what
+    to update when, and `scripts/check-docs-current.mjs` is the hard gate under
+    it: it reads the packages, queues, maintenance tasks, compose services and
+    systemd units out of the source and fails the build when a document stops
+    naming one, plus a list of claims paired with the file that disproves them.
+    Two habits the gate cannot enforce: the README's "What works today" and
+    "Not built" sections describe today, and a sentence calling something
+    planned or deferred is a claim that has to be deleted the day it stops
+    being true.
 
 ## Repository map
 
@@ -84,12 +96,14 @@ file is the contract for automated sessions. Read it before changing code.
 | `packages/mcp-tools`      | The one tool catalogue: shared by `apps/mcp` and the worker's AI tool loop.                                                   |
 | `packages/config`         | Runtime-validated environment schemas.                                                                                        |
 | `packages/contracts`      | zod schemas for REST DTOs, WebSocket events, job payloads.                                                                    |
-| `packages/database`       | Prisma schema, migrations, order keys, tree helpers, search adapter.                                                          |
+| `packages/database`       | Prisma schema, migrations, order keys, tree helpers, full-text and hybrid search adapters.                                    |
 | `packages/auth`           | Better Auth setup, session verification, authorization policies, collaboration tickets.                                       |
 | `packages/editor`         | Canonical Tiptap schema, block IDs, block catalog, Markdown, Yjs materialization.                                             |
 | `packages/queue`          | Typed BullMQ queues, workers, Redis event bus.                                                                                |
 | `packages/storage`        | S3-compatible object storage, MIME sniffing, image downscaling.                                                               |
-| `packages/ai`             | Provider-neutral AI contracts, mock provider, runner contracts.                                                               |
+| `packages/ai`             | Provider-neutral AI contracts, OpenRouter, embeddings, mock provider, runner contracts.                                       |
+| `packages/calendar`       | iCalendar parsing and serialization, recurrence expansion, reminder scheduling.                                               |
+| `packages/logger`         | Structured logging, correlation ids, the redaction list, the tracing abstraction.                                             |
 | `packages/ui`             | Design tokens, shadcn components on Base UI, layout primitives, states.                                                       |
 | `e2e`                     | Playwright browser and API tests.                                                                                             |
 | `tools/claude-code-hooks` | SessionStart/SessionEnd hooks that make this deployment Claude Code's memory. Plain Node, no dependencies, silent on failure. |
@@ -114,10 +128,11 @@ bash scripts/deploy.sh # build.sh, then migrations, nginx, the four units,
                        # readiness, and the deploy marker last.
 ```
 
-`build.sh` is the one to reach for: it runs the six hard gates that have no
+`build.sh` is the one to reach for: it runs the seven hard gates that have no
 bypass (package boundaries, `.env.example` sync, brand spelling, MCP catalogue
-completeness, capability parity, migration reproducibility) as well as the checks below, in the
-right order and without racing the live units for memory. There is deliberately
+completeness, capability parity, documentation currency, migration reproducibility)
+as well as the checks below, in the right order and without racing the live units
+for memory. There is deliberately
 no CI; `deploy/README.md` explains why and what each step does.
 
 The individual commands still exist and are useful while iterating:

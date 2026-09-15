@@ -1,5 +1,13 @@
 # eXocortex Implementation Plan
 
+> **Historical.** This is the plan for the original greenfield build, which
+> finished on 2026-08-04, and it is kept as the record of how the foundation was
+> laid and what was found while verifying it. It is **not** a list of what
+> exists today: databases, semantic search, MCP, the agent memory, automations,
+> rendering, projects, entities and overview pages all came afterwards and are
+> not in it. For the current state read `README.md`; for how the pieces fit
+> together, `docs/architecture.md`; for why, `docs/adr/`.
+
 Status legend: `[ ]` open · `[~]` in progress · `[x]` done
 
 Starting point: **empty repository** (`/var/www/exocortex`, no files, no git history).

@@ -23,7 +23,7 @@
                              └────────────┘
 ```
 
-Four Node processes, deliberately separate:
+Four long-running Node processes, deliberately separate:
 
 - **web** renders the UI. It never touches PostgreSQL, Redis, object storage or any
   secret. Everything goes through the API on the same origin.
@@ -32,7 +32,16 @@ Four Node processes, deliberately separate:
 - **collaboration** serves only the Yjs protocol. A crash in the editing hot path
   cannot take the REST API down, and it can be scaled independently.
 - **worker** performs everything expensive: materialization, search indexing, AI
-  runs, maintenance. No request handler ever does this work inline.
+  runs, rendering, project builds, maintenance. No request handler ever does this
+  work inline. It is also the only process allowed to start a container.
+
+`apps/mcp` is the fifth application in the repository and the exception to the
+picture above: it is not a service but a stdio binary an external client (Claude
+Code, Hermes) starts for itself, and it reaches the domain through the same REST
+API over loopback. The second MCP transport, `POST /api/mcp`, is served by the
+API and shares the protocol dispatcher with it (ADR-018). Both reach exactly one
+tool catalogue, `packages/mcp-tools`, which is also what the built-in AI's tool
+loop in the worker calls (ADR-014, ADR-025). See `docs/mcp.md`.
 
 ## Request and data flow of an edit
 
@@ -70,8 +79,21 @@ Awareness is never persisted. Domain events never travel over the Yjs protocol
 
 Domain mutations write an `OutboxEvent` row **inside the same transaction** as the
 state change. The `dispatch-outbox` maintenance job turns those rows into follow-up
-work (currently search indexing) and marks them processed; a failure records
-`attempts` and `lastError` and is retried, never dropped.
+work and marks them processed; a failure records `attempts` and `lastError` and is
+retried, never dropped.
+
+Four kinds of follow-up hang off it, and they hang off it for one reason: this is
+the single place every domain event passes exactly once.
+
+| Follow-up                  | For which events                                       | Written up in             |
+| -------------------------- | ------------------------------------------------------ | ------------------------- |
+| search indexing            | everything carrying a `documentId`                     | this document, below      |
+| `resolve-document-links`   | `document.created`, `.updated` (rename only), `.moved` | `docs/background-jobs.md` |
+| automations (ADR-024)      | every event, matched against the workspace's rules     | `docs/automations.md`     |
+| overview refresh (ADR-028) | page changes under an overview page, debounced         | `docs/overview-pages.md`  |
+
+A workspace with no rules and no overview page pays one cached settings read per
+event for the last two and nothing else.
 
 The realtime emit that happens right after the transaction is a fast path. If it
 fails it is logged and the request still succeeds — correctness comes from the
@@ -230,6 +252,29 @@ neither of them is a sweep.
 
 A reference to a title no page carries is kept, not discarded. It is the one
 thing the panel can tell someone that nothing else in the application reveals.
+
+## The rest of the system
+
+Everything above is the substrate: processes, events, the tree, search. The
+subsystems built on top of it each have their own document, and this is the
+index so nothing has to be found by grep.
+
+| Subsystem           | What it is                                                          | Read                        |
+| ------------------- | ------------------------------------------------------------------- | --------------------------- |
+| databases and views | a `COLLECTION` page, rows as pages, four view types (ADR-011)       | `docs/database-views.md`    |
+| the tool catalogue  | one catalogue over stdio MCP, `POST /api/mcp` and the built-in AI   | `docs/mcp.md`               |
+| capability parity   | the browser, the AI and MCP reach the same routes (ADR-025)         | `docs/capability-matrix.md` |
+| the built-in AI     | providers, runs, tools, page context, budgets                       | `docs/ai-architecture.md`   |
+| agent memory        | its own workspace, facts above notes (ADR-019, ADR-021)             | `docs/background-jobs.md`   |
+| settings            | four resolution layers, per-workspace overrides, ceilings (ADR-023) | `docs/admin.md`             |
+| automations         | rules fired from the outbox, refusing by default (ADR-024)          | `docs/automations.md`       |
+| rendering           | Markdown to PDF through Pandoc in a container (ADR-026)             | `docs/render.md`            |
+| projects            | a `PROJECT` page whose Yjs state is a file tree (ADR-027)           | `docs/projects.md`          |
+| overview pages      | text composed from the children's digests (ADR-028)                 | `docs/overview-pages.md`    |
+
+Entities (issue #47) have no document of their own: an entity is a row in an
+ordinary database, its mentions are written by the materialization pass, and
+`entity-rescan` looks one new name up across the pages that already exist.
 
 ## Adding things
 

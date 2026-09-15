@@ -40,6 +40,7 @@ Host ports are non-default so the stack can coexist with other services:
 | Redis         | `6380`    | append-only, `noeviction`                   |
 | MinIO API     | `9110`    | bucket `exocortex` is created automatically |
 | MinIO console | `9111`    |                                             |
+| `minio-init`  | none      | one-shot: creates the bucket, then exits    |
 | Mailpit SMTP  | `1026`    |                                             |
 | Mailpit UI    | `8026`    | verification and reset mails land here      |
 | Docling       | `5010`    | optional, see below                         |
@@ -58,6 +59,10 @@ docker compose up -d docling
 
 Model weights are baked into the image, so the first conversion needs no
 download. Conversion is CPU-bound at roughly 1.5 seconds per page.
+
+`minio-init` is the only service that is meant to be gone when `docker compose
+ps` is run: it sets the bucket up once MinIO is healthy and exits. An `Exited
+(0)` beside it is the success case, not a crashed container.
 
 All data lives in named volumes (`exocortex-postgres-data`, `exocortex-redis-data`,
 `exocortex-minio-data`, `exocortex-mailpit-data`).

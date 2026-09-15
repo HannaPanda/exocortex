@@ -361,6 +361,54 @@ describe('migration history (check-migrations-reproducible.sh)', () => {
   });
 });
 
+describe('documentation currency (check-docs-current.mjs)', () => {
+  it('is green: the central documents name every moving part', () => {
+    expect(gate('check-docs-current.mjs').status).toBe(0);
+  });
+
+  it('goes red when a new queue reaches the contract and no document mentions it', () => {
+    // The strongest of the four: the inventory is read out of the source, so a
+    // queue nobody wrote down is caught without anyone maintaining a list here.
+    editFile('packages/contracts/src/jobs.ts', (source) =>
+      source.replace("  render: 'render',", "  render: 'render',\n  gateProbe: 'gate-probe',"),
+    );
+    const result = gate('check-docs-current.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('gate-probe');
+    expect(result.output).toContain('docs/background-jobs.md');
+  });
+
+  it('goes red when a document stops naming something that exists', () => {
+    editFile('docs/background-jobs.md', (source) =>
+      source.replaceAll('project-build', 'something-else'),
+    );
+    const result = gate('check-docs-current.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('project-build');
+  });
+
+  it('goes red on a claim the tree disproves', () => {
+    editFile('README.md', (source) => `${source}\nNo embeddings are generated yet.\n`);
+    const result = gate('check-docs-current.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('semantic-search.ts');
+  });
+
+  it('stops forbidding a claim once the file that disproved it is gone', () => {
+    // The pairing is what keeps this half from rotting into a list of phrases
+    // nobody may write any more. Simulated by pointing one entry at a path that
+    // does not exist, which is what removing the feature would do.
+    editFile('README.md', (source) => `${source}\nNo embeddings are generated yet.\n`);
+    editFile('scripts/check-docs-current.mjs', (source) =>
+      source.replace(
+        "evidence: 'packages/database/src/semantic-search.ts'",
+        "evidence: 'packages/database/src/removed-feature.ts'",
+      ),
+    );
+    expect(gate('check-docs-current.mjs').status).toBe(0);
+  });
+});
+
 describe('build.sh', () => {
   it('refuses to run on a dirty working tree, before touching anything', () => {
     writeProbe('__gate_probe__.txt', 'untracked\n');
