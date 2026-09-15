@@ -25,24 +25,68 @@ Radix-based sources today; no Base UI registry was reachable
 
 The result contains no Radix code. See `docs/ui-system.md`.
 
+The three version choices below were re-checked against the registry on
+2026-09-15, and two of the three original reasons had expired. A reason for
+staying on an old major ages faster than anything else in this file, so each one
+now says what was measured and how, not what was believed at the time.
+
 ## 2. Prisma 6 instead of Prisma 7
 
-Prisma 7 is the newest release. Prisma 6.19.3 was chosen because it is the version
-Better Auth's Prisma adapter is tested against and because its `prisma-client-js`
-generator works unchanged in both the CJS server builds and the ESM browser build.
-Upgrading is a contained change: regenerate the client and adjust
-`packages/database/prisma/schema.prisma`.
+Prisma 6.19.3. The 7 line is at 7.10.0 and the `latest` dist-tag has already
+moved on to `8.0.0-rc.15`.
+
+The original reason is gone: Better Auth was said to be tested against 6, but
+`better-auth@1.6.25`, the version installed here, declares
+`prisma`/`@prisma/client`: `^5.0.0 || ^6.0.0 || ^7.0.0`, and so does 1.7.5.
+
+What does hold it back is that 7 is not the contained change this entry used to
+promise. Generating this schema against `prisma@7.10.0` shows two hard breaks:
+
+- `datasource db { url = env("DATABASE_URL") }` is a validation error (`P1012`).
+  Connection URLs move into a `prisma.config.ts`.
+- `new PrismaClient()` with no options throws a
+  `PrismaClientInitializationError`: a driver adapter is now required to connect
+  to the database at all. A direct connection means `@prisma/adapter-pg` and a
+  changed `packages/database/src/client.ts`.
+
+The `prisma-client-js` generator with an explicit `output` still works under
+7.10.0, so that half of the original reasoning survives. The upgrade is a day of
+work in one package, not an afternoon, and it has to be done deliberately rather
+than as a side effect of a dependency bump.
 
 ## 3. TypeScript 5.9 instead of TypeScript 7
 
-TypeScript 7.0 (the native port) is available but `typescript-eslint`, NestJS
-decorator metadata and `next`'s type plugin are not yet validated against it.
-5.9.3 is the newest release the whole toolchain supports.
+TypeScript 5.9.3. 7.0.2 is the current release and it is the native port: the
+package ships platform binaries as optional dependencies and a `getExePath`
+shim rather than a JavaScript compiler.
+
+One blocker, and it is decisive. `typescript-eslint` peers
+`typescript: >=4.8.4 <6.1.0`, in 8.66.0 as installed here and in 8.70.0, the
+newest release. That rules out the 6 line as well as the 7 line, and this
+repository lints with type information, so there is no version of this where the
+compiler moves ahead of the linter.
+
+The other two reasons this entry used to give are not blockers:
+
+- NestJS decorator metadata is fine. `tsc` 7.0.2 compiles a decorated class with
+  an injected constructor parameter under `experimentalDecorators` and
+  `emitDecoratorMetadata` and emits `design:paramtypes` as before.
+- `next`'s type plugin was not re-tested, so it is not claimed either way here.
 
 ## 4. ESLint 9 instead of ESLint 10
 
-`typescript-eslint@8` supports ESLint 9; the ESLint 10 peer range is not yet
-covered by all plugins used here.
+ESLint 9.39.5. 10.10.0 is current, and 9.39.5 is now what the registry tags
+`maintenance`, which puts a clock on this one.
+
+The culprit this entry used to name has been cleared: `typescript-eslint` peers
+`eslint: ^8.57.0 || ^9.0.0 || ^10.0.0` in both 8.66.0 and 8.70.0.
+
+The one plugin still holding the line is `eslint-plugin-react`, whose newest
+release, 7.37.5, peers `eslint: … || ^9.7` and has no 10 range. Upgrading also
+pulls `@eslint/js` to 10.x, which peers `eslint: ^10.0.0`. Nothing else in
+`eslint.config.mjs` objects: `eslint-plugin-react-hooks@7.1.1` already lists
+`^10.0.0`, and `eslint-config-prettier` and `eslint-plugin-simple-import-sort`
+have open ranges.
 
 ## 5. Redis event bus instead of the Socket.IO Redis adapter
 
