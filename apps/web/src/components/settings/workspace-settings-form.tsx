@@ -16,15 +16,17 @@ import {
   LoadingState,
   Tabs,
   TabsContent,
-  TabsList,
-  TabsTrigger,
 } from '@exocortex/ui';
 
-import { GROUP_LABELS, groupOf, SettingRow } from '@/components/settings/setting-row';
+import { SettingGroupNav } from '@/components/settings/setting-group-nav';
+import { groupOf, SettingRow } from '@/components/settings/setting-row';
 import { useAiModels } from '@/lib/api/ai-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import { useUpdateWorkspaceSettings, useWorkspaceSettings } from '@/lib/api/queries';
+
+/** The workspace form reports refusals as one message, not per field. */
+const NO_INVALID_GROUPS: ReadonlySet<string> = new Set<string>();
 
 /**
  * The overrides one workspace has set, and the ones it inherits (issue #52).
@@ -142,24 +144,12 @@ export function WorkspaceSettingsForm({
         orientation="vertical"
         className="flex flex-col gap-6 md:flex-row md:gap-8"
       >
-        <TabsList className="h-auto w-full flex-row flex-wrap items-stretch gap-0.5 overflow-visible bg-transparent p-0 md:w-48 md:shrink-0 md:flex-col">
-          {groupNames.map((name) => (
-            <TabsTrigger
-              key={name}
-              value={name}
-              data-testid={`workspace-setting-group-${name}`}
-              className="flex-none justify-start gap-2 px-2.5 py-1.5 text-sm"
-            >
-              <span className="truncate">{GROUP_LABELS[name] ?? name}</span>
-              {pending.has(name) ? (
-                <span
-                  aria-label="ungespeicherte Änderung"
-                  className="ms-auto size-1.5 shrink-0 rounded-full bg-primary"
-                />
-              ) : null}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        <SettingGroupNav
+          groups={groupNames}
+          pending={pending}
+          invalid={NO_INVALID_GROUPS}
+          testIdPrefix="workspace-setting-group"
+        />
 
         <fieldset disabled={!canEdit || update.isPending} className="min-w-0 flex-1 border-0 p-0">
           {[...groups.entries()].map(([name, keys]) => (

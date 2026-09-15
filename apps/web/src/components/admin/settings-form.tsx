@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { flushSync } from 'react-dom';
 
 import {
   SETTING_KEYS,
@@ -8,11 +9,19 @@ import {
   type Settings,
   updateSettingsRequestSchema,
 } from '@exocortex/contracts';
-import { Alert, AlertDescription, AlertTitle, Button, LoadingState } from '@exocortex/ui';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Button,
+  LoadingState,
+  Tabs,
+  TabsContent,
+} from '@exocortex/ui';
 
+import { SettingGroupNav } from '@/components/settings/setting-group-nav';
 import {
   fieldErrorsFromDetails,
-  GROUP_LABELS,
   groupOf,
   inputId,
   invalidMessage,
@@ -27,6 +36,21 @@ import {
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 
+/**
+ * What the alert beside the save button says.
+ *
+ * A refusal at a field outranks the API's own message: the fields are named in
+ * the form and marked in the group list, so "invalid input" alone would be the
+ * less specific of the two.
+ */
+function refusalSummary(refusedCount: number, errorCode: string | undefined): string {
+  if (refusedCount === 0) return messageForCode(errorCode);
+  if (refusedCount === 1) {
+    return 'Eine Einstellung liegt außerhalb ihres zulässigen Bereichs und wurde nicht gespeichert. Sie ist im Formular rot markiert.';
+  }
+  return `${refusedCount} Einstellungen liegen außerhalb ihres zulässigen Bereichs und wurden nicht gespeichert. Sie sind im Formular rot markiert.`;
+}
+
 export function SettingsForm() {
   const settingsQuery = useAdminSettings();
   const modelsQuery = useAdminAiModels();
@@ -38,6 +62,10 @@ export function SettingsForm() {
   // Set when the save was refused before it left the browser; the API's own
   // rejection is reported through `updateSettings.error` instead.
   const [localError, setLocalError] = React.useState(false);
+  // Which group of rows is on screen. Over a hundred rows in one column is a
+  // scroll nobody reads to the end of; the draft lives above this, so switching
+  // groups never loses an edit and one save covers all of them.
+  const [group, setGroup] = React.useState<string | null>(null);
 
   // Initialise the draft once the query resolves. Setting state directly
   // during render (guarded so it only fires once) is the pattern React
@@ -72,6 +100,15 @@ export function SettingsForm() {
     groups.set(groupOf(key), list);
   }
 
+  const groupNames = [...groups.keys()];
+  const activeGroup = group !== null && groups.has(group) ? group : (groupNames[0] ?? '');
+  const pendingGroups = new Set(
+    SETTING_KEYS.filter((key) => currentDraft[key] !== original[key]).map(groupOf),
+  );
+  const invalidGroups = new Set(
+    SETTING_KEYS.filter((key) => fieldErrors[key] !== undefined).map(groupOf),
+  );
+
   function updateField(key: SettingKey, value: Settings[SettingKey]): void {
     setDraft((current) => {
       if (current === null) return current;
@@ -100,10 +137,18 @@ export function SettingsForm() {
     updateSettings.reset();
   }
 
-  /** Puts the first refused setting on screen; a message out of sight is none. */
+  /**
+   * Puts the first refused setting on screen; a message out of sight is none.
+   *
+   * Since the rows arrived in groups, "out of sight" can also mean "in a group
+   * that is not rendered", and `getElementById` would find nothing at all. So
+   * the group switch is flushed first, synchronously, and only then is the
+   * field there to scroll to.
+   */
   function revealFirstError(errors: Partial<Record<SettingKey, string>>): void {
     const first = SETTING_KEYS.find((key) => errors[key] !== undefined);
     if (first === undefined) return;
+    flushSync(() => setGroup(groupOf(first)));
     const element = document.getElementById(inputId(first));
     element?.scrollIntoView({ block: 'center', behavior: 'smooth' });
     element?.focus({ preventScroll: true });
@@ -153,13 +198,7 @@ export function SettingsForm() {
 
   const errorCode =
     updateSettings.error instanceof ApiError ? updateSettings.error.code : undefined;
-  const refusedCount = Object.keys(fieldErrors).length;
-  const summaryMessage =
-    refusedCount > 0
-      ? refusedCount === 1
-        ? 'Eine Einstellung liegt außerhalb ihres zulässigen Bereichs und wurde nicht gespeichert. Sie ist im Formular rot markiert.'
-        : `${refusedCount} Einstellungen liegen außerhalb ihres zulässigen Bereichs und wurden nicht gespeichert. Sie sind im Formular rot markiert.`
-      : messageForCode(errorCode);
+  const summaryMessage = refusalSummary(Object.keys(fieldErrors).length, errorCode);
   const showError = localError || updateSettings.isError;
 
   return (
@@ -180,13 +219,22 @@ export function SettingsForm() {
         </Alert>
       ) : null}
 
-      <fieldset disabled={updateSettings.isPending} className="flex flex-col gap-8 border-0 p-0">
-        {[...groups.entries()].map(([group, keys]) => (
-          <section key={group} className="flex flex-col gap-4">
-            <h2 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
-              {GROUP_LABELS[group] ?? group}
-            </h2>
-            <div className="flex flex-col gap-4">
+      <Tabs
+        value={activeGroup}
+        onValueChange={(next) => setGroup(typeof next === 'string' ? next : null)}
+        orientation="vertical"
+        className="flex flex-col gap-6 md:flex-row md:gap-8"
+      >
+        <SettingGroupNav
+          groups={groupNames}
+          pending={pendingGroups}
+          invalid={invalidGroups}
+          testIdPrefix="setting-group"
+        />
+
+        <fieldset disabled={updateSettings.isPending} className="min-w-0 flex-1 border-0 p-0">
+          {[...groups.entries()].map(([name, keys]) => (
+            <TabsContent key={name} value={name} className="flex flex-col gap-4">
               {keys.map((key) => (
                 <SettingRow
                   key={key}
@@ -197,10 +245,10 @@ export function SettingsForm() {
                   error={fieldErrors[key]}
                 />
               ))}
-            </div>
-          </section>
-        ))}
-      </fieldset>
+            </TabsContent>
+          ))}
+        </fieldset>
+      </Tabs>
 
       {/* Both messages sit next to the button that triggers them. Above the
           form they would appear several screen heights away from the click,
