@@ -135,6 +135,7 @@ function documentDetail(overrides: Record<string, unknown> = {}) {
     title: 'Kalenderplan',
     icon: null,
     iconColor: null,
+    overviewMode: 'off',
     layout: 'narrow' as const,
     coverAttachmentId: null,
     coverPosition: 50,
