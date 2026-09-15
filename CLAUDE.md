@@ -199,6 +199,12 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   compiler is `latexmk` in a container, on the server, because there is no
   permissively licensed in-browser TeX -- no AGPL package may enter this
   repository or its bundle.
+- ADR-028: an overview page's text is derived, never its body. A digest per
+  page and a composition per overview live in `DocumentDigest`, the composition
+  is built from the children's digests rather than their content, and two input
+  hashes decide whether a refresh costs anything. Triggered from the outbox,
+  swept hourly, and degraded to a plain child list whenever no model can be
+  reached.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -223,6 +229,7 @@ Each of these has a step-by-step recipe:
 | new automation trigger or action                         | `docs/automations.md`       |
 | new render template, new renderer                        | `docs/render.md`            |
 | new project type, project build runner                   | `docs/projects.md`          |
+| overview pages, digests, composition prompts             | `docs/overview-pages.md`    |
 
 ## Deployment on this machine
 

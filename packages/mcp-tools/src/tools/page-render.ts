@@ -9,7 +9,11 @@ import { type DocumentSummary, type DocumentTreeNode } from '@exocortex/contract
  */
 
 export function formatDocumentSummary(document: DocumentSummary): string {
-  return `${document.title} (id: ${document.id}, type: ${document.type})`;
+  // An overview page says so on its own line: it is the one property that
+  // changes what an agent should *do* with the page (write under it, not into
+  // it), and a tree is where that decision is made (ADR-028).
+  const overview = document.overviewMode === 'auto' ? ', Übersichtsseite' : '';
+  return `${document.title} (id: ${document.id}, type: ${document.type}${overview})`;
 }
 
 /**

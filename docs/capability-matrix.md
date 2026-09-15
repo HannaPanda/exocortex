@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-158 routes are reachable from at least one client; 97 from all three.
+160 routes are reachable from at least one client; 99 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -63,6 +63,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/documents/:x/deletion-preview` | · | · | ✓ | `exo_page_delete` |
 | `GET /api/documents/:x/export/markdown` | ✓ | ✓ | ✓ | `exo_page_read`, `exo_rules_load`, `fetch` |
 | `GET /api/documents/:x/links` | ✓ | ✓ | ✓ | `exo_page_backlinks` |
+| `GET /api/documents/:x/overview` | ✓ | ✓ | ✓ | `exo_page_overview_read` |
 | `GET /api/documents/:x/properties` | ✓ | ✓ | ✓ | `exo_database_schema` |
 | `GET /api/documents/:x/related` | ✓ | ✓ | ✓ | `exo_page_related` |
 | `GET /api/documents/:x/row` | ✓ | ✓ | ✓ | `exo_database_row_get` |
@@ -113,7 +114,7 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/attachments/:x/text` | ✓ | ✓ | ✓ | `exo_attachment_correct_text` |
 | `PATCH /api/automations/:x` | ✓ | ✓ | ✓ | `exo_automation_update` |
 | `PATCH /api/comments/:x` | ✓ | ✓ | ✓ | `exo_comment_update` |
-| `PATCH /api/documents/:x` | ✓ | ✓ | ✓ | `exo_page_rename`, `exo_page_set_ai_rule`, `exo_page_set_cover`, `exo_page_set_layout` |
+| `PATCH /api/documents/:x` | ✓ | ✓ | ✓ | `exo_page_rename`, `exo_page_set_ai_rule`, `exo_page_set_cover`, `exo_page_set_layout`, `exo_page_set_overview` |
 | `PATCH /api/documents/:x/properties/:x` | ✓ | ✓ | ✓ | `exo_database_property_update` |
 | `PATCH /api/documents/:x/properties/:x/options/:x` | ✓ | ✓ | ✓ | `exo_database_option_update` |
 | `PATCH /api/documents/:x/values` | ✓ | ✓ | ✓ | `exo_database_row_update` |
@@ -143,6 +144,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/documents/:x/cover` | ✓ | · | · | — |
 | `POST /api/documents/:x/cover/generate` | ✓ | ✓ | ✓ | `exo_page_generate_cover` |
 | `POST /api/documents/:x/move` | ✓ | ✓ | ✓ | `exo_page_move` |
+| `POST /api/documents/:x/overview/refresh` | ✓ | ✓ | ✓ | `exo_page_overview_refresh` |
 | `POST /api/documents/:x/properties` | ✓ | ✓ | ✓ | `exo_database_create`, `exo_database_property_create` |
 | `POST /api/documents/:x/properties/:x/options` | ✓ | ✓ | ✓ | `exo_database_option_create` |
 | `POST /api/documents/:x/properties/:x/reorder` | ✓ | ✓ | ✓ | `exo_database_property_reorder` |

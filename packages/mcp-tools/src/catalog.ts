@@ -10,6 +10,7 @@ import { INVITATION_TOOLS } from './tools/invitations.js';
 import { LINK_TOOLS } from './tools/links.js';
 import { MEMORY_TOOLS } from './tools/memory.js';
 import { MEMORY_FACT_TOOLS } from './tools/memory-facts.js';
+import { OVERVIEW_TOOLS } from './tools/overviews.js';
 import { PAGE_TOOLS } from './tools/pages.js';
 import { PROJECT_TOOLS } from './tools/projects.js';
 import { RENDER_TOOLS } from './tools/render.js';
@@ -21,6 +22,7 @@ import { WORKSPACE_TOOLS } from './tools/workspaces.js';
 export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...WORKSPACE_TOOLS,
   ...PAGE_TOOLS,
+  ...OVERVIEW_TOOLS,
   ...LINK_TOOLS,
   ...COMMENT_TOOLS,
   ...SEARCH_TOOLS,

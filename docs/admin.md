@@ -413,6 +413,25 @@ ADR-024):
 Neither is reachable from a workspace's own settings. Everything else about
 automations is, including the run log: `docs/automations.md`.
 
+## Übersichtsseiten: what a composition costs
+
+A page marked as an overview describes its sub-pages, and keeps describing them
+(issue #53, [ADR-028](adr/ADR-028-overview-pages-are-derived.md)). The marking
+is per page and belongs to whoever writes; what belongs here is the spending.
+
+| Setting                    | Meaning                                                                                                                                                                                         |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `overview.enabled`         | Whether anything is composed at all. **On** by default, and a ceiling: off here is off everywhere. Off still lists every sub-page, because that list is read from the tree and costs nothing.   |
+| `overview.modelSlug`       | Empty falls back to `ai.defaultModelSlug`. A small model belongs here: the work is two to five sentences at a time, many times.                                                                 |
+| `overview.debounceSeconds` | How long a page has to stay quiet before its overview is recomposed. 300 by default, much longer than an automation's: nobody is waiting for a paragraph.                                       |
+| `overview.maxChildren`     | Beyond this no paragraph is written and the list stays complete. A prompt with two hundred digests in it is expensive and says nothing the list does not.                                       |
+| `overview.maxPageChars`    | How much of a page's own text reaches its digest prompt.                                                                                                                                        |
+| `overview.generateCovers`  | Draws a cover for an overview page that has none, once per page. Needs `ai.imageGenerationEnabled` and an `ai.imageModelSlug`, so it does nothing in a deployment that has not paid for images. |
+
+What is actually spent: one small call per changed page under an overview, one
+per overview whose children changed, both only when the input hash has moved.
+A page nobody has marked never reaches a model.
+
 ## Adding a setting
 
 1. Add the field with a `.default()` to `settingsSchema`

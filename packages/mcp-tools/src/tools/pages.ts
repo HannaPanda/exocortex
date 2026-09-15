@@ -228,7 +228,10 @@ export const pageCreateTool: AnyToolDefinition = defineTool({
     'Der Titel steht über der Seite: das Markdown nicht mit einer Überschrift beginnen, die ' +
     'den Titel wiederholt, sonst steht er auf der Seite zweimal. ' +
     'Nur gewöhnliche Seiten: eine Datenbank (Notion-artige Tabelle) legt exo_database_create an, ' +
-    'samt Startspalten.',
+    'samt Startspalten. ' +
+    'Legst du eine Sammelseite an, die vor allem Unterseiten bündeln soll, dann markiere sie mit ' +
+    'exo_page_set_overview als Übersichtsseite und schreib keinen eigenen Fließtext hinein: ' +
+    'eXocortex hält die Beschreibung der Unterseiten dort selbst aktuell.',
   inputSchema: pageCreateInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,
