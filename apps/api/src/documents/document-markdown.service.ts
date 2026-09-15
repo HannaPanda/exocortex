@@ -22,8 +22,11 @@ import {
 import {
   bindPageLinkIdentities,
   EXOCORTEX_SCHEMA_VERSION,
+  leadingTitleHeading,
   markdownToYjsState,
+  parseFrontmatter,
   serializeMarkdown,
+  stripRedundantTitleHeading,
   yjsStateToProseMirrorJson,
 } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
@@ -179,9 +182,25 @@ export class DocumentMarkdownService {
     // so it survives that page being renamed afterwards.
     const identities = await this.pageLinks.loadIndex(input.workspaceId);
 
+    /*
+     * A file that opens with its own title as a heading is the normal shape of
+     * Markdown everywhere else, and here that heading *becomes* the page title.
+     * Keeping it in the body as well would show the title twice on the imported
+     * page, so the title is decided first and the heading it came from is left
+     * out of the content.
+     */
+    const declaredTitle =
+      input.request.title ??
+      parseFrontmatter(input.request.markdown).frontmatter.title ??
+      leadingTitleHeading(input.request.markdown);
+    const body =
+      declaredTitle === undefined || declaredTitle === null
+        ? input.request.markdown
+        : stripRedundantTitleHeading(input.request.markdown, declaredTitle).markdown;
+
     let imported: ReturnType<typeof markdownToYjsState>;
     try {
-      imported = markdownToYjsState(input.request.markdown, {
+      imported = markdownToYjsState(body, {
         transformDocument: (document) =>
           bindPageLinkIdentities(document, (title) => identities.identityFor(title)),
       });
@@ -194,7 +213,7 @@ export class DocumentMarkdownService {
       throw AppError.validation('The Markdown document could not be parsed');
     }
 
-    const title = input.request.title ?? imported.title ?? 'Importierte Seite';
+    const title = declaredTitle ?? imported.title ?? 'Importierte Seite';
     const icon =
       input.request.icon ??
       (typeof imported.frontmatter.icon === 'string' ? imported.frontmatter.icon : null);
@@ -238,7 +257,7 @@ export class DocumentMarkdownService {
           schemaVersion: EXOCORTEX_SCHEMA_VERSION,
           proseMirrorJson: imported.proseMirrorJson as unknown as Prisma.InputJsonObject,
           plainText: imported.plainText,
-          markdown: input.request.markdown,
+          markdown: body,
           materializedAt: new Date(),
         },
       });

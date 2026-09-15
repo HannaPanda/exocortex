@@ -10,12 +10,14 @@ import { type Prisma, type PrismaClient } from '@exocortex/database';
 import {
   bindPageLinkIdentities,
   EXOCORTEX_SCHEMA_VERSION,
+  leadingTitleHeading,
   markdownToYjsState,
   parseMarkdown,
   type ProseMirrorDocument,
   type ProseMirrorNode,
   resolvePageLinkTitles,
   serializeMarkdown,
+  stripRedundantTitleHeading,
   yjsStateToProseMirrorJson,
 } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
@@ -29,6 +31,77 @@ import { RealtimeService } from '../realtime/realtime.service';
 
 import { CollaborationBridgeService } from './collaboration-bridge.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
+
+/** The title `createDocumentRequestSchema` gives a page nobody has named. */
+const UNTITLED_PAGE_TITLE = 'Unbenannte Seite';
+
+/** `documentTitleSchema`'s ceiling, applied to a title taken from content. */
+const DOCUMENT_TITLE_MAX_LENGTH = 300;
+
+interface IncomingMarkdown {
+  /** What is written, with a heading that only repeated the title taken out. */
+  markdown: string;
+  /** A title taken from that heading, when the page had none. */
+  promotedTitle: string | null;
+  /** What to tell the writer about either, `null` when nothing happened. */
+  warning: string | null;
+}
+
+/**
+ * Prepares the Markdown that arrives with a write.
+ *
+ * The page's title is metadata, and the Markdown serializer writes it into the
+ * frontmatter rather than as a heading. A writer that opens the body with the
+ * title once more -- which is what every Markdown file outside this product
+ * looks like, and therefore what language models produce -- would put it on the
+ * page twice, so that one heading comes off.
+ *
+ * On a page nobody has named yet the same heading is the best title anyone has,
+ * so it is promoted instead of dropped and the page ends up carrying it exactly
+ * once. The candidate is only kept when the heading was really removed;
+ * otherwise the title and the heading would both be there again.
+ *
+ * Only content that lands at the top is examined: on `append` the first heading
+ * belongs to what is already on the page, and editing that would be a change
+ * nobody asked for.
+ */
+function prepareIncomingMarkdown(
+  request: DocumentContentWriteRequest,
+  currentTitle: string,
+): IncomingMarkdown {
+  if (request.mode === 'append') {
+    return { markdown: request.markdown, promotedTitle: null, warning: null };
+  }
+
+  const candidateTitle =
+    currentTitle.trim() === UNTITLED_PAGE_TITLE ? leadingTitleHeading(request.markdown) : null;
+  const { markdown, removed } = stripRedundantTitleHeading(
+    request.markdown,
+    candidateTitle ?? currentTitle,
+  );
+  if (removed === null) {
+    return { markdown, promotedTitle: null, warning: null };
+  }
+
+  if (candidateTitle !== null) {
+    const promotedTitle = candidateTitle.slice(0, DOCUMENT_TITLE_MAX_LENGTH);
+    return {
+      markdown,
+      promotedTitle,
+      warning:
+        `Die Seite hatte noch keinen Titel; die erste Überschrift „${promotedTitle}“ ist jetzt ` +
+        'der Seitentitel und steht nicht mehr im Text.',
+    };
+  }
+
+  return {
+    markdown,
+    promotedTitle: null,
+    warning:
+      `Die erste Überschrift „${removed}“ wiederholte den Seitentitel und wurde weggelassen; ` +
+      'der Titel steht bereits über der Seite.',
+  };
+}
 
 /** Depth-first search for a `databaseEmbed` node (D8, mirrors collectImageSources). */
 function containsDatabaseEmbed(node: ProseMirrorNode | null | undefined): boolean {
@@ -120,12 +193,15 @@ export class DocumentContentService {
         identities.titleFor(documentId),
       ),
     );
+    const incoming = prepareIncomingMarkdown(input.request, context.document.title);
+    if (incoming.warning !== null) warnings.push(incoming.warning);
+
     const effectiveMarkdown =
       input.request.mode === 'replace'
-        ? input.request.markdown
+        ? incoming.markdown
         : input.request.mode === 'append'
-          ? `${currentMarkdown}\n\n${input.request.markdown}`
-          : `${input.request.markdown}\n\n${currentMarkdown}`;
+          ? `${currentMarkdown}\n\n${incoming.markdown}`
+          : `${incoming.markdown}\n\n${currentMarkdown}`;
 
     let imported: ReturnType<typeof markdownToYjsState>;
     /**
@@ -142,7 +218,7 @@ export class DocumentContentService {
       liveUpdate =
         input.request.mode === 'replace'
           ? imported.proseMirrorJson
-          : bind(parseMarkdown(input.request.markdown).document);
+          : bind(parseMarkdown(incoming.markdown).document);
     } catch (error) {
       this.logger.warn('Document content write rejected: markdown could not be parsed', {
         documentId: input.documentId,
@@ -190,7 +266,10 @@ export class DocumentContentService {
 
       await tx.document.update({
         where: { id: input.documentId },
-        data: { updatedById: input.userId },
+        data: {
+          updatedById: input.userId,
+          ...(incoming.promotedTitle === null ? {} : { title: incoming.promotedTitle }),
+        },
       });
 
       await this.outbox.writeEvent(tx, {

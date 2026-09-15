@@ -46,7 +46,12 @@ export interface ParsedMarkdown {
   body: string;
 }
 
-const FRONTMATTER_PATTERN = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/;
+/**
+ * The frontmatter block, including its trailing newline. Exported so a caller
+ * that edits the body as text can split it off without reparsing and
+ * reserializing the YAML.
+ */
+export const FRONTMATTER_PATTERN = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/;
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);

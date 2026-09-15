@@ -225,6 +225,8 @@ export const pageCreateTool: AnyToolDefinition = defineTool({
   name: 'exo_page_create',
   description:
     'Legt eine neue Seite in einem Workspace an, optional mit initialem Markdown-Inhalt. ' +
+    'Der Titel steht über der Seite: das Markdown nicht mit einer Überschrift beginnen, die ' +
+    'den Titel wiederholt, sonst steht er auf der Seite zweimal. ' +
     'Nur gewöhnliche Seiten: eine Datenbank (Notion-artige Tabelle) legt exo_database_create an, ' +
     'samt Startspalten.',
   inputSchema: pageCreateInputSchema,
@@ -304,6 +306,9 @@ export const pageWriteTool: AnyToolDefinition = defineTool({
     'Lange Inhalte in mehreren Aufrufen schreiben: den ersten mit mode "replace", die weiteren ' +
     'mit mode "append". Ein einzelner Aufruf mit sehr viel Markdown kann am Ausgabelimit ' +
     'abgeschnitten werden und wird dann gar nicht ausgeführt. ' +
+    'Der Seitentitel steht über der Seite und gehört nicht in den Text: keine erste ' +
+    'Überschrift schreiben, die den Titel wiederholt. Eine solche Überschrift wird beim ' +
+    'Schreiben entfernt. ' +
     'Hat jemand die Seite gerade geöffnet, erscheint die Änderung dort sofort.',
   inputSchema: pageWriteInputSchema,
   surfaces: ['mcp', 'ai'],

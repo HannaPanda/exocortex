@@ -1225,6 +1225,98 @@ describe('writing document content', () => {
   });
 
   /**
+   * Agents open a page with its own title as a heading, because that is what a
+   * Markdown file looks like everywhere else. Here the title is metadata and is
+   * rendered above the page, so the heading would show it a second time.
+   */
+  describe('a heading that repeats the page title', () => {
+    it('is left out of the content, and said so in a warning', async () => {
+      const documentId = await createPage('Mein Plan');
+
+      const result = await contentService.write({
+        documentId,
+        userId: ownerId,
+        request: { markdown: '# Mein Plan\n\nEin Absatz.', mode: 'replace' },
+        correlationId,
+        source: 'api',
+      });
+
+      const after = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+      expect(after.plainText?.trim()).toBe('Ein Absatz.');
+      expect(result.warnings.join(' ')).toContain('wiederholte den Seitentitel');
+    });
+
+    it('becomes the title when the page has none yet', async () => {
+      const documentId = await createPage('Unbenannte Seite');
+
+      await contentService.write({
+        documentId,
+        userId: ownerId,
+        request: { markdown: '# Aus dem Text\n\nEin Absatz.', mode: 'replace' },
+        correlationId,
+        source: 'api',
+      });
+
+      const document = await prisma.document.findUniqueOrThrow({ where: { id: documentId } });
+      expect(document.title).toBe('Aus dem Text');
+      const after = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+      expect(after.plainText?.trim()).toBe('Ein Absatz.');
+    });
+
+    it('is kept when it is not the title, only something like it', async () => {
+      const documentId = await createPage('Mein Plan');
+
+      await contentService.write({
+        documentId,
+        userId: ownerId,
+        request: { markdown: '# Mein Plan für 2026\n\nEin Absatz.', mode: 'replace' },
+        correlationId,
+        source: 'api',
+      });
+
+      const after = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+      expect(after.plainText).toContain('Mein Plan für 2026');
+    });
+
+    it('is kept when it belongs to content that was already there', async () => {
+      const documentId = await createPage('Mein Plan');
+      await contentService.write({
+        documentId,
+        userId: ownerId,
+        request: { markdown: 'Erster Absatz.', mode: 'replace' },
+        correlationId,
+        source: 'api',
+      });
+
+      await contentService.write({
+        documentId,
+        userId: ownerId,
+        request: { markdown: '# Mein Plan\n\nZweiter Absatz.', mode: 'append' },
+        correlationId,
+        source: 'api',
+      });
+
+      const after = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+      expect(after.plainText).toContain('Mein Plan');
+    });
+
+    it('is left out of an imported file, whose title it became', async () => {
+      const imported = await markdownService.import({
+        workspaceId,
+        userId: ownerId,
+        request: { markdown: '# Aus der Datei\n\nEin Absatz.' },
+        correlationId,
+      });
+
+      expect(imported.title).toBe('Aus der Datei');
+      const content = await prisma.documentContent.findUniqueOrThrow({
+        where: { documentId: imported.id },
+      });
+      expect(content.plainText?.trim()).toBe('Ein Absatz.');
+    });
+  });
+
+  /**
    * The reference index and the comment anchors are derived by the
    * materialization job, and that job skips a document whose `materializedAt`
    * has caught up with its `yjsUpdatedAt`. A write that stamps both leaves the
