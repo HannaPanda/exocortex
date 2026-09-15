@@ -16,6 +16,7 @@ import { createAttachmentTextProcessor } from './processors/attachment-text';
 import { createAutomationProcessor } from './processors/automation';
 import { createCalendarSyncProcessor } from './processors/calendar-sync';
 import { createDocumentCoverProcessor } from './processors/document-cover';
+import { createDocumentOverviewProcessor } from './processors/document-overview';
 import { createEntityRescanProcessor } from './processors/entity-rescan';
 import { createIndexDocumentProcessor } from './processors/index-document';
 import { createMaintenanceProcessor } from './processors/maintenance';
@@ -218,6 +219,7 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
 function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger): QueueWorker[] {
   const {
     prisma,
+    queues,
     bus,
     provider,
     storage,
@@ -284,6 +286,24 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
       apiClientFor,
       bus,
       settings: readSettings,
+    }),
+  });
+
+  // Concurrency 1 for the same reason as every other paid call here: a page
+  // tree that changes in a burst should produce a queue of compositions, not a
+  // fan-out of parallel requests at a provider's rate limit.
+  const documentOverview = createTypedWorker({
+    name: QUEUE_NAMES.documentOverview,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 1,
+    handler: createDocumentOverviewProcessor({
+      prisma,
+      provider,
+      queues,
+      bus,
+      settings: readSettings,
+      defaultModel: env.OPENROUTER_DEFAULT_MODEL ?? null,
     }),
   });
 
@@ -409,6 +429,7 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
   return [
     attachmentText,
     documentCover,
+    documentOverview,
     calendarSync,
     memoryCapture,
     memoryConsolidate,

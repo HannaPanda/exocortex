@@ -20,6 +20,7 @@ import { type MaintenanceTask } from './maintenance-tasks/context';
 import { backfillLinks, repairLinks, resolveLinks } from './maintenance-tasks/links';
 import { consolidateMemories, decayMemoryFacts } from './maintenance-tasks/memory-facts';
 import { dispatchOutbox } from './maintenance-tasks/outbox';
+import { refreshStaleOverviews } from './maintenance-tasks/overview-sweep';
 import { backfillEmbeddings, vacuumSearchIndex } from './maintenance-tasks/search-index';
 import { pruneSnapshots, snapshotActiveDocuments } from './maintenance-tasks/snapshots';
 
@@ -78,6 +79,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'repair-document-links': repairLinks,
   'backfill-document-links': backfillLinks,
   'rematerialize-stale-content': rematerializeStaleContent,
+  'refresh-stale-overviews': refreshStaleOverviews,
   'backfill-embeddings': backfillEmbeddings,
   'prune-memories': pruneMemories,
   'prune-invitations': pruneInvitations,

@@ -125,6 +125,9 @@ export interface JobProgressEvent {
     (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES],
     | typeof QUEUE_NAMES.attachmentText
     | typeof QUEUE_NAMES.documentCover
+    // Nor does a composition: it runs minutes after the edit that caused it,
+    // and reports through `document.overview.updated` (issue #53).
+    | typeof QUEUE_NAMES.documentOverview
     | typeof QUEUE_NAMES.calendarSync
     | typeof QUEUE_NAMES.memoryCapture
     | typeof QUEUE_NAMES.memoryConsolidate
@@ -412,6 +415,9 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
       (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES],
       | typeof QUEUE_NAMES.attachmentText
       | typeof QUEUE_NAMES.documentCover
+      // Nor does a composition: it runs minutes after the edit that caused it,
+      // and reports through `document.overview.updated` (issue #53).
+      | typeof QUEUE_NAMES.documentOverview
       // The calendar sync has no workspace in its payload and no browser
       // waiting on it, so it reports nothing over the progress channel.
       | typeof QUEUE_NAMES.calendarSync

@@ -3,6 +3,7 @@ import { type PrismaClient } from '@exocortex/database';
 
 import { fireMatchingAutomations } from './automations';
 import { isMissingRow, type MaintenanceTask } from './context';
+import { scheduleOverviewRefreshes } from './overviews';
 
 /**
  * Events after which a page may answer to a different title than before, so
@@ -73,6 +74,26 @@ export const dispatchOutbox: MaintenanceTask = async (context) => {
           correlationId: event.correlationId,
           automationRuleId: event.automationRuleId,
           automationDepth: event.automationDepth,
+        },
+      );
+      // Overview pages hang off the outbox for the same reason automations do
+      // (issue #53, ADR-028): this is the one place a page change passes
+      // exactly once. A workspace with no overview page pays for one cached
+      // settings read per event.
+      await scheduleOverviewRefreshes(
+        {
+          prisma,
+          queues,
+          enabledFor: async (workspaceId) =>
+            (await context.settings(workspaceId))['overview.enabled'],
+          debounceSecondsFor: async (workspaceId) =>
+            (await context.settings(workspaceId))['overview.debounceSeconds'],
+        },
+        {
+          workspaceId: event.workspaceId,
+          type: event.type,
+          payload: event.payload,
+          correlationId: event.correlationId,
         },
       );
       await prisma.outboxEvent.update({
