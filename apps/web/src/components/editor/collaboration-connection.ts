@@ -9,6 +9,7 @@ import {
   type DocumentSessionState,
   presenceColor,
   type PresenceUser,
+  SELF_PRESENCE_COLOR,
   useDocumentSession,
 } from '@/components/shell/document-session';
 import { fetchCollaborationTicket } from '@/lib/api/queries';
@@ -129,11 +130,17 @@ function attachPresence(
     for (const [clientId, state] of states) {
       const user = (state as { user?: { name?: string; color?: string } }).user;
       if (user === undefined) continue;
+      const self = clientId === provider.awareness?.clientID;
       users.push({
         clientId,
         name: user.name ?? 'Unbekannt',
-        color: user.color ?? presenceColor(String(clientId)),
-        self: clientId === provider.awareness?.clientID,
+        // Your own entry is recoloured on the way in rather than on the way
+        // out. The colour in awareness is what everyone else has to see you as,
+        // so it stays the hashed one; amber is a local reading of the same
+        // state, and it is applied here so there is exactly one place that
+        // decides it (see SELF_PRESENCE_COLOR).
+        color: self ? SELF_PRESENCE_COLOR : (user.color ?? presenceColor(String(clientId))),
+        self,
       });
     }
     publish({ presence: users });

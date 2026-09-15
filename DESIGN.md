@@ -268,8 +268,10 @@ because they now have to carry against a mid-tone page:
 (0.775…0.915) so they survive deuteranopia and protanopia, where hue alone
 collapses. The whole band sits high for the same reason as the status colours:
 every one of them has to clear 3:1 on `card`, the lightest surface a cursor can
-land on. Presence 1 is the amber signal: your own cursor is the one you should
-find fastest.
+land on. `presence-1` is the amber signal and it is reserved: on your own screen
+it is always you, and `presenceColor` hashes everyone else across the remaining
+five so a remote user can never draw it. That costs one colour out of six and
+buys the answer to the question a presence strip is asked first.
 
 ### Neutral
 
@@ -613,6 +615,14 @@ above it (`presence-foreground` text, ≥5.7:1 on every presence colour). Avatar
 in the header use the same colour. Colour is consistent per person across the
 whole app: the cursor in the text, the avatar in the header and the name in the
 tooltip are always the same hue.
+
+You are the exception, and deliberately so. Your own avatar is `presence-1`, the
+amber, on your own screen only. The colour you broadcast into awareness stays
+the hashed one, because it is what everyone else has to identify you by, and it
+would be useless if every participant sent the same value. So the swap happens
+where the awareness states are read rather than where they are written
+(`collaboration-connection.ts`), which keeps it to one line and one place: amber
+is you, everywhere you look, in every workspace and on every account.
 
 ## 6. Do's and Don'ts
 

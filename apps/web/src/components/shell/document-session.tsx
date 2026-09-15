@@ -98,10 +98,31 @@ export function useDocumentSession(): DocumentSessionContextValue {
   return context;
 }
 
-/** Deterministic presence colour so a user keeps the same colour everywhere. */
+/**
+ * The colour you wear on your own screen, wherever you appear to yourself: the
+ * avatar in the header, your row in a presence list.
+ *
+ * `presence-1` is the brand amber, and DESIGN.md gives it to the signed-in user
+ * on purpose. The question a presence strip answers first is "which one is me",
+ * and answering it with a colour that changed per account meant it could not be
+ * learned. Amber is the colour this product already uses for "you, now".
+ *
+ * It is not broadcast. Everyone sees themselves in amber and sees everyone else
+ * in the colour that person hashed to, which is why `presenceColor` below never
+ * returns this one.
+ */
+export const SELF_PRESENCE_COLOR = 'var(--presence-1)';
+
+/**
+ * Deterministic presence colour so another person keeps the same colour
+ * everywhere: the same seed gives the same token in the editor caret, the
+ * header avatar and the tooltip.
+ *
+ * Five tokens, not six. `presence-1` is spent on the local user, so a remote
+ * user never draws it and "amber means me" stays true even in a full room.
+ */
 export function presenceColor(seed: string): string {
   const tokens = [
-    'var(--presence-1)',
     'var(--presence-2)',
     'var(--presence-3)',
     'var(--presence-4)',
