@@ -225,11 +225,7 @@ export class DocumentContentService {
        * unrelated one and Yjs keeps both halves. See
        * `applyProseMirrorDocumentToState`.
        */
-      applied = applyProseMirrorDocumentToState(
-        existing.yjsState,
-        liveUpdate,
-        input.request.mode,
-      );
+      applied = applyProseMirrorDocumentToState(existing.yjsState, liveUpdate, input.request.mode);
     } catch (error) {
       this.logger.warn('Document content write rejected: markdown could not be parsed', {
         documentId: input.documentId,
