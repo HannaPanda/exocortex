@@ -107,6 +107,17 @@ test.describe('markdown and search', () => {
     expect(markdown).not.toContain(`# Gleich ${marker}`);
     expect(markdown).toContain('Ein Absatz.');
 
+    // Counted, not looked for by name: the overview names only the first few
+    // pages of each kind, and this workspace already holds others.
+    const countReported = async (): Promise<number> => {
+      const overview = await page.request.get(`/api/workspaces/${workspaceId}/overview`);
+      const body = (await overview.json()) as {
+        attention: { duplicateTitleHeadings: { count: number } };
+      };
+      return body.attention.duplicateTitleHeadings.count;
+    };
+    const before = await countReported();
+
     const similar = await page.request.post(`/api/workspaces/${workspaceId}/import/markdown`, {
       data: {
         markdown: `# Ähnlich ${marker} und noch etwas\n\nEin Absatz.\n`,
@@ -115,13 +126,7 @@ test.describe('markdown and search', () => {
     });
     expect(similar.ok(), await similar.text()).toBe(true);
 
-    const overview = await page.request.get(`/api/workspaces/${workspaceId}/overview`);
-    const attention = (await overview.json()) as {
-      attention: { duplicateTitleHeadings: { documents: { title: string }[] } };
-    };
-    expect(
-      attention.attention.duplicateTitleHeadings.documents.map((entry) => entry.title),
-    ).toContain(`Ähnlich ${marker}`);
+    expect(await countReported()).toBe(before + 1);
   });
 
   test('search finds text from the materialized page', async ({ page }) => {

@@ -187,9 +187,7 @@ export const SEED_PAGES = [
   {
     title: 'Willkommen bei eXocortex',
     icon: '👋',
-    markdown: `# Willkommen bei eXocortex
-
-eXocortex ist dein gemeinsames externes Gehirn: Seiten, Datenbanken, Suche und
+    markdown: `eXocortex ist dein gemeinsames externes Gehirn: Seiten, Datenbanken, Suche und
 KI in einem Werkzeug.
 
 > [!info] Erste Schritte
@@ -203,9 +201,7 @@ KI in einem Werkzeug.
       {
         title: 'Tastenkürzel',
         icon: '⌨️',
-        markdown: `# Tastenkürzel
-
-| Kürzel | Wirkung |
+        markdown: `| Kürzel | Wirkung |
 | --- | --- |
 | Strg + K | Befehlspalette öffnen |
 | Strg + B | Fett |
@@ -216,9 +212,7 @@ KI in einem Werkzeug.
       {
         title: 'Markdown-Referenz',
         icon: '📝',
-        markdown: `# Markdown-Referenz
-
-eXocortex kann Markdown importieren und exportieren.
+        markdown: `eXocortex kann Markdown importieren und exportieren.
 
 \`\`\`ts
 const beispiel = 'Code-Blöcke funktionieren';
@@ -233,17 +227,13 @@ Verlinke andere Seiten mit [[Tastenkürzel]].
   {
     title: 'Projekte',
     icon: '📁',
-    markdown: `# Projekte
-
-Sammelseite für laufende Projekte.
+    markdown: `Sammelseite für laufende Projekte.
 `,
     children: [
       {
         title: 'eXocortex selbst hosten',
         icon: '🚀',
-        markdown: `# eXocortex selbst hosten
-
-1. Repository klonen
+        markdown: `1. Repository klonen
 2. \`pnpm install\`
 3. \`pnpm infra:up\`
 4. \`pnpm db:migrate\`
@@ -256,9 +246,7 @@ Sammelseite für laufende Projekte.
           {
             title: 'Betriebsnotizen',
             icon: '🛠️',
-            markdown: `# Betriebsnotizen
-
-- Postgres, Redis, MinIO und Mailpit laufen als Container
+            markdown: `- Postgres, Redis, MinIO und Mailpit laufen als Container
 - nginx terminiert TLS
 `,
             children: [],
