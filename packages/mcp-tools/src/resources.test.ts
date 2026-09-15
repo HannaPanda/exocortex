@@ -52,6 +52,7 @@ function overview(workspaceId: string, workspaceName: string, documents: unknown
       openComments: { count: 0, documents: [] },
       brokenLinks: { count: 0, documents: [] },
       stalledAttachments: { count: 0, documents: [] },
+      duplicateTitleHeadings: { count: 0, documents: [] },
     },
   };
 }
