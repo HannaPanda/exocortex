@@ -84,7 +84,8 @@ export const workspaceOverviewTool: AnyToolDefinition = defineTool({
   description:
     'Zeigt den Einstieg in einen Arbeitsbereich: zuletzt bearbeitete Seiten, Datenbanken, ' +
     'die obersten Bereiche und was liegen geblieben ist (offene Kommentare, ins Leere ' +
-    'zeigende Verweise, hängende Textextraktionen). Gut als erster Aufruf, um zu sehen, ' +
+    'zeigende Verweise, hängende Textextraktionen, Seiten mit dem Titel doppelt im Text). ' +
+    'Gut als erster Aufruf, um zu sehen, ' +
     'woran zuletzt gearbeitet wurde, ohne den ganzen Seitenbaum zu laden.',
   inputSchema: z.object({ workspaceId: idSchema }),
   surfaces: ['mcp', 'ai'],
@@ -142,6 +143,7 @@ export const workspaceOverviewTool: AnyToolDefinition = defineTool({
       ['Offene Kommentare', result.attention.openComments] as const,
       ['Verweise ins Leere', result.attention.brokenLinks] as const,
       ['Hängende Textextraktionen', result.attention.stalledAttachments] as const,
+      ['Titel gleich nochmal als Überschrift', result.attention.duplicateTitleHeadings] as const,
     ].filter(([, item]) => item.count > 0);
     if (attention.length > 0) {
       sections.push(

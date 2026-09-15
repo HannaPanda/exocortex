@@ -199,16 +199,17 @@ export class WorkspaceOverviewService {
   }
 
   /**
-   * The three things that quietly pile up: unresolved threads, references
-   * pointing at nothing, and attachments whose text extraction never finished.
-   * Each answers with a count and the first few pages to click on, because a
-   * count on its own only tells the reader to go looking.
+   * The four things that quietly pile up: unresolved threads, references
+   * pointing at nothing, attachments whose text extraction never finished, and
+   * pages that open by saying their own title again. Each answers with a count
+   * and the first few pages to click on, because a count on its own only tells
+   * the reader to go looking.
    */
   private async loadAttention(
     workspaceId: string,
     byId: Map<string, DocumentRow>,
   ): Promise<WorkspaceOverviewResponse['attention']> {
-    const [comments, links, stalled] = await Promise.all([
+    const [comments, links, stalled, repeatedTitles] = await Promise.all([
       this.prisma.comment.groupBy({
         by: ['documentId'],
         where: { workspaceId, resolvedAt: null, parentId: null },
@@ -224,6 +225,28 @@ export class WorkspaceOverviewService {
         where: { workspaceId, deletedAt: null, textStatus: { in: ['PENDING', 'FAILED'] } },
         _count: { _all: true },
       }),
+      /*
+       * Pages whose first block is a first-level heading that starts with the
+       * page's own title. Raw SQL because the condition compares two columns of
+       * two tables, one of them inside a JSON document, which no Prisma filter
+       * expresses -- and because it has to stay one indexed scan: this runs
+       * every time somebody opens a workspace.
+       *
+       * `starts_with` rather than `LIKE`: a title containing `%` or `_` is
+       * ordinary text, not a pattern, and nobody should have to escape it here.
+       */
+      this.prisma.$queryRaw<{ documentId: string }[]>`
+        SELECT d.id AS "documentId"
+        FROM document d
+        JOIN document_content c ON c."documentId" = d.id
+        WHERE d."workspaceId" = ${workspaceId}
+          AND d."archivedAt" IS NULL
+          AND d.type = 'PAGE'
+          AND c."plainText" IS NOT NULL
+          AND c."proseMirrorJson" -> 'content' -> 0 ->> 'type' = 'heading'
+          AND c."proseMirrorJson" -> 'content' -> 0 -> 'attrs' ->> 'level' = '1'
+          AND starts_with(lower(split_part(c."plainText", E'\n', 1)), lower(d.title))
+      `,
     ]);
 
     const collect = (groups: { id: string | null; count: number }[]): AttentionItem => {
@@ -246,6 +269,9 @@ export class WorkspaceOverviewService {
       ),
       stalledAttachments: collect(
         stalled.map((group) => ({ id: group.documentId, count: group._count._all })),
+      ),
+      duplicateTitleHeadings: collect(
+        repeatedTitles.map((row) => ({ id: row.documentId, count: 1 })),
       ),
     };
   }

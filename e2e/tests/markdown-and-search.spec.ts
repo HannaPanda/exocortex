@@ -81,6 +81,49 @@ test.describe('markdown and search', () => {
     expect(workspaceId).toMatch(/^[a-z0-9]+$/);
   });
 
+  /**
+   * A page's title is metadata and is rendered above the page, so a heading
+   * repeating it shows it twice. The exact repeat is removed on the way in; a
+   * heading that only resembles the title is content nobody may delete on a
+   * hunch, so it is reported on the workspace overview instead.
+   */
+  test('drops a heading that repeats the title and reports one that resembles it', async ({
+    page,
+  }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const workspaceId = workspaceIdFrom(page);
+    const marker = `Titel-${Date.now().toString(36)}`;
+
+    const identical = await page.request.post(`/api/workspaces/${workspaceId}/import/markdown`, {
+      data: { markdown: `# Gleich ${marker}\n\nEin Absatz.\n`, title: `Gleich ${marker}` },
+    });
+    expect(identical.ok(), await identical.text()).toBe(true);
+    const identicalId = ((await identical.json()) as { document: { id: string } }).document.id;
+
+    const exported = await page.request.get(`/api/documents/${identicalId}/export/markdown`);
+    const { markdown } = (await exported.json()) as { markdown: string };
+    expect(markdown).toContain(`title: Gleich ${marker}`);
+    expect(markdown).not.toContain(`# Gleich ${marker}`);
+    expect(markdown).toContain('Ein Absatz.');
+
+    const similar = await page.request.post(`/api/workspaces/${workspaceId}/import/markdown`, {
+      data: {
+        markdown: `# Ähnlich ${marker} und noch etwas\n\nEin Absatz.\n`,
+        title: `Ähnlich ${marker}`,
+      },
+    });
+    expect(similar.ok(), await similar.text()).toBe(true);
+
+    const overview = await page.request.get(`/api/workspaces/${workspaceId}/overview`);
+    const attention = (await overview.json()) as {
+      attention: { duplicateTitleHeadings: { documents: { title: string }[] } };
+    };
+    expect(
+      attention.attention.duplicateTitleHeadings.documents.map((entry) => entry.title),
+    ).toContain(`Ähnlich ${marker}`);
+  });
+
   test('search finds text from the materialized page', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });

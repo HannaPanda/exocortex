@@ -2,6 +2,7 @@
 
 import {
   FileTextIcon,
+  Heading1Icon,
   Link2OffIcon,
   type LucideIcon,
   MessageSquareIcon,
@@ -386,6 +387,12 @@ function WorkspaceOverviewBody({
                 icon={PaperclipIcon}
                 label="Texte noch nicht gelesen"
                 item={data.attention.stalledAttachments}
+              />
+              <AttentionRow
+                workspaceId={workspaceId}
+                icon={Heading1Icon}
+                label="Titel gleich nochmal als Überschrift"
+                item={data.attention.duplicateTitleHeadings}
               />
             </ul>
           </section>

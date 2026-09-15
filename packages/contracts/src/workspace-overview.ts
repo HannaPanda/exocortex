@@ -72,6 +72,15 @@ export const workspaceAttentionSchema = z.object({
   brokenLinks: attentionItemSchema,
   /** Attachments whose text extraction has not finished or has failed. */
   stalledAttachments: attentionItemSchema,
+  /**
+   * Pages that open with a heading resembling their own title.
+   *
+   * A heading that repeats the title exactly never reaches the page any more --
+   * the write endpoint leaves it out. One that only resembles it is left alone
+   * there, because deleting content on a resemblance is guessing. It is
+   * reported here instead, where a person decides.
+   */
+  duplicateTitleHeadings: attentionItemSchema,
 });
 export type WorkspaceAttention = z.infer<typeof workspaceAttentionSchema>;
 
