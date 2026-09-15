@@ -13,6 +13,7 @@ import {
   markdownToYjsState,
   materializeYjsState,
   proseMirrorJsonToYjsState,
+  trimStrayParagraphs,
   YJS_DOCUMENT_FIELD,
   YjsMaterializationError,
   yjsStateToMarkdown,
@@ -214,5 +215,55 @@ describe('concurrent Yjs updates', () => {
     const twice = serializeMarkdown(yjsStateToProseMirrorJson(Y.encodeStateAsUpdate(doc)));
     expect(twice).toBe(once);
     doc.destroy();
+  });
+});
+
+describe('trimStrayParagraphs', () => {
+  const paragraph = (text?: string) =>
+    text === undefined
+      ? { type: 'paragraph' }
+      : { type: 'paragraph', content: [{ type: 'text', text }] };
+
+  it('removes the empty paragraphs above and below the content', () => {
+    const state = proseMirrorJsonToYjsState({
+      type: 'doc',
+      content: [paragraph(), paragraph(), paragraph('Inhalt'), paragraph()],
+    });
+
+    const trimmed = trimStrayParagraphs(state);
+
+    expect(trimmed).toMatchObject({ leading: 2, trailing: 1 });
+    expect(yjsStateToProseMirrorJson(trimmed.yjsState as Uint8Array).content).toHaveLength(1);
+  });
+
+  it('keeps a blank line that sits between two blocks', () => {
+    const state = proseMirrorJsonToYjsState({
+      type: 'doc',
+      content: [paragraph('Oben'), paragraph(), paragraph('Unten')],
+    });
+
+    expect(trimStrayParagraphs(state).yjsState).toBeNull();
+  });
+
+  it('leaves one paragraph in a document that is nothing else', () => {
+    const state = proseMirrorJsonToYjsState({
+      type: 'doc',
+      content: [paragraph(), paragraph(), paragraph()],
+    });
+
+    const trimmed = trimStrayParagraphs(state);
+
+    expect(trimmed).toMatchObject({ leading: 2, trailing: 0 });
+    expect(yjsStateToProseMirrorJson(trimmed.yjsState as Uint8Array).content).toHaveLength(1);
+  });
+
+  it('is idempotent', () => {
+    const state = proseMirrorJsonToYjsState({
+      type: 'doc',
+      content: [paragraph(), paragraph('Inhalt')],
+    });
+
+    const once = trimStrayParagraphs(state).yjsState as Uint8Array;
+    expect(trimStrayParagraphs(once).yjsState).toBeNull();
   });
 });

@@ -148,6 +148,71 @@ export function applyProseMirrorDocumentToYDoc(
   }
 }
 
+export interface TrimStrayParagraphsResult {
+  /** Empty paragraphs removed from the top of the document. */
+  leading: number;
+  /** Empty paragraphs removed from the bottom. */
+  trailing: number;
+  /** The new binary state, or `null` when there was nothing to remove. */
+  yjsState: Uint8Array | null;
+}
+
+/** An `XmlElement` that is a paragraph with nothing in it. */
+function isEmptyParagraph(node: Y.XmlElement | Y.XmlFragment | Y.XmlText | Y.XmlHook): boolean {
+  return node instanceof Y.XmlElement && node.nodeName === 'paragraph' && node.length === 0;
+}
+
+/**
+ * Removes the runs of empty paragraphs at the very top and the very bottom of a
+ * stored document.
+ *
+ * They are not something anyone typed. Until the editor waited for the stored
+ * state to arrive, opening a page built Tiptap over a Yjs fragment that was
+ * still empty; Tiptap pushed its own initial document into it, and Yjs merged
+ * that insert with the content that landed a moment later rather than
+ * discarding it. One empty paragraph per visit, above or below the text
+ * depending on where the client id sorted -- which is why the pages that are
+ * read most had grown the widest margins of blank lines.
+ *
+ * Empty paragraphs *between* two blocks are left alone: a blank line somebody
+ * put between two sections is content. A document that is nothing but empty
+ * paragraphs keeps exactly one, because a page needs a block to put the caret
+ * in.
+ */
+export function trimStrayParagraphs(state: Uint8Array): TrimStrayParagraphsResult {
+  const doc = yjsStateToDocument(state);
+  try {
+    const fragment = doc.getXmlFragment(YJS_DOCUMENT_FIELD);
+    const nodes = fragment.toArray();
+
+    let leading = 0;
+    while (leading < nodes.length && isEmptyParagraph(nodes[leading] as Y.XmlElement)) leading += 1;
+    let trailing = 0;
+    if (leading === nodes.length) {
+      // Nothing but blank paragraphs: one of them stays.
+      leading = Math.max(0, leading - 1);
+    } else {
+      while (
+        trailing < nodes.length - leading - 1 &&
+        isEmptyParagraph(nodes[nodes.length - 1 - trailing] as Y.XmlElement)
+      ) {
+        trailing += 1;
+      }
+    }
+
+    if (leading === 0 && trailing === 0) return { leading, trailing, yjsState: null };
+
+    doc.transact(() => {
+      // The tail first: deleting the head would move its indexes.
+      if (trailing > 0) fragment.delete(fragment.length - trailing, trailing);
+      if (leading > 0) fragment.delete(0, leading);
+    });
+    return { leading, trailing, yjsState: Y.encodeStateAsUpdate(doc) };
+  } finally {
+    doc.destroy();
+  }
+}
+
 export interface MaterializedContent {
   proseMirrorJson: ProseMirrorDocument;
   plainText: string;

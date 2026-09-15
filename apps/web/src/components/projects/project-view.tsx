@@ -104,7 +104,10 @@ function SourcePane({
   if (connection.error !== null) {
     return <ErrorState title="Keine Verbindung" description={connection.error} />;
   }
-  if (connection.connection === null) return <LoadingState label="Verbindung wird aufgebaut …" />;
+  // `ready` as well: a file tree is a Yjs document like any other, and an
+  // editor built before it has arrived writes into an empty one.
+  if (connection.connection === null || !connection.ready)
+    return <LoadingState label="Verbindung wird aufgebaut …" />;
   if (selected === null) {
     return <EmptyState title="Keine Datei gewählt" description="Links eine Datei anklicken." />;
   }

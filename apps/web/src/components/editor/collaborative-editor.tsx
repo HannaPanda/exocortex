@@ -222,7 +222,7 @@ export function CollaborativeEditor({
   access,
   breadcrumb,
 }: CollaborativeEditorProps) {
-  const { connection, error, synced, retry } = useCollaborationConnection({
+  const { connection, error, synced, ready, retry } = useCollaborationConnection({
     documentId,
     documentTitle,
     currentUser,
@@ -231,7 +231,10 @@ export function CollaborativeEditor({
   if (error !== null) {
     return <ErrorState title="Editor nicht verfügbar" description={error} onRetry={retry} />;
   }
-  if (connection === null) {
+  // `ready`, not just `connection`: an editor built over a document that has
+  // not arrived yet leaves an empty paragraph behind on every visit. See
+  // `CollaborationConnectionState.ready`.
+  if (connection === null || !ready) {
     return <LoadingState label="Editor wird verbunden …" />;
   }
 

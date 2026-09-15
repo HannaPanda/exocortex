@@ -205,6 +205,21 @@ export interface CollaborationConnectionState {
   error: string | null;
   /** `true` once the first server handshake has completed. */
   synced: boolean;
+  /**
+   * Whether the Yjs document is loaded far enough to build an editor on it.
+   *
+   * An editor must never be mounted over a document that is still empty only
+   * because nothing has arrived yet. Tiptap pushes its own initial document
+   * into an empty Yjs fragment, and that push is an ordinary concurrent insert:
+   * when the stored state lands a moment later, Yjs merges the two instead of
+   * replacing one with the other, and the page keeps an empty paragraph that
+   * nobody typed. One per visit, for ever -- the leading and trailing blank
+   * lines that grew on every page that is read more often than it is written.
+   *
+   * True once the server has answered, or as soon as the offline copy carries
+   * content: both mean the fragment is no longer empty by accident.
+   */
+  ready: boolean;
   /** Builds the connection again from the ticket up. */
   retry: () => void;
 }
@@ -231,6 +246,7 @@ export function useCollaborationConnection({
   const [connection, setConnection] = React.useState<Connection | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [synced, setSynced] = React.useState(false);
+  const [ready, setReady] = React.useState(false);
   /**
    * Bumped by the error state's retry button. The first ticket request is the
    * one thing here with no retry of its own — the provider retries the socket
@@ -308,6 +324,7 @@ export function useCollaborationConnection({
     const connect = async (): Promise<void> => {
       setError(null);
       setSynced(false);
+      setReady(false);
       update({
         documentId,
         documentTitle: documentTitleRef.current,
@@ -341,6 +358,23 @@ export function useCollaborationConnection({
       const ydoc = new Y.Doc();
       // Offline persistence: the local copy is available before the socket opens.
       const persistence = new IndexeddbPersistence(`exocortex:${documentId}`, ydoc);
+
+      /**
+       * Releases the editor onto this document; see `ready` on the state.
+       *
+       * The offline copy counts as an answer as long as it carries something:
+       * a page that was read before opens without the network, and a fragment
+       * that already has content cannot be mistaken for an empty document.
+       * An empty local copy says nothing, so it waits for the server.
+       */
+      const markReady = (): void => {
+        if (!disposed) setReady(true);
+      };
+      void persistence.whenSynced.then(() => {
+        // A state vector of one byte is the encoding of "no client has written
+        // anything here", which is the one case an editor must not be built on.
+        if (Y.encodeStateVector(ydoc).length > 1) markReady();
+      });
 
       const nextTicket = ticketSource(documentId, ticket.ticket);
 
@@ -429,6 +463,7 @@ export function useCollaborationConnection({
         onSynced: () => {
           record('synced');
           setSynced(true);
+          markReady();
           update({ pendingSync: false });
         },
         onDisconnect: () => {
@@ -505,5 +540,5 @@ export function useCollaborationConnection({
     // retry button rebuilds the connection from the ticket up.
   }, [attempt, documentId, retry, update, userId, userName]);
 
-  return { connection, error, synced, retry };
+  return { connection, error, synced, ready, retry };
 }

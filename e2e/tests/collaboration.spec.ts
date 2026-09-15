@@ -5,6 +5,7 @@ import {
   createPage,
   createSignedInContext,
   requireSeedCredentials,
+  waitForCollaboration,
   workspaceIdFrom,
 } from '../support/fixtures';
 
@@ -198,6 +199,42 @@ test.describe('collaborative editing', () => {
       );
     } finally {
       await first.context.close();
+    }
+  });
+
+  /**
+   * Reading a page must not write to it.
+   *
+   * The editor used to be built as soon as the provider existed, which meant it
+   * mounted over a Yjs fragment that was still empty. Tiptap pushed its own
+   * initial document into it, Yjs merged that insert with the stored state that
+   * arrived a moment later, and the page kept one empty paragraph -- per visit,
+   * above or below the text depending on where the client id sorted. Pages that
+   * were read often grew visible margins of blank lines over weeks.
+   */
+  test('reopening a page adds no empty paragraph', async ({ browser, baseURL }) => {
+    const origin = baseURL as string;
+    const { context, page } = await createSignedInContext(browser, 'johanna', origin);
+
+    try {
+      const documentId = await createPage(page, `Leerzeilen ${Date.now().toString(36)}`);
+      const workspaceId = workspaceIdFrom(page);
+      await page.getByTestId('editor-surface').click();
+      await page.keyboard.type('Eine einzige Zeile');
+
+      const blocks = page.locator('[data-testid="editor-surface"] > *');
+      await expect(blocks).toHaveCount(1);
+
+      // Three visits, each with its own Yjs client id: the fault added one
+      // paragraph per visit, so the count is the whole assertion.
+      for (let visit = 0; visit < 3; visit += 1) {
+        await page.goto(`/arbeitsbereich/${workspaceId}`);
+        await page.goto(`/arbeitsbereich/${workspaceId}/seite/${documentId}`);
+        await waitForCollaboration(page);
+        await expect(blocks).toHaveCount(1, { timeout: 30_000 });
+      }
+    } finally {
+      await context.close();
     }
   });
 
