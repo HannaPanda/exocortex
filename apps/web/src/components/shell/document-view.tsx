@@ -39,6 +39,7 @@ import { DatabaseShell } from '@/components/database/database-shell';
 import { DocumentIcon } from '@/components/document/document-icon';
 import { PageCover, PageCoverAddButton } from '@/components/document/page-cover';
 import { PageIconAddButton, PageIconButton } from '@/components/document/page-icon-picker';
+import { PageOverview } from '@/components/document/page-overview';
 import { PagePropertiesDialog } from '@/components/document/page-properties-dialog';
 import { CollaborativeEditor } from '@/components/editor/collaborative-editor';
 import { PageRenderDialog } from '@/components/render/page-render-dialog';
@@ -229,6 +230,12 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
                 void updateDocument.mutateAsync({ documentId, request: { title: nextTitle } });
               }}
             />
+
+            {/* Between the title and the body: the overview is about the page's
+                sub-pages, and a reader looking for one of them should not have
+                to scroll past a body that may be empty (ADR-028). Renders
+                nothing unless the page is marked as an overview. */}
+            <PageOverview workspaceId={workspaceId} documentId={documentId} readOnly={readOnly} />
 
             {user === undefined || user === null ? (
               <LoadingState label="Sitzung wird geprüft …" />

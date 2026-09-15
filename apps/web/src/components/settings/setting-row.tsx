@@ -39,6 +39,7 @@ export const GROUP_LABELS: Record<string, string> = {
   calendar: 'Kalender',
   activity: 'Aktivität',
   automations: 'Automationen',
+  overview: 'Übersichtsseiten',
   render: 'Veröffentlichen',
 };
 
@@ -307,6 +308,30 @@ export const SETTING_COPY: Record<SettingKey, { label: string; help: string }> =
   'automations.runRetentionDays': {
     label: 'Lauf-Protokoll aufbewahren (Tage)',
     help: 'So lange bleibt sichtbar, was die Automationen getan haben. Die Regeln selbst bleiben unberührt. 0 bedeutet: für immer.',
+  },
+  'overview.enabled': {
+    label: 'Übersichtsseiten pflegen',
+    help: 'Ob für Seiten, die als Übersicht markiert sind, ein Vorspann und Steckbriefe erzeugt werden. Die Liste der Unterseiten steht unabhängig davon immer da, sie kostet nichts. Aus bedeutet: Navigation ohne Modellaufrufe. Ein Arbeitsbereich darf das für sich abschalten, aber nicht gegen diese Einstellung wieder einschalten.',
+  },
+  'overview.modelSlug': {
+    label: 'Modell für Übersichten',
+    help: 'Leer verwendet das Standardmodell. Hier lohnt ein kleines Modell: es geht jedes Mal um zwei bis fünf Sätze, dafür oft.',
+  },
+  'overview.debounceSeconds': {
+    label: 'Ruhezeit vor dem Neuschreiben (Sekunden)',
+    help: 'So lange muss es um eine Seite still sein, bevor die Übersicht darüber neu geschrieben wird. Deutlich länger als bei Automationen: auf einen Vorspann wartet niemand, und ein Nachmittag Arbeit an einer Seite soll einen Lauf kosten, nicht zwanzig.',
+  },
+  'overview.maxChildren': {
+    label: 'Unterseiten je Vorspann',
+    help: 'Ab wie vielen Unterseiten kein Vorspann mehr erzeugt wird. Die Liste bleibt vollständig; nur der einordnende Absatz entfällt, weil er bei hundert Einträgen nichts mehr sagt, was die Liste nicht schon sagt.',
+  },
+  'overview.maxPageChars': {
+    label: 'Zeichen je Seite für den Steckbrief',
+    help: 'So viel Text einer Seite fließt in ihren Steckbrief ein. Der Anfang einer Seite sagt fast immer, worum es geht.',
+  },
+  'overview.generateCovers': {
+    label: 'Titelbilder für Übersichtsseiten',
+    help: 'Eine Übersichtsseite ohne Titelbild bekommt eines aus ihrem eigenen Vorspann gemalt, einmal. Braucht ein eingerichtetes Bildmodell, sonst passiert nichts. Ein von Hand entferntes Titelbild bleibt entfernt.',
   },
   'render.enabled': {
     label: 'PDF-Ausgabe aktiviert',

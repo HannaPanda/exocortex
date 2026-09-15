@@ -7,6 +7,7 @@ import {
   type DocumentDetail,
   type DocumentIconColor,
   type DocumentLayout,
+  type OverviewMode,
 } from '@exocortex/contracts';
 import {
   Button,
@@ -25,6 +26,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Switch,
 } from '@exocortex/ui';
 
 import { useSetAiRule } from '@/lib/api/ai-queries';
@@ -89,6 +91,7 @@ export function PagePropertiesDialog({
   const [icon, setIcon] = React.useState<string | null>(detail.icon);
   const [iconColor, setIconColor] = React.useState<DocumentIconColor | null>(detail.iconColor);
   const [layout, setLayout] = React.useState<DocumentLayout>(detail.layout);
+  const [overviewMode, setOverviewMode] = React.useState<OverviewMode>(detail.overviewMode);
   const [mode, setMode] = React.useState<AiRuleMode>(detail.aiRuleMode);
   const [trigger, setTrigger] = React.useState(detail.aiRuleTrigger ?? '');
   const [priority, setPriority] = React.useState(String(detail.aiRulePriority));
@@ -104,6 +107,7 @@ export function PagePropertiesDialog({
       setIcon(detail.icon);
       setIconColor(detail.iconColor);
       setLayout(detail.layout);
+      setOverviewMode(detail.overviewMode);
       setMode(detail.aiRuleMode);
       setTrigger(detail.aiRuleTrigger ?? '');
       setPriority(String(detail.aiRulePriority));
@@ -123,6 +127,7 @@ export function PagePropertiesDialog({
       ...(icon === detail.icon ? {} : { icon }),
       ...(iconColor === detail.iconColor ? {} : { iconColor }),
       ...(layout === detail.layout ? {} : { layout }),
+      ...(overviewMode === detail.overviewMode ? {} : { overviewMode }),
     };
     if (Object.keys(presentation).length > 0) {
       await updateDocument.mutateAsync({ documentId: detail.id, request: presentation });
@@ -151,7 +156,8 @@ export function PagePropertiesDialog({
         <DialogHeader>
           <DialogTitle>Seiteneigenschaften</DialogTitle>
           <DialogDescription>
-            Titel, Symbol, Breite der Seite und ob die KI diese Seite als Regel behandelt.
+            Titel, Symbol, Breite der Seite, ob sie ihre Unterseiten zusammenfasst und ob die KI sie
+            als Regel behandelt.
           </DialogDescription>
         </DialogHeader>
 
@@ -237,6 +243,24 @@ export function PagePropertiesDialog({
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5 border-t border-border pt-4">
+            <Label htmlFor="page-overview-mode" className="gap-2">
+              <Switch
+                id="page-overview-mode"
+                disabled={readOnly}
+                data-testid="page-properties-overview"
+                checked={overviewMode === 'auto'}
+                onCheckedChange={(checked) => setOverviewMode(checked ? 'auto' : 'off')}
+              />
+              Übersichtsseite
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              Die Seite zeigt ihre Unterseiten mit einer kurzen Beschreibung und einem Vorspann, der
+              beim Ändern der Unterseiten neu geschrieben wird. Dein eigener Seitentext bleibt
+              unangetastet: die Übersicht steht darunter und wird nie hineingeschrieben.
+            </p>
           </div>
 
           <div className="flex flex-col gap-1.5 border-t border-border pt-4">
