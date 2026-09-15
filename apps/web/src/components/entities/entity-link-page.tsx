@@ -50,7 +50,12 @@ export function EntityLinkPage({ entityId }: { entityId: string }) {
               className="w-44"
               data-testid="entity-link-workspace"
             >
-              <SelectValue />
+              <SelectValue>
+                {() =>
+                  workspaces.data?.find((workspace) => workspace.id === chosen)?.name ??
+                  'Arbeitsbereich wählen'
+                }
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {(workspaces.data ?? []).map((workspace) => (

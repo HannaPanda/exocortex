@@ -87,7 +87,7 @@ function Profile({ profile }: { profile: EntityProfile }) {
             }
           >
             <SelectTrigger id={`type-${entity.id}`} className="w-40" data-testid="entity-set-type">
-              <SelectValue />
+              <SelectValue>{() => ENTITY_TYPE_LABELS[entity.type]}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {(Object.keys(ENTITY_TYPE_LABELS) as EntityType[]).map((value) => (

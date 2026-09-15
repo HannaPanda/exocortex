@@ -48,7 +48,12 @@ export function EntityDatabaseSetup() {
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <Select value={chosen ?? ''} onValueChange={setWorkspaceId}>
             <SelectTrigger className="w-56" data-testid="entity-database-workspace">
-              <SelectValue />
+              <SelectValue>
+                {() =>
+                  workspaces.data?.find((workspace) => workspace.id === chosen)?.name ??
+                  'Arbeitsbereich wählen'
+                }
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {(workspaces.data ?? []).map((workspace) => (

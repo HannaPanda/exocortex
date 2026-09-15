@@ -80,7 +80,8 @@ export function ProjectToolbar({
         }}
       >
         <SelectTrigger id="project-root" size="sm" className="w-48">
-          <SelectValue />
+          {/* The value is the path, so here it really is the label. */}
+          <SelectValue>{() => project.rootFile}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {rootCandidates.map((file) => (
@@ -98,7 +99,7 @@ export function ProjectToolbar({
         }}
       >
         <SelectTrigger size="sm" className="w-32" aria-label="Engine">
-          <SelectValue />
+          <SelectValue>{() => ENGINE_LABEL[project.engine]}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {Object.entries(ENGINE_LABEL).map(([value, label]) => (
@@ -116,7 +117,7 @@ export function ProjectToolbar({
         }}
       >
         <SelectTrigger size="sm" className="w-36" aria-label="Literaturverzeichnis">
-          <SelectValue />
+          <SelectValue>{() => BIBLIOGRAPHY_LABEL[project.bibliography]}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {Object.entries(BIBLIOGRAPHY_LABEL).map(([value, label]) => (

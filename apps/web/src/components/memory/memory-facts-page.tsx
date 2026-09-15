@@ -81,7 +81,7 @@ export function MemoryFactsPage() {
           <Label htmlFor="memory-status">Zustand</Label>
           <Select value={status} onValueChange={(next) => setStatus(next as MemoryFactStatus)}>
             <SelectTrigger id="memory-status" className="w-44" data-testid="memory-status">
-              <SelectValue />
+              <SelectValue>{() => STATUS_LABELS[status]}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {STATUSES.map((value) => (
@@ -96,7 +96,12 @@ export function MemoryFactsPage() {
           <Label htmlFor="memory-target">Übernehmen nach</Label>
           <Select value={chosenTarget ?? ''} onValueChange={setTarget}>
             <SelectTrigger id="memory-target" className="w-56" data-testid="memory-target">
-              <SelectValue />
+              <SelectValue>
+                {() =>
+                  workspaces.data?.find((workspace) => workspace.id === chosenTarget)?.name ??
+                  'Arbeitsbereich wählen'
+                }
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {(workspaces.data ?? []).map((workspace) => (

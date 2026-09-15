@@ -348,7 +348,9 @@ function RenderForm({
         <Label htmlFor="render-template">Vorlage</Label>
         <Select value={templateId ?? ''} onValueChange={onTemplateChange}>
           <SelectTrigger id="render-template" data-testid="render-template">
-            <SelectValue />
+            <SelectValue>
+              {() => templates.find((entry) => entry.id === templateId)?.name ?? 'Vorlage wählen'}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {templates.map((entry) => (
@@ -367,7 +369,7 @@ function RenderForm({
         <Label htmlFor="render-source">Umfang</Label>
         <Select value={source} onValueChange={(value) => onSourceChange(value as RenderSource)}>
           <SelectTrigger id="render-source" data-testid="render-source">
-            <SelectValue />
+            <SelectValue>{() => RENDER_SOURCE_LABELS[source]}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             {Object.entries(RENDER_SOURCE_LABELS).map(([value, label]) => (

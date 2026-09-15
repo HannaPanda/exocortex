@@ -21,12 +21,25 @@ const SelectItemText = SelectPrimitive.ItemText;
 
 /**
  * Unlike Radix's `Select.Value`, Base UI's renders the selected *value*, not the
- * selected item's text. Whenever the value differs from what the item shows
- * (an id, a slug, an English enum member), pass a render function:
- * `<SelectValue>{() => label}</SelectValue>`. A bare `<SelectValue />` is only
- * correct when the value is already the label.
+ * selected item's text. A bare `<SelectValue />` therefore puts an id, a slug or
+ * an English enum member on screen wherever the value is not already the label,
+ * which is a defect nothing catches: the popup reads correctly, only the closed
+ * trigger lies.
+ *
+ * Hence `children` is required here rather than optional as in the primitive.
+ * Pass the label the closed trigger should show:
+ * `<SelectValue>{() => LABELS[value]}</SelectValue>`. Where the value really is
+ * the label, say so explicitly (`{() => value}`) instead of leaving it out, so
+ * the reader can tell a considered case from a forgotten one.
  */
-function SelectValue({ className, ...props }: React.ComponentProps<typeof SelectPrimitive.Value>) {
+export interface SelectValueProps extends Omit<
+  React.ComponentProps<typeof SelectPrimitive.Value>,
+  'children'
+> {
+  children: NonNullable<React.ComponentProps<typeof SelectPrimitive.Value>['children']>;
+}
+
+function SelectValue({ className, ...props }: SelectValueProps) {
   return (
     <SelectPrimitive.Value
       data-slot="select-value"

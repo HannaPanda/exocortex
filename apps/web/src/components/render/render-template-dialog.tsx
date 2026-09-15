@@ -228,7 +228,7 @@ function TemplateForm({
                   }
                 >
                   <SelectTrigger aria-label="Woher der Wert kommt">
-                    <SelectValue />
+                    <SelectValue>{() => VARIABLE_ORIGIN_LABELS[variable.origin]}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {Object.entries(VARIABLE_ORIGIN_LABELS).map(([value, label]) => (

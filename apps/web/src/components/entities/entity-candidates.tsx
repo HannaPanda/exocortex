@@ -82,7 +82,7 @@ function CandidateRow({ candidate }: { candidate: EntityCandidate }) {
         <div className="ms-auto flex items-center gap-2">
           <Select value={type} onValueChange={(next) => setType(next as EntityType)}>
             <SelectTrigger className="w-36" data-testid="entity-candidate-type">
-              <SelectValue />
+              <SelectValue>{() => ENTITY_TYPE_LABELS[type]}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {(Object.keys(ENTITY_TYPE_LABELS) as EntityType[]).map((value) => (

@@ -300,7 +300,7 @@ function ScopeFields({ draft, set }: FieldProps) {
       <Label>Geltungsbereich</Label>
       <Select value={draft.scope} onValueChange={(value) => set('scope', value as AutomationScope)}>
         <SelectTrigger data-testid="automation-scope">
-          <SelectValue />
+          <SelectValue>{() => SCOPE_LABELS[draft.scope]}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {(Object.keys(SCOPE_LABELS) as AutomationScope[]).map((scope) => (
@@ -386,7 +386,7 @@ function ActionFields({
           disabled={!isNew && draft.action === 'AI_RUN'}
         >
           <SelectTrigger data-testid="automation-action">
-            <SelectValue />
+            <SelectValue>{() => ACTION_LABELS[draft.action]}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             {(Object.keys(ACTION_LABELS) as AutomationAction[]).map((action) => (
@@ -438,7 +438,7 @@ function ActionFields({
               onValueChange={(value) => set('output', value as AutomationOutput)}
             >
               <SelectTrigger data-testid="automation-output">
-                <SelectValue />
+                <SelectValue>{() => OUTPUT_LABELS[draft.output]}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {(Object.keys(OUTPUT_LABELS) as AutomationOutput[]).map((output) => (

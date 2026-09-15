@@ -95,7 +95,7 @@ export function EntityDialog({
             <Label htmlFor="entity-type">Typ</Label>
             <Select value={type} onValueChange={(next) => setType(next as EntityType)}>
               <SelectTrigger id="entity-type" data-testid="entity-type">
-                <SelectValue />
+                <SelectValue>{() => ENTITY_TYPE_LABELS[type]}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {(Object.keys(ENTITY_TYPE_LABELS) as EntityType[]).map((value) => (

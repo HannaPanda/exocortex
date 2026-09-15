@@ -82,7 +82,9 @@ export function EntitiesPage() {
           onValueChange={(next) => setType(next === 'all' ? null : (next as EntityType))}
         >
           <SelectTrigger className="w-44" data-testid="entity-type-filter">
-            <SelectValue />
+            <SelectValue>
+              {() => (type === null ? 'Alle Typen' : ENTITY_TYPE_LABELS[type])}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Alle Typen</SelectItem>
