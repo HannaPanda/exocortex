@@ -62,6 +62,15 @@ unrelated document and Yjs keeps both halves. Pages written that way came back
 carrying their content twice (2026-09-15). Editing the stored state leaves
 tombstones, which is what makes a late copy converge on the write.
 
+A snapshot restore goes the same way, and for the mirror-image reason: storing
+the snapshot's bytes is the state exactly, but it moves the document
+_backwards_, so everything written since is missing from that state rather than
+deleted in it, and the first copy that still holds it merges it back in — the
+restore undoes itself. The restore therefore applies the snapshot's content to
+the stored state as a `replace`, which arrives at the same text by moving
+forwards. A snapshot from an older schema, whose content may not parse into the
+current one, still falls back to the bytes.
+
 Writing the database is only the whole story while nobody has the page open — an
 open session holds its own copy in memory and would autosave it back over the
 change. So the API hands the same change to this process afterwards, over a

@@ -10,7 +10,11 @@ import {
   type RelatedResult,
   type SearchAdapter,
 } from '@exocortex/database';
-import { type ProseMirrorDocument, serializePlainText } from '@exocortex/editor';
+import {
+  type ProseMirrorDocument,
+  serializePlainText,
+  yjsStateToProseMirrorJson,
+} from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
@@ -30,6 +34,7 @@ import { DocumentCoverService } from './document-cover.service';
 import { DocumentLinksService } from './document-links.service';
 import { DocumentMarkdownService } from './document-markdown.service';
 import { DocumentMoveService } from './document-move.service';
+import { DocumentSnapshotService } from './document-snapshot.service';
 import { DocumentTrashService } from './document-trash.service';
 import { DocumentTreeService } from './document-tree.service';
 import { DocumentsService } from './documents.service';
@@ -54,6 +59,7 @@ let service: DocumentsService;
 let treeService: DocumentTreeService;
 let trashService: DocumentTrashService;
 let contentService: DocumentContentService;
+let snapshotService: DocumentSnapshotService;
 let linksService: DocumentLinksService;
 let markdownService: DocumentMarkdownService;
 let workspaceId: string;
@@ -161,6 +167,15 @@ beforeAll(async () => {
     realtime,
     collaboration,
     new PageLinkIdentityService(prisma),
+  );
+  snapshotService = new DocumentSnapshotService(
+    prisma,
+    queues,
+    logger,
+    access,
+    outbox,
+    realtime,
+    collaboration,
   );
 
   const suffix = Date.now().toString(36);
@@ -1365,6 +1380,79 @@ describe('writing document content', () => {
         source: 'api',
       }),
     ).rejects.toBeInstanceOf(AuthorizationError);
+  });
+});
+
+describe('restoring a snapshot', () => {
+  it('puts the content back as an edit, not as the bytes it came from', async () => {
+    const documentId = await createPage('Wiederhergestellt');
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: 'Fassung A.', mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+    const snapshot = await snapshotService.create({
+      documentId,
+      userId: ownerId,
+      reason: 'manual',
+    });
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: 'Fassung B.', mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+
+    await snapshotService.restore({ snapshotId: snapshot.id, userId: ownerId, correlationId });
+
+    const after = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+    const stored = serializePlainText(yjsStateToProseMirrorJson(new Uint8Array(after.yjsState)));
+    expect(stored).toContain('Fassung A.');
+    expect(stored).not.toContain('Fassung B.');
+
+    /*
+     * The same text, arrived at by moving forwards: had the snapshot's bytes
+     * been put back, the state would be that snapshot again and "Fassung B."
+     * would be missing from it rather than deleted in it -- which is what lets
+     * a copy that still holds B merge it back in and undo the restore.
+     */
+    const source = await prisma.documentSnapshot.findUniqueOrThrow({
+      where: { id: snapshot.id },
+      select: { yjsState: true },
+    });
+    expect(Buffer.from(after.yjsState).equals(Buffer.from(source.yjsState))).toBe(false);
+    expect(after.yjsState.byteLength).toBeGreaterThan(source.yjsState.byteLength);
+  });
+
+  it('tells an open session what to show', async () => {
+    const documentId = await createPage('Wiederhergestellt live');
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: 'Fassung A.', mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+    const snapshot = await snapshotService.create({
+      documentId,
+      userId: ownerId,
+      reason: 'manual',
+    });
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: 'Fassung B.', mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+    liveApplications.length = 0;
+
+    await snapshotService.restore({ snapshotId: snapshot.id, userId: ownerId, correlationId });
+
+    expect(liveApplications).toEqual([{ documentId, mode: 'replace', plainText: 'Fassung A.' }]);
   });
 });
 

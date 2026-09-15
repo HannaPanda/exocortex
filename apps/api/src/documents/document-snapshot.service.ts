@@ -8,7 +8,12 @@ import {
 } from '@exocortex/auth';
 import { type DocumentSnapshot, QUEUE_NAMES } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
-import { EXOCORTEX_SCHEMA_VERSION, yjsStateToProseMirrorJson } from '@exocortex/editor';
+import {
+  applyProseMirrorDocumentToState,
+  EXOCORTEX_SCHEMA_VERSION,
+  type ProseMirrorDocument,
+  yjsStateToProseMirrorJson,
+} from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 
@@ -33,9 +38,10 @@ const REASON_MAP = {
 /**
  * Snapshot lifecycle.
  *
- * Snapshots store the binary Yjs state verbatim, so restoring one is a byte-level
- * operation and never a lossy re-parse. A full version-history UI is out of scope
- * for this version; the services below are what it will be built on.
+ * Snapshots store the binary Yjs state verbatim, so what a restore puts back is
+ * exact. It puts it back as an edit rather than as bytes, for the reason in
+ * `restore`. A full version-history UI is out of scope for this version; the
+ * services below are what it will be built on.
  */
 @Injectable()
 export class DocumentSnapshotService {
@@ -129,18 +135,88 @@ export class DocumentSnapshotService {
   }
 
   /**
+   * The state a restore stores: the snapshot's content applied to what the
+   * document holds now, or the snapshot's bytes when that is not possible.
+   *
+   * See `restore` for why the edit is the one that holds. The fallback covers
+   * a snapshot from an older schema, whose content may have nodes this schema
+   * no longer knows, and a state that cannot be derived at all -- in both cases
+   * putting the bytes back is the restore that is still available.
+   */
+  private restoredState(input: {
+    snapshot: { id: string; documentId: string; yjsState: Uint8Array; schemaVersion: number };
+    currentState: Uint8Array;
+    correlationId: string;
+  }): {
+    yjsState: Uint8Array;
+    schemaVersion: number;
+    asEdit: boolean;
+    /** What an open session is handed, `null` when the content did not derive. */
+    content: ProseMirrorDocument | null;
+  } {
+    const { snapshot } = input;
+    const bytes = {
+      yjsState: snapshot.yjsState,
+      schemaVersion: snapshot.schemaVersion,
+      asEdit: false,
+      content: null,
+    };
+    if (snapshot.schemaVersion !== EXOCORTEX_SCHEMA_VERSION) {
+      this.logger.warn('Restoring a snapshot from an older schema byte for byte', {
+        documentId: snapshot.documentId,
+        snapshotId: snapshot.id,
+        snapshotSchemaVersion: snapshot.schemaVersion,
+        correlationId: input.correlationId,
+      });
+      return bytes;
+    }
+    try {
+      const content = yjsStateToProseMirrorJson(snapshot.yjsState);
+      const applied = applyProseMirrorDocumentToState(input.currentState, content, 'replace');
+      return {
+        yjsState: applied.yjsState,
+        schemaVersion: EXOCORTEX_SCHEMA_VERSION,
+        asEdit: true,
+        content,
+      };
+    } catch (error) {
+      this.logger.warn('Restoring a snapshot byte for byte: its content did not apply', {
+        documentId: snapshot.documentId,
+        snapshotId: snapshot.id,
+        correlationId: input.correlationId,
+        reason: error instanceof Error ? error.message : String(error),
+      });
+      return bytes;
+    }
+  }
+
+  /**
    * Restores a snapshot:
    *  1. verify permission
    *  2. snapshot the current state (safety net)
-   *  3. write back the binary Yjs state
+   *  3. apply the snapshot's content to the stored state, as an edit
    *  4. push the restored content into an open editing session (ADR-016)
    *  5. trigger materialization
    *  6. notify connected clients
    *  7. write an audit entry
    *
-   * Step 4 is what makes a restore hold: a session that has the page open keeps
-   * the version it is showing in memory and would autosave it back over the
+   * Step 4 is what makes a restore hold against an open session: it keeps the
+   * version it is showing in memory and would autosave it back over the
    * restored one.
+   *
+   * Step 3 is what makes it hold against everything else. Storing the
+   * snapshot's bytes looks like the more faithful restore -- it is the state,
+   * byte for byte -- but it moves the document *backwards*: the content written
+   * since is missing from that state rather than deleted in it. Every copy that
+   * still has it (a tab, its `y-indexeddb` store, a session that loaded before
+   * the restore) then merges its newer content back in and the restore quietly
+   * undoes itself. Applying the snapshot's content as a `replace` moves the
+   * document forwards to the same text, deleting what came after, which is what
+   * a late copy cannot resurrect.
+   *
+   * A snapshot written under an older schema is the exception: its content may
+   * not parse into the current one, and a restore that cannot be expressed as
+   * an edit is still better than no restore. Those fall back to the bytes.
    */
   async restore(input: {
     snapshotId: string;
@@ -156,18 +232,24 @@ export class DocumentSnapshotService {
     const context = await this.access.requireDocumentContext(snapshot.documentId, input.userId);
     assertPolicy(canRestoreSnapshot(context.role, context.document));
 
-    await this.prisma.$transaction(async (tx) => {
-      const current = await tx.documentContent.findUnique({
-        where: { documentId: snapshot.documentId },
-        select: { yjsState: true, schemaVersion: true },
-      });
-      if (current === null) throw AppError.notFound('Document content');
+    const existing = await this.prisma.documentContent.findUnique({
+      where: { documentId: snapshot.documentId },
+      select: { yjsState: true, schemaVersion: true },
+    });
+    if (existing === null) throw AppError.notFound('Document content');
 
+    const restored = this.restoredState({
+      snapshot,
+      currentState: existing.yjsState,
+      correlationId: input.correlationId,
+    });
+
+    await this.prisma.$transaction(async (tx) => {
       const before = await tx.documentSnapshot.create({
         data: {
           documentId: snapshot.documentId,
-          yjsState: current.yjsState,
-          schemaVersion: current.schemaVersion,
+          yjsState: existing.yjsState,
+          schemaVersion: existing.schemaVersion,
           createdById: input.userId,
           reason: 'PRE_RESTORE',
         },
@@ -176,8 +258,8 @@ export class DocumentSnapshotService {
       await tx.documentContent.update({
         where: { documentId: snapshot.documentId },
         data: {
-          yjsState: snapshot.yjsState,
-          schemaVersion: snapshot.schemaVersion,
+          yjsState: Buffer.from(restored.yjsState),
+          schemaVersion: restored.schemaVersion,
           yjsUpdatedAt: new Date(),
           materializedAt: null,
         },
@@ -203,13 +285,21 @@ export class DocumentSnapshotService {
       });
     });
 
-    const live = await this.collaboration.applyToLiveSession({
-      documentId: snapshot.documentId,
-      userId: input.userId,
-      mode: 'replace',
-      proseMirrorJson: yjsStateToProseMirrorJson(snapshot.yjsState),
-      correlationId: input.correlationId,
-    });
+    /*
+     * A session that could not be handed the content keeps showing the version
+     * it has; the restore reaches it on the next load. Better than failing the
+     * request after the state has already been restored.
+     */
+    const live =
+      restored.content === null
+        ? { applied: false }
+        : await this.collaboration.applyToLiveSession({
+            documentId: snapshot.documentId,
+            userId: input.userId,
+            mode: 'replace',
+            proseMirrorJson: restored.content,
+            correlationId: input.correlationId,
+          });
 
     await this.queues.enqueue(QUEUE_NAMES.documentMaterialization, {
       correlationId: input.correlationId,
@@ -232,6 +322,7 @@ export class DocumentSnapshotService {
       snapshotId: snapshot.id,
       correlationId: input.correlationId,
       appliedToLiveSession: live.applied,
+      restoredAs: restored.asEdit ? 'edit' : 'bytes',
       schemaVersion: snapshot.schemaVersion === EXOCORTEX_SCHEMA_VERSION ? 'current' : 'legacy',
     });
 
