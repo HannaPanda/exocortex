@@ -2,6 +2,7 @@ export * from './components/instrument';
 export * from './components/layout';
 export * from './components/logo';
 export * from './components/states';
+export * from './components/truncated-text';
 export * from './components/ui/alert';
 export * from './components/ui/avatar';
 export * from './components/ui/badge';

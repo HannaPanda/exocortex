@@ -32,6 +32,7 @@ import {
   ErrorState,
   LoadingState,
   Textarea,
+  TruncatedText,
 } from '@exocortex/ui';
 
 import { DatabaseShell } from '@/components/database/database-shell';
@@ -280,7 +281,10 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
             value={importText}
             data-testid="import-textarea"
             onChange={(event) => setImportText(event.target.value)}
-            placeholder={'---\ntitle: Meine Seite\n---\n\n# Meine Seite\n'}
+            // No `# Meine Seite` here: the title belongs in the frontmatter, and
+            // an example that shows it twice is an example of the duplicate
+            // heading this import strips out again.
+            placeholder={'---\ntitle: Meine Seite\n---\n\nErster Absatz.\n'}
             className="font-mono text-xs"
           />
           <DialogFooter>
@@ -324,29 +328,46 @@ function DocumentTitleInput({ initialTitle, readOnly, onCommit }: DocumentTitleI
   };
 
   return (
-    <input
-      value={value}
-      aria-label="Seitentitel"
-      data-testid="document-title"
-      readOnly={readOnly}
-      onChange={(event) => setValue(event.target.value)}
-      onBlur={commit}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          event.currentTarget.blur();
-        }
-      }}
-      className={cn(
-        // The page title is the top of the ladder and must clear the editor's own
-        // h1 (1.375rem); at the old text-2xl the two were identical. Size alone
-        // was not enough -- see `.exocortex-page-title` for why the weight jump
-        // carries the step.
-        'exocortex-page-title mb-5 w-full bg-transparent outline-none',
-        'placeholder:text-muted-foreground',
-      )}
-      placeholder="Unbenannte Seite"
-    />
+    /*
+     * A textarea rather than an input, because an input cannot wrap: a long
+     * title scrolled sideways inside its own box and had to be read with
+     * shift-scroll. The field still behaves like a single-line one -- Enter
+     * commits and a pasted line break becomes a space -- it just occupies as
+     * many lines as it needs.
+     *
+     * The height comes from the mirror below it, not from JavaScript: both sit
+     * in the same grid cell, the mirror carries the same text and the same
+     * wrapping, and the grid row grows to the taller of the two. That keeps the
+     * field correct on the very first paint and through every reflow, without a
+     * resize effect that would run one frame late.
+     */
+    <div className="exocortex-page-title mb-5 grid w-full">
+      <textarea
+        value={value}
+        rows={1}
+        aria-label="Seitentitel"
+        data-testid="document-title"
+        readOnly={readOnly}
+        onChange={(event) => setValue(event.target.value.replace(/[\r\n]+/g, ' '))}
+        onBlur={commit}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            event.currentTarget.blur();
+          }
+        }}
+        className={cn(
+          'col-start-1 row-start-1 m-0 resize-none overflow-hidden p-0',
+          'bg-transparent outline-none placeholder:text-muted-foreground',
+        )}
+        placeholder="Unbenannte Seite"
+      />
+      <span aria-hidden className="col-start-1 row-start-1 invisible whitespace-pre-wrap">
+        {/* The trailing space reserves room for the caret behind the last
+            character, and keeps a title ending in a newline from collapsing. */}
+        {`${value} `}
+      </span>
+    </div>
   );
 }
 
@@ -397,12 +418,12 @@ function DocumentTopBar({
                   className="size-3.5 text-xs"
                 />
               )}
-              <span className="truncate">{entry.title}</span>
+              <TruncatedText text={entry.title} side="bottom" />
             </Link>
             <span aria-hidden>/</span>
           </React.Fragment>
         ))}
-        <span className="max-w-40 truncate text-foreground">{detail.title}</span>
+        <TruncatedText text={detail.title} side="bottom" className="max-w-40 text-foreground" />
       </nav>
 
       {detail.aiRuleMode !== 'off' ? (

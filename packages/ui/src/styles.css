@@ -236,6 +236,10 @@
     line-height: 1.15;
     font-weight: 720;
     letter-spacing: -0.035em;
+    /* A title is one long word often enough -- an identifier, a URL, a file
+       name -- and at this size one such word is wider than the measure. Break
+       inside it rather than let it leave the page. */
+    overflow-wrap: anywhere;
   }
 
   .exocortex-numeric {

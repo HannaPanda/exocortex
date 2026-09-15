@@ -22,6 +22,7 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
+  TruncatedText,
 } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
@@ -207,7 +208,7 @@ export function PageTreeRow({
                 className="flex min-w-0 flex-1 items-center py-1"
                 data-testid={`tree-link-${node.id}`}
               >
-                <span className="truncate">{node.title}</span>
+                <TruncatedText text={node.title} side="right" />
               </Link>
 
               <button
