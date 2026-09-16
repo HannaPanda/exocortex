@@ -140,9 +140,23 @@ async function loadRule(client: ExocortexApiClient, documentId: string): Promise
       path: `/api/documents/${documentId}/export/markdown`,
       responseSchema: markdownExportResponseSchema,
     });
-    const body = page.markdown.trim();
+    const body = stripFrontmatter(page.markdown).trim();
     return body.length === 0 ? null : body;
   } catch {
     return null;
   }
+}
+
+/**
+ * Drops the export's YAML header.
+ *
+ * The Markdown export carries ids, schema versions and timestamps so a file can
+ * be imported back. A rule that a model is supposed to follow gains nothing
+ * from them, and they arrive first, which is the most expensive place in a
+ * prompt for something nobody reads.
+ */
+function stripFrontmatter(markdown: string): string {
+  if (!markdown.startsWith('---\n')) return markdown;
+  const end = markdown.indexOf('\n---', 4);
+  return end === -1 ? markdown : markdown.slice(end + 4);
 }

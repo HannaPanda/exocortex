@@ -65,7 +65,9 @@ describe('buildServerInstructions', () => {
         '/api/documents/rule123456/export/markdown': {
           documentId: 'rule123456',
           filename: 'ki-regeln.md',
-          markdown: 'Schreib Seiten unter die tiefste passende Seite.',
+          markdown:
+            '---\ntitle: KI Regeln\nexocortexId: rule123456\n---\n\n' +
+            'Schreib Seiten unter die tiefste passende Seite.',
           path: [],
           children: [],
         },
@@ -74,6 +76,9 @@ describe('buildServerInstructions', () => {
 
     expect(instructions).toContain('Second Brain');
     expect(instructions).toContain('Schreib Seiten unter die tiefste passende Seite.');
+    // The export's YAML header is dropped: ids and timestamps exist so a file
+    // can be imported back, and they arrive first in the prompt.
+    expect(instructions).not.toContain('exocortexId');
     // An ON_DEMAND rule contributes its trigger and the id to load it with,
     // never its body: that is the whole difference between the two modes.
     expect(instructions).toContain('Beim Anlegen von Übersichtsseiten');
