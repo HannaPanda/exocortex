@@ -338,7 +338,7 @@ for the same reason: the question after a refused write is always "why".
 
 ## Reasoning levels
 
-`AiReasoningLevel` (`NONE`/`MINIMAL`/`LOW`/`MEDIUM`/`HIGH`) is resolved and
+`AiReasoningLevel` (`NONE`/`MINIMAL`/`LOW`/`MEDIUM`/`HIGH`/`XHIGH`/`MAX`) is resolved and
 clamped server-side against the selected `AiModel` row's `reasoningLevels`
 (`AiModelResolverService.clampReasoningLevel`,
 `apps/api/src/ai/ai-model-resolver.service.ts`) — a client can request a
@@ -350,6 +350,16 @@ clamped level becomes `OpenRouterProvider`'s `reasoning.effort` parameter
 `clampReasoningLevel` (`packages/contracts/src/ai-models.ts`) because the
 browser needs the same answer: the picker must not display a remembered `high`
 on a model that cannot think.
+
+Which levels a model offers is not guessed: `deriveReasoningLevels`
+(`apps/api/src/admin/ai-models.service.ts`) believes
+`reasoning.supported_efforts` out of the provider's model list whenever the
+entry carries it, and only falls back to the older heuristic (`reasoning_effort`
+in `supported_parameters`, plus `MINIMAL` for OpenAI) when it does not. That is
+how `XHIGH` and `MAX` became reachable, and how the next level will: an effort
+name with no enum value is dropped rather than approximated, and `NONE` is
+always offered, because "do not think" is a choice no model can take away. A
+registry row only learns about a new level once it is synced.
 
 The chosen model and level are remembered per workspace in `localStorage`
 (`useModelPreference`, `apps/web/src/components/ai/model-choice.ts`). A

@@ -21,6 +21,8 @@ const REASONING_LABELS: Record<AiReasoningLevel, string> = {
   low: 'niedrig',
   medium: 'mittel',
   high: 'hoch',
+  xhigh: 'sehr hoch',
+  max: 'maximal',
 };
 
 /** Sentinel for "no vision companion for this conversation" (request sends `'off'`). */

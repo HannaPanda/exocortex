@@ -2,7 +2,15 @@ import { z } from 'zod';
 
 import { idSchema, isoDateTimeSchema } from './primitives';
 
-export const aiReasoningLevelSchema = z.enum(['none', 'minimal', 'low', 'medium', 'high']);
+export const aiReasoningLevelSchema = z.enum([
+  'none',
+  'minimal',
+  'low',
+  'medium',
+  'high',
+  'xhigh',
+  'max',
+]);
 export type AiReasoningLevel = z.infer<typeof aiReasoningLevelSchema>;
 
 export const aiModelSchema = z.object({
@@ -113,6 +121,8 @@ export const REASONING_LEVEL_RANK: Record<AiReasoningLevel, number> = {
   low: 2,
   medium: 3,
   high: 4,
+  xhigh: 5,
+  max: 6,
 };
 
 /**

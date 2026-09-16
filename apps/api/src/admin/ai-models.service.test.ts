@@ -3,7 +3,37 @@ import { describe, expect, it } from 'vitest';
 import { deriveReasoningLevels, type OpenRouterModel, toCatalogEntry } from './ai-models.service';
 
 describe('deriveReasoningLevels', () => {
-  it('offers only NONE for a model without reasoning_effort (glm-4.7-like)', () => {
+  it('believes the efforts the provider reports, including xhigh and max', () => {
+    expect(
+      deriveReasoningLevels({
+        slug: 'openai/gpt-5.6-luna-pro',
+        supportedParameters: ['tools', 'reasoning_effort', 'reasoning'],
+        supportedEfforts: ['max', 'xhigh', 'high', 'medium', 'low', 'none'],
+      }),
+    ).toEqual(['NONE', 'LOW', 'MEDIUM', 'HIGH', 'XHIGH', 'MAX']);
+  });
+
+  it('drops an effort with no enum value rather than guessing at it', () => {
+    expect(
+      deriveReasoningLevels({
+        slug: 'new/model',
+        supportedParameters: ['reasoning_effort'],
+        supportedEfforts: ['low', 'ludicrous'],
+      }),
+    ).toEqual(['NONE', 'LOW']);
+  });
+
+  it('always offers NONE, even where the provider does not list it', () => {
+    expect(
+      deriveReasoningLevels({
+        slug: 'new/model',
+        supportedParameters: ['reasoning_effort'],
+        supportedEfforts: ['high'],
+      }),
+    ).toEqual(['NONE', 'HIGH']);
+  });
+
+  it('falls back to the heuristic when the entry reports no efforts (glm-4.7-like)', () => {
     expect(
       deriveReasoningLevels({
         slug: 'z-ai/glm-4.7',

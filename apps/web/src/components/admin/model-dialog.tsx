@@ -40,9 +40,19 @@ const REASONING_LABELS: Record<AiReasoningLevel, string> = {
   low: 'niedrig',
   medium: 'mittel',
   high: 'hoch',
+  xhigh: 'sehr hoch',
+  max: 'maximal',
 };
 
-const REASONING_ORDER: readonly AiReasoningLevel[] = ['none', 'minimal', 'low', 'medium', 'high'];
+const REASONING_ORDER: readonly AiReasoningLevel[] = [
+  'none',
+  'minimal',
+  'low',
+  'medium',
+  'high',
+  'xhigh',
+  'max',
+];
 
 /** Sentinel for "no vision companion"; distinct from every real slug. */
 const NO_COMPANION = '__none__';

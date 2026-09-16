@@ -45,7 +45,7 @@ export interface AiToolCall {
 
 export interface AiReasoningOptions {
   /** OpenRouter `reasoning.effort`. Omitted entirely for 'none'. */
-  effort: 'none' | 'minimal' | 'low' | 'medium' | 'high';
+  effort: 'none' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh' | 'max';
 }
 
 export interface AiGenerateRequest {

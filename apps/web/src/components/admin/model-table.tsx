@@ -45,6 +45,8 @@ const REASONING_LABELS: Record<AiReasoningLevel, string> = {
   low: 'niedrig',
   medium: 'mittel',
   high: 'hoch',
+  xhigh: 'sehr hoch',
+  max: 'maximal',
 };
 
 /** `$X,XX / $Y,YY per Mio. Tokens`, computed from the micro-USD integers. */

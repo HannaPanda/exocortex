@@ -22,6 +22,8 @@ export const REASONING_LEVEL_TO_CONTRACT: Record<AiReasoningLevelPrisma, AiReaso
   LOW: 'low',
   MEDIUM: 'medium',
   HIGH: 'high',
+  XHIGH: 'xhigh',
+  MAX: 'max',
 };
 
 export const REASONING_LEVEL_TO_PRISMA: Record<AiReasoningLevel, AiReasoningLevelPrisma> = {
@@ -30,6 +32,8 @@ export const REASONING_LEVEL_TO_PRISMA: Record<AiReasoningLevel, AiReasoningLeve
   low: 'LOW',
   medium: 'MEDIUM',
   high: 'HIGH',
+  xhigh: 'XHIGH',
+  max: 'MAX',
 };
 
 /** Shape returned by every query in this file: the registry row plus its resolved vision-companion slug. */

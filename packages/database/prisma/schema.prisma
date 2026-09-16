@@ -1185,13 +1185,18 @@ model AuditLog {
 // ---------------------------------------------------------------------------
 
 /// Thinking/effort levels a model accepts for OpenRouter's `reasoning`
-/// parameter. NONE means the parameter is omitted entirely.
+/// parameter. NONE means the parameter is omitted entirely. Declared in
+/// ascending strength: XHIGH and MAX exist because the provider started
+/// reporting them (`reasoning.supported_efforts`), not because every model
+/// offers them -- what a given model actually accepts is `AiModel.reasoningLevels`.
 enum AiReasoningLevel {
   NONE
   MINIMAL
   LOW
   MEDIUM
   HIGH
+  XHIGH
+  MAX
 }
 
 /// Admin-editable catalogue of selectable models. Seeded from the live

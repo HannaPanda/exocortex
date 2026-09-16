@@ -22,6 +22,11 @@ describe('clampReasoningLevel', () => {
     expect(clampReasoningLevel(['none', 'high'], 'low')).toBe('none');
   });
 
+  it('clamps down from max to the strongest the model has', () => {
+    expect(clampReasoningLevel(['none', 'low', 'high'], 'max')).toBe('high');
+    expect(clampReasoningLevel(['none', 'high', 'xhigh', 'max'], 'xhigh')).toBe('xhigh');
+  });
+
   it('answers none for a model without a selectable level', () => {
     expect(clampReasoningLevel(['none'], 'medium')).toBe('none');
     expect(clampReasoningLevel([], 'medium')).toBe('none');

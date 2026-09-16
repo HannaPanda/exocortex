@@ -111,7 +111,7 @@ export const CHAT_COMMANDS = [
   { name: 'model', argument: 'slug', description: 'Modell dieser Unterhaltung wechseln' },
   {
     name: 'think',
-    argument: 'none|minimal|low|medium|high',
+    argument: 'none|minimal|low|medium|high|xhigh|max',
     description: 'Denkstufe wählen',
   },
   { name: 'vision', argument: 'slug|off', description: 'Vision-Begleitmodell überschreiben' },

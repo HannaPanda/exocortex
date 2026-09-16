@@ -63,6 +63,13 @@ const openRouterModelSchema = z
       .loose()
       .optional(),
     supported_parameters: z.array(z.string()).default([]),
+    reasoning: z
+      .object({
+        supported_efforts: z.array(z.string()).default([]),
+      })
+      .loose()
+      .nullable()
+      .optional(),
     top_provider: z
       .object({
         max_completion_tokens: z.number().nullable().optional(),
@@ -85,18 +92,57 @@ const openRouterModelListSchema = z.object({
 
 export type OpenRouterModel = z.infer<typeof openRouterModelSchema>;
 
+/** The effort names OpenRouter uses, in ascending strength, mapped onto the registry's enum. */
+const EFFORT_NAME_TO_LEVEL: Record<string, AiReasoningLevelPrisma> = {
+  none: 'NONE',
+  minimal: 'MINIMAL',
+  low: 'LOW',
+  medium: 'MEDIUM',
+  high: 'HIGH',
+  xhigh: 'XHIGH',
+  max: 'MAX',
+};
+
+const LEVELS_IN_ASCENDING_STRENGTH: readonly AiReasoningLevelPrisma[] = [
+  'NONE',
+  'MINIMAL',
+  'LOW',
+  'MEDIUM',
+  'HIGH',
+  'XHIGH',
+  'MAX',
+];
+
 /**
- * Derives the selectable thinking levels from OpenRouter's `supported_parameters`.
+ * Derives the selectable thinking levels from what OpenRouter reports.
  *
- * A model that only lists `reasoning` thinks on its own terms and offers no
- * level to pick, so it gets `[NONE]`. `reasoning_effort` means the effort levels
- * are honoured; `verbosity` (Anthropic) does not add a level. MINIMAL is only
+ * `reasoning.supported_efforts` is the provider's own answer and is believed
+ * whenever it is there: it is how `xhigh` and `max` became reachable at all, and
+ * how the next level will. An effort we have no enum value for is dropped rather
+ * than guessed at, and NONE is always offered -- "do not think" is a choice no
+ * model can take away.
+ *
+ * The fallback is the older heuristic, for an entry that reports no efforts. A
+ * model that only lists `reasoning` thinks on its own terms and offers no level
+ * to pick, so it gets `[NONE]`. `reasoning_effort` means the effort levels are
+ * honoured; `verbosity` (Anthropic) does not add a level. MINIMAL is only
  * offered where the provider documents it, which today is OpenAI.
  */
 export function deriveReasoningLevels(input: {
   slug: string;
   supportedParameters: readonly string[];
+  supportedEfforts?: readonly string[];
 }): AiReasoningLevelPrisma[] {
+  const reported = new Set(
+    (input.supportedEfforts ?? [])
+      .map((effort) => EFFORT_NAME_TO_LEVEL[effort.toLowerCase()])
+      .filter((level): level is AiReasoningLevelPrisma => level !== undefined),
+  );
+  if (reported.size > 0) {
+    reported.add('NONE');
+    return LEVELS_IN_ASCENDING_STRENGTH.filter((level) => reported.has(level));
+  }
+
   if (!input.supportedParameters.includes('reasoning_effort')) {
     return ['NONE'];
   }
@@ -129,6 +175,7 @@ function mapLiveEntry(
     reasoningLevels: deriveReasoningLevels({
       slug: entry.id,
       supportedParameters: entry.supported_parameters,
+      supportedEfforts: entry.reasoning?.supported_efforts,
     }),
     inputMicroUsdPerMTok: Math.round(Number(entry.pricing.prompt) * 1e12),
     outputMicroUsdPerMTok: Math.round(Number(entry.pricing.completion) * 1e12),

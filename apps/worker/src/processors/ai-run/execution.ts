@@ -1,4 +1,9 @@
-import { type AiProvider, type AiToolCall, estimateMessageTokens } from '@exocortex/ai';
+import {
+  type AiProvider,
+  type AiReasoningOptions,
+  type AiToolCall,
+  estimateMessageTokens,
+} from '@exocortex/ai';
 import {
   AI_RUN_PHASE_MIN_INTERVAL_MS,
   type AiMessage,
@@ -44,15 +49,14 @@ const TRUNCATION_TOOL_RETRY_PROMPT =
   'Wiederhole ihn mit deutlich weniger Inhalt pro Aufruf: schreibe lange Inhalte in mehreren Schritten, ' +
   'den ersten mit mode "replace", die weiteren mit mode "append".';
 
-const REASONING_LEVEL_TO_LOWER: Record<
-  AiReasoningLevelPrisma,
-  'none' | 'minimal' | 'low' | 'medium' | 'high'
-> = {
+const REASONING_LEVEL_TO_LOWER: Record<AiReasoningLevelPrisma, AiReasoningOptions['effort']> = {
   NONE: 'none',
   MINIMAL: 'minimal',
   LOW: 'low',
   MEDIUM: 'medium',
   HIGH: 'high',
+  XHIGH: 'xhigh',
+  MAX: 'max',
 };
 
 /**
