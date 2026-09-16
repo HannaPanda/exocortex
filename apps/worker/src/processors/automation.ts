@@ -17,6 +17,7 @@ import { type JobContext } from '@exocortex/queue';
 
 import { type AutomationRuleRecord, createRunRecorder, loadRule } from './automation/run-recorder';
 import { signWebhookBody } from './automation/webhook';
+import { createWebhookSender, type WebhookSender } from './automation/webhook-request';
 
 /**
  * Running one automation (issue #50, ADR-024).
@@ -32,6 +33,9 @@ import { signWebhookBody } from './automation/webhook';
  * trusting the event: the debounce window has swallowed every change after the
  * first, so what matters is what the page says now.
  */
+
+/** The one sender a deployment uses, built once. */
+const defaultSender = createWebhookSender();
 
 /** How much of a page's text an AI rule is given. */
 const MAX_PAGE_CHARS = 20_000;
@@ -60,8 +64,12 @@ export interface AutomationDependencies {
    * loudly rather than posting unsigned.
    */
   credentialKey: Buffer | null;
-  /** Injected so a test can run a webhook without a network. */
-  fetchImpl?: typeof fetch;
+  /**
+   * How a webhook leaves this process. The default refuses redirects and
+   * refuses to connect to an address the deployment may not reach (issue #63);
+   * a test injects its own to run a webhook without a network.
+   */
+  sendWebhook?: WebhookSender;
 }
 
 export function createAutomationProcessor(dependencies: AutomationDependencies) {
@@ -169,16 +177,15 @@ async function postWebhook(input: ActionInput): Promise<Record<string, unknown>>
   });
 
   const signed = signWebhookBody({ key: input.dependencies.credentialKey, rule, body });
-  const timeoutMs = settings['automations.webhookTimeoutSeconds'] * 1_000;
-  const send = input.dependencies.fetchImpl ?? fetch;
-  const response = await send(rule.webhookUrl, {
-    method: 'POST',
+  const send = input.dependencies.sendWebhook ?? defaultSender;
+  const response = await send({
+    url: rule.webhookUrl,
     headers: { 'content-type': 'application/json', ...signed },
     body,
-    signal: AbortSignal.timeout(timeoutMs),
+    timeoutMs: settings['automations.webhookTimeoutSeconds'] * 1_000,
   });
 
-  if (!response.ok) {
+  if (response.status < 200 || response.status >= 300) {
     throw new Error(`The webhook answered ${String(response.status)}`);
   }
   return { status: response.status, url: rule.webhookUrl };

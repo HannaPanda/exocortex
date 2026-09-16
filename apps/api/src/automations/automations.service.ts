@@ -22,6 +22,8 @@ import {
   type AutomationTrigger,
   type CreateAutomationRuleRequest,
   type CreateAutomationRuleResponse,
+  disallowedWebhookAddressReason,
+  isIpAddressLiteral,
   isWebhookHostAllowed,
   parseAllowedWebhookHosts,
   type UpdateAutomationRuleRequest,
@@ -282,6 +284,14 @@ export class AutomationsService {
         'The webhook host is not on this deployment’s allowlist (automations.webhookAllowedHosts)',
         { allowedHosts: allowed },
       );
+    }
+    // A written-out address never becomes public later, so it can be refused
+    // here rather than at every firing. A *name* is judged where it is resolved,
+    // in the worker, because what it points at can change after this (issue #63).
+    const host = new URL(url).hostname;
+    const refusal = isIpAddressLiteral(host) ? disallowedWebhookAddressReason(host) : null;
+    if (refusal !== null) {
+      throw AppError.validation(`${refusal}, which this deployment does not send webhooks to`);
     }
   }
 

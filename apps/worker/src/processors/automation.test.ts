@@ -18,6 +18,7 @@ import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type JobContext } from '@exocortex/queue';
 
 import { createAutomationProcessor } from './automation';
+import { type WebhookRequestInput, type WebhookResult } from './automation/webhook-request';
 
 const logger = createLogger({ name: 'worker-test', level: 'silent' });
 const encryptionKey = randomBytes(32);
@@ -74,7 +75,7 @@ function webhookRule(overrides: Partial<StoredRule> = {}): StoredRule {
 function harness(input: {
   rule: StoredRule;
   settings?: Settings;
-  respond?: (url: string, init: RequestInit) => Response | Promise<Response>;
+  respond?: (request: WebhookRequestInput) => WebhookResult | Promise<WebhookResult>;
   answer?: string | Error;
 }) {
   const runs: Record<string, unknown>[] = [];
@@ -176,14 +177,14 @@ function harness(input: {
     settings: async () => input.settings ?? DEFAULT_SETTINGS,
     defaultModel: 'test/model',
     credentialKey: encryptionKey,
-    fetchImpl: (async (url: string, init: RequestInit) => {
+    sendWebhook: async (request) => {
       sent.push({
-        url,
-        headers: init.headers as Record<string, string>,
-        body: String(init.body),
+        url: request.url,
+        headers: { ...request.headers },
+        body: request.body,
       });
-      return input.respond?.(url, init) ?? new Response(null, { status: 204 });
-    }) as unknown as typeof fetch,
+      return (await input.respond?.(request)) ?? { status: 204 };
+    },
   });
 
   return { processor, runs, requests, sent, rule, headersSeen };
@@ -237,7 +238,7 @@ describe('a webhook rule', () => {
   it('fails the run when the receiver refuses, without throwing at the queue', async () => {
     const { processor, runs } = harness({
       rule: webhookRule(),
-      respond: () => new Response('nope', { status: 500 }),
+      respond: () => ({ status: 500 }),
     });
     await expect(processor(job())).resolves.toBeUndefined();
     expect(outcome(runs)).toMatchObject({ status: 'FAILED' });
@@ -260,7 +261,7 @@ describe('a webhook rule', () => {
   it('switches itself off once it has failed enough times in a row', async () => {
     const { processor, rule } = harness({
       rule: webhookRule({ consecutiveFailures: 4 }),
-      respond: () => new Response('', { status: 502 }),
+      respond: () => ({ status: 502 }),
       settings: settingsWith([
         { key: 'automations.enabled', value: true },
         { key: 'automations.webhookAllowedHosts', value: 'hooks.example.org' },

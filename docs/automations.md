@@ -76,6 +76,32 @@ and read it through the API.
 The signing secret is shown **once**, in the response that creates the rule, and
 cannot be read back afterwards. Losing it means creating a new rule.
 
+## Where a webhook may go
+
+Two gates, and both of them have to be passed at the moment of the request
+(issue #63):
+
+1. The **host allowlist**, `automations.webhookAllowedHosts`. Checked when the
+   rule is written and again on every firing, because narrowing the list has to
+   stop the rules that already exist.
+2. The **address** the connection actually uses. Loopback, `0.0.0.0`, RFC1918
+   and RFC4193 private space, carrier-grade NAT, link-local (including
+   `169.254.169.254`, the cloud metadata address), multicast and the reserved
+   ranges are refused. A written-out address is refused while the rule is being
+   saved; a hostname is judged in the moment the socket is opened, so a DNS
+   record that changes later, or answers differently the second time, changes
+   nothing.
+
+**A webhook is never redirected.** A `301`, `302`, `303`, `307` or `308` fails
+the run and no second request is made, because the allowlist governs the URL in
+the rule and cannot govern where that URL leads -- and a `307` would hand the
+signed body to the new target unchanged. A receiver that has moved is written
+into the rule again, and checked again.
+
+That is also why this one request does not use `fetch`: it is made through
+`node:http` with a DNS lookup of the worker's own, in
+`apps/worker/src/processors/automation/webhook-request.ts`.
+
 ## The AI action
 
 One prompt, with the changed page's Markdown (capped at 20 000 characters) as

@@ -127,6 +127,124 @@ export function isWebhookHostAllowed(url: string, allowedHosts: readonly string[
   return allowedHosts.some((allowed) => host === allowed || host.endsWith(`.${allowed}`));
 }
 
+/**
+ * Why an IP address must not receive a webhook, or `null` (issue #63).
+ *
+ * The host allowlist answers a different question than this one. It says which
+ * *names* a deployment trusts; this says which *addresses* are outside the
+ * internet the deployment meant to reach. Both are needed, because a name on
+ * the allowlist can resolve into the machine's own network, and then an entry
+ * meant to permit one receiver has quietly permitted every internal service.
+ *
+ * Refused: loopback, the unspecified address, RFC1918 and RFC4193 private
+ * space, carrier-grade NAT, link-local, multicast and the reserved ranges. The
+ * reason is a sentence rather than a boolean, because it is written into an
+ * automation's run log and somebody has to understand it there.
+ *
+ * Lives in the contracts package so the API can refuse a literal address while
+ * a rule is being written and the worker can refuse a resolved one at the
+ * moment it connects.
+ */
+export function disallowedWebhookAddressReason(address: string): string | null {
+  const value =
+    address.trim().toLowerCase().replace(/^\[/, '').replace(/]$/, '').split('%')[0] ?? '';
+  const v4 = parseIpv4(value);
+  if (v4 !== null) return refusedIpv4(v4);
+  const v6 = parseIpv6(value);
+  if (v6 !== null) return refusedIpv6(v6);
+  return 'The webhook target is not an IP address';
+}
+
+/** Whether a string is an IP literal at all, so a hostname can skip the check. */
+export function isIpAddressLiteral(value: string): boolean {
+  const bare = value.trim().toLowerCase().replace(/^\[/, '').replace(/]$/, '').split('%')[0] ?? '';
+  return parseIpv4(bare) !== null || parseIpv6(bare) !== null;
+}
+
+function refusedIpv4(octets: readonly number[]): string | null {
+  const [a, b] = [octets[0] ?? 0, octets[1] ?? 0];
+  if (a === 0) return 'The webhook target resolves to an unspecified address';
+  if (a === 127) return 'The webhook target resolves to a loopback address';
+  if (a === 10) return 'The webhook target resolves to a private address';
+  if (a === 172 && b >= 16 && b <= 31) return 'The webhook target resolves to a private address';
+  if (a === 192 && b === 168) return 'The webhook target resolves to a private address';
+  if (a === 169 && b === 254) return 'The webhook target resolves to a link-local address';
+  if (a === 100 && b >= 64 && b <= 127)
+    return 'The webhook target resolves to a shared NAT address';
+  if (a >= 224) return 'The webhook target resolves to a multicast or reserved address';
+  return null;
+}
+
+function refusedIpv6(groups: readonly number[]): string | null {
+  const head = groups.slice(0, 5);
+  if (head.every((group) => group === 0)) {
+    // ::ffff:a.b.c.d and the deprecated ::a.b.c.d both carry an IPv4 address,
+    // and an address that is refused as IPv4 stays refused when it is written
+    // this way.
+    const isMapped = groups[5] === 0xff_ff;
+    if (isMapped || groups[5] === 0) {
+      const low = [groups[6] ?? 0, groups[7] ?? 0];
+      const v4 = [low[0]! >> 8, low[0]! & 0xff, low[1]! >> 8, low[1]! & 0xff];
+      if (groups.every((group) => group === 0)) {
+        return 'The webhook target resolves to an unspecified address';
+      }
+      if (!isMapped && groups[6] === 0 && groups[7] === 1) {
+        return 'The webhook target resolves to a loopback address';
+      }
+      return refusedIpv4(v4);
+    }
+  }
+  const first = groups[0] ?? 0;
+  if ((first & 0xff_c0) === 0xfe_80) return 'The webhook target resolves to a link-local address';
+  if ((first & 0xfe_00) === 0xfc_00) return 'The webhook target resolves to a private address';
+  if ((first & 0xff_00) === 0xff_00) return 'The webhook target resolves to a multicast address';
+  return null;
+}
+
+function parseIpv4(value: string): number[] | null {
+  const parts = value.split('.');
+  if (parts.length !== 4) return null;
+  const octets: number[] = [];
+  for (const part of parts) {
+    if (!/^\d{1,3}$/.test(part)) return null;
+    const octet = Number(part);
+    if (octet > 255) return null;
+    octets.push(octet);
+  }
+  return octets;
+}
+
+/** An IPv6 literal expanded to its eight groups, or null when it is not one. */
+function parseIpv6(value: string): number[] | null {
+  if (!value.includes(':')) return null;
+  const halves = value.split('::');
+  if (halves.length > 2) return null;
+  const head = ipv6Groups(halves[0] ?? '');
+  const tail = halves.length === 2 ? ipv6Groups(halves[1] ?? '') : [];
+  if (head === null || tail === null) return null;
+  if (halves.length === 1) return head.length === 8 ? head : null;
+  const missing = 8 - head.length - tail.length;
+  if (missing < 1) return null;
+  return [...head, ...Array.from({ length: missing }, () => 0), ...tail];
+}
+
+function ipv6Groups(part: string): number[] | null {
+  if (part.length === 0) return [];
+  const chunks = part.split(':');
+  const groups: number[] = [];
+  for (const [index, chunk] of chunks.entries()) {
+    if (index === chunks.length - 1 && chunk.includes('.')) {
+      const v4 = parseIpv4(chunk);
+      if (v4 === null) return null;
+      groups.push((v4[0]! << 8) | v4[1]!, (v4[2]! << 8) | v4[3]!);
+      continue;
+    }
+    if (!/^[0-9a-f]{1,4}$/.test(chunk)) return null;
+    groups.push(Number.parseInt(chunk, 16));
+  }
+  return groups;
+}
+
 export const automationRuleSchema = z.object({
   id: idSchema,
   workspaceId: idSchema,

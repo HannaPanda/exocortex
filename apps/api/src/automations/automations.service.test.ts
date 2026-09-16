@@ -181,6 +181,22 @@ describe('creating a rule', () => {
     expect(await prisma.automationRule.count({ where: { workspaceId } })).toBe(0);
   });
 
+  it('refuses an address inside this deployment, even once it is allowlisted', async () => {
+    // Somebody putting `127.0.0.1` on the allowlist has said the name is fine.
+    // The address still is not: a webhook aimed at this machine is a request
+    // the deployment makes to itself on somebody else's behalf (issue #63).
+    workspaceSettings = settingsSchema.parse({
+      'automations.enabled': true,
+      'automations.webhookAllowedHosts': '127.0.0.1,[::1],10.0.0.5',
+    });
+    for (const webhookUrl of ['http://127.0.0.1:3211/api', 'http://[::1]/x', 'http://10.0.0.5/x']) {
+      await expect(
+        service.create({ workspaceId, userId: ownerId, request: webhookRule({ webhookUrl }) }),
+      ).rejects.toMatchObject({ code: 'validation_failed' });
+    }
+    expect(await prisma.automationRule.count({ where: { workspaceId } })).toBe(0);
+  });
+
   it('accepts a subdomain of an allowed host', async () => {
     const response = await service.create({
       workspaceId,

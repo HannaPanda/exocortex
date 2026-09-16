@@ -130,6 +130,25 @@ not an allowlist. It is checked when a rule is written _and_ again when it
 fires, because narrowing it has to stop the rules that already exist, not only
 the ones nobody has written yet.
 
+### The allowlist governs the connection, not only the URL
+
+A host allowlist alone is a name check, and a name is not a destination (issue
+#63). Two things follow from that, and both are part of this decision rather
+than an implementation detail.
+
+A webhook is **never redirected**. An allowed host answering `307` would hand
+the signed body, method intact, to a target the allowlist never saw, which turns
+one permitted receiver into a way out of the list and into the worker's own
+network. A `3xx` fails the run instead, and a receiver that has moved is written
+into the rule again.
+
+The **address** is judged where the socket is opened. An allowed name can
+resolve into this machine's network, today or after its DNS record changes, so
+loopback, private, link-local and reserved addresses are refused at connect
+time rather than once at save time. That is what a literal `fetch` cannot do,
+which is why this one request is made through `node:http` with a lookup of its
+own.
+
 ### Writing a rule is the OWNER's act
 
 `canManageAutomations` is OWNER-only, the same bar as a provider key and for the
