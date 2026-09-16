@@ -117,6 +117,10 @@ export const attachmentReadTextTool: AnyToolDefinition = defineTool({
   }),
   surfaces: ['mcp', 'ai'],
   mutating: false,
+  // A file somebody uploaded. Whatever the extraction found is the author's
+  // text, not this workspace's, and a PDF is a perfectly good place to hide a
+  // paragraph addressed to a model (issue #56).
+  untrustedOutput: 'attachment',
   async execute(client, input) {
     if (!input.includeText) {
       const info = await client.request({

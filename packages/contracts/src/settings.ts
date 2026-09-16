@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { AI_MUTATION_POLICIES, aiMutationPolicySchema } from './ai-trust';
+
 /**
  * Runtime settings, stored one row per key in the `setting` table.
  *
@@ -27,6 +29,21 @@ export const settingsSchema = z.object({
   'ai.toolsEnabled': z.boolean().default(true),
   /** Whether the built-in AI may call tools that change data. */
   'ai.mutatingToolsEnabled': z.boolean().default(true),
+  /**
+   * What the built-in AI may still change after it has read text from outside
+   * this deployment (issue #56, ADR-030).
+   *
+   * `guarded` is the default: a run writes as usual until it reads an
+   * extracted document, an image description or -- once it exists -- a web
+   * page, and mutating tools are refused from that point on. `deny` never
+   * offers them at all; `allow` is the declared exception for a workflow whose
+   * whole job is to read foreign documents and write about them.
+   *
+   * This is the ceiling a workspace is clamped against, and it is deliberately
+   * out of reach of every tool: a setting an agent could raise is not a
+   * boundary, it is a suggestion.
+   */
+  'ai.untrustedContentPolicy': aiMutationPolicySchema.default('guarded'),
   /**
    * Tool round-trips one run may take. Deliberately generous (issue #28): the
    * cost of a long run is already bounded by `ai.budgetMicroUsdPerRun`, checked
@@ -619,6 +636,7 @@ export const SETTING_SCOPES = {
   'ai.budgetMicroUsdPerRun': 'workspace',
   'ai.toolsEnabled': 'workspace',
   'ai.mutatingToolsEnabled': 'workspace',
+  'ai.untrustedContentPolicy': 'workspace',
   'ai.maxToolIterations': 'workspace',
   'ai.visionEnabled': 'workspace',
   'ai.visionMaxImagesPerRun': 'workspace',
@@ -760,6 +778,7 @@ export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
   'ai.maxRunMs',
   'ai.budgetMicroUsdPerRun',
   'ai.maxToolIterations',
+  'ai.untrustedContentPolicy',
   'ai.visionMaxImagesPerRun',
   'ai.pageContextMaxChars',
   'ai.pdfMaxBytes',
@@ -768,6 +787,20 @@ export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
 ];
 
 const CEILING_KEYS = new Set<string>(SETTING_CEILINGS);
+
+/**
+ * Keys whose values are ordered words rather than numbers, strictest first.
+ *
+ * A ceiling only means something on a value that can be compared, and a plain
+ * string cannot be. Numbers and booleans compare themselves; an enum needs
+ * somebody to say which end is the strict one, and this is where that is said.
+ * A key listed in `SETTING_CEILINGS` but not comparable at all silently passes
+ * through, which is why this table exists next to the clamp rather than inside
+ * the schema.
+ */
+export const SETTING_VALUE_RANKS: Readonly<Partial<Record<SettingKey, readonly string[]>>> = {
+  'ai.untrustedContentPolicy': AI_MUTATION_POLICIES,
+};
 
 /** The inclusive bounds of one numeric setting. */
 export interface SettingNumberRange {
@@ -906,7 +939,7 @@ function applyWorkspaceOverrides(input: {
 
     const value = result.data;
     const ceiling = writable[key];
-    const clamped = CEILING_KEYS.has(key) ? clampToCeiling(value, ceiling) : value;
+    const clamped = CEILING_KEYS.has(key) ? clampToCeiling(key, value, ceiling) : value;
     writable[key] = clamped;
     overriddenKeys.push(key);
   }
@@ -918,13 +951,23 @@ function applyWorkspaceOverrides(input: {
  * A workspace value held under the deployment's.
  *
  * Numbers take the smaller of the two; booleans take the conjunction, which is
- * the same statement for a value that is only ever "allowed" or "not". Any
- * other type passes through: a ceiling on a string would have to mean something
- * before it could be enforced, and none of them do.
+ * the same statement for a value that is only ever "allowed" or "not". An
+ * ordered enum (`SETTING_VALUE_RANKS`) takes whichever of the two sits further
+ * towards the strict end. Any other type passes through: a ceiling on a free
+ * string would have to mean something before it could be enforced, and none of
+ * them do.
  */
-function clampToCeiling(value: unknown, ceiling: unknown): unknown {
+function clampToCeiling(key: SettingKey, value: unknown, ceiling: unknown): unknown {
   if (typeof value === 'number' && typeof ceiling === 'number') return Math.min(value, ceiling);
   if (typeof value === 'boolean' && typeof ceiling === 'boolean') return value && ceiling;
+
+  const ranks = SETTING_VALUE_RANKS[key];
+  if (ranks !== undefined && typeof value === 'string' && typeof ceiling === 'string') {
+    const valueRank = ranks.indexOf(value);
+    const ceilingRank = ranks.indexOf(ceiling);
+    if (valueRank === -1 || ceilingRank === -1) return value;
+    return valueRank <= ceilingRank ? value : ceiling;
+  }
   return value;
 }
 

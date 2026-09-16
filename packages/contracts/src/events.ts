@@ -153,7 +153,13 @@ export const aiRunToolCallPayloadSchema = z.object({
   runId: idSchema,
   iteration: z.number().int().nonnegative(),
   toolName: z.string(),
-  status: z.enum(['started', 'succeeded', 'failed']),
+  /**
+   * `refused` is not a failure: the trust boundary declined the call and
+   * nothing ran (issue #56, ADR-030). It is its own status because the two
+   * mean opposite things to whoever is watching -- a failure is something that
+   * went wrong, a refusal is something that worked.
+   */
+  status: z.enum(['started', 'succeeded', 'failed', 'refused']),
   /**
    * Compact identifier of what the call touches, e.g. `document:<id>` for
    * `exo_page_write` -- never the full argument payload. `null` when the tool

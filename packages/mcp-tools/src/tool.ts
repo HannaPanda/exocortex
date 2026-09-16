@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { type UntrustedOrigin } from '@exocortex/contracts';
+
 import { type ExocortexApiClient } from './client.js';
 
 /**
@@ -61,6 +63,21 @@ export interface ToolDefinition<TInput> {
    */
   irreversible?: boolean;
   /**
+   * Where the text this tool returns comes from, when that is not this
+   * deployment (issue #56, ADR-030).
+   *
+   * Absent means `internal`: pages, comments, rows, anything a member of this
+   * workspace wrote. Set it on a tool whose result carries text somebody
+   * outside could have authored -- an extracted PDF, a fetched web page, a
+   * mail body -- and the built-in AI's loop fences the result as data and
+   * stops writing for the rest of the run (`decideMutation`).
+   *
+   * Per tool, not per call, for the same reason `destructive` is: a tool that
+   * can return foreign text counts as one even on the call that happens to
+   * return nothing.
+   */
+  untrustedOutput?: UntrustedOrigin;
+  /**
    * Identifies the write target for the destination-keyed confirmation gate.
    * Required for every mutating tool, absent for read-only tools.
    */
@@ -99,6 +116,8 @@ export interface AnyToolDefinition {
   destructive: boolean;
   /** See `ToolDefinition.irreversible`. Always `false` for a read-only tool. */
   irreversible: boolean;
+  /** See `ToolDefinition.untrustedOutput`. `null` when the tool returns this deployment's own text. */
+  untrustedOutput: UntrustedOrigin | null;
   jsonSchema: unknown;
   /** True when the underlying `ToolDefinition` declared a `target` function. */
   hasTarget: boolean;
@@ -174,6 +193,7 @@ export function defineTool<TInput>(definition: ToolDefinition<TInput>): AnyToolD
     // A tool that changes nothing cannot destroy anything, whatever it claims.
     destructive: definition.mutating && (definition.destructive ?? false),
     irreversible: definition.mutating && (definition.irreversible ?? false),
+    untrustedOutput: definition.untrustedOutput ?? null,
     jsonSchema,
     hasTarget: definition.target !== undefined,
     targetOf(rawInput: unknown): string | null {

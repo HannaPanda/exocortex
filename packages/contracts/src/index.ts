@@ -4,6 +4,7 @@ export * from './ai';
 export * from './ai-conversations';
 export * from './ai-models';
 export * from './ai-runtime';
+export * from './ai-trust';
 export * from './attachments';
 export * from './auth';
 export * from './automations';

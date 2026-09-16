@@ -6,6 +6,7 @@ import {
   SETTING_KEYS,
   SETTING_NUMBER_RANGES,
   SETTING_SCOPES,
+  SETTING_VALUE_RANKS,
   settingsResponseSchema,
   settingsSchema,
   updateSettingsRequestSchema,
@@ -220,6 +221,22 @@ describe('workspace overrides', () => {
     expect(after.settings['ai.maxRunMs']).toBe(120_000);
   });
 
+  it('clamps an ordered enum to the stricter of the two values', () => {
+    const { settings } = resolveSettings({
+      rows: [{ key: 'ai.untrustedContentPolicy', value: 'guarded' }],
+      workspaceRows: [{ key: 'ai.untrustedContentPolicy', value: 'allow' }],
+    });
+    expect(settings['ai.untrustedContentPolicy']).toBe('guarded');
+  });
+
+  it('lets a workspace be stricter than the deployment about foreign content', () => {
+    const { settings } = resolveSettings({
+      rows: [{ key: 'ai.untrustedContentPolicy', value: 'allow' }],
+      workspaceRows: [{ key: 'ai.untrustedContentPolicy', value: 'deny' }],
+    });
+    expect(settings['ai.untrustedContentPolicy']).toBe('deny');
+  });
+
   it('ignores a workspace row for a deployment-scoped key', () => {
     const { settings, overriddenKeys, invalidKeys } = resolveSettings({
       rows: [],
@@ -252,16 +269,26 @@ describe('SETTING_SCOPES', () => {
     }
   });
 
+  it('lists every ranked value the schema accepts, in order', () => {
+    for (const [key, ranks] of Object.entries(SETTING_VALUE_RANKS)) {
+      const shape = settingsSchema.shape[key as SettingKey];
+      for (const value of ranks!) expect(shape.safeParse(value).success).toBe(true);
+    }
+  });
+
   it('keeps every ceiling key overridable and clampable', () => {
     const defaults = settingsSchema.parse({});
     for (const key of SETTING_CEILINGS) {
       expect(WORKSPACE_SETTING_KEYS).toContain(key);
       // A ceiling only means something on a value that can be held down: a
-      // number takes the smaller of the two, a boolean the conjunction.
+      // number takes the smaller of the two, a boolean the conjunction, an
+      // ordered enum whichever of the two sits nearer the strict end.
       // Anything else would pass through the clamp unchanged and the entry
       // would be a promise the resolver does not keep.
       const clampable =
-        SETTING_NUMBER_RANGES[key] !== undefined || typeof defaults[key] === 'boolean';
+        SETTING_NUMBER_RANGES[key] !== undefined ||
+        typeof defaults[key] === 'boolean' ||
+        SETTING_VALUE_RANKS[key] !== undefined;
       expect(clampable).toBe(true);
     }
   });
