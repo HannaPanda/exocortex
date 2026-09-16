@@ -380,12 +380,30 @@ and do not retry in a loop.
 
 ### Tracing, when a question needs a timeline
 
-Off by default and not installed: without `OTEL_EXPORTER_OTLP_ENDPOINT` in
-`.env` the OpenTelemetry SDK is never loaded by any unit. Point it at a
-collector, restart the four units, and one trace then covers a request, the jobs
-it enqueues, the AI run those start and every tool call underneath it
-(ADR-031). `docs/observability.md` has the variables, a throwaway Jaeger to try
-it against, and the rule about what a span may never contain.
+On, and pointed at Grafana Tempo. `OTEL_EXPORTER_OTLP_ENDPOINT` in `.env` names
+`http://127.0.0.1:4318`, which is the `tempo` container of the automation stack
+(`/opt/automation-stack/docker-compose.monitoring.yml`, config in
+`monitoring/tempo/config.yml`, blocks kept for seven days). The port is bound to
+loopback: the senders are the units on this machine and nothing else.
+
+The traces are in Grafana at <https://grafana.hannapanda.de>, **Explore → tempo**,
+beside the Prometheus metrics and the Loki logs that were already there. One
+trace covers a request, the jobs it enqueues, the AI run those start and every
+tool call underneath it (ADR-031).
+
+Emptying the endpoint line and restarting the units switches it off again, and
+off means the SDK is not loaded at all rather than merely quiet.
+
+One gap on this host: a span's "logs for this span" link queries Loki, and
+promtail currently ships only `haushalt`, `nginx` and `fail2ban` from the
+journal. Until the four `exocortex-*` units are added to the keep list in
+`/opt/automation-stack/monitoring/promtail-main/config.yml`, that link finds
+nothing -- `journalctl -u exocortex-worker -o cat | grep <traceId>` does. Loki
+has no retention configured, which is why adding four chatty units is a
+decision rather than a line.
+
+`docs/observability.md` has the variables, the table of which span is opened
+where, and the rule about what a span may never contain.
 
 ### Why there is no CI
 
