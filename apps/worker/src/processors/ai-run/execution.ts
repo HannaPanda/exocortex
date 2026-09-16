@@ -297,12 +297,12 @@ class RunExecution {
       // Refused here rather than upstream: the provider would answer 404 and
       // charge nothing, but it would also take a round trip to say what the
       // registry already knows.
+      // Only ever a size problem by the time it gets here: a model whose
+      // providers cannot do what the run needs answers `known: false` and goes
+      // out unrestricted instead (see `planRoute`).
       this.failure = {
         code: AI_NO_ELIGIBLE_PROVIDER,
-        message:
-          plan.capableEndpoints === 0
-            ? 'No provider of this model supports what this run needs'
-            : 'The request is larger than any provider of this model can serve',
+        message: 'The request is larger than any provider of this model can serve',
       };
       logger.warn('No eligible provider for this run', {
         runId: run.id,

@@ -60,6 +60,13 @@ A model with no snapshot keeps the old arithmetic on its catalogue figures. A
 refresh that fails keeps the snapshot it has: a coherent old picture beats no
 picture, and beats half of a new one.
 
+The same degradation covers a disagreement between the two sources. When no
+provider in the snapshot can do what a run needs -- the registry says the model
+thinks, its only provider says otherwise -- the request goes out with no
+preference at all rather than with an empty allowlist. The snapshot is the
+younger and narrower source, and a model that worked yesterday must not stop
+working because two pieces of provider metadata disagree.
+
 ### Eligibility is decided per turn, and only eligibility
 
 `planRoute` (`packages/ai/src/route-planner.ts`) answers one question: which
@@ -93,7 +100,8 @@ what `couldCompactionHelp` compares the conversation's floor (system prompt,
 kept tail, room for the summary) against.
 
 When nothing is eligible and compaction cannot help, the run fails locally with
-`ai_no_eligible_provider` instead of paying for a request that would come back 404.
+`ai_no_eligible_provider` instead of paying for a request that would come back 404. By then it is always a size problem: the capability case degraded to no
+preference above.
 
 ### The snapshot keeps itself current
 

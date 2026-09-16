@@ -4,11 +4,13 @@ import { applyModelRouteSnapshot } from '@exocortex/database';
 import { type MaintenanceTask } from './context';
 
 /**
- * Models refreshed per run. The whole registry is a dozen rows on a normal
- * deployment, so this is a ceiling rather than a pace: it keeps one sweep from
- * making several hundred requests if somebody registers the entire catalogue.
+ * Models refreshed per run. A registry holds a few dozen rows, and one endpoint
+ * list is one unauthenticated request, so this is a ceiling rather than a pace:
+ * it keeps a single sweep from making several hundred requests if somebody
+ * registers the whole catalogue, while still getting through a normal registry
+ * in one go.
  */
-const BATCH_SIZE = 12;
+const BATCH_SIZE = 30;
 
 /**
  * Context window for a provider entry that does not state one. Same conservative

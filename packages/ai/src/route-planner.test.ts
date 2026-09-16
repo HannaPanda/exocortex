@@ -86,6 +86,21 @@ describe('planRoute', () => {
     expect(result.capableEndpoints).toBe(1);
   });
 
+  it('sends no preference at all when no provider can do what the run needs', () => {
+    // The registry says the model can think; its only provider says otherwise.
+    // Restricting to nothing would break a model that worked yesterday, so the
+    // request goes out unrestricted instead.
+    const noEffort = endpoint({ providerKey: 'no-effort', supportsReasoningEffort: false });
+    const result = plan({
+      endpoints: [noEffort],
+      inputTokens: 1_000,
+      requiresReasoningEffort: true,
+    });
+
+    expect(result.known).toBe(false);
+    expect(result.allowedProviderKeys).toEqual([]);
+  });
+
   it('excludes providers that cannot do what the run needs', () => {
     const noTools = endpoint({ providerKey: 'no-tools', supportsTools: false });
     const noEffort = endpoint({ providerKey: 'no-effort', supportsReasoningEffort: false });
@@ -123,10 +138,14 @@ describe('couldCompactionHelp', () => {
 
   it('is false when the reason is a capability, not a size', () => {
     const noTools = endpoint({ providerKey: 'no-tools', supportsTools: false });
-    const refused = plan({ endpoints: [noTools], inputTokens: 100, requiresTools: true });
+    const refused = plan({
+      endpoints: [noTools, endpoint({ providerKey: 'tiny', contextWindowTokens: 1_000 })],
+      inputTokens: 100_000,
+      requiresTools: true,
+    });
 
     expect(refused.allowedProviderKeys).toEqual([]);
-    expect(couldCompactionHelp({ plan: refused, floorInputTokens: 10 })).toBe(false);
+    expect(couldCompactionHelp({ plan: refused, floorInputTokens: 90_000 })).toBe(false);
   });
 
   it('is false while something is still eligible, and for a model without a snapshot', () => {

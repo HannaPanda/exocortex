@@ -96,6 +96,20 @@ export function planRoute(input: RoutePlanInput): RoutePlan {
   }
 
   const capable = input.endpoints.filter((endpoint) => isCapable(endpoint, input));
+  // Nobody can do what this run needs, although the registry says the model
+  // can: the snapshot and the model row disagree, and the snapshot is the
+  // younger, narrower source. Degrading to no preference lets the request go
+  // out exactly as it did before endpoint data existed, which is the only
+  // reading under which a model that worked yesterday still works today.
+  if (capable.length === 0) {
+    return {
+      known: false,
+      allowedProviderKeys: [],
+      capableEndpoints: 0,
+      largestUsableInputTokens: 0,
+    };
+  }
+
   const largestUsableInputTokens = capable.reduce(
     (largest, endpoint) => Math.max(largest, usableInput(endpoint, input)),
     0,
