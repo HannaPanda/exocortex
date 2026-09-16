@@ -59,6 +59,7 @@ import {
   isSelfOrDescendant,
   parseExpanded,
 } from './page-tree-state';
+import { SuggestParentDialog } from './suggest-parent-dialog';
 import { TrashSheet } from './trash-sheet';
 
 interface PageTreeProps {
@@ -115,6 +116,7 @@ export function PageTree({ workspaceId }: PageTreeProps) {
   // it. Kept as one pair rather than a boolean flag, because the dialog needs
   // to know which subtree it is about.
   const [moveWorkspaceNode, setMoveWorkspaceNode] = React.useState<DocumentTreeNode | null>(null);
+  const [suggestParentNode, setSuggestParentNode] = React.useState<DocumentTreeNode | null>(null);
   const [moveTargetWorkspaceId, setMoveTargetWorkspaceId] = React.useState('');
   // The row being dragged, and the row it is currently over. Two pieces of state
   // rather than one: the dragged row stays marked while the pointer travels over
@@ -360,6 +362,7 @@ export function PageTree({ workspaceId }: PageTreeProps) {
       setMoveWorkspaceNode(node);
       setMoveTargetWorkspaceId('');
     },
+    suggestParent: (node) => setSuggestParentNode(node),
   };
 
   return (
@@ -435,6 +438,12 @@ export function PageTree({ workspaceId }: PageTreeProps) {
       </ScrollArea>
 
       <TrashSheet workspaceId={workspaceId} open={showTrash} onOpenChange={setShowTrash} />
+
+      <SuggestParentDialog
+        workspaceId={workspaceId}
+        node={suggestParentNode}
+        onClose={() => setSuggestParentNode(null)}
+      />
 
       <MoveWorkspaceDialog
         workspaceId={workspaceId}

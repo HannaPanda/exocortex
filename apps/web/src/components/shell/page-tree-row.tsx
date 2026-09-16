@@ -5,6 +5,7 @@ import {
   ChevronRightIcon,
   FolderCodeIcon,
   FolderInputIcon,
+  FolderTreeIcon,
   IndentDecreaseIcon,
   IndentIncreaseIcon,
   PlusIcon,
@@ -60,6 +61,7 @@ export interface PageTreeRowContext {
   setIcon: (documentId: string, selection: PageIconSelection) => void;
   archive: (documentId: string) => void;
   startWorkspaceMove: (node: DocumentTreeNode) => void;
+  suggestParent: (node: DocumentTreeNode) => void;
 }
 
 /**
@@ -268,6 +270,7 @@ function PageTreeRowMenu({
     archive,
     setIconPickerFor,
     startWorkspaceMove,
+    suggestParent,
   } = context;
   return (
     <ContextMenuContent>
@@ -323,6 +326,15 @@ function PageTreeRowMenu({
         <FolderCodeIcon /> LaTeX-Projekt anlegen
       </ContextMenuItem>
       <ContextMenuSeparator />
+      {/* Filing help rather than a move: the answer is a list of candidates
+          with the pages that already live under them, and agreeing with one
+          is a second click. */}
+      <ContextMenuItem
+        data-testid={`tree-suggest-parent-${node.id}`}
+        onClick={() => suggestParent(node)}
+      >
+        <FolderTreeIcon /> Passenden Ort vorschlagen …
+      </ContextMenuItem>
       <ContextMenuItem
         data-testid={`tree-move-workspace-${node.id}`}
         onClick={() => startWorkspaceMove(node)}
