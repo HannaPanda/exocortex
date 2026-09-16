@@ -31,3 +31,6 @@ export * from './settings';
 export * from './workspace-credentials';
 export * from './workspace-overview';
 export * from './workspaces';
+
+// Temporary: proves the CI turns red. Removed with the branch.
+export const ciRedProbe: number = 'not a number';
