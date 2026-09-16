@@ -220,6 +220,12 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   hashes decide whether a refresh costs anything. Triggered from the outbox,
   swept hourly, and degraded to a plain child list whenever no model can be
   reached.
+- ADR-029: withdrawing access reaches connections that are already open. A
+  revocation travels on its own Redis channel, never on the application event
+  bus and never through the outbox; a revoked connection is replaced rather than
+  patched, so a widened permission only ever arrives through a fresh handshake;
+  and a periodic re-authorization sweep in both the gateway and the
+  collaboration server is what the guarantee rests on when a message is missed.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

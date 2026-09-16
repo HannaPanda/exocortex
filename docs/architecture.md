@@ -75,6 +75,16 @@ loop in the worker calls (ADR-014, ADR-025). See `docs/mcp.md`.
 Awareness is never persisted. Domain events never travel over the Yjs protocol
 (ADR-008).
 
+Both are authorized once, when they open, and then live as long as the tab does.
+A third Redis channel exists for exactly that reason: `exocortex:revocations`
+carries `{ userId, workspaceId | null, reason }` to every process holding such a
+connection, so a removed member leaves the workspace room and a demoted editing
+session loses `write` without waiting for a reconnect. It is deliberately not the
+application event bus (that one fans out into browser rooms) and deliberately not
+the outbox (a poll is too slow for an authorization decision); the guarantee
+underneath it is a periodic re-authorization sweep in both processes. ADR-029 and
+`docs/security.md` have the whole picture.
+
 ## Reliability: outbox plus best-effort realtime
 
 Domain mutations write an `OutboxEvent` row **inside the same transaction** as the
@@ -290,7 +300,10 @@ ordinary database, its mentions are written by the materialization pass, and
    the transaction.
 
 Rooms are derived server-side (`workspaceRoom(workspaceId)`); clients only ever
-send a `workspaceId` and every subscription is authorized.
+send a `workspaceId` and every subscription is authorized. A subscription can
+also be taken away again while the socket stays open: the server sends
+`exocortex.subscription.revoked`, and the browser answers by subscribing again
+(ADR-029).
 
 ### A new storage backend
 

@@ -178,6 +178,11 @@ const EXEMPT = [
     route: 'PATCH /api/workspaces/:x/members/:x',
     reason: "Changes someone's role. Granting access is not delegated to agents.",
   },
+  {
+    route: 'DELETE /api/workspaces/:x/members/:x',
+    reason:
+      "Takes someone's access away, and ends their open sessions while doing it. The same reason as granting a role, read the other way round: an agent that could remove a member could lock a person out of their own workspace.",
+  },
 
   // -- agent provenance ----------------------------------------------------
   {

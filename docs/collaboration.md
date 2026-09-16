@@ -130,14 +130,40 @@ memory to avoid data loss"), so a transient database failure does not lose edits
 
 ## Read-only enforcement
 
-Read-only is enforced in three independent places:
+Read-only is enforced in four independent places:
 
 1. the ticket carries `access: 'read'`,
 2. `connectionConfig.readOnly = true` makes Hocuspocus drop incoming updates,
-3. `DocumentPersistence.store` refuses to write archived documents at all.
+3. `DocumentPersistence.store` refuses to write archived documents at all,
+4. `Connection.readOnly` is set on a connection whose authorization was
+   withdrawn while it was open (see below).
 
 Tests: "refuses updates from a read-only connection" and "rejects a write ticket for
 an archived document by downgrading to read-only".
+
+## Withdrawing access from an open connection
+
+`onAuthenticate` decides once, and a tab keeps its connection for hours, so a
+removal or a demotion has to reach connections that already exist (issue #62,
+ADR-029). `apps/collaboration/src/revocations.ts` does that:
+
+- it subscribes to the Redis channel `exocortex:revocations`, which the API
+  publishes to after a role change, a member removal, an account being disabled
+  and an account being deleted;
+- a matching connection is marked `readOnly` first, which stops the next message
+  before any close can be acknowledged, and its socket is then closed, so the
+  client reconnects and asks for a fresh ticket;
+- every 30 seconds it re-authorizes every open connection against the database
+  as well. That sweep is what carries the guarantee when a published message was
+  missed; a connection that has only lost its write right is downgraded in place
+  there rather than closed, because reading is still allowed.
+
+`onAuthenticate` also refuses an account whose `disabledAt` is set: switching an
+account off deletes its sessions, but the collaboration ticket in the client's
+hand stays valid for its TTL.
+
+Tests: "withdrawing access from an open connection" (3 tests), all of which act
+on a connection that was open _before_ the change.
 
 ## Scaling
 
@@ -151,7 +177,9 @@ each process.
 | Situation                         | Behaviour                                                                                                       |
 | --------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | ticket expired while connected    | the existing connection stays; a reconnect needs a fresh ticket                                                 |
-| membership revoked                | the next connection attempt is rejected in `onAuthenticate`                                                     |
+| membership revoked                | the open connection is closed within a second, and the reconnect is rejected in `onAuthenticate` (ADR-029)      |
+| role demoted to read-only         | the open connection loses `write` on the next message; nothing typed is lost                                    |
+| account switched off              | every connection it holds is closed, and `onAuthenticate` refuses the ticket that is still within its TTL       |
 | document archived while connected | further writes are dropped by `store`; the UI shows the archived banner after the query refreshes               |
 | collaboration server down         | the editor keeps working on the IndexedDB copy, the badge shows "Verbindung unterbrochen", the provider retries |
 | database down                     | the store hook throws, Hocuspocus keeps the document in memory and retries                                      |

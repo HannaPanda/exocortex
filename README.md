@@ -20,7 +20,9 @@ What is deliberately still missing is listed under
 
 - email/password accounts, sessions, verification and password-reset mail;
   registration is invitation-only
-- multiple workspaces with `OWNER` / `ADMIN` / `MEMBER` / `GUEST` roles
+- multiple workspaces with `OWNER` / `ADMIN` / `MEMBER` / `GUEST` roles; adding
+  and removing members takes effect in open browser tabs, not only on the next
+  request (ADR-029)
 - arbitrarily nested pages with stable fractional ordering, trash, permanent
   deletion, page icons and cover images
 - real-time collaborative editing (Tiptap + Yjs + Hocuspocus) with presence,
@@ -81,7 +83,7 @@ What is deliberately still missing is listed under
 | Auth     | Better Auth 1.6 with the Prisma adapter                                                         |
 | AI       | provider-neutral contracts, OpenRouter, a mock provider for offline work                        |
 | Agents   | one tool catalogue over stdio MCP and `POST /api/mcp`                                           |
-| Tests    | Vitest 4, Playwright 1.62                                                                       |
+| Tests    | Vitest 5, Playwright 1.63                                                                       |
 
 ## Quick start
 

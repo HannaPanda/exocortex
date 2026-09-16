@@ -5,29 +5,30 @@ authorization mechanism.
 
 ## Where each rule lives
 
-| Rule                                                      | Enforced in                                                                                                         | Verified by                                                                                                            |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Workspace access is checked server-side                   | `WorkspaceAccessService.requireRole`, `canReadWorkspace`                                                            | `security.spec.ts` → "a foreign workspace is not readable"                                                             |
-| Document access is checked server-side                    | `WorkspaceAccessService.requireDocumentContext`, `canReadDocument`                                                  | "a document from another workspace is not readable"                                                                    |
-| WebSocket subscriptions are checked server-side           | `RealtimeGateway.subscribeWorkspace` + `canSubscribeToWorkspaceRoom`                                                | `policies.test.ts` → "realtime subscriptions"; unauthenticated sockets are disconnected in `handleConnection`          |
-| Hocuspocus access is checked server-side                  | `apps/collaboration/src/server.ts` `onAuthenticate`                                                                 | `collaboration.integration.test.ts` (4 tests)                                                                          |
-| Object storage access is checked server-side              | `AttachmentsService.download` + `canDownloadAttachment`; the bucket is private, downloads are pre-signed            | "an unauthorized attachment download is rejected"                                                                      |
-| API keys never reach the browser                          | only `PUBLIC_*` values are exposed (`apps/web/next.config.ts`); `apps/web` may not import `@exocortex/ai`           | `scripts/check-dependency-boundaries.mjs`                                                                              |
-| Collaboration tickets expire quickly                      | `COLLABORATION_TICKET_TTL_SECONDS` (default 60, max 600)                                                            | "a collaboration ticket is scoped to one document and expires quickly", "rejects an expired ticket"                    |
-| Archived documents cannot be edited                       | `canEditDocument`, plus a second check in `DocumentPersistence.store`                                               | "an archived document cannot be edited", "rejects a write ticket for an archived document by downgrading to read-only" |
-| Deleting a page for good needs ADMIN, and the trash first | `canDeleteDocument`                                                                                                 | "refuses a member without the ADMIN role", "refuses to delete a page that is not archived"                             |
-| Read-only tickets cannot submit updates                   | `connectionConfig.readOnly = true` in `onAuthenticate`                                                              | "refuses updates from a read-only connection"                                                                          |
-| Cross-workspace moves are rejected                        | `canMoveDocument`                                                                                                   | "a cross-workspace parent assignment is rejected"                                                                      |
-| Circular moves are rejected                               | `wouldCreateCycle` inside the move transaction                                                                      | "a circular move is rejected"                                                                                          |
-| All user input is validated                               | `ZodValidationPipe` + `packages/contracts`; job payloads in `createTypedWorker`                                     | "request validation rejects malformed payloads"                                                                        |
-| Destructive operations are audited                        | `OutboxService.writeAudit` in the same transaction                                                                  | `AuditLog` rows; audit metadata never contains content                                                                 |
-| Secrets are redacted from logs                            | `packages/logger/src/redaction.ts`                                                                                  | `logger.test.ts` (4 tests)                                                                                             |
-| Document contents are not written to logs                 | the same redaction list covers `yjsState`, `proseMirrorJson`, `plainText`, `markdown`, `content`                    | `logger.test.ts` → "redacts document payloads"                                                                         |
-| Passwords and session tokens are never logged             | redaction list + Better Auth stores only hashes                                                                     | `logger.test.ts`                                                                                                       |
-| Upload size is limited                                    | `MAX_UPLOAD_BYTES` in `@fastify/multipart` _and_ a second check in the service; `client_max_body_size 32m` in nginx | `AttachmentsService.upload`                                                                                            |
-| MIME types are inspected                                  | `detectMimeType` reads magic bytes; the browser type is only a hint                                                 | "uploads reject a file whose real type is not allowed"                                                                 |
-| Rate limiting is enabled                                  | `ThrottlerGuard` (300 req/min) plus explicit Better Auth limits                                                     | `x-ratelimit-*` response headers                                                                                       |
-| Secure headers are configured                             | `@fastify/helmet` for the API, `headers()` in `next.config.ts`, plus nginx defaults                                 | "security headers and health endpoints are in place"                                                                   |
+| Rule                                                       | Enforced in                                                                                                         | Verified by                                                                                                              |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Workspace access is checked server-side                    | `WorkspaceAccessService.requireRole`, `canReadWorkspace`                                                            | `security.spec.ts` → "a foreign workspace is not readable"                                                               |
+| Document access is checked server-side                     | `WorkspaceAccessService.requireDocumentContext`, `canReadDocument`                                                  | "a document from another workspace is not readable"                                                                      |
+| WebSocket subscriptions are checked server-side            | `RealtimeGateway.subscribeWorkspace` + `canSubscribeToWorkspaceRoom`                                                | `policies.test.ts` → "realtime subscriptions"; unauthenticated sockets are disconnected in `handleConnection`            |
+| Hocuspocus access is checked server-side                   | `apps/collaboration/src/server.ts` `onAuthenticate`                                                                 | `collaboration.integration.test.ts` (4 tests)                                                                            |
+| Withdrawn access reaches connections that are already open | the revocation channel plus the re-authorization sweeps (ADR-029)                                                   | `collaboration.integration.test.ts` → "withdrawing access from an open connection" (3 tests); `realtime.gateway.test.ts` |
+| Object storage access is checked server-side               | `AttachmentsService.download` + `canDownloadAttachment`; the bucket is private, downloads are pre-signed            | "an unauthorized attachment download is rejected"                                                                        |
+| API keys never reach the browser                           | only `PUBLIC_*` values are exposed (`apps/web/next.config.ts`); `apps/web` may not import `@exocortex/ai`           | `scripts/check-dependency-boundaries.mjs`                                                                                |
+| Collaboration tickets expire quickly                       | `COLLABORATION_TICKET_TTL_SECONDS` (default 60, max 600)                                                            | "a collaboration ticket is scoped to one document and expires quickly", "rejects an expired ticket"                      |
+| Archived documents cannot be edited                        | `canEditDocument`, plus a second check in `DocumentPersistence.store`                                               | "an archived document cannot be edited", "rejects a write ticket for an archived document by downgrading to read-only"   |
+| Deleting a page for good needs ADMIN, and the trash first  | `canDeleteDocument`                                                                                                 | "refuses a member without the ADMIN role", "refuses to delete a page that is not archived"                               |
+| Read-only tickets cannot submit updates                    | `connectionConfig.readOnly = true` in `onAuthenticate`                                                              | "refuses updates from a read-only connection"                                                                            |
+| Cross-workspace moves are rejected                         | `canMoveDocument`                                                                                                   | "a cross-workspace parent assignment is rejected"                                                                        |
+| Circular moves are rejected                                | `wouldCreateCycle` inside the move transaction                                                                      | "a circular move is rejected"                                                                                            |
+| All user input is validated                                | `ZodValidationPipe` + `packages/contracts`; job payloads in `createTypedWorker`                                     | "request validation rejects malformed payloads"                                                                          |
+| Destructive operations are audited                         | `OutboxService.writeAudit` in the same transaction                                                                  | `AuditLog` rows; audit metadata never contains content                                                                   |
+| Secrets are redacted from logs                             | `packages/logger/src/redaction.ts`                                                                                  | `logger.test.ts` (4 tests)                                                                                               |
+| Document contents are not written to logs                  | the same redaction list covers `yjsState`, `proseMirrorJson`, `plainText`, `markdown`, `content`                    | `logger.test.ts` → "redacts document payloads"                                                                           |
+| Passwords and session tokens are never logged              | redaction list + Better Auth stores only hashes                                                                     | `logger.test.ts`                                                                                                         |
+| Upload size is limited                                     | `MAX_UPLOAD_BYTES` in `@fastify/multipart` _and_ a second check in the service; `client_max_body_size 32m` in nginx | `AttachmentsService.upload`                                                                                              |
+| MIME types are inspected                                   | `detectMimeType` reads magic bytes; the browser type is only a hint                                                 | "uploads reject a file whose real type is not allowed"                                                                   |
+| Rate limiting is enabled                                   | `ThrottlerGuard` (300 req/min) plus explicit Better Auth limits                                                     | `x-ratelimit-*` response headers                                                                                         |
+| Secure headers are configured                              | `@fastify/helmet` for the API, `headers()` in `next.config.ts`, plus nginx defaults                                 | "security headers and health endpoints are in place"                                                                     |
 
 ## Authentication
 
@@ -155,6 +156,11 @@ already loaded: an `exo_` API token (belt and braces, it was revoked above) and 
 HMAC service token, which is not revocable at all and would otherwise keep working
 for the few minutes it lives.
 
+A WebSocket that was authenticated an hour ago has no credential left to lose, so
+disabling also publishes an account-wide revocation; see the next section but one.
+The collaboration handshake additionally refuses a disabled account outright,
+because a collaboration ticket outlives the session that bought it.
+
 The sign-in failure is Better Auth's generic one, not "this account is disabled".
 The sign-in form is unauthenticated, and an error that distinguishes "wrong
 password" from "account exists but is off" tells anybody who asks which addresses
@@ -165,6 +171,43 @@ or uploads. Otherwise the API answers `user_has_content` and the UI offers only
 disabling. What deletion is for is the invitation that went to the wrong address.
 Neither route lets an administrator act on their own account, and neither lets the
 last global admin be removed.
+
+## Withdrawing access from an open connection
+
+Everything above is decided per request, which is why a removed member is refused
+on their next click. Two channels are decided once and then live for hours: the
+application realtime socket and the Yjs collaboration socket. Without a second
+mechanism a removed member would keep receiving workspace events, and an editing
+session that was writable when it opened would stay writable (issue #62,
+ADR-029).
+
+The mechanism is a Redis channel of its own, `exocortex:revocations`, carrying
+`{ userId, workspaceId | null, reason }`:
+
+- the API publishes after a role change, a member removal, an account being
+  disabled and an account being deleted; `workspaceId: null` means the account
+  itself, so every workspace is affected;
+- the realtime gateway takes the socket out of that workspace's room and tells
+  the browser, which subscribes again and is authorized from scratch. An
+  account-scoped revocation disconnects the socket instead;
+- the collaboration server marks the connection `readOnly` — which takes effect
+  on the very next message, before any close can be acknowledged — and then
+  closes the socket, so the client reconnects with a fresh ticket.
+
+Nothing is ever _granted_ into a live connection: a promotion publishes a
+revocation exactly like a demotion does, and the wider rights arrive through the
+new handshake. A server that quietly upgraded an open connection would be an
+authorization path with no handshake to audit.
+
+Redis pub/sub is at-most-once, so the channel is the fast path rather than the
+guarantee. Both processes re-authorize their open connections on a timer as well
+— every 60 seconds in the gateway, every 30 in the collaboration server — asking
+the database what the message would have said. A missed message costs latency,
+not correctness.
+
+Removing somebody is `DELETE /api/workspaces/:id/members/:userId`, audited as
+`workspace.member_removed`. It is deliberately not an agent tool: access is
+handed out and taken away by people.
 
 ## API token scopes
 
@@ -263,9 +306,12 @@ interface CollaborationTicketClaims {
   secret.
 - The Hocuspocus document name is the opaque document id only — no workspace id and
   no permission data.
-- On connect the server re-checks membership and archival state and takes the
-  minimum of the ticket claim and the current policy, so a ticket can never widen
-  permissions and a revoked member cannot keep using a ticket inside its TTL.
+- On connect the server re-checks membership, the account's `disabledAt` and the
+  archival state, and takes the minimum of the ticket claim and the current
+  policy, so a ticket can never widen permissions and neither a revoked member
+  nor a switched-off account can keep using a ticket inside its TTL.
+- A connection that is already open is covered by the revocation channel and the
+  sweep below, not by the ticket.
 
 Covered by 9 unit tests (`collaboration-ticket.test.ts`) including a tampered
 `access` claim, a foreign document, expiry and malformed input.
