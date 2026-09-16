@@ -17,7 +17,7 @@ what that term rules out.
 
 ## Contributions are licensed to the author
 
-By opening a pull request you grant Johanna a perpetual, worldwide,
+By opening a pull request you grant Johanna Marie Schenk a perpetual, worldwide,
 irrevocable, royalty-free, transferable and sublicensable right to use,
 reproduce, modify, distribute and relicense your contribution, under any terms,
 including terms different from `LICENSE` and including commercial licences. You
