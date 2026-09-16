@@ -7,7 +7,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { type FastifyInstance } from 'fastify';
 
 import { type ApiEnv } from '@exocortex/config';
-import { createCorrelationId, type Logger } from '@exocortex/logger';
+import { createCorrelationId, type Logger, startTracing } from '@exocortex/logger';
 
 import { AppModule } from './app.module';
 import { AuthService } from './auth/auth.service';
@@ -18,6 +18,7 @@ import {
   readAutomationOriginHeader,
 } from './common/correlation';
 import { API_ENV, LOGGER } from './common/logger.provider';
+import { installHttpTracing } from './common/tracing';
 
 import 'reflect-metadata';
 
@@ -56,6 +57,18 @@ async function bootstrap(): Promise<void> {
 
   const fastify = app.getHttpAdapter().getInstance() as FastifyInstance;
 
+  // Tracing comes up before the first request is served, and comes to nothing
+  // when no collector is configured (issue #57).
+  const tracing = await startTracing({
+    serviceName: 'api',
+    endpoint: env.OTEL_EXPORTER_OTLP_ENDPOINT,
+    headers: env.OTEL_EXPORTER_OTLP_HEADERS,
+    sampleRatio: env.OTEL_TRACES_SAMPLER_RATIO,
+    enabled: env.OTEL_TRACES_ENABLED,
+    environment: env.NODE_ENV,
+    logger,
+  });
+
   // Correlation ids are assigned before anything else runs, so every log line
   // and every enqueued job of a request can be traced back to it.
   fastify.addHook('onRequest', (request, reply, done) => {
@@ -82,6 +95,8 @@ async function bootstrap(): Promise<void> {
     });
     done();
   });
+
+  installHttpTracing(fastify);
 
   // CORS for the MCP endpoint, which needs different rules than the rest of
   // the API and must therefore be answered before the global CORS middleware
@@ -175,6 +190,7 @@ async function bootstrap(): Promise<void> {
     logger.info('Shutting down API', { signal });
     try {
       await app.close();
+      await tracing?.shutdown();
       process.exit(0);
     } catch (error) {
       logger.fatal('Graceful shutdown failed', error);

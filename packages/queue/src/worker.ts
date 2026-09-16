@@ -1,7 +1,7 @@
 import { type Job, UnrecoverableError, Worker, type WorkerOptions } from 'bullmq';
 
 import { JOB_SCHEMAS, type JobPayloadMap, type QueueName } from '@exocortex/contracts';
-import { type Logger } from '@exocortex/logger';
+import { type Logger, withSpan } from '@exocortex/logger';
 
 import { createRedisConnection, type Redis } from './connection';
 import { DEFAULT_QUEUE_PREFIX } from './registry';
@@ -111,7 +111,32 @@ export function createTypedWorker<TName extends QueueName>(
       };
 
       logger.debug('Job started');
-      await options.handler({ payload, job, logger, reportProgress });
+      // The job's span continues the trace of whoever enqueued it (issue #57).
+      // `messaging.bullmq.wait_time_ms` is the reason the two halves are
+      // separate spans at all: without it, time spent waiting for a free
+      // worker is indistinguishable from time spent working, and those two
+      // have completely different fixes.
+      await withSpan(
+        `job ${options.name}`,
+        async () => {
+          await options.handler({ payload, job, logger, reportProgress });
+        },
+        {
+          kind: 'consumer',
+          correlationId: payload.correlationId,
+          ...(payload.traceparent === undefined
+            ? {}
+            : { parent: { traceparent: payload.traceparent } }),
+          attributes: {
+            'messaging.system': 'bullmq',
+            'messaging.destination.name': options.name,
+            'messaging.operation.name': 'process',
+            'messaging.message.id': job.id,
+            'messaging.bullmq.attempt': job.attemptsMade + 1,
+            'messaging.bullmq.wait_time_ms': Math.max(0, startedAt - job.timestamp),
+          },
+        },
+      );
       const durationMs = Date.now() - startedAt;
       logger.info('Job completed', { durationMs });
       await options.onCompleted?.(payload, job, durationMs);

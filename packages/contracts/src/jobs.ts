@@ -45,6 +45,16 @@ export type QueueName = z.infer<typeof queueNameSchema>;
 /** Every job payload carries a correlation identifier for traceability. */
 const jobBase = z.object({
   correlationId: z.string().min(1),
+  /**
+   * W3C trace context of whoever enqueued the job (issue #57).
+   *
+   * It travels in the payload for the same reason the correlation id does:
+   * BullMQ has no header of its own, and a trace that stops at the queue
+   * answers none of the questions a queue raises. Optional, because a job
+   * enqueued while tracing is off has no parent to name, and because the jobs
+   * already in Redis when this shipped have none either.
+   */
+  traceparent: z.string().min(1).max(200).optional(),
 });
 
 export const materializeDocumentJobSchema = jobBase.extend({

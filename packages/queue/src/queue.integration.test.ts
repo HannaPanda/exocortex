@@ -1,8 +1,11 @@
+import { createServer } from 'node:http';
+import { type AddressInfo } from 'node:net';
+
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { loadDotEnv } from '@exocortex/config';
 import { type ApplicationEvent, QUEUE_NAMES } from '@exocortex/contracts';
-import { createLogger } from '@exocortex/logger';
+import { createLogger, currentTraceIds, startTracing, withSpan } from '@exocortex/logger';
 
 import { RedisEventBus } from './event-bus';
 import { QueueRegistry, testQueuePrefix } from './registry';
@@ -55,6 +58,74 @@ async function waitFor(condition: () => boolean, timeoutMs = 5_000): Promise<voi
 afterAll(async () => {
   await queues.obliterateAll();
   await queues.close();
+});
+
+/**
+ * A collector that accepts the OTLP payload and answers 200.
+ *
+ * The trace context has to survive Redis for an AI run to belong to the
+ * request that asked for it (issue #57), and that is only observable with a
+ * tracer that actually produces one. Exporting into a port nobody listens on
+ * would make every shutdown retry for eight seconds.
+ */
+async function startCollector(): Promise<{ url: string; close: () => Promise<void> }> {
+  const server = createServer((request, response) => {
+    request.resume();
+    request.on('end', () => {
+      response.writeHead(200, { 'content-type': 'application/json' });
+      response.end('{}');
+    });
+  });
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const { port } = server.address() as AddressInfo;
+  return {
+    url: `http://127.0.0.1:${port}`,
+    close: () =>
+      new Promise<void>((resolve) => {
+        server.close(() => resolve());
+      }),
+  };
+}
+
+describe('trace context across the queue', () => {
+  it('runs the job in the trace of whoever enqueued it', async () => {
+    const collector = await startCollector();
+    const tracing = await startTracing({ serviceName: 'queue-test', endpoint: collector.url });
+    const documentId = `doc-trace-${Date.now().toString(36)}`;
+    const seen: { traceId: string | undefined; traceparent: string | undefined }[] = [];
+
+    const { worker, connection } = createTypedWorker({
+      name: QUEUE_NAMES.documentMaterialization,
+      redisUrl,
+      logger,
+      prefix,
+      concurrency: 1,
+      handler: ({ payload }) => {
+        if (payload.documentId === documentId) {
+          seen.push({ traceId: currentTraceIds()?.traceId, traceparent: payload.traceparent });
+        }
+        return Promise.resolve();
+      },
+    });
+
+    try {
+      const enqueuedTraceId = await withSpan('request', async () => {
+        await queues.enqueue(QUEUE_NAMES.documentMaterialization, materializePayload(documentId));
+        return currentTraceIds()?.traceId;
+      });
+      await waitFor(() => seen.length === 1);
+
+      expect(enqueuedTraceId).toBeDefined();
+      expect(seen[0]?.traceparent).toContain(enqueuedTraceId!);
+      // The job's span is a child of the enqueue, not a trace of its own.
+      expect(seen[0]?.traceId).toBe(enqueuedTraceId);
+    } finally {
+      await worker.close();
+      await connection.quit();
+      await tracing?.shutdown();
+      await collector.close();
+    }
+  });
 });
 
 describe('QueueRegistry', () => {

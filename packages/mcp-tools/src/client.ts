@@ -70,6 +70,16 @@ export interface FetchClientOptions {
   appUrl?: string;
   /** Agent session to stamp on every request from the start. See ADR-022. */
   agentSession?: { externalId: string; label?: string };
+  /**
+   * Current W3C trace context, asked for once per request (issue #57).
+   *
+   * A function rather than a value because a client outlives the span it is
+   * used under: the worker's tool loop mints one client per run and makes a
+   * call per tool. Passed in rather than read here, because this package may
+   * not depend on `@exocortex/logger` -- it is the tool catalogue, and it
+   * reaches the domain through the API and nothing else.
+   */
+  traceparent?: () => string | undefined;
 }
 
 /**
@@ -129,8 +139,10 @@ export function createFetchApiClient(options: FetchClientOptions): ExocortexApiC
   let agentSession = options.agentSession;
 
   function baseHeaders(): Record<string, string> {
+    const traceparent = options.traceparent?.();
     return {
       authorization: `Bearer ${options.token}`,
+      ...(traceparent === undefined ? {} : { traceparent }),
       ...(agentSession === undefined
         ? {}
         : {

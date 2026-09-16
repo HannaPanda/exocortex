@@ -1,6 +1,6 @@
 import { loadCollaborationEnv } from '@exocortex/config';
 import { createPrismaClient } from '@exocortex/database';
-import { createLogger } from '@exocortex/logger';
+import { createLogger, startTracing } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 
 import { createCollaborationServer } from './server';
@@ -17,6 +17,19 @@ async function bootstrap(): Promise<void> {
     name: 'collaboration',
     level: env.LOG_LEVEL,
     pretty: env.NODE_ENV === 'development',
+  });
+
+  // The collaboration server enqueues materialization for every document it
+  // stores; without tracing here that job would start a trace of its own with
+  // nothing above it (issue #57).
+  const tracing = await startTracing({
+    serviceName: 'collaboration',
+    endpoint: env.OTEL_EXPORTER_OTLP_ENDPOINT,
+    headers: env.OTEL_EXPORTER_OTLP_HEADERS,
+    sampleRatio: env.OTEL_TRACES_SAMPLER_RATIO,
+    enabled: env.OTEL_TRACES_ENABLED,
+    environment: env.NODE_ENV,
+    logger,
   });
 
   const prisma = createPrismaClient({ databaseUrl: env.DATABASE_URL });
@@ -48,6 +61,7 @@ async function bootstrap(): Promise<void> {
       await server.destroy();
       await queues.close();
       await prisma.$disconnect();
+      await tracing?.shutdown();
       logger.info('Collaboration server stopped cleanly');
       process.exit(0);
     } catch (error) {

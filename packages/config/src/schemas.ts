@@ -175,6 +175,23 @@ export const internalCollaborationSchema = z.object({
   COLLABORATION_INTERNAL_URL: z.url().default('http://127.0.0.1:3212'),
 });
 
+/**
+ * Distributed tracing (issue #57). Off unless an endpoint is configured, and
+ * the switch is here rather than in the `setting` table on purpose: the tracer
+ * has to exist before the first request is served, which is well before the
+ * database is read (ADR-013 leaves bootstrap to the environment).
+ */
+export const tracingSchema = z.object({
+  /** OTLP/HTTP base URL of the collector, e.g. `http://127.0.0.1:4318`. Empty means no tracing. */
+  OTEL_EXPORTER_OTLP_ENDPOINT: z.string().trim().optional(),
+  /** `key=value,key2=value2` for a collector that wants an authorization header. */
+  OTEL_EXPORTER_OTLP_HEADERS: z.string().trim().optional(),
+  /** Fraction of traces to keep, 0 to 1. A child always follows its parent's decision. */
+  OTEL_TRACES_SAMPLER_RATIO: z.coerce.number().min(0).max(1).default(1),
+  /** Switches tracing off without removing the endpoint. */
+  OTEL_TRACES_ENABLED: booleanFromString.default(true),
+});
+
 export const webProcessSchema = z.object({
   WEB_PORT: port.default(3210),
 });
@@ -203,7 +220,8 @@ export const apiEnvSchema = baseSchema
   .extend(publicSchema.shape)
   .extend(serviceTokenSchema.shape)
   .extend(credentialEncryptionSchema.shape)
-  .extend(internalCollaborationSchema.shape);
+  .extend(internalCollaborationSchema.shape)
+  .extend(tracingSchema.shape);
 
 export const workerEnvSchema = baseSchema
   .extend(databaseSchema.shape)
@@ -213,13 +231,15 @@ export const workerEnvSchema = baseSchema
   .extend(calendarSchema.shape)
   .extend(serviceTokenSchema.shape)
   .extend(credentialEncryptionSchema.shape)
-  .extend(internalApiSchema.shape);
+  .extend(internalApiSchema.shape)
+  .extend(tracingSchema.shape);
 
 export const collaborationEnvSchema = baseSchema
   .extend(databaseSchema.shape)
   .extend(redisSchema.shape)
   .extend(collaborationTicketSchema.shape)
-  .extend(collaborationProcessSchema.shape);
+  .extend(collaborationProcessSchema.shape)
+  .extend(tracingSchema.shape);
 
 export const webEnvSchema = baseSchema.extend(webProcessSchema.shape).extend(publicSchema.shape);
 

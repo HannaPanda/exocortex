@@ -7,7 +7,7 @@ import {
   QUEUE_NAMES,
   type QueueName,
 } from '@exocortex/contracts';
-import { type Logger } from '@exocortex/logger';
+import { currentTraceCarrier, type Logger, withSpan } from '@exocortex/logger';
 
 import { createRedisConnection, type Redis } from './connection';
 
@@ -164,20 +164,54 @@ export class QueueRegistry {
     return queueEvents;
   }
 
+  /**
+   * Stamps the caller's trace context onto a payload that does not name one.
+   *
+   * This is what keeps a trace going across the queue (issue #57): the worker
+   * reads `traceparent` back out and starts the job's span underneath the span
+   * that enqueued it. A payload that already carries one is left alone, so a
+   * job re-enqueued on behalf of an earlier one keeps pointing at its origin.
+   */
+  private withTraceContext<TName extends QueueName>(
+    payload: JobPayloadMap[TName],
+  ): JobPayloadMap[TName] {
+    if (payload.traceparent !== undefined) return payload;
+    const carrier = currentTraceCarrier();
+    if (carrier === undefined) return payload;
+    return { ...payload, traceparent: carrier.traceparent };
+  }
+
   /** Validates and enqueues a job. */
   async enqueue<TName extends QueueName>(
     name: TName,
     payload: JobPayloadMap[TName],
     options: EnqueueOptions = {},
   ): Promise<string> {
-    const parsed = JOB_SCHEMAS[name].parse(payload) as JobPayloadMap[TName];
-    const job = await this.rawQueue(name).add(name, parsed, options);
-    this.logger.debug('Job enqueued', {
-      queue: name,
-      jobId: job.id,
-      correlationId: parsed.correlationId,
-    });
-    return job.id ?? '';
+    return withSpan(
+      `queue.enqueue ${name}`,
+      async (span) => {
+        const parsed = JOB_SCHEMAS[name].parse(
+          this.withTraceContext(payload),
+        ) as JobPayloadMap[TName];
+        const job = await this.rawQueue(name).add(name, parsed, options);
+        span.setAttributes({ 'messaging.message.id': job.id });
+        this.logger.debug('Job enqueued', {
+          queue: name,
+          jobId: job.id,
+          correlationId: parsed.correlationId,
+        });
+        return job.id ?? '';
+      },
+      {
+        kind: 'producer',
+        correlationId: payload.correlationId,
+        attributes: {
+          'messaging.system': 'bullmq',
+          'messaging.destination.name': name,
+          'messaging.operation.name': 'send',
+        },
+      },
+    );
   }
 
   /**
@@ -198,7 +232,7 @@ export class QueueRegistry {
     if (jobId.includes(':')) {
       throw new Error(`Invalid job id "${jobId}": custom job ids must not contain ":"`);
     }
-    const parsed = JOB_SCHEMAS[name].parse(payload) as JobPayloadMap[TName];
+    const parsed = JOB_SCHEMAS[name].parse(this.withTraceContext(payload)) as JobPayloadMap[TName];
     const queue = this.rawQueue(name);
 
     const existing = await queue.getJob(jobId);

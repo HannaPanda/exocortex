@@ -1,6 +1,12 @@
 import { loadWorkerEnv } from '@exocortex/config';
 import { QUEUE_NAMES } from '@exocortex/contracts';
-import { createCorrelationId, createLogger, type Logger } from '@exocortex/logger';
+import {
+  createCorrelationId,
+  createLogger,
+  type Logger,
+  startTracing,
+  type TracingHandle,
+} from '@exocortex/logger';
 
 import { type QueueWorker, startQueueWorkers } from './queue-workers';
 import { createWorkerRuntime, type WorkerRuntime } from './runtime';
@@ -20,6 +26,18 @@ async function bootstrap(): Promise<void> {
     pretty: env.NODE_ENV === 'development',
   });
 
+  // Before the first job is picked up: a job whose span is a no-op has no
+  // parent to hang the AI run, the turns and the tool calls under (issue #57).
+  const tracing = await startTracing({
+    serviceName: 'worker',
+    endpoint: env.OTEL_EXPORTER_OTLP_ENDPOINT,
+    headers: env.OTEL_EXPORTER_OTLP_HEADERS,
+    sampleRatio: env.OTEL_TRACES_SAMPLER_RATIO,
+    enabled: env.OTEL_TRACES_ENABLED,
+    environment: env.NODE_ENV,
+    logger,
+  });
+
   const runtime = createWorkerRuntime(env, logger);
   const workers = startQueueWorkers(env, runtime, logger);
 
@@ -33,7 +51,7 @@ async function bootstrap(): Promise<void> {
     tools: runtime.toolRunnerFactory !== null,
   });
 
-  installShutdown(workers, runtime, logger);
+  installShutdown(workers, runtime, logger, tracing);
 }
 
 /**
@@ -44,6 +62,7 @@ function installShutdown(
   workers: readonly QueueWorker[],
   runtime: WorkerRuntime,
   logger: Logger,
+  tracing: TracingHandle | null,
 ): void {
   let shuttingDown = false;
   const shutdown = async (signal: string): Promise<void> => {
@@ -56,6 +75,7 @@ function installShutdown(
       await runtime.bus.close();
       await runtime.queues.close();
       await runtime.prisma.$disconnect();
+      await tracing?.shutdown();
       logger.info('Worker stopped cleanly');
       process.exit(0);
     } catch (error) {
