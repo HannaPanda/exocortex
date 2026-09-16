@@ -55,6 +55,49 @@ export const syncAiModelsRequestSchema = z.object({
 });
 export type SyncAiModelsRequest = z.infer<typeof syncAiModelsRequestSchema>;
 
+/**
+ * One model the provider currently offers, mapped onto the registry's shape.
+ *
+ * The catalogue exists so a model can be registered by picking it instead of by
+ * typing ten fields that the provider already knows.
+ */
+export const aiModelCatalogEntrySchema = z.object({
+  slug: z.string(),
+  displayName: z.string(),
+  description: z.string().nullable(),
+  contextWindowTokens: z.number().int().nonnegative(),
+  maxOutputTokens: z.number().int().positive().nullable(),
+  supportsVision: z.boolean(),
+  supportsTools: z.boolean(),
+  reasoningLevels: z.array(aiReasoningLevelSchema),
+  inputMicroUsdPerMTok: z.number().int().nonnegative(),
+  outputMicroUsdPerMTok: z.number().int().nonnegative(),
+  /** True when the registry already has a row for this slug, enabled or not. */
+  registered: z.boolean(),
+});
+export type AiModelCatalogEntry = z.infer<typeof aiModelCatalogEntrySchema>;
+
+export const aiModelCatalogResponseSchema = z.object({
+  entries: z.array(aiModelCatalogEntrySchema),
+  /** When the provider list behind this answer was fetched. */
+  fetchedAt: isoDateTimeSchema,
+});
+export type AiModelCatalogResponse = z.infer<typeof aiModelCatalogResponseSchema>;
+
+export const addAiModelsFromCatalogRequestSchema = z.object({
+  slugs: z.array(z.string().trim().min(1).max(120)).min(1).max(50),
+  /** Whether the new rows appear in the picker right away. */
+  enabled: z.boolean().default(true),
+});
+export type AddAiModelsFromCatalogRequest = z.infer<typeof addAiModelsFromCatalogRequestSchema>;
+
+export const addAiModelsFromCatalogResponseSchema = z.object({
+  added: z.array(aiModelSchema),
+  /** Slugs the registry already knew, or that the provider no longer offers. */
+  skipped: z.array(z.string()),
+});
+export type AddAiModelsFromCatalogResponse = z.infer<typeof addAiModelsFromCatalogResponseSchema>;
+
 export const syncAiModelsResponseSchema = z.object({
   updated: z.array(z.string()),
   added: z.array(z.string()),

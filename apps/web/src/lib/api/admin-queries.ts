@@ -3,6 +3,8 @@
 import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 
 import {
+  type AddAiModelsFromCatalogRequest,
+  type AddAiModelsFromCatalogResponse,
   type AdminOverviewResponse,
   type AdminUser,
   type AdminUserListResponse,
@@ -11,6 +13,7 @@ import {
   type AgentSessionListResponse,
   type AgentSessionRevertResponse,
   type AiModel,
+  type AiModelCatalogResponse,
   type AiModelListResponse,
   type AiUsageResponse,
   type ApiToken,
@@ -44,6 +47,9 @@ export const adminQueryKeys = {
   settings: ['admin', 'settings'] as const,
   users: ['admin', 'users'] as const,
   aiModels: ['admin', 'ai-models'] as const,
+  // Deliberately not a child of `aiModels`: a prefix would make every registry
+  // invalidation silently refetch the provider's list as well.
+  aiModelCatalog: ['admin', 'ai-model-catalog'] as const,
   aiUsage: (days: number) => ['admin', 'ai-usage', days] as const,
   apiTokens: ['me', 'api-tokens'] as const,
   connections: ['me', 'connections'] as const,
@@ -212,6 +218,37 @@ export function useDeleteAiModel() {
         method: 'DELETE',
       }),
     onSuccess: () => void client.invalidateQueries({ queryKey: adminQueryKeys.aiModels }),
+  });
+}
+
+/**
+ * The provider's current offer, for the "add from the catalogue" dialog.
+ *
+ * Only fetched while the dialog is open (it is a network round trip to
+ * OpenRouter), and held for five minutes: prices and context windows do not
+ * move within one sitting.
+ */
+export function useAiModelCatalog(enabled: boolean): UseQueryResult<AiModelCatalogResponse> {
+  return useQuery({
+    queryKey: adminQueryKeys.aiModelCatalog,
+    queryFn: () => apiRequest<AiModelCatalogResponse>('/api/admin/ai-models/catalog'),
+    enabled,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useAddAiModelsFromCatalog() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (request: AddAiModelsFromCatalogRequest) =>
+      apiRequest<AddAiModelsFromCatalogResponse>('/api/admin/ai-models/catalog', {
+        method: 'POST',
+        body: request,
+      }),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: adminQueryKeys.aiModels });
+      void client.invalidateQueries({ queryKey: adminQueryKeys.aiModelCatalog });
+    },
   });
 }
 

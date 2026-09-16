@@ -1,6 +1,6 @@
 'use client';
 
-import { MoreHorizontalIcon, PlusIcon, RefreshCwIcon } from 'lucide-react';
+import { LibraryBigIcon, MoreHorizontalIcon, PlusIcon, RefreshCwIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { type AiModel, type AiReasoningLevel, groupAiModelsByVendor } from '@exocortex/contracts';
@@ -34,6 +34,7 @@ import {
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 
+import { ModelCatalogDialog } from './model-catalog-dialog';
 import { ModelDialog } from './model-dialog';
 
 const numberFormat = new Intl.NumberFormat('de-DE');
@@ -63,6 +64,7 @@ export function ModelTable() {
   const syncModels = useSyncAiModels();
 
   const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [catalogOpen, setCatalogOpen] = React.useState(false);
   const [editingModel, setEditingModel] = React.useState<AiModel | undefined>(undefined);
   const [syncSummary, setSyncSummary] = React.useState<string | null>(null);
 
@@ -110,13 +112,17 @@ export function ModelTable() {
           >
             <RefreshCwIcon /> Von OpenRouter aktualisieren
           </Button>
+          <Button onClick={() => setCatalogOpen(true)}>
+            <LibraryBigIcon /> Aus dem Katalog hinzufügen
+          </Button>
           <Button
+            variant="outline"
             onClick={() => {
               setEditingModel(undefined);
               setDialogOpen(true);
             }}
           >
-            <PlusIcon /> Neues Modell
+            <PlusIcon /> Von Hand anlegen
           </Button>
         </div>
       </div>
@@ -235,6 +241,8 @@ export function ModelTable() {
           ])}
         </TableBody>
       </Table>
+
+      <ModelCatalogDialog open={catalogOpen} onOpenChange={setCatalogOpen} />
 
       <ModelDialog
         open={dialogOpen}

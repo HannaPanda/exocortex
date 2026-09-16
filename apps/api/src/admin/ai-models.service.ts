@@ -3,7 +3,11 @@ import { z } from 'zod';
 
 import { type ApiEnv } from '@exocortex/config';
 import {
+  type AddAiModelsFromCatalogRequest,
+  type AddAiModelsFromCatalogResponse,
   type AiModel,
+  type AiModelCatalogEntry,
+  type AiModelCatalogResponse,
   type AiModelListResponse,
   type CreateAiModelRequest,
   type SyncAiModelsRequest,
@@ -20,6 +24,7 @@ import { type Logger } from '@exocortex/logger';
 import {
   AiModelResolverService,
   mapAiModelRow,
+  REASONING_LEVEL_TO_CONTRACT,
   REASONING_LEVEL_TO_PRISMA,
 } from '../ai/ai-model-resolver.service';
 import { AppError } from '../common/app-error';
@@ -27,6 +32,16 @@ import { API_ENV, LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform-tokens';
 
 const AI_MODEL_INCLUDE = { visionCompanion: { select: { slug: true } } } as const;
+
+/**
+ * Context window for a provider entry that does not state one. Rare, and low
+ * enough to be conservative: compaction triggers early rather than late, and an
+ * admin can correct the row afterwards.
+ */
+const FALLBACK_CONTEXT_WINDOW_TOKENS = 8192;
+
+/** Gap between the sort positions of models added in one go, so single rows fit between them later. */
+const CATALOG_SORT_ORDER_STEP = 10;
 
 /**
  * Narrow, lenient schema for `GET {OPENROUTER_BASE_URL}/models`.
@@ -68,7 +83,7 @@ const openRouterModelListSchema = z.object({
   data: z.array(openRouterModelSchema),
 });
 
-type OpenRouterModel = z.infer<typeof openRouterModelSchema>;
+export type OpenRouterModel = z.infer<typeof openRouterModelSchema>;
 
 /**
  * Derives the selectable thinking levels from OpenRouter's `supported_parameters`.
@@ -117,6 +132,24 @@ function mapLiveEntry(
     }),
     inputMicroUsdPerMTok: Math.round(Number(entry.pricing.prompt) * 1e12),
     outputMicroUsdPerMTok: Math.round(Number(entry.pricing.completion) * 1e12),
+  };
+}
+
+/** One live entry as the catalogue dialog shows it: the registry's shape, not the provider's. */
+export function toCatalogEntry(entry: OpenRouterModel, registered: boolean): AiModelCatalogEntry {
+  const mapped = mapLiveEntry(entry, FALLBACK_CONTEXT_WINDOW_TOKENS);
+  return {
+    slug: entry.id,
+    displayName: entry.name ?? entry.id,
+    description: entry.description ?? null,
+    contextWindowTokens: mapped.contextWindowTokens,
+    maxOutputTokens: mapped.maxOutputTokens,
+    supportsVision: mapped.supportsVision,
+    supportsTools: mapped.supportsTools,
+    reasoningLevels: mapped.reasoningLevels.map((level) => REASONING_LEVEL_TO_CONTRACT[level]),
+    inputMicroUsdPerMTok: mapped.inputMicroUsdPerMTok,
+    outputMicroUsdPerMTok: mapped.outputMicroUsdPerMTok,
+    registered,
   };
 }
 
@@ -287,6 +320,94 @@ export class AiModelsService {
     await this.prisma.aiModel.delete({ where: { id: modelId } });
     this.logger.info('AI model deleted', { actorId, aiModelId: modelId });
     return { deleted: true, disabled: false };
+  }
+
+  /**
+   * Everything the provider currently offers, mapped onto the registry's shape
+   * and marked with what the registry already has.
+   *
+   * Not cached on the server: the browser holds the answer for as long as the
+   * dialog is open, and a stale price here would be copied into a row.
+   */
+  async catalog(): Promise<AiModelCatalogResponse> {
+    const liveById = await this.fetchLiveModels();
+    const registered = new Set(
+      (await this.prisma.aiModel.findMany({ select: { slug: true } })).map((row) => row.slug),
+    );
+
+    const entries = [...liveById.values()]
+      .map((live) => toCatalogEntry(live, registered.has(live.id)))
+      .sort((a, b) => a.slug.localeCompare(b.slug));
+
+    return { entries, fetchedAt: new Date().toISOString() };
+  }
+
+  /**
+   * Registers picked slugs with everything the provider knows about them.
+   *
+   * Enabled by default, unlike `sync`'s `addMissing`: picking a model out of a
+   * list is the deliberate act that switch was asking for. A slug the registry
+   * already has, or that the provider does not offer, is skipped rather than
+   * refused, so picking one row that has since been added does not lose the
+   * other nine.
+   */
+  async addFromCatalog(
+    request: AddAiModelsFromCatalogRequest,
+    actorId: string,
+  ): Promise<AddAiModelsFromCatalogResponse> {
+    const liveById = await this.fetchLiveModels();
+    const existing = new Set(
+      (
+        await this.prisma.aiModel.findMany({
+          where: { slug: { in: request.slugs } },
+          select: { slug: true },
+        })
+      ).map((row) => row.slug),
+    );
+    const highest = await this.prisma.aiModel.aggregate({ _max: { sortOrder: true } });
+
+    const added: AiModel[] = [];
+    const skipped: string[] = [];
+    let sortOrder = highest._max.sortOrder ?? 100;
+
+    for (const slug of request.slugs) {
+      const live = liveById.get(slug);
+      if (existing.has(slug) || live === undefined) {
+        skipped.push(slug);
+        continue;
+      }
+
+      const mapped = mapLiveEntry(live, FALLBACK_CONTEXT_WINDOW_TOKENS);
+      sortOrder += CATALOG_SORT_ORDER_STEP;
+      const created = await this.prisma.aiModel.create({
+        data: {
+          slug,
+          displayName: live.name ?? slug,
+          description: live.description ?? null,
+          contextWindowTokens: mapped.contextWindowTokens,
+          maxOutputTokens: mapped.maxOutputTokens,
+          supportsVision: mapped.supportsVision,
+          supportsTools: mapped.supportsTools,
+          reasoningLevels: mapped.reasoningLevels,
+          inputMicroUsdPerMTok: mapped.inputMicroUsdPerMTok,
+          outputMicroUsdPerMTok: mapped.outputMicroUsdPerMTok,
+          enabled: request.enabled,
+          sortOrder,
+          metadata: live as unknown as Prisma.InputJsonObject,
+          syncedAt: new Date(),
+        },
+        include: AI_MODEL_INCLUDE,
+      });
+      added.push(mapAiModelRow(created));
+    }
+
+    this.logger.info('AI models added from the provider catalogue', {
+      actorId,
+      added: added.length,
+      skipped: skipped.length,
+    });
+
+    return { added, skipped };
   }
 
   async sync(request: SyncAiModelsRequest, actorId: string): Promise<SyncAiModelsResponse> {

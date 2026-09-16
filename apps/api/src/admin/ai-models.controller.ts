@@ -4,7 +4,13 @@ import { z } from 'zod';
 
 import { type VerifiedSession } from '@exocortex/auth';
 import {
+  type AddAiModelsFromCatalogRequest,
+  addAiModelsFromCatalogRequestSchema,
+  type AddAiModelsFromCatalogResponse,
+  addAiModelsFromCatalogResponseSchema,
   type AiModel,
+  type AiModelCatalogResponse,
+  aiModelCatalogResponseSchema,
   type AiModelListResponse,
   aiModelListResponseSchema,
   aiModelSchema,
@@ -38,6 +44,23 @@ export class AdminAiModelsController {
   @ApiOkResponse({ schema: openApiResponseSchema(aiModelListResponseSchema) })
   async list(): Promise<AiModelListResponse> {
     return this.aiModels.list();
+  }
+
+  /** The provider's current offer. Read-only, and the only route that leaves the deployment. */
+  @Get('catalog')
+  @ApiOkResponse({ schema: openApiResponseSchema(aiModelCatalogResponseSchema) })
+  async catalog(): Promise<AiModelCatalogResponse> {
+    return this.aiModels.catalog();
+  }
+
+  @Post('catalog')
+  @ApiBody({ schema: openApiSchema(addAiModelsFromCatalogRequestSchema) })
+  @ApiCreatedResponse({ schema: openApiResponseSchema(addAiModelsFromCatalogResponseSchema) })
+  async addFromCatalog(
+    @CurrentSession() session: VerifiedSession,
+    @Body(zodPipe(addAiModelsFromCatalogRequestSchema)) body: AddAiModelsFromCatalogRequest,
+  ): Promise<AddAiModelsFromCatalogResponse> {
+    return this.aiModels.addFromCatalog(body, session.userId);
   }
 
   @Post()

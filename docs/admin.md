@@ -257,9 +257,26 @@ read from it, so a model that is not in the registry cannot be chosen.
 # Seed the curated list (idempotent: upserts by slug, wires vision companions).
 pnpm --filter @exocortex/database db:seed:ai-models
 
+# What the provider offers right now, marked with what the registry has.
+GET  /api/admin/ai-models/catalog
+
+# Register picked slugs with everything the provider knows about them.
+POST /api/admin/ai-models/catalog     # {"slugs":["z-ai/glm-5.2"],"enabled":true}
+
 # Refresh prices, context windows and capabilities from the live provider.
 POST /api/admin/ai-models/sync        # optionally {"slugs":["z-ai/glm-5.2"]}
 ```
+
+**Registering a model is picking it, not typing it.** Everything the registry
+stores is already in the provider's list, so `GET .../catalog` maps that list
+onto the registry's columns and the admin area shows it as a searchable dialog
+(`ModelCatalogDialog`). `POST .../catalog` then creates the picked rows, sorted
+after the existing ones and enabled by default — picking a model out of a list
+is the deliberate act that `sync`'s `addMissing` switch was asking for, and a
+slug that has meanwhile been registered is skipped rather than refused, so one
+stale row does not lose the other nine. The manual form stays for a model the
+provider does not offer and for correcting a row afterwards. The catalogue is
+not cached server-side: a stale price here would be copied into a row.
 
 `sync` reads the live OpenRouter model list. A slug that has disappeared
 upstream is set to `enabled = false` rather than deleted, so conversations that
