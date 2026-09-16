@@ -55,6 +55,14 @@ const openRouterModelSchema = z
     id: z.string(),
     name: z.string().optional(),
     description: z.string().optional(),
+    /** Present on the `~vendor/model-latest` entries; names the model they currently resolve to. */
+    alias_target: z
+      .object({
+        slug: z.string(),
+      })
+      .loose()
+      .nullable()
+      .optional(),
     context_length: z.number().optional(),
     architecture: z
       .object({
@@ -89,6 +97,35 @@ const openRouterModelSchema = z
 const openRouterModelListSchema = z.object({
   data: z.array(openRouterModelSchema),
 });
+
+/**
+ * Narrow, lenient schema for `GET {OPENROUTER_BASE_URL}/models/{slug}/endpoints`.
+ *
+ * One model is served by many providers, each with its own context window,
+ * output limit and price, and the router picks one per request.
+ */
+const openRouterEndpointListSchema = z.object({
+  data: z
+    .object({
+      endpoints: z.array(
+        z
+          .object({
+            context_length: z.number().optional(),
+            max_completion_tokens: z.number().nullable().optional(),
+            pricing: z
+              .object({
+                prompt: z.string(),
+                completion: z.string(),
+              })
+              .loose(),
+          })
+          .loose(),
+      ),
+    })
+    .loose(),
+});
+
+type OpenRouterEndpoint = z.infer<typeof openRouterEndpointListSchema>['data']['endpoints'][number];
 
 export type OpenRouterModel = z.infer<typeof openRouterModelSchema>;
 
@@ -182,13 +219,64 @@ function mapLiveEntry(
   };
 }
 
-/** One live entry as the catalogue dialog shows it: the registry's shape, not the provider's. */
-export function toCatalogEntry(entry: OpenRouterModel, registered: boolean): AiModelCatalogEntry {
-  const mapped = mapLiveEntry(entry, FALLBACK_CONTEXT_WINDOW_TOKENS);
+/**
+ * The worst case across a model's endpoints, or `null` when there is nothing to
+ * read.
+ *
+ * A model is served by many providers at once and the router picks one per
+ * request, so there is no single true context window or price -- GLM 5.3 ranges
+ * from 262k to 1.3M tokens and from $0.88 to $2.10 per million. The registry
+ * stores one number, and the safe one is the pessimistic one: the smallest
+ * window makes compaction trigger early rather than after a refusal, and the
+ * highest price makes the cost estimate too high rather than too low.
+ */
+export function worstCaseFromEndpoints(
+  endpoints: readonly OpenRouterEndpoint[],
+): Pick<
+  MappedLiveFields,
+  'contextWindowTokens' | 'maxOutputTokens' | 'inputMicroUsdPerMTok' | 'outputMicroUsdPerMTok'
+> | null {
+  if (endpoints.length === 0) return null;
+
+  const contextWindows = endpoints
+    .map((endpoint) => endpoint.context_length)
+    .filter((value): value is number => value !== undefined && value > 0);
+  const outputLimits = endpoints
+    .map((endpoint) => endpoint.max_completion_tokens)
+    .filter((value): value is number => value !== undefined && value !== null && value > 0);
+  const inputPrices = endpoints.map((endpoint) => Number(endpoint.pricing.prompt));
+  const outputPrices = endpoints.map((endpoint) => Number(endpoint.pricing.completion));
+  if (contextWindows.length === 0 || inputPrices.some((price) => Number.isNaN(price))) return null;
+
+  return {
+    contextWindowTokens: Math.min(...contextWindows),
+    maxOutputTokens: outputLimits.length === 0 ? null : Math.min(...outputLimits),
+    inputMicroUsdPerMTok: Math.round(Math.max(...inputPrices) * 1e12),
+    outputMicroUsdPerMTok: Math.round(Math.max(...outputPrices) * 1e12),
+  };
+}
+
+/**
+ * One live entry as the catalogue dialog shows it: the registry's shape, not the
+ * provider's.
+ *
+ * `source` is where the numbers come from and defaults to the entry itself. For
+ * an alias (`~z-ai/glm-latest`) it is the entry the alias resolves to: the alias
+ * row carries the figures of the *cheapest* endpoint, which is a different model
+ * size than the one a request usually lands on, so reading it as if it described
+ * the model would understate the context window by a factor of four.
+ */
+export function toCatalogEntry(
+  entry: OpenRouterModel,
+  registered: boolean,
+  source: OpenRouterModel = entry,
+): AiModelCatalogEntry {
+  const mapped = mapLiveEntry(source, FALLBACK_CONTEXT_WINDOW_TOKENS);
   return {
     slug: entry.id,
     displayName: entry.name ?? entry.id,
     description: entry.description ?? null,
+    aliasTargetSlug: entry.alias_target?.slug ?? null,
     contextWindowTokens: mapped.contextWindowTokens,
     maxOutputTokens: mapped.maxOutputTokens,
     supportsVision: mapped.supportsVision,
@@ -383,7 +471,7 @@ export class AiModelsService {
     );
 
     const entries = [...liveById.values()]
-      .map((live) => toCatalogEntry(live, registered.has(live.id)))
+      .map((live) => toCatalogEntry(live, registered.has(live.id), this.sourceOf(live, liveById)))
       .sort((a, b) => a.slug.localeCompare(b.slug));
 
     return { entries, fetchedAt: new Date().toISOString() };
@@ -424,7 +512,7 @@ export class AiModelsService {
         continue;
       }
 
-      const mapped = mapLiveEntry(live, FALLBACK_CONTEXT_WINDOW_TOKENS);
+      const mapped = await this.mapForRegistry(live, liveById, FALLBACK_CONTEXT_WINDOW_TOKENS);
       sortOrder += CATALOG_SORT_ORDER_STEP;
       const created = await this.prisma.aiModel.create({
         data: {
@@ -482,6 +570,59 @@ export class AiModelsService {
     return { updated, added, disabled, unchanged };
   }
 
+  /**
+   * The entry whose numbers describe a model: itself, or what an alias resolves
+   * to.
+   *
+   * An alias row (`~z-ai/glm-latest`) carries the figures of the cheapest
+   * endpoint rather than of the model, so its own row is the one thing not to
+   * read. A target the list does not contain leaves the alias describing itself,
+   * which is wrong but is still better than nothing.
+   */
+  private sourceOf(live: OpenRouterModel, liveById: Map<string, OpenRouterModel>): OpenRouterModel {
+    const targetSlug = live.alias_target?.slug;
+    if (targetSlug === undefined) return live;
+    return liveById.get(targetSlug) ?? live;
+  }
+
+  /**
+   * What a registry row should say about a model: the alias resolved, and for an
+   * alias the pessimistic figures across the target's endpoints.
+   *
+   * The endpoint list is only fetched for an alias. It is one request per model,
+   * and a pinned slug already names a model whose row is representative of it --
+   * an alias is the case where the catalogue's own figures describe something
+   * else. A failed lookup silently keeps the resolved row's figures: registering
+   * a model must not depend on a second endpoint being up.
+   */
+  private async mapForRegistry(
+    live: OpenRouterModel,
+    liveById: Map<string, OpenRouterModel>,
+    fallbackContextWindowTokens: number,
+  ): Promise<MappedLiveFields> {
+    const source = this.sourceOf(live, liveById);
+    const mapped = mapLiveEntry(source, fallbackContextWindowTokens);
+    if (live.alias_target?.slug === undefined) return mapped;
+
+    const worstCase = worstCaseFromEndpoints(await this.fetchEndpoints(source.id));
+    return worstCase === null ? mapped : { ...mapped, ...worstCase };
+  }
+
+  /** One model's endpoints, or an empty list when the provider cannot answer. */
+  private async fetchEndpoints(slug: string): Promise<OpenRouterEndpoint[]> {
+    try {
+      const response = await fetch(`${this.env.OPENROUTER_BASE_URL}/models/${slug}/endpoints`, {
+        signal: AbortSignal.timeout(15_000),
+      });
+      if (!response.ok) return [];
+      const parsed = openRouterEndpointListSchema.safeParse(await response.json());
+      return parsed.success ? parsed.data.data.endpoints : [];
+    } catch (error) {
+      this.logger.warn('Endpoint list could not be read', { slug, error });
+      return [];
+    }
+  }
+
   /** The provider's current model list, keyed by slug. */
   private async fetchLiveModels(): Promise<Map<string, OpenRouterModel>> {
     const response = await fetch(`${this.env.OPENROUTER_BASE_URL}/models`, {
@@ -529,7 +670,7 @@ export class AiModelsService {
         continue;
       }
 
-      const mapped = mapLiveEntry(live, row.contextWindowTokens);
+      const mapped = await this.mapForRegistry(live, liveById, row.contextWindowTokens);
       if (matchesLiveEntry(row, mapped)) {
         unchanged += 1;
         continue;

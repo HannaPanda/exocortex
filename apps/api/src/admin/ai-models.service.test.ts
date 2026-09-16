@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { deriveReasoningLevels, type OpenRouterModel, toCatalogEntry } from './ai-models.service';
+import {
+  deriveReasoningLevels,
+  type OpenRouterModel,
+  toCatalogEntry,
+  worstCaseFromEndpoints,
+} from './ai-models.service';
 
 describe('deriveReasoningLevels', () => {
   it('believes the efforts the provider reports, including xhigh and max', () => {
@@ -92,6 +97,7 @@ describe('toCatalogEntry', () => {
       slug: 'z-ai/glm-5.2',
       displayName: 'Z.ai: GLM 5.2',
       description: 'Ein Modell.',
+      aliasTargetSlug: null,
       contextWindowTokens: 200_000,
       maxOutputTokens: 32_000,
       supportsVision: true,
@@ -101,6 +107,32 @@ describe('toCatalogEntry', () => {
       outputMicroUsdPerMTok: 2_200_000,
       registered: false,
     });
+  });
+
+  it('describes an alias with the figures of the model it resolves to', () => {
+    const alias: OpenRouterModel = {
+      id: '~z-ai/glm-latest',
+      name: 'Z.ai: GLM Latest',
+      description: 'Always the latest GLM.',
+      alias_target: { slug: 'z-ai/glm-5.2' },
+      // The alias row carries the *cheapest* endpoint's numbers, which is
+      // exactly what must not end up in the registry.
+      context_length: 262_144,
+      supported_parameters: ['tools', 'reasoning_effort'],
+      pricing: { prompt: '0.0000008775', completion: '0.00000297' },
+    };
+
+    expect(toCatalogEntry(alias, false, entry)).toMatchObject({
+      slug: '~z-ai/glm-latest',
+      displayName: 'Z.ai: GLM Latest',
+      aliasTargetSlug: 'z-ai/glm-5.2',
+      contextWindowTokens: 200_000,
+      inputMicroUsdPerMTok: 600_000,
+    });
+  });
+
+  it('leaves an ordinary entry without an alias target', () => {
+    expect(toCatalogEntry(entry, false).aliasTargetSlug).toBeNull();
   });
 
   it('marks what the registry already has, so the row cannot be picked twice', () => {
@@ -123,5 +155,52 @@ describe('toCatalogEntry', () => {
     expect(sparse.maxOutputTokens).toBeNull();
     expect(sparse.supportsVision).toBe(false);
     expect(sparse.reasoningLevels).toEqual(['none']);
+  });
+});
+
+/**
+ * One model, many providers, one row (issue #67). The router picks an endpoint
+ * per request, so the registry's single number has to be the pessimistic one:
+ * compaction that triggers early beats a refusal, and a cost estimate that is
+ * too high beats one that is too low.
+ */
+describe('worstCaseFromEndpoints', () => {
+  const endpoints = [
+    {
+      context_length: 1_048_576,
+      max_completion_tokens: 943_718,
+      pricing: { prompt: '0.0000014', completion: '0.0000044' },
+    },
+    {
+      context_length: 262_144,
+      max_completion_tokens: 235_929,
+      pricing: { prompt: '0.0000008775', completion: '0.00000297' },
+    },
+  ];
+
+  it('takes the smallest window and the highest price', () => {
+    expect(worstCaseFromEndpoints(endpoints)).toEqual({
+      contextWindowTokens: 262_144,
+      maxOutputTokens: 235_929,
+      inputMicroUsdPerMTok: 1_400_000,
+      outputMicroUsdPerMTok: 4_400_000,
+    });
+  });
+
+  it('answers null when there is nothing to read', () => {
+    expect(worstCaseFromEndpoints([])).toBeNull();
+    expect(worstCaseFromEndpoints([{ pricing: { prompt: '0.1', completion: '0.2' } }])).toBeNull();
+  });
+
+  it('keeps maxOutputTokens null when no endpoint states one', () => {
+    expect(
+      worstCaseFromEndpoints([
+        {
+          context_length: 1000,
+          max_completion_tokens: null,
+          pricing: { prompt: '0', completion: '0' },
+        },
+      ])?.maxOutputTokens,
+    ).toBeNull();
   });
 });

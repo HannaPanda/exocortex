@@ -278,6 +278,19 @@ stale row does not lose the other nine. The manual form stays for a model the
 provider does not offer and for correcting a row afterwards. The catalogue is
 not cached server-side: a stale price here would be copied into a row.
 
+**An alias is resolved, and read pessimistically.** OpenRouter's
+`~vendor/model-latest` entries always point at the current model of a family
+(`alias_target`), and their row carries the figures of the _cheapest_ endpoint
+rather than of the model -- for `~z-ai/glm-latest` that is a context window four
+times smaller than the one a request usually gets. So the catalogue describes an
+alias with the target's figures, and registering or syncing one reads
+`GET /models/{target}/endpoints` as well: a model is served by many providers at
+once, the router picks one per request, and the registry stores a single number.
+That number is the pessimistic one -- smallest window, highest price -- because
+compaction that triggers early beats a refusal from the provider, and a cost
+estimate that is too high beats one that is too low. The extra request happens
+for an alias only, and a failed one leaves the resolved figures standing.
+
 `sync` reads the live OpenRouter model list. A slug that has disappeared
 upstream is set to `enabled = false` rather than deleted, so conversations that
 already reference it still resolve (ADR-012 / risk R12). CRUD for individual

@@ -73,6 +73,12 @@ export const aiModelCatalogEntrySchema = z.object({
   slug: z.string(),
   displayName: z.string(),
   description: z.string().nullable(),
+  /**
+   * The model an alias entry (`~z-ai/glm-latest`) currently resolves to, `null`
+   * for an ordinary one. The figures above then describe the target, not the
+   * alias row: that row carries the cheapest endpoint's numbers.
+   */
+  aliasTargetSlug: z.string().nullable(),
   contextWindowTokens: z.number().int().nonnegative(),
   maxOutputTokens: z.number().int().positive().nullable(),
   supportsVision: z.boolean(),

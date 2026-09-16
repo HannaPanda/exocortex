@@ -77,11 +77,15 @@ function CatalogRow({
         <span className="flex flex-wrap items-center gap-1.5">
           <span className="font-medium">{entry.displayName}</span>
           {entry.registered ? <Badge variant="muted">im Register</Badge> : null}
+          {entry.aliasTargetSlug !== null ? <Badge variant="outline">Alias</Badge> : null}
           {entry.supportsVision ? <Badge variant="secondary">Bild</Badge> : null}
           {entry.supportsTools ? <Badge variant="secondary">Werkzeuge</Badge> : null}
           {entry.reasoningLevels.length > 1 ? <Badge variant="secondary">Denkstufen</Badge> : null}
         </span>
-        <span className="truncate text-xs text-muted-foreground">{entry.slug}</span>
+        <span className="truncate text-xs text-muted-foreground">
+          {entry.slug}
+          {entry.aliasTargetSlug !== null ? ` → ${entry.aliasTargetSlug}` : ''}
+        </span>
         <span className="text-xs text-muted-foreground">
           {numberFormat.format(entry.contextWindowTokens)} Tokens Kontext ·{' '}
           {formatPrice(entry.inputMicroUsdPerMTok)} / {formatPrice(entry.outputMicroUsdPerMTok)} pro
@@ -142,7 +146,8 @@ export function ModelCatalogDialog({ open, onOpenChange }: ModelCatalogDialogPro
           <DialogTitle>Modelle aus dem OpenRouter-Katalog</DialogTitle>
           <DialogDescription>
             Auswählen genügt: Kontextfenster, Preise, Bildverständnis, Werkzeuge und Denkstufen
-            kommen aus dem Katalog.
+            kommen aus dem Katalog. Bei einem Alias ({'\u201Elatest\u201C'}) zählen die Werte des
+            Ziels, und gespeichert wird der vorsichtigste Wert seiner Anbieter.
           </DialogDescription>
         </DialogHeader>
 
