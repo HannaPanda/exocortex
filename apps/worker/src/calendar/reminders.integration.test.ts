@@ -61,6 +61,7 @@ function fakeApi(rows: Map<string, TestRow>): (userId: string) => ExocortexApiCl
               layout: 'narrow',
               coverAttachmentId: null,
               coverPosition: 50,
+              overviewMode: 'off',
               orderKey: 'a0',
               createdById: userId,
               updatedById: userId,

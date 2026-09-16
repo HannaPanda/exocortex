@@ -2012,6 +2012,7 @@ describe('cover generation', () => {
           layout: 'narrow',
           coverAttachmentId: 'att1234567',
           coverPosition: 50,
+          overviewMode: 'off',
           orderKey: 'a0',
           createdById: 'user1234',
           updatedById: 'user1234',
