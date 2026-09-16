@@ -29,6 +29,13 @@ export const API_ERROR_CODES = [
   'collaboration_read_only',
   'attachment_access_denied',
   'ai_provider_unavailable',
+  /**
+   * No provider of the selected model can serve this request: the prompt is
+   * larger than any of their windows, or none supports what the run needs
+   * (ADR-032). Distinct from `ai_provider_unavailable`, which means the
+   * provider is down -- this one is about the request, and says so.
+   */
+  'ai_no_eligible_provider',
   'internal_error',
   'admin_required',
   'api_token_invalid',
@@ -109,6 +116,8 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   collaboration_read_only: 403,
   attachment_access_denied: 403,
   ai_provider_unavailable: 503,
+  // The request, not the upstream: a smaller prompt or another model works.
+  ai_no_eligible_provider: 422,
   internal_error: 500,
   admin_required: 403,
   api_token_invalid: 401,
