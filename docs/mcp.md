@@ -558,7 +558,7 @@ Without those lines the connector is a lookup tool that is never looked up in.
 ## Memory over REST
 
 The three tools call three ordinary endpoints, and so does everything else that
-remembers (the Claude Code hooks in `tools/claude-code-hooks`, Hermes, a shell
+remembers (the Claude Code hooks in `tools/claude-code-plugin/hooks`, Hermes, a shell
 script):
 
 | Endpoint                             | Scope   | What it does                                                                                                                                                                                    |
@@ -698,6 +698,25 @@ danach und stütz die Antwort auf das, was du findest. Wenn ein Treffer relevant
 aussieht, lad die Seite vollständig nach, statt nur den Ausschnitt zu verwenden.
 Sag dazu, worauf du dich stützt.
 ```
+
+**The two-line way, for Claude Code:** the plugin in
+`tools/claude-code-plugin`. This repository doubles as its marketplace
+(`.claude-plugin/marketplace.json` at the root), so installing it is:
+
+```text
+/plugin marketplace add HannaPanda/exocortex
+/plugin install exocortex@exocortex
+```
+
+Claude Code then asks for the deployment's URL and a token, the second one
+masked and kept in its credential store rather than in `settings.json`, and
+substitutes both into the plugin's own `.mcp.json` (`${user_config.api_url}`,
+`${user_config.api_token}`). The same two values reach the memory hooks as
+`CLAUDE_PLUGIN_OPTION_API_URL` and `CLAUDE_PLUGIN_OPTION_API_TOKEN`, which is
+the second of the four sources `hooks/config.mjs` reads. `/exocortex:einrichten`
+then checks the configuration, the tool list and `recall`, and names whichever
+of the four is wrong. The token never lives in the plugin: it is public and
+identical for everyone.
 
 **The long way, for a client that reads a config file:**
 `apps/mcp` reads `EXOCORTEX_API_URL` + `EXOCORTEX_API_TOKEN` from its process

@@ -40,6 +40,21 @@ export function connectionSnippets(origin: string, token: string | null): Connec
 
   return [
     {
+      id: 'claude-code-plugin',
+      title: 'Claude Code mit Gedächtnis',
+      summary:
+        'Das Plugin bringt die Werkzeuge und das Gedächtnis mit: Erinnerungen beim Start, eine verdichtete Notiz am Ende jeder Sitzung.',
+      code: `/plugin marketplace add HannaPanda/exocortex
+/plugin install exocortex@exocortex`,
+      language: 'text',
+      notes: [
+        'Beide Zeilen in einer laufenden Claude-Code-Sitzung eingeben, nicht im Terminal.',
+        'Beim Aktivieren fragt Claude Code nach Adresse und Token. Leg dir vorher eins im Abschnitt darüber an, es wird nur einmal angezeigt.',
+        'Danach /exocortex:einrichten aufrufen: das prüft Werkzeuge und Gedächtnis und sagt, was noch fehlt.',
+      ],
+      usesToken: false,
+    },
+    {
       id: 'claude-code',
       title: 'Claude Code',
       summary: 'Fügt eXocortex als MCP-Server über HTTP hinzu. Eine Zeile im Terminal.',

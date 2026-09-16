@@ -95,27 +95,27 @@ file is the contract for automated sessions. Read it before changing code.
 
 ## Repository map
 
-| Path                      | Responsibility                                                                                                                |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `apps/web`                | Next.js frontend (App Router). No direct database, Redis or storage access.                                                   |
-| `apps/api`                | NestJS + Fastify REST API, Better Auth handler, Socket.IO gateway. Owns business logic.                                       |
-| `apps/collaboration`      | Hocuspocus server, binary Yjs persistence, ticket verification.                                                               |
-| `apps/worker`             | BullMQ worker: materialization, search indexing, AI runs, maintenance.                                                        |
-| `apps/mcp`                | stdio JSON-RPC MCP server for external clients (Hermes, Claude Code).                                                         |
-| `packages/mcp-tools`      | The one tool catalogue: shared by `apps/mcp` and the worker's AI tool loop.                                                   |
-| `packages/config`         | Runtime-validated environment schemas.                                                                                        |
-| `packages/contracts`      | zod schemas for REST DTOs, WebSocket events, job payloads.                                                                    |
-| `packages/database`       | Prisma schema, migrations, order keys, tree helpers, full-text and hybrid search adapters.                                    |
-| `packages/auth`           | Better Auth setup, session verification, authorization policies, collaboration tickets.                                       |
-| `packages/editor`         | Canonical Tiptap schema, block IDs, block catalog, Markdown, Yjs materialization.                                             |
-| `packages/queue`          | Typed BullMQ queues, workers, Redis event bus.                                                                                |
-| `packages/storage`        | S3-compatible object storage, MIME sniffing, image downscaling.                                                               |
-| `packages/ai`             | Provider-neutral AI contracts, OpenRouter, embeddings, mock provider, runner contracts.                                       |
-| `packages/calendar`       | iCalendar parsing and serialization, recurrence expansion, reminder scheduling.                                               |
-| `packages/logger`         | Structured logging, correlation ids, the redaction list, the tracer and its OpenTelemetry implementation.                     |
-| `packages/ui`             | Design tokens, shadcn components on Base UI, layout primitives, states.                                                       |
-| `e2e`                     | Playwright browser and API tests.                                                                                             |
-| `tools/claude-code-hooks` | SessionStart/SessionEnd hooks that make this deployment Claude Code's memory. Plain Node, no dependencies, silent on failure. |
+| Path                       | Responsibility                                                                                                                                                                                           |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/web`                 | Next.js frontend (App Router). No direct database, Redis or storage access.                                                                                                                              |
+| `apps/api`                 | NestJS + Fastify REST API, Better Auth handler, Socket.IO gateway. Owns business logic.                                                                                                                  |
+| `apps/collaboration`       | Hocuspocus server, binary Yjs persistence, ticket verification.                                                                                                                                          |
+| `apps/worker`              | BullMQ worker: materialization, search indexing, AI runs, maintenance.                                                                                                                                   |
+| `apps/mcp`                 | stdio JSON-RPC MCP server for external clients (Hermes, Claude Code).                                                                                                                                    |
+| `packages/mcp-tools`       | The one tool catalogue: shared by `apps/mcp` and the worker's AI tool loop.                                                                                                                              |
+| `packages/config`          | Runtime-validated environment schemas.                                                                                                                                                                   |
+| `packages/contracts`       | zod schemas for REST DTOs, WebSocket events, job payloads.                                                                                                                                               |
+| `packages/database`        | Prisma schema, migrations, order keys, tree helpers, full-text and hybrid search adapters.                                                                                                               |
+| `packages/auth`            | Better Auth setup, session verification, authorization policies, collaboration tickets.                                                                                                                  |
+| `packages/editor`          | Canonical Tiptap schema, block IDs, block catalog, Markdown, Yjs materialization.                                                                                                                        |
+| `packages/queue`           | Typed BullMQ queues, workers, Redis event bus.                                                                                                                                                           |
+| `packages/storage`         | S3-compatible object storage, MIME sniffing, image downscaling.                                                                                                                                          |
+| `packages/ai`              | Provider-neutral AI contracts, OpenRouter, embeddings, mock provider, runner contracts.                                                                                                                  |
+| `packages/calendar`        | iCalendar parsing and serialization, recurrence expansion, reminder scheduling.                                                                                                                          |
+| `packages/logger`          | Structured logging, correlation ids, the redaction list, the tracer and its OpenTelemetry implementation.                                                                                                |
+| `packages/ui`              | Design tokens, shadcn components on Base UI, layout primitives, states.                                                                                                                                  |
+| `e2e`                      | Playwright browser and API tests.                                                                                                                                                                        |
+| `tools/claude-code-plugin` | The Claude Code plugin: the MCP server over HTTP, the SessionStart/SessionEnd hooks that make this deployment Claude Code's memory, and the setup skill. Plain Node, no dependencies, silent on failure. |
 
 ## Commands
 

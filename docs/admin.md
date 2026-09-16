@@ -352,7 +352,9 @@ question, not three:
   `apps/web/src/lib/connection-snippets.ts` and the browser's own origin. The
   reveal dialog renders the same command with the new secret already inside it:
   a token is shown once, so anything a person has to paste in by hand is a step
-  where setup fails.
+  where setup fails. The first card is the Claude Code plugin in
+  `tools/claude-code-plugin`, which is the only entry that carries no token at
+  all: Claude Code asks for it itself when the plugin is enabled.
 
 Both connection routes need the `admin` scope (`requiredScopeForRequest`), for
 the same reason token management does: a credential that can manage credentials

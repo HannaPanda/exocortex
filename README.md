@@ -68,6 +68,9 @@ What is deliberately still missing is listed under
   deployment-wide keys a workspace may override (ADR-023)
 - API tokens with read/write/admin scopes, OAuth for remote MCP clients
   (ADR-018), and an agent journal that records what an agent changed (ADR-022)
+- a connections page that lists what has access, revokes it, and prints the
+  finished setup line per client, plus a Claude Code plugin installed in two
+  lines (`tools/claude-code-plugin`)
 - audit log and transactional outbox for destructive and reliable operations
 - live background-job progress in the UI
 - structured logs with a correlation id per request, and optional distributed
@@ -172,7 +175,7 @@ packages/ui           design tokens, shadcn components on Base UI, layout primit
 docs/adr/             architecture decision records
 deploy/               nginx, systemd units, backup scripts, the render image
 e2e/                  Playwright browser and API tests
-tools/                Claude Code hooks that make this deployment an agent's memory
+tools/                the Claude Code plugin: MCP server, memory hooks, setup skill
 ```
 
 ## Documentation

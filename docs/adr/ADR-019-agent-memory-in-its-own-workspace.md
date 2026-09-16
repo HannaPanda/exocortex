@@ -93,8 +93,11 @@ situation.
   `capture` refuses with a reason instead of guessing, and `recall` still works
   across the workspaces the caller can read.
 - Claude Code gets capture and injection from two hooks in
-  `tools/claude-code-hooks`, not from the catalogue: a hook is what fires at the
-  start and the end of a session. Both fail silently by design.
+  `tools/claude-code-plugin/hooks`, not from the catalogue: a hook is what fires
+  at the start and the end of a session. Both fail silently by design. Since
+  2026-09-16 they ship inside a plugin, which is only a different way to install
+  the same two files: a marketplace entry a person adds in two lines instead of
+  a path they paste into `settings.json`.
 - ChatGPT has no `SessionStart` equivalent. Automatic recall there is a line in
   the custom instructions ("call `recall` before answering when the question
   refers to earlier work"), which is why that text block belongs in
