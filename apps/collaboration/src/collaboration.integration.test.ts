@@ -17,9 +17,9 @@ import {
   yjsStateToProseMirrorJson,
 } from '@exocortex/editor';
 import { createLogger } from '@exocortex/logger';
-import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
+import { QueueRegistry, RedisRevocationBus, testQueuePrefix } from '@exocortex/queue';
 
-import { createCollaborationServer } from './server';
+import { type CollaborationRuntime, createCollaborationServer } from './server';
 
 /**
  * Collaboration integration tests.
@@ -58,7 +58,7 @@ async function waitFor(
   throw new Error('Timed out waiting for condition');
 }
 
-function startServer(): Server {
+function startRuntime(): CollaborationRuntime {
   return createCollaborationServer({
     prisma,
     queues,
@@ -69,7 +69,16 @@ function startServer(): Server {
     // Keep the test fast; the debounce behaviour itself is unit tested.
     storeDebounceMs: 200,
     storeMaxDebounceMs: 500,
+    redisUrl: env.REDIS_URL,
+    // The sweeps in these tests are triggered by hand, so the timer must not
+    // fire underneath an assertion.
+    revocationRecheckIntervalMs: 600_000,
   });
+}
+
+/** For the tests that never touch revocations. `destroy()` closes both halves. */
+function startServer(): Server {
+  return startRuntime().server;
 }
 
 function connect(input: { ticket: string; name: string; document: Y.Doc }): HocuspocusProvider {
@@ -116,15 +125,59 @@ function ticketFor(
   access: 'read' | 'write',
   ttlSeconds = 60,
   now?: number,
+  forUserId?: string,
 ): string {
   return issueCollaborationTicket({
     secret: TICKET_SECRET,
-    userId,
+    userId: forUserId ?? userId,
     documentId: target,
     access,
     ttlSeconds,
     ...(now === undefined ? {} : { now }),
   }).ticket;
+}
+
+/** A page of its own, so one test's writes cannot be another's evidence. */
+async function createPage(title: string): Promise<string> {
+  const page = await prisma.document.create({
+    data: {
+      workspaceId,
+      title,
+      orderKey: generateOrderKey(null, null),
+      createdById: userId,
+      updatedById: userId,
+      content: { create: { yjsState: Buffer.from(createEmptyYjsState()) } },
+    },
+  });
+  return page.id;
+}
+
+/** A second member, so access can be taken away from somebody. */
+async function createMember(role: 'MEMBER' | 'GUEST'): Promise<string> {
+  const member = await prisma.user.create({
+    data: {
+      email: `collab-member-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}@exocortex.test`,
+      name: 'Zweites Mitglied',
+      emailVerified: true,
+    },
+  });
+  await prisma.workspaceMember.create({ data: { workspaceId, userId: member.id, role } });
+  return member.id;
+}
+
+function appendParagraph(ydoc: Y.Doc, text: string): void {
+  const fragment = ydoc.get(YJS_DOCUMENT_FIELD, Y.XmlFragment);
+  const paragraph = new Y.XmlElement('paragraph');
+  paragraph.insert(0, [new Y.XmlText(text)]);
+  fragment.insert(fragment.length, [paragraph]);
+}
+
+async function storedText(documentId: string): Promise<string> {
+  const content = await prisma.documentContent.findUniqueOrThrow({
+    where: { documentId },
+    select: { yjsState: true },
+  });
+  return JSON.stringify(yjsStateToProseMirrorJson(content.yjsState));
 }
 
 beforeAll(async () => {
@@ -375,6 +428,128 @@ describe('collaboration server', () => {
     ydoc.destroy();
     await server.destroy();
   }, 60_000);
+});
+
+/**
+ * Issue #62: authorization is decided at the handshake, and a tab holds its
+ * connection for hours. These two tests work on a connection that is *already
+ * open* -- a test that only refuses a fresh connect after the change would pass
+ * against the bug.
+ */
+describe('withdrawing access from an open connection', () => {
+  it('ends a writable session when the member is removed from the workspace', async () => {
+    const runtime = startRuntime();
+    await runtime.server.listen();
+    await runtime.revocations.ready;
+
+    const memberId = await createMember('MEMBER');
+    const pageId = await createPage('Entzug während der Sitzung');
+
+    const ydoc = new Y.Doc();
+    const provider = connect({
+      ticket: ticketFor(pageId, 'write', 60, undefined, memberId),
+      name: pageId,
+      document: ydoc,
+    });
+    await waitFor(() => provider.isSynced);
+
+    // The membership goes, and the API says so on the revocation channel.
+    await prisma.workspaceMember.deleteMany({ where: { workspaceId, userId: memberId } });
+    const bus = new RedisRevocationBus({ redisUrl: env.REDIS_URL, logger });
+    await bus.publish({
+      userId: memberId,
+      workspaceId,
+      reason: 'workspace_membership_removed',
+      emittedAt: new Date().toISOString(),
+      correlationId: 'test',
+    });
+
+    // The connection is closed, and the reconnect the client tries by itself is
+    // refused -- which is the same door every other caller now finds locked.
+    await waitFor(() => !provider.isSynced, 20_000);
+
+    appendParagraph(ydoc, 'nach dem Entzug geschrieben');
+    await new Promise((resolve) => setTimeout(resolve, 3_000));
+    expect(await storedText(pageId)).not.toContain('nach dem Entzug geschrieben');
+
+    provider.destroy();
+    ydoc.destroy();
+    await bus.close();
+    await runtime.server.destroy();
+    await prisma.user.delete({ where: { id: memberId } });
+  }, 90_000);
+
+  it('takes the write right off an open connection when the role drops to read-only', async () => {
+    const runtime = startRuntime();
+    await runtime.server.listen();
+
+    const memberId = await createMember('MEMBER');
+    const pageId = await createPage('Herabstufung während der Sitzung');
+
+    const ydoc = new Y.Doc();
+    const provider = connect({
+      ticket: ticketFor(pageId, 'write', 60, undefined, memberId),
+      name: pageId,
+      document: ydoc,
+    });
+    await waitFor(() => provider.isSynced);
+
+    appendParagraph(ydoc, 'als Mitglied geschrieben');
+    await waitFor(async () => (await storedText(pageId)).includes('als Mitglied geschrieben'));
+
+    // Demoted to GUEST, which `resolveCollaborationAccess` answers with `read`.
+    await prisma.workspaceMember.update({
+      where: { workspaceId_userId: { workspaceId, userId: memberId } },
+      data: { role: 'GUEST' },
+    });
+    // The sweep rather than the channel: this is the net that catches a
+    // revocation nobody delivered, and it must reach the same conclusion.
+    await runtime.revocations.recheck();
+
+    appendParagraph(ydoc, 'als Gast geschrieben');
+    await new Promise((resolve) => setTimeout(resolve, 3_000));
+
+    const stored = await storedText(pageId);
+    expect(stored).toContain('als Mitglied geschrieben');
+    expect(stored).not.toContain('als Gast geschrieben');
+
+    provider.destroy();
+    ydoc.destroy();
+    await runtime.server.destroy();
+    await prisma.workspaceMember.deleteMany({ where: { workspaceId, userId: memberId } });
+    await prisma.user.delete({ where: { id: memberId } });
+  }, 90_000);
+
+  it('closes the connections of an account that was switched off', async () => {
+    const runtime = startRuntime();
+    await runtime.server.listen();
+
+    const memberId = await createMember('MEMBER');
+    const pageId = await createPage('Konto abgeschaltet');
+
+    const ydoc = new Y.Doc();
+    const provider = connect({
+      ticket: ticketFor(pageId, 'write', 60, undefined, memberId),
+      name: pageId,
+      document: ydoc,
+    });
+    await waitFor(() => provider.isSynced);
+
+    await prisma.user.update({ where: { id: memberId }, data: { disabledAt: new Date() } });
+    await runtime.revocations.recheck();
+
+    await waitFor(() => !provider.isSynced, 20_000);
+
+    appendParagraph(ydoc, 'nach dem Abschalten geschrieben');
+    await new Promise((resolve) => setTimeout(resolve, 3_000));
+    expect(await storedText(pageId)).not.toContain('nach dem Abschalten geschrieben');
+
+    provider.destroy();
+    ydoc.destroy();
+    await runtime.server.destroy();
+    await prisma.workspaceMember.deleteMany({ where: { workspaceId, userId: memberId } });
+    await prisma.user.delete({ where: { id: memberId } });
+  }, 90_000);
 });
 
 describe('health probes', () => {

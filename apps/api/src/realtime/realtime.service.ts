@@ -4,6 +4,7 @@ import {
   type ApplicationEvent,
   type ApplicationEventOf,
   type ApplicationEventType,
+  type AuthorizationRevocationReason,
 } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 
@@ -48,6 +49,41 @@ export class RealtimeService {
         type,
         workspaceId,
         correlationId,
+      });
+    }
+  }
+
+  /**
+   * Tells every process holding long-lived connections that a user's access
+   * changed (issue #62).
+   *
+   * `workspaceId: null` means the account itself: every connection it holds,
+   * in every workspace, is affected.
+   *
+   * Like `emit`, a failure is logged rather than thrown: the membership change
+   * that caused it is already committed, and refusing the HTTP response would
+   * only make the caller believe it did not happen. The periodic re-checks in
+   * the gateway and in the collaboration server are what makes that survivable.
+   */
+  async revoke(input: {
+    userId: string;
+    workspaceId: string | null;
+    reason: AuthorizationRevocationReason;
+    correlationId: string;
+  }): Promise<void> {
+    try {
+      await this.gateway.publishRevocation({
+        userId: input.userId,
+        workspaceId: input.workspaceId,
+        reason: input.reason,
+        emittedAt: new Date().toISOString(),
+        correlationId: input.correlationId,
+      });
+    } catch (error) {
+      this.logger.error('Failed to publish an authorization revocation', error, {
+        userId: input.userId,
+        scope: input.workspaceId ?? 'account',
+        reason: input.reason,
       });
     }
   }

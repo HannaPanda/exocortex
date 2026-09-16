@@ -31,9 +31,13 @@ let settings: SettingsService;
 let otherWorkspaceId: string;
 
 const emitted: { type: string; workspaceId: string }[] = [];
+const revoked: { userId: string; workspaceId: string | null; reason: string }[] = [];
 const realtime = {
   emit: async (type: string, workspace: string) => {
     emitted.push({ type, workspaceId: workspace });
+  },
+  revoke: async (input: { userId: string; workspaceId: string | null; reason: string }) => {
+    revoked.push(input);
   },
 } as unknown as RealtimeService;
 
@@ -177,6 +181,117 @@ describe('renaming a workspace', () => {
     expect(audit).not.toBeNull();
     expect(audit?.actorId).toBe(ownerId);
     expect(emitted.some((event) => event.type === 'workspace.updated')).toBe(true);
+  });
+});
+
+/**
+ * Membership changes, and what they have to do to connections that are already
+ * open (issue #62).
+ *
+ * The revocation itself is asserted here as "it was published, with this
+ * reason"; what the two consumers then do with it is covered where they live --
+ * `realtime.gateway.test.ts` for the application socket, the collaboration
+ * integration suite for Yjs.
+ */
+describe('membership changes', () => {
+  it('publishes a revocation when a role changes, in either direction', async () => {
+    revoked.length = 0;
+
+    await service.changeMemberRole({
+      workspaceId,
+      actorUserId: ownerId,
+      targetUserId: memberId,
+      nextRole: 'GUEST',
+      correlationId,
+    });
+    await service.changeMemberRole({
+      workspaceId,
+      actorUserId: ownerId,
+      targetUserId: memberId,
+      nextRole: 'MEMBER',
+      correlationId,
+    });
+
+    // Twice, including the promotion: a widened right must not seep into a
+    // connection that was authorized under the narrower one.
+    expect(revoked).toEqual([
+      { userId: memberId, workspaceId, reason: 'workspace_role_changed', correlationId },
+      { userId: memberId, workspaceId, reason: 'workspace_role_changed', correlationId },
+    ]);
+  });
+
+  it('removes a member, audits it and revokes their open connections', async () => {
+    const throwaway = await prisma.user.create({
+      data: {
+        email: `ws-throwaway-${Date.now().toString(36)}@exocortex.test`,
+        name: 'Throwaway',
+        emailVerified: true,
+      },
+    });
+    await prisma.workspaceMember.create({
+      data: { workspaceId, userId: throwaway.id, role: 'MEMBER' },
+    });
+    revoked.length = 0;
+
+    await service.removeMember({
+      workspaceId,
+      actorUserId: ownerId,
+      targetUserId: throwaway.id,
+      correlationId,
+    });
+
+    expect(
+      await prisma.workspaceMember.findFirst({ where: { workspaceId, userId: throwaway.id } }),
+    ).toBeNull();
+    expect(revoked).toEqual([
+      {
+        userId: throwaway.id,
+        workspaceId,
+        reason: 'workspace_membership_removed',
+        correlationId,
+      },
+    ]);
+
+    const audit = await prisma.auditLog.findFirst({
+      where: { workspaceId, action: 'workspace.member_removed' },
+      orderBy: { createdAt: 'desc' },
+    });
+    expect(audit?.actorId).toBe(ownerId);
+
+    await prisma.user.delete({ where: { id: throwaway.id } });
+  });
+
+  it('refuses to remove yourself', async () => {
+    await expect(
+      service.removeMember({
+        workspaceId,
+        actorUserId: ownerId,
+        targetUserId: ownerId,
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'validation_failed' });
+  });
+
+  it('refuses a MEMBER removing anybody', async () => {
+    await expect(
+      service.removeMember({
+        workspaceId,
+        actorUserId: memberId,
+        targetUserId: adminId,
+        correlationId,
+      }),
+    ).rejects.toBeInstanceOf(AuthorizationError);
+  });
+
+  it('refuses an ADMIN removing an OWNER', async () => {
+    await expect(
+      service.removeMember({
+        workspaceId,
+        actorUserId: adminId,
+        targetUserId: ownerId,
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'forbidden' });
   });
 });
 

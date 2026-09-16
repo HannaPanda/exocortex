@@ -16,6 +16,7 @@ import { type QueueRegistry } from '@exocortex/queue';
 import { createInternalContentHandler } from './internal-content';
 import { createInternalProjectHandler } from './internal-projects';
 import { DocumentPersistence } from './persistence';
+import { type AuthorizationRevocations, createAuthorizationRevocations } from './revocations';
 
 /** Context attached to every authenticated collaboration connection. */
 export interface CollaborationContext {
@@ -35,6 +36,22 @@ export interface CreateCollaborationServerOptions {
   /** Debounce for persisting the binary state, in milliseconds. */
   storeDebounceMs?: number;
   storeMaxDebounceMs?: number;
+  /** Redis URL for the authorization revocation channel (issue #62). */
+  redisUrl: string;
+  /** How often open connections are re-authorized. Defaults to 30 seconds. */
+  revocationRecheckIntervalMs?: number;
+}
+
+/**
+ * The collaboration process's two long-lived pieces.
+ *
+ * The revocation handle is returned rather than hidden because it is the part
+ * a test drives directly: closing it is wired into `server.destroy()`, so a
+ * caller that only shuts the server down still leaves nothing behind.
+ */
+export interface CollaborationRuntime {
+  server: Server<CollaborationContext>;
+  revocations: AuthorizationRevocations;
 }
 
 export class CollaborationAuthenticationError extends Error {
@@ -60,7 +77,7 @@ export class CollaborationAuthenticationError extends Error {
  */
 export function createCollaborationServer(
   options: CreateCollaborationServerOptions,
-): Server<CollaborationContext> {
+): CollaborationRuntime {
   const logger = options.logger.child({ component: 'collaboration-server' });
   const access = new WorkspaceAccessService(options.prisma);
   const persistence = new DocumentPersistence({
@@ -80,6 +97,11 @@ export function createCollaborationServer(
     logger: options.logger,
     secret: options.ticketSecret,
   });
+
+  // A holder rather than the value: the `onDestroy` hook below has to be able to
+  // close this, and it can only be built after the server it reads connections
+  // from exists.
+  const handle: { revocations: AuthorizationRevocations | null } = { revocations: null };
 
   const server = new Server<CollaborationContext>({
     name: 'exocortex-collaboration',
@@ -112,6 +134,22 @@ export function createCollaborationServer(
             ? 'collaboration_ticket_expired'
             : 'collaboration_ticket_invalid',
           `Collaboration ticket rejected: ${verification.reason}`,
+        );
+      }
+
+      // A ticket outlives the credential that bought it: it is valid for about a
+      // minute, and switching an account off deletes its sessions but cannot
+      // reach into a ticket already in the client's hand. So the account is
+      // checked here rather than trusted (issue #62).
+      const disabled = await access.findDisabledUserIds([verification.claims.userId]);
+      if (disabled.has(verification.claims.userId)) {
+        logger.warn('Collaboration connection from a disabled account', {
+          documentId,
+          userId: verification.claims.userId,
+        });
+        throw new CollaborationAuthenticationError(
+          'account_disabled',
+          'This account is switched off',
         );
       }
 
@@ -168,6 +206,10 @@ export function createCollaborationServer(
         clientsCount: data.clientsCount,
       });
     },
+
+    async onDestroy() {
+      await handle.revocations?.close();
+    },
   });
 
   /**
@@ -220,5 +262,15 @@ export function createCollaborationServer(
     })();
   });
 
-  return server;
+  handle.revocations = createAuthorizationRevocations({
+    hocuspocus: server.hocuspocus,
+    access,
+    logger: options.logger,
+    redisUrl: options.redisUrl,
+    ...(options.revocationRecheckIntervalMs === undefined
+      ? {}
+      : { recheckIntervalMs: options.revocationRecheckIntervalMs }),
+  });
+
+  return { server, revocations: handle.revocations };
 }

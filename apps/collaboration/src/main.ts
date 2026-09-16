@@ -22,13 +22,14 @@ async function bootstrap(): Promise<void> {
   const prisma = createPrismaClient({ databaseUrl: env.DATABASE_URL });
   const queues = new QueueRegistry({ redisUrl: env.REDIS_URL, logger });
 
-  const server = createCollaborationServer({
+  const { server } = createCollaborationServer({
     prisma,
     queues,
     logger,
     ticketSecret: env.COLLABORATION_TICKET_SECRET,
     port: env.COLLABORATION_PORT,
     address: '127.0.0.1',
+    redisUrl: env.REDIS_URL,
   });
 
   await server.listen();

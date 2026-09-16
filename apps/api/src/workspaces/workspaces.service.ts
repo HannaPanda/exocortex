@@ -6,6 +6,7 @@ import {
   canManageWorkspaceMembers,
   canManageWorkspaceSettings,
   canReadWorkspace,
+  canRemoveMember,
   canUpdateWorkspace,
   WorkspaceAccessService,
 } from '@exocortex/auth';
@@ -272,6 +273,14 @@ export class WorkspacesService {
     await this.realtime.emit('workspace.updated', input.workspaceId, input.correlationId, {
       workspace: { id: input.workspaceId },
     });
+    // The new role decides what the *next* connection may do; the ones that are
+    // already open were authorized under the old one and are replaced (#62).
+    await this.realtime.revoke({
+      userId: input.targetUserId,
+      workspaceId: input.workspaceId,
+      reason: 'workspace_role_changed',
+      correlationId: input.correlationId,
+    });
 
     return {
       id: updated.id,
@@ -281,6 +290,68 @@ export class WorkspacesService {
       role: updated.role,
       createdAt: updated.createdAt.toISOString(),
     };
+  }
+
+  /**
+   * Removes a member from a workspace.
+   *
+   * The counterpart to inviting somebody, and the reason issue #62 exists: until
+   * now the only way to take access away was to change a role, so "this person
+   * should not be in here any more" had no answer at all. The membership row is
+   * the whole of the access, so deleting it is the whole of the removal -- what
+   * they wrote stays, authored by them, exactly as it would if they had left.
+   */
+  async removeMember(input: {
+    workspaceId: string;
+    actorUserId: string;
+    targetUserId: string;
+    correlationId: string;
+  }): Promise<void> {
+    const actorRole = await this.access.findRole(input.workspaceId, input.actorUserId);
+    assertPolicy(canManageWorkspaceMembers(actorRole));
+
+    const target = await this.prisma.workspaceMember.findUnique({
+      where: { workspaceId_userId: { workspaceId: input.workspaceId, userId: input.targetUserId } },
+      select: { id: true, role: true },
+    });
+    if (target === null) throw AppError.notFound('Workspace member');
+
+    const ownerCount = await this.access.countOwners(input.workspaceId);
+    assertPolicy(
+      canRemoveMember(actorRole, target.role, input.actorUserId === input.targetUserId, ownerCount),
+    );
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.workspaceMember.delete({ where: { id: target.id } });
+      await this.outbox.writeAudit(tx, {
+        workspaceId: input.workspaceId,
+        actorId: input.actorUserId,
+        action: 'workspace.member_removed',
+        targetType: 'workspace_member',
+        targetId: target.id,
+        correlationId: input.correlationId,
+        metadata: { removedUserId: input.targetUserId, previousRole: target.role },
+      });
+      await this.outbox.writeEvent(tx, {
+        workspaceId: input.workspaceId,
+        type: 'workspace.updated',
+        payload: { workspace: { id: input.workspaceId } },
+        correlationId: input.correlationId,
+      });
+    });
+
+    await this.realtime.emit('workspace.updated', input.workspaceId, input.correlationId, {
+      workspace: { id: input.workspaceId },
+    });
+    // Without this the removed member keeps every socket they had open: the
+    // workspace room keeps delivering events, and a writable editor session
+    // keeps writing.
+    await this.realtime.revoke({
+      userId: input.targetUserId,
+      workspaceId: input.workspaceId,
+      reason: 'workspace_membership_removed',
+      correlationId: input.correlationId,
+    });
   }
 
   private async findFreeSlug(desired: string): Promise<string> {

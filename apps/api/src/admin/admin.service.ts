@@ -15,6 +15,7 @@ import { AppError } from '../common/app-error';
 import { LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform-tokens';
 import { SettingsService } from '../platform/settings.service';
+import { RealtimeService } from '../realtime/realtime.service';
 
 const USER_ROLE_TO_CONTRACT: Record<UserRolePrisma, UserRole> = { USER: 'user', ADMIN: 'admin' };
 const USER_ROLE_TO_PRISMA: Record<UserRole, UserRolePrisma> = { user: 'USER', admin: 'ADMIN' };
@@ -95,6 +96,7 @@ export class AdminService {
     @Inject(PRISMA) private readonly prisma: PrismaClient,
     @Inject(LOGGER) private readonly logger: Logger,
     private readonly settingsService: SettingsService,
+    private readonly realtime: RealtimeService,
   ) {}
 
   async overview(): Promise<AdminOverviewResponse> {
@@ -262,6 +264,20 @@ export class AdminService {
       return user;
     });
 
+    if (input.disabled) {
+      // Deleting the credentials stops every new request, but a WebSocket that
+      // was authenticated an hour ago has no credential left to lose: it has to
+      // be told (issue #62). Re-enabling publishes nothing -- a regained right
+      // takes effect when the account signs in again, never by seeping into a
+      // connection that outlived the switch-off.
+      await this.realtime.revoke({
+        userId: input.userId,
+        workspaceId: null,
+        reason: 'account_disabled',
+        correlationId: 'admin-user-disabled',
+      });
+    }
+
     this.logger.info(input.disabled ? 'User disabled' : 'User re-enabled', {
       actorId: input.actorId,
       userId: input.userId,
@@ -304,6 +320,12 @@ export class AdminService {
     }
 
     await this.prisma.user.delete({ where: { id: input.userId } });
+    await this.realtime.revoke({
+      userId: input.userId,
+      workspaceId: null,
+      reason: 'account_deleted',
+      correlationId: 'admin-user-deleted',
+    });
     this.logger.info('User deleted', { actorId: input.actorId, userId: input.userId });
   }
 }

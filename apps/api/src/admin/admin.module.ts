@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { AiModule } from '../ai/ai.module';
+import { RealtimeModule } from '../realtime/realtime.module';
 
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
@@ -9,7 +10,7 @@ import { AiModelsService } from './ai-models.service';
 import { AiUsageService } from './ai-usage.service';
 
 @Module({
-  imports: [AiModule],
+  imports: [AiModule, RealtimeModule],
   controllers: [AdminController, AdminAiModelsController],
   providers: [AdminService, AiModelsService, AiUsageService],
 })

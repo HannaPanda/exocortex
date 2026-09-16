@@ -11,6 +11,12 @@ import {
   AppPage,
   Badge,
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   Input,
   Label,
   LoadingState,
@@ -40,7 +46,7 @@ import { WorkspaceCredentialsForm } from '@/components/settings/workspace-creden
 import { WorkspaceSettingsForm } from '@/components/settings/workspace-settings-form';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
-import { useUpdateWorkspaceMember } from '@/lib/api/invitation-queries';
+import { useRemoveWorkspaceMember, useUpdateWorkspaceMember } from '@/lib/api/invitation-queries';
 import { useSessionQuery, useUpdateWorkspace, useWorkspaceDetail } from '@/lib/api/queries';
 
 const WORKSPACE_ADMIN_ROLES = new Set(['OWNER', 'ADMIN']);
@@ -406,11 +412,16 @@ function MemorySection({ workspace }: { workspace: WorkspaceDetail }) {
 function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
   const sessionQuery = useSessionQuery();
   const updateMember = useUpdateWorkspaceMember(workspace.id);
+  const removeMember = useRemoveWorkspaceMember(workspace.id);
   const [inviteOpen, setInviteOpen] = React.useState(false);
+  const [pendingRemoval, setPendingRemoval] = React.useState<
+    WorkspaceDetail['members'][number] | null
+  >(null);
 
   const currentUserId = sessionQuery.data?.user?.id ?? null;
   const isOwner = workspace.role === 'OWNER';
-  const errorCode = updateMember.error instanceof ApiError ? updateMember.error.code : undefined;
+  const failed = updateMember.error ?? removeMember.error;
+  const errorCode = failed instanceof ApiError ? failed.code : undefined;
 
   /**
    * Only an owner may hand out or take back ownership (`canChangeMemberRole`), so
@@ -436,7 +447,7 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
         </Button>
       </div>
 
-      {updateMember.isError ? (
+      {updateMember.isError || removeMember.isError ? (
         <Alert variant="destructive" data-testid="member-role-error">
           <AlertDescription>{messageForCode(errorCode)}</AlertDescription>
         </Alert>
@@ -449,6 +460,7 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
             <TableHead>Name</TableHead>
             <TableHead>E-Mail</TableHead>
             <TableHead>Rolle</TableHead>
+            <TableHead className="sr-only">Aktionen</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -481,6 +493,25 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
                   </SelectContent>
                 </Select>
               </TableCell>
+              <TableCell className="text-right">
+                {/*
+                  Removing yourself is refused by the server and left out here:
+                  leaving a workspace is a different act from being removed from
+                  one, and an owner who does it by accident has nobody left to
+                  let them back in.
+                */}
+                {member.userId === currentUserId ? null : (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    disabled={removeMember.isPending || (member.role === 'OWNER' && !isOwner)}
+                    onClick={() => setPendingRemoval(member)}
+                    data-testid={`remove-member-${member.userId}`}
+                  >
+                    Entfernen
+                  </Button>
+                )}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -496,6 +527,42 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
         onOpenChange={setInviteOpen}
         scope={{ kind: 'workspace', workspaceId: workspace.id }}
       />
+
+      <Dialog
+        open={pendingRemoval !== null}
+        onOpenChange={(next) => {
+          if (!next) setPendingRemoval(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Mitglied entfernen</DialogTitle>
+            <DialogDescription>
+              {pendingRemoval?.name} verliert den Zugang zu diesem Arbeitsbereich, sofort und auch
+              in bereits geöffneten Tabs. Angelegte Seiten und Kommentare bleiben erhalten. Für
+              einen erneuten Zugang braucht es eine neue Einladung.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPendingRemoval(null)}>
+              Abbrechen
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={removeMember.isPending}
+              onClick={() => {
+                if (pendingRemoval === null) return;
+                removeMember.mutate(pendingRemoval.userId, {
+                  onSuccess: () => setPendingRemoval(null),
+                });
+              }}
+              data-testid="confirm-remove-member"
+            >
+              Entfernen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

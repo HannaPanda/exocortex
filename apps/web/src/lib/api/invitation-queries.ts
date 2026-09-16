@@ -7,6 +7,7 @@ import {
   type Invitation,
   type InvitationListResponse,
   type InvitationWithLink,
+  type RemoveWorkspaceMemberResponse,
   type RevokeInvitationResponse,
   type UpdateWorkspaceMemberRequest,
   type WorkspaceMember,
@@ -108,6 +109,29 @@ export function useUpdateWorkspaceMember(workspaceId: string) {
         method: 'PATCH',
         body: { role: input.role } satisfies UpdateWorkspaceMemberRequest,
       }),
+    onSuccess: () =>
+      void client.invalidateQueries({ queryKey: queryKeys.workspaceDetail(workspaceId) }),
+  });
+}
+
+/**
+ * Removing a member (issue #62).
+ *
+ * The sibling of the role dropdown, and the only way to take access away
+ * outright. The server ends the removed member's open realtime and editing
+ * connections as part of the same call, so what the list shows afterwards is
+ * what that person can still reach.
+ */
+export function useRemoveWorkspaceMember(workspaceId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (userId: string) =>
+      apiRequest<RemoveWorkspaceMemberResponse>(
+        `/api/workspaces/${workspaceId}/members/${userId}`,
+        {
+          method: 'DELETE',
+        },
+      ),
     onSuccess: () =>
       void client.invalidateQueries({ queryKey: queryKeys.workspaceDetail(workspaceId) }),
   });

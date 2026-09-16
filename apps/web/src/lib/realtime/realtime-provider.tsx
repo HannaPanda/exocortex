@@ -7,8 +7,10 @@ import {
   type ApplicationEvent,
   type ApplicationEventType,
   REALTIME_EVENT_NAME,
+  REALTIME_REVOCATION_EVENT_NAME,
   REALTIME_SOCKET_PATH,
   type SubscriptionResult,
+  type SubscriptionRevoked,
 } from '@exocortex/contracts';
 
 import { installConnectionDiagnostics } from '../connection-diagnostics';
@@ -172,6 +174,34 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
       const set = listeners.current.get(event.type);
       if (set === undefined) return;
       for (const listener of set) listener(event);
+    });
+
+    /**
+     * The server dropped one of this socket's subscriptions because the
+     * authorization behind it changed (issue #62).
+     *
+     * Answering with a fresh `workspace.subscribe` is the whole protocol: the
+     * server decides again, from the membership as it is now. A role that grew
+     * arrives that way rather than by the server quietly widening a room the
+     * socket was already in, and a membership that is gone comes back as a
+     * refusal -- which is the one case where the workspace is dropped from the
+     * resubscribe set, so a later reconnect does not ask for it again.
+     */
+    socket.on(REALTIME_REVOCATION_EVENT_NAME, (message: SubscriptionRevoked) => {
+      logConnection('app', 'subscription.revoked', {
+        workspaceId: message.workspaceId,
+        reason: message.reason,
+      });
+      if (!subscribed.current.has(message.workspaceId)) return;
+      socket.emit(
+        'workspace.subscribe',
+        { workspaceId: message.workspaceId },
+        (result: SubscriptionResult) => {
+          if (result.ok) return;
+          subscribed.current.delete(message.workspaceId);
+          setLastError(result.code);
+        },
+      );
     });
 
     /**

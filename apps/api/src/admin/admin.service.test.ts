@@ -5,6 +5,7 @@ import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 
 import { type SettingsService } from '../platform/settings.service';
+import { type RealtimeService } from '../realtime/realtime.service';
 
 import { AdminService } from './admin.service';
 
@@ -17,12 +18,21 @@ import { AdminService } from './admin.service';
  * nothing left to act with.
  *
  * `SettingsService` is faked because nothing here touches settings; the two
- * methods under test never reach it.
+ * methods under test never reach it. `RealtimeService` is recorded rather than
+ * faked away: publishing the revocation is half of what disabling an account
+ * has to do since issue #62, so the test reads what was published.
  */
 loadDotEnv();
 
 const logger: Logger = createLogger({ name: 'api-test', level: 'silent' });
 const settings = {} as unknown as SettingsService;
+
+const revocations: { userId: string; workspaceId: string | null; reason: string }[] = [];
+const realtime = {
+  revoke: async (input: { userId: string; workspaceId: string | null; reason: string }) => {
+    revocations.push(input);
+  },
+} as unknown as RealtimeService;
 
 let prisma: PrismaClient;
 let service: AdminService;
@@ -34,7 +44,7 @@ let workspaceId: string;
 
 beforeAll(async () => {
   prisma = createPrismaClient({ databaseUrl: process.env.DATABASE_URL });
-  service = new AdminService(prisma, logger, settings);
+  service = new AdminService(prisma, logger, settings, realtime);
 
   const suffix = Date.now().toString(36);
   const [actor, victim, author, secondAdmin] = await Promise.all([
@@ -129,6 +139,25 @@ describe('disabling an account', () => {
     expect(updated.disabledAt).not.toBeNull();
     expect(await prisma.session.count({ where: { userId: victimId } })).toBe(0);
     expect(await prisma.apiToken.count({ where: { userId: victimId, revokedAt: null } })).toBe(0);
+  });
+
+  it('tells the connection holders, because a websocket has no credential to lose', async () => {
+    revocations.length = 0;
+
+    await service.setUserDisabled({ userId: victimId, disabled: true, actorId });
+
+    expect(revocations).toHaveLength(1);
+    expect(revocations[0]).toMatchObject({
+      userId: victimId,
+      workspaceId: null,
+      reason: 'account_disabled',
+    });
+
+    revocations.length = 0;
+    await service.setUserDisabled({ userId: victimId, disabled: false, actorId });
+    // Re-enabling publishes nothing: a regained right takes effect at the next
+    // sign-in, never by reaching into a connection that outlived the switch-off.
+    expect(revocations).toEqual([]);
   });
 
   it('re-enables without resurrecting the revoked tokens', async () => {

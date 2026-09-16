@@ -5,6 +5,8 @@ import { type VerifiedSession } from '@exocortex/auth';
 import {
   type CreateWorkspaceRequest,
   createWorkspaceRequestSchema,
+  type RemoveWorkspaceMemberResponse,
+  removeWorkspaceMemberResponseSchema,
   type SetWorkspaceCredentialRequest,
   setWorkspaceCredentialRequestSchema,
   type UpdateWorkspaceMemberRequest,
@@ -201,5 +203,21 @@ export class WorkspacesController {
       nextRole: body.role,
       correlationId: currentCorrelationId(),
     });
+  }
+
+  @Delete(':workspaceId/members/:userId')
+  @ApiOkResponse({ schema: openApiResponseSchema(removeWorkspaceMemberResponseSchema) })
+  async removeMember(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+    @Param('userId') userId: string,
+  ): Promise<RemoveWorkspaceMemberResponse> {
+    await this.workspaces.removeMember({
+      workspaceId,
+      actorUserId: session.userId,
+      targetUserId: userId,
+      correlationId: currentCorrelationId(),
+    });
+    return { removed: true };
   }
 }
