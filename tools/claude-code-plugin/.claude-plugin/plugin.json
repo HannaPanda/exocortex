@@ -1,0 +1,36 @@
+{
+  "name": "exocortex",
+  "displayName": "eXocortex",
+  "description": "Verbindet Claude Code mit deinem eXocortex: der MCP-Server als Werkzeugkasten und das Gedächtnis, das jede Sitzung mitschreibt und beim nächsten Mal wieder einspielt.",
+  "version": "1.0.0",
+  "author": {
+    "name": "HannaPanda",
+    "url": "https://github.com/HannaPanda"
+  },
+  "homepage": "https://github.com/HannaPanda/exocortex/blob/master/tools/claude-code-plugin/README.md",
+  "repository": "https://github.com/HannaPanda/exocortex",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "keywords": ["exocortex", "memory", "mcp", "knowledge-base", "second-brain"],
+  "userConfig": {
+    "api_url": {
+      "type": "string",
+      "title": "Adresse deines eXocortex",
+      "description": "Dieselbe Adresse, unter der du die Oberfläche im Browser aufrufst, ohne Pfad. Zum Beispiel https://exocortex.app",
+      "default": "https://exocortex.app",
+      "required": true
+    },
+    "api_token": {
+      "type": "string",
+      "title": "API-Token",
+      "description": "Anzulegen unter Einstellungen, Verbindungen, mit dem Recht \"Lesen und schreiben\". Das Token wird verdeckt eingegeben und landet nicht in settings.json.",
+      "sensitive": true,
+      "required": true
+    },
+    "memory": {
+      "type": "boolean",
+      "title": "Sitzungen als Erinnerung ablegen",
+      "description": "Legt am Ende jeder Sitzung eine verdichtete Notiz im Memory-Arbeitsbereich ab und spielt sie beim nächsten Start in diesem Verzeichnis wieder ein. Aus bedeutet: nur der MCP-Server, kein Mitschrieb.",
+      "default": true
+    }
+  }
+}

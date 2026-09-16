@@ -1,0 +1,15 @@
+{
+  "name": "exocortex",
+  "description": "Das Plugin zu eXocortex, dem selbst gehosteten Arbeitsbereich und externen Gehirn.",
+  "owner": {
+    "name": "HannaPanda",
+    "url": "https://github.com/HannaPanda"
+  },
+  "plugins": [
+    {
+      "name": "exocortex",
+      "source": "./tools/claude-code-plugin",
+      "description": "Verbindet Claude Code mit deinem eXocortex: MCP-Werkzeuge und ein Gedächtnis über Sitzungen hinweg."
+    }
+  ]
+}
