@@ -346,7 +346,18 @@ level the model does not support (or does not have selectable at all, e.g.
 Haiku 4.5's single-element `[NONE]`) and gets the closest supported level
 back instead of an error. `/think` reports in German when this happened. The
 clamped level becomes `OpenRouterProvider`'s `reasoning.effort` parameter
-(omitted entirely for `NONE`).
+(omitted entirely for `NONE`). The clamping itself lives in
+`clampReasoningLevel` (`packages/contracts/src/ai-models.ts`) because the
+browser needs the same answer: the picker must not display a remembered `high`
+on a model that cannot think.
+
+The chosen model and level are remembered per workspace in `localStorage`
+(`useModelPreference`, `apps/web/src/components/ai/model-choice.ts`). A
+conversation stores both on its own row, but only once it exists, and it only
+exists after the first message — without the preference a choice made in an
+empty panel died on the next reload, and every new conversation started over at
+the deployment default and `NONE`. The row still wins for a conversation that
+has started; the preference is what seeds the next one.
 
 ## Auto-compaction
 

@@ -6,8 +6,6 @@ import * as React from 'react';
 import {
   type AiConversation,
   type AiConversationMessage,
-  type AiModel,
-  type AiModelListResponse,
   type AiReasoningLevel,
   type AiRunPhase,
   type DocumentDetail,
@@ -40,6 +38,7 @@ import { ChatMessage } from './chat-message';
 import { ContextChips } from './context-chips';
 import { ContextMeter } from './context-meter';
 import { ConversationSwitcher } from './conversation-switcher';
+import { type ModelChoice, resolveModelChoice, useModelPreference } from './model-choice';
 import { ModelPicker } from './model-picker';
 import { RunActivity } from './run-activity';
 import { Transcript } from './transcript';
@@ -130,13 +129,14 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   const postMessage = usePostConversationMessage();
   const scrollRef = React.useRef<HTMLDivElement | null>(null);
 
-  const [pendingModelSlug, setPendingModelSlug] = React.useState<string | null>(null);
-  const [pendingReasoningLevel, setPendingReasoningLevel] = React.useState<AiReasoningLevel | null>(
-    null,
-  );
-  // Mirrors `pendingModelSlug`: the chip is operable before the first message,
-  // when there is no conversation row to write the choice to yet. It travels
-  // along in the create request.
+  // Model and thinking level are remembered per workspace: the panel is often
+  // empty when they are chosen, and an empty panel has no conversation row to
+  // write them to. They also seed every following conversation.
+  const preference = useModelPreference(workspaceId);
+  // Same problem as the model choice, without the memory: the chip is operable
+  // before the first message, when there is no conversation row to write it to.
+  // It travels along in the create request and is deliberately not remembered,
+  // because page context is a decision about one conversation.
   const [pendingPageContextEnabled, setPendingPageContextEnabled] = React.useState<boolean | null>(
     null,
   );
@@ -176,8 +176,7 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   const modelChoice = resolveModelChoice({
     registry: modelsQuery.data ?? null,
     conversation,
-    pendingModelSlug,
-    pendingReasoningLevel,
+    preference,
   });
 
   const openDocumentQuery = useDocument(documentId ?? undefined);
@@ -202,44 +201,40 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
     const response = await createConversation.mutateAsync({
       workspaceId,
       documentId,
-      modelSlug: pendingModelSlug ?? undefined,
-      reasoningLevel: pendingReasoningLevel ?? undefined,
+      modelSlug: preference.modelSlug ?? undefined,
+      reasoningLevel: preference.reasoningLevel ?? undefined,
       pageContextEnabled: pendingPageContextEnabled ?? undefined,
     });
     setActiveConversationId(response.conversation.id);
-    setPendingModelSlug(null);
-    setPendingReasoningLevel(null);
     setPendingPageContextEnabled(null);
     return response.conversation.id;
   }, [
     workspaceId,
     documentId,
-    pendingModelSlug,
-    pendingReasoningLevel,
+    preference.modelSlug,
+    preference.reasoningLevel,
     pendingPageContextEnabled,
     createConversation,
     setActiveConversationId,
   ]);
 
   const handleModelChange = (slug: string): void => {
+    preference.remember({ modelSlug: slug });
     if (activeConversationId !== null) {
       void updateConversation.mutateAsync({
         conversationId: activeConversationId,
         request: { modelSlug: slug },
       });
-    } else {
-      setPendingModelSlug(slug);
     }
   };
 
   const handleReasoningLevelChange = (level: AiReasoningLevel): void => {
+    preference.remember({ reasoningLevel: level });
     if (activeConversationId !== null) {
       void updateConversation.mutateAsync({
         conversationId: activeConversationId,
         request: { reasoningLevel: level },
       });
-    } else {
-      setPendingReasoningLevel(level);
     }
   };
 
@@ -475,42 +470,6 @@ function AiTranscriptArea({
       ) : null}
     </div>
   );
-}
-
-/**
- * The model, reasoning level and vision companion this conversation is about to
- * use.
- *
- * The conversation's own choice wins; a pending one (made before the first
- * message, when there is no row to write it to yet) comes next; the
- * deployment's default is the floor.
- */
-interface ModelChoice {
-  models: AiModel[];
-  defaultModelSlug: string | null;
-  modelSlug: string | null;
-  reasoningLevel: AiReasoningLevel;
-  visionCompanionSlug: string | null;
-  selectedModel: AiModel | null;
-}
-
-function resolveModelChoice(input: {
-  registry: AiModelListResponse | null;
-  conversation: AiConversation | null;
-  pendingModelSlug: string | null;
-  pendingReasoningLevel: AiReasoningLevel | null;
-}): ModelChoice {
-  const models = [...(input.registry?.models ?? [])];
-  const defaultModelSlug = input.registry?.defaultModelSlug ?? null;
-  const modelSlug = input.conversation?.modelSlug ?? input.pendingModelSlug ?? defaultModelSlug;
-  return {
-    models,
-    defaultModelSlug,
-    modelSlug,
-    reasoningLevel: input.conversation?.reasoningLevel ?? input.pendingReasoningLevel ?? 'none',
-    visionCompanionSlug: input.conversation?.visionCompanionSlug ?? null,
-    selectedModel: models.find((model) => model.slug === modelSlug) ?? null,
-  };
 }
 
 /**

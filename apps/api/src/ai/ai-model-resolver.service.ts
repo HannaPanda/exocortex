@@ -4,6 +4,7 @@ import {
   type AiModel,
   type AiModelListResponse,
   type AiReasoningLevel,
+  clampReasoningLevel,
 } from '@exocortex/contracts';
 import {
   type AiReasoningLevel as AiReasoningLevelPrisma,
@@ -29,14 +30,6 @@ export const REASONING_LEVEL_TO_PRISMA: Record<AiReasoningLevel, AiReasoningLeve
   low: 'LOW',
   medium: 'MEDIUM',
   high: 'HIGH',
-};
-
-const REASONING_RANK: Record<AiReasoningLevel, number> = {
-  none: 0,
-  minimal: 1,
-  low: 2,
-  medium: 3,
-  high: 4,
 };
 
 /** Shape returned by every query in this file: the registry row plus its resolved vision-companion slug. */
@@ -192,16 +185,7 @@ export class AiModelResolverService {
 
   /** Clamps a requested level to what the model actually supports. */
   clampReasoningLevel(model: ResolvedAiModel, requested: AiReasoningLevel): AiReasoningLevel {
-    if (model.reasoningLevels.includes(requested)) return requested;
-
-    const requestedRank = REASONING_RANK[requested];
-    let best: AiReasoningLevel = 'none';
-    for (const level of model.reasoningLevels) {
-      if (REASONING_RANK[level] <= requestedRank && REASONING_RANK[level] > REASONING_RANK[best]) {
-        best = level;
-      }
-    }
-    return best;
+    return clampReasoningLevel(model.reasoningLevels, requested);
   }
 
   /**

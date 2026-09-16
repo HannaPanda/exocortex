@@ -62,3 +62,38 @@ export const syncAiModelsResponseSchema = z.object({
   unchanged: z.number().int().nonnegative(),
 });
 export type SyncAiModelsResponse = z.infer<typeof syncAiModelsResponseSchema>;
+
+/** Ascending strength of the thinking levels. `none` is the floor. */
+export const REASONING_LEVEL_RANK: Record<AiReasoningLevel, number> = {
+  none: 0,
+  minimal: 1,
+  low: 2,
+  medium: 3,
+  high: 4,
+};
+
+/**
+ * Clamps a requested thinking level to what a model actually offers.
+ *
+ * Shared by the API (which decides what the provider is asked for) and the
+ * browser (which decides what the picker shows): a remembered `high` must not
+ * appear as the selected value on a model that cannot think at all.
+ */
+export function clampReasoningLevel(
+  available: readonly AiReasoningLevel[],
+  requested: AiReasoningLevel,
+): AiReasoningLevel {
+  if (available.includes(requested)) return requested;
+
+  const requestedRank = REASONING_LEVEL_RANK[requested];
+  let best: AiReasoningLevel = 'none';
+  for (const level of available) {
+    if (
+      REASONING_LEVEL_RANK[level] <= requestedRank &&
+      REASONING_LEVEL_RANK[level] > REASONING_LEVEL_RANK[best]
+    ) {
+      best = level;
+    }
+  }
+  return best;
+}
