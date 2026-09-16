@@ -83,6 +83,15 @@ file is the contract for automated sessions. Read it before changing code.
     "Not built" sections describe today, and a sentence calling something
     planned or deferred is a claim that has to be deleted the day it stops
     being true.
+14. **The licence is PolyForm Noncommercial 1.0.0, and the project is called
+    source available, never open source.** A restriction on the field of use is
+    exactly what that term excludes, so the wrong word in a README or a landing
+    page is a false statement about what a reader is allowed to do. Two things
+    follow for code: no dependency under GPL or AGPL may enter `apps/` or
+    `packages/`, because a copyleft licence would force the combined work to be
+    something this licence cannot be; and contributions carry the grant in
+    `CONTRIBUTING.md`, which is what keeps relicensing possible at all.
+    Individual exceptions live in `LICENSE-GRANTS.md`, never in `LICENSE`.
 
 ## Repository map
 
@@ -217,7 +226,8 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   write reaches the tree through the collaboration server, never the rows. The
   compiler is `latexmk` in a container, on the server, because there is no
   permissively licensed in-browser TeX -- no AGPL package may enter this
-  repository or its bundle.
+  repository or its bundle. Since 2026-09-16 that ban has a second, stronger
+  reason: the project's own licence (rule 14) cannot coexist with copyleft.
 - ADR-028: an overview page's text is derived, never its body. A digest per
   page and a composition per overview live in `DocumentDigest`, the composition
   is built from the children's digests rather than their content, and two input

@@ -227,5 +227,24 @@ document is in [`AGENTS.md`](AGENTS.md).
 
 ## Licence
 
-Not yet chosen. All third-party components are MIT-licensed (shadcn/ui, Base UI,
-Tiptap, Yjs, Hocuspocus, NestJS, Next.js, Prisma, BullMQ, Better Auth).
+[PolyForm Noncommercial 1.0.0](LICENSE). eXocortex is **source available, not
+open source**: read it, run it, host it, change it and pass it on, for any
+noncommercial purpose. Charities, schools, public research and government bodies
+are named in the licence as permitted uses. Making money with it is the one
+thing the licence does not grant by itself.
+
+Commercial use is a conversation rather than a refusal: johanna@hannapanda.de.
+Individual grants that differ from this are recorded in
+[`LICENSE-GRANTS.md`](LICENSE-GRANTS.md), and what a pull request means for the
+licence is in [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+Nothing in the dependency tree contradicts that choice: of 852 packages, 685 are
+MIT and 87 Apache-2.0, and there is no GPL or AGPL anywhere. The four weak
+copyleft components (`sharp`'s libvips under LGPL, `elkjs` under EPL, `ical.js`
+and `lightningcss` under MPL) are file-scoped and installed rather than
+vendored. The one binary asset in the repository, `Neuropol.otf`, is CC0; its
+own name table says so.
+
+Keeping it that way is a rule and not a preference: an AGPL dependency linked
+into the bundle would force the whole work to be AGPL, which this licence cannot
+be. See ADR-027.

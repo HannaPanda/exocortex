@@ -30,6 +30,10 @@ This file applies to any coding agent (Claude Code, Codex CLI, or another).
 11. **Documentation is part of the change, not a follow-up.** See the checklist
     below. `scripts/check-docs-current.mjs` is a hard gate and fails the build
     when a central document stops naming something the repository defines.
+12. The licence is **PolyForm Noncommercial 1.0.0**. Call the project _source
+    available_, never _open source_. No GPL or AGPL dependency may enter `apps/`
+    or `packages/`: copyleft would force the combined work to be something this
+    licence cannot be. Contributions carry the grant in `CONTRIBUTING.md`.
 
 ## Documentation, and when it has to change with the code
 
@@ -52,6 +56,7 @@ same commit series**:
 | a setting, its scope, its ceiling                        | `docs/admin.md`, `.env.example` if it has a bootstrap fallback         |
 | a deployment unit, a container, an nginx route, a backup | `deploy/README.md`                                                     |
 | a hard gate, a check in `build.sh`, the CI workflow      | `deploy/README.md`, the command tables in `README.md` and `CLAUDE.md`  |
+| the licence, or what a contribution may be used for      | `LICENSE`, `CONTRIBUTING.md`, `LICENSE-GRANTS.md`, `README.md`         |
 | a compose service or a host port                         | `docs/local-development.md`                                            |
 | an MCP or AI tool                                        | `docs/mcp.md`                                                          |
 | a span, a trace attribute, what is recorded about a run  | `docs/observability.md`                                                |

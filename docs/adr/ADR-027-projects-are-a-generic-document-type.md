@@ -34,6 +34,15 @@ about this deployment, not a technical detail, and it was taken deliberately:
 upstream carries no LICENSE file at all, which makes the provenance of the
 compiler bundle harder to reason about, not easier.)
 
+**Update 2026-09-16: the reason changed, the decision did not.** eXocortex now
+carries a licence of its own, PolyForm Noncommercial 1.0.0, and the argument
+above no longer rests on the repository being private. It rests on something
+harder: AGPL requires the combined work to be AGPL, and a licence that restricts
+commercial use cannot be that. A copyleft dependency in `apps/` or `packages/`
+would not merely add an obligation, it would make the project's own licence
+unusable. Running such a helper as a separate process in a container, which is
+what this ADR already chose, stays the way out.
+
 **The two layers we would have to replace are the two that are wired shut.**
 TeXlyre's plugin system has categories for viewers, collaborative viewers,
 renderers, loggers, bibliography, LSP, backup and themes. It has none for

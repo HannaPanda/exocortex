@@ -2,6 +2,7 @@
   "name": "exocortex",
   "version": "0.1.0",
   "private": true,
+  "license": "PolyForm-Noncommercial-1.0.0",
   "description": "eXocortex - self-hostable collaborative workspace and external brain",
   "packageManager": "pnpm@11.20.0",
   "engines": {
