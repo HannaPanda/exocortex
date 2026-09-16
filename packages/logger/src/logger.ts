@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import pino, { type Logger as PinoLogger, type LoggerOptions } from 'pino';
 
 import { REDACTED_PATHS, REDACTION_PLACEHOLDER } from './redaction';
+import { currentTraceIds } from './tracing';
 
 export type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal' | 'silent';
 
@@ -81,6 +82,11 @@ export function createLogger(options: CreateLoggerOptions): Logger {
       level: (label) => ({ level: label }),
     },
     timestamp: pino.stdTimeFunctions.isoTime,
+    // What ties a log line to a span (issue #57). Without tracing configured
+    // `currentTraceIds` returns `undefined` and every line looks exactly as it
+    // did before; with it, a slow trace leads to the lines written underneath
+    // it and a suspicious log line leads back to the trace.
+    mixin: () => currentTraceIds() ?? {},
   };
 
   if (usePretty) {
