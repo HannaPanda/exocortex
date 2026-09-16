@@ -2,6 +2,7 @@ export * from './agent-session.js';
 export * from './catalog.js';
 export * from './client.js';
 export * from './confirm.js';
+export * from './instructions.js';
 export * from './prompts.js';
 export * from './protocol.js';
 export * from './resources.js';

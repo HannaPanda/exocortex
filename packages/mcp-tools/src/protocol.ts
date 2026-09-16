@@ -1,6 +1,7 @@
 import { announceAgentSession, clientLabelFrom } from './agent-session.js';
 import { type ExocortexApiClient, ExocortexApiError } from './client.js';
 import { type WriteConfirmationGate } from './confirm.js';
+import { buildServerInstructions } from './instructions.js';
 import { getMcpPrompt, listMcpPrompts } from './prompts.js';
 import { listMcpResources, listMcpResourceTemplates, readMcpResource } from './resources.js';
 import { type AnyToolDefinition, ToolInputValidationError } from './tool.js';
@@ -230,7 +231,14 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
             },
           });
         }
-        return respond(buildInitializeResult(params, context, serverInfo));
+        // The deployment's own filing and writing rules, for the clients that
+        // can act on them. A catalogue without `exo_page_create` is one of the
+        // two tiny surfaces shaped for a foreign client (research, memory);
+        // instructions about where a page belongs would be noise there.
+        const instructions = byName.has('exo_page_create')
+          ? await buildServerInstructions(client)
+          : null;
+        return respond(buildInitializeResult(params, context, serverInfo, instructions));
       }
 
       case 'notifications/initialized':
@@ -289,6 +297,7 @@ function buildInitializeResult(
   params: Record<string, unknown>,
   context: boolean,
   serverInfo: { name: string; version: string },
+  instructions: string | null,
 ): Record<string, unknown> {
   const asked = typeof params.protocolVersion === 'string' ? params.protocolVersion : undefined;
   const known = SUPPORTED_PROTOCOL_VERSIONS.find((version) => version === asked);
@@ -307,6 +316,10 @@ function buildInitializeResult(
         : {}),
     },
     serverInfo,
+    // Read by every client that has a system prompt to put it in. Omitted
+    // rather than sent empty: a key with nothing behind it is a claim that
+    // there is nothing to say.
+    ...(instructions === null || instructions.length === 0 ? {} : { instructions }),
   };
 }
 
