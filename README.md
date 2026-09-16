@@ -45,6 +45,8 @@ What is deliberately still missing is listed under
   (ADR-028)
 - an agent memory in its own workspace, with distilled facts above its session
   notes (ADR-019, ADR-021)
+- filing help for new pages: candidate parents ranked from the pages that
+  already exist, in the sidebar's context menu and as an MCP tool
 - calendars: iCal import and export, reminders, event pages
 
 **Search, AI and automation**

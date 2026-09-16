@@ -12,6 +12,7 @@ import { MEMORY_TOOLS } from './tools/memory.js';
 import { MEMORY_FACT_TOOLS } from './tools/memory-facts.js';
 import { OVERVIEW_TOOLS } from './tools/overviews.js';
 import { PAGE_TOOLS } from './tools/pages.js';
+import { PLACEMENT_TOOLS } from './tools/placement.js';
 import { PROJECT_TOOLS } from './tools/projects.js';
 import { RENDER_TOOLS } from './tools/render.js';
 import { RESEARCH_TOOLS } from './tools/research.js';
@@ -22,6 +23,7 @@ import { WORKSPACE_TOOLS } from './tools/workspaces.js';
 export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...WORKSPACE_TOOLS,
   ...PAGE_TOOLS,
+  ...PLACEMENT_TOOLS,
   ...OVERVIEW_TOOLS,
   ...LINK_TOOLS,
   ...COMMENT_TOOLS,

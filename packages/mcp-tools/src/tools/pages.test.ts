@@ -163,6 +163,16 @@ describe('pageCreateTool', () => {
         },
         query: undefined,
       },
+      // The filing hint: after a page is created, the tool looks at what sits
+      // under the parent it was filed into, so a caller that picked a level
+      // too high is told which sections are below it.
+      {
+        kind: 'request',
+        method: 'GET',
+        path: '/api/workspaces/ws1234567/documents/tree',
+        body: undefined,
+        query: { depth: 2 },
+      },
     ]);
     expect(result.text).toContain('Test');
   });

@@ -37,6 +37,7 @@ import {
   pageTrashTool,
 } from './page-lifecycle.js';
 import { formatDocumentSummary, renderTree, summarize } from './page-render.js';
+import { filingHint } from './placement.js';
 
 const MAX_PAGE_READ_CHARS = 60_000;
 
@@ -231,7 +232,9 @@ export const pageCreateTool: AnyToolDefinition = defineTool({
     'samt Startspalten. ' +
     'Legst du eine Sammelseite an, die vor allem Unterseiten bündeln soll, dann markiere sie mit ' +
     'exo_page_set_overview als Übersichtsseite und schreib keinen eigenen Fließtext hinein: ' +
-    'eXocortex hält die Beschreibung der Unterseiten dort selbst aktuell.',
+    'eXocortex hält die Beschreibung der Unterseiten dort selbst aktuell. ' +
+    'Weißt du nicht sicher, wohin die Seite gehört, frag vorher exo_page_suggest_parent: ' +
+    'eine Seite landet sonst leicht eine Ebene zu hoch, über den Unterbereich, in den sie gehört.',
   inputSchema: pageCreateInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,
@@ -250,8 +253,9 @@ export const pageCreateTool: AnyToolDefinition = defineTool({
         } satisfies z.infer<typeof markdownImportRequestSchema>,
         responseSchema: markdownImportResponseSchema,
       });
+      const importHint = await filingHint(client, input.workspaceId, input.parentId);
       return {
-        text: `Seite erstellt: ${formatDocumentSummary(result.document)}`,
+        text: `Seite erstellt: ${formatDocumentSummary(result.document)}.${importHint}`,
         data: result,
       };
     }
@@ -268,7 +272,8 @@ export const pageCreateTool: AnyToolDefinition = defineTool({
       },
       responseSchema: documentSummarySchema,
     });
-    return { text: `Seite erstellt: ${formatDocumentSummary(result)}`, data: result };
+    const hint = await filingHint(client, input.workspaceId, input.parentId);
+    return { text: `Seite erstellt: ${formatDocumentSummary(result)}.${hint}`, data: result };
   },
 });
 

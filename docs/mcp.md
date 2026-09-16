@@ -81,6 +81,33 @@ The catalogue **only** talks REST. It never imports `@exocortex/database`,
    are two thin adapters around the same `AnyToolDefinition[]`. There is no
    second place to keep in sync.
 
+### Instructions at `initialize`
+
+The handshake answers with an `instructions` string, and every client that has
+a system prompt puts it there. Two things go into it
+(`packages/mcp-tools/src/instructions.ts`):
+
+1. **How pages are filed.** Structure is content here: where a page hangs is
+   part of what it says. A client that creates pages knows the page and nothing
+   about the shelf, and the failure is always the same shape -- the page lands
+   directly under the top-level section although the sub-section it belongs in
+   sits one level below. The text says to look first (`exo_search`,
+   `exo_page_tree` with a `parentId`) and to ask `exo_page_suggest_parent` when
+   in doubt.
+2. **The workspace's own rule pages.** A page with `aiRuleMode: ALWAYS` used to
+   reach the built-in AI's system prompt and nothing else, so the deployment's
+   own rules were invisible to exactly the clients that file the most pages.
+   The `ALWAYS` pages are inlined in full, up to 8,000 characters across all
+   workspaces; `ON_DEMAND` rules contribute their trigger sentence and the id
+   `exo_rules_load` takes. "Always" is the whole claim, which is why those
+   bodies are carried rather than pointed at.
+
+Assembly never fails the handshake and never hangs it: a five second budget and
+a catch around every call leave the base text standing. The two tiny surfaces
+shaped for one foreign client each (research, memory) are served no
+instructions at all -- a catalogue without `exo_page_create` has no pages to
+file.
+
 `apps/mcp` hand-rolls the stdio JSON-RPC transport (`src/stdio.ts`) instead of
 depending on `@modelcontextprotocol/sdk`: the protocol surface needed is a
 handful of methods around `initialize`/`ping`, and owning the transport means
@@ -89,7 +116,7 @@ the box.
 
 ## Tool reference
 
-All 71 tools below are namespaced `exo_` so they cannot collide with the other
+Every tool below is namespaced `exo_` so they cannot collide with the other
 MCP servers Hermes spawns (`flauschibrain`, `flauschi-mcp`, `health-app`). Four
 further tools live on surfaces of their own and are the only ones in the
 catalogue without the prefix: `search` and `fetch` for deep research, which
@@ -125,6 +152,7 @@ that run (ADR-030, `docs/ai-architecture.md`).
 | `exo_page_tree`                 | no       | no          | `GET /api/workspaces/:workspaceId/documents/tree` -- the text answer is the indented tree with ids, capped at 300 pages. The cap is spent breadth-first, so an oversized workspace loses its deepest level rather than its last sections; archived pages are counted, not listed                                                                                                                                                                          |
 | `exo_page_read`                 | no       | no          | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars)                                                                                                                                                                                                                                                                                                                                                                                 |
 | `exo_page_create`               | yes      | no          | `POST /api/workspaces/:workspaceId/import/markdown` when `markdown` is given, else `POST /api/workspaces/:workspaceId/documents`                                                                                                                                                                                                                                                                                                                          |
+| `exo_page_suggest_parent`       | no       | no          | `POST /api/workspaces/:workspaceId/documents/suggest-parent` -- where a page belongs, answered from the pages that already exist: the nearest neighbours are looked up through the search adapter and the parents they sit under are ranked. Answers with candidates, their path, how many pages already hang there and which neighbours argued for them. Writes nothing                                                                                  |
 | `exo_page_write`                | yes      | yes         | `POST /api/documents/:documentId/content`                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `exo_page_rename`               | yes      | yes         | `PATCH /api/documents/:documentId` (title, icon, iconColor)                                                                                                                                                                                                                                                                                                                                                                                               |
 | `exo_page_move`                 | yes      | no          | `POST /api/documents/:documentId/move` -- an optional `workspaceId` moves the whole subtree into a different workspace instead of just re-parenting within the current one                                                                                                                                                                                                                                                                                |
