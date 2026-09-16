@@ -110,6 +110,13 @@ restoring are not destructive, and neither are the reversible metadata switches
 (layout, cover, AI rule, resolving a comment), because marking a one-click
 change as dangerous only trains people to click past the warnings that matter.
 
+A third property is orthogonal to both and is about what a tool _returns_
+rather than what it changes: `untrustedOutput` marks a tool whose result
+carries text from outside this deployment. `exo_attachment_read_text` is the
+only one today. The external surfaces ignore it; in the built-in AI's loop it
+fences the result as data and closes the door on mutating tools for the rest of
+that run (ADR-030, `docs/ai-architecture.md`).
+
 | Tool                            | Mutating | Destructive | REST call                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ------------------------------- | -------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `exo_list_workspaces`           | no       | no          | `GET /api/workspaces`                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -336,22 +343,29 @@ that record; the revert is deliberately not a tool (see `docs/admin.md`).
    validated input to a stable string identifying the write destination
    (`document:<id>`, `workspace:<id>`). Every mutating tool must define one; the
    catalogue test enforces this.
-5. **Export it** from the domain file's array (e.g. `PAGE_TOOLS`) and make sure
+5. **Set `untrustedOutput` when the result carries text from outside this
+   deployment** — an extracted document, a fetched web page, a mail body
+   (ADR-030). It marks the run in the built-in AI's loop: the result is fenced
+   as data and mutating tools are refused for the rest of that run unless the
+   workspace declared `ai.untrustedContentPolicy: 'allow'`. Per tool, not per
+   call, like `destructive`. Leave it absent for anything a member of the
+   workspace wrote.
+6. **Export it** from the domain file's array (e.g. `PAGE_TOOLS`) and make sure
    `catalog.ts` re-exports that array into `EXOCORTEX_TOOLS`.
    **Set `surfaces: ['mcp', 'ai']`** unless there is a reason not to, and if
    there is, put it in `SURFACE_EXEMPT` in
    `scripts/check-capability-parity.mjs` (ADR-025). A tool on one agent surface
    with no entry there is a red gate, not a smaller tool.
-6. **Extend `catalog.test.ts`** if the new tool needs a specific assertion
+7. **Extend `catalog.test.ts`** if the new tool needs a specific assertion
    beyond the blanket checks (unique `exo_`-prefixed name, ≥20-char German
    description, `z.toJSONSchema` succeeds, mutating ⇒ has a target). Add a
    focused test in `packages/mcp-tools/src/tools/*.test.ts` for anything with
    non-trivial formatting (truncation, table rendering, branching REST calls).
-7. **No `apps/worker` change is needed.** The built-in AI tool loop reads
+8. **No `apps/worker` change is needed.** The built-in AI tool loop reads
    `toolsFor('ai', ...)` from the same catalogue; the new tool appears there
-   automatically once step 5 is done, gated by `ai.mutatingToolsEnabled` if it
-   is mutating.
-8. **Regenerate the matrix**: `node scripts/check-capability-parity.mjs --write`,
+   automatically once step 6 is done, gated by `ai.mutatingToolsEnabled` and
+   `ai.untrustedContentPolicy` if it is mutating.
+9. **Regenerate the matrix**: `node scripts/check-capability-parity.mjs --write`,
    and commit `docs/capability-matrix.md` with the rest. It is the audit of who
    can reach what, and the gate fails when it has fallen behind.
 

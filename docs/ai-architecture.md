@@ -258,7 +258,8 @@ same `exo_*` tool catalogue the external MCP server serves
   requested tool calls, persists the assistant turn (with `toolCalls`,
   verbatim as the provider returned them) and runs each call **sequentially**
   — never in parallel, so two mutating calls to the same document cannot
-  race — publishing `ai.run.tool_call` (`started` / `succeeded` / `failed`)
+  race — publishing `ai.run.tool_call`
+  (`started` / `succeeded` / `failed` / `refused`)
   around each one and persisting its result as a `TOOL` message before
   looping again. Only the final, tool-call-free turn's text becomes
   `run.resultText` and the `ai.run.completed` payload; it is also persisted
@@ -268,7 +269,9 @@ same `exo_*` tool catalogue the external MCP server serves
 - **Caps.** `ai.maxToolIterations` (default 8) and `ai.budgetMicroUsdPerRun`
   (summed from every turn's reported usage) stop a runaway loop with
   `ai_tool_limit_exceeded` / `ai_budget_exceeded`. `ai.mutatingToolsEnabled`
-  gates whether write tools are offered at all.
+  gates whether write tools are offered at all, and
+  `ai.untrustedContentPolicy` decides what a run may still change once it has
+  read content from outside this deployment (see below).
 - **A truncated turn is never a finished turn.** The `done` event's
   `finishReason` reaches `TurnResult`, and `'length'` (the output cap ended the
   turn) is handled explicitly: a cut-off text answer is picked up with a
@@ -290,6 +293,48 @@ same `exo_*` tool catalogue the external MCP server serves
 - **Unavailable without a service token.** `SERVICE_TOKEN_SECRET` is optional
   (R2); when unset, tools are simply off and the worker logs one warning per
   process instead of per run.
+
+## Foreign content and the trust boundary (ADR-030)
+
+The external MCP surface asks twice before an irreversible write, and both
+clients behind it ask a human anyway. The built-in loop has neither: it executes
+what the model asked for. That is defensible only while every sentence in the
+context was written inside this deployment. An extracted PDF, a described image,
+and later a fetched web page (issue #26) or a mail body are not: somebody
+outside gets to put text in front of a model that holds write tools.
+
+Two mechanisms, both defined in `packages/contracts/src/ai-trust.ts` so they
+cannot drift apart, and applied in `apps/worker/src/tool-runner.ts`, which is
+the single funnel every tool call of the built-in loop passes through.
+
+- **Foreign text is fenced.** `fenceUntrustedContent` wraps the result between
+  `<<<FREMDINHALT …>>>` and `<<<ENDE FREMDINHALT>>>`, naming the origin and the
+  source, and the system prompt carries `UNTRUSTED_CONTENT_SECTION` telling the
+  model that everything between the markers is data. The document is truncated
+  first and fenced afterwards, so the closing marker survives a result that ran
+  into `MAX_RESULT_CHARS`. This is a hint, not a control: it is still a string
+  the model reads.
+- **A mutating call is refused.** `decideMutation` decides outside the model,
+  from `ai.untrustedContentPolicy` and the origins the run has read so far.
+  `guarded` (the default) allows writes until the run reads foreign text and
+  refuses them afterwards; `deny` never offers a mutating tool in the first
+  place, so the model does not spend a turn proposing one; `allow` is the
+  declared exception for a workflow whose job is to read foreign documents and
+  write about them. A workspace may be stricter than the deployment and never
+  looser (`SETTING_VALUE_RANKS`, ADR-023).
+
+What counts as foreign is declared per tool, as `untrustedOutput` on the
+catalogue entry (`packages/mcp-tools/src/tool.ts`), and today that is
+`exo_attachment_read_text`. The vision preprocessor is the one path that
+bypasses the tool loop: it describes images out of an uploaded file before the
+first turn, so `ai-run.ts` notes the origin on the runner directly and
+`images.ts` fences the description.
+
+A refusal is published as `ai.run.tool_call` with status `refused` — its own
+status rather than `failed`, because the two mean opposite things to whoever is
+watching — and the model is handed a German sentence saying why and asking it to
+report what it would have written. `/tools` in the chat names the active policy
+for the same reason: the question after a refused write is always "why".
 
 ## Reasoning levels
 

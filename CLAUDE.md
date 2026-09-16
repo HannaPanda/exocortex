@@ -226,6 +226,13 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   patched, so a widened permission only ever arrives through a fresh handshake;
   and a periodic re-authorization sweep in both the gateway and the
   collaboration server is what the guarantee rests on when a message is missed.
+- ADR-030: the built-in AI's right to change anything depends on what it has
+  read. Foreign text (an extracted document, a described image, later the web)
+  is fenced as data before it enters the context and marks the run; a mutating
+  tool call is then refused by one decision in `tool-runner.ts` rather than by a
+  check per tool. The policy is a setting a workspace can only tighten, never a
+  request parameter: a boundary a run can raise for itself is one an injected
+  paragraph can raise for itself.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
