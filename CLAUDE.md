@@ -103,7 +103,7 @@ file is the contract for automated sessions. Read it before changing code.
 | `packages/storage`        | S3-compatible object storage, MIME sniffing, image downscaling.                                                               |
 | `packages/ai`             | Provider-neutral AI contracts, OpenRouter, embeddings, mock provider, runner contracts.                                       |
 | `packages/calendar`       | iCalendar parsing and serialization, recurrence expansion, reminder scheduling.                                               |
-| `packages/logger`         | Structured logging, correlation ids, the redaction list, the tracing abstraction.                                             |
+| `packages/logger`         | Structured logging, correlation ids, the redaction list, the tracer and its OpenTelemetry implementation.                     |
 | `packages/ui`             | Design tokens, shadcn components on Base UI, layout primitives, states.                                                       |
 | `e2e`                     | Playwright browser and API tests.                                                                                             |
 | `tools/claude-code-hooks` | SessionStart/SessionEnd hooks that make this deployment Claude Code's memory. Plain Node, no dependencies, silent on failure. |
@@ -233,6 +233,12 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   check per tool. The policy is a setting a workspace can only tighten, never a
   request parameter: a boundary a run can raise for itself is one an injected
   paragraph can raise for itself.
+- ADR-031: tracing is optional and the trace travels in band. The tracer is our
+  own interface with a no-op default (`packages/logger/src/tracing.ts`);
+  `otel.ts` is the only file that imports `@opentelemetry/*` and loads the SDK
+  lazily, so a deployment without a collector is unchanged. A job carries its
+  parent as `traceparent` in the payload, the worker's tool calls carry it as a
+  header, and a span holds ids, durations and outcomes -- never content.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

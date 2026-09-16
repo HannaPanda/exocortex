@@ -391,5 +391,11 @@ recipe above would otherwise require for a bulk operation.
   lines through `AsyncLocalStorage`)
 - `GET /health/live` and `GET /health/ready`; readiness probes PostgreSQL, Redis and
   object storage and answers `503` when degraded
-- an OpenTelemetry-compatible `Tracer` abstraction (`packages/logger/src/tracing.ts`)
-  with a no-op default; a real SDK can be installed with `setTracer()`
+- distributed tracing over API, queue, worker and the AI tool loop
+  (ADR-031): `packages/logger/src/tracing.ts` is the contract every call site
+  uses, `packages/logger/src/otel.ts` the OpenTelemetry implementation
+  `startTracing()` installs. Off, and not even loaded, until
+  `OTEL_EXPORTER_OTLP_ENDPOINT` names a collector; the trace context travels to
+  a job in its payload and to the API as a `traceparent` header, and every log
+  line written under a span carries `traceId` and `spanId`. What is traced,
+  what never is, and how to add a span: `docs/observability.md`

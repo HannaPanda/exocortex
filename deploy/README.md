@@ -378,6 +378,15 @@ failure. Count first if it matters:
 That is the OOM killer, not a bug in the code. Check `dmesg | tail`, free memory,
 and do not retry in a loop.
 
+### Tracing, when a question needs a timeline
+
+Off by default and not installed: without `OTEL_EXPORTER_OTLP_ENDPOINT` in
+`.env` the OpenTelemetry SDK is never loaded by any unit. Point it at a
+collector, restart the four units, and one trace then covers a request, the jobs
+it enqueues, the AI run those start and every tool call underneath it
+(ADR-031). `docs/observability.md` has the variables, a throwaway Jaeger to try
+it against, and the rule about what a span may never contain.
+
 ### Why there is no CI
 
 One person, always on `master`, no pull requests, and nothing here that has to

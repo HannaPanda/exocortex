@@ -68,6 +68,10 @@ What is deliberately still missing is listed under
   (ADR-018), and an agent journal that records what an agent changed (ADR-022)
 - audit log and transactional outbox for destructive and reliable operations
 - live background-job progress in the UI
+- structured logs with a correlation id per request, and optional distributed
+  tracing across API, queue, worker and the AI tool loop (ADR-031). Tracing is
+  off, and its SDK is not even loaded, until a collector is configured;
+  `docs/observability.md` says what a span may contain and what it never may
 
 ## Stack
 
@@ -83,6 +87,7 @@ What is deliberately still missing is listed under
 | Auth     | Better Auth 1.6 with the Prisma adapter                                                         |
 | AI       | provider-neutral contracts, OpenRouter, a mock provider for offline work                        |
 | Agents   | one tool catalogue over stdio MCP and `POST /api/mcp`                                           |
+| Tracing  | OpenTelemetry SDK over OTLP/HTTP, optional and off by default                                   |
 | Tests    | Vitest 5, Playwright 1.63                                                                       |
 
 ## Quick start
@@ -154,7 +159,7 @@ packages/config       runtime-validated environment schemas
 packages/contracts    zod schemas for REST DTOs, WebSocket events, job payloads
 packages/database     Prisma schema, migrations, order keys, tree helpers, search adapters
 packages/editor       canonical Tiptap schema, block ids, Markdown, Yjs materialization
-packages/logger       structured logging, correlation ids, tracing abstraction
+packages/logger       structured logging, correlation ids, OpenTelemetry tracing
 packages/mcp-tools    the one tool catalogue, shared by apps/mcp and the built-in AI
 packages/queue        typed BullMQ queues, workers, Redis event bus
 packages/storage      S3-compatible object storage, MIME sniffing, image downscaling
@@ -186,6 +191,7 @@ tools/                Claude Code hooks that make this deployment an agent's mem
 | [`docs/render.md`](docs/render.md)                       | Markdown to PDF, templates, the render container             |
 | [`docs/projects.md`](docs/projects.md)                   | LaTeX projects, the file tree, the build runner              |
 | [`docs/overview-pages.md`](docs/overview-pages.md)       | digests, composition, when a refresh costs anything          |
+| [`docs/observability.md`](docs/observability.md)         | logs, health, tracing: what is recorded and what never is    |
 | [`docs/deviations.md`](docs/deviations.md)               | where the implementation deviates from the brief and why     |
 | [`AGENTS.md`](AGENTS.md)                                 | rules for automated agents, including the documentation rule |
 | [`CLAUDE.md`](CLAUDE.md)                                 | rules for Claude Code sessions                               |
