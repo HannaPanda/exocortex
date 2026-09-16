@@ -116,6 +116,12 @@ export function createTypedWorker<TName extends QueueName>(
       // separate spans at all: without it, time spent waiting for a free
       // worker is indistinguishable from time spent working, and those two
       // have completely different fixes.
+      //
+      // The job's own delay is subtracted, because a debounced save and a
+      // repeatable maintenance run are both enqueued long before they are
+      // meant to run. Counting that as waiting reported a p95 of a hundred
+      // seconds on an idle queue, which is the scheduled interval and not a
+      // symptom of anything.
       await withSpan(
         `job ${options.name}`,
         async () => {
@@ -133,7 +139,7 @@ export function createTypedWorker<TName extends QueueName>(
             'messaging.operation.name': 'process',
             'messaging.message.id': job.id,
             'messaging.bullmq.attempt': job.attemptsMade + 1,
-            'messaging.bullmq.wait_time_ms': Math.max(0, startedAt - job.timestamp),
+            'messaging.bullmq.wait_time_ms': Math.max(0, startedAt - job.timestamp - job.delay),
           },
         },
       );

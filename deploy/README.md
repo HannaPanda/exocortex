@@ -383,24 +383,48 @@ and do not retry in a loop.
 On, and pointed at Grafana Tempo. `OTEL_EXPORTER_OTLP_ENDPOINT` in `.env` names
 `http://127.0.0.1:4318`, which is the `tempo` container of the automation stack
 (`/opt/automation-stack/docker-compose.monitoring.yml`, config in
-`monitoring/tempo/config.yml`, blocks kept for seven days). The port is bound to
-loopback: the senders are the units on this machine and nothing else.
-
-The traces are in Grafana at <https://grafana.hannapanda.de>, **Explore → tempo**,
-beside the Prometheus metrics and the Loki logs that were already there. One
-trace covers a request, the jobs it enqueues, the AI run those start and every
-tool call underneath it (ADR-031).
+`monitoring/tempo/config.yml`). The port is bound to loopback: the senders are
+the units on this machine and nothing else.
 
 Emptying the endpoint line and restarting the units switches it off again, and
 off means the SDK is not loaded at all rather than merely quiet.
 
-One gap on this host: a span's "logs for this span" link queries Loki, and
-promtail currently ships only `haushalt`, `nginx` and `fail2ban` from the
-journal. Until the four `exocortex-*` units are added to the keep list in
-`/opt/automation-stack/monitoring/promtail-main/config.yml`, that link finds
-nothing -- `journalctl -u exocortex-worker -o cat | grep <traceId>` does. Loki
-has no retention configured, which is why adding four chatty units is a
-decision rather than a line.
+**Where to look.** <https://grafana.hannapanda.de>, folder **eXocortex**,
+dashboard **eXocortex**. Five rows: overview, API, queue, AI, and a pair of
+look-up panels (the slowest traces, and the log lines). Everything on it is
+computed from the spans themselves through TraceQL metrics, because the
+application has no Prometheus endpoint and Tempo's metrics generator was
+deliberately not switched on. **Explore → tempo** is the same data without the
+frame. One trace covers a request, the jobs it enqueues, the AI run those start
+and every tool call underneath it (ADR-031).
+
+The dashboard is provisioned from
+`/opt/automation-stack/monitoring/grafana/dashboards/exocortex/`, so it is not
+editable in the browser: change the file, and Grafana reloads it within thirty
+seconds.
+
+**How long things are kept.** Two different numbers, on purpose.
+
+| Store          | Kept     | Why                                                                    |
+| -------------- | -------- | ---------------------------------------------------------------------- |
+| Loki (logs)    | 180 days | asked about months later, and it costs ~4.5 MB a day                   |
+| Tempo (traces) | 30 days  | diagnosis, not a record; ~500 MB a day raw, and 180 days would not fit |
+
+Both were measured on 2026-09-16 with 41 GB free. If traces need to reach
+further back, lower `OTEL_TRACES_SAMPLER_RATIO` rather than raising the
+retention: fewer traces kept longer beats more traces kept briefly, and the
+sampler is parent-based, so a kept trace is still complete.
+
+**Logs of a trace.** The four `exocortex-*` units are shipped into Loki by the
+`main-exocortex` job in `/opt/automation-stack/monitoring/promtail-main/config.yml`,
+which also unpacks pino's JSON far enough to make `level` a label. A span's
+"logs for this span" button in Grafana therefore works. Directly:
+`journalctl -u exocortex-worker -o cat | grep <traceId>`.
+
+Better Auth emits spans of its own (`GET /get-session`, `handler …`,
+`db findOne …`) as soon as a global tracer exists. They are not ours and the
+dashboard's API panels filter them out by route name; in Explore they are simply
+there.
 
 `docs/observability.md` has the variables, the table of which span is opened
 where, and the rule about what a span may never contain.

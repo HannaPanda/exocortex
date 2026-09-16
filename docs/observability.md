@@ -66,6 +66,11 @@ One trace covers a request and everything it causes, across processes.
 busy" from "the work was slow": it is the time between enqueue and pickup, while
 the span's own duration is the work.
 
+The job's own delay is subtracted from it, so a debounced save and a repeatable
+maintenance run report the time they actually waited for a worker rather than
+the interval they were scheduled at. Without that the p95 on an idle queue is
+the debounce window, which looks alarming and means nothing.
+
 An AI run reads end to end: the HTTP request that started it, the enqueue, the
 job, the run, each turn, each tool call, and each provider request. The tool
 calls go back into the API over loopback and continue the same trace, because
