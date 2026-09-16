@@ -36,6 +36,11 @@ All four have the same shape, which is worth noticing: the compiler, the
 linter, the HTTP framework and the auth library are each held by a plugin
 rather than by anything in themselves.
 
+`pnpm outdated -r` lists one more row that is not a deviation. The `prisma` CLI
+tags `8.0.0-rc.15` as `latest` while `@prisma/client` tags 7.10.0; that is a
+release candidate showing through a dist-tag, not a release this repository is
+behind on.
+
 ## 2. TypeScript 5.9 instead of TypeScript 7
 
 TypeScript 5.9.3. 7.0.2 is the current release and it is the native port: the
