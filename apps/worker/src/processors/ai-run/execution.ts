@@ -13,6 +13,7 @@ import {
   type Prisma,
   type PrismaClient,
 } from '@exocortex/database';
+import { withSpan } from '@exocortex/logger';
 import { findTool } from '@exocortex/mcp-tools';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
@@ -137,6 +138,8 @@ class RunExecution {
    */
   private liveText = '';
   private usage: AiUsage | null = null;
+  /** Exchanges with the provider so far; names the turn spans (issue #57). */
+  private turns = 0;
   private failure: RunFailure | null = null;
   private toolIterations = 0;
   private spentMicroUsd = 0;
@@ -191,7 +194,7 @@ class RunExecution {
         return;
       }
 
-      const turn = await this.streamOneTurn(this.providerMessages);
+      const turn = await this.traceTurn();
       if (turn.usage !== null) {
         this.usage = addUsage(this.usage, turn.usage);
         if (turn.usage.providerCostMicroUsd !== null) {
@@ -214,6 +217,38 @@ class RunExecution {
       if (turn.toolCalls.length === 0) return;
       if (!(await this.dispatchToolCalls(turn))) return;
     }
+  }
+
+  /**
+   * One turn, with a span around it.
+   *
+   * The span is here rather than inside `streamOneTurn` because a turn is
+   * exactly one exchange with the provider, and what is worth recording about
+   * it -- how it ended, what it cost, whether it asked for tools -- is only
+   * known once it has ended.
+   */
+  private async traceTurn(): Promise<TurnResult> {
+    const { payload, run } = this.input;
+    this.turns += 1;
+    const index = this.turns;
+    return withSpan(
+      'ai.turn',
+      async (span) => {
+        const turn = await this.streamOneTurn(this.providerMessages);
+        span.setAttributes({
+          'ai.turn.finish_reason': turn.finishReason,
+          'ai.turn.tool_calls': turn.toolCalls.length,
+          'ai.usage.input_tokens': turn.usage?.inputTokens,
+          'ai.usage.output_tokens': turn.usage?.outputTokens,
+        });
+        if (turn.failure !== null) span.setStatus('error', turn.failure.code);
+        return turn;
+      },
+      {
+        correlationId: payload.correlationId,
+        attributes: { 'ai.model': run.model, 'ai.turn.index': index, 'ai.run.id': run.id },
+      },
+    );
   }
 
   /**

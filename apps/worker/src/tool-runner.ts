@@ -6,7 +6,7 @@ import {
   fenceUntrustedContent,
   type UntrustedOrigin,
 } from '@exocortex/contracts';
-import { type Logger } from '@exocortex/logger';
+import { currentTraceCarrier, type Logger, withSpan } from '@exocortex/logger';
 import {
   createFetchApiClient,
   type ExocortexApiClient,
@@ -121,6 +121,9 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
         token: issued.token,
         timeoutMs: input.toolCallTimeoutMs,
         agentSession: input.agentSession,
+        // Read per call, not per client: the client is minted once per run and
+        // the span it belongs under is the tool call being made right now.
+        traceparent: () => currentTraceCarrier()?.traceparent,
       });
     }
     return client;
@@ -135,98 +138,133 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
     });
   }
 
+  /**
+   * The call itself, without the span around it.
+   *
+   * Split out so `run` below stays the two things it is about: what the trace
+   * records, and what the loop gets back. Every return path here is a result
+   * the model is meant to read, including the failures -- see the comment on
+   * the `try` further down.
+   */
+  async function executeToolCall(
+    name: string,
+    argumentsJson: string,
+    correlationId: string,
+  ): Promise<{ text: string; isError: boolean; refused: boolean }> {
+    const tool = findTool(name);
+    if (tool === null) {
+      return { text: `Unbekanntes Werkzeug: ${name}`, isError: true, refused: false };
+    }
+
+    // Before the arguments are even parsed: whether this call may run
+    // depends on the tool and on what the run has read, never on what the
+    // model put in the payload.
+    const decision = decideMutation({
+      policy: input.mutationPolicy,
+      mutating: tool.mutating,
+      untrustedOrigins,
+    });
+    if (!decision.allowed) {
+      input.logger.warn('Refused a mutating tool call', {
+        tool: name,
+        correlationId,
+        code: decision.code,
+        untrustedOrigins,
+      });
+      return { text: decision.message, isError: true, refused: true };
+    }
+
+    let args: unknown;
+    try {
+      args = JSON.parse(argumentsJson) as unknown;
+    } catch (error) {
+      return {
+        text: `Die Argumente waren kein gültiges JSON: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        isError: true,
+        refused: false,
+      };
+    }
+
+    // A tool error is never a thrown exception out of `run` -- the loop must
+    // be able to hand the failure back to the model as a `tool` message
+    // instead of crashing the whole run.
+    try {
+      const result = await tool.run(ensureClient(), args);
+      const isError = result.isError ?? false;
+      // The document is cut first and fenced afterwards, so the closing
+      // marker survives a result that ran into `MAX_RESULT_CHARS`: a fence
+      // the truncation ate is a fence that is not there. A failed call
+      // carries an error message of ours, not the document, so it is neither
+      // fenced nor counted.
+      if (tool.untrustedOutput !== null && !isError) {
+        noteUntrustedContent(tool.untrustedOutput);
+        return {
+          text: fenceUntrustedContent({
+            origin: tool.untrustedOutput,
+            label: name,
+            text: truncate(result.text),
+          }),
+          isError,
+          refused: false,
+        };
+      }
+      return { text: truncate(result.text), isError, refused: false };
+    } catch (error) {
+      if (error instanceof ExocortexApiError) {
+        return {
+          text: `Fehler (${error.code}): ${error.message}`,
+          isError: true,
+          refused: false,
+        };
+      }
+      if (error instanceof ToolInputValidationError) {
+        const paths = error.issues.map((issue) => issue.path.join('.') || '(root)').join(', ');
+        return {
+          text: `Die Argumente waren ungültig (Felder: ${paths}).`,
+          isError: true,
+          refused: false,
+        };
+      }
+      input.logger.warn('Tool call failed with an unexpected error', {
+        tool: name,
+        correlationId,
+        reason: error instanceof Error ? error.message : String(error),
+      });
+      return {
+        text: `Unerwarteter Fehler beim Aufruf von ${name}.`,
+        isError: true,
+        refused: false,
+      };
+    }
+  }
+
   return {
     definitions,
     untrustedOrigins,
     noteUntrustedContent,
     async run({ name, argumentsJson, correlationId }) {
-      const tool = findTool(name);
-      if (tool === null) {
-        return { text: `Unbekanntes Werkzeug: ${name}`, isError: true, refused: false };
-      }
-
-      // Before the arguments are even parsed: whether this call may run
-      // depends on the tool and on what the run has read, never on what the
-      // model put in the payload.
-      const decision = decideMutation({
-        policy: input.mutationPolicy,
-        mutating: tool.mutating,
-        untrustedOrigins,
-      });
-      if (!decision.allowed) {
-        input.logger.warn('Refused a mutating tool call', {
-          tool: name,
-          correlationId,
-          code: decision.code,
-          untrustedOrigins,
-        });
-        return { text: decision.message, isError: true, refused: true };
-      }
-
-      let args: unknown;
-      try {
-        args = JSON.parse(argumentsJson) as unknown;
-      } catch (error) {
-        return {
-          text: `Die Argumente waren kein gültiges JSON: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-          isError: true,
-          refused: false,
-        };
-      }
-
-      // A tool error is never a thrown exception out of `run` -- the loop must
-      // be able to hand the failure back to the model as a `tool` message
-      // instead of crashing the whole run.
-      try {
-        const result = await tool.run(ensureClient(), args);
-        const isError = result.isError ?? false;
-        // The document is cut first and fenced afterwards, so the closing
-        // marker survives a result that ran into `MAX_RESULT_CHARS`: a fence
-        // the truncation ate is a fence that is not there. A failed call
-        // carries an error message of ours, not the document, so it is neither
-        // fenced nor counted.
-        if (tool.untrustedOutput !== null && !isError) {
-          noteUntrustedContent(tool.untrustedOutput);
-          return {
-            text: fenceUntrustedContent({
-              origin: tool.untrustedOutput,
-              label: name,
-              text: truncate(result.text),
-            }),
-            isError,
-            refused: false,
-          };
-        }
-        return { text: truncate(result.text), isError, refused: false };
-      } catch (error) {
-        if (error instanceof ExocortexApiError) {
-          return {
-            text: `Fehler (${error.code}): ${error.message}`,
-            isError: true,
-            refused: false,
-          };
-        }
-        if (error instanceof ToolInputValidationError) {
-          const paths = error.issues.map((issue) => issue.path.join('.') || '(root)').join(', ');
-          return {
-            text: `Die Argumente waren ungültig (Felder: ${paths}).`,
-            isError: true,
-            refused: false,
-          };
-        }
-        input.logger.warn('Tool call failed with an unexpected error', {
-          tool: name,
-          correlationId,
-          reason: error instanceof Error ? error.message : String(error),
-        });
-        return {
-          text: `Unerwarteter Fehler beim Aufruf von ${name}.`,
-          isError: true,
-          refused: false,
-        };
-      }
+      // Every tool call of the built-in loop passes through here, which makes
+      // this the place for its span too (issue #57). The name and the outcome
+      // are recorded; the arguments and the result never are, because both are
+      // somebody's page content.
+      return withSpan(
+        `ai.tool ${name}`,
+        async (span) => {
+          const result = await executeToolCall(name, argumentsJson, correlationId);
+          span.setAttributes({
+            'ai.tool.refused': result.refused,
+            'ai.tool.error': result.isError,
+          });
+          // A failed tool call is a result the loop hands back to the model,
+          // never a thrown error, so the status has to be set here or a run
+          // that spent four iterations failing would look untroubled.
+          if (result.isError) span.setStatus('error', result.refused ? 'refused' : 'tool_error');
+          return result;
+        },
+        { correlationId, attributes: { 'ai.tool.name': name } },
+      );
     },
   };
 }

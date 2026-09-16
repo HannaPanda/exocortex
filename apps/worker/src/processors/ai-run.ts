@@ -6,6 +6,7 @@ import {
   type Settings,
 } from '@exocortex/contracts';
 import { type AiRun, type PrismaClient } from '@exocortex/database';
+import { withSpan } from '@exocortex/logger';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
@@ -215,21 +216,51 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     });
     await reportProgress(5, 'Antwort wird erzeugt');
 
-    const outcome = await executeRun({
-      prisma,
-      provider,
-      bus,
-      run,
-      payload,
-      logger,
-      timeouts,
-      runner,
-      toolsEnabled: tools.enabled,
-      maxOutputTokens,
-      maxToolIterations: tools.enabled ? settings['ai.maxToolIterations'] : 0,
-      budgetMicroUsd: settings['ai.budgetMicroUsdPerRun'],
-      messages,
-    });
+    // The span that holds the whole answer together (issue #57): the turns,
+    // the tool calls and the provider requests underneath it are what turn
+    // "the run took eight seconds" into "the third tool call took six".
+    // Ids, durations and usage only -- never a prompt, a message or a result.
+    const outcome = await withSpan(
+      'ai.run',
+      async (span) => {
+        const result = await executeRun({
+          prisma,
+          provider,
+          bus,
+          run,
+          payload,
+          logger,
+          timeouts,
+          runner,
+          toolsEnabled: tools.enabled,
+          maxOutputTokens,
+          maxToolIterations: tools.enabled ? settings['ai.maxToolIterations'] : 0,
+          budgetMicroUsd: settings['ai.budgetMicroUsdPerRun'],
+          messages,
+        });
+        span.setAttributes({
+          'ai.run.tool_iterations': result.toolIterations,
+          'ai.usage.input_tokens': result.usage?.inputTokens,
+          'ai.usage.output_tokens': result.usage?.outputTokens,
+          'ai.usage.cost_micro_usd': result.usage?.providerCostMicroUsd ?? undefined,
+        });
+        // A run that fails writes its own terminal status rather than throwing
+        // (see `QUEUE_JOB_OPTIONS`), so without this the span of a failed run
+        // would look exactly like the span of a successful one.
+        if (result.failure !== null) span.setStatus('error', result.failure.code);
+        return result;
+      },
+      {
+        correlationId: payload.correlationId,
+        attributes: {
+          'ai.run.id': run.id,
+          'ai.model': run.model,
+          'ai.provider': provider.id,
+          'ai.tools_enabled': tools.enabled,
+          'exocortex.workspace_id': run.workspaceId,
+        },
+      },
+    );
 
     if (outcome.failure !== null) {
       await writeFailure({

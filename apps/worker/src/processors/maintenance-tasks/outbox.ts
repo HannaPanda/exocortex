@@ -1,5 +1,6 @@
 import { QUEUE_NAMES as QUEUES } from '@exocortex/contracts';
-import { type PrismaClient } from '@exocortex/database';
+import { type OutboxEvent, type PrismaClient } from '@exocortex/database';
+import { withSpan } from '@exocortex/logger';
 
 import { fireMatchingAutomations } from './automations';
 import { isMissingRow, type MaintenanceTask } from './context';
@@ -21,7 +22,7 @@ const TITLE_EVENTS = new Set(['document.created', 'document.updated', 'document.
  * delivery is the fast, best-effort half beside it.
  */
 export const dispatchOutbox: MaintenanceTask = async (context) => {
-  const { prisma, queues, logger } = context;
+  const { prisma, logger } = context;
   const events = await prisma.outboxEvent.findMany({
     where: { processedAt: null },
     orderBy: { createdAt: 'asc' },
@@ -33,72 +34,17 @@ export const dispatchOutbox: MaintenanceTask = async (context) => {
   let vanished = 0;
   for (const event of events) {
     try {
-      const documentId = extractDocumentId(event.payload);
-      if (documentId !== null && event.type.startsWith('document.')) {
-        await queues.enqueue(QUEUES.searchIndexing, {
-          correlationId: event.correlationId,
-          documentId,
-          workspaceId: event.workspaceId,
-          reason: reasonFor(event.type),
-        });
-      }
-      // A title-based reference index goes stale when a *target* page
-      // appears or is renamed, not when the referencing page is edited,
-      // so it has to be refreshed from this side too (issue #19). The
-      // API only writes `document.updated` when the title actually
-      // changed, which is what keeps this from firing on every save.
-      if (documentId !== null && TITLE_EVENTS.has(event.type)) {
-        await queues.enqueue(QUEUES.maintenance, {
-          correlationId: event.correlationId,
-          task: 'resolve-document-links',
-          workspaceId: event.workspaceId,
-          documentId,
-        });
-      }
-      // Automations hang off the outbox for the same reason everything else
-      // here does: this is the one place every domain event passes exactly
-      // once (issue #50, ADR-024). A deployment with no rules pays for one
-      // cached settings read per event and nothing more.
-      await fireMatchingAutomations(
-        {
-          prisma,
-          queues,
-          logger,
-          enabledFor: async (workspaceId) =>
-            (await context.settings(workspaceId))['automations.enabled'],
+      // One span per event, under the sweep's own job span (issue #57). The
+      // sweep runs every five seconds and usually finds nothing; when it is
+      // slow, this is what says which event type made it slow. The row itself
+      // carries no trace context -- the request that wrote it is linked by its
+      // correlation id, not by the trace.
+      await withSpan(`outbox.dispatch ${event.type}`, async () => dispatchEvent(context, event), {
+        correlationId: event.correlationId,
+        attributes: {
+          'exocortex.event.type': event.type,
+          'exocortex.workspace_id': event.workspaceId,
         },
-        {
-          workspaceId: event.workspaceId,
-          type: event.type,
-          payload: event.payload,
-          correlationId: event.correlationId,
-          automationRuleId: event.automationRuleId,
-          automationDepth: event.automationDepth,
-        },
-      );
-      // Overview pages hang off the outbox for the same reason automations do
-      // (issue #53, ADR-028): this is the one place a page change passes
-      // exactly once. A workspace with no overview page pays for one cached
-      // settings read per event.
-      await scheduleOverviewRefreshes(
-        {
-          prisma,
-          queues,
-          enabledFor: async (workspaceId) =>
-            (await context.settings(workspaceId))['overview.enabled'],
-          debounceSecondsFor: async (workspaceId) =>
-            (await context.settings(workspaceId))['overview.debounceSeconds'],
-        },
-        {
-          workspaceId: event.workspaceId,
-          type: event.type,
-          payload: event.payload,
-          correlationId: event.correlationId,
-        },
-      );
-      await prisma.outboxEvent.update({
-        where: { id: event.id },
-        data: { processedAt: new Date(), attempts: { increment: 1 } },
       });
       dispatched += 1;
     } catch (error) {
@@ -119,6 +65,80 @@ export const dispatchOutbox: MaintenanceTask = async (context) => {
   }
   logger.debug('Outbox dispatched', { dispatched, vanished, batch: events.length });
 };
+
+/** The follow-up work one outbox row stands for, and marking the row done. */
+async function dispatchEvent(
+  context: Parameters<MaintenanceTask>[0],
+  event: OutboxEvent,
+): Promise<void> {
+  const { prisma, queues, logger } = context;
+  const documentId = extractDocumentId(event.payload);
+  if (documentId !== null && event.type.startsWith('document.')) {
+    await queues.enqueue(QUEUES.searchIndexing, {
+      correlationId: event.correlationId,
+      documentId,
+      workspaceId: event.workspaceId,
+      reason: reasonFor(event.type),
+    });
+  }
+  // A title-based reference index goes stale when a *target* page
+  // appears or is renamed, not when the referencing page is edited,
+  // so it has to be refreshed from this side too (issue #19). The
+  // API only writes `document.updated` when the title actually
+  // changed, which is what keeps this from firing on every save.
+  if (documentId !== null && TITLE_EVENTS.has(event.type)) {
+    await queues.enqueue(QUEUES.maintenance, {
+      correlationId: event.correlationId,
+      task: 'resolve-document-links',
+      workspaceId: event.workspaceId,
+      documentId,
+    });
+  }
+  // Automations hang off the outbox for the same reason everything else
+  // here does: this is the one place every domain event passes exactly
+  // once (issue #50, ADR-024). A deployment with no rules pays for one
+  // cached settings read per event and nothing more.
+  await fireMatchingAutomations(
+    {
+      prisma,
+      queues,
+      logger,
+      enabledFor: async (workspaceId) =>
+        (await context.settings(workspaceId))['automations.enabled'],
+    },
+    {
+      workspaceId: event.workspaceId,
+      type: event.type,
+      payload: event.payload,
+      correlationId: event.correlationId,
+      automationRuleId: event.automationRuleId,
+      automationDepth: event.automationDepth,
+    },
+  );
+  // Overview pages hang off the outbox for the same reason automations do
+  // (issue #53, ADR-028): this is the one place a page change passes
+  // exactly once. A workspace with no overview page pays for one cached
+  // settings read per event.
+  await scheduleOverviewRefreshes(
+    {
+      prisma,
+      queues,
+      enabledFor: async (workspaceId) => (await context.settings(workspaceId))['overview.enabled'],
+      debounceSecondsFor: async (workspaceId) =>
+        (await context.settings(workspaceId))['overview.debounceSeconds'],
+    },
+    {
+      workspaceId: event.workspaceId,
+      type: event.type,
+      payload: event.payload,
+      correlationId: event.correlationId,
+    },
+  );
+  await prisma.outboxEvent.update({
+    where: { id: event.id },
+    data: { processedAt: new Date(), attempts: { increment: 1 } },
+  });
+}
 
 /**
  * Records a failed dispatch and leaves the row unprocessed for a later run; it

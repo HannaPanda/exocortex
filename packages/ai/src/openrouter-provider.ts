@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { type AiUsage } from '@exocortex/contracts';
-import { type Logger } from '@exocortex/logger';
+import { type Logger, withSpan } from '@exocortex/logger';
 
 import {
   AI_DEFAULT_LIMITS,
@@ -143,15 +143,45 @@ export class OpenRouterProvider implements AiProvider {
     };
   }
 
+  /**
+   * The request to OpenRouter, with the span that measures it (issue #57).
+   *
+   * Only up to the response headers on purpose: for a streamed answer the rest
+   * of the time is the model writing, and that is what the `ai.turn` span
+   * above already measures. What this one adds is the part nobody can see from
+   * the outside -- how long the provider took to say anything at all, and what
+   * it answered when it refused.
+   */
+  private async postCompletions(request: AiGenerateRequest, streaming: boolean): Promise<Response> {
+    return withSpan(
+      'ai.provider.request',
+      async (span) => {
+        const response = await fetch(`${this.options.baseUrl}/chat/completions`, {
+          method: 'POST',
+          headers: this.headers(),
+          body: this.buildBody(request, streaming),
+          signal: request.signal ?? null,
+        });
+        span.setAttribute('http.response.status_code', response.status);
+        if (!response.ok) span.setStatus('error', `http_${response.status}`);
+        return response;
+      },
+      {
+        kind: 'client',
+        correlationId: request.correlationId,
+        attributes: {
+          'ai.provider': this.id,
+          'ai.model': request.model ?? this.options.defaultModel,
+          'ai.stream': streaming,
+        },
+      },
+    );
+  }
+
   async generate(request: AiGenerateRequest): Promise<AiGenerateResult> {
     this.assertConfigured();
     const startedAt = Date.now();
-    const response = await fetch(`${this.options.baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: this.headers(),
-      body: this.buildBody(request, false),
-      signal: request.signal ?? null,
-    });
+    const response = await this.postCompletions(request, false);
 
     if (!response.ok) {
       const detail = await response.text();
@@ -195,12 +225,7 @@ export class OpenRouterProvider implements AiProvider {
     const model = request.model ?? this.options.defaultModel ?? 'anthropic/claude-sonnet-4.5';
     yield { type: 'start', model, provider: this.id };
 
-    const response = await fetch(`${this.options.baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: this.headers(),
-      body: this.buildBody(request, true),
-      signal: request.signal ?? null,
-    });
+    const response = await this.postCompletions(request, true);
 
     if (!response.ok || response.body === null) {
       yield {
