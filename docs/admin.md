@@ -267,6 +267,14 @@ already reference it still resolve (ADR-012 / risk R12). CRUD for individual
 rows is `POST`, `PATCH /api/admin/ai-models/:modelId` and `DELETE`; a disabled
 model leaves the picker but stays resolvable.
 
+**Grouped by vendor.** Both the admin table and the chat's model picker group
+the list by the vendor segment of the slug (`openai/gpt-5` is made by OpenAI and
+served by OpenRouter). It is derived, not stored: `provider` on the row already
+means who serves the model, and a second column would be one more field to fill
+in by hand. `aiModelVendorLabel` (`packages/contracts/src/ai-models.ts`) knows
+how the common vendors spell themselves and title-cases the rest, so a vendor
+nobody has heard of yet still reads as a name.
+
 **Vision companions.** A model with `supportsVision = false` cannot answer
 questions about a page containing images. `visionCompanionId` names a cheap
 vision-capable model that describes the images in text first, which the main

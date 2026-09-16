@@ -3,7 +3,7 @@
 import { MoreHorizontalIcon, PlusIcon, RefreshCwIcon } from 'lucide-react';
 import * as React from 'react';
 
-import { type AiModel, type AiReasoningLevel } from '@exocortex/contracts';
+import { type AiModel, type AiReasoningLevel, groupAiModelsByVendor } from '@exocortex/contracts';
 import {
   Alert,
   AlertDescription,
@@ -151,81 +151,88 @@ export function ModelTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {models.map((model) => (
-            <TableRow key={model.id}>
-              <TableCell>
-                <div className="flex flex-col">
-                  <span className="font-medium">{model.displayName}</span>
-                  <span className="text-xs text-muted-foreground">{model.slug}</span>
-                </div>
+          {groupAiModelsByVendor(models).flatMap((group) => [
+            <TableRow key={`vendor-${group.vendor}`} className="bg-muted/40 hover:bg-muted/40">
+              <TableCell colSpan={7} className="py-1.5 text-xs font-medium text-muted-foreground">
+                {group.label}
               </TableCell>
-              <TableCell>{numberFormat.format(model.contextWindowTokens)} Tokens</TableCell>
-              <TableCell>
-                <div className="flex flex-col gap-0.5">
-                  <Badge variant={model.supportsVision ? 'default' : 'muted'}>
-                    {model.supportsVision ? 'Ja' : 'Nein'}
-                  </Badge>
-                  {!model.supportsVision && model.visionCompanionSlug !== null ? (
-                    <span className="text-xs text-muted-foreground">
-                      {model.visionCompanionSlug}
-                    </span>
-                  ) : null}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-wrap gap-1">
-                  {model.reasoningLevels.map((level) => (
-                    <Badge key={level} variant="secondary">
-                      {REASONING_LABELS[level]}
+            </TableRow>,
+            ...group.models.map((model) => (
+              <TableRow key={model.id}>
+                <TableCell>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{model.displayName}</span>
+                    <span className="text-xs text-muted-foreground">{model.slug}</span>
+                  </div>
+                </TableCell>
+                <TableCell>{numberFormat.format(model.contextWindowTokens)} Tokens</TableCell>
+                <TableCell>
+                  <div className="flex flex-col gap-0.5">
+                    <Badge variant={model.supportsVision ? 'default' : 'muted'}>
+                      {model.supportsVision ? 'Ja' : 'Nein'}
                     </Badge>
-                  ))}
-                </div>
-              </TableCell>
-              <TableCell>
-                {formatPrice(model.inputMicroUsdPerMTok, model.outputMicroUsdPerMTok)}
-              </TableCell>
-              <TableCell>
-                <Switch
-                  aria-label={`${model.displayName} aktiv`}
-                  checked={model.enabled}
-                  onCheckedChange={(checked) =>
-                    updateModel.mutate({ modelId: model.id, request: { enabled: checked } })
-                  }
-                />
-              </TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    render={
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        aria-label={`Aktionen für ${model.displayName}`}
-                      >
-                        <MoreHorizontalIcon />
-                      </Button>
+                    {!model.supportsVision && model.visionCompanionSlug !== null ? (
+                      <span className="text-xs text-muted-foreground">
+                        {model.visionCompanionSlug}
+                      </span>
+                    ) : null}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1">
+                    {model.reasoningLevels.map((level) => (
+                      <Badge key={level} variant="secondary">
+                        {REASONING_LABELS[level]}
+                      </Badge>
+                    ))}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  {formatPrice(model.inputMicroUsdPerMTok, model.outputMicroUsdPerMTok)}
+                </TableCell>
+                <TableCell>
+                  <Switch
+                    aria-label={`${model.displayName} aktiv`}
+                    checked={model.enabled}
+                    onCheckedChange={(checked) =>
+                      updateModel.mutate({ modelId: model.id, request: { enabled: checked } })
                     }
                   />
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setEditingModel(model);
-                        setDialogOpen(true);
-                      }}
-                    >
-                      Bearbeiten
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      variant="destructive"
-                      onClick={() => deleteModel.mutate(model.id)}
-                    >
-                      Entfernen
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          ))}
+                </TableCell>
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label={`Aktionen für ${model.displayName}`}
+                        >
+                          <MoreHorizontalIcon />
+                        </Button>
+                      }
+                    />
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setEditingModel(model);
+                          setDialogOpen(true);
+                        }}
+                      >
+                        Bearbeiten
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => deleteModel.mutate(model.id)}
+                      >
+                        Entfernen
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            )),
+          ])}
         </TableBody>
       </Table>
 

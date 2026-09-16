@@ -97,3 +97,68 @@ export function clampReasoningLevel(
   }
   return best;
 }
+
+/**
+ * Display names for the vendors whose spelling is not a capitalisation of their
+ * slug segment. Everything else goes through `titleCaseVendor`, so an unknown
+ * vendor still reads as a name instead of a slug fragment.
+ */
+const VENDOR_LABELS: Record<string, string> = {
+  ai21: 'AI21 Labs',
+  'meta-llama': 'Meta',
+  mistralai: 'Mistral AI',
+  moonshotai: 'Moonshot AI',
+  nousresearch: 'Nous Research',
+  nvidia: 'NVIDIA',
+  openai: 'OpenAI',
+  openrouter: 'OpenRouter',
+  'x-ai': 'xAI',
+  'z-ai': 'Z.ai',
+};
+
+function titleCaseVendor(vendor: string): string {
+  return vendor
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+/**
+ * The vendor segment of a model slug: `openai/gpt-5` is served by OpenRouter but
+ * made by OpenAI, and that is the distinction a picker groups by.
+ *
+ * Deliberately derived rather than stored. `AiModel.provider` already means
+ * something else (which provider serves the model, `openrouter` or `mock`), and
+ * a second column would be one more field to fill in by hand -- the thing this
+ * is meant to save. A slug without a `/` is its own vendor.
+ */
+export function aiModelVendor(slug: string): string {
+  const separatorIndex = slug.indexOf('/');
+  return separatorIndex === -1 ? slug : slug.slice(0, separatorIndex);
+}
+
+/** The vendor's name as a human writes it. */
+export function aiModelVendorLabel(slug: string): string {
+  const vendor = aiModelVendor(slug);
+  return VENDOR_LABELS[vendor] ?? titleCaseVendor(vendor);
+}
+
+/**
+ * Groups models by vendor, keeping the order the caller passed in: the registry
+ * is sorted by `sortOrder`, and a group appears where its first model does.
+ */
+export function groupAiModelsByVendor<TModel extends { slug: string }>(
+  models: readonly TModel[],
+): { vendor: string; label: string; models: TModel[] }[] {
+  const groups = new Map<string, { vendor: string; label: string; models: TModel[] }>();
+  for (const model of models) {
+    const vendor = aiModelVendor(model.slug);
+    const group = groups.get(vendor);
+    if (group === undefined) {
+      groups.set(vendor, { vendor, label: aiModelVendorLabel(model.slug), models: [model] });
+      continue;
+    }
+    group.models.push(model);
+  }
+  return [...groups.values()];
+}

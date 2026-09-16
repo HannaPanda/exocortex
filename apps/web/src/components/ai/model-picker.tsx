@@ -1,11 +1,13 @@
 'use client';
 
-import { type AiModel, type AiReasoningLevel } from '@exocortex/contracts';
+import { type AiModel, type AiReasoningLevel, groupAiModelsByVendor } from '@exocortex/contracts';
 import {
   Badge,
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
   Tooltip,
@@ -109,13 +111,20 @@ export function ModelPicker({
           ) : null}
         </Tooltip>
         <SelectContent>
-          {models.map((model) => (
-            <SelectItem key={model.slug} value={model.slug}>
-              <span className="flex min-w-0 items-center gap-1.5">
-                <span className="truncate">{model.displayName}</span>
-                {model.slug === defaultModelSlug ? <Badge variant="muted">Standard</Badge> : null}
-              </span>
-            </SelectItem>
+          {groupAiModelsByVendor(models).map((group) => (
+            <SelectGroup key={group.vendor}>
+              <SelectLabel>{group.label}</SelectLabel>
+              {group.models.map((model) => (
+                <SelectItem key={model.slug} value={model.slug}>
+                  <span className="flex min-w-0 items-center gap-1.5">
+                    <span className="truncate">{model.displayName}</span>
+                    {model.slug === defaultModelSlug ? (
+                      <Badge variant="muted">Standard</Badge>
+                    ) : null}
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectGroup>
           ))}
         </SelectContent>
       </Select>
@@ -184,10 +193,15 @@ export function ModelPicker({
               Automatisch ({selectedModel.visionCompanionSlug ?? '—'})
             </SelectItem>
             <SelectItem value={OFF_COMPANION}>Aus</SelectItem>
-            {visionCompanions.map((model) => (
-              <SelectItem key={model.slug} value={model.slug}>
-                {model.displayName}
-              </SelectItem>
+            {groupAiModelsByVendor(visionCompanions).map((group) => (
+              <SelectGroup key={group.vendor}>
+                <SelectLabel>{group.label}</SelectLabel>
+                {group.models.map((model) => (
+                  <SelectItem key={model.slug} value={model.slug}>
+                    {model.displayName}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
             ))}
           </SelectContent>
         </Select>
