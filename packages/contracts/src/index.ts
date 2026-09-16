@@ -24,6 +24,7 @@ export * from './overviews';
 export * from './primitives';
 export * from './projects';
 export * from './render';
+export * from './revocations';
 export * from './search';
 export * from './settings';
 export * from './workspace-credentials';

@@ -168,6 +168,23 @@ export class WorkspaceAccessService {
     return { attachment, role };
   }
 
+  /**
+   * The subset of `userIds` whose account is switched off.
+   *
+   * Used by the periodic re-authorization sweeps (issue #62): disabling an
+   * account deletes its credentials, which stops every new request, but a
+   * WebSocket that was authenticated before the switch has no credential to
+   * lose. One query for the whole connection table beats one per connection.
+   */
+  async findDisabledUserIds(userIds: string[]): Promise<Set<string>> {
+    if (userIds.length === 0) return new Set<string>();
+    const rows = await this.prisma.user.findMany({
+      where: { id: { in: userIds }, disabledAt: { not: null } },
+      select: { id: true },
+    });
+    return new Set(rows.map((row) => row.id));
+  }
+
   async countOwners(workspaceId: string): Promise<number> {
     return this.prisma.workspaceMember.count({ where: { workspaceId, role: 'OWNER' } });
   }

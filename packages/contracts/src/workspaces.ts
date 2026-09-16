@@ -61,6 +61,19 @@ export const updateWorkspaceMemberRequestSchema = z.object({
 export type UpdateWorkspaceMemberRequest = z.infer<typeof updateWorkspaceMemberRequestSchema>;
 
 /**
+ * Answer to removing a member (issue #62).
+ *
+ * Deliberately not the member list: the caller refetches the workspace anyway,
+ * and a removal that also had to describe what is left invites the reader to
+ * treat this response as the new truth about a thing somebody else may have
+ * changed in the meantime.
+ */
+export const removeWorkspaceMemberResponseSchema = z.object({
+  removed: z.literal(true),
+});
+export type RemoveWorkspaceMemberResponse = z.infer<typeof removeWorkspaceMemberResponseSchema>;
+
+/**
  * Renaming a workspace and/or changing its slug.
  *
  * The two are deliberately independent: `slug` is never derived from `name`

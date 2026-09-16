@@ -93,6 +93,34 @@ export function canChangeMemberRole(
   return ALLOW;
 }
 
+/**
+ * Removing a member outright (issue #62).
+ *
+ * The same bar as changing a role, plus the two rules that keep a workspace
+ * usable: the last owner stays, and nobody removes themselves -- leaving is a
+ * different act from being removed, and an owner who removes themselves by
+ * accident has nobody left to let them back in.
+ */
+export function canRemoveMember(
+  actorRole: WorkspaceRole | null,
+  targetRole: WorkspaceRole,
+  actorIsTarget: boolean,
+  remainingOwnerCount: number,
+): PolicyDecision {
+  const manage = canManageWorkspaceMembers(actorRole);
+  if (!manage.allowed) return manage;
+  if (actorIsTarget) {
+    return deny('validation_failed', 'You cannot remove yourself from a workspace');
+  }
+  if (targetRole === 'OWNER' && actorRole !== 'OWNER') {
+    return deny('forbidden', 'Only an OWNER may remove another OWNER');
+  }
+  if (targetRole === 'OWNER' && remainingOwnerCount <= 1) {
+    return deny('conflict', 'A workspace must keep at least one OWNER');
+  }
+  return ALLOW;
+}
+
 export function canPerformDestructiveWorkspaceOperation(
   role: WorkspaceRole | null,
 ): PolicyDecision {
