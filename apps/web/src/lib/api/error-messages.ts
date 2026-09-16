@@ -79,8 +79,15 @@ const MESSAGES: Record<ApiErrorCode, string> = {
     'Der Kollaborationsdienst ist gerade nicht erreichbar. Die Änderung wurde nicht gespeichert.',
 };
 
+/**
+ * The German sentence for an error code, or the generic one.
+ *
+ * `Object.hasOwn` rather than `in`: the code comes out of a response body, and
+ * `in` walks the prototype chain, so a body saying `"code": "toString"` would
+ * hand the UI a function to render instead of a sentence.
+ */
 export function messageForCode(code: string | undefined): string {
-  if (code !== undefined && code in MESSAGES) {
+  if (code !== undefined && Object.hasOwn(MESSAGES, code)) {
     return MESSAGES[code as ApiErrorCode];
   }
   return MESSAGES.internal_error;
