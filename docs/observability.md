@@ -66,10 +66,15 @@ One trace covers a request and everything it causes, across processes.
 busy" from "the work was slow": it is the time between enqueue and pickup, while
 the span's own duration is the work.
 
-The job's own delay is subtracted from it, so a debounced save and a repeatable
-maintenance run report the time they actually waited for a worker rather than
-the interval they were scheduled at. Without that the p95 on an idle queue is
-the debounce window, which looks alarming and means nothing.
+The delay a job asked for is subtracted from it, so a debounced save and a
+repeatable maintenance run report the time they actually waited for a worker
+rather than the interval they were scheduled at. Without that the p95 on an idle
+queue is the maintenance schedule, which looks alarming and means nothing.
+
+The number comes out of `job.opts.delay`, because BullMQ zeroes `job.delay` when
+it moves a delayed job to active; a test in `packages/queue` pins that, since an
+upgrade which also cleared the options would silently put the schedule back into
+the metric.
 
 An AI run reads end to end: the HTTP request that started it, the enqueue, the
 job, the run, each turn, each tool call, and each provider request. The tool

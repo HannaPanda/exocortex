@@ -303,6 +303,61 @@ describe('createTypedWorker', () => {
     expect(result.documentId).toBe(documentId);
     expect(result.progress).toEqual([50]);
   }, 20_000);
+
+  it('remembers a deliberate delay in the options after BullMQ has cleared it', async () => {
+    // `messaging.bullmq.wait_time_ms` on the job span subtracts the delay a job
+    // asked for, so that a debounced save and a repeatable maintenance run
+    // report the time they waited for a worker rather than the interval they
+    // were scheduled at.
+    //
+    // It can only do that as long as `opts.delay` survives into the handler.
+    // BullMQ sets `job.delay` to 0 when it moves a delayed job to active, which
+    // is why reading that field alone made the subtraction a no-op and left the
+    // attribute reporting the schedule. This test is here so an upgrade that
+    // also clears `opts` fails loudly instead of quietly restoring a number
+    // that means nothing.
+    const documentId = `doc-delay-${Date.now().toString(36)}`;
+    const delayMs = 300;
+
+    const observed = new Promise<{ delay: number; optsDelay: number | undefined; waited: number }>(
+      (resolve, reject) => {
+        const { worker, connection } = createTypedWorker({
+          name: QUEUE_NAMES.documentMaterialization,
+          redisUrl,
+          logger,
+          prefix,
+          handler: async ({ job }) => {
+            const seen = {
+              delay: job.delay,
+              optsDelay: job.opts.delay,
+              waited: Math.max(
+                0,
+                Date.now() - job.timestamp - Math.max(job.delay, job.opts.delay ?? 0),
+              ),
+            };
+            setTimeout(() => {
+              void worker
+                .close()
+                .then(() => connection.quit())
+                .then(() => resolve(seen))
+                .catch(reject);
+            }, 0);
+          },
+        });
+        worker.on('error', reject);
+      },
+    );
+
+    await queues
+      .getQueue(QUEUE_NAMES.documentMaterialization)
+      .add(QUEUE_NAMES.documentMaterialization, materializePayload(documentId), { delay: delayMs });
+
+    const seen = await observed;
+    expect(seen.delay).toBe(0);
+    expect(seen.optsDelay).toBe(delayMs);
+    // What is left is the actual queue wait, not the 300 ms the job asked for.
+    expect(seen.waited).toBeLessThan(delayMs);
+  }, 20_000);
 });
 
 describe('RedisEventBus', () => {
