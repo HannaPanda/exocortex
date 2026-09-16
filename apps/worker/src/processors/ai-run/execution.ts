@@ -463,7 +463,11 @@ class RunExecution {
         },
       });
 
-      await this.publishToolCall(call.name, result.isError ? 'failed' : 'succeeded', target);
+      await this.publishToolCall(
+        call.name,
+        result.refused ? 'refused' : result.isError ? 'failed' : 'succeeded',
+        target,
+      );
       messages.push({
         role: 'tool',
         content: result.text,
@@ -494,7 +498,7 @@ class RunExecution {
 
   private async publishToolCall(
     toolName: string,
-    status: 'started' | 'succeeded' | 'failed',
+    status: 'started' | 'succeeded' | 'failed' | 'refused',
     target: string | null,
   ): Promise<void> {
     const { bus, run, payload } = this.input;

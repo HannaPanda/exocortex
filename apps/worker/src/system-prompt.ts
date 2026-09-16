@@ -1,3 +1,4 @@
+import { UNTRUSTED_CONTENT_SECTION } from '@exocortex/contracts';
 import { type DocumentType, type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 
@@ -292,7 +293,10 @@ export async function buildSystemPrompt(
     }),
   ]);
 
-  const sections: string[] = [basePrompt, CHAT_FORMATTING_SECTION];
+  // The trust boundary is described before anything a page or a document can
+  // say, so the rule is in the context ahead of the text it is a rule about
+  // (issue #56, ADR-030).
+  const sections: string[] = [basePrompt, CHAT_FORMATTING_SECTION, UNTRUSTED_CONTENT_SECTION];
   let truncated = false;
   let alwaysRuleCount = 0;
   let remainingBudget = maxRuleChars;

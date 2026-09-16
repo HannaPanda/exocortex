@@ -83,6 +83,10 @@ export const SETTING_COPY: Record<SettingKey, { label: string; help: string }> =
     label: 'Schreibende Werkzeuge erlauben',
     help: 'Erlaubt der KI zusätzlich, Daten zu verändern statt sie nur zu lesen.',
   },
+  'ai.untrustedContentPolicy': {
+    label: 'Schreiben nach Fremdinhalten',
+    help: 'Texte aus hochgeladenen Dokumenten und aus Bildbeschreibungen können Anweisungen an die KI enthalten, die niemand hier geschrieben hat. Standardmäßig darf ein Lauf nach dem Lesen solcher Inhalte nichts mehr verändern; er sagt dann, was er geschrieben hätte. „Immer erlaubt“ braucht man nur für Abläufe, die fremde Dokumente lesen und daraus selbst schreiben sollen.',
+  },
   'ai.maxToolIterations': {
     label: 'Maximale Werkzeugdurchläufe',
     help: 'Obergrenze für Werkzeugaufrufe innerhalb eines Laufs.',
@@ -397,6 +401,11 @@ const SETTING_CHOICES: Partial<Record<SettingKey, readonly { value: string; labe
   'ai.pdfExtractor': [
     { value: 'docling', label: 'Docling (lokal, kostenlos, mit Texterkennung)' },
     { value: 'openrouter', label: 'OpenRouter (gehostet, kostenpflichtig, ohne Texterkennung)' },
+  ],
+  'ai.untrustedContentPolicy': [
+    { value: 'guarded', label: 'Gesperrt, sobald Fremdinhalte gelesen wurden (empfohlen)' },
+    { value: 'deny', label: 'Nie: die KI darf in keinem Lauf etwas verändern' },
+    { value: 'allow', label: 'Immer erlaubt, auch nach Fremdinhalten' },
   ],
 };
 

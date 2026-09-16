@@ -35,8 +35,11 @@ import { type ObjectStorage, S3ObjectStorage } from '@exocortex/storage';
 import { type AiKeyResolver, createAiKeyResolver, type ResolvedAiKey } from './ai-key';
 import { createCommandNotifier } from './calendar/notifier';
 import { type ResolvedModelRow } from './processors/ai-run';
-import { type ToolRunner } from './tool-runner';
-import { createToolRunner } from './tool-runner';
+import {
+  createToolRunner,
+  type ToolRunnerFactory,
+  type ToolRunnerFactoryInput,
+} from './tool-runner';
 
 /**
  * Everything the worker's processors are handed, built once at boot.
@@ -78,14 +81,7 @@ export interface WorkerRuntime {
    * installation (snapshot pruning, index maintenance) call it with nothing.
    */
   readSettings: (workspaceId?: string) => Promise<Settings>;
-  toolRunnerFactory:
-    | ((input: {
-        userId: string;
-        includeMutating: boolean;
-        toolCallTimeoutMs: number;
-        agentSession: { externalId: string; label: string };
-      }) => ToolRunner)
-    | null;
+  toolRunnerFactory: ToolRunnerFactory | null;
   apiClientFor:
     ((userId: string, headers?: Readonly<Record<string, string>>) => ExocortexApiClient) | null;
   resolveCalendarCredentials: (account: {
@@ -288,18 +284,14 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
   const toolRunnerFactory =
     env.SERVICE_TOKEN_SECRET === undefined
       ? null
-      : (input: {
-          userId: string;
-          includeMutating: boolean;
-          toolCallTimeoutMs: number;
-          agentSession: { externalId: string; label: string };
-        }) =>
+      : (input: ToolRunnerFactoryInput) =>
           createToolRunner({
             apiUrl: env.API_URL,
             serviceTokenSecret: env.SERVICE_TOKEN_SECRET!,
             serviceTokenTtlSeconds: env.SERVICE_TOKEN_TTL_SECONDS,
             userId: input.userId,
             includeMutating: input.includeMutating,
+            mutationPolicy: input.mutationPolicy,
             toolCallTimeoutMs: input.toolCallTimeoutMs,
             agentSession: input.agentSession,
             logger,

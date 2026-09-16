@@ -66,13 +66,18 @@ function describeToolTarget(target: string | null): string | null {
   return `${label} ${id}`;
 }
 
+/** What one line of tool activity ends with, per status. */
+const TOOL_STATUS_SUFFIX: Record<ToolActivityEntry['status'], string> = {
+  started: 'wird ausgeführt …',
+  succeeded: '… fertig',
+  failed: '… fehlgeschlagen',
+  // Not a failure: the run had read content from outside and is therefore not
+  // allowed to change anything any more (issue #56).
+  refused: '… abgelehnt, weil dieser Lauf Fremdinhalte gelesen hat',
+};
+
 function toolActivityLine(entry: ToolActivityEntry): string {
-  const suffix =
-    entry.status === 'started'
-      ? 'wird ausgeführt …'
-      : entry.status === 'succeeded'
-        ? '… fertig'
-        : '… fehlgeschlagen';
+  const suffix = TOOL_STATUS_SUFFIX[entry.status];
   const targetLabel = describeToolTarget(entry.target);
   const targetSuffix = targetLabel === null ? '' : ` (${targetLabel})`;
   return `Werkzeug ${entry.toolName}${targetSuffix} ${suffix}`;

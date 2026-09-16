@@ -10,7 +10,7 @@ import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
 import { type ResolvedAiKey } from '../ai-key';
-import { type ToolRunner } from '../tool-runner';
+import { type ToolRunner, type ToolRunnerFactory } from '../tool-runner';
 
 import { admitRun } from './ai-run/admission';
 import { writeFailure, writeSuccess } from './ai-run/completion';
@@ -36,14 +36,7 @@ export interface AiRunDependencies {
   storage: ObjectStorage;
   settings: (workspaceId?: string) => Promise<Settings>;
   /** `null` when `SERVICE_TOKEN_SECRET` is unset: the AI simply runs without tools. */
-  toolRunnerFactory:
-    | ((input: {
-        userId: string;
-        includeMutating: boolean;
-        toolCallTimeoutMs: number;
-        agentSession: { externalId: string; label: string };
-      }) => ToolRunner)
-    | null;
+  toolRunnerFactory: ToolRunnerFactory | null;
   /**
    * Resolves (and caches) a vision companion preprocessor for a given model
    * slug. Deliberately widened to accept `null`, meaning "no explicit
@@ -188,12 +181,17 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       ? dependencies.toolRunnerFactory!({
           userId: run.createdById,
           includeMutating: settings['ai.mutatingToolsEnabled'],
+          mutationPolicy: settings['ai.untrustedContentPolicy'],
           toolCallTimeoutMs: timeouts.toolCallTimeoutMs,
           // One run, one session (ADR-022): the unit somebody would want back
           // is "what the assistant did while answering that question".
           agentSession: { externalId: `ai-run-${run.id}`, label: 'eXocortex KI' },
         })
       : null;
+    // The image descriptions were produced before the runner existed, and they
+    // are text out of an uploaded file like any other (issue #56): the run has
+    // already read foreign content by the time the first turn starts.
+    if (imageContext !== null) runner?.noteUntrustedContent('attachment');
 
     // The admin setting is the ceiling for one answer; a model that caps its own
     // output lower wins, because asking a provider for more than the model can

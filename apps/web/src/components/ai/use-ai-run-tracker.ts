@@ -20,7 +20,8 @@ import { useRealtime, useRealtimeEvent } from '@/lib/realtime/realtime-provider'
 export interface ToolActivityEntry {
   key: string;
   toolName: string;
-  status: 'started' | 'succeeded' | 'failed';
+  /** `refused` means the trust boundary declined the call; nothing ran (issue #56). */
+  status: 'started' | 'succeeded' | 'failed' | 'refused';
   /** Compact identifier of what the call touched, e.g. `document:<id>`. */
   target: string | null;
 }

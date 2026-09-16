@@ -1,5 +1,5 @@
 import { type VisionPreprocessor } from '@exocortex/ai';
-import { type AiMessage } from '@exocortex/contracts';
+import { type AiMessage, fenceUntrustedContent } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
 import { type ProseMirrorNode } from '@exocortex/editor';
 import { type ObjectStorage } from '@exocortex/storage';
@@ -96,11 +96,19 @@ export async function describeDocumentImages(input: {
   }
 
   if (descriptions.length === 0) return null;
+  // Fenced like any other foreign text (issue #56): an image is a file
+  // somebody uploaded, and a screenshot of a paragraph addressed to the model
+  // reaches the prompt exactly as a paragraph would. The description is a
+  // vision model's reading of it, which changes nothing about who wrote it.
   return {
     role: 'system',
-    content:
-      'Image context from the current page, described by a separate vision model -- ' +
-      'you cannot see these images directly, only this description:\n\n' +
-      descriptions.map((description, index) => `${index + 1}. ${description}`).join('\n'),
+    content: fenceUntrustedContent({
+      origin: 'attachment',
+      label: 'Bilder der geöffneten Seite',
+      text:
+        'Image context from the current page, described by a separate vision model -- ' +
+        'you cannot see these images directly, only this description:\n\n' +
+        descriptions.map((description, index) => `${index + 1}. ${description}`).join('\n'),
+    }),
   };
 }

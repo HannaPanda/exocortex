@@ -1,4 +1,5 @@
 import {
+  type AiMutationPolicy,
   aiReasoningLevelSchema,
   CHAT_COMMANDS,
   type ChatCommandName,
@@ -251,15 +252,31 @@ const listRules: ChatCommandHandler = async (context) => {
   return answer(context, 'rules', message);
 };
 
-/** Lists the tools the AI may call right now. */
+/** How the workspace's `ai.untrustedContentPolicy` reads to a human. */
+const MUTATION_POLICY_LINE: Record<AiMutationPolicy, string> = {
+  deny: 'Verändernde Werkzeuge sind in diesem Arbeitsbereich abgeschaltet.',
+  guarded:
+    'Verändernde Werkzeuge sind gesperrt, sobald ein Lauf Inhalte von außerhalb gelesen hat ' +
+    '(hochgeladene Dokumente, Bildbeschreibungen).',
+  allow: 'Verändernde Werkzeuge bleiben auch nach dem Lesen von Fremdinhalten erlaubt.',
+};
+
+/** Lists the tools the AI may call right now, and under which conditions. */
 const listTools: ChatCommandHandler = async (context) => {
   const settings = await context.settings.getForWorkspace(context.conversation.workspaceId);
-  const includeMutating = settings['ai.mutatingToolsEnabled'];
+  const policy = settings['ai.untrustedContentPolicy'];
+  const includeMutating = settings['ai.mutatingToolsEnabled'] && policy !== 'deny';
   const tools = toolsFor('ai', { includeMutating });
+  // The list alone answers "what can it do" but not "why did it refuse", which
+  // is the question somebody asks right after a refused write (issue #56).
   const message =
     tools.length === 0
       ? 'Keine Werkzeuge verfügbar.'
-      : tools.map((tool) => `- ${tool.name} — ${tool.description}`).join('\n');
+      : [
+          ...tools.map((tool) => `- ${tool.name} — ${tool.description}`),
+          '',
+          MUTATION_POLICY_LINE[policy],
+        ].join('\n');
   return answer(context, 'tools', message);
 };
 
