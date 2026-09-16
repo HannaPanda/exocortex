@@ -162,6 +162,26 @@ pnpm test         # unit + integration (requires pnpm infra:up)
 pnpm test:e2e     # Playwright against a running deployment
 ```
 
+### What the frontend tests and what it leaves to Playwright
+
+`apps/web` has a Vitest suite of its own (issue #59), and it is deliberately
+narrow. It holds state and transformation logic that fails identically with and
+without a browser: the page tree's bookkeeping, the optimistic move behind a
+drag, a table view's column layout, the icon ranking, the German error messages,
+the diagnostic ring buffer. Each case is one function call, and a failure names
+the branch rather than the pixel.
+
+Everything a browser is actually needed for stays in `e2e/`: the editor,
+drag-and-drop itself, collaboration, and whole page flows. The rule of thumb is
+the runner's environment — the suite runs in `node`, so a test that would need a
+DOM is a test that belongs in Playwright. The one module that talks to `window`
+(`src/lib/connection-log.ts`) is handed a stub, which is also the only way to
+see what it writes into storage after a bad hour.
+
+```bash
+pnpm --filter @exocortex/web test
+```
+
 ### What a test run leaves behind
 
 The integration suites create a workspace and a few accounts each and delete them

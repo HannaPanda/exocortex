@@ -60,6 +60,7 @@ same commit series**:
 | a compose service or a host port                         | `docs/local-development.md`                                            |
 | an MCP or AI tool                                        | `docs/mcp.md`                                                          |
 | a span, a trace attribute, what is recorded about a run  | `docs/observability.md`                                                |
+| where a kind of behaviour is tested, a new test suite    | `docs/local-development.md`                                            |
 | a decision that contradicts an ADR                       | a new ADR in `docs/adr/`, and the ADR list in `CLAUDE.md`              |
 | what the product can and cannot do                       | the "What works today" and "Not built" sections of `README.md`         |
 
@@ -92,6 +93,13 @@ pnpm test
 ```
 
 For UI or flow changes also run `pnpm test:e2e` against a running deployment.
+
+Frontend logic has two homes, and putting a case in the wrong one is how a suite
+becomes slow or a bug becomes invisible: pure state and transformation logic goes
+into `apps/web`'s own Vitest suite (it runs in `node`, so it never sees a DOM),
+and anything that needs a browser — the editor, drag-and-drop, collaboration, a
+whole page flow — stays in `e2e/`. `docs/local-development.md` has the rule and
+the examples.
 
 ## Where to look first
 

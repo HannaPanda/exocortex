@@ -201,6 +201,12 @@ const CONTRADICTED = [
       'The workflow runs `bash scripts/build.sh` on every push and pull request, so the gates run somewhere other than the deployment host.',
   },
   {
+    claim: /covered by the Playwright suite|only by Playwright|no frontend unit tests/i,
+    evidence: 'apps/web/vitest.config.mts',
+    reason:
+      'The frontend has a Vitest suite of its own (issue #59) beside the Playwright one: pure state and transformation logic is tested without a browser.',
+  },
+  {
     claim: /streams from a local mock provider/i,
     evidence: 'packages/ai/src/registry.ts',
     reason:
