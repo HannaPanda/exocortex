@@ -87,7 +87,12 @@ function isCapable(endpoint: RoutingEndpoint, input: RoutePlanInput): boolean {
  */
 export function planRoute(input: RoutePlanInput): RoutePlan {
   if (input.endpoints.length === 0) {
-    return { known: false, allowedProviderKeys: [], capableEndpoints: 0, largestUsableInputTokens: 0 };
+    return {
+      known: false,
+      allowedProviderKeys: [],
+      capableEndpoints: 0,
+      largestUsableInputTokens: 0,
+    };
   }
 
   const capable = input.endpoints.filter((endpoint) => isCapable(endpoint, input));
