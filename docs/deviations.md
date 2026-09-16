@@ -25,10 +25,11 @@ Radix-based sources today; no Base UI registry was reachable
 
 The result contains no Radix code. See `docs/ui-system.md`.
 
-The three version choices below were re-checked against the registry on
-2026-09-15, and two of the three original reasons had expired. A reason for
-staying on an old major ages faster than anything else in this file, so each one
-now says what was measured and how, not what was believed at the time.
+The four version choices below were re-checked against the registry, the first
+three on 2026-09-15 and all four on 2026-09-16, and reasons keep expiring: two
+of the three original ones had already gone. A reason for staying on an old
+major ages faster than anything else in this file, so each one says what was
+measured and how, not what was believed at the time.
 
 ## 2. Prisma 6 instead of Prisma 7
 
@@ -36,7 +37,7 @@ Prisma 6.19.3. The 7 line is at 7.10.0 and the `latest` dist-tag has already
 moved on to `8.0.0-rc.15`.
 
 The original reason is gone: Better Auth was said to be tested against 6, but
-`better-auth@1.6.25`, the version installed here, declares
+`better-auth@1.6.33`, the version installed here, declares
 `prisma`/`@prisma/client`: `^5.0.0 || ^6.0.0 || ^7.0.0`, and so does 1.7.5.
 
 What does hold it back is that 7 is not the contained change this entry used to
@@ -61,8 +62,8 @@ package ships platform binaries as optional dependencies and a `getExePath`
 shim rather than a JavaScript compiler.
 
 One blocker, and it is decisive. `typescript-eslint` peers
-`typescript: >=4.8.4 <6.1.0`, in 8.66.0 as installed here and in 8.70.0, the
-newest release. That rules out the 6 line as well as the 7 line, and this
+`typescript: >=4.8.4 <6.1.0`, in 8.70.0, the newest release and the one
+installed here. That rules out the 6 line as well as the 7 line, and this
 repository lints with type information, so there is no version of this where the
 compiler moves ahead of the linter.
 
@@ -79,7 +80,7 @@ ESLint 9.39.5. 10.10.0 is current, and 9.39.5 is now what the registry tags
 `maintenance`, which puts a clock on this one.
 
 The culprit this entry used to name has been cleared: `typescript-eslint` peers
-`eslint: ^8.57.0 || ^9.0.0 || ^10.0.0` in both 8.66.0 and 8.70.0.
+`eslint: ^8.57.0 || ^9.0.0 || ^10.0.0` in 8.70.0, which is installed here.
 
 The one plugin still holding the line is `eslint-plugin-react`, whose newest
 release, 7.37.5, peers `eslint: … || ^9.7` and has no 10 range. Upgrading also
@@ -88,7 +89,45 @@ pulls `@eslint/js` to 10.x, which peers `eslint: ^10.0.0`. Nothing else in
 `^10.0.0`, and `eslint-config-prettier` and `eslint-plugin-simple-import-sort`
 have open ranges.
 
-## 5. Redis event bus instead of the Socket.IO Redis adapter
+## 5. better-auth 1.6 instead of better-auth 1.7
+
+better-auth 1.6.33, the head of the maintained `release-1.6` line. 1.7.5 is
+`latest`.
+
+The reason is one import. `packages/auth/src/auth.ts` builds the OAuth 2.1
+authorization server for remote MCP clients (ADR-018) out of better-auth's
+`mcp` plugin. In 1.7 that plugin left the package: it is `@better-auth/mcp`
+now, and it is not the same plugin under a new name. It is a different
+authorization server.
+
+What changes with it, measured against `@better-auth/mcp@1.7.5`:
+
+- `oidcConfig` is gone. The plugin used to wrap better-auth's OIDC provider and
+  took its options through that field, which is where `consentPage`,
+  `requirePKCE` and both token lifetimes are set here. 1.7 is built on
+  `@better-auth/oauth-provider` and takes a flat option object instead.
+- `resource` is required and audience-binds every token it issues (RFC 8707 /
+  RFC 9728). eXocortex has no such identifier today.
+- Dynamic client registration is opt-in. This deployment relies on it: ChatGPT
+  cannot spawn the stdio bin and registers itself. It now means either the
+  `cimd()` plugin or explicitly enabling the provider's registration options,
+  and Client ID Metadata Documents change what the consent screen is deciding
+  about.
+- Access tokens become JWTs verified against a JWKS. `verifyMcpAccessToken`
+  reads `oauth_access_token` by value, which is exactly what ADR-018 says the
+  MCP endpoint does instead of trusting the plugin's typing.
+
+Each of those reaches the consent screen at `/verbinden`, which is the actual
+gate in front of an open registration endpoint, or the token path that
+`/api/mcp` authenticates with. That is a migration with its own acceptance
+criteria, not a version number, and it is issue #64.
+
+Staying on 1.6 is not standing still: `release-1.6` is a maintained line and
+1.6.33 is its head. What it does cost is that the 1.6 line will stop being
+maintained one day, and the migration has to happen before then rather than
+after.
+
+## 6. Redis event bus instead of the Socket.IO Redis adapter
 
 **Brief:** "Create a Redis adapter boundary for future horizontal scaling."
 
@@ -99,7 +138,7 @@ scaling boundary, additionally lets the _worker_ publish events (which the
 Socket.IO adapter cannot), and validates payloads on both ends. Using both
 mechanisms at once would double-deliver events.
 
-## 6. Block identifiers in Markdown are opt-in
+## 7. Block identifiers in Markdown are opt-in
 
 **Brief:** "preserves IDs during export where the format allows it."
 
@@ -113,7 +152,7 @@ are included in the export".
 Container nodes (lists, tables) do not carry an id in Markdown; paragraphs,
 headings, code blocks, list items, task items and callouts do.
 
-## 7. MIME detection is implemented locally
+## 8. MIME detection is implemented locally
 
 `file-type` is ESM-only, which does not combine with the CommonJS builds of the
 API and worker. `packages/storage/src/mime.ts` implements a short, auditable
@@ -121,7 +160,7 @@ signature table for exactly the formats eXocortex allows, plus a UTF-8 text chec
 It is covered by 11 unit tests, including "rejects an executable disguised as an
 image".
 
-## 8. `packages/ui` and `packages/editor` are consumed as source by the browser
+## 9. `packages/ui` and `packages/editor` are consumed as source by the browser
 
 Both are listed in `transpilePackages`. For `packages/ui` this lets Tailwind see
 the class names. For `packages/editor` it is a correctness requirement: mixing its
@@ -130,26 +169,26 @@ instances, which makes ProseMirror reject plugins with
 "Adding different instances of a keyed plugin". Server processes keep using the
 compiled CommonJS output through the `require` condition.
 
-## 9. Explicit authentication rate limits
+## 10. Explicit authentication rate limits
 
 Better Auth's defaults were replaced with an explicit policy
 (`packages/auth/src/auth.ts`): 10 sign-ins/minute, 5 sign-ups/minute and
 5 password-reset requests per 5 minutes per client IP. Explicit limits are
 documented, testable and still block credential stuffing.
 
-## 10. Playwright covers the API security scenarios
+## 11. Playwright covers the API security scenarios
 
 The required security scenarios are verified with Playwright's `APIRequestContext`
 against the running API rather than with mocked unit tests, because that is where
 the rules are enforced. See `e2e/tests/security.spec.ts` (13 tests).
 
-## 11. `.env` is symlinked into `apps/web`
+## 12. `.env` is symlinked into `apps/web`
 
 Next.js only reads env files from its own project directory. `apps/web/.env` is a
 symlink to the repository root `.env` so a single file configures every process.
 Both paths are git-ignored.
 
-## 12. Markdown notation for blocks CommonMark has no syntax for
+## 13. Markdown notation for blocks CommonMark has no syntax for
 
 Toggles, columns, a table of contents, page links, media and embeds have no
 notation in CommonMark or GFM. Inventing HTML for them was not an option: raw HTML
@@ -169,7 +208,7 @@ Like a code fence the marker may be longer than three colons, which is how
 containers nest (`::::columns` around `:::column`). Every container round-trips;
 `packages/editor/src/fixtures.ts` covers each one.
 
-## 13. Inline notation for the additional marks
+## 14. Inline notation for the additional marks
 
 `underline`, `superscript`, `subscript` and a text background have no CommonMark
 notation either. They use the widely implemented extensions `++Text++`, `^hoch^`,
@@ -189,7 +228,7 @@ lose (ADR-007: Markdown is interchange, not truth).
 Mentions use `@[[Seite]]`, `@[Person]` and `@(2026-08-04)`; the page form echoes
 the `[[Seite]]` wiki link on purpose.
 
-## 14. Emoji are characters, not a schema node
+## 15. Emoji are characters, not a schema node
 
 Tiptap ships an emoji node with a shortcode dataset. eXocortex inserts the Unicode
 character as plain text instead: as a character an emoji round-trips through
@@ -197,7 +236,7 @@ Markdown perfectly, is found by full-text search, and needs neither a node view 
 a ~1,800-entry dataset in the browser bundle. The picker
 (`apps/web/src/components/editor/emoji-menu.tsx`) is a curated list.
 
-## 15. Collapsed headings are decorations, not document structure
+## 16. Collapsed headings are decorations, not document structure
 
 A collapsible heading stores one boolean. Which blocks are hidden is derived from
 that boolean plus the heading levels on every render and expressed as ProseMirror
@@ -209,7 +248,7 @@ remapped under them, and a Markdown export would have to invent nesting the sour
 never had. The trade-off is that a collapsed block is still in the document and
 still in the search index — which is correct, because it is collapsed, not deleted.
 
-## 16. Embeds are restricted to an allow list of hosts
+## 17. Embeds are restricted to an allow list of hosts
 
 An arbitrary iframe inside a shared document is a script-execution and clickjacking
 surface. `packages/editor/src/embed.ts` keeps a list of hosts whose embed endpoints
@@ -217,7 +256,7 @@ are meant to be framed; anything else becomes a bookmark card, which loses nothi
 a reader needs. Framed content is sandboxed without `allow-same-origin`, so it
 cannot reach this origin's cookies or storage.
 
-## 17. Toolbar buttons keep one workaround of the two they had
+## 18. Toolbar buttons keep one workaround of the two they had
 
 Two faults were recorded here while getting the editor toolbars to work in a
 browser, both against Base UI 1.0.0-rc.0. Both were re-measured on 2026-09-15
@@ -254,7 +293,7 @@ against nodes it will not skip; a toolbar that is already in the document when i
 mounts never enters that loop. The e2e case `the selection toolbar is a single
 tab stop with arrow-key navigation` is what keeps it honest.
 
-## 18. The suggestion menus render from the plugin state, not from the renderer
+## 19. The suggestion menus render from the plugin state, not from the renderer
 
 `@tiptap/suggestion` offers an `onStart`/`onUpdate`/`onExit` renderer for mounting
 a popup. It cannot be used together with Tiptap's React menu components.
@@ -277,7 +316,7 @@ The same rule forced a second split: the component that owns `useEditor` re-rend
 into a full option re-apply, which rebuilds all plugin views. `EditorSurface` now
 holds no state and subscribes to nothing; everything stateful is in `EditorChrome`.
 
-## 19. `DragHandle` needs a callback with a stable identity
+## 20. `DragHandle` needs a callback with a stable identity
 
 `@tiptap/extension-drag-handle-react` lists `onNodeChange` (and every other
 callback prop) in the dependency array of the effect that registers its
@@ -297,7 +336,7 @@ means moving the pointer off the block the actions belong to.
 Any further prop of `DragHandle` (`computePositionConfig`, `onElementDragStart`,
 `onElementDragEnd`) has to be a module constant or memoised for the same reason.
 
-## 20. The toggle block is styled against its node view, not its HTML
+## 21. The toggle block is styled against its node view, not its HTML
 
 Tiptap's `Details` extension renders native `<details>`/`<summary>` from
 `renderHTML` — which is the HTML _export_ path — but a `div[data-type="details"]`
@@ -306,7 +345,7 @@ CSS in `globals.css` therefore targets the node view, and the node view's button
 given its arrow, `aria-expanded` and German label through `renderToggleButton`; it
 is empty by default.
 
-## 21. The embedded PDF viewer's toolbar is switched off
+## 22. The embedded PDF viewer's toolbar is switched off
 
 A PDF is embedded as `<object type="application/pdf">`, which hands the browser's
 own viewer to the reader. In Chromium that viewer offers annotation tools and a
@@ -320,7 +359,7 @@ source and renders its own header with the two actions that do work, "Öffnen" a
 content and painting the pages ourselves; that is a feature to build, not a bug to
 fix here.
 
-## 22. The icon and emoji datasets are generated into the repository
+## 23. The icon and emoji datasets are generated into the repository
 
 `packages/contracts/src/lucide-icon-names.ts`,
 `apps/web/src/components/document/lucide-icon-nodes.generated.ts` and
@@ -337,7 +376,7 @@ would parse half a megabyte as source; as a string it is one token to both, and
 the bytes on the wire are the same. They are excluded from Prettier and ESLint —
 reformatting them costs seconds and nobody reads them.
 
-## 23. The page tree drags with the platform, not with a library
+## 24. The page tree drags with the platform, not with a library
 
 Reordering pages in the sidebar is native HTML5 drag and drop
 (`apps/web/src/components/shell/page-tree.tsx`) rather than `dnd-kit` or

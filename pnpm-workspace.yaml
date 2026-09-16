@@ -3,47 +3,6 @@ packages:
   - 'packages/*'
   - 'e2e'
 
-minimumReleaseAgeExclude:
-  - '@next/eslint-plugin-next@16.3.0'
-  - '@typescript-eslint/eslint-plugin@8.66.0'
-  - '@typescript-eslint/parser@8.66.0'
-  - '@typescript-eslint/project-service@8.66.0'
-  - '@typescript-eslint/scope-manager@8.66.0'
-  - '@typescript-eslint/tsconfig-utils@8.66.0'
-  - '@typescript-eslint/type-utils@8.66.0'
-  - '@typescript-eslint/types@8.66.0'
-  - '@typescript-eslint/typescript-estree@8.66.0'
-  - '@typescript-eslint/utils@8.66.0'
-  - '@typescript-eslint/visitor-keys@8.66.0'
-  - typescript-eslint@8.66.0
-  - '@aws-sdk/checksums@3.1000.25'
-  - '@aws-sdk/client-s3@3.1102.0'
-  - '@aws-sdk/core@3.977.5'
-  - '@aws-sdk/credential-provider-env@3.972.66'
-  - '@aws-sdk/credential-provider-http@3.972.68'
-  - '@aws-sdk/credential-provider-ini@3.973.11'
-  - '@aws-sdk/credential-provider-login@3.972.73'
-  - '@aws-sdk/credential-provider-node@3.972.77'
-  - '@aws-sdk/credential-provider-process@3.972.66'
-  - '@aws-sdk/credential-provider-sso@3.973.10'
-  - '@aws-sdk/credential-provider-web-identity@3.972.72'
-  - '@aws-sdk/middleware-sdk-s3@3.972.71'
-  - '@aws-sdk/nested-clients@3.997.40'
-  - '@aws-sdk/s3-request-presigner@3.1102.0'
-  - '@aws-sdk/token-providers@3.1102.0'
-  - bullmq@6.0.7
-  - '@next/env@16.3.0'
-  - '@next/swc-darwin-arm64@16.3.0'
-  - '@next/swc-darwin-x64@16.3.0'
-  - '@next/swc-linux-arm64-gnu@16.3.0'
-  - '@next/swc-linux-arm64-musl@16.3.0'
-  - '@next/swc-linux-x64-gnu@16.3.0'
-  - '@next/swc-linux-x64-musl@16.3.0'
-  - '@next/swc-win32-arm64-msvc@16.3.0'
-  - '@next/swc-win32-x64-msvc@16.3.0'
-  - next@16.3.0
-  - ws@8.21.2
-
 allowBuilds:
   esbuild: true
   '@prisma/client': true
@@ -58,7 +17,14 @@ allowBuilds:
   msgpackr-extract: false
   '@scarf/scarf': false
 
-# One fastify version in the tree: @nestjs/platform-fastify pins an older
-# 5.x, which makes plugin types structurally incompatible.
+# One copy of a package the type system compares structurally. Two versions of
+# either of these are not a duplicate install, they are a compile error: the
+# types carry private fields, so the same class from two paths is two types.
+#
+#   fastify           @nestjs/platform-fastify pins an older 5.x than the API.
+#   prosemirror-view  the other prosemirror-* packages peer it loosely
+#                     (^1.9.10), which lets an old resolution survive in the
+#                     lockfile while @tiptap/pm asks for the current one.
 overrides:
-  fastify: 5.11.2
+  fastify: 5.12.4
+  prosemirror-view: 1.42.3

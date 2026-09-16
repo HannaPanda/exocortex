@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@exocortex/logger": "workspace:*",
-    "fast-xml-parser": "5.3.0",
+    "fast-xml-parser": "5.11.1",
     "ical.js": "2.2.1"
   },
   "devDependencies": {

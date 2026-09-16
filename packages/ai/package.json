@@ -20,7 +20,7 @@
     "@exocortex/contracts": "workspace:*",
     "@exocortex/logger": "workspace:*",
     "pdf-lib": "1.17.1",
-    "zod": "4.4.3"
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@types/node": "24.10.4",

@@ -60,10 +60,17 @@ authorization mechanism.
 - Those limits are only worth anything if the client address cannot be chosen by
   the client. Two things guarantee that, and both are load-bearing: nginx sets
   `X-Forwarded-For` to `$remote_addr` rather than appending to what the caller
-  sent, and Fastify runs with `trustProxy: 1` so the address is read from the
-  right-hand end of the chain. With `trustProxy: true` and an appending nginx,
-  the leftmost entry -- the caller's own -- won, and rotating a fake value reset
-  every limit.
+  sent, and Fastify runs with `trustProxy: 'loopback'`, so a forwarded header is
+  only read at all when the connection itself comes from the reverse proxy, and
+  the chain is then read from the right-hand end. With `trustProxy: true` and an
+  appending nginx, the leftmost entry -- the caller's own -- won, and rotating a
+  fake value reset every limit.
+- The hop count this used to name (`trustProxy: 1`) is gone, and replacing it was
+  not cosmetic. Fastify 5.12 made a numeric `trustProxy` trust nothing, on the
+  grounds that a hop count never checks who the immediate peer is. Left as a
+  number, `request.ip` would have fallen back to the socket address and every
+  per-IP limit above would have keyed on nginx: one bucket for the whole
+  internet.
 
 ## Invitations
 

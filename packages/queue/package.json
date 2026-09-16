@@ -19,7 +19,7 @@
     "@exocortex/config": "workspace:*",
     "@exocortex/contracts": "workspace:*",
     "@exocortex/logger": "workspace:*",
-    "bullmq": "6.0.7",
+    "bullmq": "6.3.6",
     "ioredis": "6.0.0"
   },
   "devDependencies": {

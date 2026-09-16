@@ -23,18 +23,24 @@ import 'reflect-metadata';
 
 async function bootstrap(): Promise<void> {
   const adapter = new FastifyAdapter({
-    // The API always runs behind exactly one reverse proxy (nginx on loopback),
-    // so trust exactly one hop.
+    // The API always runs behind exactly one reverse proxy: nginx, on this
+    // host, reaching it over loopback. Trusting the peer address is what makes
+    // `request.ip` the caller's address instead of a value the caller picked.
     //
     // `true` trusted the whole chain and took the *leftmost* `X-Forwarded-For`
-    // entry as the client address. nginx builds that header with
-    // `$proxy_add_x_forwarded_for`, which appends the real address to whatever
-    // the caller sent -- so the leftmost entry is caller-controlled. Every
-    // per-IP rate limit in Better Auth was therefore reset by sending a
-    // different fake address, which is unlimited password guessing against
-    // `/sign-in/email`. With one hop, the address is read from the right and
-    // the fake prefix is ignored.
-    trustProxy: 1,
+    // entry as the client address, which is caller-controlled. Every per-IP
+    // rate limit in Better Auth was therefore reset by sending a different fake
+    // address, which is unlimited password guessing against `/sign-in/email`.
+    //
+    // The hop count that replaced it (`trustProxy: 1`) no longer works:
+    // Fastify 5.12 made a numeric `trustProxy` fail closed, because counting
+    // hops never validates who the immediate peer is. A number now trusts
+    // nothing, `request.ip` falls back to the socket address, and every per-IP
+    // limit would key on nginx -- one bucket for the whole internet. Naming the
+    // address instead is what the number was standing in for and is strictly
+    // stronger: the peer has to be loopback before any forwarded header is
+    // read at all, and the chain is then read from the right.
+    trustProxy: 'loopback',
     bodyLimit: 8 * 1024 * 1024,
     genReqId: () => crypto.randomUUID(),
   });

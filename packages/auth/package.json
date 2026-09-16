@@ -20,7 +20,7 @@
     "@exocortex/contracts": "workspace:*",
     "@exocortex/database": "workspace:*",
     "@exocortex/logger": "workspace:*",
-    "better-auth": "1.6.25",
+    "better-auth": "1.6.33",
     "nodemailer": "9.0.3"
   },
   "devDependencies": {

@@ -20,17 +20,17 @@
     "@exocortex/editor": "workspace:*",
     "@exocortex/logger": "workspace:*",
     "@exocortex/queue": "workspace:*",
-    "@hocuspocus/extension-database": "4.4.0",
-    "@hocuspocus/server": "4.4.0",
-    "yjs": "13.6.31",
-    "@hocuspocus/provider": "4.4.0"
+    "@hocuspocus/extension-database": "4.7.0",
+    "@hocuspocus/server": "4.7.0",
+    "yjs": "13.6.32",
+    "@hocuspocus/provider": "4.7.0"
   },
   "devDependencies": {
     "@types/node": "24.10.4",
-    "tsx": "4.23.5",
+    "tsx": "4.23.13",
     "typescript": "5.9.3",
     "vitest": "4.1.10",
-    "ws": "8.21.2",
+    "ws": "8.21.3",
     "@types/ws": "8.18.1"
   }
 }
