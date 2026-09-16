@@ -1,3 +1,5 @@
+import { PrismaPg } from '@prisma/adapter-pg';
+
 import { loadDotEnv } from '@exocortex/config';
 
 import { Prisma, PrismaClient } from '../generated/client';
@@ -25,8 +27,12 @@ export function createPrismaClient(options: CreatePrismaClientOptions = {}): Pri
     );
   }
 
+  // Prisma 7 connects through a driver adapter and nothing else: a bare
+  // `new PrismaClient()` throws, and `datasources` is gone. `PrismaPg` owns the
+  // `pg` pool it builds from this string, so `$disconnect()` still closes it and
+  // the singleton below still behaves the way it did.
   return new PrismaClient({
-    datasources: { db: { url } },
+    adapter: new PrismaPg({ connectionString: url }),
     log: options.logQueries
       ? [
           { emit: 'event', level: 'query' },

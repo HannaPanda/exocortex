@@ -25,40 +25,18 @@ Radix-based sources today; no Base UI registry was reachable
 
 The result contains no Radix code. See `docs/ui-system.md`.
 
-The five version choices below were re-checked against the registry, the first
-three on 2026-09-15 and all five on 2026-09-16, and reasons keep expiring: two
-of the three original ones had already gone. A reason for staying on an old
-major ages faster than anything else in this file, so each one says what was
-measured and how, not what was believed at the time. Four of the five have the
-same shape, which is worth noticing: the compiler, the linter, the HTTP
-framework and the auth library are each held by a plugin rather than by
-anything in themselves. Only Prisma is held by its own API.
+The four version choices below were all re-checked against the registry on
+2026-09-16, and reasons keep expiring: of the three this file carried before
+that, two had gone stale and the third -- Prisma 6 -- was measured, done, and
+deleted. A reason for staying on an old major ages faster than anything else
+here, so each one says what was measured and how, not what was believed at the
+time.
 
-## 2. Prisma 6 instead of Prisma 7
+All four have the same shape, which is worth noticing: the compiler, the
+linter, the HTTP framework and the auth library are each held by a plugin
+rather than by anything in themselves.
 
-Prisma 6.19.3. The 7 line is at 7.10.0 and the `latest` dist-tag has already
-moved on to `8.0.0-rc.15`.
-
-The original reason is gone: Better Auth was said to be tested against 6, but
-`better-auth@1.6.33`, the version installed here, declares
-`prisma`/`@prisma/client`: `^5.0.0 || ^6.0.0 || ^7.0.0`, and so does 1.7.5.
-
-What does hold it back is that 7 is not the contained change this entry used to
-promise. Generating this schema against `prisma@7.10.0` shows two hard breaks:
-
-- `datasource db { url = env("DATABASE_URL") }` is a validation error (`P1012`).
-  Connection URLs move into a `prisma.config.ts`.
-- `new PrismaClient()` with no options throws a
-  `PrismaClientInitializationError`: a driver adapter is now required to connect
-  to the database at all. A direct connection means `@prisma/adapter-pg` and a
-  changed `packages/database/src/client.ts`.
-
-The `prisma-client-js` generator with an explicit `output` still works under
-7.10.0, so that half of the original reasoning survives. The upgrade is a day of
-work in one package, not an afternoon, and it has to be done deliberately rather
-than as a side effect of a dependency bump.
-
-## 3. TypeScript 5.9 instead of TypeScript 7
+## 2. TypeScript 5.9 instead of TypeScript 7
 
 TypeScript 5.9.3. 7.0.2 is the current release and it is the native port: the
 package ships platform binaries as optional dependencies and a `getExePath`
@@ -77,7 +55,7 @@ The other two reasons this entry used to give are not blockers:
   `emitDecoratorMetadata` and emits `design:paramtypes` as before.
 - `next`'s type plugin was not re-tested, so it is not claimed either way here.
 
-## 4. ESLint 9 instead of ESLint 10
+## 3. ESLint 9 instead of ESLint 10
 
 ESLint 9.39.5. 10.10.0 is current, and 9.39.5 is now what the registry tags
 `maintenance`, which puts a clock on this one.
@@ -92,7 +70,7 @@ pulls `@eslint/js` to 10.x, which peers `eslint: ^10.0.0`. Nothing else in
 `^10.0.0`, and `eslint-config-prettier` and `eslint-plugin-simple-import-sort`
 have open ranges.
 
-## 5. better-auth 1.6 instead of better-auth 1.7
+## 4. better-auth 1.6 instead of better-auth 1.7
 
 better-auth 1.6.33, the head of the maintained `release-1.6` line. 1.7.5 is
 `latest`.
@@ -130,7 +108,7 @@ Staying on 1.6 is not standing still: `release-1.6` is a maintained line and
 maintained one day, and the migration has to happen before then rather than
 after.
 
-## 6. NestJS 11 instead of NestJS 12
+## 5. NestJS 11 instead of NestJS 12
 
 NestJS 11.1.28 across `@nestjs/common`, `core`, `platform-fastify`,
 `platform-socket.io`, `testing` and `websockets`, with `@nestjs/swagger` 11.4.6
@@ -151,7 +129,7 @@ fails against 12 twice over, and the second failure is the harder one.
   `app.module.ts`, but the cause is a path the dependency can no longer reach.
 
 The throttler is not decoration. `ThrottlerGuard` is an `APP_GUARD` at 300
-requests per minute, it runs *before* `SessionGuard` so an unauthenticated
+requests per minute, it runs _before_ `SessionGuard` so an unauthenticated
 flood is refused before any database access, and the two public invitation
 endpoints carry their own tighter `@Throttle` (10/min on preview, 5/min on
 accept) in front of a token that can be guessed. `docs/security.md` names it in
@@ -162,7 +140,7 @@ So this one waits for a `@nestjs/throttler` release that supports 12, tracked
 in issue #65. It is not measured against NestJS itself: nothing in 12 has been
 found to break `apps/api`, because the build stops before it gets that far.
 
-## 7. Redis event bus instead of the Socket.IO Redis adapter
+## 6. Redis event bus instead of the Socket.IO Redis adapter
 
 **Brief:** "Create a Redis adapter boundary for future horizontal scaling."
 
@@ -173,7 +151,7 @@ scaling boundary, additionally lets the _worker_ publish events (which the
 Socket.IO adapter cannot), and validates payloads on both ends. Using both
 mechanisms at once would double-deliver events.
 
-## 8. Block identifiers in Markdown are opt-in
+## 7. Block identifiers in Markdown are opt-in
 
 **Brief:** "preserves IDs during export where the format allows it."
 
@@ -187,7 +165,7 @@ are included in the export".
 Container nodes (lists, tables) do not carry an id in Markdown; paragraphs,
 headings, code blocks, list items, task items and callouts do.
 
-## 9. MIME detection is implemented locally
+## 8. MIME detection is implemented locally
 
 `file-type` is ESM-only, which does not combine with the CommonJS builds of the
 API and worker. `packages/storage/src/mime.ts` implements a short, auditable
@@ -195,7 +173,7 @@ signature table for exactly the formats eXocortex allows, plus a UTF-8 text chec
 It is covered by 11 unit tests, including "rejects an executable disguised as an
 image".
 
-## 10. `packages/ui` and `packages/editor` are consumed as source by the browser
+## 9. `packages/ui` and `packages/editor` are consumed as source by the browser
 
 Both are listed in `transpilePackages`. For `packages/ui` this lets Tailwind see
 the class names. For `packages/editor` it is a correctness requirement: mixing its
@@ -204,26 +182,26 @@ instances, which makes ProseMirror reject plugins with
 "Adding different instances of a keyed plugin". Server processes keep using the
 compiled CommonJS output through the `require` condition.
 
-## 11. Explicit authentication rate limits
+## 10. Explicit authentication rate limits
 
 Better Auth's defaults were replaced with an explicit policy
 (`packages/auth/src/auth.ts`): 10 sign-ins/minute, 5 sign-ups/minute and
 5 password-reset requests per 5 minutes per client IP. Explicit limits are
 documented, testable and still block credential stuffing.
 
-## 12. Playwright covers the API security scenarios
+## 11. Playwright covers the API security scenarios
 
 The required security scenarios are verified with Playwright's `APIRequestContext`
 against the running API rather than with mocked unit tests, because that is where
 the rules are enforced. See `e2e/tests/security.spec.ts` (13 tests).
 
-## 13. `.env` is symlinked into `apps/web`
+## 12. `.env` is symlinked into `apps/web`
 
 Next.js only reads env files from its own project directory. `apps/web/.env` is a
 symlink to the repository root `.env` so a single file configures every process.
 Both paths are git-ignored.
 
-## 14. Markdown notation for blocks CommonMark has no syntax for
+## 13. Markdown notation for blocks CommonMark has no syntax for
 
 Toggles, columns, a table of contents, page links, media and embeds have no
 notation in CommonMark or GFM. Inventing HTML for them was not an option: raw HTML
@@ -243,7 +221,7 @@ Like a code fence the marker may be longer than three colons, which is how
 containers nest (`::::columns` around `:::column`). Every container round-trips;
 `packages/editor/src/fixtures.ts` covers each one.
 
-## 15. Inline notation for the additional marks
+## 14. Inline notation for the additional marks
 
 `underline`, `superscript`, `subscript` and a text background have no CommonMark
 notation either. They use the widely implemented extensions `++Text++`, `^hoch^`,
@@ -263,7 +241,7 @@ lose (ADR-007: Markdown is interchange, not truth).
 Mentions use `@[[Seite]]`, `@[Person]` and `@(2026-08-04)`; the page form echoes
 the `[[Seite]]` wiki link on purpose.
 
-## 16. Emoji are characters, not a schema node
+## 15. Emoji are characters, not a schema node
 
 Tiptap ships an emoji node with a shortcode dataset. eXocortex inserts the Unicode
 character as plain text instead: as a character an emoji round-trips through
@@ -271,7 +249,7 @@ Markdown perfectly, is found by full-text search, and needs neither a node view 
 a ~1,800-entry dataset in the browser bundle. The picker
 (`apps/web/src/components/editor/emoji-menu.tsx`) is a curated list.
 
-## 17. Collapsed headings are decorations, not document structure
+## 16. Collapsed headings are decorations, not document structure
 
 A collapsible heading stores one boolean. Which blocks are hidden is derived from
 that boolean plus the heading levels on every render and expressed as ProseMirror
@@ -283,7 +261,7 @@ remapped under them, and a Markdown export would have to invent nesting the sour
 never had. The trade-off is that a collapsed block is still in the document and
 still in the search index — which is correct, because it is collapsed, not deleted.
 
-## 18. Embeds are restricted to an allow list of hosts
+## 17. Embeds are restricted to an allow list of hosts
 
 An arbitrary iframe inside a shared document is a script-execution and clickjacking
 surface. `packages/editor/src/embed.ts` keeps a list of hosts whose embed endpoints
@@ -291,7 +269,7 @@ are meant to be framed; anything else becomes a bookmark card, which loses nothi
 a reader needs. Framed content is sandboxed without `allow-same-origin`, so it
 cannot reach this origin's cookies or storage.
 
-## 19. Toolbar buttons keep one workaround of the two they had
+## 18. Toolbar buttons keep one workaround of the two they had
 
 Two faults were recorded here while getting the editor toolbars to work in a
 browser, both against Base UI 1.0.0-rc.0. Both were re-measured on 2026-09-15
@@ -328,7 +306,7 @@ against nodes it will not skip; a toolbar that is already in the document when i
 mounts never enters that loop. The e2e case `the selection toolbar is a single
 tab stop with arrow-key navigation` is what keeps it honest.
 
-## 20. The suggestion menus render from the plugin state, not from the renderer
+## 19. The suggestion menus render from the plugin state, not from the renderer
 
 `@tiptap/suggestion` offers an `onStart`/`onUpdate`/`onExit` renderer for mounting
 a popup. It cannot be used together with Tiptap's React menu components.
@@ -351,7 +329,7 @@ The same rule forced a second split: the component that owns `useEditor` re-rend
 into a full option re-apply, which rebuilds all plugin views. `EditorSurface` now
 holds no state and subscribes to nothing; everything stateful is in `EditorChrome`.
 
-## 21. `DragHandle` needs a callback with a stable identity
+## 20. `DragHandle` needs a callback with a stable identity
 
 `@tiptap/extension-drag-handle-react` lists `onNodeChange` (and every other
 callback prop) in the dependency array of the effect that registers its
@@ -371,7 +349,7 @@ means moving the pointer off the block the actions belong to.
 Any further prop of `DragHandle` (`computePositionConfig`, `onElementDragStart`,
 `onElementDragEnd`) has to be a module constant or memoised for the same reason.
 
-## 22. The toggle block is styled against its node view, not its HTML
+## 21. The toggle block is styled against its node view, not its HTML
 
 Tiptap's `Details` extension renders native `<details>`/`<summary>` from
 `renderHTML` — which is the HTML _export_ path — but a `div[data-type="details"]`
@@ -380,7 +358,7 @@ CSS in `globals.css` therefore targets the node view, and the node view's button
 given its arrow, `aria-expanded` and German label through `renderToggleButton`; it
 is empty by default.
 
-## 23. The embedded PDF viewer's toolbar is switched off
+## 22. The embedded PDF viewer's toolbar is switched off
 
 A PDF is embedded as `<object type="application/pdf">`, which hands the browser's
 own viewer to the reader. In Chromium that viewer offers annotation tools and a
@@ -394,7 +372,7 @@ source and renders its own header with the two actions that do work, "Öffnen" a
 content and painting the pages ourselves; that is a feature to build, not a bug to
 fix here.
 
-## 24. The icon and emoji datasets are generated into the repository
+## 23. The icon and emoji datasets are generated into the repository
 
 `packages/contracts/src/lucide-icon-names.ts`,
 `apps/web/src/components/document/lucide-icon-nodes.generated.ts` and
@@ -411,7 +389,7 @@ would parse half a megabyte as source; as a string it is one token to both, and
 the bytes on the wire are the same. They are excluded from Prettier and ESLint —
 reformatting them costs seconds and nobody reads them.
 
-## 25. The page tree drags with the platform, not with a library
+## 24. The page tree drags with the platform, not with a library
 
 Reordering pages in the sidebar is native HTML5 drag and drop
 (`apps/web/src/components/shell/page-tree.tsx`) rather than `dnd-kit` or

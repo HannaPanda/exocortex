@@ -11,7 +11,7 @@ vector search. It must be self-hostable with a single database engine.
 
 ## Decision
 
-PostgreSQL 17 with Prisma 6 as the ORM and Prisma Migrate for schema changes. The
+PostgreSQL 17 with Prisma 7 as the ORM and Prisma Migrate for schema changes. The
 `pgvector` image is used and the `vector` and `pg_trgm` extensions are created in the
 initial migration.
 
@@ -32,6 +32,13 @@ Anything Prisma cannot express is written as explicit SQL in the migration:
   `SearchAdapter` allows adding OpenSearch without touching application services.
 - `Unsupported("tsvector")` and `Unsupported("vector(1536)")` columns are invisible to
   the Prisma client, so all search queries use `$queryRaw` with parameter binding.
-- Prisma 6 rather than 7: it is the version the Better Auth Prisma adapter is tested
-  against, and its generator output works in both the CommonJS server builds and the
-  ESM browser build.
+- Prisma 7 connects through a driver adapter and through nothing else, so
+  `packages/database/src/client.ts` builds a `PrismaPg` from `DATABASE_URL` and a
+  bare `new PrismaClient()` is an error rather than a default. That also ends the
+  Rust query engine here: queries are compiled by the WebAssembly compiler in the
+  generated client, and `engineType` no longer names anything.
+- The connection URL lives in `packages/database/prisma.config.ts`, not in
+  `schema.prisma`, because Prisma 7 rejects `url = env(...)` in a datasource
+  (P1012). `scripts/check-migrations-reproducible.sh` writes a config of its own
+  for the same reason: the URL is the one thing that must not come from the
+  repository when the gate replays migrations.

@@ -21,8 +21,9 @@
 #
 # It never touches the live database. Everything happens inside a disposable
 # container, and Prisma is run from a scratch directory holding a copy of the
-# schema so it cannot pick up the repository's `.env` -- `packages/database/.env`
-# is a symlink to the root one, which points at production.
+# schema and a `prisma.config.ts` of this script's own making, so it cannot pick
+# up the repository's -- which reads the root `.env`, and that points at
+# production.
 #
 # Exit 0  => a database built purely from migrations equals schema.prisma
 # Exit 1  => the history is not reproducible, and a deploy must be blocked
@@ -61,14 +62,25 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# A scratch copy, run with the scratch directory as cwd. Prisma looks for a
-# `.env` next to the schema and in the working directory; both are inside
-# $WORKDIR here, and neither exists, so DATABASE_URL can only come from the
-# environment set below. Without this the gate would silently replay migrations
-# against the production database.
+# A scratch copy, run with the scratch directory as cwd, plus a config of our
+# own. Since Prisma 7 the connection URL comes from `prisma.config.ts` and
+# nothing else -- there is no `--url` on `migrate deploy` -- so a gate that
+# copied only the schema would either fail or, worse, find the repository's
+# config, which walks up to the root `.env` and points at production.
+#
+# The config written here imports nothing, which is what lets it live outside
+# the repository where no `node_modules` is reachable, and it reads exactly one
+# thing: the `DATABASE_URL` exported below for the throwaway container.
 mkdir -p "$WORKDIR/prisma"
 cp -R "$DB_DIR/prisma/migrations" "$WORKDIR/prisma/migrations"
 cp "$DB_DIR/prisma/schema.prisma" "$WORKDIR/prisma/schema.prisma"
+cat >"$WORKDIR/prisma.config.ts" <<'PRISMA_CONFIG'
+export default {
+  schema: 'prisma/schema.prisma',
+  migrations: { path: 'prisma/migrations' },
+  datasource: { url: process.env.DATABASE_URL },
+};
+PRISMA_CONFIG
 
 say "Starting a throwaway Postgres ($PG_IMAGE) …"
 docker run -d --name "$CONTAINER" \
@@ -118,9 +130,13 @@ UNMODELLABLE=(
 )
 
 say "Comparing the fresh database against schema.prisma …"
+# `--from-config-datasource` rather than a URL on the command line: Prisma 7
+# removed `--from-url`, and the config written above resolves to exactly the
+# throwaway container. `--to-schema` is the same flag `--to-schema-datamodel`
+# used to be.
 DIFF=$("$PRISMA" migrate diff \
-  --from-url "$DATABASE_URL" \
-  --to-schema-datamodel prisma/schema.prisma \
+  --from-config-datasource \
+  --to-schema prisma/schema.prisma \
   --script 2>/dev/null)
 
 STALE=()

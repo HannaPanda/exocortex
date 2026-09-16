@@ -8,15 +8,21 @@
 //  * Anything requiring raw SQL (tsvector, pgvector) is modelled with
 //    `Unsupported(...)` and maintained by explicit SQL in migrations/jobs.
 
+// `engineType = "library"` used to sit here and no longer says anything. Prisma
+// 7 connects through a driver adapter and compiles queries with the WebAssembly
+// query compiler that ships inside the generated client; generating with the
+// line and without it produces the same files, and neither produces a Rust
+// engine binary. A setting that names a binary this client never loads is worse
+// than no setting.
 generator client {
-  provider   = "prisma-client-js"
-  output     = "../generated/client"
-  engineType = "library"
+  provider = "prisma-client-js"
+  output   = "../generated/client"
 }
 
+// The connection URL is not here. Prisma 7 rejects `url = env(...)` in the
+// schema (P1012); it lives in `prisma.config.ts` next to this file.
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // ---------------------------------------------------------------------------

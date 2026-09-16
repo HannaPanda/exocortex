@@ -25,19 +25,19 @@
     "lint": "eslint src prisma",
     "test": "vitest run"
   },
-  "prisma": {
-    "schema": "prisma/schema.prisma"
-  },
   "dependencies": {
     "@exocortex/config": "workspace:*",
     "@exocortex/logger": "workspace:*",
-    "@prisma/client": "6.19.3",
+    "@prisma/adapter-pg": "7.10.0",
+    "@prisma/client": "7.10.0",
+    "@prisma/client-runtime-utils": "7.10.0",
     "@exocortex/contracts": "workspace:*",
     "@exocortex/editor": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "24.10.4",
-    "prisma": "6.19.3",
+    "dotenv": "17.4.2",
+    "prisma": "7.10.0",
     "tsx": "4.23.13",
     "typescript": "5.9.3",
     "vitest": "5.0.0"
