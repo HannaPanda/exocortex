@@ -253,6 +253,13 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   lazily, so a deployment without a collector is unchanged. A job carries its
   parent as `traceparent` in the payload, the worker's tool calls carry it as a
   header, and a span holds ids, durations and outcomes -- never content.
+- ADR-032: a request goes only to the providers that can serve it. The registry
+  keeps one row per provider per model (`AiModelEndpoint`), the model's window
+  is the largest of them, and eligibility is re-planned before every turn and
+  handed to OpenRouter as `provider.only` plus `allow_fallbacks` -- never a
+  `sort` or an order, because ranking inside the eligible set stays the
+  provider's job. Compaction answers "can anyone still serve this", and only
+  runs when a smaller prompt would change the answer.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

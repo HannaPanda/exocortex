@@ -26,6 +26,7 @@ import {
   settingsSchema,
 } from '@exocortex/contracts';
 import {
+  applyModelRouteSnapshot,
   createPrismaClient,
   generateOrderKey,
   HybridSearchAdapter,
@@ -130,6 +131,10 @@ function toolCapableModelRow(slug: string): ResolvedModelRow {
     // the mock provider reports no cost of its own (issue #10).
     inputMicroUsdPerMTok: 3_000_000,
     outputMicroUsdPerMTok: 15_000_000,
+    // No endpoint snapshot: the mock provider has nothing to choose between, so
+    // the run plans no allowlist and routes exactly as it did before ADR-032.
+    endpoints: [],
+    aliasTargetSlug: null,
   };
 }
 
@@ -419,6 +424,7 @@ describe('document materialization', () => {
         storage: recordingStorage(),
         bus,
         settings: stubSettings(),
+        openRouterBaseUrl: 'https://openrouter.test/api/v1',
       })(
         contextFor({
           correlationId: 'test-rematerialize-1',
@@ -445,6 +451,7 @@ describe('document materialization', () => {
         storage: recordingStorage(),
         bus,
         settings: stubSettings(),
+        openRouterBaseUrl: 'https://openrouter.test/api/v1',
       })(
         contextFor({
           correlationId: 'test-rematerialize-2',
@@ -2383,6 +2390,7 @@ describe('ai runs', () => {
       settings: stubSettings(),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => fakeVisionPreprocessor('Eine Katze mit Hut.'),
+      queues,
       modelRegistry: async () => null,
     });
     await processor(contextFor({ correlationId: 'test-ai-1', runId, workspaceId, userId }).context);
@@ -2420,6 +2428,7 @@ describe('ai runs', () => {
       settings: stubSettings(),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => null,
+      queues,
       modelRegistry: async () => toolCapableModelRow('priced-model'),
     });
     await processor(contextFor({ correlationId: 'test-ai-1', runId, workspaceId, userId }).context);
@@ -2449,6 +2458,7 @@ describe('ai runs', () => {
       settings: stubSettings(),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => fakeVisionPreprocessor('unused'),
+      queues,
       modelRegistry: async () => null,
     });
     await processor(contextFor({ correlationId: 'test-ai-2', runId, workspaceId, userId }).context);
@@ -2480,6 +2490,7 @@ describe('ai runs', () => {
       settings: stubSettings(),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => fakeVisionPreprocessor('unused'),
+      queues,
       modelRegistry: async () => null,
     });
     await processor(contextFor({ correlationId: 'test-ai-3', runId, workspaceId, userId }).context);
@@ -2504,6 +2515,7 @@ describe('ai runs', () => {
       settings: stubSettings({ 'ai.maxOutputTokens': 12_288 }),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => null,
+      queues,
       modelRegistry: async () => null,
     });
     await processor(
@@ -2526,6 +2538,7 @@ describe('ai runs', () => {
       settings: stubSettings({ 'ai.maxOutputTokens': 100_000 }),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => null,
+      queues,
       modelRegistry: async () => ({ ...toolCapableModelRow('test-model'), maxOutputTokens: 8_000 }),
     });
     await processor(
@@ -2551,6 +2564,7 @@ describe('ai runs', () => {
       settings: stubSettings(),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => null,
+      queues,
       modelRegistry: async () => null,
     });
     await processor(
@@ -2592,6 +2606,7 @@ describe('ai runs', () => {
       settings: stubSettings(),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => null,
+      queues,
       modelRegistry: async () => null,
     });
     await processor(
@@ -2624,6 +2639,7 @@ describe('ai runs', () => {
       settings: stubSettings(),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => null,
+      queues,
       modelRegistry: async () => null,
     });
     await processor(
@@ -2651,6 +2667,7 @@ describe('ai runs', () => {
       settings: stubSettings(),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => null,
+      queues,
       modelRegistry: async () => null,
     });
     await processor(
@@ -2684,6 +2701,7 @@ describe('ai runs', () => {
       settings: stubSettings(),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => null,
+      queues,
       modelRegistry: async () => null,
     });
     const finished = processor(
@@ -2714,6 +2732,7 @@ describe('ai runs', () => {
       settings: stubSettingsUnchecked({ 'ai.timeoutMs': 150, 'ai.maxRunMs': 150 }),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => null,
+      queues,
       modelRegistry: async () => null,
     });
     await processor(
@@ -2743,6 +2762,7 @@ describe('ai runs', () => {
       settings: stubSettings(),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => null,
+      queues,
       modelRegistry: async () => null,
     });
 
@@ -2783,6 +2803,7 @@ describe('ai runs', () => {
       settings: stubSettings(),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => null,
+      queues,
       modelRegistry: async () => null,
     });
     await processor(
@@ -2813,6 +2834,7 @@ describe('ai runs', () => {
       settings: stubSettings(),
       toolRunnerFactory: null,
       visionPreprocessorFor: () => null,
+      queues,
       modelRegistry: async () => null,
     });
     await processor(
@@ -2886,6 +2908,7 @@ describe('conversation-backed tool loop', () => {
       settings: stubSettings({ 'ai.maxToolIterations': 4 }),
       toolRunnerFactory: () => stubToolRunner([{ text: 'Werkzeugergebnis', isError: false }]),
       visionPreprocessorFor: () => null,
+      queues,
       modelRegistry: async () => toolCapableModelRow('test-tool-model'),
     });
 
@@ -2934,6 +2957,7 @@ describe('conversation-backed tool loop', () => {
       settings: stubSettings({ 'ai.maxToolIterations': 0 }),
       toolRunnerFactory: () => stubToolRunner([{ text: 'unused', isError: false }]),
       visionPreprocessorFor: () => null,
+      queues,
       modelRegistry: async () => toolCapableModelRow('test-tool-model'),
     });
 
@@ -4094,5 +4118,130 @@ describe('rendering', () => {
     expect((await prisma.renderJob.findUniqueOrThrow({ where: { id: alive.jobId } })).status).toBe(
       'RUNNING',
     );
+  });
+});
+
+/**
+ * Endpoint snapshots (issue #68, ADR-032).
+ *
+ * The snapshot is what every request's provider allowlist is planned from, so
+ * the two things that must never happen are a half-written one and an erased
+ * one. Against the real database, because the guarantee is the transaction.
+ */
+describe('applyModelRouteSnapshot', () => {
+  function endpoint(providerKey: string, contextWindowTokens: number) {
+    return {
+      providerKey,
+      providerName: providerKey,
+      contextWindowTokens,
+      maxPromptTokens: null,
+      maxOutputTokens: 131_072,
+      inputMicroUsdPerMTok: 1_400_000,
+      outputMicroUsdPerMTok: 4_400_000,
+      supportsTools: true,
+      supportsReasoningEffort: true,
+      quantization: null,
+    };
+  }
+
+  async function createModel(slug: string): Promise<string> {
+    const created = await prisma.aiModel.create({
+      data: {
+        slug,
+        displayName: slug,
+        contextWindowTokens: 200_000,
+        inputMicroUsdPerMTok: 1_000_000,
+        outputMicroUsdPerMTok: 2_000_000,
+        enabled: false,
+      },
+    });
+    return created.id;
+  }
+
+  it('stores heterogeneous providers and the largest window as the model figure', async () => {
+    const modelId = await createModel(`test/routes-${Date.now()}`);
+    try {
+      await applyModelRouteSnapshot(prisma, {
+        modelId,
+        targetSlug: 'z-ai/glm-5.3',
+        aliasTargetSlug: null,
+        endpoints: [endpoint('reka/fp8', 262_144), endpoint('together', 1_048_576)],
+        fields: {
+          contextWindowTokens: 1_048_576,
+          maxOutputTokens: 131_072,
+          inputMicroUsdPerMTok: 1_400_000,
+          outputMicroUsdPerMTok: 4_400_000,
+        },
+      });
+
+      const rows = await prisma.aiModelEndpoint.findMany({ where: { modelId } });
+      expect(rows.map((row) => row.contextWindowTokens).sort((a, b) => a - b)).toEqual([
+        262_144, 1_048_576,
+      ]);
+      const model = await prisma.aiModel.findUniqueOrThrow({ where: { id: modelId } });
+      expect(model.contextWindowTokens).toBe(1_048_576);
+      expect(model.endpointsSyncedAt).not.toBeNull();
+    } finally {
+      await prisma.aiModel.delete({ where: { id: modelId } });
+    }
+  });
+
+  it('replaces the snapshot coherently when an alias moves to another model', async () => {
+    const modelId = await createModel(`~test/latest-${Date.now()}`);
+    try {
+      await applyModelRouteSnapshot(prisma, {
+        modelId,
+        targetSlug: 'vendor/model-5.2',
+        aliasTargetSlug: 'vendor/model-5.2',
+        endpoints: [endpoint('old-provider', 200_000)],
+      });
+      await prisma.aiModel.update({
+        where: { id: modelId },
+        data: { endpointsStaleSince: new Date() },
+      });
+
+      await applyModelRouteSnapshot(prisma, {
+        modelId,
+        targetSlug: 'vendor/model-5.3',
+        aliasTargetSlug: 'vendor/model-5.3',
+        endpoints: [endpoint('new-provider', 1_000_000)],
+      });
+
+      const rows = await prisma.aiModelEndpoint.findMany({ where: { modelId } });
+      // Never both targets at once: half of one model's capacities and half of
+      // another's would be a plan for a model that does not exist.
+      expect(rows.map((row) => row.providerKey)).toEqual(['new-provider']);
+      expect(rows[0]?.targetSlug).toBe('vendor/model-5.3');
+      const model = await prisma.aiModel.findUniqueOrThrow({ where: { id: modelId } });
+      expect(model.aliasTargetSlug).toBe('vendor/model-5.3');
+      expect(model.endpointsStaleSince).toBeNull();
+    } finally {
+      await prisma.aiModel.delete({ where: { id: modelId } });
+    }
+  });
+
+  it('keeps the previous snapshot when a refresh comes back with nothing', async () => {
+    const modelId = await createModel(`test/keeps-${Date.now()}`);
+    try {
+      await applyModelRouteSnapshot(prisma, {
+        modelId,
+        targetSlug: 'vendor/model',
+        aliasTargetSlug: null,
+        endpoints: [endpoint('known', 500_000)],
+      });
+
+      const result = await applyModelRouteSnapshot(prisma, {
+        modelId,
+        targetSlug: 'vendor/model',
+        aliasTargetSlug: null,
+        endpoints: [],
+      });
+
+      expect(result).toEqual({ written: 0, removed: 0 });
+      const rows = await prisma.aiModelEndpoint.findMany({ where: { modelId } });
+      expect(rows.map((row) => row.providerKey)).toEqual(['known']);
+    } finally {
+      await prisma.aiModel.delete({ where: { id: modelId } });
+    }
   });
 });

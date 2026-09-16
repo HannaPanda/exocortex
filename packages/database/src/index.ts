@@ -1,3 +1,4 @@
+export * from './ai-model-routes';
 export * from './client';
 export * from './database-query';
 export * from './entities';

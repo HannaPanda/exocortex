@@ -28,6 +28,11 @@ export const aiModelSchema = z.object({
   outputMicroUsdPerMTok: z.number().int().nonnegative(),
   /** Slug of the vision companion, resolved from the relation. */
   visionCompanionSlug: z.string().nullable(),
+  /**
+   * For a `~vendor/model-latest` alias: the model it currently resolves to
+   * (ADR-032). `null` for an ordinary model, which is its own target.
+   */
+  aliasTargetSlug: z.string().nullable(),
   enabled: z.boolean(),
   sortOrder: z.number().int(),
   syncedAt: isoDateTimeSchema.nullable(),
@@ -41,19 +46,53 @@ export const aiModelListResponseSchema = z.object({
 });
 export type AiModelListResponse = z.infer<typeof aiModelListResponseSchema>;
 
-export const createAiModelRequestSchema = aiModelSchema.omit({ id: true, syncedAt: true }).partial({
-  provider: true,
-  description: true,
-  enabled: true,
-  sortOrder: true,
-  visionCompanionSlug: true,
-  reasoningLevels: true,
-  maxOutputTokens: true,
-});
+export const createAiModelRequestSchema = aiModelSchema
+  .omit({ id: true, syncedAt: true, aliasTargetSlug: true })
+  .partial({
+    provider: true,
+    description: true,
+    enabled: true,
+    sortOrder: true,
+    visionCompanionSlug: true,
+    reasoningLevels: true,
+    maxOutputTokens: true,
+  });
 export type CreateAiModelRequest = z.infer<typeof createAiModelRequestSchema>;
 
 export const updateAiModelRequestSchema = createAiModelRequestSchema.partial();
 export type UpdateAiModelRequest = z.infer<typeof updateAiModelRequestSchema>;
+
+/**
+ * One provider's offer for one model (ADR-032).
+ *
+ * Admin-only: it exists to debug routing ("why did that request not go to the
+ * big provider"), and it is the only place the endpoint differences are
+ * visible at all.
+ */
+export const aiModelEndpointSchema = z.object({
+  /** The key OpenRouter accepts in `provider.only`, e.g. `reka/fp8`. */
+  providerKey: z.string(),
+  providerName: z.string(),
+  contextWindowTokens: z.number().int().nonnegative(),
+  maxPromptTokens: z.number().int().positive().nullable(),
+  maxOutputTokens: z.number().int().positive().nullable(),
+  inputMicroUsdPerMTok: z.number().int().nonnegative(),
+  outputMicroUsdPerMTok: z.number().int().nonnegative(),
+  supportsTools: z.boolean(),
+  supportsReasoningEffort: z.boolean(),
+  quantization: z.string().nullable(),
+  updatedAt: isoDateTimeSchema,
+});
+export type AiModelEndpoint = z.infer<typeof aiModelEndpointSchema>;
+
+export const aiModelEndpointListResponseSchema = z.object({
+  endpoints: z.array(aiModelEndpointSchema),
+  /** The model these endpoints describe: the alias' target, or the model itself. */
+  targetSlug: z.string().nullable(),
+  /** `null` when no snapshot was ever taken; an old date means stale, not wrong. */
+  syncedAt: isoDateTimeSchema.nullable(),
+});
+export type AiModelEndpointListResponse = z.infer<typeof aiModelEndpointListResponseSchema>;
 
 export const syncAiModelsRequestSchema = z.object({
   /** Restrict the sync to these slugs. Empty syncs every registry row. */

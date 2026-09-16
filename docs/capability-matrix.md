@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-164 routes are reachable from at least one client; 100 from all three.
+165 routes are reachable from at least one client; 100 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -45,6 +45,7 @@ reorder routes shipped with no way to them in the browser.
 | `DELETE /api/workspaces/:x/invitations/:x` | · | ✓ | ✓ | `exo_invitation_revoke` |
 | `DELETE /api/workspaces/:x/members/:x` | ✓ | · | · | — |
 | `GET /api/admin/ai-models` | ✓ | · | · | — |
+| `GET /api/admin/ai-models/:x/endpoints` | ✓ | · | · | — |
 | `GET /api/admin/ai-models/catalog` | ✓ | · | · | — |
 | `GET /api/admin/ai-usage` | ✓ | · | ✓ | `exo_ai_usage` |
 | `GET /api/admin/invitations` | · | ✓ | ✓ | `exo_invitation_list` |
@@ -191,7 +192,7 @@ reorder routes shipped with no way to them in the browser.
 
 ## Routes the browser reaches and agents do not
 
-46 of them. Each is covered by a documented exemption; the reasons
+47 of them. Each is covered by a documented exemption; the reasons
 are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 - `DELETE /api/admin/ai-models/:x`
@@ -201,6 +202,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `DELETE /api/workspaces/:x/credentials/:x`
 - `DELETE /api/workspaces/:x/members/:x`
 - `GET /api/admin/ai-models`
+- `GET /api/admin/ai-models/:x/endpoints`
 - `GET /api/admin/ai-models/catalog`
 - `GET /api/admin/ai-usage` (reachable from MCP)
 - `GET /api/admin/overview`

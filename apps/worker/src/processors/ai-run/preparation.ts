@@ -1,5 +1,10 @@
-import { type AiProvider, type VisionPreprocessor } from '@exocortex/ai';
-import { estimateTokens } from '@exocortex/ai';
+import {
+  type AiProvider,
+  estimateTokens,
+  planRoute,
+  type RoutingEndpoint,
+  type VisionPreprocessor,
+} from '@exocortex/ai';
 import {
   type AiMessage,
   aiMessageSchema,
@@ -13,7 +18,7 @@ import {
 } from '@exocortex/database';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
-import { compactIfNeeded } from '../../compaction';
+import { compactIfNeeded, estimateFloorInputTokens } from '../../compaction';
 import { buildSystemPrompt } from '../../system-prompt';
 
 import { type ResolvedModelRow } from './contract';
@@ -63,7 +68,55 @@ export async function resolveModelRow(input: {
     visionCompanionSlug: null,
     inputMicroUsdPerMTok: null,
     outputMicroUsdPerMTok: null,
+    endpoints: [],
+    aliasTargetSlug: null,
   };
+}
+
+/** What the prompt is, and how much room it has (ADR-032). */
+export interface BuiltRunMessages {
+  base: AiMessage[];
+  rest: AiMessage[];
+  /**
+   * The largest prompt this run may send. Comes from the largest provider that
+   * could serve it once the model has an endpoint snapshot, and from the
+   * model's own window otherwise. `Infinity` for a run without a conversation,
+   * which carries its own message list and cannot be compacted.
+   */
+  budgetInputTokens: number;
+  /** The smallest the prompt could be made; `0` when there is nothing to compact. */
+  floorInputTokens: number;
+}
+
+/**
+ * How much prompt fits, given who could serve it.
+ *
+ * With an endpoint snapshot this is the largest provider's usable input, which
+ * is the whole point of ADR-032: a 262k provider in the set must not make a
+ * conversation compact at 262k while a 1.3M provider is standing right there.
+ * Without a snapshot it is the old arithmetic on the model's own window.
+ */
+function resolveBudgetInputTokens(input: {
+  endpoints: readonly RoutingEndpoint[];
+  contextWindowTokens: number;
+  reservedOutputTokens: number;
+  usableSharePercent: number;
+  requiresTools: boolean;
+  requiresReasoningEffort: boolean;
+}): number {
+  const plan = planRoute({
+    endpoints: input.endpoints,
+    inputTokens: 0,
+    reservedOutputTokens: input.reservedOutputTokens,
+    usableSharePercent: input.usableSharePercent,
+    requiresTools: input.requiresTools,
+    requiresReasoningEffort: input.requiresReasoningEffort,
+  });
+  if (plan.known && plan.largestUsableInputTokens > 0) return plan.largestUsableInputTokens;
+  return (
+    Math.floor((input.contextWindowTokens * input.usableSharePercent) / 100) -
+    input.reservedOutputTokens
+  );
 }
 
 /**
@@ -81,10 +134,14 @@ export async function buildRunMessages(input: {
   context: {
     toolsEnabled: boolean;
     contextWindowTokens: number;
+    /** The providers that serve this model, empty when the registry has no snapshot (ADR-032). */
+    endpoints: readonly RoutingEndpoint[];
+    reservedOutputTokens: number;
+    requiresReasoningEffort: boolean;
     payload: AiJob['payload'];
     logger: AiJob['logger'];
   };
-}): Promise<{ base: AiMessage[]; rest: AiMessage[] }> {
+}): Promise<BuiltRunMessages> {
   const { prisma, provider, bus, run, settings } = input;
   const { toolsEnabled, contextWindowTokens, payload, logger } = input.context;
 
@@ -95,6 +152,8 @@ export async function buildRunMessages(input: {
           ? [{ role: 'system', content: settings['ai.systemPrompt'] }]
           : [],
       rest: aiMessageSchema.array().parse(run.messages),
+      budgetInputTokens: Number.POSITIVE_INFINITY,
+      floorInputTokens: 0,
     };
   }
 
@@ -122,6 +181,16 @@ export async function buildRunMessages(input: {
     toolsEnabled,
   });
 
+  const systemPromptTokens = estimateTokens(systemPromptResult.prompt);
+  const budgetInputTokens = resolveBudgetInputTokens({
+    endpoints: input.context.endpoints,
+    contextWindowTokens,
+    reservedOutputTokens: input.context.reservedOutputTokens,
+    usableSharePercent: settings['ai.compactionThresholdPercent'],
+    requiresTools: toolsEnabled,
+    requiresReasoningEffort: input.context.requiresReasoningEffort,
+  });
+
   await compactIfNeeded({
     prisma,
     provider,
@@ -129,31 +198,43 @@ export async function buildRunMessages(input: {
     runId: run.id,
     conversationId: run.conversationId,
     workspaceId: run.workspaceId,
-    contextWindowTokens,
-    reservedOutputTokens: settings['ai.maxOutputTokens'],
-    systemPromptTokens: estimateTokens(systemPromptResult.prompt),
-    thresholdPercent: settings['ai.compactionThresholdPercent'],
+    budgetInputTokens,
+    systemPromptTokens,
     keepRecentMessages: settings['ai.compactionKeepRecentMessages'],
     summaryModel: settings['ai.compactionModelSlug'] ?? run.model,
     correlationId: payload.correlationId,
     logger,
   });
 
-  const activeMessages = await prisma.aiConversationMessage.findMany({
-    where: { conversationId: run.conversationId, supersededAt: null },
-    orderBy: { createdAt: 'asc' },
-  });
-
   return {
     base: [{ role: 'system', content: systemPromptResult.prompt }],
-    rest: activeMessages.map((message) => ({
-      role: CONVERSATION_ROLE_TO_LOWER[message.role],
-      content: message.content,
-      toolCallId: message.toolCallId ?? undefined,
-      toolName: message.toolName ?? undefined,
-      toolCalls: message.toolCalls ?? undefined,
-    })),
+    rest: await loadConversationMessages(prisma, run.conversationId),
+    budgetInputTokens,
+    floorInputTokens: await estimateFloorInputTokens({
+      prisma,
+      conversationId: run.conversationId,
+      systemPromptTokens,
+      keepRecentMessages: settings['ai.compactionKeepRecentMessages'],
+    }),
   };
+}
+
+/** The active transcript as provider messages. Reloaded after a compaction, so it is its own function. */
+export async function loadConversationMessages(
+  prisma: PrismaClient,
+  conversationId: string,
+): Promise<AiMessage[]> {
+  const activeMessages = await prisma.aiConversationMessage.findMany({
+    where: { conversationId, supersededAt: null },
+    orderBy: { createdAt: 'asc' },
+  });
+  return activeMessages.map((message) => ({
+    role: CONVERSATION_ROLE_TO_LOWER[message.role],
+    content: message.content,
+    toolCallId: message.toolCallId ?? undefined,
+    toolName: message.toolName ?? undefined,
+    toolCalls: message.toolCalls ?? undefined,
+  }));
 }
 
 /**

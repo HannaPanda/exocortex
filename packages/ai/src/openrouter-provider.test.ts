@@ -197,3 +197,82 @@ describe('OpenRouterProvider.stream', () => {
     });
   });
 });
+
+/**
+ * Provider routing (issue #68, ADR-032).
+ *
+ * The adapter is the only place that knows OpenRouter's wire format for this:
+ * callers hand over technical requirements, never a `provider` object.
+ */
+describe('OpenRouterProvider provider routing', () => {
+  function captureBody(): { body: () => Record<string, unknown> } {
+    let sent = '';
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((_url: string, init: RequestInit) => {
+        sent = String(init.body);
+        return Promise.resolve(streamResponse([{ choices: [{ delta: { content: 'ok' } }] }]));
+      }),
+    );
+    return { body: () => JSON.parse(sent) as Record<string, unknown> };
+  }
+
+  it('asks for the planned providers and keeps failover between them', async () => {
+    const captured = captureBody();
+
+    await collect(
+      provider().stream({
+        ...request,
+        routing: { allowedProviderKeys: ['together', 'cloudflare'] },
+      }),
+    );
+
+    expect(captured.body().provider).toEqual({
+      only: ['together', 'cloudflare'],
+      allow_fallbacks: true,
+    });
+  });
+
+  it('never forces an order or a sort: ranking stays OpenRouter’s job', async () => {
+    const captured = captureBody();
+
+    await collect(
+      provider().stream({ ...request, routing: { allowedProviderKeys: ['together'] } }),
+    );
+
+    const body = captured.body();
+    expect(body).not.toHaveProperty('provider.sort');
+    expect(body).not.toHaveProperty('provider.order');
+    expect(Object.keys(body.provider as object)).toEqual(['only', 'allow_fallbacks']);
+  });
+
+  it('sends no provider preference for a model without a snapshot', async () => {
+    const captured = captureBody();
+
+    await collect(provider().stream({ ...request, routing: { allowedProviderKeys: [] } }));
+
+    expect(captured.body()).not.toHaveProperty('provider');
+  });
+
+  it('tells a refused allowlist apart from an outage', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve(
+          new Response('{"error":{"message":"No allowed providers are available"}}', {
+            status: 404,
+          }),
+        ),
+      ),
+    );
+
+    const events = await collect(
+      provider().stream({ ...request, routing: { allowedProviderKeys: ['gone'] } }),
+    );
+
+    // The stream always announces itself first; the refusal is the event after.
+    expect(events).toContainEqual(
+      expect.objectContaining({ type: 'error', code: 'ai_no_eligible_provider' }),
+    );
+  });
+});

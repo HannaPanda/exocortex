@@ -3,6 +3,9 @@ import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 import { type RedisEventBus } from '@exocortex/queue';
 
+/** What a summary is assumed to cost once it is in the context: the summariser's own output cap. */
+const SUMMARY_TOKEN_ALLOWANCE = 1_500;
+
 const SUMMARY_PROMPT =
   'Fasse den folgenden Gesprächsverlauf so zusammen, dass die Unterhaltung ohne den Originaltext ' +
   'fortgesetzt werden kann. Behalte Entscheidungen, Fakten, Namen, IDs, offene Aufgaben und den Ton ' +
@@ -21,10 +24,15 @@ export interface CompactIfNeededInput {
   runId: string | null;
   conversationId: string;
   workspaceId: string;
-  contextWindowTokens: number;
-  reservedOutputTokens: number;
+  /**
+   * The largest prompt this turn may be, in tokens: the model's window minus
+   * the reserved answer, or -- once a model has an endpoint snapshot -- the
+   * largest prompt any provider that can serve the request would take
+   * (ADR-032). Computed by the caller, because only the caller knows which
+   * providers are eligible.
+   */
+  budgetInputTokens: number;
   systemPromptTokens: number;
-  thresholdPercent: number;
   keepRecentMessages: number;
   summaryModel: string;
   correlationId: string;
@@ -37,10 +45,34 @@ export interface CompactIfNeededResult {
 }
 
 /**
- * Summarize-and-truncate compaction, keyed to the selected model's context window.
+ * The smallest prompt this conversation could be reduced to.
+ *
+ * Everything compaction cannot touch -- the system prompt, the recent tail it
+ * keeps, and room for the summary it writes -- which is what decides whether
+ * compacting would put a bigger provider back in reach at all (ADR-032). An
+ * over-estimate is the safe direction: it only ever says "do not bother".
+ */
+export async function estimateFloorInputTokens(input: {
+  prisma: PrismaClient;
+  conversationId: string;
+  systemPromptTokens: number;
+  keepRecentMessages: number;
+}): Promise<number> {
+  const active = await input.prisma.aiConversationMessage.findMany({
+    where: { conversationId: input.conversationId, supersededAt: null },
+    orderBy: { createdAt: 'asc' },
+    select: { estimatedTokens: true },
+  });
+  const tail = active.slice(Math.max(0, active.length - input.keepRecentMessages));
+  const tailTokens = tail.reduce((sum, message) => sum + message.estimatedTokens, 0);
+  return input.systemPromptTokens + tailTokens + SUMMARY_TOKEN_ALLOWANCE;
+}
+
+/**
+ * Summarize-and-truncate compaction, keyed to the budget the caller computed.
  *
  * Runs before the provider call. Token counts are estimates
- * (`estimateTokens`), which is why the trigger sits at a configurable share of
+ * (`estimateTokens`), which is why the budget sits at a configurable share of
  * the window rather than at the window itself.
  */
 export async function compactIfNeeded(input: CompactIfNeededInput): Promise<CompactIfNeededResult> {
@@ -54,9 +86,7 @@ export async function compactIfNeeded(input: CompactIfNeededInput): Promise<Comp
     estimateConversationTokens(
       active.map((message) => ({ role: message.role, content: message.content })),
     );
-  const budget =
-    Math.floor((input.contextWindowTokens * input.thresholdPercent) / 100) -
-    input.reservedOutputTokens;
+  const budget = input.budgetInputTokens;
 
   if (usedTokens <= budget) {
     return { compacted: false, summarizedMessages: 0 };

@@ -53,6 +53,7 @@ interface AiModelRow {
   enabled: boolean;
   sortOrder: number;
   syncedAt: Date | null;
+  aliasTargetSlug: string | null;
   visionCompanion: { slug: string } | null;
 }
 
@@ -74,6 +75,7 @@ export function mapAiModelRow(row: AiModelRow): AiModel {
     inputMicroUsdPerMTok: row.inputMicroUsdPerMTok,
     outputMicroUsdPerMTok: row.outputMicroUsdPerMTok,
     visionCompanionSlug: row.visionCompanion?.slug ?? null,
+    aliasTargetSlug: row.aliasTargetSlug,
     enabled: row.enabled,
     sortOrder: row.sortOrder,
     syncedAt: row.syncedAt === null ? null : row.syncedAt.toISOString(),

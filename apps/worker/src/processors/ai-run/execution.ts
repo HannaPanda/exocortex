@@ -1,8 +1,15 @@
 import {
+  AI_NO_ELIGIBLE_PROVIDER,
   type AiProvider,
   type AiReasoningOptions,
+  type AiRoutingRequirements,
   type AiToolCall,
+  couldCompactionHelp,
+  estimateConversationTokens,
   estimateMessageTokens,
+  planRoute,
+  type RoutePlan,
+  type RoutingEndpoint,
 } from '@exocortex/ai';
 import {
   AI_RUN_PHASE_MIN_INTERVAL_MS,
@@ -90,6 +97,22 @@ function toWireToolCalls(
   }));
 }
 
+/** Everything the turn loop needs to decide who may serve a request (ADR-032). */
+export interface RunRoutingInput {
+  endpoints: readonly RoutingEndpoint[];
+  /** The model an alias resolves to, for noticing that it moved. `null` for an ordinary model. */
+  aliasTargetSlug: string | null;
+  usableSharePercent: number;
+  requiresTools: boolean;
+  requiresReasoningEffort: boolean;
+  /** The smallest this prompt could be made; decides whether compacting is worth trying. */
+  floorInputTokens: number;
+  /** Compacts to the given budget and returns the rebuilt prompt. `null` when this run cannot compact. */
+  compact: ((budgetInputTokens: number) => Promise<AiMessage[]>) | null;
+  /** Called when the provider answered as a different model than the alias last resolved to. */
+  onAliasDrift: ((actualModel: string) => void) | null;
+}
+
 export interface RunExecutionInput {
   prisma: PrismaClient;
   provider: AiProvider;
@@ -104,6 +127,7 @@ export interface RunExecutionInput {
   maxToolIterations: number;
   budgetMicroUsd: number;
   messages: AiMessage[];
+  routing: RunRoutingInput;
 }
 
 /** What the run produced, whether or not it got as far as an answer. */
@@ -151,6 +175,14 @@ class RunExecution {
   private sequence = 0;
   /** Why `runController` aborted; disambiguates the `catch` below (`null` until it fires). */
   private abortReason: 'run_budget' | 'turn_timeout' | 'cancelled' | null = null;
+  /**
+   * Who may serve the turn that is about to go out (ADR-032). Re-planned before
+   * every turn, because a tool result can add fifty thousand tokens to the
+   * prompt and put the request beyond the provider that took the last one.
+   */
+  private routing: AiRoutingRequirements | undefined;
+  /** Whether an alias drift was already reported; once per run is enough. */
+  private aliasDriftReported = false;
 
   constructor(input: RunExecutionInput) {
     this.input = input;
@@ -198,7 +230,10 @@ class RunExecution {
         return;
       }
 
+      if (!(await this.prepareRoute())) return;
+
       const turn = await this.traceTurn();
+      this.noteResolvedModel(turn.usage);
       if (turn.usage !== null) {
         this.usage = addUsage(this.usage, turn.usage);
         if (turn.usage.providerCostMicroUsd !== null) {
@@ -221,6 +256,122 @@ class RunExecution {
       if (turn.toolCalls.length === 0) return;
       if (!(await this.dispatchToolCalls(turn))) return;
     }
+  }
+
+  /**
+   * Decides who may serve the turn that is about to go out, and says whether
+   * the run can go on (ADR-032).
+   *
+   * The prompt grows between turns -- a tool result is part of the next one --
+   * so this is asked again every time rather than once per run. When nothing
+   * can serve the request, compaction is tried first, but only when making the
+   * prompt smaller would actually put a provider back in reach: a request no
+   * provider can serve because it needs tools, or because the answer is capped
+   * too high, is not a size problem and summarising it away would cost a model
+   * call and a piece of the transcript for nothing.
+   */
+  private async prepareRoute(): Promise<boolean> {
+    const { routing, logger, run } = this.input;
+
+    let plan = this.planFor(this.providerMessages);
+    if (!plan.known || plan.allowedProviderKeys.length > 0) {
+      this.applyPlan(plan);
+      return true;
+    }
+
+    if (
+      routing.compact !== null &&
+      couldCompactionHelp({ plan, floorInputTokens: routing.floorInputTokens })
+    ) {
+      logger.info('No provider can serve this turn; compacting first', {
+        runId: run.id,
+        model: run.model,
+        largestUsableInputTokens: plan.largestUsableInputTokens,
+        floorInputTokens: routing.floorInputTokens,
+      });
+      this.providerMessages = await routing.compact(plan.largestUsableInputTokens);
+      plan = this.planFor(this.providerMessages);
+    }
+
+    if (plan.allowedProviderKeys.length === 0) {
+      // Refused here rather than upstream: the provider would answer 404 and
+      // charge nothing, but it would also take a round trip to say what the
+      // registry already knows.
+      this.failure = {
+        code: AI_NO_ELIGIBLE_PROVIDER,
+        message:
+          plan.capableEndpoints === 0
+            ? 'No provider of this model supports what this run needs'
+            : 'The request is larger than any provider of this model can serve',
+      };
+      logger.warn('No eligible provider for this run', {
+        runId: run.id,
+        model: run.model,
+        knownEndpoints: routing.endpoints.length,
+        capableEndpoints: plan.capableEndpoints,
+        largestUsableInputTokens: plan.largestUsableInputTokens,
+      });
+      return false;
+    }
+
+    this.applyPlan(plan);
+    return true;
+  }
+
+  private planFor(messages: readonly AiMessage[]): RoutePlan {
+    const { routing, maxOutputTokens } = this.input;
+    return planRoute({
+      endpoints: routing.endpoints,
+      inputTokens: estimateConversationTokens(
+        messages.map((message) => ({ role: message.role, content: message.content })),
+      ),
+      reservedOutputTokens: maxOutputTokens,
+      usableSharePercent: routing.usableSharePercent,
+      requiresTools: routing.requiresTools,
+      requiresReasoningEffort: routing.requiresReasoningEffort,
+    });
+  }
+
+  /** Carries a plan into the next request, and records what it decided. Never content. */
+  private applyPlan(plan: RoutePlan): void {
+    this.routing = plan.known
+      ? {
+          allowedProviderKeys: plan.allowedProviderKeys,
+          minimumContextTokens: this.input.maxOutputTokens,
+        }
+      : undefined;
+    if (!plan.known) return;
+    this.input.logger.debug('Route planned for turn', {
+      runId: this.input.run.id,
+      model: this.input.run.model,
+      turn: this.turns + 1,
+      knownEndpoints: this.input.routing.endpoints.length,
+      capableEndpoints: plan.capableEndpoints,
+      eligibleEndpoints: plan.allowedProviderKeys.length,
+    });
+  }
+
+  /**
+   * Notices that a `latest` alias now answers as a different model.
+   *
+   * The snapshot the route was planned from describes the old target, so the
+   * refresh is asked for immediately rather than waited for: the plan stays
+   * valid for this run either way, because both targets are served by
+   * providers the allowlist named.
+   */
+  private noteResolvedModel(usage: AiUsage | null): void {
+    const { routing, run, logger } = this.input;
+    if (usage === null || routing.aliasTargetSlug === null || this.aliasDriftReported) return;
+    if (usage.model === routing.aliasTargetSlug || usage.model === run.model) return;
+
+    this.aliasDriftReported = true;
+    logger.info('The alias resolved to a different model than the registry has', {
+      runId: run.id,
+      model: run.model,
+      expected: routing.aliasTargetSlug,
+      actual: usage.model,
+    });
+    routing.onAliasDrift?.(usage.model);
   }
 
   /**
@@ -297,6 +448,7 @@ class RunExecution {
         tools: runner?.definitions,
         toolChoice: toolsEnabled ? 'auto' : undefined,
         reasoning: { effort: REASONING_LEVEL_TO_LOWER[run.reasoningLevel] },
+        routing: this.routing,
       })) {
         switch (event.type) {
           case 'delta': {

@@ -34,6 +34,8 @@ export interface MaintenanceContext {
   linkBackfillBatchSize: number;
   /** Documents per embedding request inside a backfill run. */
   embeddingBackfillBatchSize: number;
+  /** Where the OpenRouter catalogue is read from, for the model route refresh (ADR-032). */
+  openRouterBaseUrl: string;
   payload: MaintenanceJob['payload'];
   logger: MaintenanceJob['logger'];
   reportProgress: MaintenanceJob['reportProgress'];

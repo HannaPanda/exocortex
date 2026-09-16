@@ -14,6 +14,7 @@ import {
   type AgentSessionRevertResponse,
   type AiModel,
   type AiModelCatalogResponse,
+  type AiModelEndpointListResponse,
   type AiModelListResponse,
   type AiUsageResponse,
   type ApiToken,
@@ -50,6 +51,7 @@ export const adminQueryKeys = {
   // Deliberately not a child of `aiModels`: a prefix would make every registry
   // invalidation silently refetch the provider's list as well.
   aiModelCatalog: ['admin', 'ai-model-catalog'] as const,
+  aiModelEndpoints: (modelId: string) => ['admin', 'ai-models', modelId, 'endpoints'] as const,
   aiUsage: (days: number) => ['admin', 'ai-usage', days] as const,
   apiTokens: ['me', 'api-tokens'] as const,
   connections: ['me', 'connections'] as const,
@@ -234,6 +236,23 @@ export function useAiModelCatalog(enabled: boolean): UseQueryResult<AiModelCatal
     queryFn: () => apiRequest<AiModelCatalogResponse>('/api/admin/ai-models/catalog'),
     enabled,
     staleTime: 5 * 60 * 1000,
+  });
+}
+
+/**
+ * One model's endpoint snapshot (ADR-032). Only fetched while the row is
+ * expanded: it answers "why did that request not go to the big provider", which
+ * is a question somebody asks about one model at a time.
+ */
+export function useAiModelEndpoints(
+  modelId: string,
+  enabled: boolean,
+): UseQueryResult<AiModelEndpointListResponse> {
+  return useQuery({
+    queryKey: adminQueryKeys.aiModelEndpoints(modelId),
+    queryFn: () =>
+      apiRequest<AiModelEndpointListResponse>(`/api/admin/ai-models/${modelId}/endpoints`),
+    enabled,
   });
 }
 

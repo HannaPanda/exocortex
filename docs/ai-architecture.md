@@ -369,10 +369,36 @@ empty panel died on the next reload, and every new conversation started over at
 the deployment default and `NONE`. The row still wins for a conversation that
 has started; the preference is what seeds the next one.
 
+## Provider routing (ADR-032)
+
+A model on OpenRouter is served by many providers at once, and they disagree
+about it: GLM 5.3 comes with a 262k window from one and 1.05M from most others,
+at prices between $0.88 and $2.10 per million input tokens. The registry keeps
+one `AiModelEndpoint` row per provider per model, refreshed by
+`sync-ai-model-routes` and by the admin sync, and the worker plans from it
+before every turn:
+
+1. `planRoute` (`packages/ai/src/route-planner.ts`) keeps the providers whose
+   usable window takes the estimated prompt plus the reserved answer, whose own
+   input and output caps allow it, and which support what the run needs (tools,
+   effort levels). The usable share is `ai.compactionThresholdPercent`.
+2. The keys go out as `provider.only` with `allow_fallbacks: true`. No `sort`
+   and no fixed order: ranking inside the eligible set, and failover between
+   them, stay OpenRouter's job.
+3. Nothing eligible means the run compacts and re-plans -- but only when a
+   smaller prompt would change the answer (`couldCompactionHelp`). A refusal
+   caused by a missing capability is not a size problem.
+4. Still nothing eligible fails the run locally with `ai_no_eligible_provider`,
+   before paying for a request that would come back 404.
+
+A model without a snapshot sends no provider preference at all, which is what
+every request did before this existed.
+
 ## Auto-compaction
 
 `compactIfNeeded` (`apps/worker/src/compaction.ts`) runs before every
-provider call on a conversation-backed run:
+provider call on a conversation-backed run. Its budget is the largest prompt any
+eligible provider would take (ADR-032), not the model's own window:
 
 1. Estimate the active transcript's tokens (`estimateConversationTokens`,
    `packages/ai/src/token-estimate.ts` — 3.6 characters/token, deliberately

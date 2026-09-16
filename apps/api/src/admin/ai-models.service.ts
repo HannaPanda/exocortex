@@ -1,6 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { z } from 'zod';
 
+import {
+  aliasTargetOf,
+  fetchOpenRouterModels,
+  mapModelFields,
+  type OpenRouterModel,
+  type OpenRouterModelFields,
+  resolveModelRoutes,
+} from '@exocortex/ai';
 import { type ApiEnv } from '@exocortex/config';
 import {
   type AddAiModelsFromCatalogRequest,
@@ -8,6 +15,7 @@ import {
   type AiModel,
   type AiModelCatalogEntry,
   type AiModelCatalogResponse,
+  type AiModelEndpointListResponse,
   type AiModelListResponse,
   type CreateAiModelRequest,
   type SyncAiModelsRequest,
@@ -16,6 +24,7 @@ import {
 } from '@exocortex/contracts';
 import {
   type AiReasoningLevel as AiReasoningLevelPrisma,
+  applyModelRouteSnapshot,
   type Prisma,
   type PrismaClient,
 } from '@exocortex/database';
@@ -24,7 +33,6 @@ import { type Logger } from '@exocortex/logger';
 import {
   AiModelResolverService,
   mapAiModelRow,
-  REASONING_LEVEL_TO_CONTRACT,
   REASONING_LEVEL_TO_PRISMA,
 } from '../ai/ai-model-resolver.service';
 import { AppError } from '../common/app-error';
@@ -44,248 +52,39 @@ const FALLBACK_CONTEXT_WINDOW_TOKENS = 8192;
 const CATALOG_SORT_ORDER_STEP = 10;
 
 /**
- * Narrow, lenient schema for `GET {OPENROUTER_BASE_URL}/models`.
- *
- * `.loose()` on every object lets OpenRouter add a field at any time without
- * breaking the sync -- only the handful of properties this service actually
- * reads are named.
- */
-const openRouterModelSchema = z
-  .object({
-    id: z.string(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    /** Present on the `~vendor/model-latest` entries; names the model they currently resolve to. */
-    alias_target: z
-      .object({
-        slug: z.string(),
-      })
-      .loose()
-      .nullable()
-      .optional(),
-    context_length: z.number().optional(),
-    architecture: z
-      .object({
-        input_modalities: z.array(z.string()).default([]),
-      })
-      .loose()
-      .optional(),
-    supported_parameters: z.array(z.string()).default([]),
-    reasoning: z
-      .object({
-        supported_efforts: z.array(z.string()).default([]),
-      })
-      .loose()
-      .nullable()
-      .optional(),
-    top_provider: z
-      .object({
-        max_completion_tokens: z.number().nullable().optional(),
-      })
-      .loose()
-      .nullable()
-      .optional(),
-    pricing: z
-      .object({
-        prompt: z.string(),
-        completion: z.string(),
-      })
-      .loose(),
-  })
-  .loose();
-
-const openRouterModelListSchema = z.object({
-  data: z.array(openRouterModelSchema),
-});
-
-/**
- * Narrow, lenient schema for `GET {OPENROUTER_BASE_URL}/models/{slug}/endpoints`.
- *
- * One model is served by many providers, each with its own context window,
- * output limit and price, and the router picks one per request.
- */
-const openRouterEndpointListSchema = z.object({
-  data: z
-    .object({
-      endpoints: z.array(
-        z
-          .object({
-            context_length: z.number().optional(),
-            max_completion_tokens: z.number().nullable().optional(),
-            pricing: z
-              .object({
-                prompt: z.string(),
-                completion: z.string(),
-              })
-              .loose(),
-          })
-          .loose(),
-      ),
-    })
-    .loose(),
-});
-
-type OpenRouterEndpoint = z.infer<typeof openRouterEndpointListSchema>['data']['endpoints'][number];
-
-export type OpenRouterModel = z.infer<typeof openRouterModelSchema>;
-
-/** The effort names OpenRouter uses, in ascending strength, mapped onto the registry's enum. */
-const EFFORT_NAME_TO_LEVEL: Record<string, AiReasoningLevelPrisma> = {
-  none: 'NONE',
-  minimal: 'MINIMAL',
-  low: 'LOW',
-  medium: 'MEDIUM',
-  high: 'HIGH',
-  xhigh: 'XHIGH',
-  max: 'MAX',
-};
-
-const LEVELS_IN_ASCENDING_STRENGTH: readonly AiReasoningLevelPrisma[] = [
-  'NONE',
-  'MINIMAL',
-  'LOW',
-  'MEDIUM',
-  'HIGH',
-  'XHIGH',
-  'MAX',
-];
-
-/**
- * Derives the selectable thinking levels from what OpenRouter reports.
- *
- * `reasoning.supported_efforts` is the provider's own answer and is believed
- * whenever it is there: it is how `xhigh` and `max` became reachable at all, and
- * how the next level will. An effort we have no enum value for is dropped rather
- * than guessed at, and NONE is always offered -- "do not think" is a choice no
- * model can take away.
- *
- * The fallback is the older heuristic, for an entry that reports no efforts. A
- * model that only lists `reasoning` thinks on its own terms and offers no level
- * to pick, so it gets `[NONE]`. `reasoning_effort` means the effort levels are
- * honoured; `verbosity` (Anthropic) does not add a level. MINIMAL is only
- * offered where the provider documents it, which today is OpenAI.
- */
-export function deriveReasoningLevels(input: {
-  slug: string;
-  supportedParameters: readonly string[];
-  supportedEfforts?: readonly string[];
-}): AiReasoningLevelPrisma[] {
-  const reported = new Set(
-    (input.supportedEfforts ?? [])
-      .map((effort) => EFFORT_NAME_TO_LEVEL[effort.toLowerCase()])
-      .filter((level): level is AiReasoningLevelPrisma => level !== undefined),
-  );
-  if (reported.size > 0) {
-    reported.add('NONE');
-    return LEVELS_IN_ASCENDING_STRENGTH.filter((level) => reported.has(level));
-  }
-
-  if (!input.supportedParameters.includes('reasoning_effort')) {
-    return ['NONE'];
-  }
-  const levels: AiReasoningLevelPrisma[] = ['NONE'];
-  if (input.slug.startsWith('openai/')) levels.push('MINIMAL');
-  levels.push('LOW', 'MEDIUM', 'HIGH');
-  return levels;
-}
-
-interface MappedLiveFields {
-  contextWindowTokens: number;
-  maxOutputTokens: number | null;
-  supportsVision: boolean;
-  supportsTools: boolean;
-  reasoningLevels: AiReasoningLevelPrisma[];
-  inputMicroUsdPerMTok: number;
-  outputMicroUsdPerMTok: number;
-}
-
-/** Maps one live OpenRouter entry onto the registry's column shape. Prices are integers: never store a float. */
-function mapLiveEntry(
-  entry: OpenRouterModel,
-  fallbackContextWindowTokens: number,
-): MappedLiveFields {
-  return {
-    contextWindowTokens: entry.context_length ?? fallbackContextWindowTokens,
-    maxOutputTokens: entry.top_provider?.max_completion_tokens ?? null,
-    supportsVision: (entry.architecture?.input_modalities ?? []).includes('image'),
-    supportsTools: entry.supported_parameters.includes('tools'),
-    reasoningLevels: deriveReasoningLevels({
-      slug: entry.id,
-      supportedParameters: entry.supported_parameters,
-      supportedEfforts: entry.reasoning?.supported_efforts,
-    }),
-    inputMicroUsdPerMTok: Math.round(Number(entry.pricing.prompt) * 1e12),
-    outputMicroUsdPerMTok: Math.round(Number(entry.pricing.completion) * 1e12),
-  };
-}
-
-/**
- * The worst case across a model's endpoints, or `null` when there is nothing to
- * read.
- *
- * A model is served by many providers at once and the router picks one per
- * request, so there is no single true context window or price -- GLM 5.3 ranges
- * from 262k to 1.3M tokens and from $0.88 to $2.10 per million. The registry
- * stores one number, and the safe one is the pessimistic one: the smallest
- * window makes compaction trigger early rather than after a refusal, and the
- * highest price makes the cost estimate too high rather than too low.
- */
-export function worstCaseFromEndpoints(
-  endpoints: readonly OpenRouterEndpoint[],
-): Pick<
-  MappedLiveFields,
-  'contextWindowTokens' | 'maxOutputTokens' | 'inputMicroUsdPerMTok' | 'outputMicroUsdPerMTok'
-> | null {
-  if (endpoints.length === 0) return null;
-
-  const contextWindows = endpoints
-    .map((endpoint) => endpoint.context_length)
-    .filter((value): value is number => value !== undefined && value > 0);
-  const outputLimits = endpoints
-    .map((endpoint) => endpoint.max_completion_tokens)
-    .filter((value): value is number => value !== undefined && value !== null && value > 0);
-  const inputPrices = endpoints.map((endpoint) => Number(endpoint.pricing.prompt));
-  const outputPrices = endpoints.map((endpoint) => Number(endpoint.pricing.completion));
-  if (contextWindows.length === 0 || inputPrices.some((price) => Number.isNaN(price))) return null;
-
-  return {
-    contextWindowTokens: Math.min(...contextWindows),
-    maxOutputTokens: outputLimits.length === 0 ? null : Math.min(...outputLimits),
-    inputMicroUsdPerMTok: Math.round(Math.max(...inputPrices) * 1e12),
-    outputMicroUsdPerMTok: Math.round(Math.max(...outputPrices) * 1e12),
-  };
-}
-
-/**
  * One live entry as the catalogue dialog shows it: the registry's shape, not the
  * provider's.
  *
  * `source` is where the numbers come from and defaults to the entry itself. For
  * an alias (`~z-ai/glm-latest`) it is the entry the alias resolves to: the alias
- * row carries the figures of the *cheapest* endpoint, which is a different model
- * size than the one a request usually lands on, so reading it as if it described
- * the model would understate the context window by a factor of four.
+ * row carries the figures of the *cheapest* endpoint, which describes a
+ * different model size than the one a request usually lands on.
  */
 export function toCatalogEntry(
   entry: OpenRouterModel,
   registered: boolean,
   source: OpenRouterModel = entry,
 ): AiModelCatalogEntry {
-  const mapped = mapLiveEntry(source, FALLBACK_CONTEXT_WINDOW_TOKENS);
+  const fields = mapModelFields(source, FALLBACK_CONTEXT_WINDOW_TOKENS);
   return {
     slug: entry.id,
     displayName: entry.name ?? entry.id,
     description: entry.description ?? null,
-    aliasTargetSlug: entry.alias_target?.slug ?? null,
-    contextWindowTokens: mapped.contextWindowTokens,
-    maxOutputTokens: mapped.maxOutputTokens,
-    supportsVision: mapped.supportsVision,
-    supportsTools: mapped.supportsTools,
-    reasoningLevels: mapped.reasoningLevels.map((level) => REASONING_LEVEL_TO_CONTRACT[level]),
-    inputMicroUsdPerMTok: mapped.inputMicroUsdPerMTok,
-    outputMicroUsdPerMTok: mapped.outputMicroUsdPerMTok,
+    aliasTargetSlug: aliasTargetOf(entry),
+    contextWindowTokens: fields.contextWindowTokens,
+    maxOutputTokens: fields.maxOutputTokens,
+    supportsVision: fields.supportsVision,
+    supportsTools: fields.supportsTools,
+    reasoningLevels: fields.reasoningLevels,
+    inputMicroUsdPerMTok: fields.inputMicroUsdPerMTok,
+    outputMicroUsdPerMTok: fields.outputMicroUsdPerMTok,
     registered,
   };
+}
+
+/** The registry's enum for a set of levels the catalogue reported in its own vocabulary. */
+function toPrismaLevels(levels: readonly OpenRouterModelFields['reasoningLevels'][number][]) {
+  return levels.map((level) => REASONING_LEVEL_TO_PRISMA[level]);
 }
 
 function reasoningLevelsEqual(
@@ -298,16 +97,21 @@ function reasoningLevelsEqual(
 /** One `ai_model` row as the registry reads it back. */
 type AiModelRegistryRow = Awaited<ReturnType<PrismaClient['aiModel']['findMany']>>[number];
 
-/** True when a registry row already says exactly what the live entry says. */
-function matchesLiveEntry(row: AiModelRegistryRow, mapped: MappedLiveFields): boolean {
+/** True when a registry row already says exactly what the provider says. */
+function matchesLiveEntry(
+  row: AiModelRegistryRow,
+  fields: OpenRouterModelFields,
+  aliasTargetSlug: string | null,
+): boolean {
   return (
-    row.contextWindowTokens === mapped.contextWindowTokens &&
-    row.maxOutputTokens === mapped.maxOutputTokens &&
-    row.supportsVision === mapped.supportsVision &&
-    row.supportsTools === mapped.supportsTools &&
-    reasoningLevelsEqual(row.reasoningLevels, mapped.reasoningLevels) &&
-    row.inputMicroUsdPerMTok === mapped.inputMicroUsdPerMTok &&
-    row.outputMicroUsdPerMTok === mapped.outputMicroUsdPerMTok
+    row.contextWindowTokens === fields.contextWindowTokens &&
+    row.maxOutputTokens === fields.maxOutputTokens &&
+    row.supportsVision === fields.supportsVision &&
+    row.supportsTools === fields.supportsTools &&
+    reasoningLevelsEqual(row.reasoningLevels, toPrismaLevels(fields.reasoningLevels)) &&
+    row.inputMicroUsdPerMTok === fields.inputMicroUsdPerMTok &&
+    row.outputMicroUsdPerMTok === fields.outputMicroUsdPerMTok &&
+    row.aliasTargetSlug === aliasTargetSlug
   );
 }
 
@@ -458,6 +262,44 @@ export class AiModelsService {
   }
 
   /**
+   * One model's endpoint snapshot, for the admin view (ADR-032).
+   *
+   * Sorted by what a request cares about first: the biggest window, then the
+   * cheapest of those. It is a snapshot, not a live read -- the point is to show
+   * what routing decisions are actually being made from.
+   */
+  async endpoints(modelId: string): Promise<AiModelEndpointListResponse> {
+    const model = await this.prisma.aiModel.findUnique({
+      where: { id: modelId },
+      select: { id: true, slug: true, aliasTargetSlug: true, endpointsSyncedAt: true },
+    });
+    if (model === null) throw AppError.notFound('AI model');
+
+    const rows = await this.prisma.aiModelEndpoint.findMany({
+      where: { modelId },
+      orderBy: [{ contextWindowTokens: 'desc' }, { inputMicroUsdPerMTok: 'asc' }],
+    });
+
+    return {
+      endpoints: rows.map((row) => ({
+        providerKey: row.providerKey,
+        providerName: row.providerName,
+        contextWindowTokens: row.contextWindowTokens,
+        maxPromptTokens: row.maxPromptTokens,
+        maxOutputTokens: row.maxOutputTokens,
+        inputMicroUsdPerMTok: row.inputMicroUsdPerMTok,
+        outputMicroUsdPerMTok: row.outputMicroUsdPerMTok,
+        supportsTools: row.supportsTools,
+        supportsReasoningEffort: row.supportsReasoningEffort,
+        quantization: row.quantization,
+        updatedAt: row.updatedAt.toISOString(),
+      })),
+      targetSlug: rows[0]?.targetSlug ?? model.aliasTargetSlug ?? model.slug,
+      syncedAt: model.endpointsSyncedAt?.toISOString() ?? null,
+    };
+  }
+
+  /**
    * Everything the provider currently offers, mapped onto the registry's shape
    * and marked with what the registry already has.
    *
@@ -512,28 +354,15 @@ export class AiModelsService {
         continue;
       }
 
-      const mapped = await this.mapForRegistry(live, liveById, FALLBACK_CONTEXT_WINDOW_TOKENS);
       sortOrder += CATALOG_SORT_ORDER_STEP;
-      const created = await this.prisma.aiModel.create({
-        data: {
-          slug,
-          displayName: live.name ?? slug,
-          description: live.description ?? null,
-          contextWindowTokens: mapped.contextWindowTokens,
-          maxOutputTokens: mapped.maxOutputTokens,
-          supportsVision: mapped.supportsVision,
-          supportsTools: mapped.supportsTools,
-          reasoningLevels: mapped.reasoningLevels,
-          inputMicroUsdPerMTok: mapped.inputMicroUsdPerMTok,
-          outputMicroUsdPerMTok: mapped.outputMicroUsdPerMTok,
+      added.push(
+        await this.createFromLiveEntry({
+          live,
+          liveById,
           enabled: request.enabled,
           sortOrder,
-          metadata: live as unknown as Prisma.InputJsonObject,
-          syncedAt: new Date(),
-        },
-        include: AI_MODEL_INCLUDE,
-      });
-      added.push(mapAiModelRow(created));
+        }),
+      );
     }
 
     this.logger.info('AI models added from the provider catalogue', {
@@ -579,71 +408,56 @@ export class AiModelsService {
    * read. A target the list does not contain leaves the alias describing itself,
    * which is wrong but is still better than nothing.
    */
+  /**
+   * The entry whose numbers describe a model: itself, or what an alias resolves
+   * to.
+   *
+   * An alias row (`~z-ai/glm-latest`) carries the figures of the cheapest
+   * endpoint rather than of the model, so its own row is the one thing not to
+   * read. A target the list does not contain leaves the alias describing itself,
+   * which is wrong but is still better than nothing.
+   */
   private sourceOf(live: OpenRouterModel, liveById: Map<string, OpenRouterModel>): OpenRouterModel {
-    const targetSlug = live.alias_target?.slug;
-    if (targetSlug === undefined) return live;
+    const targetSlug = aliasTargetOf(live);
+    if (targetSlug === null) return live;
     return liveById.get(targetSlug) ?? live;
   }
 
   /**
-   * What a registry row should say about a model: the alias resolved, and for an
-   * alias the pessimistic figures across the target's endpoints.
+   * The alias, the figures and the endpoints for one slug (ADR-032).
    *
-   * The endpoint list is only fetched for an alias. It is one request per model,
-   * and a pinned slug already names a model whose row is representative of it --
-   * an alias is the case where the catalogue's own figures describe something
-   * else. A failed lookup silently keeps the resolved row's figures: registering
-   * a model must not depend on a second endpoint being up.
+   * Delegates to `@exocortex/ai`, which is the one implementation the scheduled
+   * refresh in the worker uses as well. A failure to read the endpoints is
+   * logged here and nowhere else: the caller keeps whatever snapshot the model
+   * already had.
    */
-  private async mapForRegistry(
-    live: OpenRouterModel,
-    liveById: Map<string, OpenRouterModel>,
-    fallbackContextWindowTokens: number,
-  ): Promise<MappedLiveFields> {
-    const source = this.sourceOf(live, liveById);
-    const mapped = mapLiveEntry(source, fallbackContextWindowTokens);
-    if (live.alias_target?.slug === undefined) return mapped;
-
-    const worstCase = worstCaseFromEndpoints(await this.fetchEndpoints(source.id));
-    return worstCase === null ? mapped : { ...mapped, ...worstCase };
-  }
-
-  /** One model's endpoints, or an empty list when the provider cannot answer. */
-  private async fetchEndpoints(slug: string): Promise<OpenRouterEndpoint[]> {
-    try {
-      const response = await fetch(`${this.env.OPENROUTER_BASE_URL}/models/${slug}/endpoints`, {
-        signal: AbortSignal.timeout(15_000),
+  private async resolveRoutes(slug: string, liveById: Map<string, OpenRouterModel>) {
+    const resolution = await resolveModelRoutes({
+      baseUrl: this.env.OPENROUTER_BASE_URL,
+      slug,
+      models: liveById,
+      fallbackContextWindowTokens: FALLBACK_CONTEXT_WINDOW_TOKENS,
+    });
+    if (resolution.endpointFailure !== null) {
+      this.logger.warn('Endpoint list could not be read; the previous snapshot stands', {
+        slug,
+        targetSlug: resolution.targetSlug,
+        reason: resolution.endpointFailure,
       });
-      if (!response.ok) return [];
-      const parsed = openRouterEndpointListSchema.safeParse(await response.json());
-      return parsed.success ? parsed.data.data.endpoints : [];
-    } catch (error) {
-      this.logger.warn('Endpoint list could not be read', { slug, error });
-      return [];
     }
+    return resolution;
   }
 
   /** The provider's current model list, keyed by slug. */
   private async fetchLiveModels(): Promise<Map<string, OpenRouterModel>> {
-    const response = await fetch(`${this.env.OPENROUTER_BASE_URL}/models`, {
-      signal: AbortSignal.timeout(15_000),
-    });
-    if (!response.ok) {
+    try {
+      return await fetchOpenRouterModels(this.env.OPENROUTER_BASE_URL);
+    } catch (error) {
       throw new AppError(
         'ai_provider_unavailable',
-        `OpenRouter model list request failed with status ${response.status}`,
+        error instanceof Error ? error.message : 'The model list could not be read',
       );
     }
-
-    const body: unknown = await response.json();
-    const parsed = openRouterModelListSchema.safeParse(body);
-    if (!parsed.success) {
-      throw new AppError(
-        'ai_provider_unavailable',
-        'OpenRouter model list response did not match the expected shape',
-      );
-    }
-    return new Map(parsed.data.data.map((entry) => [entry.id, entry]));
   }
 
   /**
@@ -670,8 +484,19 @@ export class AiModelsService {
         continue;
       }
 
-      const mapped = await this.mapForRegistry(live, liveById, row.contextWindowTokens);
-      if (matchesLiveEntry(row, mapped)) {
+      const routes = await this.resolveRoutes(row.slug, liveById);
+      // The endpoints go in even when nothing else changed: a provider that
+      // dropped the model, or one that appeared, changes what a request may be
+      // routed to without changing a single column on the row.
+      await applyModelRouteSnapshot(this.prisma, {
+        modelId: row.id,
+        targetSlug: routes.targetSlug,
+        aliasTargetSlug: routes.aliasTargetSlug,
+        endpoints: routes.endpoints,
+      });
+
+      const fields = routes.fields;
+      if (fields === null || matchesLiveEntry(row, fields, routes.aliasTargetSlug)) {
         unchanged += 1;
         continue;
       }
@@ -679,13 +504,14 @@ export class AiModelsService {
       await this.prisma.aiModel.update({
         where: { id: row.id },
         data: {
-          contextWindowTokens: mapped.contextWindowTokens,
-          maxOutputTokens: mapped.maxOutputTokens,
-          supportsVision: mapped.supportsVision,
-          supportsTools: mapped.supportsTools,
-          reasoningLevels: mapped.reasoningLevels,
-          inputMicroUsdPerMTok: mapped.inputMicroUsdPerMTok,
-          outputMicroUsdPerMTok: mapped.outputMicroUsdPerMTok,
+          contextWindowTokens: fields.contextWindowTokens,
+          maxOutputTokens: fields.maxOutputTokens,
+          supportsVision: fields.supportsVision,
+          supportsTools: fields.supportsTools,
+          reasoningLevels: toPrismaLevels(fields.reasoningLevels),
+          inputMicroUsdPerMTok: fields.inputMicroUsdPerMTok,
+          outputMicroUsdPerMTok: fields.outputMicroUsdPerMTok,
+          aliasTargetSlug: routes.aliasTargetSlug,
           metadata: live as unknown as Prisma.InputJsonObject,
           syncedAt: new Date(),
         },
@@ -710,31 +536,61 @@ export class AiModelsService {
       const live = liveById.get(slug);
       if (live === undefined) continue;
 
-      const mapped = mapLiveEntry(live, 0);
-      await this.prisma.aiModel.create({
-        data: {
-          slug,
-          displayName: live.name ?? slug,
-          description: live.description ?? null,
-          contextWindowTokens: mapped.contextWindowTokens,
-          maxOutputTokens: mapped.maxOutputTokens,
-          supportsVision: mapped.supportsVision,
-          supportsTools: mapped.supportsTools,
-          reasoningLevels: mapped.reasoningLevels,
-          inputMicroUsdPerMTok: mapped.inputMicroUsdPerMTok,
-          outputMicroUsdPerMTok: mapped.outputMicroUsdPerMTok,
-          // Disabled and sorted last: an admin must review a freshly added
-          // model before it appears in the picker.
-          enabled: false,
-          sortOrder: 900,
-          metadata: live as unknown as Prisma.InputJsonObject,
-          syncedAt: new Date(),
-        },
-      });
+      // Disabled and sorted last: a slug that arrived through a sync request
+      // was never reviewed by anyone, unlike one picked out of the catalogue.
+      await this.createFromLiveEntry({ live, liveById, enabled: false, sortOrder: 900 });
       added.push(slug);
     }
 
     return added;
+  }
+
+  /**
+   * Creates one registry row from a live catalogue entry, endpoints and all.
+   *
+   * The one place a model enters the registry from the provider, used by the
+   * catalogue dialog and by `sync`'s `addMissing`. The row is written first and
+   * the snapshot second: a provider that will not answer about its endpoints
+   * costs the model its routing, not its registration (ADR-032).
+   */
+  private async createFromLiveEntry(input: {
+    live: OpenRouterModel;
+    liveById: Map<string, OpenRouterModel>;
+    enabled: boolean;
+    sortOrder: number;
+  }): Promise<AiModel> {
+    const { live } = input;
+    const routes = await this.resolveRoutes(live.id, input.liveById);
+    const fields = routes.fields ?? mapModelFields(live, FALLBACK_CONTEXT_WINDOW_TOKENS);
+
+    const created = await this.prisma.aiModel.create({
+      data: {
+        slug: live.id,
+        displayName: live.name ?? live.id,
+        description: live.description ?? null,
+        contextWindowTokens: fields.contextWindowTokens,
+        maxOutputTokens: fields.maxOutputTokens,
+        supportsVision: fields.supportsVision,
+        supportsTools: fields.supportsTools,
+        reasoningLevels: toPrismaLevels(fields.reasoningLevels),
+        inputMicroUsdPerMTok: fields.inputMicroUsdPerMTok,
+        outputMicroUsdPerMTok: fields.outputMicroUsdPerMTok,
+        enabled: input.enabled,
+        sortOrder: input.sortOrder,
+        aliasTargetSlug: routes.aliasTargetSlug,
+        metadata: live as unknown as Prisma.InputJsonObject,
+        syncedAt: new Date(),
+      },
+      include: AI_MODEL_INCLUDE,
+    });
+
+    await applyModelRouteSnapshot(this.prisma, {
+      modelId: created.id,
+      targetSlug: routes.targetSlug,
+      aliasTargetSlug: routes.aliasTargetSlug,
+      endpoints: routes.endpoints,
+    });
+    return mapAiModelRow(created);
   }
 
   /** Resolves a vision-companion slug to an id, refusing a model to be its own companion. */

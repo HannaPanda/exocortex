@@ -393,6 +393,12 @@ export class QueueRegistry {
     // Daily, last of the nightly sweeps. A no-op while
     // `ai.runPayloadRetentionDays` is zero, which is the default; once it is
     // set, one indexed UPDATE that finds a handful of rows a day (issue #10).
+    // Hourly. Who serves a model, and what a `latest` alias points at, both
+    // move on their own, and every request's provider allowlist is planned
+    // from that snapshot (ADR-032). Hourly rather than every few minutes:
+    // prices and providers change on the scale of days, and a run that sees an
+    // alias answer as something else marks the row for the next sweep itself.
+    await schedule('sync-ai-model-routes', { pattern: '7 * * * *' });
     await schedule('prune-ai-run-payloads', { pattern: '30 5 * * *' });
     // Daily, after the journal prune. A no-op while
     // `automations.runRetentionDays` is zero; once it is set, one indexed

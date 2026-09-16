@@ -161,6 +161,7 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
       toolRunnerFactory,
       visionPreprocessorFor,
       modelRegistry,
+      queues,
     }),
     onFailed: async (payload, job, error) => {
       if (payload === null) return;
@@ -209,6 +210,7 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
       bus,
       search,
       settings: readSettings,
+      openRouterBaseUrl: env.OPENROUTER_BASE_URL,
     }),
   });
 

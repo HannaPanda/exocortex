@@ -29,6 +29,8 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   collaboration_read_only: 'Diese Seite ist nur lesbar.',
   attachment_access_denied: 'Du hast keinen Zugriff auf diese Datei.',
   ai_provider_unavailable: 'Der KI-Anbieter ist gerade nicht erreichbar.',
+  ai_no_eligible_provider:
+    'Kein Anbieter dieses Modells kann diese Anfrage bedienen. Wähle ein Modell mit größerem Kontext oder starte eine neue Unterhaltung.',
   internal_error: 'Unerwarteter Fehler. Bitte versuche es erneut.',
   admin_required: 'Dafür brauchst du Administratorrechte.',
   api_token_invalid: 'Das API-Token ist ungültig.',

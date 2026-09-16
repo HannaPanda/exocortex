@@ -263,6 +263,9 @@ GET  /api/admin/ai-models/catalog
 # Register picked slugs with everything the provider knows about them.
 POST /api/admin/ai-models/catalog     # {"slugs":["z-ai/glm-5.2"],"enabled":true}
 
+# Which providers serve one model, with what capacity (ADR-032).
+GET  /api/admin/ai-models/:modelId/endpoints
+
 # Refresh prices, context windows and capabilities from the live provider.
 POST /api/admin/ai-models/sync        # optionally {"slugs":["z-ai/glm-5.2"]}
 ```
@@ -278,18 +281,19 @@ stale row does not lose the other nine. The manual form stays for a model the
 provider does not offer and for correcting a row afterwards. The catalogue is
 not cached server-side: a stale price here would be copied into a row.
 
-**An alias is resolved, and read pessimistically.** OpenRouter's
+**An alias is resolved, and so are its providers.** OpenRouter's
 `~vendor/model-latest` entries always point at the current model of a family
 (`alias_target`), and their row carries the figures of the _cheapest_ endpoint
-rather than of the model -- for `~z-ai/glm-latest` that is a context window four
-times smaller than the one a request usually gets. So the catalogue describes an
-alias with the target's figures, and registering or syncing one reads
-`GET /models/{target}/endpoints` as well: a model is served by many providers at
-once, the router picks one per request, and the registry stores a single number.
-That number is the pessimistic one -- smallest window, highest price -- because
-compaction that triggers early beats a refusal from the provider, and a cost
-estimate that is too high beats one that is too low. The extra request happens
-for an alias only, and a failed one leaves the resolved figures standing.
+rather than of the model. So the catalogue describes an alias with the target's
+figures, and registering or syncing any model also reads
+`GET /models/{target}/endpoints` into `ai_model_endpoint` (ADR-032). That
+snapshot is what every request's provider allowlist is planned from; the model's
+own `contextWindowTokens` becomes the largest window a provider offers, and its
+prices the highest, because the router may pick either end. Expanding a row in
+the admin table shows the snapshot: provider, usable input, output limit, price,
+capabilities, and when it was last refreshed. `sync-ai-model-routes` keeps it
+current hourly, and a run that sees an alias answer as a different model marks
+the row for the next sweep itself.
 
 `sync` reads the live OpenRouter model list. A slug that has disappeared
 upstream is set to `enabled = false` rather than deleted, so conversations that

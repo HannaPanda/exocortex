@@ -43,6 +43,25 @@ export interface AiToolCall {
   argumentsJson: string;
 }
 
+/**
+ * Technical requirements this request places on whoever serves it (ADR-032).
+ *
+ * Provider-neutral on purpose: a caller says what the request needs and which
+ * providers may serve it, and the adapter for a provider that can route
+ * translates that into its own wire format. A caller never builds a provider's
+ * routing object itself.
+ */
+export interface AiRoutingRequirements {
+  /** Minimum total context window this request needs, for diagnostics and adapters that can ask for it. */
+  minimumContextTokens?: number;
+  /**
+   * Opaque provider keys that may serve this request, as the model registry's
+   * endpoint snapshot named them. An empty or absent list means "no preference":
+   * the provider routes as it normally would.
+   */
+  allowedProviderKeys?: readonly string[];
+}
+
 export interface AiReasoningOptions {
   /** OpenRouter `reasoning.effort`. Omitted entirely for 'none'. */
   effort: 'none' | 'minimal' | 'low' | 'medium' | 'high' | 'xhigh' | 'max';
@@ -65,6 +84,8 @@ export interface AiGenerateRequest {
    *  tools are present. */
   toolChoice?: 'auto' | 'none';
   reasoning?: AiReasoningOptions;
+  /** What this request needs from whoever serves it (ADR-032). Ignored by providers that cannot route. */
+  routing?: AiRoutingRequirements;
 }
 
 export interface AiGenerateResult {

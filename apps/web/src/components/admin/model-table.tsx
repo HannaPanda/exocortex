@@ -1,6 +1,13 @@
 'use client';
 
-import { LibraryBigIcon, MoreHorizontalIcon, PlusIcon, RefreshCwIcon } from 'lucide-react';
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  LibraryBigIcon,
+  MoreHorizontalIcon,
+  PlusIcon,
+  RefreshCwIcon,
+} from 'lucide-react';
 import * as React from 'react';
 
 import { type AiModel, type AiReasoningLevel, groupAiModelsByVendor } from '@exocortex/contracts';
@@ -36,6 +43,7 @@ import { messageForCode } from '@/lib/api/error-messages';
 
 import { ModelCatalogDialog } from './model-catalog-dialog';
 import { ModelDialog } from './model-dialog';
+import { ModelEndpoints } from './model-endpoints';
 
 const numberFormat = new Intl.NumberFormat('de-DE');
 
@@ -67,6 +75,7 @@ export function ModelTable() {
 
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [catalogOpen, setCatalogOpen] = React.useState(false);
+  const [expandedModelId, setExpandedModelId] = React.useState<string | null>(null);
   const [editingModel, setEditingModel] = React.useState<AiModel | undefined>(undefined);
   const [syncSummary, setSyncSummary] = React.useState<string | null>(null);
 
@@ -165,12 +174,29 @@ export function ModelTable() {
                 {group.label}
               </TableCell>
             </TableRow>,
-            ...group.models.map((model) => (
+            ...group.models.flatMap((model) => [
               <TableRow key={model.id}>
                 <TableCell>
-                  <div className="flex flex-col">
-                    <span className="font-medium">{model.displayName}</span>
-                    <span className="text-xs text-muted-foreground">{model.slug}</span>
+                  <div className="flex items-start gap-1.5">
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label={`Anbieter von ${model.displayName} ${
+                        expandedModelId === model.id ? 'ausblenden' : 'anzeigen'
+                      }`}
+                      onClick={() =>
+                        setExpandedModelId((current) => (current === model.id ? null : model.id))
+                      }
+                    >
+                      {expandedModelId === model.id ? <ChevronDownIcon /> : <ChevronRightIcon />}
+                    </Button>
+                    <div className="flex min-w-0 flex-col">
+                      <span className="font-medium">{model.displayName}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {model.slug}
+                        {model.aliasTargetSlug !== null ? ` → ${model.aliasTargetSlug}` : ''}
+                      </span>
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell>{numberFormat.format(model.contextWindowTokens)} Tokens</TableCell>
@@ -238,8 +264,17 @@ export function ModelTable() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
-              </TableRow>
-            )),
+              </TableRow>,
+              ...(expandedModelId === model.id
+                ? [
+                    <TableRow key={`${model.id}-endpoints`} className="hover:bg-transparent">
+                      <TableCell colSpan={7} className="bg-muted/30">
+                        <ModelEndpoints modelId={model.id} modelSlug={model.slug} />
+                      </TableCell>
+                    </TableRow>,
+                  ]
+                : []),
+            ]),
           ])}
         </TableBody>
       </Table>

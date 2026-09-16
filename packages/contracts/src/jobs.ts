@@ -156,6 +156,14 @@ export const maintenanceJobSchema = jobBase.extend({
      */
     'decay-memory-facts',
     /**
+     * Refreshes the endpoint snapshot of the registered OpenRouter models: who
+     * serves each of them, with what context window, output limit and price
+     * (issue #68, ADR-032). Resolves `latest` aliases again on the way, so a
+     * moved alias is noticed without a deployment. A model whose snapshot
+     * cannot be refreshed keeps the one it has.
+     */
+    'sync-ai-model-routes',
+    /**
      * Empties `messages` and `resultText` on AI runs older than
      * `ai.runPayloadRetentionDays` and marks them `payloadsPrunedAt`
      * (issue #10). Off while that setting is zero. The usage columns are left

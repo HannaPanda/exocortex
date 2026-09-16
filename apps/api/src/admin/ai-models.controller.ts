@@ -11,6 +11,8 @@ import {
   type AiModel,
   type AiModelCatalogResponse,
   aiModelCatalogResponseSchema,
+  type AiModelEndpointListResponse,
+  aiModelEndpointListResponseSchema,
   type AiModelListResponse,
   aiModelListResponseSchema,
   aiModelSchema,
@@ -91,6 +93,13 @@ export class AdminAiModelsController {
     @Param('modelId') modelId: string,
   ): Promise<RemoveResponse> {
     return this.aiModels.remove(modelId, session.userId);
+  }
+
+  /** One model's endpoint snapshot: which providers serve it, with what capacity (ADR-032). */
+  @Get(':modelId/endpoints')
+  @ApiOkResponse({ schema: openApiResponseSchema(aiModelEndpointListResponseSchema) })
+  async endpoints(@Param('modelId') modelId: string): Promise<AiModelEndpointListResponse> {
+    return this.aiModels.endpoints(modelId);
   }
 
   @Post('sync')

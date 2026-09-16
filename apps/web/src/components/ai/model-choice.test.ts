@@ -35,6 +35,7 @@ function model(
     inputMicroUsdPerMTok: 1_000_000,
     outputMicroUsdPerMTok: 2_000_000,
     visionCompanionSlug: null,
+    aliasTargetSlug: null,
     enabled: true,
     sortOrder: 100,
     syncedAt: null,

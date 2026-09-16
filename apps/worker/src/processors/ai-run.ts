@@ -1,24 +1,30 @@
-import { type AiProvider, type VisionPreprocessor } from '@exocortex/ai';
+import { type AiProvider, estimateTokens, type VisionPreprocessor } from '@exocortex/ai';
 import {
   type AiMessage,
   deriveAiRunTimeouts,
-  type QUEUE_NAMES,
+  QUEUE_NAMES,
   type Settings,
 } from '@exocortex/contracts';
 import { type AiRun, type PrismaClient } from '@exocortex/database';
 import { withSpan } from '@exocortex/logger';
-import { type JobContext, type RedisEventBus } from '@exocortex/queue';
+import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
 import { type ResolvedAiKey } from '../ai-key';
+import { compactIfNeeded } from '../compaction';
 import { type ToolRunner, type ToolRunnerFactory } from '../tool-runner';
 
 import { admitRun } from './ai-run/admission';
 import { writeFailure, writeSuccess } from './ai-run/completion';
 import { type ResolvedModelRow } from './ai-run/contract';
-import { executeRun } from './ai-run/execution';
+import { executeRun, type RunRoutingInput } from './ai-run/execution';
 import { describeDocumentImages, MAX_IMAGES_PER_RUN } from './ai-run/images';
-import { buildRunMessages, resolveModelRow, resolveVisionPreprocessor } from './ai-run/preparation';
+import {
+  buildRunMessages,
+  loadConversationMessages,
+  resolveModelRow,
+  resolveVisionPreprocessor,
+} from './ai-run/preparation';
 
 export { type ResolvedModelRow } from './ai-run/contract';
 export { toolCallTarget } from './ai-run/execution';
@@ -49,6 +55,8 @@ export interface AiRunDependencies {
    */
   visionPreprocessorFor: (modelSlug: string | null, apiKey?: string) => VisionPreprocessor | null;
   modelRegistry: (slug: string) => Promise<ResolvedModelRow | null>;
+  /** Only used to ask for an endpoint refresh when a `latest` alias turns out to have moved (ADR-032). */
+  queues: QueueRegistry;
 }
 
 /**
@@ -70,6 +78,88 @@ function resolveToolAvailability(input: {
   return {
     enabled: wanted && input.hasToolRunnerFactory,
     missingServiceToken: wanted && !input.hasToolRunnerFactory,
+  };
+}
+
+/**
+ * What the turn loop needs to keep every request inside the providers that can
+ * serve it (ADR-032).
+ *
+ * Built here rather than in the loop because it closes over everything the run
+ * already resolved: the prompt's fixed part, the settings, and the way this
+ * conversation gets smaller.
+ */
+function buildRunRouting(input: {
+  dependencies: AiRunDependencies;
+  modelRow: ResolvedModelRow;
+  run: AiRun;
+  settings: Settings;
+  payload: JobContext<typeof QUEUE_NAMES.ai>['payload'];
+  logger: JobContext<typeof QUEUE_NAMES.ai>['logger'];
+  base: AiMessage[];
+  imageContext: AiMessage | null;
+  provider: AiProvider;
+  toolsEnabled: boolean;
+  requiresReasoningEffort: boolean;
+  floorInputTokens: number;
+}): RunRoutingInput {
+  const { dependencies, modelRow, run, settings, payload, logger, base, imageContext } = input;
+  const { prisma, bus } = dependencies;
+
+  return {
+    endpoints: modelRow.endpoints,
+    aliasTargetSlug: modelRow.aliasTargetSlug,
+    usableSharePercent: settings['ai.compactionThresholdPercent'],
+    requiresTools: input.toolsEnabled,
+    requiresReasoningEffort: input.requiresReasoningEffort,
+    floorInputTokens: input.floorInputTokens,
+    // A run without a conversation carries its own message list and has
+    // nothing to summarise, so it cannot make itself smaller.
+    compact:
+      run.conversationId === null
+        ? null
+        : async (budgetInputTokens: number): Promise<AiMessage[]> => {
+            await compactIfNeeded({
+              prisma,
+              provider: input.provider,
+              bus,
+              runId: run.id,
+              conversationId: run.conversationId!,
+              workspaceId: run.workspaceId,
+              budgetInputTokens,
+              systemPromptTokens: estimateTokens(base[0]?.content ?? ''),
+              keepRecentMessages: settings['ai.compactionKeepRecentMessages'],
+              summaryModel: settings['ai.compactionModelSlug'] ?? run.model,
+              correlationId: payload.correlationId,
+              logger,
+            });
+            const reloaded = await loadConversationMessages(prisma, run.conversationId!);
+            return imageContext === null
+              ? [...base, ...reloaded]
+              : [...base, imageContext, ...reloaded];
+          },
+    onAliasDrift: (actualModel: string): void => {
+      // Marked and asked for, not repaired here: the snapshot is rebuilt in one
+      // transaction by the refresh, and this run's plan stays valid either way.
+      void (async () => {
+        await prisma.aiModel.update({
+          where: { id: modelRow.id },
+          data: { endpointsStaleSince: new Date() },
+        });
+        await dependencies.queues.enqueue(QUEUE_NAMES.maintenance, {
+          correlationId: payload.correlationId,
+          task: 'sync-ai-model-routes',
+          workspaceId: null,
+          documentId: null,
+        });
+      })().catch((error: unknown) => {
+        logger.warn('Could not ask for an endpoint refresh after alias drift', {
+          model: run.model,
+          actualModel,
+          reason: error instanceof Error ? error.message : String(error),
+        });
+      });
+    },
   };
 }
 
@@ -130,7 +220,20 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       loggedMissingServiceTokenWarning = true;
     }
 
-    const { base, rest } = await buildRunMessages({
+    // The admin setting is the ceiling for one answer; a model that caps its own
+    // output lower wins, because asking a provider for more than the model can
+    // return is a request error. Without this the adapter fell back to its own
+    // default and `ai.maxOutputTokens` changed nothing about a run.
+    //
+    // Resolved before the prompt is built: how much answer is reserved decides
+    // how much prompt fits, and which providers could serve it at all (ADR-032).
+    const maxOutputTokens = Math.min(
+      settings['ai.maxOutputTokens'],
+      modelRow.maxOutputTokens ?? Number.POSITIVE_INFINITY,
+    );
+    const requiresReasoningEffort = run.reasoningLevel !== 'NONE';
+
+    const { base, rest, floorInputTokens } = await buildRunMessages({
       prisma,
       provider,
       bus,
@@ -139,6 +242,9 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
       context: {
         toolsEnabled: tools.enabled,
         contextWindowTokens: modelRow.contextWindowTokens,
+        endpoints: modelRow.endpoints,
+        reservedOutputTokens: maxOutputTokens,
+        requiresReasoningEffort,
         payload,
         logger,
       },
@@ -194,15 +300,6 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
     // already read foreign content by the time the first turn starts.
     if (imageContext !== null) runner?.noteUntrustedContent('attachment');
 
-    // The admin setting is the ceiling for one answer; a model that caps its own
-    // output lower wins, because asking a provider for more than the model can
-    // return is a request error. Without this the adapter fell back to its own
-    // default and `ai.maxOutputTokens` changed nothing about a run.
-    const maxOutputTokens = Math.min(
-      settings['ai.maxOutputTokens'],
-      modelRow.maxOutputTokens ?? Number.POSITIVE_INFINITY,
-    );
-
     await prisma.aiRun.update({
       where: { id: run.id },
       data: {
@@ -237,6 +334,20 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           maxToolIterations: tools.enabled ? settings['ai.maxToolIterations'] : 0,
           budgetMicroUsd: settings['ai.budgetMicroUsdPerRun'],
           messages,
+          routing: buildRunRouting({
+            dependencies,
+            modelRow,
+            run,
+            settings,
+            payload,
+            logger,
+            base,
+            imageContext,
+            provider,
+            toolsEnabled: tools.enabled,
+            requiresReasoningEffort,
+            floorInputTokens,
+          }),
         });
         span.setAttributes({
           'ai.run.tool_iterations': result.toolIterations,

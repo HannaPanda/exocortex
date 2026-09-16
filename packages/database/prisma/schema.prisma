@@ -1229,6 +1229,17 @@ model AiModel {
   enabled               Boolean            @default(true)
   /// Ascending sort position in the picker. Plain integer: the list is ~20 rows.
   sortOrder             Int                @default(100)
+  /// For an OpenRouter `~vendor/model-latest` alias: the model it resolved to at
+  /// the last sync. The slug stays the alias, so the alias keeps moving with the
+  /// family; this only says what its figures and endpoints describe (ADR-032).
+  aliasTargetSlug       String?
+  /// When the endpoint snapshot below was last refreshed successfully. An old
+  /// timestamp means stale, and stale data is kept rather than deleted.
+  endpointsSyncedAt     DateTime?
+  /// Set when the snapshot is known to describe something else -- today only
+  /// when an alias answered as a different model than it last resolved to. The
+  /// scheduled refresh takes these first, and clears the mark when it succeeds.
+  endpointsStaleSince   DateTime?
   /// Raw OpenRouter metadata from the last sync. Never read at runtime.
   metadata              Json?
   syncedAt              DateTime?
@@ -1236,9 +1247,43 @@ model AiModel {
   updatedAt             DateTime           @updatedAt
 
   conversations AiConversation[]
+  endpoints     AiModelEndpoint[]
 
   @@index([enabled, sortOrder])
   @@map("ai_model")
+}
+
+/// One provider's offer for one model (ADR-032).
+///
+/// A model on OpenRouter is served by many providers at once, and they differ in
+/// context window, output limit, price and capabilities. The registry keeps a
+/// snapshot of them so a request can be restricted to the providers that can
+/// actually serve it, instead of collapsing the differences into one number.
+model AiModelEndpoint {
+  id                      String   @id @default(cuid(2))
+  modelId                 String
+  model                   AiModel  @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  /// The routing key OpenRouter accepts in `provider.only`, verbatim from the
+  /// endpoint's `tag` (e.g. `reka/fp8`). Never derived from the display name.
+  providerKey             String
+  providerName            String
+  /// Slug the snapshot describes: the alias target for an alias row, else the model's own slug.
+  targetSlug              String
+  contextWindowTokens     Int
+  /// Separate cap on the input alone; null where the endpoint states none.
+  maxPromptTokens         Int?
+  maxOutputTokens         Int?
+  inputMicroUsdPerMTok    Int
+  outputMicroUsdPerMTok   Int
+  supportsTools           Boolean  @default(false)
+  supportsReasoningEffort Boolean  @default(false)
+  quantization            String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@unique([modelId, providerKey])
+  @@index([modelId, contextWindowTokens])
+  @@map("ai_model_endpoint")
 }
 
 // ---------------------------------------------------------------------------

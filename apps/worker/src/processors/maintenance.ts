@@ -4,6 +4,7 @@ import { type HybridSearchAdapter, type PrismaClient } from '@exocortex/database
 import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
+import { syncAiModelRoutes } from './maintenance-tasks/ai-model-routes';
 import {
   collectOrphanedCovers,
   pruneAgentJournal,
@@ -57,6 +58,8 @@ export interface MaintenanceDependencies {
   linkBackfillBatchSize?: number;
   /** Documents per embedding request inside a backfill run. */
   embeddingBackfillBatchSize?: number;
+  /** Where the OpenRouter catalogue is read from (ADR-032). */
+  openRouterBaseUrl: string;
 }
 
 type MaintenanceTaskName = JobContext<typeof QUEUE_NAMES.maintenance>['payload']['task'];
@@ -88,6 +91,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'prune-ai-run-payloads': pruneAiRunPayloads,
   'prune-agent-journal': pruneAgentJournal,
   'prune-automation-runs': pruneAutomationRuns,
+  'sync-ai-model-routes': syncAiModelRoutes,
   'reap-render-jobs': reapRenderJobs,
   'reap-project-builds': reapProjectBuilds,
 };
@@ -112,6 +116,7 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
       search: dependencies.search,
       bus: dependencies.bus,
       settings: dependencies.settings,
+      openRouterBaseUrl: dependencies.openRouterBaseUrl,
       outboxBatchSize: dependencies.outboxBatchSize ?? 100,
       orphanedCoverGraceMs: dependencies.orphanedCoverGraceMs ?? 60 * 60 * 1000,
       linkBackfillBatchSize: dependencies.linkBackfillBatchSize ?? 50,

@@ -1,4 +1,4 @@
-import { type AiGenerateResult, type AiToolCall } from '@exocortex/ai';
+import { type AiGenerateResult, type AiToolCall, type RoutingEndpoint } from '@exocortex/ai';
 import { type AiUsage } from '@exocortex/contracts';
 import { type AiReasoningLevel as AiReasoningLevelPrisma } from '@exocortex/database';
 
@@ -21,6 +21,14 @@ export interface ResolvedModelRow {
    */
   inputMicroUsdPerMTok: number | null;
   outputMicroUsdPerMTok: number | null;
+  /**
+   * The providers that serve this model, as the last endpoint sync saw them
+   * (ADR-032). Empty for a model without a snapshot, which is what makes the
+   * run fall back to letting OpenRouter route on its own.
+   */
+  endpoints: readonly RoutingEndpoint[];
+  /** The model an alias currently resolves to, for drift detection. `null` for an ordinary model. */
+  aliasTargetSlug: string | null;
 }
 
 /** Why a run ended without an answer. */

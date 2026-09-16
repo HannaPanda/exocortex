@@ -45,6 +45,21 @@ const openRouterToolCallsSchema = z.array(
   }),
 );
 
+/**
+ * The error code for a request no allowed provider could serve.
+ *
+ * OpenRouter answers a `provider.only` list it cannot satisfy with a 404 and a
+ * message naming the providers it does have. That is a routing outcome, not an
+ * outage, and the caller can do something about it (compact and re-plan), so it
+ * must not arrive as the same `ai_provider_unavailable` as a dead upstream.
+ */
+export const AI_NO_ELIGIBLE_PROVIDER = 'ai_no_eligible_provider';
+
+/** Whether a failed response is OpenRouter refusing the allowlist rather than failing. */
+function isRoutingRefusal(status: number, request: AiGenerateRequest): boolean {
+  return status === 404 && (request.routing?.allowedProviderKeys?.length ?? 0) > 0;
+}
+
 function mapFinishReason(raw: string | undefined): AiGenerateResult['finishReason'] {
   if (raw === 'tool_calls' || raw === 'stop' || raw === 'length' || raw === 'content_filter') {
     return raw;
@@ -131,6 +146,19 @@ export class OpenRouterProvider implements AiProvider {
       ...(request.reasoning === undefined || request.reasoning.effort === 'none'
         ? {}
         : { reasoning: { effort: request.reasoning.effort } }),
+      // Eligibility only (ADR-032): which providers *can* serve this request.
+      // No `sort`, no `order` -- ranking inside the allowed set stays
+      // OpenRouter's job, and `allow_fallbacks` keeps its failover working
+      // between the providers that are left.
+      ...(request.routing?.allowedProviderKeys === undefined ||
+      request.routing.allowedProviderKeys.length === 0
+        ? {}
+        : {
+            provider: {
+              only: [...request.routing.allowedProviderKeys],
+              allow_fallbacks: true,
+            },
+          }),
     });
   }
 
@@ -190,7 +218,9 @@ export class OpenRouterProvider implements AiProvider {
         correlationId: request.correlationId,
       });
       throw new AiProviderError(
-        'ai_provider_unavailable',
+        isRoutingRefusal(response.status, request)
+          ? AI_NO_ELIGIBLE_PROVIDER
+          : 'ai_provider_unavailable',
         `OpenRouter responded with ${response.status}: ${detail.slice(0, 200)}`,
       );
     }
@@ -230,7 +260,9 @@ export class OpenRouterProvider implements AiProvider {
     if (!response.ok || response.body === null) {
       yield {
         type: 'error',
-        code: 'ai_provider_unavailable',
+        code: isRoutingRefusal(response.status, request)
+          ? AI_NO_ELIGIBLE_PROVIDER
+          : 'ai_provider_unavailable',
         message: `OpenRouter responded with ${response.status}`,
       };
       return;
