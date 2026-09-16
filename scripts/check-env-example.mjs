@@ -53,6 +53,17 @@ const NOT_CONFIGURATION = new Set([
   'npm_lifecycle_event',
 ]);
 
+/**
+ * Prefixes of variables somebody else's runtime injects.
+ *
+ * `CLAUDE_PLUGIN_OPTION_*` is what Claude Code exports into a plugin's hooks
+ * from the answers it collected when the plugin was enabled
+ * (`tools/claude-code-plugin`). Writing them into `.env.example` would invite
+ * somebody to set them there, where nothing would ever read them: the values
+ * live in Claude Code's own settings and credential store.
+ */
+const NOT_CONFIGURATION_PREFIXES = ['CLAUDE_PLUGIN_OPTION_'];
+
 const SKIP_DIRS = new Set([
   'node_modules',
   'dist',
@@ -145,6 +156,7 @@ step('Configuration example sync (.env.example ↔ schemas, code, compose)');
 const missing = [];
 for (const [name, where] of referenced) {
   if (documented.has(name) || NOT_CONFIGURATION.has(name)) continue;
+  if (NOT_CONFIGURATION_PREFIXES.some((prefix) => name.startsWith(prefix))) continue;
   missing.push(`${name} — used in ${where}, absent from .env.example`);
 }
 const orphaned = [];
