@@ -195,6 +195,12 @@ const CONTRADICTED = [
     reason: 'The activity panel lists snapshots and restores them.',
   },
   {
+    claim: /deliberately no CI|there is no CI|without a CI/i,
+    evidence: '.github/workflows/build.yml',
+    reason:
+      'The workflow runs `bash scripts/build.sh` on every push and pull request, so the gates run somewhere other than the deployment host.',
+  },
+  {
     claim: /streams from a local mock provider/i,
     evidence: 'packages/ai/src/registry.ts',
     reason:

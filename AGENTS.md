@@ -51,6 +51,7 @@ same commit series**:
 | a process, a socket, the outbox, the event flow          | `docs/architecture.md`                                                 |
 | a setting, its scope, its ceiling                        | `docs/admin.md`, `.env.example` if it has a bootstrap fallback         |
 | a deployment unit, a container, an nginx route, a backup | `deploy/README.md`                                                     |
+| a hard gate, a check in `build.sh`, the CI workflow      | `deploy/README.md`, the command tables in `README.md` and `CLAUDE.md`  |
 | a compose service or a host port                         | `docs/local-development.md`                                            |
 | an MCP or AI tool                                        | `docs/mcp.md`                                                          |
 | a span, a trace attribute, what is recorded about a run  | `docs/observability.md`                                                |
@@ -75,7 +76,9 @@ bash scripts/build.sh
 
 That is the one entry point: the hard gates (including the documentation gate),
 the build, lint, formatting, typecheck and the tests that need no database. The
-individual commands still exist while iterating:
+same script is all `.github/workflows/build.yml` runs, so a green run here and a
+green run in CI mean the same thing — and a new check belongs in the script, not
+in the workflow. The individual commands still exist while iterating:
 
 ```bash
 pnpm lint

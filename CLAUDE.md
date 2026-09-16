@@ -132,8 +132,12 @@ bash scripts/deploy.sh # build.sh, then migrations, nginx, the four units,
 bypass (package boundaries, `.env.example` sync, brand spelling, MCP catalogue
 completeness, capability parity, documentation currency, migration reproducibility)
 as well as the checks below, in the right order and without racing the live units
-for memory. There is deliberately
-no CI; `deploy/README.md` explains why and what each step does.
+for memory. `deploy/README.md` explains what each step does.
+
+The same script is the whole of `.github/workflows/build.yml`: the CI installs
+Node, pnpm and nothing else, then runs `bash scripts/build.sh`. A check that has
+to happen in CI belongs in that script, never in the workflow file, otherwise
+there are two rulebooks and the deployment host follows the older one.
 
 The individual commands still exist and are useful while iterating:
 

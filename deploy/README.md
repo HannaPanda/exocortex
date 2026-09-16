@@ -429,15 +429,33 @@ there.
 `docs/observability.md` has the variables, the table of which span is opened
 where, and the rule about what a span may never contain.
 
-### Why there is no CI
+### What the CI adds
 
-One person, always on `master`, no pull requests, and nothing here that has to
-survive a machine going away. A GitHub Actions run would check the same commit a
-second time, slower and somewhere else. The checks belong where the deployment
-happens, which is this host. That changes the moment a second person commits, or
-work moves onto branches, or the deploy stops happening on the machine the code
-is written on — and then the way back is short: one job, one step,
-`bash scripts/build.sh`.
+For a long time there was none, and the reasoning held: one person, always on
+`master`, and checks that belong where the deployment happens. What it missed is
+that this host is not a neutral witness. It has a warm `node_modules`, a
+`.build-marker` from the last build, a root `.env`, generated Prisma output and
+four units running the previous commit. A commit that builds here is not yet a
+commit that builds.
+
+`.github/workflows/build.yml` is that second opinion and nothing more. It
+installs Node and pnpm and runs `bash scripts/build.sh` — the same script, the
+same gates, the same order, on a checkout that has never seen this repository.
+The workflow file itself contains no checks, on purpose: a rule that lives in
+the workflow instead of the script is a rule the deploy does not know about.
+
+It needs no secrets and touches nothing here. Its Postgres is the throwaway
+container the migration gate starts for itself.
+
+What it deliberately does not do: the database-backed half of the test suite
+(`--full-tests`, which on this host talks to the live database), the Playwright
+suite, and anything resembling a deployment. `scripts/deploy.sh` on this machine
+stays the only thing that puts code in front of a user, and it runs `build.sh`
+again rather than trusting a green tick from somewhere else.
+
+A run takes around a quarter of an hour, and a private repository pays for its
+minutes, so the workflow cancels an older run on the same ref when a new push
+lands.
 
 ## Operations
 

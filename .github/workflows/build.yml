@@ -1,0 +1,56 @@
+# The same validation the deployment host runs, on a machine that has never
+# seen this repository before.
+#
+# There is exactly one step that checks anything, and it is `scripts/build.sh`:
+# the hard gates, the sequential build, lint, formatting, typecheck, the gate
+# tests and the tests live there, in the order `deploy.sh` needs them. A
+# workflow that listed them again would be a second rulebook, and the two would
+# drift the first time a gate is added. Everything above that step exists only
+# to put Node, pnpm and Docker in front of it.
+#
+# What this catches that the host cannot: a commit that only builds because of
+# something lying around on the host -- an artefact from an earlier build, a
+# global package, a file that was never committed. `build.sh` refuses a dirty
+# tree, but it cannot notice a file it needs that git does not know about.
+#
+# It needs no secrets. Nothing here talks to the deployment, and the only
+# database it touches is the throwaway container the migration gate starts.
+name: build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+# A private repository pays for its minutes, and a run of this takes a quarter
+# of an hour. Two pushes in a row means the first run is answering a question
+# nobody is waiting for any more.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: gates, build, checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # No version here on purpose: it reads `packageManager` from package.json,
+      # which is the same pin `pnpm install` enforces locally.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      # `build.sh` runs `pnpm install --frozen-lockfile` itself, which is what
+      # rejects a lockfile that does not match package.json.
+      - name: scripts/build.sh
+        run: bash scripts/build.sh

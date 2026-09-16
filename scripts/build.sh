@@ -172,7 +172,8 @@ else
   # The watchmen. Each gate is run twice, once clean and once with a violation
   # written into the tree, so a gate that has quietly stopped matching anything
   # is caught here rather than by the bug it was supposed to prevent. Fifteen
-  # seconds, and without a CI there is nowhere else this could live.
+  # seconds, and it runs wherever this script runs -- here and in CI, which is
+  # this script and nothing else.
   info "Gate tests …"
   pnpm test:gates || fail "A gate does not behave the way it is documented to" \
     "Read which case failed: a gate that cannot go red is worse than no gate, because it reports success on a question it no longer asks."
@@ -183,10 +184,10 @@ else
     pnpm test || fail "Tests failed"
   else
     # The default set is everything that needs no database, no Redis and no
-    # object storage. Without a CI this is the only place tests run at all, so
-    # the DB-backed half is one flag away rather than hidden -- but it is not
-    # the default, because pointing a test suite at the live database on the way
-    # to deploying is a bad reflex to build.
+    # object storage. The DB-backed half is one flag away rather than hidden,
+    # but it is not the default, because on this host it points at the live
+    # database, and reaching for it on the way to a deploy is a bad reflex to
+    # build. The CI runs this same default set: it has no infrastructure either.
     info "Tests without infrastructure (--full-tests adds the rest) …"
     pnpm --filter @exocortex/contracts --filter @exocortex/config --filter @exocortex/logger \
          --filter @exocortex/editor --filter @exocortex/ui --filter @exocortex/storage \

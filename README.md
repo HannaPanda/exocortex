@@ -140,8 +140,10 @@ Details, ports and troubleshooting: [`docs/local-development.md`](docs/local-dev
 Before handing work over there is one entry point rather than ten:
 `bash scripts/build.sh` runs the hard gates, the sequential build and the
 checks; `bash scripts/deploy.sh` adds migrations, nginx, the units and the
-readiness probes. There is deliberately no CI —
-[`deploy/README.md`](deploy/README.md) explains why.
+readiness probes. `.github/workflows/build.yml` runs the same script on every
+push and pull request, on a machine that has never seen this repository before
+— [`deploy/README.md`](deploy/README.md) says what that adds and what it does
+not.
 
 ## Repository layout
 
