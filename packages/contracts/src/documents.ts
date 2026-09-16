@@ -729,3 +729,64 @@ export type AiRuleSummary = z.infer<typeof aiRuleSummarySchema>;
 
 export const aiRuleListResponseSchema = z.object({ rules: z.array(aiRuleSummarySchema) });
 export type AiRuleListResponse = z.infer<typeof aiRuleListResponseSchema>;
+
+/**
+ * Where a page belongs (issue: filing new pages into an existing structure).
+ *
+ * A caller that is about to create a page knows what the page is about and
+ * nothing about the twelve sections it could go under. The suggestion is made
+ * from the pages that already exist: the ones closest to this subject are
+ * looked up, and the parents they sit under are ranked by how many of them
+ * landed there. So the answer is a statement about the workspace's own filing
+ * habits, not a model's opinion about taxonomy.
+ *
+ * Either `documentId` (file a page that exists) or `title` (file one that does
+ * not exist yet) has to be given. Both together is allowed and useful: the
+ * title of a page being renamed, or a draft title plus a summary.
+ */
+export const suggestParentRequestSchema = z
+  .object({
+    documentId: idSchema.optional(),
+    title: z.string().trim().min(1).max(300).optional(),
+    /** What the page is about, when it has no text yet. The first paragraph is plenty. */
+    summary: z.string().trim().max(4000).optional(),
+    limit: z.coerce.number().int().min(1).max(5).optional(),
+  })
+  .refine(
+    (value) => value.documentId !== undefined || value.title !== undefined,
+    'Either documentId or title is required',
+  );
+export type SuggestParentRequest = z.infer<typeof suggestParentRequestSchema>;
+
+/** One candidate parent, with the evidence for it. */
+export const parentSuggestionSchema = z.object({
+  /** `null` is the workspace root: a top-level page is a legitimate answer. */
+  parentId: idSchema.nullable(),
+  title: z.string(),
+  /** Ancestors of the candidate, root first. Empty for the root itself. */
+  path: z.array(documentPathEntrySchema),
+  /**
+   * Relative strength, highest first. Comparable within one answer and
+   * meaningless outside it, like `similarity` on a related document.
+   */
+  score: z.number(),
+  /** How many active pages already sit under the candidate. */
+  childCount: z.number().int().nonnegative(),
+  /**
+   * The neighbouring pages that put this candidate on the list. The reason is
+   * shipped with the suggestion because "Creative & Media" alone is an
+   * assertion, while "Fish Audio, HeyGen and MiniMax already live there" is an
+   * argument a reader can check.
+   */
+  matches: z.array(z.object({ documentId: idSchema, title: z.string(), similarity: z.number() })),
+});
+export type ParentSuggestion = z.infer<typeof parentSuggestionSchema>;
+
+export const suggestParentResponseSchema = z.object({
+  /** The text the neighbours were looked up with, after title and summary were joined. */
+  query: z.string(),
+  /** Which search adapter answered, so a caller can tell semantic from full-text. */
+  adapter: z.string(),
+  suggestions: z.array(parentSuggestionSchema),
+});
+export type SuggestParentResponse = z.infer<typeof suggestParentResponseSchema>;

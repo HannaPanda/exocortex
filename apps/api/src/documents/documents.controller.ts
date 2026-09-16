@@ -79,6 +79,10 @@ import {
   resolveDocumentLinkRequestSchema,
   type ResolveDocumentLinkResponse,
   resolveDocumentLinkResponseSchema,
+  type SuggestParentRequest,
+  suggestParentRequestSchema,
+  type SuggestParentResponse,
+  suggestParentResponseSchema,
   type TrashResponse,
   trashResponseSchema,
   type UpdateDocumentRequest,
@@ -97,6 +101,7 @@ import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
 import { DocumentLinksService } from './document-links.service';
 import { DocumentMarkdownService } from './document-markdown.service';
+import { DocumentPlacementService } from './document-placement.service';
 import { DocumentSnapshotService } from './document-snapshot.service';
 import { DocumentTrashService } from './document-trash.service';
 import { DocumentTreeService } from './document-tree.service';
@@ -112,6 +117,7 @@ export class WorkspaceDocumentsController {
     private readonly markdown: DocumentMarkdownService,
     private readonly treeService: DocumentTreeService,
     private readonly trashService: DocumentTrashService,
+    private readonly placement: DocumentPlacementService,
   ) {}
 
   @Get('documents/tree')
@@ -198,6 +204,23 @@ export class WorkspaceDocumentsController {
       workspaceId,
       correlationId: currentCorrelationId(),
     });
+  }
+
+  /**
+   * Where a new page belongs, answered from the pages that already exist.
+   *
+   * `POST` rather than `GET` because the question carries the page's text, not
+   * an identifier; nothing is written. See `DocumentPlacementService`.
+   */
+  @Post('documents/suggest-parent')
+  @ApiBody({ schema: openApiSchema(suggestParentRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(suggestParentResponseSchema) })
+  async suggestParent(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+    @Body(zodPipe(suggestParentRequestSchema)) body: SuggestParentRequest,
+  ): Promise<SuggestParentResponse> {
+    return this.placement.suggestParent(workspaceId, session.userId, body);
   }
 
   @Get('ai-rules')
