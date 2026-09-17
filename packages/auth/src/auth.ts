@@ -96,14 +96,40 @@ export interface CreateAuthOptions {
  * is nameable again. It is still never used: `verifyMcpAccessToken` verifies
  * an access token itself (ADR-018) rather than going through `auth.api`.
  */
+/**
+ * The scopes this authorization server issues, spelled out rather than left to
+ * the plugin's default, because the resource row below has to name the same
+ * list. They are the OpenID scopes and nothing more: what an MCP client may do
+ * in eXocortex is decided by the workspace policies applied to its user and by
+ * the tool list its endpoint serves, never by a scope string.
+ */
+const MCP_SCOPES = ['openid', 'profile', 'email', 'offline_access'] as const;
+
 function createMcpPlugin(appUrl: string) {
+  const resource = mcpResourceIdentifier(appUrl);
   return mcp({
-    resource: mcpResourceIdentifier(appUrl),
+    resource,
+    // Spelled out as a resource entity, which `mcp()` would otherwise derive
+    // from the string above. Two reasons. `allowedScopes` has to be a list
+    // here: the plugin's own seed writes `null` for an absent one, meaning "no
+    // restriction", and a Prisma scalar list refuses null -- the API would not
+    // start. And a resource that names its scopes says out loud what a token
+    // for it can carry, instead of leaving it to whatever the plugin defaults
+    // to next.
+    resources: [
+      {
+        identifier: resource,
+        name: 'eXocortex MCP',
+        allowedScopes: [...MCP_SCOPES],
+      },
+    ],
+    scopes: [...MCP_SCOPES],
     loginPage: OAUTH_LOGIN_PATH,
     consentPage: OAUTH_CONSENT_PATH,
     allowDynamicClientRegistration: true,
     allowUnauthenticatedClientRegistration: true,
     clientRegistrationRequirePKCE: true,
+    clientRegistrationDefaultScopes: [...MCP_SCOPES],
     accessTokenExpiresIn: MCP_ACCESS_TOKEN_TTL_SECONDS,
     refreshTokenExpiresIn: MCP_REFRESH_TOKEN_TTL_SECONDS,
   });
