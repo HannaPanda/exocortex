@@ -17,6 +17,11 @@ allowBuilds:
   msgpackr-extract: false
   '@scarf/scarf': false
 
+# A package pnpm installed before it had aged past the release-age wait, added
+# here by pnpm itself rather than by hand. 6.7.0 was four hours old when it went
+# in: it is the release that widened the peer range to `@nestjs/common: ^12`,
+# which is what let the API leave NestJS 11 at all (issue #65). Safe to delete
+# once the entry is older than the wait -- it changes nothing then.
 minimumReleaseAgeExclude:
   - '@nestjs/throttler@6.7.0'
 
