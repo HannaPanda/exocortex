@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   checkProjectPath,
+  detectProjectRootFile,
   isProjectTextPath,
   latexScaffold,
   projectPathDirectory,
@@ -99,5 +100,35 @@ describe('latexScaffold', () => {
     const source = latexScaffold('Titel');
     expect(source).toContain('\\begin{document}');
     expect(source).toContain('\\end{document}');
+  });
+});
+
+describe('detectProjectRootFile', () => {
+  const files = (...paths: [string, string][]) =>
+    paths.map(([path, content]) => ({ path, content }));
+
+  it('picks the file that declares a document class', () => {
+    expect(
+      detectProjectRootFile(
+        'LATEX',
+        files(['kapitel/intro.tex', 'Hallo'], ['thesis.tex', '\\documentclass{scrbook}']),
+      ),
+    ).toBe('thesis.tex');
+  });
+
+  it('prefers the one nearer the top over the one deeper down', () => {
+    expect(
+      detectProjectRootFile(
+        'LATEX',
+        files(
+          ['alt/main.tex', '\\documentclass{article}'],
+          ['main.tex', '\\documentclass{article}'],
+        ),
+      ),
+    ).toBe('main.tex');
+  });
+
+  it('has no answer when no file declares one', () => {
+    expect(detectProjectRootFile('LATEX', files(['kapitel/intro.tex', 'Hallo']))).toBeNull();
   });
 });

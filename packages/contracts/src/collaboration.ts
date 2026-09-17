@@ -95,6 +95,32 @@ export const collaborationProjectOperationSchema = z.discriminatedUnion('op', [
     byteSize: z.number().int().nonnegative(),
     mimeType: z.string().nullable(),
   }),
+  /**
+   * Many files at once, for an archive import (issue #54).
+   *
+   * Its own operation rather than a loop over `write` and `asset` at the call
+   * site: every apply opens the document, persists it and closes it again, so a
+   * thirty-file thesis would rewrite the whole binary state thirty times. One
+   * operation is one transaction and one persist, which is also what makes the
+   * file limit a single check rather than one that trips halfway through.
+   */
+  z.object({
+    op: z.literal('import'),
+    files: z.array(
+      z.discriminatedUnion('kind', [
+        z.object({ kind: z.literal('TEXT'), path: z.string(), content: z.string() }),
+        z.object({
+          kind: z.literal('ASSET'),
+          path: z.string(),
+          attachmentId: idSchema,
+          byteSize: z.number().int().nonnegative(),
+          mimeType: z.string().nullable(),
+        }),
+      ]),
+    ),
+    /** Replace a path that is already taken instead of leaving it alone. */
+    overwrite: z.boolean().default(false),
+  }),
   z.object({
     op: z.literal('move'),
     from: z.string(),

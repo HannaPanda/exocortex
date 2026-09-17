@@ -8,6 +8,7 @@ import { type CollaborationConnectionState } from '@/components/editor/collabora
 import { ProjectBuildPanel } from './project-build-panel';
 import { ProjectCodeEditor } from './project-code-editor';
 import { ProjectFileTree } from './project-file-tree';
+import { ProjectImportDialog } from './project-import-dialog';
 import { ProjectNewFileDialog } from './project-new-file-dialog';
 import { ProjectToolbar } from './project-toolbar';
 import { useProjectWorkspace } from './use-project-workspace';
@@ -43,8 +44,11 @@ export function ProjectView({ workspaceId, projectId }: ProjectViewProps) {
         files={workspace.files}
         running={workspace.running}
         buildPending={workspace.buildPending}
+        archivePending={workspace.archivePending}
         onUpdate={workspace.actions.update}
         onUpload={workspace.actions.upload}
+        onImport={workspace.actions.importArchive}
+        onExport={workspace.actions.exportArchive}
         onBuild={workspace.actions.build}
         onCancel={workspace.actions.cancel}
       />
@@ -80,6 +84,15 @@ export function ProjectView({ workspaceId, projectId }: ProjectViewProps) {
           />
         </div>
       </div>
+
+      <ProjectImportDialog
+        result={workspace.importResult}
+        pending={workspace.archivePending}
+        onOpenChange={(open) => {
+          if (!open) workspace.actions.dismissImport();
+        }}
+        onOverwrite={workspace.actions.importOverwrite}
+      />
 
       <ProjectNewFileDialog
         open={workspace.createOpen}

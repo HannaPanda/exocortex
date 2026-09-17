@@ -3,7 +3,12 @@
 import { useQueryClient } from '@tanstack/react-query';
 import * as React from 'react';
 
-import { type Project, type ProjectBuild, type ProjectFile } from '@exocortex/contracts';
+import {
+  type ImportProjectResponse,
+  type Project,
+  type ProjectBuild,
+  type ProjectFile,
+} from '@exocortex/contracts';
 
 import {
   type CollaborationConnectionState,
@@ -13,6 +18,8 @@ import {
   projectKeys,
   useCancelProjectBuild,
   useDeleteProjectBuild,
+  useExportProject,
+  useImportProject,
   useProject,
   useProjectBuild,
   useProjectBuilds,
@@ -81,6 +88,9 @@ export interface ProjectWorkspace {
   running: boolean;
   buildPending: boolean;
   writePending: boolean;
+  /** What the last archive import did, until it is dismissed. */
+  importResult: ImportProjectResponse | null;
+  archivePending: boolean;
   createOpen: boolean;
   setCreateOpen: (open: boolean) => void;
   openFile: (path: string, line: number | null) => void;
@@ -90,6 +100,11 @@ export interface ProjectWorkspace {
     createFile: (path: string) => void;
     deleteFile: (path: string) => void;
     upload: (file: File) => void;
+    importArchive: (file: File) => void;
+    /** Repeats the last import, this time replacing files that were in the way. */
+    importOverwrite: () => void;
+    dismissImport: () => void;
+    exportArchive: () => void;
     build: () => void;
     cancel: () => void;
     deleteBuild: (buildId: string) => void;
@@ -103,6 +118,7 @@ export function useProjectWorkspace(workspaceId: string, projectId: string): Pro
   const updateProject = useUpdateProject(projectId);
   const fileMutation = useProjectFileMutation(projectId);
   const builds = useBuildSelection(workspaceId, projectId);
+  const archive = useArchive(workspaceId, projectId);
 
   const [chosenPath, setChosenPath] = React.useState<string | null>(null);
   const [focusLine, setFocusLine] = React.useState<number | null>(null);
@@ -138,6 +154,8 @@ export function useProjectWorkspace(workspaceId: string, projectId: string): Pro
     running: builds.running,
     buildPending: builds.pending,
     writePending: fileMutation.write.isPending,
+    importResult: archive.result,
+    archivePending: archive.pending,
     createOpen,
     setCreateOpen,
     openFile,
@@ -159,9 +177,67 @@ export function useProjectWorkspace(workspaceId: string, projectId: string): Pro
           fileMutation.addAsset.mutateAsync({ path: file.name, attachmentId: uploaded.id }),
         );
       },
+      importArchive: archive.importFile,
+      importOverwrite: archive.importOverwrite,
+      dismissImport: archive.dismiss,
+      exportArchive: archive.exportArchive,
       build: builds.start,
       cancel: builds.cancel,
       deleteBuild: builds.remove,
+    },
+  };
+}
+
+interface ArchiveActions {
+  result: ImportProjectResponse | null;
+  pending: boolean;
+  importFile: (file: File) => void;
+  importOverwrite: () => void;
+  dismiss: () => void;
+  exportArchive: () => void;
+}
+
+/**
+ * The two archive buttons (issue #54).
+ *
+ * Its own hook because both halves carry a piece of state the rest of the
+ * screen has no use for: the attachment id of the archive that was just
+ * imported, so asking again with `overwrite` costs no second upload, and the
+ * result until somebody has read it.
+ */
+function useArchive(workspaceId: string, projectId: string): ArchiveActions {
+  const importProject = useImportProject(projectId);
+  const exportProject = useExportProject(projectId);
+  const [result, setResult] = React.useState<ImportProjectResponse | null>(null);
+  const [lastArchiveId, setLastArchiveId] = React.useState<string | null>(null);
+
+  const run = (attachmentId: string, overwrite: boolean): void => {
+    void importProject.mutateAsync({ attachmentId, overwrite }).then((imported) => {
+      setLastArchiveId(attachmentId);
+      setResult(imported);
+    });
+  };
+
+  return {
+    result,
+    pending: importProject.isPending || exportProject.isPending,
+    importFile: (file) => {
+      // The same two steps an agent takes: the bytes become an ordinary
+      // attachment, and the import names its id.
+      void uploadAttachment({ workspaceId, documentId: projectId, file }).then((uploaded) => {
+        run(uploaded.id, false);
+      });
+    },
+    importOverwrite: () => {
+      if (lastArchiveId !== null) run(lastArchiveId, true);
+    },
+    dismiss: () => setResult(null),
+    exportArchive: () => {
+      void exportProject.mutateAsync().then((archive) => {
+        // The archive is an ordinary attachment, so the download route serves
+        // it with the filename already set.
+        window.location.assign(archive.downloadPath);
+      });
     },
   };
 }

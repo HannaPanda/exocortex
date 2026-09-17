@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-168 routes are reachable from at least one client; 103 from all three.
+170 routes are reachable from at least one client; 105 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -175,9 +175,11 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/project-builds/:x/cancel` | ✓ | ✓ | ✓ | `exo_project_build_cancel` |
 | `POST /api/projects/:x/assets` | ✓ | ✓ | ✓ | `exo_project_add_asset` |
 | `POST /api/projects/:x/builds` | ✓ | ✓ | ✓ | `exo_project_build` |
+| `POST /api/projects/:x/export` | ✓ | ✓ | ✓ | `exo_project_export` |
 | `POST /api/projects/:x/files` | ✓ | ✓ | ✓ | `exo_project_write_file` |
 | `POST /api/projects/:x/files/move` | ✓ | ✓ | ✓ | `exo_project_move_file` |
 | `POST /api/projects/:x/files/patch` | ✓ | ✓ | ✓ | `exo_project_patch_file` |
+| `POST /api/projects/:x/import` | ✓ | ✓ | ✓ | `exo_project_import` |
 | `POST /api/render/jobs/:x/cancel` | ✓ | ✓ | ✓ | `exo_render_cancel` |
 | `POST /api/workspaces` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/attachments` | ✓ | ✓ | ✓ | `exo_attachment_upload` |

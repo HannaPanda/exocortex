@@ -14,6 +14,7 @@ import { MEMORY_FACT_TOOLS } from './tools/memory-facts.js';
 import { OVERVIEW_TOOLS } from './tools/overviews.js';
 import { PAGE_TOOLS } from './tools/pages.js';
 import { PLACEMENT_TOOLS } from './tools/placement.js';
+import { PROJECT_ARCHIVE_TOOLS } from './tools/project-archives.js';
 import { PROJECT_TOOLS } from './tools/projects.js';
 import { RENDER_TOOLS } from './tools/render.js';
 import { RESEARCH_TOOLS } from './tools/research.js';
@@ -43,6 +44,7 @@ export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...AUTOMATION_TOOLS,
   ...RENDER_TOOLS,
   ...PROJECT_TOOLS,
+  ...PROJECT_ARCHIVE_TOOLS,
 ];
 
 /** Tools offered on a given surface, optionally excluding mutating ones. */

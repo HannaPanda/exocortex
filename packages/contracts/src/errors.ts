@@ -74,6 +74,9 @@ export const API_ERROR_CODES = [
   'project_patch_not_unique',
   'project_too_many_files',
   'project_write_failed',
+  'project_archive_unreadable',
+  'project_archive_too_large',
+  'project_empty',
   'collaboration_unavailable',
 ] as const;
 
@@ -194,6 +197,13 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // The collaboration server took the write and could not apply it. 502: this
   // deployment's own downstream failed, and the caller did nothing wrong.
   project_write_failed: 502,
+  // The archive refusals (issue #54). An archive is foreign input, so both of
+  // these describe the file the caller sent rather than anything here: one is
+  // not a ZIP at all, the other unpacks to more than this deployment allows.
+  project_archive_unreadable: 422,
+  project_archive_too_large: 413,
+  // Nothing to put in an archive. 409 rather than 404: the project is there.
+  project_empty: 409,
   // The collaboration server could not be reached at all, so a project write
   // did not happen. 503 rather than 500: it is a service that is down, and
   // trying again in a moment is the right response.

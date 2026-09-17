@@ -67,6 +67,18 @@ export const PROJECT_MAX_TEXT_CHARS = 2_000_000;
 /** How many paths one project may hold, assets included. */
 export const PROJECT_MAX_FILES = 500;
 
+/**
+ * How many uncompressed bytes an archive may carry, in either direction.
+ *
+ * The import's guard against a zip bomb and the export's ceiling at once, and
+ * deliberately the same number: an archive this deployment refuses to read is
+ * one it must not write either, or a project could be exported and then not
+ * imported back. Checked against the sizes in the central directory *before*
+ * anything is inflated, because a limit enforced on the output of the inflate
+ * is a limit enforced after the memory is already gone.
+ */
+export const PROJECT_MAX_ARCHIVE_BYTES = 64 * 1024 * 1024;
+
 /** How much of a build log is kept on the row. */
 export const PROJECT_MAX_LOG_CHARS = 200_000;
 
@@ -438,6 +450,180 @@ export const addProjectAssetRequestSchema = z.object({
   attachmentId: idSchema,
 });
 export type AddProjectAssetRequest = z.infer<typeof addProjectAssetRequestSchema>;
+
+// ---------------------------------------------------------------------------
+// Archives
+// ---------------------------------------------------------------------------
+
+/**
+ * Why one entry of an imported archive did not become a file (issue #54).
+ *
+ * Reported per path rather than counted, and that is the point of the list: an
+ * import that swallows half an archive in silence is worse than one that
+ * refuses, because the failure only surfaces at the build, in a file nobody
+ * remembers was supposed to be there.
+ */
+export type ProjectImportSkipReason =
+  | 'invalid_path'
+  | 'ignored'
+  | 'exists'
+  | 'too_large'
+  | 'not_utf8'
+  | 'too_many_files'
+  | 'encrypted'
+  | 'unsupported_method'
+  | 'corrupt'
+  | 'upload_failed';
+
+/** German for why one entry was left out. */
+export function projectImportSkipMessage(reason: ProjectImportSkipReason): string {
+  switch (reason) {
+    case 'invalid_path':
+      return 'Der Pfad ist im Projekt nicht erlaubt.';
+    case 'ignored':
+      return 'Eine Hilfsdatei des Betriebssystems, die im Projekt nichts zu suchen hat.';
+    case 'exists':
+      return 'An dieser Stelle liegt schon eine Datei; mit overwrite wird sie ersetzt.';
+    case 'too_large':
+      return 'Die Datei ist größer, als dieses Projekt erlaubt.';
+    case 'not_utf8':
+      return 'Die Datei sieht wie Text aus, ist aber nicht UTF-8 kodiert.';
+    case 'too_many_files':
+      return 'Das Projekt hat die erlaubte Anzahl Dateien erreicht.';
+    case 'encrypted':
+      return 'Der Eintrag im Archiv ist verschlüsselt.';
+    case 'unsupported_method':
+      return 'Der Eintrag ist mit einem Verfahren gepackt, das hier nicht gelesen wird.';
+    case 'corrupt':
+      return 'Der Eintrag im Archiv ließ sich nicht entpacken.';
+    case 'upload_failed':
+      return 'Die Datei konnte nicht als Anhang gespeichert werden.';
+  }
+}
+
+export const projectImportSkipSchema = z.object({
+  /** The path as the archive spelled it, before any rewriting. */
+  name: z.string(),
+  reason: z.enum([
+    'invalid_path',
+    'ignored',
+    'exists',
+    'too_large',
+    'not_utf8',
+    'too_many_files',
+    'encrypted',
+    'unsupported_method',
+    'corrupt',
+    'upload_failed',
+  ]),
+});
+export type ProjectImportSkip = z.infer<typeof projectImportSkipSchema>;
+
+/**
+ * Reading a `.zip` into a project.
+ *
+ * The bytes arrive as an ordinary attachment, exactly as `addProjectAsset` has
+ * them arrive: the upload route owns the magic-byte sniff, the size limit and
+ * the permission check, and a second upload path here would be a second place
+ * all three could be got wrong. It also means an agent names a file it already
+ * put in the workspace instead of pushing megabytes through a tool call.
+ */
+export const importProjectRequestSchema = z.object({
+  attachmentId: idSchema,
+  /**
+   * Replace files that are already in the project.
+   *
+   * Off by default, because the common mistake is importing into the wrong
+   * project, and a default that overwrites turns that mistake into lost work.
+   * What was skipped for this reason is in the response, so the caller can ask
+   * again with the flag set rather than guess.
+   */
+  overwrite: z.boolean().default(false),
+  /**
+   * Drop a single shared top-level folder.
+   *
+   * Nearly every archive of a thesis carries one, and importing it keeps every
+   * path one level deeper than the `\input` lines inside the sources expect.
+   * Only applied when *every* entry is under the same folder, so it can never
+   * silently merge two trees.
+   */
+  stripCommonRoot: z.boolean().default(true),
+});
+export type ImportProjectRequest = z.infer<typeof importProjectRequestSchema>;
+
+export const importProjectResponseSchema = z.object({
+  projectId: idSchema,
+  /** The project-relative paths that now exist, sorted. */
+  imported: z.array(z.string()),
+  skipped: z.array(projectImportSkipSchema),
+  /** The folder that was dropped from every path, when one was. */
+  strippedRoot: z.string().nullable(),
+  /**
+   * The project's root file after the import.
+   *
+   * Set when the import chose one: an archive whose main file is not called
+   * `main.tex` would otherwise land in a project pointing at a file that is not
+   * there, and the first build would fail on a cause nobody can see.
+   */
+  rootFile: z.string(),
+  rootFileChanged: z.boolean(),
+  appliedLive: z.boolean(),
+});
+export type ImportProjectResponse = z.infer<typeof importProjectResponseSchema>;
+
+/**
+ * What an export produced.
+ *
+ * An ordinary `Attachment`, for the same reason a rendered PDF is one
+ * (ADR-026): it is downloadable, deletable and listable with everything else,
+ * and all three clients reach it the same way instead of the browser getting a
+ * stream and an agent getting nothing.
+ */
+export const exportProjectResponseSchema = z.object({
+  projectId: idSchema,
+  attachmentId: idSchema,
+  filename: z.string(),
+  byteSize: z.number().int().nonnegative(),
+  /** How many paths went in. Build artifacts are not among them. */
+  fileCount: z.number().int().nonnegative(),
+  downloadPath: z.string(),
+  /**
+   * True when the archive was written from a projection that is behind the
+   * last edit. The export is still the whole project, just possibly a second
+   * old; saying so beats pretending the two can never differ.
+   */
+  stale: z.boolean(),
+});
+export type ExportProjectResponse = z.infer<typeof exportProjectResponseSchema>;
+
+/**
+ * Which file an imported project should be built from.
+ *
+ * The one place in this file that reads a source rather than a path, and it is
+ * still keyed by `ProjectType` rather than assuming: an archive is the only
+ * moment the system has files but no one to ask, and guessing wrong costs a
+ * build, while not guessing costs a build *and* a puzzle.
+ */
+export function detectProjectRootFile(
+  type: ProjectType,
+  files: readonly { path: string; content: string }[],
+): string | null {
+  if (type !== 'LATEX') return null;
+  const candidates = files.filter(
+    (file) => file.path.toLowerCase().endsWith('.tex') && file.content.includes('\\documentclass'),
+  );
+  if (candidates.length === 0) return null;
+  // Shallowest first, then shortest, then alphabetical: a thesis keeps its main
+  // file at the top and its chapters below, and `main.tex` beats `main-alt.tex`.
+  const depth = (path: string): number => path.split('/').length;
+  candidates.sort(
+    (a, b) =>
+      depth(a.path) - depth(b.path) ||
+      a.path.length - b.path.length ||
+      (a.path < b.path ? -1 : a.path > b.path ? 1 : 0),
+  );
+  return candidates[0]?.path ?? null;
+}
 
 // ---------------------------------------------------------------------------
 // Builds

@@ -1,6 +1,6 @@
 'use client';
 
-import { HammerIcon, SquareIcon, UploadIcon } from 'lucide-react';
+import { FileArchiveIcon, HammerIcon, PackageOpenIcon, SquareIcon, UploadIcon } from 'lucide-react';
 import * as React from 'react';
 
 import {
@@ -47,8 +47,11 @@ interface ProjectToolbarProps {
   files: readonly ProjectFile[];
   running: boolean;
   buildPending: boolean;
+  archivePending: boolean;
   onUpdate: (request: UpdateProjectRequest) => void;
   onUpload: (file: File) => void;
+  onImport: (file: File) => void;
+  onExport: () => void;
   onBuild: () => void;
   onCancel: () => void;
 }
@@ -58,12 +61,16 @@ export function ProjectToolbar({
   files,
   running,
   buildPending,
+  archivePending,
   onUpdate,
   onUpload,
+  onImport,
+  onExport,
   onBuild,
   onCancel,
 }: ProjectToolbarProps) {
   const uploadInput = React.useRef<HTMLInputElement | null>(null);
+  const importInput = React.useRef<HTMLInputElement | null>(null);
   const rootCandidates = files.filter((file) => file.kind === 'TEXT' && file.path.endsWith('.tex'));
 
   return (
@@ -142,6 +149,37 @@ export function ProjectToolbar({
         />
         <Button variant="ghost" size="sm" onClick={() => uploadInput.current?.click()}>
           <UploadIcon className="size-4" /> Datei hochladen
+        </Button>
+
+        <input
+          ref={importInput}
+          type="file"
+          accept=".zip,application/zip"
+          className="hidden"
+          data-testid="project-import"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            event.target.value = '';
+            if (file !== undefined) onImport(file);
+          }}
+        />
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={archivePending}
+          onClick={() => importInput.current?.click()}
+        >
+          <PackageOpenIcon className="size-4" /> ZIP importieren
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={archivePending}
+          data-testid="project-export"
+          onClick={onExport}
+        >
+          <FileArchiveIcon className="size-4" /> Als ZIP
         </Button>
 
         {running ? (

@@ -80,6 +80,9 @@ along with its PDF and its map; a running one is cancelled first.
 **Datei hochladen** puts an image, a font or a PDF into the project. The bytes
 become an ordinary attachment and the tree gets the path.
 
+**ZIP importieren** reads a whole archive in, and **Als ZIP** writes one out.
+Both are described under [Archives](#archives) below.
+
 ## Through an agent
 
 The same loop, whole:
@@ -93,6 +96,8 @@ exo_project_patch_file          → change one anchored piece of it
 exo_project_move_file           → rename, or move a whole folder
 exo_project_delete_file         → remove a path
 exo_project_add_asset           → bind an uploaded attachment to a path
+exo_project_import              → read an uploaded .zip into the tree
+exo_project_export              → pack the project into a .zip attachment
 
 exo_project_build               → queue a build
 exo_project_build_status        → PENDING | RUNNING | COMPLETED | FAILED | CANCELLED
@@ -126,6 +131,56 @@ A file is **text** when its extension says so (`PROJECT_TEXT_EXTENSIONS` in
 `@exocortex/contracts`, plus `latexmkrc`). A text file lives in the Yjs state and
 is collaboratively editable; anything else is an attachment and only its path is
 in the tree.
+
+## Archives
+
+A project goes in and comes out as a `.zip` (issue #54). Filling one file by
+file is fine for a project that starts here; an existing thesis with thirty
+files and twenty figures is the reason the import exists, and the export is not
+only convenience -- what goes in has to come out again, or the project workspace
+is a silo.
+
+```text
+exo_attachment_upload  →  exo_project_import   (attachmentId, overwrite?)
+exo_project_export     →  an Attachment, downloadable like any other
+```
+
+The bytes travel as an attachment in both directions rather than through the
+call, for the reason `exo_project_add_asset` does: the upload route owns the
+size limit, the magic-byte sniff and the quota, and the browser and an agent
+take the same two steps instead of two different ones.
+
+**What an import does with each entry.** A path that `checkProjectPath` refuses
+-- absolute, containing `..`, with a control character, shadowing `.git` -- is
+skipped, which is what makes zip slip a non-event here rather than a patch
+later. An entry whose extension says text becomes a file in the Yjs tree; the
+rest become attachments bound to their paths. A single shared top-level folder
+is dropped, because nearly every archive of a thesis has one and keeping it
+would leave every path one level below where the `\input` lines look.
+
+**What it refuses.** `overwrite` is off by default, so files already in the
+project stay as they are. The response names every entry that did not come in,
+with the reason, and the dialog offers to repeat the import with `overwrite`
+set -- which is the answer to the common first case, a fresh project whose
+scaffolded `main.tex` is in the way of the archive's own.
+
+**Limits.** `projects.maxFiles` and `projects.maxFileChars` are checked before
+anything is written, never after. The uncompressed total is capped at
+`PROJECT_MAX_ARCHIVE_BYTES` (64 MB) and read out of the central directory
+before a byte is inflated, with `maxOutputLength` on each inflate as the second
+guard for when the central directory is the thing that lied. The archive itself
+arrives as an attachment, so `MAX_UPLOAD_BYTES` bounds it too.
+
+**The export** writes every path in the tree, text and attachments alike, and
+nothing else: a built PDF is derived and hangs off its build, so an archive
+carrying one would be an archive that imports a stale result back in. The
+result is an ordinary `Attachment` -- downloadable, deletable, listable -- for
+the reason a rendered PDF is one (ADR-026): it is the one answer the browser,
+the built-in AI and MCP can all use.
+
+Not implemented, and deliberately: Git. Cloning and pushing means credentials
+and network access out of a worker, which is a decision to take on its own
+rather than as a side effect of an import (issue #54, AP3).
 
 ## The build
 
@@ -163,8 +218,9 @@ cannot be asked where a click landed, so clicking a place in the PDF to jump to
 its source line needs pdf.js rendering the pages. Until then the error list is
 what navigates from the result back to the source.
 
-**Git and ZIP import/export.** A project can be filled through the tools, one
-file at a time. A `.zip` of an existing thesis has to be unpacked by hand.
+**Git.** A project comes in and goes out as a `.zip`; a remote repository is a
+question about credentials and network access from a worker, not a feature that
+follows from the import.
 
 ## Extending it
 

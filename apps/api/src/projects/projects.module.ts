@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { AttachmentsModule } from '../attachments/attachments.module';
 import { OutboxService } from '../common/outbox.service';
 
+import { ProjectArchiveService } from './project-archive.service';
 import { ProjectBridgeService } from './project-bridge.service';
 import { ProjectBuildsService } from './project-builds.service';
 import {
@@ -24,7 +25,13 @@ import { ProjectsService } from './projects.service';
   // that owns the stored objects, never through Prisma here.
   imports: [AttachmentsModule],
   controllers: [WorkspaceProjectsController, ProjectsController, ProjectBuildsController],
-  providers: [ProjectsService, ProjectBuildsService, ProjectBridgeService, OutboxService],
+  providers: [
+    ProjectsService,
+    ProjectBuildsService,
+    ProjectArchiveService,
+    ProjectBridgeService,
+    OutboxService,
+  ],
   exports: [ProjectsService, ProjectBuildsService],
 })
 export class ProjectsModule {}

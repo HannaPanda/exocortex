@@ -7,6 +7,8 @@ import {
   type CreateProjectInput,
   type DeleteProjectBuildResponse,
   type DeleteProjectFileRequest,
+  type ExportProjectResponse,
+  type ImportProjectResponse,
   type MoveProjectFileRequest,
   type PatchProjectFileRequest,
   type ProjectBuildArtifactsResponse,
@@ -231,6 +233,36 @@ export function useProjectFileMutation(projectId: string) {
   });
 
   return { write, patch, move, remove, addAsset };
+}
+
+/**
+ * Reads an uploaded `.zip` into the project (issue #54).
+ *
+ * The attachment id rather than the file: the bytes go through the ordinary
+ * upload route first, which is the same two steps an agent takes, so there is
+ * one import path rather than a multipart one here and a JSON one there.
+ */
+export function useImportProject(projectId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (request: { attachmentId: string; overwrite?: boolean }) =>
+      apiRequest<ImportProjectResponse>(`/api/projects/${projectId}/import`, {
+        method: 'POST',
+        body: request,
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: projectKeys.files(projectId) });
+      void queryClient.invalidateQueries({ queryKey: projectKeys.project(projectId) });
+    },
+  });
+}
+
+/** Packs the project into a `.zip` attachment and hands back where to fetch it. */
+export function useExportProject(projectId: string) {
+  return useMutation({
+    mutationFn: () =>
+      apiRequest<ExportProjectResponse>(`/api/projects/${projectId}/export`, { method: 'POST' }),
+  });
 }
 
 export function useStartProjectBuild(projectId: string) {

@@ -123,6 +123,8 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_page_write',
       'exo_project_build_delete',
       'exo_project_delete_file',
+      // With `overwrite`, an import replaces files that are already there.
+      'exo_project_import',
       'exo_project_move_file',
       'exo_project_write_file',
       'exo_render_delete',

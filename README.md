@@ -63,7 +63,8 @@ What is deliberately still missing is listed under
 - per-workspace API keys (BYOK), a one-time budget per run and a usage view
 - automations triggered from the transactional outbox (ADR-024)
 - rendering Markdown to PDF through Pandoc and xelatex in a container
-  (ADR-026), and LaTeX projects compiled with `latexmk` (ADR-027)
+  (ADR-026), and LaTeX projects compiled with `latexmk` (ADR-027), imported and
+  exported as a `.zip`
 
 **Operating it**
 

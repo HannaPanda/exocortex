@@ -78,6 +78,9 @@ const MESSAGES: Record<ApiErrorCode, string> = {
     'Der zu ersetzende Text kommt mehrfach vor. Mit mehr Kontext eindeutig machen oder alle ersetzen.',
   project_too_many_files: 'Das Projekt hat die erlaubte Anzahl Dateien erreicht.',
   project_write_failed: 'Die Änderung am Projekt konnte nicht angewendet werden.',
+  project_archive_unreadable: 'Diese Datei ist kein lesbares ZIP-Archiv.',
+  project_archive_too_large: 'Das Archiv ist größer, als hier erlaubt ist.',
+  project_empty: 'Das Projekt enthält noch keine Dateien.',
   collaboration_unavailable:
     'Der Kollaborationsdienst ist gerade nicht erreichbar. Die Änderung wurde nicht gespeichert.',
 };

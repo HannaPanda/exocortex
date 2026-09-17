@@ -71,6 +71,11 @@ export function projectFileDownloadPath(
   deletedAt: Date | null,
 ): string | null {
   if (attachmentId === null || deletedAt !== null) return null;
+  return attachmentDownloadPath(attachmentId);
+}
+
+/** Where an attachment's bytes are fetched from. One spelling of the route. */
+export function attachmentDownloadPath(attachmentId: string): string {
   return `/api/attachments/${attachmentId}/download`;
 }
 

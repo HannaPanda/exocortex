@@ -4,6 +4,7 @@ import * as Y from 'yjs';
 import {
   addProjectAsset,
   deleteProjectPath,
+  importProjectFiles,
   moveProjectPath,
   patchProjectTextFile,
   projectFilesToYjsState,
@@ -191,5 +192,71 @@ describe('project state', () => {
     expect(readProjectFileText(first, 'a.tex')).toBe('from first');
     expect(readProjectFileText(first, 'b.tex')).toBe('from second');
     expect(readProjectFileText(second, 'a.tex')).toBe('from first');
+  });
+});
+
+describe('importProjectFiles', () => {
+  it('writes text and assets in one go', () => {
+    const doc = project();
+
+    const written = importProjectFiles(doc, [
+      { kind: 'TEXT', path: 'main.tex', content: '\\documentclass{article}' },
+      {
+        kind: 'ASSET',
+        path: 'bilder/plot.png',
+        attachmentId: 'att1',
+        byteSize: 12,
+        mimeType: 'image/png',
+      },
+    ]);
+
+    expect(written).toEqual(['bilder/plot.png', 'main.tex']);
+    expect(readProjectFileText(doc, 'main.tex')).toBe('\\documentclass{article}');
+    expect(
+      readProjectTree(doc).find((entry) => entry.path === 'bilder/plot.png')?.attachmentId,
+    ).toBe('att1');
+  });
+
+  it('leaves an occupied path alone and says so by not naming it', () => {
+    const doc = project({ 'main.tex': 'meins' });
+
+    const written = importProjectFiles(doc, [
+      { kind: 'TEXT', path: 'main.tex', content: 'aus dem Archiv' },
+      { kind: 'TEXT', path: 'neu.tex', content: 'neu' },
+    ]);
+
+    expect(written).toEqual(['neu.tex']);
+    expect(readProjectFileText(doc, 'main.tex')).toBe('meins');
+  });
+
+  it('replaces an occupied path when told to', () => {
+    const doc = project({ 'main.tex': 'meins' });
+
+    const written = importProjectFiles(
+      doc,
+      [{ kind: 'TEXT', path: 'main.tex', content: 'aus dem Archiv' }],
+      { overwrite: true },
+    );
+
+    expect(written).toEqual(['main.tex']);
+    expect(readProjectFileText(doc, 'main.tex')).toBe('aus dem Archiv');
+  });
+
+  it('is one update, not one per file', () => {
+    // The whole reason the bulk operation exists: each apply costs a full
+    // persist of the project's binary state at the other end.
+    const doc = project();
+    let updates = 0;
+    doc.on('update', () => {
+      updates += 1;
+    });
+
+    importProjectFiles(doc, [
+      { kind: 'TEXT', path: 'a.tex', content: 'a' },
+      { kind: 'TEXT', path: 'b.tex', content: 'b' },
+      { kind: 'TEXT', path: 'c.tex', content: 'c' },
+    ]);
+
+    expect(updates).toBe(1);
   });
 });

@@ -18,6 +18,7 @@ import { type PrismaClient } from '@exocortex/database';
 import {
   addProjectAsset,
   deleteProjectPath,
+  importProjectFiles,
   moveProjectPath,
   patchProjectTextFile,
   projectFileCount,
@@ -47,7 +48,13 @@ import { type Logger } from '@exocortex/logger';
 
 const PATH_PATTERN = /^\/internal\/projects\/([^/?]+)\/apply(?:\?.*)?$/;
 
-/** Enough for the largest single text file a project may hold, and no more. */
+/**
+ * Enough for the largest single text file a project may hold, and no more.
+ *
+ * An archive import sends many files in one operation and would outgrow this,
+ * so the API splits it into batches that fit rather than this number growing to
+ * meet the largest archive anyone might upload.
+ */
 const MAX_BODY_BYTES = 8 * 1024 * 1024;
 
 export interface InternalProjectHandlerOptions {
@@ -89,6 +96,15 @@ function pathsAdded(doc: Y.Doc, operation: CollaborationProjectOperation): numbe
     case 'write':
     case 'asset':
       return projectHasPath(doc, operation.path) ? 0 : 1;
+    case 'import': {
+      // Counted over the distinct new paths, so an archive that names the same
+      // file twice cannot spend the budget twice.
+      const fresh = new Set<string>();
+      for (const file of operation.files) {
+        if (!projectHasPath(doc, file.path)) fresh.add(file.path);
+      }
+      return fresh.size;
+    }
     default:
       return 0;
   }
@@ -120,6 +136,8 @@ function applyOperation(doc: Y.Doc, operation: CollaborationProjectOperation): s
       });
     case 'delete':
       return deleteProjectPath(doc, operation.path, { recursive: operation.recursive });
+    case 'import':
+      return importProjectFiles(doc, operation.files, { overwrite: operation.overwrite });
   }
 }
 

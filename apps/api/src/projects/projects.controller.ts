@@ -11,6 +11,12 @@ import {
   deleteProjectBuildResponseSchema,
   type DeleteProjectFileRequest,
   deleteProjectFileRequestSchema,
+  type ExportProjectResponse,
+  exportProjectResponseSchema,
+  type ImportProjectRequest,
+  importProjectRequestSchema,
+  type ImportProjectResponse,
+  importProjectResponseSchema,
   type MoveProjectFileRequest,
   moveProjectFileRequestSchema,
   type PatchProjectFileRequest,
@@ -48,6 +54,7 @@ import {
 import { CurrentSession } from '../auth/session.guard';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
+import { ProjectArchiveService } from './project-archive.service';
 import { ProjectBuildsService } from './project-builds.service';
 import { ProjectsService } from './projects.service';
 
@@ -107,6 +114,7 @@ export class ProjectsController {
   constructor(
     private readonly projects: ProjectsService,
     private readonly builds: ProjectBuildsService,
+    private readonly archive: ProjectArchiveService,
   ) {}
 
   @Get()
@@ -210,6 +218,43 @@ export class ProjectsController {
     @Body(zodPipe(addProjectAssetRequestSchema)) body: AddProjectAssetRequest,
   ): Promise<ProjectMutationResponse> {
     return this.projects.addAsset({ projectId, userId: session.userId, request: body });
+  }
+
+  /**
+   * Reads a `.zip` that was uploaded as an attachment into the file tree
+   * (issue #54).
+   *
+   * The bytes arrive as an attachment rather than as a multipart body here, for
+   * the reason `POST assets` takes an id: the upload route owns the size limit,
+   * the magic-byte sniff and the quota, and it means the browser and an agent
+   * take the same two steps instead of two different ones.
+   */
+  @Post('import')
+  @ApiBody({ schema: openApiSchema(importProjectRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(importProjectResponseSchema) })
+  async importArchive(
+    @CurrentSession() session: VerifiedSession,
+    @Param('projectId') projectId: string,
+    @Body(zodPipe(importProjectRequestSchema)) body: ImportProjectRequest,
+  ): Promise<ImportProjectResponse> {
+    return this.archive.import({ projectId, userId: session.userId, request: body });
+  }
+
+  /**
+   * Writes the project into a `.zip` and stores it as an attachment.
+   *
+   * `POST` rather than `GET` because it creates something, and an attachment
+   * rather than a stream because that is the one answer all three clients can
+   * use: the browser downloads it, an agent gets an id it can hand on, and the
+   * file is deletable like every other (ADR-025, ADR-026).
+   */
+  @Post('export')
+  @ApiCreatedResponse({ schema: openApiResponseSchema(exportProjectResponseSchema) })
+  async exportArchive(
+    @CurrentSession() session: VerifiedSession,
+    @Param('projectId') projectId: string,
+  ): Promise<ExportProjectResponse> {
+    return this.archive.export({ projectId, userId: session.userId });
   }
 
   @Post('builds')

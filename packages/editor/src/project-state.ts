@@ -302,6 +302,50 @@ export function addProjectAsset(doc: Y.Doc, path: string, asset: ProjectAssetInp
   });
 }
 
+/** One entry an import wants to put into the tree. */
+export type ProjectImportEntry =
+  | { kind: 'TEXT'; path: string; content: string }
+  | ({ kind: 'ASSET'; path: string } & ProjectAssetInput);
+
+/**
+ * Writes many files in one transaction (issue #54).
+ *
+ * The only reason this is not a loop over `writeProjectTextFile` and
+ * `addProjectAsset` at the call site: those live at the far end of an HTTP
+ * call, and one apply per file means one full persist of the project's binary
+ * state per file. Here the thirty files of a thesis are one transaction, one
+ * update and one persist.
+ *
+ * Paths already taken are skipped rather than overwritten unless `overwrite`
+ * says otherwise, and the return value names only what was written, so the
+ * caller can report the difference instead of claiming the archive went in
+ * whole.
+ */
+export function importProjectFiles(
+  doc: Y.Doc,
+  entries: readonly ProjectImportEntry[],
+  options: { overwrite?: boolean } = {},
+): string[] {
+  const files = projectFilesMap(doc);
+  const written: string[] = [];
+  doc.transact(() => {
+    for (const entry of entries) {
+      if (files.has(entry.path) && options.overwrite !== true) continue;
+      if (entry.kind === 'TEXT') {
+        writeProjectTextFile(doc, entry.path, entry.content);
+      } else {
+        addProjectAsset(doc, entry.path, {
+          attachmentId: entry.attachmentId,
+          byteSize: entry.byteSize,
+          mimeType: entry.mimeType,
+        });
+      }
+      written.push(entry.path);
+    }
+  });
+  return written.sort();
+}
+
 /**
  * Moves one path, or a whole directory when `recursive` is set.
  *
