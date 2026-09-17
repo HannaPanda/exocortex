@@ -1,11 +1,16 @@
 'use client';
 
+import * as React from 'react';
+import { createRoot } from 'react-dom/client';
+
 import { type AttachmentTextInfoResponse, type AttachmentTextResponse } from '@exocortex/contracts';
 import {
   type MediaDocumentDetail,
   type MediaDocumentInfo,
   type MediaInfoResolver,
 } from '@exocortex/editor';
+
+import { PdfView } from '@/components/pdf/pdf-view';
 
 import { apiRequest } from './client';
 
@@ -89,6 +94,25 @@ export const attachmentMediaInfoResolver: MediaInfoResolver = {
       { method: 'POST' },
     );
     return toInfo(response);
+  },
+
+  /**
+   * Draws the PDF into the block, with the same viewer a project's result pane
+   * uses (issue #70).
+   *
+   * A React root of its own inside a Tiptap node view, which is the seam this
+   * hook exists for: `packages/editor` builds plain DOM and is read by the
+   * server too, so the renderer has to be mounted from here. `unmount` is
+   * deferred to a microtask because the node view destroys it while React is
+   * still committing the tree the editor is inside, and unmounting a root
+   * during another root's render is what React warns about.
+   */
+  renderPdf(container: HTMLElement, src: string): () => void {
+    const root = createRoot(container);
+    root.render(React.createElement(PdfView, { url: src }));
+    return () => {
+      queueMicrotask(() => root.unmount());
+    };
   },
 
   async correctText(src: string, text: string | null): Promise<MediaDocumentDetail | null> {

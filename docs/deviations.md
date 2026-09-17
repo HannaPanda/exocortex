@@ -331,19 +331,27 @@ CSS in `globals.css` therefore targets the node view, and the node view's button
 given its arrow, `aria-expanded` and German label through `renderToggleButton`; it
 is empty by default.
 
-## 21. The embedded PDF viewer's toolbar is switched off
+## 21. A PDF is drawn by pdf.js, because the browser's own viewer cannot be embedded
 
-A PDF is embedded as `<object type="application/pdf">`, which hands the browser's
-own viewer to the reader. In Chromium that viewer offers annotation tools and a
-save button, and both lie in this context: the annotations exist only in the tab
-and vanish on reload, and "save" writes the original file to disk rather than back
-into the document, which reads as _discard my drawing_.
+Resolved, and worth keeping because the reason changed twice.
 
-`packages/editor/src/media.ts` therefore appends `#toolbar=0&navpanes=0` to the
-source and renders its own header with the two actions that do work, "Öffnen" and
-"Herunterladen". Persistent annotations would mean storing them as document
-content and painting the pages ourselves; that is a feature to build, not a bug to
-fix here.
+It began as a `<object type="application/pdf">` with `#toolbar=0&navpanes=0`
+appended, to hide a toolbar whose annotation tools and save button both lie in
+this context: the annotations live in the tab and vanish on reload, and "save"
+writes the original file to disk rather than back into the document.
+
+The embed never worked at all. This application sets `object-src 'none'` in its
+own Content-Security-Policy (`apps/web/next.config.ts`), so every browser
+refused the element silently and fell back to the download link inside it, for
+as long as the block existed (issue #70). `<iframe>` is refused by the same
+policy under `frame-src`.
+
+Both the page editor's PDF block and a project's result pane therefore render
+the pages themselves, with `pdfjs-dist` in `apps/web/src/components/pdf`. That
+is also what SyncTeX needs (issue #53): a browser's viewer will not say where it
+was clicked. `packages/editor` does not load the renderer -- it is read by the
+server too -- and instead offers `MediaInfoResolver.renderPdf`, a box the host
+draws into.
 
 ## 22. The icon and emoji datasets are generated into the repository
 

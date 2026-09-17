@@ -9,18 +9,20 @@ import { Button, cn, ErrorState, LoadingState } from '@exocortex/ui';
 import { type PdfPageSize, usePdfDocument, usePdfPageSizes } from './pdf-document';
 
 /**
- * The built PDF, drawn by us (issue #53, ADR-027).
+ * A PDF, drawn by us (issue #53, then #70).
  *
- * The whole reason this exists instead of an `<object>` is the click. A browser's
- * own PDF viewer will not say where it was clicked -- not the page, not the
- * coordinates -- and without that, the SyncTeX map beside the file answers a
- * question nobody can ask. Drawing the pages ourselves is what turns a place on
- * paper back into a place in the source.
+ * Written for a LaTeX project's result pane, where the whole reason to draw the
+ * pages ourselves is the click: a browser's own viewer will not say where it
+ * was clicked -- not the page, not the coordinates -- and without that the
+ * SyncTeX map beside the file answers a question nobody can ask.
  *
- * So this is deliberately not a PDF reader. There is no text selection, no
- * search, no thumbnails and no annotations, because none of them is what a
- * person writing LaTeX next to this pane needs: they need to see the page, get
- * closer to it, and point at the bit that came out wrong.
+ * It is the only PDF viewer in the application since #70, because the other way
+ * of showing one turned out not to work at all: an `<object>` is refused by our
+ * own `object-src 'none'`, silently, falling back to the download link inside
+ * it. So the PDF block in the page editor mounts this too, without the click.
+ *
+ * It is deliberately not a PDF reader. No text selection, no search, no
+ * thumbnails, no annotations -- pages, zoom, and a click that knows its place.
  */
 
 /** Zoom steps, and the one the buttons move between. */
@@ -31,15 +33,21 @@ const ZOOM_STEP = 0.25;
 /** Pages drawn ahead of and behind the viewport, so scrolling is not a blank. */
 const RENDER_MARGIN_PX = 1200;
 
-interface ProjectPdfViewProps {
+interface PdfViewProps {
   url: string;
   /** Areas to mark, in PDF points from the top left of their page. */
-  highlights: readonly ProjectSourceArea[];
-  /** A click on a page, in PDF points from its top left corner. */
-  onPickSource: (position: { page: number; x: number; y: number }) => void;
+  highlights?: readonly ProjectSourceArea[];
+  /**
+   * A click on a page, in PDF points from its top left corner.
+   *
+   * Absent where a click means nothing -- a PDF attached to a page has no
+   * source to jump to -- and then the pages are not clickable at all rather
+   * than clickable and inert.
+   */
+  onPickSource?: (position: { page: number; x: number; y: number }) => void;
 }
 
-export function ProjectPdfView({ url, highlights, onPickSource }: ProjectPdfViewProps) {
+export function PdfView({ url, highlights = [], onPickSource }: PdfViewProps) {
   const { document, pageCount, error } = usePdfDocument(url);
   const sizes = usePdfPageSizes(document);
 
@@ -89,6 +97,7 @@ export function ProjectPdfView({ url, highlights, onPickSource }: ProjectPdfView
         pageCount={pageCount}
         zoom={zoom}
         fitScale={fitScale}
+        clickable={onPickSource !== undefined}
         onZoom={setZoom}
         onFit={() => setZoom(null)}
       />
@@ -102,7 +111,11 @@ export function ProjectPdfView({ url, highlights, onPickSource }: ProjectPdfView
               size={size}
               scale={scale}
               marks={highlights.filter((area) => area.page === index + 1)}
-              onPick={(x, y) => onPickSource({ page: index + 1, x, y })}
+              onPick={
+                onPickSource === undefined
+                  ? null
+                  : (x, y) => onPickSource({ page: index + 1, x, y })
+              }
               register={(element) => {
                 if (element === null) pageRefs.current.delete(index + 1);
                 else pageRefs.current.set(index + 1, element);
@@ -119,12 +132,14 @@ function ZoomBar({
   pageCount,
   zoom,
   fitScale,
+  clickable,
   onZoom,
   onFit,
 }: {
   pageCount: number;
   zoom: number | null;
   fitScale: number;
+  clickable: boolean;
   onZoom: (zoom: number) => void;
   onFit: () => void;
 }) {
@@ -156,7 +171,8 @@ function ZoomBar({
         Breite
       </Button>
       <span className="ms-auto text-xs text-muted-foreground">
-        {pageCount} {pageCount === 1 ? 'Seite' : 'Seiten'} · Klick springt in die Quelle
+        {pageCount} {pageCount === 1 ? 'Seite' : 'Seiten'}
+        {clickable ? ' · Klick springt in die Quelle' : ''}
       </span>
     </div>
   );
@@ -184,7 +200,7 @@ function PdfPage({
   size: PdfPageSize;
   scale: number;
   marks: readonly ProjectSourceArea[];
-  onPick: (x: number, y: number) => void;
+  onPick: ((x: number, y: number) => void) | null;
   register: (element: HTMLDivElement | null) => void;
 }) {
   const wrapperRef = React.useRef<HTMLDivElement>(null);
@@ -245,21 +261,28 @@ function PdfPage({
         wrapperRef.current = element;
         register(element);
       }}
-      className="relative bg-background shadow-sm ring-1 ring-border"
+      className={cn(
+        'relative bg-background shadow-sm ring-1 ring-border',
+        onPick !== null && 'cursor-crosshair',
+      )}
       style={{ width, height }}
-      data-testid="project-pdf-page"
+      data-testid="pdf-page"
       data-page={pageNumber}
-      onClick={(event) => {
-        const rect = event.currentTarget.getBoundingClientRect();
-        onPick((event.clientX - rect.left) / scale, (event.clientY - rect.top) / scale);
-      }}
+      onClick={
+        onPick === null
+          ? undefined
+          : (event) => {
+              const rect = event.currentTarget.getBoundingClientRect();
+              onPick((event.clientX - rect.left) / scale, (event.clientY - rect.top) / scale);
+            }
+      }
     >
       <canvas ref={canvasRef} className="block h-full w-full" />
       {marks.map((area, index) => (
         <span
           key={index}
           aria-hidden
-          data-testid="project-pdf-mark"
+          data-testid="pdf-mark"
           className={cn(
             'pointer-events-none absolute rounded-xs bg-primary/25 ring-1 ring-primary/50',
           )}

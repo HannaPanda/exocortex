@@ -72,5 +72,23 @@ test.describe('PDF block metadata', () => {
     await expect(details).toContainText('Johanna Panda');
     await expect(details).toContainText('1 Seite');
     await expect(details).toContainText('01.04.2026');
+
+    // And that the document itself is on the page (issue #70). This block used
+    // to embed an `<object>`, which the application's own `object-src 'none'`
+    // refused on every load, silently, falling back to the download link inside
+    // it. A visible slot is not enough to catch that again -- the canvas has to
+    // have been drawn into.
+    const first = page.locator('.exocortex-pdf-viewport [data-testid="pdf-page"]').first();
+    await expect(first).toBeVisible({ timeout: 60_000 });
+    await expect
+      .poll(
+        () =>
+          first
+            .locator('canvas')
+            .evaluate((canvas) => (canvas as HTMLCanvasElement).width)
+            .catch(() => 0),
+        { timeout: 30_000 },
+      )
+      .toBeGreaterThan(0);
   });
 });

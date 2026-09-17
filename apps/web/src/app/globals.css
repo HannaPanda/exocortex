@@ -420,7 +420,9 @@
     @apply shrink-0 text-muted-foreground no-underline hover:text-foreground hover:underline;
   }
 
-  .exocortex-editor .exocortex-media-pdf object {
+  /* Where the host mounts the PDF viewer (issue #70). It used to be an
+     `<object>`, which our own `object-src 'none'` refused on every page load. */
+  .exocortex-editor .exocortex-pdf-viewport {
     @apply block h-[32rem] w-full;
   }
 
@@ -466,8 +468,12 @@
    * `<dialog>` rather than a hand-rolled overlay: `showModal()` gives it
    * a11y-correct focus trapping and Escape-to-close for free.
    */
+  /* `m-auto` is not decoration: a modal `<dialog>` is centred by the browser
+     through `inset: 0` plus `margin: auto`, and Tailwind's preflight sets
+     `margin: 0` on `*`. Without this the dialog sits in the top left corner
+     (issue #70). It is the only native `<dialog>` in the application. */
   .exocortex-media-text-dialog {
-    @apply w-[min(42rem,calc(100vw-2rem))] max-w-none rounded-lg border border-border bg-popover p-6 text-popover-foreground shadow-xl;
+    @apply m-auto w-[min(42rem,calc(100vw-2rem))] max-w-none rounded-lg border border-border bg-popover p-6 text-popover-foreground shadow-xl;
   }
 
   .exocortex-media-text-dialog::backdrop {

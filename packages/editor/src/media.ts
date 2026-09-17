@@ -168,6 +168,20 @@ export interface MediaInfoResolver {
    * clears one (issue #2). Absent when the reader may not edit.
    */
   correctText?(src: string, text: string | null): Promise<MediaDocumentDetail | null>;
+  /**
+   * Draws the PDF itself into `container`, and returns how to take it down
+   * again (issue #70).
+   *
+   * Injected rather than done here, and that is the whole point of it being on
+   * this interface. Showing a PDF means pdf.js, and this package is also read
+   * by the server -- materialization, Markdown, HTML export -- so a browser
+   * renderer inside it would travel into bundles that never draw anything. The
+   * host has one already; this is how it reaches the block.
+   *
+   * Absent on the server and in the tests, and then the block renders exactly
+   * as it did before: the file's name, the two actions, and no preview.
+   */
+  renderPdf?(container: HTMLElement, src: string): () => void;
 }
 
 export interface MediaNodeOptions {
@@ -255,6 +269,17 @@ function createMediaNode(kind: MediaKind) {
         if (kind.name !== 'pdf' && kind.name !== 'fileAttachment') {
           return { dom, ignoreMutation: () => true };
         }
+
+        // The pages themselves, from the host (issue #70). Mounted here rather
+        // than in `buildMediaElement`, which knows nothing about the resolver
+        // and is also what renders a block with no host at all.
+        let unmountPdf: (() => void) | null = null;
+        if (kind.name === 'pdf' && resolver?.renderPdf !== undefined && src.length > 0) {
+          const viewport = buildPdfViewport();
+          element.append(viewport);
+          unmountPdf = resolver.renderPdf(viewport, src);
+        }
+
         const details = attachDocumentDetails(kind, element, src, name, resolver);
 
         return {
@@ -262,7 +287,10 @@ function createMediaNode(kind: MediaKind) {
           ignoreMutation: () => true,
           // A node view is rebuilt whenever its attributes change, so a
           // response still in flight belongs to a block that no longer exists.
-          destroy: () => details?.cancel(),
+          destroy: () => {
+            details?.cancel();
+            unmountPdf?.();
+          },
         };
       };
     },
@@ -288,20 +316,6 @@ function renderMediaBody(
   }
 }
 
-/**
- * Viewer parameters that switch the browser's own PDF toolbar off.
- *
- * That toolbar promises two things Exocortex cannot keep. Its annotation tools
- * draw into the viewer only: the marks live in the tab, not in the document, and
- * are gone on reload. Its save button writes the original file to disk, which
- * reads as "discard my drawing" to anyone who just drew. Hiding the toolbar
- * removes the false promise; the two actions that do work sit in the header.
- *
- * Real annotations would mean storing them as document content and rendering the
- * pages ourselves — a feature, not a fix. See docs/deviations.md.
- */
-const PDF_VIEWER_PARAMETERS = '#toolbar=0&navpanes=0';
-
 /** Header link, used for both PDF actions. */
 function buildPdfAction(src: string, text: string, download: boolean): HTMLAnchorElement {
   const anchor = window.document.createElement('a');
@@ -313,7 +327,22 @@ function buildPdfAction(src: string, text: string, download: boolean): HTMLAncho
   return anchor;
 }
 
-/** Preview of a PDF plus the actions a reader actually has. */
+/**
+ * Preview of a PDF plus the actions a reader actually has.
+ *
+ * The preview is an empty box the host fills through
+ * `MediaInfoResolver.renderPdf` (issue #70). It used to be an `<object>`, and
+ * that never once worked: the application's own Content-Security-Policy sets
+ * `object-src 'none'`, so every browser refused it silently and fell back to
+ * the download link inside it. The block looked like a deliberately plain link
+ * for as long as the feature existed. `<iframe>` is refused by the same policy
+ * under `frame-src`, which leaves drawing the pages -- and the host is the only
+ * side of this seam that may load a renderer.
+ *
+ * With no host renderer the box is left out entirely rather than left empty: an
+ * exported document and a server-rendered page still say what the file is and
+ * link to it.
+ */
 function buildPdfElement(src: string, label: string): HTMLElement {
   const container = window.document.createElement('div');
   container.className = 'exocortex-pdf';
@@ -329,15 +358,15 @@ function buildPdfElement(src: string, label: string): HTMLElement {
     buildPdfAction(src, 'Herunterladen', true),
   );
 
-  // An `<object>` rather than an `<iframe>`: it degrades to its own children, so a
-  // browser without a PDF viewer still shows the download link.
-  const object = window.document.createElement('object');
-  object.data = `${src}${PDF_VIEWER_PARAMETERS}`;
-  object.type = 'application/pdf';
-  object.append(buildPdfAction(src, label, true));
-
-  container.append(header, object);
+  container.append(header);
   return container;
+}
+
+/** Where the host's renderer draws, once there is one. */
+function buildPdfViewport(): HTMLElement {
+  const viewport = window.document.createElement('div');
+  viewport.className = 'exocortex-pdf-viewport';
+  return viewport;
 }
 
 /** `2026-04-26T11:56:10.000Z` as `26.04.2026`, without depending on a locale. */

@@ -15,15 +15,24 @@ afterEach(() => {
 /**
  * The PDF block, at the level of the DOM it actually renders.
  *
- * The browser's built-in PDF viewer comes with annotation tools and a save button
- * that this application cannot honour: the marks never reach the document and the
- * save writes the source file to disk. Switching that toolbar off is therefore a
- * correctness property, not styling, and the two actions that do work have to be
- * present in their place.
+ * These assertions are about a seam rather than about styling (issue #70). The
+ * block does not draw the file: it cannot, because this package is read by the
+ * server as well and a PDF renderer has no business in a Markdown export. So
+ * the host is handed a box to draw into, and everything below is one of the two
+ * halves of that arrangement -- the box appears when a host offers a renderer,
+ * and the block is still readable when none does.
+ *
+ * What is deliberately *not* here any more is an `<object>`. It was refused by
+ * the application's own `object-src 'none'` on every page load, silently, for
+ * as long as the block existed; a test that asserted its attributes passed
+ * throughout.
  */
 describe('pdf block', () => {
-  function insertPdf(): HTMLElement {
-    editor = new Editor({ extensions: buildEditorExtensions(), content: '<p></p>' });
+  function insertPdf(mediaInfo?: MediaInfoResolver): HTMLElement {
+    editor = new Editor({
+      extensions: buildEditorExtensions(mediaInfo === undefined ? undefined : { mediaInfo }),
+      content: '<p></p>',
+    });
     editor.commands.insertMedia('pdf', {
       src: '/api/attachments/abc/download',
       name: 'Handbuch.pdf',
@@ -33,10 +42,11 @@ describe('pdf block', () => {
     return container;
   }
 
-  it('hides the viewer toolbar', () => {
-    const object = insertPdf().querySelector('object');
-    expect(object?.getAttribute('data')).toBe('/api/attachments/abc/download#toolbar=0&navpanes=0');
-    expect(object?.type).toBe('application/pdf');
+  it('embeds nothing the content security policy refuses', () => {
+    const container = insertPdf();
+    expect(container.querySelector('object')).toBeNull();
+    expect(container.querySelector('iframe')).toBeNull();
+    expect(container.querySelector('embed')).toBeNull();
   });
 
   it('offers opening and downloading, and names the file', () => {
@@ -45,7 +55,6 @@ describe('pdf block', () => {
 
     const actions = [...container.querySelectorAll('.exocortex-pdf-header a')];
     expect(actions.map((anchor) => anchor.textContent)).toEqual(['Öffnen', 'Herunterladen']);
-    // The plain link opens the file itself, without the viewer parameters.
     expect(actions.map((anchor) => anchor.getAttribute('href'))).toEqual([
       '/api/attachments/abc/download',
       '/api/attachments/abc/download',
@@ -53,10 +62,36 @@ describe('pdf block', () => {
     expect(actions[1]?.hasAttribute('download')).toBe(true);
   });
 
-  it('keeps a download link for a browser without a PDF viewer', () => {
-    // `<object>` falls back to its children, which is why it is not an `<iframe>`.
-    const fallback = insertPdf().querySelector('object a');
-    expect(fallback?.getAttribute('href')).toBe('/api/attachments/abc/download');
+  it('gives the host a box to draw the pages into, and takes it down again', () => {
+    const drawn: string[] = [];
+    let unmounted = 0;
+    const resolver: MediaInfoResolver = {
+      read: () => Promise.resolve(null),
+      renderPdf: (container, src) => {
+        drawn.push(src);
+        container.textContent = 'gezeichnet';
+        return () => {
+          unmounted += 1;
+        };
+      },
+    };
+
+    const container = insertPdf(resolver);
+    const viewport = container.querySelector('.exocortex-pdf-viewport');
+    expect(drawn).toEqual(['/api/attachments/abc/download']);
+    expect(viewport?.textContent).toBe('gezeichnet');
+
+    // A node view is rebuilt whenever its attributes change, so a renderer that
+    // is not taken down leaks one root per edit.
+    editor?.destroy();
+    editor = null;
+    expect(unmounted).toBe(1);
+  });
+
+  it('leaves the box out entirely when no host can draw', () => {
+    // Server-side rendering and the Markdown export go through this path: an
+    // empty grey rectangle would be worse than the name and the two links.
+    expect(insertPdf().querySelector('.exocortex-pdf-viewport')).toBeNull();
   });
 });
 

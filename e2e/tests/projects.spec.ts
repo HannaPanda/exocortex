@@ -66,7 +66,7 @@ test.describe('LaTeX-Projekt im Browser', () => {
 
     // The pages are ours, not the browser's viewer (issue #53): that is what
     // makes the next two assertions possible at all.
-    const firstPage = page.getByTestId('project-pdf-page').first();
+    const firstPage = page.getByTestId('pdf-page').first();
     await expect(firstPage).toBeVisible({ timeout: 30_000 });
 
     // Reverse SyncTeX. The file that is open is the empty one just created, so
@@ -84,7 +84,7 @@ test.describe('LaTeX-Projekt im Browser', () => {
 
     // Forward SyncTeX, which follows from the same jump: the caret now rests on
     // the line that was clicked, and the PDF marks where that line went.
-    await expect(page.getByTestId('project-pdf-mark').first()).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('pdf-mark').first()).toBeVisible({ timeout: 30_000 });
   });
 });
 

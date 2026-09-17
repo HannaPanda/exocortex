@@ -20,10 +20,10 @@ import {
   TabsTrigger,
 } from '@exocortex/ui';
 
+import { PdfView } from '@/components/pdf/pdf-view';
 import { useProjectBuildDiagnostics, useProjectBuildLog } from '@/lib/api/project-queries';
 
 import { ProjectBuildHistory } from './project-build-history';
-import { ProjectPdfView } from './project-pdf-view';
 
 /**
  * The right-hand half of a project: the PDF, the errors and the log
@@ -265,10 +265,10 @@ function PdfPane({
         <p className="px-3 pb-1 text-xs text-muted-foreground">{pickError}</p>
       )}
       <div className="min-h-0 flex-1">
-        <ProjectPdfView
+        <PdfView
           url={downloadPath}
           highlights={hasSourceMap ? highlights : []}
-          onPickSource={hasSourceMap ? onPickSource : () => undefined}
+          onPickSource={hasSourceMap ? onPickSource : undefined}
         />
       </div>
     </div>
