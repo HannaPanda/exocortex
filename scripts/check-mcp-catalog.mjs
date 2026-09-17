@@ -61,6 +61,11 @@ const EXEMPT = [
       'Better Auth, proxied verbatim. Sign-in, sessions and OAuth are browser flows; an MCP client already arrives authenticated with a bearer token.',
   },
   {
+    route: '* /.well-known*',
+    reason:
+      'OAuth discovery at the origin root (RFC 8414 and RFC 9728), the same Better Auth handler under a second mount. A client reads these documents before it has a credential, which is the opposite of a tool call.',
+  },
+  {
     route: 'GET /api/session',
     reason: 'Who the current cookie belongs to. An MCP caller knows who it is from its own token.',
   },
