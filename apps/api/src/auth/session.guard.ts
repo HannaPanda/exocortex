@@ -23,6 +23,7 @@ import { type Logger } from '@exocortex/logger';
 
 import { AppError } from '../common/app-error';
 import { clearAutomationOrigin, setRequestUser } from '../common/correlation';
+import { isHttpContext } from '../common/http-context';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
 
@@ -84,6 +85,7 @@ export class SessionGuard implements CanActivate {
       context.getClass(),
     ]);
     if (isPublic === true) return true;
+    if (!isHttpContext(context)) return true;
 
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const headers = request.headers as Record<string, string | string[] | undefined>;

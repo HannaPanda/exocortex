@@ -4,6 +4,7 @@ import { Reflector } from '@nestjs/core';
 import { canAdministerDeployment, WorkspaceAccessService } from '@exocortex/auth';
 
 import { AppError } from '../common/app-error';
+import { isHttpContext } from '../common/http-context';
 
 import { type AuthenticatedRequest } from './session.guard';
 
@@ -29,6 +30,7 @@ export class AdminGuard implements CanActivate {
       context.getClass(),
     ]);
     if (requiresAdmin !== true) return true;
+    if (!isHttpContext(context)) return true;
 
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const session = request.exocortexSession;

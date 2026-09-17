@@ -15,6 +15,7 @@ import { TokenScopeGuard } from './auth/token-scope.guard';
 import { AutomationsModule } from './automations/automations.module';
 import { CommentsModule } from './comments/comments.module';
 import { ApiExceptionFilter } from './common/exception.filter';
+import { isHttpContext } from './common/http-context';
 import { API_ENV } from './common/logger.provider';
 import { DatabasesModule } from './databases/databases.module';
 import { DocumentsModule } from './documents/documents.module';
@@ -44,6 +45,9 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
       imports: [PlatformModule],
       inject: [API_ENV],
       useFactory: (env: ApiEnv) => ({
+        // A WebSocket message is not a request and has no response to write
+        // rate-limit headers to; see `isHttpContext`.
+        skipIf: (context) => !isHttpContext(context),
         throttlers: [
           {
             // Generous enough for normal use, tight enough to blunt brute force.

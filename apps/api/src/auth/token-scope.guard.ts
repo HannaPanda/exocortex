@@ -3,6 +3,7 @@ import { type CanActivate, type ExecutionContext, Injectable } from '@nestjs/com
 import { requiredScopeForRequest, tokenHasScope } from '@exocortex/auth';
 
 import { AppError } from '../common/app-error';
+import { isHttpContext } from '../common/http-context';
 
 import { type AuthenticatedRequest } from './session.guard';
 
@@ -27,6 +28,8 @@ import { type AuthenticatedRequest } from './session.guard';
 @Injectable()
 export class TokenScopeGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
+    if (!isHttpContext(context)) return true;
+
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     if (request.exocortexCredential !== 'api_token') return true;
 

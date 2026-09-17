@@ -66,6 +66,7 @@ function contextFor(authorization: string, method: string, url: string): Executi
   return {
     getHandler: () => noopHandler,
     getClass: () => NoopController,
+    getType: () => 'http',
     switchToHttp: () => ({ getRequest: () => request }),
   } as unknown as ExecutionContext;
 }
