@@ -80,15 +80,12 @@ test.describe('PDF block metadata', () => {
     // have been drawn into.
     const first = page.locator('.exocortex-pdf-viewport [data-testid="pdf-page"]').first();
     await expect(first).toBeVisible({ timeout: 60_000 });
+    // `width` is a reflected attribute, so the drawn size is readable from the
+    // outside without a DOM lib in this package's tsconfig.
     await expect
-      .poll(
-        () =>
-          first
-            .locator('canvas')
-            .evaluate((canvas) => (canvas as HTMLCanvasElement).width)
-            .catch(() => 0),
-        { timeout: 30_000 },
-      )
+      .poll(async () => Number((await first.locator('canvas').getAttribute('width')) ?? 0), {
+        timeout: 30_000,
+      })
       .toBeGreaterThan(0);
   });
 });
