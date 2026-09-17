@@ -493,6 +493,15 @@ In ChatGPT, add a connector with the URL `https://exocortex.app/api/mcp`
 on `/anmelden` if signed out, then on `/verbinden`, which names the client and
 what it is asking for. **Nothing is issued until that page is answered.**
 
+A connector set up before better-auth 1.7 has to be removed and added again
+rather than reconnected. ChatGPT keeps the endpoints it discovered when the
+connector was created, and the 1.6 plugin's `/api/auth/mcp/authorize` is gone
+(the reconnect button leads to a bare 404); its client registration is gone too,
+because a client carried over from 1.6 is linked to no resource and every
+authorization with it ends in `invalid_target`. Adding the connector again
+rediscovers `/api/auth/oauth2/authorize` and registers a client that is linked
+on the way in.
+
 The consent screen is not a formality. Client registration is open, as the
 specification requires, so without it any website could redirect a signed-in
 person to the authorization endpoint with a client it registered seconds
