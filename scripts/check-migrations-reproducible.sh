@@ -112,7 +112,8 @@ fi
 # to drop them. They are created by raw SQL in a migration and modelled as
 # `Unsupported(...)` in schema.prisma (see the header comment there): full-text
 # and trigram indexes, the HNSW index for semantic search, the GIN index on the
-# property values, and the generated tsvector's default.
+# property values, and the two generated tsvectors' defaults -- the page search
+# projection's and, since issue #69, the one on conversation messages.
 #
 # Full-line exact matches on purpose. A pattern like "any DROP INDEX on
 # document_*" would also swallow the real drift this gate exists to find.
@@ -127,6 +128,8 @@ UNMODELLABLE=(
   'DROP INDEX "document_search_index_searchVector_idx";'
   'DROP INDEX "document_search_index_title_trgm_idx";'
   'ALTER TABLE "document_search_index" ALTER COLUMN "searchVector" DROP DEFAULT;'
+  'DROP INDEX "ai_conversation_message_searchVector_idx";'
+  'ALTER TABLE "ai_conversation_message" ALTER COLUMN "searchVector" DROP DEFAULT;'
 )
 
 say "Comparing the fresh database against schema.prisma …"
