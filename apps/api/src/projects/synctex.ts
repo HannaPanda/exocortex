@@ -63,13 +63,20 @@ export interface SyncTexMap {
  * Record types that carry `width,height,depth` after the position.
  *
  * `(` and `[` open a box and are closed by `)` and `]`; `h`, `v` and `r` are a
- * box with no content. All five describe an area. Everything else -- `g`, `k`,
- * `$`, `x`, `<`, `>` -- is a single point on a baseline.
+ * box with no content. All five describe an area.
  */
 const BOX_TYPES = new Set(['(', '[', 'h', 'v', 'r']);
 
-/** Record types that are a point rather than an area. */
-const POINT_TYPES = new Set(['g', 'k', '$', 'x', '<', '>']);
+/**
+ * Record types that are a single point on a baseline rather than an area.
+ *
+ * Every other line of the content is skipped, which is the right answer for all
+ * of them: `)` and `]` only close what was already described, `!` is a
+ * character-count anchor for readers that seek rather than scan, and `<` and
+ * `>` delimit a form -- reusable content whose coordinates are relative to
+ * wherever the form is later placed, not to any page.
+ */
+const POINT_TYPES = new Set(['g', 'k', '$', 'x']);
 
 /**
  * `tag,line[,column]:x,y[:width,height[,depth]]`
