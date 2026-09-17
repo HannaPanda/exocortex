@@ -18,7 +18,9 @@ import {
   type ProjectBuildResponse,
   type ProjectFileListResponse,
   type ProjectMutationResponse,
+  type ProjectPositionLookupResponse,
   type ProjectResponse,
+  type ProjectSourceLookupResponse,
   type StartProjectBuildRequest,
   type StartProjectBuildResponse,
   type UpdateProjectRequest,
@@ -49,6 +51,8 @@ export const projectKeys = {
   diagnostics: (buildId: string) => ['project-build', buildId, 'diagnostics'] as const,
   log: (buildId: string) => ['project-build', buildId, 'log'] as const,
   artifacts: (buildId: string) => ['project-build', buildId, 'artifacts'] as const,
+  position: (buildId: string, file: string, line: number) =>
+    ['project-build', buildId, 'source-map', file, line] as const,
 };
 
 export function useProject(projectId: string | undefined): UseQueryResult<ProjectResponse> {
@@ -307,5 +311,51 @@ export function useCancelProjectBuild() {
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: projectKeys.build(result.build.id) });
     },
+  });
+}
+
+/**
+ * Where a source line ended up in the built PDF (issue #53).
+ *
+ * Forward SyncTeX, asked once per resting cursor. `staleTime: Infinity` because
+ * the answer is a property of one finished build: it cannot change while that
+ * build is the one on screen, and a refetch on every window focus would be a
+ * request for an answer that is already right.
+ */
+export function useProjectSourcePosition(
+  buildId: string | null,
+  file: string | null,
+  line: number | null,
+): UseQueryResult<ProjectPositionLookupResponse> {
+  const enabled = buildId !== null && file !== null && line !== null;
+  return useQuery({
+    queryKey: projectKeys.position(buildId ?? 'none', file ?? '', line ?? 0),
+    queryFn: () =>
+      apiRequest<ProjectPositionLookupResponse>(
+        `/api/project-builds/${buildId ?? ''}/source-map/position` +
+          `?file=${encodeURIComponent(file ?? '')}&line=${String(line ?? 0)}`,
+      ),
+    enabled,
+    staleTime: Infinity,
+    // A line that produced nothing, or a build with no map at all, answers 404.
+    // That is an ordinary answer here and not worth three more attempts.
+    retry: false,
+  });
+}
+
+/**
+ * Which source line produced a place in the built PDF (issue #53).
+ *
+ * A mutation rather than a query even though it changes nothing: it is asked by
+ * a click, and a query keyed on the coordinates of a click would fill the cache
+ * with one entry per click.
+ */
+export function useProjectSourceLookup(buildId: string | null) {
+  return useMutation({
+    mutationFn: (position: { page: number; x: number; y: number }) =>
+      apiRequest<ProjectSourceLookupResponse>(
+        `/api/project-builds/${buildId ?? ''}/source-map/source` +
+          `?page=${String(position.page)}&x=${String(position.x)}&y=${String(position.y)}`,
+      ),
   });
 }

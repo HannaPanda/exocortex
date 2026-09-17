@@ -30,6 +30,8 @@ import {
 } from '@/lib/api/project-queries';
 import { uploadAttachment, useSessionQuery } from '@/lib/api/queries';
 
+import { type ProjectSourceSync, useProjectSourceSync } from './use-project-source-sync';
+
 /**
  * Everything one project screen needs, in one place (issue #43, ADR-027).
  *
@@ -49,6 +51,11 @@ export function resolveOpenPath(
   const root = files.find((file) => file.path === rootFile);
   if (root !== undefined) return root.path;
   return files.find((file) => file.kind === 'TEXT')?.path ?? null;
+}
+
+/** The file forward sync asks about: the open text file, or nothing. */
+export function syncPath(selected: ProjectFile | null): string | null {
+  return selected !== null && selected.kind === 'TEXT' ? selected.path : null;
 }
 
 /** Whether the build is still going. */
@@ -82,6 +89,8 @@ export interface ProjectWorkspace {
   connection: CollaborationConnectionState;
   selected: ProjectFile | null;
   focusLine: number | null;
+  /** Rises with every jump, so asking for the same line twice moves twice. */
+  focusNonce: number;
   build: ProjectBuild | null;
   /** Every build this project has had, newest first. */
   builds: readonly ProjectBuild[];
@@ -93,6 +102,8 @@ export interface ProjectWorkspace {
   archivePending: boolean;
   createOpen: boolean;
   setCreateOpen: (open: boolean) => void;
+  /** Both directions of SyncTeX, between the source pane and the PDF (issue #53). */
+  sourceSync: ProjectSourceSync;
   openFile: (path: string, line: number | null) => void;
   selectBuild: (buildId: string) => void;
   actions: {
@@ -122,6 +133,7 @@ export function useProjectWorkspace(workspaceId: string, projectId: string): Pro
 
   const [chosenPath, setChosenPath] = React.useState<string | null>(null);
   const [focusLine, setFocusLine] = React.useState<number | null>(null);
+  const [focusNonce, setFocusNonce] = React.useState(0);
   const [createOpen, setCreateOpen] = React.useState(false);
 
   const user = session.data?.user ?? null;
@@ -140,7 +152,17 @@ export function useProjectWorkspace(workspaceId: string, projectId: string): Pro
   const openFile = React.useCallback((path: string, line: number | null): void => {
     setChosenPath(path);
     setFocusLine(line);
+    // Counted rather than compared: clicking the same place in the PDF twice
+    // asks for the same line twice, and the second ask has to move the caret
+    // back to it just as the first one did.
+    setFocusNonce((nonce) => nonce + 1);
   }, []);
+
+  const sourceSync = useProjectSourceSync({
+    buildId: builds.build?.id ?? null,
+    file: syncPath(selected),
+    openFile,
+  });
 
   return {
     project: user === null ? null : project,
@@ -149,6 +171,7 @@ export function useProjectWorkspace(workspaceId: string, projectId: string): Pro
     connection,
     selected,
     focusLine,
+    focusNonce,
     build: builds.build,
     builds: builds.builds,
     running: builds.running,
@@ -158,6 +181,7 @@ export function useProjectWorkspace(workspaceId: string, projectId: string): Pro
     archivePending: archive.pending,
     createOpen,
     setCreateOpen,
+    sourceSync,
     openFile,
     selectBuild: builds.select,
     actions: {

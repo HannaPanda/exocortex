@@ -10,11 +10,14 @@ import {
 import {
   PROJECT_MAX_DIAGNOSTICS,
   PROJECT_MAX_LOG_CHARS,
+  PROJECT_MAX_SOURCE_AREAS,
   type ProjectBuild,
   type ProjectBuildArtifactsResponse,
   type ProjectBuildDiagnosticsResponse,
   type ProjectBuildListResponse,
   type ProjectBuildLogResponse,
+  type ProjectPositionLookupResponse,
+  type ProjectSourceLookupResponse,
   QUEUE_NAMES,
   type StartProjectBuildRequest,
   type StartProjectBuildResponse,
@@ -36,9 +39,39 @@ import {
   PROJECT_BUILD_SELECT,
   type ProjectBuildRow,
 } from './project-mapper';
+import {
+  lookupAreas as findLineAreas,
+  lookupSource as findSourceRecord,
+  parseSyncTex,
+  resolveInputPath,
+  type SyncTexMap,
+} from './synctex';
 
 /** Builds one listing hands back. A build log is read, not exported. */
 const MAX_LISTED_BUILDS = 50;
+
+/**
+ * The largest SyncTeX map this process is willing to parse into memory.
+ *
+ * The worker already refuses to store one above 20 MB, so this is the second
+ * half of the same decision rather than a new one: a map that big is a
+ * thousand-page document, and turning it into several hundred thousand objects
+ * in the API process is not what the API process is for. The map stays
+ * downloadable either way -- it is an ordinary attachment.
+ */
+const MAX_PARSED_SOURCE_MAP_BYTES = 20_000_000;
+
+/**
+ * How long one parsed map is kept, and how many at once.
+ *
+ * Clicking through a PDF asks the same question of the same build dozens of
+ * times in a row, and parsing a few megabytes for each click would be the whole
+ * cost of the feature. Two entries rather than a real cache: the working set is
+ * "the build somebody is looking at", and holding more parsed maps than that on
+ * a host that shares its memory with a dozen services buys nothing.
+ */
+const SOURCE_MAP_CACHE_SIZE = 2;
+const SOURCE_MAP_CACHE_TTL_MS = 5 * 60 * 1000;
 
 /**
  * Project builds: starting them, watching them, stopping them (issue #43,
@@ -263,6 +296,131 @@ export class ProjectBuildsService {
   }
 
   /**
+   * Which source line produced a place in the finished PDF (issue #53).
+   *
+   * Reverse SyncTeX, and the half that a browser cannot do for itself: the
+   * built PDF is a picture of the answer, and only the map beside it knows
+   * where the answer came from. The same route serves the viewer's click and an
+   * agent asking "where does page 17 come from", which is the point of ADR-025
+   * -- the browser gets no lookup the catalogue does not also get.
+   */
+  async lookupSource(
+    buildId: string,
+    userId: string,
+    query: { page: number; x: number; y: number },
+  ): Promise<ProjectSourceLookupResponse> {
+    const { row, map } = await this.readSourceMap(buildId, userId);
+    const found = findSourceRecord(map, query);
+    if (found === null) {
+      throw AppError.notFound('Project build source position');
+    }
+    const inputPath = map.inputs.get(found.tag) ?? '';
+    return {
+      buildId: row.id,
+      file: await this.projectPathFor(row.projectId, inputPath),
+      inputPath,
+      line: found.line,
+      area: {
+        page: found.page,
+        left: found.left,
+        top: found.top,
+        width: found.width,
+        height: found.height,
+      },
+    };
+  }
+
+  /**
+   * Where a source line ended up in the finished PDF (issue #53).
+   *
+   * Forward SyncTeX. The answer names the line it actually found, which is
+   * rarely the one asked for: most lines of a LaTeX file print nothing, and a
+   * caller that showed the request back would claim a comment has a place on
+   * the page.
+   */
+  async lookupPosition(
+    buildId: string,
+    userId: string,
+    query: { file: string; line: number },
+  ): Promise<ProjectPositionLookupResponse> {
+    const { row, map } = await this.readSourceMap(buildId, userId);
+    const paths = await this.projectPaths(row.projectId);
+    // Several tags can name one file -- TeX opens `main.aux` twice and counts
+    // twice -- so every tag that resolves to this path is asked, and the first
+    // one that produced output wins.
+    const tags = [...map.inputs.entries()]
+      .filter(([, raw]) => resolveInputPath(raw, paths) === query.file)
+      .map(([tag]) => tag);
+    if (tags.length === 0) {
+      throw AppError.notFound('Project build source file');
+    }
+
+    for (const tag of tags) {
+      const found = findLineAreas(map, { tag, line: query.line }, PROJECT_MAX_SOURCE_AREAS);
+      if (found === null) continue;
+      return {
+        buildId: row.id,
+        file: query.file,
+        requestedLine: query.line,
+        line: found.line,
+        areas: found.areas,
+      };
+    }
+    throw AppError.notFound('Project build source position');
+  }
+
+  /**
+   * The build's parsed map, with the permission check the rest of this class does.
+   *
+   * The bytes travel through `AttachmentsService` rather than storage directly,
+   * so the map is read under the same rule as any other file of the workspace
+   * and a revoked membership stops this route too.
+   */
+  private async readSourceMap(
+    buildId: string,
+    userId: string,
+  ): Promise<{ row: ProjectBuildRow; map: SyncTexMap }> {
+    const row = await this.requireBuild(buildId, userId);
+    if (row.sourceMapAttachmentId === null) {
+      throw AppError.notFound('Project build source map');
+    }
+
+    const cached = readCache(sourceMapCache, buildId);
+    if (cached !== null) return { row, map: cached };
+
+    const file = await this.attachments.download(row.sourceMapAttachmentId, userId);
+    if (file.byteSize > MAX_PARSED_SOURCE_MAP_BYTES) {
+      throw AppError.conflict(
+        'Die SyncTeX-Karte dieses Baus ist zu groß, um sie hier auszuwerten. Sie lässt sich als Anhang herunterladen.',
+      );
+    }
+
+    const chunks: Buffer[] = [];
+    for await (const chunk of file.stream) chunks.push(Buffer.from(chunk as Buffer));
+    const map = parseSyncTex(Buffer.concat(chunks).toString('utf8'));
+    writeCache(sourceMapCache, buildId, map);
+    return { row, map };
+  }
+
+  /** The paths the project holds, which is what makes a container path readable. */
+  private async projectPaths(projectId: string | null): Promise<string[]> {
+    if (projectId === null) return [];
+    const files = await this.prisma.projectFile.findMany({
+      where: { projectId },
+      select: { path: true },
+    });
+    return files.map((file) => file.path);
+  }
+
+  private async projectPathFor(
+    projectId: string | null,
+    inputPath: string,
+  ): Promise<string | null> {
+    if (inputPath.length === 0) return null;
+    return resolveInputPath(inputPath, await this.projectPaths(projectId));
+  }
+
+  /**
    * Asks for a build to stop.
    *
    * Writes `cancelledAt` and leaves the rest to the worker, which checks it
@@ -379,5 +537,42 @@ export class ProjectBuildsService {
       assets: project.assets,
     });
     return current !== row.inputHash;
+  }
+}
+
+/**
+ * A parsed map per build, for as long as somebody is looking at that build.
+ *
+ * Module scope rather than an instance field because the service is a singleton
+ * either way, and because putting it here keeps the eviction rule in one place
+ * next to the two functions that touch it.
+ */
+interface CacheEntry {
+  map: SyncTexMap;
+  writtenAt: number;
+}
+
+const sourceMapCache = new Map<string, CacheEntry>();
+
+function readCache(cache: Map<string, CacheEntry>, key: string): SyncTexMap | null {
+  const entry = cache.get(key);
+  if (entry === undefined) return null;
+  if (Date.now() - entry.writtenAt > SOURCE_MAP_CACHE_TTL_MS) {
+    cache.delete(key);
+    return null;
+  }
+  // Re-inserting makes the iteration order least-recently-used first, which is
+  // what the eviction below relies on.
+  cache.delete(key);
+  cache.set(key, entry);
+  return entry.map;
+}
+
+function writeCache(cache: Map<string, CacheEntry>, key: string, map: SyncTexMap): void {
+  cache.set(key, { map, writtenAt: Date.now() });
+  while (cache.size > SOURCE_MAP_CACHE_SIZE) {
+    const oldest = cache.keys().next().value;
+    if (oldest === undefined) break;
+    cache.delete(oldest);
   }
 }

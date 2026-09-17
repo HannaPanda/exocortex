@@ -69,6 +69,13 @@ project's Yjs document over the same socket a page uses, so two people typing in
 **Bauen** starts a build. When it fails, the **Fehler** tab lists what LaTeX
 objected to with the file and line; clicking one opens that file at that line.
 
+**The PDF is drawn by pdf.js**, page by page, with zoom and fit-to-width. That
+is what makes both directions of SyncTeX possible (issue #53): a click anywhere
+in the result opens the source line that produced it, and the caret in the
+source marks its place in the PDF and scrolls it into view. A build whose engine
+wrote no map, or whose map was too large to keep, still shows its pages; only
+the jumping is gone.
+
 **Verlauf** is every build this project has had, newest first: status, root
 file, page count, size, the PDF, and the SyncTeX map of whichever one is
 selected. Picking a row brings that build back into the panel, which is how a
@@ -104,6 +111,8 @@ exo_project_build_status        → PENDING | RUNNING | COMPLETED | FAILED | CAN
 exo_project_build_diagnostics   → the errors, with file and line
 exo_project_build_log           → everything LaTeX said
 exo_project_build_artifacts     → the PDF and the SyncTeX map, as attachments
+exo_project_build_source_at     → which source line produced a place on a page
+exo_project_build_position_of   → where a source line ended up in the PDF
 exo_project_build_cancel        → stop a build
 exo_project_builds              → every build of a project, newest first
 exo_project_build_delete        → remove a finished build, its PDF and its map
@@ -208,15 +217,30 @@ mode. Asking again for an unchanged project hands back the PDF that already
 exists; a finished build is _stale_ when the same inputs hash differently now.
 The container image is not in the hash, which is what `force: true` is for.
 
-## What is not there yet
+## SyncTeX
 
-**SyncTeX in the viewer.** The build produces the SyncTeX map and hands it out
-through `exo_project_build_artifacts` -- stored uncompressed as `text/plain`, so
-`exo_attachment_read_text` reads the mapping itself rather than a blob. What is
-missing is the other half: the PDF is shown in the browser's own viewer, which
-cannot be asked where a click landed, so clicking a place in the PDF to jump to
-its source line needs pdf.js rendering the pages. Until then the error list is
-what navigates from the result back to the source.
+The build asks `latexmk` for `-synctex=1` and stores the map uncompressed as
+`text/plain`, so it is an ordinary attachment whose _content_
+`exo_attachment_read_text` can read rather than a blob (issue #43). Two routes
+turn it into answers, and both are `GET` because both are questions:
+
+```text
+GET /api/project-builds/:id/source-map/source?page=&x=&y=   → file and line
+GET /api/project-builds/:id/source-map/position?file=&line= → pages and rectangles
+```
+
+Coordinates are PDF points measured from the top left of the page, which is what
+pdf.js hands out and what an agent means by "page 17". The parser is
+`apps/api/src/projects/synctex.ts`: our own, because the `synctex` program is
+not in the TeX Live image and the JavaScript packages that read the format are
+unmaintained or carry a licence this repository cannot take (rule 14).
+
+Two things about the answers are worth knowing before reading them. A reverse
+lookup does not stop at the box it landed in: one paragraph is one box carrying
+the line it _started_ on, and often holds glyphs from two different files, so
+the answer comes from the nearest record inside that box. And a forward lookup
+answers with the line it found rather than the line asked for: most lines of a
+LaTeX file print nothing, so the search falls forward to the next one that did.
 
 **Git.** A project comes in and goes out as a `.zip`; a remote repository is a
 question about credentials and network access from a worker, not a feature that

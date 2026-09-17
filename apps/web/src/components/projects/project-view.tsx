@@ -71,6 +71,8 @@ export function ProjectView({ workspaceId, projectId }: ProjectViewProps) {
             connection={workspace.connection}
             selected={workspace.selected}
             focusLine={workspace.focusLine}
+            focusNonce={workspace.focusNonce}
+            onCursorLine={workspace.sourceSync.reportCursor}
           />
         </div>
 
@@ -78,7 +80,10 @@ export function ProjectView({ workspaceId, projectId }: ProjectViewProps) {
           <ProjectBuildPanel
             build={workspace.build}
             builds={workspace.builds}
+            highlights={workspace.sourceSync.highlights}
+            pickError={workspace.sourceSync.pickError}
             onOpenDiagnostic={workspace.openFile}
+            onPickSource={workspace.sourceSync.pickSource}
             onSelectBuild={workspace.selectBuild}
             onDeleteBuild={workspace.actions.deleteBuild}
           />
@@ -109,10 +114,14 @@ function SourcePane({
   connection,
   selected,
   focusLine,
+  focusNonce,
+  onCursorLine,
 }: {
   connection: CollaborationConnectionState;
   selected: ProjectFile | null;
   focusLine: number | null;
+  focusNonce: number;
+  onCursorLine: (line: number) => void;
 }) {
   if (connection.error !== null) {
     return <ErrorState title="Keine Verbindung" description={connection.error} />;
@@ -140,6 +149,8 @@ function SourcePane({
       path={selected.path}
       readOnly={false}
       focusLine={focusLine}
+      focusNonce={focusNonce}
+      onCursorLine={onCursorLine}
     />
   );
 }

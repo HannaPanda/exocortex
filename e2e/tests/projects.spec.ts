@@ -63,7 +63,23 @@ test.describe('LaTeX-Projekt im Browser', () => {
     // The first build of a project pulls the image's format files into place;
     // every one after that is cached.
     await expect(page.getByText('fertig', { exact: true })).toBeVisible({ timeout: 180_000 });
-    await expect(page.getByLabel('Gebautes PDF')).toBeVisible();
+
+    // The pages are ours, not the browser's viewer (issue #53): that is what
+    // makes the next two assertions possible at all.
+    const firstPage = page.getByTestId('project-pdf-page').first();
+    await expect(firstPage).toBeVisible({ timeout: 30_000 });
+
+    // Reverse SyncTeX. The file that is open is the empty one just created, so
+    // a click that lands anywhere in the result has to switch the editor back
+    // to `main.tex` -- the only file the PDF came from.
+    await firstPage.click({ position: { x: 200, y: 200 } });
+    await expect(page.getByTestId('project-editor')).toContainText('documentclass', {
+      timeout: 30_000,
+    });
+
+    // Forward SyncTeX, which follows from the same jump: the caret now rests on
+    // the line that was clicked, and the PDF marks where that line went.
+    await expect(page.getByTestId('project-pdf-mark').first()).toBeVisible({ timeout: 30_000 });
   });
 });
 

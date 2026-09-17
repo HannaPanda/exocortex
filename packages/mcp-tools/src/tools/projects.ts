@@ -27,6 +27,8 @@ import {
 
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
+import { projectBuildPositionOfTool, projectBuildSourceAtTool } from './project-source-map.js';
+
 /**
  * Project workspaces, whole (issue #43, ADR-027).
  *
@@ -609,6 +611,8 @@ export const PROJECT_TOOLS: readonly AnyToolDefinition[] = [
   projectBuildDiagnosticsTool,
   projectBuildLogTool,
   projectBuildArtifactsTool,
+  projectBuildSourceAtTool,
+  projectBuildPositionOfTool,
   projectBuildCancelTool,
   projectBuildDeleteTool,
 ];

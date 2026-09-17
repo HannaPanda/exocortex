@@ -3,7 +3,11 @@
 import { AlertTriangleIcon, DownloadIcon, FileTextIcon, XCircleIcon } from 'lucide-react';
 import * as React from 'react';
 
-import { type ProjectBuild, type ProjectDiagnostic } from '@exocortex/contracts';
+import {
+  type ProjectBuild,
+  type ProjectDiagnostic,
+  type ProjectSourceArea,
+} from '@exocortex/contracts';
 import {
   Badge,
   Button,
@@ -19,17 +23,18 @@ import {
 import { useProjectBuildDiagnostics, useProjectBuildLog } from '@/lib/api/project-queries';
 
 import { ProjectBuildHistory } from './project-build-history';
+import { ProjectPdfView } from './project-pdf-view';
 
 /**
  * The right-hand half of a project: the PDF, the errors and the log
  * (issue #43, ADR-027).
  *
- * The PDF is shown in the browser's own viewer through an `<object>` rather
- * than through a rendering library. That is a real limitation and worth stating
- * plainly: it means no click-through from a place in the PDF back to the source
- * line, even though the build produces the SyncTeX map and hands it out through
- * `exo_project_build_artifacts`. Adding pdf.js is what closes that gap; showing
- * the file is what makes the feature usable today.
+ * The pages are drawn by pdf.js rather than shown in the browser's own viewer,
+ * and the whole reason is the click (issue #53): an `<object>` will not say
+ * where it was clicked, so the SyncTeX map beside the file answers a question
+ * nobody can ask. With our own pages, a click on a line of the result opens the
+ * source line that produced it, and the caret in the source marks its place
+ * here.
  *
  * The error list is the other half, and the one that matters more while
  * writing: a diagnostic carries a file and a line, and clicking it opens that
@@ -47,7 +52,12 @@ const STATUS_LABEL: Record<ProjectBuild['status'], string> = {
 interface ProjectBuildPanelProps {
   build: ProjectBuild | null;
   builds: readonly ProjectBuild[];
+  /** Where the caret in the source pane ended up on paper (issue #53). */
+  highlights: readonly ProjectSourceArea[];
+  /** Why the last click in the PDF had no answer. German, or null. */
+  pickError: string | null;
   onOpenDiagnostic: (file: string, line: number | null) => void;
+  onPickSource: (position: { page: number; x: number; y: number }) => void;
   onSelectBuild: (buildId: string) => void;
   onDeleteBuild: (buildId: string) => void;
 }
@@ -55,7 +65,10 @@ interface ProjectBuildPanelProps {
 export function ProjectBuildPanel({
   build,
   builds,
+  highlights,
+  pickError,
   onOpenDiagnostic,
+  onPickSource,
   onSelectBuild,
   onDeleteBuild,
 }: ProjectBuildPanelProps) {
@@ -75,7 +88,10 @@ export function ProjectBuildPanel({
       key={build.id}
       build={build}
       builds={builds}
+      highlights={highlights}
+      pickError={pickError}
       onOpenDiagnostic={onOpenDiagnostic}
+      onPickSource={onPickSource}
       onSelectBuild={onSelectBuild}
       onDeleteBuild={onDeleteBuild}
     />
@@ -85,13 +101,19 @@ export function ProjectBuildPanel({
 function BuildPanel({
   build,
   builds,
+  highlights,
+  pickError,
   onOpenDiagnostic,
+  onPickSource,
   onSelectBuild,
   onDeleteBuild,
 }: {
   build: ProjectBuild;
   builds: readonly ProjectBuild[];
+  highlights: readonly ProjectSourceArea[];
+  pickError: string | null;
   onOpenDiagnostic: (file: string, line: number | null) => void;
+  onPickSource: (position: { page: number; x: number; y: number }) => void;
   onSelectBuild: (buildId: string) => void;
   onDeleteBuild: (buildId: string) => void;
 }) {
@@ -132,8 +154,15 @@ function BuildPanel({
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="pdf" className="min-h-0 flex-1 p-3 pt-2">
-          <PdfPane running={running} downloadPath={build.downloadPath} />
+        <TabsContent value="pdf" className="min-h-0 flex-1 pt-2">
+          <PdfPane
+            running={running}
+            downloadPath={build.downloadPath}
+            hasSourceMap={build.sourceMapAttachmentId !== null}
+            highlights={highlights}
+            pickError={pickError}
+            onPickSource={onPickSource}
+          />
         </TabsContent>
 
         <TabsContent value="errors" className="min-h-0 flex-1 overflow-y-auto p-3 pt-2">
@@ -200,12 +229,27 @@ function BuildHeader({ build }: { build: ProjectBuild }) {
 }
 
 /**
- * The finished file, in the browser's own PDF viewer.
+ * The finished file, drawn page by page.
  *
- * See the note at the top of this file: a viewer of our own would be what makes
- * click-to-source possible, and this is what makes the file readable today.
+ * A build with no SyncTeX map still shows: the map is written by the engine and
+ * an old build, or one whose map was too large to keep, simply has none. The
+ * pages are the point; the click is what it gains when there is a map.
  */
-function PdfPane({ running, downloadPath }: { running: boolean; downloadPath: string | null }) {
+function PdfPane({
+  running,
+  downloadPath,
+  hasSourceMap,
+  highlights,
+  pickError,
+  onPickSource,
+}: {
+  running: boolean;
+  downloadPath: string | null;
+  hasSourceMap: boolean;
+  highlights: readonly ProjectSourceArea[];
+  pickError: string | null;
+  onPickSource: (position: { page: number; x: number; y: number }) => void;
+}) {
   if (running) return <LoadingState label="Der Bau läuft …" />;
   if (downloadPath === null) {
     return (
@@ -216,16 +260,18 @@ function PdfPane({ running, downloadPath }: { running: boolean; downloadPath: st
     );
   }
   return (
-    <object
-      data={downloadPath}
-      type="application/pdf"
-      className="h-full w-full rounded-md border border-border"
-      aria-label="Gebautes PDF"
-    >
-      <a href={downloadPath} download className="text-sm underline">
-        PDF herunterladen
-      </a>
-    </object>
+    <div className="flex h-full min-h-0 flex-col">
+      {pickError === null ? null : (
+        <p className="px-3 pb-1 text-xs text-muted-foreground">{pickError}</p>
+      )}
+      <div className="min-h-0 flex-1">
+        <ProjectPdfView
+          url={downloadPath}
+          highlights={hasSourceMap ? highlights : []}
+          onPickSource={hasSourceMap ? onPickSource : () => undefined}
+        />
+      </div>
+    </div>
   );
 }
 

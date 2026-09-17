@@ -51,6 +51,10 @@ interface ProjectCodeEditorProps {
   readOnly: boolean;
   /** Line to scroll to and mark, when a diagnostic was clicked. */
   focusLine: number | null;
+  /** Rises with every jump, so the same line asked for twice moves twice. */
+  focusNonce: number;
+  /** Where the caret is, so the PDF can mark the same place (issue #53). */
+  onCursorLine: (line: number) => void;
 }
 
 /**
@@ -74,9 +78,17 @@ export function ProjectCodeEditor({
   path,
   readOnly,
   focusLine,
+  focusNonce,
+  onCursorLine,
 }: ProjectCodeEditorProps) {
   const host = React.useRef<HTMLDivElement | null>(null);
   const view = React.useRef<EditorView | null>(null);
+  // Through a ref, so a new callback identity does not rebuild the editor and
+  // throw everybody's cursor away with it.
+  const report = React.useRef(onCursorLine);
+  React.useEffect(() => {
+    report.current = onCursorLine;
+  }, [onCursorLine]);
 
   React.useEffect(() => {
     const element = host.current;
@@ -102,6 +114,10 @@ export function ProjectCodeEditor({
         // Y.Text as the source of truth and carries the remote cursors.
         yCollab(text, provider.awareness ?? undefined),
         keymap.of([...defaultKeymap, ...historyKeymap, indentWithTab]),
+        EditorView.updateListener.of((update) => {
+          if (!update.selectionSet && !update.docChanged) return;
+          report.current(update.state.doc.lineAt(update.state.selection.main.head).number);
+        }),
         placeholder('Diese Datei ist leer.'),
         EditorState.readOnly.of(readOnly),
         EditorView.editable.of(!readOnly),
@@ -128,7 +144,7 @@ export function ProjectCodeEditor({
       effects: EditorView.scrollIntoView(line.from, { y: 'center' }),
     });
     current.focus();
-  }, [focusLine]);
+  }, [focusLine, focusNonce]);
 
   return <div ref={host} className="h-full min-h-0 overflow-auto" data-testid="project-editor" />;
 }

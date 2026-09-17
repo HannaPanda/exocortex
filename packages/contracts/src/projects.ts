@@ -86,6 +86,15 @@ export const PROJECT_MAX_LOG_CHARS = 200_000;
 export const PROJECT_MAX_DIAGNOSTICS = 500;
 
 /**
+ * How many rectangles one forward lookup answers with.
+ *
+ * A source line that runs across three pages is a real thing, and so is a macro
+ * whose every use carries the line it was defined on. The cap is what keeps the
+ * second case from answering with the whole document.
+ */
+export const PROJECT_MAX_SOURCE_AREAS = 64;
+
+/**
  * How long the build queue's lock is held, and how often a stall is looked for.
  *
  * Above the longest build `projects.timeoutSeconds` allows: BullMQ renews the
@@ -760,6 +769,65 @@ export const projectBuildArtifactsResponseSchema = z.object({
     .nullable(),
 });
 export type ProjectBuildArtifactsResponse = z.infer<typeof projectBuildArtifactsResponseSchema>;
+
+/**
+ * One rectangle on one page, in PDF points measured from its top left corner.
+ *
+ * PDF points rather than pixels or scaled points, because that is the one
+ * system every caller already holds: pdf.js hands out a viewport in exactly
+ * these units, and "what is at 100,200 on page 3" means the same thing to a
+ * person, a browser and an agent. Inside the SyncTeX map they are scaled points
+ * measured from a point one inch above and to the left of the paper, which is
+ * TeX's origin and nobody else's.
+ */
+export const projectSourceAreaSchema = z.object({
+  page: z.number().int().positive(),
+  left: z.number(),
+  top: z.number(),
+  /** Zero when the map knew a baseline but no extent. */
+  width: z.number().nonnegative(),
+  height: z.number().nonnegative(),
+});
+export type ProjectSourceArea = z.infer<typeof projectSourceAreaSchema>;
+
+/**
+ * Which source line produced a place in the PDF (issue #53, ADR-027).
+ *
+ * `file` is null when the line came from outside the project -- a class file, a
+ * package, TeX Live's own sources. That is not an error and the answer is still
+ * worth having: `inputPath` names it, and knowing that a stretch of the page
+ * came from `article.cls` is what stops somebody looking for it in their own
+ * files.
+ */
+export const projectSourceLookupResponseSchema = z.object({
+  buildId: idSchema,
+  /** Project-relative path, when the map named one that maps back to the tree. */
+  file: z.string().nullable(),
+  /** The path exactly as TeX wrote it. Absolute, and inside the build container. */
+  inputPath: z.string(),
+  line: z.number().int().positive(),
+  /** What was found at that point, so a caller can show what it answered about. */
+  area: projectSourceAreaSchema.nullable(),
+});
+export type ProjectSourceLookupResponse = z.infer<typeof projectSourceLookupResponseSchema>;
+
+/**
+ * Where a source line ended up in the PDF (issue #53, ADR-027).
+ *
+ * `line` is what was found rather than what was asked for. A line that prints
+ * nothing -- a comment, a `\usepackage`, a blank -- has no place of its own, so
+ * the search falls forward to the next line that does, and a caller that draws
+ * the answer should say which line it is drawing.
+ */
+export const projectPositionLookupResponseSchema = z.object({
+  buildId: idSchema,
+  file: z.string(),
+  requestedLine: z.number().int().positive(),
+  /** The line that actually produced the areas. Equal to the request, or after it. */
+  line: z.number().int().positive(),
+  areas: z.array(projectSourceAreaSchema),
+});
+export type ProjectPositionLookupResponse = z.infer<typeof projectPositionLookupResponseSchema>;
 
 export const deleteProjectBuildResponseSchema = z.object({ deleted: z.literal(true) });
 export type DeleteProjectBuildResponse = z.infer<typeof deleteProjectBuildResponseSchema>;

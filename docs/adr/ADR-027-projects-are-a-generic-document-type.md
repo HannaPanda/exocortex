@@ -164,7 +164,10 @@ The PDF is an attachment, which means the text extraction (D6) runs over it and
 SyncTeX map is stored as an attachment beside it, which is what lets a position
 in the PDF be resolved back to a file and a line -- for the person clicking in
 the viewer and for the agent asking where page 17 comes from, through the same
-route.
+route. That route is now built (issue #53): the map is parsed in the API and
+served by two read endpoints, and the browser calls them like any other client.
+The pages themselves are drawn by pdf.js, because the click is what the feature
+rests on and the browser's own viewer will not say where it happened.
 
 ### Capability parity is the definition of done
 

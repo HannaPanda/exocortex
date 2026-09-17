@@ -39,8 +39,12 @@ import {
   projectListResponseSchema,
   type ProjectMutationResponse,
   projectMutationResponseSchema,
+  type ProjectPositionLookupResponse,
+  projectPositionLookupResponseSchema,
   type ProjectResponse,
   projectResponseSchema,
+  type ProjectSourceLookupResponse,
+  projectSourceLookupResponseSchema,
   type StartProjectBuildRequest,
   startProjectBuildRequestSchema,
   type StartProjectBuildResponse,
@@ -52,6 +56,7 @@ import {
 } from '@exocortex/contracts';
 
 import { CurrentSession } from '../auth/session.guard';
+import { AppError } from '../common/app-error';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
 import { ProjectArchiveService } from './project-archive.service';
@@ -311,6 +316,44 @@ export class ProjectBuildsController {
     return this.builds.artifacts(buildId, session.userId);
   }
 
+  /**
+   * Reverse SyncTeX: which source line produced a place on a page.
+   *
+   * `x` and `y` are PDF points from the top left of the page, which is what
+   * pdf.js hands out and what an agent reading the map means. A `GET` because
+   * it is a question: nothing about the build changes by asking it.
+   */
+  @Get('source-map/source')
+  @ApiOkResponse({ schema: openApiResponseSchema(projectSourceLookupResponseSchema) })
+  async sourceAt(
+    @CurrentSession() session: VerifiedSession,
+    @Param('buildId') buildId: string,
+    @Query('page') page: string,
+    @Query('x') x: string,
+    @Query('y') y: string,
+  ): Promise<ProjectSourceLookupResponse> {
+    return this.builds.lookupSource(buildId, session.userId, {
+      page: readInteger(page, 'page'),
+      x: readNumber(x, 'x'),
+      y: readNumber(y, 'y'),
+    });
+  }
+
+  /** Forward SyncTeX: where a source line ended up on the page. */
+  @Get('source-map/position')
+  @ApiOkResponse({ schema: openApiResponseSchema(projectPositionLookupResponseSchema) })
+  async positionOf(
+    @CurrentSession() session: VerifiedSession,
+    @Param('buildId') buildId: string,
+    @Query('file') file: string,
+    @Query('line') line: string,
+  ): Promise<ProjectPositionLookupResponse> {
+    return this.builds.lookupPosition(buildId, session.userId, {
+      file: file ?? '',
+      line: readInteger(line, 'line'),
+    });
+  }
+
   @Delete()
   @ApiOkResponse({ schema: openApiResponseSchema(deleteProjectBuildResponseSchema) })
   async remove(
@@ -329,4 +372,27 @@ export class ProjectBuildsController {
   ): Promise<ProjectBuildResponse> {
     return { build: await this.builds.cancel(buildId, session.userId) };
   }
+}
+
+/**
+ * A query parameter that has to be a number.
+ *
+ * Query strings arrive as text and a `NaN` that travels on becomes a lookup
+ * that quietly answers about the top left corner, so the refusal happens here
+ * rather than three calls down.
+ */
+function readNumber(value: string, name: string): number {
+  const parsed = Number.parseFloat(value);
+  if (!Number.isFinite(parsed)) {
+    throw AppError.validation(`Der Parameter ${name} muss eine Zahl sein`);
+  }
+  return parsed;
+}
+
+function readInteger(value: string, name: string): number {
+  const parsed = readNumber(value, name);
+  if (!Number.isInteger(parsed) || parsed < 1) {
+    throw AppError.validation(`Der Parameter ${name} muss eine positive ganze Zahl sein`);
+  }
+  return parsed;
 }

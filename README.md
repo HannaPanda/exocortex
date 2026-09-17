@@ -64,7 +64,9 @@ What is deliberately still missing is listed under
 - automations triggered from the transactional outbox (ADR-024)
 - rendering Markdown to PDF through Pandoc and xelatex in a container
   (ADR-026), and LaTeX projects compiled with `latexmk` (ADR-027), imported and
-  exported as a `.zip`
+  exported as a `.zip`, with the result drawn by pdf.js so that SyncTeX works
+  both ways: a click in the PDF opens the source line, the caret marks its place
+  on the page
 
 **Operating it**
 
