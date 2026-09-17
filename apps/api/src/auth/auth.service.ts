@@ -184,10 +184,7 @@ export class AuthService implements OnApplicationShutdown {
     const hasBody = method !== 'GET' && method !== 'HEAD';
     let body: string | undefined;
     if (hasBody && request.body !== undefined && request.body !== null) {
-      body = encodeBody(
-        forceConsentPromptInBody(url, request.body),
-        headers.get('content-type'),
-      );
+      body = encodeBody(forceConsentPromptInBody(url, request.body), headers.get('content-type'));
       if (!headers.has('content-type')) headers.set('content-type', 'application/json');
     }
 

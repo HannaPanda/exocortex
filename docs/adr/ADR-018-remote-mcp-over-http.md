@@ -54,7 +54,7 @@ same request a browser would make.
 
   Since better-auth 1.7 that token is a signed `at+jwt` (RFC 9068) rather than
   a row, so `verifyMcpAccessToken` checks the signature against the public keys
-  in `jwks` -- read straight out of the database, because this process *is* the
+  in `jwks` -- read straight out of the database, because this process _is_ the
   authorization server -- plus the issuer, the resource audience and the `typ`
   header. It then reads two things the signature cannot tell it: whether the
   client has since been switched off, and whether the subject is still an

@@ -40,8 +40,7 @@ export interface VerifiedMcpToken {
 export type McpTokenFailure = 'unknown' | 'expired' | 'orphaned' | 'client_disabled';
 
 export type McpTokenVerification =
-  | { valid: true; token: VerifiedMcpToken }
-  | { valid: false; reason: McpTokenFailure };
+  { valid: true; token: VerifiedMcpToken } | { valid: false; reason: McpTokenFailure };
 
 export interface VerifyMcpAccessTokenOptions {
   prisma: PrismaClient;
@@ -141,11 +140,7 @@ export async function verifyMcpAccessToken(
 ): Promise<McpTokenVerification> {
   const { prisma, accessToken, appUrl } = options;
 
-  const claims = await readMcpAccessTokenClaims(
-    await readLocalJwks(prisma),
-    accessToken,
-    appUrl,
-  );
+  const claims = await readMcpAccessTokenClaims(await readLocalJwks(prisma), accessToken, appUrl);
   if (claims === 'invalid') return { valid: false, reason: 'unknown' };
   if (claims === 'expired') return { valid: false, reason: 'expired' };
 

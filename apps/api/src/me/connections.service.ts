@@ -111,11 +111,7 @@ export class ConnectionsService {
         clientId: client.clientId,
         name: client.name ?? client.clientId,
         redirectUrls: client.redirectUris,
-        connectedAt: (
-          connectedAt.get(client.clientId) ??
-          client.createdAt ??
-          now
-        ).toISOString(),
+        connectedAt: (connectedAt.get(client.clientId) ?? client.createdAt ?? now).toISOString(),
         lastAuthorizedAt: lastAuthorizedAt === null ? null : lastAuthorizedAt.toISOString(),
         activeGrantCount: clientGrants.filter(
           (grant) => grant.revoked === null && grant.expiresAt > now,
