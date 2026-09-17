@@ -159,13 +159,6 @@ async function main(): Promise<void> {
           email: seedUser.email,
           name: seedUser.name,
           emailVerified: true,
-          accounts: {
-            create: {
-              providerId: 'credential',
-              accountId: seedUser.email,
-              password: hashPassword(password),
-            },
-          },
         },
         update: {
           name: seedUser.name,
@@ -175,13 +168,21 @@ async function main(): Promise<void> {
       });
 
       // Re-seeding must also reset the credential, otherwise the printed
-      // password would not work on a second run.
+      // password would not work on a second run. The account is written here
+      // rather than nested in the upsert because it needs the user's id, which
+      // is not known until the row exists.
       await prisma.account.deleteMany({ where: { userId: user.id, providerId: 'credential' } });
       await prisma.account.create({
         data: {
           userId: user.id,
           providerId: 'credential',
-          accountId: seedUser.email,
+          // Better Auth's own convention for a credential account is that the
+          // account id *is* the user id (`sign-up.mjs`), not the address. It
+          // used to be the address here, and better-auth 1.7 turned that from
+          // an inconsistency into a locked door: `signInEmail` now looks for an
+          // account whose `accountId` equals the user id and reports "user not
+          // found" when there is none.
+          accountId: user.id,
           password: hashPassword(password),
         },
       });

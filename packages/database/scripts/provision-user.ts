@@ -214,15 +214,21 @@ async function main(): Promise<void> {
         // The address was chosen by an administrator rather than typed by a
         // stranger, which is the thing verification exists to establish.
         emailVerified: true,
-        accounts: {
-          create: {
-            providerId: 'credential',
-            accountId: options.email,
-            password: hashPassword(password),
-          },
-        },
       },
       select: { id: true },
+    });
+    await prisma.account.create({
+      data: {
+        userId: user.id,
+        providerId: 'credential',
+        // Better Auth's own convention for a credential account is that the
+        // account id *is* the user id (`sign-up.mjs`), not the address, and
+        // since 1.7 `signInEmail` refuses to find an account that says
+        // otherwise. Written after the user rather than nested inside it,
+        // because it needs an id that does not exist until then.
+        accountId: user.id,
+        password: hashPassword(password),
+      },
     });
 
     let workspaceId: string;
