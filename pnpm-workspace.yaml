@@ -17,6 +17,9 @@ allowBuilds:
   msgpackr-extract: false
   '@scarf/scarf': false
 
+minimumReleaseAgeExclude:
+  - '@nestjs/throttler@6.7.0'
+
 # One copy of a package the type system compares structurally. Two versions of
 # either of these are not a duplicate install, they are a compile error: the
 # types carry private fields, so the same class from two paths is two types.

@@ -45,6 +45,24 @@ describe('deriveReasoningLevels', () => {
       deriveReasoningLevels({ slug: 'openai/gpt-5.2', supportedParameters: ['reasoning_effort'] }),
     ).toEqual(['none', 'minimal', 'low', 'medium', 'high']);
   });
+
+  it('inserts minimal only for an OpenAI model (glm-5.2-like keeps the standard four)', () => {
+    expect(
+      deriveReasoningLevels({
+        slug: 'z-ai/glm-5.2',
+        supportedParameters: ['tools', 'reasoning_effort', 'reasoning'],
+      }),
+    ).toEqual(['none', 'low', 'medium', 'high']);
+  });
+
+  it('does not add a level for `verbosity` alone', () => {
+    expect(
+      deriveReasoningLevels({
+        slug: 'anthropic/claude-sonnet-5',
+        supportedParameters: ['tools', 'reasoning_effort', 'reasoning', 'verbosity'],
+      }),
+    ).toEqual(['none', 'low', 'medium', 'high']);
+  });
 });
 
 describe('mapEndpoint', () => {

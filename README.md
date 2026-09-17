@@ -88,7 +88,7 @@ What is deliberately still missing is listed under
 | Runtime  | Node.js 24 LTS, pnpm 11, Turborepo 2                                                            |
 | Frontend | Next.js 16 (App Router), React 19, Tailwind CSS 4, shadcn/ui on Base UI, Lucide, TanStack Query |
 | Editor   | Tiptap 3, ProseMirror, Yjs, Hocuspocus, `y-indexeddb`                                           |
-| API      | NestJS 11 with the Fastify adapter, REST + OpenAPI, Socket.IO gateway                           |
+| API      | NestJS 12 with the Fastify adapter, REST + OpenAPI, Socket.IO gateway                           |
 | Data     | PostgreSQL 17 with `pgvector` and `pg_trgm`, Prisma 7                                           |
 | Jobs     | BullMQ 6 on Redis 8                                                                             |
 | Storage  | S3-compatible (MinIO locally)                                                                   |

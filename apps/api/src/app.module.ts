@@ -35,6 +35,13 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
   imports: [
     PlatformModule,
     ThrottlerModule.forRootAsync({
+      // `PlatformModule` is where `API_ENV` comes from. Naming it is also what
+      // keeps this call compiling: `@nestjs/throttler` still types its options
+      // against a deep import of `@nestjs/common/interfaces`, a path NestJS 12
+      // no longer exposes, so `Pick<ModuleMetadata, 'imports'>` collapses into
+      // an `imports` the type demands. Drop it once the throttler's
+      // declarations import from the package root.
+      imports: [PlatformModule],
       inject: [API_ENV],
       useFactory: (env: ApiEnv) => ({
         throttlers: [
