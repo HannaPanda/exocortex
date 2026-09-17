@@ -101,6 +101,22 @@ async function main(): Promise<void> {
       console.log(`${staleKeys.count} leftover test signing keys removed.`);
     }
 
+    /**
+     * The OAuth clients `oauth-connector.spec.ts` registers.
+     *
+     * Registration is open by design, and the suite uses the real endpoint, so
+     * every run leaves a client row behind. The test disconnects it, which
+     * switches it off but cannot delete it — the product has no such button,
+     * deliberately. Recognised by the name the suite gives them, which is a
+     * name no connector would choose for itself.
+     */
+    const staleClients = await prisma.oauthClient.deleteMany({
+      where: { name: { startsWith: 'E2E Connector' }, createdAt: { lt: cutoff } },
+    });
+    if (staleClients.count > 0) {
+      console.log(`${staleClients.count} leftover test OAuth clients removed.`);
+    }
+
     const candidates = await prisma.workspace.findMany({
       where: {
         createdAt: { lt: cutoff },
