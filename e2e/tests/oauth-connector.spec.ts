@@ -227,10 +227,9 @@ test.describe('remote MCP connector over OAuth', () => {
     // 9. Disconnecting ends it for good. There is no token row to delete any
     //    more, so this is the assertion that the `disabled` check on every use
     //    is what revocation now rests on.
-    const disconnect = await johannaApi.delete(
-      `${origin}/api/me/connections/${client.client_id}`,
-      { headers: { origin } },
-    );
+    const disconnect = await johannaApi.delete(`${origin}/api/me/connections/${client.client_id}`, {
+      headers: { origin },
+    });
     expect(disconnect.status(), await disconnect.text()).toBe(200);
 
     const afterRevocation = await anonymousApi.post(`${origin}/api/mcp`, {
