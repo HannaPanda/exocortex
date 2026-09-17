@@ -258,8 +258,11 @@ export function useUpdateAiConversation() {
         queryKey: aiQueryKeys.conversations(response.conversation.workspaceId),
       });
       // A rename or an archive has to reach the `/chats` list too, which is
-      // keyed across workspaces and therefore not covered by the key above.
+      // keyed across workspaces and therefore not covered by the key above --
+      // and the search results beside it, which are a key of their own and show
+      // the same title and the same archived badge.
       void client.invalidateQueries({ queryKey: ['ai', 'chats'] });
+      void client.invalidateQueries({ queryKey: ['ai', 'chat-search'] });
     },
   });
 }
@@ -274,6 +277,7 @@ export function useArchiveAiConversation() {
     onSuccess: (_result, input) => {
       void client.invalidateQueries({ queryKey: aiQueryKeys.conversations(input.workspaceId) });
       void client.invalidateQueries({ queryKey: ['ai', 'chats'] });
+      void client.invalidateQueries({ queryKey: ['ai', 'chat-search'] });
     },
   });
 }
