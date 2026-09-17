@@ -424,9 +424,11 @@ say nothing about pages. What limits it is the tool list its endpoint serves
 (`/api/mcp/research` cannot write at all) and the fact that it opens no other
 route in the API. Revoke a connector under **Einstellungen → Verbindungen**
 (`/einstellungen/verbindungen`, section "Verbundene Anwendungen"): that deletes
-the account's tokens and its consent and sets `disabled` on the
-`oauth_application` row when nobody else still uses the registration. The
-`disabled` check runs on every use, so surviving tokens die with it.
+the account's refresh grants and its consent and sets `disabled` on the
+`oauth_client` row when nobody else still uses the registration. The `disabled`
+check runs on every use, which is what makes it bite: an access token is a
+signed JWT this server keeps no copy of, so there is no row to delete and
+nothing else that could end one before its hour is up.
 
 Neither the connections list nor the disconnect button is in the tool
 catalogue, and that is a decision rather than an omission. Both live in the
@@ -472,12 +474,19 @@ curl -sS https://exocortex.app/api/mcp \
 ChatGPT cannot start a subprocess and has no field for a bearer token, so it
 authenticates with OAuth: it discovers the authorization server from the
 endpoint, registers itself (RFC 7591), and runs an authorization code flow with
-PKCE. All of that is served by Better Auth's `mcp` plugin under
-`/api/auth/mcp/*`, with the two discovery documents rewritten to the origin
-root by nginx, where clients look for them:
+PKCE. All of that is served by `@better-auth/mcp` under `/api/auth/oauth2/*`,
+with the two discovery documents answered at the origin root, where clients
+look for them:
 
-- `/.well-known/oauth-protected-resource`
-- `/.well-known/oauth-authorization-server`
+- `/.well-known/oauth-protected-resource` — proxied straight through to the API,
+  because the plugin answers it from a request hook that matches this very path
+- `/.well-known/oauth-authorization-server` — rewritten by nginx onto
+  `/api/auth/.well-known/oauth-authorization-server`, which is a real route
+
+The protected-resource document names `https://exocortex.app/api/mcp` as the
+resource, and every access token is audience-bound to it (RFC 8707). A token
+minted here is therefore useless anywhere else, and a token minted elsewhere is
+useless here.
 
 In ChatGPT, add a connector with the URL `https://exocortex.app/api/mcp`
 (or `.../api/mcp/research` for deep research) and pick OAuth. The browser lands
@@ -487,11 +496,12 @@ what it is asking for. **Nothing is issued until that page is answered.**
 The consent screen is not a formality. Client registration is open, as the
 specification requires, so without it any website could redirect a signed-in
 person to the authorization endpoint with a client it registered seconds
-earlier and receive a working token in silence. Better Auth only shows the
-screen when the client asks for it with `prompt=consent`, so the API adds that
-parameter itself before the plugin sees the request (`forceConsentPrompt` in
-`apps/api/src/auth/auth.service.ts`). If a consent screen ever appears that you
-did not set off, the answer is "Ablehnen".
+earlier and receive a working token in silence. The provider does ask on its
+own the first time, but it then remembers the answer and waves every later
+authorization through, so the API adds `prompt=consent` to every authorization
+request before the plugin sees it — in the query string and in the form body
+alike (`forceConsentPrompt` in `apps/api/src/auth/auth.service.ts`). If a
+consent screen ever appears that you did not set off, the answer is "Ablehnen".
 
 ### ChatGPT deep research
 

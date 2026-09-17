@@ -16,7 +16,7 @@ interface OAuthClient {
 }
 
 interface ConsentResponse {
-  redirectURI: string;
+  url: string;
 }
 
 /**
@@ -33,7 +33,10 @@ const SCOPE_LABELS: Record<string, string> = {
 
 export function OAuthConsentForm() {
   const searchParams = useSearchParams();
-  const consentCode = searchParams.get('consent_code');
+  // The whole query, verbatim: the authorization server signs the parameters
+  // it redirected here with, and the signature covers every one of them.
+  // Sending back a subset, or an extra field, invalidates it.
+  const oauthQuery = searchParams.toString();
   const clientId = searchParams.get('client_id');
   const scope = searchParams.get('scope') ?? '';
 
@@ -80,11 +83,11 @@ export function OAuthConsentForm() {
     try {
       const result = await apiRequest<ConsentResponse>('/api/auth/oauth2/consent', {
         method: 'POST',
-        body: { accept, consent_code: consentCode },
+        body: { accept, oauth_query: oauthQuery },
       });
       // The target belongs to the connector, not to this app, so it is a full
       // navigation out of the site.
-      window.location.assign(result.redirectURI);
+      window.location.assign(result.url);
     } catch {
       setDecisionError('Die Anfrage ist abgelaufen. Starte die Verbindung in der App noch einmal.');
       setPending(null);

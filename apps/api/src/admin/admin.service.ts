@@ -256,9 +256,14 @@ export class AdminService {
           where: { userId: input.userId, revokedAt: null },
           data: { revokedAt: new Date() },
         });
-        // An OAuth connector holds its own access tokens, so a switched-off
-        // account must lose those too, or ChatGPT keeps working for an hour.
+        // An OAuth connector renews itself, so a switched-off account must
+        // lose its refresh grants too, or ChatGPT keeps working indefinitely.
+        // The access token it holds right now is a signed JWT with no row to
+        // delete; `verifyMcpAccessToken` reads `disabledAt` on every use, which
+        // is what makes the switch take effect immediately rather than in an
+        // hour.
         await tx.oauthAccessToken.deleteMany({ where: { userId: input.userId } });
+        await tx.oauthRefreshToken.deleteMany({ where: { userId: input.userId } });
       }
 
       return user;

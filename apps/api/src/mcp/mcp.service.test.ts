@@ -1,6 +1,12 @@
+import { exportJWK, generateKeyPair, SignJWT } from 'jose';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { generateApiToken, verifyServiceToken } from '@exocortex/auth';
+import {
+  authIssuer,
+  generateApiToken,
+  mcpResourceIdentifier,
+  verifyServiceToken,
+} from '@exocortex/auth';
 import { type ApiEnv, loadApiEnv, loadDotEnv } from '@exocortex/config';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
@@ -44,6 +50,8 @@ let prisma: PrismaClient;
 let service: McpService;
 let userId: string;
 let clientId: string;
+let signingKeyId: string;
+let signingKey: CryptoKey;
 
 const HOUR = 60 * 60 * 1000;
 
@@ -70,21 +78,26 @@ async function apiToken(
   return generated.secret;
 }
 
+/**
+ * Mints the kind of access token `@better-auth/mcp` issues: a signed `at+jwt`
+ * bound to this deployment's resource. Nothing is written for it -- that is the
+ * point of the 1.7 token model -- so the only state involved is the public key
+ * the verifier reads back out of `jwks`.
+ */
 async function oauthToken(
-  overrides: { expiresAt?: Date; disabledClient?: boolean; withoutUser?: boolean } = {},
+  overrides: { expiresAt?: Date; disabledClient?: boolean; subject?: string } = {},
 ): Promise<string> {
   const suffix = Math.random().toString(36).slice(2, 10);
-  const accessToken = `at_${suffix}`;
   let targetClientId = clientId;
 
   if (overrides.disabledClient === true) {
     targetClientId = `client-disabled-${suffix}`;
-    await prisma.oauthApplication.create({
+    await prisma.oauthClient.create({
       data: {
         name: 'Abgeschalteter Connector',
         clientId: targetClientId,
-        redirectUrls: 'https://example.invalid/callback',
-        type: 'public',
+        redirectUris: ['https://example.invalid/callback'],
+        tokenEndpointAuthMethod: 'none',
         disabled: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -92,20 +105,19 @@ async function oauthToken(
     });
   }
 
-  await prisma.oauthAccessToken.create({
-    data: {
-      accessToken,
-      refreshToken: `rt_${suffix}`,
-      accessTokenExpiresAt: overrides.expiresAt ?? new Date(Date.now() + HOUR),
-      refreshTokenExpiresAt: new Date(Date.now() + 30 * 24 * HOUR),
-      clientId: targetClientId,
-      userId: overrides.withoutUser === true ? null : userId,
-      scopes: 'openid profile offline_access',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  });
-  return accessToken;
+  const expiresAt = overrides.expiresAt ?? new Date(Date.now() + HOUR);
+  return new SignJWT({
+    client_id: targetClientId,
+    azp: targetClientId,
+    scope: 'openid profile offline_access',
+  })
+    .setProtectedHeader({ alg: 'EdDSA', kid: signingKeyId, typ: 'at+jwt' })
+    .setSubject(overrides.subject ?? userId)
+    .setIssuer(authIssuer(env.APP_URL))
+    .setAudience(mcpResourceIdentifier(env.APP_URL))
+    .setIssuedAt()
+    .setExpirationTime(Math.floor(expiresAt.getTime() / 1000))
+    .sign(signingKey);
 }
 
 beforeAll(async () => {
@@ -124,20 +136,46 @@ beforeAll(async () => {
   userId = user.id;
 
   clientId = `client-chatgpt-${suffix}`;
-  await prisma.oauthApplication.create({
+  await prisma.oauthClient.create({
     data: {
       name: 'ChatGPT',
       clientId,
-      redirectUrls: 'https://chatgpt.com/connector_platform_oauth_redirect',
-      type: 'public',
+      redirectUris: ['https://chatgpt.com/connector_platform_oauth_redirect'],
+      tokenEndpointAuthMethod: 'none',
       createdAt: new Date(),
       updatedAt: new Date(),
+    },
+  });
+
+  /**
+   * A verification key the deployment will never sign with.
+   *
+   * `jwks` is shared with the running server, and this suite talks to the real
+   * database, so the row is made deliberately unusable for signing: better-auth
+   * picks the newest key whose `expiresAt` is still ahead (`getLatestKey`), and
+   * this one is already behind. The private half never leaves this process --
+   * the column holds a placeholder -- so the row can verify exactly the tokens
+   * minted here and nothing else, and `afterAll` removes it either way.
+   */
+  const pair = await generateKeyPair('EdDSA', { crv: 'Ed25519', extractable: true });
+  signingKey = pair.privateKey;
+  signingKeyId = `jwks-test-${suffix}`;
+  await prisma.jwks.create({
+    data: {
+      id: signingKeyId,
+      publicKey: JSON.stringify({ ...(await exportJWK(pair.publicKey)), alg: 'EdDSA' }),
+      privateKey: 'never-used: this key is expired on purpose',
+      alg: 'EdDSA',
+      crv: 'Ed25519',
+      createdAt: new Date(),
+      expiresAt: new Date(Date.now() - HOUR),
     },
   });
 });
 
 afterAll(async () => {
-  await prisma.oauthApplication.deleteMany({ where: { clientId: { startsWith: 'client-' } } });
+  await prisma.jwks.deleteMany({ where: { id: { startsWith: 'jwks-test-' } } });
+  await prisma.oauthClient.deleteMany({ where: { clientId: { startsWith: 'client-' } } });
   await prisma.user.delete({ where: { id: userId } });
   await prisma.$disconnect();
 });
@@ -219,8 +257,11 @@ describe('McpService.authenticate', () => {
     });
   });
 
-  it('refuses a token that authorizes nobody', async () => {
-    const token = await oauthToken({ withoutUser: true });
+  it('refuses a token whose subject is not a person here', async () => {
+    // A client-credentials grant would put the client id in `sub`. This
+    // deployment issues no such grant, so a subject that resolves to no account
+    // must not fall back to one.
+    const token = await oauthToken({ subject: clientId });
     await expect(service.authenticate(bearer(token))).rejects.toMatchObject({
       code: 'api_token_invalid',
     });

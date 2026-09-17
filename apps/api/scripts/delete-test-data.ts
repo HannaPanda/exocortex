@@ -84,6 +84,23 @@ async function main(): Promise<void> {
   const cutoff = new Date(Date.now() - options.olderThanHours * 60 * 60 * 1000);
 
   try {
+    /**
+     * The verification keys `mcp.service.test.ts` publishes, first.
+     *
+     * Not a workspace, and the only row this sweep removes that is not reached
+     * through one -- but a signing key in a shared table is the one leftover
+     * worth being thorough about. The rows are minted already expired, so
+     * better-auth never signs with them, and their private half only ever
+     * existed in a test process; still, a key nobody can account for should not
+     * outlive the run that made it.
+     */
+    const staleKeys = await prisma.jwks.deleteMany({
+      where: { id: { startsWith: 'jwks-test-' }, createdAt: { lt: cutoff } },
+    });
+    if (staleKeys.count > 0) {
+      console.log(`${staleKeys.count} leftover test signing keys removed.`);
+    }
+
     const candidates = await prisma.workspace.findMany({
       where: {
         createdAt: { lt: cutoff },

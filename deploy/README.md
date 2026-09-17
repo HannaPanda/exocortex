@@ -11,7 +11,7 @@ Internet ──► nginx :443 (TLS)
                ├─ /api/, /docs     → 127.0.0.1:3211   exocortex-api
                ├─ /realtime  (ws)  → 127.0.0.1:3211   exocortex-api
                ├─ /collab    (ws)  → 127.0.0.1:3212   exocortex-collaboration
-               ├─ /.well-known/oauth-*  → 127.0.0.1:3211 (rewritten to /api/auth/…)
+               ├─ /.well-known/oauth-*  → 127.0.0.1:3211 (one rewritten, one not)
                └─ /health/         → 127.0.0.1:3211
 
 Docker bridge ──► nginx 172.17.0.1:3213 (no TLS)
@@ -159,10 +159,14 @@ one back, they have to stay exempt.
 
 The two `/.well-known/oauth-*` locations are OAuth discovery for remote MCP
 clients ([ADR-018](../docs/adr/ADR-018-remote-mcp-over-http.md)). They must
-answer at the origin root, which is where a client looks and is not negotiable;
-Better Auth serves them under its own base path, so nginx rewrites rather than
-the application moving them. The trailing `(?:/.*)?` in the location regex is
-deliberate: a client that found the endpoint at `/api/mcp` asks for
+answer at the origin root, which is where a client looks and is not negotiable.
+The two are handled differently because the library answers them differently:
+the authorization-server document is a route under Better Auth's base path, so
+nginx rewrites onto it, while the protected-resource document is served by a
+request hook in `@better-auth/mcp` that matches the real path, so that one is
+proxied untouched. Rewriting it would hide the path the hook looks for. The
+trailing `(?:/.*)?` in the location regex is deliberate: a client that found the
+endpoint at `/api/mcp` asks for
 `/.well-known/oauth-authorization-server/api/mcp` before it asks for the bare
 path. If you put a basic auth realm back, these two need the same exemption as
 the ACME challenge, or ChatGPT cannot discover anything.

@@ -18,21 +18,21 @@ import { type Logger } from '@exocortex/logger';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
 
-/** The `mcp` plugin's authorization endpoint, relative to the app origin. */
-const MCP_AUTHORIZE_PATH = `${AUTH_BASE_PATH}/mcp/authorize`;
+/** The OAuth provider's authorization endpoint, relative to the app origin. */
+const OAUTH_AUTHORIZE_PATH = `${AUTH_BASE_PATH}/oauth2/authorize`;
 
 /**
- * Makes the consent screen unconditional on the OAuth authorization endpoint.
+ * The `jwt` plugin's own token endpoint, which this deployment does not offer.
  *
- * Better Auth only routes to `consentPage` when the *client* asks for it with
- * `prompt=consent`. That puts the decision to ask a human in the hands of the
- * party that wants the token, and since dynamic client registration is open,
- * that party can be anyone: a website could redirect a signed-in person to
- * `/authorize` with a client it registered seconds earlier and receive a
- * working access token without a single visible step. Adding the prompt here
- * takes the choice back. The rewritten query is also what gets stored in the
- * login-prompt cookie, so it survives the detour through the sign-in page.
+ * The plugin is here to sign OAuth access tokens (see `createMcpPlugin`), and
+ * it brings `/token` along: a route that hands a signed-in browser a JWT from
+ * the same key set `/api/mcp` trusts. Nothing here calls it, and an endpoint
+ * that mints credentials nobody asked for is surface for its own sake, so it
+ * is refused at the door rather than left open on the reasoning that its
+ * audience claim would not match.
  */
+const SESSION_JWT_PATH = `${AUTH_BASE_PATH}/token`;
+
 /**
  * Serializes an already-parsed body back into the wire format its own
  * `Content-Type` announced. Anything that is not form-encoded becomes JSON,
@@ -56,13 +56,44 @@ export function encodeBody(body: unknown, contentType: string | null): string {
   return JSON.stringify(body);
 }
 
-export function forceConsentPrompt(url: URL): void {
-  if (url.pathname !== MCP_AUTHORIZE_PATH) return;
-  const prompt = url.searchParams.get('prompt');
+/**
+ * Makes the consent screen unconditional on the OAuth authorization endpoint.
+ *
+ * The provider does ask on its own when it holds no recorded "yes" for a
+ * client, but the first yes is then the last one: every later authorization
+ * for the same scopes is waved through. Since dynamic client registration is
+ * open here, the party that would benefit from silence can be anyone -- a
+ * website could redirect a signed-in person to `/oauth2/authorize` with a
+ * client it registered seconds earlier, and once a stored consent exists for
+ * it, receive a working access token without a single visible step. Asking
+ * every time takes that choice back. The rewritten request is also what gets
+ * stored in the login-prompt cookie, so it survives the detour through the
+ * sign-in page.
+ */
+function withConsent(prompt: string | null): string {
   const values = new Set(prompt === null ? [] : prompt.split(' ').filter((value) => value !== ''));
-  if (values.has('consent')) return;
   values.add('consent');
-  url.searchParams.set('prompt', [...values].join(' '));
+  return [...values].join(' ');
+}
+
+export function forceConsentPrompt(url: URL): void {
+  if (url.pathname !== OAUTH_AUTHORIZE_PATH) return;
+  url.searchParams.set('prompt', withConsent(url.searchParams.get('prompt')));
+}
+
+/**
+ * The same rewrite for the form-encoded POST variant of `/oauth2/authorize`.
+ *
+ * The provider reads the authorization request from the body when the request
+ * is a POST, so a rewrite that only touched the query string would leave the
+ * consent screen optional for exactly the caller that chose the other method.
+ */
+export function forceConsentPromptInBody(url: URL, body: unknown): unknown {
+  if (url.pathname !== OAUTH_AUTHORIZE_PATH) return body;
+  if (typeof body !== 'object' || body === null || Array.isArray(body)) return body;
+  const record = body as Record<string, unknown>;
+  const prompt = record.prompt;
+  return { ...record, prompt: withConsent(typeof prompt === 'string' ? prompt : null) };
 }
 
 /**
@@ -131,13 +162,19 @@ export class AuthService implements OnApplicationShutdown {
    * shape the incoming `Content-Type` promised.
    *
    * The form-encoded branch is not hypothetical: the OAuth token endpoint
-   * (`/api/auth/mcp/token`) is posted form-encoded by every OAuth client there
+   * (`/api/auth/oauth2/token`) is posted form-encoded by every OAuth client there
    * is, Nest's Fastify adapter parses that into a plain object, and handing
    * Better Auth a JSON string under a form content type would fail in the one
    * exchange the whole connector flow depends on.
    */
   async handleAuthRequest(request: FastifyRequest): Promise<Response> {
     const url = new URL(request.url, this.env.APP_URL);
+    if (url.pathname === SESSION_JWT_PATH) {
+      return new Response(JSON.stringify({ error: 'not_found' }), {
+        status: 404,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
     forceConsentPrompt(url);
     const headers = toWebHeaders(request.headers as Record<string, string | string[] | undefined>);
     // The proxy hostname must not leak into redirect URLs.
@@ -147,7 +184,10 @@ export class AuthService implements OnApplicationShutdown {
     const hasBody = method !== 'GET' && method !== 'HEAD';
     let body: string | undefined;
     if (hasBody && request.body !== undefined && request.body !== null) {
-      body = encodeBody(request.body, headers.get('content-type'));
+      body = encodeBody(
+        forceConsentPromptInBody(url, request.body),
+        headers.get('content-type'),
+      );
       if (!headers.has('content-type')) headers.set('content-type', 'application/json');
     }
 

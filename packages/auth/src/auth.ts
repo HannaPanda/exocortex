@@ -1,9 +1,7 @@
+import { mcp } from '@better-auth/mcp';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-// `better-auth/plugins/mcp` is built but not listed in the package's export
-// map in 1.6.25; the barrel is the only importable path.
-import { mcp } from 'better-auth/plugins';
-import { type BetterAuthPlugin } from 'better-auth/types';
+import { jwt } from 'better-auth/plugins';
 
 import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
@@ -20,13 +18,40 @@ export const OAUTH_CONSENT_PATH = '/verbinden';
 /**
  * How long an MCP access token lives, in seconds.
  *
- * Short, because these tokens are stored in the clear (the plugin looks a
- * token up by its own value) and because a remote connector refreshes without
- * bothering anyone. A person only notices this number if refreshing is broken.
+ * Short, because an access token is now a signed JWT and nothing is asked of
+ * the database when one is presented: the only thing that ends a token early
+ * is its own expiry. A remote connector refreshes without bothering anyone, so
+ * a person only notices this number if refreshing is broken.
  */
 const MCP_ACCESS_TOKEN_TTL_SECONDS = 60 * 60;
 /** How long a connector may stay away before it has to ask a human again. */
 const MCP_REFRESH_TOKEN_TTL_SECONDS = 60 * 60 * 24 * 30;
+
+/**
+ * The OAuth 2.1 issuer identifier of this deployment.
+ *
+ * Better Auth derives it from its own base URL, and that URL carries the base
+ * path, so the issuer is the application origin plus `/api/auth` rather than
+ * the bare origin. The `iss` claim of every access token and the `issuer`
+ * field of the authorization-server metadata both carry this exact string,
+ * which is why `verifyMcpAccessToken` has to be able to build it too.
+ */
+export function authIssuer(appUrl: string): string {
+  return `${appUrl.replace(/\/+$/, '')}${AUTH_BASE_PATH}`;
+}
+
+/**
+ * The canonical protected-resource identifier (RFC 8707 / RFC 9728).
+ *
+ * `@better-auth/mcp` requires one and audience-binds every token it issues to
+ * it. Naming the endpoint the token actually unlocks is both true and the
+ * value an MCP client discovers at `/.well-known/oauth-protected-resource`, so
+ * a token minted for this deployment cannot be replayed against another
+ * resource and a token minted elsewhere cannot be replayed against this one.
+ */
+export function mcpResourceIdentifier(appUrl: string): string {
+  return `${appUrl.replace(/\/+$/, '')}/api/mcp`;
+}
 
 export interface CreateAuthOptions {
   prisma: PrismaClient;
@@ -46,43 +71,41 @@ export interface CreateAuthOptions {
  *
  * ChatGPT cannot spawn the stdio MCP bin and offers no field for an API token,
  * so a connector authenticates by authorization code with PKCE and registers
- * itself dynamically. Everything this adds is scoped to `/api/auth/mcp/*` plus
- * the two `.well-known` documents; it issues no cookie session, and the tokens
- * it mints are only accepted by `/api/mcp`.
+ * itself dynamically. Everything this adds is scoped to `/api/auth/oauth2/*`
+ * plus the discovery documents; it issues no cookie session, and the tokens it
+ * mints are only accepted by `/api/mcp`.
  *
- * `consentPage` is not decoration. Without it the plugin hands out an
- * authorization code the moment a signed-in browser reaches `/authorize`, and
- * since client registration is open to anyone, any website could redirect a
- * signed-in person and collect a working token. The consent screen is what
- * makes that a decision instead of a side effect. Better Auth only routes
- * there when the client asks with `prompt=consent`, so the API adds that
- * parameter itself before the plugin sees the request; see
- * `forceConsentPrompt` in `apps/api/src/auth/auth.service.ts`.
+ * `consentPage` is not decoration. The provider asks for consent on its own
+ * when it has no stored "yes" for a client, but a stored one would then let
+ * every later authorization through silently, and since client registration is
+ * open to anyone that is a decision worth repeating: the API adds
+ * `prompt=consent` to every authorization request before the plugin sees it,
+ * which is what makes the screen unconditional. See `forceConsentPrompt` in
+ * `apps/api/src/auth/auth.service.ts`.
  *
- * The return type is widened to the base plugin interface on purpose. The
- * plugin's own type mentions `MCPOptions`, and better-auth 1.6.25 does not
- * list `./plugins/mcp` in its export map, so no declaration file that names
- * that type can be emitted (TS4058). Widening costs nothing here: the endpoints
- * it would otherwise add to `auth.api` are ones this codebase never calls.
- * Access tokens are verified directly against the `oauth_access_token` table by
- * `verifyMcpAccessToken`, the same way `SessionGuard` verifies an `exo_` token,
- * so the MCP endpoint does not depend on the plugin's typing at all. The value
- * handed to `betterAuth` is the whole plugin; only its type is narrowed.
+ * Registration being explicitly opened is the other half of that trade.
+ * `@better-auth/mcp` refuses dynamic registration unless asked, which is the
+ * right default for a server that has a known set of clients; this one does
+ * not, because the client it was built for registers itself seconds before it
+ * asks for a token. The consent screen is the gate in front of it.
+ *
+ * The return type is inferred rather than widened to `BetterAuthPlugin`, which
+ * is what 1.6 needed: better-auth did not list `./plugins/mcp` in its export
+ * map, so no declaration file could name the plugin's own type (TS4058).
+ * `@better-auth/mcp` is a package with an export map of its own, so the type
+ * is nameable again. It is still never used: `verifyMcpAccessToken` verifies
+ * an access token itself (ADR-018) rather than going through `auth.api`.
  */
-function createMcpPlugin(): BetterAuthPlugin {
+function createMcpPlugin(appUrl: string) {
   return mcp({
+    resource: mcpResourceIdentifier(appUrl),
     loginPage: OAUTH_LOGIN_PATH,
-    oidcConfig: {
-      // Repeated from the option above: `oidcConfig` is the underlying OIDC
-      // provider's own type and declares it required. The plugin overwrites it
-      // with the outer `loginPage` either way.
-      loginPage: OAUTH_LOGIN_PATH,
-      consentPage: OAUTH_CONSENT_PATH,
-      requirePKCE: true,
-      allowPlainCodeChallengeMethod: false,
-      accessTokenExpiresIn: MCP_ACCESS_TOKEN_TTL_SECONDS,
-      refreshTokenExpiresIn: MCP_REFRESH_TOKEN_TTL_SECONDS,
-    },
+    consentPage: OAUTH_CONSENT_PATH,
+    allowDynamicClientRegistration: true,
+    allowUnauthenticatedClientRegistration: true,
+    clientRegistrationRequirePKCE: true,
+    accessTokenExpiresIn: MCP_ACCESS_TOKEN_TTL_SECONDS,
+    refreshTokenExpiresIn: MCP_REFRESH_TOKEN_TTL_SECONDS,
   });
 }
 
@@ -177,7 +200,12 @@ export function createAuth(options: CreateAuthOptions) {
       },
     },
 
-    plugins: [createMcpPlugin()],
+    // `jwt` is not an optional companion: `@better-auth/mcp` signs its access
+    // tokens with the key pair this plugin keeps in the `jwks` table and
+    // refuses to start without it. It also publishes the public half at
+    // `/api/auth/jwks`, which is how any other party could verify a token --
+    // this one reads the same rows directly (`verifyMcpAccessToken`).
+    plugins: [jwt(), createMcpPlugin(options.appUrl)],
 
     databaseHooks: {
       session: {

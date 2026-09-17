@@ -155,7 +155,11 @@ export class McpService {
   }
 
   private async authenticateOAuthToken(token: string): Promise<McpCaller> {
-    const result = await verifyMcpAccessToken(this.prisma, token);
+    const result = await verifyMcpAccessToken({
+      prisma: this.prisma,
+      accessToken: token,
+      appUrl: this.env.APP_URL,
+    });
     if (!result.valid) {
       if (result.reason === 'expired') {
         throw new AppError('api_token_expired', 'The access token has expired');
@@ -250,19 +254,21 @@ export class McpService {
     disabled: boolean;
     registeredAt: string;
   }> {
-    const application = await this.prisma.oauthApplication.findUnique({
+    const client = await this.prisma.oauthClient.findUnique({
       where: { clientId },
-      select: { clientId: true, name: true, redirectUrls: true, disabled: true, createdAt: true },
+      select: { clientId: true, name: true, redirectUris: true, disabled: true, createdAt: true },
     });
-    if (application === null) {
+    if (client === null) {
       throw AppError.notFound('The OAuth client');
     }
     return {
-      clientId: application.clientId,
-      name: application.name,
-      redirectUrls: application.redirectUrls.split(',').filter((url) => url !== ''),
-      disabled: application.disabled ?? false,
-      registeredAt: application.createdAt.toISOString(),
+      // `name` is optional in RFC 7591, so a client that registered without one
+      // is shown by its identifier rather than by an empty quotation mark.
+      clientId: client.clientId,
+      name: client.name ?? client.clientId,
+      redirectUrls: client.redirectUris,
+      disabled: client.disabled ?? false,
+      registeredAt: (client.createdAt ?? new Date()).toISOString(),
     };
   }
 }

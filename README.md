@@ -95,7 +95,7 @@ What is deliberately still missing is listed under
 | Data     | PostgreSQL 17 with `pgvector` and `pg_trgm`, Prisma 7                                           |
 | Jobs     | BullMQ 6 on Redis 8                                                                             |
 | Storage  | S3-compatible (MinIO locally)                                                                   |
-| Auth     | Better Auth 1.6 with the Prisma adapter                                                         |
+| Auth     | Better Auth 1.7 with the Prisma adapter                                                         |
 | AI       | provider-neutral contracts, OpenRouter, a mock provider for offline work                        |
 | Agents   | one tool catalogue over stdio MCP and `POST /api/mcp`                                           |
 | Tracing  | OpenTelemetry SDK over OTLP/HTTP, optional and off by default                                   |

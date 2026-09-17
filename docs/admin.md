@@ -384,11 +384,13 @@ question, not three:
 
 - **Verbundene Anwendungen** — the OAuth clients this account let in through
   `/verbinden`, from `GET /api/me/connections`, each with a button behind
-  `DELETE /api/me/connections/:clientId`. That call deletes the account's access
-  tokens for the client (each row holds the refresh token too, so renewal stops
-  as well), deletes its consent, and switches the `oauth_application` row off
-  when nobody else still consents to it. Before this existed, the only way to
-  end a connection was an UPDATE against the database.
+  `DELETE /api/me/connections/:clientId`. That call deletes the account's
+  refresh grants for the client, so renewal stops; deletes its consent; and
+  switches the `oauth_client` row off when nobody else still consents to it.
+  That last step is what ends the access token the client may be holding right
+  now: it is a signed JWT with no row to delete, and `disabled` is checked on
+  every use. Before this existed, the only way to end a connection was an
+  UPDATE against the database.
 - **Token** — the personal API tokens described above.
 - **Einrichten** — one finished command per client, built from
   `apps/web/src/lib/connection-snippets.ts` and the browser's own origin. The

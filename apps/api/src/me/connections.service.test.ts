@@ -26,12 +26,12 @@ function clientIdFor(label: string): string {
 
 async function application(label: string, name: string): Promise<string> {
   const clientId = clientIdFor(label);
-  await prisma.oauthApplication.create({
+  await prisma.oauthClient.create({
     data: {
       name,
       clientId,
-      redirectUrls: 'https://chatgpt.com/connector_platform_oauth_redirect',
-      type: 'public',
+      redirectUris: ['https://chatgpt.com/connector_platform_oauth_redirect'],
+      tokenEndpointAuthMethod: 'none',
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -44,31 +44,32 @@ async function consent(clientId: string, forUserId: string, createdAt = new Date
     data: {
       clientId,
       userId: forUserId,
-      scopes: 'openid profile offline_access',
-      consentGiven: true,
+      scopes: ['openid', 'profile', 'offline_access'],
       createdAt,
       updatedAt: createdAt,
     },
   });
 }
 
-async function accessToken(
+/**
+ * A refresh grant, which is what a live connection looks like now: the access
+ * token is a JWT the server keeps no copy of.
+ */
+async function grant(
   clientId: string,
   forUserId: string,
-  overrides: { expiresAt?: Date; updatedAt?: Date } = {},
+  overrides: { expiresAt?: Date; rotatedAt?: Date } = {},
 ): Promise<void> {
   const unique = Math.random().toString(36).slice(2, 12);
-  await prisma.oauthAccessToken.create({
+  await prisma.oauthRefreshToken.create({
     data: {
-      accessToken: `at_${unique}`,
-      refreshToken: `rt_${unique}`,
-      accessTokenExpiresAt: overrides.expiresAt ?? new Date(Date.now() + HOUR),
-      refreshTokenExpiresAt: new Date(Date.now() + 30 * 24 * HOUR),
+      token: `rt_${unique}`,
       clientId,
       userId: forUserId,
-      scopes: 'openid profile offline_access',
+      scopes: ['openid', 'profile', 'offline_access'],
+      expiresAt: overrides.expiresAt ?? new Date(Date.now() + 30 * 24 * HOUR),
       createdAt: new Date(),
-      updatedAt: overrides.updatedAt ?? new Date(),
+      ...(overrides.rotatedAt === undefined ? {} : { rotatedAt: overrides.rotatedAt }),
     },
   });
 }
@@ -95,18 +96,18 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await prisma.oauthApplication.deleteMany({ where: { clientId: { startsWith: 'conn-test-' } } });
+  await prisma.oauthClient.deleteMany({ where: { clientId: { startsWith: 'conn-test-' } } });
   await prisma.user.deleteMany({ where: { id: { in: [userId, otherUserId] } } });
   await prisma.$disconnect();
 });
 
 describe('ConnectionsService.list', () => {
-  it('reports a connected client with its consent date and live token', async () => {
+  it('reports a connected client with its consent date and live grant', async () => {
     const clientId = await application('listed', 'ChatGPT');
     const connectedAt = new Date(Date.now() - 5 * HOUR);
     await consent(clientId, userId, connectedAt);
     const lastAuthorizedAt = new Date(Date.now() - HOUR);
-    await accessToken(clientId, userId, { updatedAt: lastAuthorizedAt });
+    await grant(clientId, userId, { rotatedAt: lastAuthorizedAt });
 
     const { applications } = await service.list(userId);
     const entry = applications.find((application) => application.clientId === clientId);
@@ -116,28 +117,28 @@ describe('ConnectionsService.list', () => {
       redirectUrls: ['https://chatgpt.com/connector_platform_oauth_redirect'],
       connectedAt: connectedAt.toISOString(),
       lastAuthorizedAt: lastAuthorizedAt.toISOString(),
-      activeTokenCount: 1,
+      activeGrantCount: 1,
       disabled: false,
     });
   });
 
-  it('counts only tokens that have not expired', async () => {
+  it('counts only grants that have not expired', async () => {
     const clientId = await application('expired', 'Alter Connector');
     await consent(clientId, userId);
-    await accessToken(clientId, userId, { expiresAt: new Date(Date.now() - HOUR) });
+    await grant(clientId, userId, { expiresAt: new Date(Date.now() - HOUR) });
 
     const { applications } = await service.list(userId);
     const entry = applications.find((application) => application.clientId === clientId);
 
-    expect(entry?.activeTokenCount).toBe(0);
-    // Still listed: a client whose token merely expired can refresh itself, so
-    // hiding it would hide a connection that is very much still standing.
+    expect(entry?.activeGrantCount).toBe(0);
+    // Still listed: a client whose grant merely expired is one a person said
+    // yes to, so hiding it would hide a decision that is still on the record.
     expect(entry).toBeDefined();
   });
 
-  it('lists a client that still holds a token but has no consent row', async () => {
+  it('lists a client that still holds a grant but has no consent row', async () => {
     const clientId = await application('tokenonly', 'Ohne Zustimmung');
-    await accessToken(clientId, userId);
+    await grant(clientId, userId);
 
     const { applications } = await service.list(userId);
     expect(applications.map((entry) => entry.clientId)).toContain(clientId);
@@ -146,7 +147,7 @@ describe('ConnectionsService.list', () => {
   it('never shows another account its neighbour connections', async () => {
     const clientId = await application('foreign', 'Fremder Connector');
     await consent(clientId, otherUserId);
-    await accessToken(clientId, otherUserId);
+    await grant(clientId, otherUserId);
 
     const { applications } = await service.list(userId);
     expect(applications.map((entry) => entry.clientId)).not.toContain(clientId);
@@ -154,19 +155,19 @@ describe('ConnectionsService.list', () => {
 });
 
 describe('ConnectionsService.disconnect', () => {
-  it('removes tokens and consent and switches the client off', async () => {
+  it('removes grants and consent and switches the client off', async () => {
     const clientId = await application('cut', 'ChatGPT');
     await consent(clientId, userId);
-    await accessToken(clientId, userId);
+    await grant(clientId, userId);
 
     await expect(service.disconnect(userId, clientId)).resolves.toEqual({
       disconnected: true,
       clientDisabled: true,
     });
 
-    expect(await prisma.oauthAccessToken.count({ where: { clientId } })).toBe(0);
+    expect(await prisma.oauthRefreshToken.count({ where: { clientId } })).toBe(0);
     expect(await prisma.oauthConsent.count({ where: { clientId } })).toBe(0);
-    const row = await prisma.oauthApplication.findUnique({ where: { clientId } });
+    const row = await prisma.oauthClient.findUnique({ where: { clientId } });
     expect(row?.disabled).toBe(true);
     expect((await service.list(userId)).applications.map((entry) => entry.clientId)).not.toContain(
       clientId,
@@ -176,18 +177,18 @@ describe('ConnectionsService.disconnect', () => {
   it('leaves the client running while somebody else still uses it', async () => {
     const clientId = await application('shared', 'Geteilter Connector');
     await consent(clientId, userId);
-    await accessToken(clientId, userId);
+    await grant(clientId, userId);
     await consent(clientId, otherUserId);
-    await accessToken(clientId, otherUserId);
+    await grant(clientId, otherUserId);
 
     await expect(service.disconnect(userId, clientId)).resolves.toEqual({
       disconnected: true,
       clientDisabled: false,
     });
 
-    const row = await prisma.oauthApplication.findUnique({ where: { clientId } });
+    const row = await prisma.oauthClient.findUnique({ where: { clientId } });
     expect(row?.disabled ?? false).toBe(false);
-    expect(await prisma.oauthAccessToken.count({ where: { clientId, userId: otherUserId } })).toBe(
+    expect(await prisma.oauthRefreshToken.count({ where: { clientId, userId: otherUserId } })).toBe(
       1,
     );
     expect(await prisma.oauthConsent.count({ where: { clientId, userId: otherUserId } })).toBe(1);

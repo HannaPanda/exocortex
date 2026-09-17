@@ -117,7 +117,7 @@ New interactive embeds should follow this pair (schema-only node in
 `packages/editor`, `ReactNodeViewRenderer` override in `apps/web`) rather than
 inventing another mechanism.
 
-Two rules hold for this layer, both learned the hard way (docs/deviations.md 18–19):
+Two rules hold for this layer, both learned the hard way (docs/deviations.md 17–18):
 
 - **the component that owns `useEditor` must hold no state.** Tiptap re-applies its
   options after every render of that component, which makes ProseMirror rebuild

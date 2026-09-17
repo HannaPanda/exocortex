@@ -48,20 +48,29 @@ same request a browser would make.
   `TokenScopeGuard` narrows a tool exactly as it narrows a direct call. A
   read-scoped token can list every tool and gets `api_token_insufficient_scope`
   from the writing ones.
-- An OAuth access token, issued by the Better Auth `mcp` plugin, is verified
-  against `oauth_access_token` and exchanged for a two-minute service token
-  (`purpose: 'mcp-tools'`) for the loopback call. Its limit is the tool list it
-  was served, not a scope.
+- An OAuth access token, issued by `@better-auth/mcp`, is verified by the API
+  itself and exchanged for a two-minute service token (`purpose: 'mcp-tools'`)
+  for the loopback call. Its limit is the tool list it was served, not a scope.
+
+  Since better-auth 1.7 that token is a signed `at+jwt` (RFC 9068) rather than
+  a row, so `verifyMcpAccessToken` checks the signature against the public keys
+  in `jwks` -- read straight out of the database, because this process *is* the
+  authorization server -- plus the issuer, the resource audience and the `typ`
+  header. It then reads two things the signature cannot tell it: whether the
+  client has since been switched off, and whether the subject is still an
+  account here. The endpoint verifying the token itself is the part that
+  matters and is unchanged; what changed underneath it is what a token is.
 
 Cookie sessions are refused. A cookie travels with any request a page can
 provoke, so accepting one would make every mutating tool reachable by
 cross-site request forgery.
 
-**Consent is unconditional.** Better Auth routes to the consent page only when
-the client asks with `prompt=consent`; the API adds that parameter itself
-before the plugin sees the request (`forceConsentPrompt`). Without it, dynamic
-registration plus a signed-in browser is enough for any website to obtain a
-working token silently.
+**Consent is unconditional.** The provider asks on its own when it holds no
+recorded "yes" for a client, but the first yes would then be the last one; the
+API adds `prompt=consent` to every authorization request before the plugin sees
+it, in the query string and in the form body alike (`forceConsentPrompt`).
+Without that, dynamic registration plus one earlier consent is enough for any
+website to obtain a working token silently.
 
 **Deep research gets its own URL.** `POST /api/mcp/research` serves exactly two
 tools, `search` and `fetch`, in the shape ChatGPT's deep research connector
@@ -70,15 +79,24 @@ so the research endpoint cannot reach a writing tool by naming it.
 
 ## Consequences
 
-The deployment is now an OAuth authorization server. That is three new tables,
+The deployment is now an OAuth authorization server. That is seven new tables,
 a consent screen, and a class of endpoint that did not exist before. Dynamic
-client registration is open, which is what the specification asks for and what
-ChatGPT requires; the consent screen and `oauth_application.disabled` are what
-make it survivable. A registered client that nobody consents to can do nothing.
+client registration is open -- explicitly, since better-auth 1.7 refuses it by
+default -- which is what the specification asks for and what ChatGPT requires;
+the consent screen and `oauth_client.disabled` are what make it survivable. A
+registered client that nobody consents to can do nothing.
 
-Access tokens are stored in the clear, unlike `ApiToken`, because the plugin
-looks a token up by its value. They live one hour, refresh for thirty days, and
-open exactly one endpoint.
+Access tokens are written down nowhere at all, unlike `ApiToken`. They live one
+hour, refresh for thirty days, and open exactly one endpoint, named in their own
+audience claim. The cost of that is real: revocation cannot reach a token that
+has already been issued, so switching a client off or disabling an account is
+checked on every use rather than by deleting rows, and the hour is short for
+that reason.
+
+The `jwt` plugin comes with the provider, and it brings `GET /api/auth/token`:
+a route that would hand a signed-in browser a JWT from the same key set
+`/api/mcp` trusts. It is refused at the door (`SESSION_JWT_PATH`), because a
+credential-minting endpoint nobody asked for is surface for its own sake.
 
 Every tool call over HTTP is one line in the log with the credential kind, the
 client id and the user, which is how "two agents wrote from two systems" becomes

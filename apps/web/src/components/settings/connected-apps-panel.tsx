@@ -129,11 +129,12 @@ export function ConnectedAppsPanel() {
                   <TableCell>
                     {app.disabled ? (
                       <Badge variant="muted">Abgeschaltet</Badge>
-                    ) : app.activeTokenCount > 0 ? (
+                    ) : app.activeGrantCount > 0 ? (
+                      // The client can still fetch itself a new access token.
+                      // Whether it is holding one right now is not knowable:
+                      // an access token is a signed JWT nobody keeps a copy of.
                       <Badge variant="default">Aktiv</Badge>
                     ) : (
-                      // No live token, but the client can fetch a new one with
-                      // its refresh token, so this is "idle", not "harmless".
                       <Badge variant="muted">Ruht</Badge>
                     )}
                   </TableCell>

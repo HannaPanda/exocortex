@@ -33,7 +33,7 @@ authorization mechanism.
 
 ## Authentication
 
-- Better Auth 1.6 with the Prisma adapter, email and password.
+- Better Auth 1.7 with the Prisma adapter, email and password.
 - Passwords: minimum 12 characters, scrypt-hashed by Better Auth. The seed script
   reproduces the same format so a seeded account can log in normally.
 - Sessions: `httpOnly`, `sameSite=lax`, `Secure` when `APP_URL` is HTTPS, cookie
@@ -255,9 +255,11 @@ route in the API that authenticates itself instead of leaving it to
 - **An `exo_` token is passed through** to the endpoint's loopback calls into
   the REST API, so `TokenScopeGuard` narrows a tool exactly as it narrows a
   direct request. A read-scoped token cannot write through a tool.
-- **An OAuth access token** is verified against `oauth_access_token`, then
-  exchanged for a 120-second `mcp-tools` service token for the loopback. It
-  opens no other route. Its limit is the tool list its endpoint serves.
+- **An OAuth access token** is a signed `at+jwt`: its signature is checked
+  against the keys in `jwks`, together with the issuer, the resource audience
+  and the client's `disabled` flag, and then exchanged for a 120-second
+  `mcp-tools` service token for the loopback. It opens no other route. Its
+  limit is the tool list its endpoint serves.
 - **CORS is `*` on this path only**, which is sound precisely because the path
   refuses cookies: a cross-origin caller has nothing ambient to ride on and
   must present a credential a person handed it.
@@ -266,16 +268,25 @@ Being an OAuth authorization server is new surface, and the honest summary of
 it is: dynamic client registration is open, as the MCP specification requires,
 so anyone can create a client row. That row is worth nothing on its own. What
 turns it into access is a signed-in person answering the consent screen at
-`/verbinden`, and that screen is unconditional — Better Auth would only show it
-when the _client_ asks with `prompt=consent`, so `forceConsentPrompt` in the
-API adds the parameter before the plugin sees the request. Without that, a
+`/verbinden`, and that screen is unconditional — the provider would remember
+the first yes and wave every later authorization through, so
+`forceConsentPrompt` in the API adds `prompt=consent` before the plugin sees
+the request, to the query string and the form body alike. Without that, a
 website could redirect a signed-in visitor to the authorization endpoint and
 collect a token with nothing visible happening.
 
-Access tokens here are stored unhashed, unlike `ApiToken`, because the plugin
-looks a token up by its value. The compensations are that they live one hour,
-that they unlock exactly one endpoint, and that setting `disabled` on the
-client kills every token it holds at once, checked on each use.
+Access tokens here are stored nowhere at all, unlike `ApiToken`: since
+better-auth 1.7 they are signed `at+jwt` tokens (RFC 9068) bound to the
+resource `https://exocortex.app/api/mcp`, verified against the public keys in
+`jwks`. That removes a table of plaintext secrets and takes revocation-by-
+deletion with it, so the compensations carry more weight than before: they live
+one hour, they unlock exactly one endpoint and only that one, and setting
+`disabled` on the client — or `disabledAt` on the account — kills every token
+it holds at once, because both are checked on each use.
+
+`GET /api/auth/token` is refused. The `jwt` plugin that signs the OAuth tokens
+brings it along, and it would hand a signed-in browser a JWT from the same key
+set `/api/mcp` trusts.
 
 ## CSRF
 

@@ -65,8 +65,9 @@ model User {
   calendarAccounts            CalendarAccount[]     @relation("CalendarAccountOwner")
   comments                    Comment[]             @relation("CommentCreatedBy")
   resolvedComments            Comment[]             @relation("CommentResolvedBy")
-  oauthApplications           OauthApplication[]
+  oauthClients                OauthClient[]
   oauthAccessTokens           OauthAccessToken[]
+  oauthRefreshTokens          OauthRefreshToken[]
   oauthConsents               OauthConsent[]
   sentInvitations             Invitation[]          @relation("InvitationInvitedBy")
   acceptedInvitation          Invitation?           @relation("InvitationAcceptedBy")
@@ -96,6 +97,9 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  oauthAccessTokens  OauthAccessToken[]
+  oauthRefreshTokens OauthRefreshToken[]
 
   @@index([userId])
   @@map("session")
@@ -136,91 +140,237 @@ model Verification {
 }
 
 // ---------------------------------------------------------------------------
-// OAuth 2.1 authorization server (Better Auth `mcp` plugin)
+// OAuth 2.1 authorization server (`@better-auth/mcp` + the `jwt` plugin)
 // ---------------------------------------------------------------------------
 //
-// These three tables exist for one reason: ChatGPT cannot start a subprocess,
-// so it cannot speak the stdio MCP transport, and it does not let a person
-// paste an API token either. A remote MCP connector authenticates with OAuth
-// and registers itself dynamically (RFC 7591), which needs an authorization
+// These tables exist for one reason: ChatGPT cannot start a subprocess, so it
+// cannot speak the stdio MCP transport, and it does not let a person paste an
+// API token either. A remote MCP connector authenticates with OAuth and
+// registers itself dynamically (RFC 7591), which needs an authorization
 // server -- this one. Field names and shapes are dictated by the plugin's
 // adapter mapping; see docs/mcp.md.
+//
+// Nothing in the application writes to any of them. The plugin owns every row,
+// which is why the columns are named the way better-auth names them rather
+// than the way the rest of this schema reads.
+
+/// The signing keys of the authorization server. The public half is published
+/// at `/api/auth/jwks`; the private half is encrypted with the deployment
+/// secret. Access tokens are signed with these, which is what lets
+/// `verifyMcpAccessToken` check one without a round trip.
+model Jwks {
+  id         String    @id @default(cuid(2))
+  publicKey  String
+  privateKey String
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime?
+  alg        String?
+  crv        String?
+
+  @@map("jwks")
+}
 
 /// An OAuth client. Almost every row here is written by dynamic client
-/// registration rather than by a human, so `name` and `redirectUrls` are
+/// registration rather than by a human, so `name` and `redirectUris` are
 /// whatever the registering client claimed. Nothing downstream may treat them
 /// as trustworthy: they are shown on the consent page precisely so a person
 /// decides, and `disabled` is how that decision is revoked later.
-model OauthApplication {
-  id           String   @id @default(cuid(2))
-  name         String
-  icon         String?
-  /// Raw JSON blob of the registration request's `metadata`, stored verbatim.
-  metadata     String?
-  clientId     String   @unique
+model OauthClient {
+  id                               String    @id @default(cuid(2))
+  clientId                         String    @unique
   /// Null for public clients, which prove themselves with PKCE instead.
-  clientSecret String?
-  /// Comma-separated list. The plugin splits on `,` itself.
-  redirectUrls String
-  type         String
-  disabled     Boolean? @default(false)
+  clientSecret                     String?
+  clientDiscoveryId                String?
+  disabled                         Boolean?  @default(false)
+  /// Set on a client that may skip the consent screen. Never set here: the
+  /// screen is the gate in front of open registration.
+  skipConsent                      Boolean?
+  enableEndSession                 Boolean?
+  subjectType                      String?
+  scopes                           String[]  @default([])
+  clientCredentialsScopes          String[]  @default([])
   /// Who registered it, when registration happened in a session. Null for
   /// anonymous dynamic registration, which is the normal case for ChatGPT.
-  userId       String?
-  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt    DateTime
-  updatedAt    DateTime
+  userId                           String?
+  user                             User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt                        DateTime? @default(now())
+  updatedAt                        DateTime? @updatedAt
+  name                             String?
+  uri                              String?
+  icon                             String?
+  contacts                         String[]  @default([])
+  tos                              String?
+  policy                           String?
+  softwareId                       String?
+  softwareVersion                  String?
+  softwareStatement                String?
+  redirectUris                     String[]
+  postLogoutRedirectUris           String[]  @default([])
+  backchannelLogoutUri             String?
+  backchannelLogoutSessionRequired Boolean?
+  tokenEndpointAuthMethod          String?
+  applicationType                  String?
+  jwks                             String?
+  jwksUri                          String?
+  grantTypes                       String[]  @default([])
+  responseTypes                    String[]  @default([])
+  requirePKCE                      Boolean?
+  dpopBoundAccessTokens            Boolean?  @default(false)
+  referenceId                      String?
+  metadata                         Json?
 
-  accessTokens OauthAccessToken[]
-  consents     OauthConsent[]
+  accessTokens  OauthAccessToken[]
+  refreshTokens OauthRefreshToken[]
+  consents      OauthConsent[]
+  resources     OauthClientResource[]
 
   @@index([userId])
-  @@map("oauth_application")
+  @@map("oauth_client")
 }
 
-/// An issued access/refresh token pair. Unlike `ApiToken` these are stored in
-/// the clear, because the plugin looks a token up by its own value; they are
-/// short-lived (one hour by default) to make that bearable, and the endpoint
-/// they unlock is only `/api/mcp`.
-model OauthAccessToken {
-  id                    String           @id @default(cuid(2))
-  accessToken           String           @unique
-  refreshToken          String           @unique
-  accessTokenExpiresAt  DateTime
-  refreshTokenExpiresAt DateTime
-  clientId              String
-  application           OauthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
-  userId                String?
-  user                  User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  /// Space-separated OAuth scopes. These are the OpenID scopes the plugin
-  /// knows (openid, profile, email, offline_access) and say nothing about what
-  /// the token may do in eXocortex -- authorization stays with the workspace
-  /// policies the API applies to the token's user.
-  scopes                String
-  createdAt             DateTime
-  updatedAt             DateTime
+/// A protected resource tokens can be issued for (RFC 8707). This deployment
+/// has exactly one, `<APP_URL>/api/mcp`, seeded by the plugin from its
+/// `resource` option; the row exists so per-resource policy has somewhere to
+/// live, not because there is a second one to tell apart.
+model OauthResource {
+  id                            String    @id @default(cuid(2))
+  identifier                    String    @unique
+  name                          String
+  accessTokenTtl                Int?
+  refreshTokenTtl               Int?
+  signingAlgorithm              String?
+  signingKeyId                  String?
+  allowedScopes                 String[]  @default([])
+  customClaims                  Json?
+  dpopBoundAccessTokensRequired Boolean?  @default(false)
+  disabled                      Boolean?  @default(false)
+  createdAt                     DateTime? @default(now())
+  updatedAt                     DateTime? @updatedAt
+  policyVersion                 Int?      @default(1)
+  metadata                      Json?
+
+  clients OauthClientResource[]
+
+  @@map("oauth_resource")
+}
+
+/// Which client may ask for which resource. Only authoritative when the plugin
+/// runs with `enforcePerClientResources`, which it does not here; the rows are
+/// still written, because registration links every new client to the one
+/// resource this server has.
+model OauthClientResource {
+  id         String        @id @default(cuid(2))
+  clientId   String
+  client     OauthClient   @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  resourceId String
+  resource   OauthResource @relation(fields: [resourceId], references: [identifier], onDelete: Cascade)
+  metadata   Json?
+  createdAt  DateTime?     @default(now())
+
+  @@unique([clientId, resourceId])
+  @@index([clientId])
+  @@index([resourceId])
+  @@map("oauth_client_resource")
+}
+
+/// An issued refresh token. Stored hashed, unlike the pair better-auth 1.6
+/// kept in the clear: the plugin looks one up by its own digest now, so the
+/// column is useless to anyone who reads the table.
+model OauthRefreshToken {
+  id                      String      @id @default(cuid(2))
+  token                   String      @unique
+  clientId                String
+  client                  OauthClient @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  sessionId               String?
+  session                 Session?    @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  userId                  String
+  user                    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  referenceId             String?
+  authorizationCodeId     String?
+  resources               String[]    @default([])
+  requestedUserInfoClaims String[]    @default([])
+  expiresAt               DateTime
+  createdAt               DateTime    @default(now())
+  revoked                 DateTime?
+  rotatedAt               DateTime?
+  rotationReplayResponse  String?
+  rotationReplayExpiresAt DateTime?
+  authTime                DateTime?
+  confirmation            Json?
+  scopes                  String[]
+
+  accessTokens OauthAccessToken[]
 
   @@index([clientId])
+  @@index([sessionId])
   @@index([userId])
+  @@index([authorizationCodeId])
+  @@map("oauth_refresh_token")
+}
+
+/// An opaque access token. Empty in this deployment, and that is the point:
+/// every token `@better-auth/mcp` issues is bound to a resource audience and
+/// is therefore a signed JWT that is never written down. The table is part of
+/// the plugin's schema and the plugin writes to it for grants that have no
+/// audience, so it exists rather than being left out.
+model OauthAccessToken {
+  id                      String             @id @default(cuid(2))
+  token                   String             @unique
+  clientId                String
+  client                  OauthClient        @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  sessionId               String?
+  session                 Session?           @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  userId                  String?
+  user                    User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  referenceId             String?
+  authorizationCodeId     String?
+  resources               String[]           @default([])
+  requestedUserInfoClaims String[]           @default([])
+  refreshId               String?
+  refresh                 OauthRefreshToken? @relation(fields: [refreshId], references: [id], onDelete: Cascade)
+  expiresAt               DateTime
+  createdAt               DateTime           @default(now())
+  revoked                 DateTime?
+  confirmation            Json?
+  scopes                  String[]
+
+  @@index([clientId])
+  @@index([sessionId])
+  @@index([userId])
+  @@index([authorizationCodeId])
+  @@index([refreshId])
   @@map("oauth_access_token")
 }
 
 /// A person's recorded "yes" to one client. Its absence is what makes the
-/// consent page appear.
+/// consent page appear -- though here it appears anyway, because the API adds
+/// `prompt=consent` to every authorization request.
 model OauthConsent {
-  id           String           @id @default(cuid(2))
-  clientId     String
-  application  OauthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
-  userId       String
-  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  scopes       String
-  consentGiven Boolean
-  createdAt    DateTime
-  updatedAt    DateTime
+  id                      String      @id @default(cuid(2))
+  clientId                String
+  client                  OauthClient @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  userId                  String?
+  user                    User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  referenceId             String?
+  resources               String[]    @default([])
+  requestedUserInfoClaims String[]    @default([])
+  scopes                  String[]
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
 
   @@index([clientId])
   @@index([userId])
   @@map("oauth_consent")
+}
+
+/// One row per `private_key_jwt` client assertion, so a replay collides on the
+/// primary key. No client here authenticates that way; the table belongs to
+/// the plugin's schema all the same.
+model OauthClientAssertion {
+  id        String   @id @default(cuid(2))
+  expiresAt DateTime
+
+  @@map("oauth_client_assertion")
 }
 
 // ---------------------------------------------------------------------------
@@ -594,7 +744,7 @@ model Document {
 
   /// Whether this page is an overview of its sub-pages (issue #53, ADR-028).
   /// `OFF` is the default, so no existing page starts composing by accident.
-  overviewMode   OverviewMode @default(OFF)
+  overviewMode OverviewMode @default(OFF)
 
   content     DocumentContent?
   digest      DocumentDigest?
@@ -715,8 +865,8 @@ model DocumentDigest {
   /// Why the last run did not produce anything, cleared by the next one that
   /// does. A failure is never a reason to drop what is already there: an
   /// overview from yesterday beats an empty page.
-  lastError  String?
-  failedAt   DateTime?
+  lastError    String?
+  failedAt     DateTime?
   /// Whether a cover has already been offered for this page, so an overview
   /// gets its picture once rather than on every refresh (ADR-028).
   coverAskedAt DateTime?
@@ -1340,9 +1490,9 @@ model AiConversation {
 }
 
 model AiConversationMessage {
-  id              String             @id @default(cuid(2))
+  id              String                   @id @default(cuid(2))
   conversationId  String
-  conversation    AiConversation     @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversation    AiConversation           @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   role            AiConversationRole
   content         String
   /// Assistant tool-call requests, verbatim as the provider returned them.
@@ -1352,13 +1502,13 @@ model AiConversationMessage {
   toolCallId      String?
   toolName        String?
   /// True when a compaction produced this message instead of a user or model.
-  isSummary       Boolean            @default(false)
+  isSummary       Boolean                  @default(false)
   /// Set when a compaction or `/clear` retired this message. Retired messages
   /// stay readable in the UI but never reach the provider again.
   supersededAt    DateTime?
   runId           String?
-  estimatedTokens Int                @default(0)
-  createdAt       DateTime           @default(now())
+  estimatedTokens Int                      @default(0)
+  createdAt       DateTime                 @default(now())
   /// Generated tsvector over `content`, maintained by PostgreSQL rather than by
   /// an indexing job: unlike a page, a message is already plain text when it is
   /// written, so there is nothing to materialize (issue #69). Raw SQL, because

@@ -14,7 +14,7 @@ import { getSession, signIn } from '@/lib/auth/client';
  * flow resumes afterwards instead of dumping a person who was connecting
  * ChatGPT into the workspace with no idea what happened.
  */
-const OAUTH_AUTHORIZE_PATH = '/api/auth/mcp/authorize';
+const OAUTH_AUTHORIZE_PATH = '/api/auth/oauth2/authorize';
 
 function oauthContinuation(params: URLSearchParams): string | null {
   if (params.get('client_id') === null || params.get('redirect_uri') === null) return null;

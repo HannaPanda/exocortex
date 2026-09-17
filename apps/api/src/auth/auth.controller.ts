@@ -20,6 +20,26 @@ import { CurrentSession, Public } from './session.guard';
  * in `@exocortex/auth`. Cookies are produced by Better Auth, so `Set-Cookie`
  * headers are copied verbatim.
  */
+async function relay(
+  authService: AuthService,
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<void> {
+  const response = await authService.handleAuthRequest(request);
+
+  for (const [key, value] of response.headers.entries()) {
+    if (key.toLowerCase() === 'set-cookie') continue;
+    void reply.header(key, value);
+  }
+  // `getSetCookie` preserves multiple cookies, which a plain iteration merges.
+  for (const cookie of response.headers.getSetCookie()) {
+    void reply.header('set-cookie', cookie);
+  }
+
+  const body = await response.text();
+  void reply.status(response.status).send(body.length > 0 ? body : undefined);
+}
+
 @ApiTags('auth')
 @Controller('api/auth')
 export class AuthController {
@@ -29,19 +49,31 @@ export class AuthController {
   @All('*')
   @ApiExcludeEndpoint()
   async handle(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<void> {
-    const response = await this.authService.handleAuthRequest(request);
+    await relay(this.authService, request, reply);
+  }
+}
 
-    for (const [key, value] of response.headers.entries()) {
-      if (key.toLowerCase() === 'set-cookie') continue;
-      void reply.header(key, value);
-    }
-    // `getSetCookie` preserves multiple cookies, which a plain iteration merges.
-    for (const cookie of response.headers.getSetCookie()) {
-      void reply.header('set-cookie', cookie);
-    }
+/**
+ * The OAuth discovery documents, at the origin root where a client looks.
+ *
+ * `@better-auth/mcp` serves the RFC 9728 protected-resource metadata from a
+ * request hook that matches the *real* path, not a route under the auth base
+ * path, so this is a pass-through rather than a rewrite: the request reaches
+ * Better Auth with `/.well-known/...` intact and the hook answers it. Anything
+ * else under `/.well-known` falls through to Better Auth's router and comes
+ * back as a 404, which is the right answer for a document this server does not
+ * publish.
+ */
+@ApiTags('auth')
+@Controller('.well-known')
+export class WellKnownController {
+  constructor(private readonly authService: AuthService) {}
 
-    const body = await response.text();
-    void reply.status(response.status).send(body.length > 0 ? body : undefined);
+  @Public()
+  @All('*')
+  @ApiExcludeEndpoint()
+  async handle(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<void> {
+    await relay(this.authService, request, reply);
   }
 }
 

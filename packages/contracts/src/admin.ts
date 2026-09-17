@@ -245,8 +245,16 @@ export const connectedAppSchema = z.object({
    * the closest honest answer the authorization server can give.
    */
   lastAuthorizedAt: isoDateTimeSchema.nullable(),
-  /** Access tokens that have not expired yet, i.e. whether it can act right now. */
-  activeTokenCount: z.number().int().nonnegative(),
+  /**
+   * Refresh grants that are neither expired nor revoked, i.e. whether the
+   * client can still get itself a new access token.
+   *
+   * Deliberately not a count of access tokens: since better-auth 1.7 those are
+   * signed JWTs the server keeps no copy of, so "how many live tokens exist"
+   * is a question this deployment cannot answer, and a zero would read as
+   * "harmless" when it means "not asked recently".
+   */
+  activeGrantCount: z.number().int().nonnegative(),
   disabled: z.boolean(),
 });
 export type ConnectedApp = z.infer<typeof connectedAppSchema>;
