@@ -71,11 +71,16 @@ test.describe('LaTeX-Projekt im Browser', () => {
 
     // Reverse SyncTeX. The file that is open is the empty one just created, so
     // a click that lands anywhere in the result has to switch the editor back
-    // to `main.tex` -- the only file the PDF came from.
+    // to `main.tex` -- the only file the PDF came from. Asserted on the tree's
+    // selection rather than on the editor's text: CodeMirror renders only the
+    // lines in view, and the jump scrolls away from the preamble.
+    await expect(
+      page.locator('[data-testid="project-file-row"][aria-current="true"]'),
+    ).toContainText(`probe-${stamp}.tex`);
     await firstPage.click({ position: { x: 200, y: 200 } });
-    await expect(page.getByTestId('project-editor')).toContainText('documentclass', {
-      timeout: 30_000,
-    });
+    await expect(
+      page.locator('[data-testid="project-file-row"][aria-current="true"]'),
+    ).toContainText('main.tex', { timeout: 30_000 });
 
     // Forward SyncTeX, which follows from the same jump: the caret now rests on
     // the line that was clicked, and the PDF marks where that line went.

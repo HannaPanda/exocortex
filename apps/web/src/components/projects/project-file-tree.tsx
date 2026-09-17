@@ -154,6 +154,10 @@ function TreeLevel({
               selectedPath === node.path && 'bg-accent font-medium',
             )}
             style={{ paddingInlineStart: `${String(0.5 + depth * 0.75)}rem` }}
+            data-testid="project-file-row"
+            // Says which file the source pane holds, to a screen reader and to a
+            // test. The background colour said it to everybody else only.
+            aria-current={selectedPath === node.path ? 'true' : undefined}
             onClick={node.file === null ? undefined : () => onSelect(node.file as ProjectFile)}
             role={node.file === null ? undefined : 'button'}
             tabIndex={node.file === null ? undefined : 0}
