@@ -95,6 +95,19 @@ export function usePersistentState<TValue>(
 }
 
 /**
+ * Writes one of these values from outside React.
+ *
+ * `localStorage.setItem` on its own would not do: the store above caches the
+ * value in memory and only hears about a `storage` event, which the browser
+ * fires for *other* tabs. A component already mounted on this key in this tab
+ * would go on showing the old value. `/chats` needs exactly this -- handing the
+ * panel a conversation before navigating to it (issue #69, AP4).
+ */
+export function writePersistentState<TValue>(key: string, value: TValue): void {
+  storeFor(key).set(JSON.stringify(value));
+}
+
+/**
  * Browser online/offline state, again through `useSyncExternalStore` so no effect
  * has to push it into React state.
  */

@@ -47,6 +47,8 @@ export const API_ERROR_CODES = [
   'ai_image_unavailable',
   'ai_tool_limit_exceeded',
   'ai_conversation_locked',
+  /** The pagination cursor of a conversation listing is not one this API issued. */
+  'ai_conversation_cursor_invalid',
   'document_content_conflict',
   'document_content_lossy',
   'attachment_text_unavailable',
@@ -131,6 +133,7 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   ai_image_unavailable: 503,
   ai_tool_limit_exceeded: 429,
   ai_conversation_locked: 409,
+  ai_conversation_cursor_invalid: 400,
   document_content_conflict: 409,
   document_content_lossy: 422,
   attachment_text_unavailable: 409,

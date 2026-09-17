@@ -13,6 +13,16 @@ export const aiConversationSchema = z.object({
   createdById: idSchema,
   title: z.string(),
   documentId: idSchema.nullable(),
+  /** Title of the page the conversation stands on. Carried along so a list does not have to ask per row. */
+  documentTitle: z.string().nullable(),
+  /**
+   * The conversation's first user line, collapsed and cut.
+   *
+   * A title derived from that same line says what was asked; the preview says
+   * how it was asked, which is what a person recognizes weeks later. Empty for
+   * a conversation nobody has written in yet.
+   */
+  preview: z.string(),
   /** Whether the open page is disclosed to the model. `documentId` tracks it either way. */
   pageContextEnabled: z.boolean(),
   modelSlug: z.string().nullable(),
@@ -42,8 +52,17 @@ export const aiConversationMessageSchema = z.object({
 });
 export type AiConversationMessage = z.infer<typeof aiConversationMessageSchema>;
 
+/** Which half of the archive a listing asks for. */
+export const aiConversationArchivedFilterSchema = z.enum(['open', 'archived', 'all']);
+export type AiConversationArchivedFilter = z.infer<typeof aiConversationArchivedFilterSchema>;
+
+export const AI_CONVERSATION_PAGE_SIZE = 30;
+export const AI_CONVERSATION_MAX_PAGE_SIZE = 100;
+
 export const aiConversationListResponseSchema = z.object({
   conversations: z.array(aiConversationSchema),
+  /** Opaque; hand it back as `cursor` for the next page. Null when the list is exhausted. */
+  nextCursor: z.string().nullable(),
 });
 export type AiConversationListResponse = z.infer<typeof aiConversationListResponseSchema>;
 
@@ -147,3 +166,66 @@ export const postConversationMessageResponseSchema = z.object({
   userMessage: aiConversationMessageSchema.nullable(),
 });
 export type PostConversationMessageResponse = z.infer<typeof postConversationMessageResponseSchema>;
+
+// ---------------------------------------------------------------------------
+// Finding a conversation again (issue #69)
+// ---------------------------------------------------------------------------
+
+export const AI_CONVERSATION_SEARCH_LIMIT = 30;
+
+/**
+ * One conversation that matched, with the passage that matched in it.
+ *
+ * The unit of a result is the conversation and not the message: what a person
+ * is looking for is "the chat about nginx", and a list of forty lines out of
+ * the same afternoon would bury it. `matchCount` says how much else is in
+ * there, and the snippet is the best-ranked line.
+ */
+export const aiConversationSearchHitSchema = z.object({
+  conversation: aiConversationSchema,
+  /** `ts_headline` output: the matching passage with `<mark>` around the terms. */
+  snippet: z.string(),
+  messageId: idSchema,
+  messageRole: aiConversationRoleSchema,
+  messageCreatedAt: isoDateTimeSchema,
+  /** True when the matching line has dropped out of the context. It stays findable. */
+  messageSuperseded: z.boolean(),
+  matchCount: z.number().int().positive(),
+});
+export type AiConversationSearchHit = z.infer<typeof aiConversationSearchHitSchema>;
+
+export const aiConversationSearchResponseSchema = z.object({
+  query: z.string(),
+  hits: z.array(aiConversationSearchHitSchema),
+});
+export type AiConversationSearchResponse = z.infer<typeof aiConversationSearchResponseSchema>;
+
+/**
+ * What an irreversible delete leaves behind.
+ *
+ * `runsPruned` rather than "runs deleted" on purpose: the transcript goes, the
+ * run rows stay as the bare metrics they also are. See
+ * `ConversationsService.deletePermanently`.
+ */
+export const aiConversationDeleteResponseSchema = z.object({
+  deleted: z.literal(true),
+  messagesDeleted: z.number().int().nonnegative(),
+  runsPruned: z.number().int().nonnegative(),
+});
+export type AiConversationDeleteResponse = z.infer<typeof aiConversationDeleteResponseSchema>;
+
+export const conversationToPageRequestSchema = z.object({
+  /** Where the page goes. Null puts it at the top level of the conversation's workspace. */
+  parentId: idSchema.nullable().default(null),
+  title: z.string().trim().min(1).max(160).optional(),
+});
+export type ConversationToPageRequest = z.infer<typeof conversationToPageRequestSchema>;
+
+export const conversationToPageResponseSchema = z.object({
+  conversationId: idSchema,
+  documentId: idSchema,
+  workspaceId: idSchema,
+  title: z.string(),
+  url: z.string(),
+});
+export type ConversationToPageResponse = z.infer<typeof conversationToPageResponseSchema>;

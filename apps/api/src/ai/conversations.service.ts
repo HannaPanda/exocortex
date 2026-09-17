@@ -5,8 +5,6 @@ import { assertPolicy, canReadWorkspace, WorkspaceAccessService } from '@exocort
 import {
   type AiConversation,
   type AiConversationDetailResponse,
-  type AiConversationListResponse,
-  type AiConversationMessage,
   type CreateAiConversationRequest,
   type PostConversationMessageRequest,
   type PostConversationMessageResponse,
@@ -14,7 +12,6 @@ import {
   type UpdateAiConversationRequest,
 } from '@exocortex/contracts';
 import {
-  type AiConversationRole as AiConversationRolePrisma,
   type AiReasoningLevel as AiReasoningLevelPrisma,
   type Prisma,
   type PrismaClient,
@@ -34,66 +31,16 @@ import {
 } from './ai-model-resolver.service';
 import { runChatCommand } from './chat-command-runner';
 import { parseChatCommand, type ParsedChatCommand } from './chat-commands';
+import {
+  CONVERSATION_SELECT,
+  conversationMessageToContract,
+  type ConversationRow,
+  conversationToContract,
+  loadConversationPreviews,
+  loadOwnedConversation,
+  PREVIEW_MAX_CHARS,
+} from './conversation-mapping';
 import { mapAiRunRow } from './run-mapper';
-
-const CONVERSATION_SELECT = {
-  id: true,
-  workspaceId: true,
-  createdById: true,
-  title: true,
-  documentId: true,
-  pageContextEnabled: true,
-  modelId: true,
-  reasoningLevel: true,
-  visionCompanionSlug: true,
-  estimatedTokens: true,
-  lastMessageAt: true,
-  createdAt: true,
-  archivedAt: true,
-  model: { select: { slug: true, contextWindowTokens: true } },
-  _count: { select: { messages: true } },
-} as const;
-
-interface ConversationRow {
-  id: string;
-  workspaceId: string;
-  createdById: string;
-  title: string;
-  documentId: string | null;
-  pageContextEnabled: boolean;
-  modelId: string | null;
-  reasoningLevel: AiReasoningLevelPrisma;
-  visionCompanionSlug: string | null;
-  estimatedTokens: number;
-  lastMessageAt: Date;
-  createdAt: Date;
-  archivedAt: Date | null;
-  model: { slug: string; contextWindowTokens: number } | null;
-  _count: { messages: number };
-}
-
-interface ConversationMessageRow {
-  id: string;
-  conversationId: string;
-  role: AiConversationRolePrisma;
-  content: string;
-  toolCallId: string | null;
-  toolName: string | null;
-  isSummary: boolean;
-  supersededAt: Date | null;
-  runId: string | null;
-  createdAt: Date;
-}
-
-const CONVERSATION_ROLE_TO_CONTRACT: Record<
-  AiConversationRolePrisma,
-  AiConversationMessage['role']
-> = {
-  SYSTEM: 'system',
-  USER: 'user',
-  ASSISTANT: 'assistant',
-  TOOL: 'tool',
-};
 
 const PLACEHOLDER_TITLE = 'Neue Unterhaltung';
 const TITLE_MAX_CHARS = 60;
@@ -143,6 +90,14 @@ function formatSelection(input: {
   return lines.join('\n');
 }
 
+/** The list preview of a first user line: collapsed and cut to `PREVIEW_MAX_CHARS`. */
+function previewOf(content: string): string {
+  const collapsed = content.replace(/\s+/g, ' ').trim();
+  return collapsed.length > PREVIEW_MAX_CHARS
+    ? `${collapsed.slice(0, PREVIEW_MAX_CHARS - 1)}\u2026`
+    : collapsed;
+}
+
 /** Derives a conversation title from the first user message: whitespace-collapsed, capped at 60 characters. */
 function deriveTitle(content: string): string {
   const collapsed = content.replace(/\s+/g, ' ').trim();
@@ -173,28 +128,6 @@ export class ConversationsService {
     private readonly settings: SettingsService,
   ) {}
 
-  async list(input: {
-    workspaceId: string;
-    userId: string;
-    includeArchived: boolean;
-  }): Promise<AiConversationListResponse> {
-    const role = await this.access.findRole(input.workspaceId, input.userId);
-    assertPolicy(canReadWorkspace(role));
-
-    const rows = await this.prisma.aiConversation.findMany({
-      where: {
-        workspaceId: input.workspaceId,
-        createdById: input.userId,
-        archivedAt: input.includeArchived ? undefined : null,
-      },
-      orderBy: { lastMessageAt: 'desc' },
-      select: CONVERSATION_SELECT,
-    });
-
-    const fallbackContextWindow = await this.resolveFallbackContextWindow();
-    return { conversations: rows.map((row) => this.toContract(row, fallbackContextWindow)) };
-  }
-
   async get(conversationId: string, userId: string): Promise<AiConversationDetailResponse> {
     const conversation = await this.loadOwned(conversationId, userId);
     const messages = await this.prisma.aiConversationMessage.findMany({
@@ -203,9 +136,16 @@ export class ConversationsService {
     });
 
     const fallbackContextWindow = await this.resolveFallbackContextWindow();
+    // The detail response already carries the transcript, so the preview costs
+    // no query here: it is the first user line of what was just read.
+    const firstUserMessage = messages.find((message) => message.role === 'USER') ?? null;
     return {
-      conversation: this.toContract(conversation, fallbackContextWindow),
-      messages: messages.map((message) => this.messageToContract(message)),
+      conversation: conversationToContract(
+        conversation,
+        fallbackContextWindow,
+        firstUserMessage === null ? '' : previewOf(firstUserMessage.content),
+      ),
+      messages: messages.map((message) => conversationMessageToContract(message)),
     };
   }
 
@@ -252,7 +192,8 @@ export class ConversationsService {
     });
 
     const fallbackContextWindow = await this.resolveFallbackContextWindow();
-    return { conversation: this.toContract(created, fallbackContextWindow) };
+    // A conversation nobody has written in yet has nothing to preview.
+    return { conversation: conversationToContract(created, fallbackContextWindow, '') };
   }
 
   async update(input: {
@@ -294,7 +235,14 @@ export class ConversationsService {
     });
 
     const fallbackContextWindow = await this.resolveFallbackContextWindow();
-    return { conversation: this.toContract(updated, fallbackContextWindow) };
+    const previews = await loadConversationPreviews(this.prisma, [updated.id]);
+    return {
+      conversation: conversationToContract(
+        updated,
+        fallbackContextWindow,
+        previews.get(updated.id) ?? '',
+      ),
+    };
   }
 
   /** Soft-archives a conversation. It never deletes rows: the transcript stays around. */
@@ -516,7 +464,7 @@ export class ConversationsService {
     return {
       run: mapAiRunRow(run),
       command: null,
-      userMessage: this.messageToContract(userMessage),
+      userMessage: conversationMessageToContract(userMessage),
     };
   }
 
@@ -570,66 +518,6 @@ export class ConversationsService {
   }
 
   private async loadOwned(conversationId: string, userId: string): Promise<ConversationRow> {
-    const conversation = await this.prisma.aiConversation.findUnique({
-      where: { id: conversationId },
-      select: CONVERSATION_SELECT,
-    });
-    if (conversation === null) throw AppError.notFound('AI conversation');
-
-    const role = await this.access.findRole(conversation.workspaceId, userId);
-    assertPolicy(canReadWorkspace(role));
-
-    if (conversation.createdById !== userId) {
-      throw AppError.forbidden('AI conversations are visible only to the user who created them');
-    }
-    return conversation;
-  }
-
-  private toContract(
-    conversation: ConversationRow,
-    fallbackContextWindowTokens: number | null,
-  ): AiConversation {
-    const contextWindowTokens =
-      conversation.model?.contextWindowTokens ?? fallbackContextWindowTokens;
-    const contextUsagePercent =
-      contextWindowTokens === null || contextWindowTokens === 0
-        ? 0
-        : Math.min(
-            100,
-            Math.max(0, Math.round((conversation.estimatedTokens / contextWindowTokens) * 100)),
-          );
-
-    return {
-      id: conversation.id,
-      workspaceId: conversation.workspaceId,
-      createdById: conversation.createdById,
-      title: conversation.title,
-      documentId: conversation.documentId,
-      pageContextEnabled: conversation.pageContextEnabled,
-      modelSlug: conversation.model?.slug ?? null,
-      reasoningLevel: REASONING_LEVEL_TO_CONTRACT[conversation.reasoningLevel],
-      visionCompanionSlug: conversation.visionCompanionSlug,
-      estimatedTokens: conversation.estimatedTokens,
-      contextUsagePercent,
-      messageCount: conversation._count.messages,
-      lastMessageAt: conversation.lastMessageAt.toISOString(),
-      createdAt: conversation.createdAt.toISOString(),
-      archivedAt: conversation.archivedAt === null ? null : conversation.archivedAt.toISOString(),
-    };
-  }
-
-  private messageToContract(message: ConversationMessageRow): AiConversationMessage {
-    return {
-      id: message.id,
-      conversationId: message.conversationId,
-      role: CONVERSATION_ROLE_TO_CONTRACT[message.role],
-      content: message.content,
-      toolName: message.toolName,
-      toolCallId: message.toolCallId,
-      isSummary: message.isSummary,
-      superseded: message.supersededAt !== null,
-      runId: message.runId,
-      createdAt: message.createdAt.toISOString(),
-    };
+    return loadOwnedConversation(this.prisma, this.access, conversationId, userId);
   }
 }

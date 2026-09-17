@@ -19,6 +19,8 @@ import { apiRequest } from './client';
 export const placementKeys = {
   suggestParent: (workspaceId: string, documentId: string) =>
     ['workspace', workspaceId, 'suggest-parent', documentId] as const,
+  suggestParentForTitle: (workspaceId: string, title: string) =>
+    ['workspace', workspaceId, 'suggest-parent-title', title] as const,
 };
 
 export function useSuggestParent(
@@ -34,6 +36,33 @@ export function useSuggestParent(
         { method: 'POST', body: { documentId, limit: 3 } },
       ),
     enabled: workspaceId !== undefined && documentId !== undefined && enabled,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+  });
+}
+
+/**
+ * The same question for a page that does not exist yet.
+ *
+ * `suggest-parent` takes either a `documentId` or a title plus a summary, and
+ * the second form is what saving a chat as a page needs (issue #69): the text
+ * is in hand, the document is not. Same ranking, same evidence, so the dialog
+ * that offers it can look the same as the one for an existing page.
+ */
+export function useSuggestParentForTitle(input: {
+  workspaceId: string | null;
+  title: string;
+  summary: string;
+  enabled: boolean;
+}): UseQueryResult<SuggestParentResponse> {
+  return useQuery({
+    queryKey: placementKeys.suggestParentForTitle(input.workspaceId ?? 'none', input.title),
+    queryFn: () =>
+      apiRequest<SuggestParentResponse>(
+        `/api/workspaces/${input.workspaceId ?? ''}/documents/suggest-parent`,
+        { method: 'POST', body: { title: input.title, summary: input.summary, limit: 3 } },
+      ),
+    enabled: input.enabled && input.workspaceId !== null && input.title.trim().length > 0,
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   });

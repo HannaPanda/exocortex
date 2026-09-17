@@ -5,6 +5,7 @@ import {
   BrainIcon,
   KeyIcon,
   LogOutIcon,
+  MessagesSquareIcon,
   NetworkIcon,
   PanelLeftIcon,
   PanelRightIcon,
@@ -48,27 +49,16 @@ import { ContextPanel } from './context-panel';
 import { DocumentSessionProvider } from './document-session';
 import { JobProgressIndicator } from './job-progress';
 import { PageTree } from './page-tree';
+import {
+  CONTEXT_DEFAULT,
+  CONTEXT_STORAGE_KEY,
+  type PanelPreference,
+  parsePanelPreference,
+  SIDEBAR_DEFAULT,
+  SIDEBAR_STORAGE_KEY,
+} from './panel-preferences';
 import { PresenceAvatars } from './presence-avatars';
 import { WorkspaceSwitcher } from './workspace-switcher';
-
-const SIDEBAR_STORAGE_KEY = 'exocortex.sidebar';
-const CONTEXT_STORAGE_KEY = 'exocortex.context';
-
-interface PanelPreference {
-  open: boolean;
-  width: number;
-}
-
-const SIDEBAR_DEFAULT: PanelPreference = { open: true, width: 272 };
-const CONTEXT_DEFAULT: PanelPreference = { open: true, width: 336 };
-
-function parsePanelPreference(raw: string): PanelPreference {
-  const parsed = JSON.parse(raw) as Partial<PanelPreference>;
-  return {
-    open: typeof parsed.open === 'boolean' ? parsed.open : true,
-    width: typeof parsed.width === 'number' ? parsed.width : 272,
-  };
-}
 
 /**
  * Application shell: header, collapsible navigation, document area and optional
@@ -405,20 +395,22 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * The four places that belong to the deployment rather than to a workspace.
+ * The five places that belong to the deployment rather than to a workspace.
  *
  * Its own component only because the shell had grown past its line limit, and
- * a row of four identical tooltip links is the part of it that reads as one
- * thing. The two reading rooms are first: an entity's mentions are gathered
- * out of every workspace the reader may see, and a fact belongs to a project
- * rather than to a workspace, so neither fits under `/arbeitsbereich`.
+ * a row of identical tooltip links is the part of it that reads as one thing.
+ * The three reading rooms are first: a conversation belongs to a person rather
+ * than to a workspace and spans all of them (issue #69), an entity's mentions
+ * are gathered out of every workspace the reader may see, and a fact belongs to
+ * a project, so none of the three fits under `/arbeitsbereich`.
  *
  * The role is not yet part of `CurrentSessionResponse` (see `AdminGuard`'s
- * TODO), so all four render for every signed-in user; `/admin` gates itself
+ * TODO), so all five render for every signed-in user; `/admin` gates itself
  * against the API's admin check.
  */
 function GlobalLinks() {
   const links: { href: string; label: string; testId: string; icon: typeof KeyIcon }[] = [
+    { href: '/chats', label: 'Chats', testId: 'open-chats', icon: MessagesSquareIcon },
     { href: '/entitaeten', label: 'Entitäten', testId: 'open-entities', icon: NetworkIcon },
     { href: '/gedaechtnis', label: 'Gedächtnis', testId: 'open-memory', icon: BrainIcon },
     { href: '/admin', label: 'Verwaltung', testId: 'open-admin', icon: ShieldIcon },

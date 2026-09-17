@@ -3,6 +3,7 @@ import { AGENT_SESSION_TOOLS } from './tools/agent-sessions.js';
 import { AI_RUN_TOOLS } from './tools/ai-runs.js';
 import { ATTACHMENT_TOOLS } from './tools/attachments.js';
 import { AUTOMATION_TOOLS } from './tools/automations.js';
+import { CHAT_TOOLS } from './tools/chats.js';
 import { COMMENT_TOOLS } from './tools/comments.js';
 import { DATABASE_TOOLS } from './tools/databases.js';
 import { ENTITY_TOOLS } from './tools/entities.js';
@@ -32,6 +33,7 @@ export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...ATTACHMENT_TOOLS,
   ...RULES_TOOLS,
   ...AI_RUN_TOOLS,
+  ...CHAT_TOOLS,
   ...RESEARCH_TOOLS,
   ...MEMORY_TOOLS,
   ...MEMORY_FACT_TOOLS,

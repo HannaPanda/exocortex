@@ -57,6 +57,9 @@ What is deliberately still missing is listed under
 - an AI side panel with conversations, tool calling, page context, vision
   preprocessing and reasoning levels, against OpenRouter models configured in
   the admin area or the deterministic mock provider offline
+- a `/chats` area that finds a conversation again: full-text search over the
+  messages, a reading view of the transcript, continuing it in the panel, and
+  saving it as an ordinary page
 - per-workspace API keys (BYOK), a one-time budget per run and a usage view
 - automations triggered from the transactional outbox (ADR-024)
 - rendering Markdown to PDF through Pandoc and xelatex in a container

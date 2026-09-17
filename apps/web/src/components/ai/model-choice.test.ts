@@ -52,6 +52,8 @@ function conversation(input: Partial<AiConversation>): AiConversation {
     workspaceId: 'ws-1',
     title: 'Test',
     documentId: null,
+    documentTitle: null,
+    preview: '',
     pageContextEnabled: true,
     modelSlug: null,
     reasoningLevel: 'none',

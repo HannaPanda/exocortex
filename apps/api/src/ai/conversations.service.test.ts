@@ -5,12 +5,22 @@ import { loadDotEnv } from '@exocortex/config';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
+import { type ObjectStorage } from '@exocortex/storage';
 
 import { AppError } from '../common/app-error';
 import { OutboxService } from '../common/outbox.service';
+import { type CollaborationBridgeService } from '../documents/collaboration-bridge.service';
+import { DocumentContentService } from '../documents/document-content.service';
+import { DocumentMoveService } from '../documents/document-move.service';
+import { DocumentTrashService } from '../documents/document-trash.service';
+import { DocumentsService } from '../documents/documents.service';
+import { PageLinkIdentityService } from '../documents/page-link-identity.service';
 import { SettingsService } from '../platform/settings.service';
+import { type RealtimeService } from '../realtime/realtime.service';
 
 import { AiModelResolverService } from './ai-model-resolver.service';
+import { ConversationArchiveService } from './conversation-archive.service';
+import { ConversationSearchService } from './conversation-search';
 import { ConversationsService } from './conversations.service';
 
 /**
@@ -162,19 +172,6 @@ describe('ConversationsService.create / get / list', () => {
     expect(conversation.title).toBe('Neue Unterhaltung');
     expect(conversation.workspaceId).toBe(workspaceId);
     expect(conversation.messageCount).toBe(0);
-  });
-
-  it('lists only the caller-created conversations, most recent first', async () => {
-    const first = await createConversation();
-    const second = await createConversation();
-    const { conversations } = await service.list({
-      workspaceId,
-      userId: ownerId,
-      includeArchived: false,
-    });
-    const ids = conversations.map((entry) => entry.id);
-    expect(ids.indexOf(second)).toBeLessThan(ids.indexOf(first));
-    expect(conversations.every((entry) => entry.createdById === ownerId)).toBe(true);
   });
 
   it('rejects a conversation-owning-conversation lookup by another workspace member', async () => {
@@ -901,5 +898,441 @@ describe('ConversationsService.archive', () => {
       where: { id: conversationId },
     });
     expect(conversation.archivedAt).not.toBeNull();
+  });
+});
+
+/**
+ * The archive half (issue #69): listing across workspaces, searching the
+ * transcript, deleting for good, and saving a chat as a page.
+ *
+ * Against the real database because every one of those is a question about
+ * rows -- which conversations a cursor page contains, whether a retired message
+ * is still findable, what survives a permanent delete -- and none of it is
+ * visible in the shape of a single response.
+ */
+describe('ConversationArchiveService', () => {
+  let archive: ConversationArchiveService;
+  let archiveWorkspaceId: string;
+  let secondWorkspaceId: string;
+
+  /** A conversation with messages written straight in: the posting path is tested above. */
+  async function seedConversation(input: {
+    workspaceIdOverride?: string;
+    title: string;
+    contents: readonly string[];
+    archived?: boolean;
+    lastMessageAt?: Date;
+  }): Promise<string> {
+    const conversation = await prisma.aiConversation.create({
+      data: {
+        workspaceId: input.workspaceIdOverride ?? archiveWorkspaceId,
+        createdById: ownerId,
+        title: input.title,
+        archivedAt: input.archived === true ? new Date() : null,
+        ...(input.lastMessageAt === undefined ? {} : { lastMessageAt: input.lastMessageAt }),
+      },
+    });
+    for (const [index, content] of input.contents.entries()) {
+      await prisma.aiConversationMessage.create({
+        data: {
+          conversationId: conversation.id,
+          role: index % 2 === 0 ? 'USER' : 'ASSISTANT',
+          content,
+          createdAt: new Date(Date.now() + index),
+        },
+      });
+    }
+    return conversation.id;
+  }
+
+  beforeAll(async () => {
+    const suffix = Date.now().toString(36);
+    const [first, second] = await Promise.all([
+      prisma.workspace.create({
+        data: {
+          name: `Archive A ${suffix}`,
+          slug: `archive-a-${suffix}`,
+          members: {
+            create: [
+              { userId: ownerId, role: 'OWNER' },
+              // A second member, so "sees nothing" can mean "is allowed in the
+              // workspace and still sees none of this" rather than "was turned
+              // away at the door".
+              { userId: otherMemberId, role: 'MEMBER' },
+            ],
+          },
+        },
+      }),
+      prisma.workspace.create({
+        data: {
+          name: `Archive B ${suffix}`,
+          slug: `archive-b-${suffix}`,
+          members: { create: { userId: ownerId, role: 'OWNER' } },
+        },
+      }),
+    ]);
+    archiveWorkspaceId = first.id;
+    secondWorkspaceId = second.id;
+
+    const access = new WorkspaceAccessService(prisma);
+    const outbox = new OutboxService(prisma, logger);
+    const settings = new SettingsService(prisma, logger, outbox);
+    const modelResolver = new AiModelResolverService(
+      prisma,
+      process.env.OPENROUTER_DEFAULT_MODEL ?? 'anthropic/claude-sonnet-4.5',
+      settings,
+    );
+    const realtime = { emit: async () => {} } as unknown as RealtimeService;
+    const collaboration = {
+      applyToLiveSession: async () => ({
+        applied: false,
+        clientsCount: 0,
+        yjsUpdatedAt: null,
+        reachable: true,
+      }),
+    } as unknown as CollaborationBridgeService;
+    const noopStorage = {} as unknown as ObjectStorage;
+
+    const documents = new DocumentsService(
+      prisma,
+      queues,
+      logger,
+      noopStorage,
+      access,
+      outbox,
+      realtime,
+      new DocumentTrashService(prisma, queues, logger, noopStorage, access, outbox, realtime),
+      new DocumentMoveService(prisma, queues, logger, access, outbox, realtime),
+    );
+    const content = new DocumentContentService(
+      prisma,
+      queues,
+      logger,
+      access,
+      outbox,
+      realtime,
+      collaboration,
+      new PageLinkIdentityService(prisma),
+    );
+
+    archive = new ConversationArchiveService(
+      prisma,
+      logger,
+      { APP_URL: 'https://exocortex.test' } as never,
+      access,
+      modelResolver,
+      new ConversationSearchService(prisma),
+      documents,
+      content,
+    );
+  });
+
+  afterAll(async () => {
+    await prisma.workspace.deleteMany({
+      where: { id: { in: [archiveWorkspaceId, secondWorkspaceId] } },
+    });
+  });
+
+  describe('list', () => {
+    it('spans every workspace the caller is a member of when none is named', async () => {
+      await seedConversation({ title: 'In A', contents: ['Frage A'] });
+      await seedConversation({
+        workspaceIdOverride: secondWorkspaceId,
+        title: 'In B',
+        contents: ['Frage B'],
+      });
+
+      const result = await archive.list({
+        userId: ownerId,
+        workspaceId: null,
+        documentId: null,
+        archived: 'open',
+        limit: 50,
+        cursor: null,
+      });
+      const titles = result.conversations.map((conversation) => conversation.title);
+      expect(titles).toContain('In A');
+      expect(titles).toContain('In B');
+    });
+
+    it('narrows to one workspace when it is named', async () => {
+      const result = await archive.list({
+        userId: ownerId,
+        workspaceId: secondWorkspaceId,
+        documentId: null,
+        archived: 'open',
+        limit: 50,
+        cursor: null,
+      });
+      expect(
+        result.conversations.every(
+          (conversation) => conversation.workspaceId === secondWorkspaceId,
+        ),
+      ).toBe(true);
+    });
+
+    it('separates the two halves of the archive, and `all` holds both', async () => {
+      await seedConversation({ title: 'Weggelegt', contents: ['Alt'], archived: true });
+
+      const open = await archive.list({
+        userId: ownerId,
+        workspaceId: archiveWorkspaceId,
+        documentId: null,
+        archived: 'open',
+        limit: 50,
+        cursor: null,
+      });
+      const archived = await archive.list({
+        userId: ownerId,
+        workspaceId: archiveWorkspaceId,
+        documentId: null,
+        archived: 'archived',
+        limit: 50,
+        cursor: null,
+      });
+      const all = await archive.list({
+        userId: ownerId,
+        workspaceId: archiveWorkspaceId,
+        documentId: null,
+        archived: 'all',
+        limit: 50,
+        cursor: null,
+      });
+
+      expect(open.conversations.every((entry) => entry.archivedAt === null)).toBe(true);
+      expect(archived.conversations.every((entry) => entry.archivedAt !== null)).toBe(true);
+      expect(all.conversations.length).toBe(
+        open.conversations.length + archived.conversations.length,
+      );
+    });
+
+    it('walks the cursor without repeating or skipping a row', async () => {
+      const workspace = await prisma.workspace.create({
+        data: {
+          name: `Paging ${Date.now().toString(36)}`,
+          slug: `paging-${Date.now().toString(36)}`,
+          members: { create: { userId: ownerId, role: 'OWNER' } },
+        },
+      });
+      // Deliberately the same timestamp on two of them: `lastMessageAt` alone
+      // is not a stable sort key, which is why the cursor carries the id too.
+      const shared = new Date('2026-09-10T12:00:00.000Z');
+      for (const [index, title] of ['Eins', 'Zwei', 'Drei', 'Vier'].entries()) {
+        await seedConversation({
+          workspaceIdOverride: workspace.id,
+          title,
+          contents: [title],
+          lastMessageAt: index < 2 ? shared : new Date(shared.getTime() - index * 1000),
+        });
+      }
+
+      const seen: string[] = [];
+      let cursor: string | null = null;
+      for (let page = 0; page < 5; page += 1) {
+        const result: Awaited<ReturnType<typeof archive.list>> = await archive.list({
+          userId: ownerId,
+          workspaceId: workspace.id,
+          documentId: null,
+          archived: 'all',
+          limit: 2,
+          cursor,
+        });
+        seen.push(...result.conversations.map((conversation) => conversation.id));
+        cursor = result.nextCursor;
+        if (cursor === null) break;
+      }
+
+      expect(seen.length).toBe(4);
+      expect(new Set(seen).size).toBe(4);
+
+      await prisma.workspace.delete({ where: { id: workspace.id } });
+    });
+
+    it('puts the most recently touched conversation first', async () => {
+      const older = await seedConversation({
+        title: 'Älter',
+        contents: ['Alt'],
+        lastMessageAt: new Date('2026-09-01T10:00:00.000Z'),
+      });
+      const newer = await seedConversation({
+        title: 'Neuer',
+        contents: ['Neu'],
+        lastMessageAt: new Date('2026-09-02T10:00:00.000Z'),
+      });
+      const result = await archive.list({
+        userId: ownerId,
+        workspaceId: archiveWorkspaceId,
+        documentId: null,
+        archived: 'all',
+        limit: 50,
+        cursor: null,
+      });
+      const ids = result.conversations.map((conversation) => conversation.id);
+      expect(ids.indexOf(newer)).toBeLessThan(ids.indexOf(older));
+      expect(result.conversations.every((entry) => entry.createdById === ownerId)).toBe(true);
+    });
+
+    it('carries the first user line as the preview', async () => {
+      const id = await seedConversation({
+        title: 'Vorschau',
+        contents: ['  Wie   stelle ich nginx um?  ', 'Antwort'],
+      });
+      const result = await archive.list({
+        userId: ownerId,
+        workspaceId: archiveWorkspaceId,
+        documentId: null,
+        archived: 'all',
+        limit: 50,
+        cursor: null,
+      });
+      const found = result.conversations.find((conversation) => conversation.id === id);
+      expect(found?.preview).toBe('Wie stelle ich nginx um?');
+    });
+
+    it('shows a member nothing of the conversations another member started', async () => {
+      const result = await archive.list({
+        userId: otherMemberId,
+        workspaceId: archiveWorkspaceId,
+        documentId: null,
+        archived: 'all',
+        limit: 50,
+        cursor: null,
+      });
+      expect(result.conversations).toEqual([]);
+    });
+  });
+
+  describe('searchMessages', () => {
+    it('finds a conversation by a word from its transcript, not from its title', async () => {
+      const id = await seedConversation({
+        title: 'Unauffällig',
+        contents: ['Wie stelle ich den Reverseproxy um?', 'Dazu brauchst du nginx.'],
+      });
+      const result = await archive.searchMessages({
+        userId: ownerId,
+        query: 'nginx',
+        workspaceId: archiveWorkspaceId,
+        archived: 'all',
+        limit: 20,
+      });
+      const hit = result.hits.find((entry) => entry.conversation.id === id);
+      expect(hit).toBeDefined();
+      expect(hit?.snippet).toContain('<mark>nginx</mark>');
+    });
+
+    it('still finds a message a compaction has retired', async () => {
+      const conversationId = await seedConversation({
+        title: 'Verdichtet',
+        contents: ['Die Zauberformel lautet Kupferstich.'],
+      });
+      await prisma.aiConversationMessage.updateMany({
+        where: { conversationId },
+        data: { supersededAt: new Date() },
+      });
+
+      const result = await archive.searchMessages({
+        userId: ownerId,
+        query: 'Kupferstich',
+        workspaceId: archiveWorkspaceId,
+        archived: 'all',
+        limit: 20,
+      });
+      const hit = result.hits.find((entry) => entry.conversation.id === conversationId);
+      expect(hit?.messageSuperseded).toBe(true);
+    });
+
+    it('answers nothing rather than erroring on a query with no searchable token', async () => {
+      const result = await archive.searchMessages({
+        userId: ownerId,
+        query: '???',
+        workspaceId: archiveWorkspaceId,
+        archived: 'all',
+        limit: 20,
+      });
+      expect(result.hits).toEqual([]);
+    });
+
+    it('does not reach the transcript of another member', async () => {
+      await seedConversation({ title: 'Privat', contents: ['Schibboleth'] });
+      const result = await archive.searchMessages({
+        userId: otherMemberId,
+        query: 'Schibboleth',
+        workspaceId: archiveWorkspaceId,
+        archived: 'all',
+        limit: 20,
+      });
+      expect(result.hits).toEqual([]);
+    });
+  });
+
+  describe('deletePermanently', () => {
+    it('removes the transcript and keeps the run as a metric row', async () => {
+      const conversationId = await seedConversation({ title: 'Weg damit', contents: ['Geheim'] });
+      const run = await prisma.aiRun.create({
+        data: {
+          workspaceId: archiveWorkspaceId,
+          createdById: ownerId,
+          status: 'COMPLETED',
+          provider: 'openrouter',
+          model: 'test/model',
+          messages: [{ role: 'user', content: 'Geheim' }],
+          resultText: 'Antwort',
+          conversationId,
+          inputTokens: 10,
+          outputTokens: 20,
+        },
+      });
+
+      const result = await archive.deletePermanently(conversationId, ownerId);
+      expect(result.deleted).toBe(true);
+      expect(result.messagesDeleted).toBe(1);
+      expect(result.runsPruned).toBe(1);
+
+      expect(await prisma.aiConversation.findUnique({ where: { id: conversationId } })).toBeNull();
+      expect(await prisma.aiConversationMessage.count({ where: { conversationId } })).toBe(0);
+
+      const pruned = await prisma.aiRun.findUniqueOrThrow({ where: { id: run.id } });
+      expect(pruned.resultText).toBeNull();
+      expect(pruned.conversationId).toBeNull();
+      expect(pruned.payloadsPrunedAt).not.toBeNull();
+      // The ledger survives: this is what an administrator is accountable for.
+      expect(pruned.inputTokens).toBe(10);
+
+      await prisma.aiRun.delete({ where: { id: run.id } });
+    });
+
+    it('refuses a conversation the caller did not start', async () => {
+      const conversationId = await seedConversation({ title: 'Fremd', contents: ['Hallo'] });
+      await expect(archive.deletePermanently(conversationId, otherMemberId)).rejects.toMatchObject({
+        code: 'forbidden',
+      });
+    });
+  });
+
+  describe('toPage', () => {
+    it('writes the transcript into a new page and answers with its id', async () => {
+      const conversationId = await seedConversation({
+        title: 'Zum Sichern',
+        contents: ['Was ist ein Reverseproxy?', 'Ein Dienst davor.'],
+      });
+
+      const result = await archive.toPage({
+        conversationId,
+        userId: ownerId,
+        request: { parentId: null },
+        correlationId: 'test-to-page',
+      });
+      expect(result.workspaceId).toBe(archiveWorkspaceId);
+      expect(result.title).toBe('Zum Sichern');
+
+      const content = await prisma.documentContent.findUniqueOrThrow({
+        where: { documentId: result.documentId },
+      });
+      expect(content.markdown).toContain('Was ist ein Reverseproxy?');
+      expect(content.markdown).toContain('Ein Dienst davor.');
+      expect(content.markdown).toContain('Gesicherter Verlauf');
+
+      await prisma.document.delete({ where: { id: result.documentId } });
+    });
   });
 });

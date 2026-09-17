@@ -144,6 +144,66 @@ summaries — is its own `AiConversationMessage` row.
   (`apps/api/src/ai/chat-commands.ts`) so the side panel, MCP and any future
   client behave identically without reimplementing the command set.
 
+### Finding a conversation again — the `/chats` area
+
+Until issue #69 the transcript was the one thing in eXocortex that could be
+written and never retrieved: the panel's dropdown showed the twenty most recent
+titles of one workspace, `GET /api/ai/conversations` answered with every row it
+had, and nothing searched the messages. Archived conversations were reachable
+only by a query parameter no client sent.
+
+Chats now have their own top-level area, `/chats`, beside `/gedaechtnis` and
+`/entitaeten` — deliberately _not_ a virtual workspace. Three reasons, and each
+of them is a rule this repository would otherwise have to bend: a workspace is
+shared where a conversation is personal, a workspace holds `Document`s with Yjs
+state (ADR-004/005) where a conversation is an append-only list of rows, and
+`Workspace.isMemory` (ADR-023) is meant to stay the single special case.
+
+- **Listing.** `ConversationArchiveService.list`
+  (`apps/api/src/ai/conversation-archive.service.ts`) pages by a cursor over
+  `(lastMessageAt, id)` — the sort key, not an offset, so a conversation touched
+  while the list is open cannot shift a page boundary and hide a row.
+  `workspaceId` is optional: without it the list spans every workspace the
+  caller is a member of. `documentId` narrows to the chats of one page, and
+  `archived` is three-valued (`open`, `archived`, `all`). Each row carries
+  `documentTitle` and a `preview` — the first user line, collapsed and cut — so
+  the list needs no query per row.
+- **Search.** `GET /api/ai/conversations/search` runs PostgreSQL full-text over
+  the messages and answers per conversation with a `ts_headline` snippet and a
+  match count. The index is a generated `tsvector` column on
+  `ai_conversation_message` with a GIN index
+  (`20260917100000_conversation_message_search`), not a projection table with an
+  indexing job like `DocumentSearchIndex`: a message is already plain text when
+  it is written, so there is nothing to materialize and nothing that can fall
+  behind. Retired messages (`supersededAt`) stay searchable — they are exactly
+  what somebody is looking for when a compaction replaced them. Semantic search
+  is deliberately out of scope; full text answers "the chat about nginx".
+- **Deleting for good.** `DELETE /api/ai/conversations/:id/permanent` removes
+  the conversation and its messages. The `AiRun` rows are _pruned_, not deleted:
+  `messages` and `resultText` are emptied and `payloadsPrunedAt` is stamped,
+  exactly as the retention sweep already does, and the run is detached from the
+  conversation. A run row is two things at once — a copy of the transcript and a
+  line in the deployment's cost ledger — and deleting it would quietly reduce a
+  figure an administrator is accountable for. Nothing of what was said survives
+  either way.
+- **Saving a chat as a page.** `POST /api/ai/conversations/:id/to-page`
+  serializes the transcript (`apps/api/src/ai/transcript-markdown.ts`) and
+  writes it through `DocumentsService` and `DocumentContentService`, so it
+  passes the same permission checks, lands in the same outbox and reaches an
+  open editor through the collaboration server (ADR-016). The parent is chosen
+  by the caller, with candidates from the same `suggest-parent` endpoint
+  `exo_page_suggest_parent` uses. The conversation itself stays a list of rows.
+- **The panel.** The dropdown now offers the five most recent conversations and
+  a link to `/chats`; `/chats?fortsetzen=<id>` and the "Im Panel fortsetzen"
+  button do the reverse — write the panel's per-workspace `localStorage` key
+  (`apps/web/src/components/ai/panel-state.ts`), open the context panel, and
+  navigate to the page the conversation was standing on.
+- **On the agent surfaces.** `exo_chat_list`, `exo_chat_search` and
+  `exo_chat_read` (`packages/mcp-tools/src/tools/chats.ts`), all read-only. The
+  catalogue's blanket exemption for `/api/ai/conversations*` was narrowed to the
+  writing routes: an agent starting a conversation from inside one is a loop, an
+  agent searching its own past is the opposite of one.
+
 ## Page context
 
 The chat knows which page it is standing on. `AiRun.documentId` used to reach
@@ -738,11 +798,21 @@ configured/unconfigured gate.
 argument, an unknown command and a path-like message both fall through to
 prose, a message without a leading `/` is prose.
 
+`apps/api/src/ai/transcript-markdown.test.ts` (no infrastructure): the
+provenance block, an absent fact left out rather than written empty, a retired
+message marked rather than dropped, a tool result fenced longer than its own
+backticks, and the list cursor's round trip.
+
 `apps/api/src/ai/conversations.service.test.ts` (real Postgres/Redis):
-create/get/list scoped to the caller, ownership enforced on every route
+create/get scoped to the caller, ownership enforced on every route
 (including reads), `postMessage` persisting the user message and enqueuing a
 run, the `ai_conversation_locked` guard, and every slash command including
-the `/think` clamp message. Two of these post an ordinary (non-command)
+the `/think` clamp message. For the `/chats` half (`ConversationArchiveService`):
+listing across workspaces and narrowed to one, the three archive states, a
+cursor walk over rows sharing a `lastMessageAt`, the preview, a search that
+matches a word from the transcript rather than the title, a retired message
+still findable, a query with no searchable token answering nothing, a permanent
+delete that keeps the run's metrics, and saving a chat as a page. Two of these post an ordinary (non-command)
 message, which really does enqueue an `ai` job the live worker on this shared
 host will pick up and run for real (a cheap model, a short message) — the
 assertions only check what `postMessage` returns synchronously or fields

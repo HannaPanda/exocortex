@@ -1,6 +1,7 @@
 'use client';
 
-import { ArchiveIcon, ChevronDownIcon, PencilIcon, PlusIcon } from 'lucide-react';
+import { ArchiveIcon, ChevronDownIcon, ListIcon, PencilIcon, PlusIcon } from 'lucide-react';
+import Link from 'next/link';
 import * as React from 'react';
 
 import { type AiConversation } from '@exocortex/contracts';
@@ -20,6 +21,7 @@ import {
 } from '@exocortex/ui';
 
 import {
+  PANEL_CONVERSATION_LIMIT,
   useAiConversations,
   useArchiveAiConversation,
   useUpdateAiConversation,
@@ -34,8 +36,13 @@ export interface ConversationSwitcherProps {
 }
 
 /**
- * Dropdown to switch between, rename and archive recent conversations, plus
- * start a new one.
+ * Dropdown to switch between, rename and archive the most recent conversations,
+ * plus start a new one.
+ *
+ * Five, not twenty (issue #69). A dropdown is for "the one I was just in"; it
+ * was never a way to find a conversation from three weeks ago, and pretending
+ * otherwise is what kept the chat history unreachable. Everything past the last
+ * few lives in `/chats`, which this menu links to.
  */
 export function ConversationSwitcher({
   workspaceId,
@@ -52,7 +59,7 @@ export function ConversationSwitcher({
   const [renameValue, setRenameValue] = React.useState('');
 
   const list = conversations.data ?? [];
-  const visible = list.slice(0, 20);
+  const visible = list.slice(0, PANEL_CONVERSATION_LIMIT);
   const active = list.find((conversation) => conversation.id === activeConversationId) ?? null;
 
   const archive = async (conversation: AiConversation): Promise<void> => {
@@ -101,6 +108,13 @@ export function ConversationSwitcher({
             }}
           >
             <PlusIcon /> Neuer Chat
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            data-testid="ai-all-conversations"
+            render={<Link href="/chats" />}
+            onClick={() => setMenuOpen(false)}
+          >
+            <ListIcon /> Alle Chats
           </DropdownMenuItem>
           {visible.length > 0 ? <DropdownMenuSeparator /> : null}
           {visible.map((conversation) => (

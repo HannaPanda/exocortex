@@ -1,16 +1,27 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseQueryResult,
+} from '@tanstack/react-query';
 
 import {
   AI_RUN_POLL_INTERVAL_MS,
   type AiConversation,
+  type AiConversationArchivedFilter,
+  type AiConversationDeleteResponse,
   type AiConversationDetailResponse,
   type AiConversationListResponse,
+  type AiConversationSearchResponse,
   type AiModelListResponse,
   type AiRuleListResponse,
   type AiRuleSummary,
   type AiRun,
+  type ConversationToPageRequest,
+  type ConversationToPageResponse,
   type CreateAiConversationRequest,
   type DocumentSummary,
   type PostConversationMessageRequest,
@@ -31,6 +42,11 @@ import { queryKeys } from './queries';
 export const aiQueryKeys = {
   models: ['ai', 'models'] as const,
   conversations: (workspaceId: string) => ['ai', 'conversations', workspaceId] as const,
+  /** The `/chats` archive: one key per filter combination, spanning workspaces. */
+  chats: (filters: ChatListFilters) =>
+    ['ai', 'chats', filters.workspaceId ?? 'all', filters.archived] as const,
+  chatSearch: (query: string, archived: AiConversationArchivedFilter) =>
+    ['ai', 'chat-search', query, archived] as const,
   conversation: (conversationId: string) => ['ai', 'conversation', conversationId] as const,
   aiRules: (workspaceId: string) => ['ai', 'rules', workspaceId] as const,
   run: (runId: string) => ['ai', 'run', runId] as const,
@@ -98,16 +114,101 @@ export function useCancelAiRun() {
 // Conversations
 // ---------------------------------------------------------------------------
 
+/**
+ * The panel's own list: the most recent conversations of one workspace.
+ *
+ * Short on purpose since issue #69 -- the dropdown shows five and everything
+ * beyond that lives in `/chats`, which is what `useChats` below reaches.
+ */
 export function useAiConversations(workspaceId: string | null): UseQueryResult<AiConversation[]> {
   return useQuery({
     queryKey: aiQueryKeys.conversations(workspaceId ?? 'none'),
     queryFn: async () => {
       const response = await apiRequest<AiConversationListResponse>(
-        `/api/ai/conversations?workspaceId=${encodeURIComponent(workspaceId ?? '')}`,
+        `/api/ai/conversations?workspaceId=${encodeURIComponent(workspaceId ?? '')}&limit=${String(PANEL_CONVERSATION_LIMIT)}`,
       );
       return response.conversations;
     },
     enabled: workspaceId !== null,
+  });
+}
+
+/** How many conversations the panel's dropdown offers before sending the user to `/chats`. */
+export const PANEL_CONVERSATION_LIMIT = 5;
+
+export interface ChatListFilters {
+  workspaceId: string | null;
+  archived: AiConversationArchivedFilter;
+}
+
+/**
+ * The `/chats` listing: every workspace the person is a member of, paged.
+ *
+ * `useInfiniteQuery` rather than a page number, because the cursor is the sort
+ * key: a conversation touched while the list is open would otherwise shift the
+ * page boundary and hide a row.
+ */
+export function useChats(filters: ChatListFilters) {
+  return useInfiniteQuery({
+    queryKey: aiQueryKeys.chats(filters),
+    initialPageParam: null as string | null,
+    queryFn: ({ pageParam }) => {
+      const params = new URLSearchParams({ archived: filters.archived });
+      if (filters.workspaceId !== null) params.set('workspaceId', filters.workspaceId);
+      if (pageParam !== null) params.set('cursor', pageParam);
+      return apiRequest<AiConversationListResponse>(`/api/ai/conversations?${params.toString()}`);
+    },
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+  });
+}
+
+/** Full-text search over the transcripts. Idle until the box holds something. */
+export function useChatSearch(
+  query: string,
+  archived: AiConversationArchivedFilter,
+): UseQueryResult<AiConversationSearchResponse> {
+  const trimmed = query.trim();
+  return useQuery({
+    queryKey: aiQueryKeys.chatSearch(trimmed, archived),
+    queryFn: () => {
+      const params = new URLSearchParams({ q: trimmed, archived });
+      return apiRequest<AiConversationSearchResponse>(
+        `/api/ai/conversations/search?${params.toString()}`,
+      );
+    },
+    enabled: trimmed.length > 0,
+  });
+}
+
+/** Irreversible. The caller asks first; this only carries it out. */
+export function useDeleteAiConversation() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { conversationId: string; workspaceId: string }) =>
+      apiRequest<AiConversationDeleteResponse>(
+        `/api/ai/conversations/${input.conversationId}/permanent`,
+        { method: 'DELETE' },
+      ),
+    onSuccess: (_result, input) => {
+      void client.invalidateQueries({ queryKey: aiQueryKeys.conversations(input.workspaceId) });
+      void client.invalidateQueries({ queryKey: ['ai', 'chats'] });
+      void client.invalidateQueries({ queryKey: ['ai', 'chat-search'] });
+    },
+  });
+}
+
+/** Saves a transcript as an ordinary page (AP5 of issue #69). */
+export function useConversationToPage() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { conversationId: string; request: ConversationToPageRequest }) =>
+      apiRequest<ConversationToPageResponse>(
+        `/api/ai/conversations/${input.conversationId}/to-page`,
+        { method: 'POST', body: input.request },
+      ),
+    onSuccess: (response) => {
+      void client.invalidateQueries({ queryKey: queryKeys.documentTree(response.workspaceId) });
+    },
   });
 }
 
@@ -156,6 +257,9 @@ export function useUpdateAiConversation() {
       void client.invalidateQueries({
         queryKey: aiQueryKeys.conversations(response.conversation.workspaceId),
       });
+      // A rename or an archive has to reach the `/chats` list too, which is
+      // keyed across workspaces and therefore not covered by the key above.
+      void client.invalidateQueries({ queryKey: ['ai', 'chats'] });
     },
   });
 }
@@ -169,6 +273,7 @@ export function useArchiveAiConversation() {
       }),
     onSuccess: (_result, input) => {
       void client.invalidateQueries({ queryKey: aiQueryKeys.conversations(input.workspaceId) });
+      void client.invalidateQueries({ queryKey: ['ai', 'chats'] });
     },
   });
 }

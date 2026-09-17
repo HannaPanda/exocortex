@@ -1332,6 +1332,10 @@ model AiConversation {
   runs     AiRun[]
 
   @@index([workspaceId, createdById, lastMessageAt])
+  /// The `/chats` listing spans every workspace the person is a member of and
+  /// filters by creator alone, so the index above -- which leads with the
+  /// workspace -- cannot serve it (issue #69).
+  @@index([createdById, lastMessageAt(sort: Desc)])
   @@map("ai_conversation")
 }
 
@@ -1355,6 +1359,12 @@ model AiConversationMessage {
   runId           String?
   estimatedTokens Int                @default(0)
   createdAt       DateTime           @default(now())
+  /// Generated tsvector over `content`, maintained by PostgreSQL rather than by
+  /// an indexing job: unlike a page, a message is already plain text when it is
+  /// written, so there is nothing to materialize (issue #69). Raw SQL, because
+  /// Prisma has no native tsvector type -- same arrangement as
+  /// `DocumentSearchIndex.searchVector`.
+  searchVector    Unsupported("tsvector")?
 
   @@index([conversationId, createdAt])
   @@index([conversationId, supersededAt])

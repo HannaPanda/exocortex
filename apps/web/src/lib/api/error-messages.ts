@@ -43,6 +43,7 @@ const MESSAGES: Record<ApiErrorCode, string> = {
     'Bilder erzeugen ist für diese Instanz nicht eingerichtet. Im Administrationsbereich lässt sich ein Bildmodell hinterlegen.',
   ai_tool_limit_exceeded: 'Die KI hat zu viele Werkzeugaufrufe gebraucht.',
   ai_conversation_locked: 'In dieser Unterhaltung läuft noch eine Antwort.',
+  ai_conversation_cursor_invalid: 'Die Liste konnte nicht weitergeblättert werden.',
   document_content_conflict: 'Die Seite wurde zwischenzeitlich geändert.',
   document_content_lossy: 'Anhängen würde eingebettete Datenbanken auf dieser Seite verlieren.',
   attachment_text_unavailable: 'Der Text dieser Datei liegt noch nicht vor.',

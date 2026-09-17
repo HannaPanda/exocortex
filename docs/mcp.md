@@ -209,6 +209,9 @@ that run (ADR-030, `docs/ai-architecture.md`).
 | `exo_user_list`                 | no       | no          | `GET /api/admin/users`                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `exo_user_set_disabled`         | yes      | yes         | `PATCH /api/admin/users/:userId/status` -- ends every session and revokes every token of that account                                                                                                                                                                                                                                                                                                                                                     |
 | `exo_user_delete`               | yes      | yes         | `DELETE /api/admin/users/:userId` -- only for an account that authored nothing, else `user_has_content`                                                                                                                                                                                                                                                                                                                                                   |
+| `exo_chat_list`                 | no       | no          | `GET /api/ai/conversations` -- the caller's own chats, across every workspace they are a member of; `archived` is three-valued, `cursor` pages (issue #69)                                                                                                                                                                                                                                                                                                |
+| `exo_chat_search`               | no       | no          | `GET /api/ai/conversations/search` -- full text over the messages, one hit per conversation with the matching passage. Finds a chat from weeks ago by a word out of it                                                                                                                                                                                                                                                                                    |
+| `exo_chat_read`                 | no       | no          | `GET /api/ai/conversations/:conversationId` -- the whole transcript, retired messages included and marked                                                                                                                                                                                                                                                                                                                                                 |
 | `exo_agent_session_list`        | no       | no          | `GET /api/agent-sessions` -- the caller's own agent sessions, or all of them for a global admin (ADR-022)                                                                                                                                                                                                                                                                                                                                                 |
 | `exo_agent_session_get`         | no       | no          | `GET /api/agent-sessions/:sessionId` -- what one session wrote, and whether each write left a state to go back to                                                                                                                                                                                                                                                                                                                                         |
 | `exo_automation_list`           | no       | no          | `GET /api/workspaces/:workspaceId/automations` -- the rules, plus whether automations run here at all and which hosts a webhook may reach (issue #50, ADR-024)                                                                                                                                                                                                                                                                                            |
@@ -808,14 +811,21 @@ that nginx rule is added.
   with it: materialization marks it orphaned and `exo_comment_list` says so,
   along with the quote taken when the thread was opened.
 
-- **AI conversations are not in the catalogue at all**, by design rather than
-  by omission: the catalogue is what an assistant may do _to a workspace_, and
-  a conversation is the assistant's own session. An MCP client has its own
-  transcript and its own context; handing it tools to steer eXocortex's side
-  panel would be steering a second, unrelated chat. This is why the panel's
-  slash commands (`/model`, `/think`, `/context`, …) have no tool counterparts.
-  If a conversation-management API is ever wanted, it needs its own decision,
-  not an incremental tool.
+- **Writing into an AI conversation is not in the catalogue**, by design
+  rather than by omission: the catalogue is what an assistant may do _to a
+  workspace_, and steering eXocortex's side panel from an MCP client would be
+  steering a second, unrelated chat. Starting a conversation, posting into one,
+  renaming or archiving one, and deleting one for good all stay out. This is
+  also why the panel's slash commands (`/model`, `/think`, `/context`, …) have
+  no tool counterparts.
+
+  _Reading_ one is in, since issue #69. The old blanket exemption said "the
+  caller of a tool is itself the assistant in a conversation, and it holds its
+  own", which is true of writing and was never true of finding: an agent that
+  cannot look up what was decided three weeks ago asks the person to repeat it.
+  `exo_chat_list`, `exo_chat_search` and `exo_chat_read` are read-only and on
+  both agent surfaces, and they see exactly what the caller's own account may
+  see — the conversations it created, in workspaces it is a member of.
 
   A run's _lifecycle_ is the deliberate exception (issue #6). "Is this run
   still alive, and can I stop it?" is a question about a job, not about

@@ -100,9 +100,33 @@ const EXEMPT = [
 
   // -- the built-in AI's own state -----------------------------------------
   {
-    route: '* /api/ai/conversations*',
+    route: 'POST /api/ai/conversations',
     reason:
-      "The chat panel's own history. The caller of a tool is itself the assistant in a conversation, and it holds its own.",
+      'Starts a conversation. The caller of a tool is itself the assistant in one, so creating another is a loop. Reading the history is not: `exo_chat_list`, `exo_chat_search` and `exo_chat_read` cover that half (issue #69).',
+  },
+  {
+    route: 'PATCH /api/ai/conversations/:x',
+    reason:
+      'Renames a conversation, switches its model, archives it. Settings of the panel the caller is talking through.',
+  },
+  {
+    route: 'DELETE /api/ai/conversations/:x',
+    reason: 'Archives a conversation. Same reason: the agent is inside one.',
+  },
+  {
+    route: 'DELETE /api/ai/conversations/:x/permanent',
+    reason:
+      "Deletes a transcript irreversibly. The one thing no snapshot brings back, and the agent's own history is what it would reach first -- the same reason `exo_page_delete` is not on the AI surface.",
+  },
+  {
+    route: 'POST /api/ai/conversations/:x/messages',
+    reason:
+      'Posts a message into a conversation. From inside a tool loop this is the assistant writing into its own transcript.',
+  },
+  {
+    route: 'POST /api/ai/conversations/:x/to-page',
+    reason:
+      "Saves a chat as a page. Covered elsewhere: an agent that wants a transcript as a page reads it with `exo_chat_read` and writes it with `exo_page_create`, and deciding that a conversation is worth keeping is the person's call (ADR-021 draws the same line for promoting a fact).",
   },
   {
     route: 'POST /api/ai/runs',

@@ -40,6 +40,7 @@ import { ContextMeter } from './context-meter';
 import { ConversationSwitcher } from './conversation-switcher';
 import { type ModelChoice, resolveModelChoice, useModelPreference } from './model-choice';
 import { ModelPicker } from './model-picker';
+import { activeConversationKey, parseConversationId } from './panel-state';
 import { RunActivity } from './run-activity';
 import { Transcript } from './transcript';
 import { type ToolActivityEntry, useAiRunTracker } from './use-ai-run-tracker';
@@ -47,11 +48,6 @@ import { type ToolActivityEntry, useAiRunTracker } from './use-ai-run-tracker';
 export interface AiPanelProps {
   workspaceId: string | null;
   documentId: string | null;
-}
-
-function parseConversationId(raw: string): string | null {
-  const parsed: unknown = JSON.parse(raw);
-  return typeof parsed === 'string' ? parsed : null;
 }
 
 /** Turns a tool's compact target (`document:<id>`, `workspace:<id>`) into a short German phrase. */
@@ -117,7 +113,7 @@ function currentPhaseLabel(
  */
 export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
   const [activeConversationId, setActiveConversationId] = usePersistentState<string | null>(
-    `exocortex.ai.conversation.${workspaceId ?? 'none'}`,
+    activeConversationKey(workspaceId),
     null,
     parseConversationId,
   );
