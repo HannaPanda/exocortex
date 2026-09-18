@@ -32,6 +32,7 @@ import { RealtimeModule } from './realtime/realtime.module';
 import { RenderModule } from './render/render.module';
 import { ResearchModule } from './research/research.module';
 import { SearchModule } from './search/search.module';
+import { TemplatesModule } from './templates/templates.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 
 @Module({
@@ -61,6 +62,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     }),
     AuthModule,
     RealtimeModule,
+    TemplatesModule,
     WorkspacesModule,
     DocumentsModule,
     CommentsModule,

@@ -212,6 +212,17 @@ export class DocumentsService {
      * transaction rather than a silent duplicate.
      */
     isInbox?: boolean;
+    /**
+     * The Yjs state the new page starts out with, instead of an empty one
+     * (issue #79, ADR-039). Only a page that does not exist yet can be given
+     * one: a *new* document has no history to merge with and nobody has it
+     * open, which is exactly what makes handing it finished binary state safe
+     * here and unsafe everywhere else (ADR-004/005, and the duplication a
+     * rebuilt state caused on an existing page). A write to a page that
+     * already exists goes through `DocumentContentService.write`, which edits
+     * the state and tells the open session.
+     */
+    initialYjsState?: Uint8Array;
   }): Promise<DocumentSummary> {
     const role = await this.access.findRole(input.workspaceId, input.userId);
     assertPolicy(canCreateDocument(role));
@@ -267,7 +278,7 @@ export class DocumentsService {
       await tx.documentContent.create({
         data: {
           documentId: document.id,
-          yjsState: Buffer.from(createEmptyYjsState()),
+          yjsState: Buffer.from(input.initialYjsState ?? createEmptyYjsState()),
           schemaVersion: EXOCORTEX_SCHEMA_VERSION,
         },
       });
@@ -287,6 +298,20 @@ export class DocumentsService {
       document: summary,
     });
     await this.enqueueIndexing(created.id, input.workspaceId, 'title_changed', input.correlationId);
+
+    // A page that starts out with content has derived fields that do not exist
+    // yet: the Markdown, the plain text, the reference index and the comment
+    // anchors all come out of materialization, and nothing else enqueues it
+    // for a page nobody has opened.
+    if (input.initialYjsState !== undefined) {
+      await this.queues.enqueue(QUEUE_NAMES.documentMaterialization, {
+        correlationId: input.correlationId,
+        documentId: created.id,
+        workspaceId: input.workspaceId,
+        yjsUpdatedAt: Date.now(),
+        reason: 'manual',
+      });
+    }
 
     this.logger.info('Document created', {
       documentId: created.id,
