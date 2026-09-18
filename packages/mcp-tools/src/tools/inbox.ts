@@ -3,6 +3,8 @@ import { z } from 'zod';
 import {
   captureRequestSchema,
   captureResponseSchema,
+  clipRequestSchema,
+  clipResponseSchema,
   idSchema,
   inboxResponseSchema,
 } from '@exocortex/contracts';
@@ -100,4 +102,47 @@ export const inboxTool: AnyToolDefinition = defineTool({
   },
 });
 
-export const INBOX_TOOLS: readonly AnyToolDefinition[] = [captureTool, inboxTool];
+/**
+ * The web fence sits on this tool although it returns no web text (issue #72,
+ * ADR-030). A clip is the one write that carries the browser into the
+ * workspace, and a run that could clip a page and then read it back as an
+ * ordinary page would have a way around the fence that `exo_web_fetch` puts on
+ * reading. So the fence follows the browser rather than the text, and the
+ * description says so, because a rule a model runs into unannounced reads as a
+ * malfunction.
+ */
+export const clipTool: AnyToolDefinition = defineTool({
+  name: 'exo_clip',
+  description:
+    'Hebt eine Webseite auf: Adresse, Titel und der markierte Text werden zu einer gewöhnlichen ' +
+    'Seite im Eingang, mit der Herkunft in der ersten Zeile. Mit fetchPage: true wird die Seite ' +
+    'zusätzlich im Browser geladen und ihr Text mitgeschrieben; nur öffentlich erreichbare ' +
+    'http- und https-Adressen. Danach schreibt dieser Lauf nichts mehr, denn der Inhalt kommt ' +
+    'aus dem Web: brauchst du nur die Adresse und deinen eigenen Text, nimm exo_capture mit ' +
+    'sourceUrl und bleibst schreibfähig.',
+  inputSchema: z.object({ workspaceId: idSchema }).extend(clipRequestSchema.shape),
+  surfaces: ['mcp', 'ai'],
+  mutating: true,
+  untrustedOutput: 'web',
+  target: (input) => `workspace:${input.workspaceId}`,
+  async execute(client, input) {
+    const { workspaceId, ...body } = input;
+    const result = await client.request({
+      method: 'POST',
+      path: `/api/workspaces/${workspaceId}/clip`,
+      body,
+      responseSchema: clipResponseSchema,
+    });
+    const read = result.fetched
+      ? `Die Seite wurde gelesen (${result.characters} Zeichen${result.truncated ? ', gekürzt' : ''}).`
+      : 'Die Seite selbst wurde nicht gelesen, nur festgehalten.';
+    const where =
+      result.parent === null ? 'auf oberster Ebene' : `im Eingang "${result.parent.title}"`;
+    return {
+      text: `Geclippt ${where}: ${formatDocumentSummary(result.document)}. ${read}`,
+      data: result,
+    };
+  },
+});
+
+export const INBOX_TOOLS: readonly AnyToolDefinition[] = [captureTool, clipTool, inboxTool];
