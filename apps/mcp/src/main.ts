@@ -11,12 +11,18 @@ console.warn = console.error;
 
 import { randomUUID } from 'node:crypto';
 
-import { createFetchApiClient, WriteConfirmationGate } from '@exocortex/mcp-tools';
+import {
+  createFetchApiClient,
+  ResourceSubscriptions,
+  resourceUpdatedNotification,
+  WriteConfirmationGate,
+} from '@exocortex/mcp-tools';
 
+import { type ChangeFeed, createChangeFeed } from './changes.js';
 import { mcpEnvSchema } from './env.js';
 import { createDiagnosticsLogger } from './logger.js';
 import { createRequestHandler } from './server.js';
-import { createStdioServer } from './stdio.js';
+import { createStdioServer, writeMessage } from './stdio.js';
 
 function main(): void {
   const parsedEnv = mcpEnvSchema.safeParse(process.env);
@@ -48,8 +54,45 @@ function main(): void {
   const gate = new WriteConfirmationGate();
 
   const agentSessionId = `stdio-${randomUUID()}`;
-  const handler = createRequestHandler({ client, gate, env, logger, agentSessionId });
-  const server = createStdioServer(handler);
+
+  // The change feed is opened by the first `resources/subscribe` and not
+  // before: a client that only calls tools should cost this deployment one
+  // HTTP request per call and no standing connection at all. It is assigned
+  // below, before anything can be read from stdin.
+  let feed: ChangeFeed | null = null;
+  const subscriptions = new ResourceSubscriptions(() => feed?.ensureStarted());
+
+  const handler = createRequestHandler({
+    client,
+    gate,
+    env,
+    logger,
+    agentSessionId,
+    subscriptions,
+  });
+  const server = createStdioServer(handler, {
+    input: process.stdin,
+    write: writeMessage,
+    onEnd: () => {
+      // Closing stdin is how a client says it is done. The feed is a second
+      // socket this process owns; leaving it open would keep a connection on
+      // the deployment for a client that has already gone.
+      feed?.stop();
+      process.exit(0);
+    },
+  });
+
+  feed = createChangeFeed({
+    baseUrl: env.EXOCORTEX_API_URL,
+    token: env.EXOCORTEX_API_TOKEN,
+    headers,
+    logger,
+    onChange: (uris) => {
+      for (const uri of subscriptions.matching(uris)) {
+        server.notify(resourceUpdatedNotification(uri));
+      }
+    },
+  });
 
   logger.info('eXocortex MCP server starting', {
     apiUrl: env.EXOCORTEX_API_URL,

@@ -21,22 +21,28 @@ import { AppError } from '../common/app-error';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 
 import { type McpCaller, McpService } from './mcp.service';
+import { McpStreamsService } from './mcp-streams.service';
 
 /**
  * MCP over Streamable HTTP.
  *
  * One POST carries one JSON-RPC message (or, for the older protocol revision,
- * a batch of them) and the response comes straight back as JSON. The
- * specification also allows answering with an SSE stream, which exists so a
- * server can push notifications and its own requests mid-call; this server
- * never does either, so a stream would only be an idle socket. `GET` is
- * therefore refused rather than upgraded.
+ * a batch of them) and the response comes straight back as JSON. A POST is
+ * still never answered with a stream: nothing this server does mid-call
+ * needs one.
  *
- * An `Mcp-Session-Id` *is* issued, and it still keys nothing in memory: it
- * names the connection in the write journal (ADR-022) and nowhere else, so two
- * API processes go on serving the same client interchangeably. A client that
- * does not echo it back loses the grouping and keeps everything else -- each
- * write is then its own one-line session rather than none at all.
+ * `GET` is the standalone SSE channel of the specification, and since issue #48
+ * it opens one instead of refusing: `resources/subscribe` promises messages
+ * that arrive long after the call that asked for them, and this is where they
+ * travel. The two narrow surfaces serve no resources and so still refuse.
+ *
+ * An `Mcp-Session-Id` names the connection in the write journal (ADR-022), and
+ * since #48 it also keys that connection's subscriptions in this process's
+ * memory. That is the one thing a second API process would not share; the
+ * consequence is bounded and visible, because a client whose POSTs land on the
+ * other process finds its stream quiet and reconnects. A client that does not
+ * echo the id back loses the grouping and the subscriptions and keeps
+ * everything else -- each write is then its own one-line session.
  *
  * Routes are `@Public()` so `SessionGuard` steps aside. That is not an
  * exemption from authentication: `McpService.authenticate` runs on every
@@ -47,6 +53,7 @@ import { type McpCaller, McpService } from './mcp.service';
 export class McpController {
   constructor(
     private readonly mcp: McpService,
+    private readonly streams: McpStreamsService,
     @Inject(API_ENV) private readonly env: ApiEnv,
     @Inject(LOGGER) private readonly logger: Logger,
   ) {}
@@ -104,10 +111,63 @@ export class McpController {
     return this.mcp.describeClient(clientId);
   }
 
+  /**
+   * The Streamable HTTP channel this connection's notifications travel on
+   * (issue #48, ADR-035).
+   *
+   * Only the full surface opens one: it is the only surface that serves
+   * resources at all, so it is the only one with anything to notify about.
+   * A client that opens it without ever subscribing gets a quiet socket with a
+   * heartbeat, which is exactly what the specification describes.
+   */
   @Public()
   @Get()
-  openStream(@Res() reply: FastifyReply): void {
-    this.refuseStream(reply);
+  async openStream(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<void> {
+    const headers = request.headers as Record<string, string | string[] | undefined>;
+    if (!acceptsEventStream(headers.accept)) {
+      this.refuseStream(reply);
+      return;
+    }
+
+    let caller: McpCaller;
+    try {
+      caller = await this.mcp.authenticate(headers);
+    } catch (error) {
+      this.unauthorized(reply, error);
+      return;
+    }
+
+    const opened = this.streams.openSessionStream({
+      userId: caller.session.userId,
+      sessionId: agentSessionId(headers['mcp-session-id']),
+      reply,
+    });
+    if (!opened) this.tooManyStreams(reply);
+  }
+
+  /**
+   * The change feed a stdio MCP server listens on.
+   *
+   * Its own endpoint rather than the session stream above, because the
+   * subprocess is not an MCP client here: it holds the subscriptions itself
+   * and needs the raw facts, not notifications addressed to a session this
+   * process knows nothing about.
+   */
+  @Public()
+  @Get('changes')
+  async openChangeFeed(@Req() request: FastifyRequest, @Res() reply: FastifyReply): Promise<void> {
+    const headers = request.headers as Record<string, string | string[] | undefined>;
+
+    let caller: McpCaller;
+    try {
+      caller = await this.mcp.authenticate(headers);
+    } catch (error) {
+      this.unauthorized(reply, error);
+      return;
+    }
+
+    const opened = this.streams.openChangeFeed({ userId: caller.session.userId, reply });
+    if (!opened) this.tooManyStreams(reply);
   }
 
   @Public()
@@ -148,7 +208,20 @@ export class McpController {
     void reply.status(405).header('allow', 'POST, DELETE').send({
       code: 'validation_failed',
       message:
-        'This MCP endpoint answers POST only. It sends no server-initiated messages, so there is no stream to open.',
+        'This MCP endpoint answers POST only. It serves no resources, so there is nothing to notify about.',
+    });
+  }
+
+  /**
+   * A refusal rather than a ninth socket. Held connections are the one thing
+   * this endpoint cannot shed under load, so the limit is per account and the
+   * message says so: a client that leaks streams should find out from the
+   * answer, not from an operator reading a connection count.
+   */
+  private tooManyStreams(reply: FastifyReply): void {
+    void reply.status(429).send({
+      code: 'rate_limited',
+      message: 'This account already holds the maximum number of open MCP streams.',
     });
   }
 
@@ -291,6 +364,19 @@ function agentSessionId(header: string | string[] | undefined): string {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Whether this `GET` is asking for the notification stream.
+ *
+ * A browser following the URL, a monitor, a link preview: all of them send
+ * `Accept: text/html` or a wildcard, and all of them would otherwise be handed
+ * socket that never closes. The specification has the client ask for
+ * `text/event-stream` explicitly, so asking for it is the signal.
+ */
+function acceptsEventStream(accept: string | string[] | undefined): boolean {
+  const value = Array.isArray(accept) ? accept.join(',') : (accept ?? '');
+  return value.toLowerCase().includes('text/event-stream');
 }
 
 /**

@@ -14,6 +14,7 @@ import {
   JSON_RPC_ERROR_CODES,
   type JsonRpcErrorResponse,
   type JsonRpcId,
+  type JsonRpcNotification,
   type JsonRpcRequest,
   type JsonRpcResponse,
 } from '@exocortex/mcp-tools';
@@ -21,10 +22,18 @@ import {
 export type {
   JsonRpcErrorResponse,
   JsonRpcId,
+  JsonRpcNotification,
   JsonRpcRequest,
   JsonRpcResponse,
   JsonRpcSuccessResponse,
 } from '@exocortex/mcp-tools';
+
+/**
+ * Everything that may travel from server to client: an answer, or a
+ * server-initiated notification (`notifications/resources/updated`). Both are
+ * one JSON object on one line; the transport does not care which it is.
+ */
+export type OutgoingMessage = JsonRpcResponse | JsonRpcNotification;
 
 const {
   parseError: PARSE_ERROR,
@@ -61,7 +70,7 @@ function isValidRequest(value: unknown): value is JsonRpcRequest {
   return isRecord(value) && typeof value.method === 'string';
 }
 
-export function writeMessage(message: JsonRpcResponse): void {
+export function writeMessage(message: OutgoingMessage): void {
   process.stdout.write(`${JSON.stringify(message)}\n`);
 }
 
@@ -78,7 +87,7 @@ export interface StdioIo {
     on(event: 'data', listener: (chunk: string) => void): void;
     on(event: 'end', listener: () => void): void;
   };
-  write: (message: JsonRpcResponse) => void;
+  write: (message: OutgoingMessage) => void;
   onEnd: () => void;
 }
 
@@ -96,7 +105,7 @@ const DEFAULT_IO: StdioIo = {
 export function createStdioServer(
   handler: (request: JsonRpcRequest) => Promise<JsonRpcResponse | null>,
   io: StdioIo = DEFAULT_IO,
-): { start: () => void } {
+): { start: () => void; notify: (message: JsonRpcNotification) => void } {
   let buffer = '';
   let inFlight = 0;
   let ended = false;
@@ -167,6 +176,16 @@ export function createStdioServer(
         ended = true;
         maybeExit();
       });
+    },
+
+    /**
+     * Writes a server-initiated message. The one caller is the change feed,
+     * and it goes through the same `io.write` as every answer so that stdout
+     * has exactly one writer -- two writers and a notification could land in
+     * the middle of a response line.
+     */
+    notify(message: JsonRpcNotification): void {
+      io.write(message);
     },
   };
 }

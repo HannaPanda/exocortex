@@ -6,6 +6,7 @@ import {
   generateApiToken,
   mcpResourceIdentifier,
   verifyServiceToken,
+  WorkspaceAccessService,
 } from '@exocortex/auth';
 import { type ApiEnv, loadApiEnv, loadDotEnv } from '@exocortex/config';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
@@ -15,6 +16,7 @@ import { OutboxService } from '../common/outbox.service';
 import { SettingsService } from '../platform/settings.service';
 
 import { McpService } from './mcp.service';
+import { McpStreamsService } from './mcp-streams.service';
 
 /**
  * Runs against the real database, like the guard tests, because what is worth
@@ -48,6 +50,7 @@ const env: ApiEnv = loadApiEnv({
 
 let prisma: PrismaClient;
 let service: McpService;
+let streams: McpStreamsService;
 let userId: string;
 let clientId: string;
 let signingKeyId: string;
@@ -122,11 +125,16 @@ async function oauthToken(
 
 beforeAll(async () => {
   prisma = createPrismaClient({ databaseUrl: process.env.DATABASE_URL });
+  // Constructed but never initialized: `onModuleInit` is what opens the Redis
+  // subscriptions, and nothing here is about the streams. It is closed again
+  // in `afterAll` so the two publisher connections do not outlive the run.
+  streams = new McpStreamsService(new WorkspaceAccessService(prisma), logger, env);
   service = new McpService(
     prisma,
     env,
     logger,
     new SettingsService(prisma, logger, new OutboxService(prisma, logger)),
+    streams,
   );
 
   const suffix = Date.now().toString(36);
@@ -174,6 +182,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+  await streams.onModuleDestroy();
   await prisma.jwks.deleteMany({ where: { id: { startsWith: 'jwks-test-' } } });
   await prisma.oauthClient.deleteMany({ where: { clientId: { startsWith: 'client-' } } });
   await prisma.user.delete({ where: { id: userId } });

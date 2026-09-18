@@ -26,6 +26,8 @@ import { API_ENV, LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
+import { McpStreamsService } from './mcp-streams.service';
+
 /** How long the loopback credential minted for an OAuth client stays valid. */
 const LOOPBACK_TOKEN_TTL_SECONDS = 120;
 
@@ -78,6 +80,7 @@ export class McpService {
     @Inject(API_ENV) private readonly env: ApiEnv,
     @Inject(LOGGER) private readonly logger: Logger,
     private readonly settings: SettingsService,
+    private readonly streams: McpStreamsService,
   ) {}
 
   /**
@@ -229,6 +232,13 @@ export class McpService {
       // a wide one; handing them an attach menu of every recent page would
       // give back exactly the breadth they were carved out to avoid.
       context: surface === 'mcp',
+      // And with them the third part, `resources/subscribe` (issue #48). The
+      // set lives in `McpStreamsService` rather than here, because this
+      // handler is built per request and a subscription has to outlive one.
+      subscriptions:
+        surface === 'mcp'
+          ? this.streams.subscriptionsFor(caller.session.userId, agentSessionId)
+          : undefined,
       gate: this.gate,
       // `mcp.writeConfirmationRequired` widens the gate to every write. It was
       // written, shown in the admin area and documented, and then read by

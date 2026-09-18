@@ -4,6 +4,7 @@ import {
   type ExocortexApiClient,
   type JsonRpcRequest,
   type JsonRpcResponse,
+  type ResourceSubscriptions,
   toolsFor,
   type WriteConfirmationGate,
 } from '@exocortex/mcp-tools';
@@ -26,6 +27,12 @@ export function createRequestHandler(options: {
   logger: Logger;
   /** See `McpRequestHandlerOptions.agentSession`. One id per process. */
   agentSessionId: string;
+  /**
+   * This process's subscriptions. One set for the whole bin, for the same
+   * reason the agent session is minted once: a subprocess serves exactly one
+   * client, so "this connection" and "this process" are the same thing.
+   */
+  subscriptions: ResourceSubscriptions;
 }): (request: JsonRpcRequest) => Promise<JsonRpcResponse | null> {
   return createMcpRequestHandler({
     client: options.client,
@@ -37,6 +44,9 @@ export function createRequestHandler(options: {
     // This bin serves the full catalogue, so it also serves the half of the
     // protocol a person drives: pages to attach and rule pages as prompts.
     context: true,
+    // And the third part of it: a page that was attached is watched, because
+    // stdout stays open for as long as the client does (issue #48).
+    subscriptions: options.subscriptions,
     gate: options.gate,
     // The variable widens the gate rather than switching it on: the calls no
     // snapshot undoes are confirmed either way, and a deployment that wants the
