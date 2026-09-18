@@ -4,6 +4,7 @@ import { type WriteConfirmationGate } from './confirm.js';
 import { buildServerInstructions } from './instructions.js';
 import { getMcpPrompt, listMcpPrompts } from './prompts.js';
 import { listMcpResources, listMcpResourceTemplates, readMcpResource } from './resources.js';
+import { MAX_RESOURCE_SUBSCRIPTIONS, type ResourceSubscriptions } from './subscriptions.js';
 import { type AnyToolDefinition, ToolInputValidationError } from './tool.js';
 
 /**
@@ -38,6 +39,19 @@ export interface JsonRpcErrorResponse {
 }
 
 export type JsonRpcResponse = JsonRpcSuccessResponse | JsonRpcErrorResponse;
+
+/**
+ * A message the server sends without being asked.
+ *
+ * It has no `id`, so it is never answered, and it is the only shape that
+ * travels from server to client outside a response. Today there is exactly one
+ * of them, `notifications/resources/updated`.
+ */
+export interface JsonRpcNotification {
+  jsonrpc: '2.0';
+  method: string;
+  params?: unknown;
+}
 
 export const JSON_RPC_ERROR_CODES = {
   parseError: -32700,
@@ -109,6 +123,17 @@ export interface McpRequestHandlerOptions {
    */
   context?: boolean;
   /**
+   * Where this connection's `resources/subscribe` is recorded (issue #48).
+   *
+   * Passed in rather than created here, because the set outlives one handler:
+   * over HTTP a handler is built per request and the subscription has to
+   * survive until the change arrives, and the thing that delivers the
+   * notification is the transport, not the dispatcher. Omit it and the two
+   * subscribe methods are refused and the capability is not announced, which
+   * is the honest answer for a transport with no channel to notify on.
+   */
+  subscriptions?: ResourceSubscriptions;
+  /**
    * The working session every write of this connection belongs to (ADR-022).
    *
    * Announced at `initialize` and carried on every REST call after it, which
@@ -146,7 +171,7 @@ function toMcpResult(result: {
  * the correct behaviour there, not an omission.
  */
 export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpRequestHandler {
-  const { client, tools, gate, principal, logger } = options;
+  const { client, tools, gate, principal, logger, subscriptions } = options;
   const context = options.context ?? false;
   const confirm = options.confirm ?? 'irreversible';
   const serverInfo = options.serverInfo ?? DEFAULT_SERVER_INFO;
@@ -238,7 +263,15 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
         const instructions = byName.has('exo_page_create')
           ? await buildServerInstructions(client)
           : null;
-        return respond(buildInitializeResult(params, context, serverInfo, instructions));
+        return respond(
+          buildInitializeResult(
+            params,
+            context,
+            serverInfo,
+            instructions,
+            subscriptions !== undefined,
+          ),
+        );
       }
 
       case 'notifications/initialized':
@@ -271,6 +304,7 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
           const outcome = await dispatchContextMethod({
             client,
             context,
+            subscriptions,
             method: request.method,
             params: isRecord(request.params) ? request.params : {},
           });
@@ -298,6 +332,7 @@ function buildInitializeResult(
   context: boolean,
   serverInfo: { name: string; version: string },
   instructions: string | null,
+  subscribe: boolean,
 ): Record<string, unknown> {
   const asked = typeof params.protocolVersion === 'string' ? params.protocolVersion : undefined;
   const known = SUPPORTED_PROTOCOL_VERSIONS.find((version) => version === asked);
@@ -307,10 +342,13 @@ function buildInitializeResult(
       tools: { listChanged: false },
       ...(context
         ? {
-            // `subscribe: false`: change notifications are the third part of
-            // issue #48 and need a server-initiated channel neither transport
-            // opens today.
-            resources: { subscribe: false, listChanged: false },
+            // `subscribe` follows the transport, not the deployment: a channel
+            // the server can write on unasked is what makes the promise
+            // keepable, and the stdio bin and the HTTP endpoint open one each
+            // in their own way (ADR-035). `listChanged` stays false, because
+            // the listing is "recently edited", which changes constantly and
+            // is not something a client should refetch on every keystroke.
+            resources: { subscribe, listChanged: false },
             prompts: { listChanged: false },
           }
         : {}),
@@ -328,6 +366,8 @@ const CONTEXT_METHODS = new Set([
   'resources/list',
   'resources/templates/list',
   'resources/read',
+  'resources/subscribe',
+  'resources/unsubscribe',
   'prompts/list',
   'prompts/get',
 ]);
@@ -344,10 +384,11 @@ type ContextOutcome = { result: unknown } | { code: number; message: string };
 async function dispatchContextMethod(input: {
   client: ExocortexApiClient;
   context: boolean;
+  subscriptions: ResourceSubscriptions | undefined;
   method: string;
   params: Record<string, unknown>;
 }): Promise<ContextOutcome> {
-  const { client, context, params } = input;
+  const { client, context, subscriptions, params } = input;
 
   switch (input.method) {
     case 'resources/list':
@@ -364,6 +405,14 @@ async function dispatchContextMethod(input: {
         : { result: contents };
     }
 
+    case 'resources/subscribe':
+    case 'resources/unsubscribe':
+      return dispatchSubscription({
+        subscriptions: context ? subscriptions : undefined,
+        method: input.method,
+        uri: typeof params.uri === 'string' ? params.uri : '',
+      });
+
     case 'prompts/list':
       return { result: { prompts: context ? await listMcpPrompts(client) : [] } };
 
@@ -374,6 +423,45 @@ async function dispatchContextMethod(input: {
         ? { code: JSON_RPC_ERROR_CODES.invalidParams, message: `Unknown prompt: ${name}` }
         : { result: prompt };
     }
+  }
+}
+
+/**
+ * `resources/subscribe` and `resources/unsubscribe`.
+ *
+ * Refused rather than answered empty when this connection has no channel,
+ * unlike the two list methods: a client told "fine" that then never hears
+ * anything has been lied to and has no second way to find out. An empty
+ * listing can afford to be an answer, because an empty listing is the truth.
+ */
+function dispatchSubscription(input: {
+  subscriptions: ResourceSubscriptions | undefined;
+  method: string;
+  uri: string;
+}): ContextOutcome {
+  const { subscriptions, uri } = input;
+  if (subscriptions === undefined) {
+    return {
+      code: JSON_RPC_ERROR_CODES.methodNotFound,
+      message: `This connection does not offer resource subscriptions: ${input.method}`,
+    };
+  }
+
+  if (input.method === 'resources/unsubscribe') {
+    subscriptions.unsubscribe(uri);
+    return { result: {} };
+  }
+
+  switch (subscriptions.subscribe(uri)) {
+    case 'unknown-uri':
+      return { code: JSON_RPC_ERROR_CODES.resourceNotFound, message: `Resource not found: ${uri}` };
+    case 'too-many':
+      return {
+        code: JSON_RPC_ERROR_CODES.invalidParams,
+        message: `This connection already holds the maximum of ${String(MAX_RESOURCE_SUBSCRIPTIONS)} subscriptions`,
+      };
+    default:
+      return { result: {} };
   }
 }
 

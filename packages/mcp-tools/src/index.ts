@@ -6,4 +6,5 @@ export * from './instructions.js';
 export * from './prompts.js';
 export * from './protocol.js';
 export * from './resources.js';
+export * from './subscriptions.js';
 export * from './tool.js';

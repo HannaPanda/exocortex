@@ -9,6 +9,7 @@ import {
   LATEST_PROTOCOL_VERSION,
   toMcpToolList,
 } from './protocol.js';
+import { MAX_RESOURCE_SUBSCRIPTIONS, ResourceSubscriptions } from './subscriptions.js';
 import { type AnyToolDefinition, defineTool } from './tool.js';
 
 const CLIENT: ExocortexApiClient = {
@@ -62,6 +63,7 @@ function handlerWith(options?: {
   principal?: string;
   confirm?: 'irreversible' | 'all';
   context?: boolean;
+  subscriptions?: ResourceSubscriptions;
 }) {
   return createMcpRequestHandler({
     client: CLIENT,
@@ -70,6 +72,7 @@ function handlerWith(options?: {
     ...(options?.principal === undefined ? {} : { principal: options.principal }),
     ...(options?.confirm === undefined ? {} : { confirm: options.confirm }),
     ...(options?.context === undefined ? {} : { context: options.context }),
+    ...(options?.subscriptions === undefined ? {} : { subscriptions: options.subscriptions }),
   });
 }
 
@@ -328,6 +331,87 @@ describe('createMcpRequestHandler', () => {
       resources: { subscribe: false, listChanged: false },
       prompts: { listChanged: false },
     });
+  });
+
+  it('announces subscribe only when a transport can deliver', async () => {
+    const response = await handlerWith({
+      context: true,
+      subscriptions: new ResourceSubscriptions(),
+    })({ jsonrpc: '2.0', id: 1, method: 'initialize' });
+
+    expect(
+      (response as { result: { capabilities: { resources: unknown } } }).result.capabilities
+        .resources,
+    ).toEqual({ subscribe: true, listChanged: false });
+  });
+
+  it('records a subscription and forgets it again', async () => {
+    const subscriptions = new ResourceSubscriptions();
+    const handler = handlerWith({ context: true, subscriptions });
+    const uri = 'exocortex://page/doc_1';
+
+    const subscribed = await handler({
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'resources/subscribe',
+      params: { uri },
+    });
+    expect(subscribed).toEqual({ jsonrpc: '2.0', id: 1, result: {} });
+    expect(subscriptions.list()).toEqual([uri]);
+
+    await handler({ jsonrpc: '2.0', id: 2, method: 'resources/unsubscribe', params: { uri } });
+    expect(subscriptions.list()).toEqual([]);
+  });
+
+  it('refuses to subscribe where nothing could deliver the notification', async () => {
+    // Answering "fine" here would be a lie a client has no second way to
+    // detect: it would wait for messages that can never arrive.
+    const response = await handlerWith({ context: true })({
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'resources/subscribe',
+      params: { uri: 'exocortex://page/doc_1' },
+    });
+
+    expect((response as { error: { code: number } }).error.code).toBe(
+      JSON_RPC_ERROR_CODES.methodNotFound,
+    );
+  });
+
+  it('refuses a URI this server does not address', async () => {
+    const response = await handlerWith({
+      context: true,
+      subscriptions: new ResourceSubscriptions(),
+    })({
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'resources/subscribe',
+      params: { uri: 'https://example.com/page' },
+    });
+
+    expect((response as { error: { code: number } }).error.code).toBe(
+      JSON_RPC_ERROR_CODES.resourceNotFound,
+    );
+  });
+
+  it('stops accepting subscriptions past the cap', async () => {
+    const subscriptions = new ResourceSubscriptions();
+    const handler = handlerWith({ context: true, subscriptions });
+    for (let index = 0; index < MAX_RESOURCE_SUBSCRIPTIONS; index += 1) {
+      subscriptions.subscribe(`exocortex://page/doc${String(index)}`);
+    }
+
+    const response = await handler({
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'resources/subscribe',
+      params: { uri: 'exocortex://page/one_too_many' },
+    });
+
+    expect((response as { error: { code: number } }).error.code).toBe(
+      JSON_RPC_ERROR_CODES.invalidParams,
+    );
+    expect(subscriptions.size).toBe(MAX_RESOURCE_SUBSCRIPTIONS);
   });
 
   it('serves the URI templates once resources are switched on', async () => {
