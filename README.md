@@ -45,8 +45,12 @@ What is deliberately still missing is listed under
   (ADR-028)
 - an agent memory in its own workspace, with distilled facts above its session
   notes (ADR-019, ADR-021)
+- quick capture into a workspace inbox: `Strg + E`, `exo_capture` or
+  `POST /capture` write a thought down without choosing a place first, and the
+  entry is an ordinary page from the first second (ADR-036)
 - filing help for new pages: candidate parents ranked from the pages that
-  already exist, in the sidebar's context menu and as an MCP tool
+  already exist, in the sidebar's context menu, on a page sitting in the inbox,
+  and as an MCP tool
 - calendars: iCal import and export, reminders, event pages
 
 **Search, AI and automation**
