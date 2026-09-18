@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  CHUNK_THRESHOLD_CHARS,
   chunkBlockId,
   chunkPlainText,
-  CHUNK_THRESHOLD_CHARS,
   isChunkBlockId,
   MAX_CHUNKS_PER_DOCUMENT,
 } from './chunking';
