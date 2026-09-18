@@ -229,6 +229,66 @@ export function useDatabaseRows(documentId: string | undefined, request: QueryDa
   });
 }
 
+/**
+ * Rows of one calendar window, in as many requests as it takes.
+ *
+ * A calendar cannot page: a year view that showed the first hundred rows and
+ * stopped would be wrong rather than incomplete, because the reader has no way
+ * of telling which day lost its entries. So the window is narrowed server-side
+ * with `overlaps` (the operator exists for exactly this) and the pages are
+ * followed to the end.
+ */
+const CALENDAR_PAGE_SIZE = 100;
+
+/**
+ * Where following the pages stops. Ten pages is far more than a year of one
+ * person's appointments and still a bounded number of requests, and the caller
+ * is told when it was reached rather than being handed a silent truncation.
+ */
+const CALENDAR_MAX_PAGES = 10;
+
+export interface CalendarRowsResult {
+  rows: DatabaseRow[];
+  /** `false` when `CALENDAR_MAX_PAGES` ran out before the rows did. */
+  complete: boolean;
+}
+
+export function useDatabaseCalendarRows(input: {
+  documentId: string;
+  viewId: string;
+  datePropertyId: string;
+  from: string;
+  to: string;
+}) {
+  const { documentId, viewId, datePropertyId, from, to } = input;
+  return useQuery({
+    queryKey: [...databaseQueryKeys.rows(documentId, viewId), 'calendar', datePropertyId, from, to],
+    queryFn: async (): Promise<CalendarRowsResult> => {
+      const rows: DatabaseRow[] = [];
+      let cursor: string | undefined;
+      for (let page = 0; page < CALENDAR_MAX_PAGES; page += 1) {
+        const request: QueryDatabaseRowsRequest = {
+          viewId,
+          limit: CALENDAR_PAGE_SIZE,
+          cursor,
+          filters: {
+            combinator: 'and',
+            conditions: [{ propertyId: datePropertyId, operator: 'overlaps', value: [from, to] }],
+          },
+        };
+        const response = await apiRequest<QueryDatabaseRowsResponse>(
+          `/api/documents/${documentId}/rows/query`,
+          { method: 'POST', body: request },
+        );
+        rows.push(...response.rows);
+        if (response.nextCursor === null) return { rows, complete: true };
+        cursor = response.nextCursor;
+      }
+      return { rows, complete: false };
+    },
+  });
+}
+
 export function useCreateDatabaseRow(documentId: string) {
   const client = useQueryClient();
   return useMutation({

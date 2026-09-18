@@ -78,8 +78,45 @@ Two rules that are easy to get wrong:
 An all-day value is a _floating_ calendar date stored as UTC midnight. Read it
 off the ISO string; converting it into the viewer's zone shifts every birthday a
 day for anyone west of Greenwich. A timed value is a real instant and belongs in
-the day the _viewer_ sees it in. `dayKeyOf` in `calendar-view.tsx` is the one
-place that decision lives.
+the day the _viewer_ sees it in. `dayKeyOf` in
+`apps/web/src/components/database/calendar/entries.ts` is the one place that
+decision lives.
+
+### The five calendar modes
+
+A CALENDAR view draws one of five projections of the same rows, chosen with
+`config.calendarMode` (`LIST`, `DAY`, `WEEK`, `MONTH`, `YEAR`, default `MONTH`).
+They are modes rather than view types on purpose: all five read one
+`datePropertyId` and one saved filter set, and differ only in the window they
+ask for and how they lay the answer out. The field lives on the view, not in the
+browser, so the choice survives a reload on another device and an agent reaches
+it through `exo_database_view_update` like any other view setting (ADR-025).
+
+The files are all under `apps/web/src/components/database/calendar/`:
+
+| File                 | Responsibility                                                                                                                            |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `range.ts`           | The window per mode, the step of the arrows, the period label. Pure, local-time date arithmetic; the one file with a test for every mode. |
+| `entries.ts`         | Rows to `CalendarEntry`s and the day bucket each covers, including the all-day rule above.                                                |
+| `layout.ts`          | Overlapping appointments side by side on a time axis: wall-clock minutes, greedy column packing per overlap cluster.                      |
+| `time-grid-view.tsx` | Day and week. One column per day, all-day entries in a band above the axis, a line on the current minute.                                 |
+| `month-view.tsx`     | The six-week grid, three entries per cell, the rest behind "+N weitere" into the day view.                                                |
+| `year-view.tsx`      | Twelve mini grids; a day carries how busy it was, because a title is unreadable at that size.                                             |
+| `agenda-view.tsx`    | The list: only the days of the month that have something on them.                                                                         |
+
+Two consequences worth knowing before changing any of it:
+
+- **The window is a server-side filter, not a client-side one.** The view asks
+  through `useDatabaseCalendarRows`, which sends the mode's window as an
+  `overlaps` condition _alongside_ the view's saved filters and follows the
+  cursor to the end (up to ten pages). A calendar cannot page: a year view that
+  showed the first hundred rows and stopped would be wrong rather than
+  incomplete, because the reader cannot tell which day lost its entries. When
+  the page cap is hit, the view says so instead of truncating silently.
+- **Inline filters narrow a saved view, they never replace it.**
+  `resolveFiltersAndSorts` in `database-rows.service.ts` nests both groups under
+  one `and`. The other way round, a client that named a view could read the rows
+  the view was set up to hide.
 
 ### The `overlaps` filter operator
 
@@ -100,12 +137,14 @@ works on both kinds of DATE property. Served by the
    `properties`, `readOnly`) and reading rows via `useDatabaseRows(documentId,
 { viewId: view.id, limit: 100 })` — **100 is the API's pagination
    ceiling** (`paginationSchema` in `packages/contracts/src/primitives.ts`);
-   requesting more throws `validation_failed`.
+   requesting more throws `validation_failed`. A view that cannot be honest
+   about showing only the first hundred rows narrows the query instead and
+   follows `nextCursor`, the way `useDatabaseCalendarRows` does.
 3. Wire it into `database-shell.tsx`'s per-type dispatch and into
    `view-tabs.tsx`'s `VIEW_TYPE_LABELS`/`VIEW_TYPE_ICONS`/`VIEW_TYPES` so the
    "+" menu can create one.
 4. If the view needs extra per-view configuration (Calendar's
-   `datePropertyId`, Gallery's `coverPropertyId`), add it to
+   `datePropertyId` and `calendarMode`, Gallery's `coverPropertyId`), add it to
    `databaseViewConfigSchema` in contracts — it is a free-form JSON column on
    `DatabaseView`, validated at the contract boundary, no migration needed
    for a new config field.

@@ -41,7 +41,13 @@ export function databaseView(config: Partial<DatabaseViewConfig> = {}): Database
     filters: EMPTY_DATABASE_FILTER_GROUP,
     sorts: [],
     groupByPropertyId: null,
-    config: { visibleProperties: [], columnWidths: {}, rowHeight: 'short', ...config },
+    config: {
+      visibleProperties: [],
+      columnWidths: {},
+      rowHeight: 'short',
+      calendarMode: 'MONTH',
+      ...config,
+    },
     createdAt: '2026-09-16T10:00:00.000Z',
     updatedAt: '2026-09-16T10:00:00.000Z',
   };

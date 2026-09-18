@@ -309,6 +309,58 @@ test.describe('databases', () => {
       page.locator('[data-testid^="database-row-"]').first().locator('input[type="number"]'),
     ).toHaveValue('7', { timeout: 15_000 });
   });
+
+  test('shows one appointment in every calendar mode and remembers the mode', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+
+    const title = `Termine ${Date.now().toString(36)}`;
+    await createDatabase(page, title);
+    await expect(page.getByTestId('add-property')).toBeVisible({ timeout: 15_000 });
+    await addProperty(page, 'Zeitraum', 'Datum');
+
+    // Today, so every mode's window contains it without any navigation.
+    const today = new Date();
+    const isoDay = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    await page.getByTestId('add-row').click();
+    const row = page.locator('[data-testid^="database-row-"]').first();
+    await expect(row).toBeVisible({ timeout: 15_000 });
+    await row.locator('input[type="date"]').fill(isoDay);
+    await row.locator('input[type="date"]').blur();
+
+    await page.getByTestId('add-view').click();
+    await page.getByTestId('add-view-calendar').click();
+    await page.getByRole('button', { name: 'Eigenschaft wählen' }).click();
+    await page.getByRole('option', { name: 'Zeitraum' }).click();
+
+    const calendar = page.getByTestId('calendar-view');
+    const entry = calendar.getByRole('link', { name: 'Unbenannt' });
+
+    // Month is the default, and the row is on it.
+    await expect(page.getByTestId('calendar-month')).toBeVisible({ timeout: 15_000 });
+    await expect(entry.first()).toBeVisible({ timeout: 15_000 });
+
+    // The same row on a time axis, in both grid modes.
+    for (const mode of ['Woche', 'Tag']) {
+      await calendar.getByRole('button', { name: mode, exact: true }).click();
+      await expect(page.getByTestId('calendar-time-grid')).toBeVisible({ timeout: 15_000 });
+      await expect(entry.first()).toBeVisible({ timeout: 15_000 });
+    }
+
+    // The year knows the day is busy without naming what is on it.
+    await calendar.getByRole('button', { name: 'Jahr', exact: true }).click();
+    await expect(page.getByTestId('calendar-year')).toBeVisible({ timeout: 15_000 });
+
+    await calendar.getByRole('button', { name: 'Liste', exact: true }).click();
+    await expect(page.getByTestId('calendar-agenda')).toBeVisible({ timeout: 15_000 });
+    await expect(entry.first()).toBeVisible({ timeout: 15_000 });
+
+    // The mode is a field on the view, so it survives a reload: the tab opens
+    // on the list again, not on the default month.
+    await page.reload();
+    await page.getByRole('tab', { name: 'Kalender' }).click();
+    await expect(page.getByTestId('calendar-agenda')).toBeVisible({ timeout: 15_000 });
+  });
 });
 
 async function addProperty(page: Page, name: string, typeLabel: string): Promise<void> {

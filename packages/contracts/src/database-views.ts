@@ -289,10 +289,28 @@ export const DATABASE_COLUMN_DEFAULT_WIDTH = 180;
  */
 export const DATABASE_TITLE_COLUMN_KEY = 'title';
 
+/**
+ * CALENDAR only: which projection of the same rows the view draws.
+ *
+ * A mode is not a view type. All five read one `datePropertyId` and one saved
+ * filter set, and differ only in the window they ask the API for and how they
+ * lay the answer out, so switching one is a config change on the existing view
+ * rather than a second view to keep in sync.
+ */
+export const databaseCalendarModeSchema = z.enum(['LIST', 'DAY', 'WEEK', 'MONTH', 'YEAR']);
+export type DatabaseCalendarMode = z.infer<typeof databaseCalendarModeSchema>;
+
 const databaseViewConfigFields = {
   visibleProperties: z.array(databaseViewVisiblePropertySchema),
   /** CALENDAR only: which DATE property to plot rows on. */
   datePropertyId: idSchema.nullable(),
+  /**
+   * CALENDAR only: the mode the view opens in. Stored on the view rather than
+   * in the browser, because "remember the chosen view" has to survive a
+   * different device, and because every surface reaches the same capability
+   * (ADR-025): an agent reads and sets this through `exo_database_view_update`.
+   */
+  calendarMode: databaseCalendarModeSchema,
   /** GALLERY only: which FILES property supplies the card cover. */
   coverPropertyId: idSchema.nullable(),
   /**
@@ -313,6 +331,7 @@ export const databaseViewConfigSchema = z.object({
   ...databaseViewConfigFields,
   visibleProperties: databaseViewConfigFields.visibleProperties.default([]),
   datePropertyId: databaseViewConfigFields.datePropertyId.optional(),
+  calendarMode: databaseViewConfigFields.calendarMode.default('MONTH'),
   coverPropertyId: databaseViewConfigFields.coverPropertyId.optional(),
   columnWidths: databaseViewConfigFields.columnWidths.default({}),
   rowHeight: databaseViewConfigFields.rowHeight.default('short'),
@@ -330,6 +349,7 @@ export type DatabaseViewConfig = z.infer<typeof databaseViewConfigSchema>;
 export const databaseViewConfigUpdateSchema = z.object({
   visibleProperties: databaseViewConfigFields.visibleProperties.optional(),
   datePropertyId: databaseViewConfigFields.datePropertyId.optional(),
+  calendarMode: databaseViewConfigFields.calendarMode.optional(),
   coverPropertyId: databaseViewConfigFields.coverPropertyId.optional(),
   columnWidths: databaseViewConfigFields.columnWidths.optional(),
   rowHeight: databaseViewConfigFields.rowHeight.optional(),
@@ -456,6 +476,13 @@ export type DocumentRowResponse = z.infer<typeof documentRowResponseSchema>;
 export const queryDatabaseRowsRequestSchema = z.object({
   /** Omit to query ad hoc with inline filters/sorts instead of a saved view. */
   viewId: idSchema.optional(),
+  /**
+   * Narrows the answer further. Alongside `viewId` these are **added** to the
+   * view's saved filters with `and`, never substituted for them: a calendar
+   * asking for one week wants that week *of its own view*, and a client that
+   * could replace a saved filter by naming the view would be able to read rows
+   * the view was set up to hide.
+   */
   filters: databaseFilterGroupSchema.optional(),
   sorts: z.array(databaseSortSchema).optional(),
   ...paginationSchema.shape,

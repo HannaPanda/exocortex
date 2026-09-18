@@ -1,17 +1,15 @@
 'use client';
 
-import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
-import Link from 'next/link';
 import * as React from 'react';
 
 import {
+  type DatabaseCalendarMode,
   type DatabaseProperty,
-  type DatabaseRow,
-  type DatabaseRowPropertyValue,
   type DatabaseView,
 } from '@exocortex/contracts';
 import {
-  Button,
+  Alert,
+  AlertDescription,
   EmptyState,
   LoadingState,
   Select,
@@ -21,7 +19,15 @@ import {
   SelectValue,
 } from '@exocortex/ui';
 
-import { useDatabaseRows, useUpdateDatabaseView } from '@/lib/api/database-queries';
+import { useDatabaseCalendarRows, useUpdateDatabaseView } from '@/lib/api/database-queries';
+
+import { AgendaView } from './calendar/agenda-view';
+import { CalendarToolbar } from './calendar/calendar-toolbar';
+import { groupEntriesByDay, toCalendarEntries } from './calendar/entries';
+import { MonthView } from './calendar/month-view';
+import { addDays, calendarWindow, queryWindow, startOfWeek } from './calendar/range';
+import { TimeGridView } from './calendar/time-grid-view';
+import { YearView } from './calendar/year-view';
 
 interface CalendarViewProps {
   workspaceId: string;
@@ -31,106 +37,22 @@ interface CalendarViewProps {
   readOnly: boolean;
 }
 
-const WEEKDAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-const MONTH_FORMATTER = new Intl.DateTimeFormat('de-DE', { month: 'long', year: 'numeric' });
-const TIME_FORMATTER = new Intl.DateTimeFormat('de-DE', { hour: '2-digit', minute: '2-digit' });
-
-/** One appearance of a row in one day cell. A span produces several. */
-interface CalendarEntry {
-  row: DatabaseRow;
-  start: string;
-  allDay: boolean;
-}
-
-/** Days of `month` (0-indexed) laid out into a Monday-first 6x7 grid, including the leading/trailing days of neighbouring months. */
-function buildMonthGrid(year: number, month: number): Date[] {
-  const first = new Date(Date.UTC(year, month, 1));
-  const startWeekday = (first.getUTCDay() + 6) % 7; // 0 = Monday
-  const start = new Date(first);
-  start.setUTCDate(start.getUTCDate() - startWeekday);
-
-  return Array.from({ length: 42 }, (_, index) => {
-    const day = new Date(start);
-    day.setUTCDate(day.getUTCDate() + index);
-    return day;
-  });
-}
-
-function isoDay(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
-
-function pad(part: number): string {
-  return String(part).padStart(2, '0');
-}
-
 /**
- * Which grid cell an instant belongs in.
+ * The calendar view of a database: five projections of the same rows.
  *
- * The two cases are not interchangeable. An all-day value is a *floating*
- * calendar date stored as UTC midnight, so it is read straight off the ISO
- * string: converting it into the viewer's zone would push every birthday a day
- * back for anyone west of Greenwich. A timed value is a real instant, so it
- * belongs in the day the viewer sees it in, which for a 00:30 Berlin
- * appointment is *not* its UTC day.
+ * A mode is a field on the view (`config.calendarMode`), not a second view and
+ * not browser state, so the choice survives a reload on another device and an
+ * agent can read and set it like any other view setting (ADR-025). Everything
+ * else here is per-session: which day is in the middle is a question about
+ * right now, not a property of the view.
  */
-function dayKeyOf(iso: string, allDay: boolean): string {
-  if (allDay) return iso.slice(0, 10);
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return iso.slice(0, 10);
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-}
-
-/**
- * Upper bound on how many cells one row may occupy. A span longer than a year
- * is a data error rather than an appointment, and without the cap a single bad
- * row would allocate an entry per day for as long as it lasts.
- */
-const MAX_SPANNED_DAYS = 366;
-
-/** Reads either DATE response shape; null for anything the calendar cannot plot. */
-function readCalendarDate(
-  value: DatabaseRowPropertyValue['value'] | undefined,
-): { start: string; end: string | null; allDay: boolean } | null {
-  if (typeof value === 'string') return { start: value, end: null, allDay: false };
-  if (value !== null && typeof value === 'object' && !Array.isArray(value) && 'start' in value) {
-    return { start: value.start, end: value.end, allDay: value.allDay };
-  }
-  return null;
-}
-
-/**
- * Every day key a value covers. `end` is exclusive, so a span ending at
- * midnight does not bleed into the next cell: the last covered day is the one
- * containing `end - 1ms`.
- */
-function coveredDayKeys(start: string, end: string | null, allDay: boolean): string[] {
-  const startKey = dayKeyOf(start, allDay);
-  if (end === null) return [startKey];
-
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) return [startKey];
-  if (endDate.getTime() <= startDate.getTime()) return [startKey];
-
-  const lastKey = dayKeyOf(new Date(endDate.getTime() - 1).toISOString(), allDay);
-  const keys: string[] = [];
-  const cursor = new Date(startDate);
-  while (keys.length < MAX_SPANNED_DAYS) {
-    const key = dayKeyOf(cursor.toISOString(), allDay);
-    // Stepping 24h can land on the same local date across a DST change, so a
-    // repeat is skipped rather than producing the row twice in one cell.
-    if (keys[keys.length - 1] !== key) keys.push(key);
-    if (key === lastKey) break;
-    cursor.setUTCDate(cursor.getUTCDate() + 1);
-  }
-  return keys;
-}
-
-// `readOnly` isn't needed yet: the calendar has no inline write affordance of
-// its own (rows are edited on their own page), but the prop stays part of
-// the shared per-view-type signature `database-shell.tsx` calls with.
-export function CalendarView({ workspaceId, documentId, view, properties }: CalendarViewProps) {
+export function CalendarView({
+  workspaceId,
+  documentId,
+  view,
+  properties,
+  readOnly,
+}: CalendarViewProps) {
   const dateProperties = properties.filter((property) => property.type === 'DATE');
   const updateView = useUpdateDatabaseView(documentId);
   const dateProperty = properties.find((property) => property.id === view.config.datePropertyId);
@@ -181,150 +103,143 @@ export function CalendarView({ workspaceId, documentId, view, properties }: Cale
   }
 
   return (
-    <CalendarMonth
+    <CalendarBody
       workspaceId={workspaceId}
       documentId={documentId}
       view={view}
-      dateProperty={dateProperty}
+      datePropertyId={dateProperty.id}
+      readOnly={readOnly}
     />
   );
 }
 
-function CalendarMonth({
+function CalendarBody({
   workspaceId,
   documentId,
   view,
-  dateProperty,
+  datePropertyId,
+  readOnly,
 }: {
   workspaceId: string;
   documentId: string;
   view: DatabaseView;
-  dateProperty: DatabaseProperty;
+  datePropertyId: string;
+  readOnly: boolean;
 }) {
-  const today = new Date();
-  // Local, not UTC: at 00:30 in Berlin the UTC date is still yesterday, which
-  // would open the calendar on the wrong month on the first of the month and
-  // highlight the wrong cell as today.
-  const [cursor, setCursor] = React.useState(() => ({
-    year: today.getFullYear(),
-    month: today.getMonth(),
-  }));
+  const updateView = useUpdateDatabaseView(documentId);
+  // The stored mode is the starting point, not a controlled value: the switch
+  // has to answer immediately, and the view's own refetch arrives later.
+  const [mode, setMode] = React.useState<DatabaseCalendarMode>(view.config.calendarMode);
+  const [anchor, setAnchor] = React.useState(() => new Date());
 
-  // The API resolves `viewId` to the view's own saved filters/sorts and
-  // ignores any inline `filters` alongside it, so rows with no date are
-  // filtered out client-side below instead of via an extra server-side
-  // condition here.
-  const rowsQuery = useDatabaseRows(documentId, { viewId: view.id, limit: 100 });
+  // Named `period`, not `window`: the global of that name is what a browser
+  // file reaches for by reflex, and shadowing it reads as a bug later.
+  const period = React.useMemo(() => calendarWindow(mode, anchor), [mode, anchor]);
+  const range = React.useMemo(() => queryWindow(period), [period]);
+  const rowsQuery = useDatabaseCalendarRows({
+    documentId,
+    viewId: view.id,
+    datePropertyId,
+    from: range.from,
+    to: range.to,
+  });
 
-  if (rowsQuery.isPending)
-    return <LoadingState variant="skeleton" rows={4} label="Termine werden geladen" />;
-  if (rowsQuery.isError)
-    return <EmptyState title="Termine nicht geladen" description="Bitte versuche es erneut." />;
+  const entriesByDay = React.useMemo(
+    () => groupEntriesByDay(toCalendarEntries(rowsQuery.data?.rows ?? [], datePropertyId)),
+    [rowsQuery.data, datePropertyId],
+  );
 
-  // A span occupies every day it touches, not only the day it starts on: a
-  // three-day trip that appears in one cell reads as a one-day trip.
-  const rowsByDay = new Map<string, CalendarEntry[]>();
-  for (const row of rowsQuery.data.rows) {
-    const value = row.values.find((entry) => entry.propertyId === dateProperty.id)?.value;
-    const span = readCalendarDate(value);
-    if (span === null) continue;
-    const entry: CalendarEntry = { row, start: span.start, allDay: span.allDay };
-    for (const key of coveredDayKeys(span.start, span.end, span.allDay)) {
-      const list = rowsByDay.get(key);
-      if (list === undefined) rowsByDay.set(key, [entry]);
-      else list.push(entry);
+  function changeMode(next: DatabaseCalendarMode) {
+    setMode(next);
+    // A view someone may not write to still switches; it simply opens in its
+    // stored mode next time, which is the same thing the tabs do.
+    if (!readOnly) {
+      updateView.mutate({ viewId: view.id, request: { config: { calendarMode: next } } });
     }
   }
-  // Chronological within a day, with all-day entries first: that is the order a
-  // day is read in, and the row order from the query has no meaning here.
-  for (const list of rowsByDay.values()) {
-    list.sort((left, right) => {
-      if (left.allDay !== right.allDay) return left.allDay ? -1 : 1;
-      return left.start.localeCompare(right.start);
-    });
+
+  function openDay(day: Date) {
+    setAnchor(day);
+    changeMode('DAY');
   }
 
-  const days = buildMonthGrid(cursor.year, cursor.month);
-  const todayKey = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
-
   return (
-    <div className="flex min-h-0 flex-1 flex-col p-3">
-      <div className="mb-2 flex items-center justify-between">
-        <p className="text-sm font-medium capitalize">
-          {MONTH_FORMATTER.format(new Date(cursor.year, cursor.month))}
-        </p>
-        <div className="flex gap-1">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label="Vorheriger Monat"
-            onClick={() => setCursor((current) => normalizeMonth(current.year, current.month - 1))}
-          >
-            <ChevronLeftIcon />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label="Nächster Monat"
-            onClick={() => setCursor((current) => normalizeMonth(current.year, current.month + 1))}
-          >
-            <ChevronRightIcon />
-          </Button>
-        </div>
-      </div>
+    <div className="flex min-h-0 flex-1 flex-col p-3" data-testid="calendar-view">
+      <CalendarToolbar
+        mode={mode}
+        anchor={anchor}
+        onModeChange={changeMode}
+        onAnchorChange={setAnchor}
+      />
 
-      <div className="grid grid-cols-7 border-t border-l border-border text-xs">
-        {WEEKDAY_LABELS.map((label) => (
-          <div
-            key={label}
-            className="border-r border-b border-border bg-surface px-2 py-1 text-muted-foreground"
-          >
-            {label}
-          </div>
-        ))}
-        {days.map((day) => {
-          const key = isoDay(day);
-          const inMonth = day.getUTCMonth() === cursor.month;
-          const rows = rowsByDay.get(key) ?? [];
-          return (
-            <div
-              key={key}
-              className={`flex min-h-24 flex-col gap-1 border-r border-b border-border p-1 ${inMonth ? '' : 'bg-surface/50'}`}
-            >
-              <span
-                className={`text-[0.6875rem] ${key === todayKey ? 'font-semibold text-primary-text' : 'text-muted-foreground'} ${inMonth ? '' : 'opacity-50'}`}
-              >
-                {day.getUTCDate()}
-              </span>
-              {rows.slice(0, 3).map((entry) => (
-                <Link
-                  key={entry.row.document.id}
-                  href={`/arbeitsbereich/${workspaceId}/seite/${entry.row.document.id}`}
-                  className="truncate rounded bg-accent-solid px-1 py-0.5 text-[0.6875rem] hover:underline"
-                >
-                  {entry.allDay ? null : (
-                    <span className="mr-1 text-muted-foreground">
-                      {TIME_FORMATTER.format(new Date(entry.start))}
-                    </span>
-                  )}
-                  {entry.row.document.title}
-                </Link>
-              ))}
-              {rows.length > 3 ? (
-                <span className="text-[0.6875rem] text-muted-foreground">
-                  +{rows.length - 3} weitere
-                </span>
-              ) : null}
-            </div>
-          );
-        })}
-      </div>
+      {rowsQuery.data?.complete === false ? (
+        <Alert className="mb-2">
+          <AlertDescription>
+            Dieser Zeitraum enthält mehr Einträge, als hier gezeigt werden. Wähle einen kürzeren
+            Zeitraum, um alle zu sehen.
+          </AlertDescription>
+        </Alert>
+      ) : null}
+
+      {renderBody()}
     </div>
   );
+
+  function renderBody() {
+    if (rowsQuery.isPending) {
+      return <LoadingState variant="skeleton" rows={4} label="Termine werden geladen" />;
+    }
+    if (rowsQuery.isError) {
+      return <EmptyState title="Termine nicht geladen" description="Bitte versuche es erneut." />;
+    }
+    if (mode === 'DAY' || mode === 'WEEK') {
+      // The only mode that scrolls itself: its axis is taller than the box, and
+      // the header row and the all-day band have to stay put while it moves.
+      return (
+        <TimeGridView
+          workspaceId={workspaceId}
+          days={columnDays(mode, anchor)}
+          entriesByDay={entriesByDay}
+        />
+      );
+    }
+    return (
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        {mode === 'MONTH' ? (
+          <MonthView
+            workspaceId={workspaceId}
+            anchor={anchor}
+            entriesByDay={entriesByDay}
+            onOpenDay={openDay}
+          />
+        ) : null}
+        {mode === 'YEAR' ? (
+          <YearView
+            anchor={anchor}
+            entriesByDay={entriesByDay}
+            onOpenDay={openDay}
+            onOpenMonth={(day) => {
+              setAnchor(day);
+              changeMode('MONTH');
+            }}
+          />
+        ) : null}
+        {mode === 'LIST' ? (
+          <AgendaView
+            workspaceId={workspaceId}
+            from={period.from}
+            to={period.to}
+            entriesByDay={entriesByDay}
+          />
+        ) : null}
+      </div>
+    );
+  }
 }
 
-function normalizeMonth(year: number, month: number): { year: number; month: number } {
-  if (month < 0) return { year: year - 1, month: 11 };
-  if (month > 11) return { year: year + 1, month: 0 };
-  return { year, month };
+/** The columns of a time grid: one day, or the Monday-to-Sunday week around it. */
+function columnDays(mode: 'DAY' | 'WEEK', anchor: Date): Date[] {
+  if (mode === 'DAY') return [new Date(anchor.getFullYear(), anchor.getMonth(), anchor.getDate())];
+  const monday = startOfWeek(anchor);
+  return Array.from({ length: 7 }, (_, index) => addDays(monday, index));
 }
