@@ -70,6 +70,11 @@ const EXEMPT = [
     reason: 'Who the current cookie belongs to. An MCP caller knows who it is from its own token.',
   },
   {
+    route: 'POST /api/features/seen',
+    reason:
+      "Moves one person's marker in the feature registry to the newest entry (issue #80). Reading the list is a tool (`exo_features`); marking it read is a statement about a human's attention, and an agent that called it would silently clear somebody else's badge. The read side has full parity.",
+  },
+  {
     route: '* /health*',
     reason: 'Liveness and readiness for monitoring and for deploy.sh, not a workspace capability.',
   },

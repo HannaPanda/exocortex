@@ -20,6 +20,7 @@ import { API_ENV } from './common/logger.provider';
 import { DatabasesModule } from './databases/databases.module';
 import { DocumentsModule } from './documents/documents.module';
 import { EntitiesModule } from './entities/entities.module';
+import { FeaturesModule } from './features/features.module';
 import { HealthModule } from './health/health.module';
 import { InboxModule } from './inbox/inbox.module';
 import { InvitationsModule } from './invitations/invitations.module';
@@ -77,6 +78,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     MeModule,
     MemoryModule,
     EntitiesModule,
+    FeaturesModule,
     McpModule,
     AgentSessionsModule,
     AutomationsModule,

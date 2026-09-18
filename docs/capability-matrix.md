@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-182 routes are reachable from at least one client; 115 from all three.
+184 routes are reachable from at least one client; 116 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -78,6 +78,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/entities` | ✓ | ✓ | ✓ | `exo_entity_list` |
 | `GET /api/entities/:x` | ✓ | ✓ | ✓ | `exo_entity_profile` |
 | `GET /api/entities/candidates` | ✓ | ✓ | ✓ | `exo_entity_candidates` |
+| `GET /api/features` | ✓ | ✓ | ✓ | `exo_features` |
 | `GET /api/mcp/clients/:x` | ✓ | · | · | — |
 | `GET /api/me/api-tokens` | ✓ | · | · | — |
 | `GET /api/me/connections` | ✓ | · | · | — |
@@ -173,6 +174,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/entities/candidates/:x/confirm` | ✓ | ✓ | ✓ | `exo_entity_candidate_confirm` |
 | `POST /api/entities/candidates/:x/dismiss` | ✓ | ✓ | ✓ | `exo_entity_candidate_dismiss` |
 | `POST /api/entities/database` | ✓ | · | · | — |
+| `POST /api/features/seen` | ✓ | · | · | — |
 | `POST /api/invitations/accept` | ✓ | · | · | — |
 | `POST /api/invitations/preview` | ✓ | · | · | — |
 | `POST /api/me/api-tokens` | ✓ | · | · | — |
@@ -209,7 +211,7 @@ reorder routes shipped with no way to them in the browser.
 
 ## Routes the browser reaches and agents do not
 
-47 of them. Each is covered by a documented exemption; the reasons
+48 of them. Each is covered by a documented exemption; the reasons
 are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 - `DELETE /api/admin/ai-models/:x`
@@ -252,6 +254,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `POST /api/documents/:x/collaboration-ticket`
 - `POST /api/documents/:x/cover`
 - `POST /api/entities/database`
+- `POST /api/features/seen`
 - `POST /api/invitations/accept`
 - `POST /api/invitations/preview`
 - `POST /api/me/api-tokens`
@@ -269,4 +272,4 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 ---
 
-Counted against 40 documented route exemptions.
+Counted against 41 documented route exemptions.

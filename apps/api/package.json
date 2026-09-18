@@ -25,6 +25,7 @@
     "@exocortex/contracts": "workspace:*",
     "@exocortex/database": "workspace:*",
     "@exocortex/editor": "workspace:*",
+    "@exocortex/features": "workspace:*",
     "@exocortex/logger": "workspace:*",
     "@exocortex/mcp-tools": "workspace:*",
     "@exocortex/queue": "workspace:*",

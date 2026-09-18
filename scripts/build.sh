@@ -119,6 +119,7 @@ run_gate "configuration sync"   node scripts/check-env-example.mjs
 run_gate "brand spelling"       node scripts/check-brand-spelling.mjs
 run_gate "MCP catalogue"        node scripts/check-mcp-catalog.mjs
 run_gate "capability parity"    node scripts/check-capability-parity.mjs
+run_gate "feature registry"     node scripts/check-feature-coverage.mjs
 run_gate "documentation"        node scripts/check-docs-current.mjs
 run_gate "migration history"    bash scripts/check-migrations-reproducible.sh
 ok "All hard gates green."

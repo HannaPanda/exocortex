@@ -70,6 +70,7 @@ model User {
   oauthRefreshTokens          OauthRefreshToken[]
   oauthConsents               OauthConsent[]
   sentInvitations             Invitation[]          @relation("InvitationInvitedBy")
+  featureSeen                 UserFeatureSeen?
   acceptedInvitation          Invitation?           @relation("InvitationAcceptedBy")
   agentSessions               AgentSession[]
   agentWrites                 AgentWriteJournal[]
@@ -879,6 +880,30 @@ model DocumentTemplate {
 
   @@index([targetParentId])
   @@map("document_template")
+}
+
+/// How far down the feature registry one person has read (issue #80, ADR-040).
+///
+/// One row per person, and the whole of it is a date: everything in
+/// `@exocortex/features` dated later than this counts as new for them. A date
+/// rather than a set of ids, because the question is "what happened since I
+/// last looked", and a set would have to be migrated every time an entry is
+/// renamed.
+///
+/// An absent row is not "has seen nothing". A new account has missed nothing,
+/// so the API reads an absent row as "has seen everything" and writes the row
+/// the first time the person opens the list. Getting this backwards would greet
+/// every new colleague with a changelog of sixty things they never missed.
+model UserFeatureSeen {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// The `since` date the person has read up to, `YYYY-MM-DD`. Stored as a
+  /// date and not a timestamp because that is what it is compared against.
+  seenUpTo  DateTime @db.Date
+  updatedAt DateTime @updatedAt
+
+  @@map("user_feature_seen")
 }
 
 /// Derived text about one page (issue #53, ADR-028).

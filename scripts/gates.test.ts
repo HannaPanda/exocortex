@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -55,11 +55,23 @@ function gate(script: string): GateResult {
 }
 
 const probes = new Set<string>();
+const probeDirectories = new Set<string>();
 const restore = new Map<string, string>();
 
-/** Writes a file that does not exist yet and remembers to delete it. */
+/**
+ * Writes a file that does not exist yet and remembers to delete it.
+ *
+ * Missing directories are created and remembered too, because one probe is a
+ * `page.tsx`: the app router derives a screen's address from its folder, so a
+ * probe screen cannot be a file dropped next to an existing one.
+ */
 function writeProbe(relativePath: string, content: string): void {
   const absolute = join(repoRoot, relativePath);
+  const directory = dirname(absolute);
+  if (!existsSync(directory)) {
+    mkdirSync(directory, { recursive: true });
+    probeDirectories.add(directory);
+  }
   probes.add(absolute);
   writeFileSync(absolute, content, 'utf8');
 }
@@ -75,6 +87,8 @@ function editFile(relativePath: string, edit: (source: string) => string): void 
 afterEach(() => {
   for (const absolute of probes) rmSync(absolute, { force: true });
   probes.clear();
+  for (const directory of probeDirectories) rmSync(directory, { force: true, recursive: true });
+  probeDirectories.clear();
   for (const [absolute, content] of restore) writeFileSync(absolute, content, 'utf8');
   restore.clear();
 });
@@ -358,6 +372,71 @@ describe('migration history (check-migrations-reproducible.sh)', () => {
     const result = gate('check-migrations-reproducible.sh');
     expect(result.status).not.toBe(0);
     expect(result.output).toContain('gate_probe_idx');
+  });
+});
+
+describe('feature registry coverage (check-feature-coverage.mjs)', () => {
+  it('is green: every capability is described in packages/features', () => {
+    expect(gate('check-feature-coverage.mjs').status).toBe(0);
+  });
+
+  it('goes red for a tool no feature describes', () => {
+    writeProbe(
+      'packages/mcp-tools/src/tools/__gate_probe__.ts',
+      [
+        "import { z } from 'zod';",
+        '',
+        "import { type AnyToolDefinition, defineTool } from '../tool.js';",
+        '',
+        'export const gateProbeTool: AnyToolDefinition = defineTool({',
+        "  name: 'exo_gate_probe',",
+        "  description: 'Probe.',",
+        '  inputSchema: z.object({}),',
+        "  surfaces: ['mcp', 'ai'],",
+        '  mutating: false,',
+        '  async execute() {',
+        "    return { text: 'probe' };",
+        '  },',
+        '});',
+        '',
+      ].join('\n'),
+    );
+    const result = gate('check-feature-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('exo_gate_probe');
+  });
+
+  it('goes red for a screen no feature describes', () => {
+    writeProbe(
+      'apps/web/src/app/(app)/__gate_probe__/page.tsx',
+      ['export default function GateProbePage() {', '  return null;', '}', ''].join('\n'),
+    );
+    const result = gate('check-feature-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('/__gate_probe__');
+  });
+
+  /**
+   * The other direction, and the one a rename produces: the entry still names
+   * a tool that has gone, so it describes a capability that no longer works
+   * the way it says.
+   */
+  it('goes red for a claim that matches nothing any more', () => {
+    editFile('packages/features/src/features/pages.ts', (source) =>
+      source.replace("'exo_search'", "'exo_search_renamed_away'"),
+    );
+    const result = gate('check-feature-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('exo_search_renamed_away');
+  });
+
+  it('goes red for an automation trigger nobody describes', () => {
+    editFile('packages/contracts/src/automations.ts', (source) =>
+      source.replace("  'SCHEDULE',\n]", "  'SCHEDULE',\n  'GATE_PROBE',\n]"),
+    );
+    const result = gate('check-feature-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('GATE_PROBE');
   });
 });
 

@@ -59,6 +59,10 @@ What is deliberately still missing is listed under
 - filing help for new pages: candidate parents ranked from the pages that
   already exist, in the sidebar's context menu, on a page sitting in the inbox,
   and as an MCP tool
+- a feature registry: `/hilfe` lists in German what the deployment can do and
+  where to find it, marks what is newer than the reader's own marker, and is
+  kept complete by a hard gate that refuses a tool, screen or automation
+  trigger nobody described (ADR-040)
 - calendars: iCal import and export, reminders, event pages
 
 **Search, AI and automation**
@@ -191,6 +195,7 @@ packages/config       runtime-validated environment schemas
 packages/contracts    zod schemas for REST DTOs, WebSocket events, job payloads
 packages/database     Prisma schema, migrations, order keys, tree helpers, search adapters
 packages/editor       canonical Tiptap schema, block ids, Markdown, Yjs materialization
+packages/features     the feature registry: what a person can do here, in a person's words
 packages/logger       structured logging, correlation ids, OpenTelemetry tracing
 packages/mcp-tools    the one tool catalogue, shared by apps/mcp and the built-in AI
 packages/queue        typed BullMQ queues, workers, Redis event bus
@@ -224,6 +229,7 @@ tools/                the Claude Code plugin: MCP server, memory hooks, setup sk
 | [`docs/projects.md`](docs/projects.md)                   | LaTeX projects, the file tree, the build runner              |
 | [`docs/overview-pages.md`](docs/overview-pages.md)       | digests, composition, when a refresh costs anything          |
 | [`docs/templates.md`](docs/templates.md)                 | page templates: the sidecar, the copy, the title pattern     |
+| [`docs/features.md`](docs/features.md)                   | the feature registry, the coverage gate, writing an entry    |
 | [`docs/observability.md`](docs/observability.md)         | logs, health, tracing: what is recorded and what never is    |
 | [`docs/deviations.md`](docs/deviations.md)               | where the implementation deviates from the brief and why     |
 | [`AGENTS.md`](AGENTS.md)                                 | rules for automated agents, including the documentation rule |

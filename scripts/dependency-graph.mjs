@@ -37,6 +37,11 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
   // start writing rows or reasoning about documents; mapping an external event
   // onto a database row is the worker's job.
   '@exocortex/calendar': ['@exocortex/logger'],
+  // The feature registry is prose plus a handful of names, typed against the
+  // wire contract so the catalogue and the DTO cannot drift. Nothing else:
+  // an entry describes a capability, it does not reach one, and a registry
+  // that could read the database would eventually be asked to.
+  '@exocortex/features': ['@exocortex/contracts'],
   '@exocortex/auth': [
     '@exocortex/config',
     '@exocortex/logger',
@@ -68,6 +73,7 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
     '@exocortex/ai',
     '@exocortex/editor',
     '@exocortex/mcp-tools',
+    '@exocortex/features',
   ],
   '@exocortex/collaboration': [
     '@exocortex/config',

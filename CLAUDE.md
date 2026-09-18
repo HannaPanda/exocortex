@@ -92,6 +92,17 @@ file is the contract for automated sessions. Read it before changing code.
     something this licence cannot be; and contributions carry the grant in
     `CONTRIBUTING.md`, which is what keeps relicensing possible at all.
     Individual exceptions live in `LICENSE-GRANTS.md`, never in `LICENSE`.
+15. **A capability a person cannot discover is a capability nobody has.**
+    `packages/features` is the registry of what this deployment can do, written
+    in the words somebody would use to ask for it, and it is what `/hilfe` and
+    `exo_features` serve. Every MCP tool, every screen in `apps/web` and every
+    automation trigger has to be claimed by an entry, or
+    `scripts/check-feature-coverage.mjs` goes red; a claim that no longer
+    matches anything goes red too. So a feature change adds or amends an entry
+    in the same commit series, and `since` is the day it goes live, because
+    that date is what tells every reader it is new to them (ADR-040). The gate
+    counts, it cannot read: an entry that is complete and wrong passes, which
+    is why the summary is written for the person and not for the counter.
 
 ## Repository map
 
@@ -107,6 +118,7 @@ file is the contract for automated sessions. Read it before changing code.
 | `packages/contracts`       | zod schemas for REST DTOs, WebSocket events, job payloads.                                                                                                                                               |
 | `packages/database`        | Prisma schema, migrations, order keys, tree helpers, full-text and hybrid search adapters.                                                                                                               |
 | `packages/auth`            | Better Auth setup, session verification, authorization policies, collaboration tickets.                                                                                                                  |
+| `packages/features`        | The feature registry: one hand-written entry per capability, in the words a person would use. Data only, typed against the wire contract.                                                                |
 | `packages/editor`          | Canonical Tiptap schema, block IDs, block catalog, Markdown, Yjs materialization.                                                                                                                        |
 | `packages/queue`           | Typed BullMQ queues, workers, Redis event bus.                                                                                                                                                           |
 | `packages/storage`         | S3-compatible object storage, MIME sniffing, image downscaling.                                                                                                                                          |
@@ -137,11 +149,12 @@ bash scripts/deploy.sh # build.sh, then migrations, nginx, the four units,
                        # readiness, and the deploy marker last.
 ```
 
-`build.sh` is the one to reach for: it runs the seven hard gates that have no
+`build.sh` is the one to reach for: it runs the eight hard gates that have no
 bypass (package boundaries, `.env.example` sync, brand spelling, MCP catalogue
-completeness, capability parity, documentation currency, migration reproducibility)
-as well as the checks below, in the right order and without racing the live units
-for memory. `deploy/README.md` explains what each step does.
+completeness, capability parity, feature registry coverage, documentation
+currency, migration reproducibility) as well as the checks below, in the right
+order and without racing the live units for memory. `deploy/README.md` explains
+what each step does.
 
 The same script is the whole of `.github/workflows/build.yml`: the CI installs
 Node, pnpm and nothing else, then runs `bash scripts/build.sh`. A check that has
@@ -308,6 +321,12 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   Markdown, block ids are regenerated while every reference outwards is kept,
   row properties travel only within one database, and `renderTitlePattern` is
   the one function both the API and the browser build the new title with.
+- ADR-040: the feature registry is written by hand and counted by a gate. What
+  a person can do here is a German sentence in `packages/features`, not a route
+  in the matrix or a tool description; three inventories (tools, screens,
+  automation triggers) have to be claimed by an entry or the build goes red,
+  and a claim that matches nothing goes red too. Discovery is a per-person
+  date, and an absent marker means the reader has missed nothing.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -334,6 +353,7 @@ Each of these has a step-by-step recipe:
 | new project type, project build runner                   | `docs/projects.md`          |
 | overview pages, digests, composition prompts             | `docs/overview-pages.md`    |
 | new page template placeholder, template UI               | `docs/templates.md`         |
+| new feature entry, the help page, the coverage gate      | `docs/features.md`          |
 
 ## Deployment on this machine
 

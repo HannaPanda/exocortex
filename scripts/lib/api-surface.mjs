@@ -127,7 +127,7 @@ function pathLiterals(source) {
 }
 
 /** The `{ … }` literal that starts at `open`, without its braces. */
-function readBlock(source, open) {
+export function readBlock(source, open) {
   let depth = 1;
   let cursor = open + 1;
   while (cursor < source.length && depth > 0) {

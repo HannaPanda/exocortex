@@ -47,25 +47,27 @@ mechanical rather than a matter of judgement.
 Change one of the things on the left, update the documents on the right **in the
 same commit series**:
 
-| If the change touches                                    | Update                                                                 |
-| -------------------------------------------------------- | ---------------------------------------------------------------------- |
-| a capability a human can use                             | `docs/capability-matrix.md` (regenerate), the recipe doc for that area |
-| a queue, a processor, a maintenance task, a schedule     | `docs/background-jobs.md`                                              |
-| a package, an application, a package boundary            | `README.md` layout, `CLAUDE.md` repository map                         |
-| a process, a socket, the outbox, the event flow          | `docs/architecture.md`                                                 |
-| a setting, its scope, its ceiling                        | `docs/admin.md`, `.env.example` if it has a bootstrap fallback         |
-| a deployment unit, a container, an nginx route, a backup | `deploy/README.md`                                                     |
-| a hard gate, a check in `build.sh`, the CI workflow      | `deploy/README.md`, the command tables in `README.md` and `CLAUDE.md`  |
-| the licence, or what a contribution may be used for      | `LICENSE`, `CONTRIBUTING.md`, `LICENSE-GRANTS.md`, `README.md`         |
-| a compose service or a host port                         | `docs/local-development.md`                                            |
-| an MCP or AI tool                                        | `docs/mcp.md`                                                          |
-| a span, a trace attribute, what is recorded about a run  | `docs/observability.md`                                                |
-| where a kind of behaviour is tested, a new test suite    | `docs/local-development.md`                                            |
-| a decision that contradicts an ADR                       | a new ADR in `docs/adr/`, and the ADR list in `CLAUDE.md`              |
-| what the product can and cannot do                       | the "What works today" and "Not built" sections of `README.md`         |
+| If the change touches                                    | Update                                                                                                  |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| a capability a human can use                             | `docs/capability-matrix.md` (regenerate), an entry in `packages/features`, the recipe doc for that area |
+| a queue, a processor, a maintenance task, a schedule     | `docs/background-jobs.md`                                                                               |
+| a package, an application, a package boundary            | `README.md` layout, `CLAUDE.md` repository map                                                          |
+| a process, a socket, the outbox, the event flow          | `docs/architecture.md`                                                                                  |
+| a setting, its scope, its ceiling                        | `docs/admin.md`, `.env.example` if it has a bootstrap fallback                                          |
+| a deployment unit, a container, an nginx route, a backup | `deploy/README.md`                                                                                      |
+| a hard gate, a check in `build.sh`, the CI workflow      | `deploy/README.md`, the command tables in `README.md` and `CLAUDE.md`                                   |
+| the licence, or what a contribution may be used for      | `LICENSE`, `CONTRIBUTING.md`, `LICENSE-GRANTS.md`, `README.md`                                          |
+| a compose service or a host port                         | `docs/local-development.md`                                                                             |
+| an MCP or AI tool                                        | `docs/mcp.md`                                                                                           |
+| a span, a trace attribute, what is recorded about a run  | `docs/observability.md`                                                                                 |
+| where a kind of behaviour is tested, a new test suite    | `docs/local-development.md`                                                                             |
+| a decision that contradicts an ADR                       | a new ADR in `docs/adr/`, and the ADR list in `CLAUDE.md`                                               |
+| what the product can and cannot do                       | the "What works today" and "Not built" sections of `README.md`                                          |
 
-Two of these are enforced and cannot be forgotten:
-`scripts/check-capability-parity.mjs` for the first row and
+Three of these are enforced and cannot be forgotten:
+`scripts/check-capability-parity.mjs` and `scripts/check-feature-coverage.mjs`
+for the first row -- the one asks whether all three clients reach the
+capability, the other whether anybody described it in a person's words -- and
 `scripts/check-docs-current.mjs` for the inventories (packages, queues,
 maintenance tasks, compose services, systemd units, the documents under `docs/`)
 plus a short list of claims the tree disproves. The rest is this table.

@@ -12,6 +12,7 @@ import {
   PanelRightIcon,
   SearchIcon,
   ShieldIcon,
+  SparklesIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -40,6 +41,7 @@ import {
 import { AiSelectionProvider, useAiSelection } from '@/components/ai/ai-selection';
 import { CommentAnchorProvider, useCommentAnchor } from '@/components/comments/comment-anchor';
 import { SearchCommand } from '@/components/search/search-command';
+import { useFeatures } from '@/lib/api/feature-queries';
 import { queryKeys, useSessionQuery } from '@/lib/api/queries';
 import { signOut } from '@/lib/auth/client';
 import { useRealtime, useRealtimeEvent } from '@/lib/realtime/realtime-provider';
@@ -433,7 +435,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * The five places that belong to the deployment rather than to a workspace.
+ * The six places that belong to the deployment rather than to a workspace.
  *
  * Its own component only because the shell had grown past its line limit, and
  * a row of identical tooltip links is the part of it that reads as one thing.
@@ -443,11 +445,31 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
  * a project, so none of the three fits under `/arbeitsbereich`.
  *
  * The role is not yet part of `CurrentSessionResponse` (see `AdminGuard`'s
- * TODO), so all five render for every signed-in user; `/admin` gates itself
+ * TODO), so all six render for every signed-in user; `/admin` gates itself
  * against the API's admin check.
+ *
+ * "Funktionen" carries a count, and it is the only one that does. A feature
+ * nobody knows about is the same as a feature nobody built (issue #80), and a
+ * list you have to remember to open does not fix that -- the dot is the part
+ * that does the work.
  */
 function GlobalLinks() {
-  const links: { href: string; label: string; testId: string; icon: typeof KeyIcon }[] = [
+  const features = useFeatures();
+  const newCount = features.data?.newCount ?? 0;
+  const links: {
+    href: string;
+    label: string;
+    testId: string;
+    icon: typeof KeyIcon;
+    badge?: number;
+  }[] = [
+    {
+      href: '/hilfe',
+      label: newCount > 0 ? `Funktionen (${newCount} neu)` : 'Funktionen',
+      testId: 'open-features',
+      icon: SparklesIcon,
+      badge: newCount,
+    },
     { href: '/chats', label: 'Chats', testId: 'open-chats', icon: MessagesSquareIcon },
     { href: '/entitaeten', label: 'Entitäten', testId: 'open-entities', icon: NetworkIcon },
     { href: '/gedaechtnis', label: 'Gedächtnis', testId: 'open-memory', icon: BrainIcon },
@@ -472,8 +494,16 @@ function GlobalLinks() {
                 aria-label={link.label}
                 data-testid={link.testId}
                 render={<Link href={link.href} />}
+                className="relative"
               >
                 <link.icon />
+                {link.badge !== undefined && link.badge > 0 ? (
+                  <span
+                    aria-hidden
+                    data-testid="features-badge"
+                    className="absolute right-1 top-1 size-2 rounded-full bg-primary"
+                  />
+                ) : null}
               </Button>
             }
           />

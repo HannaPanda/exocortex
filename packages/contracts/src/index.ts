@@ -18,6 +18,7 @@ export * from './documents';
 export * from './entities';
 export * from './errors';
 export * from './events';
+export * from './features';
 export * from './inbox';
 export * from './invitations';
 export * from './jobs';
