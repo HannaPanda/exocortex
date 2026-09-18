@@ -39,7 +39,7 @@ function tidy(line: string): string {
 }
 
 /** `https://example.com/blog/post?x=1` -> `example.com/blog/post`. */
-function titleFromUrl(candidate: string): string | null {
+export function titleFromUrl(candidate: string): string | null {
   let url: URL;
   try {
     url = new URL(candidate);

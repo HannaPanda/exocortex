@@ -9,6 +9,7 @@ export * from './attachments';
 export * from './auth';
 export * from './automations';
 export * from './calendar';
+export * from './clips';
 export * from './collaboration';
 export * from './comments';
 export * from './database-views';

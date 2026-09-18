@@ -7,6 +7,10 @@ import {
   captureRequestSchema,
   type CaptureResponse,
   captureResponseSchema,
+  type ClipRequest,
+  clipRequestSchema,
+  type ClipResponse,
+  clipResponseSchema,
   type InboxQuery,
   inboxQuerySchema,
   type InboxResponse,
@@ -17,6 +21,7 @@ import { CurrentSession } from '../auth/session.guard';
 import { currentCorrelationId } from '../common/correlation';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
+import { ClipService } from './clip.service';
 import { InboxService } from './inbox.service';
 
 /**
@@ -30,7 +35,10 @@ import { InboxService } from './inbox.service';
 @ApiTags('inbox')
 @Controller('api/workspaces/:workspaceId')
 export class InboxController {
-  constructor(private readonly inbox: InboxService) {}
+  constructor(
+    private readonly inbox: InboxService,
+    private readonly clips: ClipService,
+  ) {}
 
   @Get('inbox')
   @ApiQuery({ name: 'limit', required: false })
@@ -52,6 +60,22 @@ export class InboxController {
     @Body(zodPipe(captureRequestSchema)) body: CaptureRequest,
   ): Promise<CaptureResponse> {
     return this.inbox.capture({
+      workspaceId,
+      userId: session.userId,
+      request: body,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  @Post('clip')
+  @ApiBody({ schema: openApiSchema(clipRequestSchema) })
+  @ApiCreatedResponse({ schema: openApiResponseSchema(clipResponseSchema) })
+  async clip(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+    @Body(zodPipe(clipRequestSchema)) body: ClipRequest,
+  ): Promise<ClipResponse> {
+    return this.clips.clip({
       workspaceId,
       userId: session.userId,
       request: body,
