@@ -22,9 +22,8 @@ export interface IndexDocumentInput {
  * Search adapter boundary.
  *
  * Application services only ever talk to this interface, so OpenSearch (or any
- * other engine) can be added later without touching them. The schema already
- * contains `pgvector` columns for a future semantic adapter; no embeddings are
- * generated in this version.
+ * other engine) can be added later without touching them. The semantic half
+ * lives beside this one in `semantic-search.ts` (ADR-020) and wraps it.
  */
 /**
  * What an adapter can answer on its own.

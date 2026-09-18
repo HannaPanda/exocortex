@@ -616,6 +616,98 @@ describe('semantic search', () => {
     }
   }, 60_000);
 
+  /** A page long enough to be cut up, with one passage about one rare thing. */
+  const longBody = [
+    ...Array.from(
+      { length: 20 },
+      (_, index) => `Absatz ${index} über Ablage und Verwaltung. ${'fuellwort '.repeat(25)}`,
+    ),
+    'Zwiebelkuchenrezept '.repeat(95),
+    ...Array.from({ length: 10 }, (_, index) => `Nachtrag ${index}. ${'fuellwort '.repeat(25)}`),
+  ].join('\n');
+
+  it('cuts a long page into passages beside its whole-document vector', async () => {
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const documentId = await indexedPage('Lange Seite', longBody);
+      const rows = await prisma.documentEmbedding.findMany({ where: { documentId } });
+
+      const whole = rows.filter((row) => row.blockId === null);
+      const passages = rows.filter((row) => row.blockId !== null);
+      expect(whole).toHaveLength(1);
+      expect(whole[0]?.chunkText).toBeNull();
+      expect(passages.length).toBeGreaterThan(1);
+      expect(passages.every((row) => row.chunkText !== null && row.chunkText.length > 0)).toBe(
+        true,
+      );
+
+      // Re-indexing the same text pays for nothing, passages included.
+      await createIndexDocumentProcessor({ prisma, search })(
+        contextFor({
+          correlationId: 'semantic',
+          documentId,
+          workspaceId,
+          reason: 'materialized' as const,
+        }).context,
+      );
+      const again = await prisma.documentEmbedding.findMany({ where: { documentId } });
+      expect(again.map((row) => row.createdAt.getTime()).sort()).toEqual(
+        rows.map((row) => row.createdAt.getTime()).sort(),
+      );
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+
+  it('drops the passages a shortened page no longer has', async () => {
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const documentId = await indexedPage('Wird kürzer', longBody);
+      expect(await prisma.documentEmbedding.count({ where: { documentId } })).toBeGreaterThan(1);
+
+      await prisma.documentContent.update({
+        where: { documentId },
+        data: { plainText: 'Nur noch ein Satz über Ablage.' },
+      });
+      await createIndexDocumentProcessor({ prisma, search })(
+        contextFor({
+          correlationId: 'semantic',
+          documentId,
+          workspaceId,
+          reason: 'materialized' as const,
+        }).context,
+      );
+
+      const rows = await prisma.documentEmbedding.findMany({ where: { documentId } });
+      expect(rows).toHaveLength(1);
+      expect(rows[0]?.blockId).toBeNull();
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+
+  it('answers with the passage that matched, not with the first lines of the page', async () => {
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const documentId = await indexedPage('Rezeptsammlung', longBody);
+
+      // `unauffindbarerbegriff` is in no document and the full-text half ANDs
+      // its tokens, so whatever comes back came back through the vector half.
+      const hits = await search.search({
+        workspaceId,
+        query: 'Zwiebelkuchenrezept unauffindbarerbegriff',
+        limit: 10,
+        includeArchived: false,
+      });
+
+      const hit = hits.find((result) => result.documentId === documentId);
+      expect(hit).toBeDefined();
+      expect(hit?.snippet).toContain('Zwiebelkuchenrezept');
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+
   it('finds a page by meaning that the full-text half does not match at all', async () => {
     semanticModel = TEST_EMBEDDING_MODEL;
     try {

@@ -364,6 +364,11 @@ writes through, and stops being work at all once they all have one. Newest
 first, because a deployment that has just switched the feature on is waiting
 for the pages it is working on today, not the ones it last touched a year ago.
 
+The same sweep carries a page over to passage vectors (ADR-034): a page above
+2400 characters that has its whole-document vector but none of its passages
+counts as owing work, exactly like a page with no vector at all. Without that,
+an archive nobody edits would never be cut up.
+
 One page the model refuses is logged and skipped, not retried in a loop:
 nothing was written for it, so the next run picks it up again. Ordinary
 indexing embeds a page as it goes, so this sweep exists only for pages that

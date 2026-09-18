@@ -1,0 +1,17 @@
+-- The passage a chunk vector was built from (issue #36).
+--
+-- A page longer than a couple of thousand characters now gets extra rows in
+-- `document_embedding`, one per passage, beside its whole-document row. Two
+-- things follow that the table could not say before:
+--
+--   * a hit has to be able to show the paragraph that matched rather than the
+--     first 200 characters of the page, which is the whole point of chunking
+--     for an agent with a small context window;
+--   * the passage cannot be recomputed from `document_search_index` at read
+--     time, because the packing that produced it may already have been redone
+--     against a newer `plainText`. Offsets would then point at the wrong
+--     sentence, silently.
+--
+-- So the passage is stored next to its vector. `NULL` marks a whole-document
+-- row, which keeps its snippet from the search index as before.
+ALTER TABLE "document_embedding" ADD COLUMN "chunkText" TEXT;

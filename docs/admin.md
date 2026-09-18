@@ -272,8 +272,12 @@ turns every indexed page into a paid embedding call.
 
 Cost, so it is not a surprise: `text-embedding-3-small` is about two cents per
 million tokens, one vector per page of up to 24k characters, and a page whose
-text has not changed is never embedded twice. Searching costs one embedding of
-the query per search ([ADR-020](adr/ADR-020-semantic-search-beside-full-text.md)).
+text has not changed is never embedded twice. A page above 2400 characters pays
+for its passages on top of that, at most 64 of them
+([ADR-034](adr/ADR-034-passages-beside-the-page-vector.md)); on this
+installation that is about 2 percent of the pages. Searching costs one embedding
+of the query per search
+([ADR-020](adr/ADR-020-semantic-search-beside-full-text.md)).
 
 ## The AI model registry
 

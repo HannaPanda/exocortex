@@ -61,3 +61,7 @@ e2e/.run-scope
 # Index and notes written by the Serena MCP server when a session activates this
 # project. Local tooling state, regenerated on demand, never shared.
 .serena/
+
+# Per-machine Claude Code state: permission decisions, scheduler locks. Local
+# tooling state like `.serena/`, never shared.
+.claude/

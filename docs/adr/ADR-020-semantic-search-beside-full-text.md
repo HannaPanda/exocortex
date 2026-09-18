@@ -70,9 +70,10 @@ no-op once they all have vectors, and a no-op while the setting is off.
 
 ## Consequences
 
-- A page is embedded as `title + plainText`, truncated to 24k characters, one
-  vector per page. Per-block chunking is what the unused `blockId` column is
-  for, and it is not built.
+- A page is embedded as `title + plainText`, truncated to 24k characters. Since
+  issue #36 a long page carries passage vectors as well, beside that one and
+  never instead of it; the `blockId` column is what holds them
+  ([ADR-034](ADR-034-passages-beside-the-page-vector.md)).
 - Switching the model in `search.embeddingModelSlug` invalidates nothing by
   hand: the vector query filters on the model, so the old rows stop being read,
   the backfill writes new ones, and the next write of a page drops the stale

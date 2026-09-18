@@ -1,5 +1,5 @@
 import { semanticSearchOptions } from '@exocortex/contracts';
-import { Prisma } from '@exocortex/database';
+import { CHUNK_THRESHOLD_CHARS, Prisma } from '@exocortex/database';
 
 import { type MaintenanceTask } from './context';
 
@@ -27,9 +27,13 @@ export const backfillEmbeddings: MaintenanceTask = async (context) => {
   if (semantic === null) return;
 
   // Pages the vector index has never seen under the model that is
-  // currently configured. Newest first: a deployment that has just
-  // switched semantic search on gets the pages it is working on today
-  // long before the ones it has not touched in a year.
+  // currently configured, plus the long ones that have a whole-document
+  // vector but none of the passages issue #36 added: turning chunking on
+  // is the same kind of catching up as turning semantic search on, and
+  // nothing else would ever revisit a page that is not being edited.
+  // Newest first: a deployment that has just switched semantic search on
+  // gets the pages it is working on today long before the ones it has not
+  // touched in a year.
   const scope =
     payload.workspaceId === null
       ? Prisma.empty
@@ -55,7 +59,18 @@ export const backfillEmbeddings: MaintenanceTask = async (context) => {
         ON embedding."documentId" = index."documentId"
        AND embedding."blockId" IS NULL
        AND embedding."model" = ${semantic.model}
-      WHERE embedding."id" IS NULL
+      WHERE (
+          embedding."id" IS NULL
+          OR (
+            length(index."plainText") > ${CHUNK_THRESHOLD_CHARS}
+            AND NOT EXISTS (
+              SELECT 1 FROM "document_embedding" AS passage
+              WHERE passage."documentId" = index."documentId"
+                AND passage."blockId" IS NOT NULL
+                AND passage."model" = ${semantic.model}
+            )
+          )
+        )
         ${scope}
       ORDER BY index."updatedAt" DESC
       LIMIT ${context.embeddingBackfillBatchSize}

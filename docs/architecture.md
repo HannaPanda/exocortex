@@ -230,6 +230,14 @@ what both composition roots build; `search.semanticEnabled` decides per call
 whether the second half runs at all, and with it off the behaviour is exactly
 `PostgresSearchAdapter`'s.
 
+A page above 2400 characters gets passage vectors as well, one per run of blocks
+of about 2000 characters (`packages/database/src/chunking.ts`, ADR-034). They
+are stored under `blockId = 'chunk:NNNN'` beside the whole-document row, with
+the passage in `chunkText`; the vector query over-samples and folds the nearest
+rows to the best one per page before fusion, and that row's passage becomes the
+excerpt a reader and `recall` see. `findRelated` reads whole-document rows only,
+which is why they survived.
+
 The vectors come from `EmbeddingProvider` in `packages/ai`, which
 `packages/database` may not import — the adapter declares its own
 `EmbeddingClient` port and the composition root passes the bridge

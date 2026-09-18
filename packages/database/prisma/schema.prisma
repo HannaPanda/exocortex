@@ -928,10 +928,16 @@ model DocumentEmbedding {
   id         String                       @id @default(cuid(2))
   documentId String
   document   Document                     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  /// `NULL` for the vector of the whole page. A passage of a long page carries
+  /// `chunk:0000`, `chunk:0001` and so on (issue #36, see `chunkBlockId`).
   blockId    String?
   model      String
   embedding  Unsupported("vector(1536)")?
   textHash   String?
+  /// The passage this vector was built from, so a hit can show the paragraph
+  /// that matched instead of the first 200 characters of the page. `NULL` on a
+  /// whole-document row, which has the search index for that.
+  chunkText  String?
   createdAt  DateTime                     @default(now())
 
   @@unique([documentId, blockId, model])

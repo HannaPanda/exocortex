@@ -267,6 +267,12 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   the browser sees it and again after a redirect, because the browser fetches
   from inside this host's Docker network; the per-run fetch budget is counted in
   the worker, since only the loop knows what a run is.
+- ADR-034: a page above 2400 characters is also embedded as passages of about
+  2000 characters, stored under `blockId = 'chunk:NNNN'` with the passage text
+  beside the vector. They are added _beside_ the whole-document row, never
+  instead of it, because `findRelated` asks about pages; a search folds the
+  nearest rows to one per page before fusion, and the winning passage becomes
+  the excerpt.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
