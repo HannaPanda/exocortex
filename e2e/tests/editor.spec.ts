@@ -275,6 +275,9 @@ test.describe('editor', () => {
     await page.keyboard.type('Fett');
     await page.keyboard.press('Home');
     await page.keyboard.press('Shift+End');
+    // The toolbar appearing is the editor confirming it has the selection, so
+    // the keystroke below cannot arrive before the editor is listening.
+    await expect(page.getByTestId('selection-toolbar')).toBeVisible();
     await page.keyboard.press('Control+b');
 
     await expect(page.locator('.exocortex-editor strong')).toHaveText('Fett');
@@ -292,6 +295,7 @@ test.describe('editor', () => {
     await page.getByTestId('editor-surface').click();
     await page.keyboard.press('Home');
     await page.keyboard.press('Shift+End');
+    await expect(page.getByTestId('selection-toolbar')).toBeVisible();
     await page.keyboard.press('Control+.');
 
     await expect(context).toBeVisible({ visible: !contextWasOpen });
