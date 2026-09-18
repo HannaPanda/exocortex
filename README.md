@@ -48,6 +48,10 @@ What is deliberately still missing is listed under
 - quick capture into a workspace inbox: `Strg + E`, `exo_capture` or
   `POST /capture` write a thought down without choosing a place first, and the
   entry is an ordinary page from the first second (ADR-036)
+- a web clipper and a share target: `/teilen` takes an address, a title and the
+  selected text from the browser's bookmarklet or from the phone's share menu,
+  optionally reads the page itself, and writes an ordinary page with its
+  provenance in the first line (ADR-037)
 - filing help for new pages: candidate parents ranked from the pages that
   already exist, in the sidebar's context menu, on a page sitting in the inbox,
   and as an MCP tool

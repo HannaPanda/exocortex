@@ -288,6 +288,12 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   partial index,
   the page is created by the first capture that needs it, and filing is the
   existing `suggest-parent` plus `move` rather than a route of its own.
+- ADR-037: a clip is a capture with a provenance line, not a second content
+  type; reading the page itself is opt-in and goes through the address check of
+  ADR-033; the share target and the bookmarklet share one GET route, because the
+  service worker answers nothing; and `exo_clip` carries the web fence although
+  it returns no web text, so a run cannot clip a page and read it back around
+  the fence on `exo_web_fetch`.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
