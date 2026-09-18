@@ -192,6 +192,7 @@ else
     info "Tests without infrastructure (--full-tests adds the rest) …"
     pnpm --filter @exocortex/contracts --filter @exocortex/config --filter @exocortex/logger \
          --filter @exocortex/editor --filter @exocortex/ui --filter @exocortex/storage \
+         --filter @exocortex/features \
          --filter @exocortex/ai --filter @exocortex/calendar --filter @exocortex/auth \
          --filter @exocortex/mcp-tools --filter @exocortex/mcp test \
       || fail "Tests failed"
