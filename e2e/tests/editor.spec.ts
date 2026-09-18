@@ -256,4 +256,45 @@ test.describe('editor', () => {
     await page.keyboard.type('Kein ausgewählter Text');
     await expect(page.getByTestId('selection-toolbar')).toBeHidden();
   });
+
+  /**
+   * One keystroke, one action (issue #81).
+   *
+   * Only a browser can show this. The shell listens on `window`, the editor
+   * keymap runs first, and nothing in either file says the other exists -- so
+   * three keys did both things at once and the code read as if it could not
+   * happen. `Strg+B` formats and leaves the navigation alone; `Strg+E` and
+   * `Strg+.` belong to the application and no longer format.
+   */
+  test('a shortcut in the editor does one thing, not two', async ({ page }) => {
+    await openEditor(page);
+
+    const sidebar = page.getByTestId('sidebar');
+    const sidebarWasOpen = await sidebar.isVisible();
+
+    await page.keyboard.type('Fett');
+    await page.keyboard.press('Home');
+    await page.keyboard.press('Shift+End');
+    await page.keyboard.press('Control+b');
+
+    await expect(page.locator('.exocortex-editor strong')).toHaveText('Fett');
+    expect(await sidebar.isVisible()).toBe(sidebarWasOpen);
+
+    // Quick capture keeps Strg+E; the selection must not become inline code.
+    await page.keyboard.press('Control+e');
+    await expect(page.getByTestId('capture-dialog')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.exocortex-editor code')).toHaveCount(0);
+
+    // The context panel keeps Strg+. ; the selection must not become superscript.
+    const context = page.getByTestId('context-panel');
+    const contextWasOpen = await context.isVisible();
+    await page.getByTestId('editor-surface').click();
+    await page.keyboard.press('Home');
+    await page.keyboard.press('Shift+End');
+    await page.keyboard.press('Control+.');
+
+    await expect(context).toBeVisible({ visible: !contextWasOpen });
+    await expect(page.locator('.exocortex-editor sup')).toHaveCount(0);
+  });
 });

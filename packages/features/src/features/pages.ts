@@ -60,7 +60,7 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
       'Seiten hängen beliebig tief ineinander, und wo eine Seite hängt, ist Teil ihrer Aussage. Eine Seite lässt sich mit der Maus an eine andere Stelle ziehen, samt allem, was darunter liegt, und sogar in einen anderen Arbeitsbereich.',
     since: '2026-08-05',
     ui: { where: 'Die Navigation links, mit der Maus.' },
-    shortcuts: ['Strg+B blendet die Navigation ein und aus'],
+    shortcuts: ['Strg+B blendet die Navigation ein und aus, außerhalb von Textfeldern'],
     tools: ['exo_page_tree', 'exo_page_move'],
   }),
   defineFeature({

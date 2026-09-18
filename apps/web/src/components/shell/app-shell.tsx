@@ -44,6 +44,7 @@ import { SearchCommand } from '@/components/search/search-command';
 import { useFeatures } from '@/lib/api/feature-queries';
 import { queryKeys, useSessionQuery } from '@/lib/api/queries';
 import { signOut } from '@/lib/auth/client';
+import { isTypingTarget } from '@/lib/keyboard';
 import { useRealtime, useRealtimeEvent } from '@/lib/realtime/realtime-provider';
 import { usePersistentState } from '@/lib/use-persistent-state';
 
@@ -228,7 +229,16 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
         event.preventDefault();
         setSearchOpen((open) => !open);
       }
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'b') {
+      // Strg+B is the editor's bold, and the editor's keymap runs first: this
+      // listener could only add a second action to the same keystroke, never
+      // replace it, so the page ended up bold *and* the navigation collapsed
+      // (issue #81). Formatting wins where text is being written; everywhere
+      // else the key is free.
+      if (
+        (event.metaKey || event.ctrlKey) &&
+        event.key.toLowerCase() === 'b' &&
+        !isTypingTarget(event.target)
+      ) {
         event.preventDefault();
         setSidebarOpen(!sidebarOpen);
       }

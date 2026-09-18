@@ -142,7 +142,22 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
       Bold,
       Italic,
       Strike,
-      Code,
+      Code.extend({
+        /**
+         * Inline code without `Strg+E` (issue #81).
+         *
+         * The application binds `Strg+E` to quick capture, and a keystroke
+         * cannot belong to both: the editor's keymap runs first, so the
+         * capture dialog opened *and* the selection became code. Capture keeps
+         * the key because it is the shortcut for interrupting yourself, and
+         * being inside the editor is when that happens. Inline code keeps the
+         * selection toolbar and the backtick input rule, which is how it is
+         * reached anyway.
+         */
+        addKeyboardShortcuts() {
+          return {};
+        },
+      }),
       Link.extend({
         /**
          * The identity next to the address (issue #24).

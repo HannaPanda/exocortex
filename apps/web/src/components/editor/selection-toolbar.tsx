@@ -56,10 +56,16 @@ interface SelectionToolbarProps {
 interface MarkButton {
   id: string;
   label: string;
-  shortcut: string;
+  /** Absent where the editor has no keystroke for it; see the code entry. */
+  shortcut?: string;
   icon: React.ComponentType<{ className?: string }>;
   mark: string;
   toggle: (editor: Editor) => void;
+}
+
+/** Label plus keystroke, or the label alone where there is no keystroke. */
+function markButtonName(button: MarkButton): string {
+  return button.shortcut === undefined ? button.label : `${button.label} (${button.shortcut})`;
 }
 
 /**
@@ -103,7 +109,7 @@ const MARK_BUTTONS: readonly MarkButton[] = [
   {
     id: 'code',
     label: 'Code',
-    shortcut: 'Strg+E',
+    // No shortcut: Strg+E belongs to quick capture (issue #81).
     icon: CodeIcon,
     mark: 'code',
     toggle: (editor) => editor.chain().focus().toggleCode().run(),
@@ -111,7 +117,7 @@ const MARK_BUTTONS: readonly MarkButton[] = [
   {
     id: 'superscript',
     label: 'Hochgestellt',
-    shortcut: 'Strg+.',
+    // No shortcut: Strg+. belongs to the context panel (issue #81).
     icon: SuperscriptIcon,
     mark: 'superscript',
     toggle: (editor) => editor.chain().focus().toggleSuperscript().run(),
@@ -242,10 +248,10 @@ export function SelectionToolbar({
               <Button
                 variant="ghost"
                 size="icon-sm"
-                aria-label={`${button.label} (${button.shortcut})`}
+                aria-label={markButtonName(button)}
                 // The accessible name never shows on screen; a pointer user needs the
                 // tooltip to learn which icon does what, and the shortcut with it.
-                title={`${button.label} (${button.shortcut})`}
+                title={markButtonName(button)}
                 aria-pressed={active.marks[button.id] === true}
                 data-pressed={active.marks[button.id] === true ? '' : undefined}
                 data-testid={`mark-${button.id}`}

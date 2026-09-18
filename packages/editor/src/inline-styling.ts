@@ -143,5 +143,24 @@ export const inlineStylingMarkdownAdapter: MarkdownExtensionAdapter = {
   },
 };
 
+/**
+ * Superscript without `Strg+.` (issue #81).
+ *
+ * The application binds `Strg+.` to the context panel, and the editor's keymap
+ * runs first, so the keystroke raised text *and* toggled the panel. The panel
+ * keeps the key: it is reached constantly and from everywhere, while a
+ * superscript is set from the selection toolbar or written as `^hoch^`.
+ */
+const SuperscriptWithoutShortcut = Superscript.extend({
+  addKeyboardShortcuts() {
+    return {};
+  },
+});
+
 /** Tiptap extensions of the inline styling unit. */
-export const INLINE_STYLING_EXTENSIONS = [Underline, Superscript, Subscript, TextColor];
+export const INLINE_STYLING_EXTENSIONS = [
+  Underline,
+  SuperscriptWithoutShortcut,
+  Subscript,
+  TextColor,
+];
