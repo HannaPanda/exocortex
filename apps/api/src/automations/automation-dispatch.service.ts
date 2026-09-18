@@ -48,7 +48,7 @@ export class AutomationDispatchService {
   }): Promise<AutomationRun> {
     const rule = await this.prisma.automationRule.findUnique({
       where: { id: input.ruleId },
-      select: { id: true, workspaceId: true },
+      select: { id: true, workspaceId: true, scopeDocumentId: true, triggers: true },
     });
     if (rule === null) throw AppError.notFound('The automation rule');
 
@@ -62,23 +62,37 @@ export class AutomationDispatchService {
       throw AppError.conflict('Automations are switched off for this workspace');
     }
 
-    const document = await this.access.findDocumentContext(input.request.documentId, input.userId);
+    // A scheduled rule already names its page, so trying it out must not
+    // require repeating it: firing "the Sunday review" against some other page
+    // would be trying a different rule.
+    const documentId = input.request.documentId ?? rule.scopeDocumentId;
+    if (documentId === null) {
+      throw AppError.validation('This rule has no page of its own; name the page to run against');
+    }
+
+    const document = await this.access.findDocumentContext(documentId, input.userId);
     if (document === null || document.workspaceId !== rule.workspaceId) {
       throw new AppError('document_access_denied', 'The page is not accessible');
     }
 
     const page = await this.prisma.document.findUnique({
-      where: { id: input.request.documentId },
+      where: { id: documentId },
       select: { title: true },
     });
+
+    // The trigger a scheduled rule fires under is its own, whatever the caller
+    // asked for: a run log saying DOCUMENT_UPDATED for a rule that watches the
+    // clock would be a log that lies.
+    const trigger = rule.triggers.includes('SCHEDULE') ? 'SCHEDULE' : input.request.trigger;
 
     const run = await this.prisma.automationRun.create({
       data: {
         ruleId: rule.id,
         workspaceId: rule.workspaceId,
-        documentId: input.request.documentId,
+        documentId,
         documentTitle: page?.title ?? null,
-        trigger: input.request.trigger,
+        trigger,
+        origin: 'MANUAL',
         status: 'PENDING',
         depth: 0,
       },
@@ -90,8 +104,9 @@ export class AutomationDispatchService {
       ruleId: rule.id,
       runId: run.id,
       workspaceId: rule.workspaceId,
-      documentId: input.request.documentId,
-      trigger: input.request.trigger,
+      documentId,
+      trigger,
+      origin: 'MANUAL',
       depth: 0,
     });
 

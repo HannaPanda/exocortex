@@ -18,6 +18,8 @@ import {
   type AutomationRuleListResponse,
   automationRuleProblems,
   type AutomationRunListResponse,
+  type AutomationScheduleKind,
+  automationScheduleOf,
   type AutomationScope,
   type AutomationTrigger,
   type CreateAutomationRuleRequest,
@@ -25,6 +27,7 @@ import {
   disallowedWebhookAddressReason,
   isIpAddressLiteral,
   isWebhookHostAllowed,
+  nextAutomationRun,
   parseAllowedWebhookHosts,
   type UpdateAutomationRuleRequest,
 } from '@exocortex/contracts';
@@ -106,6 +109,9 @@ export class AutomationsService {
     // The secret exists for exactly as long as this call: it is encrypted into
     // the row, handed back once in the response, and then it is gone from this
     // process. There is no read path for it anywhere in the API.
+    const schedule = scheduleColumnsFor(request, new Date());
+    this.assertSchedulePointsSomewhere(request.triggers, schedule.nextRunAt);
+
     const secret = request.action === 'WEBHOOK' ? generateWebhookSecret() : null;
     const encrypted =
       secret === null
@@ -124,6 +130,7 @@ export class AutomationsService {
         scope: request.scope,
         scopeDocumentId: request.scopeDocumentId,
         triggers: request.triggers,
+        ...schedule,
         debounceSeconds: request.debounceSeconds,
         action: request.action,
         webhookUrl: request.webhookUrl,
@@ -178,10 +185,24 @@ export class AutomationsService {
     // from switching itself off again, for a reason from last month.
     const reenabled = merged.enabled && !row.enabled;
 
+    // The schedule is left alone unless it actually changed, so renaming a
+    // rule cannot move its next run -- and a `ONCE` rule that has already
+    // fired stays editable instead of being refused for having no future.
+    // Switching a rule back on does recompute it: a daily rule that spent a
+    // week switched off should resume tomorrow morning, not fire the moment
+    // somebody enables it.
+    const stored = mergeableFields(row);
+    const schedule =
+      sameSchedule(stored, merged) && !reenabled ? null : scheduleColumnsFor(merged, new Date());
+    if (schedule !== null) {
+      this.assertSchedulePointsSomewhere(merged.triggers, schedule.nextRunAt);
+    }
+
     const updated = await this.prisma.automationRule.update({
       where: { id: input.ruleId },
       data: {
         ...merged,
+        ...(schedule ?? {}),
         ...(reenabled ? { consecutiveFailures: 0, disabledReason: null, disabledAt: null } : {}),
         // A webhook rule turned into an AI rule keeps no secret it cannot use.
         ...(merged.action === 'AI_RUN' && row.action === 'WEBHOOK'
@@ -240,6 +261,22 @@ export class AutomationsService {
   }
 
   /** Turns the shared cross-field rules into one validation error. */
+  /**
+   * Refuses a schedule with nothing ahead of it (issue #73).
+   *
+   * The one time check the contract cannot make: `automationRuleProblems` is
+   * pure and a moment in the past is only wrong relative to now. Without this a
+   * one-off set for yesterday would be stored as a rule that looks armed and
+   * never fires.
+   */
+  private assertSchedulePointsSomewhere(
+    triggers: readonly AutomationTrigger[],
+    nextRunAt: Date | null,
+  ): void {
+    if (!triggers.includes('SCHEDULE') || nextRunAt !== null) return;
+    throw AppError.validation('The schedule has no next run; a moment in the past never fires');
+  }
+
   private assertCoherent(rule: Parameters<typeof automationRuleProblems>[0]): void {
     const problems = automationRuleProblems(rule);
     if (problems.length > 0) {
@@ -326,6 +363,13 @@ function mergeableFields(row: {
   scope: AutomationScope;
   scopeDocumentId: string | null;
   triggers: AutomationTrigger[];
+  scheduleKind: AutomationScheduleKind | null;
+  scheduleAt: Date | null;
+  scheduleTime: string | null;
+  scheduleWeekday: number | null;
+  scheduleDayOfMonth: number | null;
+  scheduleCron: string | null;
+  scheduleTimeZone: string | null;
   debounceSeconds: number;
   action: AutomationAction;
   webhookUrl: string | null;
@@ -339,6 +383,13 @@ function mergeableFields(row: {
     scope: row.scope,
     scopeDocumentId: row.scopeDocumentId,
     triggers: row.triggers,
+    scheduleKind: row.scheduleKind,
+    scheduleAt: row.scheduleAt === null ? null : row.scheduleAt.toISOString(),
+    scheduleTime: row.scheduleTime,
+    scheduleWeekday: row.scheduleWeekday,
+    scheduleDayOfMonth: row.scheduleDayOfMonth,
+    scheduleCron: row.scheduleCron,
+    scheduleTimeZone: row.scheduleTimeZone,
     debounceSeconds: row.debounceSeconds,
     action: row.action,
     webhookUrl: row.webhookUrl,
@@ -346,6 +397,69 @@ function mergeableFields(row: {
     modelSlug: row.modelSlug,
     output: row.output,
   };
+}
+
+/** The seven schedule fields, in the shape both halves of a write speak. */
+interface ScheduleFields {
+  triggers: readonly AutomationTrigger[];
+  scheduleKind: AutomationScheduleKind | null;
+  scheduleAt: string | null;
+  scheduleTime: string | null;
+  scheduleWeekday: number | null;
+  scheduleDayOfMonth: number | null;
+  scheduleCron: string | null;
+  scheduleTimeZone: string | null;
+}
+
+/**
+ * The schedule columns a write stores, `nextRunAt` among them (issue #73).
+ *
+ * `nextRunAt` is computed here rather than by the sweep alone for one reason:
+ * a rule has to be able to say when it will next run the moment it is saved.
+ * The sweep computes the *following* one after each firing, from the same
+ * function, so the two can never drift.
+ *
+ * A rule without the `SCHEDULE` trigger has every field cleared, which is what
+ * makes switching a scheduled rule back to an event rule leave nothing behind.
+ */
+function scheduleColumnsFor(rule: ScheduleFields, now: Date) {
+  if (!rule.triggers.includes('SCHEDULE')) {
+    return {
+      scheduleKind: null,
+      scheduleAt: null,
+      scheduleTime: null,
+      scheduleWeekday: null,
+      scheduleDayOfMonth: null,
+      scheduleCron: null,
+      scheduleTimeZone: null,
+      nextRunAt: null,
+    };
+  }
+  const schedule = automationScheduleOf(rule);
+  return {
+    scheduleKind: rule.scheduleKind,
+    scheduleAt: rule.scheduleAt === null ? null : new Date(rule.scheduleAt),
+    scheduleTime: rule.scheduleTime,
+    scheduleWeekday: rule.scheduleWeekday,
+    scheduleDayOfMonth: rule.scheduleDayOfMonth,
+    scheduleCron: rule.scheduleCron,
+    scheduleTimeZone: rule.scheduleTimeZone,
+    nextRunAt: schedule === null ? null : nextAutomationRun(schedule, now),
+  };
+}
+
+/** Whether two writes describe the same schedule, down to the minute. */
+function sameSchedule(left: ScheduleFields, right: ScheduleFields): boolean {
+  return (
+    left.triggers.includes('SCHEDULE') === right.triggers.includes('SCHEDULE') &&
+    left.scheduleKind === right.scheduleKind &&
+    left.scheduleAt === right.scheduleAt &&
+    left.scheduleTime === right.scheduleTime &&
+    left.scheduleWeekday === right.scheduleWeekday &&
+    left.scheduleDayOfMonth === right.scheduleDayOfMonth &&
+    left.scheduleCron === right.scheduleCron &&
+    left.scheduleTimeZone === right.scheduleTimeZone
+  );
 }
 
 /**
