@@ -81,6 +81,10 @@ export const API_ERROR_CODES = [
   'web_research_unavailable',
   'web_address_refused',
   'web_fetch_failed',
+  /** This page is already a template; marking it a second time would be a no-op. */
+  'template_exists',
+  /** Only ordinary pages can be templates: not a database, not a project. */
+  'template_not_a_page',
 ] as const;
 
 export const apiErrorCodeSchema = z.enum(API_ERROR_CODES);
@@ -224,4 +228,6 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // browser. 502, because the failure is on the far side and the caller's next
   // move is a different address, not a different token.
   web_fetch_failed: 502,
+  template_exists: 409,
+  template_not_a_page: 422,
 };

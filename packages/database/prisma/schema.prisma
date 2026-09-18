@@ -754,6 +754,13 @@ model Document {
   /// up here or in the migration gate's diff.
   isInbox Boolean @default(false)
 
+  /// Present when this page is a template other pages are copied from (issue
+  /// #79, ADR-039). The sidecar carries only what a copy needs and a page
+  /// cannot hold; the page itself stays an ordinary page.
+  template         DocumentTemplate?  @relation("DocumentTemplatePage")
+  /// Templates that suggest this page as the place their copies land.
+  templateTargetOf DocumentTemplate[] @relation("DocumentTemplateTarget")
+
   content     DocumentContent?
   digest      DocumentDigest?
   snapshots   DocumentSnapshot[]
@@ -833,6 +840,45 @@ model DocumentContent {
 
   @@index([linksIndexedAt])
   @@map("document_content")
+}
+
+/// A page other pages are copied from (issue #79, ADR-039).
+///
+/// The sidecar, not the page. A template is an ordinary page and stays one, so
+/// the editor, search, moving, renaming and deleting all work on it without a
+/// second code path, and "turn this page into a template" is a row rather than
+/// a conversion. What the row adds is the little a copy needs and a page has
+/// nowhere to keep: the pattern the new title is built from, where the copy
+/// should land, and how often this template is actually reached for.
+model DocumentTemplate {
+  documentId String   @id
+  document   Document @relation("DocumentTemplatePage", fields: [documentId], references: [id], onDelete: Cascade)
+
+  /// One line on when to reach for this template. The picker shows it under
+  /// the title, which is the only place a template explains itself.
+  description  String?
+  /// What the copy is called, with `{{...}}` placeholders (see
+  /// `renderTitlePattern` in `@exocortex/contracts`). Null names the copy after
+  /// the template.
+  titlePattern String?
+
+  /// Where a copy lands when the caller names no parent. `SetNull` rather than
+  /// `Cascade`, because deleting the suggested target should cost the
+  /// suggestion and not the template.
+  targetParentId String?
+  targetParent   Document? @relation("DocumentTemplateTarget", fields: [targetParentId], references: [id], onDelete: SetNull)
+
+  /// Usage, so the picker can offer what is actually used. Counted rather than
+  /// derived: the copies are ordinary pages that keep no link back, which is
+  /// the whole point of a template.
+  useCount   Int       @default(0)
+  lastUsedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([targetParentId])
+  @@map("document_template")
 }
 
 /// Derived text about one page (issue #53, ADR-028).

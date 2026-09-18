@@ -33,6 +33,8 @@ export * from './research';
 export * from './revocations';
 export * from './search';
 export * from './settings';
+export * from './template-title';
+export * from './templates';
 export * from './workspace-credentials';
 export * from './workspace-overview';
 export * from './workspaces';
