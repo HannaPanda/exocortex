@@ -107,7 +107,7 @@ export const backfillEmbeddings: MaintenanceTask = async (context) => {
         // run, so the run ends here instead of spinning on it.
         logger.warn('A batch of embeddings settled nothing, ending the run', {
           batch: pending.length,
-          documentId: pending[0]?.documentId ?? null,
+          documentId: pending[0]?.documentId,
         });
         break;
       }
