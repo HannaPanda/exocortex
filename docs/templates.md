@@ -26,9 +26,10 @@ of the page it is.
 `POST /api/templates/:documentId/pages` →
 `TemplatesService.instantiate`:
 
-1. The title comes from `renderTitlePattern` (in `@exocortex/contracts`) with
-   the workspace's `calendar.timeZone`. A `title` in the request overrules the
-   template's own and is what `{{titel}}` stands for.
+1. The title comes from `titleForCopy` (in `@exocortex/contracts`) with the
+   workspace's `calendar.timeZone`. A `title` in the request wins over the
+   pattern, unless the pattern has a `{{titel}}` for it, in which case it is
+   substituted there.
 2. The content is read as canonical Yjs state, turned into ProseMirror JSON and
    run through `copyDocumentForNewPage` (in `@exocortex/editor`), which
    regenerates every block id and leaves every outward reference alone.

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { renderTitlePattern } from './template-title';
+import { renderTitlePattern, titleForCopy } from './template-title';
 
 const BERLIN = 'Europe/Berlin';
 
@@ -84,5 +84,57 @@ describe('renderTitlePattern', () => {
       timeZone: BERLIN,
     });
     expect(title).toHaveLength(300);
+  });
+});
+
+describe('titleForCopy', () => {
+  const now = new Date('2026-09-18T12:00:00Z');
+
+  it('uses the pattern when nothing was typed', () => {
+    expect(
+      titleForCopy({
+        pattern: 'Wochenreview KW{{kw}}',
+        templateTitle: 'Wochenreview',
+        requestedTitle: null,
+        now,
+        timeZone: BERLIN,
+      }),
+    ).toBe('Wochenreview KW38');
+  });
+
+  it('lets a typed title win over a pattern that has no place for it', () => {
+    expect(
+      titleForCopy({
+        pattern: 'Wochenreview KW{{kw}}',
+        templateTitle: 'Wochenreview',
+        requestedTitle: 'Bahnstrecken',
+        now,
+        timeZone: BERLIN,
+      }),
+    ).toBe('Bahnstrecken');
+  });
+
+  it('puts a typed title into the pattern that asks for it', () => {
+    expect(
+      titleForCopy({
+        pattern: 'Recherche: {{titel}} ({{datum}})',
+        templateTitle: 'Recherche',
+        requestedTitle: 'Bahnstrecken',
+        now,
+        timeZone: BERLIN,
+      }),
+    ).toBe('Recherche: Bahnstrecken (2026-09-18)');
+  });
+
+  it('falls back to the template title without a pattern', () => {
+    expect(
+      titleForCopy({
+        pattern: null,
+        templateTitle: 'Incident',
+        requestedTitle: null,
+        now,
+        timeZone: BERLIN,
+      }),
+    ).toBe('Incident');
   });
 });

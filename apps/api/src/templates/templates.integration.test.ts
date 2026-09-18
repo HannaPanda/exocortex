@@ -263,6 +263,23 @@ describe('using a template', () => {
     expect(entry?.lastUsedAt).not.toBeNull();
   });
 
+  it('lets a typed title win over a pattern that has no place for it', async () => {
+    const templateId = await makeTemplate('Recherche', 'Frage:');
+    await templates.update({
+      documentId: templateId,
+      userId: ownerId,
+      request: { titlePattern: 'Recherche {{jahr}}' },
+    });
+
+    const created = await templates.instantiate({
+      documentId: templateId,
+      userId: ownerId,
+      request: { title: 'Bahnstrecken' },
+      correlationId,
+    });
+    expect(created.document.title).toBe('Bahnstrecken');
+  });
+
   it('lands under the suggested target and lets the caller overrule it', async () => {
     const home = await createPage('Reviews');
     const elsewhere = await createPage('Anderswo');

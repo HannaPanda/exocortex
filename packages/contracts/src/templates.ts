@@ -66,10 +66,10 @@ export type UpdateTemplateRequest = z.infer<typeof updateTemplateRequestSchema>;
 
 export const instantiateTemplateRequestSchema = z.object({
   /**
-   * What the page is called, in place of the template's own title. The
-   * pattern still applies and this is what `{{titel}}` stands for in it, so a
-   * template patterned `Notiz {{titel}}` and a title of `Bahn` produce
-   * `Notiz Bahn`.
+   * What the page is called. It wins over the template's title pattern,
+   * unless the pattern has a `{{titel}}` for it: patterned `Notiz {{titel}}`
+   * with a title of `Bahn` gives `Notiz Bahn`, patterned `Notiz {{datum}}`
+   * with the same title gives `Bahn`.
    */
   title: documentTitleSchema.optional(),
   /**

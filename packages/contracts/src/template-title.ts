@@ -110,3 +110,37 @@ export function renderTitlePattern(input: TitlePatternInput): string {
   if (trimmed.length === 0) return input.fallbackTitle;
   return trimmed.length > TITLE_MAX_LENGTH ? trimmed.slice(0, TITLE_MAX_LENGTH) : trimmed;
 }
+
+/** Whether a pattern hands the caller's title a place to appear. */
+function keepsTitle(pattern: string | null): boolean {
+  if (pattern === null) return false;
+  for (const match of pattern.matchAll(PLACEHOLDER_PATTERN)) {
+    if (match[1]?.toLowerCase() === 'titel') return true;
+  }
+  return false;
+}
+
+/**
+ * What a page copied from a template is called.
+ *
+ * A typed title wins outright unless the pattern has a `{{titel}}` for it.
+ * Anything else is a trap: somebody types "Bahnstrecken", the template is
+ * patterned `Wochenreview KW{{kw}}`, and the page they get is called
+ * something they did not ask for and cannot see why.
+ */
+export function titleForCopy(input: {
+  pattern: string | null;
+  templateTitle: string;
+  /** What the caller typed, or null when they typed nothing. */
+  requestedTitle: string | null;
+  now: Date;
+  timeZone: string;
+}): string {
+  if (input.requestedTitle !== null && !keepsTitle(input.pattern)) return input.requestedTitle;
+  return renderTitlePattern({
+    pattern: input.pattern,
+    fallbackTitle: input.requestedTitle ?? input.templateTitle,
+    now: input.now,
+    timeZone: input.timeZone,
+  });
+}

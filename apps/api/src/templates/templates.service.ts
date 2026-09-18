@@ -13,9 +13,9 @@ import {
   type DocumentTemplate,
   type InstantiateTemplateRequest,
   type InstantiateTemplateResponse,
-  renderTitlePattern,
   type TemplateListResponse,
   type TemplateResponse,
+  titleForCopy,
   type UpdateTemplateRequest,
 } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
@@ -238,9 +238,10 @@ export class TemplatesService {
     // The workspace's own zone, because `{{datum}}` means the date of the
     // person creating the page and the server runs in UTC.
     const settings = await this.settings.getForWorkspace(context.workspaceId);
-    const title = renderTitlePattern({
+    const title = titleForCopy({
       pattern: template.titlePattern,
-      fallbackTitle: input.request.title ?? template.document.title,
+      templateTitle: template.document.title,
+      requestedTitle: input.request.title ?? null,
       now: new Date(),
       timeZone: settings['calendar.timeZone'],
     });

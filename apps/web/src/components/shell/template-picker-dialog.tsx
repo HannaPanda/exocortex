@@ -31,10 +31,9 @@ import { documentHref } from '@/lib/document-href';
  * "Neue Seite aus Vorlage" (issue #79, ADR-039).
  *
  * The title field is optional and stays empty by default, because most
- * templates carry a pattern that already answers the question and typing a
- * title that the pattern then rewrites is confusing. When a template has no
- * pattern, the field is the only way to name the page something other than the
- * template, so it is always there rather than appearing conditionally.
+ * templates carry a pattern that already answers the question. What is typed
+ * here wins over that pattern unless the pattern has a `{{titel}}` for it --
+ * a field that is silently ignored is worse than no field.
  */
 export function TemplatePickerDialog({
   workspaceId,
@@ -109,7 +108,7 @@ export function TemplatePickerDialog({
           <Input
             id="template-title"
             value={title}
-            placeholder="Übernimmt sonst den Titel der Vorlage"
+            placeholder="Sonst entscheidet das Titelmuster der Vorlage"
             data-testid="template-title"
             onChange={(event) => setTitle(event.target.value)}
           />
