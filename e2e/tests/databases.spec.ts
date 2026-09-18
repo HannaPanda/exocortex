@@ -330,7 +330,7 @@ test.describe('databases', () => {
 
     await page.getByTestId('add-view').click();
     await page.getByTestId('add-view-calendar').click();
-    await page.getByRole('button', { name: 'Eigenschaft wählen' }).click();
+    await page.getByTestId('calendar-date-property').click();
     await page.getByRole('option', { name: 'Zeitraum' }).click();
 
     const calendar = page.getByTestId('calendar-view');

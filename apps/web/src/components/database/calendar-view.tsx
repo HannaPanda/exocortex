@@ -79,7 +79,7 @@ export function CalendarView({
                 });
               }}
             >
-              <SelectTrigger className="w-56">
+              <SelectTrigger className="w-56" data-testid="calendar-date-property">
                 <SelectValue>
                   {(value: string | null) =>
                     value === null
