@@ -7,6 +7,7 @@ import {
   createMcpRequestHandler,
   JSON_RPC_ERROR_CODES,
   LATEST_PROTOCOL_VERSION,
+  toMcpToolList,
 } from './protocol.js';
 import { type AnyToolDefinition, defineTool } from './tool.js';
 
@@ -134,6 +135,32 @@ describe('createMcpRequestHandler', () => {
       destructiveHint: false,
       openWorldHint: false,
     });
+  });
+
+  it('marks a tool that reaches the open web as open-world', () => {
+    const webTool = defineTool({
+      name: 'exo_web_thing',
+      description: 'Holt etwas aus dem Web.',
+      inputSchema: z.object({ url: z.string() }),
+      surfaces: ['mcp'],
+      mutating: false,
+      untrustedOutput: 'web',
+      async execute() {
+        return { text: 'ok' };
+      },
+    });
+    expect(toMcpToolList([webTool, readTool])).toEqual([
+      expect.objectContaining({
+        name: 'exo_web_thing',
+        annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: true },
+      }),
+      expect.objectContaining({
+        name: 'exo_read_thing',
+        // An uploaded document is foreign text but it is *ours*: nothing
+        // reached outside this deployment to get it.
+        annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
+      }),
+    ]);
   });
 
   it('never calls a read-only tool destructive', async () => {

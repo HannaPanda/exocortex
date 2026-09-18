@@ -404,8 +404,14 @@ export function toMcpToolList(tools: readonly AnyToolDefinition[]): {
     annotations: {
       readOnlyHint: !tool.mutating,
       destructiveHint: tool.destructive,
-      // Every tool acts on this deployment's own workspaces and nothing else.
-      openWorldHint: false,
+      // Almost every tool acts on this deployment's own workspaces and nothing
+      // else. The web-research pair (issue #26) is the exception, and the
+      // specification's word for it is exactly this hint: the result comes
+      // from an open-ended set of entities we do not run. Derived from
+      // `untrustedOutput` rather than a flag of its own, because "the text
+      // came from out there" and "this reached out there" are the same fact
+      // said twice, and two flags would eventually disagree.
+      openWorldHint: tool.untrustedOutput === 'web',
     },
   }));
 }

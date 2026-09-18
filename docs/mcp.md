@@ -125,8 +125,9 @@ surface. Both surfaces are described below.
 
 Every entry in `tools/list` carries MCP annotations derived from the columns
 below: `readOnlyHint` is the negation of "Mutating", `destructiveHint` is the
-"Destructive" column, and `openWorldHint` is always false because no tool
-reaches outside this deployment. They are not decoration. A client that keeps
+"Destructive" column, and `openWorldHint` is false for every tool that acts on
+this deployment's own workspaces -- which is all of them except the web-research
+pair, whose results come from an open-ended set of servers we do not run. They are not decoration. A client that keeps
 write access behind its own opt-in reads `readOnlyHint` to decide which side of
 that switch a tool belongs on, so a catalogue served without the hints arrives
 as one undifferentiated block and tends to be used read-only.
