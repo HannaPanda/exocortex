@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  automationRuleProblems,
   disallowedWebhookAddressReason,
   isIpAddressLiteral,
   isWebhookHostAllowed,
@@ -85,5 +86,90 @@ describe('the webhook address policy', () => {
     expect(disallowedWebhookAddressReason('hooks.example.org')).toBe(
       'The webhook target is not an IP address',
     );
+  });
+});
+
+describe('a scheduled rule', () => {
+  const base = {
+    scope: 'SUBTREE' as const,
+    scopeDocumentId: 'doc1',
+    action: 'AI_RUN' as const,
+    webhookUrl: null,
+    prompt: 'Schreib ein Wochenreview.',
+    scheduleKind: 'WEEKLY' as const,
+    scheduleAt: null,
+    scheduleTime: '07:00',
+    scheduleWeekday: 0,
+    scheduleDayOfMonth: null,
+    scheduleCron: null,
+    scheduleTimeZone: 'Europe/Berlin',
+  };
+
+  it('is coherent when the clock is its only trigger', () => {
+    expect(automationRuleProblems({ ...base, triggers: ['SCHEDULE'] })).toEqual([]);
+  });
+
+  it('may not also listen for changes', () => {
+    const problems = automationRuleProblems({
+      ...base,
+      triggers: ['SCHEDULE', 'DOCUMENT_UPDATED'],
+    });
+    expect(problems).toContain(
+      'A scheduled rule listens to the clock alone, not to changes as well',
+    );
+  });
+
+  it('needs a page, because the clock names none', () => {
+    const problems = automationRuleProblems({
+      ...base,
+      scope: 'WORKSPACE',
+      scopeDocumentId: null,
+      triggers: ['SCHEDULE'],
+    });
+    expect(problems).toContain('A scheduled rule needs a scope document: the clock names no page');
+  });
+
+  it('needs the fields its kind uses, and a zone', () => {
+    const problems = automationRuleProblems({
+      ...base,
+      triggers: ['SCHEDULE'],
+      scheduleWeekday: null,
+      scheduleTimeZone: null,
+    });
+    expect(problems).toContain('A weekly schedule needs a weekday');
+    expect(problems).toContain('A scheduled rule needs an explicit time zone');
+  });
+
+  it('refuses a cron expression this deployment cannot read', () => {
+    const problems = automationRuleProblems({
+      ...base,
+      triggers: ['SCHEDULE'],
+      scheduleKind: 'CRON',
+      scheduleTime: null,
+      scheduleWeekday: null,
+      scheduleCron: '@daily',
+    });
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain('five numeric fields');
+  });
+
+  it('is not what an event rule may carry half of', () => {
+    const problems = automationRuleProblems({
+      ...base,
+      triggers: ['DOCUMENT_UPDATED'],
+    });
+    expect(problems).toContain(
+      'A rule without the SCHEDULE trigger must not carry schedule fields',
+    );
+  });
+
+  it('lets a database rule be scheduled without watching rows', () => {
+    expect(
+      automationRuleProblems({
+        ...base,
+        scope: 'DATABASE',
+        triggers: ['SCHEDULE'],
+      }),
+    ).toEqual([]);
   });
 });

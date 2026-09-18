@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+import {
+  automationCronSchema,
+  type AutomationScheduleKind,
+  automationScheduleKindSchema,
+  automationScheduleTimeSchema,
+  automationTimeZoneSchema,
+  parseCron,
+} from './automation-schedule';
 import { idSchema, isoDateTimeSchema } from './primitives';
 
 /**
@@ -19,6 +27,15 @@ export const automationTriggerSchema = z.enum([
   'DOCUMENT_ARCHIVED',
   'DOCUMENT_DELETED',
   'DATABASE_ROW_CHANGED',
+  /**
+   * The clock, not a change (issue #73). The odd one out on purpose: every
+   * other member names something that happened to a page, and this one names
+   * nothing happening at all. It lives on the same enum anyway because what a
+   * person writes is one rule either way -- "when this changes, do that" and
+   * "every Sunday, do that" differ in their first half only, and a second
+   * entity beside `AutomationRule` would have doubled the action side to say so.
+   */
+  'SCHEDULE',
 ]);
 export type AutomationTrigger = z.infer<typeof automationTriggerSchema>;
 
@@ -39,6 +56,24 @@ export const automationRunStatusSchema = z.enum([
   'SKIPPED',
 ]);
 export type AutomationRunStatus = z.infer<typeof automationRunStatusSchema>;
+
+/**
+ * What started a run (issue #73).
+ *
+ * Kept apart from `trigger`, which says what the rule listens for. Once the
+ * clock can start a rule, "it ran" stops being one story: a scheduled run that
+ * failed at 03:00 and a run somebody started by hand to see why are the same
+ * rule, the same trigger and two very different things to read in a log.
+ */
+export const automationRunOriginSchema = z.enum([
+  /** The outbox saw a change in scope. */
+  'EVENT',
+  /** The schedule sweep found the rule due. */
+  'SCHEDULE',
+  /** A person or an agent fired it. */
+  'MANUAL',
+]);
+export type AutomationRunOrigin = z.infer<typeof automationRunOriginSchema>;
 
 /**
  * The shortest quiet period a rule may ask for, in seconds.
@@ -255,6 +290,19 @@ export const automationRuleSchema = z.object({
   /** Title of the scope page, for a list that has to read as a sentence. */
   scopeDocumentTitle: z.string().nullable(),
   triggers: z.array(automationTriggerSchema),
+  scheduleKind: automationScheduleKindSchema.nullable(),
+  scheduleAt: isoDateTimeSchema.nullable(),
+  scheduleTime: z.string().nullable(),
+  scheduleWeekday: z.number().int().nullable(),
+  scheduleDayOfMonth: z.number().int().nullable(),
+  scheduleCron: z.string().nullable(),
+  scheduleTimeZone: z.string().nullable(),
+  /**
+   * When the schedule fires next, computed on write and again after each
+   * firing. Null on an event rule, and also on a `ONCE` rule whose moment has
+   * passed -- which is how a one-off stops being one that runs for ever.
+   */
+  nextRunAt: isoDateTimeSchema.nullable(),
   debounceSeconds: z.number().int().positive(),
   action: automationActionSchema,
   webhookUrl: z.string().nullable(),
@@ -284,6 +332,8 @@ export const automationRunSchema = z.object({
   documentId: idSchema.nullable(),
   documentTitle: z.string().nullable(),
   trigger: automationTriggerSchema,
+  /** What started it: a change, the clock, or somebody pressing the button. */
+  origin: automationRunOriginSchema,
   status: automationRunStatusSchema,
   depth: z.number().int().nonnegative(),
   startedAt: isoDateTimeSchema.nullable(),
@@ -323,7 +373,26 @@ const automationRuleBody = z.object({
   enabled: z.boolean().default(true),
   scope: automationScopeSchema.default('WORKSPACE'),
   scopeDocumentId: idSchema.nullable().default(null),
-  triggers: z.array(automationTriggerSchema).min(1).max(7),
+  triggers: z.array(automationTriggerSchema).min(1).max(8),
+  /** `SCHEDULE` rules: which shape of schedule. Null for every other rule. */
+  scheduleKind: automationScheduleKindSchema.nullable().default(null),
+  /** `ONCE`: the moment, absolute. */
+  scheduleAt: isoDateTimeSchema.nullable().default(null),
+  /** `DAILY`/`WEEKLY`/`MONTHLY`: `HH:MM` in `scheduleTimeZone`. */
+  scheduleTime: automationScheduleTimeSchema.nullable().default(null),
+  /** `WEEKLY`: 0 is Sunday, the way `Date` counts. */
+  scheduleWeekday: z.number().int().min(0).max(6).nullable().default(null),
+  /** `MONTHLY`: 1 to 31, clamped to the last day of a shorter month. */
+  scheduleDayOfMonth: z.number().int().min(1).max(31).nullable().default(null),
+  /** `CRON`: five numeric fields, minute first. */
+  scheduleCron: automationCronSchema.nullable().default(null),
+  /**
+   * The zone every local time above is read in, and the one a `ONCE` moment is
+   * shown in. Required for a scheduled rule and never guessed: a rule that ran
+   * in whatever zone the server happens to keep would move by an hour twice a
+   * year without anybody changing it.
+   */
+  scheduleTimeZone: automationTimeZoneSchema.nullable().default(null),
   debounceSeconds: z
     .number()
     .int()
@@ -352,8 +421,17 @@ export function automationRuleProblems(rule: {
   webhookUrl: string | null;
   prompt: string | null;
   triggers: readonly AutomationTrigger[];
+  scheduleKind?: AutomationScheduleKind | null;
+  scheduleAt?: string | Date | null;
+  scheduleTime?: string | null;
+  scheduleWeekday?: number | null;
+  scheduleDayOfMonth?: number | null;
+  scheduleCron?: string | null;
+  scheduleTimeZone?: string | null;
 }): string[] {
   const problems: string[] = [];
+  const scheduled = rule.triggers.includes('SCHEDULE');
+
   if (rule.scope === 'WORKSPACE' && rule.scopeDocumentId !== null) {
     problems.push('A workspace-wide rule must not name a scope document');
   }
@@ -368,13 +446,106 @@ export function automationRuleProblems(rule: {
     if (rule.prompt === null) problems.push('An AI rule needs a prompt');
     if (rule.webhookUrl !== null) problems.push('An AI rule has no target URL');
   }
-  if (rule.scope === 'DATABASE' && !rule.triggers.includes('DATABASE_ROW_CHANGED')) {
+  if (!scheduled && rule.scope === 'DATABASE' && !rule.triggers.includes('DATABASE_ROW_CHANGED')) {
     problems.push('A database rule that ignores row changes would never fire');
   }
   if (rule.scope !== 'DATABASE' && rule.triggers.includes('DATABASE_ROW_CHANGED')) {
     problems.push('Row changes are only observable inside a database scope');
   }
+
+  problems.push(...schedulingProblems(rule, scheduled));
   return problems;
+}
+
+/** The half of a rule the schedule checks look at. */
+interface ScheduleShape {
+  scope: AutomationScope;
+  triggers: readonly AutomationTrigger[];
+  scheduleKind?: AutomationScheduleKind | null;
+  scheduleAt?: string | Date | null;
+  scheduleTime?: string | null;
+  scheduleWeekday?: number | null;
+  scheduleDayOfMonth?: number | null;
+  scheduleCron?: string | null;
+  scheduleTimeZone?: string | null;
+}
+
+/**
+ * The cross-field rules a schedule adds (issue #73).
+ *
+ * Its own function so the list above stays readable, and because these are one
+ * decision rather than several: a scheduled rule is a different half of a rule,
+ * and everything here follows from saying that once.
+ */
+function schedulingProblems(rule: ScheduleShape, scheduled: boolean): string[] {
+  if (!scheduled) {
+    // An event rule carrying a half-filled schedule is how a rule ends up with
+    // a plan nothing reads. Refused rather than ignored.
+    const leftovers = [
+      rule.scheduleKind,
+      rule.scheduleAt,
+      rule.scheduleTime,
+      rule.scheduleWeekday,
+      rule.scheduleDayOfMonth,
+      rule.scheduleCron,
+      rule.scheduleTimeZone,
+    ];
+    return leftovers.some((value) => value !== null && value !== undefined)
+      ? ['A rule without the SCHEDULE trigger must not carry schedule fields']
+      : [];
+  }
+
+  const problems: string[] = [];
+  // Mixing the clock with a change would make "the page" two different pages:
+  // the one that changed, and the one the schedule names.
+  if (rule.triggers.length > 1) {
+    problems.push('A scheduled rule listens to the clock alone, not to changes as well');
+  }
+  // Both actions need a subject: a webhook says which page it is about, an AI
+  // run reads one. An event supplies it; a clock does not, so the rule has to.
+  if (rule.scope === 'WORKSPACE') {
+    problems.push('A scheduled rule needs a scope document: the clock names no page');
+  }
+  if (rule.scheduleTimeZone === null || rule.scheduleTimeZone === undefined) {
+    problems.push('A scheduled rule needs an explicit time zone');
+  }
+  problems.push(...scheduleKindProblems(rule));
+  return problems;
+}
+
+/** The fields one kind of schedule needs, and nothing about the other four. */
+function scheduleKindProblems(rule: ScheduleShape): string[] {
+  switch (rule.scheduleKind) {
+    case 'ONCE':
+      return rule.scheduleAt === null || rule.scheduleAt === undefined
+        ? ['A one-off schedule needs a moment']
+        : [];
+    case 'DAILY':
+      return rule.scheduleTime ? [] : ['A daily schedule needs a time of day'];
+    case 'WEEKLY':
+      return [
+        ...(rule.scheduleTime ? [] : ['A weekly schedule needs a time of day']),
+        ...(rule.scheduleWeekday === null || rule.scheduleWeekday === undefined
+          ? ['A weekly schedule needs a weekday']
+          : []),
+      ];
+    case 'MONTHLY':
+      return [
+        ...(rule.scheduleTime ? [] : ['A monthly schedule needs a time of day']),
+        ...(rule.scheduleDayOfMonth === null || rule.scheduleDayOfMonth === undefined
+          ? ['A monthly schedule needs a day of the month']
+          : []),
+      ];
+    case 'CRON':
+      if (!rule.scheduleCron) return ['A cron schedule needs an expression'];
+      return parseCron(rule.scheduleCron) === null
+        ? [
+            'The cron expression is not five numeric fields (minute hour day-of-month month day-of-week)',
+          ]
+        : [];
+    default:
+      return ['A scheduled rule needs a schedule kind'];
+  }
 }
 
 export const createAutomationRuleRequestSchema = automationRuleBody;
@@ -415,7 +586,12 @@ export type DeleteAutomationRuleResponse = z.infer<typeof deleteAutomationRuleRe
  * an agent that can create a rule but not try it cannot finish the job.
  */
 export const triggerAutomationRuleRequestSchema = z.object({
-  documentId: idSchema,
+  /**
+   * The page to run against. Optional for a scheduled rule, which already
+   * names one: firing "the Sunday review" by hand must not require repeating
+   * where it writes, or trying a rule would be a different rule.
+   */
+  documentId: idSchema.nullable().default(null),
   trigger: automationTriggerSchema.default('DOCUMENT_UPDATED'),
 });
 export type TriggerAutomationRuleRequest = z.infer<typeof triggerAutomationRuleRequestSchema>;

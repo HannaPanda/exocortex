@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { automationTriggerSchema } from './automations';
+import { automationRunOriginSchema, automationTriggerSchema } from './automations';
 import { idSchema } from './primitives';
 
 /**
@@ -186,6 +186,17 @@ export const maintenanceJobSchema = jobBase.extend({
      * no recent runs is a rule that had nothing to do.
      */
     'prune-automation-runs',
+    /**
+     * Fires every automation rule whose schedule has come due, and works out
+     * when it is due next (issue #73). The clock's half of ADR-024: the outbox
+     * dispatcher above sees changes and this one sees the time, and both end in
+     * the same `automation` queue with the same run log underneath.
+     *
+     * Runs every minute, which is also the finest a schedule can be. A minute
+     * costs one indexed query over `nextRunAt` when nothing is due, which is
+     * what it finds on a deployment with no scheduled rules.
+     */
+    'run-due-automations',
     /**
      * Closes builds whose worker never came back and deletes finished ones
      * older than `render.jobRetentionDays` (issue #44, ADR-026). The PDFs they
@@ -410,6 +421,8 @@ export const automationJobSchema = jobBase.extend({
   workspaceId: idSchema,
   documentId: idSchema,
   trigger: automationTriggerSchema,
+  /** What started it: a change, the clock, or somebody pressing the button. */
+  origin: automationRunOriginSchema.default('EVENT'),
   /** How many automations deep the change that caused this was. */
   depth: z.number().int().min(0).max(10).default(0),
 });

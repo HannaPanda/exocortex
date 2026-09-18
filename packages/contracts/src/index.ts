@@ -7,6 +7,7 @@ export * from './ai-runtime';
 export * from './ai-trust';
 export * from './attachments';
 export * from './auth';
+export * from './automation-schedule';
 export * from './automations';
 export * from './calendar';
 export * from './clips';

@@ -2179,6 +2179,36 @@ enum AutomationTrigger {
   DOCUMENT_DELETED
   /// A row's property value changed inside a database in scope.
   DATABASE_ROW_CHANGED
+  /// The clock, not a change (issue #73). The odd member out on purpose: every
+  /// other one names something that happened to a page. It lives here anyway
+  /// because what a person writes is one rule either way, and the action half
+  /// of a rule is identical whether a change or the time of day started it.
+  SCHEDULE
+}
+
+/// The shapes a schedule can have (issue #73).
+///
+/// Four of them are what people ask for, and `CRON` is the escape hatch for the
+/// fifth thing somebody will want. They are one enum rather than one cron string
+/// because "every Sunday at 07:00" has to survive being read back into a form.
+enum AutomationScheduleKind {
+  ONCE
+  DAILY
+  WEEKLY
+  MONTHLY
+  CRON
+}
+
+/// What started a run (issue #73).
+///
+/// Kept apart from the trigger, which says what the rule listens for: once the
+/// clock can start a rule, a scheduled run that failed at 03:00 and a run
+/// somebody started by hand to find out why carry the same trigger and are two
+/// very different things to read in a log.
+enum AutomationRunOrigin {
+  EVENT
+  SCHEDULE
+  MANUAL
 }
 
 /// How far a rule reaches.
@@ -2261,6 +2291,31 @@ model AutomationRule {
   /// here, so raising it later does not require a migration.
   debounceSeconds Int @default(60)
 
+  /// The clock half of a rule (issue #73), null on an event rule.
+  ///
+  /// Columns rather than one cron string or one JSON blob: "every Sunday at
+  /// 07:00 in Europe/Berlin" has to be read back into the form that wrote it,
+  /// and `nextRunAt` has to be an indexed column because the sweep's only
+  /// question, once a minute for ever, is which rules are due.
+  scheduleKind       AutomationScheduleKind?
+  /// `ONCE`: the moment, absolute.
+  scheduleAt         DateTime?
+  /// `DAILY`/`WEEKLY`/`MONTHLY`: `HH:MM` in `scheduleTimeZone`.
+  scheduleTime       String?
+  /// `WEEKLY`: 0 is Sunday, the way `Date` counts.
+  scheduleWeekday    Int?
+  /// `MONTHLY`: 1 to 31, clamped to the last day of a shorter month.
+  scheduleDayOfMonth Int?
+  /// `CRON`: five numeric fields, minute first.
+  scheduleCron       String?
+  /// The IANA zone the local times above are read in. Never guessed from the
+  /// server's own zone: a rule that moved by an hour twice a year without
+  /// anybody changing it would be a rule nobody trusts.
+  scheduleTimeZone   String?
+  /// When the schedule is due next, computed on write and again after each
+  /// firing. Null on an event rule, and on a `ONCE` rule that has run.
+  nextRunAt          DateTime?
+
   action AutomationAction
 
   /// `WEBHOOK`: where the POST goes. Checked against the allowlist on write
@@ -2307,6 +2362,8 @@ model AutomationRule {
   /// event. It is the hot path of this whole feature.
   @@index([workspaceId, enabled])
   @@index([scopeDocumentId])
+  /// The schedule sweep's query, once a minute for ever: which rules are due.
+  @@index([nextRunAt])
   @@map("automation_rule")
 }
 
@@ -2332,6 +2389,10 @@ model AutomationRun {
   documentTitle String?
 
   trigger AutomationTrigger
+  /// What started it. Defaulted for the rows that existed before the clock
+  /// could start anything, which were all of them event-driven or manual and
+  /// are honestly described as the former.
+  origin  AutomationRunOrigin @default(EVENT)
   status  AutomationRunStatus @default(PENDING)
 
   /// How many automations deep this run is. Zero means a human or an agent
