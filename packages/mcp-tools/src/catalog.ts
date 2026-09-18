@@ -21,6 +21,7 @@ import { RENDER_TOOLS } from './tools/render.js';
 import { RESEARCH_TOOLS } from './tools/research.js';
 import { RULES_TOOLS } from './tools/rules.js';
 import { SEARCH_TOOLS } from './tools/search.js';
+import { TEMPLATE_TOOLS } from './tools/templates.js';
 import { WEB_TOOLS } from './tools/web.js';
 import { WORKSPACE_TOOLS } from './tools/workspaces.js';
 
@@ -28,6 +29,7 @@ export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...WORKSPACE_TOOLS,
   ...PAGE_TOOLS,
   ...INBOX_TOOLS,
+  ...TEMPLATE_TOOLS,
   ...PLACEMENT_TOOLS,
   ...OVERVIEW_TOOLS,
   ...LINK_TOOLS,
