@@ -53,10 +53,36 @@ export class ExocortexApiError extends Error {
     message: string,
     public readonly status: number,
     public readonly correlationId: string | null,
+    public readonly details?: unknown,
   ) {
     super(message);
     this.name = 'ExocortexApiError';
   }
+}
+
+/** The `reason` an API error carries in `details`, when it carries one. */
+function detailReason(details: unknown): string | null {
+  if (typeof details !== 'object' || details === null) return null;
+  const reason = (details as { reason?: unknown }).reason;
+  return typeof reason === 'string' && reason.length > 0 ? reason : null;
+}
+
+/**
+ * The one sentence an agent gets when a call fails.
+ *
+ * It carries three things, and each is there because leaving it out cost
+ * somebody a day: the code, so the caller can branch on it; the reason the API
+ * gave in `details`, because `validation_failed` alone says only that something
+ * was wrong somewhere; and the correlation id, which is the single string that
+ * finds the full server-side record of this exact call in the log. Without it
+ * the only way to narrow a rejection down is to send smaller and smaller
+ * requests until it stops happening (issue #82).
+ */
+export function describeApiError(error: ExocortexApiError): string {
+  const reason = detailReason(error.details);
+  const head = reason === null ? error.message : `${error.message}: ${reason}`;
+  const trace = error.correlationId === null ? '' : ` [Vorgang ${error.correlationId}]`;
+  return `Fehler (${error.code}): ${head}${trace}`;
 }
 
 export interface FetchClientOptions {
@@ -123,6 +149,7 @@ async function throwForErrorResponse(response: Response): Promise<never> {
       parsed.data.message,
       response.status,
       parsed.data.correlationId,
+      parsed.data.details,
     );
   }
   throw new ExocortexApiError('internal_error', response.statusText, response.status, null);

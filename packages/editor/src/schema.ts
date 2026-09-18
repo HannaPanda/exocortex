@@ -1,7 +1,7 @@
 import { getSchema } from '@tiptap/core';
-import { type Schema } from '@tiptap/pm/model';
+import { Fragment, type Node as PMNode, type Schema } from '@tiptap/pm/model';
 
-import { type ProseMirrorDocument } from './contract';
+import { type ProseMirrorDocument, type ProseMirrorNode } from './contract';
 import { buildEditorExtensions } from './extensions';
 
 let cachedSchema: Schema | null = null;
@@ -53,6 +53,62 @@ export function validateProseMirrorDocument(
       error: error instanceof Error ? error.message : String(error),
     };
   }
+}
+
+/**
+ * Rebuilds one node, inserting whatever the schema requires around its
+ * children. Returns `null` when no arrangement of them is valid.
+ */
+function repairNode(json: ProseMirrorNode, schema: Schema): PMNode | null {
+  if (json.type === 'text') {
+    try {
+      return schema.nodeFromJSON(json);
+    } catch {
+      return null;
+    }
+  }
+
+  const nodeType = schema.nodes[json.type];
+  if (nodeType === undefined) return null;
+
+  const children: PMNode[] = [];
+  for (const child of json.content ?? []) {
+    const repaired = repairNode(child, schema);
+    if (repaired !== null) children.push(repaired);
+  }
+
+  try {
+    const marks = (json.marks ?? []).map((mark) => schema.markFromJSON(mark));
+    // `createAndFill` is the schema answering the question itself: it inserts
+    // the nodes that have to come before and after this content for the node to
+    // be valid, and nothing else.
+    return nodeType.createAndFill(json.attrs ?? null, Fragment.fromArray(children), marks);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Makes a document schema-valid by inserting what the schema itself demands.
+ *
+ * Markdown can describe structures the canonical schema forbids, and they are
+ * not exotic: a line consisting of a single `-` is a list with one empty item,
+ * which in prose is a scene break or a dash that went wrong. `Node.check()`
+ * refused that with `Invalid content for node listItem: <>`, and because a
+ * write validates the whole document, one such character rejected an entire
+ * page -- including, in `append` mode, content that had nothing to do with it
+ * (issue #82).
+ *
+ * The repair adds; it does not rewrite. A node that cannot be made valid with
+ * any filler is dropped, which loses that one node instead of the write. A
+ * document that is already valid is returned untouched, which is the normal
+ * case and the reason this costs one schema pass and no more.
+ */
+export function repairProseMirrorDocument(document: ProseMirrorDocument): ProseMirrorDocument {
+  if (validateProseMirrorDocument(document).valid) return document;
+  const repaired = repairNode(document, getExocortexSchema());
+  if (repaired === null) return document;
+  return repaired.toJSON() as ProseMirrorDocument;
 }
 
 /** An empty but valid document. */

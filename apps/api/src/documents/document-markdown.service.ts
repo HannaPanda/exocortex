@@ -205,12 +205,15 @@ export class DocumentMarkdownService {
           bindPageLinkIdentities(document, (title) => identities.identityFor(title)),
       });
     } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error);
       this.logger.warn('Markdown import rejected', {
         workspaceId: input.workspaceId,
         correlationId: input.correlationId,
-        reason: error instanceof Error ? error.message : String(error),
+        reason,
       });
-      throw AppError.validation('The Markdown document could not be parsed');
+      // Handed back rather than only logged; see the same throw in
+      // `DocumentContentService.writeMarkdown` (issue #82).
+      throw AppError.validation('The Markdown document could not be parsed', { reason });
     }
 
     const title = declaredTitle ?? imported.title ?? 'Importierte Seite';

@@ -185,6 +185,34 @@ describe('markdown import', () => {
     expect(document.content).toHaveLength(1);
     expect(validateProseMirrorDocument(document).valid).toBe(true);
   });
+
+  it('gives an empty list item the paragraph the schema demands', () => {
+    // Issue #82. A line that is only `-` is a list with one empty item, and
+    // people write it: in prose it is a scene break or a dash that went wrong.
+    // It used to produce `listItem` without children, which `Node.check()`
+    // refuses -- so a single character rejected an entire write.
+    const cases = [
+      '-\n',
+      '- eins\n-\n- drei\n',
+      '- eins\n-  \n- drei\n',
+      '1. eins\n2.\n3. drei\n',
+      '* eins\n*\n* drei\n',
+      '- eins\n  -\n- drei\n',
+      '> \n',
+      '| a | b |\n| --- | --- |\n|  |  |\n',
+    ];
+
+    for (const markdown of cases) {
+      const { document } = parseMarkdown(markdown);
+      const validation = validateProseMirrorDocument(document);
+      expect(validation.error ?? `${JSON.stringify(markdown)}: ok`).toBe(
+        `${JSON.stringify(markdown)}: ok`,
+      );
+    }
+
+    const { document } = parseMarkdown('-\n');
+    expect(document.content?.[0]?.content?.[0]?.content?.[0]?.type).toBe('paragraph');
+  });
 });
 
 describe('markdown export', () => {

@@ -9,6 +9,7 @@ import {
 import { currentTraceCarrier, type Logger, withSpan } from '@exocortex/logger';
 import {
   createFetchApiClient,
+  describeApiError,
   type ExocortexApiClient,
   ExocortexApiError,
   findTool,
@@ -261,7 +262,7 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
     } catch (error) {
       if (error instanceof ExocortexApiError) {
         return {
-          text: `Fehler (${error.code}): ${error.message}`,
+          text: describeApiError(error),
           isError: true,
           refused: false,
         };

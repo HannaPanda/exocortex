@@ -227,12 +227,18 @@ export class DocumentContentService {
        */
       applied = applyProseMirrorDocumentToState(existing.yjsState, liveUpdate, input.request.mode);
     } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error);
       this.logger.warn('Document content write rejected: markdown could not be parsed', {
         documentId: input.documentId,
         correlationId: input.correlationId,
-        reason: error instanceof Error ? error.message : String(error),
+        reason,
       });
-      throw AppError.validation('The Markdown document could not be parsed');
+      // The reason travels back to the caller. It names a node type and at most
+      // a few characters of the content the caller just sent -- which it wrote
+      // and may read -- so it discloses nothing, and without it a rejection is
+      // unanswerable: the only way to narrow it down is to send smaller and
+      // smaller writes until it stops happening (issue #82).
+      throw AppError.validation('The Markdown document could not be parsed', { reason });
     }
 
     const now = new Date();

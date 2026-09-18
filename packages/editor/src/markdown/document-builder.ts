@@ -6,6 +6,7 @@ import {
   type ProseMirrorNode,
 } from '../contract';
 import { WIKI_LINK_IDENTITY_ATTRIBUTE } from '../link-target';
+import { repairProseMirrorDocument } from '../schema';
 
 import { WIKI_LINK_SCHEME } from './serialize';
 
@@ -168,12 +169,19 @@ export class DocumentBuilder {
     },
   };
 
-  /** The finished document; an empty one still carries one empty paragraph. */
+  /**
+   * The finished document; an empty one still carries one empty paragraph.
+   *
+   * Repaired against the schema on the way out, because Markdown can ask for
+   * structures the schema forbids and a parser that hands one on turns a
+   * harmless line into a rejected write (issue #82). The repair is a no-op for
+   * everything that is already valid, which is nearly every document.
+   */
   finish(): ProseMirrorDocument {
-    return {
+    return repairProseMirrorDocument({
       type: 'doc',
       content: this.root.content.length > 0 ? this.root.content : [{ type: 'paragraph' }],
-    };
+    });
   }
 
   private top(): StackEntry {

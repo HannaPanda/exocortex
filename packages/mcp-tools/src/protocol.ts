@@ -1,5 +1,5 @@
 import { announceAgentSession, clientLabelFrom } from './agent-session.js';
-import { type ExocortexApiClient, ExocortexApiError } from './client.js';
+import { describeApiError, type ExocortexApiClient, ExocortexApiError } from './client.js';
 import { type WriteConfirmationGate } from './confirm.js';
 import { buildServerInstructions } from './instructions.js';
 import { getMcpPrompt, listMcpPrompts } from './prompts.js';
@@ -214,7 +214,7 @@ export function createMcpRequestHandler(options: McpRequestHandlerOptions): McpR
       return await tool.run(client, rawInput);
     } catch (error) {
       if (error instanceof ExocortexApiError) {
-        return { text: `Fehler (${error.code}): ${error.message}`, isError: true };
+        return { text: describeApiError(error), isError: true };
       }
       if (error instanceof ToolInputValidationError) {
         const paths = error.issues.map(
