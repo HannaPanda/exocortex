@@ -150,9 +150,21 @@ export function CaptureDialog({
         )}
 
         <DialogFooter>
-          <span className="mr-auto text-xs text-muted-foreground">
-            Speichern mit <kbd className="exocortex-numeric">Strg</kbd> +{' '}
-            <kbd className="exocortex-numeric">Enter</kbd>
+          <span className="mr-auto flex items-center gap-3 text-xs text-muted-foreground">
+            <span>
+              Speichern mit <kbd className="exocortex-numeric">Strg</kbd> +{' '}
+              <kbd className="exocortex-numeric">Enter</kbd>
+            </span>
+            {/* The one place where somebody is already thinking about capture,
+                which is the only moment a browser bookmarklet sounds useful. */}
+            <Link
+              href="/teilen"
+              className="hover:underline"
+              data-testid="open-clipper"
+              onClick={() => changeOpen(false)}
+            >
+              Web Clipper
+            </Link>
           </span>
           <Button variant="ghost" onClick={() => changeOpen(false)}>
             Schließen

@@ -9,7 +9,22 @@ import type { MetadataRoute } from 'next';
  * browser chrome nor the manifest can read a CSS custom property. Keep the
  * three in sync.
  */
-export default function manifest(): MetadataRoute.Manifest {
+/**
+ * Next's manifest type predates the share target, which is a W3C extension
+ * rather than part of the core manifest. Declaring the extra member is what
+ * keeps this file free of a cast: the returned object is wider than
+ * `MetadataRoute.Manifest`, and everything Next reads out of it is unchanged.
+ */
+type ManifestWithShareTarget = MetadataRoute.Manifest & {
+  share_target: {
+    action: string;
+    method: 'GET';
+    enctype: string;
+    params: { title: string; text: string; url: string };
+  };
+};
+
+export default function manifest(): ManifestWithShareTarget {
   return {
     id: '/',
     name: 'eXocortex',
@@ -25,6 +40,20 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: '#344955',
     theme_color: '#344955',
     categories: ['productivity'],
+    /*
+     * "Teilen an eXocortex" (issue #72). A GET target hands the share over as
+     * query parameters, which `/teilen` reads on the server; a POST one would
+     * have to be caught by the service worker, and that worker exists to make
+     * the app installable, not to answer requests. Android often puts a shared
+     * link into `text` rather than into `url`, so the page reads the address
+     * out of whatever arrives instead of trusting the field.
+     */
+    share_target: {
+      action: '/teilen',
+      method: 'GET',
+      enctype: 'application/x-www-form-urlencoded',
+      params: { title: 'title', text: 'text', url: 'url' },
+    },
     icons: [
       {
         src: '/icons/icon-192.png',

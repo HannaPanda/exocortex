@@ -5,6 +5,8 @@ import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tan
 import {
   type CaptureRequest,
   type CaptureResponse,
+  type ClipRequest,
+  type ClipResponse,
   type InboxResponse,
 } from '@exocortex/contracts';
 
@@ -44,6 +46,26 @@ export function useCapture(workspaceId: string | undefined) {
       if (workspaceId === undefined) return;
       // The tree gains a page, and on the first capture a whole new top-level
       // one, so the navigation has to be re-read rather than patched.
+      void client.invalidateQueries({ queryKey: queryKeys.documentTree(workspaceId) });
+      void client.invalidateQueries({ queryKey: inboxKeys.inbox(workspaceId) });
+    },
+  });
+}
+
+/**
+ * Clipping a web page (issue #72). The same invalidation as a capture, because
+ * the result is the same thing: a page in the inbox that the tree has not seen.
+ */
+export function useClip(workspaceId: string | undefined) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (request: ClipRequest) =>
+      apiRequest<ClipResponse>(`/api/workspaces/${workspaceId ?? ''}/clip`, {
+        method: 'POST',
+        body: request,
+      }),
+    onSuccess: () => {
+      if (workspaceId === undefined) return;
       void client.invalidateQueries({ queryKey: queryKeys.documentTree(workspaceId) });
       void client.invalidateQueries({ queryKey: inboxKeys.inbox(workspaceId) });
     },
