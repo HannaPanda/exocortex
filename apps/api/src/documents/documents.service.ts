@@ -203,6 +203,15 @@ export class DocumentsService {
     userId: string;
     request: CreateDocumentRequest;
     correlationId: string;
+    /**
+     * Marks the new page as the workspace's inbox (issue #71, ADR-036). A
+     * service option rather than a field on the request: the flag is not
+     * something a caller of `POST /documents` gets to set, and the inbox is
+     * created by exactly one code path, `InboxService`. A second inbox is
+     * refused by the partial unique index, which surfaces here as a failed
+     * transaction rather than a silent duplicate.
+     */
+    isInbox?: boolean;
   }): Promise<DocumentSummary> {
     const role = await this.access.findRole(input.workspaceId, input.userId);
     assertPolicy(canCreateDocument(role));
@@ -246,6 +255,7 @@ export class DocumentsService {
                 ? 'FULL'
                 : 'NARROW',
           orderKey,
+          isInbox: input.isInbox ?? false,
           createdById: input.userId,
           updatedById: input.userId,
         },

@@ -21,6 +21,7 @@ import { DatabasesModule } from './databases/databases.module';
 import { DocumentsModule } from './documents/documents.module';
 import { EntitiesModule } from './entities/entities.module';
 import { HealthModule } from './health/health.module';
+import { InboxModule } from './inbox/inbox.module';
 import { InvitationsModule } from './invitations/invitations.module';
 import { McpModule } from './mcp/mcp.module';
 import { MeModule } from './me/me.module';
@@ -68,6 +69,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     AttachmentsModule,
     AiModule,
     AdminModule,
+    InboxModule,
     InvitationsModule,
     HealthModule,
     MeModule,
