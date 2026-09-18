@@ -120,6 +120,7 @@ async function createRow(
       documentId: payload.documentId,
       documentTitle: page?.title ?? null,
       trigger: payload.trigger,
+      origin: payload.origin,
       status: 'RUNNING',
       depth: payload.depth,
       startedAt,

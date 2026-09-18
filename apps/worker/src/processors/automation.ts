@@ -167,6 +167,10 @@ async function postWebhook(input: ActionInput): Promise<Record<string, unknown>>
     event: 'automation.triggered',
     rule: { id: rule.id, name: rule.name },
     trigger: input.payload.trigger,
+    // What started it, which `trigger` alone stopped answering once the clock
+    // could: a receiver that acts on the nightly run and ignores the one
+    // somebody fired by hand has to be able to tell them apart.
+    origin: input.payload.origin,
     workspaceId: input.payload.workspaceId,
     document:
       page === null
@@ -295,9 +299,13 @@ async function runPrompt(input: ActionInput): Promise<Record<string, unknown>> {
  * writes a replacement instead of an observation.
  */
 function systemPrompt(trigger: AutomationTrigger): string {
+  const occasion =
+    trigger === 'SCHEDULE'
+      ? 'weil ein Zeitplan fällig war. Die Seite unten ist dein Material, sie hat sich nicht zwingend geändert.'
+      : `weil sich eine Seite geändert hat (Auslöser: ${trigger}).`;
   return [
-    'Du bist eine Automation in eXocortex. Eine Regel hat dich ausgelöst, weil sich eine Seite',
-    `geändert hat (Auslöser: ${trigger}).`,
+    'Du bist eine Automation in eXocortex. Eine Regel hat dich ausgelöst,',
+    occasion,
     '',
     'Du schreibst die Seite nicht um. Deine Antwort wird als Anmerkung neben der Seite abgelegt.',
     'Antworte knapp und auf Deutsch, ohne Einleitung und ohne Wiederholung der Aufgabe.',

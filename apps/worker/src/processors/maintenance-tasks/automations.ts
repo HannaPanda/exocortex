@@ -137,6 +137,7 @@ export async function fireMatchingAutomations(
         workspaceId: event.workspaceId,
         documentId,
         trigger,
+        origin: 'EVENT',
         depth,
       },
       {

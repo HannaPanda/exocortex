@@ -405,6 +405,10 @@ export class QueueRegistry {
     // DELETE that finds nothing on a deployment quieter than its retention
     // window (issue #50).
     await schedule('prune-automation-runs', { pattern: '55 4 * * *' });
+    // Every minute, which is also the finest a schedule can be (issue #73).
+    // The clock's half of the automation trigger side: one indexed query over
+    // `nextRunAt` that finds nothing on a deployment with no scheduled rules.
+    await schedule('run-due-automations', { every: 60_000 });
     // Every two minutes: this one is not a nightly sweep. Half of it closes
     // builds whose worker is gone, and a person watching a spinner should not
     // have to wait until tomorrow to be told that nothing is coming (issue #44).
