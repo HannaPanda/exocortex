@@ -749,9 +749,9 @@ model Document {
   /// Whether this page is the workspace's inbox (issue #71, ADR-036). Quick
   /// capture files into it and it is an ordinary page in every other respect:
   /// renamable, movable, searchable, deletable. One per workspace, kept by a
-  /// partial unique index the migration creates by hand -- Prisma cannot
-  /// describe a partial index, so `check-migrations-reproducible.sh` carries it
-  /// in its allow-list.
+  /// partial unique index the migration creates by hand. Prisma cannot describe
+  /// a partial index and does not report one either, so nothing about it shows
+  /// up here or in the migration gate's diff.
   isInbox Boolean @default(false)
 
   content     DocumentContent?

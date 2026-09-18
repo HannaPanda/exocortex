@@ -49,9 +49,10 @@ the same reason the memory workspace is `Workspace.isMemory` and not a settings
 key (ADR-023): this is identity, not configuration, and a pointer in a settings
 table survives neither a restore nor a careful reading. Not a title lookup
 either -- "Eingang" is a name, and a name is the first thing someone changes. A
-partial unique index keeps it to one per workspace; Prisma cannot describe a
-partial index, so the migration gate carries it in its allow-list, which is the
-price of enforcing the rule in the database rather than in a service.
+partial unique index keeps it to one per workspace, written by hand in the
+migration because Prisma cannot describe one. The price is that the constraint
+is invisible in `schema.prisma` apart from the comment, which is cheaper than
+enforcing the rule in a service that two concurrent captures can both pass.
 
 **The inbox is created on first use, not with the workspace.** A deployment that
 never captures anything never grows the page, and every workspace that already

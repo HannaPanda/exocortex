@@ -284,7 +284,8 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   answer.
 - ADR-036: a capture is an ordinary page created by the ordinary services, and
   the inbox it lands in is a page carrying `Document.isInbox`, not a setting and
-  not a title lookup. The flag is kept unique per workspace by a partial index,
+  not a title lookup. The flag is kept unique per workspace by a hand-written
+  partial index,
   the page is created by the first capture that needs it, and filing is the
   existing `suggest-parent` plus `move` rather than a route of its own.
 - ADR-015: the open page's _text_ reaches the prompt only when
