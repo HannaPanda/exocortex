@@ -40,7 +40,12 @@ export function SuggestParentDialog({
   onClose,
 }: {
   workspaceId: string;
-  node: DocumentTreeNode | null;
+  /**
+   * The page to file. Narrower than a tree node on purpose: the same dialog
+   * serves the tree's context menu and the open page in the inbox (issue #71),
+   * and neither the suggestions nor the move need anything below the page.
+   */
+  node: Pick<DocumentTreeNode, 'id' | 'title' | 'parentId'> | null;
   onClose: () => void;
 }) {
   const suggestions = useSuggestParent(workspaceId, node?.id, node !== null);

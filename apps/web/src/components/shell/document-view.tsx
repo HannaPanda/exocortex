@@ -4,6 +4,7 @@ import {
   ArchiveIcon,
   DownloadIcon,
   FileTextIcon,
+  FolderTreeIcon,
   MoreHorizontalIcon,
   RotateCcwIcon,
   SlidersHorizontalIcon,
@@ -43,6 +44,7 @@ import { PageOverview } from '@/components/document/page-overview';
 import { PagePropertiesDialog } from '@/components/document/page-properties-dialog';
 import { CollaborativeEditor } from '@/components/editor/collaborative-editor';
 import { PageRenderDialog } from '@/components/render/page-render-dialog';
+import { useInbox } from '@/lib/api/inbox-queries';
 import {
   useArchiveDocument,
   useDocument,
@@ -56,6 +58,7 @@ import {
 
 import { useDocumentSession } from './document-session';
 import { SaveIndicator } from './save-indicator';
+import { SuggestParentDialog } from './suggest-parent-dialog';
 
 const AI_RULE_BADGE_LABEL: Record<'always' | 'on_demand', string> = {
   always: 'KI-Regel',
@@ -404,6 +407,18 @@ function DocumentTopBar({
   const restoreDocument = useRestoreDocument(workspaceId);
   const workspaces = useWorkspaces();
   const workspaceName = workspaces.data?.find((workspace) => workspace.id === workspaceId)?.name;
+  const inbox = useInbox(workspaceId);
+  const [filing, setFiling] = React.useState(false);
+
+  /*
+   * Filing is offered where the captured page is read, not only in the tree's
+   * context menu (issue #71). Somebody emptying the inbox opens an entry,
+   * decides what it is, and that is the moment the question "where does this
+   * belong" can be answered -- a menu two levels deep in the navigation is not
+   * where that decision gets made.
+   */
+  const inInbox =
+    detail.parentId !== null && detail.parentId === (inbox.data?.inbox?.id ?? null) && !archived;
 
   return (
     <div className="flex items-center gap-2 border-b border-border px-6 py-2">
@@ -460,6 +475,17 @@ function DocumentTopBar({
       <div className="ml-auto flex items-center gap-3">
         {!archived && detail.access === 'write' ? <SaveIndicator /> : null}
 
+        {inInbox && detail.access === 'write' ? (
+          <Button
+            variant="outline"
+            size="sm"
+            data-testid="file-from-inbox"
+            onClick={() => setFiling(true)}
+          >
+            <FolderTreeIcon /> Einsortieren …
+          </Button>
+        ) : null}
+
         {archived ? (
           <Button
             variant="outline"
@@ -514,6 +540,12 @@ function DocumentTopBar({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      <SuggestParentDialog
+        workspaceId={workspaceId}
+        node={filing ? { id: documentId, title: detail.title, parentId: detail.parentId } : null}
+        onClose={() => setFiling(false)}
+      />
     </div>
   );
 }

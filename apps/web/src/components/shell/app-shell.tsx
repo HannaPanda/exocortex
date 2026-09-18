@@ -3,6 +3,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import {
   BrainIcon,
+  InboxIcon,
   KeyIcon,
   LogOutIcon,
   MessagesSquareIcon,
@@ -44,6 +45,7 @@ import { signOut } from '@/lib/auth/client';
 import { useRealtime, useRealtimeEvent } from '@/lib/realtime/realtime-provider';
 import { usePersistentState } from '@/lib/use-persistent-state';
 
+import { CaptureDialog } from './capture-dialog';
 import { ConnectionStatus } from './connection-status';
 import { ContextPanel } from './context-panel';
 import { DocumentSessionProvider } from './document-session';
@@ -112,6 +114,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     parsePanelPreference,
   );
   const [searchOpen, setSearchOpen] = React.useState(false);
+  const [captureOpen, setCaptureOpen] = React.useState(false);
 
   const sidebarOpen = sidebar.open;
   const contextOpen = context.open;
@@ -231,10 +234,23 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
         event.preventDefault();
         setContextOpen(!contextOpen);
       }
+      // Capture needs a workspace to land in, so outside one the browser keeps
+      // its own Strg+E rather than being robbed of it for a dialog that could
+      // not do anything (issue #71).
+      if (
+        (event.metaKey || event.ctrlKey) &&
+        event.key.toLowerCase() === 'e' &&
+        workspaceId !== null
+      ) {
+        event.preventDefault();
+        // Opens only, never toggles: closing runs through the dialog, which is
+        // what empties its field. Escape is the way out and always was.
+        setCaptureOpen(true);
+      }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [contextOpen, setContextOpen, setSidebarOpen, sidebarOpen]);
+  }, [contextOpen, setContextOpen, setSidebarOpen, sidebarOpen, workspaceId]);
 
   return (
     <AppShellFrame>
@@ -282,6 +298,25 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
             Strg K
           </kbd>
         </Button>
+
+        {workspaceId === null ? null : (
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label="Erfassen"
+                  data-testid="open-capture"
+                  onClick={() => setCaptureOpen(true)}
+                >
+                  <InboxIcon />
+                </Button>
+              }
+            />
+            <TooltipContent>Erfassen (Strg + E)</TooltipContent>
+          </Tooltip>
+        )}
 
         <div className="ml-auto flex items-center gap-2">
           <PresenceAvatars />
@@ -389,6 +424,9 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       </AppBody>
 
       <SearchCommand workspaceId={workspaceId} open={searchOpen} onOpenChange={setSearchOpen} />
+      {workspaceId === null ? null : (
+        <CaptureDialog workspaceId={workspaceId} open={captureOpen} onOpenChange={setCaptureOpen} />
+      )}
       <JobProgressIndicator />
     </AppShellFrame>
   );
