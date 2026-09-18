@@ -7,6 +7,7 @@ import { CHAT_TOOLS } from './tools/chats.js';
 import { COMMENT_TOOLS } from './tools/comments.js';
 import { DATABASE_TOOLS } from './tools/databases.js';
 import { ENTITY_TOOLS } from './tools/entities.js';
+import { INBOX_TOOLS } from './tools/inbox.js';
 import { INVITATION_TOOLS } from './tools/invitations.js';
 import { LINK_TOOLS } from './tools/links.js';
 import { MEMORY_TOOLS } from './tools/memory.js';
@@ -26,6 +27,7 @@ import { WORKSPACE_TOOLS } from './tools/workspaces.js';
 export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...WORKSPACE_TOOLS,
   ...PAGE_TOOLS,
+  ...INBOX_TOOLS,
   ...PLACEMENT_TOOLS,
   ...OVERVIEW_TOOLS,
   ...LINK_TOOLS,
