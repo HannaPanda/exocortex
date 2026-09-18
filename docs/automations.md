@@ -1,8 +1,9 @@
 # Automations
 
-Rules that react to page changes: a signed webhook, or one AI prompt against the
-changed page. Issue #50, and the reasoning is in
-[ADR-024](adr/ADR-024-automations-hang-off-the-outbox.md).
+Rules that react to page changes, or to the clock: a signed webhook, or one AI
+prompt against the page. Issue #50 and issue #73, and the reasoning is in
+[ADR-024](adr/ADR-024-automations-hang-off-the-outbox.md) and
+[ADR-038](adr/ADR-038-the-clock-is-the-second-way-an-automation-starts.md).
 
 ## Switching them on
 
@@ -30,9 +31,10 @@ signing secret is stored the same way a workspace's provider key is (ADR-023).
    (`DATABASE`).
 2. **Triggers.** One or more of `DOCUMENT_CREATED`, `DOCUMENT_UPDATED` (title
    and properties), `DOCUMENT_CONTENT_CHANGED` (the text), `DOCUMENT_MOVED`,
-   `DOCUMENT_ARCHIVED`, `DOCUMENT_DELETED`, `DATABASE_ROW_CHANGED`. The last one
-   only means something inside a `DATABASE` scope, and the others only outside
-   one.
+   `DOCUMENT_ARCHIVED`, `DOCUMENT_DELETED`, `DATABASE_ROW_CHANGED` -- or
+   `SCHEDULE`, which is the clock rather than a change and is described in its
+   own section below. `DATABASE_ROW_CHANGED` only means something inside a
+   `DATABASE` scope, and the other change triggers only outside one.
 3. **Action.** `WEBHOOK` or `AI_RUN`.
 
 Plus a debounce window, in seconds, with a floor of 10 and a default of 60. It
@@ -41,6 +43,53 @@ difference between one run and one run per paragraph typed.
 
 Only a workspace **OWNER** may write, change, delete or fire a rule. Everybody
 in the workspace may read the rules and the run log.
+
+## A schedule instead of a change
+
+`SCHEDULE` is a trigger like the others, on the same rule, with the same actions
+behind it. Two rules apply to it and to nothing else:
+
+- **It stands alone.** A rule that watched the clock _and_ a change would have
+  two answers to "which page", so the mixture is refused.
+- **It needs a page.** Scope `SUBTREE` or `DATABASE`, never the whole workspace:
+  the scope document is the page the webhook is about and the page the prompt
+  reads, because a clock names none.
+
+Five shapes, and each uses only the fields it needs:
+
+| `scheduleKind` | Fields                                      | Example                     |
+| -------------- | ------------------------------------------- | --------------------------- |
+| `ONCE`         | `scheduleAt` (an absolute instant)          | "in three days, look again" |
+| `DAILY`        | `scheduleTime`                              | 07:00 every morning         |
+| `WEEKLY`       | `scheduleTime`, `scheduleWeekday` (0 = Sun) | Sunday evening review       |
+| `MONTHLY`      | `scheduleTime`, `scheduleDayOfMonth`        | the 1st, or the 31st        |
+| `CRON`         | `scheduleCron`                              | `0 6 * * 1-5`               |
+
+`scheduleTimeZone` is an IANA name and is **required**, never taken from the
+server: 07:00 in `Europe/Berlin` stays 07:00 when summer time starts. A monthly
+31st means the last day of a shorter month rather than skipping it.
+
+The cron dialect is five numeric fields -- minute, hour, day of month, month,
+day of week (0 or 7 is Sunday) -- with `*`, ranges, lists and steps. No names,
+no `@daily`, no `L`, no `#`. Both day fields restricted is an **or**, the way
+cron has always worked: `0 5 1 * 1` is the first of the month _and_ every Monday.
+An expression this parser cannot read is refused when the rule is saved.
+
+`nextRunAt` is on the rule and is what the UI shows. It is computed when the
+rule is written and again after each firing, by the same function
+(`packages/contracts/src/automation-schedule.ts`) in both places.
+
+Three things follow from `nextRunAt` being a column rather than a repeatable job
+in Redis:
+
+- Pausing is `enabled: false`, and switching the rule back on recomputes the
+  next run rather than firing for the slot that passed meanwhile.
+- A deployment that was down catches up **once**, not once per missed slot.
+- A `ONCE` rule ends with an empty `nextRunAt` and stays enabled. It did what it
+  was for.
+
+The sweep is `run-due-automations`, every minute, which is also the finest a
+schedule can be.
 
 ## The webhook contract
 
@@ -63,12 +112,16 @@ The body:
   "event": "automation.triggered",
   "rule": { "id": "…", "name": "Hermes benachrichtigen" },
   "trigger": "DOCUMENT_CONTENT_CHANGED",
+  "origin": "EVENT",
   "workspaceId": "…",
   "document": { "id": "…", "title": "Technik", "type": "PAGE", "parentId": null },
   "occurredAt": "2026-09-12T20:00:00.000Z",
   "correlationId": "…"
 }
 ```
+
+`origin` is `EVENT`, `SCHEDULE` or `MANUAL`: what started the run, which
+`trigger` alone stopped answering once the clock could start one.
 
 Metadata only, never the page's text. A receiver that may read the page can come
 and read it through the API.
@@ -120,7 +173,10 @@ that is not modelled yet.
 ## Debugging a rule
 
 1. `POST /api/automations/:ruleId/trigger` with a `documentId`, or "Jetzt
-   ausführen" in the UI, or `exo_automation_trigger`. It skips the debounce.
+   ausführen" in the UI, or `exo_automation_trigger`. It skips the debounce. For
+   a scheduled rule the `documentId` may be left out: the rule already names its
+   page, and the run is logged with `origin: MANUAL` so it is not mistaken for
+   the nightly one.
 2. Read the outcome: the run log on the page, or `exo_automation_runs`.
 
 A run ends in one of five states. `SKIPPED` is not a failure and does not count
@@ -148,3 +204,9 @@ against it, so there is one place to say what a coherent rule is.
 A new trigger means a member on `AutomationTrigger` and a case in
 `triggerForEvent`. If the event it needs is not in the outbox yet, put it there
 first -- a trigger whose event nobody emits is worse than no trigger.
+
+A new schedule shape means a member on `AutomationScheduleKind`, the columns it
+needs on `automation_rule`, a branch in `dayMatcher` and `candidateMinutes` in
+`packages/contracts/src/automation-schedule.ts`, and the cross-field rules in
+`schedulingProblems` beside it. The sweep never learns about it: it reads
+`nextRunAt` and knows nothing else about time.

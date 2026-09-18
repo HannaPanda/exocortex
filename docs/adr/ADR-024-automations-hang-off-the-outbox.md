@@ -19,7 +19,14 @@ memory workspace should be announced to Hermes.
 
 ## Decision
 
-### The outbox is the only trigger
+### The outbox is the only trigger for a change
+
+> Superseded in part by
+> [ADR-038](ADR-038-the-clock-is-the-second-way-an-automation-starts.md)
+> (issue #73): a rule can also be started by the clock. The sweep there is not a
+> second event path -- it reads a column, not events -- and it ends in the same
+> `automation` queue, with the same run log and the same refusals. Everything
+> below still holds for every trigger that is a change.
 
 `fireMatchingAutomations` runs inside `dispatchOutbox`
 (`apps/worker/src/processors/maintenance-tasks/`). It is not a second listener

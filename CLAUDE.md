@@ -207,7 +207,8 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   while resolving so lowering a deployment value pulls every workspace down.
   The agent memory is `Workspace.isMemory` on the row, not a settings key, and
   credentials never become settings.
-- ADR-024: automations are triggered from the outbox and nowhere else; a rule
+- ADR-024: automations react to changes through the outbox and nowhere else
+  (the clock is the other half, ADR-038); a rule
   never fires on its own action and a chain stops at depth three; an AI rule
   writes a comment or a child page and never overwrites content; the webhook
   allowlist and `automations.enabled` both default to refusing.
@@ -294,6 +295,13 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   service worker answers nothing; and `exo_clip` carries the web fence although
   it returns no web text, so a run cannot clip a page and read it back around
   the fence on `exo_web_fetch`.
+- ADR-038: a schedule is a trigger on the existing rule, not a second entity.
+  `SCHEDULE` is exclusive and a scheduled rule names its page, because the clock
+  names none; `nextRunAt` is a column computed by one pure function both the API
+  and the worker call, never a repeatable job in Redis; the minute sweep claims a
+  rule by filtering on the `nextRunAt` it read, moves it on before queueing it,
+  and catches up once rather than for every slot a stopped deployment slept
+  through. A run carries `origin` beside its trigger.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
