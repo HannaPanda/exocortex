@@ -32,8 +32,10 @@ import { useWorkspaceDetail } from '@/lib/api/queries';
 
 import {
   ACTION_LABELS,
+  describeSchedule,
   formatDuration,
   formatMoment,
+  RUN_ORIGIN_LABELS,
   RUN_STATUS_LABELS,
   runStatusVariant,
   SCOPE_LABELS,
@@ -80,8 +82,8 @@ export function AutomationsPage({ workspaceId }: { workspaceId: string }) {
         <div>
           <h1 className="text-lg font-semibold">Automationen</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Regeln, die auf Änderungen an Seiten reagieren: ein signierter Webhook oder ein KI-Lauf
-            gegen die geänderte Seite.
+            Regeln, die auf Änderungen an Seiten oder auf die Uhr reagieren: ein signierter Webhook
+            oder ein KI-Lauf gegen die betroffene Seite.
           </p>
         </div>
         {isOwner ? (
@@ -197,7 +199,18 @@ function RuleTable({
                 : (rule.scopeDocumentTitle ?? rule.scopeDocumentId ?? '')}
             </TableCell>
             <TableCell className="text-sm text-muted-foreground">
-              {rule.triggers.map((trigger) => TRIGGER_LABELS[trigger]).join(', ')}
+              {rule.triggers.includes('SCHEDULE') ? (
+                <>
+                  <div>{describeSchedule(rule)}</div>
+                  <div className="text-xs">
+                    {rule.nextRunAt === null
+                      ? 'Kein weiterer Lauf'
+                      : `Nächster Lauf ${formatMoment(rule.nextRunAt)}`}
+                  </div>
+                </>
+              ) : (
+                rule.triggers.map((trigger) => TRIGGER_LABELS[trigger]).join(', ')
+              )}
             </TableCell>
             <TableCell className="text-sm text-muted-foreground">
               {ACTION_LABELS[rule.action]}
@@ -245,23 +258,31 @@ function RuleActions({
   const [documentId, setDocumentId] = React.useState('');
   const [confirming, setConfirming] = React.useState(false);
 
+  // A scheduled rule already names its page, so trying it out is one press.
+  const scheduled = rule.triggers.includes('SCHEDULE');
+
   return (
     <div className="flex items-center justify-end gap-2">
-      <Input
-        value={documentId}
-        onChange={(event) => setDocumentId(event.target.value)}
-        placeholder="Seiten-Id"
-        className="h-8 w-36"
-        aria-label={`Seite, gegen die ${rule.name} laufen soll`}
-      />
+      {scheduled ? null : (
+        <Input
+          value={documentId}
+          onChange={(event) => setDocumentId(event.target.value)}
+          placeholder="Seiten-Id"
+          className="h-8 w-36"
+          aria-label={`Seite, gegen die ${rule.name} laufen soll`}
+        />
+      )}
       <Button
         size="sm"
         variant="outline"
-        disabled={documentId.trim().length === 0 || trigger.isPending}
+        disabled={(!scheduled && documentId.trim().length === 0) || trigger.isPending}
         onClick={() =>
           trigger.mutate({
             ruleId: rule.id,
-            request: { documentId: documentId.trim(), trigger: 'DOCUMENT_UPDATED' },
+            request: {
+              documentId: scheduled ? null : documentId.trim(),
+              trigger: scheduled ? 'SCHEDULE' : 'DOCUMENT_UPDATED',
+            },
           })
         }
       >
@@ -303,6 +324,7 @@ function RunLog({ workspaceId }: { workspaceId: string }) {
               <TableHead>Zeitpunkt</TableHead>
               <TableHead>Regel</TableHead>
               <TableHead>Seite</TableHead>
+              <TableHead>Start</TableHead>
               <TableHead>Ergebnis</TableHead>
               <TableHead>Dauer</TableHead>
             </TableRow>
@@ -316,6 +338,9 @@ function RunLog({ workspaceId }: { workspaceId: string }) {
                 <TableCell className="text-sm">{run.ruleName}</TableCell>
                 <TableCell className="text-sm text-muted-foreground">
                   {run.documentTitle ?? '(gelöscht)'}
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {RUN_ORIGIN_LABELS[run.origin]}
                 </TableCell>
                 <TableCell>
                   <Badge variant={runStatusVariant(run.status)}>

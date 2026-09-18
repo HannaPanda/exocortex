@@ -1,7 +1,9 @@
 import {
   type AutomationAction,
   type AutomationOutput,
+  type AutomationRunOrigin,
   type AutomationRunStatus,
+  type AutomationScheduleKind,
   type AutomationScope,
   type AutomationTrigger,
 } from '@exocortex/contracts';
@@ -22,6 +24,7 @@ export const TRIGGER_LABELS: Record<AutomationTrigger, string> = {
   DOCUMENT_ARCHIVED: 'Seite archiviert',
   DOCUMENT_DELETED: 'Seite endgültig gelöscht',
   DATABASE_ROW_CHANGED: 'Zeilenwert geändert',
+  SCHEDULE: 'Zeitplan',
 };
 
 /** The order the form offers them in: from "happens most" to "happens least". */
@@ -33,6 +36,7 @@ export const TRIGGER_ORDER: readonly AutomationTrigger[] = [
   'DOCUMENT_ARCHIVED',
   'DOCUMENT_DELETED',
   'DATABASE_ROW_CHANGED',
+  'SCHEDULE',
 ];
 
 export const SCOPE_LABELS: Record<AutomationScope, string> = {
@@ -49,6 +53,31 @@ export const ACTION_LABELS: Record<AutomationAction, string> = {
 export const OUTPUT_LABELS: Record<AutomationOutput, string> = {
   COMMENT: 'Als Kommentar an der Seite',
   CHILD_PAGE: 'Als neue Unterseite',
+};
+
+export const SCHEDULE_KIND_LABELS: Record<AutomationScheduleKind, string> = {
+  ONCE: 'Einmalig zu einem Zeitpunkt',
+  DAILY: 'Täglich',
+  WEEKLY: 'Wöchentlich',
+  MONTHLY: 'Monatlich',
+  CRON: 'Cron-Ausdruck',
+};
+
+/** Sunday first, the way `Date` counts, not the way a German calendar prints. */
+export const WEEKDAY_LABELS: readonly string[] = [
+  'Sonntag',
+  'Montag',
+  'Dienstag',
+  'Mittwoch',
+  'Donnerstag',
+  'Freitag',
+  'Samstag',
+];
+
+export const RUN_ORIGIN_LABELS: Record<AutomationRunOrigin, string> = {
+  EVENT: 'Änderung',
+  SCHEDULE: 'Zeitplan',
+  MANUAL: 'Von Hand',
 };
 
 export const RUN_STATUS_LABELS: Record<AutomationRunStatus, string> = {
@@ -74,6 +103,39 @@ export function formatDuration(durationMs: number | null): string {
   if (durationMs === null) return '';
   if (durationMs < 1_000) return `${String(durationMs)} ms`;
   return `${(durationMs / 1_000).toFixed(1)} s`;
+}
+
+/**
+ * A schedule in one German clause (issue #73).
+ *
+ * The zone is always printed, even when it is the reader's own: a rule that
+ * says 07:00 without saying where is a rule two people read differently.
+ */
+export function describeSchedule(rule: {
+  scheduleKind: AutomationScheduleKind | null;
+  scheduleAt: string | null;
+  scheduleTime: string | null;
+  scheduleWeekday: number | null;
+  scheduleDayOfMonth: number | null;
+  scheduleCron: string | null;
+  scheduleTimeZone: string | null;
+}): string {
+  const zone = rule.scheduleTimeZone ?? '?';
+  const time = rule.scheduleTime ?? '?';
+  switch (rule.scheduleKind) {
+    case 'ONCE':
+      return rule.scheduleAt === null ? 'Einmalig' : `Einmalig am ${formatMoment(rule.scheduleAt)}`;
+    case 'DAILY':
+      return `Täglich um ${time} (${zone})`;
+    case 'WEEKLY':
+      return `Jeden ${WEEKDAY_LABELS[rule.scheduleWeekday ?? 0]} um ${time} (${zone})`;
+    case 'MONTHLY':
+      return `Monatlich am ${String(rule.scheduleDayOfMonth ?? 1)}. um ${time} (${zone})`;
+    case 'CRON':
+      return `Cron „${rule.scheduleCron ?? ''}" (${zone})`;
+    default:
+      return 'Ohne Zeitplan';
+  }
 }
 
 /** A timestamp in the local zone, without the year most rows share. */

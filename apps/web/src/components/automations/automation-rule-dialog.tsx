@@ -44,8 +44,15 @@ import {
   TRIGGER_LABELS,
   TRIGGER_ORDER,
 } from './automation-labels';
+import {
+  AutomationScheduleFields,
+  browserTimeZone,
+  fromLocalInput,
+  type ScheduleDraft,
+  toLocalInput,
+} from './automation-schedule-fields';
 
-interface Draft {
+interface Draft extends ScheduleDraft {
   name: string;
   scope: AutomationScope;
   scopeDocumentId: string;
@@ -64,6 +71,15 @@ const EMPTY_DRAFT: Draft = {
   scope: 'WORKSPACE',
   scopeDocumentId: '',
   triggers: ['DOCUMENT_CONTENT_CHANGED'],
+  // Carried even while the rule watches changes, so switching to the clock and
+  // back does not lose what was typed. Only a scheduled rule sends them.
+  scheduleKind: 'DAILY',
+  scheduleAt: '',
+  scheduleTime: '07:00',
+  scheduleWeekday: 1,
+  scheduleDayOfMonth: 1,
+  scheduleCron: '0 7 * * 1',
+  scheduleTimeZone: browserTimeZone(),
   debounceSeconds: 60,
   action: 'WEBHOOK',
   webhookUrl: '',
@@ -89,6 +105,13 @@ function draftFrom(rule: AutomationRule | null): Draft {
     webhookUrl: rule.webhookUrl ?? '',
     prompt: rule.prompt ?? '',
     modelSlug: rule.modelSlug ?? '',
+    scheduleKind: rule.scheduleKind ?? EMPTY_DRAFT.scheduleKind,
+    scheduleAt: toLocalInput(rule.scheduleAt),
+    scheduleTime: rule.scheduleTime ?? EMPTY_DRAFT.scheduleTime,
+    scheduleWeekday: rule.scheduleWeekday ?? EMPTY_DRAFT.scheduleWeekday,
+    scheduleDayOfMonth: rule.scheduleDayOfMonth ?? EMPTY_DRAFT.scheduleDayOfMonth,
+    scheduleCron: rule.scheduleCron ?? EMPTY_DRAFT.scheduleCron,
+    scheduleTimeZone: rule.scheduleTimeZone ?? EMPTY_DRAFT.scheduleTimeZone,
   };
 }
 
@@ -100,12 +123,43 @@ function requestFrom(draft: Draft) {
     scope: draft.scope,
     scopeDocumentId: draft.scope === 'WORKSPACE' ? null : emptyToNull(draft.scopeDocumentId),
     triggers: draft.triggers,
+    ...scheduleFrom(draft),
     debounceSeconds: draft.debounceSeconds,
     action: draft.action,
     webhookUrl: forWebhook ? emptyToNull(draft.webhookUrl) : null,
     prompt: forWebhook ? null : emptyToNull(draft.prompt),
     modelSlug: forWebhook ? null : emptyToNull(draft.modelSlug),
     output: draft.output,
+  };
+}
+
+/**
+ * The schedule fields the API wants: only the ones this kind uses, and nothing
+ * at all while the rule watches changes. The contract refuses a rule that
+ * carries a half-filled schedule it would never read.
+ */
+function scheduleFrom(draft: Draft) {
+  const empty = {
+    scheduleKind: null,
+    scheduleAt: null,
+    scheduleTime: null,
+    scheduleWeekday: null,
+    scheduleDayOfMonth: null,
+    scheduleCron: null,
+    scheduleTimeZone: null,
+  };
+  if (!draft.triggers.includes('SCHEDULE')) return empty;
+  const kind = draft.scheduleKind;
+  const timed = kind === 'DAILY' || kind === 'WEEKLY' || kind === 'MONTHLY';
+  return {
+    ...empty,
+    scheduleKind: kind,
+    scheduleAt: kind === 'ONCE' ? fromLocalInput(draft.scheduleAt) : null,
+    scheduleTime: timed ? draft.scheduleTime : null,
+    scheduleWeekday: kind === 'WEEKLY' ? draft.scheduleWeekday : null,
+    scheduleDayOfMonth: kind === 'MONTHLY' ? draft.scheduleDayOfMonth : null,
+    scheduleCron: kind === 'CRON' ? emptyToNull(draft.scheduleCron) : null,
+    scheduleTimeZone: emptyToNull(draft.scheduleTimeZone),
   };
 }
 
@@ -166,15 +220,20 @@ export function AutomationRuleDialog({
     setDraft((current) => ({ ...current, [field]: value }));
   };
 
+  // The clock is exclusive: picking it drops the change triggers, and picking a
+  // change drops the clock. The contract refuses the mixture, and a form that
+  // let somebody build it would only be handing them an error afterwards.
   const toggleTrigger = (trigger: AutomationTrigger, on: boolean): void => {
-    setDraft((current) => ({
-      ...current,
-      triggers: on
-        ? [...current.triggers, trigger]
-        : current.triggers.filter((entry) => entry !== trigger),
-    }));
+    setDraft((current) => {
+      if (trigger === 'SCHEDULE') {
+        return { ...current, triggers: on ? ['SCHEDULE'] : ['DOCUMENT_CONTENT_CHANGED'] };
+      }
+      const others = current.triggers.filter((entry) => entry !== trigger && entry !== 'SCHEDULE');
+      return { ...current, triggers: on ? [...others, trigger] : others };
+    });
   };
 
+  const scheduled = draft.triggers.includes('SCHEDULE');
   const body = requestFrom(draft);
 
   const submit = (): void => {
@@ -200,8 +259,8 @@ export function AutomationRuleDialog({
         <DialogHeader>
           <DialogTitle>{isNew ? 'Neue Automation' : 'Automation ändern'}</DialogTitle>
           <DialogDescription>
-            Wenn sich unter dem gewählten Bereich etwas ändert, läuft die Aktion. Eine Automation
-            überschreibt nie den Inhalt einer Seite.
+            Wenn sich unter dem gewählten Bereich etwas ändert oder der Zeitplan fällig wird, läuft
+            die Aktion. Eine Automation überschreibt nie den Inhalt einer Seite.
           </DialogDescription>
         </DialogHeader>
 
@@ -230,7 +289,14 @@ export function AutomationRuleDialog({
               <ScopeFields draft={draft} set={set} />
               <TriggerFields draft={draft} onToggle={toggleTrigger} />
 
-              <div className="flex flex-col gap-2">
+              {scheduled ? (
+                <AutomationScheduleFields
+                  draft={draft}
+                  onChange={(patch) => setDraft((current) => ({ ...current, ...patch }))}
+                />
+              ) : null}
+
+              <div className={scheduled ? 'hidden' : 'flex flex-col gap-2'}>
                 <Label htmlFor="automation-debounce">Entprellung (Sekunden)</Label>
                 <Input
                   id="automation-debounce"
@@ -344,7 +410,10 @@ function TriggerFields({
       <div className="flex flex-col gap-2">
         {TRIGGER_ORDER.map((trigger) => {
           const onlyInDatabase = trigger === 'DATABASE_ROW_CHANGED';
-          const disabled = onlyInDatabase !== (draft.scope === 'DATABASE');
+          // The clock fits every scope but the workspace-wide one, where it
+          // would have no page to act on.
+          const disabled =
+            trigger === 'SCHEDULE' ? false : onlyInDatabase !== (draft.scope === 'DATABASE');
           return (
             <label
               key={trigger}
@@ -362,7 +431,8 @@ function TriggerFields({
         })}
       </div>
       <p className="text-xs text-muted-foreground">
-        Zeilenwerte gibt es nur im Geltungsbereich einer Datenbank, alles andere nur außerhalb.
+        Zeilenwerte gibt es nur im Geltungsbereich einer Datenbank, alles andere nur außerhalb. Ein
+        Zeitplan steht allein und braucht eine Seite als Geltungsbereich: die Uhr nennt keine.
       </p>
     </div>
   );
