@@ -8,6 +8,8 @@ import {
   automationRuleListResponseSchema,
   automationRuleResponseSchema,
   automationRunListResponseSchema,
+  automationScheduleKindSchema,
+  automationScheduleTimeSchema,
   automationScopeSchema,
   automationTriggerSchema,
   createAutomationRuleResponseSchema,
@@ -50,7 +52,29 @@ function describeRule(rule: AutomationRule): string {
   const state = rule.enabled
     ? 'an'
     : `aus${rule.disabledReason === null ? '' : ` (${rule.disabledReason})`}`;
-  return `${rule.name} [${state}] ${scope}, ${rule.triggers.join('/')}, ${action}, Entprellung ${String(rule.debounceSeconds)}s (id: ${rule.id})`;
+  const timing = rule.triggers.includes('SCHEDULE')
+    ? `Zeitplan ${describeSchedule(rule)}${rule.nextRunAt === null ? '' : `, nächster Lauf ${rule.nextRunAt}`}`
+    : `Entprellung ${String(rule.debounceSeconds)}s`;
+  return `${rule.name} [${state}] ${scope}, ${rule.triggers.join('/')}, ${action}, ${timing} (id: ${rule.id})`;
+}
+
+/** The schedule in one readable clause, in the zone the rule keeps. */
+function describeSchedule(rule: AutomationRule): string {
+  const zone = rule.scheduleTimeZone ?? '?';
+  switch (rule.scheduleKind) {
+    case 'ONCE':
+      return `einmalig ${rule.scheduleAt ?? '?'}`;
+    case 'DAILY':
+      return `täglich ${rule.scheduleTime ?? '?'} (${zone})`;
+    case 'WEEKLY':
+      return `wöchentlich, Wochentag ${String(rule.scheduleWeekday ?? '?')}, ${rule.scheduleTime ?? '?'} (${zone})`;
+    case 'MONTHLY':
+      return `monatlich am ${String(rule.scheduleDayOfMonth ?? '?')}., ${rule.scheduleTime ?? '?'} (${zone})`;
+    case 'CRON':
+      return `cron „${rule.scheduleCron ?? '?'}" (${zone})`;
+    default:
+      return 'ohne Zeitplan';
+  }
 }
 
 const ruleBodySchema = z.object({
@@ -69,8 +93,52 @@ const ruleBodySchema = z.object({
     .array(automationTriggerSchema)
     .min(1)
     .describe(
-      'Worauf die Regel reagiert. DATABASE_ROW_CHANGED geht nur im DATABASE-Geltungsbereich.',
+      'Worauf die Regel reagiert. DATABASE_ROW_CHANGED geht nur im DATABASE-Geltungsbereich. ' +
+        'SCHEDULE ist die Uhr statt einer Änderung und steht immer allein; eine solche Regel ' +
+        'braucht einen Geltungsbereich mit Seite, weil die Uhr keine Seite nennt.',
     ),
+  scheduleKind: automationScheduleKindSchema
+    .nullable()
+    .default(null)
+    .describe('Nur bei SCHEDULE: ONCE, DAILY, WEEKLY, MONTHLY oder CRON.'),
+  scheduleAt: z
+    .string()
+    .nullable()
+    .default(null)
+    .describe('ONCE: der Zeitpunkt als ISO-8601-Stempel.'),
+  scheduleTime: automationScheduleTimeSchema
+    .nullable()
+    .default(null)
+    .describe('DAILY/WEEKLY/MONTHLY: Uhrzeit als HH:MM in der Zeitzone der Regel.'),
+  scheduleWeekday: z
+    .number()
+    .int()
+    .min(0)
+    .max(6)
+    .nullable()
+    .default(null)
+    .describe('WEEKLY: 0 ist Sonntag, 6 ist Samstag.'),
+  scheduleDayOfMonth: z
+    .number()
+    .int()
+    .min(1)
+    .max(31)
+    .nullable()
+    .default(null)
+    .describe('MONTHLY: 1 bis 31. Ein zu hoher Wert meint den letzten Tag des Monats.'),
+  scheduleCron: z
+    .string()
+    .nullable()
+    .default(null)
+    .describe(
+      'CRON: fünf numerische Felder (Minute Stunde Tag-im-Monat Monat Wochentag). ' +
+        'Keine Namen, kein @daily, kein L oder #.',
+    ),
+  scheduleTimeZone: z
+    .string()
+    .nullable()
+    .default(null)
+    .describe('IANA-Zone, zum Beispiel Europe/Berlin. Bei SCHEDULE Pflicht und nie geraten.'),
   debounceSeconds: z
     .number()
     .int()
@@ -130,7 +198,8 @@ export const automationListTool: AnyToolDefinition = defineTool({
 export const automationCreateTool: AnyToolDefinition = defineTool({
   name: 'exo_automation_create',
   description:
-    'Legt eine Automationsregel an: „wenn sich hier etwas ändert, dann das tun". Zwei Aktionen: ' +
+    'Legt eine Automationsregel an: „wenn sich hier etwas ändert, dann das tun" oder, mit dem ' +
+    'Auslöser SCHEDULE, „jeden Sonntag um 07:00 das tun". Zwei Aktionen: ' +
     'WEBHOOK schickt einen signierten POST an eine URL, AI_RUN stellt einen Prompt gegen die ' +
     'geänderte Seite und legt die Antwort als Kommentar oder Unterseite ab. Braucht die ' +
     'OWNER-Rolle im Arbeitsbereich und einen Token mit admin-Rechten. Das Signiergeheimnis eines ' +
@@ -223,14 +292,14 @@ export const automationRunsTool: AnyToolDefinition = defineTool({
       return { text: 'Keine Läufe aufgezeichnet.', data: result };
     }
     const text = renderMarkdownTable(
-      ['Zeitpunkt', 'Regel', 'Seite', 'Auslöser', 'Ergebnis', 'Dauer', 'Fehler'],
+      ['Zeitpunkt', 'Regel', 'Seite', 'Start', 'Ergebnis', 'Dauer', 'Fehler'],
       result.runs
         .slice(0, MAX_LISTED_RUNS)
         .map((run) => [
           run.createdAt,
           run.ruleName,
           run.documentTitle ?? '(gelöscht)',
-          run.trigger,
+          run.origin === 'EVENT' ? run.trigger : run.origin,
           run.status,
           run.durationMs === null ? '' : `${String(run.durationMs)} ms`,
           run.error ?? '',
@@ -248,7 +317,13 @@ export const automationTriggerTool: AnyToolDefinition = defineTool({
     'das Ergebnis steht kurz darauf in exo_automation_runs.',
   inputSchema: z.object({
     ruleId: idSchema,
-    documentId: idSchema.describe('Die Seite, gegen die die Regel laufen soll.'),
+    documentId: idSchema
+      .nullable()
+      .default(null)
+      .describe(
+        'Die Seite, gegen die die Regel laufen soll. Bei einer Zeitplan-Regel weglassen: ' +
+          'die nimmt ihre eigene Seite.',
+      ),
     trigger: automationTriggerSchema.default('DOCUMENT_UPDATED'),
   }),
   surfaces: ['mcp', 'ai'],
