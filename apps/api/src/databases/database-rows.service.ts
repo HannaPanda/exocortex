@@ -515,10 +515,22 @@ export class DatabaseRowsService {
       if (view === null || view.documentId !== collectionDocumentId) {
         throw AppError.notFound('Database view');
       }
+      // Re-parsed rather than cast: see the comment on `toResponse` in
+      // database-views.service.ts.
+      const viewFilters = databaseFilterGroupSchema.parse(view.filters);
       return {
-        // Re-parsed rather than cast: see the comment on `toResponse` in
-        // database-views.service.ts.
-        filters: databaseFilterGroupSchema.parse(view.filters),
+        // Inline filters narrow the view, they never replace it: the caller
+        // that names a view gets the view's rows, and may ask for fewer of
+        // them (a calendar asking for one week). Both groups are nested under
+        // one `and` so a saved `or` group keeps its own combinator, and an
+        // empty group compiles to `TRUE` rather than to nothing.
+        filters:
+          request.filters === undefined
+            ? viewFilters
+            : { combinator: 'and', conditions: [viewFilters, request.filters] },
+        // Sorts are not additive: a view's order is the order, and a second
+        // list appended to it would only ever break ties that the first list
+        // already decided.
         sorts: sortsArraySchema.parse(view.sorts),
       };
     }

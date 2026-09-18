@@ -663,6 +663,62 @@ describe('database rows', () => {
     expect(result.rows.map((row) => row.document.title)).toEqual(['Dringend']);
   });
 
+  it('narrows a saved view with inline filters instead of replacing them', async () => {
+    const { collectionId, urgent, priority } = await setupTaskDatabase();
+    for (const [title, isUrgent, level] of [
+      ['Dringend und laut', true, 9],
+      ['Dringend und leise', true, 1],
+      ['Kann warten', false, 9],
+    ] as const) {
+      await rows.create({
+        collectionDocumentId: collectionId,
+        userId: ownerId,
+        request: {
+          title,
+          values: [
+            { propertyId: urgent.id, value: isUrgent },
+            { propertyId: priority.id, value: level },
+          ],
+        },
+        correlationId,
+      });
+    }
+    const view = await views.create({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { type: 'TABLE', name: 'Nur dringend' },
+      correlationId,
+    });
+    await views.update({
+      viewId: view.id,
+      userId: ownerId,
+      request: {
+        filters: {
+          combinator: 'and',
+          conditions: [{ propertyId: urgent.id, operator: 'equals', value: true }],
+        },
+      },
+      correlationId,
+    });
+
+    const result = await rows.query({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: {
+        viewId: view.id,
+        limit: 20,
+        filters: {
+          combinator: 'and',
+          conditions: [{ propertyId: priority.id, operator: 'greater_than', value: 5 }],
+        },
+      },
+    });
+
+    // Not ['Dringend und laut', 'Kann warten']: the inline condition is added
+    // to the view's own, so the row the view hides stays hidden.
+    expect(result.rows.map((row) => row.document.title)).toEqual(['Dringend und laut']);
+  });
+
   it('paginates with a cursor', async () => {
     const collectionId = await createCollection('Viele Zeilen');
     for (let index = 0; index < 5; index += 1) {
