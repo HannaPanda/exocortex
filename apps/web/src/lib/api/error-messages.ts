@@ -88,6 +88,9 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   web_address_refused:
     'Diese Adresse wird nicht geholt. Erlaubt sind nur http und https und nur öffentlich erreichbare Adressen.',
   web_fetch_failed: 'Die Seite ließ sich nicht laden.',
+  template_exists: 'Diese Seite ist bereits eine Vorlage.',
+  template_not_a_page:
+    'Nur gewöhnliche Seiten können Vorlagen sein, keine Datenbanken und keine Projekte.',
 };
 
 /**

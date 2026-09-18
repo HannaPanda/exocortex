@@ -5,6 +5,7 @@ import {
   DownloadIcon,
   FileTextIcon,
   FolderTreeIcon,
+  LayoutTemplateIcon,
   MoreHorizontalIcon,
   RotateCcwIcon,
   SlidersHorizontalIcon,
@@ -59,6 +60,7 @@ import {
 import { useDocumentSession } from './document-session';
 import { SaveIndicator } from './save-indicator';
 import { SuggestParentDialog } from './suggest-parent-dialog';
+import { TemplateSettingsDialog } from './template-settings-dialog';
 
 const AI_RULE_BADGE_LABEL: Record<'always' | 'on_demand', string> = {
   always: 'KI-Regel',
@@ -409,6 +411,7 @@ function DocumentTopBar({
   const workspaceName = workspaces.data?.find((workspace) => workspace.id === workspaceId)?.name;
   const inbox = useInbox(workspaceId);
   const [filing, setFiling] = React.useState(false);
+  const [templateSettings, setTemplateSettings] = React.useState(false);
 
   /*
    * Filing is offered where the captured page is read, not only in the tree's
@@ -514,6 +517,12 @@ function DocumentTopBar({
             <DropdownMenuItem data-testid="open-page-properties" onClick={onOpenProperties}>
               <SlidersHorizontalIcon /> Seiteneigenschaften …
             </DropdownMenuItem>
+            <DropdownMenuItem
+              data-testid="open-template-settings"
+              onClick={() => setTemplateSettings(true)}
+            >
+              <LayoutTemplateIcon /> Vorlage …
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem data-testid="export-markdown" onClick={onExport}>
               <DownloadIcon /> Als Markdown exportieren
@@ -545,6 +554,14 @@ function DocumentTopBar({
         workspaceId={workspaceId}
         node={filing ? { id: documentId, title: detail.title, parentId: detail.parentId } : null}
         onClose={() => setFiling(false)}
+      />
+
+      <TemplateSettingsDialog
+        workspaceId={workspaceId}
+        documentId={documentId}
+        documentTitle={detail.title}
+        open={templateSettings}
+        onOpenChange={setTemplateSettings}
       />
     </div>
   );

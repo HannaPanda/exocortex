@@ -1,6 +1,6 @@
 'use client';
 
-import { FolderCodeIcon, PlusIcon, TableIcon, Trash2Icon } from 'lucide-react';
+import { FolderCodeIcon, LayoutTemplateIcon, PlusIcon, TableIcon, Trash2Icon } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
@@ -60,6 +60,7 @@ import {
   parseExpanded,
 } from './page-tree-state';
 import { SuggestParentDialog } from './suggest-parent-dialog';
+import { TemplatePickerDialog } from './template-picker-dialog';
 import { TrashSheet } from './trash-sheet';
 
 interface PageTreeProps {
@@ -108,6 +109,7 @@ export function PageTree({ workspaceId }: PageTreeProps) {
     parseExpanded,
   );
   const [showTrash, setShowTrash] = React.useState(false);
+  const [templatePicker, setTemplatePicker] = React.useState(false);
   // Which row's icon picker is open. One id rather than one flag per row,
   // because two of them can never be open at the same time, and because the
   // context menu has to be able to open the picker of the row it belongs to.
@@ -369,6 +371,7 @@ export function PageTree({ workspaceId }: PageTreeProps) {
     <div className="flex min-h-0 flex-1 flex-col">
       <TreeHeader
         onCreatePage={() => void createChild(null)}
+        onCreateFromTemplate={() => setTemplatePicker(true)}
         onCreateDatabase={() => void createChild(null, 'COLLECTION')}
         onCreateProject={() => void createProject(null)}
       />
@@ -443,6 +446,12 @@ export function PageTree({ workspaceId }: PageTreeProps) {
         workspaceId={workspaceId}
         node={suggestParentNode}
         onClose={() => setSuggestParentNode(null)}
+      />
+
+      <TemplatePickerDialog
+        workspaceId={workspaceId}
+        open={templatePicker}
+        onOpenChange={setTemplatePicker}
       />
 
       <MoveWorkspaceDialog
@@ -573,10 +582,12 @@ function MoveWorkspaceDialog({
  */
 function TreeHeader({
   onCreatePage,
+  onCreateFromTemplate,
   onCreateDatabase,
   onCreateProject,
 }: {
   onCreatePage: () => void;
+  onCreateFromTemplate: () => void;
   onCreateDatabase: () => void;
   onCreateProject: () => void;
 }) {
@@ -605,6 +616,9 @@ function TreeHeader({
         <DropdownMenuContent align="end">
           <DropdownMenuItem data-testid="create-root-page-item" onClick={onCreatePage}>
             <PlusIcon /> Seite anlegen
+          </DropdownMenuItem>
+          <DropdownMenuItem data-testid="create-root-from-template" onClick={onCreateFromTemplate}>
+            <LayoutTemplateIcon /> Seite aus Vorlage
           </DropdownMenuItem>
           <DropdownMenuItem data-testid="create-root-database" onClick={onCreateDatabase}>
             <TableIcon /> Datenbank anlegen
