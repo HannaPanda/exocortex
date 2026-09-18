@@ -52,6 +52,10 @@ What is deliberately still missing is listed under
   selected text from the browser's bookmarklet or from the phone's share menu,
   optionally reads the page itself, and writes an ordinary page with its
   provenance in the first line (ADR-037)
+- page templates: any page can be marked as one, and a new page copies its
+  content, icon, cover and, within the same database, its row properties. The
+  copy keeps no link back, and the title comes from a pattern like
+  `Wochenreview KW{{kw}}` (ADR-039)
 - filing help for new pages: candidate parents ranked from the pages that
   already exist, in the sidebar's context menu, on a page sitting in the inbox,
   and as an MCP tool
@@ -216,9 +220,10 @@ tools/                the Claude Code plugin: MCP server, memory hooks, setup sk
 | [`docs/capability-matrix.md`](docs/capability-matrix.md) | generated: which client reaches which route                  |
 | [`docs/admin.md`](docs/admin.md)                         | settings, their scopes, the admin area                       |
 | [`docs/automations.md`](docs/automations.md)             | triggers, actions, the allowlist                             |
-| [`docs/render.md`](docs/render.md)                       | Markdown to PDF, templates, the render container             |
+| [`docs/render.md`](docs/render.md)                       | Markdown to PDF, Pandoc templates, the render container      |
 | [`docs/projects.md`](docs/projects.md)                   | LaTeX projects, the file tree, the build runner              |
 | [`docs/overview-pages.md`](docs/overview-pages.md)       | digests, composition, when a refresh costs anything          |
+| [`docs/templates.md`](docs/templates.md)                 | page templates: the sidecar, the copy, the title pattern     |
 | [`docs/observability.md`](docs/observability.md)         | logs, health, tracing: what is recorded and what never is    |
 | [`docs/deviations.md`](docs/deviations.md)               | where the implementation deviates from the brief and why     |
 | [`AGENTS.md`](AGENTS.md)                                 | rules for automated agents, including the documentation rule |

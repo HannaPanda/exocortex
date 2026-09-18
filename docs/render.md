@@ -4,6 +4,10 @@ An existing page published as a PDF, without turning it into a LaTeX document
 first. Issue #44, and the reasoning is in
 [ADR-026](adr/ADR-026-rendering-is-a-derived-view.md).
 
+A `RenderTemplate` here is a Pandoc template: the LaTeX scaffolding a page is
+poured into. The page templates of [`docs/templates.md`](templates.md) are a
+different thing entirely -- those are pages a new page is copied from.
+
 ```text
 Document (Yjs)
   → materialized Markdown

@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-177 routes are reachable from at least one client; 110 from all three.
+182 routes are reachable from at least one client; 115 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -42,6 +42,7 @@ reorder routes shipped with no way to them in the browser.
 | `DELETE /api/projects/:x/files` | ✓ | ✓ | ✓ | `exo_project_delete_file` |
 | `DELETE /api/render/jobs/:x` | ✓ | ✓ | ✓ | `exo_render_delete` |
 | `DELETE /api/render/templates/:x` | ✓ | ✓ | ✓ | `exo_render_template_delete` |
+| `DELETE /api/templates/:x` | ✓ | ✓ | ✓ | `exo_template_delete` |
 | `DELETE /api/workspaces/:x/credentials/:x` | ✓ | · | · | — |
 | `DELETE /api/workspaces/:x/invitations/:x` | · | ✓ | ✓ | `exo_invitation_revoke` |
 | `DELETE /api/workspaces/:x/members/:x` | ✓ | · | · | — |
@@ -113,6 +114,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/workspaces/:x/render/templates` | ✓ | ✓ | ✓ | `exo_render_template_list` |
 | `GET /api/workspaces/:x/search` | ✓ | ✓ | ✓ | `exo_search`, `search` |
 | `GET /api/workspaces/:x/settings` | ✓ | · | · | — |
+| `GET /api/workspaces/:x/templates` | ✓ | ✓ | ✓ | `exo_template_list` |
 | `GET /api/workspaces/:x/trash` | ✓ | ✓ | ✓ | `exo_page_trash` |
 | `PATCH /api/admin/ai-models/:x` | ✓ | · | · | — |
 | `PATCH /api/admin/settings` | ✓ | · | · | — |
@@ -130,6 +132,7 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/entities/:x` | ✓ | ✓ | ✓ | `exo_entity_update` |
 | `PATCH /api/projects/:x` | ✓ | ✓ | ✓ | `exo_project_update` |
 | `PATCH /api/render/templates/:x` | ✓ | ✓ | ✓ | `exo_render_template_update` |
+| `PATCH /api/templates/:x` | ✓ | ✓ | ✓ | `exo_template_update` |
 | `PATCH /api/workspaces/:x` | ✓ | ✓ | ✓ | `exo_workspace_rename` |
 | `PATCH /api/workspaces/:x/members/:x` | ✓ | · | · | — |
 | `PATCH /api/workspaces/:x/settings` | ✓ | · | · | — |
@@ -184,6 +187,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/projects/:x/files/patch` | ✓ | ✓ | ✓ | `exo_project_patch_file` |
 | `POST /api/projects/:x/import` | ✓ | ✓ | ✓ | `exo_project_import` |
 | `POST /api/render/jobs/:x/cancel` | ✓ | ✓ | ✓ | `exo_render_cancel` |
+| `POST /api/templates/:x/pages` | ✓ | ✓ | ✓ | `exo_template_use` |
 | `POST /api/workspaces` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/attachments` | ✓ | ✓ | ✓ | `exo_attachment_upload` |
 | `POST /api/workspaces/:x/automations` | ✓ | ✓ | ✓ | `exo_automation_create` |
@@ -198,6 +202,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/workspaces/:x/render/templates` | ✓ | ✓ | ✓ | `exo_render_template_create` |
 | `POST /api/workspaces/:x/research/fetch` | · | ✓ | ✓ | `exo_web_fetch` |
 | `POST /api/workspaces/:x/research/search` | · | ✓ | ✓ | `exo_web_search` |
+| `POST /api/workspaces/:x/templates` | ✓ | ✓ | ✓ | `exo_template_create` |
 | `POST /api/workspaces/:x/trash/delete` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/trash/deletion-preview` | ✓ | · | · | — |
 | `PUT /api/workspaces/:x/credentials/:x` | ✓ | · | · | — |

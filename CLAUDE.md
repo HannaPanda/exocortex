@@ -302,6 +302,12 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   rule by filtering on the `nextRunAt` it read, moves it on before queueing it,
   and catches up once rather than for every slot a stopped deployment slept
   through. A run carries `origin` beside its trigger.
+- ADR-039: a template is an ordinary page carrying a `DocumentTemplate`
+  sidecar, and using one is a copy that keeps nothing: no link back, no
+  propagation. The copy is built from the canonical Yjs state rather than from
+  Markdown, block ids are regenerated while every reference outwards is kept,
+  row properties travel only within one database, and `renderTitlePattern` is
+  the one function both the API and the browser build the new title with.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -327,6 +333,7 @@ Each of these has a step-by-step recipe:
 | new render template, new renderer                        | `docs/render.md`            |
 | new project type, project build runner                   | `docs/projects.md`          |
 | overview pages, digests, composition prompts             | `docs/overview-pages.md`    |
+| new page template placeholder, template UI               | `docs/templates.md`         |
 
 ## Deployment on this machine
 
