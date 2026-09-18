@@ -9,8 +9,8 @@ import { createOptionalSteelWebFetcher, createSteelWebFetcher } from './steel';
 /**
  * The two web-research clients (issue #26).
  *
- * The payloads below are real answers, copied from this host on 2026-09-18:
- * Steel's scrape of example.com and SearXNG's JSON search. A test written
+ * The payloads below have the shape of real answers from this host on
+ * 2026-09-18: Steel's scrape of example.com and SearXNG's JSON search. A test written
  * against an invented shape proves that the parser agrees with the test, which
  * is exactly the failure a schema is supposed to catch.
  */
@@ -116,12 +116,12 @@ describe('fetching a page through Steel', () => {
 });
 
 const SEARXNG_ANSWER = {
-  query: 'exocortex',
+  query: 'zettelkasten',
   results: [
     {
-      title: 'Exocortex',
-      url: 'https://exocortex.zone/',
-      content: 'Self-hosted second brain',
+      title: 'Zettelkasten',
+      url: 'https://example.com/zettelkasten',
+      content: 'A note-taking method',
       engine: 'google cse',
     },
     { title: 'No address', url: '', content: '', engine: 'brave' },
@@ -136,30 +136,30 @@ describe('searching through SearXNG', () => {
 
   it('maps a hit onto title, address, snippet and engine', async () => {
     respondWith(SEARXNG_ANSWER);
-    const answer = await searcher().search({ query: 'exocortex', limit: 10 });
+    const answer = await searcher().search({ query: 'zettelkasten', limit: 10 });
     expect(answer.results[0]).toEqual({
-      title: 'Exocortex',
-      url: 'https://exocortex.zone/',
-      snippet: 'Self-hosted second brain',
+      title: 'Zettelkasten',
+      url: 'https://example.com/zettelkasten',
+      snippet: 'A note-taking method',
       engine: 'google cse',
     });
   });
 
   it('drops a hit without an address instead of handing on a dead result', async () => {
     respondWith(SEARXNG_ANSWER);
-    const answer = await searcher().search({ query: 'exocortex', limit: 10 });
+    const answer = await searcher().search({ query: 'zettelkasten', limit: 10 });
     expect(answer.results).toHaveLength(1);
   });
 
   it('carries the engines that did not answer', async () => {
     respondWith(SEARXNG_ANSWER);
-    const answer = await searcher().search({ query: 'exocortex', limit: 10 });
+    const answer = await searcher().search({ query: 'zettelkasten', limit: 10 });
     expect(answer.unresponsiveEngines).toEqual(['duckduckgo: CAPTCHA']);
   });
 
   it('honours the limit', async () => {
     respondWith(SEARXNG_ANSWER);
-    const answer = await searcher().search({ query: 'exocortex', limit: 0 });
+    const answer = await searcher().search({ query: 'zettelkasten', limit: 0 });
     expect(answer.results).toHaveLength(0);
   });
 
