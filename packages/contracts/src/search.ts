@@ -30,7 +30,11 @@ export const searchResultSchema = z.object({
    * "Rezepte" apart and knows where the one it found actually lives.
    */
   path: z.array(documentPathEntrySchema),
-  /** Highlighted snippet from the materialized plain text. */
+  /**
+   * What to show under the title: the highlighted fragment around the words
+   * that matched, or, for a page found by meaning alone, the passage whose
+   * vector matched (ADR-034) and otherwise the first lines of the page.
+   */
   snippet: z.string(),
   rank: z.number(),
   archivedAt: isoDateTimeSchema.nullable(),

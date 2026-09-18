@@ -98,7 +98,19 @@ export const backfillEmbeddings: MaintenanceTask = async (context) => {
     }
     seen += pending.length;
     try {
-      embedded += await search.writeEmbeddings(pending, semantic.model);
+      const written = await search.writeEmbeddings(pending, semantic.model);
+      embedded += written;
+      if (written === 0) {
+        // The batch is owed work that writing does not settle -- a page of
+        // nothing but blank lines is long enough to be cut up and has no
+        // passage to cut. The same batch would come back for the rest of the
+        // run, so the run ends here instead of spinning on it.
+        logger.warn('A batch of embeddings settled nothing, ending the run', {
+          batch: pending.length,
+          documentId: pending[0]?.documentId ?? null,
+        });
+        break;
+      }
     } catch (error) {
       // A batch the model refuses (a rate limit, a page too long even
       // after truncation) must not fail the job into a retry loop.
