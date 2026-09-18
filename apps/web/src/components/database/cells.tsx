@@ -91,7 +91,7 @@ function commitOnEnterOrBlur(onCommit: () => void) {
 
 const CELL_BOX = 'flex min-h-8 w-full items-start px-1.5 py-1.5 text-left text-sm';
 const CELL_INTERACTIVE =
-  'rounded-md hover:bg-accent-solid focus-visible:ring-1 focus-visible:ring-ring outline-none';
+  'rounded-md hover:bg-accent focus-visible:ring-1 focus-visible:ring-ring outline-none';
 
 /**
  * A text value that can be longer than its column, in two states.
@@ -445,7 +445,7 @@ function SelectCell({ property, value, onChange, readOnly }: PropertyCellProps) 
         render={
           <button
             type="button"
-            className="flex min-h-8 w-full items-center gap-1 rounded-md px-1.5 text-left hover:bg-accent-solid"
+            className="flex min-h-8 w-full items-center gap-1 rounded-md px-1.5 text-left hover:bg-accent"
           >
             {selected !== null ? (
               <OptionBadge optionId={selected} property={property} />
@@ -458,7 +458,7 @@ function SelectCell({ property, value, onChange, readOnly }: PropertyCellProps) 
       <PopoverContent align="start" className="w-56 p-1">
         <button
           type="button"
-          className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent-solid"
+          className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
           onClick={() => {
             onChange(null);
             setOpen(false);
@@ -470,7 +470,7 @@ function SelectCell({ property, value, onChange, readOnly }: PropertyCellProps) 
           <button
             key={option.id}
             type="button"
-            className="flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-sm hover:bg-accent-solid"
+            className="flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
             onClick={() => {
               onChange(option.id);
               setOpen(false);
@@ -533,7 +533,7 @@ function MultiSelectCell({
         render={
           <button
             type="button"
-            className="flex min-h-8 w-full items-center rounded-md px-1.5 py-1 text-left hover:bg-accent-solid"
+            className="flex min-h-8 w-full items-center rounded-md px-1.5 py-1 text-left hover:bg-accent"
           >
             {selected.length > 0 ? (
               badges
@@ -548,7 +548,7 @@ function MultiSelectCell({
           <button
             key={option.id}
             type="button"
-            className="flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-sm hover:bg-accent-solid"
+            className="flex w-full items-center justify-between rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
             onClick={() => toggle(option.id)}
           >
             <Badge

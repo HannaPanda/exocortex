@@ -104,7 +104,7 @@ function RecentRow({
       <Link
         href={documentHref(workspaceId, document.id)}
         data-testid={`overview-page-${document.id}`}
-        className="-mx-2 flex items-start gap-3 rounded-md px-2 py-1.5 transition-colors hover:bg-accent-solid"
+        className="-mx-2 flex items-start gap-3 rounded-md px-2 py-1.5 transition-colors hover:bg-accent"
       >
         <DocumentIcon
           icon={document.icon}
@@ -191,7 +191,7 @@ function DatabaseChip({
   return (
     <Link
       href={documentHref(workspaceId, database.id)}
-      className="inline-flex max-w-full items-center gap-2 rounded-md border border-border px-2.5 py-1.5 transition-colors hover:border-border-strong hover:bg-accent-solid"
+      className="inline-flex max-w-full items-center gap-2 rounded-md border border-border px-2.5 py-1.5 transition-colors hover:border-border-strong hover:bg-accent"
     >
       <DocumentIcon
         icon={database.icon}
@@ -223,7 +223,7 @@ function SectionRow({
     <li>
       <Link
         href={documentHref(workspaceId, section.id)}
-        className="-mx-2 flex items-baseline gap-2 rounded-md px-2 py-1 transition-colors hover:bg-accent-solid"
+        className="-mx-2 flex items-baseline gap-2 rounded-md px-2 py-1 transition-colors hover:bg-accent"
       >
         <DocumentIcon
           icon={section.icon}

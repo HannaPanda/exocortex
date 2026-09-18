@@ -108,7 +108,7 @@ export function ViewTabs({ documentId, views, activeViewId, onSelect, readOnly }
                   data-testid={`view-tab-${view.id}`}
                   onClick={() => onSelect(view.id)}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-accent-solid',
+                    'flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground hover:bg-accent',
                     view.id === activeViewId && 'bg-accent-strong text-foreground',
                   )}
                 >

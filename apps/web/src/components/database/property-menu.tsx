@@ -106,7 +106,7 @@ export function PropertyMenu({ documentId, property, view, columns, readOnly }: 
           render={
             <button
               type="button"
-              className="flex min-w-0 flex-1 items-center justify-between gap-1 rounded-sm px-1 py-0.5 hover:bg-accent-solid"
+              className="flex min-w-0 flex-1 items-center justify-between gap-1 rounded-sm px-1 py-0.5 hover:bg-accent"
               data-testid={`property-menu-${property.id}`}
             >
               <span className="truncate">{property.name}</span>

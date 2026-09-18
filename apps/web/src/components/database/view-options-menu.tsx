@@ -80,7 +80,7 @@ export function ViewOptionsMenu({ documentId, view, properties }: ViewOptionsMen
             return (
               <div
                 key={property.id}
-                className="flex items-center gap-2 rounded-sm px-1 py-1 hover:bg-accent-solid"
+                className="flex items-center gap-2 rounded-sm px-1 py-1 hover:bg-accent"
               >
                 <Checkbox
                   id={checkboxId}
