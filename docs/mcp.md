@@ -328,11 +328,46 @@ Three things about how this is built:
 - **Both transports have them**, because both run the same dispatcher. That is
   the whole point of ADR-018.
 
-Not built: `resources/subscribe` and `notifications/resources/updated`. They
-need a server-initiated channel that neither transport opens today (stdio has
-the connection but no notifier; Streamable HTTP would need the SSE return leg
-this server deliberately does not open), so `initialize` announces
-`subscribe: false`. Part 3 of issue #48, separately.
+## Subscriptions
+
+`resources/subscribe` is the third part of issue #48 and the one that changes
+the shape of the server: `notifications/resources/updated` travels from server
+to client outside any response, so each transport had to open a channel for it
+(ADR-035). `initialize` announces `subscribe: true` on a connection that has
+one, and `subscribe: false` on one that does not — an unannounced capability is
+an unreachable one, and an announced one that cannot deliver is worse.
+
+| Transport       | Channel                                                  | What travels                                                                                                |
+| --------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| stdio           | `GET /api/mcp/changes`, opened by the first subscription | resource URIs; the subprocess filters them against its own subscriptions and writes notifications to stdout |
+| Streamable HTTP | `GET /api/mcp` with `Accept: text/event-stream`          | the JSON-RPC notifications themselves, for the URIs this `Mcp-Session-Id` subscribed to                     |
+
+What one change touches is more than the page that was edited:
+`resourceUrisForEvent` also names the **parent**, because a page resource
+carries its direct children, and the **workspace tree** for anything that
+changes the hierarchy. A deletion names the whole branch it took with it.
+
+Four things are worth knowing before changing any of it:
+
+- **Authorization is per message, not per connection.** For every event the
+  accounts with an interested stream are asked against the database whether
+  they may still read that workspace. Nothing is remembered from when the
+  stream opened, which is why these streams need no re-authorization sweep the
+  way the Socket.IO rooms do. The sweep that exists covers only a disabled
+  account, which keeps its memberships.
+- **A revocation closes the stream.** There is no way in the protocol to say
+  "you may no longer watch that page", so the connection is replaced rather
+  than patched and the subscriptions go with it (ADR-029).
+- **Subscribing to a page that does not exist succeeds.** Refusing an unknown
+  id while accepting a readable one would answer the question `resources/read`
+  refuses to answer. The subscription simply never fires.
+- **Heartbeats are load-bearing.** A comment line every 25 seconds, under
+  nginx's 300-second idle timeout; the stdio feed reconnects after three
+  missed ones. A stream held open by a proxy and carrying nothing is otherwise
+  invisible.
+
+A connection may hold at most 200 subscriptions and an account at most eight
+streams across both endpoints; both are refusals rather than silent growth.
 
 ## Provenance: which session wrote what
 
@@ -447,11 +482,16 @@ every mutating tool one cross-site request away.
 ## The HTTP transport
 
 `POST /api/mcp` carries one JSON-RPC message per request and answers with the
-result as JSON. There is no session id and no SSE stream: this server sends no
-notifications and makes no requests of its own, so a stream would be an idle
-socket, and being stateless is what lets any API process answer any request.
-`GET` is refused with 405, `DELETE` answers 204 so a client that tidies up on
-shutdown gets a plain "fine".
+result as JSON; a POST is never answered with a stream, because nothing this
+server does mid-call needs one. `GET` is the standalone SSE channel of the
+specification and, since issue #48, opens one for a client that asks for
+`text/event-stream`; anything else still gets 405. `DELETE` answers 204 so a
+client that tidies up on shutdown gets a plain "fine".
+
+`Mcp-Session-Id` names the connection in the write journal (ADR-022) and keys
+its subscriptions in the memory of the process that answered. That is the one
+piece of state this endpoint holds, and it is why a second API process would
+need the set in Redis rather than in a `Map`.
 
 Two endpoints, differing only in which tools they serve:
 

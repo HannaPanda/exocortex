@@ -78,6 +78,9 @@ What is deliberately still missing is listed under
   deployment-wide keys a workspace may override (ADR-023)
 - API tokens with read/write/admin scopes, OAuth for remote MCP clients
   (ADR-018), and an agent journal that records what an agent changed (ADR-022)
+- all three halves of MCP on both transports: tools, resources and prompts a
+  person attaches, and subscriptions that notify a client when an attached page
+  changes, authorized per message rather than per connection (ADR-035)
 - a connections page that lists what has access, revokes it, and prints the
   finished setup line per client, plus a Claude Code plugin installed in two
   lines (`tools/claude-code-plugin`)

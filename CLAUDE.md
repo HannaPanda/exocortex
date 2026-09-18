@@ -273,6 +273,15 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   instead of it, because `findRelated` asks about pages; a search folds the
   nearest rows to one per page before fusion, and the winning passage becomes
   the excerpt.
+- ADR-035: an MCP subscription is delivered on a channel each transport opens
+  for itself (stdio consumes `GET /api/mcp/changes`, Streamable HTTP opens the
+  SSE stream on `GET /api/mcp`), and `packages/mcp-tools` holds the
+  subscription set without holding a socket. Every notification is authorized
+  against the database at the moment it is written, not when the stream opened,
+  so a withdrawn membership cannot deliver one; a revocation closes the stream
+  rather than trimming it, and a subscription to a page that does not exist
+  succeeds, because refusing it would answer what `resources/read` refuses to
+  answer.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
