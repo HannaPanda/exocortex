@@ -44,6 +44,7 @@ Host ports are non-default so the stack can coexist with other services:
 | Mailpit SMTP  | `1026`    |                                             |
 | Mailpit UI    | `8026`    | verification and reset mails land here      |
 | Docling       | `5010`    | optional, see below                         |
+| SearXNG       | `8090`    | optional, see below                         |
 
 Application ports: web `3210`, api `3211`, collaboration `3212`.
 
@@ -59,6 +60,26 @@ docker compose up -d docling
 
 Model weights are baked into the image, so the first conversion needs no
 download. Conversion is CPU-bound at roughly 1.5 seconds per page.
+
+`searxng` is optional in the same way. It is the search half of web research
+(ADR-033): a metasearch engine that forwards a query to the real engines and
+merges what comes back, so a run can find an address instead of having to know
+one. The fetch half is a Steel browser, which is not in this compose file
+because it runs outside it (`deploy/README.md` says where).
+
+```bash
+docker compose up -d searxng
+# then in .env:
+#   SEARXNG_BASE_URL=http://127.0.0.1:8090
+#   STEEL_BASE_URL=http://127.0.0.1:3000
+# and switch `ai.webResearchEnabled` on, which defaults to off.
+```
+
+Its configuration is `deploy/searxng/settings.yml`, mounted as a single file.
+Two things there are worth knowing before changing them: `search.formats` has to
+list `json` or every API request answers `403`, and mounting a directory over
+`/etc/searxng` instead of that one file hides the image's own template and ends
+in the same `403`.
 
 `minio-init` is the only service that is meant to be gone when `docker compose
 ps` is run: it sets the bucket up once MinIO is healthy and exits. An `Exited

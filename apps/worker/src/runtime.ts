@@ -292,6 +292,7 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
             userId: input.userId,
             includeMutating: input.includeMutating,
             mutationPolicy: input.mutationPolicy,
+            webFetchesPerRun: input.webFetchesPerRun,
             toolCallTimeoutMs: input.toolCallTimeoutMs,
             agentSession: input.agentSession,
             logger,

@@ -260,6 +260,13 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   `sort` or an order, because ranking inside the eligible set stays the
   provider's job. Compaction answers "can anyone still serve this", and only
   runs when a smaller prompt would change the answer.
+- ADR-033: web research is two REST calls, never an MCP client in the worker.
+  Search (SearXNG) and fetching (Steel) are separate tools because the choice
+  between them is what research costs; the address check in
+  `apps/api/src/research/public-address.ts` judges the _resolved_ address before
+  the browser sees it and again after a redirect, because the browser fetches
+  from inside this host's Docker network; the per-run fetch budget is counted in
+  the worker, since only the loop knows what a run is.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

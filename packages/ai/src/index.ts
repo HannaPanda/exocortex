@@ -10,5 +10,7 @@ export * from './pdf-text';
 export * from './provider';
 export * from './registry';
 export * from './route-planner';
+export * from './searxng';
+export * from './steel';
 export * from './token-estimate';
 export * from './vision-preprocessor';

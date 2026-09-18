@@ -83,6 +83,11 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   project_empty: 'Das Projekt enthält noch keine Dateien.',
   collaboration_unavailable:
     'Der Kollaborationsdienst ist gerade nicht erreichbar. Die Änderung wurde nicht gespeichert.',
+  web_research_unavailable:
+    'Die Recherche im Web ist hier nicht eingeschaltet oder nicht eingerichtet.',
+  web_address_refused:
+    'Diese Adresse wird nicht geholt. Erlaubt sind nur http und https und nur öffentlich erreichbare Adressen.',
+  web_fetch_failed: 'Die Seite ließ sich nicht laden.',
 };
 
 /**

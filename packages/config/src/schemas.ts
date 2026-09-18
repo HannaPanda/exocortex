@@ -86,6 +86,25 @@ export const aiSchema = z.object({
    * degrades to "not configured" instead of failing at request time.
    */
   DOCLING_BASE_URL: z.url().optional(),
+  /**
+   * Base URL of a Steel browser, e.g. `http://127.0.0.1:3000`. Unset means web
+   * research has no way to fetch a page, so `POST /api/research/fetch` answers
+   * "not configured" instead of failing somewhere deeper (issue #26).
+   *
+   * Infrastructure, not configuration: which containers this host runs is a
+   * fact about the machine, which is why it is here and not in the `setting`
+   * table (ADR-013). What a workspace gets to decide is `ai.webResearch*`.
+   */
+  STEEL_BASE_URL: z.url().optional(),
+  /** Sent as `steel-api-key`. A self-hosted Steel asks for none, so this stays unset here. */
+  STEEL_API_KEY: z.string().trim().optional(),
+  /**
+   * Base URL of a SearXNG instance, e.g. `http://127.0.0.1:8090`. Unset means
+   * `exo_web_search` does not exist at all, which is the honest state: without
+   * a search source a run needs an address it already knows, and that is
+   * looking something up rather than researching.
+   */
+  SEARXNG_BASE_URL: z.url().optional(),
 });
 
 /**

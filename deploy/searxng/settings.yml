@@ -1,0 +1,55 @@
+# SearXNG configuration for eXocortex web research (issue #26).
+#
+# Mounted read-only at /etc/searxng/settings.yml. The image's entrypoint only
+# writes a settings file when none exists, so this one wins -- and because it
+# starts from `use_default_settings`, everything not named here stays at the
+# upstream default, including the engine list.
+#
+# Two traps cost an afternoon each if they are not known in advance:
+#   1. `formats` defaults to `[html]`, and every `format=json` request against
+#      that answers 403 with no hint that the format is the reason.
+#   2. Mounting a *directory* over /etc/searxng hides the baked template, which
+#      ends in the same 403. Only this one file is mounted, never the folder.
+use_default_settings: true
+
+general:
+  instance_name: 'eXocortex Recherche'
+  # Nothing here is public: the container is bound to loopback and only
+  # apps/api talks to it. A donation link and a contact address would be
+  # furniture on a page nobody opens.
+  donation_url: false
+  contact_url: false
+  enable_metrics: false
+
+server:
+  # The secret comes from SEARXNG_SECRET (searx/settings_defaults.py maps it),
+  # so this file carries no credential and can live in a public repository.
+  #
+  # The limiter is off on purpose: it wants its own Valkey instance and it
+  # protects against abuse from the internet. The only client that can reach
+  # this port is our own API, which does its own limiting per user.
+  limiter: false
+  public_instance: false
+  image_proxy: false
+  method: 'GET'
+
+search:
+  # `json` is what makes this usable as an API at all. Without it every
+  # `format=json` request answers 403.
+  formats:
+    - html
+    - json
+  safe_search: 0
+  autocomplete: ''
+  default_lang: 'auto'
+
+outgoing:
+  # A search that has not answered in ten seconds is one the model should not
+  # be waiting for either; the API's own timeout sits just above this.
+  request_timeout: 10.0
+  max_request_timeout: 15.0
+  pool_connections: 20
+  pool_maxsize: 10
+
+ui:
+  static_use_hash: true

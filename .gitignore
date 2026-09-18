@@ -57,3 +57,7 @@ e2e/.run-scope
 .build-marker
 # Marker written by scripts/deploy.sh on a fully successful rollout.
 .last-deployed-sha
+
+# Index and notes written by the Serena MCP server when a session activates this
+# project. Local tooling state, regenerated on demand, never shared.
+.serena/

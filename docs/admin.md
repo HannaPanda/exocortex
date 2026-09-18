@@ -231,6 +231,34 @@ give the agent account a writing role in the memory workspace and a reading role
 in the curated ones, and `requireRole` makes the boundary physical, whatever
 scope its token carries ([ADR-019](adr/ADR-019-agent-memory-in-its-own-workspace.md)).
 
+### Web research settings (issue #26)
+
+Off until somebody turns it on, and the reason is not cost: this is outgoing
+traffic from your server to addresses a model chooses. It needs two containers
+to be useful, and neither is configured by default -- SearXNG finds addresses
+(`SEARXNG_BASE_URL`), a Steel browser reads the page behind one
+(`STEEL_BASE_URL`). With neither set, the switch can be on and the tools still
+report that nothing is configured.
+
+| Setting                          | Meaning                                                                                                                                                                                                   |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ai.webResearchEnabled`          | Master switch. A workspace may switch it off for itself; a deployment that switches it off switches every workspace off with it.                                                                          |
+| `ai.webResearchMaxChars`         | Cap on the text of one fetched page. What is cut is announced as cut, so nothing summarises an ending it never read.                                                                                      |
+| `ai.webResearchMaxFetchesPerRun` | Pages one run may read. `0` takes the fetch tool out of the catalogue and leaves searching in place. The budget is spent on the attempt, not on the page, so a broken address cannot be retried for ever. |
+| `ai.webSearchMaxResults`         | Hits one search returns.                                                                                                                                                                                  |
+
+A fetched page is foreign text, so `ai.untrustedContentPolicy` applies to it the
+way it applies to an uploaded PDF: after a run has read one, mutating tools are
+refused for the rest of that run. Turning research on therefore does not widen
+what a poisoned page can ask for
+([ADR-030](adr/ADR-030-foreign-content-and-mutating-tools.md),
+[ADR-033](adr/ADR-033-web-research-through-rest.md)).
+
+What a search result list cannot promise: SearXNG scrapes the engines itself,
+and from a datacentre address some of them answer with a CAPTCHA rather than
+results. The engines that stayed silent are named in the answer, so a short list
+is readable as "an engine said no" rather than "nothing exists".
+
 ### Search settings (issue #34, AP4)
 
 Semantic search is off until somebody turns it on, because switching it on

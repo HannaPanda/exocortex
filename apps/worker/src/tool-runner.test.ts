@@ -25,6 +25,7 @@ function runnerWith(overrides: Partial<CreateToolRunnerInput> = {}) {
     userId: 'user-1',
     includeMutating: true,
     mutationPolicy: 'guarded',
+    webFetchesPerRun: 8,
     toolCallTimeoutMs: 1_000,
     agentSession: { externalId: 'ai-run-test', label: 'eXocortex KI' },
     logger,
@@ -102,5 +103,47 @@ describe('the tool runner as a trust boundary', () => {
     });
     expect(result.isError).toBe(true);
     expect(result.refused).toBe(false);
+  });
+});
+
+/**
+ * The per-run web budget (issue #26).
+ *
+ * The same shape as the trust boundary above and tested the same way: the
+ * refusal happens before any client is built, so no network is involved and
+ * "the budget held" is not a claim about how a request behaved.
+ */
+describe('the tool runner as a web-research budget', () => {
+  const A_FETCH = {
+    name: 'exo_web_fetch',
+    argumentsJson: JSON.stringify({ workspaceId: 'ws-1', url: 'https://example.com' }),
+    correlationId: 'corr-1',
+  };
+
+  it('does not offer the fetch tool when the budget is zero', () => {
+    const names = runnerWith({ webFetchesPerRun: 0 }).definitions.map(
+      (definition) => definition.name,
+    );
+    expect(names).not.toContain('exo_web_fetch');
+    // Searching stays: it costs nothing on this host and finding an address is
+    // still useful when reading the page behind it is switched off.
+    expect(names).toContain('exo_web_search');
+  });
+
+  it('offers the fetch tool while the budget is positive', () => {
+    const names = runnerWith().definitions.map((definition) => definition.name);
+    expect(names).toContain('exo_web_fetch');
+  });
+
+  it('refuses the fetch that would exceed the budget', async () => {
+    const runner = runnerWith({ webFetchesPerRun: 1 });
+    // The first call is allowed through the budget and then fails at the
+    // network, which is the point: the budget is spent on the attempt.
+    const first = await runner.run(A_FETCH);
+    expect(first.refused).toBe(false);
+
+    const second = await runner.run(A_FETCH);
+    expect(second.refused).toBe(true);
+    expect(second.text).toContain('Kontingent');
   });
 });

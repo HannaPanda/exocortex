@@ -108,6 +108,42 @@ services:
       retries: 10
       start_period: 60s
 
+  searxng:
+    # Metasearch in front of the real engines (issue #26). Steel fetches a page
+    # it is given; it cannot find one, and a model that must already know the
+    # address is looking things up rather than researching.
+    #
+    # Self-hosted rather than a paid search API for the same reason docling is:
+    # every query would otherwise leave this deployment, one request at a time,
+    # to a company that gets to keep them. The honest cost is that SearXNG
+    # scrapes the engines itself, and a datacentre IP gets throttled by some of
+    # them -- so a dead engine here is expected maintenance, not a broken build.
+    image: searxng/searxng:2026.9.18-74ffd0115
+    container_name: exocortex-searxng
+    restart: unless-stopped
+    environment:
+      # Read by searx/settings_defaults.py, which is what keeps the secret out
+      # of deploy/searxng/settings.yml and therefore out of the repository.
+      SEARXNG_SECRET: ${SEARXNG_SECRET:-exocortex-dev-secret}
+      SEARXNG_BASE_URL: http://127.0.0.1:${SEARXNG_HOST_PORT:-8090}/
+      # The entrypoint would otherwise `chown -R` the config directory, which
+      # fails on the read-only settings file below and prints a wall of errors
+      # on every start.
+      FORCE_OWNERSHIP: 'false'
+    ports:
+      - '127.0.0.1:${SEARXNG_HOST_PORT:-8090}:8080'
+    volumes:
+      # One file, never the folder: a directory mount over /etc/searxng hides
+      # the image's own template and every request answers 403.
+      - ./deploy/searxng/settings.yml:/etc/searxng/settings.yml:ro
+    mem_limit: 1g
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:8080/healthz']
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
   mailpit:
     image: axllent/mailpit:v1.27
     container_name: exocortex-mailpit

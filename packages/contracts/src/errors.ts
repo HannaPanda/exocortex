@@ -78,6 +78,9 @@ export const API_ERROR_CODES = [
   'project_archive_too_large',
   'project_empty',
   'collaboration_unavailable',
+  'web_research_unavailable',
+  'web_address_refused',
+  'web_fetch_failed',
 ] as const;
 
 export const apiErrorCodeSchema = z.enum(API_ERROR_CODES);
@@ -208,4 +211,17 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // did not happen. 503 rather than 500: it is a service that is down, and
   // trying again in a moment is the right response.
   collaboration_unavailable: 503,
+  // Web research is switched off, or this deployment configured no browser and
+  // no search instance (issue #26). 503 rather than 404: the route exists and
+  // works the moment somebody sets `STEEL_BASE_URL` and flips the setting.
+  web_research_unavailable: 503,
+  // The address a caller asked for is not one this deployment will fetch: a
+  // scheme other than http(s), or a name that resolves somewhere private. 422
+  // rather than 403, because nothing about the caller's rights would change it
+  // -- it is the address that is wrong, and another one works.
+  web_address_refused: 422,
+  // The page did not load: DNS failure, a refused connection, a timeout in the
+  // browser. 502, because the failure is on the far side and the caller's next
+  // move is a different address, not a different token.
+  web_fetch_failed: 502,
 };

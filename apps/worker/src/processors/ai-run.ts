@@ -289,6 +289,11 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           userId: run.createdById,
           includeMutating: settings['ai.mutatingToolsEnabled'],
           mutationPolicy: settings['ai.untrustedContentPolicy'],
+          // Zero when web research is off, which is also how the fetch tool
+          // disappears from the catalogue instead of refusing every call.
+          webFetchesPerRun: settings['ai.webResearchEnabled']
+            ? settings['ai.webResearchMaxFetchesPerRun']
+            : 0,
           toolCallTimeoutMs: timeouts.toolCallTimeoutMs,
           // One run, one session (ADR-022): the unit somebody would want back
           // is "what the assistant did while answering that question".

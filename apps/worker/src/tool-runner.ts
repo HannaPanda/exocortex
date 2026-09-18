@@ -22,6 +22,15 @@ const MAX_RESULT_CHARS = 30_000;
 /** A service token is re-minted once it is within this margin of expiring. */
 const REISSUE_MARGIN_MS = 30_000;
 
+/**
+ * The one tool with a per-run budget (issue #26).
+ *
+ * Named here rather than made into a general "budgeted tools" table, because a
+ * table with one row is a design decision pretending to be a mechanism. When a
+ * second tool needs a budget, that is the moment to build the table.
+ */
+const WEB_FETCH_TOOL = 'exo_web_fetch';
+
 function truncate(text: string): string {
   return text.length > MAX_RESULT_CHARS ? `${text.slice(0, MAX_RESULT_CHARS)}\n… (gekürzt)` : text;
 }
@@ -66,6 +75,16 @@ export interface CreateToolRunnerInput {
   includeMutating: boolean;
   /** `ai.untrustedContentPolicy`: what this run may still change after reading foreign text. */
   mutationPolicy: AiMutationPolicy;
+  /**
+   * `ai.webResearchMaxFetchesPerRun`: web pages this run may read (issue #26).
+   *
+   * Counted here rather than in the API because only the loop knows what a run
+   * is; the API sees one request at a time and could not tell the fifth fetch
+   * of one run from the first of five. Zero takes the tool out of the
+   * catalogue entirely, the same move `deny` makes for the mutating ones:
+   * a tool that will refuse every call is a tool worth not offering.
+   */
+  webFetchesPerRun: number;
   logger: Logger;
   /** Ceiling for one tool call; see `AI_TOOL_CALL_TIMEOUT_MS`. */
   toolCallTimeoutMs: number;
@@ -84,7 +103,12 @@ export interface CreateToolRunnerInput {
  */
 export type ToolRunnerFactoryInput = Pick<
   CreateToolRunnerInput,
-  'userId' | 'includeMutating' | 'mutationPolicy' | 'toolCallTimeoutMs' | 'agentSession'
+  | 'userId'
+  | 'includeMutating'
+  | 'mutationPolicy'
+  | 'webFetchesPerRun'
+  | 'toolCallTimeoutMs'
+  | 'agentSession'
 >;
 
 export type ToolRunnerFactory = (input: ToolRunnerFactoryInput) => ToolRunner;
@@ -95,15 +119,18 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
   // spend a turn proposing one. `guarded` keeps them, because whether they are
   // allowed depends on what the run reads next.
   const includeMutating = input.includeMutating && input.mutationPolicy !== 'deny';
-  const definitions: AiToolDefinition[] = toolsFor('ai', { includeMutating }).map((tool) => ({
-    name: tool.name,
-    description: tool.description,
-    parameters: tool.jsonSchema,
-  }));
+  const definitions: AiToolDefinition[] = toolsFor('ai', { includeMutating })
+    .filter((tool) => tool.name !== WEB_FETCH_TOOL || input.webFetchesPerRun > 0)
+    .map((tool) => ({
+      name: tool.name,
+      description: tool.description,
+      parameters: tool.jsonSchema,
+    }));
 
   let tokenExpiresAt = 0;
   let client: ExocortexApiClient | null = null;
   const untrustedOrigins: UntrustedOrigin[] = [];
+  let webFetches = 0;
 
   /** Mints (or re-mints, close to expiry) the service token and its client. */
   function ensureClient(): ExocortexApiClient {
@@ -172,6 +199,26 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
         untrustedOrigins,
       });
       return { text: decision.message, isError: true, refused: true };
+    }
+
+    // The budget is spent on the call, not on the page: a fetch that failed
+    // still cost a round trip and a browser render, and a run allowed to keep
+    // retrying a broken address until one succeeds has no budget at all.
+    if (name === WEB_FETCH_TOOL) {
+      if (webFetches >= input.webFetchesPerRun) {
+        input.logger.info('Refused a web fetch over the run budget', {
+          correlationId,
+          limit: input.webFetchesPerRun,
+        });
+        return {
+          text:
+            `Dieser Lauf hat sein Kontingent von ${input.webFetchesPerRun} Webseiten aufgebraucht. ` +
+            'Arbeite mit dem, was du schon gelesen hast, und sage, was du sonst noch nachschlagen würdest.',
+          isError: true,
+          refused: true,
+        };
+      }
+      webFetches += 1;
     }
 
     let args: unknown;

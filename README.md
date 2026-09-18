@@ -60,6 +60,10 @@ What is deliberately still missing is listed under
 - a `/chats` area that finds a conversation again: full-text search over the
   messages, a reading view of the transcript, continuing it in the panel, and
   saving it as an ordinary page
+- web research, off until it is switched on: a self-hosted metasearch finds
+  addresses, a headless browser reads one of the pages, and what comes back is
+  foreign text, so writes stay closed for the rest of that run (ADR-030,
+  ADR-033)
 - per-workspace API keys (BYOK), a one-time budget per run and a usage view
 - automations triggered from the transactional outbox (ADR-024)
 - rendering Markdown to PDF through Pandoc and xelatex in a container

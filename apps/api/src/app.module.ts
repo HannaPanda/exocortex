@@ -29,6 +29,7 @@ import { PlatformModule } from './platform/platform.module';
 import { ProjectsModule } from './projects/projects.module';
 import { RealtimeModule } from './realtime/realtime.module';
 import { RenderModule } from './render/render.module';
+import { ResearchModule } from './research/research.module';
 import { SearchModule } from './search/search.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 
@@ -77,6 +78,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     AutomationsModule,
     ProjectsModule,
     RenderModule,
+    ResearchModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: ApiExceptionFilter },

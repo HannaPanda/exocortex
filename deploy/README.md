@@ -18,6 +18,7 @@ Docker bridge ──► nginx 172.17.0.1:3213 (no TLS)
                └─ /api/, /health/  → 127.0.0.1:3211   exocortex-api
 
 Docker (127.0.0.1 only): PostgreSQL 5433 · Redis 6380 · MinIO 9110/9111 · Mailpit 1026/8026
+Docker (127.0.0.1 only, web research): SearXNG 8090 · Steel 3000 (shared automation stack)
 Docker (per job, no network, fed by a pipe): render and project builds
 ```
 
@@ -29,6 +30,20 @@ artifact back the same way: no bind mounts, no network, gone when the job ends
 (ADR-026, ADR-027). Which image it uses is the `render.image` and
 `projects.image` settings; `deploy/render-image` builds the one this deployment
 points them at.
+
+The two web-research back ends are outbound only and are never reached from the
+internet: `apps/api` calls them over loopback, and nginx has no location for
+either (ADR-033). SearXNG is this repository's own compose service
+(`docker compose up -d searxng`, configuration in `deploy/searxng/settings.yml`).
+Steel belongs to the shared automation stack in `/opt/automation-stack` and
+listens on `127.0.0.1:3000`, with its DevTools port on 9223; eXocortex only ever
+calls `POST /v1/scrape`. Both addresses go into `.env` as `SEARXNG_BASE_URL` and
+`STEEL_BASE_URL`.
+
+One consequence worth stating plainly, because it is invisible from the edge:
+Steel fetches from **inside** the Docker network, so nginx and fail2ban never
+see those requests. What stops a model from reading Grafana through it is the
+address check in `apps/api/src/research/public-address.ts`, not the perimeter.
 
 There is no HTTP basic auth in front of the application. There was one while the
 deployment was private; it came off on 2026-08-09, once the things it had been

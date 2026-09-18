@@ -151,6 +151,22 @@ export const SETTING_COPY: Record<SettingKey, { label: string; help: string }> =
     label: 'Modell für Bilder',
     help: 'Ein Modell, das Bilder ausgeben kann, zum Beispiel google/gemini-2.5-flash-image. Ohne Eintrag bleibt die Bilderzeugung aus, auch wenn der Schalter darüber an ist.',
   },
+  'ai.webResearchEnabled': {
+    label: 'Im Web recherchieren',
+    help: 'Erlaubt der KI, im Web zu suchen und einzelne Seiten zu lesen. Aus, solange es niemand einschaltet: dabei gehen Anfragen von diesem Server an Adressen, die das Modell aussucht. Eine gelesene Seite gilt als Fremdinhalt, danach greift „Schreiben nach Fremdinhalten“.',
+  },
+  'ai.webResearchMaxChars': {
+    label: 'Zeichen je geholter Seite',
+    help: 'Obergrenze für den Text einer einzelnen Webseite. Was darüber liegt, wird gekürzt, und die Kürzung steht sichtbar im Text.',
+  },
+  'ai.webResearchMaxFetchesPerRun': {
+    label: 'Seiten pro Anfrage',
+    help: 'So viele Webseiten darf ein einzelner Lauf holen. 0 schaltet das Holen aus und lässt das Suchen stehen.',
+  },
+  'ai.webSearchMaxResults': {
+    label: 'Treffer je Suche',
+    help: 'Obergrenze für die Trefferliste einer Websuche.',
+  },
   'memory.enabled': {
     label: 'Gedächtnis aktiviert',
     help: 'Erlaubt Agenten, Sitzungen mitzuschreiben und Erinnerungen abzulegen. Aus: es wird nichts mehr geschrieben, gelesen werden kann weiter.',

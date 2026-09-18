@@ -146,6 +146,36 @@ export const settingsSchema = z.object({
    */
   'ai.imageModelSlug': z.string().trim().min(1).max(120).nullable().default(null),
   /**
+   * Searching and reading the open web (issue #26).
+   *
+   * Off by default, and for a reason that is not about cost: this is outgoing
+   * network traffic to addresses a model picks, which is not something an
+   * update may quietly start doing on somebody's server -- the same argument as
+   * `ai.imageGenerationEnabled` and `activity.editSessionSnapshotsEnabled`.
+   *
+   * Switching it on does not make writes riskier by itself: a fetched page
+   * arrives as foreign text, so `ai.untrustedContentPolicy` closes the door on
+   * mutating tools for the rest of that run (ADR-030).
+   */
+  'ai.webResearchEnabled': z.boolean().default(false),
+  /**
+   * Hard cap on the characters one fetched page may contribute, like
+   * `ai.pageContextMaxChars`. A news front page is 100,000 characters of
+   * navigation, and paying a model to read it is the failure mode here.
+   */
+  'ai.webResearchMaxChars': z.number().int().min(500).max(200_000).default(20_000),
+  /**
+   * Pages one run may fetch, like `ai.visionMaxImagesPerRun`.
+   *
+   * Generous rather than tight: a real piece of research reads a search result
+   * list and then four or five of the pages on it, and the run budget and the
+   * time limit are the brakes that know what a round costs. What this stops is
+   * the loop that walks a site.
+   */
+  'ai.webResearchMaxFetchesPerRun': z.number().int().min(0).max(50).default(8),
+  /** Hits one search returns. Above this the engines' own long tail is noise. */
+  'ai.webSearchMaxResults': z.number().int().min(1).max(50).default(8),
+  /**
    * The agents' memory area (issue #34, #52).
    *
    * Master switch for the whole feature. *Which* workspace an account writes
@@ -655,6 +685,16 @@ export const SETTING_SCOPES = {
   'ai.pdfMaxBytes': 'workspace',
   'ai.imageGenerationEnabled': 'workspace',
   'ai.imageModelSlug': 'workspace',
+  /**
+   * A workspace may switch web research off for itself, and a deployment that
+   * switches it off switches every workspace off with it (`SETTING_CEILINGS`).
+   * It may not switch it on against a deployment that said no: whether this
+   * host reaches out to the open web at all is a fact about the host.
+   */
+  'ai.webResearchEnabled': 'workspace',
+  'ai.webResearchMaxChars': 'workspace',
+  'ai.webResearchMaxFetchesPerRun': 'workspace',
+  'ai.webSearchMaxResults': 'workspace',
   'memory.enabled': 'deployment',
   'memory.captureModelSlug': 'workspace',
   'memory.captureMinChars': 'workspace',
@@ -782,6 +822,10 @@ export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
   'ai.visionMaxImagesPerRun',
   'ai.pageContextMaxChars',
   'ai.pdfMaxBytes',
+  'ai.webResearchEnabled',
+  'ai.webResearchMaxChars',
+  'ai.webResearchMaxFetchesPerRun',
+  'ai.webSearchMaxResults',
   'memory.recallMaxChars',
   'memory.recallMaxResults',
 ];

@@ -360,8 +360,8 @@ The external MCP surface asks twice before an irreversible write, and both
 clients behind it ask a human anyway. The built-in loop has neither: it executes
 what the model asked for. That is defensible only while every sentence in the
 context was written inside this deployment. An extracted PDF, a described image,
-and later a fetched web page (issue #26) or a mail body are not: somebody
-outside gets to put text in front of a model that holds write tools.
+a fetched web page (issue #26) and later a mail body are not: somebody outside
+gets to put text in front of a model that holds write tools.
 
 Two mechanisms, both defined in `packages/contracts/src/ai-trust.ts` so they
 cannot drift apart, and applied in `apps/worker/src/tool-runner.ts`, which is
@@ -384,8 +384,10 @@ the single funnel every tool call of the built-in loop passes through.
   looser (`SETTING_VALUE_RANKS`, ADR-023).
 
 What counts as foreign is declared per tool, as `untrustedOutput` on the
-catalogue entry (`packages/mcp-tools/src/tool.ts`), and today that is
-`exo_attachment_read_text`. The vision preprocessor is the one path that
+catalogue entry (`packages/mcp-tools/src/tool.ts`): today
+`exo_attachment_read_text`, `exo_web_search` and `exo_web_fetch`. The search
+result counts as much as the page does -- a title and a snippet are written by
+whoever owns the page. The vision preprocessor is the one path that
 bypasses the tool loop: it describes images out of an uploaded file before the
 first turn, so `ai-run.ts` notes the origin on the runner directly and
 `images.ts` fences the description.
@@ -601,6 +603,60 @@ Docling is built only when `DOCLING_BASE_URL` is set, which keeps its ~7.7 GB
 container optional. `ai.pdfExtractionModelSlug` exists in the settings schema
 for a future per-job model choice but is not wired in yet (see "Known
 limitations").
+
+## Web research (issue #26, ADR-033)
+
+Two capabilities, two tools, two back ends, and the split between them is the
+point: `exo_web_search` finds addresses, `exo_web_fetch` reads one of them. A
+merged "research this" would fetch every hit it found; split, the model reads
+eight snippets and pays for the two pages that look like answers.
+
+| Half   | Back end                         | Client                       | Environment        |
+| ------ | -------------------------------- | ---------------------------- | ------------------ |
+| search | SearXNG (self-hosted metasearch) | `packages/ai/src/searxng.ts` | `SEARXNG_BASE_URL` |
+| fetch  | Steel (headless Chrome, REST)    | `packages/ai/src/steel.ts`   | `STEEL_BASE_URL`   |
+
+Both clients are optional in the same sense Docling is: unset base URL, no
+client built, and the route answers `web_research_unavailable` instead of
+failing somewhere deeper. `ai.webResearchEnabled` defaults to **off** on top of
+that, because outgoing traffic to addresses a model picks is not something an
+update may quietly start doing on somebody's server.
+
+`apps/api/src/research/` is the only thing that talks to either back end. The
+catalogue calls `POST /api/workspaces/:workspaceId/research/{search,fetch}` like
+every other tool (ADR-014), so external MCP clients get web research at the same
+moment the built-in AI does.
+
+### The address check
+
+`public-address.ts` refuses a scheme other than `http`/`https`, and any address
+whose **resolved** IPs are not globally routable -- including a name that does
+not resolve at all out here, because that is the ordinary shape of an internal
+one. It runs before Steel sees the URL and again on the address Steel reports it
+ended up at, since a redirect is the cheapest way past a check that only reads
+what was typed.
+
+This is not belt and braces. Steel runs in this host's Docker network, so a
+fetch starts inside the perimeter: nginx and fail2ban never see it, and
+`http://grafana:3000/` is answered. Two limits are known and written down rather
+than implied: DNS rebinding is out of reach without an egress firewall around
+the container, and our own back ends (SearXNG, Steel, both on loopback) are
+deliberately not subject to the rule -- it guards a parameter a model supplied,
+not the outgoing HTTP layer.
+
+### Budgets and what comes back
+
+`ai.webResearchMaxChars` caps one page and the answer says `truncated` rather
+than pretending. `ai.webResearchMaxFetchesPerRun` is counted in
+`tool-runner.ts`, because only the loop knows what a run is; at zero the fetch
+tool leaves the catalogue instead of refusing every call, and the count is spent
+on the attempt, so a broken address cannot be retried for ever.
+`ai.webSearchMaxResults` caps a result list.
+
+A search answer carries `unresponsiveEngines`. SearXNG scrapes the engines
+itself, and from a datacentre address some of them answer with a CAPTCHA
+(DuckDuckGo does from this host, measured 2026-09-18). Without that field a
+throttled engine and a genuinely rare topic produce the same short list.
 
 ## Known limitations
 
