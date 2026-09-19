@@ -1880,6 +1880,24 @@ describe('maintenance', () => {
     expect(run.errorCode).toBe('ai_timeout');
   }, 30_000);
 
+  /**
+   * Every sweep in here is scoped to this suite's own workspace rather than
+   * run across all of them, which is what the payload's `workspaceId: null`
+   * would mean.
+   *
+   * The task reads the pages edited within the interval and stops at 200, in
+   * no particular order. Against the deployment database that was invisible:
+   * few pages are edited in any given quarter of an hour. Against the isolated
+   * stack of issue #94 the other suites are creating pages in the same
+   * database at the same time, all of them freshly "edited", and past 200 of
+   * them this suite's page simply is not in the batch -- which made the
+   * positive cases flaky and, worse, would have let the negative ones pass for
+   * the wrong reason.
+   *
+   * The fan-out across workspaces is not what these tests are about. The two
+   * guards are: nothing changed since the last checkpoint, and the last
+   * checkpoint is too recent.
+   */
   describe('snapshot-active-documents (issue #20, editing-session snapshots)', () => {
     it('is a no-op while the setting is off, the default', async () => {
       const documentId = await createDocument();
@@ -1900,7 +1918,7 @@ describe('maintenance', () => {
         contextFor({
           correlationId: 'test-snap-active-1',
           task: 'snapshot-active-documents',
-          workspaceId: null,
+          workspaceId,
         }).context,
       );
 
@@ -1931,7 +1949,7 @@ describe('maintenance', () => {
         contextFor({
           correlationId: 'test-snap-active-2',
           task: 'snapshot-active-documents',
-          workspaceId: null,
+          workspaceId,
         }).context,
       );
 
@@ -1973,7 +1991,7 @@ describe('maintenance', () => {
         contextFor({
           correlationId: 'test-snap-active-3',
           task: 'snapshot-active-documents',
-          workspaceId: null,
+          workspaceId,
         }).context,
       );
 
@@ -2014,7 +2032,7 @@ describe('maintenance', () => {
         contextFor({
           correlationId: 'test-snap-active-4',
           task: 'snapshot-active-documents',
-          workspaceId: null,
+          workspaceId,
         }).context,
       );
 
@@ -2068,7 +2086,7 @@ describe('maintenance', () => {
           contextFor({
             correlationId: 'test-snap-active-6',
             task: 'snapshot-active-documents',
-            workspaceId: null,
+            workspaceId,
           }).context,
         );
       } finally {
@@ -2105,7 +2123,7 @@ describe('maintenance', () => {
         contextFor({
           correlationId: 'test-snap-active-5',
           task: 'snapshot-active-documents',
-          workspaceId: null,
+          workspaceId,
         }).context,
       );
 
