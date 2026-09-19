@@ -19,35 +19,54 @@ async function noisyPng(width: number, height: number): Promise<Buffer> {
     .toBuffer();
 }
 
+/**
+ * Six megapixels of incompressible noise, encoded twice and resized once, is
+ * genuinely slow work, and Vitest's default budget is five seconds. On this
+ * eight-core host it finishes in about two; on a two-core GitHub runner it
+ * does not, which is why the build was red there and green here. The size is
+ * the point of the test -- a smaller image would not exercise the "original
+ * is actually large" branch at all -- so the budget moves rather than the
+ * image.
+ */
+const SLOW_IMAGE_TIMEOUT_MS = 30_000;
+
 describe('createImagePreview', () => {
-  it('downscales a large image to a smaller WebP', async () => {
-    const original = await noisyPng(3_000, 2_000);
-    expect(original.byteLength).toBeGreaterThan(400 * 1_024);
+  it(
+    'downscales a large image to a smaller WebP',
+    async () => {
+      const original = await noisyPng(3_000, 2_000);
+      expect(original.byteLength).toBeGreaterThan(400 * 1_024);
 
-    const preview = await createImagePreview(original, 'image/png');
+      const preview = await createImagePreview(original, 'image/png');
 
-    expect(preview).not.toBeNull();
-    expect(preview?.mimeType).toBe('image/webp');
-    expect(preview?.extension).toBe('webp');
-    // Fitted inside the 2048px box, aspect ratio kept.
-    expect(preview?.width).toBe(2_048);
-    expect(preview?.height).toBe(1_365);
-    expect(preview?.body.byteLength).toBeLessThan(original.byteLength);
-  });
+      expect(preview).not.toBeNull();
+      expect(preview?.mimeType).toBe('image/webp');
+      expect(preview?.extension).toBe('webp');
+      // Fitted inside the 2048px box, aspect ratio kept.
+      expect(preview?.width).toBe(2_048);
+      expect(preview?.height).toBe(1_365);
+      expect(preview?.body.byteLength).toBeLessThan(original.byteLength);
+    },
+    SLOW_IMAGE_TIMEOUT_MS,
+  );
 
   it('leaves a small original alone', async () => {
     const small = await noisyPng(64, 64);
     expect(await createImagePreview(small, 'image/png')).toBeNull();
   });
 
-  it('refuses types it must not re-encode', async () => {
-    const large = await noisyPng(3_000, 2_000);
-    // An SVG is vector, a GIF may be animated: re-encoding either loses more
-    // than it saves.
-    expect(await createImagePreview(large, 'image/svg+xml')).toBeNull();
-    expect(await createImagePreview(large, 'image/gif')).toBeNull();
-    expect(await createImagePreview(large, 'application/pdf')).toBeNull();
-  });
+  it(
+    'refuses types it must not re-encode',
+    async () => {
+      const large = await noisyPng(3_000, 2_000);
+      // An SVG is vector, a GIF may be animated: re-encoding either loses more
+      // than it saves.
+      expect(await createImagePreview(large, 'image/svg+xml')).toBeNull();
+      expect(await createImagePreview(large, 'image/gif')).toBeNull();
+      expect(await createImagePreview(large, 'application/pdf')).toBeNull();
+    },
+    SLOW_IMAGE_TIMEOUT_MS,
+  );
 
   it('reports a broken image instead of throwing', async () => {
     const errors: unknown[] = [];
