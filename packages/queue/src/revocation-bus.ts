@@ -5,7 +5,7 @@ import {
 } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 
-import { createRedisConnection, type Redis } from './connection';
+import { closeConnection, createRedisConnection, type Redis } from './connection';
 
 export interface RevocationBusOptions {
   redisUrl: string;
@@ -42,7 +42,13 @@ export class RedisRevocationBus {
   constructor(options: RevocationBusOptions) {
     this.channel = options.channel ?? AUTHORIZATION_REVOCATION_CHANNEL;
     this.logger = options.logger.child({ component: 'revocation-bus' });
-    this.publisher = createRedisConnection(options.redisUrl);
+    // `lazyConnect`: constructing a bus opens nothing. The socket is made by
+    // the first `publish` or `subscribe`, which is where a failure belongs --
+    // inside an awaited call rather than as an unhandled `error` event from a
+    // constructor. That difference is what made `RealtimeGateway`, whose
+    // constructor builds two of these, unusable in a unit test: merely
+    // constructing it dialled Redis.
+    this.publisher = createRedisConnection(options.redisUrl, { lazyConnect: true });
   }
 
   async publish(revocation: AuthorizationRevocation): Promise<void> {
@@ -82,9 +88,9 @@ export class RedisRevocationBus {
 
   async close(): Promise<void> {
     if (this.subscriber !== null) {
-      await this.subscriber.quit();
+      await closeConnection(this.subscriber);
       this.subscriber = null;
     }
-    await this.publisher.quit();
+    await closeConnection(this.publisher);
   }
 }

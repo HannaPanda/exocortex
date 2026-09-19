@@ -1,7 +1,7 @@
 import { type ApplicationEvent, applicationEventSchema } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 
-import { createRedisConnection, type Redis } from './connection';
+import { closeConnection, createRedisConnection, type Redis } from './connection';
 
 export const EVENT_BUS_CHANNEL = 'exocortex:events';
 
@@ -33,7 +33,11 @@ export class RedisEventBus {
   constructor(options: EventBusOptions) {
     this.channel = options.channel ?? EVENT_BUS_CHANNEL;
     this.logger = options.logger.child({ component: 'event-bus' });
-    this.publisher = createRedisConnection(options.redisUrl);
+    // `lazyConnect`: see `RedisRevocationBus`. Constructing a bus opens
+    // nothing; the first `publish` or `subscribe` makes the socket, and a dead
+    // Redis then fails inside an awaited call instead of as an unhandled
+    // `error` event.
+    this.publisher = createRedisConnection(options.redisUrl, { lazyConnect: true });
   }
 
   async publish(event: ApplicationEvent): Promise<void> {
@@ -72,9 +76,9 @@ export class RedisEventBus {
 
   async close(): Promise<void> {
     if (this.subscriber !== null) {
-      await this.subscriber.quit();
+      await closeConnection(this.subscriber);
       this.subscriber = null;
     }
-    await this.publisher.quit();
+    await closeConnection(this.publisher);
   }
 }

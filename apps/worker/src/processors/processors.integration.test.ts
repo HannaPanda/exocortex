@@ -4053,6 +4053,16 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
       'Quelle E',
     );
     await materialize(sourceId, 'test-links-6');
+    // Everything else in this workspace counts as already indexed, so the
+    // batch below is exactly this page. The sweep takes `linkBackfillBatchSize`
+    // rows in no particular order, and the earlier tests in this file leave
+    // un-indexed pages behind; against the deployment database the running
+    // worker had already swept them, against the isolated stack of issue #94
+    // nothing has.
+    await prisma.documentContent.updateMany({
+      where: { linksIndexedAt: null, document: { workspaceId } },
+      data: { linksIndexedAt: new Date() },
+    });
     // Back to the state an existing deployment is in: derived JSON, no references.
     await prisma.documentLink.deleteMany({ where: { sourceDocumentId: sourceId } });
     await prisma.documentContent.update({
