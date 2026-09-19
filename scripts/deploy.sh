@@ -178,9 +178,15 @@ fi
 # its providers compiles, type-checks and passes every unit test, and then
 # refuses to boot. But it needs Redis and Postgres, so it is not in build.sh's
 # default set -- which is how issue #83 shipped a green build and a dead API.
-# Here there is infrastructure, and here is still before the restart.
+# Here is still before the restart.
+#
+# It runs on a throwaway stack of its own rather than against the deployment
+# (issue #94). What it needs is *a* database, not *the* database: everything
+# else about the configuration is still the real one, and compiling the graph
+# no longer has Better Auth write its OAuth resource rows into production on
+# every deploy.
 step "Step 5b — the API's module graph"
-pnpm --filter @exocortex/api exec vitest run src/app.module.integration.test.ts   || fail "The API cannot construct its module graph"      "A provider is missing from a module, or a module is not imported. Nothing has been restarted; the deployment is still on the previous build."
+bash scripts/test-integration.sh --run 'pnpm --filter @exocortex/api exec vitest run src/app.module.integration.test.ts'   || fail "The API cannot construct its module graph"      "A provider is missing from a module, or a module is not imported. Nothing has been restarted; the deployment is still on the previous build."
 ok "Every provider of every module resolves."
 
 # --- 6. Restart --------------------------------------------------------------

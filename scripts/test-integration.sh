@@ -6,10 +6,17 @@
 #   bash scripts/test-integration.sh                    every integration suite
 #   bash scripts/test-integration.sh @exocortex/api     one workspace only
 #   bash scripts/test-integration.sh --keep             leave the stack up afterwards
+#   bash scripts/test-integration.sh --run '<command>'  that command instead
 #
-# The argument is a workspace name and is handed to turbo as `--filter`. It is
-# deliberately not a test-name filter: vitest ORs its positional arguments
+# A bare argument is a workspace name and is handed to turbo as `--filter`. It
+# is deliberately not a test-name filter: vitest ORs its positional arguments
 # together, so a second one would widen the selection rather than narrow it.
+#
+# `--run` is for the one caller that needs a database but is not a test run:
+# `deploy.sh` step 5b compiles the API's module graph before restarting
+# anything, which opens a connection because Better Auth seeds its OAuth
+# resource rows as the module initialises. That used to happen against the
+# live database on every deploy.
 #
 # Until this script existed, `pnpm test:integration` on this host opened the
 # live database and the live Redis, because that is what the repository's `.env`
@@ -60,20 +67,27 @@ export EXOCORTEX_TEST_POSTGRES_PORT="$PG_PORT"
 export EXOCORTEX_TEST_REDIS_PORT="$REDIS_PORT"
 
 KEEP=0
+RUN_COMMAND=""
 FILTER=()
-for arg in "$@"; do
-  case "$arg" in
+while [ $# -gt 0 ]; do
+  case "$1" in
     --keep) KEEP=1 ;;
+    --run)
+      shift
+      [ $# -gt 0 ] || { echo "--run needs a command" >&2; exit 2; }
+      RUN_COMMAND="$1"
+      ;;
     -h|--help)
-      sed -n '2,12p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+      sed -n '2,16p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
       exit 0
       ;;
     -*)
-      echo "Unknown argument: $arg (allowed: --keep, --help, or a workspace name)" >&2
+      echo "Unknown argument: $1 (allowed: --keep, --run, --help, or a workspace name)" >&2
       exit 2
       ;;
-    *) FILTER+=("$arg") ;;
+    *) FILTER+=("$1") ;;
   esac
+  shift
 done
 
 GREEN='\033[32m'; RED='\033[31m'; YELLOW='\033[33m'; CYAN='\033[36m'; BOLD='\033[1m'; DIM='\033[2m'; NC='\033[0m'
@@ -159,14 +173,20 @@ fi
 ok "Model registry seeded."
 
 # --- 4. The suites ----------------------------------------------------------
-step "Step 4 — integration tests"
 set +e
-TURBO_ARGS=(run test:integration)
-for workspace in ${FILTER[@]+"${FILTER[@]}"}; do
-  info "workspace: $workspace"
-  TURBO_ARGS+=(--filter "$workspace")
-done
-pnpm exec turbo "${TURBO_ARGS[@]}"
+if [ -n "$RUN_COMMAND" ]; then
+  step "Step 4 — the given command, against the throwaway stack"
+  info "$RUN_COMMAND"
+  bash -c "$RUN_COMMAND"
+else
+  step "Step 4 — integration tests"
+  TURBO_ARGS=(run test:integration)
+  for workspace in ${FILTER[@]+"${FILTER[@]}"}; do
+    info "workspace: $workspace"
+    TURBO_ARGS+=(--filter "$workspace")
+  done
+  pnpm exec turbo "${TURBO_ARGS[@]}"
+fi
 TEST_STATUS=$?
 set -e
 
@@ -184,8 +204,15 @@ if [ "$KEEP" -eq 0 ]; then
 fi
 
 if [ "$TEST_STATUS" -ne 0 ]; then
+  if [ -n "$RUN_COMMAND" ]; then
+    fail "The command failed." "It ran against the throwaway stack, which has been removed; re-run with --keep to inspect the database afterwards."
+  fi
   fail "Integration tests failed." "The stack they ran against has been removed; re-run with --keep to inspect the database afterwards."
 fi
 
 step "Done"
-ok "Integration tests green. The stack they ran against no longer exists."
+if [ -n "$RUN_COMMAND" ]; then
+  ok "The command succeeded. The stack it ran against no longer exists."
+else
+  ok "Integration tests green. The stack they ran against no longer exists."
+fi

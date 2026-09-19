@@ -376,8 +376,14 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
     everything else: a module that injects a provider it does not list compiles,
     type-checks, passes every unit test and then refuses to boot. The test needs
     Postgres and Redis, so `build.sh` leaves it out of its default set — and
-    that is how issue #83 got a green build and a dead API. Here there is
-    infrastructure, and here is still before the restart.
+    that is how issue #83 got a green build and a dead API. Here is still
+    before the restart.
+
+    It gets those two from `scripts/test-integration.sh --run` rather than from
+    the deployment (issue #94): what it needs is _a_ database, not _the_
+    database. Everything else about the configuration is still the real one,
+    and compiling the graph no longer has Better Auth write its OAuth resource
+    rows into production on every deploy.
 
 12. **Restart**, API first (everything talks to it), web last (it is what people
     have open):
