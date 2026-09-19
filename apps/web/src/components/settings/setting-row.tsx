@@ -107,6 +107,14 @@ export const SETTING_COPY: Record<SettingKey, { label: string; help: string }> =
     label: 'Zeichen der geöffneten Seite',
     help: 'Obergrenze für den mitgeschickten Seitentext. Was darüber liegt, wird gekürzt, und die Kürzung steht sichtbar im Text.',
   },
+  'ai.maxPinnedSources': {
+    label: 'Angeheftete Quellen je Unterhaltung',
+    help: 'Wie viele Seiten, Datenbankansichten und gespeicherte Suchen an eine Unterhaltung geheftet werden dürfen. Null schaltet das Anheften für diesen Arbeitsbereich ab.',
+  },
+  'ai.pinnedContextMaxChars': {
+    label: 'Zeichen aller eingebetteten Quellen',
+    help: 'Obergrenze für alle angehefteten Quellen zusammen, die ihren Text mitschicken. Das Budget wird gleichmäßig auf sie aufgeteilt, und jede Kürzung steht sichtbar im Text.',
+  },
   'ai.compactionThresholdPercent': {
     label: 'Zusammenfassen ab (% des Kontextfensters)',
     help: 'Ab diesem Füllstand werden ältere Nachrichten zu einer Zusammenfassung verdichtet.',

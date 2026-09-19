@@ -5,7 +5,7 @@ import {
   QUEUE_NAMES,
   type Settings,
 } from '@exocortex/contracts';
-import { type AiRun, type PrismaClient } from '@exocortex/database';
+import { type AiRun, type PrismaClient, type SearchAdapter } from '@exocortex/database';
 import { withSpan } from '@exocortex/logger';
 import { type JobContext, type QueueRegistry, type RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
@@ -57,6 +57,12 @@ export interface AiRunDependencies {
   modelRegistry: (slug: string) => Promise<ResolvedModelRow | null>;
   /** Only used to ask for an endpoint refresh when a `latest` alias turns out to have moved (ADR-032). */
   queues: QueueRegistry;
+  /**
+   * Both search halves, for the pinned saved queries a system prompt may carry
+   * (issue #75). `runSavedQuery` takes the two separately because the stored
+   * question decides which of them answers it.
+   */
+  search: { hybrid: SearchAdapter; keyword: SearchAdapter };
 }
 
 /**
@@ -245,6 +251,7 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
         endpoints: modelRow.endpoints,
         reservedOutputTokens: maxOutputTokens,
         requiresReasoningEffort,
+        search: dependencies.search,
         payload,
         logger,
       },

@@ -4,6 +4,7 @@ import {
   aiConversationDetailResponseSchema,
   aiConversationListResponseSchema,
   aiConversationSearchResponseSchema,
+  aiConversationSourcesResponseSchema,
   idSchema,
 } from '@exocortex/contracts';
 
@@ -21,7 +22,11 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
  * decided three weeks ago asks the person to repeat it, which is exactly the
  * problem the `/chats` area exists to solve.
  *
- * Read-only, all three of them. The exemption for the writing half stands.
+ * Read-only, all four of them. The exemption for the writing half stands, and
+ * it now covers the pinned sources too (issue #75): what a conversation
+ * carries with it is the person's decision about what leaves their workspace,
+ * and a tool that could pin a page would be the run widening its own context.
+ * Reading that list is the opposite, and `exo_chat_context` is it.
  */
 
 const MAX_LISTED = 40;
@@ -164,8 +169,54 @@ export const chatReadTool: AnyToolDefinition = defineTool({
   },
 });
 
+const SOURCE_KIND_LABEL: Record<string, string> = {
+  PAGE: 'Seite',
+  DATABASE_VIEW: 'Datenbankansicht',
+  SAVED_QUERY: 'Gespeicherte Suche',
+};
+
+export const chatContextTool: AnyToolDefinition = defineTool({
+  name: 'exo_chat_context',
+  description:
+    'Zeigt, welche Quellen an eine KI-Unterhaltung angeheftet sind: Titel, Art, ob ihr Text ' +
+    'mitgeschickt oder nur ihr Name genannt wird, und wie viele Zeichen sie im nächsten Zug ' +
+    'kosten. Damit sieht ein Agent denselben Kontext wie die Chip-Zeile über dem Eingabefeld.',
+  inputSchema: z.object({
+    conversationId: idSchema,
+  }),
+  surfaces: ['mcp', 'ai'],
+  mutating: false,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'GET',
+      path: `/api/ai/conversations/${input.conversationId}/sources`,
+      responseSchema: aiConversationSourcesResponseSchema,
+    });
+
+    if (result.sources.length === 0) {
+      return { text: 'An diese Unterhaltung ist keine Quelle angeheftet.', data: result };
+    }
+
+    const table = renderMarkdownTable(
+      ['Titel', 'Art', 'Modus', 'Zeichen', 'Hinweis'],
+      result.sources.map((source) => [
+        source.subtitle === null ? source.title : `${source.title} (${source.subtitle})`,
+        SOURCE_KIND_LABEL[source.kind] ?? source.kind,
+        source.mode === 'EMBED' ? 'Inhalt geht mit' : 'nur genannt',
+        String(source.chars),
+        source.empty ? 'leer' : source.truncated ? `gekürzt von ${String(source.fullChars)}` : '',
+      ]),
+    );
+    const budget =
+      `\n\n_Budget: ${String(result.budget.usedChars)} von ${String(result.budget.maxChars)} Zeichen ` +
+      `belegt, höchstens ${String(result.budget.maxSources)} Quellen je Unterhaltung._`;
+    return { text: `${table}${budget}`, data: result };
+  },
+});
+
 export const CHAT_TOOLS: readonly AnyToolDefinition[] = [
   chatListTool,
   chatSearchTool,
   chatReadTool,
+  chatContextTool,
 ];

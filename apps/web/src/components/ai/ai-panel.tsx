@@ -6,6 +6,9 @@ import * as React from 'react';
 import {
   type AiConversation,
   type AiConversationMessage,
+  type AiConversationSource,
+  type AiConversationSourceMode,
+  type AiConversationSourcesResponse,
   type AiReasoningLevel,
   type AiRunPhase,
   type DocumentDetail,
@@ -42,8 +45,10 @@ import { type ModelChoice, resolveModelChoice, useModelPreference } from './mode
 import { ModelPicker } from './model-picker';
 import { activeConversationKey, parseConversationId } from './panel-state';
 import { RunActivity } from './run-activity';
+import { SourcePicker } from './source-picker';
 import { Transcript } from './transcript';
 import { type ToolActivityEntry, useAiRunTracker } from './use-ai-run-tracker';
+import { usePinnedSources } from './use-pinned-sources';
 
 export interface AiPanelProps {
   workspaceId: string | null;
@@ -137,6 +142,8 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
     null,
   );
 
+  const [sourcePickerOpen, setSourcePickerOpen] = React.useState(false);
+
   const run = useAiRunTracker(activeConversationId);
   const {
     activeRunId,
@@ -213,6 +220,12 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
     createConversation,
     setActiveConversationId,
   ]);
+
+  const pinnedSources = usePinnedSources({
+    conversationId: activeConversationId,
+    ensureConversation: startNewConversation,
+    onError: setError,
+  });
 
   const handleModelChange = (slug: string): void => {
     preference.remember({ modelSlug: slug });
@@ -376,9 +389,23 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
         onEnabledChange={handlePageContextChange}
         selection={selection}
         onSelectionRemove={clearSelection}
+        pinned={pinnedSources.pinned}
+        onPinRequest={() => setSourcePickerOpen(true)}
+        onPinModeChange={pinnedSources.setMode}
+        onPinRemove={pinnedSources.remove}
         busy={activeRunId !== null}
         onSubmit={handleSubmit}
       />
+      {workspaceId === null ? null : (
+        <SourcePicker
+          workspaceId={workspaceId}
+          openDocumentId={documentId}
+          openDocumentIsCollection={openDocument?.type === 'COLLECTION'}
+          open={sourcePickerOpen}
+          onOpenChange={setSourcePickerOpen}
+          onPick={pinnedSources.add}
+        />
+      )}
     </div>
   );
 }
@@ -545,6 +572,10 @@ function AiPanelFooter({
   onEnabledChange,
   selection,
   onSelectionRemove,
+  pinned,
+  onPinRequest,
+  onPinModeChange,
+  onPinRemove,
   busy,
   onSubmit,
 }: {
@@ -553,6 +584,10 @@ function AiPanelFooter({
   onEnabledChange: (enabled: boolean) => void;
   selection: { blockIds: string[]; text: string } | null;
   onSelectionRemove: () => void;
+  pinned: AiConversationSourcesResponse | null;
+  onPinRequest: () => void;
+  onPinModeChange: (source: AiConversationSource, mode: AiConversationSourceMode) => void;
+  onPinRemove: (source: AiConversationSource) => void;
   busy: boolean;
   onSubmit: (content: string) => Promise<void>;
 }) {
@@ -565,6 +600,10 @@ function AiPanelFooter({
         onEnabledChange={onEnabledChange}
         selectionBlockCount={selection === null ? null : Math.max(1, selection.blockIds.length)}
         onSelectionRemove={onSelectionRemove}
+        pinned={pinned}
+        onPinRequest={onPinRequest}
+        onPinModeChange={onPinModeChange}
+        onPinRemove={onPinRemove}
         disabled={busy}
       />
       <ChatComposer disabled={busy} onSubmit={onSubmit} />

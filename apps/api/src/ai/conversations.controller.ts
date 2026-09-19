@@ -4,6 +4,8 @@ import { z } from 'zod';
 
 import { type VerifiedSession } from '@exocortex/auth';
 import {
+  type AddAiConversationSourceRequest,
+  addAiConversationSourceRequestSchema,
   AI_CONVERSATION_PAGE_SIZE,
   AI_CONVERSATION_SEARCH_LIMIT,
   type AiConversation,
@@ -17,6 +19,8 @@ import {
   aiConversationSchema,
   type AiConversationSearchResponse,
   aiConversationSearchResponseSchema,
+  type AiConversationSourcesResponse,
+  aiConversationSourcesResponseSchema,
   type ConversationToPageRequest,
   conversationToPageRequestSchema,
   type ConversationToPageResponse,
@@ -30,6 +34,8 @@ import {
   postConversationMessageResponseSchema,
   type UpdateAiConversationRequest,
   updateAiConversationRequestSchema,
+  type UpdateAiConversationSourceRequest,
+  updateAiConversationSourceRequestSchema,
 } from '@exocortex/contracts';
 
 import { CurrentSession } from '../auth/session.guard';
@@ -37,6 +43,7 @@ import { currentCorrelationId } from '../common/correlation';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
 import { ConversationArchiveService } from './conversation-archive.service';
+import { ConversationSourcesService } from './conversation-sources.service';
 import { ConversationsService } from './conversations.service';
 
 /** Query params arrive as strings; every coercion this controller needs is here. */
@@ -86,6 +93,7 @@ export class ConversationsController {
   constructor(
     private readonly conversations: ConversationsService,
     private readonly conversationArchive: ConversationArchiveService,
+    private readonly conversationSources: ConversationSourcesService,
   ) {}
 
   @Get()
@@ -196,6 +204,60 @@ export class ConversationsController {
       request: body,
       correlationId: currentCorrelationId(),
     });
+  }
+
+  /**
+   * The sources pinned beside the open page (issue #75, ADR-043).
+   *
+   * Every one of these four answers with the whole list rather than with the
+   * row it touched: the chip row is a promise about what goes out, and the
+   * budget is shared, so adding one source changes the size of the others.
+   */
+  @Get(':conversationId/sources')
+  @ApiOkResponse({ schema: openApiResponseSchema(aiConversationSourcesResponseSchema) })
+  async listSources(
+    @CurrentSession() session: VerifiedSession,
+    @Param('conversationId') conversationId: string,
+  ): Promise<AiConversationSourcesResponse> {
+    return this.conversationSources.list(conversationId, session.userId);
+  }
+
+  @Post(':conversationId/sources')
+  @ApiBody({ schema: openApiSchema(addAiConversationSourceRequestSchema) })
+  @ApiCreatedResponse({ schema: openApiResponseSchema(aiConversationSourcesResponseSchema) })
+  async addSource(
+    @CurrentSession() session: VerifiedSession,
+    @Param('conversationId') conversationId: string,
+    @Body(zodPipe(addAiConversationSourceRequestSchema)) body: AddAiConversationSourceRequest,
+  ): Promise<AiConversationSourcesResponse> {
+    return this.conversationSources.add({ conversationId, userId: session.userId, request: body });
+  }
+
+  @Patch(':conversationId/sources/:sourceId')
+  @ApiBody({ schema: openApiSchema(updateAiConversationSourceRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(aiConversationSourcesResponseSchema) })
+  async updateSource(
+    @CurrentSession() session: VerifiedSession,
+    @Param('conversationId') conversationId: string,
+    @Param('sourceId') sourceId: string,
+    @Body(zodPipe(updateAiConversationSourceRequestSchema)) body: UpdateAiConversationSourceRequest,
+  ): Promise<AiConversationSourcesResponse> {
+    return this.conversationSources.update({
+      conversationId,
+      sourceId,
+      userId: session.userId,
+      request: body,
+    });
+  }
+
+  @Delete(':conversationId/sources/:sourceId')
+  @ApiOkResponse({ schema: openApiResponseSchema(aiConversationSourcesResponseSchema) })
+  async removeSource(
+    @CurrentSession() session: VerifiedSession,
+    @Param('conversationId') conversationId: string,
+    @Param('sourceId') sourceId: string,
+  ): Promise<AiConversationSourcesResponse> {
+    return this.conversationSources.remove({ conversationId, sourceId, userId: session.userId });
   }
 
   @Post(':conversationId/messages')

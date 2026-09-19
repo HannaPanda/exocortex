@@ -92,6 +92,14 @@ export const API_ERROR_CODES = [
    * query has to be edited, and no retry will help (issue #74).
    */
   'saved_query_invalid',
+  /** Pinning context sources is switched off for this workspace (`ai.maxPinnedSources` is 0). */
+  'pinned_sources_disabled',
+  /** The conversation already pins as many sources as `ai.maxPinnedSources` allows. */
+  'pinned_sources_limit_reached',
+  /** The saved query does not exist or is not in the conversation's workspace. */
+  'saved_query_access_denied',
+  /** Only a database page has views, so only one can be pinned as a view. */
+  'document_not_a_collection',
 ] as const;
 
 export const apiErrorCodeSchema = z.enum(API_ERROR_CODES);
@@ -241,4 +249,10 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // 422 rather than 500: the request is well formed and the caller is allowed,
   // but the question it names cannot be asked of the schema as it stands now.
   saved_query_invalid: 422,
+  // 409 rather than 403: the deployment allows it, this workspace does not, and
+  // the caller's next move is a setting rather than a different token.
+  pinned_sources_disabled: 409,
+  pinned_sources_limit_reached: 409,
+  saved_query_access_denied: 403,
+  document_not_a_collection: 422,
 };

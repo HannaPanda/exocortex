@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatOpenPageSection, type OpenPage } from './system-prompt';
+import { type RenderedConversationSource } from '@exocortex/database';
+
+import { formatOpenPageSection, formatPinnedSourcesSection, type OpenPage } from './system-prompt';
 
 /**
  * Pure formatting tests for the "open page" block. The surrounding
@@ -121,5 +123,85 @@ describe('formatOpenPageSection', () => {
 
     expect(section).toContain('Titel: Unbenannte Seite');
     expect(section).toContain('Pfad: Unbenannte Seite');
+  });
+});
+
+/**
+ * The pinned sources block (issue #75). Same rule as the open page: a cut has
+ * to be visible in the text, and a run without tools must be told that the
+ * names it is given are names it cannot follow.
+ */
+function source(overrides: Partial<RenderedConversationSource> = {}): RenderedConversationSource {
+  return {
+    id: 'src_1',
+    kind: 'PAGE',
+    mode: 'EMBED',
+    title: 'Steuern 2026',
+    subtitle: 'in Finanzen',
+    pointer: 'Den vollständigen Text holst du mit `exo_page_read` und documentId doc_steuern.',
+    text: 'Die Frist endet am 31. Juli.',
+    fullChars: 27,
+    truncated: false,
+    empty: false,
+    ...overrides,
+  };
+}
+
+describe('formatPinnedSourcesSection', () => {
+  it('renders nothing when nothing is pinned', () => {
+    expect(formatPinnedSourcesSection([], { toolsAvailable: true })).toBeNull();
+  });
+
+  it('puts an embedded source under its own heading, with its text', () => {
+    const section = formatPinnedSourcesSection([source()], { toolsAvailable: true });
+
+    expect(section).toContain('## Angeheftete Quellen');
+    expect(section).toContain('### Steuern 2026 (Seite)');
+    expect(section).toContain('_in Finanzen_');
+    expect(section).toContain('Die Frist endet am 31. Juli.');
+  });
+
+  it('states a cut in the text rather than only in the metadata', () => {
+    const section = formatPinnedSourcesSection([source({ truncated: true })], {
+      toolsAvailable: true,
+    });
+
+    expect(section).toContain('die Quelle wurde gekürzt');
+    expect(section).toContain('exo_page_read');
+  });
+
+  it('tells a tool-less run it cannot fetch the rest of a cut source', () => {
+    const section = formatPinnedSourcesSection([source({ truncated: true })], {
+      toolsAvailable: false,
+    });
+
+    expect(section).toContain('Mehr kannst du in diesem Lauf nicht laden');
+    expect(section).not.toContain('exo_page_read');
+  });
+
+  it('lists a referenced source as a name with its pointer', () => {
+    const section = formatPinnedSourcesSection(
+      [source({ mode: 'REFERENCE', text: '', kind: 'SAVED_QUERY', title: 'Offene Aufgaben' })],
+      { toolsAvailable: true },
+    );
+
+    expect(section).toContain('- Offene Aufgaben (Gespeicherte Suche, in Finanzen)');
+    expect(section).not.toContain('### Offene Aufgaben');
+  });
+
+  it('says a tool-less run cannot follow a name it was given', () => {
+    const section = formatPinnedSourcesSection([source({ mode: 'REFERENCE', text: '' })], {
+      toolsAvailable: false,
+    });
+
+    expect(section).toContain('nicht laden (Werkzeuge sind aus)');
+  });
+
+  it('does not pretend an empty source has content', () => {
+    const section = formatPinnedSourcesSection([source({ text: '', empty: true })], {
+      toolsAvailable: true,
+    });
+
+    expect(section).toContain('Hier steht nichts.');
   });
 });

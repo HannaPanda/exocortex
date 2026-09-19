@@ -66,6 +66,23 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     settings: ['ai.pageContextEnabled', 'ai.pageContextMaxChars'],
   }),
   defineFeature({
+    id: 'angeheftete-quellen',
+    area: 'ki',
+    title: 'Mehrere Quellen an eine Unterhaltung heften',
+    summary:
+      'Neben der offenen Seite kannst du weitere Seiten, Datenbankansichten und gespeicherte Suchen an eine Unterhaltung heften. Sie bleiben dran, auch wenn du weiterblätterst, und über dem Eingabefeld steht jederzeit vollständig, was mitgeht.',
+    details: [
+      'Über dem Eingabefeld sitzt eine Zeile aus Chips. Mit dem Plus suchst du eine Seite, eine Datenbankansicht oder eine gespeicherte Suche und heftest sie an; mit dem Kreuz nimmst du sie wieder weg, und das wirkt ab dem nächsten Zug. Anders als die offene Seite bleibt eine angeheftete Quelle dran, wenn du woanders hinklickst, denn genau dafür heftest du sie an.',
+      'Jede Quelle kann auf zweierlei Art mitgehen. Entweder nur als Name: dann weiß das Modell, dass es sie gibt, und holt sie sich selbst, wenn eine Frage sie braucht. Oder mit Inhalt: dann steht ihr Text in jedem Zug mit drin und kostet auch in jedem Zug. Der Chip sagt dir, wie viele Zeichen das gerade sind, damit du nicht raten musst, was eine Frage kostet.',
+      'Damit das nicht still davonläuft, teilen sich alle eingebetteten Quellen ein gemeinsames Zeichenbudget, gleichmäßig aufgeteilt. Wird eine gekürzt, steht die Kürzung im Text selbst, damit das Modell einen Auszug nicht für das Ganze hält. Wie viele Quellen erlaubt sind und wie groß das Budget ist, steht in den Einstellungen; Null schaltet das Anheften für den Arbeitsbereich ab.',
+    ],
+    since: '2026-09-19',
+    references: ['#75', 'ADR-043'],
+    ui: { where: 'Die Chip-Zeile über dem Eingabefeld im KI-Bereich.' },
+    settings: ['ai.maxPinnedSources', 'ai.pinnedContextMaxChars'],
+    tools: ['exo_chat_context'],
+  }),
+  defineFeature({
     id: 'bilder-verstehen',
     area: 'ki',
     title: 'Bilder beschreiben lassen',

@@ -781,6 +781,8 @@ model Document {
   propertyValues      DocumentPropertyValue[]   @relation("RowPropertyValues")
   /// Page a conversation was opened from. Context only.
   aiConversations     AiConversation[]          @relation("AiConversationDocument")
+  /// Conversations that pinned this page as a context source (issue #75).
+  aiConversationSources AiConversationSource[]  @relation("AiConversationSourceDocument")
   /// References this page makes, and references other pages make to it.
   outgoingLinks       DocumentLink[]            @relation("DocumentLinkSource")
   incomingLinks       DocumentLink[]            @relation("DocumentLinkTarget")
@@ -1228,7 +1230,8 @@ model DatabaseView {
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 
-  aiRuns AiRun[]
+  aiRuns               AiRun[]
+  aiConversationSources AiConversationSource[]
 
   @@unique([documentId, name])
   @@index([documentId, orderKey])
@@ -1568,6 +1571,7 @@ model AiConversation {
 
   messages AiConversationMessage[]
   runs     AiRun[]
+  sources  AiConversationSource[]
 
   @@index([workspaceId, createdById, lastMessageAt])
   /// The `/chats` listing spans every workspace the person is a member of and
@@ -1575,6 +1579,58 @@ model AiConversation {
   /// workspace -- cannot serve it (issue #69).
   @@index([createdById, lastMessageAt(sort: Desc)])
   @@map("ai_conversation")
+}
+
+/// What a pinned context source points at (issue #75, ADR-043).
+enum AiConversationSourceKind {
+  PAGE
+  DATABASE_VIEW
+  SAVED_QUERY
+}
+
+/// Whether a pinned source's text is put into every prompt or only named in it.
+enum AiConversationSourceMode {
+  /// The source's text goes into the system prompt, inside the shared budget.
+  EMBED
+  /// Only the title and the id go out; the model fetches the rest with a tool.
+  REFERENCE
+}
+
+/// A source the user pinned to a conversation, beside the page it is standing
+/// on. Unlike `AiConversation.documentId` this survives walking to another
+/// page: that is the whole point of pinning one.
+model AiConversationSource {
+  id             String                   @id @default(cuid(2))
+  conversationId String
+  conversation   AiConversation           @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  kind           AiConversationSourceKind
+  mode           AiConversationSourceMode @default(REFERENCE)
+
+  /// Set for PAGE and DATABASE_VIEW. Cascade rather than SetNull: a source is a
+  /// reference, and a reference to a deleted page is not a source any more.
+  documentId     String?
+  document       Document?                @relation("AiConversationSourceDocument", fields: [documentId], references: [id], onDelete: Cascade)
+  /// The view a DATABASE_VIEW source names. Rows only mean something through a
+  /// view's filters, so a pinned database without one would describe a
+  /// different table than the one the user pinned.
+  databaseViewId String?
+  databaseView   DatabaseView?            @relation(fields: [databaseViewId], references: [id], onDelete: Cascade)
+  savedQueryId   String?
+  savedQuery     SavedQuery?              @relation(fields: [savedQueryId], references: [id], onDelete: Cascade)
+
+  /// `page:<id>`, `view:<documentId>:<viewId>` or `query:<id>`. One column
+  /// rather than a unique over the three nullable ids, because in PostgreSQL
+  /// two NULLs are distinct and such a constraint would never fire.
+  targetKey String
+
+  createdAt DateTime @default(now())
+
+  @@unique([conversationId, targetKey])
+  @@index([conversationId, createdAt])
+  @@index([documentId])
+  @@index([databaseViewId])
+  @@index([savedQueryId])
+  @@map("ai_conversation_source")
 }
 
 model AiConversationMessage {
@@ -2881,6 +2937,8 @@ model SavedQuery {
   updatedBy   User     @relation("SavedQueryUpdatedBy", fields: [updatedById], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  aiConversationSources AiConversationSource[]
 
   /// The navigation's list, and the workspace's list behind it.
   @@index([workspaceId, inSidebar, orderKey])

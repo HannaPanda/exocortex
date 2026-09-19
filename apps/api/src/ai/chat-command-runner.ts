@@ -225,7 +225,29 @@ const pageContext: ChatCommandHandler = async (context) => {
     ? 'Mit /context off schaltest du ihn ab.'
     : 'Mit /context on schaltest du ihn an.';
 
-  return answer(context, 'context', [where, what, how].join(' '));
+  // The pinned sources belong in the same answer, because the promise the chip
+  // row makes is about all of them together: naming only the open page here
+  // would describe half of what leaves (issue #75).
+  const pinned = await prisma.aiConversationSource.findMany({
+    where: { conversationId: conversation.id },
+    orderBy: { createdAt: 'asc' },
+    select: {
+      mode: true,
+      document: { select: { title: true } },
+      savedQuery: { select: { name: true } },
+    },
+  });
+  const sources =
+    pinned.length === 0
+      ? 'Angeheftet ist nichts.'
+      : `Angeheftet ${pinned.length === 1 ? 'ist' : 'sind'} außerdem: ${pinned
+          .map((source) => {
+            const title = source.document?.title ?? source.savedQuery?.name ?? 'Unbenannt';
+            return `„${title}“ (${source.mode === 'EMBED' ? 'Inhalt geht mit' : 'nur genannt'})`;
+          })
+          .join(', ')}.`;
+
+  return answer(context, 'context', [where, what, how, sources].join(' '));
 };
 
 /** Lists the workspace's active AI rule pages. */

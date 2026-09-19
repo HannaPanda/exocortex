@@ -134,6 +134,21 @@ const EXEMPT = [
       'Posts a message into a conversation. From inside a tool loop this is the assistant writing into its own transcript.',
   },
   {
+    route: 'POST /api/ai/conversations/:x/sources',
+    reason:
+      'Pins a source to a conversation. Deciding what a conversation carries with it is the person saying what leaves their workspace, so a run that could pin a page would be widening its own context from inside itself -- the same argument that keeps `ai.untrustedContentPolicy` out of a request parameter (ADR-030). Reading the list is the opposite and is `exo_chat_context` (issue #75).',
+  },
+  {
+    route: 'PATCH /api/ai/conversations/:x/sources/:x',
+    reason:
+      'Switches a pinned source between embedded and named-only. Same reason: that is the person choosing what a turn pays for, and `exo_chat_context` reports the answer.',
+  },
+  {
+    route: 'DELETE /api/ai/conversations/:x/sources/:x',
+    reason:
+      'Unpins a source. Same reason, and the asymmetry is deliberate: a run that could quietly drop a source the person pinned would be editing the context it is being judged on.',
+  },
+  {
     route: 'POST /api/ai/conversations/:x/to-page',
     reason:
       "Saves a chat as a page. Covered elsewhere: an agent that wants a transcript as a page reads it with `exo_chat_read` and writes it with `exo_page_create`, and deciding that a conversation is worth keeping is the person's call (ADR-021 draws the same line for promoting a fact).",

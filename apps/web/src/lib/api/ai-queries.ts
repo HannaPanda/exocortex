@@ -9,6 +9,7 @@ import {
 } from '@tanstack/react-query';
 
 import {
+  type AddAiConversationSourceRequest,
   AI_RUN_POLL_INTERVAL_MS,
   type AiConversation,
   type AiConversationArchivedFilter,
@@ -16,6 +17,7 @@ import {
   type AiConversationDetailResponse,
   type AiConversationListResponse,
   type AiConversationSearchResponse,
+  type AiConversationSourcesResponse,
   type AiModelListResponse,
   type AiRuleListResponse,
   type AiRuleSummary,
@@ -27,6 +29,7 @@ import {
   type PostConversationMessageRequest,
   type PostConversationMessageResponse,
   type UpdateAiConversationRequest,
+  type UpdateAiConversationSourceRequest,
   type UpdateDocumentRequest,
 } from '@exocortex/contracts';
 
@@ -48,6 +51,9 @@ export const aiQueryKeys = {
   chatSearch: (query: string, archived: AiConversationArchivedFilter) =>
     ['ai', 'chat-search', query, archived] as const,
   conversation: (conversationId: string) => ['ai', 'conversation', conversationId] as const,
+  /** The sources pinned to one conversation, with the sizes the next turn pays (issue #75). */
+  conversationSources: (conversationId: string) =>
+    ['ai', 'conversation-sources', conversationId] as const,
   aiRules: (workspaceId: string) => ['ai', 'rules', workspaceId] as const,
   run: (runId: string) => ['ai', 'run', runId] as const,
 };
@@ -296,6 +302,74 @@ export function usePostConversationMessage() {
       void client.invalidateQueries({ queryKey: aiQueryKeys.conversation(input.conversationId) });
     },
   });
+}
+
+// ---------------------------------------------------------------------------
+// Pinned context sources (issue #75, ADR-043)
+// ---------------------------------------------------------------------------
+
+export function useConversationSources(
+  conversationId: string | null,
+): UseQueryResult<AiConversationSourcesResponse> {
+  return useQuery({
+    queryKey: aiQueryKeys.conversationSources(conversationId ?? 'none'),
+    queryFn: () =>
+      apiRequest<AiConversationSourcesResponse>(
+        `/api/ai/conversations/${conversationId ?? ''}/sources`,
+      ),
+    enabled: conversationId !== null,
+  });
+}
+
+/**
+ * All three writes answer with the whole list, so the cache is replaced rather
+ * than invalidated: the budget is shared, so pinning one source changes the
+ * size reported for every other one, and a refetch would show the old numbers
+ * for a moment.
+ */
+function useSourceMutation<TInput extends { conversationId: string }>(
+  request: (input: TInput) => Promise<AiConversationSourcesResponse>,
+) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: request,
+    onSuccess: (response, input) => {
+      client.setQueryData(aiQueryKeys.conversationSources(input.conversationId), response);
+    },
+  });
+}
+
+export function useAddConversationSource() {
+  return useSourceMutation(
+    (input: { conversationId: string; request: AddAiConversationSourceRequest }) =>
+      apiRequest<AiConversationSourcesResponse>(
+        `/api/ai/conversations/${input.conversationId}/sources`,
+        { method: 'POST', body: input.request },
+      ),
+  );
+}
+
+export function useUpdateConversationSource() {
+  return useSourceMutation(
+    (input: {
+      conversationId: string;
+      sourceId: string;
+      request: UpdateAiConversationSourceRequest;
+    }) =>
+      apiRequest<AiConversationSourcesResponse>(
+        `/api/ai/conversations/${input.conversationId}/sources/${input.sourceId}`,
+        { method: 'PATCH', body: input.request },
+      ),
+  );
+}
+
+export function useRemoveConversationSource() {
+  return useSourceMutation((input: { conversationId: string; sourceId: string }) =>
+    apiRequest<AiConversationSourcesResponse>(
+      `/api/ai/conversations/${input.conversationId}/sources/${input.sourceId}`,
+      { method: 'DELETE' },
+    ),
+  );
 }
 
 // ---------------------------------------------------------------------------

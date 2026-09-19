@@ -26,6 +26,7 @@ import {
   HybridSearchAdapter,
   PostgresSearchAdapter,
   type PrismaClient,
+  type SearchAdapter,
 } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 import { createFetchApiClient, type ExocortexApiClient } from '@exocortex/mcp-tools';
@@ -72,6 +73,13 @@ export interface WorkerRuntime {
   providerFor: (workspaceId: string) => Promise<{ provider: AiProvider; key: ResolvedAiKey }>;
   storage: ObjectStorage;
   search: HybridSearchAdapter;
+  /**
+   * Full text alone, for the callers that need to hand both halves to
+   * `runSavedQuery` -- a pinned saved query in a system prompt (issue #75).
+   * The same object the hybrid adapter falls back to, built once here so the
+   * two cannot be configured differently.
+   */
+  keywordSearch: SearchAdapter;
   /**
    * The configuration in force, optionally inside one workspace (ADR-023).
    *
@@ -263,9 +271,10 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
    * not a boot-time one: turning it on in the administration area has to reach
    * the next indexing job without a restart.
    */
+  const keywordSearch = new PostgresSearchAdapter(prisma);
   const search = new HybridSearchAdapter({
     prisma,
-    keyword: new PostgresSearchAdapter(prisma),
+    keyword: keywordSearch,
     embeddings: createEmbeddingClient(
       createEmbeddingProvider({
         providerId: env.AI_PROVIDER,
@@ -447,6 +456,7 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
     providerFor,
     storage,
     search,
+    keywordSearch,
     readSettings,
     toolRunnerFactory,
     apiClientFor,

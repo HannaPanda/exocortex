@@ -15,6 +15,7 @@ import {
   type AiConversationRole as AiConversationRolePrisma,
   type AiRun,
   type PrismaClient,
+  type SearchAdapter,
 } from '@exocortex/database';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
@@ -138,6 +139,8 @@ export async function buildRunMessages(input: {
     endpoints: readonly RoutingEndpoint[];
     reservedOutputTokens: number;
     requiresReasoningEffort: boolean;
+    /** Both search halves, for a pinned saved query in the system prompt (issue #75). */
+    search: { hybrid: SearchAdapter; keyword: SearchAdapter };
     payload: AiJob['payload'];
     logger: AiJob['logger'];
   };
@@ -164,6 +167,9 @@ export async function buildRunMessages(input: {
     maxRuleChars: MAX_RULE_CHARS,
     documentId: run.documentId,
     databaseViewId: run.databaseViewId,
+    conversationId: run.conversationId,
+    pinnedContextMaxChars: settings['ai.pinnedContextMaxChars'],
+    search: input.context.search,
     toolsAvailable: toolsEnabled,
     includePageContent: settings['ai.pageContextEnabled'],
     pageContentMaxChars: settings['ai.pageContextMaxChars'],
@@ -178,6 +184,8 @@ export async function buildRunMessages(input: {
     onDemandRuleCount: systemPromptResult.onDemandRuleCount,
     ruleBudgetTruncated: systemPromptResult.truncated,
     openPageIncluded: systemPromptResult.openPageIncluded,
+    pinnedSourceCount: systemPromptResult.pinnedSourceCount,
+    pinnedSourceChars: systemPromptResult.pinnedSourceChars,
     toolsEnabled,
   });
 

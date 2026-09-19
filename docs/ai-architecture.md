@@ -303,6 +303,58 @@ system prompt.
   earlier and that has since been deleted degrades to "no page" instead,
   so a dead binding cannot lock a user out of their own transcript.
 
+## Pinned sources (issue #75, ADR-043)
+
+The open page answers "this page here" and nothing else: it is rebound the
+moment a turn arrives from somewhere else, which is right for the question it
+answers and useless for a question about three pages at once. Beside it a
+conversation can therefore carry **pinned sources** of its own, and those stay
+until they are taken away.
+
+- **A row, not a copy.** `AiConversationSource` names a page, a database view
+  or a saved query, and a `targetKey` (`page:<id>`, `view:<doc>:<view>`,
+  `query:<id>`) is what the unique index deduplicates on -- a unique over the
+  three nullable ids would never fire, because in PostgreSQL two NULLs are
+  distinct. Every target cascades on delete: a reference to a deleted page is
+  not a source.
+- **Named by default, embedded on purpose.** `REFERENCE` puts the title and the
+  id into the prompt together with the tool that fetches it, which costs
+  nothing and is enough for a tool-capable model. `EMBED` puts the text there
+  on every turn, and that is a second decision made on the chip itself. The
+  menu behind the plus always pins as a reference.
+- **One shared budget, split evenly.** `ai.pinnedContextMaxChars` (24 000 by
+  default) is divided by the number of embedded sources while the prompt is
+  built, with a floor of 600 characters under one share. Spending it in order
+  would let the first long page eat it and leave the rest as empty headings.
+  `ai.maxPinnedSources` (8) caps the count, and zero switches pinning off for
+  the workspace. Both are workspace-overridable and clamped by the deployment.
+- **A cut is stated in the text.** Same rule as the open page's: a model that
+  cannot tell an excerpt from a whole page answers "that is not in there" about
+  something that is. The sentence differs by whether the run has tools, because
+  without them the pointer to the rest is not actionable.
+- **A database view is described, not read.** `describeCollection` renders it,
+  the same function the open page's block uses -- which is why that function
+  now lives in `@exocortex/database` rather than in the worker.
+- **A saved query is run, bounded at 15 rows.** The answer moves between turns,
+  which is the point of pinning a question rather than a page, and also why
+  `REFERENCE` is the sensible mode for one.
+- **One renderer, two callers.** `renderConversationSources`
+  (`packages/database/src/conversation-source.ts`) produces the characters;
+  `ConversationSourcesService` calls it to answer
+  `GET /api/ai/conversations/:id/sources`, and `buildSystemPrompt` calls it to
+  build the `## Angeheftete Quellen` block. The chip row promises a size, and a
+  promise made by a second measurement would be about a different text.
+- **The chip row is the whole promise.** Above the composer stand the handed-over
+  selection, the open page and every pinned source, each with what it costs;
+  the plus opens a command menu over pages, the open database's views and the
+  workspace's saved searches, and the ⋯ menu on a chip switches its mode or
+  unpins it. `/context` reports the same state in words.
+- **On the agent surfaces.** `exo_chat_context` reads the list on both. The
+  three writing routes stay exempt from the catalogue with a written reason:
+  what a conversation carries is the person saying what leaves their workspace,
+  so a run that could pin a page would be widening its own context from inside
+  itself (the argument ADR-030 makes about `ai.untrustedContentPolicy`).
+
 ## Tool calling
 
 Conversation-backed runs (never the legacy `messages`-only path) can call the

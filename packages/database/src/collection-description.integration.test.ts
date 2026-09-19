@@ -1,10 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { loadWorkerEnv } from '@exocortex/config';
-import { createPrismaClient, generateOrderKey, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 
-import { describeCollection } from './collection-context';
+import { describeCollection } from './collection-description';
+import { createPrismaClient, generateOrderKey, type PrismaClient } from './index';
 
 /**
  * `describeCollection` against real PostgreSQL.
@@ -15,7 +15,7 @@ import { describeCollection } from './collection-context';
  * and the screen drift apart without any test noticing.
  */
 const env = loadWorkerEnv();
-const logger: Logger = createLogger({ name: 'collection-context-test', level: 'silent' });
+const logger: Logger = createLogger({ name: 'collection-description-test', level: 'silent' });
 
 let prisma: PrismaClient;
 let workspaceId: string;

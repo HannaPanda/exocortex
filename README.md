@@ -84,6 +84,10 @@ What is deliberately still missing is listed under
 - a `/chats` area that finds a conversation again: full-text search over the
   messages, a reading view of the transcript, continuing it in the panel, and
   saving it as an ordinary page
+- context sources pinned to a conversation beside the open page: pages,
+  database views and saved searches, each merely named or carrying its text,
+  inside one shared character budget the chip row above the composer reports
+  (ADR-043)
 - web research, off until it is switched on: a self-hosted metasearch finds
   addresses, a headless browser reads one of the pages, and what comes back is
   foreign text, so writes stay closed for the rest of that run (ADR-030,

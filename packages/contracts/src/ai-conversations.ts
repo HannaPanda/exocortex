@@ -120,6 +120,110 @@ export const postConversationMessageRequestSchema = z.object({
 });
 export type PostConversationMessageRequest = z.infer<typeof postConversationMessageRequestSchema>;
 
+// ---------------------------------------------------------------------------
+// Pinned context sources (issue #75, ADR-043)
+// ---------------------------------------------------------------------------
+
+/** What a pinned source points at. */
+export const aiConversationSourceKindSchema = z.enum(['PAGE', 'DATABASE_VIEW', 'SAVED_QUERY']);
+export type AiConversationSourceKind = z.infer<typeof aiConversationSourceKindSchema>;
+
+/**
+ * Whether the source's text goes out with every turn or only its name does.
+ *
+ * `REFERENCE` is the default, and it is the one that costs nothing: the model
+ * is told the source exists and how to fetch it, which is enough for a
+ * tool-capable model. `EMBED` is the deliberate choice to pay for it on every
+ * turn, and it is what the budget below is about.
+ */
+export const aiConversationSourceModeSchema = z.enum(['EMBED', 'REFERENCE']);
+export type AiConversationSourceMode = z.infer<typeof aiConversationSourceModeSchema>;
+
+export const aiConversationSourceSchema = z.object({
+  id: idSchema,
+  conversationId: idSchema,
+  kind: aiConversationSourceKindSchema,
+  mode: aiConversationSourceModeSchema,
+  documentId: idSchema.nullable(),
+  databaseViewId: idSchema.nullable(),
+  savedQueryId: idSchema.nullable(),
+  /** What the chip says. */
+  title: z.string(),
+  /** Where it sits: the parent page, the view's name, the query's description. */
+  subtitle: z.string().nullable(),
+  /** Characters this source contributes to the next turn. Zero in `REFERENCE` mode. */
+  chars: z.number().int().nonnegative(),
+  /** Characters it would contribute without the budget; larger than `chars` when it was cut. */
+  fullChars: z.number().int().nonnegative(),
+  /** Rough token cost of `chars`, so the chip can say what a turn pays. */
+  tokens: z.number().int().nonnegative(),
+  /** The budget cut this source short. Said in the prompt too, never only here. */
+  truncated: z.boolean(),
+  /** The target exists but has nothing to give: never materialized, no columns, no hits. */
+  empty: z.boolean(),
+  createdAt: isoDateTimeSchema,
+});
+export type AiConversationSource = z.infer<typeof aiConversationSourceSchema>;
+
+export const aiConversationSourcesResponseSchema = z.object({
+  sources: z.array(aiConversationSourceSchema),
+  budget: z.object({
+    /** `ai.pinnedContextMaxChars`, resolved for this workspace. */
+    maxChars: z.number().int().nonnegative(),
+    /** The share each embedded source may take, so a long page cannot eat the rest. */
+    perSourceChars: z.number().int().nonnegative(),
+    usedChars: z.number().int().nonnegative(),
+    usedTokens: z.number().int().nonnegative(),
+    /** `ai.maxPinnedSources`. Zero switches pinning off for the workspace. */
+    maxSources: z.number().int().nonnegative(),
+  }),
+});
+export type AiConversationSourcesResponse = z.infer<typeof aiConversationSourcesResponseSchema>;
+
+/**
+ * Pinning one source.
+ *
+ * `documentId` is required for `PAGE` and `DATABASE_VIEW`, `savedQueryId` for
+ * `SAVED_QUERY`. Checked here rather than with a discriminated union so the
+ * schema still turns into the flat JSON Schema the MCP catalogue serves.
+ */
+export const addAiConversationSourceRequestSchema = z
+  .object({
+    kind: aiConversationSourceKindSchema,
+    documentId: idSchema.optional(),
+    /** The view a `DATABASE_VIEW` source names. Omitted, the database's first view is used. */
+    databaseViewId: idSchema.nullable().optional(),
+    savedQueryId: idSchema.optional(),
+    mode: aiConversationSourceModeSchema.default('REFERENCE'),
+  })
+  .superRefine((value, ctx) => {
+    if (value.kind === 'SAVED_QUERY') {
+      if (value.savedQueryId === undefined) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['savedQueryId'],
+          message: 'savedQueryId is required for kind SAVED_QUERY',
+        });
+      }
+      return;
+    }
+    if (value.documentId === undefined) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['documentId'],
+        message: `documentId is required for kind ${value.kind}`,
+      });
+    }
+  });
+export type AddAiConversationSourceRequest = z.infer<typeof addAiConversationSourceRequestSchema>;
+
+export const updateAiConversationSourceRequestSchema = z.object({
+  mode: aiConversationSourceModeSchema,
+});
+export type UpdateAiConversationSourceRequest = z.infer<
+  typeof updateAiConversationSourceRequestSchema
+>;
+
 /**
  * Slash commands. Parsed server-side from the leading `/` of a user message so
  * every client (side panel, MCP, future clients) behaves identically.
@@ -138,7 +242,7 @@ export const CHAT_COMMANDS = [
   {
     name: 'context',
     argument: 'on|off',
-    description: 'Seitenkontext anzeigen oder umschalten',
+    description: 'Seitenkontext und angeheftete Quellen anzeigen oder umschalten',
   },
   { name: 'rules', argument: null, description: 'Aktive Regelseiten anzeigen' },
   { name: 'tools', argument: null, description: 'Verfügbare Werkzeuge anzeigen' },

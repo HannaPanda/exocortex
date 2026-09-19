@@ -346,6 +346,14 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   SQL predicate over `document`, in that order, because the adapter takes no
   list of allowed ids. A relative window and a subtree are resolved while the
   query runs, which is what makes a stored question keep moving.
+- ADR-043: a pinned source is a reference with a budget. A conversation may
+  carry pages, database views and saved searches beside the page it stands on;
+  each is merely named by default and embedded only on a second, deliberate
+  choice, and everything embedded shares one character budget split into equal
+  shares. One renderer in `packages/database` serves both the chip row's size
+  and the prompt's text, so the promise above the composer is about the same
+  characters. Pinning stays the person's: `exo_chat_context` reads the list,
+  and no tool writes it.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

@@ -7,18 +7,15 @@ import {
   databaseViewConfigSchema,
   parseDatePropertyConfig,
 } from '@exocortex/contracts';
+import { type Logger } from '@exocortex/logger';
+
+import { type DatabasePropertyType, type DatabaseViewType, type PrismaClient } from './client';
+import { derivedPropertiesOf, isDerivedColumn, loadDatabaseScope } from './database-derived';
 import {
-  type DatabasePropertyType,
-  type DatabaseViewType,
-  derivedPropertiesOf,
-  isDerivedColumn,
-  loadDatabaseScope,
-  type PrismaClient,
   queryDatabaseRows,
   queryDerivedValues,
   UnknownDatabasePropertyError,
-} from '@exocortex/database';
-import { type Logger } from '@exocortex/logger';
+} from './database-query';
 
 /**
  * How many rows of the open view are shown. Enough to recognise the shape of

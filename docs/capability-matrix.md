@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-194 routes are reachable from at least one client; 126 from all three.
+195 routes are reachable from at least one client; 126 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -59,6 +59,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/agent-sessions/:x` | ✓ | ✓ | ✓ | `exo_agent_session_get` |
 | `GET /api/ai/conversations` | ✓ | ✓ | ✓ | `exo_chat_list` |
 | `GET /api/ai/conversations/:x` | ✓ | ✓ | ✓ | `exo_chat_read` |
+| `GET /api/ai/conversations/:x/sources` | · | ✓ | ✓ | `exo_chat_context` |
 | `GET /api/ai/conversations/search` | ✓ | ✓ | ✓ | `exo_chat_search` |
 | `GET /api/ai/models` | ✓ | · | · | — |
 | `GET /api/ai/runs/:x` | ✓ | · | ✓ | `exo_ai_run_get` |
@@ -282,4 +283,4 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 ---
 
-Counted against 41 documented route exemptions.
+Counted against 44 documented route exemptions.

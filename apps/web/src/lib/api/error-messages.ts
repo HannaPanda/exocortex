@@ -95,6 +95,12 @@ const MESSAGES: Record<ApiErrorCode, string> = {
     'Nur gewöhnliche Seiten können Vorlagen sein, keine Datenbanken und keine Projekte.',
   saved_query_invalid:
     'Diese gespeicherte Suche passt nicht mehr zu den Daten: die Datenbank oder eine Eigenschaft, nach der sie filtert, gibt es so nicht mehr. Bearbeite die Suche.',
+  pinned_sources_disabled:
+    'Quellen anheften ist in diesem Arbeitsbereich abgeschaltet. Das lässt sich in den Einstellungen unter KI wieder einschalten.',
+  pinned_sources_limit_reached:
+    'Diese Unterhaltung hat schon so viele Quellen angeheftet, wie erlaubt sind. Nimm eine weg oder hebe die Grenze in den Einstellungen an.',
+  saved_query_access_denied: 'Diese gespeicherte Suche gehört nicht zu diesem Arbeitsbereich.',
+  document_not_a_collection: 'Nur eine Datenbankseite hat Ansichten.',
 };
 
 /**

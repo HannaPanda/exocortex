@@ -68,6 +68,7 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
     providerFor,
     storage,
     search,
+    keywordSearch,
     readSettings,
     toolRunnerFactory,
     visionPreprocessorFor,
@@ -162,6 +163,7 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
       visionPreprocessorFor,
       modelRegistry,
       queues,
+      search: { hybrid: search, keyword: keywordSearch },
     }),
     onFailed: async (payload, job, error) => {
       if (payload === null) return;

@@ -1,8 +1,15 @@
 import { UNTRUSTED_CONTENT_SECTION } from '@exocortex/contracts';
-import { type DocumentType, type PrismaClient } from '@exocortex/database';
+import {
+  conversationSourceKindLabel,
+  type ConversationSourceRef,
+  describeCollection,
+  type DocumentType,
+  type PrismaClient,
+  renderConversationSources,
+  type RenderedConversationSource,
+  type SearchAdapter,
+} from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
-
-import { describeCollection } from './collection-context';
 
 export interface BuildSystemPromptInput {
   prisma: PrismaClient;
@@ -14,6 +21,15 @@ export interface BuildSystemPromptInput {
   documentId: string | null;
   /** The open view when `documentId` is a collection. `null` falls back to the first one. */
   databaseViewId: string | null;
+  /**
+   * The conversation whose pinned sources belong in this prompt (issue #75).
+   * `null` for a one-shot run, which has no conversation to pin anything to.
+   */
+  conversationId: string | null;
+  /** `ai.pinnedContextMaxChars`. Zero degrades every pinned source to a pointer. */
+  pinnedContextMaxChars: number;
+  /** The adapters a pinned saved query is answered with. */
+  search: { hybrid: SearchAdapter; keyword: SearchAdapter };
   /** Whether this run may call tools. Decides whether the pointer to the open page is actionable. */
   toolsAvailable: boolean;
   /** `ai.pageContextEnabled`. Off by default; see ADR-015. */
@@ -30,6 +46,9 @@ export interface SystemPromptResult {
   truncated: boolean;
   /** `true` when the prompt names the open page. `false` when there was none, or it was not readable. */
   openPageIncluded: boolean;
+  /** Pinned sources that reached the prompt, and what their text cost. */
+  pinnedSourceCount: number;
+  pinnedSourceChars: number;
 }
 
 /** How far up the tree the breadcrumb of the open page is resolved. Deeper ancestors are elided. */
@@ -180,6 +199,76 @@ export function formatOpenPageSection(page: OpenPage, options: OpenPageSectionOp
 }
 
 /**
+ * Renders the sources the user pinned to this conversation (issue #75).
+ *
+ * Two halves, because they cost different things and the model has to tell them
+ * apart. An embedded source's text is here and is the whole of what it will
+ * ever get about it in this turn, so a cut has to be visible in the text for
+ * the same reason it does for the open page: a model that cannot tell an
+ * excerpt from a whole page answers "that is not in there" about something that
+ * is. A referenced source is a name and an id, which is enough for a
+ * tool-capable model and nothing at all for one without tools -- so the block
+ * says which of the two this run is.
+ *
+ * Exported for tests: everything here is pure formatting.
+ */
+export function formatPinnedSourcesSection(
+  sources: readonly RenderedConversationSource[],
+  options: { toolsAvailable: boolean },
+): string | null {
+  if (sources.length === 0) return null;
+
+  const lines = [
+    '## Angeheftete Quellen',
+    'Diese Quellen hat die Nutzerin dauerhaft an die Unterhaltung geheftet. Sie gelten',
+    'unabhängig davon, welche Seite gerade offen ist, und bleiben, bis sie entfernt werden.',
+  ];
+
+  const embedded = sources.filter((source) => source.mode === 'EMBED');
+  const referenced = sources.filter((source) => source.mode !== 'EMBED');
+
+  for (const source of embedded) {
+    lines.push('', `### ${source.title} (${conversationSourceKindLabel(source.kind)})`);
+    if (source.subtitle !== null) lines.push(`_${source.subtitle}_`);
+
+    if (source.empty || source.text.length === 0) {
+      lines.push(
+        options.toolsAvailable
+          ? `Hier steht nichts. ${source.pointer}`
+          : 'Hier steht nichts, und du kannst es in diesem Lauf nicht selbst laden (Werkzeuge sind aus). Sage das, statt zu raten.',
+      );
+      continue;
+    }
+
+    lines.push(source.text);
+    if (source.truncated) {
+      lines.push(
+        options.toolsAvailable
+          ? `Das ist nur der Anfang, die Quelle wurde gekürzt. ${source.pointer}`
+          : 'Das ist nur der Anfang, die Quelle wurde gekürzt. Mehr kannst du in diesem Lauf nicht laden; sage das, statt den Rest zu erraten.',
+      );
+    }
+  }
+
+  if (referenced.length > 0) {
+    lines.push(
+      '',
+      options.toolsAvailable
+        ? 'Von den folgenden Quellen steht hier nur der Name. Hole sie, wenn eine Frage sie braucht, und rate nichts zusammen:'
+        : 'Von den folgenden Quellen steht hier nur der Name, und du kannst sie in diesem Lauf nicht laden (Werkzeuge sind aus). Sage das, statt ihren Inhalt zu erfinden:',
+    );
+    for (const source of referenced) {
+      const where = source.subtitle === null ? '' : `, ${source.subtitle}`;
+      lines.push(
+        `- ${source.title} (${conversationSourceKindLabel(source.kind)}${where}) — ${source.pointer}`,
+      );
+    }
+  }
+
+  return lines.join('\n');
+}
+
+/**
  * Loads the open page's derived text, cut to the configured budget.
  *
  * Reads the same materialized `markdown` / `plainText` the ALWAYS rule pages
@@ -202,6 +291,59 @@ async function loadPageContent(input: {
   return body.length > input.maxChars
     ? { text: body.slice(0, input.maxChars), truncated: true }
     : { text: body, truncated: false };
+}
+
+/**
+ * Loads the conversation's pinned sources and renders them as one section.
+ *
+ * `null` when nothing is pinned, so the caller pushes nothing rather than an
+ * empty heading.
+ */
+async function loadPinnedSourcesSection(input: {
+  prisma: PrismaClient;
+  workspaceId: string;
+  conversationId: string;
+  maxChars: number;
+  search: { hybrid: SearchAdapter; keyword: SearchAdapter };
+  toolsAvailable: boolean;
+  logger: Logger;
+}): Promise<{ section: string; count: number; chars: number } | null> {
+  const rows = await input.prisma.aiConversationSource.findMany({
+    where: { conversationId: input.conversationId },
+    orderBy: { createdAt: 'asc' },
+    select: {
+      id: true,
+      kind: true,
+      mode: true,
+      documentId: true,
+      databaseViewId: true,
+      savedQueryId: true,
+    },
+  });
+  if (rows.length === 0) return null;
+
+  const refs: ConversationSourceRef[] = rows.map((row) => ({
+    id: row.id,
+    kind: row.kind,
+    mode: row.mode,
+    documentId: row.documentId,
+    databaseViewId: row.databaseViewId,
+    savedQueryId: row.savedQueryId,
+  }));
+  const rendered = await renderConversationSources({
+    prisma: input.prisma,
+    workspaceId: input.workspaceId,
+    sources: refs,
+    maxChars: input.maxChars,
+    search: input.search,
+    logger: input.logger,
+  });
+
+  const section = formatPinnedSourcesSection(rendered.sources, {
+    toolsAvailable: input.toolsAvailable,
+  });
+  if (section === null) return null;
+  return { section, count: rendered.sources.length, chars: rendered.budget.usedChars };
 }
 
 /**
@@ -252,6 +394,60 @@ async function loadOpenPage(input: {
   };
 }
 
+/** One ALWAYS rule page, as the query above selects it. */
+interface AlwaysRuleRow {
+  id: string;
+  title: string;
+  content: { markdown: string | null; plainText: string | null } | null;
+}
+
+/**
+ * The workspace's ALWAYS rule pages, in priority order and inside one budget.
+ *
+ * The budget is spent in order and the section says out loud when it ran out:
+ * a rule page silently missing from the prompt is a rule nobody can tell was
+ * not applied.
+ */
+function buildAlwaysRulesSection(input: {
+  rules: readonly AlwaysRuleRow[];
+  maxRuleChars: number;
+  workspaceId: string;
+  logger: Logger;
+}): { section: string | null; count: number; truncated: boolean } {
+  const { rules, maxRuleChars, workspaceId, logger } = input;
+  if (rules.length === 0) return { section: null, count: 0, truncated: false };
+
+  const parts: string[] = ['## Regeln aus dem Arbeitsbereich'];
+  let remainingBudget = maxRuleChars;
+  let count = 0;
+  let truncated = false;
+
+  for (const rule of rules) {
+    const body = rule.content?.markdown ?? rule.content?.plainText ?? null;
+    if (body === null || body.trim().length === 0) {
+      logger.info('Skipping an ALWAYS rule page that has never been materialized', {
+        documentId: rule.id,
+        workspaceId,
+      });
+      continue;
+    }
+    if (body.length > remainingBudget) {
+      truncated = true;
+      break;
+    }
+    remainingBudget -= body.length;
+    parts.push(`### ${rule.title}\n${body}`);
+    count += 1;
+  }
+
+  if (truncated) parts.push('_Weitere Regelseiten wurden wegen ihrer Länge nicht eingefügt._');
+  return {
+    section: count > 0 || truncated ? parts.join('\n\n') : null,
+    count,
+    truncated,
+  };
+}
+
 /**
  * Builds the system prompt for a run: the admin-configured base prompt, then the
  * built-in chat formatting section, then the workspace's ALWAYS rule pages in
@@ -274,6 +470,9 @@ export async function buildSystemPrompt(
     maxRuleChars,
     documentId,
     databaseViewId,
+    conversationId,
+    pinnedContextMaxChars,
+    search,
     toolsAvailable,
     includePageContent,
     pageContentMaxChars,
@@ -297,36 +496,9 @@ export async function buildSystemPrompt(
   // say, so the rule is in the context ahead of the text it is a rule about
   // (issue #56, ADR-030).
   const sections: string[] = [basePrompt, CHAT_FORMATTING_SECTION, UNTRUSTED_CONTENT_SECTION];
-  let truncated = false;
-  let alwaysRuleCount = 0;
-  let remainingBudget = maxRuleChars;
-
-  if (alwaysRules.length > 0) {
-    const alwaysSectionParts: string[] = ['## Regeln aus dem Arbeitsbereich'];
-    for (const rule of alwaysRules) {
-      const body = rule.content?.markdown ?? rule.content?.plainText ?? null;
-      if (body === null || body.trim().length === 0) {
-        logger.info('Skipping an ALWAYS rule page that has never been materialized', {
-          documentId: rule.id,
-          workspaceId,
-        });
-        continue;
-      }
-      if (body.length > remainingBudget) {
-        truncated = true;
-        break;
-      }
-      remainingBudget -= body.length;
-      alwaysSectionParts.push(`### ${rule.title}\n${body}`);
-      alwaysRuleCount += 1;
-    }
-    if (truncated) {
-      alwaysSectionParts.push('_Weitere Regelseiten wurden wegen ihrer Länge nicht eingefügt._');
-    }
-    if (alwaysRuleCount > 0 || truncated) {
-      sections.push(alwaysSectionParts.join('\n\n'));
-    }
-  }
+  const always = buildAlwaysRulesSection({ rules: alwaysRules, maxRuleChars, workspaceId, logger });
+  if (always.section !== null) sections.push(always.section);
+  const { truncated, count: alwaysRuleCount } = always;
 
   let onDemandRuleCount = 0;
   const onDemandLines = onDemandRules
@@ -392,6 +564,25 @@ export async function buildSystemPrompt(
     }
   }
 
+  // After the open page, before the closing line: the page says where the user
+  // is standing, the pinned sources say what they carry with them wherever they
+  // stand. Both are situational, and both belong below the workspace's rules.
+  const pinned =
+    conversationId === null
+      ? null
+      : await loadPinnedSourcesSection({
+          prisma,
+          workspaceId,
+          conversationId,
+          maxChars: pinnedContextMaxChars,
+          search,
+          toolsAvailable,
+          logger,
+        });
+  if (pinned !== null) sections.push(pinned.section);
+  const pinnedSourceCount = pinned?.count ?? 0;
+  const pinnedSourceChars = pinned?.chars ?? 0;
+
   const today = new Date().toISOString().slice(0, 10);
   sections.push(`Aktueller Arbeitsbereich: ${workspaceId}. Heutiges Datum: ${today}.`);
 
@@ -401,5 +592,7 @@ export async function buildSystemPrompt(
     onDemandRuleCount,
     truncated,
     openPageIncluded,
+    pinnedSourceCount,
+    pinnedSourceChars,
   };
 }

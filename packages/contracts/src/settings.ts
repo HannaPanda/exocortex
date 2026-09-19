@@ -73,6 +73,25 @@ export const settingsSchema = z.object({
   /** Hard cap on the characters the open page's text may contribute. */
   'ai.pageContextMaxChars': z.number().int().min(500).max(100_000).default(12_000),
   /**
+   * How many sources a conversation may pin beside the page it stands on
+   * (issue #75, ADR-043). Zero switches pinning off for the workspace.
+   *
+   * A count rather than only a character budget, because the cost of a pinned
+   * source is not only its text: every one of them is a heading the model has
+   * to keep apart from the others, and a chip row nobody can read at a glance
+   * stops being the promise it is meant to be.
+   */
+  'ai.maxPinnedSources': z.number().int().min(0).max(32).default(8),
+  /**
+   * Hard cap on the characters ALL embedded sources may contribute together.
+   *
+   * Shared rather than per source, and divided into equal shares while the
+   * prompt is built: spending it in order would let the first long page eat it
+   * and leave everything pinned afterwards as an empty heading, which looks
+   * like a bug and cannot be explained in a chip.
+   */
+  'ai.pinnedContextMaxChars': z.number().int().min(0).max(200_000).default(24_000),
+  /**
    * Compaction starts once the prompt passes this share of the context window.
    * Capped below 100 on purpose: at 100 the threshold is only reached once the
    * window has already overflowed, so compaction would never run in time.
@@ -672,6 +691,8 @@ export const SETTING_SCOPES = {
   'ai.visionMaxImagesPerRun': 'workspace',
   'ai.pageContextEnabled': 'workspace',
   'ai.pageContextMaxChars': 'workspace',
+  'ai.maxPinnedSources': 'workspace',
+  'ai.pinnedContextMaxChars': 'workspace',
   'ai.compactionThresholdPercent': 'workspace',
   'ai.compactionKeepRecentMessages': 'workspace',
   'ai.compactionModelSlug': 'workspace',
@@ -821,6 +842,8 @@ export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
   'ai.untrustedContentPolicy',
   'ai.visionMaxImagesPerRun',
   'ai.pageContextMaxChars',
+  'ai.maxPinnedSources',
+  'ai.pinnedContextMaxChars',
   'ai.pdfMaxBytes',
   'ai.webResearchEnabled',
   'ai.webResearchMaxChars',
