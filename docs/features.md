@@ -36,6 +36,11 @@ and the gate makes sure it gets written at all.
      title: 'Seiten aus dem Browser clippen und teilen',
      summary:
        'Über /teilen nimmt eXocortex Adresse, Titel und markierten Text einer Webseite entgegen, …',
+     details: [
+       'Am Telefon installierst du eXocortex als App über das Browsermenü; danach steht es …',
+       'Der Clip ist eine gewöhnliche Erfassung mit einer Herkunftszeile obendrüber, also …',
+       'Für das Abrufen gilt dieselbe Adressprüfung wie für die Web-Recherche, interne …',
+     ],
      since: '2026-09-18',
      references: ['#72', 'ADR-037'],
      ui: { where: 'Das Teilen-Menü des Telefons, oder ein Lesezeichen …', path: '/teilen' },
@@ -52,6 +57,7 @@ and the gate makes sure it gets written at all.
    | `area`       | One of `FEATURE_AREAS` in `packages/contracts/src/features.ts`. Adding an area means adding its German label there too.  |
    | `title`      | What a person would call it, not what the module is called.                                                              |
    | `summary`    | One or two sentences: what it does, and why somebody would want it. German, and no em dashes.                            |
+   | `details`    | The long form, one string per paragraph. Two or three of them: how it works, how you use it, where it stops. See below.  |
    | `since`      | `YYYY-MM-DD`, the day it goes **live**, not the day the branch was cut. This is what "new for you" is measured against.  |
    | `references` | Issues and ADRs, for the reader who wants the reasoning.                                                                 |
    | `ui`         | `where` is a sentence; `path` only when a link can be written for it. Omit the whole field for something with no screen. |
@@ -60,7 +66,27 @@ and the gate makes sure it gets written at all.
    | `tools`      | Tool names an agent calls. Also what the gate counts, so every tool belongs to exactly one entry.                        |
    | `claims`     | What the entry accounts for that is not a tool: `screens`, `automationTriggers`, `automationActions`.                    |
 
-3. **Run the gate.**
+3. **Write the paragraphs for the person, not for the reviewer.**
+
+   `details` is the part a reader learns something from, and the three
+   questions it answers are always the same:
+
+   - **How does it work, in the words of somebody using it?** Not the module,
+     not the table: "eine Vorlage ist eine ganz normale Seite mit einer
+     Markierung daran".
+   - **How do you actually use it?** The keystroke, the menu item, the order
+     of the two clicks, what you see afterwards.
+   - **Where does it stop?** The limit, the deliberate omission, the thing it
+     will not do for you. A copy that keeps no link back, an action that never
+     overwrites the body, a list that is not exhaustive.
+
+   The catalogue's own test insists on at least two paragraphs, more than four
+   hundred characters, and prose that is not the summary pasted twice. That is
+   a floor, not a target: it cannot tell a real explanation from four hundred
+   characters of restatement. Apply the house rules while writing: German, du,
+   and no em dashes in running text.
+
+4. **Run the gate.**
 
    ```bash
    node scripts/check-feature-coverage.mjs
@@ -101,8 +127,23 @@ useful. An entry that is complete and wrong passes. That is what review is for.
 
 ## What a reader sees
 
-`/hilfe` groups by area, searches across title, summary, access, tools and
-settings, and marks everything newer than the reader's marker. `UserFeatureSeen`
+`/hilfe` is one area at a time. The fourteen areas are a side navigation with
+a count each, and "Alle Funktionen" sits above them for the reader who wants
+the whole thing in one column; below `md` the same selection is a `Select`,
+because fourteen rows above the content push the content off a phone. Each
+area carries its one-line description from `FEATURE_AREA_DESCRIPTIONS`, and
+each entry shows the summary as a lead, then the `details` paragraphs, then a
+box with the doors: where to find it, the shortcut, the tools, the settings
+and the references.
+
+The search spans every area, over title, summary, details, access, tools,
+settings and references. When it matches nothing in the open area, the page
+falls back to "Alle Funktionen" instead of jumping to whichever area matched
+first: a tab that moves under you while you type is worse than a list that
+grew. The fallback is derived, not stored, so the reader's chosen area comes
+back as soon as it has entries again.
+
+Everything newer than the reader's marker is marked. `UserFeatureSeen`
 holds one row per person, and an **absent row means they have seen everything**:
 a new account has missed nothing and should meet a manual, not a changelog of
 sixty things it never missed. "Zur Kenntnis genommen" moves the marker to the
@@ -121,6 +162,14 @@ tool catalogue (reason next to the route in `scripts/check-mcp-catalog.mjs`):
 reading the list is a tool, marking it read is a statement about a human's
 attention, and an agent calling it would silently clear somebody's badge.
 
-`exo_features` takes an optional `area`, `query` and `since`, and returns
-Markdown grouped by area. A session that has been asked what eXocortex can do
-should call it rather than answer from what it remembers of the repository.
+`exo_features` takes an optional `area`, `query`, `since` and `detailed`, and
+returns Markdown grouped by area. A session that has been asked what eXocortex
+can do should call it rather than answer from what it remembers of the
+repository.
+
+`detailed` decides whether the `details` paragraphs come along. Left out, it
+is on for up to three matches and off above that: below that line the caller
+asked about something specific and wants the whole entry, above it the
+paragraphs would be tens of thousands of characters nobody asked for. The
+navigation's badge is a person's marker, so `isNew` is computed for whoever
+owns the token and the tool does not move it.

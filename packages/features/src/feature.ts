@@ -35,6 +35,11 @@ export interface FeatureEntry {
   area: FeatureArea;
   title: string;
   summary: string;
+  /**
+   * The long form, one string per paragraph. Required, because an entry that
+   * only teases is the thing this registry was supposed to replace.
+   */
+  details: readonly string[];
   since: string;
   references?: readonly string[];
   /** Where in the browser. `path` only when a link can be written for it. */
@@ -68,6 +73,7 @@ export function defineFeature(entry: FeatureEntry): RegisteredFeature {
     area: entry.area,
     title: entry.title,
     summary: entry.summary,
+    details: frozen(entry.details),
     since: entry.since,
     references: frozen(entry.references),
     access: Object.freeze({

@@ -1,6 +1,11 @@
 import { z } from 'zod';
 
-import { FEATURE_AREA_LABELS, featureListResponseSchema } from '@exocortex/contracts';
+import {
+  FEATURE_AREA_DESCRIPTIONS,
+  FEATURE_AREA_LABELS,
+  type FeatureArea,
+  featureListResponseSchema,
+} from '@exocortex/contracts';
 
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
@@ -18,6 +23,8 @@ export const featuresTool: AnyToolDefinition = defineTool({
     'Listet die Funktionen dieser eXocortex-Installation in verständlicher Form, mit Bereich, ' +
     'Zugang (Bildschirm, Tastenkürzel, Werkzeuge, Einstellungen) und dem Datum, seit wann es sie gibt. ' +
     'Nimm das, statt aus dem Gedächtnis zu beantworten, was die Installation kann. ' +
+    'Bei wenigen Treffern kommt die ausführliche Beschreibung mit (wie es funktioniert, wie man ' +
+    'es benutzt, wo es aufhört); über "detailed" lässt sich das erzwingen oder unterdrücken. ' +
     'Optional auf einen Bereich, eine Suchzeichenkette oder ein Datum eingrenzen.',
   inputSchema: z.object({
     area: z.string().optional().describe('Nur diesen Bereich, z. B. "datenbanken".'),
@@ -27,6 +34,14 @@ export const featuresTool: AnyToolDefinition = defineTool({
       .regex(/^\d{4}-\d{2}-\d{2}$/)
       .optional()
       .describe('Nur was an diesem Tag oder später dazukam, als YYYY-MM-DD.'),
+    detailed: z
+      .boolean()
+      .optional()
+      .describe(
+        'Die ausführliche Beschreibung mitliefern (mehrere Absätze pro Eintrag). Ohne Angabe ' +
+          'passiert das bei bis zu drei Treffern von selbst, damit eine gezielte Frage eine ' +
+          'vollständige Antwort bekommt und eine Übersicht kurz bleibt.',
+      ),
   }),
   surfaces: ['mcp', 'ai'],
   mutating: false,
@@ -42,23 +57,35 @@ export const featuresTool: AnyToolDefinition = defineTool({
       if (input.area !== undefined && feature.area !== input.area) return false;
       if (input.since !== undefined && feature.since < input.since) return false;
       if (needle === undefined || needle.length === 0) return true;
-      return `${feature.title} ${feature.summary}`.toLowerCase().includes(needle);
+      return `${feature.title} ${feature.summary} ${feature.details.join(' ')}`
+        .toLowerCase()
+        .includes(needle);
     });
 
     if (matching.length === 0) {
       return { text: 'Keine Funktion passt zu dieser Einschränkung.', data: { features: [] } };
     }
 
+    // Three is where a list stops being an answer and starts being a table of
+    // contents. Below it the caller asked about something specific and wants
+    // the whole entry; above it the paragraphs would be forty thousand
+    // characters of context nobody asked for.
+    const detailed = input.detailed ?? matching.length <= 3;
+
     const lines = [];
-    let area = null;
+    let area: FeatureArea | null = null;
     for (const feature of matching) {
       if (feature.area !== area) {
         area = feature.area;
         lines.push('', `## ${FEATURE_AREA_LABELS[feature.area] ?? feature.area}`, '');
+        const description = FEATURE_AREA_DESCRIPTIONS[feature.area];
+        if (description !== undefined) lines.push(description, '');
       }
       lines.push(`### ${feature.title} (seit ${feature.since})`);
       lines.push(feature.summary);
-      const access = [];
+      if (detailed) for (const paragraph of feature.details) lines.push('', paragraph);
+      const access: string[] = [];
+      if (detailed) lines.push('');
       if (feature.access.ui !== null) {
         const path = feature.access.ui.path;
         access.push(`Bildschirm: ${feature.access.ui.where}${path === null ? '' : ` (${path})`}`);

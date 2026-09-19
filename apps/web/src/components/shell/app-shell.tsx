@@ -3,6 +3,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import {
   BrainIcon,
+  CircleQuestionMarkIcon,
   InboxIcon,
   KeyIcon,
   LogOutIcon,
@@ -12,7 +13,6 @@ import {
   PanelRightIcon,
   SearchIcon,
   ShieldIcon,
-  SparklesIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -475,9 +475,12 @@ function GlobalLinks() {
   }[] = [
     {
       href: '/hilfe',
-      label: newCount > 0 ? `Funktionen (${newCount} neu)` : 'Funktionen',
+      label: newCount > 0 ? `Hilfe und Funktionen (${newCount} neu)` : 'Hilfe und Funktionen',
       testId: 'open-features',
-      icon: SparklesIcon,
+      // A question mark, because that is the shape people look for when they
+      // are stuck. The sparkles this started with said "something AI happens
+      // here", which is the one thing this page is not.
+      icon: CircleQuestionMarkIcon,
       badge: newCount,
     },
     { href: '/chats', label: 'Chats', testId: 'open-chats', icon: MessagesSquareIcon },

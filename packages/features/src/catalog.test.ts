@@ -39,6 +39,25 @@ describe('the feature catalogue', () => {
     }
   });
 
+  /**
+   * A length, because the failure this guards against is an entry written to
+   * satisfy the schema: one paragraph repeating the summary in other words.
+   * Two paragraphs of a few sentences is what "how it works, how you use it,
+   * where it stops" comes out at, and anything shorter than that is a teaser
+   * again. The gate cannot judge whether the prose is true; it can insist
+   * that somebody sat down and wrote some.
+   */
+  it('explains every feature in more than a teaser', () => {
+    for (const feature of FEATURES) {
+      expect(feature.details.length, `${feature.id} has too few paragraphs`).toBeGreaterThanOrEqual(
+        2,
+      );
+      const written = feature.details.join(' ');
+      expect(written.length, `${feature.id} says too little`).toBeGreaterThan(400);
+      expect(written, `${feature.id} repeats its summary verbatim`).not.toContain(feature.summary);
+    }
+  });
+
   it('gives every feature at least one door', () => {
     for (const feature of FEATURES) {
       const doors =

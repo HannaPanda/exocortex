@@ -13,6 +13,11 @@ function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimi
       data-slot="tabs-list"
       className={cn(
         'relative inline-flex h-9 w-full items-center gap-1 overflow-hidden rounded-md bg-muted p-1',
+        // Vertical: a column of full-width rows, as a page's side navigation
+        // rather than a segmented control. The height has to come off with it,
+        // or fourteen entries are squeezed into nine pixels each.
+        'data-[orientation=vertical]:h-auto data-[orientation=vertical]:flex-col',
+        'data-[orientation=vertical]:items-stretch data-[orientation=vertical]:overflow-visible',
         className,
       )}
       {...props}
@@ -25,7 +30,12 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
     <TabsPrimitive.Tab
       data-slot="tabs-trigger"
       className={cn(
-        'inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 truncate rounded-sm px-2 py-1 text-xs font-medium',
+        'inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-sm px-2 py-1 text-xs font-medium',
+        // `truncate` only in a row, where the triggers share one line and a
+        // long label would push its neighbours out. In a column the row is
+        // free to be two lines high, and truncating there would hide the end
+        // of "Struktur, Ablage und Vorlagen" for no gain.
+        'data-[orientation=horizontal]:truncate',
         'text-muted-foreground transition-colors select-none',
         'hover:text-foreground',
         // `data-active`, not `data-selected`: Base UI's tab puts its selection
@@ -43,6 +53,13 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
         // and taken back out: this product draws no rules under anything, so it
         // read as a stray mark rather than as a selection.
         'data-active:bg-accent-strong data-active:text-foreground',
+        // Vertical: the row is as tall as its label needs, the label is left
+        // aligned and may wrap, and `flex-1` is off because in a column it
+        // would stretch every row to the same share of the height.
+        'data-[orientation=vertical]:flex-none data-[orientation=vertical]:justify-between',
+        'data-[orientation=vertical]:gap-2',
+        'data-[orientation=vertical]:px-2.5 data-[orientation=vertical]:py-1.5',
+        'data-[orientation=vertical]:text-left data-[orientation=vertical]:text-sm',
         "[&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-3.5",
         className,
       )}

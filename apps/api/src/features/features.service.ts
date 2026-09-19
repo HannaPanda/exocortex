@@ -31,6 +31,7 @@ export class FeaturesService {
     const seenUpTo = marker === null ? null : asDay(marker.seenUpTo);
     const features: Feature[] = FEATURES.map((feature) => ({
       ...feature,
+      details: [...feature.details],
       references: [...feature.references],
       access: {
         ui: feature.access.ui === null ? null : { ...feature.access.ui },
