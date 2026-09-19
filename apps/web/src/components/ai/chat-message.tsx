@@ -22,6 +22,16 @@ export interface ChatMessageProps {
  * result stays monospace -- neither is prose the model formatted.
  */
 export function ChatMessage({ message, streaming = false }: ChatMessageProps) {
+  // An assistant turn that only calls a tool carries no text (issue #86). The
+  // row is persisted because the next request has to repeat it together with
+  // its `toolCalls` (`ai-run/preparation.ts`), but a bubble for it would say
+  // "the model answered nothing" at the exact moment it was working. What ran
+  // is visible in the tool message below it and in `ai-run-activity`.
+  //
+  // The bubble that is still being filled is the one exception: it starts out
+  // empty and is where the cursor belongs.
+  if (message.role === 'assistant' && message.content.length === 0 && !streaming) return null;
+
   const body = <ChatMessageBody message={message} streaming={streaming} />;
 
   if (!message.superseded) return body;
