@@ -196,4 +196,35 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     shortcuts: ['Strg+. öffnet den Kontextbereich'],
     tools: ['exo_page_backlinks', 'exo_page_related', 'exo_page_resolve_link'],
   }),
+  defineFeature({
+    id: 'gespeicherte-suchen',
+    area: 'suche',
+    title: 'Gespeicherte Suchen, Smart Views und Suchblöcke',
+    summary:
+      'Eine Suche muss keine einmalige Antwort bleiben. Im Suchbereich stellst du eine Abfrage aus Suchbegriff, Ort, Art, Eigenschaften, Entität und Zeitraum zusammen, speicherst sie unter einem Namen und bekommst sie jedes Mal neu beantwortet: als eigener Eintrag in der Navigation oder als lebende Liste mitten in einer Seite.',
+    details: [
+      'Über die Navigation unten oder Strg+K kommst du in den Suchbereich. Dort steht neben dem Suchbegriff alles, womit sich eingrenzen lässt: nur unterhalb einer bestimmten Seite, nur Seiten oder nur Datenbanken, nur Zeilen einer Datenbank mit einem Eigenschaftsfilter wie in einer Datenbankansicht, nur Seiten, die eine bestimmte Entität erwähnen, geändert oder angelegt in den letzten 30 Tagen. Die Trefferliste unten ändert sich beim Tippen mit, du siehst also vor dem Speichern, was du bekommst.',
+      'Gespeichert wird die Frage, nie die Trefferliste. Beim nächsten Öffnen wird sie neu beantwortet, mit deinen Rechten und nicht mit denen der Person, die sie angelegt hat. Ein Zeitraum wie "die letzten 30 Tage" wandert deshalb mit, und ein Unterbaum wird jedes Mal frisch bestimmt: verschiebst du eine Seite hinein, taucht sie beim nächsten Blick auf. Setzt du beim Speichern den Schalter "in der Navigation zeigen", wird aus der Suche ein Smart View, den alle Mitglieder in der Seitenleiste sehen.',
+      'Dieselbe gespeicherte Suche lässt sich als Block in eine Seite legen: Schrägstrich-Menü, "Gespeicherte Suche einbetten". Der Block zeigt die ersten Treffer und holt sie bei jedem Öffnen neu, eine Projektseite kann also "alles Offene in diesem Bereich" tragen, ohne dass jemand die Liste pflegt. Was der Block nicht ist: eine zweite Datenbank. Er besitzt keine Zeilen, er zeigt Seiten, die es ohnehin gibt, und löschst du die Suche, bleibt jede gefundene Seite unberührt.',
+    ],
+    since: '2026-09-19',
+    references: ['#74', 'ADR-020', 'ADR-011'],
+    ui: {
+      where: 'Unten in der Navigation unter "Suche und gespeicherte Suchen", oder Strg+K.',
+      path: '/arbeitsbereich',
+    },
+    shortcuts: ['Strg+K'],
+    settings: ['search.semanticEnabled'],
+    tools: [
+      'exo_saved_query_list',
+      'exo_saved_query_get',
+      'exo_saved_query_preview',
+      'exo_saved_query_run',
+      'exo_saved_query_create',
+      'exo_saved_query_update',
+      'exo_saved_query_reorder',
+      'exo_saved_query_delete',
+    ],
+    claims: { screens: ['/arbeitsbereich/:x/suche', '/arbeitsbereich/:x/suche/:x'] },
+  }),
 ];

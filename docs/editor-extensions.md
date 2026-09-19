@@ -35,7 +35,8 @@ Nodes: `doc`, `paragraph`, `heading` (1–6), `text`, `codeBlock`, `blockquote`,
 `hardBreak`, `image`, `table`, `tableRow`, `tableHeader`, `tableCell`, `callout`,
 `details` / `detailsSummary` / `detailsContent`, `columnList` / `column`,
 `inlineMath` / `blockMath`, `tableOfContents`, `pageLink`, `breadcrumb`, `mention`,
-`fileAttachment`, `video`, `audio`, `pdf`, `embed`, `bookmark`, `databaseEmbed`.
+`fileAttachment`, `video`, `audio`, `pdf`, `embed`, `bookmark`, `databaseEmbed`,
+`savedQueryEmbed`.
 
 Marks: `bold`, `italic`, `strike`, `code`, `link` (including the internal `wiki:`
 scheme), `underline`, `superscript`, `subscript`, `textColor`.
@@ -62,34 +63,35 @@ An entry that needs more than the editor declares it with `prompt`:
 
 All of it lives in `apps/web/src/components/editor` and contributes **no** schema:
 
-| File                      | Purpose                                                                                                                                                                                                                               |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `selection-toolbar.tsx`   | formatting bar over a selection                                                                                                                                                                                                       |
-| `turn-into-menu.tsx`      | convert the current block                                                                                                                                                                                                             |
-| `color-menu.tsx`          | text and background colour                                                                                                                                                                                                            |
-| `link-menu.tsx`           | link editor: understands `[[Seite]]`, and searches the workspace's pages for anything that does not look like an address                                                                                                              |
-| `link-bubble.tsx`         | bubble menu over the caret inside a link: open, edit, remove                                                                                                                                                                          |
-| `follow-link-context.tsx` | ref bridge that hands `EditorSurface`'s click handler and the `pageLink` node view a `follow` function without either holding it as state                                                                                             |
-| `link-navigation.tsx`     | `useLinkNavigation`: what following a resolved link _does_ (new tab, router push, `wiki:` lookup plus its ambiguous/missing/error dialogs)                                                                                            |
-| `emoji-menu.tsx`          | emoji picker (inserts characters)                                                                                                                                                                                                     |
-| `slash-menu.tsx`          | `/` block menu, reads the catalog                                                                                                                                                                                                     |
-| `mention-menu.tsx`        | `@` menu for pages, people and dates                                                                                                                                                                                                  |
-| `block-handle.tsx`        | drag handle in the gutter (see docs/deviations.md)                                                                                                                                                                                    |
-| `block-actions.tsx`       | duplicate, copy link, delete — shared by handle and toolbar                                                                                                                                                                           |
-| `suggestion-menu.tsx`     | shared state-driven machinery for `/` and `@`                                                                                                                                                                                         |
-| `code-block-toolbar.tsx`  | language picker and copy                                                                                                                                                                                                              |
-| `table-toolbar.tsx`       | rows, columns, header, merge                                                                                                                                                                                                          |
-| `block-prompt.tsx`        | value and file collection for catalog entries                                                                                                                                                                                         |
-| `comment-markers.tsx`     | ProseMirror **decorations** on the blocks that carry an open comment thread, plus the two-way wiring to the Kommentare panel. Never a mark: a comment is not document content, so it must leave no trace in the Yjs state (issue #18) |
-| `page-link-node-view.tsx` | React node view for `pageLink`, see the exception below                                                                                                                                                                               |
-| `page-link-context.tsx`   | ref bridge that lets the `pageLink` node view reopen the page picker, so a placed link can be re-targeted                                                                                                                             |
+| File                            | Purpose                                                                                                                                                                                                                               |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `selection-toolbar.tsx`         | formatting bar over a selection                                                                                                                                                                                                       |
+| `turn-into-menu.tsx`            | convert the current block                                                                                                                                                                                                             |
+| `color-menu.tsx`                | text and background colour                                                                                                                                                                                                            |
+| `link-menu.tsx`                 | link editor: understands `[[Seite]]`, and searches the workspace's pages for anything that does not look like an address                                                                                                              |
+| `link-bubble.tsx`               | bubble menu over the caret inside a link: open, edit, remove                                                                                                                                                                          |
+| `follow-link-context.tsx`       | ref bridge that hands `EditorSurface`'s click handler and the `pageLink` node view a `follow` function without either holding it as state                                                                                             |
+| `link-navigation.tsx`           | `useLinkNavigation`: what following a resolved link _does_ (new tab, router push, `wiki:` lookup plus its ambiguous/missing/error dialogs)                                                                                            |
+| `emoji-menu.tsx`                | emoji picker (inserts characters)                                                                                                                                                                                                     |
+| `slash-menu.tsx`                | `/` block menu, reads the catalog                                                                                                                                                                                                     |
+| `mention-menu.tsx`              | `@` menu for pages, people and dates                                                                                                                                                                                                  |
+| `block-handle.tsx`              | drag handle in the gutter (see docs/deviations.md)                                                                                                                                                                                    |
+| `block-actions.tsx`             | duplicate, copy link, delete — shared by handle and toolbar                                                                                                                                                                           |
+| `suggestion-menu.tsx`           | shared state-driven machinery for `/` and `@`                                                                                                                                                                                         |
+| `code-block-toolbar.tsx`        | language picker and copy                                                                                                                                                                                                              |
+| `table-toolbar.tsx`             | rows, columns, header, merge                                                                                                                                                                                                          |
+| `block-prompt.tsx`              | value and file collection for catalog entries                                                                                                                                                                                         |
+| `comment-markers.tsx`           | ProseMirror **decorations** on the blocks that carry an open comment thread, plus the two-way wiring to the Kommentare panel. Never a mark: a comment is not document content, so it must leave no trace in the Yjs state (issue #18) |
+| `page-link-node-view.tsx`       | React node view for `pageLink`, see the exception below                                                                                                                                                                               |
+| `page-link-context.tsx`         | ref bridge that lets the `pageLink` node view reopen the page picker, so a placed link can be re-targeted                                                                                                                             |
+| `saved-query-embed-context.tsx` | the same ref bridge for the query block, so "Suche wechseln" reaches the picker (issue #74)                                                                                                                                           |
 
 Node views that render _inside_ the document (table of contents, breadcrumb, media)
 live in `packages/editor` and are plain DOM, not React, so `getExocortexSchema()`
 keeps working without a DOM on the server.
 
-**Two exceptions:** `databaseEmbed` (`database-embed.ts`) and `pageLink`
-(`page-link.ts`). Their schema (attributes, `parseHTML`/`renderHTML`, Markdown
+**Three exceptions:** `databaseEmbed` (`database-embed.ts`), `pageLink`
+(`page-link.ts`) and `savedQueryEmbed` (`saved-query-embed.ts`). Their schema (attributes, `parseHTML`/`renderHTML`, Markdown
 adapter) lives in `packages/editor` like every other node, but each declares
 no `addNodeView()` — the interactive rendering is a real React node view
 supplied entirely by `apps/web`, wired in via `.extend({ addNodeView: () =>
@@ -99,6 +101,12 @@ ReactNodeViewRenderer(...) })` on the extension instance in
 For `databaseEmbed` that is a live `DatabaseShell`, the same component the
 full-page database view uses: reusing it outweighs hand-building filters,
 inline cell editing and four view layouts again in plain DOM.
+
+For `savedQueryEmbed` (`saved-query-node-view.tsx`, issue #74) it is the answer
+to a stored question. The node holds the saved query's id, the name it had when
+it was inserted and a row limit; the hits are fetched when the block renders
+and are deliberately never written into the document, because a written answer
+is a copy that rots.
 
 For `pageLink` (`page-link-node-view.tsx`) it is the block's _resolution
 state_: whether the reference resolves to one page, several, or none, and that
@@ -113,7 +121,7 @@ React's event system sits above ProseMirror's `view.dom` listener and would
 run too late. The guard is the `[data-page-link]` attribute the click handler
 checks for instead.
 
-New interactive embeds should follow this pair (schema-only node in
+New interactive embeds should follow this pattern (schema-only node in
 `packages/editor`, `ReactNodeViewRenderer` override in `apps/web`) rather than
 inventing another mechanism.
 

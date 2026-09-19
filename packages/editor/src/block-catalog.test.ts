@@ -108,6 +108,7 @@ describe('block catalog execution', () => {
       file: '/api/attachments/abc/download',
       page: 'Andere Seite',
       database: JSON.stringify({ documentId: 'doc123', title: 'Aufgaben' }),
+      'saved-query': JSON.stringify({ savedQueryId: 'sq123', name: 'Offene Aufgaben', limit: 5 }),
     };
 
     for (const candidate of buildBlockCatalog()) {

@@ -338,6 +338,14 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   one hop; a relation may not cross a workspace; and a configuration that
   stops compiling is refused when it is written, except for a rename, which
   rewrites the formulas that name the column.
+- ADR-042: a saved query stores the question and never an answer. A saved
+  search, a smart view and a query block are one `SavedQuery` row with
+  different flags on it; the query runs as the caller on every read, so
+  permissions are never frozen at save time and no job keeps a result list
+  warm. The words are answered by the search adapter and everything else by one
+  SQL predicate over `document`, in that order, because the adapter takes no
+  list of allowed ids. A relative window and a subtree are resolved while the
+  query runs, which is what makes a stored question keep moving.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -365,6 +373,7 @@ Each of these has a step-by-step recipe:
 | overview pages, digests, composition prompts             | `docs/overview-pages.md`    |
 | new page template placeholder, template UI               | `docs/templates.md`         |
 | new feature entry, the help page, the coverage gate      | `docs/features.md`          |
+| new saved-query dimension, smart views, query blocks     | `docs/saved-queries.md`     |
 
 ## Deployment on this machine
 

@@ -25,6 +25,17 @@ import { SettingsService } from '../platform/settings.service';
 export const SEARCH_ADAPTER = Symbol('EXOCORTEX_SEARCH_ADAPTER');
 
 /**
+ * The full-text half on its own.
+ *
+ * The search box always wants both halves fused, but a saved query may ask for
+ * keyword matching explicitly (issue #74): a question about an exact word does
+ * not need a vector, and a list that refreshes on every page view should not
+ * pay a model call for one. Provided here rather than built where it is used,
+ * so both adapters stay configured in the same place.
+ */
+export const KEYWORD_SEARCH_ADAPTER = Symbol('EXOCORTEX_KEYWORD_SEARCH_ADAPTER');
+
+/**
  * Search application service.
  *
  * Membership is verified before any query runs, and the workspace filter is part
@@ -95,6 +106,12 @@ export class SearchService {
     return paths;
   }
 }
+
+export const keywordSearchAdapterProvider = {
+  provide: KEYWORD_SEARCH_ADAPTER,
+  inject: [PRISMA],
+  useFactory: (prisma: PrismaClient): SearchAdapter => new PostgresSearchAdapter(prisma),
+};
 
 export const searchAdapterProvider = {
   provide: SEARCH_ADAPTER,

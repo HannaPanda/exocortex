@@ -49,6 +49,7 @@ export const BLOCK_ICON_NAMES = [
   'AtSign',
   'Smile',
   'LayoutGrid',
+  'ListFilter',
 ] as const;
 
 export type BlockIconName = (typeof BLOCK_ICON_NAMES)[number];
@@ -84,7 +85,9 @@ export type BlockPromptKind =
   /** A LaTeX expression. */
   | 'latex'
   /** An existing database from this workspace, for a database embed. */
-  | 'database';
+  | 'database'
+  /** An existing saved query from this workspace, for a query block (issue #74). */
+  | 'saved-query';
 
 export interface BlockCatalogEntry {
   /** Stable identifier; used by tests, the slash menu and the block menu. */

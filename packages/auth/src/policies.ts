@@ -234,6 +234,27 @@ export function canManageRenderTemplates(role: WorkspaceRole | null): PolicyDeci
 }
 
 /**
+ * Writing a saved query, a smart view or the query behind a block (issue #74).
+ *
+ * MEMBER. A saved query only ever reads, and it reads as whoever runs it, so
+ * the worst a bad one can do is show its author an empty list. But it is
+ * workspace furniture like a render template: a smart view appears in
+ * everybody's navigation, and a guest who may not create a page should not be
+ * able to put a permanent entry in it either.
+ *
+ * Reading the list is plain `canReadWorkspace`, because the answer a query
+ * gives is filtered by the reader's own access anyway.
+ */
+export function canManageSavedQueries(role: WorkspaceRole | null): PolicyDecision {
+  const read = canReadWorkspace(role);
+  if (!read.allowed) return read;
+  if (!hasAtLeast(role as WorkspaceRole, 'MEMBER')) {
+    return deny('forbidden', 'Managing saved queries requires at least the MEMBER role');
+  }
+  return ALLOW;
+}
+
+/**
  * Starting a build, or cancelling one (issue #44, ADR-026).
  *
  * MEMBER: it costs CPU on this host and nothing else, and the result is a file

@@ -19,6 +19,7 @@ import {
   LightbulbIcon,
   Link2Icon,
   ListChecksIcon,
+  ListFilterIcon,
   ListIcon,
   ListOrderedIcon,
   ListTodoIcon,
@@ -78,6 +79,7 @@ const BLOCK_ICONS: Readonly<Record<BlockIconName, React.ComponentType<{ classNam
   AtSign: AtSignIcon,
   Smile: SmileIcon,
   LayoutGrid: LayoutGridIcon,
+  ListFilter: ListFilterIcon,
 };
 
 export function BlockIcon({ name, className }: { name: BlockIconName; className?: string }) {

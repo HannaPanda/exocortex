@@ -93,6 +93,8 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   template_exists: 'Diese Seite ist bereits eine Vorlage.',
   template_not_a_page:
     'Nur gewöhnliche Seiten können Vorlagen sein, keine Datenbanken und keine Projekte.',
+  saved_query_invalid:
+    'Diese gespeicherte Suche passt nicht mehr zu den Daten: die Datenbank oder eine Eigenschaft, nach der sie filtert, gibt es so nicht mehr. Bearbeite die Suche.',
 };
 
 /**

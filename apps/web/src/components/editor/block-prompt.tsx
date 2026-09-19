@@ -2,7 +2,11 @@
 
 import * as React from 'react';
 
-import { ALLOWED_ATTACHMENT_MIME_TYPES, type DocumentTreeNode } from '@exocortex/contracts';
+import {
+  ALLOWED_ATTACHMENT_MIME_TYPES,
+  type DocumentTreeNode,
+  type SavedQuery,
+} from '@exocortex/contracts';
 import { type BlockPromptKind } from '@exocortex/editor';
 import {
   Button,
@@ -21,6 +25,7 @@ import {
 import { DocumentIcon } from '@/components/document/document-icon';
 import { ApiError } from '@/lib/api/client';
 import { uploadAttachment, useDocumentTree } from '@/lib/api/queries';
+import { useSavedQueries } from '@/lib/api/saved-query-queries';
 
 /**
  * Flattens the tree for a picker.
@@ -42,7 +47,7 @@ function collectDocuments(
 }
 
 /** Kinds whose dialog is a picker over the workspace rather than a free field. */
-const PICKER_KINDS = new Set<BlockPromptKind>(['page', 'database']);
+const PICKER_KINDS = new Set<BlockPromptKind>(['page', 'database', 'saved-query']);
 
 /** What the dialog asks for, and what it does with the answer. */
 interface PendingPrompt {
@@ -77,6 +82,13 @@ const PROMPT_COPY: Readonly<
     title: 'Datenbank einbetten',
     description: 'Wähle eine bestehende Datenbank aus diesem Arbeitsbereich.',
     placeholder: 'Datenbank suchen …',
+  },
+  'saved-query': {
+    title: 'Gespeicherte Suche einbetten',
+    description:
+      'Wähle eine gespeicherte Suche. Der Block zeigt ihre Treffer und ermittelt sie bei jedem ' +
+      'Öffnen der Seite neu. Neue Suchen entstehen im Suchbereich.',
+    placeholder: 'Gespeicherte Suche suchen …',
   },
 };
 
@@ -122,7 +134,9 @@ export function useBlockPrompt({
   const fileInput = React.useRef<HTMLInputElement | null>(null);
   const fileResolve = React.useRef<((value: string | null) => void) | null>(null);
   const isPicker = pending !== null && PICKER_KINDS.has(pending.kind);
-  const tree = useDocumentTree(isPicker ? workspaceId : undefined);
+  const isSavedQueryPicker = pending?.kind === 'saved-query';
+  const tree = useDocumentTree(isPicker && !isSavedQueryPicker ? workspaceId : undefined);
+  const savedQueries = useSavedQueries(isSavedQueryPicker ? workspaceId : undefined);
 
   const candidates = React.useMemo(() => {
     if (tree.data === undefined || pending === null) return [];
@@ -134,6 +148,12 @@ export function useBlockPrompt({
     if (needle.length === 0) return candidates;
     return candidates.filter((entry) => entry.title.toLowerCase().includes(needle));
   }, [candidates, needle]);
+
+  const filteredSavedQueries = React.useMemo(() => {
+    const all = savedQueries.data?.savedQueries ?? [];
+    if (needle.length === 0) return all;
+    return all.filter((entry) => entry.name.toLowerCase().includes(needle));
+  }, [needle, savedQueries.data]);
 
   /**
    * Whether the typed text is a title no page carries. Obsidian's behaviour:
@@ -202,6 +222,20 @@ export function useBlockPrompt({
   const choose = (chosen: { id: string; title: string }): void =>
     finish(JSON.stringify({ documentId: chosen.id, title: chosen.title }));
 
+  /**
+   * Picks a stored question. The block keeps the id, the name it had at the
+   * time and its own row limit, which is smaller than the query's: a block in
+   * running text shows a handful, the smart view shows the whole answer.
+   */
+  const chooseSavedQuery = (chosen: SavedQuery): void =>
+    finish(
+      JSON.stringify({
+        savedQueryId: chosen.id,
+        name: chosen.name,
+        limit: Math.min(chosen.definition.limit, 5),
+      }),
+    );
+
   const submit = (): void => {
     const trimmed = value.trim();
     // A page link may be made for a page that does not exist yet; every other
@@ -234,8 +268,10 @@ export function useBlockPrompt({
         onValueChange={setValue}
         isPicker={isPicker}
         entries={filtered}
+        savedQueries={filteredSavedQueries}
         newTitle={isNewTitle ? value.trim() : null}
         onChoose={choose}
+        onChooseSavedQuery={chooseSavedQuery}
         onSubmit={submit}
         onCancel={() => finish(null)}
       />
@@ -316,6 +352,55 @@ function PickerList({
   );
 }
 
+/**
+ * The list of stored questions (issue #74).
+ *
+ * Its own list rather than a branch in `PickerList`, because a saved query is
+ * not a document: it has no icon of its own to fall back on, and what tells
+ * two of them apart is the description rather than the path.
+ */
+function SavedQueryPickerList({
+  entries,
+  onChoose,
+}: {
+  entries: readonly SavedQuery[];
+  onChoose: (entry: SavedQuery) => void;
+}) {
+  return (
+    <ul
+      className="max-h-64 overflow-y-auto rounded-md border border-border"
+      data-testid="saved-query-prompt-list"
+    >
+      {entries.length === 0 ? (
+        <li>
+          <EmptyState
+            title="Keine gespeicherte Suche gefunden"
+            description="Im Suchbereich lässt sich eine Suche zusammenstellen und speichern; danach steht sie hier."
+          />
+        </li>
+      ) : (
+        entries.map((entry) => (
+          <li key={entry.id}>
+            <button
+              type="button"
+              data-testid={`saved-query-prompt-option-${entry.id}`}
+              className="flex w-full flex-col items-start gap-0.5 px-3 py-2 text-left text-sm hover:bg-accent"
+              onClick={() => onChoose(entry)}
+            >
+              <span className="w-full truncate">{entry.name}</span>
+              {entry.description === null ? null : (
+                <span className="w-full truncate text-xs text-muted-foreground">
+                  {entry.description}
+                </span>
+              )}
+            </button>
+          </li>
+        ))
+      )}
+    </ul>
+  );
+}
+
 /** The dialog half of `useBlockPrompt`: one input, optionally a picker below it. */
 function BlockPromptDialog({
   pending,
@@ -323,8 +408,10 @@ function BlockPromptDialog({
   onValueChange,
   isPicker,
   entries,
+  savedQueries,
   newTitle,
   onChoose,
+  onChooseSavedQuery,
   onSubmit,
   onCancel,
 }: {
@@ -333,8 +420,10 @@ function BlockPromptDialog({
   onValueChange: (next: string) => void;
   isPicker: boolean;
   entries: readonly DocumentTreeNode[];
+  savedQueries: readonly SavedQuery[];
   newTitle: string | null;
   onChoose: (entry: { id: string; title: string }) => void;
+  onChooseSavedQuery: (entry: SavedQuery) => void;
   onSubmit: () => void;
   onCancel: () => void;
 }) {
@@ -374,7 +463,11 @@ function BlockPromptDialog({
               placeholder={pending?.placeholder ?? ''}
               onChange={(event) => onValueChange(event.target.value)}
               onKeyDown={(event) => {
-                if (event.key === 'Enter' && pending?.kind !== 'database') {
+                if (
+                  event.key === 'Enter' &&
+                  pending?.kind !== 'database' &&
+                  pending?.kind !== 'saved-query'
+                ) {
                   event.preventDefault();
                   onSubmit();
                 }
@@ -382,20 +475,24 @@ function BlockPromptDialog({
             />
           )}
           {isPicker && pending !== null ? (
-            <PickerList
-              kind={pending.kind}
-              entries={entries}
-              newTitle={newTitle}
-              onChoose={onChoose}
-              onCreate={onSubmit}
-            />
+            pending.kind === 'saved-query' ? (
+              <SavedQueryPickerList entries={savedQueries} onChoose={onChooseSavedQuery} />
+            ) : (
+              <PickerList
+                kind={pending.kind}
+                entries={entries}
+                newTitle={newTitle}
+                onChoose={onChoose}
+                onCreate={onSubmit}
+              />
+            )
           ) : null}
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={onCancel}>
             Abbrechen
           </Button>
-          {pending?.kind === 'database' ? null : (
+          {pending?.kind === 'database' || pending?.kind === 'saved-query' ? null : (
             <Button data-testid="block-prompt-submit" onClick={onSubmit}>
               Einfügen
             </Button>

@@ -46,6 +46,7 @@ export const APPLICATION_EVENT_TYPES = [
   'render.job.updated',
   'project.files.changed',
   'project.build.updated',
+  'saved-query.changed',
 ] as const;
 
 export const applicationEventTypeSchema = z.enum(APPLICATION_EVENT_TYPES);
@@ -294,6 +295,22 @@ export const projectBuildUpdatedPayloadSchema = z.object({
 });
 export type ProjectBuildUpdatedPayload = z.infer<typeof projectBuildUpdatedPayloadSchema>;
 
+/**
+ * A saved query was created, edited, reordered or deleted (issue #74).
+ *
+ * Only the id and what happened travel: a smart view is an entry in everybody's
+ * navigation, so the other browsers have to re-read the list, and the list is
+ * the thing they have to re-read rather than one row of it. The definition
+ * itself is deliberately not in the payload -- it would put a workspace's
+ * stored questions on a socket every member is on, for no gain over the read
+ * they are about to do anyway.
+ */
+export const savedQueryChangedPayloadSchema = z.object({
+  savedQueryId: idSchema,
+  action: z.enum(['created', 'updated', 'deleted']),
+});
+export type SavedQueryChangedPayload = z.infer<typeof savedQueryChangedPayloadSchema>;
+
 export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('workspace.updated', z.object({ workspace: workspaceSchema.partial() })),
   envelope('document.created', z.object({ document: documentSummarySchema })),
@@ -325,6 +342,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('render.job.updated', renderJobUpdatedPayloadSchema),
   envelope('project.files.changed', projectFilesChangedPayloadSchema),
   envelope('project.build.updated', projectBuildUpdatedPayloadSchema),
+  envelope('saved-query.changed', savedQueryChangedPayloadSchema),
 ]);
 export type ApplicationEvent = z.infer<typeof applicationEventSchema>;
 

@@ -8,6 +8,7 @@ export * from './order-key';
 export * from './overview-source';
 export * from './project-source';
 export * from './render-source';
+export * from './saved-query';
 export * from './search';
 export * from './semantic-search';
 export * from './tree';

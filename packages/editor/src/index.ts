@@ -28,6 +28,7 @@ export * from './page-link-identity';
 export * from './plain-text';
 export * from './plain-text-adapter';
 export * from './project-state';
+export * from './saved-query-embed';
 export * from './schema';
 export * from './schema-v2';
 export * from './schema-v3';

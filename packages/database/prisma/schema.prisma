@@ -77,6 +77,8 @@ model User {
   automationRules             AutomationRule[]      @relation("AutomationRuleCreatedBy")
   renderTemplates             RenderTemplate[]      @relation("RenderTemplateCreatedBy")
   renderJobs                  RenderJob[]           @relation("RenderJobCreatedBy")
+  createdSavedQueries         SavedQuery[]          @relation("SavedQueryCreatedBy")
+  updatedSavedQueries         SavedQuery[]          @relation("SavedQueryUpdatedBy")
 
   @@map("user")
 }
@@ -523,6 +525,7 @@ model Workspace {
   renderTemplates  RenderTemplate[]
   renderJobs       RenderJob[]
   projectBuilds    ProjectBuild[]
+  savedQueries     SavedQuery[]
 
   @@index([isMemory])
   @@map("workspace")
@@ -2824,4 +2827,64 @@ model ProjectBuild {
   @@index([createdAt])
   @@index([status, heartbeatAt])
   @@map("project_build")
+}
+
+/// A stored question (issue #74).
+///
+/// The three surfaces of issue #74 -- a saved search, a smart view in the
+/// navigation, a query block in a page -- are one row with different flags on
+/// it, because they are one thing: a question somebody wants answered again.
+/// What is stored is only ever the question. No result, no document id list, no
+/// count. A frozen answer would be stale the moment anybody wrote a page, and
+/// it would carry the permissions of whoever saved it rather than of whoever is
+/// reading; running the query as the caller every time is what keeps both
+/// correct.
+///
+/// Deliberately not a `Document`. A database is a document (ADR-011) because it
+/// owns its rows; a saved query owns nothing and names pages that exist for
+/// their own reasons. Making it a page would give it a place in a tree it has
+/// no business being in, a Yjs state with nothing in it and a search index
+/// entry that would match its own results.
+model SavedQuery {
+  id          String    @id @default(cuid(2))
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String?
+  /// Either a literal emoji or `lucide:<name>`, exactly like a page icon.
+  icon        String?
+  iconColor   String?
+
+  /// The question, shaped by `savedQueryDefinitionSchema` in
+  /// `@exocortex/contracts` and validated there on every write and every read.
+  /// JSON rather than columns: the dimensions are a list that grows, and a
+  /// migration per filter kind would make adding one a schema change.
+  ///
+  /// It may name pages (`underDocumentId`, `collectionId`, `entityIds`) that
+  /// are later deleted. No foreign key reaches into JSON, so that is handled
+  /// where it happens: a query naming a page that is gone answers with nothing
+  /// and says so, rather than failing.
+  definition Json
+  /// Layout of the answer. Presentation only; it never changes what is found.
+  display    Json
+
+  /// Whether this query is a smart view: its own entry in the navigation.
+  /// A saved search that is not one is still reachable from the search area.
+  inSidebar Boolean @default(false)
+  /// Fractional index (base62) among the sidebar entries, like `Document.orderKey`.
+  orderKey  String
+
+  createdById String
+  createdBy   User     @relation("SavedQueryCreatedBy", fields: [createdById], references: [id])
+  updatedById String
+  updatedBy   User     @relation("SavedQueryUpdatedBy", fields: [updatedById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  /// The navigation's list, and the workspace's list behind it.
+  @@index([workspaceId, inSidebar, orderKey])
+  @@index([createdById])
+  @@index([updatedById])
+  @@map("saved_query")
 }

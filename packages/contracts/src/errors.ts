@@ -86,6 +86,12 @@ export const API_ERROR_CODES = [
   'template_exists',
   /** Only ordinary pages can be templates: not a database, not a project. */
   'template_not_a_page',
+  /**
+   * The stored question no longer compiles: it filters on a property of a
+   * database that has since changed, or it names a database that is gone. The
+   * query has to be edited, and no retry will help (issue #74).
+   */
+  'saved_query_invalid',
 ] as const;
 
 export const apiErrorCodeSchema = z.enum(API_ERROR_CODES);
@@ -232,4 +238,7 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   web_fetch_failed: 502,
   template_exists: 409,
   template_not_a_page: 422,
+  // 422 rather than 500: the request is well formed and the caller is allowed,
+  // but the question it names cannot be asked of the schema as it stands now.
+  saved_query_invalid: 422,
 };

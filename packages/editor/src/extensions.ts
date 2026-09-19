@@ -92,6 +92,12 @@ import {
   pageLinkPlainTextAdapter,
 } from './page-link';
 import { corePlainTextAdapter } from './plain-text-adapter';
+import {
+  SavedQueryEmbed,
+  savedQueryEmbedBlocks,
+  savedQueryEmbedMarkdownAdapter,
+  savedQueryEmbedPlainTextAdapter,
+} from './saved-query-embed';
 import { SCHEMA_V2_MIGRATION } from './schema-v2';
 import { SCHEMA_V3_MIGRATION } from './schema-v3';
 import { SCHEMA_V4_MIGRATION } from './schema-v4';
@@ -295,6 +301,14 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
     markdown: databaseEmbedMarkdownAdapter,
     plainText: databaseEmbedPlainTextAdapter,
     blocks: databaseEmbedBlocks,
+  },
+  {
+    name: 'saved-query-embed',
+    schemaVersion: 5,
+    extensions: [SavedQueryEmbed],
+    markdown: savedQueryEmbedMarkdownAdapter,
+    plainText: savedQueryEmbedPlainTextAdapter,
+    blocks: savedQueryEmbedBlocks,
   },
   {
     name: 'tables',

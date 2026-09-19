@@ -26,6 +26,7 @@ import {
   type LinkTarget,
   PageLink,
   parseLinkHref,
+  SavedQueryEmbed,
   YJS_DOCUMENT_FIELD,
 } from '@exocortex/editor';
 import { ErrorState, LoadingState } from '@exocortex/ui';
@@ -67,6 +68,7 @@ import {
 import { type SuggestionKeyboard } from '@/components/editor/suggestion-menu';
 import { TableToolbar } from '@/components/editor/table-toolbar';
 import { createWikiLinkMarkers, WikiLinkMarkers } from '@/components/editor/wiki-link-markers';
+import { SavedQueryNodeView } from '@/components/search/saved-query-node-view';
 import {
   presenceColor,
   type PresenceUser,
@@ -74,6 +76,12 @@ import {
 } from '@/components/shell/document-session';
 import { attachmentMediaInfoResolver } from '@/lib/api/attachment-info';
 import { uploadAttachment, useDocumentTree } from '@/lib/api/queries';
+
+import {
+  type AskSavedQueryEmbed,
+  SavedQueryEmbedPromptContext,
+  type SavedQueryEmbedSelection,
+} from './saved-query-embed-context';
 
 interface CollaborativeEditorProps {
   workspaceId: string;
@@ -325,6 +333,13 @@ function EditorSurface({
     [workspaceId],
   );
 
+  // Same arrangement for the query block (issue #74).
+  const askSavedQueryEmbedRef = React.useRef<AskSavedQueryEmbed | null>(null);
+  const SavedQueryView = React.useCallback(
+    (props: NodeViewProps) => <SavedQueryNodeView {...props} workspaceId={workspaceId} />,
+    [workspaceId],
+  );
+
   // Same pattern, for following a link; see `follow-link-context.tsx`.
   const followLinkRef = React.useRef<FollowLink | null>(null);
   // And once more, so a placed page link can be re-targeted; see
@@ -368,6 +383,8 @@ function EditorSurface({
           // The schema for `databaseEmbed` lives in `packages/editor`; only the
           // React node view can live here (see `docs/editor-extensions.md`).
           DatabaseEmbed.extend({ addNodeView: () => ReactNodeViewRenderer(DatabaseEmbedView) }),
+          // The query block: schema in `packages/editor`, live answer here.
+          SavedQueryEmbed.extend({ addNodeView: () => ReactNodeViewRenderer(SavedQueryView) }),
           // Same pairing for `pageLink`: the schema stays in `packages/editor`,
           // only its resolution state (icon, path, "does not exist") is React.
           PageLink.extend({ addNodeView: () => ReactNodeViewRenderer(PageLinkView) }),
@@ -464,11 +481,13 @@ function EditorSurface({
         </p>
       ) : null}
       <DatabaseEmbedPromptContext.Provider value={askDatabaseEmbedRef}>
-        <PageLinkPromptContext.Provider value={askPageLinkRef}>
-          <FollowLinkContext.Provider value={followLinkRef}>
-            <EditorContent editor={editor} className="exocortex-editor" />
-          </FollowLinkContext.Provider>
-        </PageLinkPromptContext.Provider>
+        <SavedQueryEmbedPromptContext.Provider value={askSavedQueryEmbedRef}>
+          <PageLinkPromptContext.Provider value={askPageLinkRef}>
+            <FollowLinkContext.Provider value={followLinkRef}>
+              <EditorContent editor={editor} className="exocortex-editor" />
+            </FollowLinkContext.Provider>
+          </PageLinkPromptContext.Provider>
+        </SavedQueryEmbedPromptContext.Provider>
       </DatabaseEmbedPromptContext.Provider>
       {uploadError === null ? null : (
         <p className="mt-2 text-xs text-destructive-text" role="alert">
@@ -486,6 +505,7 @@ function EditorSurface({
           mentionKeyboard={mentionKeyboard}
           editable={access === 'write'}
           askDatabaseEmbedRef={askDatabaseEmbedRef}
+          askSavedQueryEmbedRef={askSavedQueryEmbedRef}
           askPageLinkRef={askPageLinkRef}
           followLinkRef={followLinkRef}
         />
@@ -504,6 +524,7 @@ interface EditorChromeProps {
   mentionKeyboard: SuggestionKeyboard;
   editable: boolean;
   askDatabaseEmbedRef: React.RefObject<AskDatabaseEmbed | null>;
+  askSavedQueryEmbedRef: React.RefObject<AskSavedQueryEmbed | null>;
   askPageLinkRef: React.RefObject<AskPageLink | null>;
   followLinkRef: React.RefObject<FollowLink | null>;
 }
@@ -524,6 +545,7 @@ function EditorChrome({
   mentionKeyboard,
   editable,
   askDatabaseEmbedRef,
+  askSavedQueryEmbedRef,
   askPageLinkRef,
   followLinkRef,
 }: EditorChromeProps) {
@@ -558,6 +580,14 @@ function EditorChrome({
       return raw === null ? null : (JSON.parse(raw) as DatabaseEmbedSelection);
     };
   }, [askDatabaseEmbedRef, prompt]);
+
+  // And for the query block, so "Suche wechseln" reaches the same picker.
+  React.useEffect(() => {
+    askSavedQueryEmbedRef.current = async () => {
+      const raw = await prompt.ask('saved-query');
+      return raw === null ? null : (JSON.parse(raw) as SavedQueryEmbedSelection);
+    };
+  }, [askSavedQueryEmbedRef, prompt]);
 
   // The same bridge for the page picker, so the `pageLink` node view can
   // re-target a link that is already placed ("Seite ändern") instead of the

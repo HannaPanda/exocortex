@@ -1,6 +1,6 @@
 'use client';
 
-import { PlusIcon } from 'lucide-react';
+import { ListFilterIcon, PlusIcon, SlidersHorizontalIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -9,6 +9,7 @@ import { type CommandItem, CommandPalette } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { useCreateDocument, useSearch } from '@/lib/api/queries';
+import { useSavedQueries } from '@/lib/api/saved-query-queries';
 import { documentHref } from '@/lib/document-href';
 
 export interface SearchCommandProps {
@@ -28,6 +29,9 @@ export function SearchCommand({ workspaceId, open, onOpenChange }: SearchCommand
   const [query, setQuery] = React.useState('');
   const search = useSearch(workspaceId ?? undefined, query);
   const createDocument = useCreateDocument(workspaceId ?? undefined);
+  // Only while the palette is open: the list is small, but a workspace's
+  // stored questions are not worth a request on every page load.
+  const savedQueries = useSavedQueries(open && workspaceId !== null ? workspaceId : undefined);
 
   const items = React.useMemo<CommandItem[]>(() => {
     const actions: CommandItem[] = [];
@@ -46,7 +50,36 @@ export function SearchCommand({ workspaceId, open, onOpenChange }: SearchCommand
             });
         },
       });
+      actions.push({
+        id: 'action-open-search-page',
+        group: 'Aktionen',
+        label: 'Erweiterte Suche mit Filtern',
+        icon: <SlidersHorizontalIcon className="size-4 text-muted-foreground" />,
+        link: <Link href={`/arbeitsbereich/${workspaceId}/suche`} />,
+        onSelect: () => {
+          onOpenChange(false);
+          router.push(`/arbeitsbereich/${workspaceId}/suche`);
+        },
+      });
     }
+
+    // The stored questions, so a saved search is reachable by name from the
+    // same keystroke everything else is.
+    const stored = (savedQueries.data?.savedQueries ?? []).map<CommandItem>((savedQuery) => {
+      const href = `/arbeitsbereich/${savedQuery.workspaceId}/suche/${savedQuery.id}`;
+      return {
+        id: `saved-query-${savedQuery.id}`,
+        group: 'Gespeicherte Suchen',
+        label: savedQuery.name,
+        hint: savedQuery.description ?? undefined,
+        icon: <ListFilterIcon className="size-4 text-muted-foreground" />,
+        link: <Link href={href} />,
+        onSelect: () => {
+          onOpenChange(false);
+          router.push(href);
+        },
+      };
+    });
 
     const results = (search.data?.results ?? []).map<CommandItem>((result) => {
       const href = documentHref(result.workspaceId, result.documentId, result.type);
@@ -84,8 +117,8 @@ export function SearchCommand({ workspaceId, open, onOpenChange }: SearchCommand
       };
     });
 
-    return [...actions, ...results];
-  }, [createDocument, onOpenChange, router, search.data, workspaceId]);
+    return [...actions, ...stored, ...results];
+  }, [createDocument, onOpenChange, router, savedQueries.data, search.data, workspaceId]);
 
   return (
     <CommandPalette

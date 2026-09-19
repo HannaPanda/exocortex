@@ -34,6 +34,7 @@ export * from './projects';
 export * from './render';
 export * from './research';
 export * from './revocations';
+export * from './saved-queries';
 export * from './search';
 export * from './settings';
 export * from './template-title';

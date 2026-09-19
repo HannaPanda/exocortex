@@ -212,6 +212,18 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       predicate: (query) => query.queryKey[0] === 'document' && query.queryKey[2] === 'links',
     });
   });
+  // A saved query was created, edited or deleted, possibly by another member
+  // or by an agent. The navigation shows the smart views among them, so every
+  // browser in this workspace re-reads the list (issue #74).
+  useRealtimeEvent('saved-query.changed', (event) => {
+    void queryClient.invalidateQueries({
+      queryKey: ['workspace', event.workspaceId, 'saved-queries'],
+    });
+    void queryClient.invalidateQueries({
+      queryKey: ['saved-query', event.payload.savedQueryId],
+    });
+  });
+
   // A write from outside the editor (MCP, the built-in AI, the REST endpoint).
   // The text itself arrives through the collaboration socket (ADR-016); what
   // the cache still holds is everything around it, from the version list to the

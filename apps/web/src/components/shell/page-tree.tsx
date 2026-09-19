@@ -59,6 +59,7 @@ import {
   isSelfOrDescendant,
   parseExpanded,
 } from './page-tree-state';
+import { SmartViews } from './smart-views';
 import { SuggestParentDialog } from './suggest-parent-dialog';
 import { TemplatePickerDialog } from './template-picker-dialog';
 import { TrashSheet } from './trash-sheet';
@@ -422,6 +423,8 @@ export function PageTree({ workspaceId }: PageTreeProps) {
             Hierher: oberste Ebene
           </div>
         ) : null}
+
+        <SmartViews workspaceId={workspaceId} />
 
         {/* The trash opens as its own sheet rather than unfolding here: what it
             has to show (structure, dates, what came along, a selection) does not

@@ -129,6 +129,11 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_project_write_file',
       'exo_render_delete',
       'exo_render_template_delete',
+      // Deleting a saved query (issue #74) takes away a stored question that
+      // nothing else holds. The pages it found are untouched, which is why it
+      // is not irreversible in the sense below, but the question itself has no
+      // snapshot and no trash.
+      'exo_saved_query_delete',
       'exo_user_delete',
       'exo_user_set_disabled',
       'exo_workspace_rename',

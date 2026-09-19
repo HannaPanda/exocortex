@@ -70,6 +70,11 @@ What is deliberately still missing is listed under
 - PostgreSQL full-text search with trigram-tolerant titles and highlighted
   snippets, fused by reciprocal rank with `pgvector` nearest neighbours when
   semantic search is on (ADR-020)
+- saved searches, smart views and query blocks: a query over words, place,
+  type, database properties, entities and a time window is stored as a
+  question rather than a result list, answered again with the reader's own
+  access on every look, and shown in the search area, in the navigation or as
+  a live list inside a page (ADR-042)
 - an AI side panel with conversations, tool calling, page context, vision
   preprocessing and reasoning levels, against OpenRouter models configured in
   the admin area or the deterministic mock provider offline
@@ -229,6 +234,7 @@ tools/                the Claude Code plugin: MCP server, memory hooks, setup sk
 | [`docs/projects.md`](docs/projects.md)                   | LaTeX projects, the file tree, the build runner              |
 | [`docs/overview-pages.md`](docs/overview-pages.md)       | digests, composition, when a refresh costs anything          |
 | [`docs/templates.md`](docs/templates.md)                 | page templates: the sidecar, the copy, the title pattern     |
+| [`docs/saved-queries.md`](docs/saved-queries.md)         | saved searches, smart views, query blocks, the query model   |
 | [`docs/features.md`](docs/features.md)                   | the feature registry, the coverage gate, writing an entry    |
 | [`docs/observability.md`](docs/observability.md)         | logs, health, tracing: what is recorded and what never is    |
 | [`docs/deviations.md`](docs/deviations.md)               | where the implementation deviates from the brief and why     |
