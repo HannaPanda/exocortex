@@ -361,7 +361,15 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
     `POST /api/ai/runs` and `.../conversations/:id/messages` answer as soon as
     the job is enqueued. `/` stays at 120s; Next.js has no long-running routes.
 
-11. **Restart**, API first (everything talks to it), web last (it is what people
+11. **The API's module graph**, compiled once before any unit is touched
+    (`app.module.test.ts`). It catches the one failure that is invisible to
+    everything else: a module that injects a provider it does not list compiles,
+    type-checks, passes every unit test and then refuses to boot. The test needs
+    Postgres and Redis, so `build.sh` leaves it out of its default set — and
+    that is how issue #83 got a green build and a dead API. Here there is
+    infrastructure, and here is still before the restart.
+
+12. **Restart**, API first (everything talks to it), web last (it is what people
     have open):
 
     ```text
@@ -376,9 +384,9 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
     Never `pkill -f`: a pattern like `node dist/main.js` matches the live
     services. Use `systemctl`, or an exact PID.
 
-12. **Readiness**, `/health/ready` with up to fifteen tries two seconds apart,
+13. **Readiness**, `/health/ready` with up to fifteen tries two seconds apart,
     then `systemctl is-active` for all four.
-13. **The marker.** `.last-deployed-sha` is written last and only on full
+14. **The marker.** `.last-deployed-sha` is written last and only on full
     success, so a rollout that fell over halfway leaves nothing behind claiming
     it worked, and the next run does everything again rather than believing this
     one.

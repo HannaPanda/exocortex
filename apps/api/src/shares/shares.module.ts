@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { OutboxService } from '../common/outbox.service';
 import { RealtimeModule } from '../realtime/realtime.module';
 
 import { PublicSharesController } from './public-shares.controller';
@@ -18,7 +19,11 @@ import { SharesService } from './shares.service';
 @Module({
   imports: [RealtimeModule],
   controllers: [SharesController, PublicSharesController],
-  providers: [SharesService, PublicSharesService],
+  // `OutboxService` is provided per module rather than exported globally, the
+  // way every other module here does it: an audit row belongs to the
+  // transaction that caused it, so the service is built where that transaction
+  // is opened.
+  providers: [SharesService, PublicSharesService, OutboxService],
   exports: [SharesService],
 })
 export class SharesModule {}
