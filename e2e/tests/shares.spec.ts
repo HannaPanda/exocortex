@@ -185,9 +185,9 @@ test.describe('shares', () => {
 
     // The page is in no workspace list of theirs, because they are in no such
     // workspace.
-    const workspaces = (await (await stefanApi.get(`${origin}/api/workspaces`)).json()) as {
-      id: string;
-    }[];
+    const { workspaces } = (await (await stefanApi.get(`${origin}/api/workspaces`)).json()) as {
+      workspaces: { id: string }[];
+    };
     expect(workspaces.some((workspace) => workspace.id === workspaceId)).toBe(false);
   });
 
