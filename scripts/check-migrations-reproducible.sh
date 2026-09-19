@@ -57,7 +57,7 @@ docker info >/dev/null 2>&1 \
 
 WORKDIR="$(mktemp -d)"
 cleanup() {
-  docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
+  docker rm -fv "$CONTAINER" >/dev/null 2>&1 || true
   rm -rf "$WORKDIR"
 }
 trap cleanup EXIT
