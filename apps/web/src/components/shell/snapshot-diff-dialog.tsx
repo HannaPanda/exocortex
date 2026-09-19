@@ -35,6 +35,11 @@ function formatDateTime(iso: string): string {
   return dateTimeFormat.format(new Date(iso));
 }
 
+/** "1 Block" / "4 Blöcke": a slash in a sentence is not a plural. */
+function countBlocks(count: number): string {
+  return count === 1 ? '1 Block' : `${count} Blöcke`;
+}
+
 const KIND_LABEL: Record<DocumentDiffBlock['kind'], string> = {
   added: 'Neu',
   removed: 'Entfernt',
@@ -72,13 +77,17 @@ function Segments({ block }: { block: DocumentDiffBlock }) {
         if (segment.kind === 'equal') return <span key={index}>{segment.text}</span>;
         if (segment.kind === 'inserted') {
           return (
-            <span key={index} className="rounded-xs bg-success/25 px-0.5">
+            <span key={index} data-segment="inserted" className="rounded-xs bg-success/25 px-0.5">
               {segment.text}
             </span>
           );
         }
         return (
-          <span key={index} className="rounded-xs bg-destructive/25 px-0.5 line-through">
+          <span
+            key={index}
+            data-segment="removed"
+            className="rounded-xs bg-destructive/25 px-0.5 line-through"
+          >
             {segment.text}
           </span>
         );
@@ -102,7 +111,12 @@ function BlockRow({
   const text = block.kind === 'removed' ? block.beforeText : block.afterText;
 
   return (
-    <div className="flex items-start gap-2 rounded-md border border-border px-3 py-2">
+    <div
+      className="flex items-start gap-2 rounded-md border border-border px-3 py-2"
+      data-testid="diff-block"
+      data-block-kind={block.kind}
+      data-block-id={block.blockId ?? undefined}
+    >
       {selectable ? (
         <Checkbox
           className="mt-1"
@@ -284,9 +298,7 @@ export function SnapshotDiffDialog({
                 );
               }}
             >
-              {confirming
-                ? `${selected.size} Block/Blöcke wirklich zurückholen`
-                : `${selected.size} Block/Blöcke in die Seite zurückholen`}
+              {confirming ? 'Wirklich zurückholen?' : `${countBlocks(selected.size)} zurückholen`}
             </Button>
           )}
         </DialogFooter>

@@ -331,8 +331,9 @@ export const pageRestoreBlocksTool: AnyToolDefinition = defineTool({
       body: { blockIds: input.blockIds },
       responseSchema: restoreSnapshotBlocksResponseSchema,
     });
+    const blocks = (count: number): string => (count === 1 ? '1 Block' : `${count} Blöcke`);
     const parts = [
-      `${result.restored.length} Block/Blöcke zurückgeholt`,
+      `${blocks(result.restored.length)} zurückgeholt`,
       `${result.removed.length} wieder entfernt`,
     ];
     if (result.missing.length > 0) parts.push(`${result.missing.length} unbekannt`);

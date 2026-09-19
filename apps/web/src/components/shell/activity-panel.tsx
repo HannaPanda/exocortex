@@ -4,6 +4,7 @@ import {
   ActivityIcon,
   ArchiveIcon,
   ArrowRightLeftIcon,
+  EllipsisIcon,
   FilePlusIcon,
   GitCompareIcon,
   HistoryIcon,
@@ -16,16 +17,22 @@ import * as React from 'react';
 import { type DocumentActivityEntry } from '@exocortex/contracts';
 import {
   Button,
+  cn,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   EmptyState,
   ErrorState,
   LoadingState,
   SectionRule,
+  TruncatedText,
 } from '@exocortex/ui';
 
 import { useDocument, useDocumentActivity, useRestoreSnapshot } from '@/lib/api/queries';
@@ -37,12 +44,46 @@ const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
   timeStyle: 'short',
 });
 const timeFormat = new Intl.DateTimeFormat('de-DE', { timeStyle: 'short' });
+const dayFormat = new Intl.DateTimeFormat('de-DE', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+});
+const dayWithYearFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'long' });
 
 function formatDateTime(iso: string): string {
   return dateTimeFormat.format(new Date(iso));
 }
 function formatTime(iso: string): string {
   return timeFormat.format(new Date(iso));
+}
+
+/** Local calendar day, which is what a reader means by "the same day". */
+function dayKey(iso: string): string {
+  const date = new Date(iso);
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+}
+
+/**
+ * The heading over a day's entries.
+ *
+ * "Heute" and "Gestern" are what somebody reading their own page's history is
+ * actually looking for; a weekday carries the rest of the current year, because
+ * "Mittwoch" places a change in memory in a way "17.09." does not. Only once
+ * the year differs does the year become worth its width.
+ */
+function dayHeading(iso: string, now: Date): string {
+  const date = new Date(iso);
+  if (dayKey(iso) === dayKey(now.toISOString())) return 'Heute';
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  if (dayKey(iso) === dayKey(yesterday.toISOString())) return 'Gestern';
+  if (date.getFullYear() !== now.getFullYear()) return dayWithYearFormat.format(date);
+  return dayFormat.format(date);
+}
+
+/** When an entry happened; an editing session is filed under the day it ended. */
+function entryTimestamp(entry: DocumentActivityEntry): string {
+  return entry.type === 'editingSession' ? entry.endedAt : entry.occurredAt;
 }
 
 /** German label for a snapshot's `reason`. */
@@ -55,14 +96,14 @@ const SNAPSHOT_REASON_LABEL: Record<
   pre_restore: 'Vor einer Wiederherstellung gesichert',
   import: 'Beim Import gesichert',
   restore: 'Wiederherstellung',
-  api_write: 'Von außen geschrieben (nicht im Editor)',
+  api_write: 'Von außen geschrieben',
 };
 
 type SnapshotEntry = Extract<DocumentActivityEntry, { type: 'snapshot' }>;
 
 /** One row's icon, matched to the entry kind so the timeline scans quickly. */
 function EntryIcon({ type }: { type: DocumentActivityEntry['type'] }) {
-  const className = 'size-4 shrink-0 text-muted-foreground';
+  const className = 'mt-0.5 size-4 shrink-0 text-muted-foreground';
   switch (type) {
     case 'created':
       return <FilePlusIcon className={className} aria-hidden />;
@@ -82,30 +123,69 @@ function EntryIcon({ type }: { type: DocumentActivityEntry['type'] }) {
   }
 }
 
+/**
+ * One event.
+ *
+ * The title says *what happened* and the second line says when and by whom,
+ * which is the opposite of how this panel used to read. A history sorted by
+ * time that also prints the date on every row spends its width restating the
+ * order it is already in: the date moved up into the day heading, the row kept
+ * the clock time, and the sentence that is actually news moved into the title.
+ *
+ * What it does not do is grow a column of buttons. This panel is resizable down
+ * to 260 pixels, where two labelled buttons leave the text about sixty pixels
+ * to live in. An entry that can be acted on is a button itself, with its other
+ * actions behind one menu of fixed width.
+ */
 function Row({
   type,
   title,
   meta,
-  trailing,
+  onActivate,
+  activateLabel,
+  actions,
 }: {
   type: DocumentActivityEntry['type'];
   title: string;
   meta: string;
-  trailing?: React.ReactNode;
+  /** Makes the row itself the primary action. Omit for an entry that has none. */
+  onActivate?: () => void;
+  activateLabel?: string;
+  actions?: React.ReactNode;
 }) {
+  const body = (
+    <>
+      <EntryIcon type={type} />
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <TruncatedText text={title} className="font-medium" />
+        <span className="exocortex-numeric truncate text-xs text-muted-foreground">{meta}</span>
+      </span>
+    </>
+  );
+
   return (
     // Borderless: a boxed row per event turned a history into a stack of
-    // identical cards. The aligned icon column and the monospaced timestamps
-    // carry the sequence; a box around each one only added chrome. No painted
-    // background either -- a row that paints itself has to know which surface
-    // it is on, and gets it wrong the moment it is reused.
-    <div className="flex items-start gap-2 rounded-md px-2 py-1.5 text-sm">
-      <EntryIcon type={type} />
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="truncate font-medium">{title}</span>
-        <span className="text-xs text-muted-foreground">{meta}</span>
-      </div>
-      {trailing}
+    // identical cards. The aligned icon column and the day headings carry the
+    // sequence; a box around each one only added chrome.
+    <div className="group flex items-start gap-0.5 text-sm">
+      {onActivate === undefined ? (
+        <div className="flex min-w-0 flex-1 items-start gap-2 px-2 py-1.5">{body}</div>
+      ) : (
+        <button
+          type="button"
+          onClick={onActivate}
+          aria-label={activateLabel}
+          data-testid="activity-entry-open"
+          className={cn(
+            'flex min-w-0 flex-1 items-start gap-2 rounded-md px-2 py-1.5 text-left transition-colors',
+            'hover:bg-accent hover:text-foreground',
+            'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+          )}
+        >
+          {body}
+        </button>
+      )}
+      {actions}
     </div>
   );
 }
@@ -122,22 +202,17 @@ function ActivityEntryRow({
   onRequestCompare: (entry: SnapshotEntry) => void;
 }) {
   const who = entry.actorName ?? 'Unbekannt';
+  const at = `${formatTime(entryTimestamp(entry))} · ${who}`;
 
   switch (entry.type) {
     case 'created':
-      return (
-        <Row
-          type={entry.type}
-          title="Seite angelegt"
-          meta={`${formatDateTime(entry.occurredAt)} · ${who}`}
-        />
-      );
+      return <Row type={entry.type} title="Seite angelegt" meta={at} />;
     case 'renamed':
       return (
         <Row
           type={entry.type}
           title={`Umbenannt: „${entry.previousTitle ?? '?'}“ → „${entry.nextTitle ?? '?'}“`}
-          meta={`${formatDateTime(entry.occurredAt)} · ${who}`}
+          meta={at}
         />
       );
     case 'moved':
@@ -145,83 +220,103 @@ function ActivityEntryRow({
         <Row
           type={entry.type}
           title={entry.acrossWorkspace ? 'In anderen Arbeitsbereich verschoben' : 'Verschoben'}
-          meta={`${formatDateTime(entry.occurredAt)} · ${who}`}
+          meta={at}
         />
       );
     case 'archived':
-      return (
-        <Row
-          type={entry.type}
-          title="Archiviert"
-          meta={`${formatDateTime(entry.occurredAt)} · ${who}`}
-        />
-      );
+      return <Row type={entry.type} title="Archiviert" meta={at} />;
     case 'restored':
-      return (
-        <Row
-          type={entry.type}
-          title="Wiederhergestellt"
-          meta={`${formatDateTime(entry.occurredAt)} · ${who}`}
-        />
-      );
+      return <Row type={entry.type} title="Wiederhergestellt" meta={at} />;
     case 'snapshotRestored':
-      return (
-        <Row
-          type={entry.type}
-          title="Auf einen früheren Stand zurückgesetzt"
-          meta={`${formatDateTime(entry.occurredAt)} · ${who}`}
-        />
-      );
+      return <Row type={entry.type} title="Auf einen früheren Stand zurückgesetzt" meta={at} />;
     case 'editingSession':
       return (
         <Row
           type={entry.type}
           title={
             entry.startedAt === entry.endedAt
-              ? `Bearbeitet um ${formatTime(entry.endedAt)}`
-              : `Bearbeitet von ${formatTime(entry.startedAt)} bis ${formatTime(entry.endedAt)}`
+              ? 'Bearbeitet'
+              : `Bearbeitet ${formatTime(entry.startedAt)} bis ${formatTime(entry.endedAt)}`
           }
-          meta={who}
+          meta={at}
         />
       );
     case 'snapshot':
       return (
         <Row
           type={entry.type}
-          title={`Stand vom ${formatDateTime(entry.occurredAt)}`}
-          meta={`${who} · ${SNAPSHOT_REASON_LABEL[entry.reason]}`}
-          trailing={
-            /*
-             * Comparing is offered to readers too: it changes nothing, and
-             * "what did the agent write last night" is a question somebody
-             * without write access has as much as anybody else.
-             */
-            <div className="flex shrink-0 items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                data-testid="activity-compare-button"
-                aria-label="Mit einem anderen Stand vergleichen"
-                onClick={() => onRequestCompare(entry)}
-              >
-                <GitCompareIcon className="size-4" aria-hidden />
-                Vergleichen
-              </Button>
-              {readOnly ? null : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  data-testid="activity-restore-button"
-                  onClick={() => onRequestRestore(entry)}
+          title={SNAPSHOT_REASON_LABEL[entry.reason]}
+          meta={at}
+          /*
+           * Comparing is the row's own action, and it is offered to readers
+           * too: it changes nothing, and "what did the agent write last night"
+           * is a question somebody without write access has as much as anybody
+           * else. Restoring is the one that overwrites, so it stays behind the
+           * menu and behind a confirmation after that.
+           */
+          onActivate={() => onRequestCompare(entry)}
+          activateLabel={`Stand vom ${formatDateTime(entry.occurredAt)} vergleichen`}
+          actions={
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className="mt-1 shrink-0"
+                    aria-label={`Aktionen für den Stand vom ${formatDateTime(entry.occurredAt)}`}
+                    data-testid="activity-entry-menu"
+                  >
+                    <EllipsisIcon />
+                  </Button>
+                }
+              />
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  data-testid="activity-compare-item"
+                  onClick={() => onRequestCompare(entry)}
                 >
-                  Wiederherstellen
-                </Button>
-              )}
-            </div>
+                  <GitCompareIcon /> Vergleichen
+                </DropdownMenuItem>
+                {readOnly ? null : (
+                  <DropdownMenuItem
+                    data-testid="activity-restore-item"
+                    onClick={() => onRequestRestore(entry)}
+                  >
+                    <RotateCcwIcon /> Wiederherstellen …
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           }
         />
       );
   }
+}
+
+interface DayGroup {
+  key: string;
+  heading: string;
+  entries: DocumentActivityEntry[];
+}
+
+/**
+ * Splits the list into calendar days, keeping the order the server sent.
+ *
+ * A day that comes back twice would be printed twice rather than merged: the
+ * list is the server's ordering, and quietly regrouping it here would hide a
+ * sorting bug instead of showing it.
+ */
+function groupByDay(entries: DocumentActivityEntry[], now: Date): DayGroup[] {
+  const groups: DayGroup[] = [];
+  for (const entry of entries) {
+    const timestamp = entryTimestamp(entry);
+    const key = dayKey(timestamp);
+    const last = groups[groups.length - 1];
+    if (last !== undefined && last.key === key) last.entries.push(entry);
+    else groups.push({ key, heading: dayHeading(timestamp, now), entries: [entry] });
+  }
+  return groups;
 }
 
 export interface ActivityPanelProps {
@@ -234,11 +329,13 @@ export interface ActivityPanelProps {
  * (issue #20). One merged, reverse-chronological list of what happened to
  * *this* page -- created, renamed, moved, archived, restored, restorable
  * snapshots, and condensed editing sessions -- built server-side by
- * `DocumentActivityService`.
+ * `DocumentActivityService`, grouped into days here.
  *
- * Restoring a snapshot is destructive (it overwrites the page's current
- * content, even though the current state is itself snapshotted first), so it
- * goes through a confirmation dialog rather than firing on the button click.
+ * A snapshot row opens the comparison (issue #77), which is the question this
+ * panel is usually open for. Restoring a snapshot is destructive (it overwrites
+ * the page's current content, even though the current state is itself
+ * snapshotted first), so it sits in the row's menu and goes through a
+ * confirmation dialog rather than firing on a click.
  */
 export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
   const document = useDocument(documentId ?? undefined);
@@ -286,6 +383,7 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
   const snapshots: DiffableSnapshot[] = entries
     .filter((entry): entry is SnapshotEntry => entry.type === 'snapshot')
     .map((entry) => ({ id: entry.id, createdAt: entry.occurredAt }));
+  const groups = groupByDay(entries, new Date());
 
   return (
     <div className="flex flex-col gap-3" data-testid="activity-panel">
@@ -299,33 +397,40 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
           icon={ActivityIcon}
         />
       ) : (
-        <div className="flex flex-col gap-1">
-          {entries.map((entry) => (
-            <ActivityEntryRow
-              key={entry.id}
-              entry={entry}
-              readOnly={readOnly}
-              onRequestRestore={(target) => {
-                setRestoreError(null);
-                setPendingRestore(target);
-              }}
-              onRequestCompare={(target) =>
-                setComparing({ id: target.id, createdAt: target.occurredAt })
-              }
-            />
+        <div className="flex flex-col gap-4">
+          {groups.map((group) => (
+            <section key={group.key} className="flex flex-col gap-0.5">
+              {/* Quieter than the `SectionRule` above it: this is a marker
+                  inside a section, not a second section. */}
+              <h4 className="exocortex-numeric px-2 pb-1 text-[0.6875rem] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+                {group.heading}
+              </h4>
+              {group.entries.map((entry) => (
+                <ActivityEntryRow
+                  key={entry.id}
+                  entry={entry}
+                  readOnly={readOnly}
+                  onRequestRestore={(target) => {
+                    setRestoreError(null);
+                    setPendingRestore(target);
+                  }}
+                  onRequestCompare={(target) =>
+                    setComparing({ id: target.id, createdAt: target.occurredAt })
+                  }
+                />
+              ))}
+            </section>
           ))}
         </div>
       )}
 
-      {documentId === null ? null : (
-        <SnapshotDiffDialog
-          documentId={documentId}
-          snapshot={comparing}
-          snapshots={snapshots}
-          readOnly={readOnly}
-          onClose={() => setComparing(null)}
-        />
-      )}
+      <SnapshotDiffDialog
+        documentId={documentId}
+        snapshot={comparing}
+        snapshots={snapshots}
+        readOnly={readOnly}
+        onClose={() => setComparing(null)}
+      />
 
       <Dialog
         open={pendingRestore !== null}

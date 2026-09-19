@@ -109,6 +109,40 @@ export async function waitForCollaboration(page: Page): Promise<void> {
   );
 }
 
+/**
+ * The one browser global this suite touches, typed here rather than by giving
+ * the whole suite a DOM.
+ *
+ * Everything else in `e2e/` runs in Node, and that is deliberate: a spec that
+ * could write `document.querySelector` and still typecheck would be a spec
+ * that fails at run time instead of at build time. An init script genuinely
+ * runs in the page, so it gets the narrow declaration it needs and no more.
+ */
+interface BrowserLocalStorage {
+  localStorage: { setItem(key: string, value: string): void };
+}
+
+/**
+ * Pins one of the two layout panels to a width before the app boots.
+ *
+ * Both panels are resizable, and a panel is at its most fragile at its minimum
+ * width -- which is exactly the width nobody tests at, because the browser
+ * opens at the comfortable default. A spec that cares about a narrow panel
+ * says so here instead of dragging a handle.
+ */
+export async function presetPanelPreference(
+  page: Page,
+  storageKey: string,
+  preference: { open: boolean; width: number },
+): Promise<void> {
+  await page.addInitScript(
+    ([key, value]: [string, string]) => {
+      (globalThis as unknown as BrowserLocalStorage).localStorage.setItem(key, value);
+    },
+    [storageKey, JSON.stringify(preference)] as [string, string],
+  );
+}
+
 /** Waits until the page tree contains a node with the given title. */
 export async function expectTreeContains(page: Page, title: string): Promise<void> {
   await expect(page.getByTestId('page-tree').getByText(title, { exact: true })).toBeVisible({
