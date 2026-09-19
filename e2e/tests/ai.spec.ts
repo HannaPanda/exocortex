@@ -38,26 +38,40 @@ test.describe('AI side panel', () => {
     await page.getByTestId('ai-input').fill('Was ist eXocortex?');
     await page.getByTestId('ai-send').click();
 
-    const answer = page.getByTestId('ai-answer').first();
-    await expect(answer).toBeVisible({ timeout: 60_000 });
+    // Whether the model calls a tool before it answers is the model's decision,
+    // not this deployment's, so nothing here may depend on it (issue #87).
+    // Pinning `.first()` used to do exactly that: with a tool call the first
+    // assistant message is the call itself, and the answer stands in the
+    // second. Measuring every bubble at once is independent of how many turns
+    // the model took to get there.
+    const answers = page.getByTestId('ai-answer');
+    const visibleAnswerLength = async (): Promise<number> =>
+      (await answers.allInnerTexts()).join('').trim().length;
+    const activity = page.getByTestId('ai-run-activity');
+
+    await expect(answers.first()).toBeVisible({ timeout: 60_000 });
     // Text arrives at all: the run reached the worker, the provider and the
     // socket back into this browser.
-    await expect
-      .poll(async () => (await answer.innerText()).trim().length, { timeout: 60_000 })
-      .toBeGreaterThan(0);
+    await expect.poll(visibleAnswerLength, { timeout: 60_000 }).toBeGreaterThan(0);
 
     // The visible text only ever grows while the run is live: a re-render that
-    // fell back to an earlier buffer would show up here. It cannot demand
-    // strict growth, because a short answer may already be complete when it is
-    // first read.
-    const firstLength = (await answer.innerText()).length;
-    await expect
-      .poll(async () => (await answer.innerText()).length, { timeout: 60_000 })
-      .toBeGreaterThanOrEqual(firstLength);
+    // fell back to an earlier buffer, or a streamed bubble replaced by a
+    // shorter persisted one, would show up between two samples here.
+    const deadline = Date.now() + 60_000;
+    let seen = await visibleAnswerLength();
+    while (Date.now() < deadline && (await activity.isVisible())) {
+      const current = await visibleAnswerLength();
+      expect(current).toBeGreaterThanOrEqual(seen);
+      seen = current;
+      await page.waitForTimeout(250);
+    }
 
     // Judge who answered only once the run is over, so a marker that has
-    // merely not streamed in yet is never read as "a real provider".
-    await expect(page.getByTestId('ai-run-activity')).toBeHidden({ timeout: 60_000 });
+    // merely not streamed in yet is never read as "a real provider". The
+    // answer is the last bubble: anything the model said before a tool call
+    // stands above it.
+    await expect(activity).toBeHidden({ timeout: 60_000 });
+    const answer = answers.last();
     const servedByMock =
       declaredProvider === 'mock' ||
       (declaredProvider === null && (await answer.innerText()).includes(MOCK_MARKER));
