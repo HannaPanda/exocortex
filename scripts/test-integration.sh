@@ -144,6 +144,35 @@ export EXOCORTEX_TEST_DATABASE_URL="$DATABASE_URL"
 export EXOCORTEX_TEST_REDIS_URL="$REDIS_URL"
 export EXOCORTEX_TEST_INFRA=1
 
+# The rest of the environment the schemas insist on.
+#
+# Several suites call `loadApiEnv()` / `loadWorkerEnv()`, which validate the
+# whole schema rather than the part they use, so a variable nothing in the run
+# ever reads still has to be present and well-formed. On this host they came
+# from the repository's `.env`, which is exactly the coupling issue #94 is
+# about; on a fresh checkout or a CI runner there is no `.env` and the suites
+# failed on `APP_URL: expected string, received undefined`.
+#
+# Set unconditionally rather than only when absent, so that a run here and a
+# run on a runner validate the same values. The S3 ones point at an address
+# with no listener on purpose: no integration test constructs an
+# `S3ObjectStorage` (they all stub it), and if one ever does, it should fail
+# loudly here rather than quietly reach the deployment's bucket. The secrets
+# are obvious fakes of the required length, never the deployment's.
+export APP_URL="http://127.0.0.1:3210"
+export PUBLIC_API_URL="http://127.0.0.1:3211"
+export PUBLIC_COLLABORATION_URL="ws://127.0.0.1:3212"
+export BETTER_AUTH_URL="http://127.0.0.1:3211"
+export BETTER_AUTH_SECRET="integration-test-secret-not-a-real-one-0000"
+export COLLABORATION_TICKET_SECRET="integration-test-ticket-secret-not-real-000"
+export S3_ENDPOINT="http://127.0.0.1:1"
+export S3_BUCKET="exocortex-test"
+export S3_ACCESS_KEY_ID="integration-test"
+export S3_SECRET_ACCESS_KEY="integration-test"
+export SMTP_HOST="127.0.0.1"
+export SMTP_PORT="1"
+export SMTP_FROM="tests@exocortex.test"
+
 # --- 3. Schema --------------------------------------------------------------
 # `migrate deploy`, never `migrate dev`: the latter wants to drop the search
 # index every time it runs on this schema, and it would do so here against a
