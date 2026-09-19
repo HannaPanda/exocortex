@@ -36,6 +36,11 @@ interface ComparableState {
   schemaVersion: number;
 }
 
+/** The older of the two states is always a snapshot, and says so in its type. */
+interface SnapshotState extends ComparableState {
+  snapshotId: string;
+}
+
 /**
  * Comparing two states of a page, and taking single blocks back (issue #77).
  *
@@ -59,7 +64,7 @@ export class DocumentDiffService {
   ) {}
 
   /** Loads a snapshot and refuses one that belongs to a different page. */
-  private async loadSnapshot(documentId: string, snapshotId: string): Promise<ComparableState> {
+  private async loadSnapshot(documentId: string, snapshotId: string): Promise<SnapshotState> {
     const snapshot = await this.prisma.documentSnapshot.findUnique({
       where: { id: snapshotId },
       select: { id: true, documentId: true, yjsState: true, schemaVersion: true, createdAt: true },
@@ -127,19 +132,31 @@ export class DocumentDiffService {
     assertPolicy(canReadDocument(context.role, context.document, context.workspaceId));
 
     const named = await this.loadSnapshot(input.documentId, input.snapshotId);
-    const other =
-      input.against === 'current'
-        ? await this.loadCurrent(input.documentId)
-        : await this.loadSnapshot(input.documentId, input.against);
 
-    if (other.snapshotId === named.snapshotId) {
-      throw AppError.validation('A snapshot cannot be compared with itself');
-    }
-
-    const [from, to] =
-      other.createdAt.getTime() < named.createdAt.getTime() ? [other, named] : [named, other];
-    if (from.snapshotId === null) {
-      throw AppError.validation('The current content is never the older of the two states');
+    /*
+     * The page's current content is always the newer of the two, whatever the
+     * timestamps say. A snapshot is a copy of a state that existed at or
+     * before now, so it can never be the later one -- and its `createdAt` is
+     * genuinely younger than `yjsUpdatedAt` in the ordinary case of a snapshot
+     * taken without a write since, which is exactly the comparison somebody
+     * asks for right after taking one. Age decides between two snapshots and
+     * nowhere else.
+     */
+    let from: SnapshotState = named;
+    let to: ComparableState;
+    if (input.against === 'current') {
+      to = await this.loadCurrent(input.documentId);
+    } else {
+      const second = await this.loadSnapshot(input.documentId, input.against);
+      if (second.snapshotId === named.snapshotId) {
+        throw AppError.validation('A snapshot cannot be compared with itself');
+      }
+      if (second.createdAt.getTime() < named.createdAt.getTime()) {
+        from = second;
+        to = named;
+      } else {
+        to = second;
+      }
     }
 
     const diff = diffDocuments(

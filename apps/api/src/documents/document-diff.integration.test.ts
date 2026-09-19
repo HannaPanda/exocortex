@@ -241,6 +241,23 @@ describe('DocumentDiffService.diff', () => {
     expect(diff.blocks.find((block) => block.blockId === B)?.kind).toBe('added');
   });
 
+  it('compares against the current content even when nothing was written since', async () => {
+    const documentId = await createPage('Frisch gesichert');
+    await write(documentId, `Eins ^${A}`);
+    const snapshot = await snapshots.create({ documentId, userId: ownerId, reason: 'manual' });
+
+    const diff = await diffs.diff({
+      documentId,
+      snapshotId: snapshot.id,
+      against: 'current',
+      userId: ownerId,
+    });
+
+    expect(diff.fromSnapshotId).toBe(snapshot.id);
+    expect(diff.toSnapshotId).toBeNull();
+    expect(diff.summary).toMatchObject({ added: 0, removed: 0, changed: 0, moved: 0 });
+  });
+
   it('refuses a snapshot of a different page and a caller without access', async () => {
     const documentId = await createPage('Fremd');
     const other = await createPage('Anders');
