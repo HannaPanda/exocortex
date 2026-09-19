@@ -25,6 +25,12 @@ import { apiRequest } from './client';
 
 export const shareKeys = {
   document: (documentId: string) => ['document', documentId, 'shares'] as const,
+  /**
+   * Deliberately a key without a hook of its own: the move dialog asks this
+   * question imperatively, because the answer decides whether the move happens
+   * at all (issue #83). A standing query would arrive in a render and need an
+   * effect to act on, which is the shape React asks us not to write.
+   */
   inherited: (parentId: string) => ['document', parentId, 'inherited-shares'] as const,
   workspace: (workspaceId: string) => ['workspace', workspaceId, 'shares'] as const,
   incoming: () => ['me', 'shares'] as const,
@@ -38,27 +44,6 @@ export function useDocumentShares(
     queryKey: shareKeys.document(documentId ?? 'none'),
     queryFn: () => apiRequest<ShareListResponse>(`/api/documents/${documentId ?? ''}/shares`),
     enabled: documentId !== undefined && (options.enabled ?? true),
-    staleTime: 0,
-  });
-}
-
-/**
- * What a page would inherit at this parent.
- *
- * Asked before a move rather than reported after one, which is why it takes
- * the *target* and is fetched on demand: dropping a page into a shared branch
- * is the one way to publish something without doing anything that looks like
- * publishing.
- */
-export function useInheritedShares(
-  parentId: string | undefined,
-  options: { enabled?: boolean } = {},
-): UseQueryResult<ShareListResponse> {
-  return useQuery({
-    queryKey: shareKeys.inherited(parentId ?? 'none'),
-    queryFn: () =>
-      apiRequest<ShareListResponse>(`/api/documents/${parentId ?? ''}/inherited-shares`),
-    enabled: parentId !== undefined && (options.enabled ?? true),
     staleTime: 0,
   });
 }

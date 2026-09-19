@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-205 routes are reachable from at least one client; 127 from all three.
+205 routes are reachable from at least one client; 134 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -44,7 +44,7 @@ reorder routes shipped with no way to them in the browser.
 | `DELETE /api/render/jobs/:x` | ✓ | ✓ | ✓ | `exo_render_delete` |
 | `DELETE /api/render/templates/:x` | ✓ | ✓ | ✓ | `exo_render_template_delete` |
 | `DELETE /api/saved-queries/:x` | ✓ | ✓ | ✓ | `exo_saved_query_delete` |
-| `DELETE /api/shares/:x` | · | ✓ | ✓ | `exo_share_revoke` |
+| `DELETE /api/shares/:x` | ✓ | ✓ | ✓ | `exo_share_revoke` |
 | `DELETE /api/templates/:x` | ✓ | ✓ | ✓ | `exo_template_delete` |
 | `DELETE /api/workspaces/:x/credentials/:x` | ✓ | · | · | — |
 | `DELETE /api/workspaces/:x/invitations/:x` | · | ✓ | ✓ | `exo_invitation_revoke` |
@@ -72,13 +72,13 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/documents/:x/comments` | ✓ | ✓ | ✓ | `exo_comment_list` |
 | `GET /api/documents/:x/deletion-preview` | · | · | ✓ | `exo_page_delete` |
 | `GET /api/documents/:x/export/markdown` | ✓ | ✓ | ✓ | `exo_page_read`, `exo_rules_load`, `fetch` |
-| `GET /api/documents/:x/inherited-shares` | · | ✓ | ✓ | `exo_share_inherited` |
+| `GET /api/documents/:x/inherited-shares` | ✓ | ✓ | ✓ | `exo_share_inherited` |
 | `GET /api/documents/:x/links` | ✓ | ✓ | ✓ | `exo_page_backlinks` |
 | `GET /api/documents/:x/overview` | ✓ | ✓ | ✓ | `exo_page_overview_read` |
 | `GET /api/documents/:x/properties` | ✓ | ✓ | ✓ | `exo_database_schema` |
 | `GET /api/documents/:x/related` | ✓ | ✓ | ✓ | `exo_page_related` |
 | `GET /api/documents/:x/row` | ✓ | ✓ | ✓ | `exo_database_row_get` |
-| `GET /api/documents/:x/shares` | · | ✓ | ✓ | `exo_share_list` |
+| `GET /api/documents/:x/shares` | ✓ | ✓ | ✓ | `exo_share_list` |
 | `GET /api/documents/:x/snapshots` | · | ✓ | ✓ | `exo_page_snapshots` |
 | `GET /api/documents/:x/snapshots/:x/diff` | ✓ | ✓ | ✓ | `exo_page_snapshot_diff` |
 | `GET /api/documents/:x/views` | ✓ | ✓ | ✓ | `exo_database_schema` |
@@ -89,7 +89,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/mcp/clients/:x` | ✓ | · | · | — |
 | `GET /api/me/api-tokens` | ✓ | · | · | — |
 | `GET /api/me/connections` | ✓ | · | · | — |
-| `GET /api/me/shares` | · | ✓ | ✓ | `exo_shared_with_me` |
+| `GET /api/me/shares` | ✓ | ✓ | ✓ | `exo_shared_with_me` |
 | `GET /api/memory/facts` | ✓ | ✓ | ✓ | `exo_memory_facts` |
 | `GET /api/memory/recall` | · | · | · | `recall` |
 | `GET /api/project-builds/:x` | ✓ | ✓ | ✓ | `exo_project_build_status` |
@@ -126,7 +126,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/workspaces/:x/saved-queries` | ✓ | ✓ | ✓ | `exo_saved_query_list` |
 | `GET /api/workspaces/:x/search` | ✓ | ✓ | ✓ | `exo_search`, `search` |
 | `GET /api/workspaces/:x/settings` | ✓ | · | · | — |
-| `GET /api/workspaces/:x/shares` | · | ✓ | ✓ | `exo_share_workspace_list` |
+| `GET /api/workspaces/:x/shares` | ✓ | ✓ | ✓ | `exo_share_workspace_list` |
 | `GET /api/workspaces/:x/templates` | ✓ | ✓ | ✓ | `exo_template_list` |
 | `GET /api/workspaces/:x/trash` | ✓ | ✓ | ✓ | `exo_page_trash` |
 | `PATCH /api/admin/ai-models/:x` | ✓ | · | · | — |
@@ -147,7 +147,7 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/projects/:x` | ✓ | ✓ | ✓ | `exo_project_update` |
 | `PATCH /api/render/templates/:x` | ✓ | ✓ | ✓ | `exo_render_template_update` |
 | `PATCH /api/saved-queries/:x` | ✓ | ✓ | ✓ | `exo_saved_query_update` |
-| `PATCH /api/shares/:x` | · | ✓ | ✓ | `exo_share_update` |
+| `PATCH /api/shares/:x` | ✓ | ✓ | ✓ | `exo_share_update` |
 | `PATCH /api/templates/:x` | ✓ | ✓ | ✓ | `exo_template_update` |
 | `PATCH /api/workspaces/:x` | ✓ | ✓ | ✓ | `exo_workspace_rename` |
 | `PATCH /api/workspaces/:x/members/:x` | ✓ | · | · | — |
@@ -182,7 +182,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/documents/:x/restore` | ✓ | ✓ | ✓ | `exo_page_restore` |
 | `POST /api/documents/:x/rows` | ✓ | ✓ | ✓ | `exo_database_row_create` |
 | `POST /api/documents/:x/rows/query` | ✓ | ✓ | ✓ | `exo_database_query` |
-| `POST /api/documents/:x/shares` | · | ✓ | ✓ | `exo_share_create` |
+| `POST /api/documents/:x/shares` | ✓ | ✓ | ✓ | `exo_share_create` |
 | `POST /api/documents/:x/snapshots/:x/restore` | ✓ | ✓ | ✓ | `exo_page_restore_snapshot` |
 | `POST /api/documents/:x/snapshots/:x/restore-blocks` | ✓ | ✓ | ✓ | `exo_page_restore_blocks` |
 | `POST /api/documents/:x/views` | ✓ | ✓ | ✓ | `exo_database_view_create` |
