@@ -8,11 +8,14 @@ import {
   parseDatePropertyConfig,
 } from '@exocortex/contracts';
 import {
-  buildPropertyMap,
   type DatabasePropertyType,
   type DatabaseViewType,
+  derivedPropertiesOf,
+  isDerivedColumn,
+  loadDatabaseScope,
   type PrismaClient,
   queryDatabaseRows,
+  queryDerivedValues,
   UnknownDatabasePropertyError,
 } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
@@ -79,7 +82,7 @@ const COMPUTED_TYPES = new Set<DatabasePropertyType>([
   'CREATED_BY',
   'UPDATED_BY',
 ]);
-const ARRAY_TYPES = new Set<DatabasePropertyType>(['MULTI_SELECT', 'PERSON', 'FILES']);
+const ARRAY_TYPES = new Set<DatabasePropertyType>(['MULTI_SELECT', 'PERSON', 'FILES', 'RELATION']);
 
 interface PropertyRow {
   id: string;
@@ -275,7 +278,6 @@ export async function describeCollection(input: {
     prisma,
     workspaceId,
     documentId,
-    properties,
     columns,
     filters: filterGroup,
     sorts: sortList,
@@ -290,22 +292,24 @@ async function describeRows(input: {
   prisma: PrismaClient;
   workspaceId: string;
   documentId: string;
-  properties: readonly PropertyRow[];
   columns: readonly PropertyRow[];
   filters: DatabaseFilterGroup;
   sorts: readonly DatabaseSort[];
   logger: Logger;
 }): Promise<string | null> {
-  const { prisma, workspaceId, documentId, properties, columns, filters, sorts, logger } = input;
+  const { prisma, workspaceId, documentId, columns, filters, sorts, logger } = input;
+
+  // The same scope the API builds, so a rollup or a formula reads the same
+  // here as it does in the browser (ADR-025, ADR-041). Access was decided
+  // before this function was called; this only reads the schema.
+  const scope = await loadDatabaseScope(prisma, documentId);
 
   let rows;
   try {
     rows = await queryDatabaseRows(prisma, {
       workspaceId,
       collectionDocumentId: documentId,
-      properties: buildPropertyMap(
-        properties.map((property) => ({ id: property.id, type: property.type })),
-      ),
+      scope,
       filters,
       sorts: [...sorts],
       // One more than shown, so "there are further rows" is a fact rather than
@@ -352,6 +356,23 @@ async function describeRows(input: {
     valuesByRow.set(value.documentId, perRow);
   }
 
+  // A rollup or a formula has no stored value; it is computed alongside. A
+  // failure here costs those columns and not the table, because a context
+  // section that disappears is worse for the model than one missing column.
+  const derivedProperties = derivedPropertiesOf(scope);
+  let derivedByRow = new Map<string, Map<string, unknown>>();
+  if (derivedProperties.length > 0) {
+    try {
+      derivedByRow = await queryDerivedValues(prisma, {
+        documentIds: shown.map((row) => row.id),
+        derived: derivedProperties,
+        scope,
+      });
+    } catch {
+      logger.info('Skipping the computed columns of the open database view', { documentId });
+    }
+  }
+
   const header = ['Titel', ...columns.map((column) => column.name)];
   const lines = [`| ${header.join(' | ')} |`, `| ${header.map(() => '---').join(' | ')} |`];
 
@@ -360,12 +381,14 @@ async function describeRows(input: {
     for (const column of columns) {
       cells.push(
         truncateCell(
-          renderValue(column, valuesByRow.get(row.id)?.get(column.id), {
-            createdAt: row.createdAt,
-            updatedAt: row.updatedAt,
-            createdById: row.createdById,
-            updatedById: row.updatedById,
-          }),
+          isDerivedColumn(column.type)
+            ? renderDerivedValue(derivedByRow.get(row.id)?.get(column.id))
+            : renderValue(column, valuesByRow.get(row.id)?.get(column.id), {
+                createdAt: row.createdAt,
+                updatedAt: row.updatedAt,
+                createdById: row.createdById,
+                updatedById: row.updatedById,
+              }),
         ),
       );
     }
@@ -416,6 +439,17 @@ function renderDateValue(property: PropertyRow, stored: StoredValue): string {
   const start = format(stored.dateValue);
   if (!config.isRange || stored.dateEndValue === null) return start;
   return `${start} bis ${format(stored.dateEndValue)}`;
+}
+
+/**
+ * A computed cell as text. ISO for an instant, the plain value otherwise: this
+ * is model input, so an unambiguous number travels better than a locale.
+ */
+function renderDerivedValue(value: unknown): string {
+  if (value === null || value === undefined) return '';
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'boolean') return value ? 'ja' : 'nein';
+  return String(value);
 }
 
 /** One cell as text. Option ids become their labels; everything else stays literal. */

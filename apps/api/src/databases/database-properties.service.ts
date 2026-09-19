@@ -7,6 +7,7 @@ import {
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import {
+  CONFIGURED_PROPERTY_TYPES,
   type CreateDatabasePropertyOptionRequest,
   type CreateDatabasePropertyRequest,
   databaseDatePropertyConfigSchema,
@@ -14,18 +15,33 @@ import {
   type DatabaseProperty,
   type DatabasePropertyOption,
   type DatabasePropertyType,
-  IMPLEMENTED_PROPERTY_TYPES,
   parseDatePropertyConfig,
+  parseFormulaConfig,
+  renameFormulaProperty,
   type ReorderDatabasePropertyRequest,
   type UpdateDatabasePropertyOptionRequest,
   type UpdateDatabasePropertyRequest,
 } from '@exocortex/contracts';
-import { generateOrderKey, type Prisma, type PrismaClient } from '@exocortex/database';
+import {
+  type DatabasePropertyRef,
+  generateOrderKey,
+  loadDatabaseScope,
+  type PendingSchemaChange,
+  Prisma,
+  type PrismaClient,
+} from '@exocortex/database';
 
 import { AppError } from '../common/app-error';
 import { OutboxService } from '../common/outbox.service';
 import { PRISMA } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
+
+import {
+  assertDerivedPropertiesCompile,
+  normalizeDerivedConfig,
+  PENDING_PROPERTY_ID,
+  toDerivedRef,
+} from './derived-properties';
 
 const PROPERTY_INCLUDE = { options: true } as const;
 
@@ -106,16 +122,26 @@ export class DatabasePropertiesService {
     const context = await this.requireCollection(input.collectionDocumentId, input.userId);
     assertPolicy(canManageDatabaseSchema(context.role, context.document));
 
-    if (
-      !IMPLEMENTED_PROPERTY_TYPES.includes(
-        input.request.type as (typeof IMPLEMENTED_PROPERTY_TYPES)[number],
-      )
-    ) {
-      throw new AppError(
-        'database_property_reserved',
-        `Property type ${input.request.type} is reserved for a later round and cannot be created yet`,
-      );
-    }
+    const config = await this.resolveConfigForType({
+      type: input.request.type,
+      config: input.request.config,
+      collectionDocumentId: input.collectionDocumentId,
+      workspaceId: context.workspaceId,
+    });
+
+    // Validated as if it already existed, so a formula that does not compile
+    // is a refused request rather than a column the table cannot render.
+    await this.assertSchemaStaysValid(input.collectionDocumentId, {
+      upserts: [
+        {
+          id: PENDING_PROPERTY_ID,
+          documentId: input.collectionDocumentId,
+          type: input.request.type,
+          name: input.request.name,
+          config,
+        },
+      ],
+    });
 
     const orderKey = await this.resolveOrderKey({
       documentId: input.collectionDocumentId,
@@ -129,6 +155,7 @@ export class DatabasePropertiesService {
         type: input.request.type,
         name: input.request.name,
         orderKey,
+        ...(config === null ? {} : { config: config as Prisma.InputJsonValue }),
       },
       include: PROPERTY_INCLUDE,
     });
@@ -162,15 +189,57 @@ export class DatabasePropertiesService {
       );
     }
 
-    const updated = await this.prisma.databaseProperty.update({
-      where: { id: input.propertyId },
-      data: {
-        ...(input.request.name === undefined ? {} : { name: input.request.name }),
-        ...(input.request.config === undefined
-          ? {}
-          : { config: input.request.config as Prisma.InputJsonValue | typeof Prisma.JsonNull }),
-      },
-      include: PROPERTY_INCLUDE,
+    const nextConfig =
+      input.request.config === undefined
+        ? (property.config as Record<string, unknown> | null)
+        : await this.resolveConfigForType({
+            type: property.type,
+            config: input.request.config,
+            collectionDocumentId: property.documentId,
+            workspaceId: context.workspaceId,
+          });
+    const nextName = input.request.name ?? property.name;
+
+    // A rename reaches the formulas that spell the old name out, before the
+    // validation below would call them broken.
+    const rewrites =
+      nextName === property.name
+        ? []
+        : await this.formulaRewritesForRename(property.documentId, property.name, nextName);
+
+    await this.assertSchemaStaysValid(property.documentId, {
+      upserts: [
+        {
+          id: property.id,
+          documentId: property.documentId,
+          type: property.type,
+          name: nextName,
+          config: nextConfig,
+        },
+        ...rewrites,
+      ],
+    });
+
+    const updated = await this.prisma.$transaction(async (tx) => {
+      for (const rewrite of rewrites) {
+        await tx.databaseProperty.update({
+          where: { id: rewrite.id },
+          data: { config: (rewrite.config ?? {}) as Prisma.InputJsonValue },
+        });
+      }
+      return tx.databaseProperty.update({
+        where: { id: input.propertyId },
+        data: {
+          ...(input.request.name === undefined ? {} : { name: input.request.name }),
+          ...(input.request.config === undefined
+            ? {}
+            : {
+                config:
+                  nextConfig === null ? Prisma.JsonNull : (nextConfig as Prisma.InputJsonValue),
+              }),
+        },
+        include: PROPERTY_INCLUDE,
+      });
     });
 
     await this.realtime.emit(
@@ -270,6 +339,11 @@ export class DatabasePropertiesService {
     const property = await this.loadPropertyOrThrow(input.propertyId);
     const context = await this.requireCollection(property.documentId, input.userId);
     assertPolicy(canManageDatabaseSchema(context.role, context.document));
+
+    // A rollup aggregating over this column, or a formula naming it, would be
+    // left pointing at nothing. Refused here with the offending column in the
+    // message, because the alternative is a table that stops rendering.
+    await this.assertSchemaStaysValid(property.documentId, { omit: input.propertyId });
 
     await this.prisma.$transaction(async (tx) => {
       await this.outbox.writeAudit(tx, {
@@ -388,6 +462,71 @@ export class DatabasePropertiesService {
       },
     );
     return { deleted: true };
+  }
+
+  /**
+   * The `config` to store for a property of this type.
+   *
+   * RELATION, ROLLUP and FORMULA carry their whole meaning in it, so an
+   * absent one is refused rather than stored as a column that means nothing.
+   * Every other type keeps the old behaviour: the bag is whatever the caller
+   * sent, and the DATE check above is the only one that looks inside it.
+   */
+  private async resolveConfigForType(input: {
+    type: DatabasePropertyType;
+    config: Record<string, unknown> | null | undefined;
+    collectionDocumentId: string;
+    workspaceId: string;
+  }): Promise<Record<string, unknown> | null> {
+    const configured = CONFIGURED_PROPERTY_TYPES.includes(
+      input.type as (typeof CONFIGURED_PROPERTY_TYPES)[number],
+    );
+    if (!configured) return input.config ?? null;
+    return normalizeDerivedConfig({
+      prisma: this.prisma,
+      type: input.type,
+      config: input.config,
+      collectionDocumentId: input.collectionDocumentId,
+      workspaceId: input.workspaceId,
+    });
+  }
+
+  /** Every derived column of this database still compiles once `pending` is applied. */
+  private async assertSchemaStaysValid(
+    collectionDocumentId: string,
+    pending: PendingSchemaChange,
+  ): Promise<void> {
+    assertDerivedPropertiesCompile(
+      await loadDatabaseScope(this.prisma, collectionDocumentId, pending),
+      pending.omit === undefined ? 'database_property_config_invalid' : 'database_property_in_use',
+    );
+  }
+
+  /**
+   * The formula columns of this database with the old column name swapped for
+   * the new one. Returned rather than written, so the same list can be handed
+   * to the validation and then to the transaction that performs the rename.
+   */
+  private async formulaRewritesForRename(
+    collectionDocumentId: string,
+    from: string,
+    to: string,
+  ): Promise<DatabasePropertyRef[]> {
+    const formulas = await this.prisma.databaseProperty.findMany({
+      where: { documentId: collectionDocumentId, type: 'FORMULA' },
+      select: { id: true, documentId: true, type: true, name: true, config: true },
+    });
+
+    const rewrites: DatabasePropertyRef[] = [];
+    for (const row of formulas) {
+      const ref = toDerivedRef(row);
+      const config = parseFormulaConfig(ref.config);
+      if (config === null) continue;
+      const expression = renameFormulaProperty(config.expression, from, to);
+      if (expression === config.expression) continue;
+      rewrites.push({ ...ref, config: { ...config, expression } });
+    }
+    return rewrites;
   }
 
   private async loadPropertyOrThrow(propertyId: string): Promise<{

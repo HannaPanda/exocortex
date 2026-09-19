@@ -21,7 +21,9 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   document_archived: 'Archivierte Seiten können nicht bearbeitet werden.',
   document_move_cycle: 'Eine Seite kann nicht in sich selbst verschoben werden.',
   document_cross_workspace: 'Das übergeordnete Element gehört nicht zu diesem Arbeitsbereich.',
-  database_property_reserved: 'Dieser Eigenschaftstyp ist noch nicht verfügbar.',
+  database_property_config_invalid:
+    'Diese Spalte lässt sich so nicht berechnen. Prüfe Verknüpfung, Rollup oder Formel.',
+  database_property_in_use: 'Eine Rollup- oder Formelspalte benutzt diese Spalte noch.',
   database_property_date_range_in_use:
     'Einige Einträge haben ein Enddatum. Entferne die Enddaten, bevor du den Zeitraum abschaltest.',
   collaboration_ticket_invalid: 'Die Verbindung zur Live-Bearbeitung wurde abgelehnt.',

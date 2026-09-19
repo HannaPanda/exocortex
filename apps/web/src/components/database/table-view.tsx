@@ -159,6 +159,7 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
                 <div className="flex items-center justify-between gap-1">
                   <PropertyMenu
                     documentId={documentId}
+                    workspaceId={workspaceId}
                     property={property}
                     view={view}
                     columns={columns}
@@ -176,7 +177,9 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
               </TableHead>
             ))}
             <TableHead className="sticky top-0 z-20 border-b border-border bg-background">
-              {readOnly ? null : <AddPropertyButton documentId={documentId} />}
+              {readOnly ? null : (
+                <AddPropertyButton documentId={documentId} workspaceId={workspaceId} />
+              )}
             </TableHead>
           </TableRow>
         </TableHeader>

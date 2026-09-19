@@ -248,8 +248,6 @@ Deliberately absent, while the architecture leaves room for each:
 - real Claude Code / Codex execution. `packages/ai/src/agent-runners.ts`
   defines the contract and `createUnimplementedRunner()` throws rather than
   pretending; when they are built they run from `apps/worker` in a container
-- relation, rollup and formula properties. The enum values exist so adding
-  them needs no destructive migration
 - granular per-block permissions
 - horizontal scaling beyond one host. The Redis event bus is the boundary that
   makes it possible, and nothing has been run against a second instance

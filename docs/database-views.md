@@ -26,12 +26,13 @@ All four view types share one query path (`POST /api/documents/:id/rows/query`
    migration).
 2. Add it to `databasePropertyTypeSchema` in
    `packages/contracts/src/database-views.ts`, and to
-   `IMPLEMENTED_PROPERTY_TYPES` once the type is ready to accept writes
-   (leaving it out of that list, like `RELATION`/`ROLLUP`/`FORMULA` today,
-   reserves the enum value while rejecting creation with
-   `database_property_reserved`).
+   `IMPLEMENTED_PROPERTY_TYPES` once the type is ready to accept writes.
+   Leaving it out of that list reserves the enum value without offering it to
+   anybody, which is how `RELATION`/`ROLLUP`/`FORMULA` waited for issue #76.
+   If its whole meaning is in `config`, add it to `CONFIGURED_PROPERTY_TYPES`
+   too, so it cannot be created half-finished.
 3. Map it to a `document_property_value` column in
-   `packages/database/src/database-query.ts`'s `columnForType` (query side)
+   `packages/database/src/database-derived.ts`'s `columnForType` (query side)
    and in `apps/api/src/databases/database-rows.service.ts`'s `toColumnData`
    /`storedToResponseValue` (write/read side). A genuinely new storage shape
    needs a new typed column on `DocumentPropertyValue`, not a JSONB
@@ -235,8 +236,10 @@ cannot disagree about which names exist.
 **Relations between entities are ordinary references.** Writing `[[fpb2]]` on
 the Orielle page is how somebody already says "runs on", and the reference index
 (issue #33) already resolves it. `GET /api/entities/:id` reads the relations off
-that index rather than off a `RELATION` column — which is also why the reserved
-`RELATION` property type staying unimplemented did not block this feature.
+that index rather than off a `RELATION` column, and that is still true now that
+the column exists: a `[[…]]` in prose and a relation column answer different
+questions, and an entity profile is built from what people wrote, not from a
+schema somebody has to maintain.
 
 **New names are proposed, never created.** A phrase that looks like a name,
 appears at least twice on a page and on at least `entities.candidateThreshold`
@@ -244,6 +247,67 @@ separate pages becomes an `entity_candidate`. Confirming one is a call
 (`exo_entity_candidate_confirm`); dismissing it is recorded, so it does not come
 back the next time somebody saves a page carrying it. No model is asked at any
 point: counting is deterministic, free, and gives the same answer tomorrow.
+
+## Linked and computed columns
+
+Three property types do not hold a value of their own (issue #76, ADR-041).
+
+**RELATION** stores a list of row ids in `jsonValue`, the same shape
+`MULTI_SELECT`, `PERSON` and `FILES` use, which is why `contains`,
+`not_contains`, `is_empty` and `is_not_empty` work on it with no new operator.
+Its `config` is `{ targetCollectionId, allowMultiple }`. The target has to be a
+database in the same workspace — a self-relation is allowed, and is how a task
+gets sub-tasks. Every id written is checked to be a live row of that database,
+because a dangling link is invisible in the table and only surfaces later as a
+rollup that quietly counts wrong.
+
+Values are ids and never titles. A client that shows names fetched them through
+an authorized read of the target database, so somebody who may not open it sees
+the bare id rather than a name nobody showed them.
+
+**ROLLUP** aggregates over a relation. Its `config` is
+`{ relationPropertyId, targetPropertyId, aggregate }`, with nine aggregates:
+`count` (needs no target), `count_unique`, `count_not_empty`, `sum`, `average`,
+`min`, `max`, `earliest`, `latest`. An empty `sum` is `0`; every other
+aggregate over no rows is empty, because "no earliest date" is not a date. An
+archived linked row drops out of the aggregate but keeps its link, so restoring
+it brings its contribution back.
+
+A rollup's target must be a plain column — not another rollup, not a formula,
+not a relation. That rule is what bounds how much schema computing a cell
+needs: its own database plus one hop, which is all `loadDatabaseScope` loads.
+
+**FORMULA** carries `{ expression }` in the language of
+`packages/contracts/src/database-formula.ts`:
+
+|            |                                                                                                                                      |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Columns    | `prop("Name")`, by column name or by column id                                                                                       |
+| Types      | number, text, boolean, date                                                                                                          |
+| Operators  | `+ - * / %`, `== != < <= > >=`, `and`, `or`, unary `-`                                                                               |
+| Precedence | `or` < `and` < `== !=` < comparison < `+ -` < `* / %` < unary                                                                        |
+| Functions  | `if not and or empty format concat length upper lower contains abs floor ceil round min max now dateAdd dateDiffDays year month day` |
+| Separators | `;` and `,` both work                                                                                                                |
+
+A formula may read another formula and a rollup of the same database; a cycle
+is refused, at a depth of at most `MAX_DERIVED_DEPTH`. Division is compiled
+with `NULLIF`, so dividing by zero is an empty cell rather than a failed query.
+An unchecked checkbox reads as `false`, not as unknown.
+
+**All three are computed in SQL on every read**, never stored (ADR-041). The
+compiled expression is used in the `SELECT`, in a `WHERE` that filters on the
+column and in the `ORDER BY` that sorts by it, which is the reason a computed
+column can be filtered and sorted at all. Writing to a rollup or a formula is
+refused; the way to change one is to change the linked rows or the expression.
+
+**A configuration that cannot be computed is refused when it is written.**
+Creating, changing or deleting a property re-compiles every derived column of
+the database first, so deleting a column a formula reads fails with
+`database_property_in_use` rather than leaving a table that will not render.
+Renaming is the one case that gets help instead of a refusal: the formulas of
+that database are rewritten through the tokenizer in the same transaction, so
+`prop("Preis")` follows the column it names — and a string literal that merely
+happens to read `"Preis"` is left alone.
 
 ## Known limitations (deliberate, not bugs)
 

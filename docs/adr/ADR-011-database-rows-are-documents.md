@@ -42,10 +42,11 @@ code from the property's _loaded_ type, never from the request — the one
 place raw SQL touches anything resembling user input is provably closed
 against injection this way.
 
-`RELATION`, `ROLLUP` and `FORMULA` property types exist in the
-`DatabasePropertyType` enum now, rejected at the property-create endpoint
-with `database_property_reserved`, so implementing them later needs no
-further destructive migration.
+`RELATION`, `ROLLUP` and `FORMULA` were reserved in the
+`DatabasePropertyType` enum from the start so that implementing them would
+need no further destructive migration. They were implemented in issue #76, and
+that reservation is what made it a change to the query engine rather than to
+the schema; how they compute is ADR-041.
 
 ## Consequences
 
@@ -83,6 +84,7 @@ Costs accepted on purpose:
   filtered query falls back to an offset cursor, which can skip or repeat a
   row if the set changes mid-scroll. Documented as a known limitation in
   `docs/database-views.md`, not silently papered over.
-- **RELATION/ROLLUP/FORMULA are reserved, not implemented.** A future round
-  adds their query-engine logic; the enum values and the rejection path
-  already exist so that round does not need a migration of its own.
+- **RELATION/ROLLUP/FORMULA cost no migration.** Reserving the enum values
+  here is what let issue #76 add them as query-engine work alone: a relation
+  reuses the `jsonValue` column the array-valued types already write, and a
+  rollup and a formula store nothing at all (ADR-041).

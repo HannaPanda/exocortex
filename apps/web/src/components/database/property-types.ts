@@ -1,8 +1,11 @@
 import {
+  ARRAY_VALUED_PROPERTY_TYPES,
+  CONFIGURED_PROPERTY_TYPES,
   type DatabaseFilterOperator,
   type DatabaseOptionColor,
   type DatabaseProperty,
   type DatabasePropertyType,
+  DERIVED_PROPERTY_TYPES,
   IMPLEMENTED_PROPERTY_TYPES,
 } from '@exocortex/contracts';
 
@@ -28,7 +31,7 @@ export const PROPERTY_TYPE_LABELS: Record<DatabasePropertyType, string> = {
   FORMULA: 'Formel',
 };
 
-/** Property types a user can add today. RELATION/ROLLUP/FORMULA are reserved server-side. */
+/** Property types a user can add today. */
 export const CREATABLE_PROPERTY_TYPES = IMPLEMENTED_PROPERTY_TYPES;
 
 export const COMPUTED_PROPERTY_TYPES = new Set<DatabasePropertyType>([
@@ -38,11 +41,23 @@ export const COMPUTED_PROPERTY_TYPES = new Set<DatabasePropertyType>([
   'UPDATED_BY',
 ]);
 
-export const ARRAY_PROPERTY_TYPES = new Set<DatabasePropertyType>([
-  'MULTI_SELECT',
-  'PERSON',
-  'FILES',
-]);
+/** Computed by the query engine from other rows: shown, never edited in a cell. */
+export const DERIVED_PROPERTY_TYPE_SET = new Set<DatabasePropertyType>(DERIVED_PROPERTY_TYPES);
+
+/** Types whose meaning lives entirely in `config`, so adding one needs a form first. */
+export const CONFIGURED_PROPERTY_TYPE_SET = new Set<DatabasePropertyType>(
+  CONFIGURED_PROPERTY_TYPES,
+);
+
+/**
+ * Types whose value is a list of ids. SELECT-style options only exist for the
+ * first two; a relation picks rows and a person picks members, so the option
+ * manager stays off them.
+ */
+export const ARRAY_PROPERTY_TYPES = new Set<DatabasePropertyType>(ARRAY_VALUED_PROPERTY_TYPES);
+
+/** The subset of the above that carries `DatabasePropertyOption` rows. */
+export const OPTION_PROPERTY_TYPES = new Set<DatabasePropertyType>(['SELECT', 'MULTI_SELECT']);
 
 export const FILTER_OPERATOR_LABELS: Record<DatabaseFilterOperator, string> = {
   equals: 'ist',
@@ -91,8 +106,23 @@ export function filterValueLabel(property: DatabaseProperty | undefined, value: 
 
 /** Which filter operators make sense for a given property type, in menu order. */
 export function operatorsForType(type: DatabasePropertyType): DatabaseFilterOperator[] {
-  if (type === 'NUMBER')
+  if (type === 'NUMBER' || type === 'ROLLUP')
     return ['equals', 'not_equals', 'greater_than', 'less_than', 'is_empty', 'is_not_empty'];
+  // A formula answers a number, a text, a date or a yes/no depending on what
+  // it says, and only the server knows which. The full list is offered rather
+  // than a guessed subset; an operator that does not fit the result type is
+  // refused by the API with a message naming the mismatch.
+  if (type === 'FORMULA')
+    return [
+      'equals',
+      'not_equals',
+      'contains',
+      'not_contains',
+      'greater_than',
+      'less_than',
+      'is_empty',
+      'is_not_empty',
+    ];
   if (type === 'DATE' || type === 'CREATED_TIME' || type === 'UPDATED_TIME') {
     return ['on_or_after', 'on_or_before', 'is_empty', 'is_not_empty'];
   }

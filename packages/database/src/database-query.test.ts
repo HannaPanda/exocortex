@@ -6,10 +6,11 @@ import {
   EMPTY_DATABASE_FILTER_GROUP,
 } from '@exocortex/contracts';
 
+import { buildDerivedSchema, buildPropertyMap } from './database-derived';
 import {
-  buildPropertyMap,
   compileFilterGroup,
   compileSorts,
+  type DatabaseQueryScope,
   InvalidDatabaseFilterError,
   UnknownDatabasePropertyError,
 } from './database-query';
@@ -21,11 +22,15 @@ const CHECKBOX = { id: 'prop_checkbox', type: 'CHECKBOX' as const };
 const MULTI_SELECT = { id: 'prop_multi', type: 'MULTI_SELECT' as const };
 const CREATED_TIME = { id: 'prop_created', type: 'CREATED_TIME' as const };
 
-const properties = buildPropertyMap([TEXT, NUMBER, DATE, CHECKBOX, MULTI_SELECT, CREATED_TIME]);
+const ALL = [TEXT, NUMBER, DATE, CHECKBOX, MULTI_SELECT, CREATED_TIME];
+const scope: DatabaseQueryScope = {
+  properties: buildPropertyMap(ALL),
+  schema: buildDerivedSchema(ALL),
+};
 
 describe('compileFilterGroup', () => {
   it('compiles to TRUE for an empty group', () => {
-    const sql = compileFilterGroup(EMPTY_DATABASE_FILTER_GROUP, properties);
+    const sql = compileFilterGroup(EMPTY_DATABASE_FILTER_GROUP, scope);
     expect(sql.sql).toBe('TRUE');
     expect(sql.values).toEqual([]);
   });
@@ -35,7 +40,7 @@ describe('compileFilterGroup', () => {
       combinator: 'and',
       conditions: [{ propertyId: 'not_this_collection', operator: 'equals', value: 'x' }],
     };
-    expect(() => compileFilterGroup(group, properties)).toThrow(UnknownDatabasePropertyError);
+    expect(() => compileFilterGroup(group, scope)).toThrow(UnknownDatabasePropertyError);
   });
 
   it('never lets Prisma.raw see anything but the five known column names', () => {
@@ -46,7 +51,7 @@ describe('compileFilterGroup', () => {
         { propertyId: NUMBER.id, operator: 'greater_than', value: 1 },
       ],
     };
-    const sql = compileFilterGroup(group, properties);
+    const sql = compileFilterGroup(group, scope);
     // The malicious payload must appear only as a bound parameter (wrapped in
     // ILIKE wildcards by the "contains" operator), never spliced into the SQL
     // text itself.
@@ -68,7 +73,7 @@ describe('compileFilterGroup', () => {
       combinator: 'and',
       conditions: [{ propertyId: TEXT.id, operator: 'equals', value: 'Hallo' }],
     };
-    const sql = compileFilterGroup(group, properties);
+    const sql = compileFilterGroup(group, scope);
     expect(sql.sql).toContain('"textValue"');
     expect(sql.sql.trim().endsWith('= ?')).toBe(true);
     expect(sql.values).toEqual([TEXT.id, 'Hallo']);
@@ -79,7 +84,7 @@ describe('compileFilterGroup', () => {
       combinator: 'and',
       conditions: [{ propertyId: MULTI_SELECT.id, operator: 'contains', value: 'opt_1' }],
     };
-    const sql = compileFilterGroup(group, properties);
+    const sql = compileFilterGroup(group, scope);
     expect(sql.sql).toContain('"jsonValue"');
     expect(sql.sql).toContain('@>');
     expect(sql.values).toEqual([MULTI_SELECT.id, JSON.stringify(['opt_1'])]);
@@ -93,7 +98,7 @@ describe('compileFilterGroup', () => {
         { propertyId: NUMBER.id, operator: 'is_not_empty' },
       ],
     };
-    const sql = compileFilterGroup(group, properties);
+    const sql = compileFilterGroup(group, scope);
     expect(sql.sql).toContain('IS NULL');
     expect(sql.sql).toContain('IS NOT NULL');
     expect(sql.sql).toContain(' OR ');
@@ -106,7 +111,7 @@ describe('compileFilterGroup', () => {
       combinator: 'and',
       conditions: [{ propertyId: CREATED_TIME.id, operator: 'on_or_after', value: '2026-01-01' }],
     };
-    const sql = compileFilterGroup(group, properties);
+    const sql = compileFilterGroup(group, scope);
     expect(sql.sql).toContain('document."createdAt"');
     expect(sql.sql).not.toContain('document_property_value');
   });
@@ -125,7 +130,7 @@ describe('compileFilterGroup', () => {
         },
       ],
     };
-    const sql = compileFilterGroup(group, properties);
+    const sql = compileFilterGroup(group, scope);
     expect(sql.sql).toMatch(/\([\s\S]*AND[\s\S]*\)/);
     expect(sql.sql).toContain(' OR ');
   });
@@ -142,7 +147,7 @@ describe('compileFilterGroup with the overlaps operator', () => {
   it('compares both ends of the span and binds the window as parameters', () => {
     const sql = compileFilterGroup(
       overlaps(DATE.id, ['2026-08-01T00:00:00.000Z', '2026-09-01T00:00:00.000Z']),
-      properties,
+      scope,
     );
     expect(sql.sql).toContain('EXISTS');
     expect(sql.sql).toContain('"dateEndValue"');
@@ -155,7 +160,7 @@ describe('compileFilterGroup with the overlaps operator', () => {
   it('treats a value without an end as a point in time, not as an open span', () => {
     const sql = compileFilterGroup(
       overlaps(DATE.id, ['2026-08-01T00:00:00.000Z', '2026-09-01T00:00:00.000Z']),
-      properties,
+      scope,
     );
     // The NULL branch is bounded on both sides; the span branch is not.
     expect(sql.sql).toContain('WHEN dpv."dateEndValue" IS NULL');
@@ -165,7 +170,7 @@ describe('compileFilterGroup with the overlaps operator', () => {
 
   it('rejects the operator on a property type that has no span', () => {
     expect(() =>
-      compileFilterGroup(overlaps(TEXT.id, ['2026-08-01', '2026-09-01']), properties),
+      compileFilterGroup(overlaps(TEXT.id, ['2026-08-01', '2026-09-01']), scope),
     ).toThrow(InvalidDatabaseFilterError);
   });
 
@@ -176,7 +181,7 @@ describe('compileFilterGroup with the overlaps operator', () => {
     ['an unparsable date', ['not-a-date', '2026-09-01']],
     ['a reversed window', ['2026-09-01', '2026-08-01']],
   ])('rejects %s', (_label, value) => {
-    expect(() => compileFilterGroup(overlaps(DATE.id, value), properties)).toThrow(
+    expect(() => compileFilterGroup(overlaps(DATE.id, value), scope)).toThrow(
       InvalidDatabaseFilterError,
     );
   });
@@ -184,18 +189,18 @@ describe('compileFilterGroup with the overlaps operator', () => {
 
 describe('compileSorts', () => {
   it('falls back to orderKey when there are no sorts', () => {
-    const sql = compileSorts([], properties);
+    const sql = compileSorts([], scope);
     expect(sql.sql).toBe('document."orderKey" ASC');
   });
 
   it('rejects a sort on a propertyId outside the map', () => {
     const sorts: DatabaseSort[] = [{ propertyId: 'unknown', direction: 'asc' }];
-    expect(() => compileSorts(sorts, properties)).toThrow(UnknownDatabasePropertyError);
+    expect(() => compileSorts(sorts, scope)).toThrow(UnknownDatabasePropertyError);
   });
 
   it('always appends orderKey as a deterministic tiebreaker', () => {
     const sorts: DatabaseSort[] = [{ propertyId: NUMBER.id, direction: 'desc' }];
-    const sql = compileSorts(sorts, properties);
+    const sql = compileSorts(sorts, scope);
     expect(sql.sql).toContain('DESC NULLS LAST');
     expect(sql.sql.trim().endsWith('document."orderKey" ASC')).toBe(true);
   });

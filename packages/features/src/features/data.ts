@@ -30,7 +30,7 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     area: 'datenbanken',
     title: 'Spalten: Text, Zahl, Auswahl, Datum, Person, Dateien',
     summary:
-      'Eine Datenbank bekommt Spalten vom Typ Text, Zahl, Auswahl, Mehrfachauswahl, Datum, Kontrollkästchen, Adresse, E-Mail, Telefon, Person und Dateien. Dazu kommen vier Spalten, die sich selbst füllen: angelegt am, geändert am, angelegt von, geändert von. Ein Datum darf ein Zeitraum sein.',
+      'Eine Datenbank bekommt Spalten vom Typ Text, Zahl, Auswahl, Mehrfachauswahl, Datum, Kontrollkästchen, Adresse, E-Mail, Telefon, Person und Dateien. Dazu kommen vier Spalten, die sich selbst füllen: angelegt am, geändert am, angelegt von, geändert von. Ein Datum darf ein Zeitraum sein. Verknüpfung, Rollup und Formel stehen als eigener Eintrag daneben.',
     details: [
       'Über den Spaltenkopf legst du eine Spalte an, benennst sie um, änderst ihren Typ oder wirfst sie weg; Ziehen sortiert die Spalten um. Bei Auswahl und Mehrfachauswahl gehören die möglichen Werte zur Spalte, mit eigener Farbe, sodass ein Status im Board sofort erkennbar ist.',
       'Ein Datum kann ein einzelner Tag, ein Tag mit Uhrzeit oder ein Zeitraum mit Anfang und Ende sein. Das ist die Spalte, an der später die Kalenderansicht und die Erinnerungen hängen. Eine Personen-Spalte verweist auf Mitglieder des Arbeitsbereichs, eine Dateien-Spalte nimmt Anhänge direkt in der Zeile auf.',
@@ -47,6 +47,24 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
       'exo_database_option_update',
       'exo_database_option_delete',
     ],
+  }),
+  defineFeature({
+    id: 'datenbank-verknuepfungen',
+    area: 'datenbanken',
+    title: 'Verknüpfung, Rollup und Formel',
+    summary:
+      'Eine Spalte kann auf Zeilen einer anderen Datenbank zeigen (Verknüpfung), über diese Zeilen rechnen (Rollup: Anzahl, Summe, Durchschnitt, kleinster und größter Wert, frühestes und spätestes Datum) oder aus den eigenen Spalten einen Wert berechnen (Formel). Alle drei lassen sich filtern und sortieren wie jede andere Spalte.',
+    details: [
+      'Eine Verknüpfung zeigt auf eine Datenbank im selben Arbeitsbereich, auch auf sich selbst: so bekommt eine Aufgabe Unteraufgaben. In der Zelle wählst du Zeilen aus einer Liste, gespeichert werden nur deren Ids, nie Titel. Damit ein Projekt also weiß, welche Aufgaben zu ihm gehören, brauchst du keine zweite Tabelle, sondern eine Spalte.',
+      'Ein Rollup rechnet über die verknüpften Zeilen: „wie viele Aufgaben hat dieses Projekt", „was kosten sie zusammen", „wann ist der erste Termin". Du wählst die Verknüpfungsspalte, die Berechnung und die Spalte in der verknüpften Datenbank. Eine leere Summe ist 0, ein fehlendes frühestes Datum bleibt leer, und eine Zeile im Papierkorb zählt nicht mit, kommt beim Wiederherstellen aber zurück.',
+      'Eine Formel schreibst du als kleinen Ausdruck: prop("Budget") - prop("Ausgegeben"), oder if(prop("Rest") < 0; "überzogen"; "im Rahmen"). Es gibt Zahlen, Text, Ja/Nein und Datum, die üblichen Rechen- und Vergleichszeichen und rund zwanzig Funktionen. Eine Formel darf eine andere Formel und ein Rollup lesen; ein Kreis wird abgelehnt, nicht gerechnet.',
+      'Rollup und Formel werden bei jedem Lesen frisch berechnet und nirgends gespeichert, können also nicht veralten. Beschreiben lässt sich eine solche Zelle nicht: du änderst die verknüpften Zeilen oder die Formel selbst. Benennst du eine Spalte um, ziehen die Formeln mit, die sie beim Namen nennen; löschen lässt sich eine Spalte erst, wenn keine Formel und kein Rollup sie mehr braucht.',
+    ],
+    since: '2026-09-19',
+    references: ['ADR-041'],
+    ui: {
+      where: 'In der Tabellenansicht „+ Eigenschaft", dann Verknüpfung, Rollup oder Formel wählen.',
+    },
   }),
   defineFeature({
     id: 'datenbank-ansichten',

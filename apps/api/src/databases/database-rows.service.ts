@@ -9,6 +9,7 @@ import {
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import {
+  ARRAY_VALUED_PROPERTY_TYPES,
   type CreateDatabaseRowRequest,
   databaseDateRangeValueSchema,
   type DatabaseFilterGroup,
@@ -19,19 +20,26 @@ import {
   type DatabaseSort,
   databaseSortSchema,
   EMPTY_DATABASE_FILTER_GROUP,
+  type FormulaValueType,
   parseDatePropertyConfig,
   type QueryDatabaseRowsRequest,
   type QueryDatabaseRowsResponse,
   type UpdateDatabaseRowValuesRequest,
 } from '@exocortex/contracts';
 import {
-  buildPropertyMap,
   type DatabasePropertyRef,
   type DatabaseQueryRowRecord,
+  type DatabaseQueryScope,
+  derivedPropertiesOf,
+  DerivedPropertyError,
+  formulaTypeOf,
   InvalidDatabaseFilterError,
+  isDerivedColumn,
+  loadDatabaseScope,
   Prisma,
   type PrismaClient,
   queryDatabaseRows,
+  queryDerivedValues,
   UnknownDatabasePropertyError,
 } from '@exocortex/database';
 
@@ -41,6 +49,8 @@ import { DocumentsService, toSummary } from '../documents/documents.service';
 import { PRISMA } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
+import { normalizeRelationValue } from './derived-properties';
+
 const sortsArraySchema = z.array(databaseSortSchema);
 
 const COMPUTED_TYPES = new Set<DatabasePropertyType>([
@@ -49,7 +59,7 @@ const COMPUTED_TYPES = new Set<DatabasePropertyType>([
   'CREATED_BY',
   'UPDATED_BY',
 ]);
-const ARRAY_TYPES = new Set<DatabasePropertyType>(['MULTI_SELECT', 'PERSON', 'FILES']);
+const ARRAY_TYPES = new Set<DatabasePropertyType>(ARRAY_VALUED_PROPERTY_TYPES);
 
 function computedValue(type: DatabasePropertyType, row: DatabaseQueryRowRecord): string {
   switch (type) {
@@ -64,23 +74,6 @@ function computedValue(type: DatabasePropertyType, row: DatabaseQueryRowRecord):
     default:
       throw new Error(`${type} is not a computed property type`);
   }
-}
-
-/**
- * Prisma types a `Json?` column as the whole `JsonValue` union, which is wider
- * than the config bag every reader here expects. Narrowed in one place so the
- * cast is not repeated at each call site.
- */
-function toPropertyRef(row: {
-  id: string;
-  type: DatabasePropertyType;
-  config: Prisma.JsonValue;
-}): DatabasePropertyRef {
-  return {
-    id: row.id,
-    type: row.type,
-    config: (row.config ?? null) as Record<string, unknown> | null,
-  };
 }
 
 interface StoredValueRow {
@@ -112,6 +105,28 @@ function storedToDateResponseValue(
     end: stored.dateEndValue === null ? null : stored.dateEndValue.toISOString(),
     allDay: stored.dateAllDay ?? false,
   };
+}
+
+/**
+ * A derived value on its way out.
+ *
+ * PostgreSQL answers `numeric` as a string or a Decimal depending on the
+ * driver, and the wire contract says number, so the conversion happens here
+ * once rather than in every client. An empty aggregate stays `null`: "no
+ * linked rows had a date" is not a date.
+ */
+function derivedToResponseValue(
+  type: FormulaValueType,
+  raw: unknown,
+): DatabaseRowPropertyValue['value'] {
+  if (raw === null || raw === undefined) return null;
+  if (type === 'number') {
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  if (type === 'boolean') return Boolean(raw);
+  if (type === 'date') return raw instanceof Date ? raw.toISOString() : String(raw);
+  return String(raw);
 }
 
 function storedToResponseValue(
@@ -256,11 +271,7 @@ export class DatabaseRowsService {
     const context = await this.requireCollection(input.collectionDocumentId, input.userId);
     assertPolicy(canReadDocument(context.role, context.document, context.workspaceId));
 
-    const propertyRows = await this.prisma.databaseProperty.findMany({
-      where: { documentId: input.collectionDocumentId },
-      select: { id: true, type: true, config: true },
-    });
-    const properties = buildPropertyMap(propertyRows.map(toPropertyRef));
+    const scope = await loadDatabaseScope(this.prisma, input.collectionDocumentId);
 
     const { filters, sorts } = await this.resolveFiltersAndSorts(
       input.collectionDocumentId,
@@ -274,25 +285,21 @@ export class DatabaseRowsService {
       rows = await queryDatabaseRows(this.prisma, {
         workspaceId: context.workspaceId,
         collectionDocumentId: input.collectionDocumentId,
-        properties,
+        scope,
         filters,
         sorts,
         limit,
         offset,
       });
     } catch (error) {
-      if (
-        error instanceof UnknownDatabasePropertyError ||
-        error instanceof InvalidDatabaseFilterError
-      ) {
-        throw AppError.validation(error.message);
-      }
-      throw error;
+      throw this.toQueryError(error);
     }
 
-    const values = await this.prisma.documentPropertyValue.findMany({
-      where: { documentId: { in: rows.map((row) => row.id) } },
-    });
+    const rowIds = rows.map((row) => row.id);
+    const [values, derived] = await Promise.all([
+      this.prisma.documentPropertyValue.findMany({ where: { documentId: { in: rowIds } } }),
+      this.readDerivedValues(rowIds, scope),
+    ]);
     const valuesByRow = new Map<string, StoredValueRow[]>();
     for (const value of values) {
       const list = valuesByRow.get(value.documentId);
@@ -300,24 +307,84 @@ export class DatabaseRowsService {
       else list.push(value);
     }
 
-    const propertyList = [...properties.values()];
+    const propertyList = [...scope.properties.values()];
     const result: DatabaseRow[] = rows.map((row) => ({
       document: toSummary(row),
-      values: propertyList.map((property) => ({
-        propertyId: property.id,
-        value: COMPUTED_TYPES.has(property.type)
-          ? computedValue(property.type, row)
-          : storedToResponseValue(
-              property,
-              valuesByRow.get(row.id)?.find((entry) => entry.propertyId === property.id),
-            ),
-      })),
+      values: propertyList.map((property) =>
+        this.toValue(property, scope, {
+          row,
+          stored: valuesByRow.get(row.id)?.find((entry) => entry.propertyId === property.id),
+          derived: derived.get(row.id)?.get(property.id),
+        }),
+      ),
     }));
 
     return {
       rows: result,
       nextCursor: rows.length === limit ? encodeCursor(offset + limit) : null,
     };
+  }
+
+  /**
+   * One `{propertyId, value}` pair, whichever of the three kinds of column it
+   * is: computed from the row document, stored in `document_property_value`,
+   * or derived by the query engine from other rows.
+   */
+  private toValue(
+    property: DatabasePropertyRef,
+    scope: DatabaseQueryScope,
+    sources: {
+      row: DatabaseQueryRowRecord;
+      stored: StoredValueRow | undefined;
+      derived: unknown;
+    },
+  ): DatabaseRowPropertyValue {
+    if (COMPUTED_TYPES.has(property.type)) {
+      return { propertyId: property.id, value: computedValue(property.type, sources.row) };
+    }
+    if (isDerivedColumn(property.type)) {
+      return {
+        propertyId: property.id,
+        value: derivedToResponseValue(formulaTypeOf(property, scope.schema), sources.derived),
+      };
+    }
+    return { propertyId: property.id, value: storedToResponseValue(property, sources.stored) };
+  }
+
+  /**
+   * The ROLLUP and FORMULA values of a page of rows, or empty values when the
+   * database cannot compute them.
+   *
+   * A broken configuration is refused when it is written, so reaching this
+   * catch means something changed underneath one -- and a table that shows
+   * every other column is a far better answer to that than a 500 on the whole
+   * database.
+   */
+  private async readDerivedValues(
+    rowIds: readonly string[],
+    scope: DatabaseQueryScope,
+  ): Promise<Map<string, Map<string, unknown>>> {
+    const derived = derivedPropertiesOf(scope);
+    if (derived.length === 0 || rowIds.length === 0) return new Map();
+    try {
+      return await queryDerivedValues(this.prisma, { documentIds: rowIds, derived, scope });
+    } catch (error) {
+      if (error instanceof DerivedPropertyError) return new Map();
+      throw error;
+    }
+  }
+
+  private toQueryError(error: unknown): unknown {
+    if (
+      error instanceof UnknownDatabasePropertyError ||
+      error instanceof InvalidDatabaseFilterError
+    ) {
+      return AppError.validation(error.message);
+    }
+    if (error instanceof DerivedPropertyError) {
+      return new AppError('database_property_config_invalid', error.message);
+    }
+    return error;
   }
 
   async create(input: {
@@ -434,25 +501,34 @@ export class DatabaseRowsService {
     workspaceId: string;
     correlationId: string;
   }): Promise<void> {
-    const propertyRows = await this.prisma.databaseProperty.findMany({
-      where: { documentId: input.collectionDocumentId },
-      select: { id: true, type: true, config: true },
-    });
-    const properties = buildPropertyMap(propertyRows.map(toPropertyRef));
+    const scope = await loadDatabaseScope(this.prisma, input.collectionDocumentId);
 
     // Resolved before the transaction opens: a validation failure here is the
     // caller's mistake, and finding it out with a transaction held open would
-    // hold a connection for the length of the check.
-    const writes = input.values.map((entry) => {
-      const property = properties.get(entry.propertyId);
-      if (property === undefined) {
-        throw AppError.validation(`Unknown property in this database: ${entry.propertyId}`);
-      }
-      if (COMPUTED_TYPES.has(property.type)) {
-        throw AppError.validation(`${property.type} is computed and cannot be written directly`);
-      }
-      return { propertyId: entry.propertyId, columns: toColumnData(property, entry.value) };
-    });
+    // hold a connection for the length of the check. Relations are the one kind
+    // that needs the database to check them, because the ids have to be rows of
+    // the linked collection -- so that lookup happens here too, not inside.
+    const writes = await Promise.all(
+      input.values.map(async (entry) => {
+        const property = scope.properties.get(entry.propertyId);
+        if (property === undefined) {
+          throw AppError.validation(`Unknown property in this database: ${entry.propertyId}`);
+        }
+        if (COMPUTED_TYPES.has(property.type)) {
+          throw AppError.validation(`${property.type} is computed and cannot be written directly`);
+        }
+        if (isDerivedColumn(property.type)) {
+          throw AppError.validation(
+            `${property.type} is computed from other rows and cannot be written`,
+          );
+        }
+        const value =
+          property.type === 'RELATION' && entry.value !== null
+            ? await normalizeRelationValue({ prisma: this.prisma, property, value: entry.value })
+            : entry.value;
+        return { propertyId: entry.propertyId, columns: toColumnData(property, value) };
+      }),
+    );
 
     await this.prisma.$transaction(async (tx) => {
       for (const write of writes) {
@@ -475,26 +551,22 @@ export class DatabaseRowsService {
   }
 
   private async toRowResponse(collectionDocumentId: string, rowId: string): Promise<DatabaseRow> {
-    const [row, propertyRows, values] = await Promise.all([
+    const [row, scope, values] = await Promise.all([
       this.documents.loadDocumentOrThrow(rowId),
-      this.prisma.databaseProperty.findMany({
-        where: { documentId: collectionDocumentId },
-        select: { id: true, type: true, config: true },
-      }),
+      loadDatabaseScope(this.prisma, collectionDocumentId),
       this.prisma.documentPropertyValue.findMany({ where: { documentId: rowId } }),
     ]);
+    const derived = (await this.readDerivedValues([rowId], scope)).get(rowId);
 
     return {
       document: toSummary(row),
-      values: propertyRows.map((property) => ({
-        propertyId: property.id,
-        value: COMPUTED_TYPES.has(property.type)
-          ? computedValue(property.type, row as unknown as DatabaseQueryRowRecord)
-          : storedToResponseValue(
-              toPropertyRef(property),
-              values.find((entry) => entry.propertyId === property.id),
-            ),
-      })),
+      values: [...scope.properties.values()].map((property) =>
+        this.toValue(property, scope, {
+          row: row as unknown as DatabaseQueryRowRecord,
+          stored: values.find((entry) => entry.propertyId === property.id),
+          derived: derived?.get(property.id),
+        }),
+      ),
     };
   }
 

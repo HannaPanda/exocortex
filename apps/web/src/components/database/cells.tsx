@@ -23,9 +23,11 @@ import {
 import {
   ARRAY_PROPERTY_TYPES,
   COMPUTED_PROPERTY_TYPES,
+  DERIVED_PROPERTY_TYPE_SET,
   OPTION_COLOR_BG_CLASS,
   OPTION_COLOR_TEXT_CLASS,
 } from './property-types';
+import { RelationCell, RelationValueDisplay } from './relation-cell';
 import { ROW_HEIGHT_BOX_CLAMP, ROW_HEIGHT_LINE_CLAMP } from './table-columns';
 
 type CellValue = DatabaseRowPropertyValue['value'];
@@ -57,10 +59,15 @@ export function PropertyCell({
 }: PropertyCellProps) {
   const cellKey = JSON.stringify(value);
   const shared = { property, value, onChange, readOnly, rowHeight };
-  if (COMPUTED_PROPERTY_TYPES.has(property.type)) {
+  // A rollup and a formula are computed by the query engine on every read, so
+  // there is nothing here to edit: the way to change one is to change the
+  // linked rows, or the formula itself in the column menu.
+  if (COMPUTED_PROPERTY_TYPES.has(property.type) || DERIVED_PROPERTY_TYPE_SET.has(property.type)) {
     return <ReadonlyCell property={property} value={value} rowHeight={rowHeight} />;
   }
   switch (property.type) {
+    case 'RELATION':
+      return <RelationCell key={cellKey} {...shared} />;
     case 'CHECKBOX':
       return <CheckboxCell key={cellKey} {...shared} />;
     case 'NUMBER':
@@ -594,15 +601,27 @@ function IdListCell(props: PropertyCellProps) {
   );
 }
 
+const ISO_INSTANT = /^\d{4}-\d{2}-\d{2}T/;
+
 function formatComputed(property: DatabaseProperty, value: CellValue): string {
   if (value === null) return '—';
   if (property.type === 'CREATED_TIME' || property.type === 'UPDATED_TIME') {
-    return new Date(String(value)).toLocaleString('de-DE', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    });
+    return formatInstant(String(value));
   }
+  // A formula answers a number, a text, a date or a yes/no, and the cell only
+  // ever sees the value. An ISO instant is recognised by its shape so a date
+  // formula reads like a date column rather than like a timestamp.
+  if (typeof value === 'boolean') return value ? 'Ja' : 'Nein';
+  if (typeof value === 'string' && ISO_INSTANT.test(value)) return formatInstant(value);
+  if (typeof value === 'number') return value.toLocaleString('de-DE', { maximumFractionDigits: 6 });
   return String(value);
+}
+
+function formatInstant(value: string): string {
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime())
+    ? value
+    : parsed.toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
 }
 
 function ReadonlyCell({
@@ -660,6 +679,9 @@ export function PropertyValueDisplay({
     return formatted === null ? null : (
       <span className="text-xs text-muted-foreground">{formatted}</span>
     );
+  }
+  if (property.type === 'RELATION') {
+    return <RelationValueDisplay property={property} value={value} />;
   }
   if (property.type === 'SELECT' && typeof value === 'string') {
     return <OptionBadge optionId={value} property={property} />;

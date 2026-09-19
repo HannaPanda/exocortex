@@ -327,6 +327,17 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   automation triggers) have to be claimed by an entry or the build goes red,
   and a claim that matches nothing goes red too. Discovery is a per-person
   date, and an absent marker means the reader has missed nothing.
+- ADR-041: a computed database column is a SQL expression, never a stored
+  value. A RELATION is a list of row ids in the `jsonValue` column the
+  array-valued types already use; a ROLLUP and a FORMULA store nothing and are
+  compiled on every read, so the same expression serves the SELECT, the WHERE
+  and the ORDER BY -- which is the only way a computed column can be filtered
+  and sorted. The formula language is our own, total and typed
+  (`packages/contracts/src/database-formula.ts`); a rollup never aggregates
+  over another derived column, which bounds the schema a read has to load to
+  one hop; a relation may not cross a workspace; and a configuration that
+  stops compiling is refused when it is written, except for a rename, which
+  rewrites the formulas that name the column.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

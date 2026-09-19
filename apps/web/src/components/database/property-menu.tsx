@@ -51,11 +51,17 @@ import {
 } from '@/lib/api/database-queries';
 
 import {
-  ARRAY_PROPERTY_TYPES,
+  isPropertyConfigComplete,
+  type PropertyConfig,
+  PropertyConfigEditor,
+} from './property-config-editor';
+import {
+  CONFIGURED_PROPERTY_TYPE_SET,
   OPTION_COLOR_BG_CLASS,
   OPTION_COLOR_LABELS,
   OPTION_COLOR_TEXT_CLASS,
   OPTION_COLORS,
+  OPTION_PROPERTY_TYPES,
   PROPERTY_TYPE_LABELS,
 } from './property-types';
 import {
@@ -67,6 +73,7 @@ import {
 
 interface PropertyMenuProps {
   documentId: string;
+  workspaceId: string;
   property: DatabaseProperty;
   /** The view this header belongs to, and the columns it shows, in order. */
   view: DatabaseView;
@@ -75,10 +82,18 @@ interface PropertyMenuProps {
 }
 
 /** Column header: name, icon-labelled type, and the manage/delete menu. */
-export function PropertyMenu({ documentId, property, view, columns, readOnly }: PropertyMenuProps) {
+export function PropertyMenu({
+  documentId,
+  workspaceId,
+  property,
+  view,
+  columns,
+  readOnly,
+}: PropertyMenuProps) {
   const [renaming, setRenaming] = React.useState(false);
   const [managingOptions, setManagingOptions] = React.useState(false);
   const [editingDateFormat, setEditingDateFormat] = React.useState(false);
+  const [editingConfig, setEditingConfig] = React.useState(false);
   const [confirmingDelete, setConfirmingDelete] = React.useState(false);
   const [name, setName] = React.useState(property.name);
 
@@ -86,7 +101,8 @@ export function PropertyMenu({ documentId, property, view, columns, readOnly }: 
   const deleteProperty = useDeleteDatabaseProperty(documentId);
   const move = useColumnMove(documentId, view, columns);
 
-  const hasOptions = ARRAY_PROPERTY_TYPES.has(property.type) || property.type === 'SELECT';
+  const hasOptions = OPTION_PROPERTY_TYPES.has(property.type);
+  const hasConfig = CONFIGURED_PROPERTY_TYPE_SET.has(property.type);
 
   if (readOnly) {
     return (
@@ -140,6 +156,14 @@ export function PropertyMenu({ documentId, property, view, columns, readOnly }: 
               <SettingsIcon /> Datumsformat
             </DropdownMenuItem>
           ) : null}
+          {hasConfig ? (
+            <DropdownMenuItem
+              onClick={() => setEditingConfig(true)}
+              data-testid={`property-configure-${property.id}`}
+            >
+              <SettingsIcon /> {PROPERTY_TYPE_LABELS[property.type]} einrichten
+            </DropdownMenuItem>
+          ) : null}
           <DropdownMenuSeparator />
           <DropdownMenuItem variant="destructive" onClick={() => setConfirmingDelete(true)}>
             <TrashIcon /> Eigenschaft löschen
@@ -187,6 +211,19 @@ export function PropertyMenu({ documentId, property, view, columns, readOnly }: 
         <PopoverTrigger render={<span />} nativeButton={false} />
         <PopoverContent align="start" className="w-72">
           <DateFormatEditor documentId={documentId} property={property} />
+        </PopoverContent>
+      </Popover>
+
+      <Popover open={editingConfig} onOpenChange={setEditingConfig}>
+        {/* Same programmatic-anchor pattern as the popovers above. */}
+        <PopoverTrigger render={<span />} nativeButton={false} />
+        <PopoverContent align="start" className="w-80">
+          <DerivedConfigEditor
+            documentId={documentId}
+            workspaceId={workspaceId}
+            property={property}
+            onDone={() => setEditingConfig(false)}
+          />
         </PopoverContent>
       </Popover>
 
@@ -406,5 +443,51 @@ function OptionsManager({
         </Button>
       </form>
     </div>
+  );
+}
+
+/**
+ * Changes the settings of a RELATION, ROLLUP or FORMULA column after the fact.
+ *
+ * Saving is a plain `PATCH` of `config`, so the API runs exactly the same
+ * checks it ran when the column was created -- including whether every other
+ * derived column of this database still compiles afterwards.
+ */
+function DerivedConfigEditor({
+  documentId,
+  workspaceId,
+  property,
+  onDone,
+}: {
+  documentId: string;
+  workspaceId: string;
+  property: DatabaseProperty;
+  onDone: () => void;
+}) {
+  const [config, setConfig] = React.useState<PropertyConfig>(property.config);
+  const updateProperty = useUpdateDatabaseProperty(documentId);
+  const ready = isPropertyConfigComplete(property.type, config);
+
+  return (
+    <form
+      className="flex flex-col gap-3"
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (!ready) return;
+        updateProperty.mutate({ propertyId: property.id, request: { config } });
+        onDone();
+      }}
+    >
+      <PropertyConfigEditor
+        documentId={documentId}
+        workspaceId={workspaceId}
+        type={property.type}
+        config={config}
+        onChange={setConfig}
+      />
+      <Button type="submit" size="sm" disabled={!ready}>
+        Speichern
+      </Button>
+    </form>
   );
 }

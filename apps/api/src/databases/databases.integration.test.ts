@@ -2,7 +2,11 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
 import { loadDotEnv } from '@exocortex/config';
-import { IMPLEMENTED_PROPERTY_TYPES } from '@exocortex/contracts';
+import {
+  CONFIGURED_PROPERTY_TYPES,
+  type DatabasePropertyType,
+  IMPLEMENTED_PROPERTY_TYPES,
+} from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
@@ -134,10 +138,30 @@ async function createCollection(title: string, targetWorkspaceId = workspaceId):
   return document.id;
 }
 
+/** The types that mean something on their own; the other three need a config. */
+const PLAIN_PROPERTY_TYPES = IMPLEMENTED_PROPERTY_TYPES.filter(
+  (type) => !CONFIGURED_PROPERTY_TYPES.includes(type as (typeof CONFIGURED_PROPERTY_TYPES)[number]),
+);
+
+async function createProperty(
+  collectionId: string,
+  type: DatabasePropertyType,
+  name: string,
+  config?: Record<string, unknown>,
+): Promise<string> {
+  const property = await properties.create({
+    collectionDocumentId: collectionId,
+    userId: ownerId,
+    request: { type, name, config },
+    correlationId,
+  });
+  return property.id;
+}
+
 describe('database properties', () => {
-  it('creates a property for every implemented type', async () => {
+  it('creates a property for every plain type', async () => {
     const collectionId = await createCollection('Aufgaben');
-    for (const type of IMPLEMENTED_PROPERTY_TYPES) {
+    for (const type of PLAIN_PROPERTY_TYPES) {
       const property = await properties.create({
         collectionDocumentId: collectionId,
         userId: ownerId,
@@ -149,8 +173,8 @@ describe('database properties', () => {
     }
   });
 
-  it('rejects a reserved property type', async () => {
-    const collectionId = await createCollection('Reserviert');
+  it('rejects a relation without a configuration', async () => {
+    const collectionId = await createCollection('Ohne Konfiguration');
     await expect(
       properties.create({
         collectionDocumentId: collectionId,
@@ -158,7 +182,7 @@ describe('database properties', () => {
         request: { type: 'RELATION', name: 'Verknüpfung' },
         correlationId,
       }),
-    ).rejects.toMatchObject({ code: 'database_property_reserved' });
+    ).rejects.toMatchObject({ code: 'validation_failed' });
   });
 
   it('rejects adding a property to a plain page', async () => {
@@ -1067,5 +1091,346 @@ describe('date spans', () => {
         }),
       ).rejects.toBeInstanceOf(AppError);
     });
+  });
+});
+
+/**
+ * RELATION, ROLLUP and FORMULA end to end (issue #76).
+ *
+ * Against the real database on purpose: the whole point of the three types is
+ * that they are computed by the query engine, so a test with a stubbed Prisma
+ * would prove that the TypeScript around the SQL is well typed and nothing
+ * about whether the SQL is right.
+ */
+describe('linked and computed properties', () => {
+  interface Fixture {
+    projects: string;
+    tasks: string;
+    cost: string;
+    due: string;
+    done: string;
+    link: string;
+  }
+
+  async function createLinkedDatabases(label: string): Promise<Fixture> {
+    const tasks = await createCollection(`Aufgaben ${label}`);
+    const projects = await createCollection(`Projekte ${label}`);
+    const cost = await createProperty(tasks, 'NUMBER', 'Kosten');
+    const due = await createProperty(tasks, 'DATE', 'Fällig');
+    const done = await createProperty(tasks, 'CHECKBOX', 'Erledigt');
+    const link = await createProperty(projects, 'RELATION', 'Aufgaben', {
+      targetCollectionId: tasks,
+      allowMultiple: true,
+    });
+    return { projects, tasks, cost, due, done, link };
+  }
+
+  async function addTask(
+    fixture: Fixture,
+    title: string,
+    values: { propertyId: string; value: unknown }[],
+  ): Promise<string> {
+    const row = await rows.create({
+      collectionDocumentId: fixture.tasks,
+      userId: ownerId,
+      request: { title, values: values as never },
+      correlationId,
+    });
+    return row.document.id;
+  }
+
+  function valueOf(row: { values: { propertyId: string; value: unknown }[] }, propertyId: string) {
+    return row.values.find((entry) => entry.propertyId === propertyId)?.value ?? null;
+  }
+
+  it('stores a relation as row ids and reads them back', async () => {
+    const fixture = await createLinkedDatabases('A');
+    const first = await addTask(fixture, 'Erste', []);
+    const second = await addTask(fixture, 'Zweite', []);
+
+    const project = await rows.create({
+      collectionDocumentId: fixture.projects,
+      userId: ownerId,
+      request: { title: 'Projekt', values: [{ propertyId: fixture.link, value: [first, second] }] },
+      correlationId,
+    });
+    expect(valueOf(project, fixture.link)).toEqual([first, second]);
+  });
+
+  it('refuses an id that is not a row of the linked database', async () => {
+    const fixture = await createLinkedDatabases('B');
+    const project = await rows.create({
+      collectionDocumentId: fixture.projects,
+      userId: ownerId,
+      request: { title: 'Projekt', values: [] },
+      correlationId,
+    });
+    await expect(
+      rows.updateValues({
+        rowId: project.document.id,
+        userId: ownerId,
+        request: { values: [{ propertyId: fixture.link, value: [fixture.tasks] }] },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'validation_failed' });
+  });
+
+  it('refuses a relation pointing at another workspace', async () => {
+    const here = await createCollection('Hier');
+    const elsewhere = await createCollection('Woanders', otherWorkspaceId);
+    await expect(
+      properties.create({
+        collectionDocumentId: here,
+        userId: ownerId,
+        request: {
+          type: 'RELATION',
+          name: 'Fremd',
+          config: { targetCollectionId: elsewhere, allowMultiple: true },
+        },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'validation_failed' });
+  });
+
+  it('counts, sums and dates over the linked rows', async () => {
+    const fixture = await createLinkedDatabases('C');
+    const cheap = await addTask(fixture, 'Billig', [
+      { propertyId: fixture.cost, value: 10 },
+      { propertyId: fixture.due, value: '2026-03-01T00:00:00.000Z' },
+    ]);
+    const dear = await addTask(fixture, 'Teuer', [
+      { propertyId: fixture.cost, value: 32.5 },
+      { propertyId: fixture.due, value: '2026-05-01T00:00:00.000Z' },
+    ]);
+
+    const count = await createProperty(fixture.projects, 'ROLLUP', 'Anzahl', {
+      relationPropertyId: fixture.link,
+      targetPropertyId: null,
+      aggregate: 'count',
+    });
+    const sum = await createProperty(fixture.projects, 'ROLLUP', 'Gesamtkosten', {
+      relationPropertyId: fixture.link,
+      targetPropertyId: fixture.cost,
+      aggregate: 'sum',
+    });
+    const earliest = await createProperty(fixture.projects, 'ROLLUP', 'Erster Termin', {
+      relationPropertyId: fixture.link,
+      targetPropertyId: fixture.due,
+      aggregate: 'earliest',
+    });
+
+    await rows.create({
+      collectionDocumentId: fixture.projects,
+      userId: ownerId,
+      request: { title: 'Projekt', values: [{ propertyId: fixture.link, value: [cheap, dear] }] },
+      correlationId,
+    });
+    const empty = await rows.create({
+      collectionDocumentId: fixture.projects,
+      userId: ownerId,
+      request: { title: 'Leeres Projekt', values: [] },
+      correlationId,
+    });
+
+    const page = await rows.query({
+      collectionDocumentId: fixture.projects,
+      userId: ownerId,
+      request: { limit: 20 },
+    });
+    const filled = page.rows.find((row) => row.document.title === 'Projekt');
+    expect(valueOf(filled!, count)).toBe(2);
+    expect(valueOf(filled!, sum)).toBe(42.5);
+    expect(valueOf(filled!, earliest)).toBe('2026-03-01T00:00:00.000Z');
+
+    // A project with no links counts zero and sums zero, but has no earliest
+    // date: "no rows had a date" is empty, not a date.
+    const none = page.rows.find((row) => row.document.id === empty.document.id);
+    expect(valueOf(none!, count)).toBe(0);
+    expect(valueOf(none!, sum)).toBe(0);
+    expect(valueOf(none!, earliest)).toBeNull();
+  });
+
+  it('computes a formula over the row, and over a rollup of it', async () => {
+    const fixture = await createLinkedDatabases('D');
+    const task = await addTask(fixture, 'Eine', [{ propertyId: fixture.cost, value: 20 }]);
+    const budget = await createProperty(fixture.projects, 'NUMBER', 'Budget');
+    const spent = await createProperty(fixture.projects, 'ROLLUP', 'Ausgegeben', {
+      relationPropertyId: fixture.link,
+      targetPropertyId: fixture.cost,
+      aggregate: 'sum',
+    });
+    const left = await createProperty(fixture.projects, 'FORMULA', 'Rest', {
+      expression: 'prop("Budget") - prop("Ausgegeben")',
+    });
+    const state = await createProperty(fixture.projects, 'FORMULA', 'Status', {
+      expression: 'if(prop("Rest") < 0; "überzogen"; "im Rahmen")',
+    });
+
+    await rows.create({
+      collectionDocumentId: fixture.projects,
+      userId: ownerId,
+      request: {
+        title: 'Projekt',
+        values: [
+          { propertyId: fixture.link, value: [task] },
+          { propertyId: budget, value: 15 },
+        ],
+      },
+      correlationId,
+    });
+
+    const page = await rows.query({
+      collectionDocumentId: fixture.projects,
+      userId: ownerId,
+      request: { limit: 20 },
+    });
+    const row = page.rows[0];
+    expect(valueOf(row!, spent)).toBe(20);
+    expect(valueOf(row!, left)).toBe(-5);
+    expect(valueOf(row!, state)).toBe('überzogen');
+  });
+
+  it('filters and sorts by a rollup', async () => {
+    const fixture = await createLinkedDatabases('E');
+    const one = await addTask(fixture, 'Eins', []);
+    const two = await addTask(fixture, 'Zwei', []);
+    const count = await createProperty(fixture.projects, 'ROLLUP', 'Anzahl', {
+      relationPropertyId: fixture.link,
+      targetPropertyId: null,
+      aggregate: 'count',
+    });
+
+    await rows.create({
+      collectionDocumentId: fixture.projects,
+      userId: ownerId,
+      request: {
+        title: 'Zwei Aufgaben',
+        values: [{ propertyId: fixture.link, value: [one, two] }],
+      },
+      correlationId,
+    });
+    await rows.create({
+      collectionDocumentId: fixture.projects,
+      userId: ownerId,
+      request: { title: 'Eine Aufgabe', values: [{ propertyId: fixture.link, value: [one] }] },
+      correlationId,
+    });
+
+    const filtered = await rows.query({
+      collectionDocumentId: fixture.projects,
+      userId: ownerId,
+      request: {
+        limit: 20,
+        filters: {
+          combinator: 'and',
+          conditions: [{ propertyId: count, operator: 'greater_than', value: 1 }],
+        },
+      },
+    });
+    expect(filtered.rows.map((row) => row.document.title)).toEqual(['Zwei Aufgaben']);
+
+    const sorted = await rows.query({
+      collectionDocumentId: fixture.projects,
+      userId: ownerId,
+      request: { limit: 20, sorts: [{ propertyId: count, direction: 'desc' }] },
+    });
+    expect(sorted.rows.map((row) => row.document.title)).toEqual(['Zwei Aufgaben', 'Eine Aufgabe']);
+  });
+
+  it('refuses to write a computed column', async () => {
+    const fixture = await createLinkedDatabases('F');
+    const count = await createProperty(fixture.projects, 'ROLLUP', 'Anzahl', {
+      relationPropertyId: fixture.link,
+      targetPropertyId: null,
+      aggregate: 'count',
+    });
+    const project = await rows.create({
+      collectionDocumentId: fixture.projects,
+      userId: ownerId,
+      request: { title: 'Projekt', values: [] },
+      correlationId,
+    });
+    await expect(
+      rows.updateValues({
+        rowId: project.document.id,
+        userId: ownerId,
+        request: { values: [{ propertyId: count, value: 7 }] },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'validation_failed' });
+  });
+
+  it('refuses a formula that names a column which does not exist', async () => {
+    const collectionId = await createCollection('Formelfehler');
+    await expect(
+      properties.create({
+        collectionDocumentId: collectionId,
+        userId: ownerId,
+        request: { type: 'FORMULA', name: 'Kaputt', config: { expression: 'prop("Nichts") + 1' } },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'database_property_config_invalid' });
+  });
+
+  it('refuses two formulas that depend on each other', async () => {
+    const collectionId = await createCollection('Kreis');
+    await createProperty(collectionId, 'NUMBER', 'Basis');
+    await createProperty(collectionId, 'FORMULA', 'A', { expression: 'prop("Basis") + 1' });
+    await expect(
+      properties.create({
+        collectionDocumentId: collectionId,
+        userId: ownerId,
+        request: { type: 'FORMULA', name: 'B', config: { expression: 'prop("A") + prop("B")' } },
+        correlationId,
+      }),
+    ).rejects.toMatchObject({ code: 'database_property_config_invalid' });
+  });
+
+  it('follows a column rename into the formulas that name it', async () => {
+    const collectionId = await createCollection('Umbenennen');
+    const basis = await createProperty(collectionId, 'NUMBER', 'Basis');
+    const doubled = await createProperty(collectionId, 'FORMULA', 'Doppelt', {
+      expression: 'prop("Basis") * 2',
+    });
+
+    await properties.update({
+      propertyId: basis,
+      userId: ownerId,
+      request: { name: 'Grundwert' },
+      correlationId,
+    });
+
+    const after = await properties.list(collectionId, ownerId);
+    const formula = after.find((property) => property.id === doubled);
+    expect(formula?.config).toMatchObject({ expression: 'prop("Grundwert") * 2' });
+
+    const row = await rows.create({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { title: 'Zeile', values: [{ propertyId: basis, value: 21 }] },
+      correlationId,
+    });
+    const page = await rows.query({
+      collectionDocumentId: collectionId,
+      userId: ownerId,
+      request: { limit: 5 },
+    });
+    expect(
+      valueOf(
+        page.rows.find((entry) => entry.document.id === row.document.id)!,
+        doubled,
+      ),
+    ).toBe(42);
+  });
+
+  it('refuses to delete a column a formula still reads', async () => {
+    const collectionId = await createCollection('Noch benutzt');
+    const basis = await createProperty(collectionId, 'NUMBER', 'Basis');
+    await createProperty(collectionId, 'FORMULA', 'Doppelt', {
+      expression: 'prop("Basis") * 2',
+    });
+    await expect(
+      properties.delete({ propertyId: basis, userId: ownerId, correlationId }),
+    ).rejects.toMatchObject({ code: 'database_property_in_use' });
   });
 });

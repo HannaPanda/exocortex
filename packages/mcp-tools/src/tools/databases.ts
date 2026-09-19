@@ -43,10 +43,10 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
 import { ICON_COLOR_DESCRIPTION, ICON_DESCRIPTION } from './pages.js';
 
 /**
- * The query engine and property-write endpoint only implement a subset of the
- * 18 `DatabasePropertyType` values (`RELATION`/`ROLLUP`/`FORMULA` are
- * reserved). This enum is used for every tool input so the model is never
- * told it can create a property type the API will reject.
+ * Every property type the query engine and the property-write endpoint
+ * implement. Built from `IMPLEMENTED_PROPERTY_TYPES` rather than from the
+ * enum, so a type reserved in the contract can never be offered to a model as
+ * something it can create.
  */
 const implementedPropertyTypeSchema = z.enum(
   IMPLEMENTED_PROPERTY_TYPES as unknown as readonly [
@@ -55,9 +55,29 @@ const implementedPropertyTypeSchema = z.enum(
   ],
 );
 
+/**
+ * What the three linked types need in `config`, written out because a model
+ * cannot guess the shape from the type name and a wrong bag is a refused call.
+ */
+const PROPERTY_CONFIG_DESCRIPTION = [
+  'Typabhängige Konfiguration.',
+  'RELATION: { "targetCollectionId": "<id der Ziel-Datenbank>", "allowMultiple": true }.',
+  'ROLLUP: { "relationPropertyId": "<id der Verknüpfungsspalte>", "targetPropertyId": "<id einer Spalte der Ziel-Datenbank oder null>", "aggregate": "count|count_unique|count_not_empty|sum|average|min|max|earliest|latest" }.',
+  "FORMULA: { \"expression\": \"if(prop('Menge') > 0; prop('Preis') * prop('Menge'); 0)\" }.",
+  'DATE: { "includeTime": false, "isRange": false, "timeZone": null }.',
+  'Bei allen anderen Typen weglassen.',
+].join(' ');
+
+const propertyConfigSchema = z
+  .record(z.string(), z.unknown())
+  .nullable()
+  .optional()
+  .describe(PROPERTY_CONFIG_DESCRIPTION);
+
 const createDatabaseRequestPropertySchema = z.object({
   type: implementedPropertyTypeSchema,
   name: z.string().trim().min(1).max(100),
+  config: propertyConfigSchema,
 });
 
 const databaseCreateInputSchema = z.object({
@@ -102,7 +122,7 @@ export const databaseCreateTool: AnyToolDefinition = defineTool({
       const created = await client.request({
         method: 'POST',
         path: `/api/documents/${document.id}/properties`,
-        body: { type: property.type, name: property.name },
+        body: { type: property.type, name: property.name, config: property.config },
         responseSchema: databasePropertySchema,
       });
       properties.push(created);
@@ -158,7 +178,7 @@ export const databaseSchemaTool: AnyToolDefinition = defineTool({
 const databasePropertyCreateInputSchema = z
   .object({ documentId: idSchema })
   .extend(createDatabasePropertyRequestSchema.shape)
-  .extend({ type: implementedPropertyTypeSchema });
+  .extend({ type: implementedPropertyTypeSchema, config: propertyConfigSchema });
 
 export const databasePropertyCreateTool: AnyToolDefinition = defineTool({
   name: 'exo_database_property_create',
@@ -190,6 +210,7 @@ export const databasePropertyCreateTool: AnyToolDefinition = defineTool({
 const databasePropertyUpdateInputSchema = z
   .object({ documentId: idSchema, propertyId: idSchema })
   .extend(updateDatabasePropertyRequestSchema.shape)
+  .extend({ config: propertyConfigSchema })
   .refine((value) => value.name !== undefined || value.config !== undefined, {
     message: 'At least one of "name" or "config" must be provided',
   });

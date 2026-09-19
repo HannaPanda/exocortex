@@ -32,6 +32,9 @@ export const databaseQueryKeys = {
     ['database', documentId, 'rows', viewId ?? 'default'] as const,
   /** A single row by its own document id, independent of its collection. */
   row: (rowId: string) => ['database', 'row', rowId] as const,
+  /** Titles of the rows a RELATION property can point at. */
+  relationTargets: (collectionId: string) =>
+    ['database', collectionId, 'relation-targets'] as const,
 };
 
 // ---------------------------------------------------------------------------
@@ -341,5 +344,41 @@ export function useDocumentRow(documentId: string | undefined) {
       return response.row;
     },
     enabled: documentId !== undefined,
+  });
+}
+
+/**
+ * How many rows of a linked database the relation picker offers at once.
+ *
+ * The API pages at 100, and a picker that has to scroll past several hundred
+ * entries is the wrong shape for the problem anyway -- the honest fix for a
+ * database that large is a search field, not a longer list. Until then the
+ * limit is visible: the picker says when it is showing only the beginning.
+ */
+export const RELATION_PICKER_LIMIT = 100;
+
+/**
+ * The rows of a linked database, as id and title.
+ *
+ * A relation value is a list of ids and nothing else, which is what keeps it
+ * from leaking anything: the titles come from this ordinary, authorized read
+ * of the target database, so somebody who may not open it sees ids rather than
+ * a name they were never shown.
+ */
+export function useRelationTargetRows(collectionId: string | undefined) {
+  return useQuery({
+    queryKey: databaseQueryKeys.relationTargets(collectionId ?? 'none'),
+    queryFn: async () => {
+      const response = await apiRequest<QueryDatabaseRowsResponse>(
+        `/api/documents/${collectionId ?? ''}/rows/query`,
+        { method: 'POST', body: { limit: RELATION_PICKER_LIMIT } },
+      );
+      return response.rows.map((row) => ({
+        id: row.document.id,
+        title: row.document.title,
+        icon: row.document.icon,
+      }));
+    },
+    enabled: collectionId !== undefined,
   });
 }

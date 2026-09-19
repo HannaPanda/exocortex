@@ -1,6 +1,7 @@
 export * from './ai-model-routes';
 export * from './chunking';
 export * from './client';
+export * from './database-derived';
 export * from './database-query';
 export * from './entities';
 export * from './order-key';

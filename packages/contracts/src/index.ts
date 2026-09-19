@@ -13,6 +13,8 @@ export * from './calendar';
 export * from './clips';
 export * from './collaboration';
 export * from './comments';
+export * from './database-formula';
+export * from './database-relations';
 export * from './database-views';
 export * from './documents';
 export * from './entities';

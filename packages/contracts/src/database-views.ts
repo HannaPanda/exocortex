@@ -27,9 +27,6 @@ export const databasePropertyTypeSchema = z.enum([
   'UPDATED_TIME',
   'CREATED_BY',
   'UPDATED_BY',
-  // Reserved for a later round: accepted by the enum, rejected at the
-  // property-create endpoint with `database_property_reserved` until the
-  // query engine implements them.
   'RELATION',
   'ROLLUP',
   'FORMULA',
@@ -53,6 +50,9 @@ export const IMPLEMENTED_PROPERTY_TYPES = [
   'UPDATED_TIME',
   'CREATED_BY',
   'UPDATED_BY',
+  'RELATION',
+  'ROLLUP',
+  'FORMULA',
 ] as const satisfies readonly DatabasePropertyType[];
 
 /** Property types computed from the row `Document` itself, never stored. */
@@ -61,6 +61,36 @@ export const COMPUTED_PROPERTY_TYPES = [
   'UPDATED_TIME',
   'CREATED_BY',
   'UPDATED_BY',
+] as const satisfies readonly DatabasePropertyType[];
+
+/**
+ * Property types the query engine computes from *other* rows on every read:
+ * a rollup aggregates over a relation, a formula evaluates an expression. They
+ * are never written, so a write to one is a client mistake rather than an
+ * update (ADR-041).
+ */
+export const DERIVED_PROPERTY_TYPES = [
+  'ROLLUP',
+  'FORMULA',
+] as const satisfies readonly DatabasePropertyType[];
+
+/**
+ * Property types that need a `config` before they mean anything. Creating one
+ * without it is refused rather than stored half-finished, because a rollup
+ * with no relation and a formula with no expression are not columns yet.
+ */
+export const CONFIGURED_PROPERTY_TYPES = [
+  'RELATION',
+  'ROLLUP',
+  'FORMULA',
+] as const satisfies readonly DatabasePropertyType[];
+
+/** Property types whose value is a JSON array of ids. */
+export const ARRAY_VALUED_PROPERTY_TYPES = [
+  'MULTI_SELECT',
+  'PERSON',
+  'FILES',
+  'RELATION',
 ] as const satisfies readonly DatabasePropertyType[];
 
 /**
@@ -166,6 +196,12 @@ export const createDatabasePropertyRequestSchema = z.object({
   name: z.string().trim().min(1).max(100),
   /** Server derives the fractional orderKey; omit for "append to the end". */
   afterPropertyId: idSchema.nullable().optional(),
+  /**
+   * Type-specific configuration, validated against the schema for `type`.
+   * Required for RELATION, ROLLUP and FORMULA (`CONFIGURED_PROPERTY_TYPES`):
+   * those three carry their whole meaning in it.
+   */
+  config: z.record(z.string(), z.unknown()).nullable().optional(),
 });
 export type CreateDatabasePropertyRequest = z.infer<typeof createDatabasePropertyRequestSchema>;
 
