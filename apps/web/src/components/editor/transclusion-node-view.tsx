@@ -18,6 +18,7 @@ import {
   Button,
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -273,8 +274,13 @@ function BlockChooser({
         }
       />
       <DropdownMenuContent align="end" className="max-h-80 w-80 overflow-y-auto">
-        <DropdownMenuLabel>Was soll hier stehen?</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => onChoose(null)}>Die ganze Seite</DropdownMenuItem>
+        {/* The label has to sit inside a group: it is `Menu.GroupLabel`, and
+            Base UI throws when it finds none, which the editor's error
+            boundary turns into a blank page rather than a broken menu. */}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Was soll hier stehen?</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => onChoose(null)}>Die ganze Seite</DropdownMenuItem>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         {open ? <BlockChoices documentId={documentId} onChoose={onChoose} /> : null}
       </DropdownMenuContent>
@@ -305,7 +311,7 @@ function BlockChoices({
     return <DropdownMenuItem disabled>Diese Seite hat keine benannten Blöcke.</DropdownMenuItem>;
   }
   return (
-    <>
+    <DropdownMenuGroup>
       {blocks.map((block) => (
         <DropdownMenuItem
           key={block.blockId}
@@ -315,7 +321,7 @@ function BlockChoices({
           <BlockChoiceLabel block={block} />
         </DropdownMenuItem>
       ))}
-    </>
+    </DropdownMenuGroup>
   );
 }
 
