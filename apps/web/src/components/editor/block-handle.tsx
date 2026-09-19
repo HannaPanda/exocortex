@@ -1,5 +1,6 @@
 'use client';
 
+import { type ComputePositionConfig, offset, shift } from '@floating-ui/dom';
 import { DragHandle } from '@tiptap/extension-drag-handle-react';
 import { type Node as PmNode } from '@tiptap/pm/model';
 import { type Editor } from '@tiptap/react';
@@ -10,6 +11,38 @@ import { type BlockCatalogEntry } from '@exocortex/editor';
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@exocortex/ui';
 
 import { BlockActionItems, type BlockTarget } from './block-actions';
+
+/**
+ * Width of the inner lane of the interaction gutter, in pixels.
+ *
+ * The same number as `--gutter-collapse` in `globals.css`, where the rest of the
+ * gutter is defined; it cannot be read from there, because a custom property
+ * resolves to `1.25rem` and not to a pixel count.
+ */
+const COLLAPSE_LANE = 20;
+
+/**
+ * Where the handle sits.
+ *
+ * `offset` moves it out of the inner lane, which belongs to the disclosure
+ * button of a collapsible heading: without it the handle covers that button and
+ * takes its clicks, so a section could not be collapsed while the handle was
+ * showing (issue #88). `shift` is the safety net for the case where the page
+ * could not reserve the full gutter — a narrow editor column with both side
+ * panels pulled wide — and keeps the handle inside its clipping ancestors
+ * rather than letting `AppMain` cut it off. It is deliberately left without
+ * padding: the reserved gutter already leaves the handle clear of the edge, and
+ * a padding would make `shift` nudge the handle on every full-width page.
+ *
+ * A module constant, not an object literal in the JSX: `DragHandle` lists this
+ * in the dependencies of the effect that registers its plugin, and a new
+ * identity per render tears that plugin down (deviation 18).
+ */
+const HANDLE_POSITION: ComputePositionConfig = {
+  placement: 'left-start',
+  strategy: 'absolute',
+  middleware: [offset(COLLAPSE_LANE), shift()],
+};
 
 interface BlockHandleProps {
   editor: Editor;
@@ -71,6 +104,7 @@ export function BlockHandle({ editor, catalog }: BlockHandleProps) {
       editor={editor}
       nested
       onNodeChange={handleNodeChange}
+      computePositionConfig={HANDLE_POSITION}
       className="exocortex-block-handle flex items-center gap-0.5 pr-1"
     >
       <Button

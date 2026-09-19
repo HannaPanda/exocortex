@@ -171,6 +171,7 @@ function headingToggleWidgets(doc: PmNode, editable: boolean): Decoration[] {
           const button = window.document.createElement('button');
           button.type = 'button';
           button.className = 'exocortex-heading-toggle';
+          button.dataset.testid = 'heading-toggle';
           button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
           button.setAttribute(
             'aria-label',

@@ -199,6 +199,107 @@ test.describe('editor', () => {
     await expect(page.locator('.exocortex-editor p', { hasText: 'Ein Block' })).toHaveCount(2);
   });
 
+  /*
+   * The interaction gutter has two lanes, and they are not allowed to share
+   * pixels (issue #88).
+   *
+   * The block handle used to be placed flush against the block, which is
+   * exactly where a collapsible heading puts its disclosure button. The button
+   * was still in the DOM and still counted as visible, so only a real click
+   * shows the bug: the handle lay on top of it and took the pointer event, and
+   * the section could not be collapsed while the handle was showing.
+   */
+  test('keeps a heading collapsible while the block handle is showing', async ({ page }) => {
+    await openEditor(page);
+
+    await page.keyboard.type('# Abschnitt');
+    await page.keyboard.press('Enter');
+    await page.keyboard.type('Inhalt des Abschnitts');
+
+    const heading = page.locator('.exocortex-editor h1', { hasText: 'Abschnitt' }).first();
+    const body = page.locator('.exocortex-editor p', { hasText: 'Inhalt des Abschnitts' }).first();
+    const toggle = page.getByTestId('heading-toggle').first();
+    await expect(toggle).toBeVisible();
+
+    const box = await heading.boundingBox();
+    if (box === null) throw new Error('heading has no layout');
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.move(box.x + 8, box.y + box.height / 2, { steps: 8 });
+
+    const handle = page.getByTestId('block-handle');
+    await expect(handle).toBeVisible();
+
+    const handleBox = await handle.boundingBox();
+    const toggleBox = await toggle.boundingBox();
+    if (handleBox === null || toggleBox === null) throw new Error('the gutter has no layout');
+    expect(handleBox.x + handleBox.width).toBeLessThanOrEqual(toggleBox.x);
+
+    // `click` runs its own hit test, so this fails if anything covers the
+    // button -- which is the regression, not the assertion below it.
+    await toggle.click();
+    await expect(body).toBeHidden();
+
+    await page.getByTestId('heading-toggle').first().click();
+    await expect(body).toBeVisible();
+  });
+
+  /*
+   * The other half of issue #88: a `full` page with both side panels pulled to
+   * their maximum leaves the text almost at the left edge of the canvas, and
+   * the handle sits left of the text. Without a reserved gutter it landed under
+   * the navigation or was cut off by `AppMain`, which clips on purpose.
+   */
+  test('keeps the block handle inside the canvas on a full-width page', async ({ page }) => {
+    // Both panels at their maximum width, so the editor column is as narrow as
+    // a person can make it without resizing the window.
+    await page.addInitScript(() => {
+      window.localStorage.setItem('exocortex.sidebar', JSON.stringify({ open: true, width: 420 }));
+      window.localStorage.setItem('exocortex.context', JSON.stringify({ open: true, width: 520 }));
+    });
+    await page.setViewportSize({ width: 1440, height: 900 });
+
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    await createPage(page, `Gutter ${Date.now().toString(36)}`);
+    await expect(page.getByTestId('editor-surface')).toBeVisible();
+    await expect(page.getByTestId('sidebar')).toBeVisible();
+    await expect(page.getByTestId('context-panel')).toBeVisible();
+
+    await page.getByTestId('document-actions').click();
+    await page.getByTestId('open-page-properties').click();
+    await page.getByTestId('layout-full').click();
+    await page.getByTestId('save-page-properties').click();
+    await expect(page.locator('.exocortex-page')).toHaveAttribute('data-layout', 'full', {
+      timeout: 15_000,
+    });
+
+    await page.getByTestId('editor-surface').click();
+    await page.keyboard.type('Ein Block am linken Rand');
+
+    const block = page.locator('.exocortex-editor p', { hasText: 'Ein Block am linken Rand' });
+    const box = await block.first().boundingBox();
+    if (box === null) throw new Error('block has no layout');
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.move(box.x + 8, box.y + box.height / 2, { steps: 8 });
+
+    const handle = page.getByTestId('block-handle');
+    await expect(handle).toBeVisible();
+
+    const main = await page.locator('#exocortex-main').boundingBox();
+    const handleBox = await handle.boundingBox();
+    const insert = page.getByTestId('block-insert');
+    const insertBox = await insert.boundingBox();
+    if (main === null || handleBox === null || insertBox === null) {
+      throw new Error('the gutter has no layout');
+    }
+    expect(insertBox.x).toBeGreaterThanOrEqual(main.x);
+    expect(handleBox.x + handleBox.width).toBeLessThanOrEqual(main.x + main.width);
+
+    // Inside the box is not the same as reachable: this click hit tests too.
+    await insert.click();
+    await expect(page.locator('.exocortex-editor p')).toHaveCount(2);
+  });
+
   test('offers the code language picker inside a code block', async ({ page }) => {
     await openEditor(page);
 

@@ -254,6 +254,33 @@ The editor's own surfaces live in `apps/web/src/components/editor` and are liste
   shows editor state (a pressed formatting button, the current block type) subscribes
   with `useEditorState` and one selector for the whole surface, not one per control.
 
+### The interaction gutter
+
+Everything the editor puts left of a block shares one reserved strip, defined in
+`globals.css` on `.exocortex-page` and split into two lanes:
+
+```text
+[ + ][ ⋮⋮ ]   [ ▾ ] Überschrift
+└── handle ──┘ └ collapse ┘
+```
+
+`--gutter-collapse` is the inner lane and belongs to the disclosure button of a
+collapsible heading, which sits right beside the text. `--gutter-handle` is the
+outer lane, and `block-handle.tsx` positions the drag handle into it by giving
+floating-ui an `offset` of exactly the inner lane. That offset is the whole
+reason the two controls no longer cover each other (issue #88); a `z-index`
+would have settled which one is drawn on top without moving either.
+
+The sum is reserved as real page padding rather than borrowed from the margin
+around the reading measure, because there is no margin left on a `wide` or
+`full` page with both side panels pulled open: the handle then ended up under
+the navigation or was cut off by `AppMain`, which clips on purpose. The padding
+grows outside the measure and symmetrically, so reserving it neither narrows the
+text nor pushes the column off centre, and it collapses back to the plain
+`--page-pad` once the editor column gets too narrow to give the text 20rem. For
+that case, and for it only, the handle carries floating-ui's `shift` as a safety
+net, which keeps it inside its clipping ancestors.
+
 ## Accessibility rules
 
 - every icon-only control has an `aria-label`

@@ -154,6 +154,9 @@ tested (26 tests in `packages/auth/src/policies.test.ts`).
   `exo_page_set_layout`. New databases default to `FULL`, new pages to `NARROW`.
   The three values only set `--page-measure` in `globals.css`; blocks that carry
   a layout of their own (a database embed) break out of the measure regardless.
+  None of them touches the interaction gutter, the strip left of every block
+  that the editor's own controls sit in (`docs/ui-system.md`): it is reserved as
+  page padding outside the measure, so a `full` page has one too.
 - `coverAttachmentId` / `coverPosition` are the page's cover image: an ordinary
   image `Attachment` shown full width above the title at a fixed height, cropped
   with `object-fit: cover`, plus the vertical offset in percent that decides

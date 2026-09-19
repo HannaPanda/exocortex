@@ -193,7 +193,7 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
           {cover}
           <div
             className={cn(
-              'exocortex-page flex min-h-0 flex-1 flex-col px-6',
+              'exocortex-page flex min-h-0 flex-1 flex-col',
               cover === null ? 'pt-8' : 'pt-5',
             )}
             data-layout={detail.layout}
@@ -219,11 +219,14 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
       ) : (
         <div className="exocortex-page-scroll group/page min-h-0 flex-1 overflow-y-auto">
           {cover}
-          {/* Width comes from `Document.layout`; the `px-6` here is the 3rem the
-              wide-block rule in globals.css subtracts. */}
+          {/* Width comes from `Document.layout`; the padding comes from the
+              `.exocortex-page` rule in globals.css, because on a page with an
+              editor it also has to hold the interaction gutter the block handle
+              and the heading toggles sit in (issue #88). */}
           <div
-            className={cn('exocortex-page px-6 pb-8', cover === null ? 'pt-8' : 'pt-5')}
+            className={cn('exocortex-page pb-8', cover === null ? 'pt-8' : 'pt-5')}
             data-layout={detail.layout}
+            data-gutter="editor"
           >
             {decorations}
             {pageIcon}

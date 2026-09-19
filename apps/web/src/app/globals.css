@@ -14,11 +14,25 @@
    element selectors are used, because ProseMirror owns that DOM. */
 @layer components {
   /*
-   * Page body width (`Document.layout`).
+   * Page body width (`Document.layout`) and the interaction gutter.
    *
    * The scroll container is a query container so blocks inside the reading
    * measure can still ask how wide the *page* is. `--page-measure` is the only
    * thing the three layouts change; everything else reads it.
+   *
+   * Left of every block the editor puts controls of its own, and they need room
+   * the layout has actually reserved. Two lanes, from the text outwards:
+   *
+   *     [ + ][ ⋮⋮ ]   [ ▾ ] Überschrift
+   *     └── handle ──┘ └ collapse ┘
+   *
+   * `--gutter-collapse` is where a collapsible heading's disclosure button sits,
+   * immediately beside the text; `--gutter-handle` is the lane outside it that
+   * the block handle is positioned into (`block-handle.tsx` offsets the handle
+   * by the collapse lane, so the two can never land on the same pixels).
+   * Reserving the sum as page padding is what keeps both inside the clickable
+   * canvas: a control positioned into space nobody reserved ends up under the
+   * navigation or is cut off by `AppMain`'s `overflow-hidden` (issue #88).
    */
   .exocortex-page-scroll {
     container-type: inline-size;
@@ -27,8 +41,29 @@
   .exocortex-page {
     /* 68ch is the reading measure from DESIGN.md; max-w-3xl ran ~85ch. */
     --page-measure: 68ch;
+    /* What a page pads with when it reserves no gutter. */
+    --page-pad: 1.5rem;
+    /* 1rem of arrow plus the 0.25rem that separate it from the heading. */
+    --gutter-collapse: 1.25rem;
+    /* Two `icon-sm` buttons (1.75rem each), the 0.125rem gap between them, the
+       0.25rem the handle keeps clear of the collapse lane and 0.25rem of air
+       towards the edge of the canvas. */
+    --gutter-handle: 4.125rem;
+    --editor-gutter: calc(var(--gutter-collapse) + var(--gutter-handle));
+    --page-inline: var(--page-pad);
     @apply mx-auto w-full;
-    max-width: var(--page-measure);
+    padding-inline: var(--page-inline);
+    /* The gutter grows *outside* the measure and symmetrically, so reserving it
+       neither narrows the text nor pushes the column off centre. */
+    max-width: calc(var(--page-measure) + 2 * (var(--page-inline) - var(--page-pad)));
+  }
+
+  /* Only a page that carries an editor needs the lanes. Below the width where
+     the gutter would start eating into the text the page falls back to the
+     plain padding, and `shift()` in `block-handle.tsx` keeps the handle inside
+     the canvas instead; 20rem is the narrowest measure still worth reading. */
+  .exocortex-page[data-gutter='editor'] {
+    --page-inline: clamp(var(--page-pad), (100cqi - 20rem) / 2, var(--editor-gutter));
   }
 
   /* Twice the measure: still a column, but a table has room to be a table. */
@@ -45,12 +80,13 @@
    * on every page width. A database is unreadable at 68ch, and forcing the
    * whole page to `full` just to see a table would punish the prose around it.
    *
-   * `100cqi` is the scroll container's width; the 3rem subtracted from it is
-   * the `px-6` the page body carries. `max(100%, …)` keeps the margins at zero
-   * once the measure is already wider than the block wants to be.
+   * `100cqi` is the scroll container's width; what is subtracted from it is the
+   * padding the page body carries on both sides, which is also what leaves the
+   * block's own handle a lane to sit in. `max(100%, …)` keeps the margins at
+   * zero once the measure is already wider than the block wants to be.
    */
   .exocortex-page :is(.exocortex-database-embed) {
-    --wide-block: min(100cqi - 3rem, 90rem);
+    --wide-block: min(100cqi - 2 * var(--page-inline), 90rem);
     width: max(100%, var(--wide-block));
     margin-inline: calc((100% - max(100%, var(--wide-block))) / 2);
   }
@@ -322,11 +358,16 @@
     @apply mt-2 border-l border-border pl-4;
   }
 
-  /* Collapsible headings. The disclosure button lives in the left gutter so the
-     heading text itself keeps the measure it has everywhere else. */
+  /* Collapsible headings. The disclosure button lives in the inner lane of the
+     interaction gutter, right beside the heading: the heading text keeps the
+     measure it has everywhere else, and the block handle, which sits in the
+     outer lane, can no longer cover the button or swallow its clicks. The two
+     margins cancel out, so nothing moves when the button appears. */
   .exocortex-editor .exocortex-heading-toggle {
-    @apply -ml-5 mr-1 w-4 cursor-pointer text-sm text-muted-foreground hover:text-foreground;
+    @apply w-4 cursor-pointer text-sm text-muted-foreground hover:text-foreground;
     float: left;
+    margin-left: calc(-1 * var(--gutter-collapse));
+    margin-right: calc(var(--gutter-collapse) - 1rem);
   }
 
   .exocortex-editor .exocortex-collapsed {
