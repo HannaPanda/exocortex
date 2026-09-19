@@ -171,8 +171,8 @@ pnpm format            # Prettier over the tree; format:check is what build.sh r
 pnpm typecheck
 pnpm test:unit         # every test that needs no infrastructure, in every
                        # workspace -- this is what build.sh and CI run
-pnpm test:integration  # only `*.integration.test.ts` -- talks to the
-                       # PRODUCTION database and Redis on this host
+pnpm test:integration  # only `*.integration.test.ts` -- brings up its own
+                       # throwaway Postgres and Redis, and can reach no other
 pnpm test              # both halves at once
 pnpm test:gates        # proves each gate can still go red
 pnpm test:e2e          # Playwright (needs a running deployment)

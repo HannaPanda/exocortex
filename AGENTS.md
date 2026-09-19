@@ -98,8 +98,9 @@ pnpm test:unit
 For UI or flow changes also run `pnpm test:e2e` against a running deployment.
 
 Tests come in two halves, told apart by the file name and kept apart by the
-test-split gate. `*.integration.test.ts` may open a database, Redis or storage
-connection and runs only under `pnpm test:integration`; every other test runs
+test-split gate. `*.integration.test.ts` may open a database or Redis
+connection and runs only under `pnpm test:integration`, which gives it a
+throwaway Postgres and Redis and refuses to let it reach any other; every other test runs
 under `pnpm test:unit`, which is what `build.sh` and CI run. A test that needs
 infrastructure is named accordingly, and a workspace that gains tests gains the
 two scripts as well — without them `turbo run test:unit` walks past it and the

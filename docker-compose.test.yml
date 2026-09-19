@@ -1,0 +1,91 @@
+# Throwaway infrastructure for the integration tests (issue #94).
+#
+# A second, deliberately separate stack rather than a profile inside
+# `docker-compose.yml`: that file describes the infrastructure this deployment
+# *serves* from, and the whole point here is that a test can never reach it. A
+# profile would have shared the project name, and `docker compose down` in the
+# wrong terminal would have taken the live database with it.
+#
+# Three properties this file is built for, each of which is a way the previous
+# arrangement could hurt:
+#
+#   * nothing persists. Both data directories are tmpfs, so a run starts on an
+#     empty database and leaves nothing on disk. That is also what keeps the
+#     anonymous volumes away: `pgvector/pgvector:pg17` and `redis:8-alpine` both
+#     declare a VOLUME, and a container removed without `-v` leaves that volume
+#     behind -- 919 of them, 46.7 GB, had piled up from the migration gate by
+#     2026-09-19. A tmpfs mount over the same path means none is ever created.
+#   * nothing restarts. `restart: 'no'` is explicit: a container that comes back
+#     after a reboot is exactly the orphan this stack must not produce.
+#   * nothing collides. Own project name, own ports, own database name. The
+#     ports are two above the ones `docker-compose.yml` uses so that a URL
+#     pointing at the wrong one is visible at a glance.
+#
+# It is not meant to be run by hand. `scripts/test-integration.sh` brings it up,
+# migrates it, runs the suites against it and removes it again.
+name: exocortex-test
+
+services:
+  postgres:
+    # Same image and major version as the deployment: a test that passes
+    # against a different Postgres has answered a different question. pgvector
+    # in particular is not optional -- the first migration does
+    # `CREATE EXTENSION vector`.
+    image: pgvector/pgvector:pg17
+    container_name: exocortex-test-postgres
+    restart: 'no'
+    environment:
+      POSTGRES_USER: exocortex_test
+      POSTGRES_PASSWORD: exocortex_test
+      POSTGRES_DB: exocortex_test
+      # The data directory is thrown away with the container, so the checksums
+      # and the fsync are paying for a durability nobody wants here.
+      POSTGRES_INITDB_ARGS: '--nosync'
+    command:
+      - postgres
+      - '-c'
+      - 'fsync=off'
+      - '-c'
+      - 'synchronous_commit=off'
+      - '-c'
+      - 'full_page_writes=off'
+    ports:
+      - '127.0.0.1:${EXOCORTEX_TEST_POSTGRES_PORT:-5435}:5432'
+    tmpfs:
+      # 1 GB is far more than a suite run needs (the schema plus a few hundred
+      # rows), and it is a ceiling rather than a reservation: tmpfs only holds
+      # what is written to it.
+      - /var/lib/postgresql/data:size=1g
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U exocortex_test -d exocortex_test']
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+
+  redis:
+    image: redis:8-alpine
+    container_name: exocortex-test-redis
+    restart: 'no'
+    # No appendonly and no snapshots: a queue that survives the run is a queue
+    # that leaks into the next one. `noeviction` matches the deployment,
+    # because BullMQ loses jobs under any other policy.
+    command:
+      ['redis-server', '--save', '', '--appendonly', 'no', '--maxmemory-policy', 'noeviction']
+    ports:
+      - '127.0.0.1:${EXOCORTEX_TEST_REDIS_PORT:-6382}:6379'
+    tmpfs:
+      - /data:size=64m
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+# No volumes section on purpose. See the header: an anonymous volume is what
+# this stack must not be able to leave behind.
+#
+# No MinIO either. Not one integration test constructs an `S3ObjectStorage`;
+# every one of them hands its service a stub, because what they assert about
+# attachments is the database row, not the bytes. If that changes, add the
+# service here and the guard in `vitest.setup.integration.ts` grows a third
+# check -- do not let a test reach the deployment's bucket instead.

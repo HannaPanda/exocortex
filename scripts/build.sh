@@ -9,7 +9,8 @@
 #
 #   bash scripts/build.sh                 validate and build
 #   bash scripts/build.sh --skip-checks   hard gates only, no lint/typecheck/tests
-#   bash scripts/build.sh --full-tests    also the tests that need the database
+#   bash scripts/build.sh --full-tests    also the tests that need a database,
+#                                         on a throwaway stack of their own
 #
 # Two kinds of check, and the difference matters:
 #
@@ -37,7 +38,7 @@ for arg in "$@"; do
     --skip-checks) SKIP_CHECKS=1 ;;
     --full-tests)  FULL_TESTS=1 ;;
     -h|--help)
-      sed -n '2,26p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+      sed -n '2,27p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
       exit 0
       ;;
     *)
@@ -187,16 +188,15 @@ else
   # therefore never ran `apps/api`, `apps/web` or `apps/worker` at all, and nine
   # failing tests sat on `master` behind a green build (issue #93).
   #
-  # The infrastructure-backed half is one flag away rather than hidden, but it
-  # is not the default, because on this host it points at the live database and
-  # reaching for it on the way to a deploy is a bad reflex to build. The CI runs
-  # the default set: it has no infrastructure either.
+  # The infrastructure-backed half is one flag away rather than hidden. It is
+  # not the default here because it needs Docker and half a minute of container
+  # startup, not because it is dangerous any more: since issue #94 it brings up
+  # its own Postgres and Redis and cannot reach the deployment's.
   info "Tests without infrastructure (--full-tests adds the rest) …"
   pnpm test:unit || fail "Unit tests failed"
 
   if [ "$FULL_TESTS" -eq 1 ]; then
-    warn "--full-tests: the integration tests talk to the PRODUCTION database and Redis on this host."
-    warn "They create throwaway rows and clean up after themselves, but they are not isolated."
+    info "Integration tests on a throwaway Postgres and Redis …"
     pnpm test:integration || fail "Integration tests failed"
   fi
 

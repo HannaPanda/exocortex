@@ -329,9 +329,12 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
    (each package lints `src` only, which leaves the root scripts, `apps/api/scripts`
    and `e2e` unseen), `pnpm format:check`, `pnpm typecheck`, the gate tests, and
    `pnpm test:unit` — every test in every workspace that needs no
-   infrastructure. `--full-tests` adds `pnpm test:integration` — those talk to
-   the **production** database and Redis on this host. They create throwaway
-   rows and clean up after themselves, but they are not isolated.
+   infrastructure. `--full-tests` adds `pnpm test:integration`, which brings up
+   a Postgres and a Redis of its own (`docker-compose.test.yml`), migrates
+   them, runs the suites and removes them again. Until issue #94 those suites
+   talked to the **production** database on this host; a guard now refuses any
+   connection but the throwaway one, so the flag is a question of half a minute
+   of container startup rather than of risk.
 
    Which half a test is in follows from its name (`*.integration.test.ts`) and
    is enforced by the test-split gate above. Until issue #93 the default step
@@ -479,12 +482,12 @@ same gates, the same order, on a checkout that has never seen this repository.
 The workflow file itself contains no checks, on purpose: a rule that lives in
 the workflow instead of the script is a rule the deploy does not know about.
 
-It needs no secrets and touches nothing here. Its Postgres is the throwaway
-container the migration gate starts for itself.
+It needs no secrets and touches nothing here. Its databases are throwaway
+containers: the migration gate's, and the integration tests' own Postgres and
+Redis, which it runs because the workflow calls `build.sh --full-tests`
+(issue #94).
 
-What it deliberately does not do: the database-backed half of the test suite
-(`--full-tests`, i.e. `pnpm test:integration`, which on this host talks to the
-live database), the Playwright
+What it deliberately does not do: the Playwright
 suite, and anything resembling a deployment. `scripts/deploy.sh` on this machine
 stays the only thing that puts code in front of a user, and it runs `build.sh`
 again rather than trusting a green tick from somewhere else.

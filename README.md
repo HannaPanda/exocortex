@@ -193,8 +193,8 @@ Details, ports and troubleshooting: [`docs/local-development.md`](docs/local-dev
 | `pnpm lint`                                | dependency-boundary check + ESLint                   |
 | `pnpm typecheck`                           | TypeScript in strict mode across the monorepo        |
 | `pnpm test:unit`                           | every test that needs no infrastructure              |
-| `pnpm test:integration`                    | `*.integration.test.ts` only (needs `pnpm infra:up`) |
-| `pnpm test`                                | both halves at once (needs `pnpm infra:up`)          |
+| `pnpm test:integration`                    | `*.integration.test.ts` on a throwaway stack         |
+| `pnpm test`                                | both halves at once                                  |
 | `pnpm test:gates`                          | proves each hard gate can still go red               |
 | `pnpm test:e2e`                            | Playwright suite against a running deployment        |
 | `pnpm db:migrate` / `db:seed` / `db:reset` | database lifecycle                                   |

@@ -180,8 +180,8 @@ behind nginx in production.
 pnpm lint             # dependency boundaries, then ESLint per package
 pnpm typecheck
 pnpm test:unit        # everything that needs no infrastructure
-pnpm test:integration # *.integration.test.ts only (requires pnpm infra:up)
-pnpm test             # both halves (requires pnpm infra:up)
+pnpm test:integration # *.integration.test.ts on a throwaway stack (needs Docker)
+pnpm test             # both halves
 pnpm test:e2e         # Playwright against a running deployment
 ```
 
@@ -192,7 +192,7 @@ The file name decides, and the test-split gate
 
 | Name                            | May open                         | Run by                  |
 | ------------------------------- | -------------------------------- | ----------------------- |
-| `something.integration.test.ts` | Postgres, Redis, object storage  | `pnpm test:integration` |
+| `something.integration.test.ts` | the throwaway Postgres and Redis | `pnpm test:integration` |
 | `something.test.ts`             | nothing but the process it is in | `pnpm test:unit`        |
 
 `pnpm test:unit` is what `build.sh` runs and therefore what CI runs, so a unit
@@ -230,30 +230,47 @@ see what it writes into storage after a bad hour.
 pnpm --filter @exocortex/web test:unit
 ```
 
-### What a test run leaves behind
+### Where the integration tests run
 
-The integration suites create a workspace and a few accounts each and delete them
-in `afterAll` — which does not run when the process is killed, and that is
-exactly when the mess is made. Interrupted runs had left 21 workspaces by
-2026-08-12, in `Collab`/`Worker` pairs created in the same second, because two
-packages test in parallel and an interrupt takes both.
-
-`pnpm test` and `pnpm test:integration` therefore sweep _before_ they start,
-which is the only moment that catches a run nobody finished:
+Not against the infrastructure from `pnpm infra:up`, and since issue #94 they
+cannot be made to. `pnpm test:integration` is `scripts/test-integration.sh`,
+which brings up a second stack from `docker-compose.test.yml` — its own
+Postgres on 5435 and its own Redis on 6382, both empty — applies the migration
+history to it, seeds the AI model registry, runs the suites and removes the
+stack again.
 
 ```bash
-pnpm --filter @exocortex/api test-data:prune -- [--older-than 2] [--dry-run]
+pnpm test:integration                                    # all of it
+bash scripts/test-integration.sh @exocortex/api          # one workspace
+bash scripts/test-integration.sh --keep                  # leave it up to poke at
 ```
 
-It recognises test data by the accounts: they live at `@exocortex.test`, and
-`.test` is reserved by RFC 6761 so it can never be a real address. A workspace
-whose members are _all_ such accounts was made by a test run and by nothing else.
-One real member is enough to spare it, and nothing younger than `--older-than`
-(two hours) is touched, so a suite running in another terminal keeps its ground.
+Two properties are worth knowing:
 
-A name prefix would have been the obvious rule and the wrong one: it needs
-updating whenever a suite invents a name, and it would happily match a real
-workspace somebody called "Docs".
+- **The tests cannot reach anything else.** `vitest.setup.integration.ts` runs
+  before every integration test file and refuses the run unless `DATABASE_URL`
+  and `REDIS_URL` are literally the ones the script just created. A suite
+  started by hand fails with a message saying so rather than opening a
+  connection to whatever `.env` points at — which on the deployment host is
+  production. Nothing is exempt and there is no override flag.
+- **Nothing survives the run.** Both data directories are tmpfs, so the
+  database exists only in memory, and the stack is torn down before it is
+  brought up as well as afterwards — the pre-flight teardown is what heals a
+  run that was killed before its trap could fire. The tmpfs mounts are also
+  what keeps anonymous volumes away: the Postgres and Redis images declare a
+  `VOLUME`, and a container removed without `-v` leaves one behind. 919 of
+  those, 46.7 GB, had accumulated from the migration gate by 2026-09-19.
+
+A consequence worth saying out loud: the suites start against an **empty**
+database, so a test may not assume anything exists that it did not create. The
+one exception is the AI model registry, which the script seeds because it is
+reference data rather than somebody's content.
+
+`apps/api/scripts/delete-test-data.ts` still exists and still works. It is now
+an operator tool for the leftovers of the old arrangement, not part of any test
+run: it recognises test data by the accounts, which live at `@exocortex.test`
+(reserved by RFC 6761, so it can never be a real address), and spares any
+workspace with even one real member or anything younger than `--older-than`.
 
 The Playwright suite reads the repository's `.env` itself
 (`e2e/support/env.ts`), so on this host `pnpm test:e2e` needs no preparation at

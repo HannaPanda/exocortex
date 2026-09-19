@@ -30,6 +30,11 @@
  *   3. a workspace whose scripts exist has them pointing at vitest with the
  *      right filter, because a `test:unit` that quietly runs everything is the
  *      first failure again with extra steps.
+ *   4. a workspace that has integration tests loads the guard that keeps them
+ *      away from the deployment's database (issue #94). The guard lives in a
+ *      `setupFiles` entry, and a `setupFiles` entry is easy to forget in a new
+ *      workspace -- at which point its tests would reach whatever the
+ *      repository's `.env` points at, silently and on the first run.
  *
  * There is no bypass and no allowlist. A test that needs infrastructure is
  * renamed; it is one `git mv`.
@@ -76,6 +81,13 @@ const INFRASTRUCTURE = [
 ];
 
 const INTEGRATION_SUFFIX = '.integration.test.';
+
+/**
+ * The guard from issue #94, as a workspace's vitest config has to name it. It
+ * refuses to let an integration test open a connection to anything but the
+ * throwaway stack `scripts/test-integration.sh` creates.
+ */
+const GUARD_SETUP_FILE = 'vitest.setup.integration.ts';
 
 function walk(dir, acc = []) {
   for (const entry of readdirSync(dir)) {
@@ -137,6 +149,21 @@ for (const dir of workspaces()) {
       findings.push({
         line: `${name}/package.json: \`${script}\` is "${scripts[script]}", not the canonical command`,
         hint: `Use "${expected}". The filter is the whole of the split; a different one splits somewhere else.`,
+      });
+    }
+  }
+
+  // The guard is loaded per workspace, so a workspace that has integration
+  // tests has to name it. Checked against the vitest config rather than against
+  // the test files: `setupFiles` is what actually runs it, and a test file that
+  // imported it by hand would be one import away from not doing so.
+  if (tests.some((file) => file.includes(INTEGRATION_SUFFIX))) {
+    const configPath = join(dir, 'vitest.config.mts');
+    const config = existsSync(configPath) ? readFileSync(configPath, 'utf8') : '';
+    if (!config.includes(GUARD_SETUP_FILE)) {
+      findings.push({
+        line: `${name}/vitest.config.mts: has integration tests but does not load ${GUARD_SETUP_FILE}`,
+        hint: `Add "setupFiles: ['../../${GUARD_SETUP_FILE}']". Without it these tests open whatever DATABASE_URL points at, which on the deployment host is production.`,
       });
     }
   }

@@ -554,6 +554,21 @@ describe('test split (check-test-split.mjs)', () => {
     expect(result.status).not.toBe(0);
     expect(result.output).toContain('canonical command');
   });
+
+  /**
+   * Issue #94: the guard is what stands between an integration test and the
+   * live database, and it is loaded by one line in a vitest config. A
+   * workspace that loses that line still passes every other check here, and
+   * its tests would connect to whatever `.env` points at.
+   */
+  it('goes red when a workspace with integration tests stops loading the guard', () => {
+    editFile('apps/worker/vitest.config.mts', (source) =>
+      source.replace(/\s*setupFiles: \[[^\]]*\],/, ''),
+    );
+    const result = gate('check-test-split.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('vitest.setup.integration.ts');
+  });
 });
 
 describe('build.sh', () => {

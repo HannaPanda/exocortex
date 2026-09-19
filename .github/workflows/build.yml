@@ -14,7 +14,10 @@
 # tree, but it cannot notice a file it needs that git does not know about.
 #
 # It needs no secrets. Nothing here talks to the deployment, and the only
-# database it touches is the throwaway container the migration gate starts.
+# databases it touches are throwaway containers: the migration gate's, and since
+# issue #94 the integration tests' own Postgres and Redis from
+# `docker-compose.test.yml`. That is what `--full-tests` costs here -- about a
+# minute, on a runner that has Docker anyway.
 name: build
 
 on:
@@ -52,5 +55,5 @@ jobs:
 
       # `build.sh` runs `pnpm install --frozen-lockfile` itself, which is what
       # rejects a lockfile that does not match package.json.
-      - name: scripts/build.sh
-        run: bash scripts/build.sh
+      - name: scripts/build.sh --full-tests
+        run: bash scripts/build.sh --full-tests
