@@ -162,4 +162,52 @@ test.describe('AI side panel', () => {
     await command('/clear');
     await expect(boundary).toHaveCount(1, { timeout: 30_000 });
   });
+
+  /**
+   * The promise the chip row makes (issue #75): a pinned source stays until it
+   * is taken away, which is exactly what tells it apart from the open page.
+   * Only a browser can check that, because "walking to another page" is a route
+   * change and a re-render, not a function call.
+   */
+  test('keeps a pinned source across a page switch and drops it on demand', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+
+    const suffix = Date.now().toString(36);
+    const pinnedTitle = `Quelle ${suffix}`;
+    await createPage(page, pinnedTitle);
+    const otherTitle = `Anderswo ${suffix}`;
+    await createPage(page, otherTitle);
+
+    await page.getByTestId('context-tab-ai').click();
+    await page.getByTestId('ai-pin-add').click();
+    await page.getByPlaceholder('Seite, Datenbank oder gespeicherte Suche').fill(pinnedTitle);
+    // The title reaches the search index through materialization and the
+    // indexing job, so the entry appears a moment after the page does.
+    const entry = page.getByRole('option', { name: new RegExp(pinnedTitle) });
+    await expect(entry.first()).toBeVisible({ timeout: 60_000 });
+    await entry.first().click();
+
+    const chips = page.getByTestId('ai-pinned-chip');
+    await expect(chips).toHaveCount(1, { timeout: 30_000 });
+    await expect(chips.first()).toContainText(pinnedTitle);
+    // Pinned as a name first: nothing is paid for until that is chosen.
+    await expect(chips.first()).toContainText('nur genannt');
+
+    // The point of the feature: another page, same chip.
+    await page.getByRole('link', { name: otherTitle }).first().click();
+    await page.waitForURL(/\/seite\/[a-z0-9]+/, { timeout: 30_000 });
+    await page.getByTestId('context-tab-ai').click();
+    await expect(chips).toHaveCount(1, { timeout: 30_000 });
+    await expect(chips.first()).toContainText(pinnedTitle);
+
+    // Switching the mode is what makes it cost something, and the chip says so.
+    await page.getByTestId('ai-pinned-menu').first().click();
+    await page.getByTestId('ai-pinned-mode-item').click();
+    await expect(chips.first()).not.toContainText('nur genannt', { timeout: 30_000 });
+
+    await page.getByTestId('ai-pinned-menu').first().click();
+    await page.getByTestId('ai-pinned-remove-item').click();
+    await expect(chips).toHaveCount(0, { timeout: 30_000 });
+  });
 });
