@@ -79,6 +79,8 @@ model User {
   renderJobs                  RenderJob[]           @relation("RenderJobCreatedBy")
   createdSavedQueries         SavedQuery[]          @relation("SavedQueryCreatedBy")
   updatedSavedQueries         SavedQuery[]          @relation("SavedQueryUpdatedBy")
+  grantedShares               DocumentShare[]       @relation("DocumentShareCreatedBy")
+  receivedShares              DocumentShare[]       @relation("DocumentShareGrantee")
 
   @@map("user")
 }
@@ -417,8 +419,41 @@ model ApiToken {
   revokedAt  DateTime?
   createdAt  DateTime  @default(now())
 
+  /// Whether this token was issued confined to certain pages (issue #83,
+  /// ADR-044). A separate flag rather than "the list is empty", because the
+  /// rows are deleted with the pages they name: without it, deleting the last
+  /// scoped page would widen the token back to the whole account, which is a
+  /// privilege escalation dressed as a cleanup. A confined token that has lost
+  /// every page it was given reaches nothing at all.
+  pageScoped Boolean            @default(false)
+  pageScopes ApiTokenPageScope[]
+
   @@index([userId])
   @@map("api_token")
+}
+
+/// One page or subtree an API token may reach (issue #83, ADR-044).
+///
+/// A separate table rather than a JSON column on `ApiToken`, because the
+/// foreign key is the point: a scope that named a deleted page would widen the
+/// token back to the whole account the moment the list became empty, and
+/// `Cascade` plus the "no rows means unrestricted" rule would turn deleting a
+/// page into a privilege escalation. So the row is deleted with the page and
+/// the *token* is refused outright once it has lost every scope it was given
+/// -- see `PageScopeRestriction` in `@exocortex/auth`, which distinguishes
+/// "never had any" from "had some and lost them" through `declared`.
+model ApiTokenPageScope {
+  id         String             @id @default(cuid(2))
+  apiTokenId String
+  apiToken   ApiToken           @relation(fields: [apiTokenId], references: [id], onDelete: Cascade)
+  documentId String
+  document   Document           @relation("ApiTokenPageScopeDocument", fields: [documentId], references: [id], onDelete: Cascade)
+  scope      DocumentShareScope @default(SUBTREE)
+  createdAt  DateTime           @default(now())
+
+  @@unique([apiTokenId, documentId])
+  @@index([documentId])
+  @@map("api_token_page_scope")
 }
 
 /// The only way an account comes into being besides the seed script (issue #3).
@@ -526,6 +561,7 @@ model Workspace {
   renderJobs       RenderJob[]
   projectBuilds    ProjectBuild[]
   savedQueries     SavedQuery[]
+  shares           DocumentShare[]
 
   @@index([isMemory])
   @@map("workspace")
@@ -814,6 +850,11 @@ model Document {
   automationRuns      AutomationRun[]           @relation("AutomationRunDocument")
   /// Builds of this page into a file (issue #44).
   renderJobs          RenderJob[]               @relation("RenderJobDocument")
+  /// Grants that let somebody outside this workspace reach this page, and the
+  /// public links to it (issue #83, ADR-044).
+  shares              DocumentShare[]           @relation("DocumentShareDocument")
+  /// API tokens confined to this page or the branch below it.
+  tokenScopes         ApiTokenPageScope[]       @relation("ApiTokenPageScopeDocument")
 
   @@index([workspaceId, parentId, orderKey])
   @@index([workspaceId, archivedAt])
@@ -846,6 +887,84 @@ model DocumentContent {
 
   @@index([linksIndexedAt])
   @@map("document_content")
+}
+
+/// Who may reach a page besides the people the workspace already lets in
+/// (issue #83, ADR-044).
+///
+/// One table for two things the UI shows separately, because they are the same
+/// grant with a different principal: a link anybody may open, and a page handed
+/// to one account. `kind` says which, and exactly one of `granteeId` and
+/// `tokenHash` is set -- a check constraint the migration writes by hand, since
+/// Prisma cannot express it.
+///
+/// `(documentId, granteeId)` is unique, which in PostgreSQL constrains only the
+/// account shares: two NULLs are distinct, so a page may carry several public
+/// links (rotating one means creating the new one before withdrawing the old)
+/// while it can carry only one grant per account.
+model DocumentShare {
+  id          String   @id @default(cuid(2))
+  /// Denormalized from the document so a revocation can be addressed at a
+  /// workspace without a join, and so a listing of "what have I shared" is one
+  /// index scan.
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  documentId  String
+  document    Document @relation("DocumentShareDocument", fields: [documentId], references: [id], onDelete: Cascade)
+
+  kind       DocumentShareKind
+  permission DocumentSharePermission @default(READ)
+  scope      DocumentShareScope      @default(PAGE_ONLY)
+
+  /// The account a `USER` share was granted to. Null for a link.
+  granteeId String?
+  grantee   User?   @relation("DocumentShareGrantee", fields: [granteeId], references: [id], onDelete: Cascade)
+
+  /// SHA-256 of the raw link token, exactly like `ApiToken.tokenHash`: the raw
+  /// value is returned once, at creation, and never stored or logged. Null for
+  /// a `USER` share.
+  tokenHash   String? @unique
+  /// First characters of the raw token, so a link is recognisable in a list
+  /// without the list being able to reconstruct it.
+  tokenPrefix String?
+
+  expiresAt DateTime?
+  /// Set the moment the share is withdrawn. Kept rather than deleted so the
+  /// owner can see that a link existed and is gone, and so a token that is
+  /// still in somebody's bookmarks answers "no" rather than "never heard of it".
+  revokedAt DateTime?
+
+  createdById String
+  createdBy   User     @relation("DocumentShareCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([documentId, granteeId])
+  @@index([workspaceId, revokedAt])
+  @@index([granteeId, revokedAt])
+  @@index([documentId, revokedAt])
+  @@map("document_share")
+}
+
+enum DocumentShareKind {
+  USER
+  PUBLIC_LINK
+}
+
+enum DocumentSharePermission {
+  READ
+  WRITE
+}
+
+/// Whether a grant covers one page or everything below it (issue #83).
+///
+/// SUBTREE is resolved against the hierarchy at the moment of the request,
+/// never stored as a list of ids: that is what makes a page moved inside the
+/// shared branch stay shared and a page moved out of it stop being shared,
+/// without a job to keep anything in step.
+enum DocumentShareScope {
+  PAGE_ONLY
+  SUBTREE
 }
 
 /// A page other pages are copied from (issue #79, ADR-039).

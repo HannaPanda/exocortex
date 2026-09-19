@@ -127,6 +127,8 @@ describe('databaseSchemaTool', () => {
         updatedByName: 'Owner',
         parentType: null,
         rowCount: 3,
+        canShare: true,
+        viaShare: false,
       },
       '/api/documents/col1234567/properties': {
         properties: [

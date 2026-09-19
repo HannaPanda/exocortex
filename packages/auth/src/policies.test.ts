@@ -15,15 +15,18 @@ import {
   canEditDocument,
   canIssueCollaborationTicket,
   canManageDatabaseSchema,
+  canManageShares,
   canManageWorkspaceMembers,
   canMoveDocument,
   canMoveDocumentAcrossWorkspaces,
   canPerformDestructiveWorkspaceOperation,
   canReadComments,
   canReadDocument,
+  canReadShares,
   canReadWorkspace,
   canResolveComment,
   canRestoreSnapshot,
+  canShareAtMost,
   canSubscribeToWorkspaceRoom,
   canUpdateWorkspace,
   canUploadFile,
@@ -354,5 +357,33 @@ describe('realtime subscriptions', () => {
   it('requires membership', () => {
     expect(canSubscribeToWorkspaceRoom(null).allowed).toBe(false);
     expect(canSubscribeToWorkspaceRoom('GUEST').allowed).toBe(true);
+  });
+});
+
+describe('shares (issue #83, ADR-044)', () => {
+  it('takes ADMIN to hand a page outward', () => {
+    // A step above editing on purpose: every other write changes what is
+    // inside the workspace, this one changes who the workspace is.
+    expect(canManageShares(null).allowed).toBe(false);
+    expect(canManageShares('GUEST').allowed).toBe(false);
+    expect(canManageShares('MEMBER').allowed).toBe(false);
+    expect(canManageShares('ADMIN').allowed).toBe(true);
+    expect(canManageShares('OWNER').allowed).toBe(true);
+  });
+
+  it('lets any member see what has been handed out', () => {
+    // A page on the open internet is not a secret from the people writing it.
+    expect(canReadShares('GUEST').allowed).toBe(true);
+    expect(canReadShares(null).allowed).toBe(false);
+  });
+
+  it('never grants more than the person handing it out has', () => {
+    expect(canShareAtMost('MEMBER', 'READ', activeDocument).allowed).toBe(false);
+    expect(canShareAtMost('ADMIN', 'READ', activeDocument).allowed).toBe(true);
+    expect(canShareAtMost('ADMIN', 'WRITE', activeDocument).allowed).toBe(true);
+    // An archived page is read-only, so a WRITE grant on one would promise
+    // something the product refuses anyway.
+    expect(canShareAtMost('ADMIN', 'WRITE', archivedDocument).allowed).toBe(false);
+    expect(canShareAtMost('ADMIN', 'READ', archivedDocument).allowed).toBe(true);
   });
 });

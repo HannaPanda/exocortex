@@ -1,5 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 
+import { type PageScopeRestriction } from '@exocortex/auth';
 import { createCorrelationId } from '@exocortex/logger';
 
 export interface RequestContext {
@@ -21,6 +22,17 @@ export interface RequestContext {
    * on a request they were making anyway.
    */
   automation?: AutomationOriginContext;
+  /**
+   * The pages the credential making this request is confined to (issue #83,
+   * ADR-044), when it is confined at all.
+   *
+   * It rides in the request context rather than being passed down, because the
+   * alternative is a parameter on every service method that might one day
+   * touch a page -- and the one that does not get the parameter is the one
+   * that ignores the confinement. `SessionGuard` is the only writer, and
+   * `WorkspaceAccessService` the only reader.
+   */
+  pageScopes?: PageScopeRestriction;
 }
 
 export interface AutomationOriginContext {
@@ -92,6 +104,25 @@ export function currentAutomation(): AutomationOriginContext | undefined {
 export function clearAutomationOrigin(): void {
   const context = storage.getStore();
   if (context !== undefined) context.automation = undefined;
+}
+
+/**
+ * Records the page confinement of the credential that just authenticated.
+ *
+ * Called by `SessionGuard` for every request, with `null` for the credentials
+ * that carry their owner's full authority. Passing `null` explicitly rather
+ * than leaving the field alone is the point: a context object is reused within
+ * one request, and a confinement that survived into the next one would be a
+ * confusion in the direction of *more* access on a later request.
+ */
+export function setPageScopeRestriction(restriction: PageScopeRestriction | null): void {
+  const context = storage.getStore();
+  if (context !== undefined) context.pageScopes = restriction ?? undefined;
+}
+
+/** The confinement of the current request's credential, or null outside one. */
+export function currentPageScopeRestriction(): PageScopeRestriction | null {
+  return storage.getStore()?.pageScopes ?? null;
 }
 
 export const CORRELATION_HEADER = 'x-correlation-id';

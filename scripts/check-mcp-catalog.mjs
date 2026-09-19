@@ -75,6 +75,11 @@ const EXEMPT = [
       "Moves one person's marker in the feature registry to the newest entry (issue #80). Reading the list is a tool (`exo_features`); marking it read is a statement about a human's attention, and an agent that called it would silently clear somebody else's badge. The read side has full parity.",
   },
   {
+    route: '* /api/share/*',
+    reason:
+      'What a public share link serves (issue #83, ADR-044). Authenticated by a token in the path and by nothing else, so a tool calling it would be an agent reading a page it holds no credential for. Everything behind a link is reachable with a credential through the ordinary page routes, which have full parity.',
+  },
+  {
     route: '* /health*',
     reason: 'Liveness and readiness for monitoring and for deploy.sh, not a workspace capability.',
   },

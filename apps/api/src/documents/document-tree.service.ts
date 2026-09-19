@@ -57,13 +57,22 @@ export class DocumentTreeService {
     userId: string,
     request: DocumentTreeRequest = {},
   ): Promise<DocumentTreeResponse> {
-    await this.access.requireRole(workspaceId, userId);
+    const scoped = await this.access.requireScopedRole(workspaceId, userId);
 
-    const rows = await this.prisma.document.findMany({
+    const all = await this.prisma.document.findMany({
       where: { workspaceId },
       select: DOCUMENT_SELECT,
       orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
     });
+    // A confined credential is told about its branches and nothing else, not
+    // even that the rest exists (issue #83, ADR-044). Filtering the flat list
+    // before the tree is built is what makes the pages above a scope root
+    // disappear rather than turn into a root of their own: `buildTree` treats
+    // a node whose parent is missing as a root, which is exactly right here.
+    const rows =
+      scoped.documentIds === null
+        ? all
+        : all.filter((row) => (scoped.documentIds as Set<string>).has(row.id));
 
     const parentId = request.parentId;
     // A `parentId` from another workspace must not silently answer with that
@@ -151,7 +160,9 @@ export class DocumentTreeService {
     userId: string,
     request: ResolveDocumentLinkRequest,
   ): Promise<ResolveDocumentLinkResponse> {
-    await this.access.requireRole(workspaceId, userId);
+    const scoped = await this.access.requireScopedRole(workspaceId, userId);
+    const visible = (documentId: string): boolean =>
+      scoped.documentIds === null || scoped.documentIds.has(documentId);
 
     const title = (request.title ?? '').trim().replace(/\s+/g, ' ');
 
@@ -175,14 +186,14 @@ export class DocumentTreeService {
       // The identity is unambiguous by definition, so no path is needed and no
       // second query runs. Only when it no longer names a document does the
       // title get its turn below.
-      if (byId !== null) {
+      if (byId !== null && visible(byId.id)) {
         return { title: byId.title, matches: [toLinkMatch(byId, [])], resolvedBy: 'id' };
       }
     }
 
     if (title.length === 0) return { title, matches: [], resolvedBy: 'none' };
 
-    const rows = await this.prisma.$queryRaw<ResolveLinkRow[]>`
+    const matched = await this.prisma.$queryRaw<ResolveLinkRow[]>`
       SELECT "id", "workspaceId", "type", "title", "icon", "iconColor", "archivedAt"
       FROM "document"
       WHERE "workspaceId" = ${workspaceId}
@@ -191,6 +202,11 @@ export class DocumentTreeService {
       ORDER BY ("archivedAt" IS NOT NULL) ASC, "updatedAt" DESC, "id" ASC
       LIMIT ${request.limit}
     `;
+    // A reference that points outside what this credential may see resolves to
+    // nothing, exactly as if the page had been deleted (issue #83). Saying
+    // "there is a page called that, you may not have it" would answer the
+    // question the confinement exists to refuse.
+    const rows = matched.filter((row) => visible(row.id));
 
     if (rows.length <= 1) {
       return {
@@ -201,10 +217,11 @@ export class DocumentTreeService {
     }
 
     // Only worth the extra query when the caller actually has to disambiguate.
-    const siblings = await this.prisma.document.findMany({
+    const allSiblings = await this.prisma.document.findMany({
       where: { workspaceId },
       select: { id: true, parentId: true, orderKey: true, title: true },
     });
+    const siblings = allSiblings.filter((row) => visible(row.id));
 
     return {
       title,

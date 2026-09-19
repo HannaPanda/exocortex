@@ -8,6 +8,7 @@ import {
   LayoutTemplateIcon,
   MoreHorizontalIcon,
   RotateCcwIcon,
+  Share2Icon,
   SlidersHorizontalIcon,
   UploadIcon,
 } from 'lucide-react';
@@ -56,9 +57,11 @@ import {
   useUpdateDocument,
   useWorkspaces,
 } from '@/lib/api/queries';
+import { useDocumentShares } from '@/lib/api/share-queries';
 
 import { useDocumentSession } from './document-session';
 import { SaveIndicator } from './save-indicator';
+import { ShareDialog } from './share-dialog';
 import { SuggestParentDialog } from './suggest-parent-dialog';
 import { TemplateSettingsDialog } from './template-settings-dialog';
 
@@ -412,9 +415,19 @@ function DocumentTopBar({
   const restoreDocument = useRestoreDocument(workspaceId);
   const workspaces = useWorkspaces();
   const workspaceName = workspaces.data?.find((workspace) => workspace.id === workspaceId)?.name;
-  const inbox = useInbox(workspaceId);
+  // Not for a page reached through a share: the reader is not a member of this
+  // workspace, so asking about its inbox is a refused request on every load.
+  const inbox = useInbox(detail.viaShare ? undefined : workspaceId);
   const [filing, setFiling] = React.useState(false);
   const [templateSettings, setTemplateSettings] = React.useState(false);
+  const [sharing, setSharing] = React.useState(false);
+  /*
+   * Asked on every page view, not only when the dialog opens (issue #83): the
+   * badge below is the only thing that tells somebody a page is readable from
+   * outside, and the case that matters most is the one they would never open a
+   * dialog to check -- a page that is shared because a section above it is.
+   */
+  const isShared = useIsShared(documentId, detail.viaShare);
 
   /*
    * Filing is offered where the captured page is read, not only in the tree's
@@ -428,53 +441,17 @@ function DocumentTopBar({
 
   return (
     <div className="flex items-center gap-2 border-b border-border px-6 py-2">
-      <nav
-        aria-label="Pfad"
-        className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground"
-      >
-        {/* The workspace starts the path, so its overview is one click away
-            instead of two through the switcher. It is skipped while the list
-            is still loading rather than shown under a placeholder name. */}
-        {workspaceName === undefined ? null : (
-          <>
-            <Link
-              href={`/arbeitsbereich/${workspaceId}`}
-              className="flex max-w-32 items-center gap-1 truncate hover:text-foreground"
-              data-testid="breadcrumb-workspace"
-            >
-              <TruncatedText text={workspaceName} side="bottom" />
-            </Link>
-            <span aria-hidden>/</span>
-          </>
-        )}
-        {detail.breadcrumb.map((entry) => (
-          <React.Fragment key={entry.id}>
-            <Link
-              href={`/arbeitsbereich/${workspaceId}/seite/${entry.id}`}
-              className="flex max-w-32 items-center gap-1 truncate hover:text-foreground"
-            >
-              {/* Only a chosen symbol, never the default one: a path is a line
-                    of text, and a file icon in front of every step would say
-                    nothing the path does not already say. */}
-              {entry.icon === null ? null : (
-                <DocumentIcon
-                  icon={entry.icon}
-                  iconColor={entry.iconColor}
-                  type="PAGE"
-                  className="size-3.5 text-xs"
-                />
-              )}
-              <TruncatedText text={entry.title} side="bottom" />
-            </Link>
-            <span aria-hidden>/</span>
-          </React.Fragment>
-        ))}
-        <TruncatedText text={detail.title} side="bottom" className="max-w-40 text-foreground" />
-      </nav>
+      <PageBreadcrumb workspaceId={workspaceId} workspaceName={workspaceName} detail={detail} />
 
       {detail.aiRuleMode !== 'off' ? (
         <Badge variant="muted" data-testid="ai-rule-badge">
           {AI_RULE_BADGE_LABEL[detail.aiRuleMode]}
+        </Badge>
+      ) : null}
+
+      {isShared ? (
+        <Badge variant="outline" data-testid="share-badge">
+          <Share2Icon className="size-3" /> Geteilt
         </Badge>
       ) : null}
 
@@ -503,54 +480,21 @@ function DocumentTopBar({
           </Button>
         ) : null}
 
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label="Seitenaktionen"
-                data-testid="document-actions"
-              >
-                <MoreHorizontalIcon />
-              </Button>
-            }
-          />
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem data-testid="open-page-properties" onClick={onOpenProperties}>
-              <SlidersHorizontalIcon /> Seiteneigenschaften …
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              data-testid="open-template-settings"
-              onClick={() => setTemplateSettings(true)}
-            >
-              <LayoutTemplateIcon /> Vorlage …
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem data-testid="export-markdown" onClick={onExport}>
-              <DownloadIcon /> Als Markdown exportieren
-            </DropdownMenuItem>
-            <DropdownMenuItem data-testid="open-render" onClick={onOpenRender}>
-              <FileTextIcon /> Als PDF veröffentlichen …
-            </DropdownMenuItem>
-            <DropdownMenuItem data-testid="open-import" onClick={onOpenImport}>
-              <UploadIcon /> Markdown importieren
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              variant="destructive"
-              disabled={archived}
-              data-testid="archive-document"
-              onClick={() => {
-                void archiveDocument
-                  .mutateAsync(documentId)
-                  .then(() => router.push(`/arbeitsbereich/${workspaceId}`));
-              }}
-            >
-              <ArchiveIcon /> Archivieren
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <PageActionsMenu
+          canShare={detail.canShare}
+          archived={archived}
+          onOpenProperties={onOpenProperties}
+          onOpenTemplateSettings={() => setTemplateSettings(true)}
+          onOpenShare={() => setSharing(true)}
+          onExport={onExport}
+          onOpenRender={onOpenRender}
+          onOpenImport={onOpenImport}
+          onArchive={() => {
+            void archiveDocument
+              .mutateAsync(documentId)
+              .then(() => router.push(`/arbeitsbereich/${workspaceId}`));
+          }}
+        />
       </div>
 
       <SuggestParentDialog
@@ -565,6 +509,13 @@ function DocumentTopBar({
         documentTitle={detail.title}
         open={templateSettings}
         onOpenChange={setTemplateSettings}
+      />
+
+      <ShareDialog
+        documentId={documentId}
+        documentTitle={detail.title}
+        open={sharing}
+        onOpenChange={setSharing}
       />
     </div>
   );
@@ -596,5 +547,167 @@ function PageDecorations({
         <PageCoverAddButton workspaceId={workspaceId} documentId={documentId} />
       ) : null}
     </div>
+  );
+}
+
+/**
+ * The page's own actions, in one menu.
+ *
+ * Extracted from `DocumentTopBar` rather than inlined: the bar had grown past
+ * what the complexity rule allows, and a menu of eight entries is a thing in
+ * its own right. It takes callbacks and nothing else, so it holds no state and
+ * knows nothing about workspaces.
+ */
+function PageActionsMenu({
+  canShare,
+  archived,
+  onOpenProperties,
+  onOpenTemplateSettings,
+  onOpenShare,
+  onExport,
+  onOpenRender,
+  onOpenImport,
+  onArchive,
+}: {
+  canShare: boolean;
+  archived: boolean;
+  onOpenProperties: () => void;
+  onOpenTemplateSettings: () => void;
+  onOpenShare: () => void;
+  onExport: () => void;
+  onOpenRender: () => void;
+  onOpenImport: () => void;
+  onArchive: () => void;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Seitenaktionen"
+            data-testid="document-actions"
+          >
+            <MoreHorizontalIcon />
+          </Button>
+        }
+      />
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem data-testid="open-page-properties" onClick={onOpenProperties}>
+          <SlidersHorizontalIcon /> Seiteneigenschaften …
+        </DropdownMenuItem>
+        <DropdownMenuItem data-testid="open-template-settings" onClick={onOpenTemplateSettings}>
+          <LayoutTemplateIcon /> Vorlage …
+        </DropdownMenuItem>
+        {canShare ? (
+          <DropdownMenuItem data-testid="open-share" onClick={onOpenShare}>
+            <Share2Icon /> Teilen …
+          </DropdownMenuItem>
+        ) : null}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem data-testid="export-markdown" onClick={onExport}>
+          <DownloadIcon /> Als Markdown exportieren
+        </DropdownMenuItem>
+        <DropdownMenuItem data-testid="open-render" onClick={onOpenRender}>
+          <FileTextIcon /> Als PDF veröffentlichen …
+        </DropdownMenuItem>
+        <DropdownMenuItem data-testid="open-import" onClick={onOpenImport}>
+          <UploadIcon /> Markdown importieren
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          variant="destructive"
+          disabled={archived}
+          data-testid="archive-document"
+          onClick={onArchive}
+        >
+          <ArchiveIcon /> Archivieren
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+/**
+ * Whether anybody outside this workspace can reach the page (issue #83).
+ *
+ * Asked on every page view rather than only when the share dialog opens,
+ * because the badge it feeds is the only thing that tells somebody a page is
+ * readable from outside -- and the case that matters most is the one nobody
+ * would open a dialog to check: a page that is shared because a section above
+ * it is. A reader who is here through a share is not asked at all; they are
+ * told nothing about the other grants on the page.
+ */
+function useIsShared(documentId: string, viaShare: boolean): boolean {
+  const shares = useDocumentShares(documentId, { enabled: !viaShare });
+  const live = (shares.data?.shares ?? []).filter((share) => share.revokedAt === null);
+  return live.length + (shares.data?.inherited ?? []).length > 0;
+}
+
+/**
+ * Where the page sits, as a line of links.
+ *
+ * Its own component because the bar it came out of had grown past what the
+ * complexity rule allows, and because a breadcrumb is the one part of the bar
+ * that is pure rendering: it holds no state and calls nothing.
+ *
+ * `breadcrumb` is already cut for a reader who is here through a share (issue
+ * #83, ADR-044) -- the API stops it at the shared page -- so nothing here has
+ * to know that shares exist.
+ */
+function PageBreadcrumb({
+  workspaceId,
+  workspaceName,
+  detail,
+}: {
+  workspaceId: string;
+  workspaceName: string | undefined;
+  detail: DocumentDetail;
+}) {
+  return (
+    <nav
+      aria-label="Pfad"
+      className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground"
+    >
+      {/* The workspace starts the path, so its overview is one click away
+          instead of two through the switcher. It is skipped while the list
+          is still loading rather than shown under a placeholder name. */}
+      {workspaceName === undefined ? null : (
+        <>
+          <Link
+            href={`/arbeitsbereich/${workspaceId}`}
+            className="flex max-w-32 items-center gap-1 truncate hover:text-foreground"
+            data-testid="breadcrumb-workspace"
+          >
+            <TruncatedText text={workspaceName} side="bottom" />
+          </Link>
+          <span aria-hidden>/</span>
+        </>
+      )}
+      {detail.breadcrumb.map((entry) => (
+        <React.Fragment key={entry.id}>
+          <Link
+            href={`/arbeitsbereich/${workspaceId}/seite/${entry.id}`}
+            className="flex max-w-32 items-center gap-1 truncate hover:text-foreground"
+          >
+            {/* Only a chosen symbol, never the default one: a path is a line
+                  of text, and a file icon in front of every step would say
+                  nothing the path does not already say. */}
+            {entry.icon === null ? null : (
+              <DocumentIcon
+                icon={entry.icon}
+                iconColor={entry.iconColor}
+                type="PAGE"
+                className="size-3.5 text-xs"
+              />
+            )}
+            <TruncatedText text={entry.title} side="bottom" />
+          </Link>
+          <span aria-hidden>/</span>
+        </React.Fragment>
+      ))}
+      <TruncatedText text={detail.title} side="bottom" className="max-w-40 text-foreground" />
+    </nav>
   );
 }

@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { aiRunStatusSchema } from './ai';
 import { idSchema, isoDateTimeSchema } from './primitives';
+import { apiTokenPageScopeInputSchema, apiTokenPageScopeSchema } from './shares';
 
 /**
  * Global (cross-workspace) role. Lowercase on the wire like every other status
@@ -193,6 +194,14 @@ export const apiTokenSchema = z.object({
   name: z.string(),
   prefix: z.string(),
   scopes: z.array(apiTokenScopeSchema),
+  /**
+   * The pages this token may reach, empty when it may reach everything its
+   * owner may (issue #83). A second dimension beside `scopes` rather than more
+   * values in it: what a credential may *do* and what it may do it *to* are
+   * different questions, and folding them together is how a list of verbs ends
+   * up carrying page ids.
+   */
+  pageScopes: z.array(apiTokenPageScopeSchema),
   lastUsedAt: isoDateTimeSchema.nullable(),
   expiresAt: isoDateTimeSchema.nullable(),
   revokedAt: isoDateTimeSchema.nullable(),
@@ -210,6 +219,12 @@ export const createApiTokenRequestSchema = z.object({
    * does not think about it gets a read-only token rather than a master key.
    */
   scopes: z.array(apiTokenScopeSchema).min(1).max(API_TOKEN_SCOPES.length).default(['read']),
+  /**
+   * Pages this token is confined to (issue #83). An empty list leaves the
+   * token as broad as its owner, which is what every token was before scopes
+   * existed; naming even one page makes everything else unreachable.
+   */
+  pageScopes: z.array(apiTokenPageScopeInputSchema).max(20).default([]),
   /** Days until expiry. Null creates a token that does not expire. */
   expiresInDays: z.number().int().min(1).max(3_650).nullable().default(null),
 });

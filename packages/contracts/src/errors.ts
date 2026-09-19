@@ -100,6 +100,24 @@ export const API_ERROR_CODES = [
   'saved_query_access_denied',
   /** Only a database page has views, so only one can be pinned as a view. */
   'document_not_a_collection',
+  /**
+   * The share link does not exist, was withdrawn, or has expired (issue #83).
+   * One code for all three on purpose: telling an anonymous caller which of
+   * them it was would turn the route into an oracle for guessed tokens.
+   */
+  'share_link_invalid',
+  /** This page is already shared with that account; change the existing share. */
+  'share_exists',
+  /** Nobody here has that email address, so there is no account to share with. */
+  'share_grantee_unknown',
+  /** A page cannot be shared with the person who would reach it anyway. */
+  'share_grantee_is_member',
+  /**
+   * The credential is confined to certain pages and this one is not among them
+   * (issue #83). Distinct from `document_access_denied`, which is about the
+   * account: this one says the *token* is narrower than its owner.
+   */
+  'token_scope_exceeded',
 ] as const;
 
 export const apiErrorCodeSchema = z.enum(API_ERROR_CODES);
@@ -255,4 +273,17 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   pinned_sources_limit_reached: 409,
   saved_query_access_denied: 403,
   document_not_a_collection: 422,
+  // Unknown link, withdrawn link, expired link: one code and one status for
+  // all three (issue #83). 404 for the same reason `invitation_invalid` is
+  // one -- an anonymous caller must not be able to tell a wrong guess from a
+  // right guess that has been revoked.
+  share_link_invalid: 404,
+  share_exists: 409,
+  share_grantee_unknown: 404,
+  // 409 rather than 403: nothing is wrong with the caller, the page simply
+  // needs no share to reach the person they named.
+  share_grantee_is_member: 409,
+  // The credential is genuine and its owner may well be allowed; this token
+  // was issued for other pages. 403, because no retry with it will help.
+  token_scope_exceeded: 403,
 };

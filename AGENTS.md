@@ -60,6 +60,7 @@ same commit series**:
 | a compose service or a host port                         | `docs/local-development.md`                                                                             |
 | an MCP or AI tool                                        | `docs/mcp.md`                                                                                           |
 | a span, a trace attribute, what is recorded about a run  | `docs/observability.md`                                                                                 |
+| who may reach a page, or what a credential may reach     | `docs/sharing.md`, `docs/security.md`                                                                   |
 | where a kind of behaviour is tested, a new test suite    | `docs/local-development.md`                                                                             |
 | a decision that contradicts an ADR                       | a new ADR in `docs/adr/`, and the ADR list in `CLAUDE.md`                                               |
 | what the product can and cannot do                       | the "What works today" and "Not built" sections of `README.md`                                          |

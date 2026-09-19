@@ -8,7 +8,12 @@ import {
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import { type DocumentSummary, type MoveDocumentRequest, QUEUE_NAMES } from '@exocortex/contracts';
-import { collectDescendantIds, type PrismaClient, wouldCreateCycle } from '@exocortex/database';
+import {
+  collectDescendantIds,
+  loadAncestorChain,
+  type PrismaClient,
+  wouldCreateCycle,
+} from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 
@@ -132,7 +137,55 @@ export class DocumentMoveService {
       document: summary,
       previousParentId,
     });
+    // A subtree share is resolved against the hierarchy at request time, so a
+    // move silently changes who may reach this page (issue #83, ADR-044). HTTP
+    // notices on the next call; an open collaboration socket makes no next
+    // call, so everybody who held a grant anywhere along the old chain or the
+    // new one is re-authorized from scratch (ADR-029).
+    await this.announceShareChange(
+      [previousParentId, input.request.parentId, input.documentId],
+      context.workspaceId,
+      input.correlationId,
+    );
     return summary;
+  }
+
+  /**
+   * Tells the holders of subtree grants above these pages that their access
+   * may have changed.
+   *
+   * Deliberately generous: it re-authorizes a few connections that did not
+   * have to be, and re-authorizing costs a handshake. The opposite mistake
+   * costs somebody a socket into a page they were moved out of.
+   */
+  private async announceShareChange(
+    anchors: readonly (string | null)[],
+    workspaceId: string,
+    correlationId: string,
+  ): Promise<void> {
+    const chains = await Promise.all(
+      anchors
+        .filter((id): id is string => id !== null)
+        .map(async (id) => loadAncestorChain(this.prisma, id)),
+    );
+    const ids = [...new Set(chains.flat())];
+    if (ids.length === 0) return;
+
+    const grants = await this.prisma.documentShare.findMany({
+      where: { documentId: { in: ids }, kind: 'USER', revokedAt: null, granteeId: { not: null } },
+      select: { granteeId: true },
+    });
+    const grantees = [
+      ...new Set(grants.map((grant) => grant.granteeId).filter((id): id is string => id !== null)),
+    ];
+    for (const granteeId of grantees) {
+      await this.realtime.revoke({
+        userId: granteeId,
+        workspaceId,
+        reason: 'document_share_changed',
+        correlationId,
+      });
+    }
   }
 
   /**

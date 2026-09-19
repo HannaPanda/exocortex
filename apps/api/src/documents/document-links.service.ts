@@ -69,6 +69,13 @@ export class DocumentLinksService {
   async list(documentId: string, userId: string): Promise<DocumentLinksResponse> {
     const context = await this.access.requireDocumentContext(documentId, userId);
     assertPolicy(canReadDocument(context.role, context.document, context.workspaceId));
+    // Everything below answers with *other* pages, so the workspace is not the
+    // boundary for everybody any more (issue #83, ADR-044): somebody holding a
+    // share of one page, or a credential confined to a branch, must not learn
+    // the titles and the surrounding sentences of the pages that happen to
+    // point at it. `null` is the member's answer and means the whole workspace.
+    const visible = await this.access.visibleDocumentIds(context);
+    const mayShow = (id: string): boolean => visible === null || visible.has(id);
 
     const [incomingRows, outgoingRows, content] = await Promise.all([
       this.prisma.documentLink.findMany({
@@ -115,14 +122,16 @@ export class DocumentLinksService {
 
     return {
       documentId,
-      incoming: incomingRows.map((row) => ({
-        id: row.id,
-        kind: KIND_TO_CONTRACT[row.kind],
-        targetTitle: row.targetTitle,
-        blockId: row.blockId,
-        context: row.context,
-        source: toEndpoint(row.sourceDocument),
-      })),
+      incoming: incomingRows
+        .filter((row) => mayShow(row.sourceDocument.id))
+        .map((row) => ({
+          id: row.id,
+          kind: KIND_TO_CONTRACT[row.kind],
+          targetTitle: row.targetTitle,
+          blockId: row.blockId,
+          context: row.context,
+          source: toEndpoint(row.sourceDocument),
+        })),
       outgoing: outgoingRows.map((row) => ({
         id: row.id,
         kind: KIND_TO_CONTRACT[row.kind],
@@ -132,7 +141,9 @@ export class DocumentLinksService {
         // A target in a different workspace cannot be reached by this reader,
         // so it is reported as unresolved rather than as a page they cannot open.
         target:
-          row.targetDocument !== null && row.targetDocument.workspaceId === context.workspaceId
+          row.targetDocument !== null &&
+          row.targetDocument.workspaceId === context.workspaceId &&
+          mayShow(row.targetDocument.id)
             ? toEndpoint(row.targetDocument)
             : null,
       })),

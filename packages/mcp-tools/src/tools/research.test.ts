@@ -156,6 +156,8 @@ function documentDetail(overrides: Record<string, unknown> = {}) {
     updatedByName: 'Johanna',
     parentType: null,
     rowCount: null,
+    canShare: true,
+    viaShare: false,
     ...overrides,
   };
 }

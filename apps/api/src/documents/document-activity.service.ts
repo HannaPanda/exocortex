@@ -29,6 +29,8 @@ const AUDIT_ACTION_KINDS = [
   'document.restored',
   'document.renamed',
   'document.snapshot_restored',
+  'document.shared',
+  'document.share_revoked',
 ] as const;
 type RelevantAuditAction = (typeof AUDIT_ACTION_KINDS)[number];
 
@@ -180,6 +182,15 @@ export class DocumentActivityService {
             type: 'renamed',
             previousTitle: metadataString(row.metadata, 'previousTitle'),
             nextTitle: metadataString(row.metadata, 'nextTitle'),
+          });
+          break;
+        case 'document.shared':
+        case 'document.share_revoked':
+          entries.push({
+            ...base,
+            type: 'shared',
+            kind: metadataString(row.metadata, 'kind') === 'PUBLIC_LINK' ? 'PUBLIC_LINK' : 'USER',
+            revoked: row.action === 'document.share_revoked',
           });
           break;
         case 'document.snapshot_restored':

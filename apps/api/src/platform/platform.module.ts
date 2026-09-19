@@ -8,6 +8,7 @@ import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 import { type ObjectStorage, S3ObjectStorage } from '@exocortex/storage';
 
+import { currentPageScopeRestriction } from '../common/correlation';
 import { API_ENV, apiEnvProvider, LOGGER, loggerProvider } from '../common/logger.provider';
 import { OutboxService } from '../common/outbox.service';
 
@@ -99,7 +100,11 @@ export class PlatformLifecycle implements OnApplicationShutdown {
       provide: WorkspaceAccessService,
       inject: [PRISMA],
       useFactory: (prisma: PrismaClient): WorkspaceAccessService =>
-        new WorkspaceAccessService(prisma),
+        // The confinement of the current credential is read out of the request
+        // context (issue #83, ADR-044), so a page-scoped token narrows every
+        // access decision in the process without a single service learning
+        // that page scopes exist.
+        new WorkspaceAccessService(prisma, { current: currentPageScopeRestriction }),
     },
     OutboxService,
     SettingsService,

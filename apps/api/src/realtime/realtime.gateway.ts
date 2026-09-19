@@ -309,7 +309,9 @@ export class RealtimeGateway
   /** One socket's subscriptions, checked against the membership behind them. */
   private async recheckSocket(socket: Socket, userId: string): Promise<void> {
     for (const workspaceId of [...socketData(socket).subscribedWorkspaces]) {
-      const role = await this.access.findRole(workspaceId, userId);
+      // The socket's own credential, not the request's: a WebSocket is
+      // authenticated by a cookie session, which is never page-confined.
+      const role = await this.access.findMembershipRole(workspaceId, userId);
       if (canSubscribeToWorkspaceRoom(role).allowed) continue;
       this.dropSubscription(socket, workspaceId, 'workspace_membership_removed');
     }
@@ -333,7 +335,7 @@ export class RealtimeGateway
       return { ok: false, code: 'unauthenticated', message: 'Socket is not authenticated' };
     }
 
-    const role = await this.access.findRole(parsed.data.workspaceId, data.userId);
+    const role = await this.access.findMembershipRole(parsed.data.workspaceId, data.userId);
     const decision = canSubscribeToWorkspaceRoom(role);
     if (!decision.allowed) {
       this.logger.warn('Rejected realtime room subscription', {

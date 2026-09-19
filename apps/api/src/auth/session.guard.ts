@@ -12,6 +12,7 @@ import { type FastifyRequest } from 'fastify';
 import {
   API_TOKEN_PREFIX,
   hashApiToken,
+  type PageScopeRestriction,
   readBearerToken,
   SERVICE_TOKEN_PREFIX,
   type VerifiedSession,
@@ -22,7 +23,11 @@ import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 
 import { AppError } from '../common/app-error';
-import { clearAutomationOrigin, setRequestUser } from '../common/correlation';
+import {
+  clearAutomationOrigin,
+  setPageScopeRestriction,
+  setRequestUser,
+} from '../common/correlation';
 import { isHttpContext } from '../common/http-context';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
@@ -47,6 +52,12 @@ export interface AuthenticatedRequest extends FastifyRequest {
    * nothing here; `TokenScopeGuard` only narrows persistent API tokens.
    */
   exocortexTokenScopes?: readonly string[];
+  /**
+   * The pages this credential is confined to, if any (issue #83, ADR-044).
+   * Mirrored onto the request for the same reason as the scopes above: a guard
+   * or an interceptor can read it without reaching into async storage.
+   */
+  exocortexPageScopes?: PageScopeRestriction;
 }
 
 /** A far-future expiry for tokens that never expire (`ApiToken.expiresAt === null`). */
@@ -57,6 +68,8 @@ interface VerifiedBearer {
   credential: ExocortexCredential;
   /** Only set for `api_token`; see `AuthenticatedRequest.exocortexTokenScopes`. */
   scopes?: readonly string[];
+  /** Only set for `api_token`; see `AuthenticatedRequest.exocortexPageScopes`. */
+  pageScopes?: PageScopeRestriction;
 }
 
 /**
@@ -99,6 +112,10 @@ export class SessionGuard implements CanActivate {
       request.exocortexCredential = 'session';
       setRequestUser(cookieSession.userId);
       clearAutomationOrigin();
+      // A browser session is the person themselves and is never confined to a
+      // branch. Said explicitly rather than left alone, so a reused context
+      // object cannot carry a previous request's confinement.
+      setPageScopeRestriction(null);
       return true;
     }
 
@@ -107,11 +124,13 @@ export class SessionGuard implements CanActivate {
       throw AppError.unauthenticated('No valid session cookie was provided');
     }
 
-    const { session, credential, scopes } = await this.verifyBearerToken(bearer);
+    const { session, credential, scopes, pageScopes } = await this.verifyBearerToken(bearer);
     request.exocortexSession = session;
     request.exocortexCredential = credential;
     request.exocortexTokenScopes = scopes;
+    request.exocortexPageScopes = pageScopes;
     setRequestUser(session.userId);
+    setPageScopeRestriction(pageScopes ?? null);
     // The automation origin header is read before authentication runs, because
     // that is where the request context is built. Only the worker may assert
     // it, and a service token is the only way the worker speaks to this API
@@ -184,6 +203,8 @@ export class SessionGuard implements CanActivate {
       select: {
         id: true,
         scopes: true,
+        pageScoped: true,
+        pageScopes: { select: { documentId: true, scope: true } },
         expiresAt: true,
         revokedAt: true,
         user: {
@@ -229,6 +250,13 @@ export class SessionGuard implements CanActivate {
       },
       credential: 'api_token',
       scopes: apiToken.scopes,
+      // `declared` is the flag, not the length of the list: the rows are
+      // deleted with the pages they name, so an empty list on a confined token
+      // means "everything it was given is gone", which must reach nothing
+      // rather than everything (issue #83, ADR-044).
+      pageScopes: apiToken.pageScoped
+        ? { tokenId: apiToken.id, declared: true, scopes: apiToken.pageScopes }
+        : undefined,
     };
   }
 }

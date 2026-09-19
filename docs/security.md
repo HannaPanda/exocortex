@@ -8,6 +8,9 @@ authorization mechanism.
 | Rule                                                       | Enforced in                                                                                                         | Verified by                                                                                                              |
 | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Workspace access is checked server-side                    | `WorkspaceAccessService.requireRole`, `canReadWorkspace`                                                            | `security.spec.ts` → "a foreign workspace is not readable"                                                               |
+| A shared page hands over nothing around it                 | `WorkspaceAccessService.visibleDocumentIds`, `visiblePath`, `mayListChildren` (ADR-044)                             | `shares.integration.test.ts` → "a share hands over the page and nothing around it"                                       |
+| A page-scoped token reaches nothing outside its branch     | `findRole` fails closed; `requireScopedRole` / `requireRoleAnchoredAt` narrow (ADR-044)                             | `shares.integration.test.ts` → "a page-scoped token"                                                                     |
+| A public link is read-only and anonymous                   | `document_share_public_is_read_only` check constraint; `PublicSharesService` has no write (ADR-044)                 | `shares.integration.test.ts` → "a public link"                                                                           |
 | Document access is checked server-side                     | `WorkspaceAccessService.requireDocumentContext`, `canReadDocument`                                                  | "a document from another workspace is not readable"                                                                      |
 | WebSocket subscriptions are checked server-side            | `RealtimeGateway.subscribeWorkspace` + `canSubscribeToWorkspaceRoom`                                                | `policies.test.ts` → "realtime subscriptions"; unauthenticated sockets are disconnected in `handleConnection`            |
 | Hocuspocus access is checked server-side                   | `apps/collaboration/src/server.ts` `onAuthenticate`                                                                 | `collaboration.integration.test.ts` (4 tests)                                                                            |
@@ -241,6 +244,61 @@ Three cumulative scopes, stored in `ApiToken.scopes`:
   browser already is the account, and a service token is minted per AI run, or
   per MCP request from an OAuth client, from a credential that was itself
   authorized.
+
+## Page shares and page-scoped tokens
+
+Issue #83, [ADR-044](adr/ADR-044-a-grant-is-a-row-on-a-page.md). Three things
+that look separate are one grant on one resource: a link anybody may open, a
+page handed to another account, and the branch an agent's token is confined to.
+
+**A share is a role.** `DocumentShare` carries `READ` or `WRITE`;
+`roleForSharePermission` turns it into `GUEST` or `MEMBER`, and every policy in
+`policies.ts` then applies unchanged. A share can never stand in for `ADMIN`, so
+deleting a page for good, restoring a snapshot and managing members stay with
+the workspace.
+
+**`SUBTREE` is resolved against the hierarchy on every request**
+(`loadAncestorChain`), never against a stored list of ids. A page moved inside
+the shared branch stays shared, one moved out stops being shared, and one moved
+_in_ becomes shared — which is the dangerous direction, so it is announced:
+`GET /documents/:id/inherited-shares` before the move, inherited grants at the
+top of the share dialog, and a badge on the page whether the grant is on it or
+above it.
+
+**A public link is read-only by a check constraint**, not by a validation
+somebody has to remember, and `PublicSharesService` has no write path at all. Its
+token is 32 random bytes, SHA-256 stored, returned exactly once, never logged and
+never written into an audit row — an audit log holding link tokens would be a
+list of working links. Unknown, revoked and expired all answer
+`share_link_invalid` with the same 404, so a guessed token cannot be told from a
+withdrawn one.
+
+**A share cannot be passed on.** Somebody who reached a page through a grant
+gets `canShare: false`, sees no share list, and is refused if they call the
+route anyway.
+
+**A page-scoped token is confined by the credential, not by the request.**
+`ApiTokenPageScope` rows are read by `SessionGuard` into the request context and
+consulted only by `WorkspaceAccessService`. Under a confinement, `findRole` and
+`requireRole` refuse outright (`token_scope_exceeded`): a route that answers
+about a whole workspace has no answer that stays inside one branch. The readers
+that _can_ narrow opt in — `requireScopedRole` for search, the tree, link
+resolution, the trash and filing suggestions, `requireRoleAnchoredAt` for
+creating under a parent or uploading onto a page, `visibleDocumentIds` for
+backlinks and related pages. A new workspace-wide route therefore costs a
+confined token a refusal, never a leak.
+
+`ApiToken.pageScoped` is a flag rather than "the list is non-empty", because the
+scope rows cascade with the pages they name: without it, deleting the last
+scoped page would widen the token back to the whole account. A confined token
+also cannot mint an unconfined one, and every page it names is checked as a read
+by its owner at issue time _and_ against their membership on every request.
+
+**Withdrawal reaches open connections.** A changed, revoked or newly inherited
+grant publishes `document_share_changed` on the revocation channel of
+[ADR-029](adr/ADR-029-revocation-reaches-open-connections.md), for a widening as
+well as a narrowing; the collaboration server's re-authorization sweep already
+re-reads `findDocumentContext`, so a missed message costs at most 30 seconds.
 
 ## The MCP endpoint and its OAuth server
 

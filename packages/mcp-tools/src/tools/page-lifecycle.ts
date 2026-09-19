@@ -363,6 +363,10 @@ function formatActivityEntry(
       return `${entry.occurredAt}: wiederhergestellt von ${who}`;
     case 'snapshotRestored':
       return `${entry.occurredAt}: auf Snapshot ${entry.restoredFromSnapshotId} zurückgesetzt von ${who}`;
+    case 'shared': {
+      const what = entry.kind === 'PUBLIC_LINK' ? 'öffentlicher Link' : 'Freigabe an ein Konto';
+      return `${entry.occurredAt}: ${what} ${entry.revoked ? 'widerrufen' : 'angelegt'} von ${who}`;
+    }
     case 'snapshot':
       return `${entry.occurredAt}: Snapshot ${entry.id} (${entry.reason}) von ${who}`;
     case 'editingSession':

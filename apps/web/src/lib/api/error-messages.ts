@@ -101,6 +101,13 @@ const MESSAGES: Record<ApiErrorCode, string> = {
     'Diese Unterhaltung hat schon so viele Quellen angeheftet, wie erlaubt sind. Nimm eine weg oder hebe die Grenze in den Einstellungen an.',
   saved_query_access_denied: 'Diese gespeicherte Suche gehört nicht zu diesem Arbeitsbereich.',
   document_not_a_collection: 'Nur eine Datenbankseite hat Ansichten.',
+  share_link_invalid:
+    'Dieser Link führt nicht mehr zu einer Seite. Er wurde zurückgezogen, ist abgelaufen, oder er war nie gültig.',
+  share_exists: 'Diese Seite ist mit diesem Konto schon geteilt. Ändere die vorhandene Freigabe.',
+  share_grantee_unknown: 'Zu dieser Adresse gibt es hier kein Konto.',
+  share_grantee_is_member:
+    'Diese Person kommt schon an die Seite: sie ist Mitglied dieses Arbeitsbereichs.',
+  token_scope_exceeded: 'Dieses Token gilt nur für bestimmte Seiten und darf hier nicht zugreifen.',
 };
 
 /**

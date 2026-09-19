@@ -22,6 +22,16 @@ export const AUDIT_ACTIONS = [
   'document.moved_workspace',
   'document.renamed',
   'document.snapshot_restored',
+  /**
+   * A grant on a page was handed out or withdrawn (issue #83, ADR-044).
+   *
+   * Permission-relevant by definition, which is what `AuditLog` is for. The
+   * entry carries the kind of grant and the account it went to, never the raw
+   * link token -- an audit log that held those would be a list of working
+   * links, and a log is the one place a secret must never end up.
+   */
+  'document.shared',
+  'document.share_revoked',
   'attachment.deleted',
   'workspace.renamed',
   'workspace.member_role_changed',

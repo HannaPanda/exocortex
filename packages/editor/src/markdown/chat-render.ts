@@ -146,3 +146,49 @@ function pruneNode(node: ProseMirrorNode): ProseMirrorNode | null {
 export function pruneForChat(document: ProseMirrorDocument): ProseMirrorDocument {
   return { type: 'doc', content: pruneChildren(document.content) };
 }
+
+/**
+ * The same vocabulary plus images and rules, for a page somebody is *reading*
+ * rather than a chat bubble (issue #83, ADR-044).
+ *
+ * The difference is one sentence long and worth stating: a chat bubble holds
+ * text a model wrote, so an image in it would be a remote address chosen by
+ * something untrusted and fetched by the reader's browser -- a tracking pixel
+ * with extra steps. A shared page holds text the people here wrote, and an
+ * illustration is part of what they wrote. Dropping it would publish a broken
+ * version of their page.
+ *
+ * `src` goes through the same scheme check as a link, so `javascript:` and
+ * `data:` cannot arrive through an image either.
+ */
+export function pruneForReading(document: ProseMirrorDocument): ProseMirrorDocument {
+  const keep = (nodes: readonly ProseMirrorNode[] | undefined): ProseMirrorNode[] => {
+    const result: ProseMirrorNode[] = [];
+    for (const node of nodes ?? []) {
+      if (node.type === 'image') {
+        const src = typeof node.attrs?.src === 'string' ? node.attrs.src : '';
+        const safe = sanitizeLinkHref(src);
+        if (safe === null) continue;
+        result.push({ type: 'image', attrs: { ...node.attrs, src: safe } });
+        continue;
+      }
+      if (node.type === 'horizontalRule') {
+        result.push({ type: 'horizontalRule' });
+        continue;
+      }
+      const pruned = pruneNode(node);
+      if (pruned === null) continue;
+      // A block that survived may itself contain an image, and `pruneNode`
+      // dropped it. Re-walking only the surviving blocks keeps this function
+      // additive rather than a second copy of the pruner.
+      if (node.content === undefined) {
+        result.push(pruned);
+        continue;
+      }
+      const content = keep(node.content);
+      result.push(content.length === 0 ? pruned : { ...pruned, content });
+    }
+    return result;
+  };
+  return { type: 'doc', content: keep(document.content) };
+}

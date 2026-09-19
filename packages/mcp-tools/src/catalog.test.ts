@@ -159,7 +159,9 @@ describe('EXOCORTEX_TOOLS', () => {
     // it again gives it a new id, and the rows that had it stay empty. A render
     // template is: the PDFs built from it stay, but nothing can rebuild them,
     // and a LaTeX preamble somebody spent an afternoon on is not something the
-    // trash holds a copy of.
+    // trash holds a copy of. Creating a share is the one entry here that
+    // deletes nothing (issue #83): a public address is out the moment it is
+    // made, and revoking it afterwards does not unread the page.
     const irreversible = EXOCORTEX_TOOLS.filter((tool) => tool.irreversible)
       .map((tool) => tool.name)
       .sort();
@@ -170,16 +172,19 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_database_property_delete',
       'exo_page_delete',
       'exo_render_template_delete',
+      'exo_share_create',
       'exo_user_delete',
     ]);
   });
 
-  it('never calls a reversible tool irreversible, or a read-only one either', () => {
+  it('never calls a read-only tool irreversible, and names the one that deletes nothing', () => {
     for (const tool of EXOCORTEX_TOOLS) {
-      if (tool.irreversible) {
-        expect(tool.mutating).toBe(true);
-        expect(tool.destructive).toBe(true);
-      }
+      if (!tool.irreversible) continue;
+      expect(tool.mutating).toBe(true);
+      // Irreversible is almost always destructive too, and the exception is
+      // pinned rather than allowed in general: a share creates an address, and
+      // an address cannot be taken back out of somebody's memory.
+      if (tool.name !== 'exo_share_create') expect(tool.destructive).toBe(true);
     }
   });
 

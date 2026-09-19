@@ -1,9 +1,15 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { FolderTreeIcon } from 'lucide-react';
 import * as React from 'react';
 
-import { type DocumentTreeNode, type ParentSuggestion } from '@exocortex/contracts';
+import {
+  type DocumentShare,
+  type DocumentTreeNode,
+  type ParentSuggestion,
+  type ShareListResponse,
+} from '@exocortex/contracts';
 import {
   Alert,
   AlertDescription,
@@ -19,10 +25,11 @@ import {
   LoadingState,
 } from '@exocortex/ui';
 
-import { ApiError } from '@/lib/api/client';
+import { ApiError, apiRequest } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import { useSuggestParent } from '@/lib/api/placement-queries';
 import { useMoveDocument } from '@/lib/api/queries';
+import { shareKeys } from '@/lib/api/share-queries';
 
 /**
  * "Wohin gehört diese Seite?" for the person, not just for the agent.
@@ -51,11 +58,60 @@ export function SuggestParentDialog({
   const suggestions = useSuggestParent(workspaceId, node?.id, node !== null);
   const moveDocument = useMoveDocument(workspaceId);
 
-  const move = (suggestion: ParentSuggestion): void => {
+  /*
+   * Moving a page into a shared branch shares it, and nothing about the act
+   * looks like sharing (issue #83, ADR-044). So a target is asked about before
+   * the page lands in it: a target that inherits nothing moves straight away,
+   * and one that does stops here and says what it would hand over.
+   *
+   * The question is asked imperatively rather than as a standing query, because
+   * the answer decides what happens next. A `useQuery` would arrive in a render
+   * and need an effect to act on it, which is the shape React asks us not to
+   * write -- and here it would also mean a click whose consequence lands a tick
+   * later.
+   */
+  const queryClient = useQueryClient();
+  const [warning, setWarning] = React.useState<{
+    target: { parentId: string; title: string };
+    shares: DocumentShare[];
+  } | null>(null);
+  const [checking, setChecking] = React.useState(false);
+
+  const move = (parentId: string | null): void => {
     if (node === null) return;
     void moveDocument
-      .mutateAsync({ documentId: node.id, request: { parentId: suggestion.parentId } })
+      .mutateAsync({ documentId: node.id, request: { parentId } })
       .then(() => onClose());
+  };
+
+  const proposeMove = async (suggestion: ParentSuggestion): Promise<void> => {
+    setWarning(null);
+    // The workspace root inherits nothing by definition, so it never waits.
+    if (suggestion.parentId === null) {
+      move(null);
+      return;
+    }
+    setChecking(true);
+    try {
+      const inherited = await queryClient.fetchQuery({
+        queryKey: shareKeys.inherited(suggestion.parentId),
+        queryFn: () =>
+          apiRequest<ShareListResponse>(
+            `/api/documents/${suggestion.parentId ?? ''}/inherited-shares`,
+          ),
+        staleTime: 0,
+      });
+      if (inherited.inherited.length === 0) {
+        move(suggestion.parentId);
+        return;
+      }
+      setWarning({
+        target: { parentId: suggestion.parentId, title: suggestion.title },
+        shares: inherited.inherited,
+      });
+    } finally {
+      setChecking(false);
+    }
   };
 
   return (
@@ -84,6 +140,41 @@ export function SuggestParentDialog({
           </Alert>
         ) : null}
 
+        {warning !== null ? (
+          <Alert data-testid="suggest-parent-share-warning">
+            <AlertDescription>
+              „{warning.target.title}“ ist nach außen freigegeben, mitsamt allem darunter. Wenn „
+              {node?.title}“ dort landet, ist sie damit auch freigegeben:
+              <ul className="mt-2 list-disc pl-4">
+                {warning.shares.map((share) => (
+                  <li key={share.id}>
+                    {share.kind === 'PUBLIC_LINK'
+                      ? 'Öffentlicher Link (jeder mit der Adresse liest mit)'
+                      : `Freigegeben an ${share.grantee?.email ?? 'ein Konto'}`}
+                  </li>
+                ))}
+              </ul>
+              <span className="mt-2 flex gap-2">
+                <Button size="sm" variant="ghost" onClick={() => setWarning(null)}>
+                  Abbrechen
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  data-testid="suggest-parent-share-confirm"
+                  onClick={() => {
+                    const target = warning.target.parentId;
+                    setWarning(null);
+                    move(target);
+                  }}
+                >
+                  Trotzdem verschieben
+                </Button>
+              </span>
+            </AlertDescription>
+          </Alert>
+        ) : null}
+
         {suggestions.isPending ? (
           <LoadingState variant="skeleton" rows={3} label="Vorschläge werden gesucht" />
         ) : suggestions.isError ? (
@@ -99,9 +190,11 @@ export function SuggestParentDialog({
               <SuggestionRow
                 key={suggestion.parentId ?? 'root'}
                 suggestion={suggestion}
-                disabled={moveDocument.isPending || suggestion.parentId === node?.parentId}
+                disabled={
+                  moveDocument.isPending || checking || suggestion.parentId === node?.parentId
+                }
                 current={suggestion.parentId === node?.parentId}
-                onMove={() => move(suggestion)}
+                onMove={() => void proposeMove(suggestion)}
               />
             ))}
           </ul>

@@ -10,6 +10,7 @@ import {
   type ProseMirrorDocument,
   type ProseMirrorNode,
   pruneForChat,
+  pruneForReading,
   WIKI_LINK_SCHEME,
 } from '@exocortex/editor';
 import {
@@ -335,10 +336,31 @@ function renderBlock(node: ProseMirrorNode, key: string): React.ReactNode {
       return <TableCell key={key}>{renderTableCellContent(node, key)}</TableCell>;
 
     default:
-      // `pruneForChat` already removed everything else; this only guards
+      // The two blocks only `pruneForReading` keeps, and then nothing:
+      // `pruneForChat` already removed everything else, and this guards
       // against a future node type slipping through.
-      return null;
+      return renderReadingBlock(node, key);
   }
+}
+
+/**
+ * The blocks a page has and a chat bubble does not (issue #83, ADR-044).
+ *
+ * Only ever reached through `ReadingMarkdown`: `pruneForChat` drops both, so a
+ * model's answer can never put an image on screen, which is what keeps a reply
+ * from making the reader's browser fetch an address the model chose.
+ */
+function renderReadingBlock(node: ProseMirrorNode, key: string): React.ReactNode {
+  if (node.type === 'horizontalRule') return <hr key={key} className="my-6 border-border" />;
+  if (node.type !== 'image') return null;
+
+  const src = typeof node.attrs?.src === 'string' ? node.attrs.src : '';
+  const alt = typeof node.attrs?.alt === 'string' ? node.attrs.alt : '';
+  if (src.length === 0) return null;
+  /* eslint-disable-next-line @next/next/no-img-element --
+     the address comes out of a page's content at runtime, so no loader
+     configuration could cover it. */
+  return <img key={key} src={src} alt={alt} className="mb-3 max-w-full rounded-md" />;
 }
 
 export interface ChatMarkdownProps {
@@ -358,6 +380,26 @@ export interface ChatMarkdownProps {
 export function ChatMarkdown({ content, streaming = false, className }: ChatMarkdownProps) {
   const document = useChatMarkdownDocument(content, streaming);
   return <div className={className}>{renderBlockChildren(document.content, 'block')}</div>;
+}
+
+/**
+ * The same renderer for a page somebody is reading rather than a chat bubble
+ * (issue #83, ADR-044): images and horizontal rules survive.
+ *
+ * It shares this file rather than copying three hundred lines of node
+ * rendering. The difference between the two is one pruner, and stating it in
+ * one place is what keeps a shared page and a chat answer from slowly
+ * rendering the same Markdown differently.
+ */
+export function ReadingMarkdown({ content, className }: { content: string; className?: string }) {
+  const document = React.useMemo(() => {
+    try {
+      return pruneForReading(parseMarkdown(content, { assignBlockIds: false }).document);
+    } catch {
+      return { type: 'doc', content: [] } as ProseMirrorDocument;
+    }
+  }, [content]);
+  return <div className={className}>{renderBlockChildren(document.content, 'reading')}</div>;
 }
 
 /**

@@ -10,6 +10,7 @@ import {
   HistoryIcon,
   PencilIcon,
   RotateCcwIcon,
+  Share2Icon,
   Undo2Icon,
 } from 'lucide-react';
 import * as React from 'react';
@@ -120,6 +121,8 @@ function EntryIcon({ type }: { type: DocumentActivityEntry['type'] }) {
       return <RotateCcwIcon className={className} aria-hidden />;
     case 'snapshot':
       return <HistoryIcon className={className} aria-hidden />;
+    case 'shared':
+      return <Share2Icon className={className} aria-hidden />;
   }
 }
 
@@ -229,6 +232,22 @@ function ActivityEntryRow({
       return <Row type={entry.type} title="Wiederhergestellt" meta={at} />;
     case 'snapshotRestored':
       return <Row type={entry.type} title="Auf einen früheren Stand zurückgesetzt" meta={at} />;
+    case 'shared':
+      return (
+        <Row
+          type={entry.type}
+          title={
+            entry.kind === 'PUBLIC_LINK'
+              ? entry.revoked
+                ? 'Öffentlicher Link zurückgezogen'
+                : 'Öffentlicher Link erzeugt'
+              : entry.revoked
+                ? 'Freigabe an ein Konto zurückgezogen'
+                : 'An ein Konto freigegeben'
+          }
+          meta={at}
+        />
+      );
     case 'editingSession':
       return (
         <Row

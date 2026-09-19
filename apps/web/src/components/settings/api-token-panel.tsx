@@ -3,7 +3,12 @@
 import { CopyIcon } from 'lucide-react';
 import * as React from 'react';
 
-import { type ApiToken, type CreateApiTokenResponse } from '@exocortex/contracts';
+import {
+  type ApiToken,
+  type ApiTokenPageScopeInput,
+  type CreateApiTokenResponse,
+  type DocumentTreeNode,
+} from '@exocortex/contracts';
 import {
   Alert,
   AlertDescription,
@@ -36,6 +41,7 @@ import {
 import { useApiTokens, useCreateApiToken, useRevokeApiToken } from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
+import { useDocumentTree, useWorkspaces } from '@/lib/api/queries';
 import { connectionSnippets } from '@/lib/connection-snippets';
 
 import { CopyBlock } from './copy-block';
@@ -81,6 +87,22 @@ const SCOPE_LABELS: Record<string, string> = {
   admin: 'Administration',
 };
 
+/** The "no page limit" choice, which is what a token has had until issue #83. */
+const NO_SCOPE = '__all__';
+
+/** The tree as a flat list with its nesting kept as an indent. */
+function flattenTree(
+  nodes: readonly DocumentTreeNode[],
+  depth = 0,
+): { id: string; title: string; depth: number }[] {
+  const result: { id: string; title: string; depth: number }[] = [];
+  for (const node of nodes) {
+    result.push({ id: node.id, title: node.title, depth });
+    result.push(...flattenTree(node.children, depth + 1));
+  }
+  return result;
+}
+
 interface ApiTokenPanelProps {
   /**
    * Called with the raw secret the moment a token is created, so the setup
@@ -102,6 +124,20 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
   const [name, setName] = React.useState('');
   const [expiry, setExpiry] = React.useState<ExpiryOption>('90');
   const [scope, setScope] = React.useState<ScopeOption>('read');
+  /*
+   * Page scopes (issue #83, ADR-044). Empty means the token is as broad as the
+   * account, which is what every token was before this existed; naming one
+   * page makes everything else unreachable, including search, references and
+   * every workspace-wide listing.
+   */
+  const [scopeWorkspaceId, setScopeWorkspaceId] = React.useState<string>(NO_SCOPE);
+  const [pageScopes, setPageScopes] = React.useState<ApiTokenPageScopeInput[]>([]);
+  const workspaces = useWorkspaces();
+  const scopeTree = useDocumentTree(scopeWorkspaceId === NO_SCOPE ? undefined : scopeWorkspaceId);
+  const scopeCandidates = React.useMemo(
+    () => flattenTree(scopeTree.data?.nodes ?? []),
+    [scopeTree.data],
+  );
   const [revealedToken, setRevealedToken] = React.useState<CreateApiTokenResponse | null>(null);
   const [revokeTarget, setRevokeTarget] = React.useState<ApiToken | null>(null);
   const [copied, setCopied] = React.useState(false);
@@ -119,6 +155,7 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
       {
         name: trimmed,
         scopes: [scope],
+        pageScopes,
         expiresInDays: expiry === 'never' ? null : Number(expiry),
       },
       {
@@ -128,6 +165,8 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
           setName('');
           setExpiry('90');
           setScope('read');
+          setPageScopes([]);
+          setScopeWorkspaceId(NO_SCOPE);
           onTokenCreated?.(response.secret);
         },
       },
@@ -178,6 +217,7 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
               <TableHead>Name</TableHead>
               <TableHead>Präfix</TableHead>
               <TableHead>Rechte</TableHead>
+              <TableHead>Seiten</TableHead>
               <TableHead>Zuletzt benutzt</TableHead>
               <TableHead>Läuft ab</TableHead>
               <TableHead>Status</TableHead>
@@ -204,6 +244,20 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
                       // Issued before scopes existed. The API refuses it, so say so
                       // instead of showing an empty cell that looks like a glitch.
                       <Badge variant="destructive">Keine</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-xs">
+                    {token.pageScopes.length === 0 ? (
+                      <span className="text-muted-foreground">alle</span>
+                    ) : (
+                      <span className="flex flex-col gap-0.5">
+                        {token.pageScopes.map((entry) => (
+                          <span key={entry.documentId}>
+                            {entry.documentTitle}
+                            {entry.scope === 'SUBTREE' ? ' + Unterseiten' : ''}
+                          </span>
+                        ))}
+                      </span>
                     )}
                   </TableCell>
                   <TableCell>
@@ -297,6 +351,15 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
         <p className="text-xs text-muted-foreground">
           {SCOPE_OPTIONS.find((option) => option.value === scope)?.hint}
         </p>
+
+        <TokenPageScopePicker
+          workspaceId={scopeWorkspaceId}
+          onWorkspaceChange={setScopeWorkspaceId}
+          workspaces={workspaces.data ?? []}
+          candidates={scopeCandidates}
+          value={pageScopes}
+          onChange={setPageScopes}
+        />
       </div>
 
       {/*
@@ -388,4 +451,130 @@ function claudeCodeCommand(secret: string): string {
   const origin = typeof window === 'undefined' ? 'https://exocortex.app' : window.location.origin;
   const snippet = connectionSnippets(origin, secret).find((entry) => entry.id === 'claude-code');
   return snippet?.code ?? '';
+}
+
+/**
+ * Confining a token to pages (issue #83, ADR-044).
+ *
+ * Its own component because the panel it came out of had grown past what the
+ * size rule allows, and because this is a self-contained decision: a workspace,
+ * a handful of pages, and how far each one reaches. It holds no state of its
+ * own -- the token form owns the draft, so cancelling the form cancels this.
+ */
+function TokenPageScopePicker({
+  workspaceId,
+  onWorkspaceChange,
+  workspaces,
+  candidates,
+  value,
+  onChange,
+}: {
+  workspaceId: string;
+  onWorkspaceChange: (next: string) => void;
+  workspaces: readonly { id: string; name: string }[];
+  candidates: readonly { id: string; title: string; depth: number }[];
+  value: readonly ApiTokenPageScopeInput[];
+  onChange: (next: ApiTokenPageScopeInput[]) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-2 border-t border-border pt-3">
+      <Label htmlFor="token-scope-workspace">Auf Seiten beschränken (optional)</Label>
+      <p className="text-xs text-muted-foreground">
+        Ohne Angabe kommt das Token überall hin, wo du hinkommst. Nennst du eine Seite, erreicht es
+        nur noch sie: nicht über die Suche, nicht über Verweise, nicht über Listen, und der ganze
+        Rest ist für dieses Token nicht einmal vorhanden.
+      </p>
+      <div className="flex flex-wrap items-end gap-2">
+        <Select value={workspaceId} onValueChange={(next) => onWorkspaceChange(next ?? NO_SCOPE)}>
+          <SelectTrigger id="token-scope-workspace" className="w-56">
+            <SelectValue>
+              {() =>
+                workspaceId === NO_SCOPE
+                  ? 'Keine Beschränkung'
+                  : (workspaces.find((entry) => entry.id === workspaceId)?.name ?? workspaceId)
+              }
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={NO_SCOPE}>Keine Beschränkung</SelectItem>
+            {workspaces.map((workspace) => (
+              <SelectItem key={workspace.id} value={workspace.id}>
+                {workspace.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {workspaceId === NO_SCOPE ? null : (
+          <Select
+            value=""
+            onValueChange={(documentId) => {
+              if (documentId === null || documentId.length === 0) return;
+              if (value.some((entry) => entry.documentId === documentId)) return;
+              onChange([...value, { documentId, scope: 'SUBTREE' }]);
+            }}
+          >
+            <SelectTrigger aria-label="Seite hinzufügen" className="w-72">
+              <SelectValue>{() => 'Seite hinzufügen …'}</SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {candidates.map((entry) => (
+                <SelectItem key={entry.id} value={entry.id}>
+                  {`${'\u00a0\u00a0'.repeat(entry.depth)}${entry.title}`}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      </div>
+
+      {value.length === 0 ? null : (
+        <ul className="flex flex-col gap-1" data-testid="token-page-scopes">
+          {value.map((entry) => (
+            <li
+              key={entry.documentId}
+              className="flex flex-wrap items-center gap-2 rounded-md border border-border px-2 py-1 text-sm"
+            >
+              <span className="min-w-0 flex-1 truncate">
+                {candidates.find((candidate) => candidate.id === entry.documentId)?.title ??
+                  entry.documentId}
+              </span>
+              <Select
+                value={entry.scope}
+                onValueChange={(next) =>
+                  onChange(
+                    value.map((item) =>
+                      item.documentId === entry.documentId
+                        ? { ...item, scope: (next ?? 'SUBTREE') as 'PAGE_ONLY' | 'SUBTREE' }
+                        : item,
+                    ),
+                  )
+                }
+              >
+                <SelectTrigger aria-label="Umfang" className="w-48">
+                  <SelectValue>
+                    {() => (entry.scope === 'SUBTREE' ? 'mit Unterseiten' : 'nur diese Seite')}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="SUBTREE">mit Unterseiten</SelectItem>
+                  <SelectItem value="PAGE_ONLY">nur diese Seite</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  onChange(value.filter((item) => item.documentId !== entry.documentId))
+                }
+              >
+                Entfernen
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }

@@ -74,7 +74,15 @@ export class RelatedDocumentsService {
     });
     if (result.hits.length === 0) return { documentId, state: result.state, related: [] };
 
-    const neighbourIds = result.hits.map((hit) => hit.documentId);
+    // The neighbours are other people's pages, so the workspace is the
+    // boundary only for a member with an unconfined credential (issue #83,
+    // ADR-044). Everybody else is offered what they may already read.
+    const visible = await this.access.visibleDocumentIds(context);
+    const hits =
+      visible === null ? result.hits : result.hits.filter((hit) => visible.has(hit.documentId));
+    if (hits.length === 0) return { documentId, state: result.state, related: [] };
+
+    const neighbourIds = hits.map((hit) => hit.documentId);
     const [rows, paths, linked] = await Promise.all([
       this.prisma.document.findMany({
         where: { id: { in: neighbourIds } },
@@ -87,13 +95,13 @@ export class RelatedDocumentsService {
           archivedAt: true,
         },
       }),
-      this.resolvePaths(context.workspaceId, neighbourIds),
+      this.resolvePaths(context.workspaceId, neighbourIds, visible),
       this.linkedNeighbours(documentId, neighbourIds),
     ]);
     const byId = new Map(rows.map((row) => [row.id, row]));
 
     const related: RelatedDocument[] = [];
-    for (const hit of result.hits) {
+    for (const hit of hits) {
       const row = byId.get(hit.documentId);
       if (row === undefined) continue;
       related.push({
@@ -151,14 +159,17 @@ export class RelatedDocumentsService {
   private async resolvePaths(
     workspaceId: string,
     documentIds: readonly string[],
+    visibleIds: Set<string> | null,
   ): Promise<Map<string, DocumentPathEntry[]>> {
     const paths = new Map<string, DocumentPathEntry[]>();
     if (documentIds.length === 0) return paths;
 
-    const rows = await this.prisma.document.findMany({
+    const all = await this.prisma.document.findMany({
       where: { workspaceId },
       select: { id: true, parentId: true, title: true },
     });
+    // A path is a list of titles, so it is filtered like the hits themselves.
+    const rows = visibleIds === null ? all : all.filter((row) => visibleIds.has(row.id));
 
     for (const documentId of documentIds) {
       paths.set(

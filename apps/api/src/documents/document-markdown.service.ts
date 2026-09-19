@@ -40,6 +40,7 @@ import { RealtimeService } from '../realtime/realtime.service';
 
 import { DOCUMENT_SELECT, toSummary } from './documents.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
+import { mayListChildren, visiblePath } from './share-visibility';
 
 function filenameFor(title: string): string {
   const base = title
@@ -136,13 +137,18 @@ export class DocumentMarkdownService {
       documentId,
       filename: filenameFor(document.title),
       markdown,
-      path: collectAncestors(siblingRows, documentId).map((row) => ({
+      // Both lists are cut for a caller who is here through a share (issue
+      // #83): an export must not carry the names of the sections above the
+      // shared page, nor of sub-pages a page-only grant did not include.
+      path: visiblePath(collectAncestors(siblingRows, documentId), context.grant).map((row) => ({
         id: row.id,
         title: row.title,
       })),
-      children: siblingRows
-        .filter((row) => row.parentId === documentId && row.archivedAt === null)
-        .map(toSummary),
+      children: mayListChildren(context.grant)
+        ? siblingRows
+            .filter((row) => row.parentId === documentId && row.archivedAt === null)
+            .map(toSummary)
+        : [],
     };
   }
 
@@ -156,10 +162,11 @@ export class DocumentMarkdownService {
     request: MarkdownImportRequest;
     correlationId: string;
   }): Promise<DocumentSummary> {
-    const role = await this.access.findRole(input.workspaceId, input.userId);
+    const parentId = input.request.parentId ?? null;
+    // Anchored at the parent, like `DocumentsService.create` (issue #83).
+    const role = await this.access.requireRoleAnchoredAt(input.workspaceId, input.userId, parentId);
     assertPolicy(canCreateDocument(role));
 
-    const parentId = input.request.parentId ?? null;
     if (parentId !== null) {
       const parent = await this.prisma.document.findUnique({
         where: { id: parentId },

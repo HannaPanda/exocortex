@@ -213,14 +213,20 @@ export class DocumentTrashService {
    * new record.
    */
   async getTrash(workspaceId: string, userId: string): Promise<TrashResponse> {
-    const role = await this.access.findRole(workspaceId, userId);
-    assertPolicy(canReadWorkspace(role));
+    const scoped = await this.access.requireScopedRole(workspaceId, userId);
+    assertPolicy(canReadWorkspace(scoped.role));
 
-    const rows = await this.prisma.document.findMany({
+    const archived = await this.prisma.document.findMany({
       where: { workspaceId, archivedAt: { not: null } },
       select: DOCUMENT_SELECT,
       orderBy: [{ orderKey: 'asc' }, { id: 'asc' }],
     });
+    // The trash is a workspace-wide list, so a confined credential sees only
+    // the part of it that came out of its own branch (issue #83).
+    const rows =
+      scoped.documentIds === null
+        ? archived
+        : archived.filter((row) => (scoped.documentIds as Set<string>).has(row.id));
 
     const byId = new Map(rows.map((row) => [row.id, row]));
     const childrenByParent = new Map<string, DocumentRow[]>();

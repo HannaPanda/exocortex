@@ -517,6 +517,24 @@ export const documentDetailSchema = documentSummarySchema.extend({
    * question does not apply.
    */
   rowCount: z.number().int().nonnegative().nullable(),
+  /**
+   * Whether this reader may hand the page to somebody outside the workspace
+   * (issue #83, ADR-044).
+   *
+   * Two conditions in one flag, because the UI asks one question: the reader
+   * has to be a *member* of the workspace rather than somebody who was handed
+   * the page themselves -- a share cannot be passed on -- and they have to be
+   * an ADMIN or OWNER, which is the bar for changing who the workspace is.
+   */
+  canShare: z.boolean(),
+  /**
+   * True when this reader is here through a share rather than a membership.
+   *
+   * The browser needs it because a shared page is opened outside the workspace
+   * shell: there is no tree, no inbox and no workspace name to show, and a
+   * page that tried would spend its first second on three refused requests.
+   */
+  viaShare: z.boolean(),
 });
 export type DocumentDetail = z.infer<typeof documentDetailSchema>;
 
@@ -767,6 +785,24 @@ export const documentActivityEntrySchema = z.discriminatedUnion('type', [
     actorId: idSchema.nullable(),
     actorName: z.string().nullable(),
     restoredFromSnapshotId: idSchema,
+  }),
+  /**
+   * A grant on this page was handed out or withdrawn (issue #83, ADR-044).
+   *
+   * In the page's own history rather than only in the share list, because
+   * "when did this page become readable from outside" is a question about the
+   * page. `kind` says whether it was a link or an account; who the account was
+   * is deliberately left out -- that is in the share list, which is where
+   * somebody is already looking at recipients.
+   */
+  z.object({
+    type: z.literal('shared'),
+    id: z.string(),
+    occurredAt: isoDateTimeSchema,
+    actorId: idSchema.nullable(),
+    actorName: z.string().nullable(),
+    kind: z.enum(['USER', 'PUBLIC_LINK']),
+    revoked: z.boolean(),
   }),
   z.object({
     type: z.literal('snapshot'),

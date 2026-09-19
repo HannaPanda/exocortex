@@ -266,10 +266,19 @@ function MoreSection({ workspaceId }: { workspaceId: string }) {
         >
           Vorlagen für PDF öffnen
         </Button>
+        <Button
+          render={<Link href={`/arbeitsbereich/${workspaceId}/freigaben`} />}
+          variant="outline"
+          className="justify-start"
+          data-testid="open-workspace-shares"
+        >
+          Freigaben öffnen
+        </Button>
       </div>
       <p className="text-xs text-muted-foreground">
         Regeln, die auf Änderungen an Seiten reagieren, mit dem Protokoll dessen, was sie getan
-        haben. Und womit sich Seiten dieses Arbeitsbereichs als PDF veröffentlichen lassen.
+        haben. Womit sich Seiten dieses Arbeitsbereichs als PDF veröffentlichen lassen. Und was aus
+        diesem Arbeitsbereich nach außen gegeben ist, an Konten und als öffentlicher Link.
       </p>
     </section>
   );

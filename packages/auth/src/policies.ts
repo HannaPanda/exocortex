@@ -554,6 +554,74 @@ export function canResolveComment(
 }
 
 // --------------------------------------------------------------------------
+// Shares (issue #83, ADR-044)
+// --------------------------------------------------------------------------
+
+/**
+ * Sharing a page outward: a public link, or a grant to another account.
+ *
+ * ADMIN, one step above editing the page and deliberately not the same
+ * question. Every other write in this list changes what is inside the
+ * workspace; this one changes who the workspace is. A public link puts a page
+ * on the open internet for anybody who has the address, and a grant to an
+ * account lets somebody who was never invited here read or write inside it --
+ * neither is undone by editing the page back.
+ *
+ * Below ADMIN on purpose, though: an OWNER bar would put every share through
+ * the one person who also answers for the provider bill, and a workspace where
+ * handing somebody a page needs the owner is a workspace where people email
+ * each other exports instead. What stops that from being a hole is the ceiling
+ * in `canShareAtMost` below -- a share can never grant more than the workspace
+ * itself would.
+ */
+export function canManageShares(role: WorkspaceRole | null): PolicyDecision {
+  const read = canReadWorkspace(role);
+  if (!read.allowed) return read;
+  if (!hasAtLeast(role as WorkspaceRole, 'ADMIN')) {
+    return deny('forbidden', 'Sharing a page requires the ADMIN or OWNER role');
+  }
+  return ALLOW;
+}
+
+/**
+ * The ceiling every grant is clamped to: nobody hands out what they do not
+ * have.
+ *
+ * A share is made by a person, and the person's own authority over the page is
+ * the most it can carry. The check reads trivially today, because
+ * `canManageShares` already demands ADMIN and an ADMIN may write -- it is here
+ * for the day that changes, and because the rule the issue states ("a token
+ * can never hold more rights than its account") is the same rule and should be
+ * written down once rather than inferred twice.
+ */
+export function canShareAtMost(
+  role: WorkspaceRole | null,
+  permission: 'READ' | 'WRITE',
+  document: DocumentPolicySubject,
+): PolicyDecision {
+  const manage = canManageShares(role);
+  if (!manage.allowed) return manage;
+  if (permission === 'WRITE') {
+    const edit = canEditDocument(role, document);
+    if (!edit.allowed) return edit;
+  }
+  return ALLOW;
+}
+
+/**
+ * Reading the list of shares on a page, and the two personal lists behind
+ * "geteilt".
+ *
+ * Membership is enough to see that a page is shared and with whom: a page that
+ * has been put on the open internet is not a secret from the people who write
+ * it, and a workspace where only admins can find that out is a workspace where
+ * nobody finds it out.
+ */
+export function canReadShares(role: WorkspaceRole | null): PolicyDecision {
+  return canReadWorkspace(role);
+}
+
+// --------------------------------------------------------------------------
 // Collaboration tickets
 // --------------------------------------------------------------------------
 

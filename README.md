@@ -66,6 +66,15 @@ What is deliberately still missing is listed under
   where to find it, marks what is newer than the reader's own marker, and is
   kept complete by a hard gate that refuses a tool, screen or automation
   trigger nobody described (ADR-040)
+- sharing a single page outward (ADR-044): an unguessable read-only link, or a
+  grant to another account that reads or writes without becoming a member of
+  anything, for one page or the branch below it, optionally with an expiry and
+  withdrawable while somebody has it open. A subtree grant follows the
+  hierarchy, so moving a page into a shared branch shares it -- which is why the
+  move says so first and the page header says so afterwards
+- API tokens confined to a page or a branch: such a token reaches nothing else,
+  not through search, references, listings or the trash, and a workspace-wide
+  request is refused rather than filtered (ADR-044)
 - calendars: iCal import and export, reminders, event pages
 
 **Search, AI and automation**
@@ -242,6 +251,7 @@ tools/                the Claude Code plugin: MCP server, memory hooks, setup sk
 | [`docs/overview-pages.md`](docs/overview-pages.md)       | digests, composition, when a refresh costs anything          |
 | [`docs/templates.md`](docs/templates.md)                 | page templates: the sidecar, the copy, the title pattern     |
 | [`docs/saved-queries.md`](docs/saved-queries.md)         | saved searches, smart views, query blocks, the query model   |
+| [`docs/sharing.md`](docs/sharing.md)                     | page shares, public links, page-scoped tokens                |
 | [`docs/features.md`](docs/features.md)                   | the feature registry, the coverage gate, writing an entry    |
 | [`docs/observability.md`](docs/observability.md)         | logs, health, tracing: what is recorded and what never is    |
 | [`docs/deviations.md`](docs/deviations.md)               | where the implementation deviates from the brief and why     |

@@ -97,6 +97,21 @@ export const PLATFORM_FEATURES: readonly RegisteredFeature[] = [
     claims: { screens: ['/einstellungen/tokens'] },
   }),
   defineFeature({
+    id: 'token-seitenbereiche',
+    area: 'agenten',
+    title: 'Ein Token auf bestimmte Seiten begrenzen',
+    summary:
+      'Ein Zugangstoken lässt sich beim Anlegen auf eine Seite oder einen Seitenbereich festnageln. Danach kommt es an nichts anderes mehr heran: nicht über die Suche, nicht über Verweise, nicht über Listen, und der Rest existiert für dieses Token schlicht nicht.',
+    details: [
+      'Beim Anlegen eines Tokens gibt es unter den Rechten den Abschnitt „Auf Seiten beschränken“. Du wählst einen Arbeitsbereich, dann eine oder mehrere Seiten, und je Seite, ob nur sie gemeint ist oder alles darunter. Ohne Angabe bleibt das Token so breit wie dein Konto, wie es das immer war.',
+      'Das ist für Agenten gedacht, die nur einen Ausschnitt kennen sollen: ein Schreibassistent für „Worldbuilding > Cyberpunk“ braucht deine Steuerunterlagen nicht zu sehen und soll auch nicht wissen, dass es sie gibt. Die Grenze gilt deshalb nicht nur beim direkten Öffnen einer Seite, sondern auch für Suche, Seitenbaum, Verweise, verwandte Seiten, Anhänge, den Papierkorb und die Ablagevorschläge. Ein Aufruf, der sich auf den ganzen Arbeitsbereich bezieht, wird abgelehnt statt gefiltert, damit nichts durchrutscht, woran niemand gedacht hat.',
+      'Ein Token kann nie mehr dürfen als das Konto dahinter: beim Anlegen wird jede genannte Seite als Lesevorgang von dir geprüft, und bei jeder Anfrage gilt zusätzlich deine Mitgliedschaft von heute. Ein begrenztes Token kann auch kein unbegrenztes erzeugen. Wird die letzte Seite gelöscht, auf die ein Token beschränkt war, erreicht es nichts mehr, statt wieder alles zu erreichen.',
+    ],
+    since: '2026-09-19',
+    references: ['#83', 'ADR-044'],
+    ui: { where: 'Einstellungen, Verbindungen, beim Anlegen eines Tokens.' },
+  }),
+  defineFeature({
     id: 'verbindungen',
     area: 'agenten',
     title: 'Verbundene Clients wieder loswerden',

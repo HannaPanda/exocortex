@@ -135,4 +135,47 @@ export const PUBLISHING_FEATURES: readonly RegisteredFeature[] = [
     ui: { where: 'Das Menü der Projektansicht.' },
     tools: ['exo_project_export', 'exo_project_import'],
   }),
+  defineFeature({
+    id: 'seiten-teilen',
+    area: 'veroeffentlichen',
+    title: 'Eine Seite nach außen freigeben',
+    summary:
+      'Eine Seite lässt sich einzeln weitergeben: als Adresse, die jeder öffnen kann, der sie hat, oder an ein bestimmtes Konto zum Lesen oder Bearbeiten. Wahlweise nur die Seite oder alles darunter, wahlweise befristet, jederzeit zurückziehbar.',
+    details: [
+      'Im Seitenmenü steht „Teilen …“. Dort entscheidest du zuerst den Umfang: nur diese Seite, oder sie mitsamt allem, was darunter hängt. Danach hast du zwei Wege. „An ein Konto“ gibt die Seite jemandem, der hier schon ein Konto hat, zum Lesen oder zum Bearbeiten; die Person muss dafür in keinem Arbeitsbereich Mitglied werden und sieht auch sonst nichts von ihm. „Link erzeugen“ macht eine Adresse, unter der die Seite ohne Anmeldung lesbar ist. Die Adresse steht genau einmal da, direkt nach dem Erzeugen; danach zeigt die Liste nur noch ihre ersten Zeichen.',
+      'Ein Link ist immer nur lesend. Schreiben über eine Adresse, die jemand weiterreichen kann, gibt es hier nicht, und zwar nicht als Einstellung, sondern gar nicht. Eine Freigabe an ein Konto kann schreiben, weil dahinter eine angemeldete Person steht, die im Verlauf der Seite auftaucht wie jede andere.',
+      'Zurückziehen wirkt sofort, auch für jemanden, der die Seite gerade offen hat: die Verbindung wird neu geprüft und fällt weg. Was schon gelesen wurde, holt das nicht zurück, deshalb fragt eXocortex beim Erzeugen eines Links noch einmal nach. Eine Freigabe „mit allem darunter“ hängt an der Struktur, nicht an einer Liste: eine Seite, die du innerhalb des freigegebenen Bereichs verschiebst, bleibt freigegeben, und eine, die du herausschiebst, ist es nicht mehr.',
+      'Der umgekehrte Fall ist der gefährliche, deshalb sagt eXocortex ihn an: eine Seite in einen bereits freigegebenen Bereich zu verschieben, gibt sie mit frei. Beim Einsortieren steht eine Warnung, bevor verschoben wird, und eine Seite, die von weiter oben freigegeben ist, trägt oben das Kennzeichen „Geteilt“, auch wenn an ihr selbst nichts eingestellt wurde.',
+    ],
+    since: '2026-09-19',
+    references: ['#83', 'ADR-044'],
+    ui: { where: 'Seitenmenü oben rechts, „Teilen …“.' },
+    tools: [
+      'exo_share_create',
+      'exo_share_list',
+      'exo_share_update',
+      'exo_share_revoke',
+      'exo_share_inherited',
+    ],
+    claims: { screens: ['/freigabe/:x'] },
+  }),
+  defineFeature({
+    id: 'freigaben-uebersicht',
+    area: 'veroeffentlichen',
+    title: 'Was ist freigegeben, und was hat man mir gegeben',
+    summary:
+      'Zwei Listen: alle Freigaben eines Arbeitsbereichs an einer Stelle, zum Aufräumen, und die Seiten, die andere mit dir geteilt haben. Letztere stehen in keiner Navigation, weil du in dem Arbeitsbereich kein Mitglied bist.',
+    details: [
+      'In den Einstellungen eines Arbeitsbereichs führt „Freigaben öffnen“ auf die Liste dessen, was von hier nach außen gegeben ist: welche Seite, an wen oder als Link, lesend oder schreibend, wie weit, bis wann. Zurückgezogene Freigaben bleiben stehen statt zu verschwinden, weil „das war bis März offen“ zur Antwort gehört. Ohne diese Liste ist „was ist bei uns eigentlich öffentlich“ eine Frage, die nach einem Jahr niemand mehr beantworten kann.',
+      'In der linken Leiste führt „Mit mir geteilt“ auf die Gegenrichtung: Seiten, die jemand dir gegeben hat, über Arbeitsbereiche hinweg. Sie tauchen in keinem Seitenbaum auf, denn du bist dort kein Mitglied; diese Liste ist der einzige Weg dorthin. Eine solche Seite öffnet sich ohne die Navigation des fremden Arbeitsbereichs: du siehst die Seite und, wenn der Bereich mitgegeben wurde, was darunter hängt, sonst nichts.',
+      'Was du über eine Freigabe erreichst, kannst du nicht weitergeben. Eine geteilte Seite hat keinen „Teilen“-Knopf: wer sie weiterreichen darf, ist eine Frage an den Arbeitsbereich, aus dem sie kommt.',
+    ],
+    since: '2026-09-19',
+    references: ['#83', 'ADR-044'],
+    ui: {
+      where: 'Linke Leiste „Mit mir geteilt“; Arbeitsbereich-Einstellungen, „Freigaben öffnen“.',
+    },
+    tools: ['exo_shared_with_me', 'exo_share_workspace_list'],
+    claims: { screens: ['/geteilt', '/geteilt/:x', '/arbeitsbereich/:x/freigaben'] },
+  }),
 ];

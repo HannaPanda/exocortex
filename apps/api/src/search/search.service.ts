@@ -36,6 +36,16 @@ export const SEARCH_ADAPTER = Symbol('EXOCORTEX_SEARCH_ADAPTER');
 export const KEYWORD_SEARCH_ADAPTER = Symbol('EXOCORTEX_KEYWORD_SEARCH_ADAPTER');
 
 /**
+ * How much more a page-confined search asks the adapter for than it keeps.
+ *
+ * Four is a guess with a floor under it, not a measurement: the filter drops
+ * whatever falls outside the branch, and a factor of one would let a workspace
+ * full of other people's pages starve the answer. It costs one larger read of
+ * an index that is already ranked.
+ */
+const SCOPED_OVERFETCH = 4;
+
+/**
  * Search application service.
  *
  * Membership is verified before any query runs, and the workspace filter is part
@@ -54,19 +64,31 @@ export class SearchService {
     userId: string,
     request: SearchRequest,
   ): Promise<SearchResponse> {
-    await this.access.requireRole(workspaceId, userId);
+    const scoped = await this.access.requireScopedRole(workspaceId, userId);
 
     const startedAt = Date.now();
-    const hits = await this.adapter.search({
+    const found = await this.adapter.search({
       workspaceId,
       query: request.q,
-      limit: request.limit,
+      // A confined credential asks for more than it will keep, because the
+      // filter below runs after ranking and would otherwise turn a limit of
+      // ten into two (issue #83). Over-fetching rather than pushing a list of
+      // ids into the adapter: the adapter takes no such list (ADR-042), and
+      // an engine that is not PostgreSQL would have no way to honour one.
+      limit: scoped.documentIds === null ? request.limit : request.limit * SCOPED_OVERFETCH,
       includeArchived: request.includeArchived,
     });
+    const hits =
+      scoped.documentIds === null
+        ? found
+        : found
+            .filter((hit) => (scoped.documentIds as Set<string>).has(hit.documentId))
+            .slice(0, request.limit);
 
     const paths = await this.resolvePaths(
       workspaceId,
       hits.map((hit) => hit.documentId),
+      scoped.documentIds,
     );
 
     return {
@@ -88,14 +110,19 @@ export class SearchService {
   private async resolvePaths(
     workspaceId: string,
     documentIds: readonly string[],
+    visibleIds: Set<string> | null,
   ): Promise<Map<string, DocumentPathEntry[]>> {
     const paths = new Map<string, DocumentPathEntry[]>();
     if (documentIds.length === 0) return paths;
 
-    const rows = await this.prisma.document.findMany({
+    const all = await this.prisma.document.findMany({
       where: { workspaceId },
       select: { id: true, parentId: true, title: true },
     });
+    // A path is a list of page titles, so it leaks exactly what the hit
+    // filter above prevents: the chain of a hit inside a scoped branch stops
+    // at the branch, rather than naming the sections above it (issue #83).
+    const rows = visibleIds === null ? all : all.filter((row) => visibleIds.has(row.id));
 
     for (const documentId of documentIds) {
       paths.set(

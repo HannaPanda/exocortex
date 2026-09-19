@@ -45,6 +45,7 @@ import {
   toSummary,
 } from './document-shape';
 import { DocumentTrashService } from './document-trash.service';
+import { visiblePath } from './share-visibility';
 
 /** Re-exported so the many callers that import them from here keep working. */
 export { DOCUMENT_SELECT, toIconColor, toSummary } from './document-shape';
@@ -161,13 +162,15 @@ export class DocumentsService {
       }),
     ]);
 
-    const ancestors = collectAncestors(siblings, documentId);
+    // Cut at the root of the grant for a caller who is here through a share
+    // (issue #83): the sections above a shared page were not shared.
+    const ancestors = visiblePath(collectAncestors(siblings, documentId), context.grant);
     // The immediate parent's type, read from the workspace-wide list already
     // fetched above rather than a second query: it is what tells the context
     // panel apart a database row (`PAGE` under a `COLLECTION`, ADR-011) from an
     // ordinary sub-page.
     const parentType =
-      row.parentId === null
+      row.parentId === null || !ancestors.some((entry) => entry.id === row.parentId)
         ? null
         : (siblings.find((entry) => entry.id === row.parentId)?.type ?? null);
     // Only a database itself has rows; the count is one extra query, run only
@@ -195,6 +198,12 @@ export class DocumentsService {
       updatedByName: row.updatedBy.name,
       parentType,
       rowCount,
+      // A share cannot be passed on (issue #83, ADR-044), and handing a page
+      // outward is the ADMIN bar rather than the writing one.
+      canShare:
+        context.grant.source === 'membership' &&
+        (context.role === 'ADMIN' || context.role === 'OWNER'),
+      viaShare: context.grant.source === 'share',
     };
   }
 
@@ -224,10 +233,15 @@ export class DocumentsService {
      */
     initialYjsState?: Uint8Array;
   }): Promise<DocumentSummary> {
-    const role = await this.access.findRole(input.workspaceId, input.userId);
+    const parentId = input.request.parentId ?? null;
+    // Anchored at the parent (issue #83, ADR-044): the authority to create
+    // comes from the workspace, but whether *this credential* may create here
+    // is decided by where "here" is. A confined token creating at the root is
+    // refused, which is the case that would otherwise walk straight out of the
+    // branch it was confined to.
+    const role = await this.access.requireRoleAnchoredAt(input.workspaceId, input.userId, parentId);
     assertPolicy(canCreateDocument(role));
 
-    const parentId = input.request.parentId ?? null;
     if (parentId !== null) {
       const parent = await this.loadDocumentOrThrow(parentId);
       if (parent.workspaceId !== input.workspaceId) {

@@ -72,7 +72,15 @@ export class AttachmentsService {
   ) {}
 
   async upload(input: UploadInput): Promise<UploadAttachmentResponse> {
-    const role = await this.access.findRole(input.workspaceId, input.userId);
+    // Anchored at the page the file lands on (issue #83, ADR-044): a file that
+    // hangs on a page takes that page's access, so a credential confined to a
+    // branch may upload into it and a file that hangs on nothing is a
+    // workspace-level act and refused for such a credential.
+    const role = await this.access.requireRoleAnchoredAt(
+      input.workspaceId,
+      input.userId,
+      input.documentId,
+    );
     assertPolicy(canUploadFile(role));
 
     if (input.body.byteLength === 0) {

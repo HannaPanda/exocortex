@@ -354,6 +354,16 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   and the prompt's text, so the promise above the composer is about the same
   characters. Pinning stays the person's: `exo_chat_context` reads the list,
   and no tool writes it.
+- ADR-044: a grant is a row on a page, and a confinement travels with the
+  credential. A share is expressed as a `WorkspaceRole` so every existing policy
+  applies unchanged; `SUBTREE` is resolved against the hierarchy on every
+  request, never against a stored list of ids. A public link is read-only by a
+  check constraint and served by its own tiny anonymous surface, because a
+  principal without a user id cannot go through `WorkspaceAccessService`. Page
+  scopes on a token are read by `SessionGuard` into the request context and
+  consulted only there: `findRole` and `requireRole` fail closed for a confined
+  credential, and the readers that can narrow opt in through
+  `requireScopedRole`, `requireRoleAnchoredAt` and `visibleDocumentIds`.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -382,6 +392,7 @@ Each of these has a step-by-step recipe:
 | new page template placeholder, template UI               | `docs/templates.md`         |
 | new feature entry, the help page, the coverage gate      | `docs/features.md`          |
 | new saved-query dimension, smart views, query blocks     | `docs/saved-queries.md`     |
+| new kind of share, a route that answers with pages       | `docs/sharing.md`           |
 
 ## Deployment on this machine
 

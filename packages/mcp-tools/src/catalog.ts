@@ -23,6 +23,7 @@ import { RESEARCH_TOOLS } from './tools/research.js';
 import { RULES_TOOLS } from './tools/rules.js';
 import { SAVED_QUERY_TOOLS } from './tools/saved-queries.js';
 import { SEARCH_TOOLS } from './tools/search.js';
+import { SHARE_TOOLS } from './tools/shares.js';
 import { TEMPLATE_TOOLS } from './tools/templates.js';
 import { WEB_TOOLS } from './tools/web.js';
 import { WORKSPACE_TOOLS } from './tools/workspaces.js';
@@ -37,6 +38,7 @@ export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...OVERVIEW_TOOLS,
   ...LINK_TOOLS,
   ...COMMENT_TOOLS,
+  ...SHARE_TOOLS,
   ...SEARCH_TOOLS,
   ...SAVED_QUERY_TOOLS,
   ...WEB_TOOLS,

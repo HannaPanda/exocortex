@@ -52,8 +52,12 @@ export interface ToolDefinition<TInput> {
   /**
    * True when nothing brings the data back: no snapshot, no trash, no restore.
    *
-   * This is the narrow subset of `destructive` that the two-step confirmation
-   * gate still applies to. The distinction matters because the gate is a weak
+   * This is what the two-step confirmation gate still applies to. Almost
+   * always a subset of `destructive`, but not by definition: `exo_share_create`
+   * takes nothing away and is still irreversible, because the address of a
+   * public link is out the moment it is made and withdrawing it afterwards does
+   * not unread the page. What the two flags share is the question they answer
+   * for a caller -- "can I undo this" -- and the gate keys on that one. The distinction matters because the gate is a weak
    * control: anyone holding the bearer token simply sends the call twice, and
    * the prompt is read by the model, never by a person -- both MCP clients this
    * deployment serves already ask their human before a write. What it costs is

@@ -31,6 +31,13 @@ export const AUTHORIZATION_REVOCATION_REASONS = [
   'account_disabled',
   /** The account was deleted outright; every workspace is affected. */
   'account_deleted',
+  /**
+   * A page share was withdrawn or narrowed (issue #83). Sent for a widening
+   * too, for the reason `workspace_role_changed` gives: a connection
+   * authorized under the old grant is replaced rather than patched, so the
+   * new right arrives through a fresh handshake or not at all.
+   */
+  'document_share_changed',
 ] as const;
 
 export const authorizationRevocationReasonSchema = z.enum(AUTHORIZATION_REVOCATION_REASONS);

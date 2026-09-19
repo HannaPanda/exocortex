@@ -65,14 +65,14 @@ export class DocumentPlacementService {
     userId: string,
     request: SuggestParentRequest,
   ): Promise<SuggestParentResponse> {
-    await this.access.requireRole(workspaceId, userId);
+    const scoped = await this.access.requireScopedRole(workspaceId, userId);
 
     const query = await this.buildQuery(workspaceId, userId, request);
     if (query.length === 0) {
       return { query, adapter: this.adapter.id, suggestions: [] };
     }
 
-    const [hits, rows] = await Promise.all([
+    const [found, all] = await Promise.all([
       this.adapter.search({
         workspaceId,
         query,
@@ -84,6 +84,18 @@ export class DocumentPlacementService {
         select: { id: true, parentId: true, title: true, type: true },
       }),
     ]);
+    // Suggesting a home for a page is a reading of the whole tree, so a
+    // confined credential is only ever offered somewhere inside its own branch
+    // (issue #83) -- suggesting a parent it may not write to would be advice
+    // that cannot be taken.
+    const hits =
+      scoped.documentIds === null
+        ? found
+        : found.filter((hit) => (scoped.documentIds as Set<string>).has(hit.documentId));
+    const rows =
+      scoped.documentIds === null
+        ? all
+        : all.filter((row) => (scoped.documentIds as Set<string>).has(row.id));
 
     const byId = new Map(rows.map((row) => [row.id, row]));
     const childCounts = new Map<string | null, number>();

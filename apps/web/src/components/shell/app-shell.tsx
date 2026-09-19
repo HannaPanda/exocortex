@@ -12,6 +12,7 @@ import {
   PanelLeftIcon,
   PanelRightIcon,
   SearchIcon,
+  Share2Icon,
   ShieldIcon,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -497,6 +498,9 @@ function GlobalLinks() {
     },
     { href: '/chats', label: 'Chats', testId: 'open-chats', icon: MessagesSquareIcon },
     { href: '/entitaeten', label: 'Entitäten', testId: 'open-entities', icon: NetworkIcon },
+    // The only way to a page somebody shared with this account: the reader is
+    // not a member of that workspace, so no tree will ever show it (issue #83).
+    { href: '/geteilt', label: 'Mit mir geteilt', testId: 'open-shared', icon: Share2Icon },
     { href: '/gedaechtnis', label: 'Gedächtnis', testId: 'open-memory', icon: BrainIcon },
     { href: '/admin', label: 'Verwaltung', testId: 'open-admin', icon: ShieldIcon },
     {
