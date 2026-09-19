@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-195 routes are reachable from at least one client; 126 from all three.
+198 routes are reachable from at least one client; 127 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -29,6 +29,7 @@ reorder routes shipped with no way to them in the browser.
 | `DELETE /api/admin/users/:x` | ✓ | ✓ | ✓ | `exo_user_delete` |
 | `DELETE /api/ai/conversations/:x` | ✓ | · | · | — |
 | `DELETE /api/ai/conversations/:x/permanent` | ✓ | · | · | — |
+| `DELETE /api/ai/conversations/:x/sources/:x` | ✓ | · | · | — |
 | `DELETE /api/automations/:x` | ✓ | ✓ | ✓ | `exo_automation_delete` |
 | `DELETE /api/comments/:x` | ✓ | ✓ | ✓ | `exo_comment_delete` |
 | `DELETE /api/documents/:x` | · | · | ✓ | `exo_page_delete` |
@@ -59,7 +60,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/agent-sessions/:x` | ✓ | ✓ | ✓ | `exo_agent_session_get` |
 | `GET /api/ai/conversations` | ✓ | ✓ | ✓ | `exo_chat_list` |
 | `GET /api/ai/conversations/:x` | ✓ | ✓ | ✓ | `exo_chat_read` |
-| `GET /api/ai/conversations/:x/sources` | · | ✓ | ✓ | `exo_chat_context` |
+| `GET /api/ai/conversations/:x/sources` | ✓ | ✓ | ✓ | `exo_chat_context` |
 | `GET /api/ai/conversations/search` | ✓ | ✓ | ✓ | `exo_chat_search` |
 | `GET /api/ai/models` | ✓ | · | · | — |
 | `GET /api/ai/runs/:x` | ✓ | · | ✓ | `exo_ai_run_get` |
@@ -128,6 +129,7 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/admin/users/:x` | ✓ | · | · | — |
 | `PATCH /api/admin/users/:x/status` | ✓ | ✓ | ✓ | `exo_user_set_disabled` |
 | `PATCH /api/ai/conversations/:x` | ✓ | · | · | — |
+| `PATCH /api/ai/conversations/:x/sources/:x` | ✓ | · | · | — |
 | `PATCH /api/attachments/:x/text` | ✓ | ✓ | ✓ | `exo_attachment_correct_text` |
 | `PATCH /api/automations/:x` | ✓ | ✓ | ✓ | `exo_automation_update` |
 | `PATCH /api/comments/:x` | ✓ | ✓ | ✓ | `exo_comment_update` |
@@ -152,6 +154,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/agent-sessions/:x/revert` | ✓ | · | · | — |
 | `POST /api/ai/conversations` | ✓ | · | · | — |
 | `POST /api/ai/conversations/:x/messages` | ✓ | · | · | — |
+| `POST /api/ai/conversations/:x/sources` | ✓ | · | · | — |
 | `POST /api/ai/conversations/:x/to-page` | ✓ | · | · | — |
 | `POST /api/ai/runs/:x/cancel` | ✓ | · | ✓ | `exo_ai_run_cancel` |
 | `POST /api/attachments/:x/text/reextract` | ✓ | ✓ | ✓ | `exo_attachment_reextract_text` |
@@ -222,12 +225,13 @@ reorder routes shipped with no way to them in the browser.
 
 ## Routes the browser reaches and agents do not
 
-48 of them. Each is covered by a documented exemption; the reasons
+51 of them. Each is covered by a documented exemption; the reasons
 are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 - `DELETE /api/admin/ai-models/:x`
 - `DELETE /api/ai/conversations/:x`
 - `DELETE /api/ai/conversations/:x/permanent`
+- `DELETE /api/ai/conversations/:x/sources/:x`
 - `DELETE /api/me/api-tokens/:x`
 - `DELETE /api/me/connections/:x`
 - `DELETE /api/workspaces/:x/credentials/:x`
@@ -251,6 +255,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `PATCH /api/admin/settings`
 - `PATCH /api/admin/users/:x`
 - `PATCH /api/ai/conversations/:x`
+- `PATCH /api/ai/conversations/:x/sources/:x`
 - `PATCH /api/workspaces/:x/members/:x`
 - `PATCH /api/workspaces/:x/settings`
 - `POST /api/admin/ai-models`
@@ -259,6 +264,7 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 - `POST /api/agent-sessions/:x/revert`
 - `POST /api/ai/conversations`
 - `POST /api/ai/conversations/:x/messages`
+- `POST /api/ai/conversations/:x/sources`
 - `POST /api/ai/conversations/:x/to-page`
 - `POST /api/ai/runs/:x/cancel` (reachable from MCP)
 - `POST /api/auth/oauth2/consent`
