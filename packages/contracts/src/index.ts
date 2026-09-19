@@ -40,6 +40,7 @@ export * from './settings';
 export * from './shares';
 export * from './template-title';
 export * from './templates';
+export * from './transclusion';
 export * from './workspace-credentials';
 export * from './workspace-overview';
 export * from './workspaces';

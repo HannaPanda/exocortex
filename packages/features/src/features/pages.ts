@@ -142,6 +142,22 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     claims: { screens: ['/arbeitsbereich/:x/vorlagen'] },
   }),
   defineFeature({
+    id: 'transklusion',
+    area: 'seiten',
+    title: 'Inhalt an mehreren Stellen zeigen, ohne ihn zu kopieren',
+    summary:
+      'Ein Abschnitt, den du an zwei Stellen brauchst, muss nicht zweimal existieren. Der Block "Inhalt einbetten" zeigt Text einer anderen Seite dort, wo du ihn brauchst; geändert wird er weiterhin nur an der einen Stelle, der er gehört, und die Einbettung zieht mit.',
+    details: [
+      'Im Schrägstrich-Menü wählst du "Inhalt einbetten" und danach die Quellseite. Zunächst zeigt der Block die ganze Seite; über "Ganze Seite" oben rechts im Block kommst du an die Liste ihrer Blöcke und wählst stattdessen einen einzelnen aus. Wählst du eine Überschrift, gehört der ganze Abschnitt darunter dazu, bis zur nächsten Überschrift derselben oder einer höheren Ebene. Ein Statusabschnitt, der auf der Projektseite gepflegt und auf der Übersichtsseite gezeigt wird, ist damit genau ein Abschnitt.',
+      'Die eingebettete Stelle ist nur eine Anzeige: hier lässt sich nichts bearbeiten, und in deiner Seite steht keine Kopie des Textes, sondern ein Verweis. Das hat drei Folgen, die du merkst. Die Quelle darf umbenannt und verschoben werden, ohne dass etwas bricht. Wer die Quellseite nicht lesen darf, sieht hier, dass etwas eingebettet ist, aber nicht was. Und die Suche gewichtet denselben Absatz nicht mehrfach, egal an wie vielen Stellen er auftaucht.',
+      'Verschwindet der eingebettete Block, weil jemand die Quelle umgeschrieben hat, sagt der Block das deutlich und bietet an, stattdessen die ganze Seite zu zeigen. Es verschwindet also nie stillschweigend Inhalt. Beim Export als Markdown entscheidest du, ob der Verweis stehen bleibt oder der Text an seine Stelle tritt: für eine Datei, die hier bleibt, das eine, für eine Datei, die diese Installation verlässt, das andere.',
+    ],
+    since: '2026-09-19',
+    references: ['#78', 'ADR-045'],
+    ui: { where: 'Im Editor "/" tippen und "Inhalt einbetten" wählen.' },
+    tools: ['exo_page_block_read'],
+  }),
+  defineFeature({
     id: 'uebersichtsseiten',
     area: 'struktur',
     title: 'Übersichtsseiten, die sich selbst schreiben',

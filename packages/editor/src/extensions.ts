@@ -114,6 +114,12 @@ import {
   toggleMarkdownAdapter,
   togglePlainTextAdapter,
 } from './toggle';
+import {
+  Transclusion,
+  transclusionBlocks,
+  transclusionMarkdownAdapter,
+  transclusionPlainTextAdapter,
+} from './transclusion';
 
 /**
  * The canonical extension registry.
@@ -309,6 +315,14 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
     markdown: savedQueryEmbedMarkdownAdapter,
     plainText: savedQueryEmbedPlainTextAdapter,
     blocks: savedQueryEmbedBlocks,
+  },
+  {
+    name: 'transclusion',
+    schemaVersion: 5,
+    extensions: [Transclusion],
+    markdown: transclusionMarkdownAdapter,
+    plainText: transclusionPlainTextAdapter,
+    blocks: transclusionBlocks,
   },
   {
     name: 'tables',

@@ -37,4 +37,6 @@ export * from './schema-v4';
 export * from './schema-v5';
 export * from './table-of-contents';
 export * from './toggle';
+export * from './transclusion';
+export * from './transclusion-fragment';
 export * from './yjs';

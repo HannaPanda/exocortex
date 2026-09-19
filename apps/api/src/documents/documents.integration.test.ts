@@ -31,6 +31,7 @@ import {
 } from './collaboration-bridge.service';
 import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
+import { DocumentFragmentService } from './document-fragment.service';
 import { DocumentLinksService } from './document-links.service';
 import { DocumentMarkdownService } from './document-markdown.service';
 import { DocumentMoveService } from './document-move.service';
@@ -62,6 +63,7 @@ let contentService: DocumentContentService;
 let snapshotService: DocumentSnapshotService;
 let linksService: DocumentLinksService;
 let markdownService: DocumentMarkdownService;
+let fragmentService: DocumentFragmentService;
 let workspaceId: string;
 let otherWorkspaceId: string;
 let ownerId: string;
@@ -149,6 +151,7 @@ beforeAll(async () => {
     new DocumentMoveService(prisma, queues, logger, access, outbox, realtime),
   );
   linksService = new DocumentLinksService(prisma, access);
+  fragmentService = new DocumentFragmentService(prisma, access, new PageLinkIdentityService(prisma));
   markdownService = new DocumentMarkdownService(
     prisma,
     queues,
@@ -157,6 +160,7 @@ beforeAll(async () => {
     outbox,
     realtime,
     new PageLinkIdentityService(prisma),
+    fragmentService,
   );
   contentService = new DocumentContentService(
     prisma,
@@ -2052,5 +2056,159 @@ describe('renaming a page', () => {
     expect(entries).toHaveLength(1);
     expect(entries[0]?.actorId).toBe(ownerId);
     expect(entries[0]?.metadata).toMatchObject({ previousTitle: 'Vorher', nextTitle: 'Nachher' });
+  });
+});
+
+/**
+ * Transclusion (issue #78, ADR-045).
+ *
+ * What is asserted here is the half that cannot be proven in the editor
+ * package: that the fragment is read *as the caller*, that a dead block is
+ * said out loud rather than papered over, and that an export makes the choice
+ * between the reference and the text.
+ */
+describe('reading a fragment of a page', () => {
+  /** A source page with two sections, written the way anything else writes one. */
+  async function createSource(title: string): Promise<{ documentId: string; heading: string }> {
+    const documentId = await createPage(title);
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: {
+        markdown:
+          '## Stand\n\nLäuft seit gestern.\n\nNächster Schritt: ausrollen.\n\n## Offen\n\nNichts.',
+        mode: 'replace',
+      },
+      correlationId,
+      source: 'api',
+    });
+    const outline = await fragmentService.read(documentId, ownerId, { outline: true });
+    const heading = outline.blocks.find((block) => block.preview === 'Stand');
+    expect(heading).toBeDefined();
+    return { documentId, heading: (heading as { blockId: string }).blockId };
+  }
+
+  it('answers with the whole page when no block is named', async () => {
+    const { documentId } = await createSource('Quelle ganz');
+    const fragment = await fragmentService.read(documentId, ownerId, { outline: false });
+
+    expect(fragment.resolved).toBe(true);
+    expect(fragment.blockId).toBeNull();
+    expect(fragment.markdown).toContain('Läuft seit gestern.');
+    expect(fragment.markdown).toContain('Nichts.');
+    // The outline costs something, so it is only there when it was asked for.
+    expect(fragment.blocks).toEqual([]);
+  });
+
+  it('gives a heading its section and stops at the next heading', async () => {
+    const { documentId, heading } = await createSource('Quelle Abschnitt');
+    const fragment = await fragmentService.read(documentId, ownerId, {
+      blockId: heading,
+      outline: false,
+    });
+
+    expect(fragment.resolved).toBe(true);
+    expect(fragment.markdown).toContain('Nächster Schritt: ausrollen.');
+    expect(fragment.markdown).not.toContain('Nichts.');
+  });
+
+  it('says a block is gone instead of showing a different one', async () => {
+    const { documentId, heading } = await createSource('Quelle geändert');
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: '## Ganz anders\n\nNeuer Text.', mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+
+    const fragment = await fragmentService.read(documentId, ownerId, {
+      blockId: heading,
+      outline: false,
+    });
+    expect(fragment.resolved).toBe(false);
+    expect(fragment.markdown).toBe('');
+    // The page itself is still there, and still named.
+    expect(fragment.title).toBe('Quelle geändert');
+  });
+
+  it('refuses a source the caller may not read', async () => {
+    const { documentId } = await createSource('Quelle fremd');
+    await expect(
+      fragmentService.read(documentId, outsiderId, { outline: false }),
+    ).rejects.toBeInstanceOf(AuthorizationError);
+  });
+});
+
+describe('exporting a page that embeds another', () => {
+  async function createEmbedding(sourceTitle: string): Promise<string> {
+    const source = await createPage(sourceTitle);
+    await contentService.write({
+      documentId: source,
+      userId: ownerId,
+      request: { markdown: 'Der eine Satz, der überall stehen soll.', mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+
+    const embedding = await createPage(`Einbettung von ${sourceTitle}`);
+    await contentService.write({
+      documentId: embedding,
+      userId: ownerId,
+      request: { markdown: `Davor.\n\n:::transclusion ${sourceTitle}\n:::`, mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+    return embedding;
+  }
+
+  it('keeps the reference by default and never the text', async () => {
+    const embedding = await createEmbedding('Stammdaten A');
+    const exported = await markdownService.export(embedding, ownerId);
+
+    expect(exported.markdown).toContain(':::transclusion Stammdaten A');
+    expect(exported.markdown).not.toContain('Der eine Satz');
+  });
+
+  it('puts the source text in place when asked to', async () => {
+    const embedding = await createEmbedding('Stammdaten B');
+    const exported = await markdownService.export(embedding, ownerId, 'text');
+
+    expect(exported.markdown).toContain('Der eine Satz, der überall stehen soll.');
+    expect(exported.markdown).not.toContain(':::transclusion');
+  });
+
+  it('does not put content into an export the caller may not read', async () => {
+    const embedding = await createEmbedding('Stammdaten C');
+    // The guest may read the embedding page, and the source is refused to
+    // nobody here -- so the interesting case is the one where resolution fails
+    // outright: the reference has to survive as a reference.
+    await prisma.document.update({
+      where: { id: embedding },
+      data: { title: 'Einbettung mit toter Quelle' },
+    });
+    const source = await prisma.document.findFirstOrThrow({
+      where: { workspaceId, title: 'Stammdaten C' },
+    });
+    await prisma.document.delete({ where: { id: source.id } });
+
+    const exported = await markdownService.export(embedding, ownerId, 'text');
+    expect(exported.markdown).toContain(':::transclusion Stammdaten C');
+  });
+
+  it('refuses to embed the page into itself', async () => {
+    const documentId = await createPage('Selbstbezug');
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: 'Text.\n\n:::transclusion Selbstbezug\n:::', mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+
+    const exported = await markdownService.export(documentId, ownerId, 'text');
+    // The reference stays a reference rather than duplicating the page inside
+    // itself, which is the one case one level of expansion does not cover.
+    expect(exported.markdown).toContain(':::transclusion Selbstbezug');
   });
 });

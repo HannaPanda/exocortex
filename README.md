@@ -33,8 +33,14 @@ What is deliberately still missing is listed under
 - a blockwise comparison of two states of a page, matched on stable block
   identifiers so a moved block reads as moved, and a selective restore that
   takes single blocks back into the current content (issue #77)
+- transclusion: a block that shows a page, or one section of it, without
+  copying its text. The source is addressed by identity and block id, so a
+  rename or a move keeps it intact; it is read as the reader, so the source's
+  permissions apply where it is shown; and it expands one level, which is what
+  makes a cycle impossible rather than detectable (ADR-045)
 - deterministic Markdown export and import (frontmatter, task lists, tables,
-  wiki links, callouts, stable block ids)
+  wiki links, callouts, stable block ids), with the choice of exporting a
+  transclusion as the reference or as the text it shows
 - attachments in S3-compatible storage with magic-byte MIME verification,
   downscaled image previews and text extraction from PDFs
 

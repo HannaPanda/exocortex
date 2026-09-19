@@ -1,11 +1,12 @@
 /**
  * Identity handling for references to other pages.
  *
- * Three notations point at a page: the `pageLink` block, the `mention` node
- * with `kind: 'page'`, and the `link` mark carrying a `wiki:` address, which is
- * what `[[Titel]]` in running text becomes. All three store an identity
- * (`documentId` / `id`) next to the title they display, and all three write
- * only the title to Markdown. That split needs exactly three pure operations,
+ * Four notations point at a page: the `pageLink` block, the `mention` node with
+ * `kind: 'page'`, the `link` mark carrying a `wiki:` address (which is what
+ * `[[Titel]]` in running text becomes), and the `transclusion` block, which
+ * shows the page instead of naming it (issue #78, ADR-045). All four store an
+ * identity (`documentId` / `id`) next to the title they display, and all four
+ * write only the title to Markdown. That split needs exactly three pure operations,
  * and they all live here so the export path, the import path and the editor UI
  * cannot drift apart:
  *
@@ -30,10 +31,11 @@ import {
 } from './link-target';
 import { WIKI_LINK_SCHEME } from './markdown/serialize';
 import { pageLinkDocumentId, pageLinkTitle } from './page-link';
+import { transclusionDocumentId, transclusionLabel } from './transclusion';
 
 /** One reference to another page, regardless of which notation produced it. */
 export interface PageReference {
-  kind: 'pageLink' | 'mention' | 'wikiMark';
+  kind: 'pageLink' | 'mention' | 'wikiMark' | 'transclusion';
   /** Stored identity, or `null` when the reference only carries a title. */
   documentId: string | null;
   /** Stored display title, whitespace-normalized. */
@@ -119,6 +121,8 @@ export function collectPageReferences(document: ProseMirrorDocument): PageRefere
       add('pageLink', pageLinkDocumentId(node.attrs), pageLinkTitle(node.attrs));
     } else if (isPageMention(node)) {
       add('mention', mentionId(node.attrs), stringAttribute(node.attrs?.label));
+    } else if (node.type === 'transclusion') {
+      add('transclusion', transclusionDocumentId(node.attrs), transclusionLabel(node.attrs));
     }
     for (const mark of node.marks ?? []) {
       const title = wikiLinkTitle(mark);
@@ -166,6 +170,23 @@ export function resolvePageLinkTitles(
         typeof title !== 'string' ||
         title.length === 0 ||
         title === stringAttribute(node.attrs?.label)
+      ) {
+        return node;
+      }
+      return { ...node, attrs: { ...node.attrs, label: title } };
+    }
+
+    // A transclusion writes `:::transclusion Titel^block`, so the same rename
+    // would otherwise send an export out naming a page that no longer answers
+    // to that title -- and an import of that file would bind it to nothing.
+    if (node.type === 'transclusion') {
+      const documentId = transclusionDocumentId(node.attrs);
+      if (documentId === null) return node;
+      const title = lookup(documentId);
+      if (
+        typeof title !== 'string' ||
+        title.length === 0 ||
+        title === transclusionLabel(node.attrs)
       ) {
         return node;
       }
@@ -224,6 +245,16 @@ export function bindPageLinkIdentities(
       const id = lookup(stringAttribute(node.attrs?.label));
       if (typeof id !== 'string' || id.length === 0) return node;
       return { ...node, attrs: { ...node.attrs, id } };
+    }
+
+    // Without this, `:::transclusion Titel^block` written through the API or by
+    // an agent would arrive as a reference to nothing: the block would render
+    // its own empty state on a page that names its source perfectly well.
+    if (node.type === 'transclusion') {
+      if (transclusionDocumentId(node.attrs) !== null) return node;
+      const documentId = lookup(transclusionLabel(node.attrs));
+      if (typeof documentId !== 'string' || documentId.length === 0) return node;
+      return { ...node, attrs: { ...node.attrs, documentId } };
     }
 
     return mapWikiMarks(node, (mark, title) => {

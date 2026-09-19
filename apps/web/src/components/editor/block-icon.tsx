@@ -3,6 +3,7 @@
 import {
   AtSignIcon,
   AudioLinesIcon,
+  BlocksIcon,
   BookmarkIcon,
   ChevronRightIcon,
   CircleCheckIcon,
@@ -80,6 +81,7 @@ const BLOCK_ICONS: Readonly<Record<BlockIconName, React.ComponentType<{ classNam
   Smile: SmileIcon,
   LayoutGrid: LayoutGridIcon,
   ListFilter: ListFilterIcon,
+  Blocks: BlocksIcon,
 };
 
 export function BlockIcon({ name, className }: { name: BlockIconName; className?: string }) {

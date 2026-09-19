@@ -65,6 +65,8 @@ import {
   generateDocumentCoverRequestSchema,
   type GenerateDocumentCoverResponse,
   generateDocumentCoverResponseSchema,
+  type MarkdownExportRequest,
+  markdownExportRequestSchema,
   type MarkdownExportResponse,
   markdownExportResponseSchema,
   type MarkdownImportRequest,
@@ -481,12 +483,14 @@ export class DocumentsController {
   }
 
   @Get(':documentId/export/markdown')
+  @ApiQuery({ name: 'transclusions', required: false })
   @ApiOkResponse({ schema: openApiResponseSchema(markdownExportResponseSchema) })
   async exportMarkdown(
     @CurrentSession() session: VerifiedSession,
     @Param('documentId') documentId: string,
+    @Query(zodPipe(markdownExportRequestSchema)) query: MarkdownExportRequest,
   ): Promise<MarkdownExportResponse> {
-    return this.markdown.export(documentId, session.userId);
+    return this.markdown.export(documentId, session.userId, query.transclusions);
   }
 
   @Get(':documentId/snapshots')

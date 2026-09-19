@@ -50,6 +50,7 @@ export const BLOCK_ICON_NAMES = [
   'Smile',
   'LayoutGrid',
   'ListFilter',
+  'Blocks',
 ] as const;
 
 export type BlockIconName = (typeof BLOCK_ICON_NAMES)[number];

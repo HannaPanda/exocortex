@@ -118,6 +118,7 @@ export const DIFF_BLOCK_TYPE_LABELS: Readonly<Record<string, string>> = {
   breadcrumb: 'Pfad',
   databaseEmbed: 'Eingebettete Datenbank',
   savedQueryEmbed: 'Eingebettete Suche',
+  transclusion: 'Eingebetteter Inhalt',
   fileAttachment: 'Datei',
   image: 'Bild',
   video: 'Video',

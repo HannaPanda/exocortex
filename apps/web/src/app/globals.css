@@ -563,24 +563,42 @@
     @apply my-4 flex max-h-[min(75vh,44rem)] flex-col overflow-hidden rounded-md border border-border;
   }
 
-  .exocortex-database-embed .embed-header {
+  :is(.exocortex-database-embed, .exocortex-transclusion) .embed-header {
     @apply flex shrink-0 items-center justify-between gap-3 border-b border-border bg-muted px-3 py-1.5;
   }
 
-  .exocortex-database-embed .embed-title {
+  :is(.exocortex-database-embed, .exocortex-transclusion) .embed-title {
     @apply min-w-0 flex-1 truncate text-sm font-medium;
   }
 
-  .exocortex-database-embed .embed-actions {
+  :is(.exocortex-database-embed, .exocortex-transclusion) .embed-actions {
     @apply flex shrink-0 items-center gap-1;
   }
 
-  .exocortex-database-embed .embed-action {
+  :is(.exocortex-database-embed, .exocortex-transclusion) .embed-action {
     @apply flex items-center gap-1 text-xs text-muted-foreground no-underline hover:text-foreground;
   }
 
-  .exocortex-database-embed .embed-action svg {
+  :is(.exocortex-database-embed, .exocortex-transclusion) .embed-action svg {
     @apply size-3.5;
+  }
+
+  /* Transclusion (issue #78): the frame says the content belongs to another
+     page, the left rule says where it ends. No max height -- a transcluded
+     section is prose the reader is meant to read here, not a table with its
+     own scrollport. */
+  .exocortex-transclusion {
+    @apply my-4 flex flex-col overflow-hidden rounded-md border border-border border-l-2 border-l-accent-foreground/30;
+  }
+
+  /* The fragment is rendered by a second editor, which brings its own top and
+     bottom margins; the frame already provides the spacing. */
+  .exocortex-transclusion .exocortex-editor > .tiptap > :first-child {
+    @apply mt-0;
+  }
+
+  .exocortex-transclusion .exocortex-editor > .tiptap > :last-child {
+    @apply mb-0;
   }
 
   /* Embeds keep a 16:9 box so the page does not reflow when the iframe loads. */

@@ -36,6 +36,7 @@ export const ADDRESSABLE_BLOCK_TYPES = [
   'pageLink',
   'breadcrumb',
   'databaseEmbed',
+  'transclusion',
   'fileAttachment',
   'video',
   'audio',

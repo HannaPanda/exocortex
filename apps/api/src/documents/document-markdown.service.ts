@@ -12,6 +12,7 @@ import {
   type MarkdownExportResponse,
   type MarkdownImportRequest,
   QUEUE_NAMES,
+  type TransclusionExportMode,
 } from '@exocortex/contracts';
 import {
   collectAncestors,
@@ -21,12 +22,16 @@ import {
 } from '@exocortex/database';
 import {
   bindPageLinkIdentities,
+  collectTransclusions,
   EXOCORTEX_SCHEMA_VERSION,
   leadingTitleHeading,
   markdownToYjsState,
+  materializeTransclusions,
   parseFrontmatter,
+  type ProseMirrorDocument,
   serializeMarkdown,
   stripRedundantTitleHeading,
+  transclusionKey,
   yjsStateToProseMirrorJson,
 } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
@@ -38,6 +43,7 @@ import { OutboxService } from '../common/outbox.service';
 import { PRISMA, QUEUES } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
+import { DocumentFragmentService } from './document-fragment.service';
 import { DOCUMENT_SELECT, toSummary } from './documents.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
 import { mayListChildren, visiblePath } from './share-visibility';
@@ -68,9 +74,14 @@ export class DocumentMarkdownService {
     private readonly outbox: OutboxService,
     private readonly realtime: RealtimeService,
     private readonly pageLinks: PageLinkIdentityService,
+    private readonly fragments: DocumentFragmentService,
   ) {}
 
-  async export(documentId: string, userId: string): Promise<MarkdownExportResponse> {
+  async export(
+    documentId: string,
+    userId: string,
+    transclusions: TransclusionExportMode = 'reference',
+  ): Promise<MarkdownExportResponse> {
     const context = await this.access.requireDocumentContext(documentId, userId);
     assertPolicy(canReadDocument(context.role, context.document, context.workspaceId));
 
@@ -109,10 +120,15 @@ export class DocumentMarkdownService {
     // `[[Titel]]` is written from the identity a reference stores, not from the
     // label frozen into it when it was made: a file exported after a rename
     // names the target the way it is called now (issue #14).
-    const proseMirrorJson = await this.pageLinks.refreshTitles(
+    const refreshed = await this.pageLinks.refreshTitles(
       context.workspaceId,
       yjsStateToProseMirrorJson(content.yjsState),
     );
+    const proseMirrorJson = await this.applyTransclusions(refreshed, {
+      documentId,
+      userId,
+      mode: transclusions,
+    });
     const markdown = serializeMarkdown(proseMirrorJson, {
       frontmatter: {
         title: document.title,
@@ -150,6 +166,35 @@ export class DocumentMarkdownService {
             .map(toSummary)
         : [],
     };
+  }
+
+  /**
+   * Puts the transcluded text in place of the references, when asked to.
+   *
+   * The choice issue #78 asks the export to make. `reference` is the default
+   * and leaves the document exactly as it is, because a file that comes back
+   * here should keep pointing at the one page that owns the text. `text` is for
+   * a file that leaves: it carries what it shows, since nothing outside this
+   * deployment can resolve `:::transclusion`.
+   *
+   * What does not resolve stays a reference (`materializeTransclusions`), so an
+   * export is never where a dead reference becomes missing content.
+   */
+  private async applyTransclusions(
+    document: ProseMirrorDocument,
+    input: { documentId: string; userId: string; mode: TransclusionExportMode },
+  ): Promise<ProseMirrorDocument> {
+    if (input.mode === 'reference') return document;
+
+    const targets = collectTransclusions(document);
+    if (targets.length === 0) return document;
+
+    const resolved = await this.fragments.resolveMany(targets, input.userId, input.documentId);
+    return materializeTransclusions(document, (target) =>
+      target.documentId === null
+        ? null
+        : (resolved.get(transclusionKey(target.documentId, target.blockId)) ?? null),
+    );
   }
 
   /**

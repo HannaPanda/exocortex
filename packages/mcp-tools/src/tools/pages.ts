@@ -22,6 +22,7 @@ import {
   moveDocumentRequestSchema,
   resolveDocumentLinkRequestSchema,
   resolveDocumentLinkResponseSchema,
+  transclusionExportModeSchema,
 } from '@exocortex/contracts';
 
 import { truncateText } from '../format.js';
@@ -172,14 +173,21 @@ export const pageReadTool: AnyToolDefinition = defineTool({
   description:
     'Exportiert den Inhalt einer Seite als Markdown, mit ihrem Pfad und ihren direkten ' +
     'Unterseiten. Der Fließtext einer Übersichtsseite ist nicht die Struktur: was wirklich unter ' +
-    'ihr hängt, steht in der Liste der Unterseiten.',
-  inputSchema: z.object({ documentId: idSchema }),
+    'ihr hängt, steht in der Liste der Unterseiten. ' +
+    'Ein Block ":::transclusion Titel^blockId" zeigt Inhalt, der einer anderen Seite gehört. ' +
+    'Standardmäßig steht er als solcher im Export; mit transclusions "text" steht stattdessen ' +
+    'der Text der Quelle dort, was für einen Export gedacht ist, der diese Installation verlässt.',
+  inputSchema: z.object({
+    documentId: idSchema,
+    transclusions: transclusionExportModeSchema.optional(),
+  }),
   surfaces: ['mcp', 'ai'],
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
       method: 'GET',
       path: `/api/documents/${input.documentId}/export/markdown`,
+      query: input.transclusions === undefined ? undefined : { transclusions: input.transclusions },
       responseSchema: markdownExportResponseSchema,
     });
     const { text } = truncateText(result.markdown, MAX_PAGE_READ_CHARS);

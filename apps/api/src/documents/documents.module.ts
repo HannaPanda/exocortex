@@ -12,6 +12,8 @@ import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
 import { DocumentDiffController } from './document-diff.controller';
 import { DocumentDiffService } from './document-diff.service';
+import { DocumentFragmentController } from './document-fragment.controller';
+import { DocumentFragmentService } from './document-fragment.service';
 import { DocumentLinksService } from './document-links.service';
 import { DocumentMarkdownService } from './document-markdown.service';
 import { DocumentMoveService } from './document-move.service';
@@ -35,6 +37,7 @@ import { RelatedDocumentsService } from './related-documents.service';
     DocumentsController,
     DocumentOverviewController,
     DocumentDiffController,
+    DocumentFragmentController,
   ],
   providers: [
     DocumentsService,
@@ -46,6 +49,7 @@ import { RelatedDocumentsService } from './related-documents.service';
     DocumentMarkdownService,
     DocumentSnapshotService,
     DocumentDiffService,
+    DocumentFragmentService,
     DocumentActivityService,
     DocumentContentService,
     DocumentLinksService,
@@ -64,6 +68,7 @@ import { RelatedDocumentsService } from './related-documents.service';
     DocumentActivityService,
     DocumentContentService,
     DocumentLinksService,
+    DocumentFragmentService,
     RelatedDocumentsService,
   ],
 })

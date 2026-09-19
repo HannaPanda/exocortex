@@ -27,6 +27,7 @@ import {
   PageLink,
   parseLinkHref,
   SavedQueryEmbed,
+  Transclusion,
   YJS_DOCUMENT_FIELD,
 } from '@exocortex/editor';
 import { ErrorState, LoadingState } from '@exocortex/ui';
@@ -67,6 +68,7 @@ import {
 } from '@/components/editor/slash-menu';
 import { type SuggestionKeyboard } from '@/components/editor/suggestion-menu';
 import { TableToolbar } from '@/components/editor/table-toolbar';
+import { TransclusionNodeView } from '@/components/editor/transclusion-node-view';
 import { createWikiLinkMarkers, WikiLinkMarkers } from '@/components/editor/wiki-link-markers';
 import { SavedQueryNodeView } from '@/components/search/saved-query-node-view';
 import {
@@ -333,6 +335,15 @@ function EditorSurface({
     [workspaceId],
   );
 
+  // The transclusion block reuses the page picker of `pageLink` below, so it
+  // needs no ref of its own -- only its own node view (issue #78).
+  const TransclusionView = React.useCallback(
+    (props: NodeViewProps) => (
+      <TransclusionNodeView {...props} workspaceId={workspaceId} documentId={documentId} />
+    ),
+    [documentId, workspaceId],
+  );
+
   // Same arrangement for the query block (issue #74).
   const askSavedQueryEmbedRef = React.useRef<AskSavedQueryEmbed | null>(null);
   const SavedQueryView = React.useCallback(
@@ -385,6 +396,9 @@ function EditorSurface({
           DatabaseEmbed.extend({ addNodeView: () => ReactNodeViewRenderer(DatabaseEmbedView) }),
           // The query block: schema in `packages/editor`, live answer here.
           SavedQueryEmbed.extend({ addNodeView: () => ReactNodeViewRenderer(SavedQueryView) }),
+          // Transclusion: the reference is schema, what it shows is a read
+          // performed here, as this reader (ADR-045).
+          Transclusion.extend({ addNodeView: () => ReactNodeViewRenderer(TransclusionView) }),
           // Same pairing for `pageLink`: the schema stays in `packages/editor`,
           // only its resolution state (icon, path, "does not exist") is React.
           PageLink.extend({ addNodeView: () => ReactNodeViewRenderer(PageLinkView) }),

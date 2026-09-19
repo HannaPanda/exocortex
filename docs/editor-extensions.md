@@ -26,7 +26,8 @@ insertable blocks.
 Current units: `core-structure`, `core-marks`, `inline-styling`, `mention`,
 `lists`, `toggle`, `collapsible-heading`, `columns`, `mathematics`,
 `table-of-contents`, `page-link`, `breadcrumb`, `tables`, `media`, `media-blocks`,
-`embed`, `callout`, `database-embed`, `block-id`.
+`embed`, `callout`, `database-embed`, `saved-query-embed`, `transclusion`,
+`block-id`.
 
 ## Supported nodes and marks
 
@@ -36,7 +37,7 @@ Nodes: `doc`, `paragraph`, `heading` (1–6), `text`, `codeBlock`, `blockquote`,
 `details` / `detailsSummary` / `detailsContent`, `columnList` / `column`,
 `inlineMath` / `blockMath`, `tableOfContents`, `pageLink`, `breadcrumb`, `mention`,
 `fileAttachment`, `video`, `audio`, `pdf`, `embed`, `bookmark`, `databaseEmbed`,
-`savedQueryEmbed`.
+`savedQueryEmbed`, `transclusion`.
 
 Marks: `bold`, `italic`, `strike`, `code`, `link` (including the internal `wiki:`
 scheme), `underline`, `superscript`, `subscript`, `textColor`.
@@ -56,7 +57,7 @@ because `packages/editor` has to stay renderer-free for headless use on the serv
 `apps/web/src/components/editor/block-icon.tsx` resolves the names.
 
 An entry that needs more than the editor declares it with `prompt`:
-`'url'`, `'file'`, `'page'` or `'latex'`. The web layer collects the value
+`'url'`, `'file'`, `'page'`, `'database'`, `'saved-query'` or `'latex'`. The web layer collects the value
 (`block-prompt.tsx`, including the attachment upload) and passes it into `run`.
 
 ## Editor UI
@@ -85,13 +86,15 @@ All of it lives in `apps/web/src/components/editor` and contributes **no** schem
 | `page-link-node-view.tsx`       | React node view for `pageLink`, see the exception below                                                                                                                                                                               |
 | `page-link-context.tsx`         | ref bridge that lets the `pageLink` node view reopen the page picker, so a placed link can be re-targeted                                                                                                                             |
 | `saved-query-embed-context.tsx` | the same ref bridge for the query block, so "Suche wechseln" reaches the picker (issue #74)                                                                                                                                           |
+| `transclusion-node-view.tsx`    | React node view for `transclusion`: the header, the five states a reference can be in, and the read-only editor that renders the fragment (issue #78)                                                                                 |
 
 Node views that render _inside_ the document (table of contents, breadcrumb, media)
 live in `packages/editor` and are plain DOM, not React, so `getExocortexSchema()`
 keeps working without a DOM on the server.
 
-**Three exceptions:** `databaseEmbed` (`database-embed.ts`), `pageLink`
-(`page-link.ts`) and `savedQueryEmbed` (`saved-query-embed.ts`). Their schema (attributes, `parseHTML`/`renderHTML`, Markdown
+**Four exceptions:** `databaseEmbed` (`database-embed.ts`), `pageLink`
+(`page-link.ts`), `savedQueryEmbed` (`saved-query-embed.ts`) and `transclusion`
+(`transclusion.ts`). Their schema (attributes, `parseHTML`/`renderHTML`, Markdown
 adapter) lives in `packages/editor` like every other node, but each declares
 no `addNodeView()` — the interactive rendering is a real React node view
 supplied entirely by `apps/web`, wired in via `.extend({ addNodeView: () =>
@@ -107,6 +110,22 @@ to a stored question. The node holds the saved query's id, the name it had when
 it was inserted and a row limit; the hits are fetched when the block renders
 and are deliberately never written into the document, because a written answer
 is a copy that rots.
+
+For `transclusion` (`transclusion-node-view.tsx`, issue #78, ADR-045) it is
+content the document does not own. The node stores `documentId`, `label` and
+`sourceBlockId`; what it shows is fetched from
+`GET /api/documents/:id/fragment` when somebody looks, as that reader, so the
+source's permissions decide what appears. The fragment is rendered by a second,
+**read-only editor over the canonical schema** rather than by a Markdown
+renderer, because anything that re-derived it would be a second rendering of
+one document: a checklist has to stay a checklist. A transclusion inside the
+fragment is left as the plain block the schema renders and is never resolved
+further -- one level is what makes a cycle impossible instead of detectable.
+
+Note the attribute name: `sourceBlockId`, not `blockId`. Every addressable node
+already carries `blockId` (`block-id.ts`), which says where *this* block lives;
+`sourceBlockId` says which block it shows. A node attribute that collides with
+a global one is silently overwritten.
 
 For `pageLink` (`page-link-node-view.tsx`) it is the block's _resolution
 state_: whether the reference resolves to one page, several, or none, and that
@@ -194,6 +213,9 @@ rechts
 :::page Andere Seite
 :::
 
+:::transclusion Projektseite^k3h9s0p2m1qa
+:::
+
 :::video /api/attachments/abc/download Aufzeichnung.mp4
 :::
 
@@ -202,10 +224,21 @@ rechts
 ```
 
 Names in use: `toggle`, `columns`, `column`, `toc`, `breadcrumb`, `page`,
-`database-embed`, `file`, `video`, `audio`, `pdf`, `embed`, `bookmark`. A unit claims a name through the
+`database-embed`, `saved-query`, `transclusion`, `file`, `video`, `audio`,
+`pdf`, `embed`, `bookmark`. A unit claims a name through the
 `containers` field of its Markdown adapter and returns how many nodes it opened;
 the importer closes exactly those at the matching `:::`. An unknown name is ignored
 rather than dropped, so its content survives as plain blocks.
+
+`:::transclusion` (issue #78, ADR-045) addresses its source by **title**, like
+`:::page` and `[[Titel]]`, so an exported file carries no internal document
+ids and an import binds the title back through `bindPageLinkIdentities`. What
+follows the `^` is a block identifier and *is* written, because it is the
+address of the part and nothing else names it; a caret that is not followed by
+a valid block identifier stays part of the title. An export may also be asked to
+put the source's text in place of the reference
+(`?transclusions=text`, `DocumentMarkdownService.applyTransclusions`), which is
+what a file that leaves this deployment needs.
 
 Callout syntax (Obsidian-compatible):
 

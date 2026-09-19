@@ -364,6 +364,14 @@ pnpm test:e2e          # Playwright (needs a running deployment)
   consulted only there: `findRole` and `requireRole` fail closed for a confined
   credential, and the readers that can narrow opt in through
   `requireScopedRole`, `requireRoleAnchoredAt` and `visibleDocumentIds`.
+- ADR-045: a transclusion stores a reference and no content, so the same
+  paragraph is indexed once however many pages show it. A heading addresses its
+  whole section; the fragment is read at read time through one route that runs
+  as the reader, so the source's permissions apply where it is shown; and it
+  expands exactly one level, in the browser, the export and the tool alike,
+  which makes a cycle impossible instead of detectable. A dead block is stated,
+  never repaired with the nearest surviving one, and Markdown addresses the
+  source by title like every other reference.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
