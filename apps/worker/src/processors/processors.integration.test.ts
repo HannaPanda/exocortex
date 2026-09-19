@@ -1241,8 +1241,45 @@ async function createAiRunRow(
   return run.id;
 }
 
+/**
+ * Empties the outbox before a test that wants to watch its own rows go through.
+ *
+ * The dispatcher reads `processedAt: null` across every workspace, oldest
+ * first, and stops at `outboxBatchSize` (100). Against the deployment database
+ * that was invisible, because the live worker sweeps every five seconds and
+ * there is never a backlog. Against the isolated stack of issue #94 the
+ * database starts empty and nothing drains it, so the rows every other suite
+ * writes queue up ahead of this one's and a single run never reaches them.
+ *
+ * Draining first is also the more honest precondition: what these tests are
+ * about is what happens to a row once the dispatcher gets to it, not whether it
+ * gets to it within one batch.
+ */
+async function drainOutboxBacklog(): Promise<void> {
+  const processor = createMaintenanceProcessor({
+    search,
+    prisma,
+    queues,
+    storage: recordingStorage(),
+    bus,
+    settings: stubSettings(),
+  });
+  // Each pass clears up to a batch, so the bound is a backlog of 5000 rows --
+  // far beyond what the other suites write while this one runs, and finite so a
+  // dispatcher that stops making progress fails the test rather than hanging.
+  for (let pass = 0; pass < 50; pass += 1) {
+    if ((await prisma.outboxEvent.count({ where: { processedAt: null } })) === 0) return;
+    await processor(
+      contextFor({ correlationId: 'test-outbox-drain', task: 'dispatch-outbox', workspaceId: null })
+        .context,
+    );
+  }
+  throw new Error('The outbox backlog did not drain: the dispatcher stopped making progress.');
+}
+
 describe('maintenance', () => {
   it('dispatches outbox events exactly once', async () => {
+    await drainOutboxBacklog();
     const documentId = await createDocument();
     await prisma.outboxEvent.create({
       data: {
@@ -1290,6 +1327,7 @@ describe('maintenance', () => {
     // update" whenever the API suite deleted its fixtures in parallel. What
     // matters is not the vanished row, it is that the rows behind it are still
     // dispatched.
+    await drainOutboxBacklog();
     const documentId = await createDocument();
     const [doomed, survivor] = await Promise.all([
       prisma.outboxEvent.create({

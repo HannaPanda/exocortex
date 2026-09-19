@@ -60,8 +60,14 @@ beforeAll(async () => {
   const auth = {
     verifySession: async () => ({ userId }),
   } as unknown as AuthService;
+  // `findMembershipRole` and not `findRole`: the gateway asks for the
+  // membership row directly, because a subscription is a workspace room and a
+  // page share must not open one. The stub said `findRole` and the cast hid
+  // the difference, so every subscribe in this file threw "not a function"
+  // until the suite was run against infrastructure it could not reach before
+  // (issue #94).
   const access = {
-    findRole: async () => 'MEMBER',
+    findMembershipRole: async () => 'MEMBER',
     findDisabledUserIds: async () => new Set<string>(),
   } as unknown as WorkspaceAccessService;
   gateway = new RealtimeGateway(auth, access, logger, { REDIS_URL: redisUrl } as ApiEnv);
