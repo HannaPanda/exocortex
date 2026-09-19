@@ -123,7 +123,7 @@ fragment is left as the plain block the schema renders and is never resolved
 further -- one level is what makes a cycle impossible instead of detectable.
 
 Note the attribute name: `sourceBlockId`, not `blockId`. Every addressable node
-already carries `blockId` (`block-id.ts`), which says where *this* block lives;
+already carries `blockId` (`block-id.ts`), which says where _this_ block lives;
 `sourceBlockId` says which block it shows. A node attribute that collides with
 a global one is silently overwritten.
 
@@ -233,7 +233,7 @@ rather than dropped, so its content survives as plain blocks.
 `:::transclusion` (issue #78, ADR-045) addresses its source by **title**, like
 `:::page` and `[[Titel]]`, so an exported file carries no internal document
 ids and an import binds the title back through `bindPageLinkIdentities`. What
-follows the `^` is a block identifier and *is* written, because it is the
+follows the `^` is a block identifier and _is_ written, because it is the
 address of the part and nothing else names it; a caret that is not followed by
 a valid block identifier stays part of the title. An export may also be asked to
 put the source's text in place of the reference

@@ -151,7 +151,11 @@ beforeAll(async () => {
     new DocumentMoveService(prisma, queues, logger, access, outbox, realtime),
   );
   linksService = new DocumentLinksService(prisma, access);
-  fragmentService = new DocumentFragmentService(prisma, access, new PageLinkIdentityService(prisma));
+  fragmentService = new DocumentFragmentService(
+    prisma,
+    access,
+    new PageLinkIdentityService(prisma),
+  );
   markdownService = new DocumentMarkdownService(
     prisma,
     queues,

@@ -18,7 +18,7 @@ two, and there is no moment at which the product could tell anyone that the
 drift happened. The same mistake a query block avoids by storing the question
 instead of the answer (ADR-042), and the same one a template avoids by keeping
 no link back to what it was copied from (ADR-039) -- with the difference that a
-template copy is *supposed* to go its own way and a transclusion is not.
+template copy is _supposed_ to go its own way and a transclusion is not.
 
 Four things then have to be decided, and three of them are only difficult
 together:
@@ -56,7 +56,7 @@ every time somebody adds a paragraph.
 `GET /api/documents/:documentId/fragment`, goes through the ordinary
 `canReadDocument` policy. So the source's permissions apply at the place of the
 embedding without the node, the editor or the page knowing anything about
-permissions, and somebody who may not open the source sees *that* something is
+permissions, and somebody who may not open the source sees _that_ something is
 embedded, never what. The browser calls it per placed block while it renders;
 the materialized export calls it for all of them at once. Both go through
 `DocumentFragmentService`, so the authorization is written once.
@@ -64,7 +64,7 @@ the materialized export calls it for all of them at once. Both go through
 **One level, everywhere.** A transclusion inside a fragment is shown as the
 reference it is and is never resolved further -- in the browser, in the export
 and in the MCP tool. This is the answer to cycles, and it is deliberately not
-cycle *detection*: a depth limit, a visited set travelling with the request or a
+cycle _detection_: a depth limit, a visited set travelling with the request or a
 refusal at insertion time would all have to be right in three places and would
 each be a thing that can be got wrong. One level cannot loop. Two pages that
 embed each other both render, each showing the other's text with the way back
@@ -72,7 +72,7 @@ named but not followed. What is lost is a chain of embeddings, which no example
 in the issue asks for; what is gained is that no reader, exporter or indexer can
 be sent around a loop by content somebody wrote.
 
-The one case one level does not cover is a page embedding *itself*, which would
+The one case one level does not cover is a page embedding _itself_, which would
 not loop but would show the page inside itself. That is refused outright, in the
 node view and in the export.
 
@@ -90,7 +90,7 @@ reference comes back when the source does.
 uses. The identity is not written -- the rule `pageLink` follows (ADR-014's
 interchange principle, issue #14): an exported file contains no internal
 document ids, and an import binds the title back to a document through
-`bindPageLinkIdentities`. The block identifier *is* written, because it is the
+`bindPageLinkIdentities`. The block identifier _is_ written, because it is the
 address of the part and nothing else names it.
 
 **The export chooses.** `GET …/export/markdown?transclusions=text` puts the
@@ -108,7 +108,7 @@ block, and a write reaches it through that document's collaboration session
 
 ## Consequences
 
-- A transclusion is as fresh as the source's *materialization*, not as its
+- A transclusion is as fresh as the source's _materialization_, not as its
   open editing session. Typing in the source's editor reaches the embedding
   page when that page's cached fragment is invalidated, which happens on
   `document.materialized` and on every write from outside the editor. Live
