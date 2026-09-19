@@ -458,7 +458,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
  * TODO), so all six render for every signed-in user; `/admin` gates itself
  * against the API's admin check.
  *
- * "Funktionen" carries a count, and it is the only one that does. A feature
+ * "Hilfe und Funktionen" carries a count, and it is the only one that does. A feature
  * nobody knows about is the same as a feature nobody built (issue #80), and a
  * list you have to remember to open does not fix that -- the dot is the part
  * that does the work.

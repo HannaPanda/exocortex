@@ -15,7 +15,7 @@ export const PLATFORM_FEATURES: readonly RegisteredFeature[] = [
     ],
     since: '2026-09-18',
     references: ['#80', 'ADR-040'],
-    ui: { where: 'Der Punkt "Funktionen" in der Navigation.', path: '/hilfe' },
+    ui: { where: 'Das Fragezeichen oben in der Leiste.', path: '/hilfe' },
     tools: ['exo_features'],
     claims: { screens: ['/hilfe'] },
   }),
