@@ -1,6 +1,6 @@
 import { expect, type Page, test } from '@playwright/test';
 
-import { createPage, requireSeedCredentials } from '../support/fixtures';
+import { createPage, presetPanelPreference, requireSeedCredentials } from '../support/fixtures';
 import { storageStatePath } from '../support/global-setup';
 
 // Reuse the session created by the global setup instead of logging in again:
@@ -252,10 +252,8 @@ test.describe('editor', () => {
   test('keeps the block handle inside the canvas on a full-width page', async ({ page }) => {
     // Both panels at their maximum width, so the editor column is as narrow as
     // a person can make it without resizing the window.
-    await page.addInitScript(() => {
-      window.localStorage.setItem('exocortex.sidebar', JSON.stringify({ open: true, width: 420 }));
-      window.localStorage.setItem('exocortex.context', JSON.stringify({ open: true, width: 520 }));
-    });
+    await presetPanelPreference(page, 'exocortex.sidebar', { open: true, width: 420 });
+    await presetPanelPreference(page, 'exocortex.context', { open: true, width: 520 });
     await page.setViewportSize({ width: 1440, height: 900 });
 
     await page.goto('/arbeitsbereich');
