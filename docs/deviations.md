@@ -238,8 +238,19 @@ renders `tabindex="-1"` and `role="toolbar"` promises a Tab stop it does not
 have. `packages/ui/src/components/ui/toolbar.tsx` remounts its children once its
 root is connected, which re-runs the item ref callbacks and flushes the composite
 against nodes it will not skip; a toolbar that is already in the document when it
-mounts never enters that loop. The e2e case `the selection toolbar is a single
+mounts never enters that wait. The e2e case `the selection toolbar is a single
 tab stop with arrow-key navigation` is what keeps it honest.
+
+That wait may not have a deadline (issue #89). It first polled for 60 animation
+frames, on the assumption that a toolbar which is not appended within a second is
+a caller's bug. It is not: `BubbleMenu` appends its div in `show()`, so the
+selection toolbar stays detached from the moment the editor mounts until the
+reader first selects text. Past the budget the bar was left without a Tab stop
+for good, because the composite re-sorts only when an item registers or
+unregisters and appending the div does neither — which is why the e2e case failed
+in a full run and passed on its own, and why retrying the assertion never helped.
+The wait is a `MutationObserver` on the document now: it costs nothing while
+nothing moves, and it disconnects itself the moment the node lands.
 
 ## 17. The suggestion menus render from the plugin state, not from the renderer
 

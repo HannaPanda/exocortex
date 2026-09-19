@@ -20,8 +20,17 @@ import { cn } from '../../lib/utils';
  * Remounting the children once the root is connected is enough, because that
  * re-runs the item ref callbacks and the composite flushes again, now with
  * nodes it will not skip. A toolbar that is already in the document when it
- * mounts — every other one in the application — never enters the loop and
+ * mounts — every other one in the application — never enters the wait and
  * never remounts.
+ *
+ * The wait has no deadline, and that is the point (issue #89). `BubbleMenu`
+ * appends its div in `show()`, so a selection toolbar stays detached from the
+ * moment the editor mounts until the reader first selects text — seconds, or
+ * the whole session. A budget of a few frames expires long before that and
+ * leaves the bar permanently without a Tab stop, which is a state nothing
+ * afterwards corrects: the composite only re-sorts when an item registers or
+ * unregisters, and appending the div does neither. A `MutationObserver` costs
+ * nothing while nothing moves and stops itself the moment the node lands.
  */
 function useConnectedRemountKey(ref: React.RefObject<HTMLDivElement | null>): number {
   const [key, setKey] = React.useState(0);
@@ -30,20 +39,16 @@ function useConnectedRemountKey(ref: React.RefObject<HTMLDivElement | null>): nu
     const node = ref.current;
     if (node === null || node.isConnected) return undefined;
 
-    let handle = 0;
-    // Bounded: a toolbar that never gets appended is a caller's bug, not
-    // something to poll for the lifetime of the page.
-    let framesLeft = 60;
-    const check = (): void => {
-      if (node.isConnected) {
-        setKey((previous) => previous + 1);
-        return;
-      }
-      framesLeft -= 1;
-      if (framesLeft > 0) handle = requestAnimationFrame(check);
-    };
-    handle = requestAnimationFrame(check);
-    return () => cancelAnimationFrame(handle);
+    // Watching the whole document is what it takes: the node is detached, so it
+    // has no ancestor to watch, and only its future parent sees the insertion.
+    // Each callback is one `isConnected` read.
+    const observer = new MutationObserver(() => {
+      if (!node.isConnected) return;
+      observer.disconnect();
+      setKey((previous) => previous + 1);
+    });
+    observer.observe(node.ownerDocument, { childList: true, subtree: true });
+    return () => observer.disconnect();
   }, [ref]);
 
   return key;

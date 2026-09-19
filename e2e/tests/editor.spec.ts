@@ -67,6 +67,15 @@ test.describe('editor', () => {
    */
   test('the selection toolbar is a single tab stop with arrow-key navigation', async ({ page }) => {
     await openEditor(page);
+
+    // Deliberately late: the bar lives in a detached div until the first
+    // selection appends it, and the roving tabindex has to survive any gap
+    // between the two. A version of this waited a fixed number of frames and
+    // gave up, which made the case pass on its own and fail in a full run
+    // (issue #89) -- the slower the machine, the longer this pause has to be
+    // for the test to mean anything.
+    await page.waitForTimeout(2000);
+
     await page.keyboard.type('Tastaturbedienung');
     await page.keyboard.press('Home');
     await page.keyboard.press('Shift+End');
