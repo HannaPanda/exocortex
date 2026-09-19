@@ -49,7 +49,7 @@ function createGateway(
 ): RealtimeGateway {
   const auth = { verifySession } as unknown as AuthService;
   const accessService = {
-    findRole: async () => 'MEMBER',
+    findMembershipRole: async () => 'MEMBER',
     findDisabledUserIds: async () => new Set<string>(),
     ...access,
   } as unknown as WorkspaceAccessService;
@@ -193,10 +193,10 @@ describe('RealtimeGateway', () => {
 
     // The membership is gone by the time the sweep runs.
     const sweepable = gateway as unknown as {
-      access: { findRole: () => Promise<string | null> };
+      access: { findMembershipRole: () => Promise<string | null> };
       recheckSubscriptions: () => Promise<void>;
     };
-    sweepable.access.findRole = async () => null;
+    sweepable.access.findMembershipRole = async () => null;
     await sweepable.recheckSubscriptions();
 
     expect(client.leave).toHaveBeenCalledWith('workspace:workspace-1');

@@ -62,6 +62,9 @@ function serviceWith(hits: SearchHit[], rows = ROWS): DocumentPlacementService {
 
   const access = {
     requireRole: async () => 'OWNER',
+    // An unconfined credential: `documentIds === null` means "no narrowing",
+    // which is what every case here is about (ADR-044).
+    requireScopedRole: async () => ({ role: 'OWNER', documentIds: null }),
     requireDocumentContext: async (documentId: string) => ({
       document: {
         id: documentId,
