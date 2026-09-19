@@ -1,0 +1,21 @@
+{
+  // The operator scripts under `scripts/`: the Obsidian import, the workspace
+  // and document deletions, the test-data prune, the token creation. They are
+  // run with `tsx` and never bundled, so they are deliberately outside
+  // `tsconfig.json` -- but "not built" was read as "not checked" for a long
+  // time, and issue #95 is what that cost: `import-obsidian/verify.ts` had lost
+  // every one of its imports and would have thrown a ReferenceError on the
+  // first `--verify-only` run, with ESLint and CI both green.
+  //
+  // Same base, same strictness, no emit. `rootDir` is the workspace root rather
+  // than `src`, which is the only reason this cannot simply be a second
+  // `include` in `tsconfig.json`: that project emits, and emitting the scripts
+  // would put them into the deployed bundle.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true
+  },
+  "include": ["scripts/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

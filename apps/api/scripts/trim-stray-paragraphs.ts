@@ -74,7 +74,11 @@ async function main(): Promise<void> {
       for (const row of rows) {
         scanned += 1;
         const trimmed = trimStrayParagraphs(new Uint8Array(row.yjsState));
-        if (trimmed.yjsState === null) continue;
+        // Bound to a local before the guard: a narrowing on a property is
+        // discarded again inside the transaction callback below, because the
+        // property could in principle be reassigned before the callback runs.
+        const trimmedState = trimmed.yjsState;
+        if (trimmedState === null) continue;
 
         changed += 1;
         removed += trimmed.leading + trimmed.trailing;
@@ -97,7 +101,7 @@ async function main(): Promise<void> {
           });
           await tx.documentContent.update({
             where: { documentId: row.documentId },
-            data: { yjsState: Buffer.from(trimmed.yjsState), yjsUpdatedAt: now },
+            data: { yjsState: Buffer.from(trimmedState), yjsUpdatedAt: now },
           });
         });
 

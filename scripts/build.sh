@@ -123,6 +123,7 @@ run_gate "capability parity"    node scripts/check-capability-parity.mjs
 run_gate "feature registry"     node scripts/check-feature-coverage.mjs
 run_gate "documentation"        node scripts/check-docs-current.mjs
 run_gate "test split"           node scripts/check-test-split.mjs
+run_gate "typecheck coverage"   node scripts/check-typecheck-coverage.mjs
 run_gate "migration history"    bash scripts/check-migrations-reproducible.sh
 ok "All hard gates green."
 
@@ -156,6 +157,8 @@ else
   # `eslint .` rather than `pnpm lint`: each package lints `src` only, so the
   # root scripts, the deploy helpers, apps/api/scripts and e2e are never seen by
   # the per-package runs. The size policy from issue #40 applies to those too.
+  # ESLint is not a typecheck, which is what issue #95 was: those same files had
+  # been outside every tsconfig for as long as they had existed.
   info "ESLint, whole repository …"
   pnpm exec eslint . || fail "ESLint found problems" "Run 'pnpm exec eslint . --fix' for the mechanical ones."
 
@@ -170,7 +173,7 @@ else
     "Run 'pnpm format'. If it touches files you did not change, commit that on its own -- a reformat mixed into a real change makes the real change unreadable."
 
   info "Typecheck …"
-  pnpm typecheck || fail "Type errors" "Note that apps/api/scripts is outside apps/api/tsconfig.json and is only reached by the ESLint step above."
+  pnpm typecheck || fail "Type errors" "Every TypeScript file in the repository but the tests is covered by one of these projects; the coverage gate above is what keeps that true."
 
   # The watchmen. Each gate is run twice, once clean and once with a violation
   # written into the tree, so a gate that has quietly stopped matching anything

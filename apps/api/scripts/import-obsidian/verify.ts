@@ -1,6 +1,17 @@
 // ---------------------------------------------------------------------------
 // Verification (pass 6) — also runnable standalone with --verify-only
 // ---------------------------------------------------------------------------
+import { PostgresSearchAdapter, type PrismaClient } from '@exocortex/database';
+import { parseFrontmatter, yjsStateToMarkdown } from '@exocortex/editor';
+
+import {
+  buildBasenameIndex,
+  buildTitleIndex,
+  collectFolderPaths,
+  rewriteWikilinks,
+  scanVault,
+  type VaultNote,
+} from './vault';
 
 interface VerificationCheck {
   name: string;

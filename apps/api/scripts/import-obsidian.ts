@@ -51,6 +51,7 @@ import {
   comparePath,
   renderFrontmatterHeader,
   rewriteWikilinks,
+  type RewriteWikilinksResult,
   scanVault,
 } from './import-obsidian/vault';
 import { printVerification, runVerification } from './import-obsidian/verify';

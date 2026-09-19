@@ -13,7 +13,7 @@ import { randomBytes, scryptSync } from 'node:crypto';
 import { loadDotEnv } from '@exocortex/config';
 import { markdownToYjsState, SEED_PAGES } from '@exocortex/editor';
 
-import { createPrismaClient, type PrismaClient } from '../src/client';
+import { createPrismaClient, type Prisma, type PrismaClient } from '../src/client';
 import { generateOrderKey } from '../src/order-key';
 
 loadDotEnv();
@@ -87,7 +87,10 @@ async function createPageTree(
           create: {
             yjsState: Buffer.from(imported.yjsState),
             schemaVersion: imported.schemaVersion,
-            proseMirrorJson: imported.proseMirrorJson,
+            // Same cast as `document-markdown.service.ts`: the editor's
+            // document type is a closed interface, Prisma's JSON input wants
+            // an index signature.
+            proseMirrorJson: imported.proseMirrorJson as unknown as Prisma.InputJsonObject,
             plainText: imported.plainText,
             markdown: page.markdown,
             materializedAt: new Date(),

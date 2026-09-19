@@ -149,12 +149,12 @@ bash scripts/deploy.sh # build.sh, then migrations, nginx, the four units,
                        # readiness, and the deploy marker last.
 ```
 
-`build.sh` is the one to reach for: it runs the nine hard gates that have no
+`build.sh` is the one to reach for: it runs the ten hard gates that have no
 bypass (package boundaries, `.env.example` sync, brand spelling, MCP catalogue
 completeness, capability parity, feature registry coverage, documentation
-currency, the unit/integration test split, migration reproducibility) as well as
-the checks below, in the right order and without racing the live units for
-memory. `deploy/README.md` explains what each step does.
+currency, the unit/integration test split, typecheck coverage, migration
+reproducibility) as well as the checks below, in the right order and without
+racing the live units for memory. `deploy/README.md` explains what each step does.
 
 The same script is the whole of `.github/workflows/build.yml`: the CI installs
 Node, pnpm and nothing else, then runs `bash scripts/build.sh`. A check that has

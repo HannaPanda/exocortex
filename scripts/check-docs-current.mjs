@@ -213,6 +213,13 @@ const CONTRADICTED = [
       'Every workspace with tests runs in the default set since issue #93, and the test-split gate is what keeps it that way.',
   },
   {
+    claim:
+      /only reached by (the )?ESLint|outside apps\/api\/tsconfig\.json|scripts are not type-?checked/i,
+    evidence: 'apps/api/tsconfig.scripts.json',
+    reason:
+      'The operator scripts have their own typecheck project since issue #95, and the coverage gate fails the build when a TypeScript file falls outside every project.',
+  },
+  {
     claim: /streams from a local mock provider/i,
     evidence: 'packages/ai/src/registry.ts',
     reason:

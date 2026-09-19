@@ -1,0 +1,18 @@
+{
+  // The operator entry points beside the package: the development seed, the AI
+  // model seed, `provision-user`, and the Prisma config itself. Like
+  // `apps/api/tsconfig.scripts.json`, they run through `tsx` and are never
+  // bundled, which is why they cannot simply join `tsconfig.json` -- that
+  // project emits into `dist/` with `rootDir: "src"`.
+  //
+  // They are checked here because "not built" never meant "not checked", and
+  // reading it that way is what issue #95 was about. These reach the database
+  // directly.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true
+  },
+  "include": ["prisma/**/*.ts", "scripts/**/*.ts", "prisma.config.ts"],
+  "exclude": ["node_modules", "dist"]
+}

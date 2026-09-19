@@ -571,6 +571,56 @@ describe('test split (check-test-split.mjs)', () => {
   });
 });
 
+describe('typecheck coverage (check-typecheck-coverage.mjs)', () => {
+  it('is green: every TypeScript file but the tests is inside a project that runs', () => {
+    expect(gate('check-typecheck-coverage.mjs').status).toBe(0);
+  });
+
+  /**
+   * The shape of issue #95: a source file in a directory no `tsconfig` covers.
+   * It compiles nowhere, so nothing ever reads its types -- which is how
+   * `import-obsidian/verify.ts` lost every one of its imports without a single
+   * red build.
+   */
+  it('goes red when a source file sits outside every project', () => {
+    writeProbe('tools/__gate_probe__/probe.ts', 'export const probe: number = 1;\n');
+    const result = gate('check-typecheck-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('tools/__gate_probe__/probe.ts');
+  });
+
+  /**
+   * The same hole one step later: the project file is there, so the directory
+   * looks covered, but no `typecheck` script ever hands it to `tsc`.
+   */
+  it('goes red when a project file exists that no typecheck script runs', () => {
+    writeProbe(
+      'tsconfig.__gate_probe__.json',
+      `${JSON.stringify({ extends: './tsconfig.node.json', include: [] }, null, 2)}\n`,
+    );
+    const result = gate('check-typecheck-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('tsconfig.__gate_probe__.json');
+  });
+
+  /**
+   * And the reverse: a workspace that stops naming the project its operator
+   * scripts are checked by. The files are still there and still compile; only
+   * the command that would notice is gone.
+   */
+  it('goes red when a workspace stops running the project its scripts are checked by', () => {
+    editFile('apps/api/package.json', (source) => {
+      const manifest = JSON.parse(source) as { scripts: Record<string, string> };
+      manifest.scripts.typecheck = 'tsc -p tsconfig.json --noEmit';
+      return `${JSON.stringify(manifest, null, 2)}\n`;
+    });
+    const result = gate('check-typecheck-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('apps/api/scripts/');
+    expect(result.output).toContain('apps/api/tsconfig.scripts.json');
+  });
+});
+
 describe('build.sh', () => {
   it('refuses to run on a dirty working tree, before touching anything', () => {
     writeProbe('__gate_probe__.txt', 'untracked\n');

@@ -1,0 +1,21 @@
+{
+  // The files that configure the tooling: every `vitest.config.mts`, the
+  // integration guard the suites load, and the Next.js config. They belong to
+  // no package's build -- a workspace project emits from `src/` -- and so they
+  // were checked by nothing until issue #95.
+  //
+  // Run from the root `typecheck` script, after `turbo run typecheck` has
+  // walked the workspaces.
+  "extends": "./tsconfig.node.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true
+  },
+  "include": [
+    "vitest.config.mts",
+    "vitest.setup.integration.ts",
+    "apps/*/vitest.config.mts",
+    "packages/*/vitest.config.mts",
+    "apps/web/next.config.ts"
+  ]
+}

@@ -210,6 +210,31 @@ because `turbo run test:unit` reaches a workspace only through the task it
 names. Four apps once had tests that no CI run ever executed for exactly that
 reason (issue #93).
 
+### What `pnpm typecheck` covers
+
+Every TypeScript file in the repository except the tests, and it takes three
+projects per place rather than one, because a project that emits decides what
+goes into the bundle:
+
+| Project                                   | Holds                                                                   |
+| ----------------------------------------- | ----------------------------------------------------------------------- |
+| `<workspace>/tsconfig.json`               | `src/`, the code that is built and shipped                              |
+| `apps/api/tsconfig.scripts.json`          | the operator scripts: Obsidian import, deletions, prune, token creation |
+| `packages/database/tsconfig.scripts.json` | the seeds, `provision-user`, `prisma.config.ts`                         |
+| `tsconfig.tools.json`                     | every `vitest.config.mts`, the integration guard, `next.config.ts`      |
+
+The three extra projects check without emitting, so nothing they cover reaches
+`dist/`. They exist because "not built" was read as "not checked" for as long as
+the scripts had existed: `apps/api/scripts/import-obsidian/verify.ts` had lost
+every one of its imports and would have thrown a `ReferenceError` on its first
+run against the live database, with lint and CI both green (issue #95).
+
+`scripts/check-typecheck-coverage.mjs` is the gate under it. It asks `tsc
+--showConfig` which files each project resolves to and compares that with the
+tree, so a new file in a directory nothing covers fails the build, and so does a
+`tsconfig` that no `typecheck` script runs. Test files are the one carve-out and
+are tracked in issue #99.
+
 ### What the frontend tests and what it leaves to Playwright
 
 `apps/web` has a Vitest suite of its own (issue #59), and it is deliberately
