@@ -29,8 +29,22 @@ test.describe('quick capture in the browser', () => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
 
-    await page.keyboard.press('Control+e');
-    await expect(page.getByTestId('capture-dialog')).toBeVisible();
+    // The landing page reaches a workspace by a client-side redirect, so the
+    // address bar is ahead of the shell: the URL already names a workspace
+    // while the shell is still rendering with none. Strg+E is gated on exactly
+    // that -- capture needs somewhere to land -- and this button is rendered
+    // under exactly the same condition, so waiting for it waits for the
+    // listener instead of for the address.
+    await expect(page.getByTestId('open-capture')).toBeVisible();
+
+    // A keystroke is an event, not a state: one that arrives a moment too early
+    // is dropped, and no amount of waiting afterwards brings it back. That is
+    // what made this test fail under the load of a full run and pass on its own.
+    // Repeating it is safe because the shortcut only ever opens the dialog.
+    await expect(async () => {
+      await page.keyboard.press('Control+e');
+      await expect(page.getByTestId('capture-dialog')).toBeVisible({ timeout: 2_000 });
+    }).toPass({ timeout: 30_000, intervals: [500] });
 
     await page.getByTestId('capture-text').fill(`${marker}\n\nDer Rest der Notiz.`);
     await page.keyboard.press('Control+Enter');
