@@ -19,8 +19,14 @@ import { AppModule } from './app.module';
  * unexported provider fails here instead of in `deploy.sh` after the units have
  * already been restarted.
  *
- * It touches no external service: Prisma connects lazily and the queue registry
- * is closed again below, which is what the shutdown hook exists for.
+ * It is an integration test and named like one. Prisma itself connects lazily,
+ * but Better Auth's OAuth provider plugin seeds its resource rows while the
+ * module initialises (Better Auth 1.7), so compiling the graph opens a database
+ * connection whether the test asks for one or not. Without a database that
+ * arrives as an unhandled rejection rather than a failed expectation, which is
+ * the worst of both: red, and about nothing the test was asking. `deploy.sh`
+ * runs it by name in step 5b, where infrastructure exists and the units have
+ * not been restarted yet.
  */
 describe('AppModule', () => {
   it('resolves every provider of every module', async () => {

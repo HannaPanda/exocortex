@@ -488,6 +488,74 @@ describe('documentation currency (check-docs-current.mjs)', () => {
   });
 });
 
+describe('test split (check-test-split.mjs)', () => {
+  it('is green: every workspace with tests is reachable and none of the default set needs a database', () => {
+    expect(gate('check-test-split.mjs').status).toBe(0);
+  });
+
+  /**
+   * The failure that started issue #93, reproduced: a test that opens a real
+   * Postgres connection, in a file the default set runs. On this host that
+   * connection is the live database, so the gate is not only about CI.
+   */
+  it('goes red when a unit test constructs a real database client', () => {
+    writeProbe(
+      'apps/worker/src/__gate_probe__.test.ts',
+      [
+        "import { createPrismaClient } from '@exocortex/database';",
+        '',
+        'export const probe = createPrismaClient();',
+        '',
+      ].join('\n'),
+    );
+    const result = gate('check-test-split.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('__gate_probe__.test.ts');
+    expect(result.output).toContain('PostgreSQL');
+  });
+
+  it('is content with the same test once its name says it needs infrastructure', () => {
+    writeProbe(
+      'apps/worker/src/__gate_probe__.integration.test.ts',
+      [
+        "import { createPrismaClient } from '@exocortex/database';",
+        '',
+        'export const probe = createPrismaClient();',
+        '',
+      ].join('\n'),
+    );
+    expect(gate('check-test-split.mjs').status).toBe(0);
+  });
+
+  /**
+   * The other half, and the one that makes a green build lie: a workspace with
+   * tests that `turbo run test:unit` walks past, because its manifest never
+   * names the task. That is how four apps stayed out of CI.
+   */
+  it('goes red when a workspace with tests loses the script that runs them', () => {
+    editFile('apps/worker/package.json', (source) => {
+      const manifest = JSON.parse(source) as { scripts: Record<string, string> };
+      delete manifest.scripts['test:unit'];
+      return `${JSON.stringify(manifest, null, 2)}\n`;
+    });
+    const result = gate('check-test-split.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('apps/worker/package.json');
+    expect(result.output).toContain('test:unit');
+  });
+
+  it('goes red when the script stops filtering the way the split assumes', () => {
+    editFile('apps/worker/package.json', (source) => {
+      const manifest = JSON.parse(source) as { scripts: Record<string, string> };
+      manifest.scripts['test:unit'] = 'vitest run';
+      return `${JSON.stringify(manifest, null, 2)}\n`;
+    });
+    const result = gate('check-test-split.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('canonical command');
+  });
+});
+
 describe('build.sh', () => {
   it('refuses to run on a dirty working tree, before touching anything', () => {
     writeProbe('__gate_probe__.txt', 'untracked\n');

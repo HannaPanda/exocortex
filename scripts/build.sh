@@ -121,6 +121,7 @@ run_gate "MCP catalogue"        node scripts/check-mcp-catalog.mjs
 run_gate "capability parity"    node scripts/check-capability-parity.mjs
 run_gate "feature registry"     node scripts/check-feature-coverage.mjs
 run_gate "documentation"        node scripts/check-docs-current.mjs
+run_gate "test split"           node scripts/check-test-split.mjs
 run_gate "migration history"    bash scripts/check-migrations-reproducible.sh
 ok "All hard gates green."
 
@@ -179,23 +180,24 @@ else
   pnpm test:gates || fail "A gate does not behave the way it is documented to" \
     "Read which case failed: a gate that cannot go red is worse than no gate, because it reports success on a question it no longer asks."
 
+  # The default set is every test that needs no database, no Redis and no
+  # object storage -- in every workspace, apps included. Which tests those are
+  # is decided by the file name and enforced by the test-split gate above, not
+  # by a list of packages here: the list used to name twelve packages and
+  # therefore never ran `apps/api`, `apps/web` or `apps/worker` at all, and nine
+  # failing tests sat on `master` behind a green build (issue #93).
+  #
+  # The infrastructure-backed half is one flag away rather than hidden, but it
+  # is not the default, because on this host it points at the live database and
+  # reaching for it on the way to a deploy is a bad reflex to build. The CI runs
+  # the default set: it has no infrastructure either.
+  info "Tests without infrastructure (--full-tests adds the rest) …"
+  pnpm test:unit || fail "Unit tests failed"
+
   if [ "$FULL_TESTS" -eq 1 ]; then
     warn "--full-tests: the integration tests talk to the PRODUCTION database and Redis on this host."
     warn "They create throwaway rows and clean up after themselves, but they are not isolated."
-    pnpm test || fail "Tests failed"
-  else
-    # The default set is everything that needs no database, no Redis and no
-    # object storage. The DB-backed half is one flag away rather than hidden,
-    # but it is not the default, because on this host it points at the live
-    # database, and reaching for it on the way to a deploy is a bad reflex to
-    # build. The CI runs this same default set: it has no infrastructure either.
-    info "Tests without infrastructure (--full-tests adds the rest) …"
-    pnpm --filter @exocortex/contracts --filter @exocortex/config --filter @exocortex/logger \
-         --filter @exocortex/editor --filter @exocortex/ui --filter @exocortex/storage \
-         --filter @exocortex/features \
-         --filter @exocortex/ai --filter @exocortex/calendar --filter @exocortex/auth \
-         --filter @exocortex/mcp-tools --filter @exocortex/mcp test \
-      || fail "Tests failed"
+    pnpm test:integration || fail "Integration tests failed"
   fi
 
   ok "Soft checks green."

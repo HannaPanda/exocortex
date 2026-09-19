@@ -23,7 +23,7 @@ import { apiSignIn, requireSeedCredentials } from '../support/fixtures';
  *
  * The two admin-only halves of the feature (switching an account off, deleting
  * one) therefore have no browser coverage. They are covered by
- * `apps/api/src/admin/admin.service.test.ts` against the real database.
+ * `apps/api/src/admin/admin.service.integration.test.ts` against the real database.
  *
  * The accounts this suite creates are left behind, for the same reason the
  * workspaces used to be: nothing reachable from a seeded session can remove a

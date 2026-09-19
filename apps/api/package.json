@@ -11,6 +11,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint src",
     "test": "vitest run",
+    "test:unit": "vitest run --exclude '**/*.integration.test.*' --passWithNoTests",
+    "test:integration": "vitest run --passWithNoTests integration.test",
     "token:create": "tsx scripts/create-api-token.ts",
     "import:obsidian": "tsx scripts/import-obsidian.ts",
     "workspaces:delete": "tsx scripts/delete-workspaces.ts",

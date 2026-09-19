@@ -85,7 +85,7 @@ async function main(): Promise<void> {
 
   try {
     /**
-     * The verification keys `mcp.service.test.ts` publishes, first.
+     * The verification keys `mcp.service.integration.test.ts` publishes, first.
      *
      * Not a workspace, and the only row this sweep removes that is not reached
      * through one -- but a signing key in a shared table is the one leftover

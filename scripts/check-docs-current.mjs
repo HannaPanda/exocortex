@@ -207,6 +207,12 @@ const CONTRADICTED = [
       'The frontend has a Vitest suite of its own (issue #59) beside the Playwright one: pure state and transformation logic is tested without a browser.',
   },
   {
+    claim: /only the packages are tested|hand-picked list of packages|apps are not covered by CI/i,
+    evidence: 'scripts/check-test-split.mjs',
+    reason:
+      'Every workspace with tests runs in the default set since issue #93, and the test-split gate is what keeps it that way.',
+  },
+  {
     claim: /streams from a local mock provider/i,
     evidence: 'packages/ai/src/registry.ts',
     reason:

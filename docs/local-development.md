@@ -177,11 +177,38 @@ behind nginx in production.
 ## Checks
 
 ```bash
-pnpm lint         # dependency boundaries, then ESLint per package
+pnpm lint             # dependency boundaries, then ESLint per package
 pnpm typecheck
-pnpm test         # unit + integration (requires pnpm infra:up)
-pnpm test:e2e     # Playwright against a running deployment
+pnpm test:unit        # everything that needs no infrastructure
+pnpm test:integration # *.integration.test.ts only (requires pnpm infra:up)
+pnpm test             # both halves (requires pnpm infra:up)
+pnpm test:e2e         # Playwright against a running deployment
 ```
+
+### Which half a test belongs in
+
+The file name decides, and the test-split gate
+(`scripts/check-test-split.mjs`) is what keeps the name true:
+
+| Name                            | May open                         | Run by                  |
+| ------------------------------- | -------------------------------- | ----------------------- |
+| `something.integration.test.ts` | Postgres, Redis, object storage  | `pnpm test:integration` |
+| `something.test.ts`             | nothing but the process it is in | `pnpm test:unit`        |
+
+`pnpm test:unit` is what `build.sh` runs and therefore what CI runs, so a unit
+test that quietly connects to a database is two problems at once: red on a
+machine that has no containers, and on this host pointed at the _live_ database
+rather than a throwaway one. The gate reads the tests for the constructors that
+open a connection (`createPrismaClient`, `new Redis`, `Test.createTestingModule`
+and the rest) and names the file and the line when it finds one in the wrong
+half. The fix is a `git mv`, or a fake handed to the subject instead of a real
+client — most service tests already do the latter.
+
+The other half of the gate is the manifest: a workspace with test files has to
+declare `test:unit` and `test:integration`, spelled the same way everywhere,
+because `turbo run test:unit` reaches a workspace only through the task it
+names. Four apps once had tests that no CI run ever executed for exactly that
+reason (issue #93).
 
 ### What the frontend tests and what it leaves to Playwright
 
@@ -200,7 +227,7 @@ DOM is a test that belongs in Playwright. The one module that talks to `window`
 see what it writes into storage after a bad hour.
 
 ```bash
-pnpm --filter @exocortex/web test
+pnpm --filter @exocortex/web test:unit
 ```
 
 ### What a test run leaves behind
@@ -211,8 +238,8 @@ exactly when the mess is made. Interrupted runs had left 21 workspaces by
 2026-08-12, in `Collab`/`Worker` pairs created in the same second, because two
 packages test in parallel and an interrupt takes both.
 
-`pnpm test` therefore sweeps _before_ it starts, which is the only moment that
-catches a run nobody finished:
+`pnpm test` and `pnpm test:integration` therefore sweep _before_ they start,
+which is the only moment that catches a run nobody finished:
 
 ```bash
 pnpm --filter @exocortex/api test-data:prune -- [--older-than 2] [--dry-run]

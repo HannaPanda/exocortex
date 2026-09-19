@@ -14,7 +14,7 @@ import { InvitationsService } from './invitations.service';
 /**
  * Invitation tests against the real database (issue #3).
  *
- * The service is constructed directly, like `workspaces.service.test.ts`: what
+ * The service is constructed directly, like `workspaces.service.integration.test.ts`: what
  * is under test is who may invite whom and what a token is worth, not HTTP.
  *
  * Two collaborators are faked, both for the same reason -- they leave the

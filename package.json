@@ -19,6 +19,8 @@
     "lint:fix": "turbo run lint -- --fix",
     "typecheck": "turbo run typecheck",
     "test": "pnpm --filter @exocortex/api test-data:prune && turbo run test",
+    "test:unit": "turbo run test:unit",
+    "test:integration": "pnpm --filter @exocortex/api test-data:prune && turbo run test:integration",
     "test:gates": "vitest run",
     "test:e2e": "pnpm --filter @exocortex/e2e test:e2e",
     "db:generate": "pnpm --filter @exocortex/database db:generate",

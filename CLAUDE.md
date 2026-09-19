@@ -149,12 +149,12 @@ bash scripts/deploy.sh # build.sh, then migrations, nginx, the four units,
                        # readiness, and the deploy marker last.
 ```
 
-`build.sh` is the one to reach for: it runs the eight hard gates that have no
+`build.sh` is the one to reach for: it runs the nine hard gates that have no
 bypass (package boundaries, `.env.example` sync, brand spelling, MCP catalogue
 completeness, capability parity, feature registry coverage, documentation
-currency, migration reproducibility) as well as the checks below, in the right
-order and without racing the live units for memory. `deploy/README.md` explains
-what each step does.
+currency, the unit/integration test split, migration reproducibility) as well as
+the checks below, in the right order and without racing the live units for
+memory. `deploy/README.md` explains what each step does.
 
 The same script is the whole of `.github/workflows/build.yml`: the CI installs
 Node, pnpm and nothing else, then runs `bash scripts/build.sh`. A check that has
@@ -169,11 +169,20 @@ pnpm lint              # dependency boundaries + ESLint, src/ of each package on
 pnpm exec eslint .     # the whole repository, including scripts/ and e2e/
 pnpm format            # Prettier over the tree; format:check is what build.sh runs
 pnpm typecheck
-pnpm test              # unit and integration tests -- the integration half talks
-                       # to the PRODUCTION database on this host
+pnpm test:unit         # every test that needs no infrastructure, in every
+                       # workspace -- this is what build.sh and CI run
+pnpm test:integration  # only `*.integration.test.ts` -- talks to the
+                       # PRODUCTION database and Redis on this host
+pnpm test              # both halves at once
 pnpm test:gates        # proves each gate can still go red
 pnpm test:e2e          # Playwright (needs a running deployment)
 ```
+
+A test belongs to one half or the other by its file name, and the test-split
+gate enforces it: `*.integration.test.ts` may open a database, Redis or storage
+connection, and nothing else may. Adding a test that needs infrastructure means
+naming it that way; adding a workspace with tests means giving it the two
+scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
 
 ## Architectural decisions you must not silently reverse
 

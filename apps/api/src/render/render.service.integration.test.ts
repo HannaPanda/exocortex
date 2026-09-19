@@ -22,7 +22,7 @@ import { RenderTemplatesService } from './render-templates.service';
  *
  * The settings stub is bound to this suite's own workspace id and throws for any
  * other, because these tests talk to the deployment's database (see
- * `automations.service.test.ts` for the time that mattered).
+ * `automations.service.integration.test.ts` for the time that mattered).
  */
 loadDotEnv();
 

@@ -911,7 +911,7 @@ provenance block, an absent fact left out rather than written empty, a retired
 message marked rather than dropped, a tool result fenced longer than its own
 backticks, and the list cursor's round trip.
 
-`apps/api/src/ai/conversations.service.test.ts` (real Postgres/Redis):
+`apps/api/src/ai/conversations.service.integration.test.ts` (real Postgres/Redis):
 create/get scoped to the caller, ownership enforced on every route
 (including reads), `postMessage` persisting the user message and enqueuing a
 run, the `ai_conversation_locked` guard, and every slash command including

@@ -314,6 +314,7 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
    | `check-capability-parity.mjs`      | a tool the built-in AI does not get, a screen no agent can reach, a stale matrix (rule 12, ADR-025)                                       |
    | `check-feature-coverage.mjs`       | a tool, screen or automation trigger the feature registry does not describe, and a claim that matches nothing (rule 15, ADR-040)          |
    | `check-docs-current.mjs`           | a package, queue, maintenance task, compose service or unit no central document names, and claims the tree disproves (rule 13, issue #58) |
+   | `check-test-split.mjs`             | a unit test that opens a database, and a workspace whose tests no CI run executes (issue #93)                                             |
    | `check-migrations-reproducible.sh` | a migration history that does not rebuild `schema.prisma` from zero                                                                       |
 
    Each one prints its findings and one sentence on how to fix them. The
@@ -327,9 +328,15 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
 6. **Soft checks**, skippable with `--skip-checks`: `eslint .` from the root
    (each package lints `src` only, which leaves the root scripts, `apps/api/scripts`
    and `e2e` unseen), `pnpm format:check`, `pnpm typecheck`, the gate tests, and
-   the tests that need no infrastructure. `--full-tests` adds the rest — those
-   talk to the **production** database and Redis on this host. They create
-   throwaway rows and clean up after themselves, but they are not isolated.
+   `pnpm test:unit` — every test in every workspace that needs no
+   infrastructure. `--full-tests` adds `pnpm test:integration` — those talk to
+   the **production** database and Redis on this host. They create throwaway
+   rows and clean up after themselves, but they are not isolated.
+
+   Which half a test is in follows from its name (`*.integration.test.ts`) and
+   is enforced by the test-split gate above. Until issue #93 the default step
+   named twelve packages by hand instead, so nothing under `apps/` was ever run
+   by CI, and nine failing tests sat on `master` behind a green build.
 
    `format:check` is a soft check rather than a hard gate on purpose: an
    unformatted file is not a wrong file. It only became runnable in `73009f7`,
@@ -362,7 +369,7 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
     the job is enqueued. `/` stays at 120s; Next.js has no long-running routes.
 
 11. **The API's module graph**, compiled once before any unit is touched
-    (`app.module.test.ts`). It catches the one failure that is invisible to
+    (`app.module.integration.test.ts`). It catches the one failure that is invisible to
     everything else: a module that injects a provider it does not list compiles,
     type-checks, passes every unit test and then refuses to boot. The test needs
     Postgres and Redis, so `build.sh` leaves it out of its default set — and
@@ -476,7 +483,8 @@ It needs no secrets and touches nothing here. Its Postgres is the throwaway
 container the migration gate starts for itself.
 
 What it deliberately does not do: the database-backed half of the test suite
-(`--full-tests`, which on this host talks to the live database), the Playwright
+(`--full-tests`, i.e. `pnpm test:integration`, which on this host talks to the
+live database), the Playwright
 suite, and anything resembling a deployment. `scripts/deploy.sh` on this machine
 stays the only thing that puts code in front of a user, and it runs `build.sh`
 again rather than trusting a green tick from somewhere else.
