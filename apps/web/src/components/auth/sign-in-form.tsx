@@ -7,6 +7,7 @@ import * as React from 'react';
 import { Alert, AlertDescription, Button, Card, CardContent, Input, Label } from '@exocortex/ui';
 
 import { getSession, signIn } from '@/lib/auth/client';
+import { signInErrorMessage } from '@/lib/auth/sign-in-error';
 
 /**
  * The OAuth authorization endpoint sends a signed-out visitor here with the
@@ -43,7 +44,9 @@ export function SignInForm() {
     if (result.error !== null && result.error !== undefined) {
       const session = continuation === null ? null : (await getSession()).data;
       if (session === null || session === undefined) {
-        setError('E-Mail-Adresse oder Passwort ist falsch.');
+        // The status, not a fixed sentence: a refusal the server made without
+        // looking at the credentials must not be reported as wrong credentials.
+        setError(signInErrorMessage(result.error.status));
         setPending(false);
         return;
       }

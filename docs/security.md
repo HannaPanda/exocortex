@@ -62,6 +62,14 @@ authorization mechanism.
   verified, which includes the only administrator.
 - Sign-in, sign-up and password-reset endpoints have explicit per-IP rate limits
   (10/min, 5/min, 5 per 5 min).
+- The sign-in form says when the limiter is what refused it
+  (`apps/web/src/lib/auth/sign-in-error.ts`). It used to report every refusal as
+  wrong credentials, which sent a throttled person back to retype a password
+  that was right and to spend their next attempts on the limiter. Naming it
+  leaks nothing, because the count is per client address and not per account:
+  the answer is the same whether or not the address belongs to anybody. Which
+  half of the credentials was wrong stays unsaid, and that is the part that
+  would enumerate accounts.
 - Those limits are only worth anything if the client address cannot be chosen by
   the client. Two things guarantee that, and both are load-bearing: nginx sets
   `X-Forwarded-For` to `$remote_addr` rather than appending to what the caller
