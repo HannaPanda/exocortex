@@ -244,77 +244,18 @@ export class DocumentSnapshotService {
       correlationId: input.correlationId,
     });
 
-    await this.prisma.$transaction(async (tx) => {
-      const before = await tx.documentSnapshot.create({
-        data: {
-          documentId: snapshot.documentId,
-          yjsState: existing.yjsState,
-          schemaVersion: existing.schemaVersion,
-          createdById: input.userId,
-          reason: 'PRE_RESTORE',
-        },
-      });
-
-      await tx.documentContent.update({
-        where: { documentId: snapshot.documentId },
-        data: {
-          yjsState: Buffer.from(restored.yjsState),
-          schemaVersion: restored.schemaVersion,
-          yjsUpdatedAt: new Date(),
-          materializedAt: null,
-        },
-      });
-
-      await this.outbox.writeAudit(tx, {
-        workspaceId: context.workspaceId,
-        actorId: input.userId,
-        action: 'document.snapshot_restored',
-        targetType: 'document_snapshot',
-        targetId: snapshot.id,
-        correlationId: input.correlationId,
-        metadata: { documentId: snapshot.documentId },
-      });
-      await this.outbox.writeEvent(tx, {
-        workspaceId: context.workspaceId,
-        type: 'document.updated',
-        payload: { documentId: snapshot.documentId },
-        correlationId: input.correlationId,
-        // A restore is itself a write an agent may have made, and the
-        // safety-net snapshot above is what takes it back (ADR-022).
-        snapshotBeforeId: before.id,
-      });
-    });
-
-    /*
-     * A session that could not be handed the content keeps showing the version
-     * it has; the restore reaches it on the next load. Better than failing the
-     * request after the state has already been restored.
-     */
-    const live =
-      restored.content === null
-        ? { applied: false }
-        : await this.collaboration.applyToLiveSession({
-            documentId: snapshot.documentId,
-            userId: input.userId,
-            mode: 'replace',
-            proseMirrorJson: restored.content,
-            correlationId: input.correlationId,
-          });
-
-    await this.queues.enqueue(QUEUE_NAMES.documentMaterialization, {
-      correlationId: input.correlationId,
+    const live = await this.commitRestore({
       documentId: snapshot.documentId,
       workspaceId: context.workspaceId,
-      yjsUpdatedAt: Date.now(),
-      reason: 'restore',
-    });
-
-    const document = await this.prisma.document.findUniqueOrThrow({
-      where: { id: snapshot.documentId },
-      select: DOCUMENT_SELECT,
-    });
-    await this.realtime.emit('document.updated', context.workspaceId, input.correlationId, {
-      document: toSummary(document),
+      userId: input.userId,
+      correlationId: input.correlationId,
+      currentState: existing.yjsState,
+      currentSchemaVersion: existing.schemaVersion,
+      nextState: restored.yjsState,
+      nextSchemaVersion: restored.schemaVersion,
+      liveContent: restored.content,
+      auditTargetId: snapshot.id,
+      auditMetadata: { documentId: snapshot.documentId },
     });
 
     this.logger.warn('Document snapshot restored', {
@@ -327,5 +268,104 @@ export class DocumentSnapshotService {
     });
 
     return { documentId: snapshot.documentId, restoredFrom: snapshot.id };
+  }
+
+  /**
+   * Steps 2 to 6 of `restore`, shared with the partial restore of issue #77.
+   *
+   * It is one method rather than two because everything a restore has to get
+   * right lives here: the safety-net snapshot before the write, the journal
+   * entry pointing at it (ADR-022), the push into an open editing session
+   * (ADR-016), materialization and the realtime notice. A second caller that
+   * reimplemented the sequence would be a second chance to leave one of them
+   * out.
+   *
+   * `liveContent` is what an open session is handed; `null` when the content
+   * did not derive, in which case the session keeps showing its version until
+   * the next load rather than the request failing after the state is written.
+   */
+  async commitRestore(input: {
+    documentId: string;
+    workspaceId: string;
+    userId: string;
+    correlationId: string;
+    currentState: Uint8Array;
+    currentSchemaVersion: number;
+    nextState: Uint8Array;
+    nextSchemaVersion: number;
+    liveContent: ProseMirrorDocument | null;
+    auditTargetId: string;
+    auditMetadata: Record<string, string | number | boolean | null>;
+  }): Promise<{ applied: boolean; snapshotBeforeId: string }> {
+    const snapshotBeforeId = await this.prisma.$transaction(async (tx) => {
+      const before = await tx.documentSnapshot.create({
+        data: {
+          documentId: input.documentId,
+          yjsState: Buffer.from(input.currentState),
+          schemaVersion: input.currentSchemaVersion,
+          createdById: input.userId,
+          reason: 'PRE_RESTORE',
+        },
+      });
+
+      await tx.documentContent.update({
+        where: { documentId: input.documentId },
+        data: {
+          yjsState: Buffer.from(input.nextState),
+          schemaVersion: input.nextSchemaVersion,
+          yjsUpdatedAt: new Date(),
+          materializedAt: null,
+        },
+      });
+
+      await this.outbox.writeAudit(tx, {
+        workspaceId: input.workspaceId,
+        actorId: input.userId,
+        action: 'document.snapshot_restored',
+        targetType: 'document_snapshot',
+        targetId: input.auditTargetId,
+        correlationId: input.correlationId,
+        metadata: input.auditMetadata,
+      });
+      await this.outbox.writeEvent(tx, {
+        workspaceId: input.workspaceId,
+        type: 'document.updated',
+        payload: { documentId: input.documentId },
+        correlationId: input.correlationId,
+        // A restore is itself a write an agent may have made, and the
+        // safety-net snapshot above is what takes it back (ADR-022).
+        snapshotBeforeId: before.id,
+      });
+      return before.id;
+    });
+
+    const live =
+      input.liveContent === null
+        ? { applied: false }
+        : await this.collaboration.applyToLiveSession({
+            documentId: input.documentId,
+            userId: input.userId,
+            mode: 'replace',
+            proseMirrorJson: input.liveContent,
+            correlationId: input.correlationId,
+          });
+
+    await this.queues.enqueue(QUEUE_NAMES.documentMaterialization, {
+      correlationId: input.correlationId,
+      documentId: input.documentId,
+      workspaceId: input.workspaceId,
+      yjsUpdatedAt: Date.now(),
+      reason: 'restore',
+    });
+
+    const document = await this.prisma.document.findUniqueOrThrow({
+      where: { id: input.documentId },
+      select: DOCUMENT_SELECT,
+    });
+    await this.realtime.emit('document.updated', input.workspaceId, input.correlationId, {
+      document: toSummary(document),
+    });
+
+    return { applied: live.applied, snapshotBeforeId };
   }
 }

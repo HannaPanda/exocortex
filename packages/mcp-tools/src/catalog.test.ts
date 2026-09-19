@@ -119,6 +119,10 @@ describe('EXOCORTEX_TOOLS', () => {
       'exo_page_archive',
       'exo_page_delete',
       'exo_page_rename',
+      // A partial restore (issue #77) overwrites blocks somebody authored, and
+      // takes out the ones the snapshot never had. The state before it is
+      // snapshotted first, so it is destructive without being irreversible.
+      'exo_page_restore_blocks',
       'exo_page_restore_snapshot',
       'exo_page_write',
       'exo_project_build_delete',

@@ -5,9 +5,11 @@ import {
   deleteDocumentsResponseSchema,
   documentActivityResponseSchema,
   documentDeletionPreviewSchema,
+  documentDiffResponseSchema,
   documentSnapshotListResponseSchema,
   documentSummarySchema,
   idSchema,
+  restoreSnapshotBlocksResponseSchema,
   type TrashEntry,
   trashResponseSchema,
 } from '@exocortex/contracts';
@@ -253,6 +255,92 @@ export const pageRestoreSnapshotTool: AnyToolDefinition = defineTool({
       text: `Seite ${result.documentId} auf Snapshot ${result.restoredFrom} zurückgesetzt.`,
       data: result,
     };
+  },
+});
+
+/** One line per block, short enough that a whole diff stays readable. */
+function formatDiffBlock(
+  block: z.infer<typeof documentDiffResponseSchema>['blocks'][number],
+): string {
+  const marker = { added: '+', removed: '-', changed: '~', unchanged: ' ' }[block.kind];
+  const moved = block.moved ? ' (verschoben)' : '';
+  const id = block.blockId === null ? 'ohne Kennung' : block.blockId;
+  const text = block.kind === 'removed' ? block.beforeText : block.afterText;
+  return `${marker} ${id} ${block.nodeLabel}${moved}: ${(text ?? '').replace(/\s+/g, ' ').slice(0, 160)}`;
+}
+
+export const pageSnapshotDiffTool: AnyToolDefinition = defineTool({
+  name: 'exo_page_snapshot_diff',
+  description:
+    'Vergleicht einen Snapshot mit einem zweiten Snapshot oder mit dem aktuellen Stand der Seite. ' +
+    'Antwortet blockweise: hinzugefügt, entfernt, geändert, verschoben, je mit Blockkennung. ' +
+    'Die Kennungen sind das, was exo_page_restore_blocks einzeln zurückholt.',
+  inputSchema: z.object({
+    documentId: idSchema,
+    snapshotId: idSchema,
+    against: z
+      .union([idSchema, z.literal('current')])
+      .default('current')
+      .describe('Zweiter Snapshot oder "current" für den jetzigen Stand der Seite.'),
+  }),
+  surfaces: ['mcp', 'ai'],
+  mutating: false,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'GET',
+      path: `/api/documents/${input.documentId}/snapshots/${input.snapshotId}/diff`,
+      query: { against: input.against },
+      responseSchema: documentDiffResponseSchema,
+    });
+    const changed = result.blocks.filter((block) => block.kind !== 'unchanged' || block.moved);
+    const header =
+      `${result.summary.added} hinzugefügt, ${result.summary.removed} entfernt, ` +
+      `${result.summary.changed} geändert, ${result.summary.moved} verschoben, ` +
+      `${result.summary.unchanged} unverändert.`;
+    const body =
+      changed.length === 0
+        ? 'Keine inhaltlichen Unterschiede.'
+        : changed.map(formatDiffBlock).join('\n');
+    return {
+      text: [header, body, ...result.warnings].join('\n'),
+      data: result,
+    };
+  },
+});
+
+export const pageRestoreBlocksTool: AnyToolDefinition = defineTool({
+  name: 'exo_page_restore_blocks',
+  description:
+    'Holt einzelne Blöcke eines Snapshots in den aktuellen Stand der Seite zurück, statt die ganze Seite ' +
+    'zurückzusetzen. Je Kennung entscheidet der Snapshot: steht der Block dort, wird er in die Seite ' +
+    'geschrieben (ersetzt oder wieder eingefügt); steht er dort nicht, wird er aus der Seite entfernt. ' +
+    'Die Kennungen kommen aus exo_page_snapshot_diff. Der bisherige Stand wird vorher gesichert.',
+  inputSchema: z.object({
+    documentId: idSchema,
+    snapshotId: idSchema,
+    blockIds: z.array(idSchema).min(1).max(500),
+  }),
+  surfaces: ['mcp', 'ai'],
+  mutating: true,
+  destructive: true,
+  target: (input) => `document:${input.documentId}`,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'POST',
+      path: `/api/documents/${input.documentId}/snapshots/${input.snapshotId}/restore-blocks`,
+      body: { blockIds: input.blockIds },
+      responseSchema: restoreSnapshotBlocksResponseSchema,
+    });
+    const parts = [
+      `${result.restored.length} Block/Blöcke zurückgeholt`,
+      `${result.removed.length} wieder entfernt`,
+    ];
+    if (result.missing.length > 0) parts.push(`${result.missing.length} unbekannt`);
+    const undo =
+      result.snapshotBeforeId === null
+        ? 'Nichts geändert.'
+        : `Snapshot ${result.snapshotBeforeId} zum Zurückrollen.`;
+    return { text: `${parts.join(', ')}. ${undo}`, data: result };
   },
 });
 

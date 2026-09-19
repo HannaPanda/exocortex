@@ -10,6 +10,8 @@ import { CollaborationTicketService } from './collaboration-ticket.service';
 import { DocumentActivityService } from './document-activity.service';
 import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
+import { DocumentDiffController } from './document-diff.controller';
+import { DocumentDiffService } from './document-diff.service';
 import { DocumentLinksService } from './document-links.service';
 import { DocumentMarkdownService } from './document-markdown.service';
 import { DocumentMoveService } from './document-move.service';
@@ -28,7 +30,12 @@ import { RelatedDocumentsService } from './related-documents.service';
   // `SearchModule` for its search adapter: "verwandte Notizen" is a
   // nearest-neighbour read over the same vectors the search box uses.
   imports: [RealtimeModule, AttachmentsModule, SearchModule],
-  controllers: [WorkspaceDocumentsController, DocumentsController, DocumentOverviewController],
+  controllers: [
+    WorkspaceDocumentsController,
+    DocumentsController,
+    DocumentOverviewController,
+    DocumentDiffController,
+  ],
   providers: [
     DocumentsService,
     DocumentTreeService,
@@ -38,6 +45,7 @@ import { RelatedDocumentsService } from './related-documents.service';
     DocumentOverviewService,
     DocumentMarkdownService,
     DocumentSnapshotService,
+    DocumentDiffService,
     DocumentActivityService,
     DocumentContentService,
     DocumentLinksService,

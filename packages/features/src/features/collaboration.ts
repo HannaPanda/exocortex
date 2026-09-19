@@ -60,6 +60,21 @@ export const COLLABORATION_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_page_activity', 'exo_page_snapshots', 'exo_page_restore_snapshot'],
   }),
   defineFeature({
+    id: 'versionsvergleich',
+    area: 'zusammenarbeit',
+    title: 'Sehen, was sich geändert hat',
+    summary:
+      'Zwei Stände einer Seite lassen sich nebeneinanderlegen: was dazugekommen ist, was weg ist, was umgeschrieben wurde, Wort für Wort. Einzelne Blöcke holst du daraus zurück, ohne die ganze Seite zurückzusetzen.',
+    details: [
+      'Im Reiter "Aktivität" hat jeder gespeicherte Stand einen Knopf "Vergleichen". Verglichen wird gegen den aktuellen Inhalt der Seite oder gegen einen zweiten Stand. Das Ergebnis liest sich von oben nach unten wie die Seite selbst: unveränderte Blöcke sind zusammengeklappt, geänderte zeigen den alten und den neuen Text mit den einzelnen Wörtern hervorgehoben.',
+      'Verglichen wird blockweise, anhand der festen Kennung, die jeder Block trägt. Deshalb steht bei einem verschobenen Absatz "verschoben" und nicht "gelöscht und neu geschrieben". Die Einheit ist der Block auf oberster Ebene: ändert sich ein Punkt einer Liste, gilt die Liste als geändert und der Wortvergleich zeigt darin, welcher Punkt es war.',
+      'Aus dem Vergleich holst du einzelne Blöcke zurück. Der alte Stand entscheidet dabei: stand der Block dort, wird er wieder in die Seite geschrieben, notfalls an seinem alten Platz zwischen den Nachbarn, die es noch gibt; stand er dort nicht, wird er aus der Seite genommen. Alles andere auf der Seite bleibt, wie es ist, auch das, was nach dem Schnappschuss entstanden ist. Vorher entsteht wieder ein Schnappschuss, das Zurückholen selbst ist also auch zurückholbar.',
+    ],
+    since: '2026-09-19',
+    ui: { where: 'Der Reiter "Aktivität" im Kontextbereich rechts, Knopf "Vergleichen".' },
+    tools: ['exo_page_snapshot_diff', 'exo_page_restore_blocks'],
+  }),
+  defineFeature({
     id: 'agenten-journal',
     area: 'zusammenarbeit',
     title: 'Was ein Agent in einer Sitzung geändert hat',

@@ -30,6 +30,9 @@ What is deliberately still missing is listed under
 - binary Yjs persistence in PostgreSQL that survives a full server restart
 - comments with inline markers, an activity panel with snapshots and restore,
   and a references panel backed by a derived link index
+- a blockwise comparison of two states of a page, matched on stable block
+  identifiers so a moved block reads as moved, and a selective restore that
+  takes single blocks back into the current content (issue #77)
 - deterministic Markdown export and import (frontmatter, task lists, tables,
   wiki links, callouts, stable block ids)
 - attachments in S3-compatible storage with magic-byte MIME verification,

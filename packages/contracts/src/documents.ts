@@ -591,6 +591,118 @@ export const createSnapshotRequestSchema = z.object({
 export type CreateSnapshotRequest = z.infer<typeof createSnapshotRequestSchema>;
 
 /**
+ * The comparison of two states of one page (issue #77).
+ *
+ * `from` is always a snapshot; `to` is either a second snapshot or the state
+ * the page holds right now. The direction matters: "added" means present in
+ * `to` and not in `from`, so a diff against the current state reads as what
+ * happened since.
+ *
+ * The unit is the top-level block, matched on its stable identifier. That is
+ * what keeps a moved block from being reported as a deletion plus an unrelated
+ * insertion, and it is what makes a single block restorable afterwards. See
+ * `packages/editor/src/document-diff.ts`.
+ *
+ * A snapshot holds the page's content and nothing else, so a title or a
+ * database property has no second state here to compare against. Those changes
+ * are in the activity timeline (`renamed`), which is where a reader already
+ * looks for them.
+ */
+export const documentDiffRequestSchema = z.object({
+  /** The snapshot to compare against, or the page's current content. */
+  against: z.union([idSchema, z.literal('current')]).default('current'),
+});
+export type DocumentDiffRequest = z.infer<typeof documentDiffRequestSchema>;
+
+export const documentDiffSegmentSchema = z.object({
+  kind: z.enum(['equal', 'inserted', 'removed']),
+  text: z.string(),
+});
+export type DocumentDiffSegment = z.infer<typeof documentDiffSegmentSchema>;
+
+export const documentDiffBlockSchema = z.object({
+  kind: z.enum(['added', 'removed', 'changed', 'unchanged']),
+  /** Independent of `kind`: a block can move and change in the same edit. */
+  moved: z.boolean(),
+  /** `null` for a block that carries no identifier; it cannot be restored alone. */
+  blockId: idSchema.nullable(),
+  nodeType: z.string(),
+  /** Visible German name of the block type, e.g. "Absatz". */
+  nodeLabel: z.string(),
+  beforeIndex: z.number().int().nonnegative().nullable(),
+  afterIndex: z.number().int().nonnegative().nullable(),
+  beforeText: z.string().nullable(),
+  afterText: z.string().nullable(),
+  /** Word-level diff; filled for `changed` blocks, empty otherwise. */
+  segments: z.array(documentDiffSegmentSchema),
+  /** True when the block was too long to diff word by word. */
+  coarse: z.boolean(),
+});
+export type DocumentDiffBlock = z.infer<typeof documentDiffBlockSchema>;
+
+export const documentDiffResponseSchema = z.object({
+  documentId: idSchema,
+  /** The older of the two states; always a snapshot. */
+  fromSnapshotId: idSchema,
+  fromCreatedAt: isoDateTimeSchema,
+  /** `null` when the newer state is the page's current content. */
+  toSnapshotId: idSchema.nullable(),
+  toCreatedAt: isoDateTimeSchema,
+  blocks: z.array(documentDiffBlockSchema),
+  summary: z.object({
+    added: z.number().int().nonnegative(),
+    removed: z.number().int().nonnegative(),
+    changed: z.number().int().nonnegative(),
+    moved: z.number().int().nonnegative(),
+    unchanged: z.number().int().nonnegative(),
+  }),
+  /** True when the page had more blocks than the diff reports. */
+  truncated: z.boolean(),
+  /**
+   * German notes about what the comparison could not do, e.g. a snapshot
+   * written under an older schema whose content no longer derives.
+   */
+  warnings: z.array(z.string()),
+});
+export type DocumentDiffResponse = z.infer<typeof documentDiffResponseSchema>;
+
+/**
+ * Takes selected blocks of a snapshot back into the page's *current* content.
+ *
+ * One rule decides per identifier, so the caller never has to say which kind
+ * of change it is undoing: present in the snapshot, the block is written into
+ * the page (replaced where it still exists, re-inserted next to its old
+ * neighbour where it does not); absent from the snapshot, the block is taken
+ * out of the page, which is what reverting an insertion means.
+ *
+ * Always applied to what the page holds now, never to the state the diff was
+ * rendered against. A full restore stays available and unchanged.
+ */
+export const restoreSnapshotBlocksRequestSchema = z.object({
+  blockIds: z.array(idSchema).min(1).max(500),
+});
+export type RestoreSnapshotBlocksRequest = z.infer<typeof restoreSnapshotBlocksRequestSchema>;
+
+export const restoreSnapshotBlocksResponseSchema = z.object({
+  documentId: idSchema,
+  snapshotId: idSchema,
+  /**
+   * Snapshot of the state *before* this partial restore; restore it to undo.
+   * `null` when the selection changed nothing, in which case nothing was
+   * written and no snapshot was taken.
+   */
+  snapshotBeforeId: idSchema.nullable(),
+  /** Identifiers written back into the page. */
+  restored: z.array(idSchema),
+  /** Identifiers taken out of the page, because the snapshot had none. */
+  removed: z.array(idSchema),
+  /** Identifiers neither state knows; nothing was done for them. */
+  missing: z.array(idSchema),
+  appliedToLiveSession: z.boolean(),
+});
+export type RestoreSnapshotBlocksResponse = z.infer<typeof restoreSnapshotBlocksResponseSchema>;
+
+/**
  * The page's own history (issue #20), merged server-side from three sources
  * that are each incomplete on their own:
  *

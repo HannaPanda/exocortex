@@ -17,6 +17,7 @@ import {
   type DocumentActivityResponse,
   type DocumentDeletionPreviewsResponse,
   type DocumentDetail,
+  type DocumentDiffResponse,
   type DocumentLinksResponse,
   type DocumentSummary,
   type DocumentTreeResponse,
@@ -26,6 +27,8 @@ import {
   type MoveDocumentRequest,
   type RelatedDocumentsResponse,
   type ResolveDocumentLinkResponse,
+  type RestoreSnapshotBlocksRequest,
+  type RestoreSnapshotBlocksResponse,
   type SearchResponse,
   type SetWorkspaceCredentialRequest,
   type TrashResponse,
@@ -60,6 +63,8 @@ export const queryKeys = {
     ['workspace', workspaceId, 'search', query] as const,
   documentLinks: (documentId: string) => ['document', documentId, 'links'] as const,
   documentActivity: (documentId: string) => ['document', documentId, 'activity'] as const,
+  documentDiff: (documentId: string, snapshotId: string, against: string) =>
+    ['document', documentId, 'diff', snapshotId, against] as const,
   documentRelated: (documentId: string) => ['document', documentId, 'related'] as const,
   /** Every resolved reference of a workspace; the prefix all of them share. */
   pageLinks: (workspaceId: string) => ['workspace', workspaceId, 'page-link'] as const,
@@ -258,6 +263,51 @@ export function useRestoreSnapshot(documentId: string | undefined) {
       if (documentId === undefined) return;
       void client.invalidateQueries({ queryKey: queryKeys.document(documentId) });
       void client.invalidateQueries({ queryKey: queryKeys.documentActivity(documentId) });
+    },
+  });
+}
+
+/**
+ * Compares a snapshot with a second one or with the page as it stands
+ * (issue #77). Read-only and only fetched while the comparison is open, which
+ * is why it is a query of its own rather than part of the activity list: a
+ * diff derives both states server-side and is far more expensive than the
+ * timeline beside it.
+ */
+export function useSnapshotDiff(
+  documentId: string | undefined,
+  snapshotId: string | undefined,
+  against: string,
+) {
+  return useQuery({
+    queryKey: queryKeys.documentDiff(documentId ?? 'none', snapshotId ?? 'none', against),
+    queryFn: () =>
+      apiRequest<DocumentDiffResponse>(
+        `/api/documents/${documentId ?? ''}/snapshots/${snapshotId ?? ''}/diff?against=${encodeURIComponent(against)}`,
+      ),
+    enabled: documentId !== undefined && snapshotId !== undefined,
+    staleTime: 10_000,
+  });
+}
+
+/**
+ * Takes selected blocks of a snapshot back into the current content. Changes
+ * the page immediately, so the caller confirms first, the same way the full
+ * restore above does.
+ */
+export function useRestoreSnapshotBlocks(documentId: string | undefined) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { snapshotId: string } & RestoreSnapshotBlocksRequest) =>
+      apiRequest<RestoreSnapshotBlocksResponse>(
+        `/api/documents/${documentId ?? ''}/snapshots/${input.snapshotId}/restore-blocks`,
+        { method: 'POST', body: { blockIds: input.blockIds } },
+      ),
+    onSuccess: () => {
+      if (documentId === undefined) return;
+      void client.invalidateQueries({ queryKey: queryKeys.document(documentId) });
+      void client.invalidateQueries({ queryKey: queryKeys.documentActivity(documentId) });
+      void client.invalidateQueries({ queryKey: ['document', documentId, 'diff'] });
     },
   });
 }

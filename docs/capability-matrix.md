@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-192 routes are reachable from at least one client; 124 from all three.
+194 routes are reachable from at least one client; 126 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -75,6 +75,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/documents/:x/related` | ✓ | ✓ | ✓ | `exo_page_related` |
 | `GET /api/documents/:x/row` | ✓ | ✓ | ✓ | `exo_database_row_get` |
 | `GET /api/documents/:x/snapshots` | · | ✓ | ✓ | `exo_page_snapshots` |
+| `GET /api/documents/:x/snapshots/:x/diff` | ✓ | ✓ | ✓ | `exo_page_snapshot_diff` |
 | `GET /api/documents/:x/views` | ✓ | ✓ | ✓ | `exo_database_schema` |
 | `GET /api/entities` | ✓ | ✓ | ✓ | `exo_entity_list` |
 | `GET /api/entities/:x` | ✓ | ✓ | ✓ | `exo_entity_profile` |
@@ -172,6 +173,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/documents/:x/rows` | ✓ | ✓ | ✓ | `exo_database_row_create` |
 | `POST /api/documents/:x/rows/query` | ✓ | ✓ | ✓ | `exo_database_query` |
 | `POST /api/documents/:x/snapshots/:x/restore` | ✓ | ✓ | ✓ | `exo_page_restore_snapshot` |
+| `POST /api/documents/:x/snapshots/:x/restore-blocks` | ✓ | ✓ | ✓ | `exo_page_restore_blocks` |
 | `POST /api/documents/:x/views` | ✓ | ✓ | ✓ | `exo_database_view_create` |
 | `POST /api/documents/:x/views/:x/reorder` | ✓ | ✓ | ✓ | `exo_database_view_reorder` |
 | `POST /api/entities` | ✓ | ✓ | ✓ | `exo_entity_create` |

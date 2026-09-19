@@ -5,6 +5,7 @@ import {
   ArchiveIcon,
   ArrowRightLeftIcon,
   FilePlusIcon,
+  GitCompareIcon,
   HistoryIcon,
   PencilIcon,
   RotateCcwIcon,
@@ -28,6 +29,8 @@ import {
 } from '@exocortex/ui';
 
 import { useDocument, useDocumentActivity, useRestoreSnapshot } from '@/lib/api/queries';
+
+import { type DiffableSnapshot, SnapshotDiffDialog } from './snapshot-diff-dialog';
 
 const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
   dateStyle: 'medium',
@@ -111,10 +114,12 @@ function ActivityEntryRow({
   entry,
   readOnly,
   onRequestRestore,
+  onRequestCompare,
 }: {
   entry: DocumentActivityEntry;
   readOnly: boolean;
   onRequestRestore: (entry: SnapshotEntry) => void;
+  onRequestCompare: (entry: SnapshotEntry) => void;
 }) {
   const who = entry.actorName ?? 'Unbekannt';
 
@@ -186,16 +191,33 @@ function ActivityEntryRow({
           title={`Stand vom ${formatDateTime(entry.occurredAt)}`}
           meta={`${who} · ${SNAPSHOT_REASON_LABEL[entry.reason]}`}
           trailing={
-            readOnly ? null : (
+            /*
+             * Comparing is offered to readers too: it changes nothing, and
+             * "what did the agent write last night" is a question somebody
+             * without write access has as much as anybody else.
+             */
+            <div className="flex shrink-0 items-center gap-1">
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                data-testid="activity-restore-button"
-                onClick={() => onRequestRestore(entry)}
+                data-testid="activity-compare-button"
+                aria-label="Mit einem anderen Stand vergleichen"
+                onClick={() => onRequestCompare(entry)}
               >
-                Wiederherstellen
+                <GitCompareIcon className="size-4" aria-hidden />
+                Vergleichen
               </Button>
-            )
+              {readOnly ? null : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  data-testid="activity-restore-button"
+                  onClick={() => onRequestRestore(entry)}
+                >
+                  Wiederherstellen
+                </Button>
+              )}
+            </div>
           }
         />
       );
@@ -223,6 +245,7 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
   const activity = useDocumentActivity(documentId ?? undefined);
   const restoreSnapshot = useRestoreSnapshot(documentId ?? undefined);
   const [pendingRestore, setPendingRestore] = React.useState<SnapshotEntry | null>(null);
+  const [comparing, setComparing] = React.useState<DiffableSnapshot | null>(null);
   const [restoreError, setRestoreError] = React.useState<string | null>(null);
 
   if (documentId === null || workspaceId === null) {
@@ -260,6 +283,9 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
 
   const readOnly = document.data.access === 'read';
   const entries = activity.data.entries;
+  const snapshots: DiffableSnapshot[] = entries
+    .filter((entry): entry is SnapshotEntry => entry.type === 'snapshot')
+    .map((entry) => ({ id: entry.id, createdAt: entry.occurredAt }));
 
   return (
     <div className="flex flex-col gap-3" data-testid="activity-panel">
@@ -283,9 +309,22 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
                 setRestoreError(null);
                 setPendingRestore(target);
               }}
+              onRequestCompare={(target) =>
+                setComparing({ id: target.id, createdAt: target.occurredAt })
+              }
             />
           ))}
         </div>
+      )}
+
+      {documentId === null ? null : (
+        <SnapshotDiffDialog
+          documentId={documentId}
+          snapshot={comparing}
+          snapshots={snapshots}
+          readOnly={readOnly}
+          onClose={() => setComparing(null)}
+        />
       )}
 
       <Dialog
