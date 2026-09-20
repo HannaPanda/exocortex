@@ -67,7 +67,11 @@ apologising interfaces. English for code, logs, identifiers and API error codes.
 
 - **Hacker-terminal green.** Saturated green on near-black reads as Matrix
   cosplay. It is the first reflex for any "second brain" tool and it is not what
-  this is. The current palette falls into this trap and is being replaced.
+  this is. Two earlier palettes were that costume -- saturated green on
+  near-black, then near-black graphite with an amber terminal glow -- and both
+  were removed. What replaced them is the mid-tone slate sheet with a single
+  amber signal documented in `DESIGN.md`; the brand direction beyond that is not
+  settled, and nothing here fixes it.
 - **Neon-on-black cyberpunk.** The obvious escape from the point above is
   cyan-and-magenta glow, scanlines and glassmorphism. That is the same reflex one
   tier deeper. Cyberpunk here means precision instrument, not arcade cabinet.
