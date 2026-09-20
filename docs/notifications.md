@@ -41,6 +41,14 @@ a feature must not thereby start writing to people who never asked it to. A
 share, by contrast, is on because a share nobody hears about is a share nobody
 uses.
 
+**The mail an automation sends is not in this table, on purpose** (issue #104,
+ADR-054). Everything here is an occasion somebody is _told_ about, where a
+default has to be chosen for people who never decided. An `EMAIL_SELF` rule is
+the decision: somebody wrote it, named the page and set the time. A switch that
+silently stopped it would turn a rule reading "enabled" into one that does
+nothing; switching it off is `enabled: false` on the rule, where it was
+switched on.
+
 ## Where a preference is stored
 
 `storedOn` on the catalogue entry decides, and there are exactly two answers.

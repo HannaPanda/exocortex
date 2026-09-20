@@ -140,6 +140,7 @@ export class AutomationsService {
         secretKeyVersion: encrypted?.keyVersion ?? null,
         prompt: request.prompt,
         modelSlug: request.modelSlug,
+        mailSubject: request.mailSubject,
         output: request.output,
         createdById: input.userId,
       },
@@ -165,14 +166,14 @@ export class AutomationsService {
     const { row } = await this.requireManageableRule(input.ruleId, input.userId);
     const merged = { ...mergeableFields(row), ...stripUndefined(input.request) };
 
-    // Turning an AI rule into a webhook rule is refused rather than supported.
-    // A webhook needs a signing secret, a secret is handed over exactly once at
-    // creation, and a PATCH response is not a place to hand one over: the
-    // caller would end up with a rule that posts unsigned, or with a secret in
-    // a response they were not expecting to have to keep.
-    if (merged.action === 'WEBHOOK' && row.action === 'AI_RUN') {
+    // Becoming a webhook rule is refused rather than supported, whatever the
+    // rule was before. A webhook needs a signing secret, a secret is handed
+    // over exactly once at creation, and a PATCH response is not a place to
+    // hand one over: the caller would end up with a rule that posts unsigned,
+    // or with a secret in a response they were not expecting to have to keep.
+    if (merged.action === 'WEBHOOK' && row.action !== 'WEBHOOK') {
       throw AppError.validation(
-        'An AI rule cannot become a webhook rule; create a webhook rule instead, so its signing secret can be handed over once',
+        'Only a new rule can be a webhook rule, so its signing secret can be handed over once',
       );
     }
 
@@ -204,8 +205,8 @@ export class AutomationsService {
         ...merged,
         ...schedule,
         ...(reenabled ? { consecutiveFailures: 0, disabledReason: null, disabledAt: null } : {}),
-        // A webhook rule turned into an AI rule keeps no secret it cannot use.
-        ...(merged.action === 'AI_RUN' && row.action === 'WEBHOOK'
+        // A webhook rule that became something else keeps no secret it cannot use.
+        ...(merged.action !== 'WEBHOOK' && row.action === 'WEBHOOK'
           ? {
               secretCiphertext: null,
               secretIv: null,
@@ -375,6 +376,7 @@ function mergeableFields(row: {
   webhookUrl: string | null;
   prompt: string | null;
   modelSlug: string | null;
+  mailSubject: string | null;
   output: AutomationOutput;
 }) {
   return {
@@ -395,6 +397,7 @@ function mergeableFields(row: {
     webhookUrl: row.webhookUrl,
     prompt: row.prompt,
     modelSlug: row.modelSlug,
+    mailSubject: row.mailSubject,
     output: row.output,
   };
 }

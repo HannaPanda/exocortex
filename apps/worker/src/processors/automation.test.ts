@@ -15,7 +15,7 @@ import {
 import { type PrismaClient } from '@exocortex/database';
 import { createLogger } from '@exocortex/logger';
 import { type ExocortexApiClient } from '@exocortex/mcp-tools';
-import { type JobContext } from '@exocortex/queue';
+import { type JobContext, type QueueRegistry } from '@exocortex/queue';
 
 import { createAutomationProcessor } from './automation';
 import { type WebhookRequestInput, type WebhookResult } from './automation/webhook-request';
@@ -38,15 +38,29 @@ interface StoredRule {
   workspaceId: string;
   name: string;
   enabled: boolean;
-  action: 'WEBHOOK' | 'AI_RUN';
+  action: 'WEBHOOK' | 'AI_RUN' | 'EMAIL_SELF';
   output: 'COMMENT' | 'CHILD_PAGE';
   webhookUrl: string | null;
   prompt: string | null;
   modelSlug: string | null;
+  mailSubject: string | null;
   createdById: string | null;
   consecutiveFailures: number;
   disabledReason: string | null;
 }
+
+/** The owning account, as the mail action reads it back. */
+interface StoredOwner {
+  email: string;
+  emailVerified: boolean;
+  disabledAt: Date | null;
+}
+
+const OWNER: StoredOwner = {
+  email: 'johanna@example.org',
+  emailVerified: true,
+  disabledAt: null,
+};
 
 function webhookRule(overrides: Partial<StoredRule> = {}): StoredRule {
   return {
@@ -59,6 +73,7 @@ function webhookRule(overrides: Partial<StoredRule> = {}): StoredRule {
     webhookUrl: 'https://hooks.example.org/exocortex',
     prompt: null,
     modelSlug: null,
+    mailSubject: null,
     createdById: 'user-1',
     consecutiveFailures: 0,
     disabledReason: null,
@@ -77,8 +92,13 @@ function harness(input: {
   settings?: Settings;
   respond?: (request: WebhookRequestInput) => WebhookResult | Promise<WebhookResult>;
   answer?: string | Error;
+  /** The owning account, or null for one that has been deleted. */
+  owner?: StoredOwner | null;
+  /** What the page's Markdown export answers with. */
+  markdown?: string;
 }) {
   const runs: Record<string, unknown>[] = [];
+  const mails: { payload: Record<string, unknown>; options?: { jobId?: string } }[] = [];
   const requests: { path: string; body: unknown }[] = [];
   const sent: { url: string; headers: Record<string, string>; body: string }[] = [];
   const rule = { ...input.rule };
@@ -140,7 +160,20 @@ function harness(input: {
         parentId: null,
       }),
     },
+    user: {
+      findUnique: async () => (input.owner === undefined ? OWNER : input.owner),
+    },
   } as unknown as PrismaClient;
+
+  const queues = {
+    enqueue: async (
+      _queue: string,
+      payload: Record<string, unknown>,
+      options?: { jobId?: string },
+    ) => {
+      mails.push({ payload, options });
+    },
+  } as unknown as QueueRegistry;
 
   const provider = {
     generate: async () => {
@@ -156,7 +189,7 @@ function harness(input: {
         return {
           documentId: 'page-1',
           filename: 'technik.md',
-          markdown: '# Technik',
+          markdown: input.markdown ?? '# Technik',
           path: [],
           children: [],
         };
@@ -177,6 +210,8 @@ function harness(input: {
     settings: async () => input.settings ?? DEFAULT_SETTINGS,
     defaultModel: 'test/model',
     credentialKey: encryptionKey,
+    queues,
+    appUrl: 'https://exocortex.example/',
     sendWebhook: async (request) => {
       sent.push({
         url: request.url,
@@ -187,7 +222,7 @@ function harness(input: {
     },
   });
 
-  return { processor, runs, requests, sent, rule, headersSeen };
+  return { processor, runs, requests, sent, rule, headersSeen, mails };
 }
 
 function job(overrides: Partial<AutomationJob> = {}): JobContext<typeof QUEUE_NAMES.automation> {
@@ -322,6 +357,87 @@ describe('an AI rule', () => {
     });
     await expect(processor(job())).resolves.toBeUndefined();
     expect(outcome(runs)).toMatchObject({ status: 'FAILED', error: 'provider exploded' });
+  });
+});
+
+describe('a mail rule', () => {
+  function mailRule(overrides: Partial<StoredRule> = {}): StoredRule {
+    return webhookRule({
+      action: 'EMAIL_SELF',
+      webhookUrl: null,
+      name: 'Morgenübersicht',
+      ...overrides,
+    });
+  }
+
+  it('queues the page to its owner, once per run', async () => {
+    const { processor, runs, mails } = harness({ rule: mailRule() });
+    await processor(job());
+
+    expect(mails).toHaveLength(1);
+    expect(mails[0]?.payload).toMatchObject({
+      recipient: 'johanna@example.org',
+      mail: {
+        template: 'AUTOMATION_PAGE',
+        ruleName: 'Morgenübersicht',
+        // No subject on the rule, so the rule's name serves as one.
+        subject: 'Morgenübersicht',
+        documentTitle: 'Technik',
+        url: 'https://exocortex.example/arbeitsbereich/workspace-1/seite/page-1',
+        body: '# Technik',
+        truncated: false,
+      },
+    });
+    // One run, one letter: a retried job reaching this line again must not
+    // post a second copy of the same morning.
+    expect(mails[0]?.options?.jobId).toBe('automation-mail-run-1');
+    // "queued" and never "sent": the relay has not been asked yet.
+    expect(outcome(runs)).toMatchObject({
+      status: 'SUCCEEDED',
+      detail: { action: 'EMAIL_SELF', queued: true, recipientDomain: 'example.org' },
+    });
+  });
+
+  it('uses the subject the rule carries when there is one', async () => {
+    const { processor, mails } = harness({ rule: mailRule({ mailSubject: 'Dein Tag' }) });
+    await processor(job());
+    expect(mails[0]?.payload).toMatchObject({ mail: { subject: 'Dein Tag' } });
+  });
+
+  it('cuts a long page and says so rather than mailing all of it', async () => {
+    const line = `${'x'.repeat(99)}\n`;
+    const { processor, mails } = harness({ rule: mailRule(), markdown: line.repeat(200) });
+    await processor(job());
+
+    const queued = mails[0];
+    expect(queued).toBeDefined();
+    const mail = (queued?.payload as { mail: { body: string; truncated: boolean } } | undefined)
+      ?.mail;
+    expect(mail?.truncated).toBe(true);
+    expect(mail?.body.length ?? 0).toBeLessThanOrEqual(10_000);
+  });
+
+  it('fails the run rather than writing to an unconfirmed address', async () => {
+    const { processor, runs, mails } = harness({
+      rule: mailRule(),
+      owner: { ...OWNER, emailVerified: false },
+    });
+    await processor(job());
+
+    expect(mails).toHaveLength(0);
+    expect(outcome(runs)).toMatchObject({ status: 'FAILED' });
+    expect(String(outcome(runs).error)).toContain('confirmed');
+  });
+
+  it('writes nothing to an account somebody switched off', async () => {
+    const { processor, runs, mails } = harness({
+      rule: mailRule(),
+      owner: { ...OWNER, disabledAt: new Date() },
+    });
+    await processor(job());
+
+    expect(mails).toHaveLength(0);
+    expect(String(outcome(runs).error)).toContain('switched off');
   });
 });
 

@@ -62,6 +62,7 @@ interface Draft extends ScheduleDraft {
   webhookUrl: string;
   prompt: string;
   modelSlug: string;
+  mailSubject: string;
   output: AutomationOutput;
 }
 
@@ -85,6 +86,7 @@ const EMPTY_DRAFT: Draft = {
   webhookUrl: '',
   prompt: '',
   modelSlug: '',
+  mailSubject: '',
   output: 'COMMENT',
 };
 
@@ -105,6 +107,7 @@ function draftFrom(rule: AutomationRule | null): Draft {
     webhookUrl: rule.webhookUrl ?? '',
     prompt: rule.prompt ?? '',
     modelSlug: rule.modelSlug ?? '',
+    mailSubject: rule.mailSubject ?? '',
     scheduleKind: rule.scheduleKind ?? EMPTY_DRAFT.scheduleKind,
     scheduleAt: toLocalInput(rule.scheduleAt),
     scheduleTime: rule.scheduleTime ?? EMPTY_DRAFT.scheduleTime,
@@ -115,9 +118,18 @@ function draftFrom(rule: AutomationRule | null): Draft {
   };
 }
 
-/** The draft as the API wants it: empty strings become nulls again. */
+/**
+ * The draft as the API wants it: empty strings become nulls again.
+ *
+ * Each action sends only its own fields and nulls the rest. The contract
+ * refuses a rule carrying a field its action does not use, which is what keeps
+ * a rule somebody switched from a webhook to a mail from still holding a URL
+ * nothing reads.
+ */
 function requestFrom(draft: Draft) {
   const forWebhook = draft.action === 'WEBHOOK';
+  const forAi = draft.action === 'AI_RUN';
+  const forMail = draft.action === 'EMAIL_SELF';
   return {
     name: draft.name.trim(),
     scope: draft.scope,
@@ -127,8 +139,9 @@ function requestFrom(draft: Draft) {
     debounceSeconds: draft.debounceSeconds,
     action: draft.action,
     webhookUrl: forWebhook ? emptyToNull(draft.webhookUrl) : null,
-    prompt: forWebhook ? null : emptyToNull(draft.prompt),
-    modelSlug: forWebhook ? null : emptyToNull(draft.modelSlug),
+    prompt: forAi ? emptyToNull(draft.prompt) : null,
+    modelSlug: forAi ? emptyToNull(draft.modelSlug) : null,
+    mailSubject: forMail ? emptyToNull(draft.mailSubject) : null,
     output: draft.output,
   };
 }
@@ -451,9 +464,9 @@ function ActionFields({
         <Select
           value={draft.action}
           onValueChange={(value) => set('action', value as AutomationAction)}
-          // A stored AI rule cannot become a webhook rule: its signing secret
-          // can only be handed over once, at creation.
-          disabled={!isNew && draft.action === 'AI_RUN'}
+          // A stored rule cannot become a webhook rule: the signing secret can
+          // only be handed over once, at creation.
+          disabled={!isNew && draft.action !== 'WEBHOOK'}
         >
           <SelectTrigger data-testid="automation-action">
             <SelectValue>{() => ACTION_LABELS[draft.action]}</SelectValue>
@@ -468,68 +481,103 @@ function ActionFields({
         </Select>
       </div>
 
+      {draft.action === 'EMAIL_SELF' ? <MailFields draft={draft} set={set} /> : null}
       {draft.action === 'WEBHOOK' ? (
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="automation-url">Ziel-URL</Label>
-          <Input
-            id="automation-url"
-            data-testid="automation-url"
-            value={draft.webhookUrl}
-            onChange={(event) => set('webhookUrl', event.target.value)}
-            placeholder="https://hooks.example.org/exocortex"
-          />
-          <p className="text-xs text-muted-foreground">
-            {allowedHosts.length === 0
-              ? 'Diese Installation erlaubt derzeit keine Webhook-Ziele. Ein globaler Administrator muss automations.webhookAllowedHosts füllen.'
-              : `Erlaubte Hosts: ${allowedHosts.join(', ')}. Verschickt werden nur Metadaten der Seite, nie ihr Inhalt.`}
-          </p>
-        </div>
-      ) : (
-        <>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="automation-prompt">Prompt</Label>
-            <Textarea
-              id="automation-prompt"
-              data-testid="automation-prompt"
-              rows={4}
-              value={draft.prompt}
-              onChange={(event) => set('prompt', event.target.value)}
-              placeholder="Prüfe, ob diese Seite durch die Änderung veraltete Angaben enthält."
-            />
-            <p className="text-xs text-muted-foreground">
-              Die geänderte Seite ist das Material des Modells. Die Antwort landet daneben, nicht
-              darin.
-            </p>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label>Ergebnis</Label>
-            <Select
-              value={draft.output}
-              onValueChange={(value) => set('output', value as AutomationOutput)}
-            >
-              <SelectTrigger data-testid="automation-output">
-                <SelectValue>{() => OUTPUT_LABELS[draft.output]}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {(Object.keys(OUTPUT_LABELS) as AutomationOutput[]).map((output) => (
-                  <SelectItem key={output} value={output}>
-                    {OUTPUT_LABELS[output]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="automation-model">Modell (optional)</Label>
-            <Input
-              id="automation-model"
-              value={draft.modelSlug}
-              onChange={(event) => set('modelSlug', event.target.value)}
-              placeholder="Leer lassen für das Standardmodell"
-            />
-          </div>
-        </>
-      )}
+        <WebhookFields draft={draft} set={set} allowedHosts={allowedHosts} />
+      ) : null}
+      {draft.action === 'AI_RUN' ? <AiFields draft={draft} set={set} /> : null}
     </div>
+  );
+}
+
+/** The mail action: a subject, and the promise about where it goes. */
+function MailFields({ draft, set }: FieldProps) {
+  return (
+    <div className="flex flex-col gap-2">
+      <Label htmlFor="automation-mail-subject">Betreff (optional)</Label>
+      <Input
+        id="automation-mail-subject"
+        data-testid="automation-mail-subject"
+        value={draft.mailSubject}
+        onChange={(event) => set('mailSubject', event.target.value)}
+        placeholder="Leer lassen für den Namen der Regel"
+      />
+      <p className="text-xs text-muted-foreground">
+        Die Mail geht an die bestätigte Adresse deines eigenen Kontos, an keine andere. Im Text
+        steht die Seite selbst, bei langen Seiten gekürzt und mit einem Link darunter.
+      </p>
+    </div>
+  );
+}
+
+function WebhookFields({
+  draft,
+  set,
+  allowedHosts,
+}: FieldProps & { allowedHosts: readonly string[] }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <Label htmlFor="automation-url">Ziel-URL</Label>
+      <Input
+        id="automation-url"
+        data-testid="automation-url"
+        value={draft.webhookUrl}
+        onChange={(event) => set('webhookUrl', event.target.value)}
+        placeholder="https://hooks.example.org/exocortex"
+      />
+      <p className="text-xs text-muted-foreground">
+        {allowedHosts.length === 0
+          ? 'Diese Installation erlaubt derzeit keine Webhook-Ziele. Ein globaler Administrator muss automations.webhookAllowedHosts füllen.'
+          : `Erlaubte Hosts: ${allowedHosts.join(', ')}. Verschickt werden nur Metadaten der Seite, nie ihr Inhalt.`}
+      </p>
+    </div>
+  );
+}
+
+function AiFields({ draft, set }: FieldProps) {
+  return (
+    <>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="automation-prompt">Prompt</Label>
+        <Textarea
+          id="automation-prompt"
+          data-testid="automation-prompt"
+          rows={4}
+          value={draft.prompt}
+          onChange={(event) => set('prompt', event.target.value)}
+          placeholder="Prüfe, ob diese Seite durch die Änderung veraltete Angaben enthält."
+        />
+        <p className="text-xs text-muted-foreground">
+          Die geänderte Seite ist das Material des Modells. Die Antwort landet daneben, nicht darin.
+        </p>
+      </div>
+      <div className="flex flex-col gap-2">
+        <Label>Ergebnis</Label>
+        <Select
+          value={draft.output}
+          onValueChange={(value) => set('output', value as AutomationOutput)}
+        >
+          <SelectTrigger data-testid="automation-output">
+            <SelectValue>{() => OUTPUT_LABELS[draft.output]}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {(Object.keys(OUTPUT_LABELS) as AutomationOutput[]).map((output) => (
+              <SelectItem key={output} value={output}>
+                {OUTPUT_LABELS[output]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="automation-model">Modell (optional)</Label>
+        <Input
+          id="automation-model"
+          value={draft.modelSlug}
+          onChange={(event) => set('modelSlug', event.target.value)}
+          placeholder="Leer lassen für das Standardmodell"
+        />
+      </div>
+    </>
   );
 }

@@ -43,7 +43,7 @@ export interface QueueWorker {
 }
 
 /**
- * The sixteen queues this process listens on, in two groups.
+ * The sixteen queues this process listens on, in three groups.
  *
  * Concurrency is per queue and deliberately uneven: materialization is cheap
  * and parallel, PDF extraction is an external call and runs one at a time so it
@@ -54,7 +54,11 @@ export function startQueueWorkers(
   runtime: WorkerRuntime,
   logger: Logger,
 ): QueueWorker[] {
-  return [...startCoreWorkers(env, runtime, logger), ...startMediaWorkers(env, runtime, logger)];
+  return [
+    ...startCoreWorkers(env, runtime, logger),
+    ...startMediaWorkers(env, runtime, logger),
+    ...startDeliveryWorkers(env, runtime, logger),
+  ];
 }
 
 /** Materialization, search indexing, the AI runs and the maintenance sweeps. */
@@ -231,7 +235,6 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     resolveCalendarCredentials,
     reminderNotifier,
     pushSender,
-    mailer,
     imageGeneratorFor,
     pdfDocumentInfo,
     pdfExtractorChain,
@@ -395,6 +398,8 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
       settings: readSettings,
       defaultModel: env.OPENROUTER_DEFAULT_MODEL ?? null,
       credentialKey,
+      queues,
+      appUrl: env.APP_URL,
     }),
   });
 
@@ -438,6 +443,35 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     }),
   });
 
+  return [
+    attachmentText,
+    documentCover,
+    documentOverview,
+    calendarSync,
+    memoryCapture,
+    memoryConsolidate,
+    entityRescan,
+    automation,
+    render,
+    projectBuild,
+  ];
+}
+
+/**
+ * The two queues that hand something to somebody outside this deployment.
+ *
+ * Their own function because they are the only workers here whose concurrency
+ * is somebody else's business: a push service and an SMTP relay both have an
+ * opinion about how fast a client may go, and neither number has anything to
+ * do with what this host can carry.
+ */
+function startDeliveryWorkers(
+  env: WorkerEnv,
+  runtime: WorkerRuntime,
+  logger: Logger,
+): QueueWorker[] {
+  const { prisma, pushSender, mailer } = runtime;
+
   // Concurrency 4: a notification is one small HTTPS POST per device and the
   // job spends its life waiting for a push service to answer. Four is enough
   // that a slow service cannot hold up an appointment reminder for somebody
@@ -462,20 +496,7 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     handler: createMailDeliveryProcessor({ mailer }),
   });
 
-  return [
-    attachmentText,
-    documentCover,
-    documentOverview,
-    calendarSync,
-    memoryCapture,
-    memoryConsolidate,
-    entityRescan,
-    automation,
-    render,
-    projectBuild,
-    push,
-    mail,
-  ];
+  return [push, mail];
 }
 
 /**

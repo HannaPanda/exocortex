@@ -18,9 +18,9 @@ not run yet. These go straight through the `MAILER` provider in
 `apps/api/src/platform/platform.module.ts`, and a relay that is down makes the
 request say so.
 
-**Asynchronous, in the worker.** Everything else, starting with the share
-notifications of issue #103, the comment digests of #106, and continuing with
-#104 and #107. They are enqueued on the `mail` queue and sent by `createMailDeliveryProcessor`, so a relay having
+**Asynchronous, in the worker.** Everything else: the share notifications of
+issue #103, the comment digests of #106, the automation mail of #104, and
+continuing with #107. They are enqueued on the `mail` queue and sent by `createMailDeliveryProcessor`, so a relay having
 a bad five minutes delays a mail instead of failing whatever caused it.
 `docs/background-jobs.md` describes the queue, its retry policy and its
 deduplication.
@@ -32,16 +32,17 @@ it.
 
 ## The packages
 
-| Path                                          | Owns                                                          |
-| --------------------------------------------- | ------------------------------------------------------------- |
-| `packages/mail/src/transport.ts`              | the SMTP connection, TLS, credentials, failure classification |
-| `packages/mail/src/templates/`                | the words, in German                                          |
-| `packages/mail/src/render.ts`                 | template name plus values becomes subject plus text           |
-| `packages/mail/src/mailer.ts`                 | transport plus catalogue, and what may be logged              |
-| `packages/contracts/src/mail.ts`              | the template catalogue as a zod union                         |
-| `share-notifications.ts` (worker)             | which grant change becomes which mail, and to whom            |
-| `comment-digests.ts` (worker)                 | which collected comments become one mail, and to whom         |
-| `apps/worker/src/processors/mail-delivery.ts` | one job, one SMTP hop, retry or do not                        |
+| Path                                          | Owns                                                                 |
+| --------------------------------------------- | -------------------------------------------------------------------- |
+| `packages/mail/src/transport.ts`              | the SMTP connection, TLS, credentials, failure classification        |
+| `packages/mail/src/templates/`                | the words, in German                                                 |
+| `packages/mail/src/render.ts`                 | template name plus values becomes subject plus text                  |
+| `packages/mail/src/mailer.ts`                 | transport plus catalogue, and what may be logged                     |
+| `packages/contracts/src/mail.ts`              | the template catalogue as a zod union                                |
+| `share-notifications.ts` (worker)             | which grant change becomes which mail, and to whom                   |
+| `comment-digests.ts` (worker)                 | which collected comments become one mail, and to whom                |
+| `automation/mail.ts` (worker)                 | which page an `EMAIL_SELF` rule sends, and that it goes to its owner |
+| `apps/worker/src/processors/mail-delivery.ts` | one job, one SMTP hop, retry or do not                               |
 
 `packages/mail` may see `@exocortex/contracts` and `@exocortex/logger` and
 nothing else. In particular not `@exocortex/database`: a package that could look
@@ -126,6 +127,20 @@ Who gets it, and what is in it, is decided by `comment-digests.ts` at the
 moment of sending and not when the comment was written:
 `docs/background-jobs.md` describes the sweep, and ADR-053 why the thing in
 between is a row per owed comment rather than a checkpoint.
+
+## Automation mail
+
+`EMAIL_SELF` is the one action that sends mail, and `AUTOMATION_PAGE` is the
+one template that carries a page's text rather than a link to it (issue #104,
+ADR-054). Both are the same decision seen from two sides: the action has no
+recipient field anywhere, the address is read from the rule's owner when the
+mail is queued, and so the worst this template can do is post somebody their
+own page.
+
+That is also the condition under which it stays defensible. If a rule ever gets
+to name an address, this variant goes back to being a link and the subject
+stops being free text. `docs/automations.md` has the action; ADR-054 has the
+reasoning.
 
 ## Why a template and not a subject and a body
 

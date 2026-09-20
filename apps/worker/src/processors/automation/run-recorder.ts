@@ -1,4 +1,4 @@
-import { type AutomationJob } from '@exocortex/contracts';
+import { type AutomationAction, type AutomationJob } from '@exocortex/contracts';
 import { type Prisma, type PrismaClient } from '@exocortex/database';
 
 /**
@@ -21,7 +21,7 @@ export interface AutomationRuleRecord {
   workspaceId: string;
   name: string;
   enabled: boolean;
-  action: 'WEBHOOK' | 'AI_RUN';
+  action: AutomationAction;
   output: 'COMMENT' | 'CHILD_PAGE';
   webhookUrl: string | null;
   secretCiphertext: string | null;
@@ -30,6 +30,7 @@ export interface AutomationRuleRecord {
   secretKeyVersion: number | null;
   prompt: string | null;
   modelSlug: string | null;
+  mailSubject: string | null;
   createdById: string | null;
 }
 
@@ -53,6 +54,7 @@ export async function loadRule(
       secretKeyVersion: true,
       prompt: true,
       modelSlug: true,
+      mailSubject: true,
       createdById: true,
     },
   });
@@ -60,6 +62,14 @@ export async function loadRule(
 
 /** Writes one run's outcome. One instance per job, used exactly once. */
 export interface RunRecorder {
+  /**
+   * The row this run is being written to.
+   *
+   * Exposed for exactly one caller: the mail action derives the mail's job id
+   * from it, so a run that queued a letter and then failed to record itself
+   * cannot buy the reader a second copy of the same page (issue #104).
+   */
+  readonly runId: string;
   succeed(detail: Record<string, unknown>, durationMs: number): Promise<void>;
   fail(error: string, durationMs: number): Promise<void>;
   /** Nothing was attempted, and why. Not a failure: it does not count a strike. */
@@ -90,6 +100,7 @@ export async function createRunRecorder(
   }
 
   return {
+    runId,
     async succeed(detail, durationMs) {
       await finish({ status: 'SUCCEEDED', detail: detail as Prisma.InputJsonObject, durationMs });
     },

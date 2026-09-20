@@ -257,6 +257,22 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     claims: { automationActions: ['AI_RUN'] },
   }),
   defineFeature({
+    id: 'automation-mail',
+    area: 'automationen',
+    title: 'Eine Automation, die dir eine Seite schickt',
+    summary:
+      'Als Aktion kann eine Regel dir eine Seite per E-Mail schicken, zum Beispiel jeden Morgen um sieben den Eingang oder Sonntagabend den Wochenrückblick. Sie schickt sie an dich und an niemanden sonst: eine Empfängeradresse lässt sich nicht eintragen.',
+    details: [
+      'Zusammen mit dem Auslöser "Zeitplan" wird daraus eine tägliche Übersicht, ein wöchentlicher Rückblick oder ein einmaliges "schick mir das am Freitag". Es braucht dafür keine weitere Einstellung: die Uhr und der Versand sind schon da.',
+      'Die Mail geht an die bestätigte Adresse des Kontos, dem die Regel gehört. Das ist Absicht und keine Sparversion: eine Automation, die eine beliebige Adresse anschreiben darf, ist ein Weg, Inhalte aus deinem Arbeitsbereich hinauszutragen, und Agenten dürfen Regeln schreiben.',
+      'Im Text steht die Seite selbst, bei langen Seiten gekürzt und mit einem Link darunter. Der Betreff ist frei wählbar, sonst nimmt die Mail den Namen der Regel. Im Lauf-Protokoll steht, dass die Mail eingereiht wurde, und bei einem Konto ohne bestätigte Adresse steht dort, woran es lag.',
+    ],
+    since: '2026-09-20',
+    references: ['#104', 'ADR-054'],
+    ui: { where: 'Beim Anlegen einer Automation als Aktion "E-Mail an dich selbst".' },
+    claims: { automationActions: ['EMAIL_SELF'] },
+  }),
+  defineFeature({
     id: 'zeitplaene',
     area: 'automationen',
     title: 'Automationen nach der Uhr',

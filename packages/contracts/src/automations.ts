@@ -42,8 +42,33 @@ export type AutomationTrigger = z.infer<typeof automationTriggerSchema>;
 export const automationScopeSchema = z.enum(['WORKSPACE', 'SUBTREE', 'DATABASE']);
 export type AutomationScope = z.infer<typeof automationScopeSchema>;
 
-export const automationActionSchema = z.enum(['WEBHOOK', 'AI_RUN']);
+export const automationActionSchema = z.enum([
+  'WEBHOOK',
+  'AI_RUN',
+  /**
+   * A mail to the rule's owner, and to nobody else (issue #104, ADR-054).
+   *
+   * The name is the security decision rather than a description of the
+   * transport. An action that could name a recipient would make every
+   * automation a relay somebody else's inbox can be pointed at, and would hand
+   * an agent that may write a rule a second way out of this deployment. The
+   * address is read from the owning account when the mail is sent and is never
+   * a field on the rule, so there is nothing here to point anywhere.
+   */
+  'EMAIL_SELF',
+]);
 export type AutomationAction = z.infer<typeof automationActionSchema>;
+
+/**
+ * How much of a page an `EMAIL_SELF` rule puts in the mail.
+ *
+ * A mail is a copy that leaves and cannot be corrected afterwards, so the cap
+ * is much lower than the 20 000 characters an AI rule reads: what is wanted is
+ * the morning's agenda in the body, not a page somebody has to scroll through
+ * in a mail client. Longer pages are cut here and say so, with the link
+ * underneath.
+ */
+export const AUTOMATION_MAX_MAIL_CHARS = 10_000;
 
 export const automationOutputSchema = z.enum(['COMMENT', 'CHILD_PAGE']);
 export type AutomationOutput = z.infer<typeof automationOutputSchema>;
@@ -313,6 +338,8 @@ export const automationRuleSchema = z.object({
   hasWebhookSecret: z.boolean(),
   prompt: z.string().nullable(),
   modelSlug: z.string().nullable(),
+  /** `EMAIL_SELF`: the subject line, or null when the rule's name serves. */
+  mailSubject: z.string().nullable(),
   output: automationOutputSchema,
   consecutiveFailures: z.number().int().nonnegative(),
   /** English, developer-facing; set when the rule switched itself off. */
@@ -403,6 +430,14 @@ const automationRuleBody = z.object({
   webhookUrl: automationWebhookUrlSchema.nullable().default(null),
   prompt: z.string().trim().min(1).max(4_000).nullable().default(null),
   modelSlug: z.string().trim().min(1).max(200).nullable().default(null),
+  /**
+   * `EMAIL_SELF`: the subject line, or null for the rule's name.
+   *
+   * Bounded like a title because it becomes one. It is the one string a person
+   * writes that ends up in a mail header, and it is defensible only because of
+   * where that mail goes: the rule's owner, who wrote it.
+   */
+  mailSubject: z.string().trim().min(1).max(200).nullable().default(null),
   output: automationOutputSchema.default('COMMENT'),
 });
 
@@ -420,6 +455,7 @@ export function automationRuleProblems(rule: {
   action: AutomationAction;
   webhookUrl: string | null;
   prompt: string | null;
+  mailSubject?: string | null;
   triggers: readonly AutomationTrigger[];
   scheduleKind?: AutomationScheduleKind | null;
   scheduleAt?: string | Date | null;
@@ -438,14 +474,7 @@ export function automationRuleProblems(rule: {
   if (rule.scope !== 'WORKSPACE' && rule.scopeDocumentId === null) {
     problems.push('A subtree or database rule needs a scope document');
   }
-  if (rule.action === 'WEBHOOK') {
-    if (rule.webhookUrl === null) problems.push('A webhook rule needs a target URL');
-    if (rule.prompt !== null) problems.push('A webhook rule has no prompt');
-  }
-  if (rule.action === 'AI_RUN') {
-    if (rule.prompt === null) problems.push('An AI rule needs a prompt');
-    if (rule.webhookUrl !== null) problems.push('An AI rule has no target URL');
-  }
+  problems.push(...actionProblems(rule));
   if (!scheduled && rule.scope === 'DATABASE' && !rule.triggers.includes('DATABASE_ROW_CHANGED')) {
     problems.push('A database rule that ignores row changes would never fire');
   }
@@ -454,6 +483,42 @@ export function automationRuleProblems(rule: {
   }
 
   problems.push(...schedulingProblems(rule, scheduled));
+  return problems;
+}
+
+/**
+ * The fields one action uses, and none of the other two's.
+ *
+ * Written as three symmetrical pairs on purpose: every action says both what
+ * it needs and what it must not carry, so a rule that changed action cannot be
+ * stored still holding a URL nothing reads.
+ */
+function actionProblems(rule: {
+  action: AutomationAction;
+  webhookUrl: string | null;
+  prompt: string | null;
+  mailSubject?: string | null;
+}): string[] {
+  const problems: string[] = [];
+  switch (rule.action) {
+    case 'WEBHOOK':
+      if (rule.webhookUrl === null) problems.push('A webhook rule needs a target URL');
+      if (rule.prompt !== null) problems.push('A webhook rule has no prompt');
+      break;
+    case 'AI_RUN':
+      if (rule.prompt === null) problems.push('An AI rule needs a prompt');
+      if (rule.webhookUrl !== null) problems.push('An AI rule has no target URL');
+      break;
+    case 'EMAIL_SELF':
+      // No target of any kind, which is the whole of the action's security
+      // story: there is no field on the rule that names where the mail goes.
+      if (rule.webhookUrl !== null) problems.push('A mail rule has no target URL');
+      if (rule.prompt !== null) problems.push('A mail rule has no prompt');
+      break;
+  }
+  if (rule.action !== 'EMAIL_SELF' && rule.mailSubject !== null && rule.mailSubject !== undefined) {
+    problems.push('Only a mail rule carries a subject line');
+  }
   return problems;
 }
 
@@ -501,8 +566,9 @@ function schedulingProblems(rule: ScheduleShape, scheduled: boolean): string[] {
   if (rule.triggers.length > 1) {
     problems.push('A scheduled rule listens to the clock alone, not to changes as well');
   }
-  // Both actions need a subject: a webhook says which page it is about, an AI
-  // run reads one. An event supplies it; a clock does not, so the rule has to.
+  // Every action needs a subject: a webhook says which page it is about, an AI
+  // run reads one, a mail carries one. An event supplies it; a clock does not,
+  // so the rule has to.
   if (rule.scope === 'WORKSPACE') {
     problems.push('A scheduled rule needs a scope document: the clock names no page');
   }
@@ -561,7 +627,8 @@ export type UpdateAutomationRuleRequest = z.infer<typeof updateAutomationRuleReq
 export const createAutomationRuleResponseSchema = z.object({
   rule: automationRuleSchema,
   /**
-   * The signing secret, in the clear, exactly once. Null for an AI rule.
+   * The signing secret, in the clear, exactly once. Null unless the rule is a
+   * webhook rule: nothing else has anybody to authenticate to.
    *
    * Same bargain as an API token: the receiving end needs it to verify the
    * signature, and a deployment that could hand it back later would be a

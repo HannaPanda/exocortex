@@ -48,6 +48,7 @@ export const SCOPE_LABELS: Record<AutomationScope, string> = {
 export const ACTION_LABELS: Record<AutomationAction, string> = {
   WEBHOOK: 'Webhook (signierter POST)',
   AI_RUN: 'KI-Lauf gegen die geänderte Seite',
+  EMAIL_SELF: 'E-Mail an dich selbst',
 };
 
 export const OUTPUT_LABELS: Record<AutomationOutput, string> = {

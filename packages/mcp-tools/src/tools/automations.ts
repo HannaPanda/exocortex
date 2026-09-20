@@ -45,10 +45,7 @@ function describeRule(rule: AutomationRule): string {
     rule.scope === 'WORKSPACE'
       ? 'ganzer Arbeitsbereich'
       : `${rule.scope === 'SUBTREE' ? 'unter' : 'Datenbank'} „${rule.scopeDocumentTitle ?? rule.scopeDocumentId ?? '?'}"`;
-  const action =
-    rule.action === 'WEBHOOK'
-      ? `Webhook → ${rule.webhookUrl ?? '?'}`
-      : `KI-Lauf → ${rule.output === 'COMMENT' ? 'Kommentar' : 'Unterseite'}`;
+  const action = describeAction(rule);
   const state = rule.enabled
     ? 'an'
     : `aus${rule.disabledReason === null ? '' : ` (${rule.disabledReason})`}`;
@@ -56,6 +53,18 @@ function describeRule(rule: AutomationRule): string {
     ? `Zeitplan ${describeSchedule(rule)}${rule.nextRunAt === null ? '' : `, nächster Lauf ${rule.nextRunAt}`}`
     : `Entprellung ${String(rule.debounceSeconds)}s`;
   return `${rule.name} [${state}] ${scope}, ${rule.triggers.join('/')}, ${action}, ${timing} (id: ${rule.id})`;
+}
+
+/** What the rule does, in one clause. */
+function describeAction(rule: AutomationRule): string {
+  switch (rule.action) {
+    case 'WEBHOOK':
+      return `Webhook → ${rule.webhookUrl ?? '?'}`;
+    case 'AI_RUN':
+      return `KI-Lauf → ${rule.output === 'COMMENT' ? 'Kommentar' : 'Unterseite'}`;
+    case 'EMAIL_SELF':
+      return `E-Mail an den Besitzer der Regel → „${rule.mailSubject ?? rule.name}"`;
+  }
 }
 
 /** The schedule in one readable clause, in the zone the rule keeps. */
@@ -162,6 +171,17 @@ const ruleBodySchema = z.object({
     .default(null)
     .describe('Was das Modell gefragt wird. Die geänderte Seite ist sein Material.'),
   modelSlug: z.string().min(1).max(200).nullable().default(null),
+  mailSubject: z
+    .string()
+    .min(1)
+    .max(200)
+    .nullable()
+    .default(null)
+    .describe(
+      'Nur bei EMAIL_SELF: die Betreffzeile. Leer lassen für den Namen der Regel. ' +
+        'Eine Empfängeradresse gibt es bewusst nicht: die Mail geht immer an das Konto, ' +
+        'dem die Regel gehört.',
+    ),
   output: automationOutputSchema
     .default('COMMENT')
     .describe('Wohin die Antwort geht. Eine Automation überschreibt niemals den Seiteninhalt.'),
@@ -199,9 +219,11 @@ export const automationCreateTool: AnyToolDefinition = defineTool({
   name: 'exo_automation_create',
   description:
     'Legt eine Automationsregel an: „wenn sich hier etwas ändert, dann das tun" oder, mit dem ' +
-    'Auslöser SCHEDULE, „jeden Sonntag um 07:00 das tun". Zwei Aktionen: ' +
+    'Auslöser SCHEDULE, „jeden Sonntag um 07:00 das tun". Drei Aktionen: ' +
     'WEBHOOK schickt einen signierten POST an eine URL, AI_RUN stellt einen Prompt gegen die ' +
-    'geänderte Seite und legt die Antwort als Kommentar oder Unterseite ab. Braucht die ' +
+    'geänderte Seite und legt die Antwort als Kommentar oder Unterseite ab, EMAIL_SELF schickt ' +
+    'die Seite per Mail an das Konto, dem die Regel gehört, und ausdrücklich an kein anderes: ' +
+    'es gibt kein Feld für eine Empfängeradresse. Braucht die ' +
     'OWNER-Rolle im Arbeitsbereich und einen Token mit admin-Rechten. Das Signiergeheimnis eines ' +
     'Webhooks steht genau einmal in dieser Antwort und lässt sich später nicht mehr auslesen.',
   inputSchema: ruleBodySchema.extend({ workspaceId: idSchema }),

@@ -173,3 +173,49 @@ describe('a scheduled rule', () => {
     ).toEqual([]);
   });
 });
+
+describe('a mail rule', () => {
+  const base = {
+    scope: 'SUBTREE' as const,
+    scopeDocumentId: 'doc1',
+    action: 'EMAIL_SELF' as const,
+    webhookUrl: null,
+    prompt: null,
+    mailSubject: 'Dein Tag',
+    triggers: ['SCHEDULE'] as const,
+    scheduleKind: 'DAILY' as const,
+    scheduleAt: null,
+    scheduleTime: '07:00',
+    scheduleWeekday: null,
+    scheduleDayOfMonth: null,
+    scheduleCron: null,
+    scheduleTimeZone: 'Europe/Berlin',
+  };
+
+  it('is coherent with a subject and nothing else', () => {
+    expect(automationRuleProblems(base)).toEqual([]);
+    expect(automationRuleProblems({ ...base, mailSubject: null })).toEqual([]);
+  });
+
+  it('has no target of any kind, which is the point of the action', () => {
+    const problems = automationRuleProblems({
+      ...base,
+      webhookUrl: 'https://hooks.example.org/x',
+    });
+    expect(problems).toContain('A mail rule has no target URL');
+  });
+
+  it('has no prompt', () => {
+    const problems = automationRuleProblems({ ...base, prompt: 'Fasse zusammen.' });
+    expect(problems).toContain('A mail rule has no prompt');
+  });
+
+  it('refuses a subject on a rule that sends no mail', () => {
+    const problems = automationRuleProblems({
+      ...base,
+      action: 'AI_RUN',
+      prompt: 'Fasse zusammen.',
+    });
+    expect(problems).toContain('Only a mail rule carries a subject line');
+  });
+});

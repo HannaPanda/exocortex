@@ -14,8 +14,11 @@ import { sharePermissionSchema, shareScopeSchema } from './shares';
  * comments -- all carry text a person or a model wrote. A template cannot be
  * talked into saying something else.
  *
- * It follows that every field here is small and bounded. A page's text never
- * appears in a mail payload; a title, a name and a link do.
+ * It follows that every field here is small and bounded. A title, a name and a
+ * link is what a mail about something carries; the page itself stays behind
+ * the link. The single exception is `AUTOMATION_PAGE` (issue #104), where the
+ * mail *is* the page and the recipient can only ever be the person who asked
+ * for it -- the comment on that variant says why that is a different question.
  */
 
 /** A recipient address. Length is RFC 5321's limit for a mailbox. */
@@ -148,6 +151,33 @@ export const mailMessageSchema = z.discriminatedUnion('template', [
       .max(10),
     /** Pages the mail does not list at all. */
     morePages: z.number().int().min(0),
+  }),
+  /**
+   * A page an automation sends to the person who wrote the rule (issue #104,
+   * ADR-054).
+   *
+   * The one template that carries a page's text, and the one whose subject a
+   * person chose, which is exactly the thing the comment at the top of this
+   * file says a payload must not do. It is defensible here and nowhere else
+   * because of who receives it: an `EMAIL_SELF` rule has no field naming a
+   * recipient, the address is read from the owning account at the moment of
+   * sending, and so the worst this template can carry is somebody's own page
+   * to their own inbox. Change that -- let a rule name an address -- and this
+   * variant has to go back to being a link.
+   *
+   * `body` is Markdown, already cut to `AUTOMATION_MAX_MAIL_CHARS` by the
+   * producer; `truncated` is what lets the template say so instead of ending
+   * mid-sentence and leaving the reader to wonder.
+   */
+  z.object({
+    template: z.literal('AUTOMATION_PAGE'),
+    ruleName: mailNameSchema,
+    /** What the rule's owner typed, or the rule's name. Never a third thing. */
+    subject: mailTitleSchema,
+    documentTitle: mailTitleSchema,
+    url: mailUrlSchema,
+    body: z.string().max(10_000),
+    truncated: z.boolean(),
   }),
 ]);
 export type MailMessage = z.infer<typeof mailMessageSchema>;

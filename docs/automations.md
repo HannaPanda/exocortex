@@ -1,9 +1,11 @@
 # Automations
 
-Rules that react to page changes, or to the clock: a signed webhook, or one AI
-prompt against the page. Issue #50 and issue #73, and the reasoning is in
-[ADR-024](adr/ADR-024-automations-hang-off-the-outbox.md) and
-[ADR-038](adr/ADR-038-the-clock-is-the-second-way-an-automation-starts.md).
+Rules that react to page changes, or to the clock: a signed webhook, one AI
+prompt against the page, or the page by mail to whoever wrote the rule. Issues
+#50, #73 and #104, and the reasoning is in
+[ADR-024](adr/ADR-024-automations-hang-off-the-outbox.md),
+[ADR-038](adr/ADR-038-the-clock-is-the-second-way-an-automation-starts.md) and
+[ADR-054](adr/ADR-054-an-automation-may-write-to-its-owner-and-to-nobody-else.md).
 
 ## Switching them on
 
@@ -35,7 +37,7 @@ signing secret is stored the same way a workspace's provider key is (ADR-023).
    `SCHEDULE`, which is the clock rather than a change and is described in its
    own section below. `DATABASE_ROW_CHANGED` only means something inside a
    `DATABASE` scope, and the other change triggers only outside one.
-3. **Action.** `WEBHOOK` or `AI_RUN`.
+3. **Action.** `WEBHOOK`, `AI_RUN` or `EMAIL_SELF`.
 
 Plus a debounce window, in seconds, with a floor of 10 and a default of 60. It
 is how long the page has to stay quiet before the rule runs, and it is the
@@ -155,6 +157,44 @@ That is also why this one request does not use `fetch`: it is made through
 `node:http` with a DNS lookup of the worker's own, in
 `apps/worker/src/processors/automation/webhook-request.ts`.
 
+## The mail action
+
+`EMAIL_SELF` sends the page to the account that owns the rule, as plain text,
+with a link underneath. Together with `SCHEDULE` that is a daily agenda, a
+weekly review or a one-off "send me this on Friday", and it needs no scheduler
+code of its own.
+
+**It has no recipient, and that is the whole design** (ADR-054). There is no
+column on the rule, no field in the request and no parameter on the tool naming
+an address: it is read from `createdById` when the mail is queued. A rule that
+could name an inbox would be an allowlist-free way to carry a workspace out of
+this deployment, written by whoever can write a rule -- which includes an
+agent.
+
+Four things follow:
+
+- The page is fetched **as the owner**, so a rule cannot mail out a page its
+  owner may not read.
+- The account has to exist, be switched on and have a **confirmed** address.
+  Any of those missing **fails** the run rather than skipping it: the rule is
+  broken, and it should end up visibly disabled rather than quietly doing
+  nothing every morning at seven.
+- The body is cut at 10 000 characters on a line boundary, and the mail says it
+  was cut.
+- `mailSubject` is optional; without it the rule's name is the subject. The
+  rendered subject is prefixed `eXocortex:` either way.
+
+The run records `queued`, never `sent`: the relay conversation happens in the
+`mail` queue afterwards, under its retry policy, so an SMTP outage delays a
+letter instead of failing five runs and switching a working rule off. The
+mail's job id comes from the run id, so a retried automation job cannot post
+the same morning twice.
+
+There is deliberately **no notification preference** for it. A rule _is_ the
+decision to be written to; switching it off is `enabled: false`, where it was
+switched on (`docs/notifications.md` has the model for everything that is a
+notification).
+
 ## The AI action
 
 One prompt, with the changed page's Markdown (capped at 20 000 characters) as
@@ -194,8 +234,9 @@ Neither is configurable, and neither is a substitute for the debounce.
 
 ## Extending it
 
-A third action means: a member on `AutomationAction`, a branch in
-`apps/worker/src/processors/automation.ts`, and the fields it needs as columns
+A fourth action means: a member on `AutomationAction`, a branch in `act` in
+`apps/worker/src/processors/automation.ts` (a switch over the closed union, so
+forgetting the branch is a type error), and the fields it needs as columns
 on `automation_rule` -- not a JSON blob, for the reason the schema comment gives.
 `automationRuleProblems` in `packages/contracts/src/automations.ts` is where the
 cross-field rules live, and both create and update validate the merged rule

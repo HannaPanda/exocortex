@@ -153,6 +153,7 @@ function webhookRule(overrides: Record<string, unknown> = {}) {
     webhookUrl: 'https://hooks.example.org/exocortex',
     prompt: null,
     modelSlug: null,
+    mailSubject: null,
     output: 'COMMENT' as const,
     ...overrides,
   };

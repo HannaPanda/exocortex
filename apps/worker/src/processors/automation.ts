@@ -13,8 +13,9 @@ import {
 import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 import { type ExocortexApiClient } from '@exocortex/mcp-tools';
-import { type JobContext } from '@exocortex/queue';
+import { type JobContext, type QueueRegistry } from '@exocortex/queue';
 
+import { sendPageToOwner } from './automation/mail';
 import { type AutomationRuleRecord, createRunRecorder, loadRule } from './automation/run-recorder';
 import { signWebhookBody } from './automation/webhook';
 import { createWebhookSender, type WebhookSender } from './automation/webhook-request';
@@ -65,6 +66,15 @@ export interface AutomationDependencies {
    */
   credentialKey: Buffer | null;
   /**
+   * The mail queue, for an `EMAIL_SELF` rule (issue #104). The action queues a
+   * letter rather than opening an SMTP session here, so a relay having a bad
+   * five minutes delays a mail instead of failing a run -- and, five failed
+   * runs later, switching a perfectly good rule off.
+   */
+  queues: QueueRegistry;
+  /** Where the link in that mail points. */
+  appUrl: string;
+  /**
    * How a webhook leaves this process. The default refuses redirects and
    * refuses to connect to an address the deployment may not reach (issue #63);
    * a test injects its own to run a webhook without a network.
@@ -86,10 +96,8 @@ export function createAutomationProcessor(dependencies: AutomationDependencies) 
 
     const started = Date.now();
     try {
-      const detail =
-        rule.action === 'WEBHOOK'
-          ? await postWebhook({ dependencies, rule, settings, payload, logger })
-          : await runPrompt({ dependencies, rule, settings, payload, logger });
+      const input = { dependencies, rule, settings, payload, logger };
+      const detail = await act(rule.action, input, recorder.runId);
       await recorder.succeed(detail, Date.now() - started);
       await noteSuccess(dependencies.prisma, rule.id);
     } catch (error) {
@@ -104,6 +112,31 @@ export function createAutomationProcessor(dependencies: AutomationDependencies) 
       });
     }
   };
+}
+
+/**
+ * The one place an action is chosen.
+ *
+ * A switch over the closed union rather than a chain of ternaries, so a fourth
+ * action is a type error here instead of quietly falling into the AI branch --
+ * which is what the two-armed conditional this replaced would have done.
+ */
+async function act(
+  action: AutomationRuleRecord['action'],
+  input: ActionInput,
+  runId: string,
+): Promise<Record<string, unknown>> {
+  switch (action) {
+    case 'WEBHOOK':
+      return postWebhook(input);
+    case 'AI_RUN':
+      return runPrompt(input);
+    case 'EMAIL_SELF':
+      return sendPageToOwner(
+        { dependencies: input.dependencies, rule: input.rule, payload: input.payload },
+        runId,
+      );
+  }
 }
 
 /**
@@ -132,7 +165,7 @@ function refuseReason(input: {
   return null;
 }
 
-interface ActionInput {
+export interface ActionInput {
   dependencies: AutomationDependencies;
   rule: AutomationRuleRecord;
   settings: Settings;

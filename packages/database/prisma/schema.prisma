@@ -2635,6 +2635,11 @@ enum AutomationAction {
   WEBHOOK
   /// One prompt against the changed page, written back as a remark.
   AI_RUN
+  /// The page, by mail, to the account that owns the rule and to no other
+  /// address (issue #104, ADR-054). There is deliberately no recipient column:
+  /// an automation that could name one would be a relay, and the address is
+  /// read from `createdBy` at the moment the mail is queued.
+  EMAIL_SELF
 }
 
 /// Where an `AI_RUN` rule puts its answer.
@@ -2744,6 +2749,13 @@ model AutomationRule {
   modelSlug String?
   /// `AI_RUN`: where the answer is written.
   output    AutomationOutput @default(COMMENT)
+
+  /// `EMAIL_SELF`: the subject line, or null for the rule's name.
+  ///
+  /// The only free text on this model that reaches a mail header. It is a
+  /// column rather than a rendered message for the reason ADR-051 gives: what
+  /// a mail says is chosen in `packages/mail`, and a rule supplies values.
+  mailSubject String?
 
   /// Failures since the last success. The rule switches itself off when this
   /// reaches `automations.maxConsecutiveFailures`, and the reason lands in

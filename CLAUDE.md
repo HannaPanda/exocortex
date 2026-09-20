@@ -447,6 +447,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   changes moves everybody who never decided. One resolver in
   `packages/database` is asked before anything is enqueued, because `OFF` has
   to mean that no job exists.
+- ADR-054: an automation may write to its owner and to nobody else. The action
+  is `EMAIL_SELF` and the name is the decision: no column, no request field and
+  no tool parameter names an address, so the recipient is read from
+  `createdById` when the mail is queued and a rule an agent wrote cannot post
+  anything to anybody else. The page is fetched as the owner, cut at 10 000
+  characters, and is the one mail template carrying a page's text rather than a
+  link -- defensible only because the reader is the person who asked. The run
+  says `queued`, never sent, because the relay belongs to the mail queue; and
+  there is no notification preference for it, since a rule is the decision.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

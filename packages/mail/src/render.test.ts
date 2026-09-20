@@ -166,3 +166,30 @@ describe('renderMail', () => {
     expect(mail.text).toContain('Einstellungen → Benachrichtigungen');
   });
 });
+
+describe('the mail an automation sends', () => {
+  const base = {
+    template: 'AUTOMATION_PAGE' as const,
+    ruleName: 'Morgenübersicht',
+    subject: 'Dein Tag',
+    documentTitle: 'Eingang',
+    url: 'https://exocortex.app/arbeitsbereich/w1/seite/d1',
+    body: '## Heute\n\n- Steuer\n',
+    truncated: false,
+  };
+
+  it('carries the page itself and says which rule sent it', () => {
+    const mail = renderMail(base);
+    expect(mail.subject).toBe('eXocortex: Dein Tag');
+    expect(mail.text).toContain('Automation „Morgenübersicht"');
+    expect(mail.text).toContain('- Steuer');
+    expect(mail.text).toContain(base.url);
+    expect(mail.text).not.toContain('abgeschnitten');
+  });
+
+  it('says when it was cut rather than ending mid-sentence', () => {
+    const mail = renderMail({ ...base, truncated: true });
+    expect(mail.text).toContain('abgeschnitten');
+    expect(mail.text).toContain(base.url);
+  });
+});
