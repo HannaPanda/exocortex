@@ -196,8 +196,11 @@ test.describe('Topbar auf breitem Schirm', () => {
     await expect(menu).toBeVisible();
     await expect(page.getByTestId('open-search')).toBeVisible();
 
+    // Scoped to the application bar: a page renders a `<header>` of its own,
+    // and counting both would measure the wrong thing.
     const focusable = await page
-      .locator('header button:visible, header a:visible, header [tabindex="0"]:visible')
+      .getByTestId('topbar')
+      .locator('button:visible, a:visible, [tabindex="0"]:visible')
       .count();
     expect(focusable, 'Die Kopfzeile hat wieder zu viele Tabstopps').toBeLessThanOrEqual(8);
 

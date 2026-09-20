@@ -64,6 +64,7 @@ import { SmartViews } from './smart-views';
 import { SuggestParentDialog } from './suggest-parent-dialog';
 import { TemplatePickerDialog } from './template-picker-dialog';
 import { TrashSheet } from './trash-sheet';
+import { useTreeKeyboard } from './use-tree-keyboard';
 
 interface PageTreeProps {
   workspaceId: string;
@@ -128,6 +129,8 @@ export function PageTree({ workspaceId }: PageTreeProps) {
   const [draggedId, setDraggedId] = React.useState<string | null>(null);
   const [dropTarget, setDropTarget] = React.useState<{ id: string; zone: DropZone } | null>(null);
   const [rootDropActive, setRootDropActive] = React.useState(false);
+
+  const treeRef = React.useRef<HTMLUListElement | null>(null);
 
   const activeDocumentId = params.documentId;
   const nodes = tree.data?.nodes;
@@ -282,6 +285,23 @@ export function PageTree({ workspaceId }: PageTreeProps) {
     return position.parentId !== null;
   };
 
+  // One tab stop, then arrow keys. Declared after `toggle` and `nudge` because
+  // it drives both of them, and before the render because the tab stop is a
+  // property of every row.
+  const { tabStopId, onRowKeyDown, onRowFocus } = useTreeKeyboard({
+    containerRef: treeRef,
+    nodes: nodes ?? [],
+    expanded,
+    activeDocumentId,
+    toggle,
+    nudge,
+    openDocument: (documentId) => {
+      const target = positions.get(documentId)?.node;
+      if (target === undefined) return;
+      router.push(documentHref(workspaceId, target.id, target.type));
+    },
+  });
+
   const draggedNode = draggedId === null ? null : (positions.get(draggedId)?.node ?? null);
 
   /** Whether a row is allowed to receive the page currently being dragged. */
@@ -343,6 +363,9 @@ export function PageTree({ workspaceId }: PageTreeProps) {
   const rowContext: PageTreeRowContext = {
     workspaceId,
     activeDocumentId,
+    tabStopId,
+    onRowKeyDown,
+    onRowFocus,
     expanded,
     draggedId,
     dropTarget,
@@ -386,7 +409,7 @@ export function PageTree({ workspaceId }: PageTreeProps) {
             action={{ label: 'Seite anlegen', onClick: () => void createChild(null) }}
           />
         ) : (
-          <ul data-testid="page-tree">
+          <ul ref={treeRef} role="tree" aria-label="Seiten" data-testid="page-tree">
             {tree.data.nodes.map((node) => (
               <PageTreeRow key={node.id} node={node} depth={0} context={rowContext} />
             ))}

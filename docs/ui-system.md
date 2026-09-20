@@ -423,7 +423,19 @@ net, which keeps it inside its clipping ancestors.
   `opacity-0 group-hover:opacity-100 focus-visible:opacity-100
 pointer-coarse:opacity-100`, never `invisible`: `visibility: hidden` takes the
   control out of the tab order, so it stops existing for a keyboard and for a
-  phone alike
+  phone alike. The one exception is a control inside a composite widget, where
+  the widget owns the tab stop and the command has a second way in — see the
+  tree below
+- **a composite widget hands out one tab stop.** The page tree is a WAI-ARIA
+  `tree`: `role="tree"` on the list, `role="treeitem"` on each `<li>` (which is
+  what owns the nested `role="group"`), one item with `tabIndex={0}` and the
+  rest at `-1`. `use-tree-keyboard.ts` answers the arrows, Home and End, Enter,
+  and Shift + F10 for the row's menu; `Alt` plus an arrow stays the keyboard
+  half of dragging and is checked first. A treeitem states its name with
+  `aria-label`, or the name would be composed from the four labels inside the
+  row. The three buttons in a row are pointer shortcuts with `tabIndex={-1}`,
+  and every command they carry is in the row menu, which is the only reason
+  taking them out of the tab order is allowed at all
 - the command palette is a real `combobox` + `listbox` with
   `aria-activedescendant`
 - colour is never the only signal — presence also shows initials, connection state

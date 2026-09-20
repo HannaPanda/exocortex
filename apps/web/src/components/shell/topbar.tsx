@@ -63,7 +63,7 @@ export function Topbar({
   const session = useSessionQuery();
 
   return (
-    <AppHeader>
+    <AppHeader data-testid="topbar">
       {/* The full lockup, one step below its default height: 1.75rem in a
           3rem header leaves the name room to breathe instead of filling the
           bar. The mark alone was correct by the One Signal Rule and wrong by

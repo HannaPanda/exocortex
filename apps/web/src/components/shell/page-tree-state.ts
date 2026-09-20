@@ -64,6 +64,42 @@ export function ancestorsOf(
   return null;
 }
 
+/** One row as the keyboard sees it: what an arrow key needs to know about it. */
+export interface VisibleRow {
+  readonly id: string;
+  readonly parentId: string | null;
+  readonly hasChildren: boolean;
+  readonly isOpen: boolean;
+}
+
+/**
+ * Every row a person can currently see, in the order they move through them.
+ *
+ * The tree renders itself recursively, which is right for indentation and drop
+ * zones and useless for "what is below this row": the row below a folded page
+ * is its next sibling, the row below an unfolded one is its first child, and
+ * neither of those is a sibling in the component that draws it. Flattening the
+ * visible part once per render is what turns that into an index.
+ */
+export function visibleRows(
+  nodes: readonly DocumentTreeNode[],
+  expanded: ExpandedState,
+): readonly VisibleRow[] {
+  const rows: VisibleRow[] = [];
+
+  const walk = (siblings: readonly DocumentTreeNode[], parentId: string | null): void => {
+    for (const node of siblings) {
+      const hasChildren = node.children.length > 0;
+      const isOpen = hasChildren && expanded[node.id] === true;
+      rows.push({ id: node.id, parentId, hasChildren, isOpen });
+      if (isOpen) walk(node.children, node.id);
+    }
+  };
+
+  walk(nodes, null);
+  return rows;
+}
+
 /** Where a dragged page would land relative to the row under the pointer. */
 export type DropZone = 'before' | 'inside' | 'after';
 

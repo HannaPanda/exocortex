@@ -32,17 +32,14 @@ import { documentHref } from '@/lib/document-href';
 
 import { type DropZone, type ExpandedState } from './page-tree-state';
 
-const nudgeKeys: Readonly<Record<string, 'up' | 'down' | 'in' | 'out'>> = {
-  ArrowUp: 'up',
-  ArrowDown: 'down',
-  ArrowRight: 'in',
-  ArrowLeft: 'out',
-};
-
 /** Everything a row needs that is not the page it renders. */
 export interface PageTreeRowContext {
   workspaceId: string;
   activeDocumentId: string | undefined;
+  /** The one row that carries the tree's tab stop (`useTreeKeyboard`). */
+  tabStopId: string | null;
+  onRowKeyDown: (event: React.KeyboardEvent<HTMLElement>, documentId: string) => void;
+  onRowFocus: (documentId: string) => void;
   expanded: ExpandedState;
   draggedId: string | null;
   dropTarget: { id: string; zone: DropZone } | null;
@@ -70,6 +67,14 @@ export interface PageTreeRowContext {
  * Recursive rather than a flattened list: the indentation, the unfold state and
  * the drop zones all describe a shape, and flattening it would mean carrying
  * that shape in every row instead.
+ *
+ * The `<li>` is the `treeitem`, not the row inside it, because a treeitem owns
+ * the group of its children and here that group is the nested `<ul>`. It is
+ * also what holds focus, so everything inside it -- the chevron, the symbol,
+ * the link, "create a child page" -- carries `tabIndex={-1}`: a composite
+ * widget hands out one tab stop and answers the arrow keys itself
+ * (`useTreeKeyboard`). The name is stated rather than composed, or a screen
+ * reader would read all four labels where the page's title belongs.
  */
 export function PageTreeRow({
   node,
@@ -96,7 +101,9 @@ export function PageTreeRow({
     toggle,
     createChild,
     setIcon,
-    nudge,
+    tabStopId,
+    onRowKeyDown,
+    onRowFocus,
   } = context;
   const isOpen = expanded[node.id] === true;
   const hasChildren = node.children.length > 0;
@@ -106,12 +113,28 @@ export function PageTreeRow({
   const dropLine = zone === 'inside' ? null : zone;
 
   return (
-    <li>
+    <li
+      role="treeitem"
+      aria-label={node.title}
+      aria-selected={isActive}
+      aria-expanded={hasChildren ? isOpen : undefined}
+      data-tree-item={node.id}
+      tabIndex={tabStopId === node.id ? 0 : -1}
+      onKeyDown={(event) => onRowKeyDown(event, node.id)}
+      onFocus={() => onRowFocus(node.id)}
+      // The outline belongs on the row, not on the item: an unfolded item is
+      // as tall as its whole branch, and a ring around that says nothing about
+      // where focus is. Inset by its own width, because the tree sits in a
+      // scroll container with one unit of padding and an outset ring would be
+      // clipped on both edges.
+      className="group/item outline-none"
+    >
       <ContextMenu>
         <ContextMenuTrigger
           render={
             <div
               draggable
+              data-tree-row=""
               onDragStart={(event) => {
                 event.dataTransfer.effectAllowed = 'move';
                 event.dataTransfer.setData('text/plain', node.id);
@@ -124,14 +147,9 @@ export function PageTreeRow({
               }}
               onDragOver={(event) => onRowDragOver(event, node)}
               onDrop={(event) => onRowDrop(event, node)}
-              onKeyDown={(event) => {
-                const direction = event.altKey ? nudgeKeys[event.key] : undefined;
-                if (direction === undefined) return;
-                event.preventDefault();
-                nudge(node.id, direction);
-              }}
               className={cn(
                 'group relative flex items-center gap-1 rounded-md pr-1 text-sm transition-colors',
+                'group-focus-visible/item:outline-2 group-focus-visible/item:-outline-offset-2 group-focus-visible/item:outline-ring',
                 // Where you are is the most important state in the tree, so it
                 // is carried three times over: surface, weight and an amber
                 // icon. Hover stays a hint and never comes close to it.
@@ -160,6 +178,7 @@ export function PageTreeRow({
 
               <button
                 type="button"
+                tabIndex={-1}
                 aria-label={isOpen ? 'Unterseiten einklappen' : 'Unterseiten ausklappen'}
                 aria-expanded={isOpen}
                 onClick={() => toggle(node.id)}
@@ -185,6 +204,7 @@ export function PageTreeRow({
                 trigger={
                   <button
                     type="button"
+                    tabIndex={-1}
                     aria-label={`Symbol von „${node.title}“ ändern`}
                     data-testid={`tree-icon-${node.id}`}
                     className="grid size-5 shrink-0 place-items-center rounded-sm hover:bg-accent-strong"
@@ -207,6 +227,9 @@ export function PageTreeRow({
                 // A link drags itself by default, which would start a drag of
                 // its URL instead of the row the pointer is actually on.
                 draggable={false}
+                // Clickable, not tabbable: the tree item above it is the tab
+                // stop, and Enter on that item opens this same page.
+                tabIndex={-1}
                 className="flex min-w-0 flex-1 items-center py-1"
                 data-testid={`tree-link-${node.id}`}
               >
@@ -215,16 +238,15 @@ export function PageTreeRow({
 
               <button
                 type="button"
+                tabIndex={-1}
                 aria-label={`Unterseite in „${node.title}“ anlegen`}
                 onClick={() => createChild(node.id)}
-                // Revealed by the pointer, but never only by the pointer:
-                // `visibility: hidden` took this out of the tab order, so the
-                // one control that creates a page from the tree was
-                // unreachable by keyboard and invisible on a phone. Opacity
-                // keeps it focusable, `focus-visible:` shows it while it is
-                // focused, and a coarse pointer gets it permanently, because
-                // there is no hover to reveal it with.
-                className="size-5 shrink-0 rounded-sm text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-foreground focus-visible:opacity-100 pointer-coarse:opacity-100"
+                // Revealed by the pointer, and by a coarse pointer
+                // permanently, because there is no hover to reveal it with.
+                // It is a pointer shortcut rather than the only way in: the
+                // keyboard reaches the same command in the row's own menu,
+                // which is what the tree pattern trades the tab stop for.
+                className="size-5 shrink-0 rounded-sm text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-foreground pointer-coarse:opacity-100"
               >
                 <PlusIcon className="size-3.5" />
               </button>
@@ -241,7 +263,7 @@ export function PageTreeRow({
         // several levels deep, where indentation alone stops being countable.
         // `--signal-line`, because it describes the shape of the screen and is
         // not something you can act on.
-        <ul className="relative">
+        <ul role="group" className="relative">
           <span
             aria-hidden
             className="pointer-events-none absolute inset-y-0 w-px bg-signal-line"
