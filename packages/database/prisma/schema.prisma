@@ -75,6 +75,8 @@ model User {
   agentSessions               AgentSession[]
   agentWrites                 AgentWriteJournal[]
   memoryCheckpoints           MemoryCheckpoint[]
+  sentAgentMessages           AgentMessage[]        @relation("AgentMessageSender")
+  receivedAgentMessages       AgentMessage[]        @relation("AgentMessageRecipient")
   automationRules             AutomationRule[]      @relation("AutomationRuleCreatedBy")
   renderTemplates             RenderTemplate[]      @relation("RenderTemplateCreatedBy")
   renderJobs                  RenderJob[]           @relation("RenderJobCreatedBy")
@@ -564,6 +566,7 @@ model Workspace {
   savedQueries      SavedQuery[]
   shares            DocumentShare[]
   memoryCheckpoints MemoryCheckpoint[]
+  agentMessages     AgentMessage[]
 
   @@index([isMemory])
   @@map("workspace")
@@ -842,6 +845,8 @@ model Document {
   /// Present when this page is the note a pre compaction checkpoint wrote
   /// (issue #92).
   memoryCheckpoints     MemoryCheckpoint[]        @relation("MemoryCheckpointNote")
+  /// Messages between agents that point at this page (issue #51).
+  agentMessages         AgentMessage[]            @relation("AgentMessageAbout")
   /// Present when this page is an entity row: the pages that talk about it
   /// (issue #47).
   entityMentions        EntityMention[]           @relation("EntityMentionEntity")
@@ -2258,6 +2263,78 @@ model MemoryCheckpoint {
   /// The retention sweep, which works one memory area at a time.
   @@index([workspaceId, createdAt])
   @@map("memory_checkpoint")
+}
+
+/// One message from one agent account to another (issue #51, ADR-047).
+///
+/// The mailbox is the one thing in the memory that is deliberately *not* a
+/// page. Everything else down here is written to be read again later, which is
+/// what a page is for; a message is a delivery. It is addressed, it is read
+/// once, it carries a read state nobody else shares, and it expires. Three
+/// concrete things follow from storing it as a row instead:
+///
+/// * the nightly consolidation reads session notes under project pages and
+///   distils them into facts, so a message shaped like a page would let an
+///   agent write into the memory's fact layer by mailing itself,
+/// * the search index stays about knowledge rather than about post,
+/// * a mailbox that filled up would age out through its own `expiresAt`
+///   instead of waiting for `memory.retentionDays`, which defaults to "never".
+///
+/// `subject` and `body` are columns for the same reason: nothing about a
+/// message is collaborative, it is never edited, and a Yjs document per note
+/// would be a materialization job per note (rule 5 is about collaborative
+/// state, and there is none here).
+model AgentMessage {
+  id String @id @default(cuid(2))
+
+  /// The memory area sender and recipient share. Both must be members of it,
+  /// which is what makes membership the whole of the addressing rule: an agent
+  /// can write to the accounts it already shares a memory with, and to no
+  /// others.
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  senderId String
+  sender   User   @relation("AgentMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  /// Deliberately allowed to equal `senderId`. The same agent account runs on
+  /// several machines here, so "Claude Code on main tells Claude Code on fpb2"
+  /// is one account writing to itself, and it is the most likely first use.
+  recipientId String
+  recipient   User   @relation("AgentMessageRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  subject String
+  body    String
+
+  /// Which client sent it. A `MemoryClient` member, kept as text: provenance,
+  /// not a decision anything branches on.
+  client     String
+  /// Normalized project key, the same one notes are filed under. Null for a
+  /// message that is about no particular working directory.
+  projectKey String?
+
+  /// The page the message is about, if any. A plain optional relation rather
+  /// than something the body has to spell out, so a recipient can open it
+  /// without parsing prose. Deleting the page leaves the message standing.
+  documentId String?
+  document   Document? @relation("AgentMessageAbout", fields: [documentId], references: [id], onDelete: SetNull)
+
+  /// When the recipient acknowledged it. Null means unread, and unread is what
+  /// a recall puts in front of everything else.
+  readAt    DateTime?
+  /// When it stops being delivered. Always set: a mailbox without expiry is a
+  /// tip, and the one thing worse than an agent missing a message is an agent
+  /// reading the same one every session for a year.
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+
+  /// "What is waiting for me" -- the recall and the inbox read.
+  @@index([recipientId, readAt, expiresAt])
+  /// The sweep that removes what expired, one memory area at a time.
+  @@index([workspaceId, expiresAt])
+  /// "What did I send" -- the sent box.
+  @@index([senderId, createdAt])
+  @@map("agent_message")
 }
 
 // ---------------------------------------------------------------------------

@@ -121,6 +121,118 @@ export const memoryRecallEntitySchema = z.object({
 });
 export type MemoryRecallEntity = z.infer<typeof memoryRecallEntitySchema>;
 
+/**
+ * The mailbox between agents (issue #51, ADR-047).
+ *
+ * Here rather than in a file of its own because it is the same surface: sender
+ * and recipient are addressed through the memory area they share, the messages
+ * ride along in the recall a session starts with, and `memoryClientSchema`
+ * already says who is talking.
+ *
+ * A message is not a page (ADR-047). It is a delivery: addressed, read once,
+ * and gone when it expires.
+ */
+
+/** Who a message is from or to, in the two fields anybody needs to read one. */
+export const agentMessagePartySchema = z.object({
+  userId: idSchema,
+  /** The account's display name, which is how a sender addresses it. */
+  name: z.string(),
+});
+export type AgentMessageParty = z.infer<typeof agentMessagePartySchema>;
+
+export const agentMessageSchema = z.object({
+  id: idSchema,
+  from: agentMessagePartySchema,
+  to: agentMessagePartySchema,
+  subject: z.string(),
+  body: z.string(),
+  client: memoryClientSchema,
+  /** The project the message is about, or null when it is about no directory. */
+  project: z.string().nullable(),
+  /** The page the message points at, if any. */
+  documentId: idSchema.nullable(),
+  read: z.boolean(),
+  createdAt: isoDateTimeSchema,
+  expiresAt: isoDateTimeSchema,
+});
+export type AgentMessage = z.infer<typeof agentMessageSchema>;
+
+export const agentMessageSendRequestSchema = z.object({
+  /**
+   * The recipient, by display name or by email address, matched among the
+   * members of the sender's memory area. Not an id: the caller is a model that
+   * has a name in front of it and no directory to look an id up in, and the
+   * listing endpoint answers with the names it may use.
+   */
+  to: z.string().trim().min(1).max(320),
+  subject: z.string().trim().min(1).max(200),
+  /**
+   * The message. Short on purpose: this is a note left for another agent, and
+   * anything that needs more room is a page with a link to it.
+   */
+  body: z.string().trim().min(1).max(4_000),
+  client: memoryClientSchema.default('other'),
+  project: memoryProjectSchema.optional(),
+  documentId: idSchema.optional(),
+  /**
+   * How long it waits. A mailbox without expiry becomes a tip, and a message
+   * nobody collected in two weeks has usually stopped being true.
+   */
+  expiresInDays: z.number().int().min(1).max(90).optional(),
+});
+export type AgentMessageSendRequest = z.infer<typeof agentMessageSendRequestSchema>;
+
+export const agentMessageSendResponseSchema = z.object({
+  message: agentMessageSchema,
+  /** How many of the recipient's messages are now waiting, this one included. */
+  waiting: z.number().int().nonnegative(),
+});
+export type AgentMessageSendResponse = z.infer<typeof agentMessageSendResponseSchema>;
+
+export const agentMessageBoxSchema = z.enum(['inbox', 'sent']);
+export type AgentMessageBox = z.infer<typeof agentMessageBoxSchema>;
+
+export const agentMessageListQuerySchema = z.object({
+  box: agentMessageBoxSchema.default('inbox'),
+  /** `unread` is the default: the question a session asks at its start. */
+  status: z.enum(['unread', 'all']).default('unread'),
+  limit: z.coerce.number().int().min(1).max(50).default(20),
+});
+export type AgentMessageListQuery = z.infer<typeof agentMessageListQuerySchema>;
+
+export const agentMessageListResponseSchema = z.object({
+  messages: z.array(agentMessageSchema),
+  /** Unread messages waiting, whatever `limit` and `status` asked for. */
+  unread: z.number().int().nonnegative(),
+  /**
+   * Who else shares this memory area, and may therefore be written to. Part of
+   * the listing rather than an endpoint of its own: an agent that cannot see
+   * the names guesses them, and a guessed recipient is a refused send.
+   */
+  recipients: z.array(agentMessagePartySchema),
+  /**
+   * The messages as one block of German text, fenced as somebody else's words.
+   * Rendered here for the same reason the recall's text is: the session-start
+   * hook pastes it, and the fence is a safety property rather than formatting.
+   */
+  text: z.string(),
+});
+export type AgentMessageListResponse = z.infer<typeof agentMessageListResponseSchema>;
+
+export const agentMessageReadRequestSchema = z.object({
+  /** The messages to acknowledge. Only the recipient's own are ever marked. */
+  ids: z.array(idSchema).min(1).max(50),
+});
+export type AgentMessageReadRequest = z.infer<typeof agentMessageReadRequestSchema>;
+
+export const agentMessageReadResponseSchema = z.object({
+  /** How many were newly marked. Zero is a success: marking twice is a no-op. */
+  marked: z.number().int().nonnegative(),
+  unread: z.number().int().nonnegative(),
+});
+export type AgentMessageReadResponse = z.infer<typeof agentMessageReadResponseSchema>;
+
 export const memoryRecallResponseSchema = z.object({
   query: z.string().nullable(),
   project: z.string().nullable(),
@@ -135,6 +247,13 @@ export const memoryRecallResponseSchema = z.object({
    * layer is off, when nothing matched, or when the recall carried no query.
    */
   entities: z.array(memoryRecallEntitySchema).default([]),
+  /**
+   * Unread mail from other agents, ahead of everything else and capped by
+   * `memory.recallMessageLimit` (issue #51). Reading a recall does not mark
+   * them read: a session that dies in its first second must not have lost its
+   * post. `POST /api/memory/messages/read` is the acknowledgement.
+   */
+  messages: z.array(agentMessageSchema).default([]),
   hits: z.array(memoryHitSchema),
   /**
    * The facts and the hits as one block of German text, already inside

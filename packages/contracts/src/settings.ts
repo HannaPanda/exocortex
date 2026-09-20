@@ -274,6 +274,27 @@ export const settingsSchema = z.object({
   /** Facts a recall may put in front of the hits. Kept small; the hits need room. */
   'memory.recallFactLimit': z.number().int().min(0).max(20).default(5),
   /**
+   * The mailbox between agents (issue #51, ADR-047).
+   *
+   * On by default and harmless while nobody writes: an empty inbox changes no
+   * recall. Off refuses sending and stops a recall carrying mail, which is what
+   * a deployment with one agent account wants.
+   */
+  'memory.mailboxEnabled': z.boolean().default(true),
+  /**
+   * Days a message waits before it stops being delivered, when the sender names
+   * no span of its own. Not `memory.retentionDays`: that one defaults to "for
+   * ever", which is right for notes and wrong for post.
+   */
+  'memory.messageExpiryDays': z.number().int().min(1).max(365).default(14),
+  /**
+   * Unread messages a recall may put in front of everything else. The hard
+   * ceiling the issue asks for: a full mailbox must not eat the context window
+   * the recall exists to improve. Zero leaves mail out of recalls entirely,
+   * which still leaves `exo_agent_messages` to read it with.
+   */
+  'memory.recallMessageLimit': z.number().int().min(0).max(20).default(3),
+  /**
    * The entity layer (issue #47).
    *
    * Off until a database is named, and that is the whole switch: without
@@ -730,6 +751,9 @@ export const SETTING_SCOPES = {
   'memory.factHalfLifeDays': 'workspace',
   'memory.factConfidenceFloor': 'workspace',
   'memory.recallFactLimit': 'workspace',
+  'memory.mailboxEnabled': 'workspace',
+  'memory.messageExpiryDays': 'workspace',
+  'memory.recallMessageLimit': 'workspace',
   'entities.enabled': 'deployment',
   'entities.databaseId': 'deployment',
   'entities.minAliasLength': 'deployment',

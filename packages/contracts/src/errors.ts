@@ -58,6 +58,13 @@ export const API_ERROR_CODES = [
   'setting_above_deployment_ceiling',
   'credential_storage_unavailable',
   'memory_unavailable',
+  /**
+   * Nobody in this memory area answers to the name a message was addressed to
+   * (issue #51). Its own code because the caller is usually a model: the
+   * details carry the names it may use, and a generic validation failure would
+   * have it guess again.
+   */
+  'agent_message_recipient_unknown',
   'entity_layer_unavailable',
   'entity_exists',
   'entity_candidate_promoted',
@@ -197,6 +204,10 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   // The deployment has no memory area configured, or switched it off. 503,
   // not 404: the route exists and will work once somebody names a workspace.
   memory_unavailable: 503,
+  // The addressee is not a member of this memory area. 404 rather than 403:
+  // there is nobody to refuse access on behalf of, the name simply answers to
+  // no account here.
+  agent_message_recipient_unknown: 404,
   // No entity database is configured, or the layer is switched off. 503 for
   // the same reason as above: the route works the moment somebody names one.
   entity_layer_unavailable: 503,
