@@ -74,6 +74,7 @@ model User {
   acceptedInvitation          Invitation?           @relation("InvitationAcceptedBy")
   agentSessions               AgentSession[]
   agentWrites                 AgentWriteJournal[]
+  memoryCheckpoints           MemoryCheckpoint[]
   automationRules             AutomationRule[]      @relation("AutomationRuleCreatedBy")
   renderTemplates             RenderTemplate[]      @relation("RenderTemplateCreatedBy")
   renderJobs                  RenderJob[]           @relation("RenderJobCreatedBy")
@@ -425,7 +426,7 @@ model ApiToken {
   /// scoped page would widen the token back to the whole account, which is a
   /// privilege escalation dressed as a cleanup. A confined token that has lost
   /// every page it was given reaches nothing at all.
-  pageScoped Boolean            @default(false)
+  pageScoped Boolean             @default(false)
   pageScopes ApiTokenPageScope[]
 
   @@index([userId])
@@ -541,27 +542,28 @@ model Workspace {
   /// oldest membership wins, deterministically.
   isMemory Boolean @default(false)
 
-  members          WorkspaceMember[]
-  documents        Document[]
-  attachments      Attachment[]
-  outbox           OutboxEvent[]
-  auditLog         AuditLog[]
-  aiRuns           AiRun[]
-  aiConversations  AiConversation[]
-  documentLinks    DocumentLink[]
-  calendarAccounts CalendarAccount[]
-  comments         Comment[]
-  invitations      Invitation[]
-  agentWrites      AgentWriteJournal[]
-  settings         WorkspaceSetting[]
-  credentials      WorkspaceCredential[]
-  automations      AutomationRule[]
-  automationRuns   AutomationRun[]
-  renderTemplates  RenderTemplate[]
-  renderJobs       RenderJob[]
-  projectBuilds    ProjectBuild[]
-  savedQueries     SavedQuery[]
-  shares           DocumentShare[]
+  members           WorkspaceMember[]
+  documents         Document[]
+  attachments       Attachment[]
+  outbox            OutboxEvent[]
+  auditLog          AuditLog[]
+  aiRuns            AiRun[]
+  aiConversations   AiConversation[]
+  documentLinks     DocumentLink[]
+  calendarAccounts  CalendarAccount[]
+  comments          Comment[]
+  invitations       Invitation[]
+  agentWrites       AgentWriteJournal[]
+  settings          WorkspaceSetting[]
+  credentials       WorkspaceCredential[]
+  automations       AutomationRule[]
+  automationRuns    AutomationRun[]
+  renderTemplates   RenderTemplate[]
+  renderJobs        RenderJob[]
+  projectBuilds     ProjectBuild[]
+  savedQueries      SavedQuery[]
+  shares            DocumentShare[]
+  memoryCheckpoints MemoryCheckpoint[]
 
   @@index([isMemory])
   @@map("workspace")
@@ -811,50 +813,53 @@ model Document {
 
   /// Present when `type` is COLLECTION: the property and view definitions of
   /// this database.
-  databaseProperties  DatabaseProperty[]        @relation("CollectionProperties")
-  databaseViews       DatabaseView[]            @relation("CollectionViews")
+  databaseProperties    DatabaseProperty[]        @relation("CollectionProperties")
+  databaseViews         DatabaseView[]            @relation("CollectionViews")
   /// Present when this document is a row (a PAGE child of a COLLECTION).
-  propertyValues      DocumentPropertyValue[]   @relation("RowPropertyValues")
+  propertyValues        DocumentPropertyValue[]   @relation("RowPropertyValues")
   /// Page a conversation was opened from. Context only.
-  aiConversations     AiConversation[]          @relation("AiConversationDocument")
+  aiConversations       AiConversation[]          @relation("AiConversationDocument")
   /// Conversations that pinned this page as a context source (issue #75).
-  aiConversationSources AiConversationSource[]  @relation("AiConversationSourceDocument")
+  aiConversationSources AiConversationSource[]    @relation("AiConversationSourceDocument")
   /// References this page makes, and references other pages make to it.
-  outgoingLinks       DocumentLink[]            @relation("DocumentLinkSource")
-  incomingLinks       DocumentLink[]            @relation("DocumentLinkTarget")
+  outgoingLinks         DocumentLink[]            @relation("DocumentLinkSource")
+  incomingLinks         DocumentLink[]            @relation("DocumentLinkTarget")
   /// Present when this COLLECTION mirrors a remote calendar.
-  calendarLinks       CalendarLink[]            @relation("CalendarLinkTarget")
+  calendarLinks         CalendarLink[]            @relation("CalendarLinkTarget")
   /// Present when this row mirrors one remote calendar object.
-  calendarObject      CalendarObjectState[]     @relation("CalendarRow")
+  calendarObject        CalendarObjectState[]     @relation("CalendarRow")
   /// Remarks about this page. Not part of its content (see `Comment`).
-  comments            Comment[]                 @relation("DocumentComments")
+  comments              Comment[]                 @relation("DocumentComments")
   /// Present when `type` is PROJECT: the project's settings, files and builds
   /// (issue #43, ADR-027).
-  project             Project?                  @relation("ProjectDocument")
+  project               Project?                  @relation("ProjectDocument")
   /// Present when this page *is* a distilled memory fact (issue #46).
-  memoryFact          MemoryFact?               @relation("MemoryFactPage")
+  memoryFact            MemoryFact?               @relation("MemoryFactPage")
   /// Present when this page is a session note a consolidation run has read.
-  memoryConsolidation MemoryConsolidation?      @relation("MemoryConsolidationNote")
+  memoryConsolidation   MemoryConsolidation?      @relation("MemoryConsolidationNote")
   /// Facts this session note is evidence for.
-  memoryFactSources   MemoryFactSource[]        @relation("MemoryFactSourceNote")
+  memoryFactSources     MemoryFactSource[]        @relation("MemoryFactSourceNote")
+  /// Present when this page is the note a pre compaction checkpoint wrote
+  /// (issue #92).
+  memoryCheckpoints     MemoryCheckpoint[]        @relation("MemoryCheckpointNote")
   /// Present when this page is an entity row: the pages that talk about it
   /// (issue #47).
-  entityMentions      EntityMention[]           @relation("EntityMentionEntity")
+  entityMentions        EntityMention[]           @relation("EntityMentionEntity")
   /// Entities this page talks about.
-  mentionedEntities   EntityMention[]           @relation("EntityMentionPage")
+  mentionedEntities     EntityMention[]           @relation("EntityMentionPage")
   /// Names on this page that no entity answers to yet.
-  entitySightings     EntityCandidateSighting[] @relation("EntityCandidateSightingPage")
+  entitySightings       EntityCandidateSighting[] @relation("EntityCandidateSightingPage")
   /// Present when a rule is scoped to this page's subtree or database.
-  automationScopes    AutomationRule[]          @relation("AutomationScopeDocument")
+  automationScopes      AutomationRule[]          @relation("AutomationScopeDocument")
   /// Automation runs this page triggered.
-  automationRuns      AutomationRun[]           @relation("AutomationRunDocument")
+  automationRuns        AutomationRun[]           @relation("AutomationRunDocument")
   /// Builds of this page into a file (issue #44).
-  renderJobs          RenderJob[]               @relation("RenderJobDocument")
+  renderJobs            RenderJob[]               @relation("RenderJobDocument")
   /// Grants that let somebody outside this workspace reach this page, and the
   /// public links to it (issue #83, ADR-044).
-  shares              DocumentShare[]           @relation("DocumentShareDocument")
+  shares                DocumentShare[]           @relation("DocumentShareDocument")
   /// API tokens confined to this page or the branch below it.
-  tokenScopes         ApiTokenPageScope[]       @relation("ApiTokenPageScopeDocument")
+  tokenScopes           ApiTokenPageScope[]       @relation("ApiTokenPageScopeDocument")
 
   @@index([workspaceId, parentId, orderKey])
   @@index([workspaceId, archivedAt])
@@ -903,14 +908,14 @@ model DocumentContent {
 /// links (rotating one means creating the new one before withdrawing the old)
 /// while it can carry only one grant per account.
 model DocumentShare {
-  id          String   @id @default(cuid(2))
+  id          String    @id @default(cuid(2))
   /// Denormalized from the document so a revocation can be addressed at a
   /// workspace without a join, and so a listing of "what have I shared" is one
   /// index scan.
   workspaceId String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   documentId  String
-  document    Document @relation("DocumentShareDocument", fields: [documentId], references: [id], onDelete: Cascade)
+  document    Document  @relation("DocumentShareDocument", fields: [documentId], references: [id], onDelete: Cascade)
 
   kind       DocumentShareKind
   permission DocumentSharePermission @default(READ)
@@ -1349,7 +1354,7 @@ model DatabaseView {
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 
-  aiRuns               AiRun[]
+  aiRuns                AiRun[]
   aiConversationSources AiConversationSource[]
 
   @@unique([documentId, name])
@@ -1728,14 +1733,14 @@ model AiConversationSource {
   /// Set for PAGE and DATABASE_VIEW. Cascade rather than SetNull: a source is a
   /// reference, and a reference to a deleted page is not a source any more.
   documentId     String?
-  document       Document?                @relation("AiConversationSourceDocument", fields: [documentId], references: [id], onDelete: Cascade)
+  document       Document?     @relation("AiConversationSourceDocument", fields: [documentId], references: [id], onDelete: Cascade)
   /// The view a DATABASE_VIEW source names. Rows only mean something through a
   /// view's filters, so a pinned database without one would describe a
   /// different table than the one the user pinned.
   databaseViewId String?
-  databaseView   DatabaseView?            @relation(fields: [databaseViewId], references: [id], onDelete: Cascade)
+  databaseView   DatabaseView? @relation(fields: [databaseViewId], references: [id], onDelete: Cascade)
   savedQueryId   String?
-  savedQuery     SavedQuery?              @relation(fields: [savedQueryId], references: [id], onDelete: Cascade)
+  savedQuery     SavedQuery?   @relation(fields: [savedQueryId], references: [id], onDelete: Cascade)
 
   /// `page:<id>`, `view:<documentId>:<viewId>` or `query:<id>`. One column
   /// rather than a unique over the three nullable ids, because in PostgreSQL
@@ -2185,6 +2190,74 @@ model MemoryFactSource {
   @@unique([factId, noteId])
   @@index([noteId])
   @@map("memory_fact_source")
+}
+
+/// A receipt for evidence an agent handed over before it threw the evidence
+/// away (issue #92).
+///
+/// Hermes compacts a long conversation by summarising the old part of it and
+/// dropping the wording. `POST /api/memory/checkpoint` is the step before that:
+/// it distils the part about to be lost into a memory note and answers only
+/// once the note is committed, so a failure here means the compaction does not
+/// happen and the wording survives.
+///
+/// This row holds no evidence, only the proof that a piece of it was seen:
+/// digests, counts and the note that came out. ADR-019 says the raw transcript
+/// is never stored, and a checkpoint table full of conversations would be
+/// exactly the archive that decision refused -- with the added irony that it
+/// would live in the one workspace whose promise is that it may be thrown away.
+model MemoryCheckpoint {
+  id String @id @default(cuid(2))
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// The agent's own session id. Trusted only within one account, like
+  /// `AgentSession.externalId`: naming somebody else's session lands in a row
+  /// of one's own.
+  sessionId  String
+  /// Which client asked. A `MemoryClient` member, kept as text because this is
+  /// provenance rather than a decision anything branches on.
+  client     String
+  /// Normalized project key, the same one notes are filed under.
+  projectKey String
+
+  /// sha256 over the per-message digests this call actually distilled. The
+  /// idempotency key: the same evidence twice is one checkpoint.
+  digest String
+
+  /// One short digest per message covered by this checkpoint, in order.
+  ///
+  /// The reason a second checkpoint of an overlapping conversation costs
+  /// nothing for the part it repeats: the messages already covered by an
+  /// earlier checkpoint of the same session are dropped before a model is ever
+  /// asked. A digest of the whole blob could only ever recognise an exact
+  /// retry, and Hermes does not send exact retries, it sends longer prefixes.
+  messageDigests String[]
+
+  messageCount  Int
+  /// How many characters of evidence this checkpoint stood for. Bookkeeping, so
+  /// a person can see what a session cost without the text being kept.
+  evidenceChars Int
+
+  /// The note that was written. Null when the model judged the evidence held
+  /// nothing worth keeping, which is a successful checkpoint: the judgement was
+  /// made and recorded, and compaction may proceed.
+  documentId String?
+  document   Document? @relation("MemoryCheckpointNote", fields: [documentId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  /// Two identical calls racing each other resolve to one row here.
+  @@unique([userId, sessionId, digest])
+  /// "What has this session already checkpointed" -- the dedup read.
+  @@index([userId, sessionId, createdAt])
+  /// The retention sweep, which works one memory area at a time.
+  @@index([workspaceId, createdAt])
+  @@map("memory_checkpoint")
 }
 
 // ---------------------------------------------------------------------------

@@ -5,6 +5,10 @@ import { type VerifiedSession } from '@exocortex/auth';
 import {
   type MemoryCaptureRequest,
   memoryCaptureRequestSchema,
+  type MemoryCheckpointRequest,
+  memoryCheckpointRequestSchema,
+  type MemoryCheckpointResponse,
+  memoryCheckpointResponseSchema,
   type MemoryCaptureResponse,
   memoryCaptureResponseSchema,
   type MemoryConsolidateRequest,
@@ -33,6 +37,7 @@ import { CurrentSession } from '../auth/session.guard';
 import { currentCorrelationId } from '../common/correlation';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
+import { MemoryCheckpointService } from './memory-checkpoint.service';
 import { MemoryService } from './memory.service';
 import { MemoryFactsService } from './memory-facts.service';
 
@@ -50,6 +55,7 @@ export class MemoryController {
   constructor(
     private readonly memory: MemoryService,
     private readonly facts: MemoryFactsService,
+    private readonly checkpoints: MemoryCheckpointService,
   ) {}
 
   @Get('recall')
@@ -88,6 +94,28 @@ export class MemoryController {
     @Body(zodPipe(memoryCaptureRequestSchema)) body: MemoryCaptureRequest,
   ): Promise<MemoryCaptureResponse> {
     return this.memory.capture({
+      userId: session.userId,
+      request: body,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  /**
+   * The checkpoint before a lossy compaction (issue #92).
+   *
+   * The one call in this controller that keeps its caller waiting, and the one
+   * that throws rather than reporting a reason. Both follow from what the
+   * caller does next: it is about to drop the wording of its own conversation,
+   * and it may only do so once this answered.
+   */
+  @Post('checkpoint')
+  @ApiBody({ schema: openApiSchema(memoryCheckpointRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(memoryCheckpointResponseSchema) })
+  async checkpoint(
+    @CurrentSession() session: VerifiedSession,
+    @Body(zodPipe(memoryCheckpointRequestSchema)) body: MemoryCheckpointRequest,
+  ): Promise<MemoryCheckpointResponse> {
+    return this.checkpoints.checkpoint({
       userId: session.userId,
       request: body,
       correlationId: currentCorrelationId(),

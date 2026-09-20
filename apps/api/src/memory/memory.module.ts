@@ -4,6 +4,7 @@ import { DocumentsModule } from '../documents/documents.module';
 import { EntitiesModule } from '../entities/entities.module';
 import { SearchModule } from '../search/search.module';
 
+import { MemoryCheckpointService } from './memory-checkpoint.service';
 import { MemoryController } from './memory.controller';
 import { MemoryService } from './memory.service';
 import { MemoryFactsService } from './memory-facts.service';
@@ -19,7 +20,7 @@ import { MemoryFactsService } from './memory-facts.service';
   // searches (issue #47). One-way: the entity module knows nothing of memory.
   imports: [SearchModule, DocumentsModule, EntitiesModule],
   controllers: [MemoryController],
-  providers: [MemoryService, MemoryFactsService],
-  exports: [MemoryService, MemoryFactsService],
+  providers: [MemoryService, MemoryFactsService, MemoryCheckpointService],
+  exports: [MemoryService, MemoryFactsService, MemoryCheckpointService],
 })
 export class MemoryModule {}

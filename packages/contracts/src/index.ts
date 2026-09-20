@@ -27,6 +27,7 @@ export * from './jobs';
 export * from './lucide-icon-names';
 export * from './mcp';
 export * from './memory';
+export * from './memory-checkpoint';
 export * from './memory-facts';
 export * from './overviews';
 export * from './primitives';

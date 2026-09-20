@@ -228,9 +228,19 @@ async function pruneOneMemory(input: {
           where: { id: { in: purgeable.map((row) => row.id) } },
         });
 
+  // The checkpoint receipts age on the same clock as the notes they point at
+  // (issue #92). They carry digests rather than evidence, so this is about a
+  // list staying about the present rather than about storage: a session whose
+  // notes are gone has nothing left to deduplicate against, and Hermes does not
+  // resume a conversation weeks later.
+  const checkpoints = await prisma.memoryCheckpoint.deleteMany({
+    where: { workspaceId, createdAt: { lt: cutoff } },
+  });
+
   logger.info('Memory notes pruned', {
     archived: expiring.length,
     purged: purged.count,
+    checkpoints: checkpoints.count,
     retentionDays,
     workspaceId,
   });

@@ -271,6 +271,11 @@ const EXEMPT = [
       'The SessionEnd hook posts a whole transcript here to be condensed (ADR-019). `remember` is the deliberate half and is a tool; capture is machinery.',
   },
   {
+    route: 'POST /api/memory/checkpoint',
+    reason:
+      "The step before an agent compacts its own conversation away (issue #92). Machinery for the same reason `capture` is: it belongs to a client's compaction lifecycle, it is called by a memory provider rather than by anybody's judgement, and the deliberate half of it is `remember`, which is a tool.",
+  },
+  {
     route: 'POST /api/entities/database',
     reason:
       'Creates the entity database and writes `entities.databaseId`, a deployment-wide setting that decides what every entity tool then reads (issue #47). Administrator-only and done once, like the rest of `/api/admin/settings`. The nine `exo_entity_*` tools cover everything past that point.',
