@@ -173,7 +173,7 @@ else
     "Run 'pnpm format'. If it touches files you did not change, commit that on its own -- a reformat mixed into a real change makes the real change unreadable."
 
   info "Typecheck …"
-  pnpm typecheck || fail "Type errors" "Every TypeScript file in the repository but the tests is covered by one of these projects; the coverage gate above is what keeps that true."
+  pnpm typecheck || fail "Type errors" "Every TypeScript file in the repository, tests included, is covered by one of these projects; the coverage gate above is what keeps that true."
 
   # The watchmen. Each gate is run twice, once clean and once with a violation
   # written into the tree, so a gate that has quietly stopped matching anything
