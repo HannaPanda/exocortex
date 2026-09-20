@@ -5,44 +5,46 @@ import * as React from 'react';
 
 import { EmptyState, LoadingState } from '@exocortex/ui';
 
-import { useAdminOverview } from '@/lib/api/admin-queries';
-import { ApiError } from '@/lib/api/client';
+import { useSessionQuery } from '@/lib/api/session-queries';
 
 /**
  * Client-side gate for the admin section.
  *
  * This is convenience only: the real check lives in the API's AdminGuard, so a
- * user who forces the route sees an empty page instead of data. Never treat a
- * client-side role check as authorization.
+ * user who forges the session's `role` still gets nothing but refusals from
+ * every route underneath. Never treat a client-side role check as
+ * authorization.
  *
- * TODO(admin-role-client): `CurrentSessionResponse` (packages/contracts/src/auth.ts)
- * does not carry the global role yet, so this cannot gate on the session
- * directly. It falls back to probing `GET /api/admin/overview` and reading the
- * resulting `forbidden`/`admin_required` error instead.
+ * It reads `role` off the session rather than probing `GET /api/admin/overview`
+ * for a `forbidden`, which is what it did while the session carried no role.
+ * The probe cost a request that was expected to fail and could only answer
+ * after it came back; the session is loaded on every page anyway, so a person
+ * who may not be here now learns it without a round trip -- and the same field
+ * is what stops the header offering the area in the first place.
  */
 export function AdminGuard({ children }: { children: React.ReactNode }) {
-  const overview = useAdminOverview();
+  const session = useSessionQuery();
 
-  if (overview.isPending) {
+  if (session.isPending) {
     return <LoadingState label="Zugriff wird geprüft …" />;
   }
 
-  if (overview.isError) {
-    const code = overview.error instanceof ApiError ? overview.error.code : undefined;
-    if (code === 'forbidden' || code === 'admin_required') {
-      return (
-        <EmptyState
-          icon={ShieldAlertIcon}
-          title="Kein Zugriff"
-          description="Dieser Bereich ist Administratorinnen und Administratoren vorbehalten."
-        />
-      );
-    }
+  if (session.isError) {
     return (
       <EmptyState
         icon={ShieldAlertIcon}
         title="Verwaltung nicht verfügbar"
-        description="Die Verwaltungsdaten konnten nicht geladen werden. Bitte versuche es später erneut."
+        description="Die Sitzung konnte nicht geprüft werden. Bitte versuche es später erneut."
+      />
+    );
+  }
+
+  if (session.data.user?.role !== 'admin') {
+    return (
+      <EmptyState
+        icon={ShieldAlertIcon}
+        title="Kein Zugriff"
+        description="Dieser Bereich ist Administratorinnen und Administratoren vorbehalten."
       />
     );
   }

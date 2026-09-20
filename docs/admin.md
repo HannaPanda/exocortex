@@ -19,6 +19,15 @@ but only rejects routes marked `@AdminOnly()`. Both `AdminController` and
 `AiModelsController` carry the decorator at class level, so a route added to
 either is protected by default rather than by remembering to annotate it.
 
+`GET /api/session` carries the same role, lowercased, on `user.role`. That is
+what the browser reads to stop offering what it knows it may not have: the
+account menu leaves "Verwaltung" out for an ordinary account, `AdminGuard` in
+`apps/web` answers "Kein Zugriff" without a request that was only ever going to
+fail, and the entity-database setup says who can do it instead of handing over a
+button that refuses. None of it is authorization: a forged field buys a menu
+entry and nothing behind it, because every administrative route is still checked
+by the API's own guard.
+
 Promoting someone:
 
 ```bash

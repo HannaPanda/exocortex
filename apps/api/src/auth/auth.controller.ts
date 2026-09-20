@@ -95,6 +95,7 @@ export class SessionController {
         emailVerified: true,
         image: true,
         createdAt: true,
+        role: true,
       },
     });
     if (user === null) {
@@ -108,6 +109,11 @@ export class SessionController {
         emailVerified: user.emailVerified,
         image: user.image,
         createdAt: user.createdAt.toISOString(),
+        // Lowercase on the wire, like every other enum in the contracts
+        // package. The client uses it to stop offering the administration area
+        // to somebody who would only be refused there; the refusal itself is
+        // still `AdminGuard`'s, on every single route.
+        role: user.role === 'ADMIN' ? 'admin' : 'user',
       },
     };
   }

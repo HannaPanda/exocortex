@@ -14,16 +14,19 @@ import {
 } from '@exocortex/ui';
 
 import { useProvisionEntityDatabase } from '@/lib/api/entity-queries';
+import { useSessionQuery } from '@/lib/api/session-queries';
 import { useWorkspaces } from '@/lib/api/workspace-queries';
 
 /**
  * The one-time setup: a database with the two columns the matcher reads, and
  * `entities.databaseId` pointing at it (issue #47).
  *
- * Administrator-only at the API, and the button says so by failing with the
- * API's own message rather than by being hidden -- the browser does not know
- * the caller's deployment role yet (see `AdminGuard`), and a hidden button
- * would be a worse lie than a refused one.
+ * Administrator-only at the API. Since the session carries `role`, a reader who
+ * may not do this is told so instead of being handed a button that fails: the
+ * sentence still says what is missing and who can supply it, which is more than
+ * a refusal after the click ever said. The form is not hidden for secrecy -- the
+ * API refuses the route regardless -- but because an offer nobody can accept is
+ * a worse lie than no offer.
  *
  * Until this has been done, every entity call answers with `databaseId: null`
  * and an empty list. Before this panel existed there was no way to do it in the
@@ -33,10 +36,12 @@ import { useWorkspaces } from '@/lib/api/workspace-queries';
  */
 export function EntityDatabaseSetup() {
   const workspaces = useWorkspaces();
+  const session = useSessionQuery();
   const provision = useProvisionEntityDatabase();
   const [workspaceId, setWorkspaceId] = React.useState<string | null>(null);
 
   const chosen = workspaceId ?? workspaces.data?.[0]?.id ?? null;
+  const mayProvision = session.data?.user?.role === 'admin';
 
   return (
     <Alert className="mt-6">
@@ -45,35 +50,42 @@ export function EntityDatabaseSetup() {
           Es gibt noch kein Verzeichnis für Entitäten. Es wird als Datenbank in einem Arbeitsbereich
           angelegt; danach sammelt eXocortex Namen aus den Seiten von selbst.
         </p>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <Select value={chosen ?? ''} onValueChange={setWorkspaceId}>
-            <SelectTrigger className="w-56" data-testid="entity-database-workspace">
-              <SelectValue>
-                {() =>
-                  workspaces.data?.find((workspace) => workspace.id === chosen)?.name ??
-                  'Arbeitsbereich wählen'
-                }
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {(workspaces.data ?? []).map((workspace) => (
-                <SelectItem key={workspace.id} value={workspace.id}>
-                  {workspace.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            disabled={chosen === null || provision.isPending}
-            data-testid="entity-database-create"
-            onClick={() => {
-              if (chosen === null) return;
-              provision.mutate({ workspaceId: chosen, parentId: null, title: 'Entitäten' });
-            }}
-          >
-            Verzeichnis anlegen
-          </Button>
-        </div>
+        {mayProvision ? null : (
+          <p className="mt-2 text-muted-foreground">
+            Anlegen kann es nur, wer diese Installation verwaltet.
+          </p>
+        )}
+        {mayProvision ? (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <Select value={chosen ?? ''} onValueChange={setWorkspaceId}>
+              <SelectTrigger className="w-56" data-testid="entity-database-workspace">
+                <SelectValue>
+                  {() =>
+                    workspaces.data?.find((workspace) => workspace.id === chosen)?.name ??
+                    'Arbeitsbereich wählen'
+                  }
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {(workspaces.data ?? []).map((workspace) => (
+                  <SelectItem key={workspace.id} value={workspace.id}>
+                    {workspace.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              disabled={chosen === null || provision.isPending}
+              data-testid="entity-database-create"
+              onClick={() => {
+                if (chosen === null) return;
+                provision.mutate({ workspaceId: chosen, parentId: null, title: 'Entitäten' });
+              }}
+            >
+              Verzeichnis anlegen
+            </Button>
+          </div>
+        ) : null}
         {provision.isError ? (
           <p role="alert" className="mt-2 text-xs text-destructive-text">
             {provision.error.message}

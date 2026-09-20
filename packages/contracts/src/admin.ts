@@ -1,16 +1,9 @@
 import { z } from 'zod';
 
 import { aiRunStatusSchema } from './ai';
+import { userRoleSchema } from './auth';
 import { idSchema, isoDateTimeSchema } from './primitives';
 import { apiTokenPageScopeInputSchema, apiTokenPageScopeSchema } from './shares';
-
-/**
- * Global (cross-workspace) role. Lowercase on the wire like every other status
- * enum in this package (`aiRunStatusSchema`); the database's `UserRole` enum
- * is uppercase and mapped by the service layer.
- */
-export const userRoleSchema = z.enum(['user', 'admin']);
-export type UserRole = z.infer<typeof userRoleSchema>;
 
 export const adminUserSchema = z.object({
   id: idSchema,
