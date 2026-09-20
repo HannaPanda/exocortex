@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "exocortex-memory"
+version = "0.1.0"
+description = "eXocortex as a Hermes memory provider: a durable checkpoint before a lossy compaction"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "PolyForm-Noncommercial-1.0.0" }
+authors = [{ name = "eXocortex" }]
+# No runtime dependencies on purpose. This package runs inside somebody's
+# Hermes process and is allowed to fail closed; a dependency tree is a second
+# way for it to fail, and urllib does everything an HTTP client is needed for
+# here.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.entry-points."hermes_agent.memory_providers"]
+exocortex = "exocortex_memory:register"
+
+[tool.hatch.build.targets.wheel]
+packages = ["exocortex_memory"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -65,3 +65,10 @@ e2e/.run-scope
 # Per-machine Claude Code state: permission decisions, scheduler locks. Local
 # tooling state like `.serena/`, never shared.
 .claude/
+
+# Byte code and virtual environments of the Python integration under
+# `integrations/`. Build output like `dist/`, never shared.
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
