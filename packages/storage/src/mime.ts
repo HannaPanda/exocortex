@@ -23,6 +23,16 @@ interface Signature {
   bytes: number[];
   /** Optional secondary check (for containers such as RIFF/WEBP). */
   verify?: (buffer: Uint8Array) => boolean;
+  /**
+   * Optional look inside the container, for the families whose signature only
+   * says which box the document came in.
+   *
+   * A docx, an xlsx, an odt and an epub are all ZIP archives, and a .doc, a
+   * .xls and a .ppt are all OLE compound files, so the eight bytes at the front
+   * identify the packaging and not the document. Returning null falls back to
+   * the signature's own type, which is how a plain zip stays a plain zip.
+   */
+  resolve?: (buffer: Uint8Array) => DetectedMimeType | null;
 }
 
 const SIGNATURES: Signature[] = [
@@ -54,7 +64,28 @@ const SIGNATURES: Signature[] = [
     offset: 0,
     bytes: [0x25, 0x50, 0x44, 0x46, 0x2d],
   },
-  { mimeType: 'application/zip', extension: 'zip', offset: 0, bytes: [0x50, 0x4b, 0x03, 0x04] },
+  {
+    mimeType: 'application/zip',
+    extension: 'zip',
+    offset: 0,
+    bytes: [0x50, 0x4b, 0x03, 0x04],
+    resolve: resolveZipContainer,
+  },
+  {
+    // OLE2 compound file: the legacy Word, Excel and PowerPoint documents.
+    mimeType: 'application/x-ole-storage',
+    extension: 'bin',
+    offset: 0,
+    bytes: [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1],
+    resolve: resolveOleContainer,
+  },
+  {
+    // `{\rtf`, the open group and control word every RTF file starts with.
+    mimeType: 'application/rtf',
+    extension: 'rtf',
+    offset: 0,
+    bytes: [0x7b, 0x5c, 0x72, 0x74, 0x66],
+  },
 
   // Media for the video and audio blocks. The ISO base media container (`ftyp`)
   // is shared by MP4 and M4A, so the brand at offset 8 decides which it is; the
@@ -111,6 +142,114 @@ function matches(buffer: Uint8Array, offset: number, bytes: readonly number[]): 
   return bytes.every((byte, index) => buffer[offset + index] === byte);
 }
 
+/** Byte offset of the first local file header's name, per the ZIP specification. */
+const ZIP_FIRST_NAME_OFFSET = 30;
+
+/**
+ * OpenDocument and EPUB both require their first archive entry to be a stored
+ * (uncompressed) `mimetype` whose contents are the media type. That makes the
+ * type readable at a fixed offset without inflating anything, which is exactly
+ * what the two specifications intended it for.
+ */
+const ODF_LIKE_MIME_TYPES: Readonly<Record<string, string>> = {
+  'application/vnd.oasis.opendocument.text': 'odt',
+  'application/vnd.oasis.opendocument.spreadsheet': 'ods',
+  'application/vnd.oasis.opendocument.presentation': 'odp',
+  'application/epub+zip': 'epub',
+};
+
+/**
+ * OOXML has no such marker, so the document is identified by the part that only
+ * its own kind of document has. Entry names are never compressed, so they are
+ * readable in the raw bytes whatever the archive did with the parts themselves.
+ */
+const OOXML_PARTS: readonly (readonly [part: string, mimeType: string, extension: string])[] = [
+  [
+    'word/document.xml',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'docx',
+  ],
+  ['xl/workbook.xml', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'xlsx'],
+  [
+    'ppt/presentation.xml',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'pptx',
+  ],
+];
+
+/** Null for an archive that is just an archive, which keeps a zip a zip. */
+function resolveZipContainer(buffer: Uint8Array): DetectedMimeType | null {
+  const nameLength = readUint16(buffer, 26);
+  if (nameLength === 8 && asciiAt(buffer, ZIP_FIRST_NAME_OFFSET, 8) === 'mimetype') {
+    // Stored, so the declared type follows the name -- but not necessarily
+    // directly: bytes 28 and 29 are the extra field's length, and the extra
+    // field is what sits between the two. Reading the type at a fixed 38 works
+    // on every file a normal producer writes and silently reads the wrong
+    // bytes on the one that uses the field. An entry that was deflated after
+    // all leaves garbage here, which simply matches nothing.
+    const extraFieldLength = readUint16(buffer, 28);
+    const declared = asciiAt(buffer, ZIP_FIRST_NAME_OFFSET + 8 + extraFieldLength, 64);
+    for (const [mimeType, extension] of Object.entries(ODF_LIKE_MIME_TYPES)) {
+      if (declared.startsWith(mimeType)) return { mimeType, extension };
+    }
+  }
+
+  // Only the head is scanned: the parts below sit in the first entries of every
+  // OOXML package, and scanning tens of megabytes to answer a type question
+  // would make a large upload pay for a small fact.
+  const head = asciiAt(buffer, 0, 64 * 1_024);
+  for (const [part, mimeType, extension] of OOXML_PARTS) {
+    if (head.includes(part)) return { mimeType, extension };
+  }
+  return null;
+}
+
+/**
+ * The stream that identifies each legacy format, as its directory names it.
+ * Directory entry names are UTF-16LE, so they are searched in that encoding.
+ */
+const OLE_STREAMS: readonly (readonly [stream: string, mimeType: string, extension: string])[] = [
+  ['WordDocument', 'application/msword', 'doc'],
+  ['Workbook', 'application/vnd.ms-excel', 'xls'],
+  ['PowerPoint Document', 'application/vnd.ms-powerpoint', 'ppt'],
+];
+
+/**
+ * Null for any other OLE compound file, and that is the useful answer: the
+ * fallback type is not on the upload allow list, so an Outlook message or an
+ * old Visio drawing is refused rather than stored as a document nothing reads.
+ */
+function resolveOleContainer(buffer: Uint8Array): DetectedMimeType | null {
+  const head = utf16LeAt(buffer, 0, 512 * 1_024);
+  for (const [stream, mimeType, extension] of OLE_STREAMS) {
+    if (head.includes(stream)) return { mimeType, extension };
+  }
+  return null;
+}
+
+function readUint16(buffer: Uint8Array, offset: number): number {
+  if (buffer.length < offset + 2) return 0;
+  return (buffer[offset] ?? 0) | ((buffer[offset + 1] ?? 0) << 8);
+}
+
+/** Latin-1 rather than UTF-8: a byte that is not ASCII must not end the scan. */
+function asciiAt(buffer: Uint8Array, offset: number, length: number): string {
+  return new TextDecoder('latin1').decode(buffer.subarray(offset, offset + length));
+}
+
+/**
+ * Decodes as UTF-16LE with the surrogate halves left alone, which is what makes
+ * a search for a plain ASCII stream name work: each of its characters lands on
+ * one code unit whatever surrounds it in the directory.
+ */
+function utf16LeAt(buffer: Uint8Array, offset: number, length: number): string {
+  const slice = buffer.subarray(offset, offset + length);
+  // An odd tail byte cannot start a code unit, so it is dropped rather than
+  // shifting every character after it.
+  const units = slice.length - (slice.length % 2);
+  return new TextDecoder('utf-16le').decode(slice.subarray(0, units));
+}
+
 const SVG_PATTERN = /<svg[\s>]/i;
 const XML_DECLARATION_PATTERN = /^\s*<\?xml/i;
 
@@ -126,7 +265,12 @@ export function detectMimeType(
   for (const signature of SIGNATURES) {
     if (!matches(buffer, signature.offset, signature.bytes)) continue;
     if (signature.verify !== undefined && !signature.verify(buffer)) continue;
-    return { mimeType: signature.mimeType, extension: signature.extension };
+    return (
+      signature.resolve?.(buffer) ?? {
+        mimeType: signature.mimeType,
+        extension: signature.extension,
+      }
+    );
   }
 
   const head = new TextDecoder('utf-8', { fatal: false }).decode(buffer.subarray(0, 4_096));
@@ -144,6 +288,12 @@ export function detectMimeType(
         : null;
     case 'text/markdown':
       return { mimeType: 'text/markdown', extension: 'md' };
+    // Like the two below it, a declared type and valid text is all there is to
+    // go on. The distinction is worth keeping even so: it is what routes the
+    // file to the converter that reads a table out of it rather than storing
+    // the commas as prose.
+    case 'text/csv':
+      return { mimeType: 'text/csv', extension: 'csv' };
     case 'text/plain':
       return { mimeType: 'text/plain', extension: 'txt' };
     default:

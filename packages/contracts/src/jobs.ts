@@ -76,7 +76,20 @@ export type MaterializeDocumentJob = z.infer<typeof materializeDocumentJobSchema
 export const indexDocumentJobSchema = jobBase.extend({
   documentId: idSchema,
   workspaceId: idSchema,
-  reason: z.enum(['materialized', 'title_changed', 'archived', 'restored', 'deleted', 'manual']),
+  reason: z.enum([
+    'materialized',
+    'title_changed',
+    'archived',
+    'restored',
+    'deleted',
+    'manual',
+    /**
+     * An attachment of this page finished, or failed, a text extraction
+     * (issue #101). The page's own content did not change, but what is findable
+     * about it did.
+     */
+    'attachment_text',
+  ]),
 });
 export type IndexDocumentJob = z.infer<typeof indexDocumentJobSchema>;
 
@@ -132,6 +145,17 @@ export const maintenanceJobSchema = jobBase.extend({
      * with the pages it already has (issue #34, AP4).
      */
     'backfill-embeddings',
+    /**
+     * Re-indexes the pages whose attachment text is newer than their search
+     * projection (issue #101).
+     *
+     * The extraction enqueues a re-index itself, so this exists for the two
+     * cases that never enqueued one: every attachment read before the search
+     * projection learned to carry attachment text, and any page whose
+     * re-index was lost. A no-op once every projection is at least as new as
+     * the attachments under it.
+     */
+    'backfill-attachment-search-text',
     /**
      * Deletes session notes in the memory workspace that are older than
      * `memory.retentionDays`. Off while that is zero. Never touches the project

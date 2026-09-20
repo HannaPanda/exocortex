@@ -15,6 +15,44 @@ function textBytes(value: string): Uint8Array {
   return new TextEncoder().encode(value);
 }
 
+/**
+ * A ZIP archive whose first local file header carries `name` and, stored
+ * uncompressed, `contents`.
+ *
+ * Built here rather than checked in as a binary: what the detection reads is
+ * the two length fields and the bytes they point at, so a fixture would hide
+ * exactly the part worth asserting. Verified against real files produced by
+ * pandoc and by Word on 2026-09-20 before this was written.
+ */
+function zipEntry(name: string, contents = ''): Uint8Array {
+  const nameBytes = textBytes(name);
+  const contentBytes = textBytes(contents);
+  const header = new Uint8Array(30 + nameBytes.length + contentBytes.length);
+  header.set([0x50, 0x4b, 0x03, 0x04], 0);
+  // Bytes 18 to 25 are the two sizes and 26 to 29 the two lengths the reader
+  // needs: the name's, and the extra field's, which is what sits between the
+  // name and the contents. Leaving the extra field at zero is what every real
+  // producer of these files does.
+  header[26] = nameBytes.length & 0xff;
+  header[27] = (nameBytes.length >> 8) & 0xff;
+  header.set(nameBytes, 30);
+  header.set(contentBytes, 30 + nameBytes.length);
+  return header;
+}
+
+/** An OLE compound file whose directory names `stream`, as UTF-16LE. */
+function oleWithStream(stream: string): Uint8Array {
+  const name = new Uint8Array(stream.length * 2);
+  for (const [index, character] of [...stream].entries()) {
+    name[index * 2] = character.charCodeAt(0) & 0xff;
+    name[index * 2 + 1] = character.charCodeAt(0) >> 8;
+  }
+  const bytes = new Uint8Array(512 + name.length);
+  bytes.set([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1], 0);
+  bytes.set(name, 512);
+  return bytes;
+}
+
 describe('detectMimeType', () => {
   it('detects images and documents by magic bytes', () => {
     expect(detectMimeType(png, 'image/png')?.mimeType).toBe('image/png');
@@ -50,6 +88,62 @@ describe('detectMimeType', () => {
       'application/json',
     );
     expect(detectMimeType(textBytes('{not json'), 'application/json')).toBeNull();
+  });
+
+  it('reads the OpenDocument and EPUB type out of the first archive entry', () => {
+    expect(
+      detectMimeType(zipEntry('mimetype', 'application/vnd.oasis.opendocument.text'), undefined)
+        ?.mimeType,
+    ).toBe('application/vnd.oasis.opendocument.text');
+    expect(detectMimeType(zipEntry('mimetype', 'application/epub+zip'), undefined)?.mimeType).toBe(
+      'application/epub+zip',
+    );
+  });
+
+  it('identifies an OOXML package by the part only its own kind has', () => {
+    expect(detectMimeType(zipEntry('word/document.xml'), undefined)?.extension).toBe('docx');
+    expect(detectMimeType(zipEntry('xl/workbook.xml'), undefined)?.extension).toBe('xlsx');
+    expect(detectMimeType(zipEntry('ppt/presentation.xml'), undefined)?.extension).toBe('pptx');
+  });
+
+  it('identifies the legacy Office formats by their OLE stream', () => {
+    expect(detectMimeType(oleWithStream('WordDocument'), undefined)?.mimeType).toBe(
+      'application/msword',
+    );
+    expect(detectMimeType(oleWithStream('Workbook'), undefined)?.mimeType).toBe(
+      'application/vnd.ms-excel',
+    );
+    expect(detectMimeType(oleWithStream('PowerPoint Document'), undefined)?.mimeType).toBe(
+      'application/vnd.ms-powerpoint',
+    );
+  });
+
+  it('leaves an archive that is only an archive alone', () => {
+    // The regression this whole look-inside exists for: every docx is a ZIP, so
+    // matching the ZIP signature first would have stored one as a plain archive
+    // and never offered it an extraction.
+    expect(detectMimeType(zipEntry('notes.txt', 'hallo'), undefined)?.mimeType).toBe(
+      'application/zip',
+    );
+  });
+
+  it('refuses an OLE compound file that is not a document', () => {
+    // The fallback type is not on the upload allow list, so an Outlook message
+    // is rejected rather than stored as something nothing can read.
+    expect(detectMimeType(oleWithStream('__substg1.0_0037001F'), undefined)?.mimeType).toBe(
+      'application/x-ole-storage',
+    );
+  });
+
+  it('detects RTF by its open group', () => {
+    expect(detectMimeType(textBytes('{\\rtf1\\ansi Hallo}'), undefined)?.mimeType).toBe(
+      'application/rtf',
+    );
+  });
+
+  it('accepts CSV only when declared, like the other text formats', () => {
+    expect(detectMimeType(textBytes('a,b\n1,2\n'), 'text/csv')?.mimeType).toBe('text/csv');
+    expect(detectMimeType(textBytes('a,b\n1,2\n'), undefined)).toBeNull();
   });
 
   it('treats NUL bytes as binary', () => {

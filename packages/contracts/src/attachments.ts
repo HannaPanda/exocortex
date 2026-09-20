@@ -16,8 +16,25 @@ export const ALLOWED_ATTACHMENT_MIME_TYPES = [
   'application/pdf',
   'text/plain',
   'text/markdown',
+  'text/csv',
   'application/json',
   'application/zip',
+  // Office and e-book documents, readable since 2026-09-20 (issue #38). Every
+  // one of these is a container `detectMimeType` has to look inside: the OOXML
+  // and OpenDocument families are ZIP archives and the legacy trio is an OLE
+  // compound file, so all of them would otherwise be accepted as the generic
+  // `application/zip` above and never be offered an extraction.
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'application/msword',
+  'application/vnd.ms-excel',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.oasis.opendocument.text',
+  'application/vnd.oasis.opendocument.spreadsheet',
+  'application/vnd.oasis.opendocument.presentation',
+  'application/rtf',
+  'application/epub+zip',
   // Media for the video and audio blocks of the editor.
   'video/mp4',
   'video/webm',
@@ -26,6 +43,42 @@ export const ALLOWED_ATTACHMENT_MIME_TYPES = [
   'audio/wav',
   'audio/ogg',
 ] as const;
+
+/**
+ * Document formats the local converter reads, i.e. everything but PDF.
+ *
+ * PDF is deliberately absent: it has its own chain of engines behind its own
+ * settings, because only that chain can read a scan. The split is what this
+ * list is for -- see `attachmentTextEngine`.
+ */
+export const OFFICE_ATTACHMENT_MIME_TYPES = [
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'application/msword',
+  'application/vnd.ms-excel',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.oasis.opendocument.text',
+  'application/vnd.oasis.opendocument.spreadsheet',
+  'application/vnd.oasis.opendocument.presentation',
+  'application/rtf',
+  'application/epub+zip',
+  'text/csv',
+] as const;
+
+/**
+ * Which engine, if any, can read the text of a file with this MIME type.
+ *
+ * One predicate rather than a `=== 'application/pdf'` in each of the four
+ * places that used to ask: the upload that decides whether to enqueue an
+ * extraction, the read that decides whether to start one, the forced
+ * re-extraction and the human correction. They disagreeing is what would make
+ * a docx show an empty text bar it can never fill.
+ */
+export function attachmentTextEngine(mimeType: string): 'pdf' | 'office' | null {
+  if (mimeType === 'application/pdf') return 'pdf';
+  return (OFFICE_ATTACHMENT_MIME_TYPES as readonly string[]).includes(mimeType) ? 'office' : null;
+}
 
 export const attachmentMimeTypeSchema = z.enum(ALLOWED_ATTACHMENT_MIME_TYPES);
 export type AttachmentMimeType = z.infer<typeof attachmentMimeTypeSchema>;
@@ -70,9 +123,15 @@ export type AttachmentTextStatus = z.infer<typeof attachmentTextStatusSchema>;
  * reports layout (pages, tables, pictures, whether OCR ran) and nothing from
  * the metadata dictionary. When the chain tries both, the result is the union.
  * A null therefore means "no engine could tell", never "zero".
+ *
+ * Several fields describe a paginated document and stay null for the office
+ * formats the local converter reads: a docx has no page count until something
+ * lays it out, and nothing in the OOXML file says how many pages Word would
+ * have drawn. That is the same "could not tell" the PDF engines already
+ * express, which is why this is one schema and not two.
  */
-export const pdfMetadataSchema = z.object({
-  /** Engine whose text was kept, e.g. `openrouter` or `docling`. */
+export const documentTextMetadataSchema = z.object({
+  /** Engine whose text was kept, e.g. `openrouter`, `docling` or `anydoc`. */
   extractor: z.string(),
   title: z.string().nullable().default(null),
   author: z.string().nullable().default(null),
@@ -88,7 +147,7 @@ export const pdfMetadataSchema = z.object({
   /** Whether OCR contributed text, i.e. the document had bitmap content. */
   ocrUsed: z.boolean().nullable().default(null),
 });
-export type PdfMetadata = z.infer<typeof pdfMetadataSchema>;
+export type DocumentTextMetadata = z.infer<typeof documentTextMetadataSchema>;
 
 /**
  * Extracted text is capped here; a 400k character page is already enormous
@@ -96,6 +155,20 @@ export type PdfMetadata = z.infer<typeof pdfMetadataSchema>;
  * caps a human correction to the same length), so the two limits cannot drift.
  */
 export const ATTACHMENT_TEXT_MAX_CHARS = 400_000;
+
+/**
+ * How much of a page's attachments may reach its search projection (issue #101).
+ *
+ * The full text stays on the attachment row, which is what the reading routes
+ * and the AI serve. What goes into `document_search_index.plainText` is a
+ * copy, and a page carrying five 400,000-character PDFs would otherwise put two
+ * million characters into one `tsvector` -- past PostgreSQL's one-megabyte
+ * limit, at which point indexing the page fails outright rather than indexing
+ * less of it. The budget is per page and shared by its attachments, so the
+ * failure mode is a long attachment being cut, never a page dropping out of
+ * the index.
+ */
+export const ATTACHMENT_SEARCH_TEXT_MAX_CHARS = 200_000;
 
 /**
  * Records that a person edited the extracted text by hand (issue #2).
@@ -132,7 +205,7 @@ export const attachmentTextResponseSchema = z.object({
   /** True when `machineText` was cut off at `ATTACHMENT_TEXT_MAX_CHARS`. */
   truncated: z.boolean(),
   /** Null until an extraction succeeded, and for engines that report nothing. */
-  metadata: pdfMetadataSchema.nullable(),
+  metadata: documentTextMetadataSchema.nullable(),
   extractedAt: isoDateTimeSchema.nullable(),
   error: z.string().nullable(),
 });

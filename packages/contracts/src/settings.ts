@@ -151,6 +151,28 @@ export const settingsSchema = z.object({
     .max(50 * 1_024 * 1_024)
     .default(10 * 1_024 * 1_024),
   /**
+   * Reading the text of a Word, Excel, PowerPoint, OpenDocument, RTF, EPUB or
+   * CSV attachment (issue #38).
+   *
+   * A pair of its own rather than a share in the PDF keys above, because the
+   * two cost entirely different things. This converter is a local library call
+   * with no container, no network and no tokens, which is why it defaults to
+   * on where a hosted engine could not; the switch exists for a deployment
+   * that wants no text lifted out of office files at all.
+   */
+  'ai.officeExtractionEnabled': z.boolean().default(true),
+  /**
+   * Larger than the PDF limit on purpose: a spreadsheet is compressed XML, so
+   * the same byte count is far more text than a PDF of that size, and the
+   * conversion is milliseconds rather than a page-by-page pipeline.
+   */
+  'ai.officeMaxBytes': z
+    .number()
+    .int()
+    .min(1_024)
+    .max(100 * 1_024 * 1_024)
+    .default(25 * 1_024 * 1_024),
+  /**
    * Generating a page cover from a prompt.
    *
    * Off by default, unlike the read-only AI features: drawing an image is a
@@ -725,6 +747,8 @@ export const SETTING_SCOPES = {
   'ai.pdfExtractorFallbackEnabled': 'deployment',
   'ai.pdfExtractionModelSlug': 'workspace',
   'ai.pdfMaxBytes': 'workspace',
+  'ai.officeExtractionEnabled': 'workspace',
+  'ai.officeMaxBytes': 'workspace',
   'ai.imageGenerationEnabled': 'workspace',
   'ai.imageModelSlug': 'workspace',
   /**
@@ -869,6 +893,7 @@ export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
   'ai.maxPinnedSources',
   'ai.pinnedContextMaxChars',
   'ai.pdfMaxBytes',
+  'ai.officeMaxBytes',
   'ai.webResearchEnabled',
   'ai.webResearchMaxChars',
   'ai.webResearchMaxFetchesPerRun',
