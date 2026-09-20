@@ -61,7 +61,7 @@ test.describe('editor', () => {
    * and for a long time this bar could not keep the promise: Base UI 1.0.0-rc.0
    * swallowed the click of a `Toolbar.Button` that rendered our own `Button`, so
    * every control was a plain button outside the roving tabindex
-   * (`docs/deviations.md` 16). The workaround is gone since 1.8.0, and this test
+   * (`docs/deviations.md` 15). The workaround is gone since 1.8.0, and this test
    * is what stops it coming back unnoticed: a roving tabindex means exactly one
    * control is reachable by Tab and the arrow keys move between them.
    */

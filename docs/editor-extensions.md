@@ -76,7 +76,7 @@ All of it lives in `apps/web/src/components/editor` and contributes **no** schem
 | `emoji-menu.tsx`                | emoji picker (inserts characters)                                                                                                                                                                                                     |
 | `slash-menu.tsx`                | `/` block menu, reads the catalog                                                                                                                                                                                                     |
 | `mention-menu.tsx`              | `@` menu for pages, people and dates                                                                                                                                                                                                  |
-| `block-handle.tsx`              | drag handle in the outer lane of the interaction gutter (docs/ui-system.md, and docs/deviations.md 18)                                                                                                                                |
+| `block-handle.tsx`              | drag handle in the outer lane of the interaction gutter (docs/ui-system.md, and docs/deviations.md 17)                                                                                                                                |
 | `block-actions.tsx`             | duplicate, copy link, delete — shared by handle and toolbar; a delete that loses a whole structure is confirmed first and re-finds its block by id afterwards                                                                         |
 | `block-removal.ts`              | which blocks are worth a confirmation (compound ones, and anything above 280 characters) and what the dialog says about them (issue #91)                                                                                              |
 | `destructive-confirm.tsx`       | the confirmation dialog itself. Rendered by `EditorChrome` and reached through a context, because every caller is a bubble menu or a drag handle that unmounts as soon as the text loses focus                                        |
@@ -146,7 +146,7 @@ New interactive embeds should follow this pattern (schema-only node in
 `packages/editor`, `ReactNodeViewRenderer` override in `apps/web`) rather than
 inventing another mechanism.
 
-Two rules hold for this layer, both learned the hard way (docs/deviations.md 17–18):
+Two rules hold for this layer, both learned the hard way (docs/deviations.md 16–17):
 
 - **the component that owns `useEditor` must hold no state.** Tiptap re-applies its
   options after every render of that component, which makes ProseMirror rebuild

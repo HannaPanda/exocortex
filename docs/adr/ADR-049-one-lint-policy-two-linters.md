@@ -41,9 +41,14 @@ silently.
 `.oxlintrc.json` carries everything oxlint can express. `eslint.config.mjs`
 carries the five rules it cannot, with a comment per rule explaining what is
 missing — so the day oxlint grows it, the entry and its plugin go. ESLint keeps
-a parser and nothing else: `@typescript-eslint/parser` instead of the
+a parser and nothing else: `@babel/eslint-parser` instead of the
 `typescript-eslint` meta package, and `@eslint/js`, `eslint-config-prettier` and
-`eslint-plugin-react-hooks` are removed with the rules they carried.
+`eslint-plugin-react-hooks` are removed with the rules they carried. (The parser
+was `@typescript-eslint/parser` until issue #85; the rule set had already gone,
+and the parser followed it out because it loads the `typescript` package for a
+compiler API that TypeScript 7 does not ship. Babel parses TypeScript itself and
+so has no opinion about which compiler is installed — which is the property that
+matters here: the linter must not be able to hold the compiler back.)
 
 **`.oxlintrc.json` is generated, never authored.** The policy lives in
 `scripts/generate-oxlint-config.mjs`, in JavaScript, where it can carry its
@@ -96,7 +101,9 @@ they made linting wait for `^build`.
   comment — and nine of them in this repository do exactly that, on purpose.
 - ESLint 10 is now held by one plugin for one rule (`eslint-plugin-react`, for
   `react/no-deprecated`), and TypeScript 7 by a parser rather than by a rule
-  set. See `docs/deviations.md`.
+  set. Issue #85 then swapped that parser out and took the compiler to 7; the
+  parser that replaced it peers `eslint: ^7 || ^8 || ^9` too, so ESLint 10 is
+  now held by two plugins rather than one. See `docs/deviations.md`.
 
 ## Alternatives considered
 

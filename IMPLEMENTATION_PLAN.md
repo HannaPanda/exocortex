@@ -20,7 +20,7 @@ No existing architecture had to be preserved, so the plan below is a greenfield 
 | Node            | 24.18.1 (active LTS), pinned via `.nvmrc`, `engines`, Corepack |
 | Package manager | pnpm 11.20.0 via Corepack                                      |
 | Build orchestr. | Turborepo 2.10                                                 |
-| Language        | TypeScript 5.9.3, strict, no `any`                             |
+| Language        | TypeScript 7.0.2, strict, no `any`                             |
 
 ## Phases
 

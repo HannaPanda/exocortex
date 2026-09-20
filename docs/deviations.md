@@ -25,67 +25,46 @@ Radix-based sources today; no Base UI registry was reachable
 
 The result contains no Radix code. See `docs/ui-system.md`.
 
-The two version choices below were re-checked against the registry on
-2026-09-17, and reasons keep expiring: of the six this file has carried, two
+The one version choice left below was re-checked against the registry on
+2026-09-20, and reasons keep expiring: of the seven this file has carried, two
 went stale, Prisma 6 was measured, done and deleted, NestJS 11 lasted a single
-day after the throttler widened its peer range, and better-auth 1.6 lasted
-until the migration in issue #64 was actually done rather than described. A
-reason for staying on an old major ages faster than anything else here, so each
-one says what was measured and how, not what was believed at the time.
-
-Both have the same shape, which is worth noticing: the compiler and the linter
-are each held by a plugin rather than by anything in themselves.
+day after the throttler widened its peer range, better-auth 1.6 lasted until
+the migration in issue #64 was actually done rather than described, and
+TypeScript 5.9 lasted until issue #85 removed the parser that was holding it.
+A reason for staying on an old major ages faster than anything else here, so
+each one says what was measured and how, not what was believed at the time.
 
 `pnpm outdated -r` lists one more row that is not a deviation. The `prisma` CLI
 tags `8.0.0-rc.15` as `latest` while `@prisma/client` tags 7.10.0; that is a
 release candidate showing through a dist-tag, not a release this repository is
 behind on.
 
-## 2. TypeScript 5.9 instead of TypeScript 7
-
-TypeScript 5.9.3. 7.0.2 is the current release and it is the native port: the
-package ships platform binaries as optional dependencies and a `getExePath`
-shim rather than a JavaScript compiler.
-
-One blocker, and it is still decisive, though it has got smaller. The lint
-stack no longer contains `typescript-eslint` at all -- issue #84 moved the
-TypeScript rules to oxlint, which does not use `tsc` -- but ESLint still needs a
-parser for the four rules it kept, and `@typescript-eslint/parser` 8.70.0 peers
-`typescript: >=4.8.4 <6.1.0`. That rules out the 6 line as well as the 7 line.
-
-What has changed is the size of the thing in the way: a parser, not a rule set.
-The blocker disappears the day that peer range opens, or the day oxlint grows a
-selector language and `simple-import-sort`'s grouping, whichever comes first.
-(An earlier version of this entry said the repository "lints with type
-information". It never did: nothing in `eslint.config.mjs` ever set
-`parserOptions.project` or `projectService`.)
-
-The other two reasons this entry used to give are not blockers:
-
-- NestJS decorator metadata is fine. `tsc` 7.0.2 compiles a decorated class with
-  an injected constructor parameter under `experimentalDecorators` and
-  `emitDecoratorMetadata` and emits `design:paramtypes` as before.
-- `next`'s type plugin was not re-tested, so it is not claimed either way here.
-
-## 3. ESLint 9 instead of ESLint 10
+## 2. ESLint 9 instead of ESLint 10
 
 ESLint 9.39.5. 10.10.0 is current, and 9.39.5 is now what the registry tags
 `maintenance`, which puts a clock on this one.
 
-The culprit this entry used to name has been cleared: `typescript-eslint` peers
-`eslint: ^8.57.0 || ^9.0.0 || ^10.0.0` in 8.70.0, which is installed here.
+Two plugins hold the line, and the second one was invited in on purpose.
 
-The one plugin still holding the line is `eslint-plugin-react`, whose newest
-release, 7.37.5, peers `eslint: … || ^9.7` and has no 10 range. Since issue #84
-it is installed for exactly one rule, `react/no-deprecated`, which cannot fire
-while this codebase has no class components -- so this deviation now costs one
-dependency for one rule, and dropping the rule would end it. Nothing else in
-`eslint.config.mjs` objects: `@typescript-eslint/parser` 8.70.0 and
-`@next/eslint-plugin-next` both accept 10, and `eslint-plugin-simple-import-sort`
-has an open range. `@eslint/js`, `eslint-config-prettier` and
-`eslint-plugin-react-hooks` are gone with the rules they carried.
+`eslint-plugin-react`, whose newest release, 7.37.5, peers
+`eslint: ^3 || … || ^9.7` and has no 10 range. Since issue #84 it is installed
+for exactly one rule, `react/no-deprecated`, which cannot fire while this
+codebase has no class components -- so it costs one dependency for one rule,
+and dropping the rule would end it.
 
-## 4. Redis event bus instead of the Socket.IO Redis adapter
+`@babel/eslint-parser` 7.29.9, which peers `eslint: ^7.5.0 || ^8.0.0 || ^9.0.0`.
+It is the parser issue #85 put in place of `@typescript-eslint/parser`, and that
+was the trade: the old parser accepted ESLint 10 but refused TypeScript 7, and
+the compiler is worth more than the linter's major. Measured on this host on
+2026-09-20, `turbo run typecheck --force` over all 22 projects went from 48
+seconds to 19, and `tsc` alone on `apps/api` from 12.1 seconds to 2.4.
+
+Nothing else in `eslint.config.mjs` objects: `@next/eslint-plugin-next` accepts
+10 and `eslint-plugin-simple-import-sort` has an open range. `@eslint/js`,
+`eslint-config-prettier` and `eslint-plugin-react-hooks` are gone with the rules
+they carried.
+
+## 3. Redis event bus instead of the Socket.IO Redis adapter
 
 **Brief:** "Create a Redis adapter boundary for future horizontal scaling."
 
@@ -96,7 +75,7 @@ scaling boundary, additionally lets the _worker_ publish events (which the
 Socket.IO adapter cannot), and validates payloads on both ends. Using both
 mechanisms at once would double-deliver events.
 
-## 5. Block identifiers in Markdown are opt-in
+## 4. Block identifiers in Markdown are opt-in
 
 **Brief:** "preserves IDs during export where the format allows it."
 
@@ -110,7 +89,7 @@ are included in the export".
 Container nodes (lists, tables) do not carry an id in Markdown; paragraphs,
 headings, code blocks, list items, task items and callouts do.
 
-## 6. MIME detection is implemented locally
+## 5. MIME detection is implemented locally
 
 `file-type` is ESM-only, which does not combine with the CommonJS builds of the
 API and worker. `packages/storage/src/mime.ts` implements a short, auditable
@@ -118,7 +97,7 @@ signature table for exactly the formats eXocortex allows, plus a UTF-8 text chec
 It is covered by 11 unit tests, including "rejects an executable disguised as an
 image".
 
-## 7. `packages/ui` and `packages/editor` are consumed as source by the browser
+## 6. `packages/ui` and `packages/editor` are consumed as source by the browser
 
 Both are listed in `transpilePackages`. For `packages/ui` this lets Tailwind see
 the class names. For `packages/editor` it is a correctness requirement: mixing its
@@ -127,26 +106,26 @@ instances, which makes ProseMirror reject plugins with
 "Adding different instances of a keyed plugin". Server processes keep using the
 compiled CommonJS output through the `require` condition.
 
-## 8. Explicit authentication rate limits
+## 7. Explicit authentication rate limits
 
 Better Auth's defaults were replaced with an explicit policy
 (`packages/auth/src/auth.ts`): 10 sign-ins/minute, 5 sign-ups/minute and
 5 password-reset requests per 5 minutes per client IP. Explicit limits are
 documented, testable and still block credential stuffing.
 
-## 9. Playwright covers the API security scenarios
+## 8. Playwright covers the API security scenarios
 
 The required security scenarios are verified with Playwright's `APIRequestContext`
 against the running API rather than with mocked unit tests, because that is where
 the rules are enforced. See `e2e/tests/security.spec.ts` (13 tests).
 
-## 10. `.env` is symlinked into `apps/web`
+## 9. `.env` is symlinked into `apps/web`
 
 Next.js only reads env files from its own project directory. `apps/web/.env` is a
 symlink to the repository root `.env` so a single file configures every process.
 Both paths are git-ignored.
 
-## 11. Markdown notation for blocks CommonMark has no syntax for
+## 10. Markdown notation for blocks CommonMark has no syntax for
 
 Toggles, columns, a table of contents, page links, media and embeds have no
 notation in CommonMark or GFM. Inventing HTML for them was not an option: raw HTML
@@ -166,7 +145,7 @@ Like a code fence the marker may be longer than three colons, which is how
 containers nest (`::::columns` around `:::column`). Every container round-trips;
 `packages/editor/src/fixtures.ts` covers each one.
 
-## 12. Inline notation for the additional marks
+## 11. Inline notation for the additional marks
 
 `underline`, `superscript`, `subscript` and a text background have no CommonMark
 notation either. They use the widely implemented extensions `++Text++`, `^hoch^`,
@@ -186,7 +165,7 @@ lose (ADR-007: Markdown is interchange, not truth).
 Mentions use `@[[Seite]]`, `@[Person]` and `@(2026-08-04)`; the page form echoes
 the `[[Seite]]` wiki link on purpose.
 
-## 13. Emoji are characters, not a schema node
+## 12. Emoji are characters, not a schema node
 
 Tiptap ships an emoji node with a shortcode dataset. eXocortex inserts the Unicode
 character as plain text instead: as a character an emoji round-trips through
@@ -194,7 +173,7 @@ Markdown perfectly, is found by full-text search, and needs neither a node view 
 a ~1,800-entry dataset in the browser bundle. The picker
 (`apps/web/src/components/editor/emoji-menu.tsx`) is a curated list.
 
-## 14. Collapsed headings are decorations, not document structure
+## 13. Collapsed headings are decorations, not document structure
 
 A collapsible heading stores one boolean. Which blocks are hidden is derived from
 that boolean plus the heading levels on every render and expressed as ProseMirror
@@ -206,7 +185,7 @@ remapped under them, and a Markdown export would have to invent nesting the sour
 never had. The trade-off is that a collapsed block is still in the document and
 still in the search index — which is correct, because it is collapsed, not deleted.
 
-## 15. Embeds are restricted to an allow list of hosts
+## 14. Embeds are restricted to an allow list of hosts
 
 An arbitrary iframe inside a shared document is a script-execution and clickjacking
 surface. `packages/editor/src/embed.ts` keeps a list of hosts whose embed endpoints
@@ -214,7 +193,7 @@ are meant to be framed; anything else becomes a bookmark card, which loses nothi
 a reader needs. Framed content is sandboxed without `allow-same-origin`, so it
 cannot reach this origin's cookies or storage.
 
-## 16. Toolbar buttons keep one workaround of the two they had
+## 15. Toolbar buttons keep one workaround of the two they had
 
 Two faults were recorded here while getting the editor toolbars to work in a
 browser, both against Base UI 1.0.0-rc.0. Both were re-measured on 2026-09-15
@@ -262,7 +241,7 @@ in a full run and passed on its own, and why retrying the assertion never helped
 The wait is a `MutationObserver` on the document now: it costs nothing while
 nothing moves, and it disconnects itself the moment the node lands.
 
-## 17. The suggestion menus render from the plugin state, not from the renderer
+## 16. The suggestion menus render from the plugin state, not from the renderer
 
 `@tiptap/suggestion` offers an `onStart`/`onUpdate`/`onExit` renderer for mounting
 a popup. It cannot be used together with Tiptap's React menu components.
@@ -285,7 +264,7 @@ The same rule forced a second split: the component that owns `useEditor` re-rend
 into a full option re-apply, which rebuilds all plugin views. `EditorSurface` now
 holds no state and subscribes to nothing; everything stateful is in `EditorChrome`.
 
-## 18. `DragHandle` needs a callback with a stable identity
+## 17. `DragHandle` needs a callback with a stable identity
 
 `@tiptap/extension-drag-handle-react` lists `onNodeChange` (and every other
 callback prop) in the dependency array of the effect that registers its
@@ -305,7 +284,7 @@ means moving the pointer off the block the actions belong to.
 Any further prop of `DragHandle` (`computePositionConfig`, `onElementDragStart`,
 `onElementDragEnd`) has to be a module constant or memoised for the same reason.
 
-## 19. The toggle block is styled against its node view, not its HTML
+## 18. The toggle block is styled against its node view, not its HTML
 
 Tiptap's `Details` extension renders native `<details>`/`<summary>` from
 `renderHTML` — which is the HTML _export_ path — but a `div[data-type="details"]`
@@ -314,7 +293,7 @@ CSS in `globals.css` therefore targets the node view, and the node view's button
 given its arrow, `aria-expanded` and German label through `renderToggleButton`; it
 is empty by default.
 
-## 20. A PDF is drawn by pdf.js, because the browser's own viewer cannot be embedded
+## 19. A PDF is drawn by pdf.js, because the browser's own viewer cannot be embedded
 
 Resolved, and worth keeping because the reason changed twice.
 
@@ -336,7 +315,7 @@ was clicked. `packages/editor` does not load the renderer -- it is read by the
 server too -- and instead offers `MediaInfoResolver.renderPdf`, a box the host
 draws into.
 
-## 21. The icon and emoji datasets are generated into the repository
+## 20. The icon and emoji datasets are generated into the repository
 
 `packages/contracts/src/lucide-icon-names.ts`,
 `apps/web/src/components/document/lucide-icon-nodes.generated.ts` and
@@ -353,7 +332,7 @@ would parse half a megabyte as source; as a string it is one token to both, and
 the bytes on the wire are the same. They are excluded from Prettier and ESLint —
 reformatting them costs seconds and nobody reads them.
 
-## 22. The page tree drags with the platform, not with a library
+## 21. The page tree drags with the platform, not with a library
 
 Reordering pages in the sidebar is native HTML5 drag and drop
 (`apps/web/src/components/shell/page-tree.tsx`) rather than `dnd-kit` or
