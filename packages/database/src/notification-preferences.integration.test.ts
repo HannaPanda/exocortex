@@ -112,16 +112,22 @@ describe('notificationPreferenceRefusal', () => {
     expect(notificationPreferenceRefusal('SHARE', 'EMAIL', 'IMMEDIATE')).toBeNull();
     expect(notificationPreferenceRefusal('CALENDAR', 'EMAIL', 'OFF')).toBe('unsupported_pair');
     expect(notificationPreferenceRefusal('COMMENT', 'PUSH', 'OFF')).toBe('device_scoped');
+    // The mode exists and one pair offers it; this one does not, and a switch
+    // that collects share notifications for a day is not a thing anybody built.
     expect(notificationPreferenceRefusal('SHARE', 'EMAIL', 'DAILY_DIGEST')).toBe(
       'unsupported_mode',
     );
+    expect(notificationPreferenceRefusal('COMMENT', 'EMAIL', 'DAILY_DIGEST')).toBeNull();
   });
 });
 
 describe('listNotificationPreferences', () => {
   it('describes every account-wide pair, answered or not', async () => {
     const rows = await listNotificationPreferences(prisma, userId);
-    expect(rows.map((row) => `${row.kind}/${row.channel}`)).toEqual(['SHARE/EMAIL']);
+    expect(rows.map((row) => `${row.kind}/${row.channel}`)).toEqual([
+      'SHARE/EMAIL',
+      'COMMENT/EMAIL',
+    ]);
     expect(rows[0]).toMatchObject({ mode: 'IMMEDIATE', defaultMode: 'IMMEDIATE' });
     expect(rows[0]?.modes).toEqual(['OFF', 'IMMEDIATE']);
     expect(rows[0]?.label.length).toBeGreaterThan(0);

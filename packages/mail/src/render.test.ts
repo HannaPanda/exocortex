@@ -115,4 +115,54 @@ describe('renderMail', () => {
     expect(mail.subject).toBe('eXocortex: E-Mail-Adresse bestätigen');
     expect(mail.text.startsWith('Hallo Stefan,')).toBe(true);
   });
+
+  /**
+   * The digest is the one template whose shape changes with what happened
+   * (issue #106). Two things are worth asserting: it counts what it does not
+   * list, and it never puts a whole comment in a mail.
+   */
+  it('lists comments per page and counts the rest', () => {
+    const mail = renderMail({
+      template: 'COMMENT_DIGEST',
+      commentCount: 9,
+      morePages: 2,
+      pages: [
+        {
+          title: 'Claude Code Setup',
+          url: 'https://exocortex.app/arbeitsbereich/w1/seite/d1',
+          moreComments: 3,
+          comments: [
+            { authorName: 'Stefan', preview: 'Sollen wir den Hook rauswerfen?' },
+            { authorName: 'Johanna', preview: 'Ja, der läuft doppelt.' },
+          ],
+        },
+      ],
+    });
+
+    expect(mail.subject).toBe('eXocortex: 9 neue Kommentare auf 3 Seiten');
+    expect(mail.text).toContain('- Stefan: „Sollen wir den Hook rauswerfen?“');
+    expect(mail.text).toContain('- und 3 weitere');
+    expect(mail.text).toContain('https://exocortex.app/arbeitsbereich/w1/seite/d1');
+    expect(mail.text).toContain('Auf 2 weiteren Seiten');
+  });
+
+  it('reads as a sentence when there is exactly one comment', () => {
+    const mail = renderMail({
+      template: 'COMMENT_DIGEST',
+      commentCount: 1,
+      morePages: 0,
+      pages: [
+        {
+          title: 'Projektideen',
+          url: 'https://exocortex.app/arbeitsbereich/w1/seite/d2',
+          moreComments: 0,
+          comments: [{ authorName: 'Stefan', preview: 'Kurz notiert.' }],
+        },
+      ],
+    });
+
+    expect(mail.subject).toBe('eXocortex: Ein neuer Kommentar auf „Projektideen“');
+    expect(mail.text).not.toContain('weitere');
+    expect(mail.text).toContain('Einstellungen → Benachrichtigungen');
+  });
 });

@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+import {
+  addLocalDays,
+  daysInMonth,
+  instantAtLocalTime,
+  isUsableTimeZone,
+  type LocalDate,
+  localTimeParts,
+  localWeekday,
+} from './zoned-time';
+
 /**
  * When a scheduled automation runs next (issue #73).
  *
@@ -31,16 +41,6 @@ export const automationTimeZoneSchema = z
   .min(1)
   .max(64)
   .refine(isUsableTimeZone, { message: 'Unknown IANA time zone' });
-
-/** Whether the runtime knows the zone. */
-export function isUsableTimeZone(value: string): boolean {
-  try {
-    new Intl.DateTimeFormat('en-US', { timeZone: value });
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 /**
  * Everything the next-run calculation needs, in the shape the row stores.
@@ -121,15 +121,15 @@ export function nextAutomationRun(schedule: AutomationSchedule, after: Date): Da
   const matcher = dayMatcher(schedule);
   if (matcher === null) return null;
 
-  const start = localParts(after, schedule.timeZone);
+  const start = localTimeParts(after, schedule.timeZone);
   const startMinute = start.hour * 60 + start.minute;
 
   for (let offset = 0; offset < MAX_SEARCH_DAYS; offset += 1) {
-    const day = addDays(start, offset);
+    const day = addLocalDays(start, offset);
     if (!matcher(day)) continue;
     for (const minuteOfDay of minutes) {
       if (offset === 0 && minuteOfDay <= startMinute) continue;
-      const instant = zonedInstant(
+      const instant = instantAtLocalTime(
         { ...day, hour: Math.floor(minuteOfDay / 60), minute: minuteOfDay % 60 },
         schedule.timeZone,
       );
@@ -141,18 +141,6 @@ export function nextAutomationRun(schedule: AutomationSchedule, after: Date): Da
     }
   }
   return null;
-}
-
-/** A calendar date without a zone: what a wall clock shows. */
-interface LocalDate {
-  year: number;
-  month: number;
-  day: number;
-}
-
-interface LocalDateTime extends LocalDate {
-  hour: number;
-  minute: number;
 }
 
 /** Minutes of the day the schedule can fire at, ascending. */
@@ -182,7 +170,7 @@ function dayMatcher(schedule: AutomationSchedule): ((date: LocalDate) => boolean
     case 'WEEKLY': {
       const weekday = schedule.weekday;
       if (weekday === null) return null;
-      return (date) => weekdayOf(date) === weekday;
+      return (date) => localWeekday(date) === weekday;
     }
     case 'MONTHLY': {
       const wanted = schedule.dayOfMonth;
@@ -306,103 +294,9 @@ function parseField(field: string, min: number, max: number): number[] | null {
 function cronMatchesDay(fields: CronFields, date: LocalDate): boolean {
   if (!fields.months.includes(date.month)) return false;
   const byDay = fields.daysOfMonth.includes(date.day);
-  const byWeekday = fields.weekdays.includes(weekdayOf(date));
+  const byWeekday = fields.weekdays.includes(localWeekday(date));
   if (fields.dayOfMonthRestricted && fields.weekdayRestricted) return byDay || byWeekday;
   if (fields.dayOfMonthRestricted) return byDay;
   if (fields.weekdayRestricted) return byWeekday;
   return true;
-}
-
-// ---------------------------------------------------------------------------
-// Calendar and zone arithmetic
-// ---------------------------------------------------------------------------
-
-function daysInMonth(year: number, month: number): number {
-  return new Date(Date.UTC(year, month, 0)).getUTCDate();
-}
-
-function weekdayOf(date: LocalDate): number {
-  return new Date(Date.UTC(date.year, date.month - 1, date.day)).getUTCDay();
-}
-
-function addDays(date: LocalDate, days: number): LocalDate {
-  const moved = new Date(Date.UTC(date.year, date.month - 1, date.day + days));
-  return {
-    year: moved.getUTCFullYear(),
-    month: moved.getUTCMonth() + 1,
-    day: moved.getUTCDate(),
-  };
-}
-
-/** What a wall clock in `timeZone` shows at this instant. */
-function localParts(instant: Date, timeZone: string): LocalDateTime {
-  const parts = zoneParts(instant, timeZone);
-  return {
-    year: parts.year,
-    month: parts.month,
-    day: parts.day,
-    hour: parts.hour,
-    minute: parts.minute,
-  };
-}
-
-/**
- * The instant at which a wall clock in `timeZone` shows this local time.
- *
- * Two passes: the first offset is read at the wrong instant by up to an hour
- * around a transition, and applying it lands close enough for the second to be
- * right. The same shape as `apps/worker/src/calendar/reminder-time.ts`, which
- * has to answer the same question for appointment reminders.
- */
-function zonedInstant(local: LocalDateTime, timeZone: string): Date {
-  const wall = Date.UTC(local.year, local.month - 1, local.day, local.hour, local.minute);
-  let instant = wall - offsetMs(new Date(wall), timeZone);
-  instant = wall - offsetMs(new Date(instant), timeZone);
-  return new Date(instant);
-}
-
-/** How far ahead of UTC the zone is at this instant, in milliseconds. */
-function offsetMs(instant: Date, timeZone: string): number {
-  const parts = zoneParts(instant, timeZone);
-  const asUtc = Date.UTC(
-    parts.year,
-    parts.month - 1,
-    parts.day,
-    parts.hour,
-    parts.minute,
-    parts.second,
-  );
-  return asUtc - instant.getTime();
-}
-
-function zoneParts(
-  instant: Date,
-  timeZone: string,
-): { year: number; month: number; day: number; hour: number; minute: number; second: number } {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  }).formatToParts(instant);
-
-  const read = (type: Intl.DateTimeFormatPartTypes): number => {
-    const value = parts.find((part) => part.type === type)?.value ?? '0';
-    return Number.parseInt(value, 10);
-  };
-
-  return {
-    year: read('year'),
-    month: read('month'),
-    day: read('day'),
-    // `hour12: false` renders midnight as 24 in some runtimes, which would push
-    // the date forward by a day.
-    hour: read('hour') % 24,
-    minute: read('minute'),
-    second: read('second'),
-  };
 }

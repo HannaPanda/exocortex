@@ -1,6 +1,7 @@
 import { type MailMessage } from '@exocortex/contracts';
 
 import { passwordResetMail, verificationMail } from './templates/auth';
+import { commentDigestMail } from './templates/comment-digest';
 import { invitationMail } from './templates/invitation';
 import { shareChangedMail, shareGrantedMail, shareRevokedMail } from './templates/share';
 import { type RenderedMail } from './types';
@@ -50,6 +51,12 @@ export function renderMail(message: MailMessage): RenderedMail {
         revokedByName: message.revokedByName,
         documentTitle: message.documentTitle,
         url: message.url,
+      });
+    case 'COMMENT_DIGEST':
+      return commentDigestMail({
+        commentCount: message.commentCount,
+        pages: message.pages,
+        morePages: message.morePages,
       });
   }
 }

@@ -3,9 +3,10 @@
 Which occasions this deployment tells somebody about, over which channels, and
 where the answer to "do you want that" is kept.
 
-The decision behind this file is ADR-052. The two transports have their own
-documents: `docs/mail.md` for how a mail is built and sent, and ADR-048 for how
-a device is subscribed and encrypted to.
+The decision behind this file is ADR-052, and ADR-053 for the one pair that
+collects. The two transports have their own documents: `docs/mail.md` for how
+a mail is built and sent, and ADR-048 for how a device is subscribed and
+encrypted to.
 
 ## The two axes
 
@@ -20,17 +21,25 @@ table that says which pairs exist. It is not a cross product. A pair appears
 there when something actually delivers it, because a switch that reaches no
 sender is a promise the deployment does not keep.
 
-| Occasion   | Channel | Modes             | Default     | Preference lives |
-| ---------- | ------- | ----------------- | ----------- | ---------------- |
-| `SHARE`    | `EMAIL` | `OFF`/`IMMEDIATE` | `IMMEDIATE` | the account      |
-| `COMMENT`  | `PUSH`  | `OFF`/`IMMEDIATE` | `IMMEDIATE` | the device       |
-| `CALENDAR` | `PUSH`  | `OFF`/`IMMEDIATE` | `IMMEDIATE` | the device       |
-| `AGENT`    | `PUSH`  | `OFF`/`IMMEDIATE` | `IMMEDIATE` | the device       |
+| Occasion   | Channel | Modes                            | Default     | Preference lives |
+| ---------- | ------- | -------------------------------- | ----------- | ---------------- |
+| `SHARE`    | `EMAIL` | `OFF`/`IMMEDIATE`                | `IMMEDIATE` | the account      |
+| `COMMENT`  | `PUSH`  | `OFF`/`IMMEDIATE`                | `IMMEDIATE` | the device       |
+| `COMMENT`  | `EMAIL` | `OFF`/`IMMEDIATE`/`DAILY_DIGEST` | `OFF`       | the account      |
+| `CALENDAR` | `PUSH`  | `OFF`/`IMMEDIATE`                | `IMMEDIATE` | the device       |
+| `AGENT`    | `PUSH`  | `OFF`/`IMMEDIATE`                | `IMMEDIATE` | the device       |
 
 `SHARE` has no push row because a share is not a moment: the person it concerns
 is usually not here when it happens, and may have no device registered at all.
 `CALENDAR` has no mail row because a reminder that arrives whenever a mail
 client next polls is a reminder for the wrong minute.
+
+`COMMENT` is the only pair with both, and the only one that can collect. It is
+also the only mail row that is `OFF` by default: push already reaches whoever
+registered a device, so nothing is lost by silence, and a deployment that gains
+a feature must not thereby start writing to people who never asked it to. A
+share, by contrast, is on because a share nobody hears about is a share nobody
+uses.
 
 ## Where a preference is stored
 
@@ -58,15 +67,27 @@ the switch.
 
 `OFF`, `IMMEDIATE`, `DAILY_DIGEST`.
 
-The third is in the union although nothing produces one yet. The routing layer
-has to be able to answer "queue now, or collect for later" before anything
-collects; adding the mode afterwards would mean migrating rows that already say
-`IMMEDIATE` and guessing which of them meant it. No catalogue entry offers it,
-`notifications.test.ts` says so out loud, and it is issue #106 that adds the
-mode to an entry and the job that sends it, in one commit series.
+The third was in the union before anything produced one: the routing layer had
+to be able to answer "queue now, or collect for later" before anything
+collected, and adding the mode afterwards would have meant migrating rows that
+already said `IMMEDIATE` and guessing which of them meant it. Issue #106 added
+the other half, and `COMMENT`/`EMAIL` is so far the only entry that offers it
+(ADR-053, `docs/background-jobs.md` for the sweep).
 
 A sender compares against `IMMEDIATE` rather than against `OFF`. A collecting
 mode must never fall through to sending at once.
+
+Only mail collects. A digest is a page of text somebody reads when they get
+round to it; a push notification is a line on a lock screen at the moment
+something happens, and a collected push would arrive as a nudge about something
+that stopped being news yesterday. `notifications.test.ts` says so out loud.
+
+Which knobs a digest has, and where: `notifications.digestHour`,
+`notifications.digestTimeZone` and
+`notifications.commentMailDebounceMinutes`, all deployment-wide (ADR-023).
+One mail per person covers every workspace they are in, so the hour it goes
+out cannot be a workspace's answer -- and the zone is stated rather than read
+off the server, which runs in UTC.
 
 ## Asking
 
@@ -106,6 +127,13 @@ share is still announced.
 4. If the channel is mail, follow `docs/mail.md`'s four steps for the template
    itself. The preference decides whether to enqueue; the template decides what
    the mail says.
+   If the mode is `DAILY_DIGEST`, there is a fifth thing to decide: what holds
+   the occurrences between the event and the mail. ADR-053 answers it for
+   comments with a row per owed occurrence, written where the recipient is
+   already being decided, carrying a pointer and no text. Do not reconstruct a
+   digest from jobs that have already been sent, and do not re-derive its
+   recipients from a checkpoint -- that is the recipient logic in a second
+   place, reading a world that has moved on.
 5. Amend the feature entry `benachrichtigungen-einstellen` in
    `packages/features/src/features/platform.ts`, and this table.
 
@@ -125,3 +153,9 @@ list already carries it.
 The page keeps the two sections apart rather than drawing a matrix of occasion
 by channel. A matrix would hide the difference between them and would offer
 cells that nothing delivers.
+
+Inside the mail section the control follows the pair: two modes are a switch,
+three are a select. A switch with three states is a puzzle, and a select with
+two entries is a detour around a yes. Both read `modes` from the response
+rather than from a list in the browser, so a mode this deployment refuses is
+never offered.

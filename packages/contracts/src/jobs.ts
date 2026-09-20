@@ -111,6 +111,14 @@ export const maintenanceJobSchema = jobBase.extend({
     'collect-orphaned-covers',
     'reap-stale-ai-runs',
     /**
+     * Hands out the comment mail people have collected (issue #106, ADR-053).
+     * Runs every minute and is a no-op unless somebody has switched comment
+     * mail on, which nobody has by default. Both modes go through it: the
+     * difference between `IMMEDIATE` and `DAILY_DIGEST` is when an entry
+     * counts as due, not which code sends it.
+     */
+    'send-comment-digests',
+    /**
      * Re-points the reference index after a page appeared, was renamed or
      * changed workspace. Needs `documentId`; without one it does nothing,
      * because there is no title to resolve against (issue #19).

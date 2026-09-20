@@ -48,3 +48,4 @@ export * from './transclusion';
 export * from './workspace-credentials';
 export * from './workspace-overview';
 export * from './workspaces';
+export * from './zoned-time';

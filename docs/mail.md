@@ -19,8 +19,8 @@ not run yet. These go straight through the `MAILER` provider in
 request say so.
 
 **Asynchronous, in the worker.** Everything else, starting with the share
-notifications of issue #103 and continuing with #104 to #107. They are enqueued
-on the `mail` queue and sent by `createMailDeliveryProcessor`, so a relay having
+notifications of issue #103, the comment digests of #106, and continuing with
+#104 and #107. They are enqueued on the `mail` queue and sent by `createMailDeliveryProcessor`, so a relay having
 a bad five minutes delays a mail instead of failing whatever caused it.
 `docs/background-jobs.md` describes the queue, its retry policy and its
 deduplication.
@@ -40,6 +40,7 @@ it.
 | `packages/mail/src/mailer.ts`                 | transport plus catalogue, and what may be logged              |
 | `packages/contracts/src/mail.ts`              | the template catalogue as a zod union                         |
 | `share-notifications.ts` (worker)             | which grant change becomes which mail, and to whom            |
+| `comment-digests.ts` (worker)                 | which collected comments become one mail, and to whom         |
 | `apps/worker/src/processors/mail-delivery.ts` | one job, one SMTP hop, retry or do not                        |
 
 `packages/mail` may see `@exocortex/contracts` and `@exocortex/logger` and
@@ -107,6 +108,24 @@ withdrawn in between is not announced as an arrival. The withdrawal mail is the 
 says least on purpose -- the page's title, which the first mail already
 carried, and a link to the list of what is still shared. Not a link into the
 page, because the reader can no longer open it.
+
+## Comment mail
+
+One template, `COMMENT_DIGEST`, for both modes the `COMMENT`/`EMAIL` pair
+offers (issue #106, ADR-053). `IMMEDIATE` is a digest of the last couple of
+minutes and `DAILY_DIGEST` is a digest of a day; a second "one new comment"
+template would be the same words with the plural removed, kept in step by hand
+for ever.
+
+It carries previews and links and never a whole comment: about 140 characters
+per comment, at most five comments per page and ten pages per mail, with the
+remainder stated as a count. The payload is bounded twice -- the producer caps
+the lists, `mailMessageSchema` refuses anything longer.
+
+Who gets it, and what is in it, is decided by `comment-digests.ts` at the
+moment of sending and not when the comment was written:
+`docs/background-jobs.md` describes the sweep, and ADR-053 why the thing in
+between is a row per owed comment rather than a checkpoint.
 
 ## Why a template and not a subject and a body
 

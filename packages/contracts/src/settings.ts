@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { AI_MUTATION_POLICIES, aiMutationPolicySchema } from './ai-trust';
+import { isUsableTimeZone } from './zoned-time';
 
 /**
  * Runtime settings, stored one row per key in the `setting` table.
@@ -434,6 +435,42 @@ export const settingsSchema = z.object({
     .refine(isUsableTimeZone, { message: 'Unbekannte Zeitzone' })
     .default('Europe/Berlin'),
   /**
+   * Local hour at which a daily comment digest goes out (issue #106, ADR-053).
+   *
+   * Morning by default, because the mail's whole purpose is to be read once
+   * rather than the moment it arrives. Deployment-wide rather than per
+   * workspace: a digest is one mail per person covering every workspace they
+   * are in, so a workspace-level answer would be several answers to a question
+   * with one mail behind it.
+   */
+  'notifications.digestHour': z.number().int().min(0).max(23).default(7),
+  /**
+   * The zone the hour above is read in. Explicit rather than the server's, and
+   * validated here so a typo is refused at the boundary instead of throwing
+   * inside the sweep every minute.
+   *
+   * Deliberately not guessed: a process running in UTC would post everybody
+   * their morning mail at two in the morning and nothing would report it as a
+   * fault. There is no per-account zone in this deployment yet; when there is,
+   * this becomes its fallback rather than its replacement.
+   */
+  'notifications.digestTimeZone': z
+    .string()
+    .trim()
+    .min(1)
+    .max(64)
+    .refine(isUsableTimeZone, { message: 'Unbekannte Zeitzone' })
+    .default('Europe/Berlin'),
+  /**
+   * How long `IMMEDIATE` comment mail waits before it goes out, so a burst of
+   * replies becomes one message.
+   *
+   * Zero means no waiting, which is the literal reading of the word. The
+   * default is two minutes: long enough that a thread somebody is typing into
+   * arrives as one mail, short enough that nobody experiences it as a delay.
+   */
+  'notifications.commentMailDebounceMinutes': z.number().int().min(0).max(60).default(2),
+  /**
    * Takes a `SCHEDULED` snapshot of a page that changed since its last
    * snapshot, on the interval below (issue #20, "Bearbeitungen im Editor
    * verdichten"). Off by default: it is a new, recurring write the deployment
@@ -645,15 +682,6 @@ export const settingsSchema = z.object({
   'projects.buildRetentionDays': z.number().int().min(0).max(3_650).default(30),
 });
 
-/** Whether the runtime knows the zone. `Intl` is the only authority available. */
-function isUsableTimeZone(value: string): boolean {
-  try {
-    new Intl.DateTimeFormat('de-DE', { timeZone: value });
-    return true;
-  } catch {
-    return false;
-  }
-}
 export type Settings = z.infer<typeof settingsSchema>;
 
 /**
@@ -795,6 +823,11 @@ export const SETTING_SCOPES = {
   'calendar.reminderLeadMinutes': 'workspace',
   'calendar.reminderAllDayHour': 'workspace',
   'calendar.timeZone': 'workspace',
+  // One mail per person covers every workspace they are in, so the hour it
+  // goes out cannot be a workspace's answer (issue #106).
+  'notifications.digestHour': 'deployment',
+  'notifications.digestTimeZone': 'deployment',
+  'notifications.commentMailDebounceMinutes': 'deployment',
   'activity.editSessionSnapshotsEnabled': 'deployment',
   'activity.editSessionSnapshotIntervalMinutes': 'deployment',
   'activity.snapshotRetentionFullDays': 'deployment',

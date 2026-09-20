@@ -32,11 +32,12 @@ export type NotificationChannel = z.infer<typeof notificationChannelSchema>;
 /**
  * How much of a channel a person wants for one occasion.
  *
- * `DAILY_DIGEST` is in the union although no sender produces one yet: the
- * routing layer has to be able to answer "queue now, or collect for later"
- * before anything collects, and a mode added afterwards would mean migrating
- * rows that already say `IMMEDIATE`. No catalogue entry offers it, so nothing
- * can be stored yet either -- issue #106 adds both halves at once.
+ * `DAILY_DIGEST` was in this union before anything produced one: the routing
+ * layer had to be able to answer "queue now, or collect for later" before
+ * anything collected, and a mode added afterwards would have meant migrating
+ * rows that already said `IMMEDIATE`. Issue #106 added the other half -- the
+ * `COMMENT`/`EMAIL` entry below offers it, and `send-comment-digests` sends
+ * it (ADR-053).
  */
 export const notificationDeliveryModes = ['OFF', 'IMMEDIATE', 'DAILY_DIGEST'] as const;
 export const notificationDeliveryModeSchema = z.enum(notificationDeliveryModes);
@@ -73,6 +74,21 @@ export interface NotificationKindEntry {
 /** Off, or delivered the moment it happens. What a switch expresses. */
 const SWITCH: readonly NotificationDeliveryMode[] = ['OFF', 'IMMEDIATE'];
 
+/**
+ * The same, plus collecting for later. What a channel expresses that can also
+ * carry several occurrences in one message (issue #106).
+ *
+ * Only mail offers it. A digest is a page of text somebody reads when they get
+ * round to it, and a push notification is a line on a lock screen at the
+ * moment something happens -- a collected push would arrive as a nudge about
+ * something that stopped being news yesterday.
+ */
+const SWITCH_WITH_DIGEST: readonly NotificationDeliveryMode[] = [
+  'OFF',
+  'IMMEDIATE',
+  'DAILY_DIGEST',
+];
+
 export const NOTIFICATION_CATALOG: Readonly<Record<NotificationKind, NotificationKindEntry>> = {
   SHARE: {
     label: 'Geteilte Seiten',
@@ -91,6 +107,18 @@ export const NOTIFICATION_CATALOG: Readonly<Record<NotificationKind, Notificatio
       'Jemand kommentiert eine Seite, die du geschrieben hast, oder antwortet in einem Faden, in dem du schon steckst.',
     channels: {
       PUSH: { modes: SWITCH, defaultMode: 'IMMEDIATE', storedOn: 'device' },
+      /**
+       * Mail as well, and the only pair that can collect (issue #106,
+       * ADR-053). A comment is the one occasion here that arrives in bursts:
+       * a thread is four replies in ten minutes, and four letters about them
+       * is how somebody learns to filter this sender into a folder.
+       *
+       * `OFF` by default, unlike the share mail beside it. Push already
+       * reaches whoever registered a device, so nothing is lost by silence
+       * here -- and a deployment that gains a feature must not thereby start
+       * writing to people who never asked it to.
+       */
+      EMAIL: { modes: SWITCH_WITH_DIGEST, defaultMode: 'OFF', storedOn: 'account' },
     },
   },
   CALENDAR: {

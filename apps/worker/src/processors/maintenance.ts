@@ -18,6 +18,7 @@ import {
   reapRenderJobs,
   reapStaleAiRuns,
 } from './maintenance-tasks/cleanup';
+import { sendCommentDigests } from './maintenance-tasks/comment-digests';
 import { rematerializeStaleContent } from './maintenance-tasks/content';
 import { type MaintenanceTask } from './maintenance-tasks/context';
 import { backfillLinks, repairLinks, resolveLinks } from './maintenance-tasks/links';
@@ -86,6 +87,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'collect-orphaned-covers': collectOrphanedCovers,
   'vacuum-search-index': vacuumSearchIndex,
   'reap-stale-ai-runs': reapStaleAiRuns,
+  'send-comment-digests': sendCommentDigests,
   'resolve-document-links': resolveLinks,
   'repair-document-links': repairLinks,
   'backfill-document-links': backfillLinks,
@@ -110,7 +112,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
 /**
  * Maintenance processor.
  *
- * Twenty-five unrelated sweeps share one queue and one schedule; what they have
+ * Twenty-six unrelated sweeps share one queue and one schedule; what they have
  * in common is that nobody is waiting for them. The work itself lives one per
  * function in `maintenance-tasks/`, grouped by what it touches.
  */

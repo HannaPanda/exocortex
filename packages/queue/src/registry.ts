@@ -445,6 +445,12 @@ export class QueueRegistry {
     // The clock's half of the automation trigger side: one indexed query over
     // `nextRunAt` that finds nothing on a deployment with no scheduled rules.
     await schedule('run-due-automations', { every: 60_000 });
+    // Every minute, and a no-op on almost all of them: nobody has comment
+    // mail switched on by default, and the sweep's first query asks whether
+    // anybody is owed anything (issue #106). The cadence is the finest a
+    // schedule can be because `IMMEDIATE` means it: a mail that waits its
+    // debounce and then another four minutes for a sweep is not immediate.
+    await schedule('send-comment-digests', { every: 60_000 });
     // Every two minutes: this one is not a nightly sweep. Half of it closes
     // builds whose worker is gone, and a person watching a spinner should not
     // have to wait until tomorrow to be told that nothing is coming (issue #44).

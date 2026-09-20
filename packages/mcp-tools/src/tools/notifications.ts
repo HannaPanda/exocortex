@@ -29,8 +29,8 @@ export const notificationPreferencesTool: AnyToolDefinition = defineTool({
   description:
     'Zeigt, worüber dieses Konto benachrichtigt werden will, und zwar für die Kanäle, die am ' +
     'Konto hängen statt an einem Gerät: derzeit E-Mail. Je Anlass steht dabei, welche ' +
-    'Zustellarten möglich sind (OFF, IMMEDIATE), was ohne eigene Entscheidung gilt und was ' +
-    'gerade eingestellt ist. Push gehört nicht hierher: was ein einzelner Browser hören soll, ' +
+    'Zustellarten möglich sind (OFF, IMMEDIATE und bei Kommentaren zusätzlich DAILY_DIGEST), ' +
+    'was ohne eigene Entscheidung gilt und was gerade eingestellt ist. Push gehört nicht hierher: was ein einzelner Browser hören soll, ' +
     'steht in exo_push_devices, weil das Handy in der Tasche und der Rechner auf der Arbeit ' +
     'unterschiedliche Antworten geben dürfen.',
   inputSchema: z.object({}),

@@ -86,6 +86,7 @@ model User {
   receivedShares              DocumentShare[]       @relation("DocumentShareGrantee")
   pushSubscriptions           PushSubscription[]    @relation("PushSubscriptionOwner")
   notificationPreferences     NotificationPreference[] @relation("NotificationPreferenceOwner")
+  commentDigestEntries        CommentDigestEntry[]     @relation("CommentDigestRecipient")
 
   @@map("user")
 }
@@ -556,6 +557,7 @@ model Workspace {
   documentLinks     DocumentLink[]
   calendarAccounts  CalendarAccount[]
   comments          Comment[]
+  commentDigestEntries CommentDigestEntry[]
   invitations       Invitation[]
   agentWrites       AgentWriteJournal[]
   settings          WorkspaceSetting[]
@@ -835,6 +837,7 @@ model Document {
   calendarObject        CalendarObjectState[]     @relation("CalendarRow")
   /// Remarks about this page. Not part of its content (see `Comment`).
   comments              Comment[]                 @relation("DocumentComments")
+  commentDigestEntries  CommentDigestEntry[]      @relation("DocumentCommentDigestEntries")
   /// Present when `type` is PROJECT: the project's settings, files and builds
   /// (issue #43, ADR-027).
   project               Project?                  @relation("ProjectDocument")
@@ -1250,6 +1253,9 @@ model Comment {
   parentId String?
   parent   Comment?  @relation("CommentThread", fields: [parentId], references: [id], onDelete: Cascade)
   replies  Comment[] @relation("CommentThread")
+  /// Pending comment-digest pointers. They cascade with the comment: a
+  /// deleted comment owes nobody a mail (issue #106).
+  digestEntries CommentDigestEntry[]
 
   /// Addressable block the thread hangs on (`@exocortex/editor`'s block
   /// identifiers, which survive rewording). `null` is a comment on the page as
@@ -3293,6 +3299,51 @@ model NotificationPreference {
 
   @@id([userId, kind, channel])
   @@map("notification_preference")
+}
+
+/// One comment somebody is owed a mail about, and has not had one about yet
+/// (issue #106, ADR-053).
+///
+/// The row is a pointer and carries no text. Who a recipient is was decided
+/// once, by the same code that decides who gets a push, at the moment the
+/// outbox passed the comment; what the mail says is read fresh when it is
+/// sent, which is the only way a comment deleted in between or a share
+/// withdrawn in between cannot leak into somebody's inbox.
+///
+/// `sentAt` is the whole of the bookkeeping. An entry that has one is history
+/// and never appears in a second mail; an entry without one is owed, however
+/// many times a send failed on the way. There is no checkpoint beside it,
+/// because a checkpoint and a set of rows are two things that can disagree.
+model CommentDigestEntry {
+  id String @id @default(cuid(2))
+
+  userId String
+  user   User   @relation("CommentDigestRecipient", fields: [userId], references: [id], onDelete: Cascade)
+
+  /// The comment itself, so the mail is built from what is true at send time.
+  /// Cascades: a deleted comment owes nobody a mail.
+  commentId String
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  /// Denormalized so the access re-check can group by page without loading
+  /// every comment first, and so a digest can be grouped without a join.
+  documentId  String
+  document    Document  @relation("DocumentCommentDigestEntries", fields: [documentId], references: [id], onDelete: Cascade)
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  /// When the entry was written, which is when the comment was dispatched.
+  /// What the daily slot compares against.
+  createdAt DateTime @default(now())
+  /// When the mail carrying it was handed to the queue. Null means owed.
+  sentAt    DateTime?
+
+  /// One entry per person per comment. A redelivered outbox row must not buy
+  /// somebody a second line in the same mail.
+  @@unique([userId, commentId])
+  /// The sweep's query: who is owed something, oldest first.
+  @@index([sentAt, userId, createdAt])
+  @@map("comment_digest_entry")
 }
 
 /// One browser on one device that has agreed to be notified.

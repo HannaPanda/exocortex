@@ -107,6 +107,48 @@ export const mailMessageSchema = z.discriminatedUnion('template', [
     /** The list of pages still shared with them, not the page that was withdrawn. */
     url: mailUrlSchema,
   }),
+  /**
+   * The comments somebody has collected since the last time they were told
+   * (issue #106, ADR-053).
+   *
+   * One template for both modes the pair offers. `IMMEDIATE` is a digest of
+   * whatever arrived in the last couple of minutes and `DAILY_DIGEST` is a
+   * digest of a day; a second, single-comment template would be the same mail
+   * with the plural removed, and two templates to keep in step for that.
+   *
+   * Everything here is bounded twice over. The producer caps the lists and
+   * counts what it left out in `moreComments` and `morePages`, and the schema
+   * refuses anything longer -- a mail is a summary, and a person who wants the
+   * whole thread follows the link.
+   */
+  z.object({
+    template: z.literal('COMMENT_DIGEST'),
+    /** Every comment this mail stands for, the ones it lists and the ones it counts. */
+    commentCount: z.number().int().min(1),
+    pages: z
+      .array(
+        z.object({
+          title: mailTitleSchema,
+          url: mailUrlSchema,
+          comments: z
+            .array(
+              z.object({
+                authorName: mailNameSchema,
+                /** The comment's first words, flattened. Never the whole body. */
+                preview: z.string().trim().min(1).max(200),
+              }),
+            )
+            .min(1)
+            .max(5),
+          /** Comments on this page the mail does not list. */
+          moreComments: z.number().int().min(0),
+        }),
+      )
+      .min(1)
+      .max(10),
+    /** Pages the mail does not list at all. */
+    morePages: z.number().int().min(0),
+  }),
 ]);
 export type MailMessage = z.infer<typeof mailMessageSchema>;
 

@@ -52,20 +52,30 @@ describe('the notification catalogue', () => {
     }
     expect(ACCOUNT_NOTIFICATION_PAIRS.map((pair) => `${pair.kind}/${pair.channel}`)).toEqual([
       'SHARE/EMAIL',
+      'COMMENT/EMAIL',
     ]);
   });
 
   /**
-   * A digest is modelled and nothing collects one yet (issue #106). Offering it
-   * would be a switch that quietly delivers nothing, so the catalogue may not
-   * name it until a sender exists -- at which point this expectation is what
-   * says out loud that the two halves ship together.
+   * A digest is a thing a mail can be and a push cannot (issue #106). It said
+   * so before by naming nobody at all; now that `send-comment-digests` exists
+   * it says which side of the line each channel is on, which is what stops a
+   * later pair from quietly offering a collected push nothing collects.
    */
-  it('offers no digest while nothing collects one', () => {
+  it('offers a digest on mail and never on push', () => {
     for (const kind of notificationKinds) {
-      for (const channel of notificationChannels) {
-        expect(notificationSupport(kind, channel)?.modes ?? []).not.toContain('DAILY_DIGEST');
-      }
+      expect(notificationSupport(kind, 'PUSH')?.modes ?? []).not.toContain('DAILY_DIGEST');
     }
+    expect(notificationSupport('COMMENT', 'EMAIL')?.modes).toContain('DAILY_DIGEST');
+  });
+
+  /**
+   * The one pair that collects must not arrive by default. Comment mail is
+   * `OFF` until somebody asks for it: push already reaches whoever registered
+   * a device, and a deployment that gains a feature must not thereby start
+   * writing to people who never asked it to.
+   */
+  it('keeps comment mail off until it is asked for', () => {
+    expect(notificationSupport('COMMENT', 'EMAIL')?.defaultMode).toBe('OFF');
   });
 });

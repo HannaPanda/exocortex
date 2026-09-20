@@ -37,6 +37,7 @@ export const GROUP_LABELS: Record<string, string> = {
   search: 'Suche',
   mcp: 'MCP',
   calendar: 'Kalender',
+  notifications: 'Benachrichtigungen',
   activity: 'Aktivität',
   automations: 'Automationen',
   overview: 'Übersichtsseiten',
@@ -314,6 +315,18 @@ export const SETTING_COPY: Record<SettingKey, { label: string; help: string }> =
   'calendar.timeZone': {
     label: 'Zeitzone',
     help: 'In welcher Zone die beiden Angaben darüber gelesen werden, zum Beispiel Europe/Berlin.',
+  },
+  'notifications.digestHour': {
+    label: 'Uhrzeit der Tageszusammenfassung',
+    help: 'Zu welcher Stunde die tägliche Kommentar-Zusammenfassung rausgeht, für alle, die sie eingeschaltet haben. Morgens, weil so eine Mail einmal gelesen und nicht sofort beantwortet werden soll.',
+  },
+  'notifications.digestTimeZone': {
+    label: 'Zeitzone der Zusammenfassung',
+    help: 'In welcher Zone die Uhrzeit darüber gelesen wird, zum Beispiel Europe/Berlin. Bewusst eine eigene Angabe statt der Zeit des Servers, der in UTC läuft.',
+  },
+  'notifications.commentMailDebounceMinutes': {
+    label: 'Sammelzeit für sofortige Kommentar-Mails (Minuten)',
+    help: 'Wie lange auf weitere Kommentare gewartet wird, bevor eine sofortige Mail rausgeht. So wird aus vier Antworten in einem Faden eine Mail statt vier. 0 bedeutet: ohne Warten.',
   },
   'activity.editSessionSnapshotsEnabled': {
     label: 'Bearbeitungssitzungen aufzeichnen',
