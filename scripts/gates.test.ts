@@ -281,6 +281,53 @@ describe('capability parity (check-capability-parity.mjs)', () => {
   });
 
   /**
+   * The same question for the multipart wrapper: a route the browser uploads to
+   * is a route the browser reaches, and the scanner has to see it through
+   * `uploadRequest` as it does through `apiRequest` (issue #96).
+   */
+  it('goes red for an upload screen the agents cannot reach', () => {
+    writeProbe(
+      'apps/api/src/__gate_probe__.controller.ts',
+      [
+        "import { Controller, Post } from '@nestjs/common';",
+        '',
+        "@Controller('api/gate-probe')",
+        'export class GateProbeController {',
+        "  @Post('upload')",
+        "  upload(): string { return 'probe'; }",
+        '}',
+        '',
+      ].join('\n'),
+    );
+    writeProbe(
+      'apps/web/src/lib/api/__gate_probe__.ts',
+      [
+        "import { uploadRequest } from './client';",
+        '',
+        'export async function probeUpload(form: FormData): Promise<unknown> {',
+        '  return uploadRequest<unknown>(`/api/gate-probe/upload`, form);',
+        '}',
+        '',
+      ].join('\n'),
+    );
+    writeProbe(
+      'apps/web/src/components/__gate_probe__.tsx',
+      [
+        "import { probeUpload } from '@/lib/api/__gate_probe__';",
+        '',
+        'export function GateProbe() {',
+        '  void probeUpload;',
+        '  return null;',
+        '}',
+        '',
+      ].join('\n'),
+    );
+    const result = gate('check-capability-parity.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('POST /api/gate-probe/upload');
+  });
+
+  /**
    * The failure the matrix used to hide: a hook that calls the API and that no
    * screen imports counted as browser coverage, so a build history and two
    * reorder routes could sit in `lib/api` with nothing rendering them.
