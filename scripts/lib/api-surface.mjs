@@ -183,10 +183,12 @@ const WEB_CLIENT_DIR = join(WEB_SRC, 'lib/api');
 /**
  * Every route the browser calls, as `METHOD /path` -> the file that calls it.
  *
- * Two shapes are read: `apiRequest('/api/…', { method: 'POST' })`, which is how
- * the whole app talks to the API, and the two bare `fetch('/api/…')` calls that
- * upload multipart bodies the JSON wrapper cannot carry. A call without a
- * `method` is a GET, which is the wrapper's own default.
+ * Three shapes are read: `apiRequest('/api/…', { method: 'POST' })`, which is
+ * how the whole app talks to the API, `uploadRequest('/api/…', form)`, which is
+ * the same wrapper for the multipart bodies the JSON one cannot carry, and a
+ * bare `fetch('/api/…')` for anything that goes around both. A call without a
+ * `method` is a GET, which is the wrapper's own default; `uploadRequest` is a
+ * POST and says so at its call sites through the route it names.
  *
  * A call inside `lib/api` only counts when a screen actually reaches the hook
  * that makes it -- see `reachableClientNames`. The whole point of the UI column
@@ -201,8 +203,9 @@ export function collectWebCalls() {
     const rel = relative(repoRoot, file);
     const source = readFileSync(file, 'utf8');
     const declarations = file.startsWith(WEB_CLIENT_DIR) ? topLevelDeclarations(source) : null;
-    const opener = /\b(apiRequest|fetch)\s*(?:<[^>]*>)?\s*\(\s*/g;
-    while (opener.exec(source) !== null) {
+    const opener = /\b(apiRequest|uploadRequest|fetch)\s*(?:<[^>]*>)?\s*\(\s*/g;
+    let call = opener.exec(source);
+    for (; call !== null; call = opener.exec(source)) {
       const literal = readStringLiteral(source, opener.lastIndex);
       if (literal === null || !literal.text.startsWith('/api/')) continue;
       if (declarations !== null) {
@@ -211,7 +214,10 @@ export function collectWebCalls() {
       }
       const rest = source.slice(literal.end).match(/^\s*,\s*\{/);
       const options = rest === null ? '' : readBlock(source, literal.end + rest[0].length - 1).text;
-      const method = options.match(/(?:^|[\s,{])method:\s*'(\w+)'/)?.[1] ?? 'GET';
+      const method =
+        call[1] === 'uploadRequest'
+          ? 'POST'
+          : (options.match(/(?:^|[\s,{])method:\s*'(\w+)'/)?.[1] ?? 'GET');
       const key = `${method.toUpperCase()} ${normalizePath(literal.text)}`;
       if (!calls.has(key)) calls.set(key, rel);
     }
@@ -236,7 +242,11 @@ export function deadClientExports() {
       // Only the ones that talk to the API: a type, a query-key map or a label
       // table is scaffolding, and an unused one is a lint concern rather than a
       // missing screen.
-      if (!/\b(apiRequest|fetch)\s*(?:<[^>]*>)?\s*\(\s*['"`]\/api\//.test(declaration.body)) {
+      if (
+        !/\b(apiRequest|uploadRequest|fetch)\s*(?:<[^>]*>)?\s*\(\s*['"`]\/api\//.test(
+          declaration.body,
+        )
+      ) {
         continue;
       }
       dead.set(declaration.name, relative(repoRoot, file));
