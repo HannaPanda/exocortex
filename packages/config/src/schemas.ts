@@ -175,6 +175,26 @@ export const credentialEncryptionSchema = z.object({
   CREDENTIAL_ENCRYPTION_KEY: z.string().trim().optional(),
 });
 
+/**
+ * The application server's VAPID key pair for Web Push (issue #30, ADR-048).
+ *
+ * A credential, so it lives here and never in the `setting` table (ADR-023).
+ * Optional for the same reason as the two above: an unset line in `.env` must
+ * never stop a process from booting, and unset simply means this deployment
+ * sends no push notifications. `node scripts/generate-vapid-keys.mjs` prints a
+ * pair.
+ *
+ * The API needs the public half as well: it is what a browser subscribes
+ * with, and it is public by definition -- the private half is the worker's
+ * alone, because the worker is the only process that sends.
+ */
+export const pushSchema = z.object({
+  VAPID_PUBLIC_KEY: z.string().trim().optional(),
+  VAPID_PRIVATE_KEY: z.string().trim().optional(),
+  /** Contact for the push services, `mailto:` or `https:` (RFC 8292). */
+  VAPID_SUBJECT: z.string().trim().optional(),
+});
+
 export const internalApiSchema = z.object({
   /** Internal base URL of the REST API, used by the worker's tool loop. */
   API_URL: z.url().default('http://127.0.0.1:3211'),
@@ -239,6 +259,7 @@ export const apiEnvSchema = baseSchema
   .extend(publicSchema.shape)
   .extend(serviceTokenSchema.shape)
   .extend(credentialEncryptionSchema.shape)
+  .extend(pushSchema.shape)
   .extend(internalCollaborationSchema.shape)
   .extend(tracingSchema.shape);
 
@@ -250,6 +271,7 @@ export const workerEnvSchema = baseSchema
   .extend(calendarSchema.shape)
   .extend(serviceTokenSchema.shape)
   .extend(credentialEncryptionSchema.shape)
+  .extend(pushSchema.shape)
   .extend(internalApiSchema.shape)
   .extend(tracingSchema.shape);
 
