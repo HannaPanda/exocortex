@@ -84,9 +84,13 @@ test.describe('Seitenbaum mit der Tastatur', () => {
     await page.keyboard.press('ArrowRight');
     expect(await focusedRow(page)).toBe(childId);
 
-    // Und wieder heraus, zurück zur Elternzeile.
+    // Und wieder heraus, zurück zur Elternzeile. Ein Tastendruck tut dabei
+    // genau eine Sache: eine Zeile steckt in ihrer Elternzeile, also lief der
+    // Tastendruck anfangs durch beide Handler und die Elternzeile klappte
+    // hinterher noch zu.
     await page.keyboard.press('ArrowLeft');
     expect(await focusedRow(page)).toBe(parentId);
+    await expect(parentRow).toHaveAttribute('aria-expanded', 'true');
 
     // Auf und ab bewegen sich Zeile für Zeile, Pos1 und Ende an die Enden.
     await page.keyboard.press('ArrowDown');

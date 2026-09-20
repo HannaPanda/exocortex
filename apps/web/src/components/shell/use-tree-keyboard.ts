@@ -145,9 +145,23 @@ export function useTreeKeyboard({
     const row = rows[index];
     if (row === undefined) return;
 
+    /**
+     * This row answers the key, and no other.
+     *
+     * A tree item sits inside its parent tree item, so a key pressed on a child
+     * reaches every ancestor's handler on the way up. Without this, stepping
+     * out of a child with the left arrow moved focus to the parent and then let
+     * the parent fold itself shut -- one press doing two things, the second of
+     * them invisible until the branch was gone.
+     */
+    const claim = (): void => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+
     const direction = event.altKey ? NUDGE_KEYS[event.key] : undefined;
     if (direction !== undefined) {
-      event.preventDefault();
+      claim();
       nudge(documentId, direction);
       return;
     }
@@ -156,13 +170,13 @@ export function useTreeKeyboard({
     if (event.altKey || event.ctrlKey || event.metaKey) return;
 
     if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
+      claim();
       openDocument(documentId);
       return;
     }
 
     if (event.key === 'ContextMenu' || (event.key === 'F10' && event.shiftKey)) {
-      event.preventDefault();
+      claim();
       openRowMenu(event.currentTarget);
       return;
     }
@@ -173,13 +187,13 @@ export function useTreeKeyboard({
       (event.key === 'ArrowRight' && row.hasChildren && !row.isOpen) ||
       (event.key === 'ArrowLeft' && row.isOpen);
     if (folds) {
-      event.preventDefault();
+      claim();
       toggle(documentId);
       return;
     }
 
     if (!MOVE_KEYS.has(event.key)) return;
-    event.preventDefault();
+    claim();
     const target = focusTargetFor(event.key, rows, index);
     if (target !== null) focusRow(target);
   };
