@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-206 routes are reachable from at least one client; 135 from all three.
+209 routes are reachable from at least one client; 135 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -92,6 +92,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/me/connections` | ✓ | · | · | — |
 | `GET /api/me/shares` | ✓ | ✓ | ✓ | `exo_shared_with_me` |
 | `GET /api/memory/facts` | ✓ | ✓ | ✓ | `exo_memory_facts` |
+| `GET /api/memory/messages` | · | ✓ | ✓ | `exo_agent_messages` |
 | `GET /api/memory/recall` | · | · | · | `recall` |
 | `GET /api/project-builds/:x` | ✓ | ✓ | ✓ | `exo_project_build_status` |
 | `GET /api/project-builds/:x/artifacts` | ✓ | ✓ | ✓ | `exo_project_build_artifacts` |
@@ -198,6 +199,8 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/invitations/preview` | ✓ | · | · | — |
 | `POST /api/me/api-tokens` | ✓ | · | · | — |
 | `POST /api/memory/facts/:x/promote` | ✓ | ✓ | ✓ | `exo_memory_fact_promote` |
+| `POST /api/memory/messages` | · | ✓ | ✓ | `exo_agent_message_send` |
+| `POST /api/memory/messages/read` | · | ✓ | ✓ | `exo_agent_message_read` |
 | `POST /api/memory/remember` | · | · | · | `remember` |
 | `POST /api/project-builds/:x/cancel` | ✓ | ✓ | ✓ | `exo_project_build_cancel` |
 | `POST /api/projects/:x/assets` | ✓ | ✓ | ✓ | `exo_project_add_asset` |

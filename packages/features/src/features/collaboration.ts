@@ -133,6 +133,26 @@ export const COLLABORATION_FEATURES: readonly RegisteredFeature[] = [
     settings: ['memory.enabled', 'memory.captureModelSlug', 'memory.retentionDays'],
   }),
   defineFeature({
+    id: 'gedaechtnis-postfach',
+    area: 'gedaechtnis',
+    title: 'Agenten hinterlassen einander Nachrichten',
+    summary:
+      'Ein Agent kann einem anderen etwas ausrichten, ohne dass du es weitererzählen musst. Die Nachricht bleibt liegen, bis der Empfänger das nächste Mal läuft, und steht dann beim Sitzungsstart ganz oben. Sie verfällt nach zwei Wochen.',
+    details: [
+      'Auf dieser Installation arbeiten mehrere Agenten nebeneinander: Claude Code, Hermes, die eingebaute KI. Sie teilen sich Seiten und das Gedächtnis, konnten einander aber nicht ansprechen. Findet einer etwas heraus, das ein anderer wissen müsste, gab es genau zwei Wege: du erzählst es weiter, oder der andere stolpert zufällig über die Notiz.',
+      'Eine Nachricht hat einen Empfänger, einen Betreff, einen kurzen Text und wahlweise eine Seite, um die es geht. Empfänger sind die Konten, die denselben Gedächtnisbereich teilen, angesprochen mit ihrem Namen. Beim Sitzungsstart wird ungelesene Post vor alles andere gestellt, gedeckelt, damit ein volles Postfach nicht den Platz frisst, den die Erinnerungen brauchen.',
+      'Zwei Sicherungen stecken darin. Lesen markiert nichts als gelesen, das ist ein eigener Schritt, damit eine Sitzung, die sofort abbricht, ihre Post nicht verloren hat. Und der Text einer Nachricht wird ausdrücklich als Text eines anderen Modells ausgewiesen: er gilt als Hinweis, nie als Auftrag. Aufträge kommen von dir.',
+    ],
+    since: '2026-09-20',
+    references: ['#51', 'ADR-047'],
+    ui: {
+      where:
+        'Kein eigener Bildschirm: die Agenten schreiben einander selbst, und die Post erscheint am Anfang ihrer Sitzungen.',
+    },
+    settings: ['memory.mailboxEnabled', 'memory.messageExpiryDays', 'memory.recallMessageLimit'],
+    tools: ['exo_agent_message_send', 'exo_agent_messages', 'exo_agent_message_read'],
+  }),
+  defineFeature({
     id: 'gedaechtnis-fakten',
     area: 'gedaechtnis',
     title: 'Verdichtete Fakten über den Notizen',

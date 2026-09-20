@@ -389,6 +389,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   forget. What is stored is digests and counts, never message text, and
   deduplication is per message rather than per payload, because a client sends
   longer prefixes rather than retries.
+- ADR-047: a message between agents is a delivery, not a page. `AgentMessage`
+  is a row, because a message shaped like a page would be swept into the fact
+  layer by the nightly consolidation and would age on the notes' clock instead
+  of its own; addressing is membership of one memory area, so the permission
+  question was answered before the feature existed; reading never
+  acknowledges, because a session that dies on its first call must not have
+  lost its post; and the rendered block reserves its fence before it writes a
+  word, so a budget that runs out drops messages and never the sentence saying
+  this is data.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

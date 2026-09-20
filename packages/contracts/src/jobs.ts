@@ -142,6 +142,12 @@ export const maintenanceJobSchema = jobBase.extend({
      */
     'prune-invitations',
     /**
+     * Deletes messages between agents whose `expiresAt` has passed (issue #51,
+     * ADR-047). Unconditional and hourly: a message's expiry is part of what
+     * the mailbox promises, not a retention setting somebody switches on.
+     */
+    'prune-agent-messages',
+    /**
      * Finds the projects whose memory holds notes nobody has consolidated yet
      * and hands each one to the `memory-consolidate` queue (issue #46). The
      * fan-out only: the model call and the writing happen there, because this

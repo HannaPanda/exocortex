@@ -662,6 +662,9 @@ script):
 | `GET /api/memory/facts`              | `read`  | The distilled facts of a project, best first. `status` picks between `current` (the default), `superseded` and `conflicted`.                                                                    |
 | `POST /api/memory/facts`             | `write` | Applies one consolidation run. Not a tool: see below.                                                                                                                                           |
 | `POST /api/memory/facts/:id/promote` | `write` | Copies a fact into a curated workspace somebody names.                                                                                                                                          |
+| `GET /api/memory/messages`           | `read`  | The mailbox between agents. `box` picks `inbox` (the default) or `sent`, `status` between `unread` (the default) and `all`. Never marks anything read.                                          |
+| `POST /api/memory/messages`          | `write` | Leaves a message for another account in the same memory area.                                                                                                                                   |
+| `POST /api/memory/messages/read`     | `write` | Acknowledges messages, so they stop leading the next recall.                                                                                                                                    |
 
 `recall` is a `GET` deliberately: `requiredScopeForRequest` derives the needed
 scope from the method, so a `POST` would force every client that only ever looks
@@ -722,6 +725,38 @@ exemption in `scripts/check-mcp-catalog.mjs` worth understanding: it rewrites
 what the memory believes in a single call, and it exists for the job that has
 just read the notes it is judging. A model able to reach it directly could
 rewrite its own past without any note saying so.
+
+### The mailbox between agents
+
+Since issue #51 ([ADR-047](adr/ADR-047-a-message-is-a-delivery-not-a-page.md))
+an agent can leave a message for another account instead of hoping a person
+repeats what it found. Three tools: `exo_agent_message_send`,
+`exo_agent_messages` and `exo_agent_message_read`.
+
+A message is a row rather than a page, which is the whole of that ADR. What
+matters when reading the code here is the three properties it buys:
+
+1. **Addressing is membership.** A message travels inside one memory area and
+   both accounts must be members of it, so there is no permission question this
+   feature had to answer for itself. The recipient is named by display name or
+   email; `exo_agent_messages` lists the names that resolve.
+2. **Reading never acknowledges.** `recall` puts unread mail in front of
+   everything else and leaves `readAt` alone. The session-start hook in
+   `tools/claude-code-plugin/hooks` marks the messages read _after_ it has
+   written the context block, which is the moment delivery actually happened. A
+   failed acknowledgement repeats a message; a premature one loses it.
+3. **The text is fenced as data.** One renderer serves the recall, the listing
+   and the tool, and it reserves the closing sentence's room before it writes a
+   block, so an exhausted budget drops messages rather than the fence. The tools
+   are deliberately _not_ `untrustedOutput`: a message comes from an
+   authenticated member of this workspace, like the pages that member writes,
+   and closing the write door for a whole run (ADR-030) would mean an agent that
+   collects its post can no longer act on it.
+
+`memory.recallMessageLimit` (default 3) and a quarter of the recall's character
+budget are the hard ceiling the issue asks for. `memory.mailboxEnabled` switches
+the whole thing off, and `prune-agent-messages` deletes what has expired, hourly
+and without a retention setting of its own.
 
 ## Confirmation gate
 
