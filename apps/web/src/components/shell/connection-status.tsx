@@ -37,7 +37,7 @@ export function ConnectionStatus() {
         tone: 'broken' as const,
         icon: CloudOffIcon,
         short: 'offline',
-        label: 'Offline – Änderungen werden lokal gespeichert',
+        label: 'Offline: Änderungen werden lokal gespeichert',
       };
     }
     if (status === 'connected' && (collaboration === 'connected' || state.documentId === null)) {
@@ -48,7 +48,7 @@ export function ConnectionStatus() {
         tone: 'broken' as const,
         icon: SignalZeroIcon,
         short: 'getrennt',
-        label: 'Verbindung unterbrochen – wird erneut versucht',
+        label: 'Verbindung unterbrochen, wird erneut versucht',
       };
     }
     return {

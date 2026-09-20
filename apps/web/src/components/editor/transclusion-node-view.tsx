@@ -333,7 +333,7 @@ function BlockChoiceLabel({ block }: { block: DocumentOutlineBlock }) {
       </span>
       {block.level === null ? null : (
         <span className="text-xs text-muted-foreground">
-          Überschrift {block.level} — mit dem ganzen Abschnitt darunter
+          Überschrift {block.level}, mit dem ganzen Abschnitt darunter
         </span>
       )}
     </span>

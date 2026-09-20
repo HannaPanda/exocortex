@@ -324,7 +324,7 @@ function SlugSection({ workspace }: { workspace: WorkspaceDetail }) {
       <Label htmlFor="workspace-slug">Slug</Label>
       <p className="max-w-measure text-xs text-muted-foreground">
         Der Slug steckt in Links, die bereits verschickt oder gespeichert wurden. Anders als der
-        Name wandert er nicht automatisch mit &ndash; und eine Änderung bricht diese Links.
+        Name wandert er nicht automatisch mit, und eine Änderung bricht diese Links.
       </p>
       <div className="flex max-w-md gap-2">
         <Input

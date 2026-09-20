@@ -604,7 +604,7 @@ function IdListCell(props: PropertyCellProps) {
 const ISO_INSTANT = /^\d{4}-\d{2}-\d{2}T/;
 
 function formatComputed(property: DatabaseProperty, value: CellValue): string {
-  if (value === null) return '—';
+  if (value === null) return '–';
   if (property.type === 'CREATED_TIME' || property.type === 'UPDATED_TIME') {
     return formatInstant(String(value));
   }

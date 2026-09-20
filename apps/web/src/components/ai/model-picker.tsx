@@ -192,7 +192,7 @@ export function ModelPicker({
           </Tooltip>
           <SelectContent>
             <SelectItem value={AUTO_COMPANION}>
-              Automatisch ({selectedModel.visionCompanionSlug ?? '—'})
+              Automatisch ({selectedModel.visionCompanionSlug ?? '–'})
             </SelectItem>
             <SelectItem value={OFF_COMPANION}>Aus</SelectItem>
             {groupAiModelsByVendor(visionCompanions).map((group) => (

@@ -181,7 +181,7 @@ function UnresolvedPageLink({
   return (
     <div className="flex flex-1 items-center gap-2">
       <span className="truncate text-muted-foreground">
-        {title.length > 0 ? `${title} — ` : ''}
+        {title.length > 0 ? `${title}: ` : ''}
         {UNRESOLVED_TEXT[reason]}
       </span>
       {editable && reason !== 'empty' ? (

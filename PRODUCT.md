@@ -63,6 +63,12 @@ Voice: German for everything the user reads, direct and warm, second person
 informal (du). Short sentences. No corporate hedging, no exclamation marks, no
 apologising interfaces. English for code, logs, identifiers and API error codes.
 
+No em or en dash in a sentence a person reads: a full stop, a comma, a colon or
+a pair of brackets says the same thing and does not break the reading rhythm for
+somebody who reads by decoding rather than by shape. The one place a dash stays
+is as a symbol rather than punctuation, the `–` that marks an empty cell in a
+table.
+
 ## Anti-references
 
 - **Hacker-terminal green.** Saturated green on near-black reads as Matrix

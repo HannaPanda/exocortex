@@ -149,7 +149,7 @@ export function AgentSessionTable() {
                     </Badge>
                   )}
                 </TableCell>
-                <TableCell className="text-muted-foreground">{session.userName ?? '—'}</TableCell>
+                <TableCell className="text-muted-foreground">{session.userName ?? '–'}</TableCell>
                 <TableCell className="whitespace-nowrap text-muted-foreground">
                   {dateTimeFormat.format(new Date(session.startedAt))} bis{' '}
                   {dateTimeFormat.format(new Date(session.lastSeenAt))}
