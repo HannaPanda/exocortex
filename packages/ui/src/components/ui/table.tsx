@@ -73,10 +73,15 @@ function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
   );
 }
 
-function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
+function TableHead({ className, scope = 'col', ...props }: React.ComponentProps<'th'>) {
   return (
     <th
       data-slot="table-head"
+      // `scope="col"` by default, because a `<th>` without one leaves a screen
+      // reader to guess which cells it heads, and every table in the
+      // administration and settings areas inherits whatever this decides. A
+      // row header passes `scope="row"` and overrides it.
+      scope={scope}
       className={cn(
         'h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
         className,

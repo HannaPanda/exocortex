@@ -411,6 +411,14 @@ net, which keeps it inside its clipping ancestors.
   control branches. Where the refusal moves focus to the offending field, the
   message carries no `role="alert"` as well — focusing the control already reads
   its description, and an alert per field would say it twice
+- **a `<th>` says what it heads.** `TableHead` sets `scope="col"` by default;
+  a row header passes `scope="row"`. Without it a screen reader guesses, and
+  every table in the administration and settings areas inherits the guess
+- **a tooltip is a hover affordance.** On a device with no hover it is hidden,
+  because a tap opens it through focus and nothing closes it again. The name
+  lives on the control's `aria-label`, not in the tooltip. The exception opts in
+  with `onTouch="show"`, and there is one: `TruncatedText`, which hands over the
+  half of a title the row cut off
 - **a control revealed by hover is revealed by focus and by touch too.**
   `opacity-0 group-hover:opacity-100 focus-visible:opacity-100
 pointer-coarse:opacity-100`, never `invisible`: `visibility: hidden` takes the
