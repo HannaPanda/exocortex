@@ -21,7 +21,7 @@ export function NotificationsPage() {
     <AppPage maxWidth="max-w-3xl" className="flex flex-col gap-6">
       <div>
         <h1 className="exocortex-page-title">Benachrichtigungen</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
           Wann eXocortex dich von sich aus erreicht, und auf welchem Weg. Auf deinen Geräten
           entscheidest du pro Gerät, per Mail für das ganze Konto.
         </p>

@@ -190,7 +190,7 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
         <h2 id="api-tokens-heading" className="text-sm font-semibold">
           Token
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
           API-Token erlauben externen Programmen wie dem MCP-Server, in deinem Namen auf eXocortex
           zuzugreifen. Gib jedem Token nur die Rechte, die es wirklich braucht: Wenn es
           abhandenkommt, kann jemand genau das damit tun.

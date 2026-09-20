@@ -81,7 +81,7 @@ export function AutomationsPage({ workspaceId }: { workspaceId: string }) {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="exocortex-page-title">Automationen</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 max-w-measure text-sm text-muted-foreground">
             Regeln, die auf Änderungen an Seiten oder auf die Uhr reagieren: ein signierter Webhook
             oder ein KI-Lauf gegen die betroffene Seite.
           </p>

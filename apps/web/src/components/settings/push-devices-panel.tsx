@@ -129,7 +129,7 @@ export function PushDevicesPanel() {
         <h2 id="push-devices-heading" className="text-sm font-semibold">
           Auf deinen Geräten
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
           eXocortex kann dich auf deinen Geräten anstupsen, wenn gerade niemand hinschaut: kurz vor
           einem Termin, bei einem Kommentar an deiner Seite, oder wenn ein Agent dir etwas sagen
           will. Was ein Gerät hören soll, entscheidest du pro Gerät, denn das Handy in der Tasche

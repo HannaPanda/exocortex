@@ -70,7 +70,7 @@ export function ConnectedAppsPanel() {
         <h2 id="connected-apps-heading" className="text-sm font-semibold">
           Verbundene Anwendungen
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
           Programme, denen du auf der Zustimmungsseite Zugriff gegeben hast, zum Beispiel ChatGPT.
           Sie melden sich in deinem Namen an, ohne ein Token von dir. Trennen wirkt sofort: laufende
           Sitzungen enden, und ein erneuter Zugriff braucht deine Zustimmung von vorn.

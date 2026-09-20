@@ -102,7 +102,7 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
   return (
     <AppPage maxWidth="max-w-4xl">
       <h1 className="exocortex-page-title">Arbeitsbereich-Einstellungen</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
+      <p className="mt-1 max-w-measure text-sm text-muted-foreground">
         {original.name} · {original.memberCount}{' '}
         {original.memberCount === 1 ? 'Mitglied' : 'Mitglieder'}
       </p>
@@ -197,7 +197,7 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
           <section className="flex flex-col gap-4">
             <div>
               <h2 className="text-base font-semibold">Eigener Schlüssel für die KI</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="mt-1 max-w-measure text-sm text-muted-foreground">
                 Ohne eigenen Schlüssel laufen die Anfragen dieses Arbeitsbereichs über den der
                 Installation.
               </p>
@@ -214,7 +214,7 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
           <section className="flex flex-col gap-4 border-t border-border pt-8">
             <div>
               <h2 className="text-base font-semibold">KI-Regeln</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="mt-1 max-w-measure text-sm text-muted-foreground">
                 Seiten, die die KI als Anweisung behandelt. Gesetzt wird das in den Eigenschaften
                 der jeweiligen Seite.
               </p>
@@ -230,7 +230,7 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
         <TabsContent value="einstellungen" className="flex flex-col gap-4">
           <div>
             <h2 className="text-base font-semibold">Konfiguration dieses Arbeitsbereichs</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 max-w-measure text-sm text-muted-foreground">
               Diese Werte gelten nur hier. Alles andere kommt aus der Installation.
             </p>
           </div>
@@ -278,7 +278,7 @@ function MoreSection({ workspaceId }: { workspaceId: string }) {
           Freigaben öffnen
         </Button>
       </div>
-      <p className="text-xs text-muted-foreground">
+      <p className="max-w-measure text-xs text-muted-foreground">
         Regeln, die auf Änderungen an Seiten reagieren, mit dem Protokoll dessen, was sie getan
         haben. Womit sich Seiten dieses Arbeitsbereichs als PDF veröffentlichen lassen. Und was aus
         diesem Arbeitsbereich nach außen gegeben ist, an Konten und als öffentlicher Link.
@@ -322,7 +322,7 @@ function SlugSection({ workspace }: { workspace: WorkspaceDetail }) {
   return (
     <section className="flex flex-col gap-2 border-t border-border pt-6">
       <Label htmlFor="workspace-slug">Slug</Label>
-      <p className="text-xs text-muted-foreground">
+      <p className="max-w-measure text-xs text-muted-foreground">
         Der Slug steckt in Links, die bereits verschickt oder gespeichert wurden. Anders als der
         Name wandert er nicht automatisch mit &ndash; und eine Änderung bricht diese Links.
       </p>
@@ -406,7 +406,7 @@ function MemorySection({ workspace }: { workspace: WorkspaceDetail }) {
             );
           }}
         />
-        <p className="text-xs text-muted-foreground">
+        <p className="max-w-measure text-xs text-muted-foreground">
           Agenten legen ihre Sitzungsnotizen in diesem Arbeitsbereich ab und finden sie beim
           nächsten Start wieder. Notizen verfallen hier nach der eingestellten Frist. Für einen
           Bereich, den du selbst pflegst, ist das nichts.
@@ -449,7 +449,7 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
       <div className="flex items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h2 className="text-sm font-medium">Mitglieder</h2>
-          <p className="text-xs text-muted-foreground">
+          <p className="max-w-measure text-xs text-muted-foreground">
             Mitgliedschaften gelten immer ausdrücklich: wer eingeladen wird, landet genau in diesem
             Arbeitsbereich.
           </p>

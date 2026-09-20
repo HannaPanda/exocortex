@@ -70,7 +70,7 @@ export function NotificationPreferencesPanel() {
         <h2 id="notification-preferences-heading" className="text-sm font-semibold">
           Per E-Mail
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
           Mail geht an dein Konto und nicht an ein Gerät, deshalb gilt das hier überall gleich.
           Gedacht für das, was auch morgen noch wichtig ist und was dich erreichen soll, wenn du
           gerade gar nicht in eXocortex bist.

@@ -137,7 +137,7 @@ export function SavedQueryPage({ workspaceId, savedQueryId }: SavedQueryPageProp
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="exocortex-page-title">{savedQuery?.name ?? 'Suche'}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 max-w-measure text-sm text-muted-foreground">
             {savedQuery?.description ??
               (savedQueryId === undefined
                 ? 'Suche über alle Seiten dieses Arbeitsbereichs, mit Filtern nach Ort, Art, Eigenschaften, Entitäten und Zeitraum. Was sich lohnt, lässt sich speichern.'

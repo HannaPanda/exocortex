@@ -57,7 +57,7 @@ export function ConnectionSetupPanel({ freshSecret, onForgetSecret }: Connection
         <h2 id="setup-heading" className="text-sm font-semibold">
           Einrichten
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
           Such dir dein Programm und kopier die Zeile. Mehr ist es nicht.
         </p>
       </div>

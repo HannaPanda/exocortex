@@ -172,7 +172,9 @@ function AreaSection({ area, features }: { area: FeatureArea; features: Feature[
   return (
     <section className="scroll-mt-24">
       <h2 className="text-lg font-semibold">{FEATURE_AREA_LABELS[area]}</h2>
-      <p className="mt-1 text-sm text-muted-foreground">{FEATURE_AREA_DESCRIPTIONS[area]}</p>
+      <p className="mt-1 max-w-measure text-sm text-muted-foreground">
+        {FEATURE_AREA_DESCRIPTIONS[area]}
+      </p>
       <div className="mt-6 space-y-8">
         {features.map((feature) => (
           <FeatureArticle key={feature.id} feature={feature} />

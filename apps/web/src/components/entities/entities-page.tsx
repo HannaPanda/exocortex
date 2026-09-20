@@ -57,7 +57,7 @@ export function EntitiesPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="exocortex-page-title">Entitäten</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 max-w-measure text-sm text-muted-foreground">
             Personen, Hosts, Dienste und Projekte, die in deinen Seiten vorkommen, und was über sie
             bekannt ist.
           </p>
@@ -113,7 +113,7 @@ export function EntitiesPage() {
 
       <section className="mt-10 border-t border-border pt-8">
         <h2 className="text-base font-semibold">Vorschläge</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
           Namen, die auf mehreren Seiten auftauchen und zu denen es noch keine Entität gibt.
         </p>
         <div className="mt-4">

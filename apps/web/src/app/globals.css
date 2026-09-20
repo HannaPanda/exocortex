@@ -280,20 +280,32 @@
     @apply flex items-start gap-2;
   }
 
+  /*
+   * The label is the target, not the box.
+   *
+   * A native checkbox draws itself at 13 CSS pixels and cannot be told to be
+   * bigger without losing the drawing, and 13px is well under the 24px WCAG 2.2
+   * asks for -- on a phone it is a coin toss. Tiptap wraps the input in a
+   * `<label>`, and a label toggles its input, so the *label* is what has to be
+   * 24px. It centres a 1rem box inside a 1.5rem target and pulls back by the
+   * difference on both sides, which keeps the column and the gap to the text
+   * exactly where they were while the thumb gets three times the area.
+   */
   .exocortex-editor ul[data-type='taskList'] li > label {
-    @apply mt-1 shrink-0;
+    @apply grid size-6 shrink-0 place-items-center;
+    margin-inline: -0.25rem;
   }
 
-  /* The one control in the product that was still drawing itself: a native
-     checkbox with `accent-color: auto` ticks in the browser's blue, which is
-     the only colour on screen that is not a token. `accent-color` is the whole
-     fix -- restyling the box would mean a node view in `packages/editor`, and
-     the native control is the one a screen reader and a password-free
-     keyboard already understand. The box stays 13px, which passes WCAG 2.5.8
-     through the spacing exception rather than the size one: one checkbox per
-     line, nothing beside it. */
+  /* Still the native control -- restyling the box would mean a node view in
+     `packages/editor`, and this is the one a screen reader and a keyboard
+     already understand. Two things it does not decide for itself: the tick was
+     the browser's blue, the only colour on screen that was not a token, and at
+     its intrinsic 13px it drew smaller than the 16px the rest of the interface
+     uses for a checkbox. */
   .exocortex-editor ul[data-type='taskList'] li > label input[type='checkbox'] {
     accent-color: var(--primary);
+    @apply size-4;
+    margin: 0;
   }
 
   /* Same cascade caveat as the headings: `.ProseMirror` is needed for `my-8` to

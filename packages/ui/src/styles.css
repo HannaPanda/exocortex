@@ -176,6 +176,12 @@
   --text-micro: 0.6875rem;
   --text-nano: 0.625rem;
 
+  /* The reading measure from DESIGN.md as a named width, so prose can be capped
+     by naming the rule rather than by an arbitrary value. `ch` resolves against
+     the element's own size, so `max-w-measure` means the same number of
+     characters at `text-sm` as at `text-xs`. */
+  --container-measure: 68ch;
+
   --font-sans:
     'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
     Arial, 'Noto Sans', sans-serif;

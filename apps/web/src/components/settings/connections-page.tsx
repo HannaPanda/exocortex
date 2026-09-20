@@ -26,7 +26,7 @@ export function ConnectionsPage() {
     <AppPage maxWidth="max-w-3xl" className="flex flex-col gap-6">
       <div>
         <h1 className="exocortex-page-title">Verbindungen</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
           Hier hängen deine Agenten an eXocortex: Anwendungen, die sich in deinem Namen anmelden,
           Token für alles andere, und die fertigen Befehle zum Einrichten. Wann eXocortex dich von
           sich aus erreicht, steht unter{' '}

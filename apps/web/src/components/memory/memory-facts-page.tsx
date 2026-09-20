@@ -59,7 +59,7 @@ export function MemoryFactsPage() {
     <AppPage maxWidth="max-w-3xl">
       <div>
         <h1 className="exocortex-page-title">Gedächtnis</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
           Was die Agenten aus ihren Sitzungsnotizen destilliert haben. Jeder Satz ist eine eigene
           Seite im Memory-Arbeitsbereich.
         </p>

@@ -54,7 +54,7 @@ export function RenderTemplatesPage({ workspaceId }: { workspaceId: string }) {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="exocortex-page-title">Vorlagen</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 max-w-measure text-sm text-muted-foreground">
             Womit sich Seiten dieses Arbeitsbereichs als PDF veröffentlichen lassen. Der Satz läuft
             über Pandoc und LaTeX; der Inhalt der Seiten bleibt dabei unberührt.
           </p>
