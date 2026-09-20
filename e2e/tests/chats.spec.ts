@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 
+import { AI_TEST_TIMEOUT_MS, waitForAiRun } from '../support/ai-run';
 import { createPage, requireSeedCredentials } from '../support/fixtures';
 import { storageStatePath } from '../support/global-setup';
 
@@ -22,6 +23,10 @@ test.beforeAll(() => {
 });
 
 test.describe('Chats area', () => {
+  // The test waits for a real provider call; the suite's ordinary budget is
+  // not meant for one (issue #90).
+  test.describe.configure({ timeout: AI_TEST_TIMEOUT_MS });
+
   test('writes a chat, finds it by a word from the transcript, continues and deletes it', async ({
     page,
   }) => {
@@ -36,9 +41,7 @@ test.describe('Chats area', () => {
     await page.getByTestId('context-tab-ai').click();
     await page.getByTestId('ai-input').fill(`Was bedeutet ${marker}?`);
     await page.getByTestId('ai-send').click();
-    const activity = page.getByTestId('ai-run-activity');
-    await expect(activity).toBeVisible({ timeout: 30_000 });
-    await expect(activity).toBeHidden({ timeout: 60_000 });
+    await waitForAiRun(page, 'chats:first-question');
 
     // The dropdown is short now and offers the way out of it.
     await page.getByTestId('ai-conversation-switcher').click();

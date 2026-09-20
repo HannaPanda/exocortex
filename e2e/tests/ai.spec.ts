@@ -1,5 +1,11 @@
 import { expect, test } from '@playwright/test';
 
+import {
+  AI_RUN_FINISH_TIMEOUT_MS,
+  AI_TEST_TIMEOUT_MS,
+  recordAiRun,
+  waitForAiRun,
+} from '../support/ai-run';
 import { createPage, requireSeedCredentials, waitForMaterialization } from '../support/fixtures';
 import { storageStatePath } from '../support/global-setup';
 
@@ -30,6 +36,8 @@ test.beforeAll(() => {
 
 test.describe('AI side panel', () => {
   test('streams a response through the realtime channel', async ({ page }) => {
+    // Waits for one real provider call (issue #90).
+    test.setTimeout(AI_TEST_TIMEOUT_MS);
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
     await createPage(page, `KI ${Date.now().toString(36)}`);
@@ -49,15 +57,19 @@ test.describe('AI side panel', () => {
       (await answers.allInnerTexts()).join('').trim().length;
     const activity = page.getByTestId('ai-run-activity');
 
-    await expect(answers.first()).toBeVisible({ timeout: 60_000 });
+    const sentAt = Date.now();
+    await expect(answers.first()).toBeVisible({ timeout: AI_RUN_FINISH_TIMEOUT_MS });
     // Text arrives at all: the run reached the worker, the provider and the
     // socket back into this browser.
-    await expect.poll(visibleAnswerLength, { timeout: 60_000 }).toBeGreaterThan(0);
+    await expect
+      .poll(visibleAnswerLength, { timeout: AI_RUN_FINISH_TIMEOUT_MS })
+      .toBeGreaterThan(0);
+    recordAiRun('ai:stream-first-text', Date.now() - sentAt);
 
     // The visible text only ever grows while the run is live: a re-render that
     // fell back to an earlier buffer, or a streamed bubble replaced by a
     // shorter persisted one, would show up between two samples here.
-    const deadline = Date.now() + 60_000;
+    const deadline = Date.now() + AI_RUN_FINISH_TIMEOUT_MS;
     let seen = await visibleAnswerLength();
     while (Date.now() < deadline && (await activity.isVisible())) {
       const current = await visibleAnswerLength();
@@ -70,7 +82,8 @@ test.describe('AI side panel', () => {
     // merely not streamed in yet is never read as "a real provider". The
     // answer is the last bubble: anything the model said before a tool call
     // stands above it.
-    await expect(activity).toBeHidden({ timeout: 60_000 });
+    await expect(activity).toBeHidden({ timeout: AI_RUN_FINISH_TIMEOUT_MS });
+    recordAiRun('ai:stream-total', Date.now() - sentAt);
     const answer = answers.last();
     const servedByMock =
       declaredProvider === 'mock' ||
@@ -117,6 +130,8 @@ test.describe('AI side panel', () => {
   });
 
   test('draws the /clear cut where it happened and never stacks it', async ({ page }) => {
+    // Waits for two real provider calls (issue #90).
+    test.setTimeout(AI_TEST_TIMEOUT_MS);
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
     await createPage(page, `Schnitt ${Date.now().toString(36)}`);
@@ -130,9 +145,7 @@ test.describe('AI side panel', () => {
       await page.getByTestId('ai-send').click();
       // The composer stays disabled for the whole run, so this is also the
       // gate that keeps the next `/clear` from being swallowed.
-      const activity = page.getByTestId('ai-run-activity');
-      await expect(activity).toBeVisible({ timeout: 30_000 });
-      await expect(activity).toBeHidden({ timeout: 60_000 });
+      await waitForAiRun(page, 'ai:ask');
     };
 
     /** Sends a slash command, which starts no run. */

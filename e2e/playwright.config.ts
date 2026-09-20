@@ -29,6 +29,10 @@ export default defineConfig({
   // Deletes the workspaces the run created; see the file for why the tests
   // cannot do it themselves.
   globalTeardown: './support/global-teardown.ts',
+  // The ordinary budget. The three tests that wait for a real AI run raise it
+  // for themselves to `AI_TEST_TIMEOUT_MS` (`support/ai-run.ts`, issue #90),
+  // because a limit wide enough for a provider call would let every other test
+  // in the suite hang for minutes before failing.
   timeout: 90_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,
