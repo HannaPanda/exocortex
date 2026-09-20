@@ -61,6 +61,7 @@ same commit series**:
 | a compose service or a host port                         | `docs/local-development.md`                                                                             |
 | an MCP or AI tool                                        | `docs/mcp.md`                                                                                           |
 | a mail template, or what may send mail                   | `docs/mail.md`                                                                                          |
+| a notification occasion, a channel, a delivery mode      | `docs/notifications.md`                                                                                 |
 | a span, a trace attribute, what is recorded about a run  | `docs/observability.md`                                                                                 |
 | who may reach a page, or what a credential may reach     | `docs/sharing.md`, `docs/security.md`                                                                   |
 | where a kind of behaviour is tested, a new test suite    | `docs/local-development.md`                                                                             |

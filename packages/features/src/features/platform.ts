@@ -118,20 +118,41 @@ export const PLATFORM_FEATURES: readonly RegisteredFeature[] = [
     summary:
       'eXocortex kann dich auf deinen Geräten anstupsen, wenn gerade niemand hinschaut: kurz vor einem Termin, bei einem Kommentar an deiner Seite, und wenn ein Agent dir absichtlich Bescheid gibt. Welches Gerät was hört, stellst du pro Gerät ein.',
     details: [
-      'Unter Einstellungen → Verbindungen meldest du das Gerät an, an dem du gerade sitzt. Der Browser fragt einmal um Erlaubnis, danach steht das Gerät in der Liste. Jedes Gerät hat eigene Schalter für die drei Arten, denn das Handy in der Tasche und der Rechner auf der Arbeit wollen selten dasselbe hören. Eine Testnachricht daneben zeigt sofort, ob es ankommt.',
+      'Unter Einstellungen → Benachrichtigungen meldest du das Gerät an, an dem du gerade sitzt. Der Browser fragt einmal um Erlaubnis, danach steht das Gerät in der Liste. Jedes Gerät hat eigene Schalter für die drei Arten, denn das Handy in der Tasche und der Rechner auf der Arbeit wollen selten dasselbe hören. Eine Testnachricht daneben zeigt sofort, ob es ankommt.',
       'Die drei Arten sind: kurz vor einem Termin aus deinem Kalender, ein Kommentar an einer Seite, die du geschrieben hast, oder eine Antwort in einem Gesprächsfaden, in dem du schon steckst, und Nachrichten von Agenten. Das Letzte ist der eigentliche Grund für die Funktion: ein langer Lauf ist fertig, etwas ist schiefgegangen, eine Frage blockiert, und Hermes oder eine Claude-Code-Sitzung erreicht dich über exo_push_send direkt auf dem Telefon, statt dass du nachschauen musst.',
       'Der Text der Benachrichtigung ist an dein Gerät verschlüsselt: der Push-Dienst dazwischen, also Google, Mozilla oder Apple, transportiert einen Umschlag, den er nicht aufmachen kann. Antippen öffnet die Seite, um die es geht, in einem schon offenen Fenster, statt ein zweites aufzumachen.',
       'Auf dem iPhone und dem iPad gibt es Benachrichtigungen nur, wenn eXocortex über „Zum Home-Bildschirm“ installiert ist, das ist eine Einschränkung von Safari. Meldest du ein Gerät ab oder entziehst im Browser die Erlaubnis, hört es sofort auf; ein Gerät, das der Push-Dienst nicht mehr kennt, fliegt von selbst aus der Liste.',
     ],
     since: '2026-09-20',
     references: ['#30', 'ADR-048'],
-    ui: { where: 'Einstellungen, Verbindungen, Abschnitt Benachrichtigungen.' },
+    ui: { where: 'Einstellungen, Benachrichtigungen, Abschnitt „Auf deinen Geräten“.' },
     tools: [
       'exo_push_devices',
       'exo_push_device_update',
       'exo_push_device_remove',
       'exo_push_send',
     ],
+  }),
+  defineFeature({
+    id: 'benachrichtigungen-einstellen',
+    area: 'agenten',
+    title: 'Selbst entscheiden, worüber du Post bekommst',
+    summary:
+      'Unter Einstellungen → Benachrichtigungen steht an einer Stelle, wann eXocortex dich von sich aus erreicht: auf deinen Geräten und per E-Mail. Der Mail-Teil gilt fürs ganze Konto, der Geräte-Teil für jedes Gerät einzeln.',
+    details: [
+      'Die Seite trennt zwei Fragen, die leicht durcheinandergehen. Ein Gerät entscheidet für sich, weil dein Handy abends etwas anderes hören soll als der Rechner auf der Arbeit. Deine Adresse dagegen gehört dir und nicht einem Browser, deshalb gilt eine Mail-Einstellung überall gleich, egal wo du dich gerade anmeldest.',
+      'Per Mail gibt es derzeit einen Schalter: geteilte Seiten. Er deckt alle drei Fälle ab, die dir jemand über eine Freigabe mitteilt, nämlich dass eine Seite neu bei dir ankommt, dass sich deine Rechte daran ändern und dass sie dir wieder entzogen wird. Er steht ab Werk an, weil eine Freigabe, von der du nichts erfährst, dir auch nichts nützt. Schaltest du ihn aus, wird gar keine Mail mehr in die Warteschlange gelegt, statt eine zu verschicken und wegzuwerfen.',
+      'Angeboten wird nur, was diese Installation auch wirklich zustellt. Eine Kombination aus Anlass und Weg, für die es keinen Absender gibt, taucht weder als Schalter auf noch lässt sie sich über die Werkzeuge setzen: ein Schalter, der nichts tut, ist schlimmer als ein fehlender.',
+      'Agenten sehen und setzen dieselben Einstellungen über exo_notification_preferences und exo_notification_preference_set. Für Push bleibt exo_push_device_update zuständig, weil dort das einzelne Gerät gemeint ist und nicht das Konto.',
+    ],
+    since: '2026-09-20',
+    references: ['#105', 'ADR-052'],
+    ui: {
+      where: 'Einstellungen, Benachrichtigungen.',
+      path: '/einstellungen/benachrichtigungen',
+    },
+    claims: { screens: ['/einstellungen/benachrichtigungen'] },
+    tools: ['exo_notification_preferences', 'exo_notification_preference_set'],
   }),
   defineFeature({
     id: 'verbindungen',

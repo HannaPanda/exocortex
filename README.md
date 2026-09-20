@@ -93,6 +93,13 @@ What is deliberately still missing is listed under
   the phone and the desktop accept different kinds; the payload is encrypted to
   the device, so the push service in between carries an envelope it cannot
   open; and the deployment sends nothing at all until a VAPID key pair exists
+- one page for what reaches you unasked (ADR-052): an occasion — a share, a
+  comment, an appointment, an agent — is named separately from the channel that
+  carries it, and its preference is stored where the question lives: on the
+  device for push, on the account for mail. Only pairs something actually
+  delivers are offered, so there is no switch that quietly does nothing;
+  switching one off means no job is enqueued rather than a job that discards
+  the result. Share mail is the first notification here a person can refuse
 
 **Search, AI and automation**
 
@@ -265,6 +272,7 @@ tools/                the Claude Code plugin: MCP server, memory hooks, setup sk
 | [`docs/ai-architecture.md`](docs/ai-architecture.md)     | provider contract, runners, isolation rules                  |
 | [`docs/background-jobs.md`](docs/background-jobs.md)     | queues, maintenance tasks, idempotency, failure handling     |
 | [`docs/mail.md`](docs/mail.md)                           | synchronous and queued mail, templates, what is logged       |
+| [`docs/notifications.md`](docs/notifications.md)         | occasions, channels, where a preference is stored            |
 | [`docs/mcp.md`](docs/mcp.md)                             | the tool catalogue, both transports, adding a tool           |
 | [`docs/capability-matrix.md`](docs/capability-matrix.md) | generated: which client reaches which route                  |
 | [`docs/admin.md`](docs/admin.md)                         | settings, their scopes, the admin area                       |

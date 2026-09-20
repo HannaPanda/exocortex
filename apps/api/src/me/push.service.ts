@@ -6,6 +6,7 @@ import {
   type PushDevice,
   type PushDeviceListResponse,
   type PushNotificationKind,
+  pushNotificationKinds,
   QUEUE_NAMES,
   type RegisterPushDeviceRequest,
   type SendPushRequest,
@@ -228,7 +229,13 @@ function toDevice(row: PushSubscriptionRow, currentEndpoint?: string): PushDevic
   return {
     id: row.id,
     label: row.label,
-    kinds: row.kinds as PushNotificationKind[],
+    // Filtered rather than cast. The column is a `NotificationKind[]` since
+    // issue #105 and therefore wider than what reaches a device; nothing here
+    // writes a kind the catalogue calls account-scoped, and a device list that
+    // returned one would put a switch on the page that the API then refuses.
+    kinds: row.kinds.filter((kind): kind is PushNotificationKind =>
+      (pushNotificationKinds as readonly string[]).includes(kind),
+    ),
     service: hostOf(row.endpoint),
     createdAt: row.createdAt.toISOString(),
     lastSeenAt: row.lastSeenAt.toISOString(),

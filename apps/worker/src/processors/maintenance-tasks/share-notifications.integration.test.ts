@@ -82,6 +82,7 @@ afterAll(async () => {
 beforeEach(async () => {
   await prisma.documentShare.deleteMany({ where: { workspaceId } });
   await prisma.user.update({ where: { id: granteeId }, data: { disabledAt: null } });
+  await prisma.notificationPreference.deleteMany({ where: { userId: granteeId } });
 });
 
 async function share(
@@ -219,6 +220,35 @@ describe('scheduleShareNotifications', () => {
   it('does not announce access that was withdrawn in the meantime', async () => {
     const id = await share({ revokedAt: new Date() });
     expect((await enqueued({ shareId: id, change: 'granted' })).jobs).toEqual([]);
+  });
+
+  /**
+   * The preference is consulted before anything is enqueued (issue #105): a
+   * switched-off notification has to cost no job, because a job that runs and
+   * then throws the mail away is a retry queue full of mails nobody wanted.
+   */
+  it('enqueues nothing once the account has switched share mail off', async () => {
+    const id = await share();
+    await prisma.notificationPreference.create({
+      data: { userId: granteeId, kind: 'SHARE', channel: 'EMAIL', mode: 'OFF' },
+    });
+    expect((await enqueued({ shareId: id, change: 'granted' })).jobs).toEqual([]);
+  });
+
+  it('still says nothing about a withdrawal once share mail is off', async () => {
+    const id = await share({ revokedAt: new Date() });
+    await prisma.notificationPreference.create({
+      data: { userId: granteeId, kind: 'SHARE', channel: 'EMAIL', mode: 'OFF' },
+    });
+    expect((await enqueued({ shareId: id, change: 'revoked' })).jobs).toEqual([]);
+  });
+
+  it('writes exactly once when the account asked for immediate share mail', async () => {
+    const id = await share();
+    await prisma.notificationPreference.create({
+      data: { userId: granteeId, kind: 'SHARE', channel: 'EMAIL', mode: 'IMMEDIATE' },
+    });
+    expect((await enqueued({ shareId: id, change: 'granted' })).jobs).toHaveLength(1);
   });
 
   it('names a deleted actor as somebody rather than as nobody', async () => {

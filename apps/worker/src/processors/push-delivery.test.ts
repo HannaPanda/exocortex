@@ -63,7 +63,7 @@ const logger = {
   error: vi.fn(),
 } as unknown as Parameters<ReturnType<typeof createPushDeliveryProcessor>>[0]['logger'];
 
-function job(overrides: Partial<{ kind: 'AGENT' | 'COMMENT' | 'CALENDAR_REMINDER' }> = {}) {
+function job(overrides: Partial<{ kind: 'AGENT' | 'COMMENT' | 'CALENDAR' }> = {}) {
   return {
     payload: {
       correlationId: 'c1',

@@ -3,7 +3,12 @@
 import { BellIcon, BellOffIcon } from 'lucide-react';
 import * as React from 'react';
 
-import { type PushDevice, type PushNotificationKind } from '@exocortex/contracts';
+import {
+  NOTIFICATION_CATALOG,
+  type PushDevice,
+  type PushNotificationKind,
+  pushNotificationKinds,
+} from '@exocortex/contracts';
 import {
   Alert,
   AlertDescription,
@@ -38,21 +43,15 @@ const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
   timeStyle: 'short',
 });
 
-/** What each kind is called, and what it actually announces. */
-const KIND_LABELS: Record<PushNotificationKind, { title: string; description: string }> = {
-  CALENDAR_REMINDER: {
-    title: 'Termine',
-    description: 'Kurz bevor ein Termin aus deinem Kalender anfängt.',
-  },
-  COMMENT: {
-    title: 'Kommentare',
-    description: 'Wenn jemand deine Seite kommentiert oder in einem deiner Gespräche antwortet.',
-  },
-  AGENT: {
-    title: 'Agenten',
-    description: 'Wenn ein Agent dir absichtlich Bescheid gibt. Auch die Testnachricht kommt so.',
-  },
-};
+/**
+ * What each kind is called, out of the shared catalogue (issue #105).
+ *
+ * Not a second list of German words here: an occasion is called the same
+ * thing wherever it is offered, and the row on this page and the row in the
+ * account-wide section below it would otherwise describe the same event
+ * differently.
+ */
+const KINDS: readonly PushNotificationKind[] = pushNotificationKinds;
 
 /**
  * Die Geräte, auf denen dieses Konto benachrichtigt werden darf (Issue #30,
@@ -128,12 +127,13 @@ export function PushDevicesPanel() {
     <section className="flex flex-col gap-3" aria-labelledby="push-devices-heading">
       <div>
         <h2 id="push-devices-heading" className="text-sm font-semibold">
-          Benachrichtigungen
+          Auf deinen Geräten
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
           eXocortex kann dich auf deinen Geräten anstupsen, wenn gerade niemand hinschaut: kurz vor
           einem Termin, bei einem Kommentar an deiner Seite, oder wenn ein Agent dir etwas sagen
-          will. Was ein Gerät hören soll, entscheidest du pro Gerät.
+          will. Was ein Gerät hören soll, entscheidest du pro Gerät, denn das Handy in der Tasche
+          und der Rechner auf der Arbeit wollen selten dasselbe.
         </p>
       </div>
 
@@ -307,7 +307,7 @@ function DeviceRow({
       </p>
 
       <div className="mt-3 flex flex-col gap-2">
-        {(Object.keys(KIND_LABELS) as PushNotificationKind[]).map((kind) => (
+        {KINDS.map((kind) => (
           <div key={kind} className="flex items-start gap-3">
             <Switch
               id={`${device.id}-${kind}`}
@@ -316,9 +316,11 @@ function DeviceRow({
             />
             <div>
               <Label htmlFor={`${device.id}-${kind}`} className="text-sm">
-                {KIND_LABELS[kind].title}
+                {NOTIFICATION_CATALOG[kind].label}
               </Label>
-              <p className="text-xs text-muted-foreground">{KIND_LABELS[kind].description}</p>
+              <p className="text-xs text-muted-foreground">
+                {NOTIFICATION_CATALOG[kind].description}
+              </p>
             </div>
           </div>
         ))}

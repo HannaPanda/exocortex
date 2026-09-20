@@ -437,6 +437,16 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   wrote. Relay acceptance is never called delivery, a 5xx is never retried, and
   the only things logged about a mail are the template, the recipient's domain
   and the relay's message id.
+- ADR-052: an occasion is not a transport. `NotificationKind` names what
+  happened and `NotificationChannel` how it travels;
+  `NOTIFICATION_CATALOG` is the one table saying which pairs exist, and it
+  lists a pair only when something delivers it. Each pair says where its answer
+  is stored: on the device for push (ADR-048, unchanged, and a check constraint
+  refuses an account-wide push row), on the account for mail. An absent row
+  means the default and setting the default deletes the row, so a default that
+  changes moves everybody who never decided. One resolver in
+  `packages/database` is asked before anything is enqueued, because `OFF` has
+  to mean that no job exists.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -458,6 +468,7 @@ Each of these has a step-by-step recipe:
 | new database property type, view type                    | `docs/database-views.md`    |
 | new MCP tool, new AI tool                                | `docs/mcp.md`               |
 | new mail template, a sender for a new kind of mail       | `docs/mail.md`              |
+| new notification occasion or channel, a preference       | `docs/notifications.md`     |
 | new admin setting, admin page                            | `docs/admin.md`             |
 | new automation trigger or action                         | `docs/automations.md`       |
 | new render template, new renderer                        | `docs/render.md`            |

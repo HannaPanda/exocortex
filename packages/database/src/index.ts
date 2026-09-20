@@ -7,6 +7,7 @@ export * from './database-derived';
 export * from './database-query';
 export * from './entities';
 export * from './hierarchy';
+export * from './notification-preferences';
 export * from './order-key';
 export * from './overview-source';
 export * from './project-source';

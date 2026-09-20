@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import * as React from 'react';
 
 import { AppPage, Separator } from '@exocortex/ui';
@@ -7,7 +8,6 @@ import { AppPage, Separator } from '@exocortex/ui';
 import { ApiTokenPanel } from './api-token-panel';
 import { ConnectedAppsPanel } from './connected-apps-panel';
 import { ConnectionSetupPanel } from './connection-setup-panel';
-import { PushDevicesPanel } from './push-devices-panel';
 
 /**
  * Everything about letting a program into this account, in the order a person
@@ -28,8 +28,12 @@ export function ConnectionsPage() {
         <h1 className="exocortex-page-title">Verbindungen</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Hier hängen deine Agenten an eXocortex: Anwendungen, die sich in deinem Namen anmelden,
-          Token für alles andere, die fertigen Befehle zum Einrichten, und die Geräte, auf denen du
-          benachrichtigt werden willst.
+          Token für alles andere, und die fertigen Befehle zum Einrichten. Wann eXocortex dich von
+          sich aus erreicht, steht unter{' '}
+          <Link href="/einstellungen/benachrichtigungen" className="underline">
+            Benachrichtigungen
+          </Link>
+          .
         </p>
       </div>
 
@@ -38,13 +42,6 @@ export function ConnectionsPage() {
       <ApiTokenPanel onTokenCreated={setFreshSecret} />
       <Separator />
       <ConnectionSetupPanel freshSecret={freshSecret} onForgetSecret={() => setFreshSecret(null)} />
-      <Separator />
-      {/*
-        Notifications sit on this page rather than on one of their own: a
-        device that may be notified is a thing this account has let in, which
-        is what the page is about (issue #30).
-      */}
-      <PushDevicesPanel />
     </AppPage>
   );
 }

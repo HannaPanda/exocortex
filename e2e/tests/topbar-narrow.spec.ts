@@ -42,6 +42,11 @@ const AREAS = [
   { testId: 'open-memory', label: 'Gedächtnis', href: '/gedaechtnis' },
   { testId: 'open-admin', label: 'Verwaltung', href: '/admin' },
   { testId: 'open-api-tokens', label: 'Verbindungen', href: '/einstellungen/verbindungen' },
+  {
+    testId: 'open-notifications',
+    label: 'Benachrichtigungen',
+    href: '/einstellungen/benachrichtigungen',
+  },
 ];
 
 async function openWorkspace(page: Page): Promise<void> {

@@ -3,7 +3,7 @@ import {
   type MailMessage,
   QUEUE_NAMES,
 } from '@exocortex/contracts';
-import { type PrismaClient } from '@exocortex/database';
+import { type PrismaClient, resolveNotificationMode } from '@exocortex/database';
 import { type QueueRegistry } from '@exocortex/queue';
 
 /**
@@ -69,7 +69,7 @@ export async function scheduleShareNotifications(
       revokedAt: true,
       // The address comes from the account, never from what the sharing
       // request typed: the two agree only until somebody changes their mail.
-      grantee: { select: { email: true, disabledAt: true } },
+      grantee: { select: { id: true, email: true, disabledAt: true } },
       document: { select: { title: true } },
     },
   });
@@ -85,6 +85,23 @@ export async function scheduleShareNotifications(
   // withdrawal wrote its own event, and this one would announce access that
   // no longer exists.
   if (change !== 'revoked' && share.revokedAt !== null) return;
+
+  // Asked here, at dispatch, and before anything is enqueued (issue #105):
+  // `OFF` has to mean that no job exists, not that a job runs and throws the
+  // mail away. One switch covers the arrival, the change and the withdrawal,
+  // because they are one occasion -- somebody who does not want to hear about
+  // their access changing does not want two thirds of it either.
+  //
+  // `IMMEDIATE` explicitly rather than "not OFF": a mode that collects for
+  // later must never fall through to sending at once, which is the mistake
+  // issue #106 would otherwise inherit.
+  const mode = await resolveNotificationMode(
+    dependencies.prisma,
+    share.grantee.id,
+    'SHARE',
+    'EMAIL',
+  );
+  if (mode !== 'IMMEDIATE') return;
 
   const actor = await dependencies.prisma.user.findUnique({
     where: { id: actorId },

@@ -85,6 +85,7 @@ model User {
   grantedShares               DocumentShare[]       @relation("DocumentShareCreatedBy")
   receivedShares              DocumentShare[]       @relation("DocumentShareGrantee")
   pushSubscriptions           PushSubscription[]    @relation("PushSubscriptionOwner")
+  notificationPreferences     NotificationPreference[] @relation("NotificationPreferenceOwner")
 
   @@map("user")
 }
@@ -3218,25 +3219,80 @@ model SavedQuery {
 }
 
 // ---------------------------------------------------------------------------
-// Push notifications (issue #30, ADR-048)
+// Notifications (issue #30, ADR-048; issue #105, ADR-052)
 // ---------------------------------------------------------------------------
 
-/// What a device may be woken up for.
+/// What a person may be told about, whichever transport carries it.
 ///
 /// A short list on purpose. Every member is something that happens while
-/// nobody is looking at the application, which is the only thing a push
+/// nobody is looking at the application, which is the only thing a
 /// notification is good for: anything visible in an open tab is already
 /// delivered by the realtime socket, and a notification for it would be noise.
-enum PushNotificationKind {
-  /// An appointment is about to start. The same sweep that sends the
-  /// deployment's reminder, delivered to the calendar's owner.
-  CALENDAR_REMINDER
+///
+/// This is the occasion and not the transport (ADR-052). Which channels a kind
+/// actually reaches, and with which delivery modes, is `NOTIFICATION_CATALOG`
+/// in `packages/contracts/src/notifications.ts`; the database stores only what
+/// somebody chose.
+enum NotificationKind {
+  /// A page was shared with this account, the grant changed, or it was
+  /// withdrawn. Mail only: the point is to reach somebody who is not looking
+  /// at this deployment and may have no device registered here at all.
+  SHARE
   /// Somebody commented on a page this person wrote, or answered in a thread
   /// they took part in. Never one's own comment.
   COMMENT
+  /// An appointment is about to start. The same sweep that sends the
+  /// deployment's reminder, delivered to the calendar's owner.
+  CALENDAR
   /// An agent said something on purpose: `exo_push_send`, and the test
   /// notification, which is the same call aimed at oneself.
   AGENT
+}
+
+/// How a notification reaches somebody.
+enum NotificationChannel {
+  /// Web Push to the devices that accept the kind (ADR-048).
+  PUSH
+  /// A named template through the mail queue (ADR-051).
+  EMAIL
+}
+
+/// How much of a channel somebody wants for one occasion.
+enum NotificationDeliveryMode {
+  /// Nothing is queued at all. The check happens before the job, so an
+  /// unwanted notification costs no work and leaves no trace.
+  OFF
+  /// Queued the moment the event is dispatched.
+  IMMEDIATE
+  /// Collected and sent once a day. Modelled here because the routing layer
+  /// has to be able to answer "queue now or collect for later" before
+  /// anything collects; no catalogue entry offers it yet (issue #106).
+  DAILY_DIGEST
+}
+
+/// One account-wide answer: this person, this occasion, this channel.
+///
+/// An absent row means the catalogue's default, exactly as an absent
+/// `workspace_setting` means inherit (ADR-023). Setting a preference back to
+/// its default deletes the row rather than storing the same value, so a
+/// default that changes later moves everybody who never decided.
+///
+/// Only account-scoped channels live here. A push preference is a column on
+/// the device (ADR-048) and stays there: a per-person push switch cannot say
+/// that the phone in a pocket should buzz and the desktop at work should not.
+/// The check constraint in the migration is what enforces that split.
+model NotificationPreference {
+  userId String
+  user   User   @relation("NotificationPreferenceOwner", fields: [userId], references: [id], onDelete: Cascade)
+
+  kind    NotificationKind
+  channel NotificationChannel
+  mode    NotificationDeliveryMode
+
+  updatedAt DateTime @updatedAt
+
+  @@id([userId, kind, channel])
+  @@map("notification_preference")
 }
 
 /// One browser on one device that has agreed to be notified.
@@ -3277,7 +3333,11 @@ model PushSubscription {
   /// The kinds this device accepts. An empty list is a device that is
   /// registered and silent, which is a legitimate state: it keeps the
   /// permission and the endpoint without the noise.
-  kinds PushNotificationKind[]
+  ///
+  /// Only the kinds `NOTIFICATION_CATALOG` marks as reaching a device ever
+  /// appear here; the API refuses the others rather than storing a value
+  /// nothing would ever read.
+  kinds NotificationKind[]
 
   createdAt       DateTime  @default(now())
   /// Refreshed whenever the browser re-registers, which it does on every

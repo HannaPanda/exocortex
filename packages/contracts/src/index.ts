@@ -30,6 +30,7 @@ export * from './mcp';
 export * from './memory';
 export * from './memory-checkpoint';
 export * from './memory-facts';
+export * from './notifications';
 export * from './overviews';
 export * from './primitives';
 export * from './projects';

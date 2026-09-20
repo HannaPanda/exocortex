@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import type { NotificationKind } from './notifications';
 import { idSchema } from './primitives';
 
 /**
@@ -13,7 +14,21 @@ import { idSchema } from './primitives';
  * for making somebody's phone beep.
  */
 
-export const pushNotificationKinds = ['CALENDAR_REMINDER', 'COMMENT', 'AGENT'] as const;
+/**
+ * The occasions a device can be told about.
+ *
+ * These are `NotificationKind`s (issue #105) rather than a vocabulary of their
+ * own: an occasion is one thing whichever transport carries it, and two lists
+ * that had to be mapped onto each other would drift the first time somebody
+ * added to one. The subset is written out rather than filtered out of
+ * `NOTIFICATION_CATALOG` so that it is a literal type; `notifications.test.ts`
+ * is what keeps it equal to the catalogue's push-capable kinds.
+ */
+export const pushNotificationKinds = [
+  'COMMENT',
+  'CALENDAR',
+  'AGENT',
+] as const satisfies readonly NotificationKind[];
 export const pushNotificationKindSchema = z.enum(pushNotificationKinds);
 export type PushNotificationKind = z.infer<typeof pushNotificationKindSchema>;
 

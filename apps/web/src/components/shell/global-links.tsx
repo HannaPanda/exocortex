@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  BellIcon,
   BrainIcon,
   CircleQuestionMarkIcon,
   KeyIcon,
@@ -38,7 +39,7 @@ interface GlobalLink {
 }
 
 /**
- * The seven places that belong to the deployment rather than to a workspace,
+ * The eight places that belong to the deployment rather than to a workspace,
  * plus signing out.
  *
  * The three reading rooms are first: a conversation belongs to a person rather
@@ -47,7 +48,7 @@ interface GlobalLink {
  * a project, so none of the three fits under `/arbeitsbereich`.
  *
  * The role is not yet part of `CurrentSessionResponse` (see `AdminGuard`'s
- * TODO), so all seven render for every signed-in user; `/admin` gates itself
+ * TODO), so all eight render for every signed-in user; `/admin` gates itself
  * against the API's admin check.
  *
  * "Hilfe und Funktionen" carries a count, and it is the only one that does. A
@@ -79,6 +80,15 @@ function globalLinks(newCount: number): GlobalLink[] {
       label: 'Verbindungen',
       testId: 'open-api-tokens',
       icon: KeyIcon,
+    },
+    // Its own entry rather than a corner of "Verbindungen": since issue #105
+    // this is where both halves of being notified are decided, and the other
+    // page is about programs one lets in.
+    {
+      href: '/einstellungen/benachrichtigungen',
+      label: 'Benachrichtigungen',
+      testId: 'open-notifications',
+      icon: BellIcon,
     },
   ];
 }

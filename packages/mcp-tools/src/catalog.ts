@@ -14,6 +14,7 @@ import { INVITATION_TOOLS } from './tools/invitations.js';
 import { LINK_TOOLS } from './tools/links.js';
 import { MEMORY_TOOLS } from './tools/memory.js';
 import { MEMORY_FACT_TOOLS } from './tools/memory-facts.js';
+import { NOTIFICATION_TOOLS } from './tools/notifications.js';
 import { OVERVIEW_TOOLS } from './tools/overviews.js';
 import { PAGE_TOOLS } from './tools/pages.js';
 import { PLACEMENT_TOOLS } from './tools/placement.js';
@@ -60,6 +61,7 @@ export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...AGENT_SESSION_TOOLS,
   ...AUTOMATION_TOOLS,
   ...PUSH_TOOLS,
+  ...NOTIFICATION_TOOLS,
   ...RENDER_TOOLS,
   ...PROJECT_TOOLS,
   ...PROJECT_ARCHIVE_TOOLS,

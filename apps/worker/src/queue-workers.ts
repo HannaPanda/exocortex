@@ -496,7 +496,7 @@ function pushReminderVia(queues: WorkerRuntime['queues']) {
     await queues.enqueue(QUEUE_NAMES.push, {
       correlationId: randomUUID(),
       userId: notification.userId,
-      kind: 'CALENDAR_REMINDER',
+      kind: 'CALENDAR',
       notification: {
         title: notification.title,
         body: notification.body,

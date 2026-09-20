@@ -78,6 +78,13 @@ Only a grant that names an account, and only these changes to it (issue #103):
 | an expiry was set, removed or moved                  | `SHARE_CHANGED` |
 | the grant was withdrawn                              | `SHARE_REVOKED` |
 
+Since issue #105 all five of them are one switch, `SHARE` over `EMAIL`, and the
+grantee owns it. It is on by default — a share nobody hears about is a share
+nobody uses — and switching it off means no job is enqueued at all rather than
+a job that runs and throws the mail away. One switch covers arrival, change and
+withdrawal together, because they are one occasion. `docs/notifications.md` has
+the model.
+
 Nothing else does, and three cases are deliberate rather than missing:
 
 - **A public link sends nothing**, whether it is created, rotated or withdrawn.
@@ -94,8 +101,9 @@ Nothing else does, and three cases are deliberate rather than missing:
 
 The mail is built from the state that holds when the dispatcher reaches the
 event, not from the request that caused it: the address comes from the
-grantee's account, a switched-off account is skipped, and a grant withdrawn in
-between is not announced as an arrival. The withdrawal mail is the one that
+grantee's account, a switched-off account is skipped, the grantee's own
+preference is read then and not when the share was written, and a grant
+withdrawn in between is not announced as an arrival. The withdrawal mail is the one that
 says least on purpose -- the page's title, which the first mail already
 carried, and a link to the list of what is still shared. Not a link into the
 page, because the reader can no longer open it.

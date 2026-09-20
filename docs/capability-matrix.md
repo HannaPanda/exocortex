@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-214 routes are reachable from at least one client; 139 from all three.
+216 routes are reachable from at least one client; 141 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -91,6 +91,7 @@ reorder routes shipped with no way to them in the browser.
 | `GET /api/mcp/clients/:x` | ✓ | · | · | — |
 | `GET /api/me/api-tokens` | ✓ | · | · | — |
 | `GET /api/me/connections` | ✓ | · | · | — |
+| `GET /api/me/notification-preferences` | ✓ | ✓ | ✓ | `exo_notification_preferences` |
 | `GET /api/me/push/devices` | ✓ | ✓ | ✓ | `exo_push_devices` |
 | `GET /api/me/shares` | ✓ | ✓ | ✓ | `exo_shared_with_me` |
 | `GET /api/memory/facts` | ✓ | ✓ | ✓ | `exo_memory_facts` |
@@ -148,6 +149,7 @@ reorder routes shipped with no way to them in the browser.
 | `PATCH /api/documents/:x/values` | ✓ | ✓ | ✓ | `exo_database_row_update` |
 | `PATCH /api/documents/:x/views/:x` | ✓ | ✓ | ✓ | `exo_database_view_update` |
 | `PATCH /api/entities/:x` | ✓ | ✓ | ✓ | `exo_entity_update` |
+| `PATCH /api/me/notification-preferences` | ✓ | ✓ | ✓ | `exo_notification_preference_set` |
 | `PATCH /api/me/push/devices/:x` | ✓ | ✓ | ✓ | `exo_push_device_update` |
 | `PATCH /api/projects/:x` | ✓ | ✓ | ✓ | `exo_project_update` |
 | `PATCH /api/render/templates/:x` | ✓ | ✓ | ✓ | `exo_render_template_update` |

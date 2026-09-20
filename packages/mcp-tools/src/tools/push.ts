@@ -77,7 +77,7 @@ export const pushDeviceUpdateTool: AnyToolDefinition = defineTool({
   description:
     'Ändert, was ein angemeldetes Gerät hören soll, oder benennt es um. "kinds" ersetzt die ' +
     'Liste vollständig; eine leere Liste lässt das Gerät angemeldet, aber still. Die möglichen ' +
-    'Arten sind CALENDAR_REMINDER (kurz vor einem Termin), COMMENT (Kommentar an einer eigenen ' +
+    'Arten sind CALENDAR (kurz vor einem Termin), COMMENT (Kommentar an einer eigenen ' +
     'Seite oder Antwort im eigenen Gesprächsfaden) und AGENT (was exo_push_send schickt). ' +
     'Die Geräte-Kennung steht in exo_push_devices.',
   inputSchema: z.object({

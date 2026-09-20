@@ -672,7 +672,11 @@ dispatcher, when a grant on a page is handed out, altered or withdrawn
 (issue #103). The address is read from the grantee's account at that moment
 rather than taken from the request that changed the grant, a switched-off
 account is skipped, and a public link enqueues nothing because it names nobody.
-`docs/sharing.md` lists exactly which changes send which mail.
+Since issue #105 the grantee's own preference is read there too, before the
+`enqueue` call rather than inside the job: `OFF` has to mean that no job
+exists, because a job that runs and throws the mail away is a retry queue full
+of mail nobody wanted (`docs/notifications.md`). `docs/sharing.md` lists
+exactly which changes send which mail.
 
 **Deduplication** is the producer's `jobId`, not a field in the payload. A
 domain event that may be dispatched twice enqueues under an id derived from the
