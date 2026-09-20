@@ -490,3 +490,122 @@ describe('a page-scoped token', () => {
     expect(full.nodes.length).toBeGreaterThan(1);
   });
 });
+
+/**
+ * The events the recipient's mail is built from (issue #103).
+ *
+ * Asserted here rather than at the mail, because this is where the decision
+ * is: the worker sends what it is handed, so an event too many is a mail too
+ * many and an event that never leaves the transaction is a mail that never
+ * goes. The two cases the issue singles out are both about restraint -- a
+ * public link has nobody to write to, and a page moved into a shared branch
+ * must not write to everybody who holds anything nearby.
+ */
+describe('a changed grant leaves an event behind', () => {
+  interface ShareEvent {
+    change: string;
+    shareId: string;
+    documentId: string;
+    granteeId: string;
+    actorId: string;
+  }
+
+  async function shareEvents(): Promise<ShareEvent[]> {
+    const rows = await prisma.outboxEvent.findMany({
+      where: { workspaceId, type: 'document.share.changed' },
+      orderBy: { createdAt: 'asc' },
+    });
+    return rows.map((row) => row.payload as unknown as ShareEvent);
+  }
+
+  beforeEach(async () => {
+    await prisma.outboxEvent.deleteMany({ where: { workspaceId } });
+  });
+
+  it('records who was given what, and by whom', async () => {
+    const outsider = await prisma.user.findUniqueOrThrow({ where: { id: outsiderId } });
+    const shareId = await shareWith(sharedPageId, outsider.email, 'READ', 'PAGE_ONLY');
+
+    expect(await shareEvents()).toEqual([
+      {
+        change: 'granted',
+        shareId,
+        documentId: sharedPageId,
+        granteeId: outsiderId,
+        actorId: ownerId,
+      },
+    ]);
+  });
+
+  it('records a widened permission, and stays quiet about a save that changed nothing', async () => {
+    const outsider = await prisma.user.findUniqueOrThrow({ where: { id: outsiderId } });
+    const shareId = await shareWith(sharedPageId, outsider.email, 'READ', 'PAGE_ONLY');
+    await prisma.outboxEvent.deleteMany({ where: { workspaceId } });
+
+    await shares.update({
+      shareId,
+      userId: ownerId,
+      request: { permission: 'WRITE' },
+      correlationId,
+    });
+    expect((await shareEvents()).map((event) => event.change)).toEqual(['changed']);
+
+    // The same value again. A dialog that submits every field on every save
+    // would otherwise post somebody a letter saying nothing happened.
+    await shares.update({
+      shareId,
+      userId: ownerId,
+      request: { permission: 'WRITE', scope: 'PAGE_ONLY' },
+      correlationId,
+    });
+    expect((await shareEvents()).map((event) => event.change)).toEqual(['changed']);
+  });
+
+  it('records a withdrawal once, however often it is asked for', async () => {
+    const outsider = await prisma.user.findUniqueOrThrow({ where: { id: outsiderId } });
+    const shareId = await shareWith(sharedPageId, outsider.email, 'READ', 'PAGE_ONLY');
+    await prisma.outboxEvent.deleteMany({ where: { workspaceId } });
+
+    await shares.revoke({ shareId, userId: ownerId, correlationId });
+    await shares.revoke({ shareId, userId: ownerId, correlationId });
+    expect((await shareEvents()).map((event) => event.change)).toEqual(['revoked']);
+  });
+
+  it('writes nothing for a public link, neither when it is made nor when it ends', async () => {
+    const created = await shares.create({
+      documentId: sharedPageId,
+      userId: ownerId,
+      request: { kind: 'PUBLIC_LINK', permission: 'READ', scope: 'PAGE_ONLY', expiresInDays: null },
+      correlationId,
+    });
+    await shares.revoke({ shareId: created.share.id, userId: ownerId, correlationId });
+
+    expect(await shareEvents()).toEqual([]);
+  });
+
+  it('writes nothing when a page is moved into a shared branch', async () => {
+    const outsider = await prisma.user.findUniqueOrThrow({ where: { id: outsiderId } });
+    await shareWith(sharedPageId, outsider.email, 'READ', 'SUBTREE');
+    await prisma.outboxEvent.deleteMany({ where: { workspaceId } });
+
+    const moved = await documents.create({
+      workspaceId,
+      userId: ownerId,
+      request: { title: 'Wandert', type: 'PAGE', parentId: secretPageId },
+      correlationId,
+    });
+    await documents.move({
+      documentId: moved.id,
+      userId: ownerId,
+      request: { parentId: sharedPageId },
+      correlationId,
+    });
+
+    // The recipient can now read it, and hears nothing: a reorganization is
+    // not an access change anybody asked to be told about, and one move can
+    // carry a hundred pages.
+    expect(await access.findDocumentContext(moved.id, outsiderId)).not.toBeNull();
+    expect(await shareEvents()).toEqual([]);
+    await prisma.document.delete({ where: { id: moved.id } });
+  });
+});

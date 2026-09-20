@@ -2,6 +2,7 @@ import { type MailMessage } from '@exocortex/contracts';
 
 import { passwordResetMail, verificationMail } from './templates/auth';
 import { invitationMail } from './templates/invitation';
+import { shareChangedMail, shareGrantedMail, shareRevokedMail } from './templates/share';
 import { type RenderedMail } from './types';
 
 /**
@@ -25,6 +26,30 @@ export function renderMail(message: MailMessage): RenderedMail {
         workspaceName: message.workspaceName,
         url: message.url,
         expiresAt: new Date(message.expiresAt),
+      });
+    case 'SHARE_GRANTED':
+      return shareGrantedMail({
+        sharedByName: message.sharedByName,
+        documentTitle: message.documentTitle,
+        permission: message.permission,
+        scope: message.scope,
+        url: message.url,
+        expiresAt: message.expiresAt,
+      });
+    case 'SHARE_CHANGED':
+      return shareChangedMail({
+        changedByName: message.changedByName,
+        documentTitle: message.documentTitle,
+        permission: message.permission,
+        scope: message.scope,
+        url: message.url,
+        expiresAt: message.expiresAt,
+      });
+    case 'SHARE_REVOKED':
+      return shareRevokedMail({
+        revokedByName: message.revokedByName,
+        documentTitle: message.documentTitle,
+        url: message.url,
       });
   }
 }

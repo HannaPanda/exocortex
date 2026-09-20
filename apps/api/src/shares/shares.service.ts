@@ -11,6 +11,7 @@ import {
 import {
   type CreateShareRequest,
   type DocumentShare,
+  type DocumentShareChangedPayload,
   type IncomingShare,
   type IncomingShareListResponse,
   type OutgoingShareListResponse,
@@ -20,7 +21,11 @@ import {
   type ShareScope,
   type UpdateShareRequest,
 } from '@exocortex/contracts';
-import { loadAncestorChain, type PrismaClient } from '@exocortex/database';
+import {
+  loadAncestorChain,
+  type PrismaClient,
+  type PrismaTransactionClient,
+} from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 
 import { AppError } from '../common/app-error';
@@ -96,6 +101,23 @@ function toContract(row: ShareRow, secret?: string): DocumentShare {
     createdAt: row.createdAt.toISOString(),
     revokedAt: row.revokedAt?.toISOString() ?? null,
   };
+}
+
+/**
+ * True when an update changed something the recipient would want to know
+ * (issue #103): what they may do, how far it reaches, or how long it lasts.
+ *
+ * Everything else an update can touch is bookkeeping. A tree move is not in
+ * this list at all and never reaches it: moving a page into a shared branch
+ * writes no share row, which is what keeps a reorganization from mailing
+ * everybody who holds anything nearby.
+ */
+function changesTheGrant(before: ShareRow, after: ShareRow): boolean {
+  return (
+    before.permission !== after.permission ||
+    before.scope !== after.scope ||
+    (before.expiresAt?.getTime() ?? null) !== (after.expiresAt?.getTime() ?? null)
+  );
 }
 
 /**
@@ -277,6 +299,7 @@ export class SharesService {
           scope: input.request.scope,
         },
       });
+      await this.announceByMail(tx, row, input.userId, 'granted', input.correlationId);
       return row;
     });
 
@@ -348,21 +371,33 @@ export class SharesService {
       throw AppError.validation('A public link is read-only');
     }
 
-    const updated = await this.prisma.documentShare.update({
-      where: { id: input.shareId },
-      data: {
-        ...(input.request.permission === undefined ? {} : { permission: input.request.permission }),
-        ...(input.request.scope === undefined ? {} : { scope: input.request.scope }),
-        ...(input.request.expiresInDays === undefined
-          ? {}
-          : {
-              expiresAt:
-                input.request.expiresInDays === null
-                  ? null
-                  : new Date(Date.now() + input.request.expiresInDays * MILLISECONDS_PER_DAY),
-            }),
-      },
-      select: SHARE_SELECT,
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const row = await tx.documentShare.update({
+        where: { id: input.shareId },
+        data: {
+          ...(input.request.permission === undefined
+            ? {}
+            : { permission: input.request.permission }),
+          ...(input.request.scope === undefined ? {} : { scope: input.request.scope }),
+          ...(input.request.expiresInDays === undefined
+            ? {}
+            : {
+                expiresAt:
+                  input.request.expiresInDays === null
+                    ? null
+                    : new Date(Date.now() + input.request.expiresInDays * MILLISECONDS_PER_DAY),
+              }),
+        },
+        select: SHARE_SELECT,
+      });
+      // Only when the grant actually reads differently afterwards. A dialog
+      // that submits every field on every save would otherwise mail somebody
+      // to tell them nothing changed, which is how a useful mail becomes one
+      // people filter away.
+      if (row.revokedAt === null && changesTheGrant(existing, row)) {
+        await this.announceByMail(tx, row, input.userId, 'changed', input.correlationId);
+      }
+      return row;
     });
 
     // Every change, not only a narrowing (ADR-029): a connection authorized
@@ -394,11 +429,48 @@ export class SharesService {
           correlationId: input.correlationId,
           metadata: { kind: row.kind, shareId: row.id },
         });
+        await this.announceByMail(tx, row, input.userId, 'revoked', input.correlationId);
         return row;
       });
       await this.announce(revoked, input.correlationId);
     }
     return { revoked: true };
+  }
+
+  /**
+   * Writes the event the recipient's mail is built from (issue #103).
+   *
+   * Inside the caller's transaction, like every other outbox write: a mail
+   * announcing a share that was rolled back is worse than no mail at all,
+   * because the reader will go looking for a page that never existed.
+   *
+   * Nothing is decided here beyond "this grant names an account". Whether that
+   * account still exists, whether it is switched off, and what its address is,
+   * are read by the dispatcher when it enqueues the mail -- minutes later, from
+   * the state that holds then.
+   */
+  private async announceByMail(
+    tx: PrismaTransactionClient,
+    row: ShareRow,
+    actorId: string,
+    change: 'granted' | 'changed' | 'revoked',
+    correlationId: string,
+  ): Promise<void> {
+    // A public link is nobody's post. Not an omission: mailing on link
+    // creation would mean mailing whoever created it about what they just did.
+    if (row.kind !== 'USER' || row.granteeId === null) return;
+    await this.outbox.writeEvent(tx, {
+      workspaceId: row.workspaceId,
+      type: 'document.share.changed',
+      payload: {
+        shareId: row.id,
+        documentId: row.documentId,
+        granteeId: row.granteeId,
+        actorId,
+        change,
+      } satisfies DocumentShareChangedPayload,
+      correlationId,
+    });
   }
 
   /** Tells open connections that a grant changed. A link has nobody to tell. */

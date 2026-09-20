@@ -18,11 +18,12 @@ not run yet. These go straight through the `MAILER` provider in
 `apps/api/src/platform/platform.module.ts`, and a relay that is down makes the
 request say so.
 
-**Asynchronous, in the worker.** Everything else: the notification mails of
-issues #103 to #107. They are enqueued on the `mail` queue and sent by
-`createMailDeliveryProcessor`, so a relay having a bad five minutes delays a
-mail instead of failing whatever caused it. `docs/background-jobs.md` describes
-the queue, its retry policy and its deduplication.
+**Asynchronous, in the worker.** Everything else, starting with the share
+notifications of issue #103 and continuing with #104 to #107. They are enqueued
+on the `mail` queue and sent by `createMailDeliveryProcessor`, so a relay having
+a bad five minutes delays a mail instead of failing whatever caused it.
+`docs/background-jobs.md` describes the queue, its retry policy and its
+deduplication.
 
 Both processes build their transport with the same `createMailerFromEnv` from
 the same `SMTP_*` variables. There is one relay, configured in one place, and
@@ -38,6 +39,7 @@ it.
 | `packages/mail/src/render.ts`                 | template name plus values becomes subject plus text           |
 | `packages/mail/src/mailer.ts`                 | transport plus catalogue, and what may be logged              |
 | `packages/contracts/src/mail.ts`              | the template catalogue as a zod union                         |
+| `share-notifications.ts` (worker)             | which grant change becomes which mail, and to whom            |
 | `apps/worker/src/processors/mail-delivery.ts` | one job, one SMTP hop, retry or do not                        |
 
 `packages/mail` may see `@exocortex/contracts` and `@exocortex/logger` and
@@ -63,6 +65,40 @@ A template is never rendered by its caller. That is the rule the shape exists
 to enforce: everything that will enqueue mail from here on carries text a
 person or a model wrote, and a queue that accepts prose is a relay for whatever
 reaches it.
+
+## Which change sends which mail
+
+Only a grant that names an account, and only these changes to it (issue #103):
+
+| What happened                                        | Template        |
+| ---------------------------------------------------- | --------------- |
+| a page was shared with an account                    | `SHARE_GRANTED` |
+| `READ` became `WRITE`, or the other way round        | `SHARE_CHANGED` |
+| `PAGE_ONLY` became `SUBTREE`, or the other way round | `SHARE_CHANGED` |
+| an expiry was set, removed or moved                  | `SHARE_CHANGED` |
+| the grant was withdrawn                              | `SHARE_REVOKED` |
+
+Nothing else does, and three cases are deliberate rather than missing:
+
+- **A public link sends nothing**, whether it is created, rotated or withdrawn.
+  It names nobody, so the only address available would be the one of the person
+  who just clicked the button.
+- **Moving a page into a shared subtree sends nothing.** It changes what the
+  holder of that subtree can reach, and it writes no share row: one
+  reorganization can carry a hundred pages, and a mail per page is how a useful
+  notification becomes a filter rule. The move dialog warns the person doing it
+  instead (`docs/sharing.md`).
+- **An update that changes none of the four fields sends nothing**, so a dialog
+  that submits every field on every save does not post somebody a letter saying
+  nothing happened.
+
+The mail is built from the state that holds when the dispatcher reaches the
+event, not from the request that caused it: the address comes from the
+grantee's account, a switched-off account is skipped, and a grant withdrawn in
+between is not announced as an arrival. The withdrawal mail is the one that
+says least on purpose -- the page's title, which the first mail already
+carried, and a link to the list of what is still shared. Not a link into the
+page, because the reader can no longer open it.
 
 ## Why a template and not a subject and a body
 

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { sharePermissionSchema, shareScopeSchema } from './shares';
+
 /**
  * What a mail this deployment sends may say (issue #102).
  *
@@ -21,14 +23,22 @@ export const mailRecipientSchema = z.string().trim().min(3).max(320).includes('@
 
 const mailNameSchema = z.string().trim().min(1).max(200);
 const mailUrlSchema = z.string().trim().min(1).max(2000);
+/**
+ * A page's title as a mail may carry it.
+ *
+ * Bounded like a name and never longer: a title is the one field here that a
+ * person writes freely, and a subject line built from 4000 characters is a
+ * subject line no client shows. The producer shortens; this refuses.
+ */
+const mailTitleSchema = z.string().trim().min(1).max(200);
 
 /**
  * The templates, as a discriminated union.
  *
- * The three that exist are the ones this deployment already sent before there
- * was a queue: they were moved here unchanged, wording included, because a
- * refactor that also rewrites the password-reset mail is two changes wearing
- * one commit message.
+ * The first three are the ones this deployment already sent before there was a
+ * queue: they were moved here unchanged, wording included, because a refactor
+ * that also rewrites the password-reset mail is two changes wearing one commit
+ * message. The share mails below them are the first that no request waits on.
  *
  * `expiresAt` is an ISO string rather than a `Date`: a payload makes a round
  * trip through JSON in Redis, and a `Date` comes back out of it as a string
@@ -53,6 +63,49 @@ export const mailMessageSchema = z.discriminatedUnion('template', [
     workspaceName: z.string().trim().min(1).max(200).nullable(),
     url: mailUrlSchema,
     expiresAt: z.iso.datetime(),
+  }),
+  /**
+   * A page was shared with an account (issue #103).
+   *
+   * Three templates rather than one with a `change` field, because the three
+   * mails say different things and one of them says deliberately less: a
+   * withdrawal carries no link into the page and no permission, since the
+   * reader can no longer check either.
+   */
+  z.object({
+    template: z.literal('SHARE_GRANTED'),
+    sharedByName: mailNameSchema,
+    documentTitle: mailTitleSchema,
+    permission: sharePermissionSchema,
+    scope: shareScopeSchema,
+    url: mailUrlSchema,
+    /** When the grant ends by itself, or null when it does not. */
+    expiresAt: z.iso.datetime().nullable(),
+  }),
+  z.object({
+    template: z.literal('SHARE_CHANGED'),
+    changedByName: mailNameSchema,
+    documentTitle: mailTitleSchema,
+    /** The state after the change, never a before-and-after: one is enough to act on. */
+    permission: sharePermissionSchema,
+    scope: shareScopeSchema,
+    url: mailUrlSchema,
+    expiresAt: z.iso.datetime().nullable(),
+  }),
+  z.object({
+    template: z.literal('SHARE_REVOKED'),
+    revokedByName: mailNameSchema,
+    /**
+     * The title, and nothing else about the page.
+     *
+     * Defensible because it was in the mail that announced the share: the
+     * reader already has it. What is not here is the link, the permission and
+     * anything the page says -- a withdrawal must not hand over more than the
+     * grant did.
+     */
+    documentTitle: mailTitleSchema,
+    /** The list of pages still shared with them, not the page that was withdrawn. */
+    url: mailUrlSchema,
   }),
 ]);
 export type MailMessage = z.infer<typeof mailMessageSchema>;

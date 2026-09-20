@@ -47,6 +47,7 @@ export const APPLICATION_EVENT_TYPES = [
   'project.files.changed',
   'project.build.updated',
   'saved-query.changed',
+  'document.share.changed',
 ] as const;
 
 export const applicationEventTypeSchema = z.enum(APPLICATION_EVENT_TYPES);
@@ -311,6 +312,32 @@ export const savedQueryChangedPayloadSchema = z.object({
 });
 export type SavedQueryChangedPayload = z.infer<typeof savedQueryChangedPayloadSchema>;
 
+/**
+ * A grant on a page was handed out, altered or withdrawn (issue #103).
+ *
+ * The one event type in this list that never reaches a socket. It is written
+ * to the outbox and read by the dispatcher, which turns it into the mail that
+ * tells the recipient their access changed; broadcasting it to the workspace
+ * room would tell every member who holds which page, which is a question the
+ * share list already answers to the people allowed to ask it.
+ *
+ * It carries ids and what happened, never an address and never a title. Who
+ * the grantee is by mail, and whether their account still exists, is looked up
+ * when the mail is enqueued -- minutes later, and therefore from the state
+ * that holds then rather than the state that held at the request.
+ *
+ * `PUBLIC_LINK` grants write no event at all: a link has nobody to tell.
+ */
+export const documentShareChangedPayloadSchema = z.object({
+  shareId: idSchema,
+  documentId: idSchema,
+  granteeId: idSchema,
+  /** Who did it, so the mail can name them. */
+  actorId: idSchema,
+  change: z.enum(['granted', 'changed', 'revoked']),
+});
+export type DocumentShareChangedPayload = z.infer<typeof documentShareChangedPayloadSchema>;
+
 export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('workspace.updated', z.object({ workspace: workspaceSchema.partial() })),
   envelope('document.created', z.object({ document: documentSummarySchema })),
@@ -343,6 +370,7 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('project.files.changed', projectFilesChangedPayloadSchema),
   envelope('project.build.updated', projectBuildUpdatedPayloadSchema),
   envelope('saved-query.changed', savedQueryChangedPayloadSchema),
+  envelope('document.share.changed', documentShareChangedPayloadSchema),
 ]);
 export type ApplicationEvent = z.infer<typeof applicationEventSchema>;
 

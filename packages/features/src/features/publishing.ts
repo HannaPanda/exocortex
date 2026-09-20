@@ -146,8 +146,9 @@ export const PUBLISHING_FEATURES: readonly RegisteredFeature[] = [
       'Ein Link ist immer nur lesend. Schreiben über eine Adresse, die jemand weiterreichen kann, gibt es hier nicht, und zwar nicht als Einstellung, sondern gar nicht. Eine Freigabe an ein Konto kann schreiben, weil dahinter eine angemeldete Person steht, die im Verlauf der Seite auftaucht wie jede andere.',
       'Zurückziehen wirkt sofort, auch für jemanden, der die Seite gerade offen hat: die Verbindung wird neu geprüft und fällt weg. Was schon gelesen wurde, holt das nicht zurück, deshalb fragt eXocortex beim Erzeugen eines Links noch einmal nach. Eine Freigabe „mit allem darunter“ hängt an der Struktur, nicht an einer Liste: eine Seite, die du innerhalb des freigegebenen Bereichs verschiebst, bleibt freigegeben, und eine, die du herausschiebst, ist es nicht mehr.',
       'Der umgekehrte Fall ist der gefährliche, deshalb sagt eXocortex ihn an: eine Seite in einen bereits freigegebenen Bereich zu verschieben, gibt sie mit frei. Beim Einsortieren steht eine Warnung, bevor verschoben wird, und eine Seite, die von weiter oben freigegeben ist, trägt oben das Kennzeichen „Geteilt“, auch wenn an ihr selbst nichts eingestellt wurde.',
+      'Wer eine Seite bekommt, erfährt es per E-Mail: beim Freigeben, wenn sich später ändert, was erlaubt ist, wie weit es reicht oder wie lange es gilt, und wenn du die Freigabe zurückziehst. In der Mail steht, wer geteilt hat, um welche Seite es geht und was damit erlaubt ist, dazu ein Link direkt dorthin. Die Mail zum Entzug nennt nur noch den Titel und führt auf die Liste dessen, was weiterhin geteilt ist, denn die Seite selbst ist ja zu. Keine Mail gibt es bei einem Link (der gehört niemandem) und beim Verschieben einer Seite in einen freigegebenen Bereich, sonst würde ein Aufräumen zu hundert Mails.',
     ],
-    since: '2026-09-19',
+    since: '2026-09-20',
     references: ['#83', 'ADR-044'],
     ui: { where: 'Seitenmenü oben rechts, „Teilen …“.' },
     tools: [

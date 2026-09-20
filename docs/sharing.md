@@ -17,6 +17,7 @@ the feature.
 | Writing grants                                    | `apps/api/src/shares/shares.service.ts`                                                              |
 | The anonymous read                                | `apps/api/src/shares/public-shares.service.ts`                                                       |
 | What a shared page may say about its surroundings | `apps/api/src/documents/share-visibility.ts`                                                         |
+| Telling the recipient                             | `apps/worker/src/processors/maintenance-tasks/share-notifications.ts`                                |
 | Tools                                             | `packages/mcp-tools/src/tools/shares.ts`                                                             |
 | Browser                                           | `share-dialog.tsx`, `workspace-shares-page.tsx`, `incoming-shares-page.tsx`, `public-share-page.tsx` |
 
@@ -62,6 +63,28 @@ principal column is set. A third kind means:
 3. a row in the share dialog and in the workspace overview,
 4. `formatShare` in the tool file, because a grant nobody can read out loud is a
    grant nobody audits.
+
+## Telling the person it concerns
+
+A grant on an account is post, not a push (issue #103): it is still true
+tomorrow, and the person it concerns is usually not in eXocortex when it
+happens. `SharesService` writes a `document.share.changed` row into the outbox
+inside the same transaction as the grant, and the outbox dispatcher turns it
+into a mail. Which change sends which mail, and the three cases that send none,
+are in [mail.md](mail.md); the shape of the mails is in
+`packages/mail/src/templates/share.ts`.
+
+Two things to keep in mind when changing this feature:
+
+- **A new field on `DocumentShare` is not automatically worth a mail.**
+  `changesTheGrant` lists the ones that are: what the holder may do, how far it
+  reaches, how long it lasts. Adding a field there is a decision to write to
+  somebody about it.
+- **The event carries ids and nothing else.** The address, the name and the
+  title are read when the mail is enqueued, minutes later, from the state that
+  holds then. That is what keeps a withdrawn account, a renamed page and a
+  grant revoked in between from being announced as they were rather than as
+  they are.
 
 ## Things that are deliberate
 

@@ -6,6 +6,7 @@ import { fireMatchingAutomations } from './automations';
 import { scheduleCommentNotifications } from './comment-notifications';
 import { isMissingRow, type MaintenanceTask } from './context';
 import { scheduleOverviewRefreshes } from './overviews';
+import { scheduleShareNotifications } from './share-notifications';
 
 /**
  * Events after which a page may answer to a different title than before, so
@@ -142,6 +143,19 @@ async function dispatchEvent(
   await scheduleCommentNotifications(
     { prisma, queues, appUrl: context.appUrl },
     {
+      workspaceId: event.workspaceId,
+      type: event.type,
+      payload: event.payload,
+      correlationId: event.correlationId,
+    },
+  );
+  // And a mail for the fourth (issue #103). It takes the row's id as well,
+  // because that id is what makes a redelivered event enqueue the same job
+  // twice instead of sending the same mail twice.
+  await scheduleShareNotifications(
+    { prisma, queues, appUrl: context.appUrl },
+    {
+      eventId: event.id,
       workspaceId: event.workspaceId,
       type: event.type,
       payload: event.payload,
