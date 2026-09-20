@@ -50,7 +50,7 @@ function DialogContent({
           // reachable. `DialogBody` moves that scrolling into the middle
           // section; without one, the whole popup scrolls.
           'max-h-[calc(100dvh-2rem)] overflow-y-auto',
-          'rounded-lg border border-border bg-popover p-6 text-popover-foreground shadow-xl',
+          'rounded-lg border border-border bg-popover p-6 text-popover-foreground shadow-lg',
           'transition-all duration-150',
           'data-[starting-style]:scale-98 data-[starting-style]:opacity-0',
           'data-[ending-style]:scale-98 data-[ending-style]:opacity-0',

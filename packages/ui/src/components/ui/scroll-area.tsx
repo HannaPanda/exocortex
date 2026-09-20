@@ -41,7 +41,7 @@ function ScrollArea({
         </ScrollAreaPrimitive.Content>
       </ScrollAreaPrimitive.Viewport>
       <ScrollAreaPrimitive.Scrollbar
-        className="flex w-2 justify-center rounded p-0.5 opacity-0 transition-opacity data-hovering:opacity-100 data-scrolling:opacity-100"
+        className="flex w-2 justify-center rounded-sm p-0.5 opacity-0 transition-opacity data-hovering:opacity-100 data-scrolling:opacity-100"
         orientation="vertical"
       >
         <ScrollAreaPrimitive.Thumb className="w-full rounded-full bg-border-strong" />

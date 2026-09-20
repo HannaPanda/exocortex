@@ -42,14 +42,17 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
   return (
     <section className="flex flex-col gap-3">
       <SectionRule>{title}</SectionRule>
-      <div className="grid gap-x-8 gap-y-3 sm:grid-cols-2">{children}</div>
+      <div className="grid gap-x-8 gap-y-4 sm:grid-cols-2">{children}</div>
     </section>
   );
 }
 
 export function OverviewCards({ overview }: { overview: AdminOverviewResponse }) {
   return (
-    <div className="flex flex-col gap-8">
+    // `gap-10` between groups against `gap-4` inside them, the same rhythm the
+    // workspace overview uses: the space is what groups a section here, since
+    // nothing is boxed.
+    <div className="flex flex-col gap-10">
       <Group title="Letzte 24 Stunden">
         <Readout
           label="KI-Anfragen"

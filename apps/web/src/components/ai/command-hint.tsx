@@ -20,7 +20,7 @@ export function CommandHint({ commands, activeIndex, onSelect }: CommandHintProp
     <div
       role="listbox"
       aria-label="Befehle"
-      className="absolute bottom-full left-0 z-10 mb-1 max-h-64 w-full overflow-y-auto rounded-md border border-border bg-popover text-popover-foreground shadow-lg"
+      className="absolute bottom-full left-0 z-10 mb-1 max-h-64 w-full overflow-y-auto rounded-md border border-border bg-popover text-popover-foreground shadow-md"
     >
       {commands.map((command, index) => (
         <div

@@ -81,7 +81,7 @@ export function TimeGridView({ workspaceId, days, entriesByDay }: TimeGridViewPr
                     key={entry.row.document.id}
                     workspaceId={workspaceId}
                     entry={entry}
-                    className="truncate rounded bg-accent px-1 py-0.5 text-micro hover:underline"
+                    className="truncate rounded-sm bg-accent px-1 py-0.5 text-micro hover:underline"
                   />
                 ))}
               </div>
@@ -158,7 +158,7 @@ function DayColumn({
             <CalendarEntryLink
               workspaceId={workspaceId}
               entry={item.entry}
-              className={`block h-full overflow-hidden rounded bg-accent px-1 py-0.5 text-micro leading-tight hover:underline ${item.continuesBefore ? 'rounded-t-none' : ''} ${item.continuesAfter ? 'rounded-b-none' : ''}`}
+              className={`block h-full overflow-hidden rounded-sm bg-accent px-1 py-0.5 text-micro leading-tight hover:underline ${item.continuesBefore ? 'rounded-t-none' : ''} ${item.continuesAfter ? 'rounded-b-none' : ''}`}
             />
           </div>
         );

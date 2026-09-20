@@ -60,7 +60,7 @@ function SheetContent({
       <SheetPrimitive.Popup
         data-slot="sheet-content"
         className={cn(
-          'fixed z-50 flex flex-col bg-popover text-popover-foreground shadow-xl',
+          'fixed z-50 flex flex-col bg-popover text-popover-foreground shadow-lg',
           'transition-transform duration-150',
           SIDE_STYLES[side],
           className,

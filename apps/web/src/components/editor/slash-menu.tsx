@@ -128,7 +128,7 @@ function SlashMenuList({ items, query, activeIndex, onSelect }: SlashMenuListPro
   if (items.length === 0) {
     return (
       <div
-        className="w-72 rounded-md border border-border bg-popover p-3 text-sm text-muted-foreground shadow-lg"
+        className="w-72 rounded-md border border-border bg-popover p-3 text-sm text-muted-foreground shadow-md"
         data-testid="slash-menu-empty"
       >
         Kein Block passt zu „{query}“.
@@ -142,7 +142,7 @@ function SlashMenuList({ items, query, activeIndex, onSelect }: SlashMenuListPro
       aria-label="Block einfügen"
       aria-activedescendant={`slash-option-${items[activeIndex]?.id ?? ''}`}
       data-testid="slash-menu"
-      className="max-h-80 w-72 overflow-y-auto rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-lg"
+      className="max-h-80 w-72 overflow-y-auto rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md"
     >
       {sections.map((section) => (
         <div key={section.group} role="group" aria-label={section.label}>

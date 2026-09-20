@@ -89,7 +89,7 @@ function MiniMonth({
               type="button"
               onClick={() => onOpenDay(day)}
               title={count === 0 ? undefined : `${count} Einträge`}
-              className={`rounded text-nano leading-5 hover:bg-accent ${key === todayKey ? 'font-semibold text-primary-text' : ''} ${busyClass(count)}`}
+              className={`rounded-sm text-nano leading-5 hover:bg-accent ${key === todayKey ? 'font-semibold text-primary-text' : ''} ${busyClass(count)}`}
             >
               {day.getDate()}
             </button>

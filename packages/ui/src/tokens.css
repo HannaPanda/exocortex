@@ -164,9 +164,46 @@
   --input: oklch(0.725 0.022 234);
   --ring: oklch(0.796 0.155 72);
 
+  /*
+   * Four radii, and the step between them is the point: a radius says how big
+   * the thing wearing it is.
+   *
+   *   xs 2px   a tint laid over text or a graphic -- a diff span, a chart bar
+   *   sm 5px   a mark smaller than a control -- a chip, a key cap, a tree button
+   *   md 8px   a control -- button, input, select
+   *   lg 12px  a surface -- popover, dialog, sheet, card
+   *
+   * There used to be six values in use for three tokens. Tailwind's bare
+   * `rounded` (4px) sat one pixel under `--radius-sm` and `rounded-xl` (14px in
+   * DESIGN.md, 12px in Tailwind because it had no token) sat two pixels over
+   * `--radius-lg`; neither difference is one anybody sees, so both were a tier
+   * the system claimed and the screen did not keep. What is left is roughly
+   * 1.6x per step, which is.
+   */
+  --radius-xs: 0.125rem;
   --radius: 0.5rem;
   --radius-sm: 0.3125rem;
   --radius-lg: 0.75rem;
+
+  /*
+   * Elevation is the surface ramp; a shadow only confirms what the step in the
+   * slate already said (DESIGN.md section 4). These are Tailwind's geometry with
+   * the colour replaced: a pure black shadow on a mid-tone slate page reads as
+   * dirt rather than as a layer, so the colour is the same deep slate the modal
+   * scrim uses, and the alpha is higher than Tailwind's because 10% of black
+   * is invisible on a surface this light.
+   *
+   *   xs  a field at rest
+   *   sm  a block raised off the page: a card, a PDF page
+   *   md  a floating surface: menu, popover, toolbar, tooltip
+   *   lg  a modal surface: dialog, sheet
+   */
+  --shadow-xs: 0 1px 2px 0 oklch(0.16 0.02 234 / 0.24);
+  --shadow-sm: 0 1px 3px 0 oklch(0.16 0.02 234 / 0.26), 0 1px 2px -1px oklch(0.16 0.02 234 / 0.26);
+  --shadow-md:
+    0 4px 8px -2px oklch(0.16 0.02 234 / 0.34), 0 2px 4px -2px oklch(0.16 0.02 234 / 0.3);
+  --shadow-md:
+    0 12px 24px -6px oklch(0.16 0.02 234 / 0.44), 0 4px 8px -4px oklch(0.16 0.02 234 / 0.34);
 
   /* Motion. One curve and two durations are the whole vocabulary.
      The curve is an exponential ease-out: movement leaves fast and settles long,

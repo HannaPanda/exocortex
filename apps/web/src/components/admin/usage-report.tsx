@@ -11,11 +11,6 @@ import {
 } from '@exocortex/contracts';
 import {
   Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
   cn,
   EmptyState,
   ErrorState,
@@ -160,12 +155,12 @@ function DailyChart({ daily }: { daily: readonly AiUsageDay[] }) {
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <CardDescription>Läufe pro Tag</CardDescription>
-        <CardTitle className="text-base">Verlauf nach Ausgang</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
+    // A section rather than a card: everything else on this page is announced
+    // by a rule now, and one boxed block in the middle of it would be the only
+    // thing claiming to be separate from the page it is about.
+    <section className="flex flex-col gap-3">
+      <SectionRule>Läufe pro Tag, nach Ausgang</SectionRule>
+      <div className="space-y-3">
         {/*
          * The bars are the picture; the table under them is the same data for
          * anybody the picture does not reach. It was `role="img"` over a row of
@@ -244,8 +239,8 @@ function DailyChart({ daily }: { daily: readonly AiUsageDay[] }) {
             ))}
           </tbody>
         </table>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -397,7 +392,7 @@ export function UsageReport() {
           took. */}
       <section className="flex flex-col gap-3">
         <SectionRule>Im Zeitraum</SectionRule>
-        <div className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
+        <div className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
           <Readout
             label="Läufe"
             value={numberFormat.format(usage.runs)}

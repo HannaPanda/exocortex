@@ -99,9 +99,19 @@
   --color-content-bg-pink: var(--content-bg-pink);
   --color-content-bg-red: var(--content-bg-red);
 
+  --radius-xs: var(--radius-xs);
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius);
   --radius-lg: var(--radius-lg);
+
+  /* The four steps of elevation, tinted with the page's own hue. Overriding
+     Tailwind's names rather than adding new ones means every `shadow-*` already
+     in the repository is a token, and a fifth step cannot be reached by
+     accident. */
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-md: var(--shadow-md);
 
   /* Motion vocabulary from tokens.css. Overriding Tailwind's two `--default-*`
      variables gives every `transition-*` utility in the repository the curve and

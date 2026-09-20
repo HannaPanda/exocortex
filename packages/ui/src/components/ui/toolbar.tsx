@@ -78,7 +78,7 @@ function Toolbar({
       ref={ref}
       data-slot="toolbar"
       className={cn(
-        'flex items-center gap-0.5 rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-lg',
+        'flex items-center gap-0.5 rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md',
         className,
       )}
       {...props}

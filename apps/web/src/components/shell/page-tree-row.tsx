@@ -164,7 +164,7 @@ export function PageTreeRow({
                 aria-expanded={isOpen}
                 onClick={() => toggle(node.id)}
                 className={cn(
-                  'flex size-5 shrink-0 items-center justify-center rounded text-muted-foreground transition-transform hover:text-foreground',
+                  'flex size-5 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-transform hover:text-foreground',
                   isOpen && 'rotate-90',
                   !hasChildren && 'invisible',
                 )}
@@ -187,7 +187,7 @@ export function PageTreeRow({
                     type="button"
                     aria-label={`Symbol von „${node.title}“ ändern`}
                     data-testid={`tree-icon-${node.id}`}
-                    className="grid size-5 shrink-0 place-items-center rounded hover:bg-accent-strong"
+                    className="grid size-5 shrink-0 place-items-center rounded-sm hover:bg-accent-strong"
                   >
                     <DocumentIcon
                       icon={node.icon}
@@ -224,7 +224,7 @@ export function PageTreeRow({
                 // keeps it focusable, `focus-visible:` shows it while it is
                 // focused, and a coarse pointer gets it permanently, because
                 // there is no hover to reveal it with.
-                className="size-5 shrink-0 rounded text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-foreground focus-visible:opacity-100 pointer-coarse:opacity-100"
+                className="size-5 shrink-0 rounded-sm text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-foreground focus-visible:opacity-100 pointer-coarse:opacity-100"
               >
                 <PlusIcon className="size-3.5" />
               </button>

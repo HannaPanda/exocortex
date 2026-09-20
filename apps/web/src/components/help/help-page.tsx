@@ -113,7 +113,7 @@ function AccessBox({ feature }: { feature: Feature }) {
           {feature.access.shortcuts.map((shortcut) => (
             <kbd
               key={shortcut}
-              className="rounded border border-border bg-background px-1.5 py-0.5 text-xs"
+              className="rounded-sm border border-border bg-background px-1.5 py-0.5 text-xs"
             >
               {shortcut}
             </kbd>

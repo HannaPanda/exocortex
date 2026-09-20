@@ -20,7 +20,7 @@ function ContextMenuContent({
           data-slot="context-menu-content"
           className={cn(
             'min-w-[11rem] overflow-hidden rounded-md border border-border bg-popover p-1',
-            'text-popover-foreground shadow-lg outline-none',
+            'text-popover-foreground shadow-md outline-none',
             className,
           )}
           {...props}

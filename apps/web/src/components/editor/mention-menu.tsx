@@ -162,7 +162,7 @@ export function MentionMenu({
     <SuggestionPopup anchor={anchor}>
       {items.length === 0 ? (
         <div
-          className="w-64 rounded-md border border-border bg-popover p-3 text-sm text-muted-foreground shadow-lg"
+          className="w-64 rounded-md border border-border bg-popover p-3 text-sm text-muted-foreground shadow-md"
           data-testid="mention-menu-empty"
         >
           Nichts gefunden zu „{snapshot.query}“.
@@ -173,7 +173,7 @@ export function MentionMenu({
           aria-label="Erwähnung einfügen"
           aria-activedescendant={`mention-option-${index}`}
           data-testid="mention-menu"
-          className="max-h-72 w-64 overflow-y-auto rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-lg"
+          className="max-h-72 w-64 overflow-y-auto rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md"
         >
           {items.map((candidate, position) => {
             const Icon = KIND_ICONS[candidate.kind];

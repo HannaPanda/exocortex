@@ -82,6 +82,32 @@ Rules that fall out of the system:
 - Status is never carried by colour alone; every status also has an icon and
   text.
 
+## Radius and elevation
+
+Four radii and four shadows, and in both cases the step is what carries the
+information. Full values and reasoning in `DESIGN.md`; this is the lookup.
+
+| Radius | Value     | Wears it                                                        |
+| ------ | --------- | --------------------------------------------------------------- |
+| `xs`   | 0.125rem  | a tint over text or a graphic: a diff span, a chart bar         |
+| `sm`   | 0.3125rem | a mark smaller than a control: a chip, a key cap, a tree button |
+| `md`   | 0.5rem    | a control: button, input, select                                |
+| `lg`   | 0.75rem   | a surface: popover, dialog, sheet, card                         |
+
+Never write a bare `rounded` (Tailwind's 4px) or `rounded-xl`. Both were in use
+against no token, one pixel under `sm` and two pixels over `lg` respectively,
+which is a tier nobody can see.
+
+| Shadow      | Job                                                 |
+| ----------- | --------------------------------------------------- |
+| `shadow-xs` | a field at rest                                     |
+| `shadow-sm` | a block raised off the page: a card, a PDF page     |
+| `shadow-md` | a floating surface: menu, popover, toolbar, tooltip |
+| `shadow-lg` | a modal surface: dialog, sheet                      |
+
+All four are tokens in `tokens.css` and are tinted with the slate hue, because
+a black shadow on a mid-tone page reads as dirt. There is no `shadow-xl`.
+
 ## Motion
 
 One curve and two durations live in `tokens.css`: `--ease-out-quint`,

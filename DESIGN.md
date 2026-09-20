@@ -94,10 +94,10 @@ typography:
     lineHeight: 1.5
     letterSpacing: 'normal'
 rounded:
+  xs: '0.125rem'
   sm: '0.3125rem'
   md: '0.5rem'
   lg: '0.75rem'
-  xl: '0.875rem'
   full: '9999px'
 spacing:
   xs: '0.25rem'
@@ -157,7 +157,7 @@ components:
   card:
     backgroundColor: '{colors.card}'
     textColor: '{colors.foreground}'
-    rounded: '{rounded.xl}'
+    rounded: '{rounded.lg}'
     padding: '1.5rem'
   popover:
     backgroundColor: '{colors.popover}'
@@ -512,12 +512,40 @@ rule. Below about 0.03 the eye stops resolving the step, and the ramp becomes a
 claim the tokens make and the screen does not keep. A new surface that cannot
 afford a clear step is not a new surface.
 
+### Radius
+
+Four steps, and the step is the point: a radius says how big the thing wearing
+it is.
+
+| Token | Value     | Wears it                                                        |
+| ----- | --------- | --------------------------------------------------------------- |
+| `xs`  | 0.125rem  | a tint over text or a graphic: a diff span, a chart bar         |
+| `sm`  | 0.3125rem | a mark smaller than a control: a chip, a key cap, a tree button |
+| `md`  | 0.5rem    | a control: button, input, select                                |
+| `lg`  | 0.75rem   | a surface: popover, dialog, sheet, card                         |
+
+There used to be six values in use against three tokens. Tailwind's bare
+`rounded` (4px) sat one pixel under `sm`, and `xl` was documented at 14px, never
+defined, and therefore resolved to Tailwind's 12px — so a card and a popover
+shared a radius while this document said they did not. Neither gap is one anybody
+sees, so both were a tier the system claimed and the screen did not keep. What
+is left is about 1.6x per step.
+
 ### Shadow Vocabulary
 
-- `shadow-xs` — form fields at rest
-- `shadow-sm` — cards
-- `shadow-md` and above — floating surfaces only (popover, dropdown, dialog,
-  command palette)
+Four steps, tinted with the page's own hue rather than black. A pure black
+shadow on a mid-tone slate reads as dirt instead of as a layer, and 10% of
+black — Tailwind's default — is invisible on a surface this light. The colour is
+the same deep slate as the modal scrim.
+
+- `shadow-xs` — a field at rest
+- `shadow-sm` — a block raised off the page: a card, a PDF page
+- `shadow-md` — a floating surface: menu, popover, toolbar, tooltip
+- `shadow-lg` — a modal surface: dialog, sheet
+
+There is no fifth step. `shadow-xl` was in use for dialogs while `shadow-md` was
+carrying exactly one tooltip, which is two names for one job and one name for
+none.
 
 ### Named Rules
 
@@ -551,10 +579,13 @@ Sizes: `sm` 2rem, default 2.25rem, `lg` 2.5rem, `icon` 2.25rem square, `icon-sm`
 
 ### Cards / Containers
 
-`rounded-xl`, `bg-card`, 1px `border`, `shadow-sm`, 1.5rem padding, 1.5rem
-internal gap. Used for genuinely separable blocks: a workspace in a list, an
-empty state, an error state. **Never nested.** A card inside a card means the
-hierarchy is wrong.
+`rounded-lg`, `bg-card`, 1px `border`, `shadow-sm`, 1.5rem padding, 1rem
+internal gap. Used for genuinely separable blocks, and after the 2026-09-20
+review that is two places: the front door, where one form floats on an empty
+page, and the pair of setup recipes in the connection panel. A card is not the
+answer to grouping — `SectionRule` is — and the administration overview, which
+used to be eight of them in a grid, now uses `Readout` under rules.
+**Never nested.** A card inside a card means the hierarchy is wrong.
 
 **And never as a list row.** The references and activity panels each drew a
 bordered box per entry, which turned a list into a stack of identical outlined

@@ -558,7 +558,7 @@ function JobPanel({
             {log === null ? 'Protokoll anzeigen' : 'Protokoll ausblenden'}
           </Button>
           {log === null ? null : (
-            <pre className="max-h-64 overflow-auto rounded bg-sunken p-2 text-xs whitespace-pre-wrap">
+            <pre className="max-h-64 overflow-auto rounded-sm bg-sunken p-2 text-xs whitespace-pre-wrap">
               {log.length === 0 ? '(leer)' : log}
             </pre>
           )}

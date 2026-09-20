@@ -172,7 +172,7 @@ function renderText(node: ProseMirrorNode, key: string): React.ReactNode {
     else if (mark.type === 'italic') content = <em className="italic">{content}</em>;
     else if (mark.type === 'code') {
       content = (
-        <code className="rounded bg-card px-1 py-0.5 font-mono text-[0.85em]">{content}</code>
+        <code className="rounded-sm bg-card px-1 py-0.5 font-mono text-[0.85em]">{content}</code>
       );
     }
   }

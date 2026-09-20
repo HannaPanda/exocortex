@@ -57,7 +57,7 @@ export function CodeBlockToolbar({ editor }: { editor: Editor }) {
       shouldShow={({ editor: instance }) => instance.isEditable && instance.isActive('codeBlock')}
     >
       <div
-        className="flex items-center gap-1 rounded-md border border-border bg-popover p-1 shadow-lg"
+        className="flex items-center gap-1 rounded-md border border-border bg-popover p-1 shadow-md"
         data-testid="code-block-toolbar"
       >
         <Select

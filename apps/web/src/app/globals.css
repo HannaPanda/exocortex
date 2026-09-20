@@ -178,7 +178,7 @@
   }
 
   .exocortex-editor code {
-    @apply rounded bg-sunken px-1 py-0.5 font-mono text-[0.85em];
+    @apply rounded-sm bg-sunken px-1 py-0.5 font-mono text-[0.85em];
   }
 
   .exocortex-editor pre {
@@ -530,7 +530,7 @@
      `margin: 0` on `*`. Without this the dialog sits in the top left corner
      (issue #70). It is the only native `<dialog>` in the application. */
   .exocortex-media-text-dialog {
-    @apply m-auto w-[min(42rem,calc(100vw-2rem))] max-w-none rounded-lg border border-border bg-popover p-6 text-popover-foreground shadow-xl;
+    @apply m-auto w-[min(42rem,calc(100vw-2rem))] max-w-none rounded-lg border border-border bg-popover p-6 text-popover-foreground shadow-lg;
   }
 
   .exocortex-media-text-dialog::backdrop {

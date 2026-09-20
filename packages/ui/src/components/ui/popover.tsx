@@ -39,7 +39,7 @@ function PopoverContent({
         <PopoverPrimitive.Popup
           data-slot="popover-content"
           className={cn(
-            'rounded-md border border-border bg-popover p-3 text-popover-foreground shadow-lg outline-none',
+            'rounded-md border border-border bg-popover p-3 text-popover-foreground shadow-md outline-none',
             'transition-[transform,opacity] duration-100',
             'data-[starting-style]:scale-98 data-[starting-style]:opacity-0',
             'data-[ending-style]:scale-98 data-[ending-style]:opacity-0',
