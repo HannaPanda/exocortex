@@ -383,7 +383,7 @@ export class WorkspaceAccessService {
       extractedText: string | null;
       textExtractedAt: Date | null;
       textExtractionError: string | null;
-      /** Engine-reported facts, shaped by `pdfMetadataSchema`. Parsed by the caller. */
+      /** Engine-reported facts, shaped by `documentTextMetadataSchema`. Parsed by the caller. */
       textMetadata: unknown;
       /** True when `extractedText` was cut off at `ATTACHMENT_TEXT_MAX_CHARS`. */
       textTruncated: boolean;

@@ -2,7 +2,11 @@ import { z } from 'zod';
 
 import { type Logger } from '@exocortex/logger';
 
-import { EMPTY_METADATA, type PdfExtraction, type PdfTextExtractor } from './pdf-text';
+import {
+  type DocumentTextExtraction,
+  type DocumentTextExtractor,
+  EMPTY_METADATA,
+} from './pdf-text';
 import { AiProviderError } from './provider';
 
 /**
@@ -76,7 +80,7 @@ type DoclingResponse = z.infer<typeof doclingResponseSchema>;
  * of fallbacks: a document without tables reports no `tables` key at all, and
  * that is "none", not "unknown".
  */
-function toExtractionMetadata(payload: DoclingResponse): PdfExtraction['metadata'] {
+function toExtractionMetadata(payload: DoclingResponse): DocumentTextExtraction['metadata'] {
   const document = payload.document.json_content;
   return {
     ...EMPTY_METADATA,
@@ -110,11 +114,13 @@ export interface DoclingPdfExtractorOptions {
  * `attachment-text` queue runs with concurrency 1, so a long conversion delays
  * only other PDF extractions.
  */
-export function createDoclingPdfExtractor(options: DoclingPdfExtractorOptions): PdfTextExtractor {
+export function createDoclingPdfExtractor(
+  options: DoclingPdfExtractorOptions,
+): DocumentTextExtractor {
   const baseUrl = options.baseUrl.replace(/\/+$/, '');
 
   return {
-    async extract(input): Promise<PdfExtraction> {
+    async extract(input): Promise<DocumentTextExtraction> {
       const controller = new AbortController();
       // Generous by default because the work is per-page, not per-request.
       const timeoutMs = input.timeoutMs ?? 900_000;
@@ -192,7 +198,7 @@ export function createDoclingPdfExtractor(options: DoclingPdfExtractorOptions): 
 export function createOptionalDoclingPdfExtractor(options: {
   baseUrl: string | undefined;
   logger: Logger;
-}): PdfTextExtractor | null {
+}): DocumentTextExtractor | null {
   if (options.baseUrl === undefined || options.baseUrl.length === 0) return null;
   return createDoclingPdfExtractor({ baseUrl: options.baseUrl, logger: options.logger });
 }

@@ -4,8 +4,8 @@ import {
   ATTACHMENT_TEXT_MAX_CHARS,
   attachmentTextInfoResponseSchema,
   attachmentTextResponseSchema,
+  type DocumentTextMetadata,
   idSchema,
-  type PdfMetadata,
   uploadAttachmentResponseSchema,
 } from '@exocortex/contracts';
 
@@ -65,7 +65,7 @@ export const attachmentUploadTool: AnyToolDefinition = defineTool({
  * an engine that reports little produces a short line instead of a row of
  * "unbekannt".
  */
-function describeMetadata(metadata: PdfMetadata | null): string {
+function describeMetadata(metadata: DocumentTextMetadata | null): string {
   if (metadata === null) return '';
 
   const parts: string[] = [];

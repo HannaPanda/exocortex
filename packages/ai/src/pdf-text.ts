@@ -1,11 +1,11 @@
-import { type PdfMetadata } from '@exocortex/contracts';
+import { type DocumentTextMetadata } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 
 import { AiProviderError } from './provider';
 
-export { type PdfMetadata };
+export { type DocumentTextMetadata };
 
-export interface PdfExtraction {
+export interface DocumentTextExtraction {
   /**
    * Null when this engine found no usable text. For the OpenRouter engine that
    * includes every scan, which is why the caller tries the next engine in the
@@ -18,17 +18,24 @@ export interface PdfExtraction {
    * still carries a metadata dictionary that Docling cannot see, so the caller
    * merges metadata across every engine it tried.
    */
-  metadata: PdfMetadata | null;
+  metadata: DocumentTextMetadata | null;
 }
 
-export interface PdfTextExtractor {
-  /** Extracts the text of a PDF. Never rejects for "found nothing"; see `text`. */
+export interface DocumentTextExtractor {
+  /** Extracts the text of a document. Never rejects for "found nothing"; see `text`. */
   extract(input: {
     data: Uint8Array;
     filename: string;
+    /**
+     * Absent for the PDF engines, which are only ever handed a PDF. The office
+     * converter needs it: it reads twelve formats and is told which one it has
+     * rather than sniffing the bytes a second time, so that what this
+     * deployment accepts stays one decision made at upload.
+     */
+    mimeType?: string;
     correlationId: string;
     timeoutMs?: number;
-  }): Promise<PdfExtraction>;
+  }): Promise<DocumentTextExtraction>;
 }
 
 export interface OpenRouterPdfExtractorOptions {
@@ -124,7 +131,7 @@ function parsePdfDate(value: string): string | null {
 function parsePdfTextMetadata(
   metadataBlock: string,
   pageText: string,
-): Omit<PdfMetadata, 'extractor'> {
+): Omit<DocumentTextMetadata, 'extractor'> {
   const fields = new Map<string, string>();
   for (const line of metadataBlock.split('\n')) {
     const match = /^-\s*([A-Za-z]+)=(.*)$/.exec(line.trim());
@@ -158,7 +165,7 @@ function parsePdfTextMetadata(
 }
 
 /** Every reportable field unset; spread over an `extractor` to build a metadata object. */
-export const EMPTY_METADATA: Omit<PdfMetadata, 'extractor'> = {
+export const EMPTY_METADATA: Omit<DocumentTextMetadata, 'extractor'> = {
   title: null,
   author: null,
   creator: null,
@@ -179,14 +186,17 @@ export const EMPTY_METADATA: Omit<PdfMetadata, 'extractor'> = {
  * tried before it fill the gaps. That is what turns "OpenRouter saw the title
  * and the dates, Docling saw the pages and ran OCR" into a single answer.
  */
-export function mergePdfMetadata(
-  winner: PdfMetadata,
-  earlier: readonly (PdfMetadata | null)[],
-): PdfMetadata {
-  const merged: PdfMetadata = { ...winner };
+export function mergeDocumentTextMetadata(
+  winner: DocumentTextMetadata,
+  earlier: readonly (DocumentTextMetadata | null)[],
+): DocumentTextMetadata {
+  const merged: DocumentTextMetadata = { ...winner };
   for (const candidate of earlier) {
     if (candidate === null) continue;
-    for (const key of Object.keys(EMPTY_METADATA) as (keyof Omit<PdfMetadata, 'extractor'>)[]) {
+    for (const key of Object.keys(EMPTY_METADATA) as (keyof Omit<
+      DocumentTextMetadata,
+      'extractor'
+    >)[]) {
       if (merged[key] === null) {
         // Index-signature-free assignment: each key's type is identical on both
         // sides, but TypeScript cannot prove that through a union of keys.
@@ -214,9 +224,9 @@ export function mergePdfMetadata(
  */
 export function createOpenRouterPdfExtractor(
   options: OpenRouterPdfExtractorOptions,
-): PdfTextExtractor {
+): DocumentTextExtractor {
   return {
-    async extract(input): Promise<PdfExtraction> {
+    async extract(input): Promise<DocumentTextExtraction> {
       const controller = new AbortController();
       // 60 s was too tight: a 33-page document aborted on all five BullMQ
       // attempts, and because an abort throws, the OCR engine behind this one
@@ -279,7 +289,7 @@ export function createOpenRouterPdfExtractor(
           return { text, metadata: { extractor: 'openrouter', ...EMPTY_METADATA, ocrUsed: false } };
         }
 
-        const metadata: PdfMetadata = {
+        const metadata: DocumentTextMetadata = {
           extractor: 'openrouter',
           ...parsePdfTextMetadata(split.metadataBlock, text),
         };
@@ -308,7 +318,7 @@ export function createPdfTextExtractor(options: {
   model: string | undefined;
   appUrl: string;
   logger: Logger;
-}): PdfTextExtractor | null {
+}): DocumentTextExtractor | null {
   if (options.apiKey.length === 0 || options.model === undefined || options.model.length === 0) {
     return null;
   }

@@ -1,4 +1,5 @@
 export * from './agent-runners';
+export * from './anydoc';
 export * from './docling';
 export * from './embedding-provider';
 export * from './image-generator';

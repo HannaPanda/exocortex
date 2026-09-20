@@ -1,6 +1,6 @@
 import { PDFDocument } from 'pdf-lib';
 
-import { type PdfMetadata } from '@exocortex/contracts';
+import { type DocumentTextMetadata } from '@exocortex/contracts';
 import { type Logger } from '@exocortex/logger';
 
 import { EMPTY_METADATA } from './pdf-text';
@@ -23,12 +23,12 @@ import { EMPTY_METADATA } from './pdf-text';
  * produces the text, the dictionary is already known.
  *
  * This is not a text extractor and deliberately does not implement
- * `PdfTextExtractor`. It never produces text, so it must not count towards the
+ * `DocumentTextExtractor`. It never produces text, so it must not count towards the
  * "is any engine configured" question the processor asks of its chain.
  */
 export interface PdfDocumentInfoReader {
   /** Never rejects: an unreadable file yields null, it does not fail the job. */
-  read(input: { data: Uint8Array; correlationId: string }): Promise<PdfMetadata | null>;
+  read(input: { data: Uint8Array; correlationId: string }): Promise<DocumentTextMetadata | null>;
 }
 
 /**
@@ -76,7 +76,7 @@ function isoDate(read: () => Date | undefined): string | null {
 
 export function createPdfDocumentInfoReader(options: { logger: Logger }): PdfDocumentInfoReader {
   return {
-    async read(input): Promise<PdfMetadata | null> {
+    async read(input): Promise<DocumentTextMetadata | null> {
       let document: PDFDocument;
       try {
         document = await PDFDocument.load(input.data, LOAD_OPTIONS);

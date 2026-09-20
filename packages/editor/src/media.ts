@@ -63,7 +63,7 @@ const MEDIA_KINDS: readonly MediaKind[] = [
 /**
  * What an extraction knows about a document, as the block needs it.
  *
- * Structurally identical to the relevant part of `PdfMetadata` in
+ * Structurally identical to the relevant part of `DocumentTextMetadata` in
  * `@exocortex/contracts`, but declared here rather than imported: this package
  * is a leaf and depends on no other Exocortex package (see
  * `scripts/dependency-graph.mjs`). The host passes its contract object straight
