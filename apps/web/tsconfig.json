@@ -1,7 +1,6 @@
 {
   "extends": "../../tsconfig.react.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": { "@/*": ["./src/*"] },
     "plugins": [{ "name": "next" }],
     "incremental": true,

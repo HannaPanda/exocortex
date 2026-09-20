@@ -7,6 +7,17 @@
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "jsx": "preserve",
     "allowJs": true,
-    "noEmit": true
+    "noEmit": true,
+    // Nothing that extends this config emits: `apps/web` is built by Next and
+    // `packages/ui` is consumed as source through `transpilePackages`, so both
+    // run `tsc` only as a check. Declaration emit is still *checked* while it
+    // is on, which is what makes the portability rule ("the inferred type of X
+    // cannot be named without a reference to Y", TS2883) apply to files whose
+    // types no other package ever reads. TypeScript 7 raises it where 5.9 did
+    // not, on `useSession` re-exported from better-auth's client. Turning the
+    // emit off is what says the rule has nothing to protect here; it is on
+    // everywhere a package really does ship `.d.ts`.
+    "declaration": false,
+    "declarationMap": false
   }
 }

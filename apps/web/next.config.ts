@@ -102,6 +102,12 @@ const nextConfig: NextConfig = {
     // by itself. Scope hoisting is on by default in builds and always off in
     // development, which is why only the deployed app was affected.
     turbopackScopeHoisting: false,
+    // Type-check by running `tsc` as a process instead of calling TypeScript's
+    // JavaScript compiler API. TypeScript 7 (issue #85) is the native port and
+    // ships no such API: the `typescript` package's main export is a version
+    // string next to a platform binary. Without this flag `next build` looks
+    // for the API, does not find it, and gives up on checking types at all.
+    useTypeScriptCli: true,
   },
   productionBrowserSourceMaps: true,
   typedRoutes: false,

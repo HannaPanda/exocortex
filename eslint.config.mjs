@@ -33,10 +33,33 @@
  * There are no formatting rules left, so `eslint-config-prettier` is gone with
  * them: nothing here can disagree with Prettier any more.
  */
+import parser from '@babel/eslint-parser';
 import nextPlugin from '@next/eslint-plugin-next';
-import parser from '@typescript-eslint/parser';
 import reactPlugin from 'eslint-plugin-react';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+
+/**
+ * The parser options, spelled out here rather than in a Babel config file.
+ *
+ * `requireConfigFile: false` is what keeps this inline: a `babel.config.json`
+ * at the root of the repository would be found by Next.js as well, and finding
+ * one is how Next decides to compile `apps/web` with Babel instead of SWC. The
+ * lint run must not be able to change how the application is built.
+ *
+ * `@babel/preset-typescript` reads the file name, so `.ts` and `.tsx` each get
+ * the right dialect without `allExtensions`, and angle-bracket assertions stay
+ * legal in `.ts`. The decorator syntax is the legacy form because that is what
+ * `experimentalDecorators` in `apps/api/tsconfig.json` compiles.
+ */
+const babelOptions = {
+  requireConfigFile: false,
+  babelOptions: {
+    babelrc: false,
+    configFile: false,
+    presets: ['@babel/preset-typescript'],
+    plugins: [['@babel/plugin-syntax-decorators', { legacy: true }]],
+  },
+};
 
 /**
  * `max-params`, minus the constructors.
@@ -95,12 +118,17 @@ export default [
   {
     files: ['**/*.{js,mjs,cjs,ts,tsx,mts,cts}'],
     languageOptions: {
-      // The parser alone. Nothing here needs type information, and nothing here
-      // needs `typescript-eslint`'s rule set any more -- oxlint has it.
+      // Babel's parser, not `@typescript-eslint/parser`. Nothing here needs
+      // type information, and nothing here needs `typescript-eslint`'s rule set
+      // any more -- oxlint has it since issue #84. What was left was a parser
+      // that loads the `typescript` package for its compiler API, and
+      // TypeScript 7 does not ship one (issue #85): its main export is the
+      // version string beside a native binary. Babel parses TypeScript by
+      // itself and so has no opinion about which compiler is installed.
       parser,
       ecmaVersion: 2023,
       sourceType: 'module',
-      parserOptions: { ecmaFeatures: { jsx: true } },
+      parserOptions: { ecmaFeatures: { jsx: true }, ...babelOptions },
     },
     plugins: { 'simple-import-sort': simpleImportSort },
     rules: {
@@ -135,6 +163,20 @@ export default [
     files: ['apps/web/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
     plugins: { react: reactPlugin, '@next/next': nextPlugin },
     settings: { react: { version: 'detect' } },
+    // The Next.js rule below only fires on an identifier that resolves to a
+    // declared global, and a flat config declares none unless it is asked to.
+    // Without these five names `location.assign('/x')` is an unresolved
+    // reference, the rule returns early, and it has never reported anything --
+    // the same shape of dead rule that issue #84 found in the selector list.
+    languageOptions: {
+      globals: {
+        document: 'readonly',
+        globalThis: 'readonly',
+        location: 'readonly',
+        self: 'readonly',
+        window: 'readonly',
+      },
+    },
     rules: {
       // The legacy class API. It cannot fire while this codebase has no class
       // components, and that is the point: it is what says so.

@@ -46,7 +46,15 @@ import { fail, info, ok, step } from './lib/gate-log.mjs';
 
 const run = promisify(execFile);
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
-const tsc = createRequire(import.meta.url).resolve('typescript/bin/tsc');
+// Located through `package.json` rather than by resolving `typescript/bin/tsc`
+// directly: TypeScript 7 declares an `exports` map, and `./bin/tsc` is not in
+// it, so resolving the entry point is the only way in that both compilers
+// answer. The file is there either way.
+const tsc = join(
+  dirname(createRequire(import.meta.url).resolve('typescript/package.json')),
+  'bin',
+  'tsc',
+);
 
 /** Directories that hold dependencies, build output or generated code. */
 const SKIP_DIRS = new Set([
