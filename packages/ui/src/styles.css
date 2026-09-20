@@ -381,6 +381,21 @@
     --exocortex-content-background: var(--content-bg-red);
   }
 
+  /*
+   * A tooltip is a hover affordance, and a device with no hover has no way to
+   * take one back. A tap focuses the button, the focus opens the tooltip, and
+   * nothing ever closes it: the box then sits on top of the breadcrumb for the
+   * rest of the session. Since a hint tooltip only repeats the control's own
+   * `aria-label` and adds a shortcut no phone can press, it is dropped there
+   * rather than repaired. `data-touch="show"` opts a tooltip back in, and
+   * exactly one does: the one that hands over a title the row cut off.
+   */
+  @media (hover: none) {
+    [data-slot='tooltip-content'][data-touch='hide'] {
+      display: none;
+    }
+  }
+
   /* Screen-reader-only helper, used by skip links and icon-only buttons. */
   .exocortex-sr-only {
     position: absolute;

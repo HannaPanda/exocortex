@@ -63,7 +63,10 @@ export function TruncatedText({
       >
         {text}
       </TooltipTrigger>
-      <TooltipContent side={side} className="max-w-80 text-wrap break-words">
+      {/* The one tooltip that survives a device with no hover: it is not a
+          hint about the control, it is the half of the text the row is
+          hiding, and on a phone there is no other way to read it. */}
+      <TooltipContent side={side} onTouch="show" className="max-w-80 text-wrap break-words">
         {text}
       </TooltipContent>
     </Tooltip>

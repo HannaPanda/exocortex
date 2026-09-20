@@ -112,7 +112,9 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
         onValueChange={(next) => setTab(typeof next === 'string' ? next : 'allgemein')}
         className="mt-6 flex flex-col gap-8"
       >
-        <TabsList className="h-10 gap-1 p-1" data-testid="workspace-settings-tabs">
+        {/* `min-h-10`, not `h-10`: a fixed height would keep the row from
+            wrapping on a phone, which is the whole point of the wrap. */}
+        <TabsList className="min-h-10 gap-1 p-1" data-testid="workspace-settings-tabs">
           <TabsTrigger value="allgemein" className="py-1.5 text-sm">
             Allgemein
           </TabsTrigger>

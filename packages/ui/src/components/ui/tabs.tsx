@@ -12,7 +12,13 @@ function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimi
     <TabsPrimitive.List
       data-slot="tabs-list"
       className={cn(
-        'relative inline-flex h-9 w-full items-center gap-1 overflow-hidden rounded-md bg-muted p-1',
+        // `min-h-9` rather than `h-9`, and the row is allowed to wrap: four
+        // tabs that fit a desk do not fit a phone, and the previous answer was
+        // to squeeze each one into a quarter of 342px and truncate what was
+        // left -- so the last tab in the workspace settings read
+        // "Einstellunger" and there was no gesture that would show the rest. A
+        // second line costs 36 pixels and hides nothing.
+        'relative inline-flex min-h-9 w-full flex-wrap items-center gap-1 overflow-hidden rounded-md bg-muted p-1',
         // Vertical: a column of full-width rows, as a page's side navigation
         // rather than a segmented control. The height has to come off with it,
         // or fourteen entries are squeezed into nine pixels each.
@@ -30,11 +36,17 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
     <TabsPrimitive.Tab
       data-slot="tabs-trigger"
       className={cn(
-        'inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-sm px-2 py-1 text-xs font-medium',
-        // `truncate` only in a row, where the triggers share one line and a
-        // long label would push its neighbours out. In a column the row is
-        // free to be two lines high, and truncating there would hide the end
-        // of "Struktur, Ablage und Vorlagen" for no gain.
+        // `flex-auto` rather than `flex-1`: the difference is the flex basis,
+        // and with `flex-wrap` on the list the basis is what decides whether a
+        // row wraps or shrinks. At `flex-1` the basis is zero, so a row never
+        // wraps and every label is squeezed instead; at `auto` the tabs keep
+        // their content width, share the leftover space evenly when there is
+        // any, and move to a second line when there is not.
+        'inline-flex min-w-0 flex-auto items-center justify-center gap-1.5 rounded-sm px-2 py-1 text-xs font-medium',
+        // `truncate` only in a row, and now only as the backstop for the one
+        // label that is wider than the whole list on its own. In a column the
+        // row is free to be two lines high, and truncating there would hide
+        // the end of "Struktur, Ablage und Vorlagen" for no gain.
         'data-[orientation=horizontal]:truncate',
         'text-muted-foreground transition-colors select-none',
         'hover:text-foreground',
