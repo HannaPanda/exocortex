@@ -658,6 +658,7 @@ script):
 | `GET /api/memory/recall`             | `read`  | Searches across the readable workspaces. Without `q` it answers with the newest notes for `project`. `maxChars` and `limit` are clamped by `memory.recallMaxChars` / `memory.recallMaxResults`. |
 | `POST /api/memory/remember`          | `write` | Writes one distilled note under the project page. `appendToday` adds to today's note instead of starting a page.                                                                                |
 | `POST /api/memory/capture`           | `write` | Hands a finished session over for distillation. Answers `{accepted, jobId, reason}` at once and never throws for something the caller cannot fix.                                               |
+| `POST /api/memory/checkpoint`        | `write` | Secures the part of a running session that is about to be compacted away. Waits for the note, throws when it could not be written.                                                              |
 | `GET /api/memory/facts`              | `read`  | The distilled facts of a project, best first. `status` picks between `current` (the default), `superseded` and `conflicted`.                                                                    |
 | `POST /api/memory/facts`             | `write` | Applies one consolidation run. Not a tool: see below.                                                                                                                                           |
 | `POST /api/memory/facts/:id/promote` | `write` | Copies a fact into a curated workspace somebody names.                                                                                                                                          |
@@ -669,6 +670,35 @@ things up to hold a `write` token.
 `capture` stores nothing itself. The transcript goes into a `memory-capture`
 job, a model distils it, and only the summary is written; see
 `docs/background-jobs.md`.
+
+### The checkpoint before a compaction
+
+`POST /api/memory/checkpoint` is `capture` with the opposite promise, and it
+exists for one caller: an agent that is about to summarise the old part of its
+own conversation and drop the wording (issue #92,
+[ADR-046](adr/ADR-046-a-checkpoint-is-a-receipt-not-an-archive.md)). Hermes'
+`compression.checkpoint_required: true` will only let that happen once a memory
+provider has confirmed a durable write, so this call distils the evidence in the
+request, writes the note, and answers afterwards. Everything `capture` reports
+as a `reason` is an exception here: a soft refusal would reach the caller as a
+successful checkpoint and become permission to forget.
+
+The evidence arrives as a list of messages rather than one blob, because that is
+what makes a second checkpoint cheap. Hermes does not send retries, it sends
+longer prefixes; each message is hashed, the digests of this session's earlier
+checkpoints are subtracted, and only the new turns are handed to a model. When
+nothing is left the answer is the previous checkpoint with `deduplicated: true`,
+which is a success. `sessionId` is required, since without it there is nothing
+to recognise a second checkpoint by.
+
+What is stored is a receipt: session, client, project, digests, two counts and
+the note that came out. No message text, ever. `NICHTS` from the distiller is
+recorded as a checkpoint with no document, and the caller may compact.
+
+It is not a tool, for the same reason `capture` is not: it belongs to a client's
+compaction lifecycle rather than to anybody's judgement, and the deliberate half
+of it is `remember`. `integrations/hermes-memory-provider` is the Python package
+that calls it.
 
 ### The facts above the notes
 

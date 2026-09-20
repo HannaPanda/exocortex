@@ -297,4 +297,4 @@ are in `scripts/check-mcp-catalog.mjs`, next to the route.
 
 ---
 
-Counted against 45 documented route exemptions.
+Counted against 46 documented route exemptions.

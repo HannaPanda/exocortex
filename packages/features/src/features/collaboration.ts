@@ -114,6 +114,25 @@ export const COLLABORATION_FEATURES: readonly RegisteredFeature[] = [
     tools: ['recall', 'remember'],
   }),
   defineFeature({
+    id: 'gedaechtnis-checkpoint',
+    area: 'gedaechtnis',
+    title: 'Sicherung, bevor ein Agent seinen Verlauf vergisst',
+    summary:
+      'Bevor ein Agent seinen alten Gesprächsverlauf verdichtet und den Wortlaut wegwirft, kann er den Teil, der gleich verschwindet, hier ablegen. Erst wenn die Notiz geschrieben ist, antwortet eXocortex. Schlägt es fehl, darf der Agent nicht verdichten.',
+    details: [
+      'Ein Chat-Agent wie Hermes räumt seinen Kontext auf, indem er den alten Teil des Gesprächs zusammenfasst und den Wortlaut verwirft. Das ist genau der Moment, in dem etwas verloren geht. Vor diesem Schritt legt der Agent den betroffenen Teil hier ab, eXocortex destilliert ihn zu einer Notiz und antwortet erst, wenn sie geschrieben ist.',
+      'Die Reihenfolge ist der ganze Sinn: geht dabei etwas schief, bekommt der Agent einen Fehler und lässt das Verdichten sein. Der Wortlaut bleibt dann im Gespräch, statt dass beides verschwindet. Deshalb ist das der einzige Aufruf im Gedächtnis, der wartet und der laut scheitert.',
+      'Gespeichert wird auch hier nur die Verdichtung, nie das Gespräch selbst. Was daneben bleibt, ist ein Beleg aus Prüfsummen und Zahlen, und der sorgt dafür, dass ein zweiter Aufruf denselben Abschnitt nicht noch einmal destilliert: ein Agent schickt beim nächsten Mal den alten Teil wieder mit.',
+    ],
+    since: '2026-09-20',
+    references: ['ADR-019', 'ADR-046', '#92'],
+    ui: {
+      where:
+        'Kein eigener Bildschirm: der Agent ruft es von sich aus auf. Die Notizen erscheinen wie alle anderen im Gedächtnis.',
+    },
+    settings: ['memory.enabled', 'memory.captureModelSlug', 'memory.retentionDays'],
+  }),
+  defineFeature({
     id: 'gedaechtnis-fakten',
     area: 'gedaechtnis',
     title: 'Verdichtete Fakten über den Notizen',

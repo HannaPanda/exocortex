@@ -53,7 +53,9 @@ What is deliberately still missing is listed under
 - overview pages whose text is composed from the digests of their children
   (ADR-028)
 - an agent memory in its own workspace, with distilled facts above its session
-  notes (ADR-019, ADR-021)
+  notes (ADR-019, ADR-021), and a checkpoint an agent takes before it compacts
+  its own conversation away: the call waits for the note and fails loudly, so a
+  deployment that cannot be reached is never permission to forget (ADR-046)
 - quick capture into a workspace inbox: `Strg + E`, `exo_capture` or
   `POST /capture` write a thought down without choosing a place first, and the
   entry is an ordinary page from the first second (ADR-036)
@@ -234,6 +236,7 @@ packages/ui           design tokens, shadcn components on Base UI, layout primit
 docs/adr/             architecture decision records
 deploy/               nginx, systemd units, backup scripts, the render image
 e2e/                  Playwright browser and API tests
+integrations/         the Hermes memory provider (Python, standard library only)
 tools/                the Claude Code plugin: MCP server, memory hooks, setup skill
 ```
 

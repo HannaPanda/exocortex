@@ -214,6 +214,11 @@ search projection follows the same path an archive from the API takes
 (ADR-010); the delete stage needs no follow-up, because the cascades take the
 content, the projection, the embeddings and the snapshots with them.
 
+The same sweep removes the checkpoint receipts of that memory area past the same
+cutoff (issue #92, ADR-046). They hold digests rather than evidence, so this is
+about a list staying about the present rather than about storage: a session
+whose notes have gone has nothing left to deduplicate against.
+
 ### `memory-consolidate`: notes become facts
 
 `memoryConsolidateJobSchema`: `{ correlationId, workspaceId, userId,

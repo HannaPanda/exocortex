@@ -127,6 +127,7 @@ file is the contract for automated sessions. Read it before changing code.
 | `packages/logger`          | Structured logging, correlation ids, the redaction list, the tracer and its OpenTelemetry implementation.                                                                                                |
 | `packages/ui`              | Design tokens, shadcn components on Base UI, layout primitives, states.                                                                                                                                  |
 | `e2e`                      | Playwright browser and API tests.                                                                                                                                                                        |
+| `integrations/hermes-memory-provider` | The Hermes memory provider: a small Python package that checkpoints a conversation into this deployment before Hermes compacts it away. Standard library only, and it fails closed. |
 | `tools/claude-code-plugin` | The Claude Code plugin: the MCP server over HTTP, the SessionStart/SessionEnd hooks that make this deployment Claude Code's memory, and the setup skill. Plain Node, no dependencies, silent on failure. |
 
 ## Commands
@@ -381,6 +382,13 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   which makes a cycle impossible instead of detectable. A dead block is stated,
   never repaired with the nearest surviving one, and Markdown addresses the
   source by title like every other reference.
+- ADR-046: a checkpoint is a receipt, not an archive.
+  `POST /api/memory/checkpoint` is the one memory call that waits and that
+  throws: an agent about to compact its own conversation away may only do so
+  once a note is committed, so a soft refusal would become permission to
+  forget. What is stored is digests and counts, never message text, and
+  deduplication is per message rather than per payload, because a client sends
+  longer prefixes rather than retries.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
