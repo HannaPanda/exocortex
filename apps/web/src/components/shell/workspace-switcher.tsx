@@ -54,7 +54,11 @@ export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: st
             <Button
               variant="ghost"
               size="sm"
-              className="max-w-52 justify-between gap-1"
+              // The one element of the topbar that gives way: on a phone it is
+              // what the icons to its right take their room from, and its name
+              // is the only thing there that can be shortened and still be
+              // understood (issue #100).
+              className="min-w-0 max-w-52 shrink justify-between gap-1"
               data-testid="workspace-switcher"
             >
               <span className="truncate">{active?.name ?? 'Arbeitsbereich wählen'}</span>

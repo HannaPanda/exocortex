@@ -1,21 +1,7 @@
 'use client';
 
 import { useQueryClient } from '@tanstack/react-query';
-import {
-  BrainIcon,
-  CircleQuestionMarkIcon,
-  InboxIcon,
-  KeyIcon,
-  LogOutIcon,
-  MessagesSquareIcon,
-  NetworkIcon,
-  PanelLeftIcon,
-  PanelRightIcon,
-  SearchIcon,
-  Share2Icon,
-  ShieldIcon,
-} from 'lucide-react';
-import Link from 'next/link';
+import { InboxIcon, PanelLeftIcon, PanelRightIcon, SearchIcon } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
@@ -28,7 +14,6 @@ import {
   cn,
   ExocortexWordmark,
   ResizablePanel,
-  Separator,
   Sheet,
   SheetContent,
   SheetTitle,
@@ -42,7 +27,6 @@ import {
 import { AiSelectionProvider, useAiSelection } from '@/components/ai/ai-selection';
 import { CommentAnchorProvider, useCommentAnchor } from '@/components/comments/comment-anchor';
 import { SearchCommand } from '@/components/search/search-command';
-import { useFeatures } from '@/lib/api/feature-queries';
 import { queryKeys } from '@/lib/api/query-keys';
 import { useSessionQuery } from '@/lib/api/session-queries';
 import { signOut } from '@/lib/auth/client';
@@ -54,6 +38,7 @@ import { CaptureDialog } from './capture-dialog';
 import { ConnectionStatus } from './connection-status';
 import { ContextPanel } from './context-panel';
 import { DocumentSessionProvider } from './document-session';
+import { GlobalLinks } from './global-links';
 import { JobProgressIndicator } from './job-progress';
 import { PageTree } from './page-tree';
 import {
@@ -289,7 +274,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
             eye -- a bare icon in the corner reads as an unfinished product. The
             lockup earns its amber here because it is the one place the product
             says its own name, and it never repeats inside the page. */}
-        <ExocortexWordmark className="mr-1 hidden h-7 sm:block" />
+        <ExocortexWordmark className="mr-1 hidden h-7 shrink-0 sm:block" />
 
         <Tooltip>
           <TooltipTrigger
@@ -314,12 +299,15 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
         <Button
           variant="outline"
           size="sm"
-          className="ml-1 hidden w-56 justify-start gap-2 text-muted-foreground sm:flex"
+          // Second in line to give way, after the workspace name: between the
+          // phone and the desktop the field is narrower, and it truncates
+          // rather than pushing the icons off the right edge (issue #100).
+          className="ml-1 hidden w-40 min-w-0 shrink justify-start gap-2 text-muted-foreground sm:flex lg:w-56"
           data-testid="open-search"
           onClick={() => setSearchOpen(true)}
         >
           <SearchIcon />
-          <span className="flex-1 text-left">Suchen …</span>
+          <span className="flex-1 truncate text-left">Suchen …</span>
           <kbd className="exocortex-numeric rounded border border-border px-1 text-[0.625rem]">
             Strg K
           </kbd>
@@ -344,7 +332,9 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
           </Tooltip>
         )}
 
-        <div className="ml-auto flex items-center gap-2">
+        {/* Never squeezed: everything to its left gives way first, which is
+            what keeps the bar inside a 360-pixel viewport (issue #100). */}
+        <div className="ml-auto flex shrink-0 items-center gap-2">
           <PresenceAvatars />
           <ConnectionStatus />
 
@@ -366,28 +356,12 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
             <TooltipContent>Kontextbereich (Strg + .)</TooltipContent>
           </Tooltip>
 
-          <GlobalLinks />
-
-          <Separator orientation="vertical" className="h-5" />
-
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="Abmelden"
-                  data-testid="sign-out"
-                  onClick={() => {
-                    void signOut().then(() => router.replace('/anmelden'));
-                  }}
-                >
-                  <LogOutIcon />
-                </Button>
-              }
-            />
-            <TooltipContent>{session.data?.user?.name ?? 'Konto'} · Abmelden</TooltipContent>
-          </Tooltip>
+          <GlobalLinks
+            accountLabel={session.data?.user?.name ?? 'Konto'}
+            onSignOut={() => {
+              void signOut().then(() => router.replace('/anmelden'));
+            }}
+          />
         </div>
       </AppHeader>
 
@@ -455,91 +429,5 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       )}
       <JobProgressIndicator />
     </AppShellFrame>
-  );
-}
-
-/**
- * The six places that belong to the deployment rather than to a workspace.
- *
- * Its own component only because the shell had grown past its line limit, and
- * a row of identical tooltip links is the part of it that reads as one thing.
- * The three reading rooms are first: a conversation belongs to a person rather
- * than to a workspace and spans all of them (issue #69), an entity's mentions
- * are gathered out of every workspace the reader may see, and a fact belongs to
- * a project, so none of the three fits under `/arbeitsbereich`.
- *
- * The role is not yet part of `CurrentSessionResponse` (see `AdminGuard`'s
- * TODO), so all six render for every signed-in user; `/admin` gates itself
- * against the API's admin check.
- *
- * "Hilfe und Funktionen" carries a count, and it is the only one that does. A feature
- * nobody knows about is the same as a feature nobody built (issue #80), and a
- * list you have to remember to open does not fix that -- the dot is the part
- * that does the work.
- */
-function GlobalLinks() {
-  const features = useFeatures();
-  const newCount = features.data?.newCount ?? 0;
-  const links: {
-    href: string;
-    label: string;
-    testId: string;
-    icon: typeof KeyIcon;
-    badge?: number;
-  }[] = [
-    {
-      href: '/hilfe',
-      label: newCount > 0 ? `Hilfe und Funktionen (${newCount} neu)` : 'Hilfe und Funktionen',
-      testId: 'open-features',
-      // A question mark, because that is the shape people look for when they
-      // are stuck. The sparkles this started with said "something AI happens
-      // here", which is the one thing this page is not.
-      icon: CircleQuestionMarkIcon,
-      badge: newCount,
-    },
-    { href: '/chats', label: 'Chats', testId: 'open-chats', icon: MessagesSquareIcon },
-    { href: '/entitaeten', label: 'Entitäten', testId: 'open-entities', icon: NetworkIcon },
-    // The only way to a page somebody shared with this account: the reader is
-    // not a member of that workspace, so no tree will ever show it (issue #83).
-    { href: '/geteilt', label: 'Mit mir geteilt', testId: 'open-shared', icon: Share2Icon },
-    { href: '/gedaechtnis', label: 'Gedächtnis', testId: 'open-memory', icon: BrainIcon },
-    { href: '/admin', label: 'Verwaltung', testId: 'open-admin', icon: ShieldIcon },
-    {
-      href: '/einstellungen/verbindungen',
-      label: 'Verbindungen',
-      testId: 'open-api-tokens',
-      icon: KeyIcon,
-    },
-  ];
-
-  return (
-    <>
-      {links.map((link) => (
-        <Tooltip key={link.href}>
-          <TooltipTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label={link.label}
-                data-testid={link.testId}
-                render={<Link href={link.href} />}
-                className="relative"
-              >
-                <link.icon />
-                {link.badge !== undefined && link.badge > 0 ? (
-                  <span
-                    aria-hidden
-                    data-testid="features-badge"
-                    className="absolute right-1 top-1 size-2 rounded-full bg-primary"
-                  />
-                ) : null}
-              </Button>
-            }
-          />
-          <TooltipContent>{link.label}</TooltipContent>
-        </Tooltip>
-      ))}
-    </>
   );
 }

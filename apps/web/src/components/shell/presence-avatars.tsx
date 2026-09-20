@@ -13,7 +13,7 @@ export function PresenceAvatars() {
 
   return (
     <div
-      className="flex items-center -space-x-1.5"
+      className="flex shrink-0 items-center -space-x-1.5"
       data-testid="presence-avatars"
       aria-label={`${state.presence.length} Personen bearbeiten diese Seite`}
     >

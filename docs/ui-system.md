@@ -211,6 +211,27 @@ Keyboard shortcuts: `Ctrl/⌘ K` command menu, `Ctrl/⌘ B` sidebar,
 `Ctrl/⌘ .` context panel. On a page-tree row, `Alt ↑/↓` moves it among its
 siblings and `Alt →/←` changes which page it belongs to.
 
+### The topbar on a narrow screen
+
+The bar has a fixed part and a part that gives way, and the order is written
+into the classes rather than measured at runtime. Giving way, in this order:
+the workspace name (`min-w-0 shrink` plus `truncate`, so it shortens and stays
+readable), then the search field (`w-40` until `lg`, truncating). Never giving
+way: the icon buttons and the right-hand group, which carries `shrink-0`.
+
+Below `lg` the deployment-wide links (`global-links.tsx`) stop being a row of
+icons and become one button that opens a menu carrying the same entries with
+their words, signing out included. Above `lg` nothing changes. Both shapes are
+in the markup and one is hidden by a media query: a width the client measures
+would make the first painted frame the wrong one, and this bar is the first
+thing on screen.
+
+Two rules follow from issue #100, where ten icons at 360 CSS pixels simply hung
+out of the viewport. A new deployment-wide surface goes into that list and
+nowhere else in the bar, so the row cannot grow again. And a count that the row
+shows without being opened has to survive the collapse: the dot moves onto the
+menu button, because a hint hidden inside a menu is a hint nobody gets.
+
 ### The page tree
 
 Rows are dragged with native HTML5 drag and drop (deviation 23). The row under
