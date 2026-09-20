@@ -91,6 +91,11 @@ const EXEMPT = [
       'API tokens are minted in the browser, on purpose: a token that could mint further tokens would turn one leaked credential into permanent access.',
   },
   {
+    route: 'POST /api/me/push/devices',
+    reason:
+      "Registers a browser for push notifications (issue #30, ADR-048). A subscription is minted by the browser's own push service, so an agent has nothing to register; the other three routes -- listing, retiring and notifying a device -- are tools, and they are what a caller without a browser can meaningfully do.",
+  },
+  {
     route: '* /api/me/connections*',
     reason:
       'The list of OAuth clients a person has connected, and revoking one. Same reason: a client must not be able to manage its own authorization.',

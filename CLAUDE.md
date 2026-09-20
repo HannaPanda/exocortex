@@ -398,6 +398,14 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   lost its post; and the rendered block reserves its fence before it writes a
   word, so a budget that runs out drops messages and never the sentence saying
   this is data.
+- ADR-048: a push subscription is a device, and the worker holds the key. The
+  kinds a browser accepts are a column on the subscription rather than a
+  setting on the person, because a phone in a pocket and a desktop at work
+  want different things; the VAPID pair lives in the worker's environment and
+  never in the `setting` table, so the process answering the public internet
+  holds no signing key; a job names a person, so which devices hear it is read
+  at send time; and a push service answering 404 or 410 deletes the row,
+  because a subscription it has forgotten can never come back.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

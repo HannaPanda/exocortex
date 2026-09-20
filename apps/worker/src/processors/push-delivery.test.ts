@@ -49,7 +49,10 @@ function prismaWith(rows: Row[]) {
 
 function senderReturning(outcomes: Record<string, PushOutcome>): PushSender {
   return {
-    send: vi.fn(async (target: PushTarget) => outcomes[target.endpoint] ?? { status: 'delivered' }),
+    send: vi.fn(
+      async (target: PushTarget): Promise<PushOutcome> =>
+        outcomes[target.endpoint] ?? { status: 'delivered' },
+    ),
   };
 }
 

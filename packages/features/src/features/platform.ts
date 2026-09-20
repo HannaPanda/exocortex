@@ -112,6 +112,28 @@ export const PLATFORM_FEATURES: readonly RegisteredFeature[] = [
     ui: { where: 'Einstellungen, Verbindungen, beim Anlegen eines Tokens.' },
   }),
   defineFeature({
+    id: 'push-benachrichtigungen',
+    area: 'agenten',
+    title: 'Benachrichtigungen auf dem Handy und am Rechner',
+    summary:
+      'eXocortex kann dich auf deinen Geräten anstupsen, wenn gerade niemand hinschaut: kurz vor einem Termin, bei einem Kommentar an deiner Seite, und wenn ein Agent dir absichtlich Bescheid gibt. Welches Gerät was hört, stellst du pro Gerät ein.',
+    details: [
+      'Unter Einstellungen → Verbindungen meldest du das Gerät an, an dem du gerade sitzt. Der Browser fragt einmal um Erlaubnis, danach steht das Gerät in der Liste. Jedes Gerät hat eigene Schalter für die drei Arten, denn das Handy in der Tasche und der Rechner auf der Arbeit wollen selten dasselbe hören. Eine Testnachricht daneben zeigt sofort, ob es ankommt.',
+      'Die drei Arten sind: kurz vor einem Termin aus deinem Kalender, ein Kommentar an einer Seite, die du geschrieben hast, oder eine Antwort in einem Gesprächsfaden, in dem du schon steckst, und Nachrichten von Agenten. Das Letzte ist der eigentliche Grund für die Funktion: ein langer Lauf ist fertig, etwas ist schiefgegangen, eine Frage blockiert, und Hermes oder eine Claude-Code-Sitzung erreicht dich über exo_push_send direkt auf dem Telefon, statt dass du nachschauen musst.',
+      'Der Text der Benachrichtigung ist an dein Gerät verschlüsselt: der Push-Dienst dazwischen, also Google, Mozilla oder Apple, transportiert einen Umschlag, den er nicht aufmachen kann. Antippen öffnet die Seite, um die es geht, in einem schon offenen Fenster, statt ein zweites aufzumachen.',
+      'Auf dem iPhone und dem iPad gibt es Benachrichtigungen nur, wenn eXocortex über „Zum Home-Bildschirm“ installiert ist, das ist eine Einschränkung von Safari. Meldest du ein Gerät ab oder entziehst im Browser die Erlaubnis, hört es sofort auf; ein Gerät, das der Push-Dienst nicht mehr kennt, fliegt von selbst aus der Liste.',
+    ],
+    since: '2026-09-20',
+    references: ['#30', 'ADR-048'],
+    ui: { where: 'Einstellungen, Verbindungen, Abschnitt Benachrichtigungen.' },
+    tools: [
+      'exo_push_devices',
+      'exo_push_device_update',
+      'exo_push_device_remove',
+      'exo_push_send',
+    ],
+  }),
+  defineFeature({
     id: 'verbindungen',
     area: 'agenten',
     title: 'Verbundene Clients wieder loswerden',

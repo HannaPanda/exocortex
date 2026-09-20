@@ -20,6 +20,7 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `entity-rescan`            | `EntitiesService` after an entity is created or its names change                                                     | `createEntityRescanProcessor`        | real (one name against every existing page, 2 000 pages per run; issue #47)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | `render`                   | `POST /api/documents/:id/render`                                                                                     | `createRenderProcessor`              | real (Pandoc and xelatex in a container, artifact stored as an attachment)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `project-build`            | `POST /api/projects/:id/builds`                                                                                      | `createProjectBuildProcessor`        | real (`latexmk` in a container, PDF plus SyncTeX map plus parsed diagnostics; ADR-027)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `push`                     | outbox dispatch (`comment.created`), the reminder sweep, `POST /api/me/push/send`                                    | `createPushDeliveryProcessor`        | real (one encrypted POST per device, 3 attempts; a 404/410 deletes the subscription; ADR-048)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 Queue names and payload schemas live in `packages/contracts/src/jobs.ts`, so
 producers and consumers cannot drift apart.
@@ -584,6 +585,37 @@ in UTC rather than in its authored zone, reminders are all-or-nothing rather tha
 per calendar, and there are still no REST endpoints or MCP tools for calendar
 accounts and links, so an account row is created by hand and `direction` is flipped
 by hand.
+
+### `push`: one notification reaches the devices that asked for it
+
+`pushDeliveryJobSchema`: `{ correlationId, userId, kind, notification: { title,
+body, url, tag } }`. It names a **person**, never a subscription, and that is
+the point: which of their devices hears about it is read at send time, so a
+switch flipped between the enqueue and the send is obeyed and a device
+registered in that window is included (ADR-048).
+
+`createPushDeliveryProcessor` runs at concurrency 4 -- a job is a small HTTPS
+POST per device and spends its life waiting for a push service, so a slow one
+must not hold up somebody else's appointment reminder. Three things enqueue it:
+the outbox dispatcher on `comment.created`, the reminder sweep inside
+`calendar-sync`, and `POST /api/me/push/send`.
+
+Delivery is classified per device rather than per job. A push service
+answering 404 or 410 means the subscription is over (RFC 8030 section 7.3) and
+the row is **deleted**: the browser mints a new endpoint when it asks again, so
+keeping the old one would keep a device nobody owns. Any other failure is
+counted on the row, and ten consecutive failures retire it. The job itself only
+throws when _every_ device failed retryably -- throwing on a partial failure
+would notify the devices that already heard a second time. `QUEUE_JOB_OPTIONS`
+gives this queue three attempts instead of five, because the fourth would
+arrive after the appointment it was about.
+
+The payload is encrypted to each device in `apps/worker/src/push/encrypt.ts`
+(RFC 8291 over RFC 8188, `node:crypto` only) and signed with the deployment's
+VAPID pair in `vapid.ts` (RFC 8292). Both halves of the pair come from the
+environment; without them `runtime.pushSender` is null and every job is a
+silent no-op, which is the state of a deployment that never ran
+`scripts/generate-vapid-keys.mjs`.
 
 ## Guarantees
 

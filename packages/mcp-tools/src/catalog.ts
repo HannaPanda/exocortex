@@ -19,6 +19,7 @@ import { PAGE_TOOLS } from './tools/pages.js';
 import { PLACEMENT_TOOLS } from './tools/placement.js';
 import { PROJECT_ARCHIVE_TOOLS } from './tools/project-archives.js';
 import { PROJECT_TOOLS } from './tools/projects.js';
+import { PUSH_TOOLS } from './tools/push.js';
 import { RENDER_TOOLS } from './tools/render.js';
 import { RESEARCH_TOOLS } from './tools/research.js';
 import { RULES_TOOLS } from './tools/rules.js';
@@ -58,6 +59,7 @@ export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...INVITATION_TOOLS,
   ...AGENT_SESSION_TOOLS,
   ...AUTOMATION_TOOLS,
+  ...PUSH_TOOLS,
   ...RENDER_TOOLS,
   ...PROJECT_TOOLS,
   ...PROJECT_ARCHIVE_TOOLS,

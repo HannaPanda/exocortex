@@ -84,6 +84,12 @@ What is deliberately still missing is listed under
   not through search, references, listings or the trash, and a workspace-wide
   request is refused rather than filtered (ADR-044)
 - calendars: iCal import and export, reminders, event pages
+- push notifications on the installed app (ADR-048): an appointment about to
+  start, a comment on one's own page, and an agent that has something to say
+  through `exo_push_send`. A subscription is a device rather than a person, so
+  the phone and the desktop accept different kinds; the payload is encrypted to
+  the device, so the push service in between carries an envelope it cannot
+  open; and the deployment sends nothing at all until a VAPID key pair exists
 
 **Search, AI and automation**
 
