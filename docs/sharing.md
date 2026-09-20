@@ -97,6 +97,14 @@ Two things to keep in mind when changing this feature:
   may carry several links and only one grant per account.
 - **An archived page answers a link like a missing one.** Putting a page in the
   trash says it is out of use, and a link that kept serving it would disagree.
+- **Withdrawing a grant is asked about before it happens**, and the question
+  names what it costs: a public link's address stops working for everyone and
+  cannot be brought back, while an account can be invited again in the row
+  above. The question is inline in the share row rather than a second dialog on
+  top of the first: the sentence belongs beside the grant it is about, and
+  DESIGN.md rules out reaching for a modal while an inline answer works. The
+  safe half of the choice takes focus, so a second Return never destroys
+  anything.
 - **`pageScoped` is a flag.** See ADR-044: the rows cascade with their pages, so
   "the list is empty" must not mean "unconfined".
 - **Attachment addresses on a public page are rewritten textually** to

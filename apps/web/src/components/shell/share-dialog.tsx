@@ -92,6 +92,8 @@ export function ShareDialog({
   /** The one moment the raw address exists in the browser. Dropped on close. */
   const [freshLink, setFreshLink] = React.useState<string | null>(null);
   const [copied, setCopied] = React.useState(false);
+  /** The share whose withdrawal is being confirmed, by id. At most one. */
+  const [revoking, setRevoking] = React.useState<string | null>(null);
 
   /*
    * Closing the dialog forgets the raw address. Done in the handler rather
@@ -103,16 +105,16 @@ export function ShareDialog({
       setFreshLink(null);
       setCopied(false);
       setEmail('');
+      setRevoking(null);
+      revokeShare.reset();
     }
     onOpenChange(next);
   };
 
-  const errorCode =
-    createShare.error instanceof ApiError
-      ? createShare.error.code
-      : revokeShare.error instanceof ApiError
-        ? revokeShare.error.code
-        : undefined;
+  // Only the creating half. A refused withdrawal belongs beside the row it was
+  // asked about, not in a banner at the top of a dialog the reader has scrolled
+  // past: it is the answer to a question they asked three lines above.
+  const errorCode = createShare.error instanceof ApiError ? createShare.error.code : undefined;
 
   const active = (shares.data?.shares ?? []).filter((share) => share.revokedAt === null);
   const inherited = shares.data?.inherited ?? [];
@@ -292,45 +294,30 @@ export function ShareDialog({
           ) : (
             <ul className="flex flex-col gap-2" data-testid="share-list">
               {active.map((share) => (
-                <li
+                <ShareRow
                   key={share.id}
-                  className="flex flex-wrap items-center gap-2 rounded-md border border-border px-3 py-2"
-                  data-testid="share-row"
-                >
-                  {share.kind === 'PUBLIC_LINK' ? <GlobeIcon className="size-4" /> : null}
-                  <span className="min-w-0 flex-1 truncate text-sm">{describe(share)}</span>
-                  {share.kind === 'USER' ? (
-                    <Select
-                      value={share.permission}
-                      onValueChange={(next) =>
-                        updateShare.mutate({
-                          shareId: share.id,
-                          request: { permission: next as 'READ' | 'WRITE' },
-                        })
-                      }
-                    >
-                      <SelectTrigger aria-label="Recht ändern" className="w-32">
-                        <SelectValue>
-                          {() => (share.permission === 'WRITE' ? 'Bearbeiten' : 'Lesen')}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="READ">Lesen</SelectItem>
-                        <SelectItem value="WRITE">Bearbeiten</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <Badge variant="muted">Nur lesen</Badge>
-                  )}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    data-testid="share-revoke"
-                    onClick={() => revokeShare.mutate(share.id)}
-                  >
-                    Zurückziehen
-                  </Button>
-                </li>
+                  share={share}
+                  confirming={revoking === share.id}
+                  onAskRevoke={() => {
+                    revokeShare.reset();
+                    setRevoking(share.id);
+                  }}
+                  onCancelRevoke={() => setRevoking(null)}
+                  onConfirmRevoke={() =>
+                    revokeShare.mutate(share.id, { onSuccess: () => setRevoking(null) })
+                  }
+                  onPermissionChange={(permission) =>
+                    updateShare.mutate({ shareId: share.id, request: { permission } })
+                  }
+                  revokePending={revokeShare.isPending}
+                  revokeError={
+                    revokeShare.isError
+                      ? revokeShare.error instanceof ApiError
+                        ? messageForCode(revokeShare.error.code)
+                        : 'Zurückziehen fehlgeschlagen.'
+                      : null
+                  }
+                />
               ))}
             </ul>
           )}
@@ -346,6 +333,133 @@ export function ShareDialog({
   );
 }
 
+/**
+ * One active grant, and the question that has to be answered before it goes.
+ *
+ * The confirmation is inline rather than a second dialog on top of this one.
+ * DESIGN.md rules out reaching for a modal before the inline alternatives are
+ * exhausted, and here the inline one is also the better answer: the sentence
+ * belongs beside the grant it is about, the row stays on screen while it is
+ * read, and on a phone a dialog inside a dialog has nowhere to go. What is
+ * borrowed from the trash confirmation is the part that matters -- name what
+ * goes, name what cannot be undone, and put the safe choice first.
+ */
+function ShareRow({
+  share,
+  confirming,
+  onAskRevoke,
+  onCancelRevoke,
+  onConfirmRevoke,
+  onPermissionChange,
+  revokePending,
+  revokeError,
+}: {
+  share: DocumentShare;
+  confirming: boolean;
+  onAskRevoke: () => void;
+  onCancelRevoke: () => void;
+  onConfirmRevoke: () => void;
+  onPermissionChange: (permission: 'READ' | 'WRITE') => void;
+  revokePending: boolean;
+  revokeError: string | null;
+}) {
+  return (
+    <li
+      className="flex flex-col gap-2 rounded-md border border-border px-3 py-2"
+      data-testid="share-row"
+    >
+      <div className="flex flex-wrap items-center gap-2">
+        {share.kind === 'PUBLIC_LINK' ? <GlobeIcon className="size-4" /> : null}
+        <span className="min-w-0 flex-1 truncate text-sm">{describe(share)}</span>
+        {confirming ? null : (
+          <>
+            {share.kind === 'USER' ? (
+              <Select
+                value={share.permission}
+                onValueChange={(next) => onPermissionChange(next as 'READ' | 'WRITE')}
+              >
+                <SelectTrigger aria-label="Recht ändern" className="w-32">
+                  <SelectValue>
+                    {() => (share.permission === 'WRITE' ? 'Bearbeiten' : 'Lesen')}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="READ">Lesen</SelectItem>
+                  <SelectItem value="WRITE">Bearbeiten</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <Badge variant="muted">Nur lesen</Badge>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              data-testid="share-revoke"
+              // The word repeats once per row, so the row's own sentence is
+              // what tells a screen reader which grant this button is for.
+              aria-label={`Zurückziehen: ${describe(share)}`}
+              onClick={onAskRevoke}
+            >
+              Zurückziehen
+            </Button>
+          </>
+        )}
+      </div>
+
+      {confirming ? (
+        <div
+          className="flex flex-col gap-2 border-t border-border pt-2"
+          data-testid="share-revoke-confirm"
+          // Escape backs out of the question, the same key that backs out of
+          // the dialog this sits inside.
+          onKeyDown={(event) => {
+            if (event.key !== 'Escape') return;
+            event.stopPropagation();
+            onCancelRevoke();
+          }}
+        >
+          {/* `role="alert"`: the sentence appears in place of nothing, so this
+              is the only way it reaches a screen reader before the button
+              under it is pressed. */}
+          <p role="alert" className="text-sm">
+            <span className="font-medium">Zurückziehen?</span>{' '}
+            <span className="text-muted-foreground">{revokeConsequence(share)}</span>
+          </p>
+          {revokeError === null ? null : (
+            <p role="alert" className="text-xs text-destructive-text">
+              {revokeError}
+            </p>
+          )}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              // The trigger this replaces is gone from the DOM, so without
+              // this a keyboard user is left standing on `<body>`. It lands on
+              // the safe half of the choice, and it is a button rather than a
+              // field, so no phone opens a keyboard for it.
+              autoFocus
+              data-testid="share-revoke-cancel"
+              onClick={onCancelRevoke}
+            >
+              Abbrechen
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              disabled={revokePending}
+              data-testid="share-revoke-confirm-button"
+              onClick={onConfirmRevoke}
+            >
+              {revokePending ? 'Wird zurückgezogen …' : 'Zurückziehen'}
+            </Button>
+          </div>
+        </div>
+      ) : null}
+    </li>
+  );
+}
+
 /** One sentence per grant, in the words somebody would use about it. */
 function describe(share: DocumentShare): string {
   const who =
@@ -358,5 +472,31 @@ function describe(share: DocumentShare): string {
     share.expiresAt === null
       ? ''
       : `, bis ${new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium' }).format(new Date(share.expiresAt))}`;
-  return `${who} — ${right}${reach}${until}`;
+  return `${who}: ${right}${reach}${until}`;
+}
+
+/**
+ * What withdrawing this grant actually costs, in facts the system already
+ * knows.
+ *
+ * The same shape the trash confirmation uses: name what goes, name what cannot
+ * be undone, and say nothing that is merely alarming. The two kinds cost
+ * different things, and the difference is the whole reason this sentence
+ * exists -- a public link's token is gone for good, while an account can be
+ * invited again in the row above.
+ */
+function revokeConsequence(share: DocumentShare): string {
+  const reach = share.scope === 'SUBTREE' ? ' Das gilt für diese Seite und alles darunter.' : '';
+  if (share.kind === 'PUBLIC_LINK') {
+    return (
+      `Die Adresse funktioniert danach für niemanden mehr, auch nicht für jemanden, ` +
+      `der sie weitergereicht bekommen hat. Sie lässt sich nicht wiederherstellen: ` +
+      `ein neuer Link bekommt eine neue Adresse.${reach}`
+    );
+  }
+  const who = share.grantee?.email ?? 'Dieses Konto';
+  return (
+    `${who} verliert den Zugriff sofort, auch in einer Sitzung, die gerade offen ist. ` +
+    `Du kannst die Freigabe oben jederzeit neu erteilen.${reach}`
+  );
 }
