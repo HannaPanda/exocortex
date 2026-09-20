@@ -12,6 +12,7 @@ import {
   ErrorState,
   Leader,
   LoadingState,
+  sectionLabelClassName,
   SectionRule,
 } from '@exocortex/ui';
 
@@ -239,7 +240,13 @@ function TechnicalSection({ detail }: { detail: DocumentDetail }) {
     <section className="flex flex-col gap-1.5 border-t border-border pt-3">
       <button
         type="button"
-        className="flex items-center gap-2 text-micro font-medium tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:text-foreground"
+        // The mark's typography from one place. This stays a button rather
+        // than a `SectionRule`, because it is a control and the rule is not --
+        // what it borrows is the family resemblance, not the device.
+        className={cn(
+          'flex items-center gap-2 transition-colors hover:text-foreground',
+          sectionLabelClassName,
+        )}
         aria-expanded={open}
         data-testid="technical-section-toggle"
         onClick={() => setOpen((next) => !next)}

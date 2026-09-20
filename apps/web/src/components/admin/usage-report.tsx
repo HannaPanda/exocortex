@@ -20,6 +20,8 @@ import {
   EmptyState,
   ErrorState,
   LoadingState,
+  Readout,
+  SectionRule,
   Table,
   TableBody,
   TableCaption,
@@ -127,33 +129,13 @@ function CostSummary({ cost }: { cost: AiUsageCost }) {
     parts.push(`${formatMicroUsd(cost.ownKeyMicroUsd)} über eigene Schlüssel`);
   }
   return (
-    <MetricCard
+    <Readout
       label="Kosten"
       value={formatMicroUsd(total)}
-      subtitle={parts.length === 0 ? 'vollständig vom Anbieter gemeldet' : parts.join(' · ')}
+      tone="live"
+      note={parts.length === 0 ? 'vollständig vom Anbieter gemeldet' : parts.join(' · ')}
+      data-testid="usage-metric-cost"
     />
-  );
-}
-
-function MetricCard({
-  label,
-  value,
-  subtitle,
-}: {
-  label: string;
-  value: string;
-  subtitle?: string;
-}) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardDescription>{label}</CardDescription>
-        <CardTitle className="text-2xl">{value}</CardTitle>
-      </CardHeader>
-      {subtitle === undefined ? null : (
-        <CardContent className="text-xs text-muted-foreground">{subtitle}</CardContent>
-      )}
-    </Card>
   );
 }
 
@@ -167,9 +149,15 @@ function MetricCard({
  * of vanishing between two busy days.
  */
 function DailyChart({ daily }: { daily: readonly AiUsageDay[] }) {
+  const chartTableId = React.useId();
   const peak = Math.max(1, ...daily.map((day) => day.runs));
   // A dense range gets a label every few days; otherwise they overlap.
   const labelEvery = Math.ceil(daily.length / 12);
+
+  const busiest = daily.reduce(
+    (peakDay, day) => (day.runs > peakDay.runs ? day : peakDay),
+    daily[0] ?? { date: '', runs: 0, costMicroUsd: 0, byStatus: {} as AiUsageStatusCounts },
+  );
 
   return (
     <Card>
@@ -178,7 +166,20 @@ function DailyChart({ daily }: { daily: readonly AiUsageDay[] }) {
         <CardTitle className="text-base">Verlauf nach Ausgang</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        <div className="flex h-40 items-end gap-px" role="img" aria-label="Läufe pro Tag">
+        {/*
+         * The bars are the picture; the table under them is the same data for
+         * anybody the picture does not reach. It was `role="img"` over a row of
+         * empty divs whose numbers lived in a `title` attribute, which a screen
+         * reader never reads and a finger cannot summon: position was the only
+         * carrier of the one quantitative view of what the AI costs, on a
+         * product whose own rule is that meaning never rides on one channel.
+         */}
+        <div
+          className="flex h-40 items-end gap-px"
+          role="img"
+          aria-label="Läufe pro Tag"
+          aria-describedby={chartTableId}
+        >
           {daily.map((day, index) => (
             <div
               key={day.date}
@@ -216,6 +217,33 @@ function DailyChart({ daily }: { daily: readonly AiUsageDay[] }) {
             </span>
           ))}
         </div>
+
+        {/* Visible to everyone as one sentence, and complete to a screen
+            reader as the table the picture describes. */}
+        <p className="text-xs text-muted-foreground">
+          {daily.length === 0
+            ? 'Keine Tage im Zeitraum.'
+            : `Stärkster Tag: ${formatDayLabel(busiest.date)} mit ${numberFormat.format(busiest.runs)} Läufen.`}
+        </p>
+        <table id={chartTableId} className="exocortex-sr-only">
+          <caption>Läufe und Kosten pro Tag</caption>
+          <thead>
+            <tr>
+              <th scope="col">Tag</th>
+              <th scope="col">Läufe</th>
+              <th scope="col">Kosten</th>
+            </tr>
+          </thead>
+          <tbody>
+            {daily.map((day) => (
+              <tr key={day.date}>
+                <th scope="row">{formatDayLabel(day.date)}</th>
+                <td>{numberFormat.format(day.runs)}</td>
+                <td>{formatMicroUsd(day.costMicroUsd)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </CardContent>
     </Card>
   );
@@ -363,47 +391,56 @@ export function UsageReport() {
     <div className="space-y-6">
       {picker}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <MetricCard
-          label="Läufe"
-          value={numberFormat.format(usage.runs)}
-          subtitle={runBreakdown(usage.byStatus)}
-        />
-        <MetricCard
-          label="Erfolgsquote"
-          value={usage.successRate === null ? '–' : percentFormat.format(usage.successRate)}
-          subtitle="abgebrochene Läufe zählen nicht mit"
-        />
-        <CostSummary cost={usage.cost} />
-        <MetricCard
-          label="Tokens rein/raus"
-          value={`${numberFormat.format(usage.tokens.input)} / ${numberFormat.format(usage.tokens.output)}`}
-          subtitle={
-            cachedShare === null
-              ? undefined
-              : `${percentFormat.format(cachedShare)} der Eingabe kam aus dem Zwischenspeicher`
-          }
-        />
-        <MetricCard
-          label="Dauer"
-          value={formatDuration(usage.medianDurationMs)}
-          subtitle={`95. Perzentil: ${formatDuration(usage.p95DurationMs)}`}
-        />
-        <MetricCard
-          label="Werkzeug-Iterationen"
-          value={numberFormat.format(usage.toolIterations)}
-          subtitle={
-            usage.prunedRuns === 0
-              ? undefined
-              : `${numberFormat.format(usage.prunedRuns)} Läufe ohne Texte (aufgeräumt)`
-          }
-        />
-      </div>
+      {/* The same vocabulary as the administration overview: a rule names the
+          group, a leader carries each label to its figure, and the order is the
+          ranking. What was spent and whether it worked comes before how long it
+          took. */}
+      <section className="flex flex-col gap-3">
+        <SectionRule>Im Zeitraum</SectionRule>
+        <div className="grid gap-x-8 gap-y-3 sm:grid-cols-2">
+          <Readout
+            label="Läufe"
+            value={numberFormat.format(usage.runs)}
+            tone="live"
+            note={runBreakdown(usage.byStatus)}
+            data-testid="usage-metric-runs"
+          />
+          <CostSummary cost={usage.cost} />
+          <Readout
+            label="Erfolgsquote"
+            value={usage.successRate === null ? '–' : percentFormat.format(usage.successRate)}
+            note="abgebrochene Läufe zählen nicht mit"
+          />
+          <Readout
+            label="Tokens rein/raus"
+            value={`${numberFormat.format(usage.tokens.input)} / ${numberFormat.format(usage.tokens.output)}`}
+            note={
+              cachedShare === null
+                ? undefined
+                : `${percentFormat.format(cachedShare)} der Eingabe kam aus dem Zwischenspeicher`
+            }
+          />
+          <Readout
+            label="Dauer"
+            value={formatDuration(usage.medianDurationMs)}
+            note={`95. Perzentil: ${formatDuration(usage.p95DurationMs)}`}
+          />
+          <Readout
+            label="Werkzeug-Iterationen"
+            value={numberFormat.format(usage.toolIterations)}
+            note={
+              usage.prunedRuns === 0
+                ? undefined
+                : `${numberFormat.format(usage.prunedRuns)} Läufe ohne Texte (aufgeräumt)`
+            }
+          />
+        </div>
+      </section>
 
       <DailyChart daily={usage.daily} />
 
       <section className="space-y-2">
-        <h2 className="text-sm font-medium">Nach Modell</h2>
+        <SectionRule>Nach Modell</SectionRule>
         {usage.byModel.length === 0 ? (
           <EmptyState
             title="Keine Läufe in diesem Zeitraum"
@@ -415,7 +452,7 @@ export function UsageReport() {
       </section>
 
       <section className="space-y-2">
-        <h2 className="text-sm font-medium">Fehler</h2>
+        <SectionRule>Fehler</SectionRule>
         {usage.byErrorCode.length === 0 ? (
           <EmptyState
             title="Keine Fehler in diesem Zeitraum"

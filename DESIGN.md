@@ -605,6 +605,24 @@ rather than dashed and held to 70%: a dash long enough to read as a dash stops
 leading the eye and starts being a rule. It expects to sit between two items in
 a `flex items-baseline` row.
 
+**`Readout`** is the row `Leader` was drawn for, given a name: a label, the
+dotted rule, the value in the numeric face, and an optional line of context
+under it. It is what this product uses instead of a metric tile. A grid of
+identical boxes each holding a caption and a big number is the shape PRODUCT.md
+rules out, and it carries no ranking -- "Nutzer" and "KI-Kosten (24 h)" are not
+equally important and a grid draws them identically. A column of readouts under
+a `SectionRule` says which group a figure belongs to, and the order inside the
+group says which one is read first. Its `tone="live"` marks the figures about
+what just happened rather than what is stored, which is the one place on such a
+screen where amber still means what it means everywhere else.
+
+The typography of the mark is exported on its own as `sectionLabelClassName`,
+for the two places that are not section announcements and still belong to the
+family: the disclosure that opens the technical properties is a control, and a
+day heading inside the activity list is a marker inside a section. Both used to
+copy the four utilities, which is how one of them ended up at a tracking the
+component had not used for months.
+
 The same hairline device runs vertically as a **tree guide**: an unfolded branch
 in the page tree draws a `signal-line` rule down its parent's chevron column, so
 a branch reads as a branch several levels deep, where indentation alone stops

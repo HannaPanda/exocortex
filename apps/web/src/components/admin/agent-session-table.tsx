@@ -17,6 +17,7 @@ import {
   EmptyState,
   ErrorState,
   LoadingState,
+  SectionRule,
   Table,
   TableBody,
   TableCaption,
@@ -85,7 +86,7 @@ export function AgentSessionTable() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h2 className="text-base font-semibold">Agenten-Sitzungen</h2>
+        <SectionRule>Agenten-Sitzungen</SectionRule>
         <p className="text-sm text-muted-foreground">
           Jede Verbindung eines Agenten mit dem, was sie geschrieben hat. Zurücknehmen setzt jede
           betroffene Seite auf den Stand vor dem ersten Eingriff dieser Sitzung zurück; Seiten, die

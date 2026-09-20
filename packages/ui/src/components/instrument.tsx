@@ -15,6 +15,21 @@ import { cn } from '../lib/utils';
  */
 
 /**
+ * The typography of the mark, on its own.
+ *
+ * `SectionRule` is the whole device -- square, label, hairline -- and most
+ * places want the whole device. Two do not: the disclosure that opens the
+ * technical properties is a *control* rather than a section announcement, and
+ * the day headings inside the activity list are markers inside a section rather
+ * than sections of their own. Both still have to look like the same family, and
+ * both used to say so by copying these four utilities, which is how one of them
+ * ended up at `0.12em` while the component was at `0.14em`. One definition, so
+ * a change to the mark reaches everything wearing it.
+ */
+export const sectionLabelClassName =
+  'text-micro font-medium tracking-[0.14em] text-muted-foreground uppercase';
+
+/**
  * A hairline rule with a small label riding on it, opened by a square mark.
  *
  * The instrument-panel alternative to a card header: it separates without
@@ -24,25 +39,27 @@ import { cn } from '../lib/utils';
  *
  * `trailing` is for a count or another short readout that belongs to the
  * section rather than to a row inside it; it sits after the rule, at the right
- * edge, where the eye ends up anyway.
+ * edge, where the eye ends up anyway. `action` is the same position for
+ * something you can press, and it is a separate slot because a count is set in
+ * the numeric face and a control must not be.
  */
 export function SectionRule({
   children,
   trailing,
+  action,
   className,
   as: Heading = 'h2',
   ...props
 }: React.ComponentPropsWithoutRef<'div'> & {
   trailing?: React.ReactNode;
+  action?: React.ReactNode;
   /** Heading level, so the rule fits the document outline it appears in. */
   as?: 'h2' | 'h3';
 }) {
   return (
     <div className={cn('flex items-center gap-2.5', className)} {...props}>
       <span className="size-1 shrink-0 bg-signal-line" aria-hidden />
-      <Heading className="min-w-0 truncate text-micro font-medium tracking-[0.14em] text-muted-foreground uppercase">
-        {children}
-      </Heading>
+      <Heading className={cn('min-w-0 truncate', sectionLabelClassName)}>{children}</Heading>
       {/* Short and fixed, not a full-width divider. A rule that crosses the
           whole column competes with the leaders in the rows underneath, and two
           systems of horizontal line on one screen read as stripes. This is a
@@ -53,6 +70,7 @@ export function SectionRule({
           {trailing}
         </span>
       )}
+      {action === undefined ? null : <span className="shrink-0">{action}</span>}
     </div>
   );
 }
@@ -83,5 +101,54 @@ export function Leader({ className, ...props }: React.ComponentPropsWithoutRef<'
       )}
       {...props}
     />
+  );
+}
+
+/**
+ * A label carried across to its value, with an optional line of context under
+ * it. The row `Leader` was drawn for, given a name.
+ *
+ * This is what the product uses instead of a metric tile. A grid of identical
+ * boxes, each with a caption and a big number, is the shape `PRODUCT.md` rules
+ * out by name, and it carries no ranking: "Nutzer" and "KI-Kosten (24 h)" are
+ * not equally important and a grid draws them identically. A list of readouts
+ * under a `SectionRule` says which group a figure belongs to, and the order
+ * inside the group says which one is read first.
+ *
+ * `tone="live"` marks the figures that are about what just happened rather than
+ * what is stored, which is the one place on such a screen where amber means
+ * what it means everywhere else: something is happening here.
+ */
+export function Readout({
+  label,
+  value,
+  note,
+  tone = 'default',
+  className,
+  ...props
+}: Omit<React.ComponentPropsWithoutRef<'div'>, 'children'> & {
+  label: React.ReactNode;
+  value: React.ReactNode;
+  note?: React.ReactNode;
+  tone?: 'default' | 'live';
+}) {
+  return (
+    <div className={cn('flex flex-col', className)} {...props}>
+      <span className="flex items-baseline gap-2">
+        <span className="truncate text-sm">{label}</span>
+        <Leader />
+        <span
+          className={cn(
+            'exocortex-numeric shrink-0 text-sm font-medium',
+            tone === 'live' ? 'text-primary-text' : 'text-foreground',
+          )}
+        >
+          {value}
+        </span>
+      </span>
+      {note === undefined ? null : (
+        <span className="mt-0.5 text-meta text-muted-foreground">{note}</span>
+      )}
+    </div>
   );
 }

@@ -28,6 +28,7 @@ import {
   ErrorState,
   LoadingState,
   ScrollArea,
+  SectionRule,
   Select,
   SelectContent,
   SelectItem,
@@ -595,42 +596,47 @@ function TreeHeader({
   onCreateProject: () => void;
 }) {
   return (
-    <div className="flex items-center gap-2.5 px-2 py-1.5">
-      {/* The same mark the overview and the context panel use, so "this is a
-          section" looks identical wherever the reader meets it. */}
-      <span className="size-1 shrink-0 bg-signal-line" aria-hidden />
-      <p className="text-micro font-medium tracking-[0.14em] text-muted-foreground uppercase">
-        Seiten
-      </p>
-      <span className="h-px w-6 shrink-0 bg-signal-line" aria-hidden />
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          render={
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label="Anlegen"
-              data-testid="create-root-page"
+    // The component, not a copy of it. This header drew the square, the label
+    // and the hairline by hand with the comment "the same mark the overview
+    // uses", which is how a mark stops being a system: the three copies of it
+    // had already drifted apart by the time anybody looked.
+    <SectionRule
+      className="px-2 py-1.5"
+      action={
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Anlegen"
+                data-testid="create-root-page"
+              >
+                <PlusIcon />
+              </Button>
+            }
+          />
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem data-testid="create-root-page-item" onClick={onCreatePage}>
+              <PlusIcon /> Seite anlegen
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              data-testid="create-root-from-template"
+              onClick={onCreateFromTemplate}
             >
-              <PlusIcon />
-            </Button>
-          }
-        />
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem data-testid="create-root-page-item" onClick={onCreatePage}>
-            <PlusIcon /> Seite anlegen
-          </DropdownMenuItem>
-          <DropdownMenuItem data-testid="create-root-from-template" onClick={onCreateFromTemplate}>
-            <LayoutTemplateIcon /> Seite aus Vorlage
-          </DropdownMenuItem>
-          <DropdownMenuItem data-testid="create-root-database" onClick={onCreateDatabase}>
-            <TableIcon /> Datenbank anlegen
-          </DropdownMenuItem>
-          <DropdownMenuItem data-testid="create-root-project" onClick={onCreateProject}>
-            <FolderCodeIcon /> LaTeX-Projekt anlegen
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+              <LayoutTemplateIcon /> Seite aus Vorlage
+            </DropdownMenuItem>
+            <DropdownMenuItem data-testid="create-root-database" onClick={onCreateDatabase}>
+              <TableIcon /> Datenbank anlegen
+            </DropdownMenuItem>
+            <DropdownMenuItem data-testid="create-root-project" onClick={onCreateProject}>
+              <FolderCodeIcon /> LaTeX-Projekt anlegen
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      }
+    >
+      Seiten
+    </SectionRule>
   );
 }

@@ -130,6 +130,28 @@ because inline code and a footnote marker scale with what they sit in, and the
 CodeMirror pane in `projects/project-code-editor.tsx` sizes source code rather
 than interface text.
 
+## The instrument marks
+
+Three primitives in `packages/ui/src/components/instrument.tsx` carry the
+structure of every dense screen, and they are what this product reaches for
+before a card.
+
+| Primitive               | What it is                                    | Use                                                     |
+| ----------------------- | --------------------------------------------- | ------------------------------------------------------- |
+| `SectionRule`           | square, label, short hairline                 | announcing a section without enclosing it               |
+| `Leader`                | the dotted rule between a label and its value | inside a `flex items-baseline` row                      |
+| `Readout`               | label, leader, value, optional note           | a figure and its name; the alternative to a metric tile |
+| `sectionLabelClassName` | the mark's typography alone                   | a control or a sub-heading that belongs to the family   |
+
+`SectionRule` takes a `trailing` slot for a count (set in the numeric face, and
+never given a zero) and an `action` slot for something you can press. `Readout`
+takes `tone="live"` for a figure about what just happened rather than what is
+stored.
+
+Do not draw the square-label-hairline by hand. It was drawn by hand in three
+places, with the comment "the same mark the overview uses", and by the time
+anybody compared them one was at a different tracking.
+
 ## Values versus labels
 
 `.exocortex-numeric` (mono, `tabular-nums`) is for **values**: timestamps,

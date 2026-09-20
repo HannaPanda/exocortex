@@ -32,6 +32,7 @@ import {
   EmptyState,
   ErrorState,
   LoadingState,
+  sectionLabelClassName,
   SectionRule,
   TruncatedText,
 } from '@exocortex/ui';
@@ -421,8 +422,12 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
           {groups.map((group) => (
             <section key={group.key} className="flex flex-col gap-0.5">
               {/* Quieter than the `SectionRule` above it: this is a marker
-                  inside a section, not a second section. */}
-              <h4 className="exocortex-numeric px-2 pb-1 text-micro font-medium tracking-[0.12em] text-muted-foreground uppercase">
+                  inside a section, not a second section. What makes it quieter
+                  is the missing square and the missing hairline, not a
+                  different tracking -- it carried `0.12em` against the
+                  component's `0.14em`, which nobody can see and which meant the
+                  mark had two definitions. */}
+              <h4 className={cn('exocortex-numeric px-2 pb-1', sectionLabelClassName)}>
                 {group.heading}
               </h4>
               {group.entries.map((entry) => (

@@ -16,6 +16,7 @@ import {
   DialogTitle,
   ErrorState,
   LoadingState,
+  SectionRule,
   Select,
   SelectContent,
   SelectItem,
@@ -93,12 +94,15 @@ export function UserTable() {
   return (
     <div className="flex flex-col gap-10">
       <section className="flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="text-base font-semibold">Nutzer</h2>
-          <Button onClick={() => setInviteOpen(true)} data-testid="open-invite-dialog">
-            Einladen
-          </Button>
-        </div>
+        <SectionRule
+          action={
+            <Button onClick={() => setInviteOpen(true)} data-testid="open-invite-dialog">
+              Einladen
+            </Button>
+          }
+        >
+          Nutzer
+        </SectionRule>
 
         {actionError !== undefined ? (
           <Alert variant="destructive" data-testid="user-role-error">
@@ -213,7 +217,7 @@ export function UserTable() {
       </section>
 
       <section className="flex flex-col gap-4 border-t border-border pt-8">
-        <h2 className="text-base font-semibold">Einladungen</h2>
+        <SectionRule>Einladungen</SectionRule>
         <InvitationTable scope={{ kind: 'admin' }} showWorkspace />
       </section>
 
