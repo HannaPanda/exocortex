@@ -32,10 +32,13 @@ import { memoryWorkspaceFor } from './memory-workspace';
  * How long the distillation may take before the checkpoint fails.
  *
  * Shorter than the capture job's two minutes, and not because the model is
- * faster here. A caller is holding this request open and nginx closes an idle
- * proxied connection at sixty seconds; a timeout the reverse proxy wins is a
- * checkpoint that reports failure to nobody. Forty-five seconds leaves room to
- * answer.
+ * faster here. Nobody waits for a capture. Here an agent is holding the request
+ * open in the middle of a conversation somebody is having with it, so the
+ * budget is what a person will sit through before the reply, not what the
+ * reverse proxy allows (`/api/` gets 300 seconds in
+ * `deploy/nginx/exocortex.app.conf`). A checkpoint that cannot be written in
+ * forty-five seconds is better reported as failed: the caller keeps its
+ * transcript and tries again at the next compaction.
  */
 const CHECKPOINT_TIMEOUT_MS = 45_000;
 

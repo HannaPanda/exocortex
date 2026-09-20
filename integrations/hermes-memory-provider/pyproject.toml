@@ -25,5 +25,10 @@ exocortex = "exocortex_memory:register"
 [tool.hatch.build.targets.wheel]
 packages = ["exocortex_memory"]
 
+# `plugin.yaml` travels with the package: Hermes resolves an entry point back to
+# its package directory and reads the manifest from disk, without importing it.
+[tool.hatch.build.targets.wheel.force-include]
+"exocortex_memory/plugin.yaml" = "exocortex_memory/plugin.yaml"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

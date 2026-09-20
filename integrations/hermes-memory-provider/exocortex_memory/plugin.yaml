@@ -1,0 +1,7 @@
+name: exocortex
+version: 0.1.0
+description: 'eXocortex — durable checkpoint before a lossy compaction, plus optional recall.'
+hooks:
+  - on_pre_compress
+  - on_session_end
+  - on_session_switch

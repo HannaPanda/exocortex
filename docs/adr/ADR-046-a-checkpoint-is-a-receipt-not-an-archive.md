@@ -69,15 +69,20 @@ moved to `packages/ai/src/memory-distill.ts` and are shared with the
 `memory-capture` job, so the two kinds of note cannot drift apart in shape. This
 is a provider call in the request path, which the API already does for
 embeddings; it is not a CLI agent, and rule 6 is untouched. The timeout is 45
-seconds rather than the job's 120, because nginx closes an idle proxied
-connection at 60 and a timeout the reverse proxy wins is a failure the caller
-never learns about.
+seconds rather than the job's 120, and the budget comes from the person on the
+other end of the conversation rather than from the reverse proxy, which allows
+300: a checkpoint that cannot be written inside that is better reported as
+failed, because the caller keeps its transcript and tries again at the next
+compaction.
 
 **The provider talks HTTP, not MCP.** `integrations/hermes-memory-provider` is a
-small Python package with no dependency beyond the standard library and Hermes
-itself. The memory-provider lifecycle is not the MCP lifecycle: it has to
-persist synchronously at a point where no tool loop is running, and routing that
-through a tool catalogue would mean an agent could decline to call it.
+small Python package with no runtime dependency at all, not even Hermes. The
+memory-provider lifecycle is not the MCP lifecycle: it has to persist
+synchronously at a point where no tool loop is running, and routing that through
+a tool catalogue would mean an agent could decline to call it. It subclasses
+Hermes' `MemoryProvider` when Hermes is importable and a local stand-in when it
+is not, because Hermes resolves a provider by `isinstance` while the tests and a
+plain `pip install` must not drag an agent framework in.
 
 ## Consequences
 
@@ -99,6 +104,10 @@ through a tool catalogue would mean an agent could decline to call it.
 - A client that sends no `sessionId` is refused at the schema. Without one there
   is nothing to recognise a second checkpoint by, and the deduplication this
   endpoint promises would be a lie.
+- Nothing about the endpoint is private to one deployment. It is an ordinary
+  authenticated REST call behind the same nginx as everything else, so any
+  agent runtime that can hold a bearer token can checkpoint into eXocortex over
+  the network; the Hermes package is one client of it, not the interface.
 - The receipt points at its note with `onDelete: SetNull`. A memory note is an
   ordinary page and somebody may delete it; the record that a checkpoint
   happened survives that and simply stops pointing anywhere.

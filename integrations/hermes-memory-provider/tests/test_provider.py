@@ -30,7 +30,7 @@ class FakeClient:
             raise self._error
         return self._answer
 
-    def recall(self, query, project, *, max_chars, limit):
+    def recall(self, query, project, *, max_chars, limit, timeout_seconds=None):
         self.calls.append(
             {"recall": query, "project": project, "maxChars": max_chars, "limit": limit}
         )
@@ -39,9 +39,14 @@ class FakeClient:
         return self._answer
 
 
-def make_provider(client) -> ExocortexMemoryProvider:
-    config = ProviderConfig.from_mapping({"project": "hermes", "token": "t"}, environ={})
-    return ExocortexMemoryProvider(config, client=client)
+def make_provider(client, *, session="session-7", **options) -> ExocortexMemoryProvider:
+    config = ProviderConfig.from_mapping(
+        {"project": "hermes", **options}, environ={"EXOCORTEX_API_TOKEN": "t"}
+    )
+    provider = ExocortexMemoryProvider(config, client=client)
+    if session is not None:
+        provider.initialize(session)
+    return provider
 
 
 def result(**overrides):
@@ -67,7 +72,6 @@ def test_sends_the_evidence_and_answers_with_a_line_for_the_history():
     line = provider.on_pre_compress(
         [{"role": "user", "content": "Bau den Provider"}, {"role": "assistant", "content": "Ok"}],
         require_checkpoint=True,
-        session_id="session-7",
     )
 
     assert client.calls[0]["sessionId"] == "session-7"
@@ -86,9 +90,7 @@ def test_fails_closed_when_the_deployment_is_unreachable():
 
     with pytest.raises(CheckpointError):
         provider.on_pre_compress(
-            [{"role": "user", "content": "etwas"}],
-            require_checkpoint=True,
-            session_id="session-7",
+            [{"role": "user", "content": "etwas"}], require_checkpoint=True
         )
 
 
@@ -96,35 +98,46 @@ def test_stays_quiet_when_the_caller_did_not_require_a_checkpoint():
     provider = make_provider(FakeClient(error=CheckpointError("connection refused")))
 
     assert (
-        provider.on_pre_compress(
-            [{"role": "user", "content": "etwas"}],
-            require_checkpoint=False,
-            session_id="session-7",
-        )
-        is None
+        provider.on_pre_compress([{"role": "user", "content": "etwas"}], require_checkpoint=False)
+        == ""
     )
 
 
-def test_refuses_without_a_session_id():
-    provider = make_provider(FakeClient(answer=result()))
+def test_invents_a_session_id_rather_than_blocking_the_compaction():
+    # Hermes always calls `initialize`, but a provider built by hand has no id
+    # yet. Refusing there would block every compaction over a detail nobody
+    # configured; a per-instance id groups the checkpoints of exactly one run,
+    # which is the lifetime a session has anyway.
+    provider = make_provider(FakeClient(answer=result()), session=None)
 
-    with pytest.raises(CheckpointError):
-        provider.on_pre_compress([{"role": "user", "content": "x"}], require_checkpoint=True)
+    assert provider.session_id.startswith("exocortex-")
+    provider.on_pre_compress([{"role": "user", "content": "x"}], require_checkpoint=True)
+
+
+def test_initialize_binds_the_session_and_on_session_switch_rebinds_it():
+    provider = make_provider(FakeClient(answer=result()), session=None)
+
+    provider.initialize("session-a", agent_context="cron")
+    provider.on_pre_compress([{"role": "user", "content": "x"}], require_checkpoint=True)
+    provider.on_session_switch("session-b")
+    provider.on_pre_compress([{"role": "user", "content": "y"}], require_checkpoint=True)
+
+    assert [call["sessionId"] for call in provider.client.calls] == ["session-a", "session-b"]
+    # The agent context travels as provenance, so a cron run reads as one later.
+    assert "cron" in provider.client.calls[0]["hint"]
 
 
 def test_an_empty_window_is_not_a_failure():
     # Refusing to compact an empty window would stall the agent forever.
     provider = make_provider(FakeClient(answer=result()))
 
-    assert provider.on_pre_compress([], require_checkpoint=True, session_id="s") is None
+    assert provider.on_pre_compress([], require_checkpoint=True) == ""
 
 
 def test_a_repeated_window_is_reported_as_already_saved():
     provider = make_provider(FakeClient(answer=result(deduplicated=True, new_messages=0)))
 
-    line = provider.on_pre_compress(
-        [{"role": "user", "content": "x"}], require_checkpoint=True, session_id="s"
-    )
+    line = provider.on_pre_compress([{"role": "user", "content": "x"}], require_checkpoint=True)
 
     assert "bereits gesichert" in line
 
@@ -132,30 +145,95 @@ def test_a_repeated_window_is_reported_as_already_saved():
 def test_nothing_worth_keeping_still_lets_the_compaction_happen():
     provider = make_provider(FakeClient(answer=result(document_id=None, title=None)))
 
-    line = provider.on_pre_compress(
-        [{"role": "user", "content": "x"}], require_checkpoint=True, session_id="s"
-    )
+    line = provider.on_pre_compress([{"role": "user", "content": "x"}], require_checkpoint=True)
 
     assert "nichts Erhaltenswertes" in line
 
 
 def test_session_end_never_raises():
     provider = make_provider(FakeClient(error=CheckpointError("down")))
-    provider.on_session_start(session_id="s")
 
     provider.on_session_end([{"role": "user", "content": "x"}])
 
 
 def test_prefetch_is_off_until_it_is_turned_on():
-    provider = make_provider(FakeClient(answer="etwas Gedächtnis"))
+    off = make_provider(FakeClient(answer="etwas Gedächtnis"))
+    off.queue_prefetch("woran arbeiten wir")
+    assert off.prefetch("woran arbeiten wir") == ""
+    assert off.client.calls == []
 
-    assert provider.prefetch("woran arbeiten wir") is None
 
-    config = ProviderConfig.from_mapping(
-        {"project": "hermes", "token": "t", "prefetch_enabled": True}, environ={}
-    )
-    on = ExocortexMemoryProvider(config, client=FakeClient(answer="etwas Gedächtnis"))
+def test_prefetch_answers_from_the_background_recall_and_only_once():
+    # Hermes needs prefetch to be fast because it sits in front of a turn, so
+    # the request happens in `queue_prefetch` and this only hands back what it
+    # found. Showing it twice would read as two memories.
+    on = make_provider(FakeClient(answer="etwas Gedächtnis"), prefetch_enabled=True)
+
+    on.queue_prefetch("woran arbeiten wir")
+    _drain(on)
+
     assert on.prefetch("woran arbeiten wir") == "etwas Gedächtnis"
+    assert on.prefetch("woran arbeiten wir") == ""
+
+
+def test_a_failed_recall_is_a_turn_without_context_not_a_failed_turn():
+    on = make_provider(FakeClient(error=CheckpointError("down")), prefetch_enabled=True)
+
+    on.queue_prefetch("woran arbeiten wir")
+    _drain(on)
+
+    assert on.prefetch("woran arbeiten wir") == ""
+
+
+def _drain(provider) -> None:
+    """Waits for the background recall this provider started."""
+    import threading
+
+    for thread in threading.enumerate():
+        if thread.name == "exocortex-recall":
+            thread.join(timeout=5)
+
+
+class TestHermesContract:
+    """The shapes Hermes checks before it will use a provider at all."""
+
+    def test_declares_the_fail_closed_checkpoint_api(self):
+        assert ExocortexMemoryProvider.pre_compress_checkpoint_api_version == 2
+
+    def test_is_unavailable_without_a_token_and_says_why(self):
+        config = ProviderConfig.from_mapping({"project": "hermes"}, environ={})
+        provider = ExocortexMemoryProvider(config)
+
+        assert provider.is_available() is False
+        assert "EXOCORTEX_API_TOKEN" in provider.unavailable_reason()
+
+    def test_adds_no_tools(self):
+        # The `exo_*` MCP catalogue is how a model reaches eXocortex; a second,
+        # smaller copy inside the memory lifecycle would be two answers to one
+        # question.
+        assert make_provider(FakeClient()).get_tool_schemas() == []
+
+    def test_the_token_field_is_marked_secret_so_it_lands_in_env(self):
+        from exocortex_memory import config_schema
+
+        token = next(field for field in config_schema() if field["key"] == "token")
+        assert token["secret"] is True
+        assert token["env_var"] == "EXOCORTEX_API_TOKEN"
+
+    def test_register_announces_the_provider_on_the_context(self):
+        from exocortex_memory import register
+
+        class Ctx:
+            def __init__(self):
+                self.provider = None
+
+            def register_memory_provider(self, provider):
+                self.provider = provider
+
+        ctx = Ctx()
+        returned = register(ctx)
+        assert ctx.provider is returned
+        assert isinstance(returned, ExocortexMemoryProvider)
 
 
 class TestFlattening:
@@ -182,6 +260,13 @@ class TestConfig:
         config = ProviderConfig.from_mapping({}, environ={"EXOCORTEX_API_TOKEN": "secret"})
         assert config.token == "secret"
 
+    def test_ignores_a_token_somebody_put_in_the_config_file(self):
+        # It would work, and then it would sit in a file that gets committed
+        # and backed up. The schema marks the field secret so `hermes memory
+        # setup` writes it to `.env`; honouring it here would undo that.
+        config = ProviderConfig.from_mapping({"token": "committed"}, environ={})
+        assert config.token == ""
+
     def test_falls_back_to_the_public_deployment(self):
         config = ProviderConfig.from_mapping({}, environ={})
         assert config.base_url == "https://exocortex.app"
@@ -192,7 +277,5 @@ def test_the_request_body_is_json_serialisable():
     # there would only show up at the moment of a real compaction.
     client = FakeClient(answer=result())
     provider = make_provider(client)
-    provider.on_pre_compress(
-        [{"role": "user", "content": ["a", "b"]}], require_checkpoint=True, session_id="s"
-    )
+    provider.on_pre_compress([{"role": "user", "content": ["a", "b"]}], require_checkpoint=True)
     json.dumps(client.calls[0])

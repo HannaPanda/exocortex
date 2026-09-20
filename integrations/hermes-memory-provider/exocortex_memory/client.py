@@ -81,7 +81,15 @@ class ExocortexClient:
         payload = self._post("/api/memory/checkpoint", body)
         return CheckpointResult.from_payload(payload)
 
-    def recall(self, query: str | None, project: str, *, max_chars: int, limit: int) -> str:
+    def recall(
+        self,
+        query: str | None,
+        project: str,
+        *,
+        max_chars: int,
+        limit: int,
+        timeout_seconds: float | None = None,
+    ) -> str:
         params = [
             ("project", project),
             ("maxChars", str(max_chars)),
@@ -90,7 +98,7 @@ class ExocortexClient:
         if query:
             params.append(("q", query))
 
-        payload = self._get(f"/api/memory/recall?{urlencode(params)}")
+        payload = self._get(f"/api/memory/recall?{urlencode(params)}", timeout=timeout_seconds)
         text = payload.get("text")
         return text if isinstance(text, str) else ""
 
@@ -109,7 +117,7 @@ class ExocortexClient:
         )
         return self._send(request)
 
-    def _get(self, path: str) -> Mapping[str, Any]:
+    def _get(self, path: str, *, timeout: float | None = None) -> Mapping[str, Any]:
         request = urllib.request.Request(
             f"{self._base_url}{path}",
             method="GET",
@@ -118,11 +126,11 @@ class ExocortexClient:
                 "authorization": f"Bearer {self._token}",
             },
         )
-        return self._send(request)
+        return self._send(request, timeout=timeout)
 
-    def _send(self, request: Any) -> Mapping[str, Any]:
+    def _send(self, request: Any, *, timeout: float | None = None) -> Mapping[str, Any]:
         try:
-            with self._opener(request, timeout=self._timeout) as response:
+            with self._opener(request, timeout=timeout or self._timeout) as response:
                 raw = response.read()
         except urllib.error.HTTPError as error:  # pragma: no cover - exercised via fakes
             detail = _read_error(error)
