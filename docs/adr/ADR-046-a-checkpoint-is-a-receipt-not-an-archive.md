@@ -88,6 +88,11 @@ through a tool catalogue would mean an agent could decline to call it.
 - A checkpoint costs a model call. `memory.captureMinChars` does not apply,
   because the caller does not get to decide that its lost turns were too short
   to matter; the model's `NICHTS` is the filter instead.
+- Extracting durable knowledge needed no second mechanism. The note a
+  checkpoint writes is an ordinary memory note, so the nightly consolidation of
+  [ADR-021](ADR-021-facts-above-notes.md) reads it like any other and turns
+  what keeps recurring into a fact. A second distillation ladder beside that
+  one would have produced a second answer to "what is true here".
 - Receipts are pruned by `pruneMemories` on `memory.retentionDays`, the same
   clock as the notes. A session whose notes have gone has nothing left to
   deduplicate against.

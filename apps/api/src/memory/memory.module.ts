@@ -4,9 +4,9 @@ import { DocumentsModule } from '../documents/documents.module';
 import { EntitiesModule } from '../entities/entities.module';
 import { SearchModule } from '../search/search.module';
 
-import { MemoryCheckpointService } from './memory-checkpoint.service';
 import { MemoryController } from './memory.controller';
 import { MemoryService } from './memory.service';
+import { MemoryCheckpointService } from './memory-checkpoint.service';
 import { MemoryFactsService } from './memory-facts.service';
 
 /**

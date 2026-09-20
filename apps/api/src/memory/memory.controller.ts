@@ -5,12 +5,12 @@ import { type VerifiedSession } from '@exocortex/auth';
 import {
   type MemoryCaptureRequest,
   memoryCaptureRequestSchema,
+  type MemoryCaptureResponse,
+  memoryCaptureResponseSchema,
   type MemoryCheckpointRequest,
   memoryCheckpointRequestSchema,
   type MemoryCheckpointResponse,
   memoryCheckpointResponseSchema,
-  type MemoryCaptureResponse,
-  memoryCaptureResponseSchema,
   type MemoryConsolidateRequest,
   memoryConsolidateRequestSchema,
   type MemoryConsolidateResponse,
@@ -37,8 +37,8 @@ import { CurrentSession } from '../auth/session.guard';
 import { currentCorrelationId } from '../common/correlation';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
-import { MemoryCheckpointService } from './memory-checkpoint.service';
 import { MemoryService } from './memory.service';
+import { MemoryCheckpointService } from './memory-checkpoint.service';
 import { MemoryFactsService } from './memory-facts.service';
 
 /**

@@ -26,8 +26,8 @@ import { type SettingsService } from '../platform/settings.service';
 import { type RealtimeService } from '../realtime/realtime.service';
 import { type SearchService } from '../search/search.service';
 
-import { MemoryCheckpointService } from './memory-checkpoint.service';
 import { MemoryService } from './memory.service';
+import { MemoryCheckpointService } from './memory-checkpoint.service';
 
 /**
  * The checkpoint against the real database (issue #92, ADR-046).
@@ -290,7 +290,7 @@ describe('checkpoint', () => {
     expect(prompts[1]).not.toContain('eins');
   });
 
-  it("keeps the same evidence apart when it belongs to two sessions", async () => {
+  it('keeps the same evidence apart when it belongs to two sessions', async () => {
     const messages = [message('user', 'dasselbe')];
     await service.checkpoint({
       userId: agentId,

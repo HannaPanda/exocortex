@@ -25,8 +25,8 @@ import { LOGGER } from '../common/logger.provider';
 import { AI_DEFAULT_MODEL, AI_PROVIDER, PRISMA } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
-import { memoryWorkspaceFor } from './memory-workspace';
 import { MemoryService, normaliseProject } from './memory.service';
+import { memoryWorkspaceFor } from './memory-workspace';
 
 /**
  * How long the distillation may take before the checkpoint fails.
@@ -121,9 +121,7 @@ export class MemoryCheckpointService {
     });
     const covered = new Set(previous.flatMap((row) => row.messageDigests));
 
-    const fresh = input.request.messages.filter(
-      (message) => !covered.has(digestMessage(message)),
-    );
+    const fresh = input.request.messages.filter((message) => !covered.has(digestMessage(message)));
 
     if (fresh.length === 0) {
       const latest = previous[0];

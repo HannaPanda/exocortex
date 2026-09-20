@@ -62,12 +62,12 @@ Modellaufruf weg; vollständig bleiben sie im Hermes Session Store.
 
 ## Was passiert
 
-| Hermes ruft         | Der Provider tut                                                                                                   |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `on_session_start`  | merkt sich die Sitzungskennung, nach der Checkpoints gruppiert werden                                              |
-| `on_pre_compress`   | `POST /api/memory/checkpoint`, wartet auf die geschriebene Notiz, wirft bei Fehlschlag                              |
-| `on_session_end`    | ein letzter Checkpoint, der nie wirft: es gibt nichts mehr aufzuhalten                                              |
-| `prefetch`          | `GET /api/memory/recall` mit fester Zeichenobergrenze, standardmäßig aus                                            |
+| Hermes ruft        | Der Provider tut                                                                       |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| `on_session_start` | merkt sich die Sitzungskennung, nach der Checkpoints gruppiert werden                  |
+| `on_pre_compress`  | `POST /api/memory/checkpoint`, wartet auf die geschriebene Notiz, wirft bei Fehlschlag |
+| `on_session_end`   | ein letzter Checkpoint, der nie wirft: es gibt nichts mehr aufzuhalten                 |
+| `prefetch`         | `GET /api/memory/recall` mit fester Zeichenobergrenze, standardmäßig aus               |
 
 `on_pre_compress` gibt eine Zeile zurück, die Hermes im verdichteten Verlauf
 behalten kann („eXocortex checkpoint: … · Titel · Adresse"), damit das Gespräch
