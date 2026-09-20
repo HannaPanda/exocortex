@@ -1,4 +1,4 @@
-import { semanticSearchOptions } from '@exocortex/contracts';
+import { QUEUE_NAMES, semanticSearchOptions } from '@exocortex/contracts';
 import { CHUNK_THRESHOLD_CHARS, Prisma } from '@exocortex/database';
 
 import { type MaintenanceTask } from './context';
@@ -17,6 +17,66 @@ export const vacuumSearchIndex: MaintenanceTask = async ({ prisma, logger }) => 
     WHERE "documentId" NOT IN (SELECT "id" FROM "document")
   `;
   logger.info('Search index vacuumed', { removed: orphans });
+};
+
+/** How many pages one backfill run hands to the indexing queue. */
+const ATTACHMENT_SEARCH_BACKFILL_BATCH = 200;
+
+/**
+ * Re-indexes the pages whose attachment text never reached the projection
+ * (issue #101).
+ *
+ * Every extraction now enqueues a re-index of its page, so the steady state
+ * needs no sweep. This is for the attachments read before the projection
+ * carried attachment text at all -- on this deployment, every PDF extracted
+ * between 2026-08-06 and 2026-09-20 -- and for the occasional re-index that
+ * was lost. The comparison is what makes it a no-op afterwards: a projection
+ * at least as new as the attachments under it is already correct, so a second
+ * run finds nothing.
+ */
+export const backfillAttachmentSearchText: MaintenanceTask = async ({
+  prisma,
+  queues,
+  payload,
+  logger,
+}) => {
+  const scope =
+    payload.workspaceId === null
+      ? Prisma.empty
+      : Prisma.sql`AND attachment."workspaceId" = ${payload.workspaceId}`;
+
+  const stale = await prisma.$queryRaw<{ documentId: string; workspaceId: string }[]>(Prisma.sql`
+    SELECT DISTINCT
+      attachment."documentId"  AS "documentId",
+      attachment."workspaceId" AS "workspaceId"
+    FROM "attachment" AS attachment
+    JOIN "document_search_index" AS index
+      ON index."documentId" = attachment."documentId"
+    WHERE attachment."deletedAt" IS NULL
+      AND attachment."documentId" IS NOT NULL
+      AND attachment."textStatus" = 'READY'
+      AND index."updatedAt" < GREATEST(
+        attachment."textExtractedAt",
+        COALESCE(attachment."textCorrectedAt", attachment."textExtractedAt")
+      )
+      ${scope}
+    LIMIT ${ATTACHMENT_SEARCH_BACKFILL_BATCH}
+  `);
+
+  for (const row of stale) {
+    await queues.enqueue(QUEUE_NAMES.searchIndexing, {
+      correlationId: payload.correlationId,
+      documentId: row.documentId,
+      workspaceId: row.workspaceId,
+      reason: 'attachment_text',
+    });
+  }
+
+  if (stale.length > 0) {
+    logger.info('Re-indexing pages whose attachment text is newer than their projection', {
+      pages: stale.length,
+    });
+  }
 };
 
 /** Fills in vectors for the pages the semantic index has never seen. */

@@ -1,4 +1,4 @@
-import { type QUEUE_NAMES } from '@exocortex/contracts';
+import { ATTACHMENT_SEARCH_TEXT_MAX_CHARS, type QUEUE_NAMES } from '@exocortex/contracts';
 import { type PrismaClient, type SearchAdapter } from '@exocortex/database';
 import { type JobContext } from '@exocortex/queue';
 
@@ -32,6 +32,13 @@ export function createIndexDocumentProcessor(dependencies: IndexingDependencies)
         title: true,
         archivedAt: true,
         content: { select: { plainText: true } },
+        attachments: {
+          where: { deletedAt: null, textStatus: 'READY' },
+          // Oldest first, so which attachments fit inside the budget below is
+          // stable across runs rather than shuffling on every reindex.
+          orderBy: { createdAt: 'asc' },
+          select: { extractedText: true, correctedText: true },
+        },
       },
     });
 
@@ -44,12 +51,15 @@ export function createIndexDocumentProcessor(dependencies: IndexingDependencies)
       return;
     }
 
+    // A page without materialized content is still findable by its title.
+    const pageText = document.content?.plainText ?? '';
+    const attachmentText = collectAttachmentText(document.attachments);
+
     await search.index({
       documentId: document.id,
       workspaceId: document.workspaceId,
       title: document.title,
-      // A page without materialized content is still findable by its title.
-      plainText: document.content?.plainText ?? '',
+      plainText: attachmentText.length === 0 ? pageText : `${pageText}\n\n${attachmentText}`,
       archivedAt: document.archivedAt,
     });
 
@@ -57,6 +67,38 @@ export function createIndexDocumentProcessor(dependencies: IndexingDependencies)
     logger.debug('Search projection updated', {
       documentId: document.id,
       reason: payload.reason,
+      attachmentTextChars: attachmentText.length,
     });
   };
+}
+
+/**
+ * The text of a page's attachments, as the search projection carries it
+ * (issue #101).
+ *
+ * Until now the projection held only what was written on the page, so a PDF
+ * could be found by its file name and by nothing inside it -- although the text
+ * had been extracted, stored and served to the AI for over a month. This is the
+ * missing half: what a person can read in an attachment, they can now search
+ * for.
+ *
+ * The human correction wins over the machine result, the same order every other
+ * reader uses: somebody who fixed a garbled scan fixed it for the search too.
+ * The budget is shared and spent oldest first rather than divided per
+ * attachment, so one long PDF beside three short ones is not cut to a quarter
+ * for the sake of symmetry.
+ */
+function collectAttachmentText(
+  attachments: readonly { extractedText: string | null; correctedText: string | null }[],
+): string {
+  const parts: string[] = [];
+  let remaining = ATTACHMENT_SEARCH_TEXT_MAX_CHARS;
+  for (const attachment of attachments) {
+    if (remaining <= 0) break;
+    const text = attachment.correctedText ?? attachment.extractedText;
+    if (text === null || text.length === 0) continue;
+    parts.push(text.slice(0, remaining));
+    remaining -= Math.min(text.length, remaining);
+  }
+  return parts.join('\n\n');
 }

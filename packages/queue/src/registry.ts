@@ -379,6 +379,13 @@ export class QueueRegistry {
     // backfill because a deployment that just enabled the feature is waiting
     // for it, and each batch is bounded by a paid call it pays for once.
     await schedule('backfill-embeddings', { every: 120_000 });
+    // Every ten minutes, a batch of up to 200 pages, and nothing at all once
+    // the projections have caught up: an extraction enqueues its own re-index,
+    // so this only ever sees the attachments read before the projection
+    // carried their text and the occasional re-index that was lost (issue
+    // #101). Slower than the embedding backfill because it costs one query
+    // rather than a paid call, and nobody is waiting on it.
+    await schedule('backfill-attachment-search-text', { every: 600_000 });
     // Daily, after the snapshot sweep. Does nothing while
     // `memory.retentionDays` is zero, which is the default.
     await schedule('prune-memories', { pattern: '15 4 * * *' });

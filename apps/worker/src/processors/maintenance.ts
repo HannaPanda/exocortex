@@ -24,7 +24,11 @@ import { backfillLinks, repairLinks, resolveLinks } from './maintenance-tasks/li
 import { consolidateMemories, decayMemoryFacts } from './maintenance-tasks/memory-facts';
 import { dispatchOutbox } from './maintenance-tasks/outbox';
 import { refreshStaleOverviews } from './maintenance-tasks/overview-sweep';
-import { backfillEmbeddings, vacuumSearchIndex } from './maintenance-tasks/search-index';
+import {
+  backfillAttachmentSearchText,
+  backfillEmbeddings,
+  vacuumSearchIndex,
+} from './maintenance-tasks/search-index';
 import { pruneSnapshots, snapshotActiveDocuments } from './maintenance-tasks/snapshots';
 
 export { pruneSnapshotIds } from './maintenance-tasks/snapshots';
@@ -88,6 +92,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'rematerialize-stale-content': rematerializeStaleContent,
   'refresh-stale-overviews': refreshStaleOverviews,
   'backfill-embeddings': backfillEmbeddings,
+  'backfill-attachment-search-text': backfillAttachmentSearchText,
   'prune-memories': pruneMemories,
   'prune-invitations': pruneInvitations,
   'prune-agent-messages': pruneAgentMessages,
@@ -105,7 +110,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
 /**
  * Maintenance processor.
  *
- * Twenty-three unrelated sweeps share one queue and one schedule; what they have
+ * Twenty-five unrelated sweeps share one queue and one schedule; what they have
  * in common is that nobody is waiting for them. The work itself lives one per
  * function in `maintenance-tasks/`, grouped by what it touches.
  */
