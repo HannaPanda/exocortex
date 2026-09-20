@@ -5,7 +5,7 @@
  *
  * Layering (low -> high):
  *   config, logger, contracts, editor, ui   (leaf packages)
- *   database, storage, queue, ai            (infrastructure)
+ *   database, storage, queue, ai, mail      (infrastructure)
  *   auth                                    (depends on database)
  *   apps                                    (composition roots)
  */
@@ -42,6 +42,13 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
   // an entry describes a capability, it does not reach one, and a registry
   // that could read the database would eventually be asked to.
   '@exocortex/features': ['@exocortex/contracts'],
+  // SMTP and the wording of the mails, and nothing about the domain (issue
+  // #102). It reads the template catalogue out of the contracts and knows how
+  // to put words around it; who should receive one, and whether they still
+  // may, is decided by the caller. Deliberately not allowed to see
+  // @exocortex/database: a package that could look up an address would sooner
+  // or later be asked to decide who gets mail.
+  '@exocortex/mail': ['@exocortex/contracts', '@exocortex/logger'],
   '@exocortex/auth': [
     '@exocortex/config',
     '@exocortex/logger',
@@ -74,6 +81,8 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
     '@exocortex/editor',
     '@exocortex/mcp-tools',
     '@exocortex/features',
+    // The mails a request waits on: verification, password reset, invitation.
+    '@exocortex/mail',
   ],
   '@exocortex/collaboration': [
     '@exocortex/config',
@@ -99,6 +108,10 @@ export const ALLOWED_INTERNAL_DEPENDENCIES = {
     // Talks CalDAV to mailbox.org; the mapping onto database rows lives here,
     // in the worker, not in the protocol package.
     '@exocortex/calendar',
+    // The other half of the mail split (issue #102): notification mail is
+    // queued and sent here, so a relay that is down delays a mail instead of
+    // failing whatever request caused it.
+    '@exocortex/mail',
   ],
   // The web frontend must never reach infrastructure packages directly.
   // The web bundle must never reach server-side packages. Authentication is

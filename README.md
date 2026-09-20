@@ -238,6 +238,7 @@ packages/database     Prisma schema, migrations, order keys, tree helpers, searc
 packages/editor       canonical Tiptap schema, block ids, Markdown, Yjs materialization
 packages/features     the feature registry: what a person can do here, in a person's words
 packages/logger       structured logging, correlation ids, OpenTelemetry tracing
+packages/mail         SMTP transport and the typed mail templates, shared by API and worker
 packages/mcp-tools    the one tool catalogue, shared by apps/mcp and the built-in AI
 packages/queue        typed BullMQ queues, workers, Redis event bus
 packages/storage      S3-compatible object storage, MIME sniffing, image downscaling
@@ -263,6 +264,7 @@ tools/                the Claude Code plugin: MCP server, memory hooks, setup sk
 | [`docs/database-views.md`](docs/database-views.md)       | database properties, the four view types, the query engine   |
 | [`docs/ai-architecture.md`](docs/ai-architecture.md)     | provider contract, runners, isolation rules                  |
 | [`docs/background-jobs.md`](docs/background-jobs.md)     | queues, maintenance tasks, idempotency, failure handling     |
+| [`docs/mail.md`](docs/mail.md)                           | synchronous and queued mail, templates, what is logged       |
 | [`docs/mcp.md`](docs/mcp.md)                             | the tool catalogue, both transports, adding a tool           |
 | [`docs/capability-matrix.md`](docs/capability-matrix.md) | generated: which client reaches which route                  |
 | [`docs/admin.md`](docs/admin.md)                         | settings, their scopes, the admin area                       |

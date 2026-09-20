@@ -3,8 +3,10 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
 import { loadDotEnv } from '@exocortex/config';
 import { type ApiEnv } from '@exocortex/config';
+import { type MailMessage } from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
+import { type Mailer } from '@exocortex/mail';
 
 import { type AuthService } from '../auth/auth.service';
 import { OutboxService } from '../common/outbox.service';
@@ -20,10 +22,10 @@ import { InvitationsService } from './invitations.service';
  * Two collaborators are faked, both for the same reason -- they leave the
  * process. `password.hash` stands in for Better Auth's scrypt, which is slow by
  * design and would dominate the runtime; the account it writes is checked for
- * existence, never for signing in (that is the e2e suite's job). The mailer
- * records what it was asked to send and can be told to fail, which is the only
- * way to exercise the "invitation exists, mail did not go out" path that the
- * whole `emailSent: false` design turns on.
+ * existence, never for signing in (that is the e2e suite's job). The mailer is
+ * the third: it records what it was asked to send and can be told to fail,
+ * which is the only way to exercise the "invitation exists, mail did not go
+ * out" path that the whole `emailSent: false` design turns on.
  */
 loadDotEnv();
 
@@ -47,17 +49,23 @@ const authService = {
       password: { hash: async (value: string) => `hashed:${value}` },
     }),
   },
-  mailer: {
-    sendInvitationEmail: async (input: {
-      to: string;
-      workspaceName: string | null;
-      url: string;
-    }) => {
-      if (mailShouldFail) throw new Error('relay unreachable');
-      sentMails.push({ to: input.to, workspaceName: input.workspaceName, url: input.url });
-    },
-  },
 } as unknown as AuthService;
+
+const mailer = {
+  send: async (input: { to: string; message: MailMessage }) => {
+    if (mailShouldFail) throw new Error('relay unreachable');
+    const message = input.message;
+    if (message.template !== 'INVITATION')
+      throw new Error(`unexpected template ${message.template}`);
+    sentMails.push({
+      to: input.to,
+      workspaceName: message.workspaceName,
+      url: message.url,
+    });
+    return { messageId: '<test@relay>', accepted: [input.to], rejected: [] };
+  },
+  close: async () => {},
+} satisfies Mailer;
 
 const env = { APP_URL: 'https://exocortex.test' } as unknown as ApiEnv;
 const correlationId = 'test-correlation';
@@ -76,6 +84,7 @@ beforeAll(async () => {
     new WorkspaceAccessService(prisma),
     authService,
     new OutboxService(prisma, logger),
+    mailer,
   );
 
   const suffix = Date.now().toString(36);

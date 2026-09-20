@@ -267,6 +267,11 @@ export const workerEnvSchema = baseSchema
   .extend(databaseSchema.shape)
   .extend(redisSchema.shape)
   .extend(storageSchema.shape)
+  // The worker sends the mails nobody is waiting on (issue #102). Same keys as
+  // the API reads, because there is one relay and one `.env`: a second set of
+  // variables would be a second relay one process could be pointed at without
+  // the other noticing.
+  .extend(mailSchema.shape)
   .extend(aiSchema.shape)
   .extend(calendarSchema.shape)
   .extend(serviceTokenSchema.shape)

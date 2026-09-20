@@ -22,6 +22,7 @@
     "@exocortex/database": "workspace:*",
     "@exocortex/editor": "workspace:*",
     "@exocortex/logger": "workspace:*",
+    "@exocortex/mail": "workspace:*",
     "@exocortex/mcp-tools": "workspace:*",
     "@exocortex/queue": "workspace:*",
     "@exocortex/storage": "workspace:*"

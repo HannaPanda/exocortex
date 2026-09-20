@@ -126,6 +126,7 @@ file is the contract for automated sessions. Read it before changing code.
 | `packages/ai`                         | Provider-neutral AI contracts, OpenRouter, embeddings, mock provider, runner contracts.                                                                                                                  |
 | `packages/calendar`                   | iCalendar parsing and serialization, recurrence expansion, reminder scheduling.                                                                                                                          |
 | `packages/logger`                     | Structured logging, correlation ids, the redaction list, the tracer and its OpenTelemetry implementation.                                                                                                |
+| `packages/mail`                       | The SMTP transport and the typed mail templates. The only code here that opens a connection to a relay; it reaches no database and decides no recipient.                                                 |
 | `packages/ui`                         | Design tokens, shadcn components on Base UI, layout primitives, states.                                                                                                                                  |
 | `e2e`                                 | Playwright browser and API tests.                                                                                                                                                                        |
 | `integrations/hermes-memory-provider` | The Hermes memory provider: a small Python package that checkpoints a conversation into this deployment before Hermes compacts it away. Standard library only, and it fails closed.                      |
@@ -427,6 +428,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   would be stored as an archive no engine reads. An attachment's text goes into
   its page's search projection, correction first, under one shared budget, and
   the sweep that carries the old ones over stops by comparing timestamps.
+- ADR-051: a mail is a named template and takes one of exactly two paths. The
+  transport, the wording and the TLS decisions live in `packages/mail`, which
+  reaches no database; a request that waits on a mail sends it synchronously
+  through the API, everything else is queued and sent by the worker. A payload
+  carries a variant of a closed union and never a subject and a body, because
+  everything that will enqueue mail next carries text a person or a model
+  wrote. Relay acceptance is never called delivery, a 5xx is never retried, and
+  the only things logged about a mail are the template, the recipient's domain
+  and the relay's message id.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -447,6 +457,7 @@ Each of these has a step-by-step recipe:
 | new storage backend                                      | `docs/architecture.md`      |
 | new database property type, view type                    | `docs/database-views.md`    |
 | new MCP tool, new AI tool                                | `docs/mcp.md`               |
+| new mail template, a sender for a new kind of mail       | `docs/mail.md`              |
 | new admin setting, admin page                            | `docs/admin.md`             |
 | new automation trigger or action                         | `docs/automations.md`       |
 | new render template, new renderer                        | `docs/render.md`            |

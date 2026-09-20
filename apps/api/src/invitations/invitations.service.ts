@@ -24,12 +24,13 @@ import {
   type WorkspaceRole as WorkspaceRolePrisma,
 } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
+import { type Mailer } from '@exocortex/mail';
 
 import { AuthService } from '../auth/auth.service';
 import { AppError } from '../common/app-error';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { OutboxService } from '../common/outbox.service';
-import { PRISMA } from '../platform/platform-tokens';
+import { MAILER, PRISMA } from '../platform/platform-tokens';
 
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -136,6 +137,9 @@ export class InvitationsService {
     private readonly access: WorkspaceAccessService,
     private readonly authService: AuthService,
     private readonly outbox: OutboxService,
+    // Synchronous on purpose (issue #102): the response carries `emailSent`,
+    // and a queued job cannot answer that yet.
+    @Inject(MAILER) private readonly mailer: Mailer,
   ) {}
 
   // -------------------------------------------------------------------------
@@ -603,12 +607,15 @@ export class InvitationsService {
     invitationId: string;
   }): Promise<Date | null> {
     try {
-      await this.authService.mailer.sendInvitationEmail({
+      await this.mailer.send({
         to: input.email,
-        invitedByName: input.invitedByName,
-        workspaceName: input.workspaceName,
-        url: input.url,
-        expiresAt: input.expiresAt,
+        message: {
+          template: 'INVITATION',
+          invitedByName: input.invitedByName,
+          workspaceName: input.workspaceName,
+          url: input.url,
+          expiresAt: input.expiresAt.toISOString(),
+        },
       });
       const sentAt = new Date();
       await this.prisma.invitation.update({

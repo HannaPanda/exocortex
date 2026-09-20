@@ -30,6 +30,7 @@ import {
   type SearchAdapter,
 } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
+import { createMailerFromEnv, type Mailer } from '@exocortex/mail';
 import { createFetchApiClient, type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { QueueRegistry, RedisEventBus } from '@exocortex/queue';
 import { type ObjectStorage, S3ObjectStorage } from '@exocortex/storage';
@@ -110,6 +111,14 @@ export interface WorkerRuntime {
    * the worker is unchanged.
    */
   pushSender: PushSender | null;
+  /**
+   * The worker's SMTP transport (issue #102).
+   *
+   * Not nullable, unlike `pushSender` beside it: a deployment without a relay
+   * gets a mailer that logs what it would have sent, so the mail queue keeps
+   * working and says so instead of every job failing on a missing dependency.
+   */
+  mailer: Mailer;
   imageGeneratorFor: (modelSlug: string | null) => ImageGenerator | null;
   /**
    * A vision companion for one model slug, optionally paid for with a
@@ -165,6 +174,9 @@ export interface JobProgressEvent {
     // Nor does a push notification: the device it is aimed at is precisely the
     // one nobody is looking at (issue #30, ADR-048).
     | typeof QUEUE_NAMES.push
+    // Nor does a mail: it has no workspace, and the person it is addressed to
+    // is by definition not looking at this deployment (issue #102).
+    | typeof QUEUE_NAMES.mail
   >;
   workspaceId: string;
   correlationId: string;
@@ -408,6 +420,16 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
   const vapidKeys = vapidKeysFromEnv(env);
   const pushSender = vapidKeys === null ? null : createPushSender({ keys: vapidKeys });
 
+  // One transport for the process, closed on shutdown by `main.ts`.
+  const mailer = createMailerFromEnv({
+    host: env.SMTP_HOST,
+    port: env.SMTP_PORT,
+    from: env.SMTP_FROM,
+    user: env.SMTP_USER,
+    password: env.SMTP_PASSWORD,
+    logger,
+  });
+
   const {
     imageGeneratorFor,
     visionPreprocessorFor,
@@ -461,6 +483,9 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
       // Nor does a push notification: the device it is aimed at is precisely
       // the one nobody is looking at (issue #30, ADR-048).
       | typeof QUEUE_NAMES.push
+      // Nor does a mail, for the same reason one layer further out: it has no
+      // workspace, and its reader is not in a browser here (issue #102).
+      | typeof QUEUE_NAMES.mail
     >;
     workspaceId: string;
     correlationId: string;
@@ -500,6 +525,7 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
     resolveCalendarCredentials,
     reminderNotifier,
     pushSender,
+    mailer,
     imageGeneratorFor,
     visionPreprocessorFor,
     pdfDocumentInfo,

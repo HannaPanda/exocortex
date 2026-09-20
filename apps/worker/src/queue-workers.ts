@@ -21,6 +21,7 @@ import { createDocumentCoverProcessor } from './processors/document-cover';
 import { createDocumentOverviewProcessor } from './processors/document-overview';
 import { createEntityRescanProcessor } from './processors/entity-rescan';
 import { createIndexDocumentProcessor } from './processors/index-document';
+import { createMailDeliveryProcessor } from './processors/mail-delivery';
 import { createMaintenanceProcessor } from './processors/maintenance';
 import { createMaterializeDocumentProcessor } from './processors/materialize-document';
 import { createMemoryCaptureProcessor } from './processors/memory-capture';
@@ -31,16 +32,10 @@ import { createRenderProcessor } from './processors/render';
 import { type WorkerRuntime } from './runtime';
 
 /**
- * The fifteen queues this process listens on.
- *
- * Concurrency is per queue and deliberately uneven: materialization is cheap
- * and parallel, PDF extraction is CPU-bound and runs one at a time.
- */
-/**
  * What the shutdown path needs from a started worker, and nothing else.
  *
  * Structural rather than `ReturnType<typeof createTypedWorker>`: each queue has
- * its own payload type, so the fifteen of them only share this much.
+ * its own payload type, so the sixteen of them only share this much.
  */
 export interface QueueWorker {
   worker: { close: () => Promise<void> };
@@ -48,7 +43,7 @@ export interface QueueWorker {
 }
 
 /**
- * The fifteen queues this process listens on, in two groups.
+ * The sixteen queues this process listens on, in two groups.
  *
  * Concurrency is per queue and deliberately uneven: materialization is cheap
  * and parallel, PDF extraction is an external call and runs one at a time so it
@@ -236,6 +231,7 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     resolveCalendarCredentials,
     reminderNotifier,
     pushSender,
+    mailer,
     imageGeneratorFor,
     pdfDocumentInfo,
     pdfExtractorChain,
@@ -454,6 +450,18 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     handler: createPushDeliveryProcessor({ prisma, sender: pushSender }),
   });
 
+  // Concurrency 2: an SMTP hop is short and spends its time waiting, but a
+  // relay is a shared resource with its own opinion about how fast a client
+  // may go (issue #102). Two keeps a digest fan-out moving without ever
+  // looking like a burst worth rate limiting.
+  const mail = createTypedWorker({
+    name: QUEUE_NAMES.mail,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 2,
+    handler: createMailDeliveryProcessor({ mailer }),
+  });
+
   return [
     attachmentText,
     documentCover,
@@ -466,6 +474,7 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     render,
     projectBuild,
     push,
+    mail,
   ];
 }
 

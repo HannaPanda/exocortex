@@ -76,6 +76,20 @@ export const QUEUE_JOB_OPTIONS: Partial<Record<QueueName, JobsOptions>> = {
     attempts: 3,
     backoff: { type: 'exponential', delay: 5_000 },
   },
+  // A mail is the opposite case to the push above (issue #102): it does not
+  // age out, and the thing it is usually waiting for -- a relay that is busy,
+  // rate limiting us, or briefly down -- is measured in minutes rather than
+  // seconds. So the base delay is thirty seconds, which spreads five attempts
+  // over roughly eight minutes instead of fifteen. Retrying faster than the
+  // relay recovers is how a deployment gets itself throttled.
+  //
+  // What is *not* retried at all is a refusal: `createMailDeliveryProcessor`
+  // turns a 5xx and a rejected recipient into an unrecoverable failure, so
+  // these attempts only ever buy another try at a fault that could pass.
+  [QUEUE_NAMES.mail]: {
+    attempts: 5,
+    backoff: { type: 'exponential', delay: 30_000 },
+  },
 };
 
 /** Debounce window for document materialization. */

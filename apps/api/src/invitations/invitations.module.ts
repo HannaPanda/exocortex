@@ -13,9 +13,10 @@ import { InvitationsService } from './invitations.service';
 /**
  * Invitations (issue #3).
  *
- * Depends on `AuthModule` for two things it must not duplicate: Better Auth's
- * configured password hasher, so an invited account's credential is byte-for-byte
- * what a sign-up would have produced, and the single SMTP transport.
+ * Depends on `AuthModule` for the one thing it must not duplicate: Better
+ * Auth's configured password hasher, so an invited account's credential is
+ * byte-for-byte what a sign-up would have produced. The relay comes from
+ * `PlatformModule`'s `MAILER`, which is global (issue #102).
  */
 @Module({
   imports: [AuthModule],

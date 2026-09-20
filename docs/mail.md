@@ -1,0 +1,106 @@
+# Mail
+
+How this deployment sends e-mail, and which of the two ways a given mail takes.
+
+Issue #102 split one from the other. Before it, SMTP lived in
+`packages/auth/src/mailer.ts` and knew three mails: verification, password
+reset, invitation. That was true to what the deployment did, and it stopped
+being true the moment anything other than authentication wanted to write to
+somebody — a share, an automation, a digest — because reaching a relay then
+meant depending on the authentication library.
+
+## The two halves
+
+**Synchronous, in the API.** The mails a request waits on. Better Auth's own
+callbacks (`EMAIL_VERIFICATION`, `PASSWORD_RESET`) and the invitation, whose
+response carries `emailSent` and therefore cannot be answered by a job that has
+not run yet. These go straight through the `MAILER` provider in
+`apps/api/src/platform/platform.module.ts`, and a relay that is down makes the
+request say so.
+
+**Asynchronous, in the worker.** Everything else: the notification mails of
+issues #103 to #107. They are enqueued on the `mail` queue and sent by
+`createMailDeliveryProcessor`, so a relay having a bad five minutes delays a
+mail instead of failing whatever caused it. `docs/background-jobs.md` describes
+the queue, its retry policy and its deduplication.
+
+Both processes build their transport with the same `createMailerFromEnv` from
+the same `SMTP_*` variables. There is one relay, configured in one place, and
+`packages/mail` is the only code in this repository that opens a connection to
+it.
+
+## The packages
+
+| Path                                          | Owns                                                          |
+| --------------------------------------------- | ------------------------------------------------------------- |
+| `packages/mail/src/transport.ts`              | the SMTP connection, TLS, credentials, failure classification |
+| `packages/mail/src/templates/`                | the words, in German                                          |
+| `packages/mail/src/render.ts`                 | template name plus values becomes subject plus text           |
+| `packages/mail/src/mailer.ts`                 | transport plus catalogue, and what may be logged              |
+| `packages/contracts/src/mail.ts`              | the template catalogue as a zod union                         |
+| `apps/worker/src/processors/mail-delivery.ts` | one job, one SMTP hop, retry or do not                        |
+
+`packages/mail` may see `@exocortex/contracts` and `@exocortex/logger` and
+nothing else. In particular not `@exocortex/database`: a package that could look
+up an address would sooner or later be asked to decide who gets mail, and that
+decision belongs to whoever already knows whether the person still has access.
+
+## Adding a mail
+
+1. Add a variant to `mailMessageSchema` in `packages/contracts/src/mail.ts`. It
+   carries the handful of values the template needs — a name, a title, a link,
+   a date as an ISO string — and never a rendered subject or body, and never a
+   page's text.
+2. Write the template in `packages/mail/src/templates/`, returning a
+   `RenderedMail`. Visible text is German; everything else is English.
+3. Add the branch to `renderMail`. The switch is exhaustive over a closed
+   union, so forgetting this is a type error rather than an empty mail.
+4. Enqueue it: `queues.enqueue(QUEUE_NAMES.mail, { correlationId, recipient, mail })`.
+   If the event behind it can be dispatched twice, pass a `jobId` derived from
+   the event.
+
+A template is never rendered by its caller. That is the rule the shape exists
+to enforce: everything that will enqueue mail from here on carries text a
+person or a model wrote, and a queue that accepts prose is a relay for whatever
+reaches it.
+
+## Why a template and not a subject and a body
+
+The same reasoning as ADR-030's fence around foreign text. A mail leaves this
+deployment, arrives somewhere nobody here controls, and carries our `From:`
+address while it does. A payload holding a subject and a body would let
+whatever can enqueue a job choose both — which, once automations can send mail
+(#104), includes a rule a model helped write. Naming a template instead bounds
+what a mail can say to what somebody wrote in this repository, and bounds what
+it can carry to a handful of short fields.
+
+## Acceptance is not delivery
+
+`MailAcceptance` is what the relay said: it has the message and owes us the
+next hop. It is not delivery, it is not a read, and no log line, UI string or
+run log may call it `zugestellt`. The only thing that could later be matched
+against a bounce is `messageId`.
+
+## What is logged
+
+The template name, the recipient's **domain**, and the relay's message id. Not
+the address, not the subject, not a line of the body. `recipient` and `mail`
+are in the logger's redaction list (`packages/logger/src/redaction.ts`) as a
+second line of defence, so a later `logger.error(..., { payload })` cannot
+quietly turn a log file into somebody's post — the same reason `prompt` and
+`messages` are in that list.
+
+## Configuration
+
+`SMTP_HOST`, `SMTP_PORT`, `SMTP_FROM`, and `SMTP_USER`/`SMTP_PASSWORD` as a
+pair. Supplying credentials switches the transport to `requireTLS`, so
+nodemailer aborts rather than falling back to a plaintext session; port 465 is
+implicit TLS and 587 is STARTTLS. Locally this is Mailpit, which wants neither.
+
+The credentials stay environment variables and never become settings rows
+(ADR-023): a relay password is a credential, and credentials do not go in the
+`setting` table.
+
+A deployment with no relay is not a failure state. `createMailerFromEnv` hands
+back a mailer that logs what it would have sent, every queued job succeeds, and
+nothing else about the deployment changes.

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { automationRunOriginSchema, automationTriggerSchema } from './automations';
+import { mailMessageSchema, mailRecipientSchema } from './mail';
 import { idSchema } from './primitives';
 import { pushNotificationKindSchema } from './push';
 
@@ -24,6 +25,7 @@ export const QUEUE_NAMES = {
   render: 'render',
   projectBuild: 'project-build',
   push: 'push',
+  mail: 'mail',
 } as const;
 
 export const queueNameSchema = z.enum([
@@ -42,6 +44,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.render,
   QUEUE_NAMES.projectBuild,
   QUEUE_NAMES.push,
+  QUEUE_NAMES.mail,
 ]);
 export type QueueName = z.infer<typeof queueNameSchema>;
 
@@ -514,6 +517,32 @@ export const pushDeliveryJobSchema = jobBase.extend({
 });
 export type PushDeliveryJob = z.infer<typeof pushDeliveryJobSchema>;
 
+/**
+ * One notification mail, rendered and relayed by the worker (issue #102).
+ *
+ * The recipient is an address and not a user id, deliberately. A mail job is
+ * queued by whoever already resolved the person -- and resolving them is where
+ * "does this account still exist, is it disabled, did it ask for this" gets
+ * decided. Re-resolving here would put that decision in two places and let the
+ * two disagree.
+ *
+ * What travels is a template name and its values (see `mailMessageSchema`),
+ * never a subject and a body: a queue that accepts prose accepts prose from
+ * whoever can reach it.
+ *
+ * Deduplication is the producer's `jobId`, not a field here. A domain event
+ * that may be dispatched twice enqueues under an id derived from the event, and
+ * BullMQ ignores the second add -- for as long as the first job is still known
+ * to Redis, which is `removeOnComplete` (an hour) rather than for ever. That is
+ * the right window for the case this exists for: an outbox row redelivered
+ * seconds later.
+ */
+export const mailDeliveryJobSchema = jobBase.extend({
+  recipient: mailRecipientSchema,
+  mail: mailMessageSchema,
+});
+export type MailDeliveryJob = z.infer<typeof mailDeliveryJobSchema>;
+
 export const JOB_SCHEMAS = {
   [QUEUE_NAMES.documentMaterialization]: materializeDocumentJobSchema,
   [QUEUE_NAMES.searchIndexing]: indexDocumentJobSchema,
@@ -530,6 +559,7 @@ export const JOB_SCHEMAS = {
   [QUEUE_NAMES.render]: renderJobPayloadSchema,
   [QUEUE_NAMES.projectBuild]: projectBuildJobSchema,
   [QUEUE_NAMES.push]: pushDeliveryJobSchema,
+  [QUEUE_NAMES.mail]: mailDeliveryJobSchema,
 } as const;
 
 export type JobPayloadMap = {
@@ -548,4 +578,5 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.render]: RenderJobPayload;
   [QUEUE_NAMES.projectBuild]: ProjectBuildJob;
   [QUEUE_NAMES.push]: PushDeliveryJob;
+  [QUEUE_NAMES.mail]: MailDeliveryJob;
 };

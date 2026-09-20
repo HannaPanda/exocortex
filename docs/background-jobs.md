@@ -21,6 +21,7 @@ BullMQ 6 on Redis. Expensive work never happens inside an API request handler.
 | `render`                   | `POST /api/documents/:id/render`                                                                                     | `createRenderProcessor`              | real (Pandoc and xelatex in a container, artifact stored as an attachment)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `project-build`            | `POST /api/projects/:id/builds`                                                                                      | `createProjectBuildProcessor`        | real (`latexmk` in a container, PDF plus SyncTeX map plus parsed diagnostics; ADR-027)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `push`                     | outbox dispatch (`comment.created`), the reminder sweep, `POST /api/me/push/send`                                    | `createPushDeliveryProcessor`        | real (one encrypted POST per device, 3 attempts; a 404/410 deletes the subscription; ADR-048)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `mail`                     | nothing yet; the transport for the notification mails of #103 to #107                                                | `createMailDeliveryProcessor`        | real (one SMTP hop, 5 attempts over ~8 min; a 5xx fails unrecoverably; issue #102)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
 Queue names and payload schemas live in `packages/contracts/src/jobs.ts`, so
 producers and consumers cannot drift apart.
@@ -634,6 +635,59 @@ VAPID pair in `vapid.ts` (RFC 8292). Both halves of the pair come from the
 environment; without them `runtime.pushSender` is null and every job is a
 silent no-op, which is the state of a deployment that never ran
 `scripts/generate-vapid-keys.mjs`.
+
+### `mail`: the mails nobody is waiting on
+
+`mailDeliveryJobSchema`: `{ correlationId, recipient, mail }`, where `mail` is
+a **named template** and its values (`packages/contracts/src/mail.ts`), never a
+subject and a body. That shape is the security decision in this queue: the
+things that will enqueue mail next -- a share, an automation, a digest of
+somebody's comments -- all carry text a person or a model wrote, and a queue
+that accepts prose is a relay for whatever reached it. A template cannot be
+talked into saying something else.
+
+It follows that a mail payload is small. A page's text never travels in one; a
+title, a name and a link do.
+
+**Which half sends what.** The API sends the mails a request waits on, straight
+through `MAILER` and synchronously: e-mail verification and password reset
+(Better Auth's own callbacks) and the invitation, whose response carries
+`emailSent` and therefore cannot be answered by a queued job. Everything else
+belongs here, where a relay having a bad five minutes delays a mail instead of
+failing the request that caused it. Both processes build their transport with
+`createMailerFromEnv` from the same `SMTP_*` variables, so there is one relay
+and one place it is configured.
+
+**Retry.** `QUEUE_JOB_OPTIONS` gives this queue five attempts with a 30-second
+base, which spreads them over roughly eight minutes: what a mail usually waits
+for is a relay that is busy, throttling us or briefly down, and retrying faster
+than it recovers is how a deployment gets itself throttled. A refusal is not
+retried at all -- `createMailTransport` turns a 5xx reply, and a relay that
+accepted no recipient, into a `PermanentMailError`, and the processor turns
+that into an `UnrecoverableError`. The job then stays in the failed set where
+somebody can see it instead of looking busy for eight minutes first.
+
+**Deduplication** is the producer's `jobId`, not a field in the payload. A
+domain event that may be dispatched twice enqueues under an id derived from the
+event and BullMQ ignores the second add -- for as long as the first job is
+still in Redis, which is `removeOnComplete` (an hour) rather than for ever.
+That is the right window for the case it exists for: an outbox row redelivered
+seconds later.
+
+**Acceptance is not delivery.** `MailAcceptance` carries what the relay said:
+it has the message and owes us the next hop. Nothing in this process can know
+whether an inbox ever shows it, so no log line and no UI string may call it
+`zugestellt`.
+
+**What is logged**: the template name, the recipient's _domain_, and the
+relay's message id. Not the address, not the subject, not a line of the body.
+The payload's `recipient` and `mail` fields are in the logger's redaction list
+as well, so a future `logger.error(..., { payload })` cannot quietly turn a log
+file into somebody's post.
+
+A deployment with no relay is not a failure state: `createMailerFromEnv` hands
+back a mailer that logs what it would have sent, so every job succeeds and says
+so. See `docs/mail.md`.
 
 ## Guarantees
 

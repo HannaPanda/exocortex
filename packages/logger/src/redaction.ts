@@ -39,6 +39,15 @@ export const REDACTED_PATHS: readonly string[] = [
   'prompt',
   'systemPrompt',
   'messages',
+  // A mail job's payload (issue #102): the address it goes to and the values
+  // the template puts in front of a reader. Nothing logs these -- the mailer
+  // and the processor log the template name and the recipient's *domain*, and
+  // that is on purpose -- but a job payload is one `logger.error(..., { payload })`
+  // away from a log file that holds somebody's post and the address it went to.
+  'recipient',
+  'mail',
+  '*.recipient',
+  '*.mail',
   '*.password',
   '*.token',
   '*.secret',

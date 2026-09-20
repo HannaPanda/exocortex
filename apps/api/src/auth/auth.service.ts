@@ -1,12 +1,10 @@
-import { Inject, Injectable, type OnApplicationShutdown } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { type FastifyRequest } from 'fastify';
 
 import {
   AUTH_BASE_PATH,
   createAuth,
-  createMailer,
   type ExocortexAuth,
-  type Mailer,
   toWebHeaders,
   type VerifiedSession,
   verifySessionFromHeaders,
@@ -14,9 +12,10 @@ import {
 import { type ApiEnv } from '@exocortex/config';
 import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
+import { type Mailer } from '@exocortex/mail';
 
 import { API_ENV, LOGGER } from '../common/logger.provider';
-import { PRISMA } from '../platform/platform.module';
+import { MAILER, PRISMA } from '../platform/platform.module';
 
 /** The OAuth provider's authorization endpoint, relative to the app origin. */
 const OAUTH_AUTHORIZE_PATH = `${AUTH_BASE_PATH}/oauth2/authorize`;
@@ -104,34 +103,23 @@ export function forceConsentPromptInBody(url: URL, body: unknown): unknown {
  * two transports can never diverge.
  */
 @Injectable()
-export class AuthService implements OnApplicationShutdown {
+export class AuthService {
   public readonly auth: ExocortexAuth;
-  /**
-   * The one SMTP transport in the process. Public because invitations are sent
-   * outside Better Auth's own flows (issue #3) and a second transport would mean
-   * a second connection pool and a second place to configure the relay.
-   */
-  public readonly mailer: Mailer;
 
   constructor(
     @Inject(PRISMA) prisma: PrismaClient,
     @Inject(API_ENV) private readonly env: ApiEnv,
     @Inject(LOGGER) private readonly logger: Logger,
+    // The process's one transport, owned by `PlatformModule` (issue #102).
+    // Better Auth only ever asks it for two of the templates; it does not know
+    // that a relay exists.
+    @Inject(MAILER) mailer: Mailer,
   ) {
-    this.mailer = createMailer({
-      host: env.SMTP_HOST,
-      port: env.SMTP_PORT,
-      from: env.SMTP_FROM,
-      user: env.SMTP_USER,
-      password: env.SMTP_PASSWORD,
-      logger,
-    });
-
     this.auth = createAuth({
       prisma,
       secret: env.BETTER_AUTH_SECRET,
       appUrl: env.APP_URL,
-      mailer: this.mailer,
+      mailer,
       logger,
       secureCookies: env.APP_URL.startsWith('https://'),
       trustedOrigins: [env.BETTER_AUTH_URL, env.PUBLIC_API_URL],
@@ -195,9 +183,5 @@ export class AuthService implements OnApplicationShutdown {
         ...(body === undefined ? {} : { body }),
       }),
     );
-  }
-
-  async onApplicationShutdown(): Promise<void> {
-    await this.mailer.close();
   }
 }

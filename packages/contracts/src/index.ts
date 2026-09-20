@@ -25,6 +25,7 @@ export * from './inbox';
 export * from './invitations';
 export * from './jobs';
 export * from './lucide-icon-names';
+export * from './mail';
 export * from './mcp';
 export * from './memory';
 export * from './memory-checkpoint';

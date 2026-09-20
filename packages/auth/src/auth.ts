@@ -6,7 +6,7 @@ import { jwt } from 'better-auth/plugins';
 import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 
-import { type Mailer } from './mailer';
+import { type AuthMailer } from './auth-mailer';
 
 export const AUTH_BASE_PATH = '/api/auth';
 
@@ -59,7 +59,7 @@ export interface CreateAuthOptions {
   secret: string;
   /** Public origin of the application, e.g. https://exocortex.app */
   appUrl: string;
-  mailer: Mailer;
+  mailer: AuthMailer;
   logger: Logger;
   /** Additional origins allowed to send credentialed requests. */
   trustedOrigins?: string[];
@@ -178,7 +178,10 @@ export function createAuth(options: CreateAuthOptions) {
       // there is a reason beyond tidiness.
       requireEmailVerification: false,
       sendResetPassword: async ({ user, url }) => {
-        await mailer.sendPasswordResetEmail({ to: user.email, name: user.name, url });
+        await mailer.send({
+          to: user.email,
+          message: { template: 'PASSWORD_RESET', name: user.name, url },
+        });
       },
     },
 
@@ -186,7 +189,10 @@ export function createAuth(options: CreateAuthOptions) {
       sendOnSignUp: true,
       autoSignInAfterVerification: true,
       sendVerificationEmail: async ({ user, url }) => {
-        await mailer.sendVerificationEmail({ to: user.email, name: user.name, url });
+        await mailer.send({
+          to: user.email,
+          message: { template: 'EMAIL_VERIFICATION', name: user.name, url },
+        });
       },
     },
 

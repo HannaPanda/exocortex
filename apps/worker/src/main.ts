@@ -74,6 +74,9 @@ function installShutdown(
       await Promise.all(workers.map((entry) => entry.connection.quit()));
       await runtime.bus.close();
       await runtime.queues.close();
+      // After the workers, so a mail job that was still in flight has already
+      // handed its message over rather than losing the transport under it.
+      await runtime.mailer.close();
       await runtime.prisma.$disconnect();
       await tracing?.shutdown();
       logger.info('Worker stopped cleanly');

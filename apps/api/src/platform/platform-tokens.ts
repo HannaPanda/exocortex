@@ -11,3 +11,14 @@ export const QUEUES = Symbol('EXOCORTEX_QUEUES');
 export const OBJECT_STORAGE = Symbol('EXOCORTEX_OBJECT_STORAGE');
 export const AI_PROVIDER = Symbol('EXOCORTEX_AI_PROVIDER');
 export const AI_DEFAULT_MODEL = Symbol('EXOCORTEX_AI_DEFAULT_MODEL');
+/**
+ * The process's one SMTP transport (issue #102).
+ *
+ * A token rather than a field on `AuthService`, which is where it used to
+ * live: mail is not an authentication concern, and reaching it through the
+ * authentication service is what made every future sender -- shares,
+ * automations, digests -- depend on Better Auth to send a line of text. The
+ * API sends the mails a request waits on; everything else is queued and sent
+ * by the worker.
+ */
+export const MAILER = Symbol('EXOCORTEX_MAILER');

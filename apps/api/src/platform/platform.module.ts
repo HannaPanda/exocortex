@@ -5,6 +5,7 @@ import { WorkspaceAccessService } from '@exocortex/auth';
 import { type ApiEnv } from '@exocortex/config';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
+import { createMailerFromEnv, type Mailer } from '@exocortex/mail';
 import { QueueRegistry } from '@exocortex/queue';
 import { type ObjectStorage, S3ObjectStorage } from '@exocortex/storage';
 
@@ -12,10 +13,17 @@ import { currentPageScopeRestriction } from '../common/correlation';
 import { API_ENV, apiEnvProvider, LOGGER, loggerProvider } from '../common/logger.provider';
 import { OutboxService } from '../common/outbox.service';
 
-import { AI_DEFAULT_MODEL, AI_PROVIDER, OBJECT_STORAGE, PRISMA, QUEUES } from './platform-tokens';
+import {
+  AI_DEFAULT_MODEL,
+  AI_PROVIDER,
+  MAILER,
+  OBJECT_STORAGE,
+  PRISMA,
+  QUEUES,
+} from './platform-tokens';
 import { SettingsService } from './settings.service';
 
-export { AI_DEFAULT_MODEL, AI_PROVIDER, OBJECT_STORAGE, PRISMA, QUEUES };
+export { AI_DEFAULT_MODEL, AI_PROVIDER, MAILER, OBJECT_STORAGE, PRISMA, QUEUES };
 
 /**
  * Owns every long-lived infrastructure connection and closes them again on
@@ -26,11 +34,15 @@ export class PlatformLifecycle implements OnApplicationShutdown {
   constructor(
     @Inject(PRISMA) private readonly prisma: PrismaClient,
     @Inject(QUEUES) private readonly queues: QueueRegistry,
+    @Inject(MAILER) private readonly mailer: Mailer,
     @Inject(LOGGER) private readonly logger: Logger,
   ) {}
 
   async onApplicationShutdown(signal?: string): Promise<void> {
     this.logger.info('Closing platform resources', { signal: signal ?? 'unknown' });
+    await this.mailer.close().catch((error: unknown) => {
+      this.logger.error('Failed to close the mail transport', error);
+    });
     await this.queues.close().catch((error: unknown) => {
       this.logger.error('Failed to close queues', error);
     });
@@ -87,6 +99,22 @@ export class PlatformLifecycle implements OnApplicationShutdown {
         }),
     },
     {
+      provide: MAILER,
+      inject: [API_ENV, LOGGER],
+      // One transport per process, closed by `PlatformLifecycle` above: a
+      // second one would mean a second connection pool and a second place the
+      // relay is configured (issue #102).
+      useFactory: (env: ApiEnv, logger: Logger): Mailer =>
+        createMailerFromEnv({
+          host: env.SMTP_HOST,
+          port: env.SMTP_PORT,
+          from: env.SMTP_FROM,
+          user: env.SMTP_USER,
+          password: env.SMTP_PASSWORD,
+          logger,
+        }),
+    },
+    {
       provide: AI_DEFAULT_MODEL,
       inject: [API_ENV],
       // Bootstrap value only: this is what a fresh process falls back to before
@@ -118,6 +146,7 @@ export class PlatformLifecycle implements OnApplicationShutdown {
     OBJECT_STORAGE,
     AI_PROVIDER,
     AI_DEFAULT_MODEL,
+    MAILER,
     WorkspaceAccessService,
     SettingsService,
   ],
