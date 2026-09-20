@@ -6,12 +6,14 @@ import {
   attachmentCorrectTextTool,
   attachmentReadTextTool,
   attachmentReextractTextTool,
+  attachmentUploadTool,
 } from './attachments.js';
 
 interface RecordedCall {
   method?: string;
   path: string;
   body?: unknown;
+  contentType?: string;
 }
 
 /** Hand-written fake client: records every call, answers with a fixed response. */
@@ -26,7 +28,7 @@ function createFakeClient(response: unknown): {
       return input.responseSchema.parse(response);
     },
     async upload(input) {
-      calls.push({ path: input.path });
+      calls.push({ path: input.path, contentType: input.contentType });
       return input.responseSchema.parse(response);
     },
   };
@@ -144,5 +146,49 @@ describe('exo_attachment_correct_text', () => {
       { method: 'PATCH', path: '/api/attachments/attachment1/text', body: { text: null } },
     ]);
     expect(result.text).toContain('verworfen');
+  });
+});
+
+describe('exo_attachment_upload', () => {
+  const uploadResponse = {
+    attachment: {
+      id: 'attachment1',
+      workspaceId: 'workspace1',
+      documentId: null,
+      filename: 'zahlen.csv',
+      mimeType: 'text/csv',
+      byteSize: 12,
+      createdById: 'user12345',
+      createdAt: '2026-09-20T00:00:00.000Z',
+    },
+    downloadUrl: '/api/attachments/attachment1/download',
+  };
+
+  it('declares the type of a format that has no magic bytes', async () => {
+    // Without this the server sees `application/octet-stream` over text and
+    // refuses it, so the browser could upload a CSV and no agent could.
+    const { client, calls } = createFakeClient(uploadResponse);
+
+    await attachmentUploadTool.run(client, {
+      workspaceId: 'workspace1',
+      documentId: null,
+      filename: 'zahlen.csv',
+      contentBase64: Buffer.from('a,b\n1,2\n').toString('base64'),
+    });
+
+    expect(calls[0]?.contentType).toBe('text/csv');
+  });
+
+  it('leaves a binary format to the magic bytes', async () => {
+    const { client, calls } = createFakeClient(uploadResponse);
+
+    await attachmentUploadTool.run(client, {
+      workspaceId: 'workspace1',
+      documentId: null,
+      filename: 'bericht.docx',
+      contentBase64: Buffer.from('PK').toString('base64'),
+    });
+
+    expect(calls[0]?.contentType).toBe('application/octet-stream');
   });
 });

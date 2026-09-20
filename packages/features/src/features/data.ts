@@ -211,11 +211,10 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     since: '2026-09-20',
     ui: { where: 'Die Leiste unter einem Dateiblock.' },
     settings: ['ai.officeExtractionEnabled', 'ai.officeMaxBytes'],
-    tools: [
-      'exo_attachment_read_text',
-      'exo_attachment_reextract_text',
-      'exo_attachment_correct_text',
-    ],
+    // Kein eigener Werkzeugeintrag: es sind dieselben drei Werkzeuge wie beim
+    // PDF (exo_attachment_read_text, _reextract_text, _correct_text), und die
+    // gehören dort schon zu „texterkennung". Ein Werkzeug hat genau einen
+    // Eintrag, sonst sagt die Hilfe zweimal dasselbe.
   }),
   defineFeature({
     id: 'anhaenge-mitdurchsuchen',

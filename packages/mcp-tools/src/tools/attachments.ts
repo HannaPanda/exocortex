@@ -25,6 +25,32 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
  * reachable through `exo_attachment_upload`'s response at upload time.
  */
 
+/**
+ * The declared type for the formats that carry no signature.
+ *
+ * Everything binary is identified from its magic bytes server-side, so an
+ * upload never has to guess. Plain text does not work that way: CSV, Markdown,
+ * JSON and plain text look identical to a byte reader, so the server accepts
+ * them only when the upload says which one it is. Sending
+ * `application/octet-stream` for all of them, as this tool used to, meant the
+ * browser could upload a CSV and no agent could -- and CSV is one of the twelve
+ * formats whose text is read (issue #38). The extension is the only thing the
+ * caller gives us to go on, and the server still refuses anything that is not
+ * valid text.
+ */
+const DECLARED_TYPE_BY_EXTENSION: Readonly<Record<string, string>> = {
+  csv: 'text/csv',
+  md: 'text/markdown',
+  markdown: 'text/markdown',
+  json: 'application/json',
+  txt: 'text/plain',
+};
+
+function declaredTypeFor(filename: string): string {
+  const extension = filename.toLowerCase().split('.').pop() ?? '';
+  return DECLARED_TYPE_BY_EXTENSION[extension] ?? 'application/octet-stream';
+}
+
 const attachmentUploadInputSchema = z.object({
   workspaceId: idSchema,
   documentId: idSchema.nullable().default(null),
@@ -46,8 +72,9 @@ export const attachmentUploadTool: AnyToolDefinition = defineTool({
       path: `/api/workspaces/${input.workspaceId}/attachments`,
       filename: input.filename,
       // The API sniffs the real MIME type from magic bytes server-side, so
-      // the upload never guesses it client-side.
-      contentType: 'application/octet-stream',
+      // this is only ever a hint -- and one that matters for the formats that
+      // have no magic bytes to sniff (see DECLARED_TYPE_BY_EXTENSION).
+      contentType: declaredTypeFor(input.filename),
       bytes,
       fields: input.documentId !== null ? { documentId: input.documentId } : undefined,
       responseSchema: uploadAttachmentResponseSchema,
