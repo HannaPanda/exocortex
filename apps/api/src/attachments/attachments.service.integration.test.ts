@@ -147,6 +147,7 @@ describe('correcting extracted text', () => {
       attachmentId,
       memberId,
       'die von Hand korrigierte Fassung',
+      'test-correlation',
     );
     expect(corrected.text).toBe('die von Hand korrigierte Fassung');
     expect(corrected.machineText).toBe('was die Maschine gelesen hat');
@@ -166,19 +167,19 @@ describe('correcting extracted text', () => {
       textCorrectedById: memberId,
     });
 
-    const cleared = await service.correctText(attachmentId, memberId, null);
+    const cleared = await service.correctText(attachmentId, memberId, null, 'test-correlation');
     expect(cleared.text).toBe('was die Maschine gelesen hat');
     expect(cleared.correction).toBeNull();
   });
 
   it('denies a guest the right to correct text', async () => {
     const attachmentId = await createPdfAttachment();
-    await expect(service.correctText(attachmentId, guestId, 'versucht')).rejects.toThrow(
-      AuthorizationError,
-    );
+    await expect(
+      service.correctText(attachmentId, guestId, 'versucht', 'test-correlation'),
+    ).rejects.toThrow(AuthorizationError);
   });
 
-  it('refuses to correct text on a non-PDF attachment', async () => {
+  it('refuses to correct text on an attachment no engine can read', async () => {
     const attachment = await prisma.attachment.create({
       data: {
         workspaceId,
@@ -190,7 +191,9 @@ describe('correcting extracted text', () => {
       },
     });
 
-    await expect(service.correctText(attachment.id, memberId, 'text')).rejects.toMatchObject({
+    await expect(
+      service.correctText(attachment.id, memberId, 'text', 'test-correlation'),
+    ).rejects.toMatchObject({
       code: 'attachment_text_unavailable',
     });
   });

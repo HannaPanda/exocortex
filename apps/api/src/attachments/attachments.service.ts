@@ -14,9 +14,10 @@ import { type ApiEnv } from '@exocortex/config';
 import {
   ALLOWED_ATTACHMENT_MIME_TYPES,
   type Attachment,
+  attachmentTextEngine,
   type AttachmentTextInfoResponse,
   type AttachmentTextResponse,
-  pdfMetadataSchema,
+  documentTextMetadataSchema,
   QUEUE_NAMES,
   type UploadAttachmentResponse,
 } from '@exocortex/contracts';
@@ -124,9 +125,14 @@ export class AttachmentsService {
 
     const filename = sanitizeFilename(input.filename, detected.extension);
 
-    const pdfExtractionEnabled =
-      detected.mimeType === 'application/pdf' &&
-      (await this.settings.getKey('ai.pdfExtractionEnabled'));
+    // A file whose text can be read is queued for it right away; the two
+    // engines have a switch each, so which one applies is asked first.
+    const engine = attachmentTextEngine(detected.mimeType);
+    const extractionEnabled =
+      engine !== null &&
+      (await this.settings.getKey(
+        engine === 'pdf' ? 'ai.pdfExtractionEnabled' : 'ai.officeExtractionEnabled',
+      ));
 
     // The row is created first so the object key can embed its identifier.
     const attachment = await this.prisma.attachment.create({
@@ -138,7 +144,7 @@ export class AttachmentsService {
         byteSize: input.body.byteLength,
         storageKey: 'pending',
         createdById: input.userId,
-        ...(pdfExtractionEnabled ? { textStatus: 'PENDING' } : {}),
+        ...(extractionEnabled ? { textStatus: 'PENDING' } : {}),
       },
     });
 
@@ -186,7 +192,7 @@ export class AttachmentsService {
     // the create raced the upload: the worker reliably won and failed on the
     // placeholder key `pending`, burning a retry and logging an error on every
     // single PDF upload before the retry succeeded.
-    if (pdfExtractionEnabled) {
+    if (extractionEnabled) {
       await this.queues.enqueue(QUEUE_NAMES.attachmentText, {
         correlationId: input.correlationId,
         attachmentId: attachment.id,
@@ -389,11 +395,12 @@ export class AttachmentsService {
     // attempt of an already-`ready` attachment has to say so explicitly
     // through `forceReextract` (issue #2); this route stays the idempotent one.
     if (projected.status === 'ready' || projected.status === 'pending') return projected;
-    // Only a PDF has a text layer worth chasing; anything else is settled.
-    if (attachment.mimeType !== 'application/pdf') return projected;
+    // Only a document an engine can read is worth chasing; anything else is
+    // settled.
+    if (attachmentTextEngine(attachment.mimeType) === null) return projected;
 
-    // A PDF that was never asked for, or one whose last attempt failed. Reading
-    // it is the request to try (again).
+    // A document that was never asked for, or one whose last attempt failed.
+    // Reading it is the request to try (again).
     await this.prisma.attachment.update({
       where: { id: attachmentId },
       data: { textStatus: 'PENDING', textExtractionError: null },
@@ -445,10 +452,10 @@ export class AttachmentsService {
       requireEdit: true,
     });
 
-    if (attachment.mimeType !== 'application/pdf') {
+    if (attachmentTextEngine(attachment.mimeType) === null) {
       throw new AppError(
         'attachment_text_unavailable',
-        'Only a PDF attachment has a text layer to re-extract',
+        'This attachment has no text layer to re-extract',
       );
     }
 
@@ -485,15 +492,16 @@ export class AttachmentsService {
     attachmentId: string,
     userId: string,
     text: string | null,
+    correlationId: string,
   ): Promise<AttachmentTextResponse> {
     const { attachment, projected } = await this.readTextState(attachmentId, userId, {
       requireEdit: true,
     });
 
-    if (attachment.mimeType !== 'application/pdf') {
+    if (attachmentTextEngine(attachment.mimeType) === null) {
       throw new AppError(
         'attachment_text_unavailable',
-        'Only a PDF attachment has extracted text to correct',
+        'This attachment has no extracted text to correct',
       );
     }
 
@@ -504,6 +512,18 @@ export class AttachmentsService {
           ? { correctedText: null, textCorrectedAt: null, textCorrectedById: null }
           : { correctedText: text, textCorrectedAt: new Date(), textCorrectedById: userId },
     });
+
+    // The correction is what the search projection carries (issue #101), so
+    // fixing a garbled scan has to reach the index as well as the reader.
+    // Clearing one does too: the machine result becomes findable again.
+    if (attachment.documentId !== null) {
+      await this.queues.enqueue(QUEUE_NAMES.searchIndexing, {
+        correlationId,
+        documentId: attachment.documentId,
+        workspaceId: attachment.workspaceId,
+        reason: 'attachment_text',
+      });
+    }
 
     return {
       ...projected,
@@ -532,7 +552,7 @@ export class AttachmentsService {
     userId: string,
     options?: { requireEdit?: boolean },
   ): Promise<{
-    attachment: { workspaceId: string; mimeType: string };
+    attachment: { workspaceId: string; mimeType: string; documentId: string | null };
     projected: AttachmentTextResponse;
   }> {
     const context = await this.access.findAttachmentContext(attachmentId, userId);
@@ -549,10 +569,10 @@ export class AttachmentsService {
     );
 
     const { attachment } = context;
-    // A row written before `pdfMetadataSchema` existed, or by a future engine
+    // A row written before `documentTextMetadataSchema` existed, or by a future engine
     // reporting an extra field, must not turn a read into a 500: an unparsable
     // blob is reported as "no metadata".
-    const parsedMetadata = pdfMetadataSchema.safeParse(attachment.textMetadata);
+    const parsedMetadata = documentTextMetadataSchema.safeParse(attachment.textMetadata);
     const correction =
       attachment.correctedText === null || attachment.textCorrectedById === null
         ? null

@@ -11,17 +11,19 @@ import {
   type AiStreamEvent,
   type AiToolCall,
   createEmbeddingClient,
+  type DocumentTextExtractor,
   MockAiProvider,
   MockEmbeddingProvider,
   MockImageGenerator,
+  OfficeExtractionRefused,
   type PdfDocumentInfoReader,
   type VisionPreprocessor,
 } from '@exocortex/ai';
 import { loadWorkerEnv } from '@exocortex/config';
 import {
   AI_RUN_HEARTBEAT_STALE_MS,
+  type DocumentTextMetadata,
   type JobPayloadMap,
-  type PdfMetadata,
   QUEUE_NAMES,
   type Settings,
   settingsSchema,
@@ -534,6 +536,126 @@ describe('search indexing', () => {
     await indexer(contextFor<'search-indexing'>(payload).context);
     const rows = await prisma.documentSearchIndex.count({ where: { documentId } });
     expect(rows).toBe(1);
+  }, 60_000);
+
+  /**
+   * What a person can read in an attachment, they can search for (issue #101).
+   *
+   * Until this existed the projection held only what was written on the page,
+   * so a PDF was findable by its file name and by nothing inside it -- although
+   * the text had been extracted, stored and served to the AI for over a month.
+   */
+  it('finds a page by a sentence that exists only inside its attachment', async () => {
+    const documentId = await createDocument();
+    await prisma.attachment.create({
+      data: {
+        workspaceId,
+        documentId,
+        filename: 'kontoauszug.pdf',
+        mimeType: 'application/pdf',
+        byteSize: 10,
+        storageKey: `test/search-attachment-${Date.now().toString(36)}`,
+        createdById: userId,
+        textStatus: 'READY',
+        extractedText: 'Überweisung an die Sonnenblumengasse',
+      },
+    });
+
+    await createIndexDocumentProcessor({ prisma, search })(
+      contextFor<'search-indexing'>({
+        correlationId: 'test-attachment-search',
+        documentId,
+        workspaceId,
+        reason: 'attachment_text',
+      }).context,
+    );
+
+    const results = await search.search({
+      workspaceId,
+      query: 'Sonnenblumengasse',
+      limit: 10,
+      includeArchived: false,
+    });
+    expect(results.map((result) => result.documentId)).toContain(documentId);
+  }, 60_000);
+
+  it('indexes a hand-corrected text rather than the machine result it replaced', async () => {
+    // Somebody who fixed a garbled scan fixed it for the search too, which is
+    // the order every other reader of this text already uses.
+    const documentId = await createDocument();
+    await prisma.attachment.create({
+      data: {
+        workspaceId,
+        documentId,
+        filename: 'scan.pdf',
+        mimeType: 'application/pdf',
+        byteSize: 10,
+        storageKey: `test/search-correction-${Date.now().toString(36)}`,
+        createdById: userId,
+        textStatus: 'READY',
+        extractedText: 'Rechnungsbetrag Vlerhundert',
+        correctedText: 'Rechnungsbetrag Vierhundert',
+      },
+    });
+
+    await createIndexDocumentProcessor({ prisma, search })(
+      contextFor<'search-indexing'>({
+        correlationId: 'test-attachment-correction',
+        documentId,
+        workspaceId,
+        reason: 'attachment_text',
+      }).context,
+    );
+
+    const corrected = await search.search({
+      workspaceId,
+      query: 'Vierhundert',
+      limit: 10,
+      includeArchived: false,
+    });
+    expect(corrected.map((result) => result.documentId)).toContain(documentId);
+
+    const machine = await search.search({
+      workspaceId,
+      query: 'Vlerhundert',
+      limit: 10,
+      includeArchived: false,
+    });
+    expect(machine.map((result) => result.documentId)).not.toContain(documentId);
+  }, 60_000);
+
+  it('leaves an attachment whose extraction has not finished out of the index', async () => {
+    const documentId = await createDocument();
+    await prisma.attachment.create({
+      data: {
+        workspaceId,
+        documentId,
+        filename: 'laeuft-noch.pdf',
+        mimeType: 'application/pdf',
+        byteSize: 10,
+        storageKey: `test/search-pending-${Date.now().toString(36)}`,
+        createdById: userId,
+        textStatus: 'PENDING',
+        extractedText: 'Zwischenstand Regenbogenforelle',
+      },
+    });
+
+    await createIndexDocumentProcessor({ prisma, search })(
+      contextFor<'search-indexing'>({
+        correlationId: 'test-attachment-pending',
+        documentId,
+        workspaceId,
+        reason: 'attachment_text',
+      }).context,
+    );
+
+    const results = await search.search({
+      workspaceId,
+      query: 'Regenbogenforelle',
+      limit: 10,
+      includeArchived: false,
+    });
+    expect(results.map((result) => result.documentId)).not.toContain(documentId);
   }, 60_000);
 
   it('removes the projection of a deleted document', async () => {
@@ -3420,7 +3542,17 @@ describe('attachment text extraction', () => {
   /** The default for tests that are about the engine chain, not the file. */
   const noDocumentInfo: PdfDocumentInfoReader = { read: async () => null };
 
-  const stubMetadata: PdfMetadata = {
+  /**
+   * The default for the tests that are about a PDF: they never reach the office
+   * converter, and one that throws if they did is how that stays true.
+   */
+  const refusingOfficeExtractor: DocumentTextExtractor = {
+    extract: async () => {
+      throw new Error('The office converter must not be reached for a PDF');
+    },
+  };
+
+  const stubMetadata: DocumentTextMetadata = {
     extractor: 'stub',
     title: null,
     author: null,
@@ -3453,6 +3585,8 @@ describe('attachment text extraction', () => {
     const attachmentId = await createAttachment({ mimeType: 'image/png' });
     const processor = createAttachmentTextProcessor({
       prisma,
+      queues,
+      officeExtractor: refusingOfficeExtractor,
       storage: fakeStorage(Buffer.from('unused')),
       extractors: () => [{ extract: async () => ({ text: 'unused', metadata: stubMetadata }) }],
       documentInfo: noDocumentInfo,
@@ -3476,6 +3610,8 @@ describe('attachment text extraction', () => {
     const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
     const processor = createAttachmentTextProcessor({
       prisma,
+      queues,
+      officeExtractor: refusingOfficeExtractor,
       storage: fakeStorage(Buffer.from('unused')),
       extractors: () => [],
       documentInfo: noDocumentInfo,
@@ -3501,6 +3637,8 @@ describe('attachment text extraction', () => {
     const calls: string[] = [];
     const processor = createAttachmentTextProcessor({
       prisma,
+      queues,
+      officeExtractor: refusingOfficeExtractor,
       storage: fakeStorage(Buffer.from('%PDF-1.7 scanned')),
       // Mirrors a scan meeting the text-only engine first: it reports nothing,
       // and the OCR-capable engine behind it reads the document.
@@ -3555,6 +3693,8 @@ describe('attachment text extraction', () => {
     const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
     const processor = createAttachmentTextProcessor({
       prisma,
+      queues,
+      officeExtractor: refusingOfficeExtractor,
       storage: fakeStorage(Buffer.from('%PDF-1.7')),
       extractors: () => [
         {
@@ -3586,6 +3726,8 @@ describe('attachment text extraction', () => {
     const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
     const processor = createAttachmentTextProcessor({
       prisma,
+      queues,
+      officeExtractor: refusingOfficeExtractor,
       storage: fakeStorage(Buffer.from('%PDF-1.7')),
       extractors: () => [
         {
@@ -3620,6 +3762,8 @@ describe('attachment text extraction', () => {
     let secondCalled = false;
     const processor = createAttachmentTextProcessor({
       prisma,
+      queues,
+      officeExtractor: refusingOfficeExtractor,
       storage: fakeStorage(Buffer.from('%PDF-1.7 with a text layer')),
       extractors: () => [
         { extract: async () => ({ text: 'from the text layer', metadata: stubMetadata }) },
@@ -3655,6 +3799,8 @@ describe('attachment text extraction', () => {
     const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
     const processor = createAttachmentTextProcessor({
       prisma,
+      queues,
+      officeExtractor: refusingOfficeExtractor,
       storage: fakeStorage(Buffer.from('%PDF-1.7 scanned')),
       extractors: () => [
         {
@@ -3707,6 +3853,8 @@ describe('attachment text extraction', () => {
     const attachmentId = await createAttachment({ mimeType: 'application/pdf' });
     const processor = createAttachmentTextProcessor({
       prisma,
+      queues,
+      officeExtractor: refusingOfficeExtractor,
       storage: fakeStorage(Buffer.from('%PDF-1.7 empty')),
       extractors: () => [{ extract: async () => ({ text: null, metadata: null }) }],
       documentInfo: {
@@ -3748,6 +3896,8 @@ describe('attachment text extraction', () => {
     let calls = 0;
     const processor = createAttachmentTextProcessor({
       prisma,
+      queues,
+      officeExtractor: refusingOfficeExtractor,
       storage: fakeStorage(Buffer.from('%PDF-1.7')),
       extractors: () => [
         {
@@ -3804,6 +3954,8 @@ describe('attachment text extraction', () => {
     });
     const processor = createAttachmentTextProcessor({
       prisma,
+      queues,
+      officeExtractor: refusingOfficeExtractor,
       storage: fakeStorage(Buffer.from('%PDF-1.7')),
       extractors: () => [
         { extract: async () => ({ text: 'a fresh machine result', metadata: stubMetadata }) },
@@ -3832,6 +3984,8 @@ describe('attachment text extraction', () => {
     const longText = 'a'.repeat(400_001);
     const processor = createAttachmentTextProcessor({
       prisma,
+      queues,
+      officeExtractor: refusingOfficeExtractor,
       storage: fakeStorage(Buffer.from('%PDF-1.7')),
       extractors: () => [{ extract: async () => ({ text: longText, metadata: stubMetadata }) }],
       documentInfo: noDocumentInfo,
@@ -3853,6 +4007,8 @@ describe('attachment text extraction', () => {
 
     const processorShort = createAttachmentTextProcessor({
       prisma,
+      queues,
+      officeExtractor: refusingOfficeExtractor,
       storage: fakeStorage(Buffer.from('%PDF-1.7')),
       extractors: () => [
         { extract: async () => ({ text: 'short result', metadata: stubMetadata }) },
@@ -3872,6 +4028,148 @@ describe('attachment text extraction', () => {
     const reread = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
     expect(reread.textTruncated).toBe(false);
   }, 30_000);
+
+  /**
+   * The office formats, through the local converter (issue #38).
+   *
+   * The PDF chain is not involved and must not be: an extractor that throws is
+   * what proves the routing rather than a comment saying it.
+   */
+  describe('office documents', () => {
+    const DOCX = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    const refusingPdfChain = (): readonly DocumentTextExtractor[] => [
+      {
+        extract: async () => {
+          throw new Error('The PDF chain must not be reached for a docx');
+        },
+      },
+    ];
+
+    it('reads a Word document through the office converter', async () => {
+      const attachmentId = await createAttachment({ mimeType: DOCX });
+      const processor = createAttachmentTextProcessor({
+        prisma,
+        queues,
+        officeExtractor: {
+          extract: async () => ({
+            text: '# Quartalsbericht\n\nEin Absatz.',
+            metadata: { ...stubMetadata, extractor: 'anydoc', ocrUsed: false },
+          }),
+        },
+        storage: fakeStorage(Buffer.from('PK\u0003\u0004')),
+        extractors: refusingPdfChain,
+        documentInfo: noDocumentInfo,
+        settings: stubSettings(),
+      });
+
+      await processor(
+        contextFor<'attachment-text'>({
+          correlationId: 'test-office-1',
+          attachmentId,
+          workspaceId,
+          reason: 'upload',
+        }).context,
+      );
+
+      const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+      expect(attachment.textStatus).toBe('READY');
+      expect(attachment.extractedText).toContain('Quartalsbericht');
+      expect((attachment.textMetadata as { extractor?: string } | null)?.extractor).toBe('anydoc');
+    }, 30_000);
+
+    it('settles a refused document instead of retrying it for ever', async () => {
+      // A password-protected file will be just as protected on the fifth
+      // attempt, so the reason is written to the row and the job is done.
+      const attachmentId = await createAttachment({ mimeType: DOCX });
+      const processor = createAttachmentTextProcessor({
+        prisma,
+        queues,
+        officeExtractor: {
+          extract: async () => {
+            throw new OfficeExtractionRefused('encrypted', 'Die Datei ist passwortgeschützt');
+          },
+        },
+        storage: fakeStorage(Buffer.from('PK\u0003\u0004')),
+        extractors: refusingPdfChain,
+        documentInfo: noDocumentInfo,
+        settings: stubSettings(),
+      });
+
+      await processor(
+        contextFor<'attachment-text'>({
+          correlationId: 'test-office-2',
+          attachmentId,
+          workspaceId,
+          reason: 'upload',
+        }).context,
+      );
+
+      const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+      expect(attachment.textStatus).toBe('FAILED');
+      expect(attachment.textExtractionError).toBe('Die Datei ist passwortgeschützt');
+    }, 30_000);
+
+    it('retries a converter that broke rather than blaming the document', async () => {
+      const attachmentId = await createAttachment({ mimeType: DOCX });
+      const processor = createAttachmentTextProcessor({
+        prisma,
+        queues,
+        officeExtractor: {
+          extract: async () => {
+            throw new Error('binding not loaded');
+          },
+        },
+        storage: fakeStorage(Buffer.from('PK\u0003\u0004')),
+        extractors: refusingPdfChain,
+        documentInfo: noDocumentInfo,
+        settings: stubSettings(),
+      });
+
+      await expect(
+        processor(
+          contextFor<'attachment-text'>({
+            correlationId: 'test-office-3',
+            attachmentId,
+            workspaceId,
+            reason: 'upload',
+          }).context,
+        ),
+      ).rejects.toThrow('binding not loaded');
+
+      // Untouched, so the BullMQ retry finds the same starting point.
+      const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+      expect(attachment.textStatus).toBe('NOT_APPLICABLE');
+    }, 30_000);
+
+    it('leaves an image alone even when no PDF engine is configured', async () => {
+      // The regression this reordering fixed: the "not configured" answer used
+      // to be given before anyone asked what kind of file it was, so a PNG was
+      // left FAILED with a retry button that could never do anything.
+      const attachmentId = await createAttachment({ mimeType: 'image/png' });
+      const processor = createAttachmentTextProcessor({
+        prisma,
+        queues,
+        officeExtractor: refusingOfficeExtractor,
+        storage: fakeStorage(Buffer.from('unused')),
+        extractors: () => [],
+        documentInfo: noDocumentInfo,
+        settings: stubSettings(),
+      });
+
+      await processor(
+        contextFor<'attachment-text'>({
+          correlationId: 'test-office-4',
+          attachmentId,
+          workspaceId,
+          reason: 'upload',
+        }).context,
+      );
+
+      const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
+      expect(attachment.textStatus).toBe('NOT_APPLICABLE');
+      expect(attachment.textExtractionError).toBeNull();
+    }, 30_000);
+  });
 });
 
 /**

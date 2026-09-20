@@ -151,6 +151,14 @@ export const SETTING_COPY: Record<SettingKey, { label: string; help: string }> =
     label: 'Maximale PDF-Größe (Bytes)',
     help: 'PDFs über dieser Größe werden nicht für die Textextraktion angenommen.',
   },
+  'ai.officeExtractionEnabled': {
+    label: 'Text aus Office-Dateien lesen',
+    help: 'Liest Word, Excel, PowerPoint, OpenDocument, RTF, EPUB und CSV direkt auf diesem Server aus, ohne Container und ohne Modellkosten.',
+  },
+  'ai.officeMaxBytes': {
+    label: 'Maximale Office-Dateigröße (Bytes)',
+    help: 'Office-Dateien über dieser Größe werden nicht für die Textextraktion angenommen.',
+  },
   'ai.imageGenerationEnabled': {
     label: 'Titelbilder erzeugen',
     help: 'Erlaubt es, das Titelbild einer Seite von der KI malen zu lassen. Jedes Bild ist ein kostenpflichtiger Aufruf.',

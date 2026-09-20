@@ -1,6 +1,7 @@
 import {
   type AiProvider,
   createAiProvider,
+  createAnydocExtractor,
   createEmbeddingClient,
   createEmbeddingProvider,
   createImageGenerator,
@@ -8,9 +9,9 @@ import {
   createPdfDocumentInfoReader,
   createPdfTextExtractor,
   createVisionPreprocessor,
+  type DocumentTextExtractor,
   type ImageGenerator,
   type PdfDocumentInfoReader,
-  type PdfTextExtractor,
   type VisionPreprocessor,
 } from '@exocortex/ai';
 import { issueServiceToken, parseCredentialKey } from '@exocortex/auth';
@@ -118,7 +119,13 @@ export interface WorkerRuntime {
    */
   visionPreprocessorFor: (modelSlug: string | null, apiKey?: string) => VisionPreprocessor | null;
   pdfDocumentInfo: PdfDocumentInfoReader;
-  pdfExtractorChain: (settings: Settings) => readonly PdfTextExtractor[];
+  pdfExtractorChain: (settings: Settings) => readonly DocumentTextExtractor[];
+  /**
+   * The local office converter (issue #38). One instance rather than a
+   * factory: it reads no settings and holds no credential, so there is
+   * nothing for a per-job rebuild to pick up.
+   */
+  officeExtractor: DocumentTextExtractor;
   modelRegistry: (slug: string) => Promise<ResolvedModelRow | null>;
   publishProgress: (event: JobProgressEvent) => Promise<void>;
   /**
@@ -401,8 +408,13 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
   const vapidKeys = vapidKeysFromEnv(env);
   const pushSender = vapidKeys === null ? null : createPushSender({ keys: vapidKeys });
 
-  const { imageGeneratorFor, visionPreprocessorFor, pdfDocumentInfo, pdfExtractorChain } =
-    createMediaFactories(env, logger);
+  const {
+    imageGeneratorFor,
+    visionPreprocessorFor,
+    pdfDocumentInfo,
+    pdfExtractorChain,
+    officeExtractor,
+  } = createMediaFactories(env, logger);
 
   const modelRegistry = (slug: string): Promise<ResolvedModelRow | null> =>
     readModelRow(prisma, slug);
@@ -492,6 +504,7 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
     visionPreprocessorFor,
     pdfDocumentInfo,
     pdfExtractorChain,
+    officeExtractor,
     modelRegistry,
     publishProgress,
     credentialKey,
@@ -500,11 +513,14 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
 
 /**
  * The pieces that turn a file or a prompt into something a model produced:
- * image generation, the vision companions, and the PDF text chain.
+ * image generation, the vision companions, the PDF text chain and the local
+ * office converter.
  *
- * All four are cached or built once and all four have a "not configured" answer
+ * All but the last are cached or built once and have a "not configured" answer
  * rather than an exception, because a deployment is allowed to run without a
- * Docling container or an image model.
+ * Docling container or an image model. The office converter has no such answer
+ * because it has nothing to configure: it is a library, and it is either
+ * installed or the import fails.
  */
 function createMediaFactories(
   env: WorkerEnv,
@@ -513,7 +529,8 @@ function createMediaFactories(
   imageGeneratorFor: (modelSlug: string | null) => ImageGenerator | null;
   visionPreprocessorFor: (modelSlug: string | null, apiKey?: string) => VisionPreprocessor | null;
   pdfDocumentInfo: PdfDocumentInfoReader;
-  pdfExtractorChain: (settings: Settings) => readonly PdfTextExtractor[];
+  pdfExtractorChain: (settings: Settings) => readonly DocumentTextExtractor[];
+  officeExtractor: DocumentTextExtractor;
 } {
   // Image generation: the model comes from the settings, so an admin can point
   // it at a different one without a restart; the generators are cached per slug
@@ -613,18 +630,29 @@ function createMediaFactories(
    * chain is how the processor learns that PDF extraction is unavailable -- so
    * a deployment with neither says so plainly instead of failing per document.
    */
-  const pdfExtractorChain = (settings: Settings): readonly PdfTextExtractor[] => {
+  const pdfExtractorChain = (settings: Settings): readonly DocumentTextExtractor[] => {
     const [primary, fallback] =
       settings['ai.pdfExtractor'] === 'openrouter'
         ? [openRouterPdfExtractor, doclingPdfExtractor]
         : [doclingPdfExtractor, openRouterPdfExtractor];
-    const chain: PdfTextExtractor[] = [];
+    const chain: DocumentTextExtractor[] = [];
     if (primary !== null) chain.push(primary);
     if (settings['ai.pdfExtractorFallbackEnabled'] && fallback !== null) chain.push(fallback);
     return chain;
   };
 
-  return { imageGeneratorFor, visionPreprocessorFor, pdfDocumentInfo, pdfExtractorChain };
+  // No configuration seam of its own: the converter is a library call with
+  // no endpoint and no key, so the only question a deployment gets to answer
+  // is `ai.officeExtractionEnabled`, and the processor asks that one.
+  const officeExtractor = createAnydocExtractor({ logger });
+
+  return {
+    imageGeneratorFor,
+    visionPreprocessorFor,
+    pdfDocumentInfo,
+    pdfExtractorChain,
+    officeExtractor,
+  };
 }
 
 /**

@@ -159,6 +159,11 @@ export class AttachmentsController {
     @Param('attachmentId') attachmentId: string,
     @Body(zodPipe(attachmentTextCorrectionInputSchema)) body: AttachmentTextCorrectionInput,
   ): Promise<AttachmentTextResponse> {
-    return this.attachments.correctText(attachmentId, session.userId, body.text);
+    return this.attachments.correctText(
+      attachmentId,
+      session.userId,
+      body.text,
+      currentCorrelationId(),
+    );
   }
 }

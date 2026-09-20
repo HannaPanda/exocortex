@@ -239,11 +239,13 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     imageGeneratorFor,
     pdfDocumentInfo,
     pdfExtractorChain,
+    officeExtractor,
     credentialKey,
   } = runtime;
 
-  // Concurrency 1: PDF extraction is an external call and must not crowd out
-  // document materialization.
+  // Concurrency 1: a PDF extraction is an external call and must not crowd out
+  // document materialization. The office converter beside it is a local call
+  // measured in milliseconds, so it has nothing to gain from a lane of its own.
   const attachmentText = createTypedWorker({
     name: QUEUE_NAMES.attachmentText,
     redisUrl: env.REDIS_URL,
@@ -252,7 +254,9 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     handler: createAttachmentTextProcessor({
       prisma,
       storage,
+      queues,
       extractors: pdfExtractorChain,
+      officeExtractor,
       documentInfo: pdfDocumentInfo,
       settings: readSettings,
     }),

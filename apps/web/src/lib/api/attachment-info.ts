@@ -3,7 +3,11 @@
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { type AttachmentTextInfoResponse, type AttachmentTextResponse } from '@exocortex/contracts';
+import {
+  attachmentTextEngine,
+  type AttachmentTextInfoResponse,
+  type AttachmentTextResponse,
+} from '@exocortex/contracts';
 import {
   type MediaDocumentDetail,
   type MediaDocumentInfo,
@@ -33,9 +37,11 @@ function toInfo(response: AttachmentTextInfoResponse | AttachmentTextResponse): 
     metadata: response.metadata,
     error: response.error,
     filename: response.filename,
-    // What separates "an image has no text" from "nobody has read this PDF
-    // yet", which the API reports with the same status.
-    extractable: response.mimeType === 'application/pdf',
+    // What separates "an image has no text" from "nobody has read this
+    // document yet", which the API reports with the same status. The same
+    // predicate the API decides with, so the bar is offered exactly where it
+    // can be filled.
+    extractable: attachmentTextEngine(response.mimeType) !== null,
     correction: response.correction,
     truncated: response.truncated,
   };
