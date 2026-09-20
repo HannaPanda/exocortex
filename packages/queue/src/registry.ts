@@ -378,6 +378,12 @@ export class QueueRegistry {
     // after that, so this only ever has work in a deployment that invites people
     // and gets ignored (issue #3).
     await schedule('prune-invitations', { pattern: '45 4 * * *' });
+    // Hourly, not nightly. A message carries its own `expiresAt`, so unlike
+    // every other sweep here this one is not waiting for a retention setting
+    // somebody has to switch on -- it is the mechanism the mailbox's promise
+    // rests on, and "expires in a day" should mean a day rather than a day plus
+    // however long until 4am (issue #51).
+    await schedule('prune-agent-messages', { pattern: '20 * * * *' });
     // Daily, with the other sweeps. Two indexed DELETEs that usually match
     // nothing: the journal is kept for ninety days by default, so this only has
     // work once a deployment has been letting agents write for a season

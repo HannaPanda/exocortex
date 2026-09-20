@@ -273,6 +273,33 @@ export const pruneInvitations: MaintenanceTask = async ({ prisma, logger, report
 };
 
 /**
+ * Removes messages between agents that have stopped being delivered
+ * (issue #51, ADR-047).
+ *
+ * Unconditional, unlike every other sweep in this file. There is no setting to
+ * switch on: a message is written with an `expiresAt`, and a mailbox that kept
+ * delivering past it would break the one promise that keeps it from becoming a
+ * tip. Read messages are deleted on the same clock rather than immediately,
+ * because "what did you tell me last week" is a question worth being able to
+ * answer for as long as the message was going to live anyway.
+ *
+ * A hard delete, and it is the right one: a message is a delivery, not a page,
+ * so there is no trash it could pass through and nothing downstream that points
+ * at it.
+ */
+export const pruneAgentMessages: MaintenanceTask = async ({ prisma, logger, reportProgress }) => {
+  await reportProgress(10, 'Abgelaufene Nachrichten werden entfernt');
+  const removed = await prisma.agentMessage.deleteMany({
+    where: { expiresAt: { lt: new Date() } },
+  });
+
+  await reportProgress(100, 'Nachrichten aufgeräumt');
+  if (removed.count > 0) {
+    logger.info('Expired agent messages pruned', { removed: removed.count });
+  }
+};
+
+/**
  * Empties the two fat columns on old AI runs (issue #10).
  *
  * The usage view is meant to answer questions about months, and the only

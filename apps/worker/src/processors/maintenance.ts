@@ -9,6 +9,7 @@ import { runDueAutomations } from './maintenance-tasks/automation-schedules';
 import {
   collectOrphanedCovers,
   pruneAgentJournal,
+  pruneAgentMessages,
   pruneAiRunPayloads,
   pruneAutomationRuns,
   pruneInvitations,
@@ -87,6 +88,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'backfill-embeddings': backfillEmbeddings,
   'prune-memories': pruneMemories,
   'prune-invitations': pruneInvitations,
+  'prune-agent-messages': pruneAgentMessages,
   'consolidate-memories': consolidateMemories,
   'decay-memory-facts': decayMemoryFacts,
   'prune-ai-run-payloads': pruneAiRunPayloads,
@@ -101,7 +103,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
 /**
  * Maintenance processor.
  *
- * Twenty-two unrelated sweeps share one queue and one schedule; what they have
+ * Twenty-three unrelated sweeps share one queue and one schedule; what they have
  * in common is that nobody is waiting for them. The work itself lives one per
  * function in `maintenance-tasks/`, grouped by what it touches.
  */
