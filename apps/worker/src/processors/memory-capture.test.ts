@@ -11,7 +11,7 @@ import { createLogger } from '@exocortex/logger';
 import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type JobContext } from '@exocortex/queue';
 
-import { createMemoryCaptureProcessor, parseNote } from './memory-capture';
+import { createMemoryCaptureProcessor } from './memory-capture';
 
 const logger = createLogger({ name: 'worker-test', level: 'silent' });
 
@@ -67,34 +67,6 @@ function harness(answer: string | Error) {
 
   return { prompts, written, provider, apiClientFor };
 }
-
-describe('parseNote', () => {
-  it('splits the title line off the body', () => {
-    const note = parseNote('TITEL: Hooks nach tools/ verschoben\n\n- erledigt\n- offen: Plugin');
-    expect(note).toEqual({
-      title: 'Hooks nach tools/ verschoben',
-      body: '- erledigt\n- offen: Plugin',
-    });
-  });
-
-  it('keeps a note whose title line the model forgot', () => {
-    // A formatting slip is not a reason to throw away a summary that was
-    // already paid for.
-    const note = parseNote('- etwas gelernt\n- etwas anderes');
-    expect(note?.title).toBe('etwas gelernt');
-    expect(note?.body).toBe('- etwas gelernt\n- etwas anderes');
-  });
-
-  it('writes nothing when the model says there is nothing to keep', () => {
-    expect(parseNote('NICHTS')).toBeNull();
-    expect(parseNote('nichts.')).toBeNull();
-    expect(parseNote('   ')).toBeNull();
-  });
-
-  it('writes nothing when only a title came back', () => {
-    expect(parseNote('TITEL: Eine Sitzung')).toBeNull();
-  });
-});
 
 describe('memory capture processor', () => {
   it('writes the distilled note through the API, not the database', async () => {

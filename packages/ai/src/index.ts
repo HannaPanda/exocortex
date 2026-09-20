@@ -2,6 +2,7 @@ export * from './agent-runners';
 export * from './docling';
 export * from './embedding-provider';
 export * from './image-generator';
+export * from './memory-distill';
 export * from './mock-provider';
 export * from './openrouter-catalog';
 export * from './openrouter-provider';
