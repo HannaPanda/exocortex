@@ -177,10 +177,10 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
     area: 'dateien',
     title: 'Text aus PDFs, auch aus gescannten',
     summary:
-      'Aus einem hochgeladenen PDF wird der Text herausgelesen, bei Scans lokal über Docling und notfalls über ein Modell. Der Text ist durchsuchbar, lesbar und von Hand korrigierbar, und eine Chipzeile am PDF zeigt Titel, Autor und Seitenzahl aus den Metadaten der Datei.',
+      'Aus einem hochgeladenen PDF wird der Text herausgelesen, bei Scans lokal über Docling und notfalls über ein Modell. Der Text ist lesbar und von Hand korrigierbar, und eine Chipzeile am PDF zeigt Titel, Autor und Seitenzahl aus den Metadaten der Datei.',
     details: [
       'Lädst du ein PDF hoch, läuft die Texterkennung im Hintergrund an; du kannst weiterarbeiten. Zuerst versucht es Docling lokal auf diesem Server, das auch mit Scans und mit mehrspaltigem Satz zurechtkommt. Erst wenn das scheitert und die Rückfallebene eingeschaltet ist, geht die Datei an ein Modell.',
-      'Danach ist der Text Teil der Suche, du findest das PDF also über einen Satz darin und nicht nur über den Dateinamen. Unter dem PDF-Block liegt eine Leiste, über die du den erkannten Text liest, die Erkennung neu anstößt oder den Text von Hand korrigierst, wenn ein Scan Unsinn ergeben hat.',
+      'Unter dem PDF-Block liegt eine Leiste, über die du den erkannten Text liest, die Erkennung neu anstößt oder den Text von Hand korrigierst, wenn ein Scan Unsinn ergeben hat. Dass der Text auch in der Suche auftaucht, steht unter „Anhänge mitdurchsuchen".',
       'Eine Chipzeile am Block zeigt Titel, Autor und Seitenzahl aus den Metadaten der Datei. Die kommen von einem eigenen, lokalen Leser, weil keine der Erkennungsengines beides zugleich liefert. Wie groß eine Datei sein darf und ob die Erkennung überhaupt läuft, sind Einstellungen.',
     ],
     since: '2026-08-06',
@@ -196,5 +196,39 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
       'exo_attachment_reextract_text',
       'exo_attachment_correct_text',
     ],
+  }),
+  defineFeature({
+    id: 'office-dateien-lesen',
+    area: 'dateien',
+    title: 'Text aus Word, Excel, PowerPoint und Co.',
+    summary:
+      'Lädst du ein Word-, Excel-, PowerPoint-, OpenDocument-, RTF-, EPUB- oder CSV-Dokument hoch, wird sein Text genauso herausgelesen wie bei einem PDF: du kannst ihn lesen, korrigieren, durchsuchen und der KI zeigen.',
+    details: [
+      'Zwölf Formate insgesamt, die alten .doc, .xls und .ppt eingeschlossen. Das Umwandeln passiert vollständig auf diesem Server, in Millisekunden und ohne Modellkosten; es geht nichts nach außen. Tabellen bleiben Tabellen, Überschriften bleiben Überschriften.',
+      'Unter dem Dateiblock liegt dieselbe Leiste wie beim PDF: Text ansehen, neu einlesen, von Hand korrigieren. Ist eine Datei passwortgeschützt oder beschädigt, steht genau das da, statt dass es still im Hintergrund scheitert.',
+      'Woran eine Datei erkannt wird, ist ihr Inhalt und nicht ihre Endung. Das war hier nötig, weil ein docx innen ein ZIP-Archiv ist: ohne einen Blick hinein wäre es als Archiv gelandet und hätte nie eine Texterkennung angeboten bekommen.',
+    ],
+    since: '2026-09-20',
+    ui: { where: 'Die Leiste unter einem Dateiblock.' },
+    settings: ['ai.officeExtractionEnabled', 'ai.officeMaxBytes'],
+    tools: [
+      'exo_attachment_read_text',
+      'exo_attachment_reextract_text',
+      'exo_attachment_correct_text',
+    ],
+  }),
+  defineFeature({
+    id: 'anhaenge-mitdurchsuchen',
+    area: 'suche',
+    title: 'Anhänge mitdurchsuchen',
+    summary:
+      'Die Suche findet eine Seite auch über einen Satz, der nur in einem angehängten PDF oder Office-Dokument steht, nicht bloß über den Dateinamen.',
+    details: [
+      'Sobald der Text einer Datei herausgelesen ist, wird er Teil dessen, was die Suche über die Seite weiß. Du suchst also nach einer Formulierung aus einem Kontoauszug und landest auf der Seite, an der er hängt.',
+      'Hast du den erkannten Text von Hand korrigiert, sucht die Suche in deiner Fassung und nicht in dem, was die Maschine gelesen hatte. Wer einen verhunzten Scan repariert, repariert ihn damit auch für das Wiederfinden.',
+      'Hochgeladene Dateien von vor dem 20. September 2026 werden nachgetragen: ein Aufräumlauf reicht sie nach und hört von selbst wieder auf, sobald alle drin sind.',
+    ],
+    since: '2026-09-20',
+    ui: { where: 'Das Suchfeld oben, und Strg+K.' },
   }),
 ];

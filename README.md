@@ -42,7 +42,10 @@ What is deliberately still missing is listed under
   wiki links, callouts, stable block ids), with the choice of exporting a
   transclusion as the reference or as the text it shows
 - attachments in S3-compatible storage with magic-byte MIME verification,
-  downscaled image previews and text extraction from PDFs
+  downscaled image previews, and text extraction from PDFs (Docling locally,
+  with OCR for scans) and from twelve office formats -- Word, Excel,
+  PowerPoint, OpenDocument, RTF, EPUB, CSV -- through a local library call
+  (ADR-050)
 
 **Structure**
 
@@ -95,7 +98,8 @@ What is deliberately still missing is listed under
 
 - PostgreSQL full-text search with trigram-tolerant titles and highlighted
   snippets, fused by reciprocal rank with `pgvector` nearest neighbours when
-  semantic search is on (ADR-020)
+  semantic search is on (ADR-020); the text extracted from a page's attachments
+  is part of what it is found by, so a PDF is findable by a sentence inside it
 - saved searches, smart views and query blocks: a query over words, place,
   type, database properties, entities and a time window is stored as a
   question rather than a result list, answered again with the reader's own

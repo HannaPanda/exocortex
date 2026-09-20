@@ -550,15 +550,24 @@ logs that it did — this is the registry's actual payoff: switching the
 driver to a vision-capable model stops paying for a second call per image.
 `ai.visionEnabled` gates the whole mechanism.
 
-## PDF text
+## Attachment text
 
-`Attachment.extractedText` / `textStatus` cache the text of a PDF
+`Attachment.extractedText` / `textStatus` cache the text of an attachment
 (D6), populated by the `attachment-text` queue
 (`apps/worker/src/processors/attachment-text.ts`) and read — never
 extracted — by `exo_attachment_read_text`.
 
-Two engines implement the same `PdfTextExtractor` interface, and the processor
-is handed an ordered _chain_ of them rather than a single one:
+Which engine a file goes to is decided by `attachmentTextEngine` in
+`@exocortex/contracts`, and that one predicate is what the upload, the read,
+the forced re-extraction, the human correction and the editor's file bar all
+ask. A PDF goes through the chain below; the twelve office formats go to the
+local converter described under "Office documents"; everything else is
+`NOT_APPLICABLE`.
+
+### PDF
+
+Two engines implement the same `DocumentTextExtractor` interface, and the
+processor is handed an ordered _chain_ of them rather than a single one:
 
 | Engine                                       | Where                                                        | Reads scans       | Cost                                                              |
 | -------------------------------------------- | ------------------------------------------------------------ | ----------------- | ----------------------------------------------------------------- |
@@ -593,7 +602,7 @@ against docling-serve 1.29.0 on 2026-08-06.
 ### Metadata
 
 `Attachment.textMetadata` caches what is known about the document, shaped by
-`pdfMetadataSchema` in `@exocortex/contracts`. Three sources see disjoint parts
+`documentTextMetadataSchema` in `@exocortex/contracts`. Three sources see disjoint parts
 of it, which is why the processor merges _every_ attempt rather than only the
 winning one:
 
@@ -645,16 +654,75 @@ failed. `packages/editor` knows no routes, so the host injects the reader via
 `buildEditorExtensions({ mediaInfo })`; see
 `apps/web/src/lib/api/attachment-info.ts`.
 
-`textStatus` states: `NOT_APPLICABLE` (not a PDF), `PENDING` (queued, not yet
-attempted), `READY` (`extractedText` populated, capped at 400 000
-characters), `FAILED` (`textExtractionError` explains why: unconfigured,
-oversized per `ai.pdfMaxBytes`, or no engine in the chain found text). The
+`textStatus` states: `NOT_APPLICABLE` (no engine reads this kind of file),
+`PENDING` (queued, not yet attempted), `READY` (`extractedText` populated,
+capped at 400 000 characters), `FAILED` (`textExtractionError` explains why:
+unconfigured, oversized per `ai.pdfMaxBytes` or `ai.officeMaxBytes`, no engine
+in the chain found text, or the converter refused the document).
+
+That first state is asked before anything about engines, which is the other way
+round from how this ran until 2026-09-20: the "not configured" answer used to
+be given first, so a PNG on a deployment without a PDF engine was left `FAILED`
+with a retry button that could never do anything. The
 OpenRouter engine is built once at boot from `OPENROUTER_DEFAULT_MODEL` (the
 file-parser plugin works with any model, so no dedicated env var was needed);
 Docling is built only when `DOCLING_BASE_URL` is set, which keeps its ~7.7 GB
 container optional. `ai.pdfExtractionModelSlug` exists in the settings schema
 for a future per-job model choice but is not wired in yet (see "Known
 limitations").
+
+### Office documents (issue #38, ADR-050)
+
+Word, Excel, PowerPoint, OpenDocument, RTF, EPUB and CSV go to
+`packages/ai/src/anydoc.ts`, a wrapper around the `@firecrawl/anydoc` library
+(MIT, Rust behind N-API bindings). Twelve formats including the legacy `.doc`,
+`.xls` and `.ppt`, converted to Markdown in single-digit milliseconds, in
+process, with no container, no network call and no tokens.
+
+No chain and no fallback, because there is nothing to fall back to: it is the
+only engine that reads these formats. A refusal that names the document
+(`encrypted`, `malformed`, `unsupported`, `missingPart`, `resourceLimit`)
+becomes `OfficeExtractionRefused` and is written to the row as the sentence a
+reader sees, because a password-protected file will be just as protected on the
+fifth attempt. Anything else — a binding that did not load, an out of memory —
+is rethrown, so BullMQ retries.
+
+The library's `ocr: 'hosted'` mode is never used. It would upload the document
+to Firecrawl's API, and a local extractor that quietly ships a file off the
+machine is not a local extractor.
+
+**Detection has to look inside the container.** Every OOXML and OpenDocument
+file is a ZIP archive and the legacy trio is an OLE compound file, so the bytes
+at the front identify the packaging, not the document; without the look inside
+(`packages/storage/src/mime.ts`) a docx would have been stored as
+`application/zip` and never offered an extraction. OpenDocument and EPUB name
+their type in a stored first entry, OOXML is identified by the part only its
+own kind has (`word/document.xml`, `xl/workbook.xml`, `ppt/presentation.xml`),
+and the legacy formats by their OLE stream name in UTF-16LE. An OLE file that
+is none of the three resolves to `application/x-ole-storage`, which is not on
+the upload allow list, so an Outlook message is refused rather than stored.
+
+**Why PDF is not routed here, although anydoc reads one.** Measured on
+2026-09-20 against the PDFs this deployment actually holds:
+
+| Document               | Docling                     | anydoc                                         | anydoc time |
+| ---------------------- | --------------------------- | ---------------------------------------------- | ----------- |
+| 29-page xelatex render | 9 949 words, 0 soft hyphens | 9 125 words, 689 soft hyphens, 186 glued words | 90 ms       |
+| 8-page xelatex render  | 1 744 words, 0              | 1 703 words, 170 soft hyphens, 25 glued words  | 25 ms       |
+| 1-page payment advice  | equivalent content          | equivalent content                             | 7 ms        |
+| 1-page scan            | 469 characters via OCR      | rejects with `needsOcr`, naming page 1 of 1    | 13 ms       |
+
+anydoc is 30 to 100 times faster and loses word boundaries doing it:
+`DamitkanndiesesTokenimBrainphysischnichtsverändern` where Docling spaces the
+words, and `zusätzli‑ cher` left broken across a line. Those two PDFs are this
+deployment's own render output (ADR-026), so the loss would land squarely on
+the documents eXocortex produces itself — and the text it costs is exactly what
+the search index and the embeddings are built from. Speed is not the thing a
+PDF's text is judged on here, so `ai.pdfExtractor` keeps its two engines.
+
+The one thing worth keeping from the measurement: `needsOcr` names the pages
+that need OCR, without rendering them. If the PDF chain ever wants a cheap
+"does this need Docling at all" probe, that is where it is.
 
 ## Web research (issue #26, ADR-033)
 

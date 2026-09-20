@@ -418,6 +418,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   express, each with the reason it is still there. Every plugin is enabled
   repository-wide, because oxlint resolves `categories` against the base plugin
   list and a plugin scoped to an override silently loses its category rules.
+- ADR-050: which engine reads an attachment is one predicate,
+  `attachmentTextEngine`, that six callers ask; a PDF keeps its chain and the
+  local office converter never sees one, because it is 30 to 100 times faster
+  and loses the word boundaries the search index is built from. A refusal
+  naming the document is written to the row, anything else is rethrown so the
+  job retries; detection resolves the ZIP and OLE containers, or every docx
+  would be stored as an archive no engine reads. An attachment's text goes into
+  its page's search projection, correction first, under one shared budget, and
+  the sweep that carries the old ones over stops by comparing timestamps.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
