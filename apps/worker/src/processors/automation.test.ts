@@ -198,6 +198,7 @@ function job(overrides: Partial<AutomationJob> = {}): JobContext<typeof QUEUE_NA
     workspaceId: 'workspace-1',
     documentId: 'page-1',
     trigger: 'DOCUMENT_CONTENT_CHANGED',
+    origin: 'EVENT',
     depth: 0,
     ...overrides,
   };

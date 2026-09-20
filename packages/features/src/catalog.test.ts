@@ -72,8 +72,8 @@ describe('the feature catalogue', () => {
     const areaIndex = (area: string) =>
       FEATURE_AREAS.indexOf(area as (typeof FEATURE_AREAS)[number]);
     for (let index = 1; index < FEATURES.length; index += 1) {
-      const previous = FEATURES[index - 1];
-      const current = FEATURES[index];
+      const previous = FEATURES[index - 1]!;
+      const current = FEATURES[index]!;
       if (previous.area !== current.area) {
         expect(areaIndex(previous.area)).toBeLessThan(areaIndex(current.area));
         continue;
@@ -89,7 +89,8 @@ describe('the feature catalogue', () => {
   });
 
   it('finds a feature by id and nothing by a wrong one', () => {
-    expect(findFeature(FEATURES[0].id)?.title).toBe(FEATURES[0].title);
+    const first = FEATURES[0]!;
+    expect(findFeature(first.id)?.title).toBe(first.title);
     expect(findFeature('no-such-feature')).toBeNull();
   });
 });

@@ -8,7 +8,7 @@ import {
   MAX_DOCUMENT_LINKS,
 } from './document-links';
 
-function doc(...content: ProseMirrorDocument['content']): ProseMirrorDocument {
+function doc(...content: NonNullable<ProseMirrorDocument['content']>): ProseMirrorDocument {
   return { type: 'doc', content };
 }
 

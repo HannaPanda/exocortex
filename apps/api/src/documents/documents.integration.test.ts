@@ -1889,7 +1889,9 @@ describe('document links', () => {
    */
   describe('related documents', () => {
     /** Stands in for the vector half, so these tests need no embedding model. */
-    function adapterReturning(documentIds: readonly string[]): SearchAdapter {
+    function adapterReturning(
+      documentIds: readonly string[],
+    ): SearchAdapter & RelatedDocumentsPort {
       return {
         id: 'stub',
         search: async () => [],

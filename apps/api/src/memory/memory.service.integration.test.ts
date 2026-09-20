@@ -19,6 +19,8 @@ import { DocumentMoveService } from '../documents/document-move.service';
 import { DocumentTrashService } from '../documents/document-trash.service';
 import { DocumentsService } from '../documents/documents.service';
 import { PageLinkIdentityService } from '../documents/page-link-identity.service';
+import { EntityProfileService } from '../entities/entity-profile.service';
+import { EntityRegistryService } from '../entities/entity-registry.service';
 import { type SettingsService } from '../platform/settings.service';
 import { type RealtimeService } from '../realtime/realtime.service';
 import { type SearchService } from '../search/search.service';
@@ -178,6 +180,7 @@ beforeAll(async () => {
     getForWorkspace: async () => settings,
   } as unknown as SettingsService;
 
+  const entityRegistry = new EntityRegistryService(prisma, settingsService, access);
   service = new MemoryService(
     prisma,
     queues,
@@ -187,6 +190,8 @@ beforeAll(async () => {
     search,
     documents,
     content,
+    entityRegistry,
+    new EntityProfileService(prisma, entityRegistry, settingsService),
   );
 });
 

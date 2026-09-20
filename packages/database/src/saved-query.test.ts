@@ -7,8 +7,7 @@ import {
 } from '@exocortex/contracts';
 
 import { type PrismaClient } from './client';
-import { buildDerivedSchema, buildPropertyMap } from './database-derived';
-import { type DatabaseQueryScope } from './database-query';
+import { buildDerivedSchema, buildPropertyMap, type DatabaseQueryScope } from './database-derived';
 import {
   compileStructuralFilter,
   resolveDateRange,

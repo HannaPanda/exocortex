@@ -1,0 +1,10 @@
+{
+  // The emitting half of this workspace: the sources without their tests.
+  //
+  // `tsconfig.json` next door is the whole workspace, tests included, because
+  // that is what `typecheck` has to look at (issue #99). What goes into
+  // `dist/` is a shorter list: a compiled test belongs in no bundle, and the
+  // `vitest` import in it would not resolve there anyway.
+  "extends": "./tsconfig.json",
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts"]
+}

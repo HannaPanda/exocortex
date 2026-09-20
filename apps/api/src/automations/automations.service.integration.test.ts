@@ -138,6 +138,16 @@ function webhookRule(overrides: Record<string, unknown> = {}) {
     scope: 'WORKSPACE' as const,
     scopeDocumentId: null,
     triggers: ['DOCUMENT_CONTENT_CHANGED' as const],
+    // The schedule half of the rule, spelled out because the service is handed
+    // the parsed request and the parser has already filled these in. A rule
+    // that reacts to changes names no clock (ADR-038).
+    scheduleKind: null,
+    scheduleAt: null,
+    scheduleTime: null,
+    scheduleWeekday: null,
+    scheduleDayOfMonth: null,
+    scheduleCron: null,
+    scheduleTimeZone: null,
     debounceSeconds: 60,
     action: 'WEBHOOK' as const,
     webhookUrl: 'https://hooks.example.org/exocortex',

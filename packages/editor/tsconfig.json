@@ -3,11 +3,13 @@
   "compilerOptions": {
     // Node views run in the browser, so this package needs the DOM types even
     // though its Markdown and Yjs paths are used headlessly on the server.
-    "lib": ["ES2023", "DOM"],
+    // `DOM.Iterable` with them: a `NodeList` is iterable everywhere this code
+    // runs, and without it spreading one is a type error in the tests alone.
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "rootDir": "src",
     "outDir": "dist",
     "tsBuildInfoFile": "dist/.tsbuildinfo"
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/**/*.test.ts"]
+  "exclude": ["node_modules", "dist"]
 }

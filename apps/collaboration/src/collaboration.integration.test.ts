@@ -1,4 +1,7 @@
-import { HocuspocusProvider } from '@hocuspocus/provider';
+import {
+  HocuspocusProvider,
+  type HocuspocusProviderWebsocketConfiguration,
+} from '@hocuspocus/provider';
 import { type Server } from '@hocuspocus/server';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import WebSocket from 'ws';
@@ -88,8 +91,18 @@ function connect(input: { ticket: string; name: string; document: Y.Doc }): Hocu
     token: input.ticket,
     document: input.document,
     // Node has no global WebSocket in the version range we support explicitly.
-    WebSocketPolyfill: WebSocket as unknown as typeof globalThis.WebSocket,
-    connect: true,
+    //
+    // Spread rather than written inline: the option belongs to the socket, and
+    // the provider builds that socket out of its own configuration, so this
+    // does reach it -- but the published provider type does not repeat the
+    // socket's options, and an inline property would be refused as an excess
+    // one. Handing the socket over ready-made instead is not the same thing:
+    // a provider given a `websocketProvider` stops managing it and never
+    // attaches, which is fourteen tests hanging until they time out.
+    ...({ WebSocketPolyfill: WebSocket } satisfies Pick<
+      HocuspocusProviderWebsocketConfiguration,
+      'WebSocketPolyfill'
+    >),
   });
 }
 

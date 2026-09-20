@@ -572,8 +572,41 @@ describe('test split (check-test-split.mjs)', () => {
 });
 
 describe('typecheck coverage (check-typecheck-coverage.mjs)', () => {
-  it('is green: every TypeScript file but the tests is inside a project that runs', () => {
+  it('is green: every TypeScript file is inside a project that runs', () => {
     expect(gate('check-typecheck-coverage.mjs').status).toBe(0);
+  });
+
+  /**
+   * Issue #99: the tests used to be a named exception here, and a test that
+   * only compiles because nobody looked at it usually checks something other
+   * than what it claims. A test file is an ordinary source file to this gate
+   * now, so one outside every project is a finding like any other.
+   */
+  it('goes red when a test file sits outside every project', () => {
+    writeProbe('tools/__gate_probe__/probe.test.ts', 'export const probe: number = 1;\n');
+    const result = gate('check-typecheck-coverage.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('tools/__gate_probe__/probe.test.ts');
+  });
+
+  /**
+   * And the other half of the same issue, which no gate can answer: that the
+   * typecheck actually reads the file. One small workspace stands in for all
+   * of them, because what changed is the shape every `tsconfig.json` has.
+   */
+  it('makes a type error inside a test file fail the workspace typecheck', () => {
+    writeProbe(
+      'packages/config/src/__gate_probe__.test.ts',
+      "import { expect, it } from 'vitest';\n\nit('probe', () => {\n  const value: number = 'not a number';\n  expect(value).toBe(1);\n});\n",
+    );
+    const result = run('node', [
+      'node_modules/typescript/bin/tsc',
+      '-p',
+      'packages/config/tsconfig.json',
+      '--noEmit',
+    ]);
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('__gate_probe__.test.ts');
   });
 
   /**

@@ -95,7 +95,7 @@ describe('fenceUntrustedContent', () => {
 
   it('uses the same markers the system prompt tells the model about', () => {
     const fenced = fenceUntrustedContent({ origin: 'mail', text: 'x' });
-    const [opening] = fenced.split('\n');
+    const opening = fenced.split('\n')[0] ?? '';
     expect(UNTRUSTED_CONTENT_SECTION).toContain(opening.slice(0, '<<<FREMDINHALT'.length));
     expect(UNTRUSTED_CONTENT_SECTION).toContain('<<<ENDE FREMDINHALT>>>');
   });

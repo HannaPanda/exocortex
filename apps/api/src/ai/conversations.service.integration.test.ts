@@ -771,10 +771,12 @@ describe('ConversationsService.postMessage', () => {
         correlationId: 'test-new-1',
       });
       expect(response.command?.conversationChanged).toBe(true);
-      expect(response.command?.conversationId).not.toBe(conversationId);
+      const newConversationId = response.command?.conversationId;
+      expect(newConversationId).toBeTypeOf('string');
+      expect(newConversationId).not.toBe(conversationId);
 
       const created = await prisma.aiConversation.findUniqueOrThrow({
-        where: { id: response.command?.conversationId },
+        where: { id: newConversationId! },
       });
       expect(created.title).toBe('Mein zweiter Chat');
     });

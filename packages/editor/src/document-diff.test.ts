@@ -25,8 +25,8 @@ describe('diffText', () => {
       'inserted',
       'equal',
     ]);
-    expect(segments.filter((segment) => segment.kind === 'removed')[0].text).toBe('Hund');
-    expect(segments.filter((segment) => segment.kind === 'inserted')[0].text).toBe('Kater');
+    expect(segments.filter((segment) => segment.kind === 'removed')[0]?.text).toBe('Hund');
+    expect(segments.filter((segment) => segment.kind === 'inserted')[0]?.text).toBe('Kater');
   });
 
   it('reassembles the old text from everything that is not an insertion', () => {
@@ -85,7 +85,7 @@ describe('diffDocuments', () => {
     const diff = diffDocuments(before, after);
 
     expect(diff.blocks.map((block) => block.blockId)).toEqual([A, B, C]);
-    expect(diff.blocks[1].kind).toBe('removed');
+    expect(diff.blocks[1]?.kind).toBe('removed');
   });
 
   it('keeps the text of unchanged blocks short', () => {
@@ -93,7 +93,7 @@ describe('diffDocuments', () => {
     const diff = diffDocuments(doc(paragraph(A, long)), doc(paragraph(A, long)), {
       maxUnchangedTextLength: 20,
     });
-    expect(diff.blocks[0].afterText?.length).toBeLessThanOrEqual(21);
+    expect(diff.blocks[0]?.afterText?.length).toBeLessThanOrEqual(21);
   });
 
   it('pairs identical blocks that carry no identifier', () => {
@@ -109,8 +109,8 @@ describe('diffDocuments', () => {
     const diff = diffDocuments(before, after);
 
     expect(diff.summary).toMatchObject({ added: 0, removed: 0, changed: 1, unchanged: 1 });
-    expect(diff.blocks[0].blockId).toBeNull();
-    expect(diff.blocks[0].kind).toBe('unchanged');
+    expect(diff.blocks[0]?.blockId).toBeNull();
+    expect(diff.blocks[0]?.kind).toBe('unchanged');
   });
 
   it('notices a change that leaves the text alone', () => {
@@ -131,7 +131,7 @@ describe('diffDocuments', () => {
       ],
     });
 
-    expect(diffDocuments(before, after).blocks[0].kind).toBe('changed');
+    expect(diffDocuments(before, after).blocks[0]?.kind).toBe('changed');
   });
 
   it('cuts the list off at the configured maximum', () => {

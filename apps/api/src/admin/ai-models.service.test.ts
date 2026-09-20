@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { type OpenRouterModel, toCatalogEntry } from './ai-models.service';
+import { type OpenRouterModel } from '@exocortex/ai';
+
+import { toCatalogEntry } from './ai-models.service';
 
 /**
  * The catalogue entry a picked model is created from (issue #67). The provider

@@ -7,6 +7,7 @@ import {
   SETTING_NUMBER_RANGES,
   SETTING_SCOPES,
   SETTING_VALUE_RANKS,
+  type SettingKey,
   settingsResponseSchema,
   settingsSchema,
   updateSettingsRequestSchema,

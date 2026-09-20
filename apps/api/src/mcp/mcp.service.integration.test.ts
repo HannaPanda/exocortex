@@ -54,7 +54,9 @@ let streams: McpStreamsService;
 let userId: string;
 let clientId: string;
 let signingKeyId: string;
-let signingKey: CryptoKey;
+// `CryptoKey` is a global value in Node's types, not a global type, so the key
+// is named by what produced it.
+let signingKey: Awaited<ReturnType<typeof generateKeyPair>>['privateKey'];
 
 const HOUR = 60 * 60 * 1000;
 
@@ -289,14 +291,14 @@ describe('McpService.createHandler', () => {
     const caller = await service.authenticate(bearer(secret));
 
     const full = await (
-      await service.createHandler(caller, 'mcp')
+      await service.createHandler(caller, 'mcp', 'test-session-catalogue')
     )({
       jsonrpc: '2.0',
       id: 1,
       method: 'tools/list',
     });
     const research = await (
-      await service.createHandler(caller, 'research')
+      await service.createHandler(caller, 'research', 'test-session-catalogue')
     )({
       jsonrpc: '2.0',
       id: 1,

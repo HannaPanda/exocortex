@@ -212,28 +212,34 @@ reason (issue #93).
 
 ### What `pnpm typecheck` covers
 
-Every TypeScript file in the repository except the tests, and it takes three
-projects per place rather than one, because a project that emits decides what
-goes into the bundle:
+Every TypeScript file in the repository, tests included, and it takes several
+projects per place rather than one, because what is checked and what is emitted
+are two different lists:
 
-| Project                                   | Holds                                                                   |
-| ----------------------------------------- | ----------------------------------------------------------------------- |
-| `<workspace>/tsconfig.json`               | `src/`, the code that is built and shipped                              |
-| `apps/api/tsconfig.scripts.json`          | the operator scripts: Obsidian import, deletions, prune, token creation |
-| `packages/database/tsconfig.scripts.json` | the seeds, `provision-user`, `prisma.config.ts`                         |
-| `tsconfig.tools.json`                     | every `vitest.config.mts`, the integration guard, `next.config.ts`      |
+| Project                                   | Holds                                                                                      |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `<workspace>/tsconfig.json`               | all of `src/`, the shipped code and its tests: what `typecheck` runs                       |
+| `<workspace>/tsconfig.build.json`         | the same without `src/**/*.test.ts`: what `build` emits into `dist/`                       |
+| `apps/api/tsconfig.scripts.json`          | the operator scripts: Obsidian import, deletions, prune, token creation                    |
+| `packages/database/tsconfig.scripts.json` | the seeds, `provision-user`, `prisma.config.ts`                                            |
+| `tsconfig.tools.json`                     | every `vitest.config.mts`, the integration guard, `next.config.ts`, `scripts/**/*.test.ts` |
 
-The three extra projects check without emitting, so nothing they cover reaches
-`dist/`. They exist because "not built" was read as "not checked" for as long as
-the scripts had existed: `apps/api/scripts/import-obsidian/verify.ts` had lost
-every one of its imports and would have thrown a `ReferenceError` on its first
-run against the live database, with lint and CI both green (issue #95).
+Only `tsconfig.build.json` emits, and it is the shorter list: a compiled test
+belongs in no bundle. Everything else checks without emitting, which is what
+lets the tests and the operator scripts be checked at all. They had not been,
+for as long as they had existed: `apps/api/scripts/import-obsidian/verify.ts`
+had lost every one of its imports and would have thrown a `ReferenceError` on
+its first run against the live database, with lint and CI both green (issue
+#95), and the 164 test files behind the old `exclude` turned out to hold some
+230 type errors of their own -- incomplete mocks, constructors that had grown an
+argument, a compaction test passing three options the function had stopped
+taking (issue #99).
 
 `scripts/check-typecheck-coverage.mjs` is the gate under it. It asks `tsc
 --showConfig` which files each project resolves to and compares that with the
 tree, so a new file in a directory nothing covers fails the build, and so does a
-`tsconfig` that no `typecheck` script runs. Test files are the one carve-out and
-are tracked in issue #99.
+`tsconfig` that neither a `typecheck` nor a `build` script runs. There is no
+exception for tests.
 
 ### What the frontend tests and what it leaves to Playwright
 

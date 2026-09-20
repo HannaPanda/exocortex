@@ -9,7 +9,7 @@
     "exocortex-mcp": "./dist/main.js"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json && node scripts/postbuild.mjs",
+    "build": "tsc -p tsconfig.build.json && node scripts/postbuild.mjs",
     "dev": "tsx src/main.ts",
     "start": "node dist/main.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",

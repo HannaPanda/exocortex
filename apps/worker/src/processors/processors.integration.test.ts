@@ -20,6 +20,7 @@ import {
 import { loadWorkerEnv } from '@exocortex/config';
 import {
   AI_RUN_HEARTBEAT_STALE_MS,
+  type JobPayloadMap,
   type PdfMetadata,
   QUEUE_NAMES,
   type Settings,
@@ -138,18 +139,27 @@ function toolCapableModelRow(slug: string): ResolvedModelRow {
   };
 }
 
-/** Returns one canned response per call, in order; extra calls get an error result. */
-function stubToolRunner(responses: readonly { text: string; isError: boolean }[]): ToolRunner {
+/**
+ * Returns one canned response per call, in order; extra calls get an error
+ * result. `refused` defaults to false: the runs here never read foreign text,
+ * so the write fence of ADR-030 is never the reason a call comes back empty,
+ * and a test about it says so.
+ */
+function stubToolRunner(
+  responses: readonly { text: string; isError: boolean; refused?: boolean }[],
+): ToolRunner {
   let callIndex = 0;
   return {
     definitions: [{ name: 'exo_test_tool', description: 'Ein Testwerkzeug', parameters: {} }],
+    untrustedOrigins: [],
+    noteUntrustedContent() {},
     async run() {
       const response = responses[callIndex] ?? {
         text: 'Keine weitere Antwort konfiguriert',
         isError: true,
       };
       callIndex += 1;
-      return response;
+      return { text: response.text, isError: response.isError, refused: response.refused ?? false };
     },
   };
 }
@@ -175,6 +185,7 @@ let prisma: PrismaClient;
 let queues: QueueRegistry;
 let bus: RedisEventBus;
 let search: HybridSearchAdapter;
+let keywordSearch: PostgresSearchAdapter;
 /**
  * The semantic half is off for every existing test, so the hybrid adapter
  * behaves exactly like the full-text one, and the tests that are about
@@ -196,11 +207,28 @@ Ein Absatz mit dem Wort Zwiebelkuchen.
 type QueueKey = (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES];
 
 /**
+ * Where `sync-ai-model-routes` would read the catalogue. Every maintenance
+ * test names it, because the dependency is required and a sweep that never
+ * calls out must still be constructed the way the worker constructs it; the
+ * tests that do exercise the sync point `fetch` at this host themselves.
+ */
+const OPENROUTER_TEST_BASE_URL = 'https://openrouter.test/api/v1';
+
+/**
  * Builds a job context with a progress recorder. The processors are invoked
  * directly, so the BullMQ `Job` is stubbed down to the fields they read.
+ *
+ * The queue is named at the call site (`contextFor<'render'>({ ... })`) rather
+ * than inferred: the payload is the only argument, and TypeScript infers
+ * nothing from `JobPayloadMap[TName]`, so an inferred call would quietly settle
+ * on the union of every queue and check the payload against none of them. With
+ * the name written down, the payload is checked against that queue's schema,
+ * which is the whole reason these tests can call a processor directly.
  */
-function contextFor(payload: unknown): {
-  context: JobContext<QueueKey>;
+function contextFor<TName extends QueueKey>(
+  payload: JobPayloadMap[TName],
+): {
+  context: JobContext<TName>;
   progress: number[];
 } {
   const progress: number[] = [];
@@ -211,7 +239,7 @@ function contextFor(payload: unknown): {
     reportProgress: async (value: number) => {
       progress.push(value);
     },
-  } as unknown as JobContext<QueueKey>;
+  } as unknown as JobContext<TName>;
   return { context, progress };
 }
 
@@ -243,9 +271,10 @@ beforeAll(async () => {
     prefix: testQueuePrefix('worker-processors'),
   });
   bus = new RedisEventBus({ redisUrl: env.REDIS_URL, logger });
+  keywordSearch = new PostgresSearchAdapter(prisma);
   search = new HybridSearchAdapter({
     prisma,
-    keyword: new PostgresSearchAdapter(prisma),
+    keyword: keywordSearch,
     embeddings: createEmbeddingClient(new MockEmbeddingProvider()),
     options: async () => (semanticModel === null ? null : { model: semanticModel, weight: 0.5 }),
     logger,
@@ -286,7 +315,7 @@ describe('document materialization', () => {
       bus,
       settings: stubSettings(),
     });
-    const { context, progress } = contextFor({
+    const { context, progress } = contextFor<'document-materialization'>({
       correlationId: 'test-1',
       documentId,
       workspaceId,
@@ -324,14 +353,14 @@ describe('document materialization', () => {
       reason: 'collaboration_store' as const,
     };
 
-    await processor(contextFor(payload).context);
+    await processor(contextFor<'document-materialization'>(payload).context);
     const first = await prisma.documentContent.findUniqueOrThrow({
       where: { documentId },
       select: { plainText: true, markdown: true, materializedAt: true },
     });
 
     // Second run: the derived data is already at least as fresh as the state.
-    await processor(contextFor(payload).context);
+    await processor(contextFor<'document-materialization'>(payload).context);
     const second = await prisma.documentContent.findUniqueOrThrow({
       where: { documentId },
       select: { plainText: true, markdown: true, materializedAt: true },
@@ -358,7 +387,7 @@ describe('document materialization', () => {
       yjsUpdatedAt: Date.now(),
       reason: 'collaboration_store' as const,
     };
-    await processor(contextFor(payload).context);
+    await processor(contextFor<'document-materialization'>(payload).context);
 
     const changed = markdownToYjsState('# Neuer Titel\n\nGanz anderer Inhalt.\n');
     await prisma.documentContent.update({
@@ -366,7 +395,7 @@ describe('document materialization', () => {
       data: { yjsState: Buffer.from(changed.yjsState), yjsUpdatedAt: new Date(Date.now() + 1_000) },
     });
 
-    await processor(contextFor(payload).context);
+    await processor(contextFor<'document-materialization'>(payload).context);
     const content = await prisma.documentContent.findUniqueOrThrow({
       where: { documentId },
       select: { plainText: true },
@@ -384,7 +413,7 @@ describe('document materialization', () => {
     });
     await expect(
       processor(
-        contextFor({
+        contextFor<'document-materialization'>({
           correlationId: 'test-4',
           documentId: 'nonexistent-document-id',
           workspaceId,
@@ -424,9 +453,9 @@ describe('document materialization', () => {
         storage: recordingStorage(),
         bus,
         settings: stubSettings(),
-        openRouterBaseUrl: 'https://openrouter.test/api/v1',
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       })(
-        contextFor({
+        contextFor<'maintenance'>({
           correlationId: 'test-rematerialize-1',
           task: 'rematerialize-stale-content',
           workspaceId,
@@ -451,9 +480,9 @@ describe('document materialization', () => {
         storage: recordingStorage(),
         bus,
         settings: stubSettings(),
-        openRouterBaseUrl: 'https://openrouter.test/api/v1',
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       })(
-        contextFor({
+        contextFor<'maintenance'>({
           correlationId: 'test-rematerialize-2',
           task: 'rematerialize-stale-content',
           workspaceId,
@@ -470,7 +499,7 @@ describe('search indexing', () => {
   it('indexes the materialized plain text and finds it again', async () => {
     const documentId = await createDocument();
     await createMaterializeDocumentProcessor({ prisma, queues, bus, settings: stubSettings() })(
-      contextFor({
+      contextFor<'document-materialization'>({
         correlationId: 'test-5',
         documentId,
         workspaceId,
@@ -486,7 +515,7 @@ describe('search indexing', () => {
       workspaceId,
       reason: 'materialized' as const,
     };
-    await indexer(contextFor(payload).context);
+    await indexer(contextFor<'search-indexing'>(payload).context);
 
     const results = await search.search({
       workspaceId,
@@ -498,7 +527,7 @@ describe('search indexing', () => {
     expect(results[0]?.snippet).toContain('Zwiebelkuchen');
 
     // Running the indexer twice must not duplicate the projection.
-    await indexer(contextFor(payload).context);
+    await indexer(contextFor<'search-indexing'>(payload).context);
     const rows = await prisma.documentSearchIndex.count({ where: { documentId } });
     expect(rows).toBe(1);
   }, 60_000);
@@ -507,13 +536,23 @@ describe('search indexing', () => {
     const documentId = await createDocument();
     const indexer = createIndexDocumentProcessor({ prisma, search });
     await indexer(
-      contextFor({ correlationId: 'test-6', documentId, workspaceId, reason: 'manual' }).context,
+      contextFor<'search-indexing'>({
+        correlationId: 'test-6',
+        documentId,
+        workspaceId,
+        reason: 'manual',
+      }).context,
     );
     expect(await prisma.documentSearchIndex.count({ where: { documentId } })).toBe(1);
 
     await prisma.document.delete({ where: { id: documentId } });
     await indexer(
-      contextFor({ correlationId: 'test-6', documentId, workspaceId, reason: 'deleted' }).context,
+      contextFor<'search-indexing'>({
+        correlationId: 'test-6',
+        documentId,
+        workspaceId,
+        reason: 'deleted',
+      }).context,
     );
     expect(await prisma.documentSearchIndex.count({ where: { documentId } })).toBe(0);
   }, 60_000);
@@ -521,7 +560,7 @@ describe('search indexing', () => {
   it('excludes archived documents from search results by default', async () => {
     const documentId = await createDocument();
     await createMaterializeDocumentProcessor({ prisma, queues, bus, settings: stubSettings() })(
-      contextFor({
+      contextFor<'document-materialization'>({
         correlationId: 'test-7',
         documentId,
         workspaceId,
@@ -533,7 +572,12 @@ describe('search indexing', () => {
 
     const indexer = createIndexDocumentProcessor({ prisma, search });
     await indexer(
-      contextFor({ correlationId: 'test-7', documentId, workspaceId, reason: 'archived' }).context,
+      contextFor<'search-indexing'>({
+        correlationId: 'test-7',
+        documentId,
+        workspaceId,
+        reason: 'archived',
+      }).context,
     );
 
     const active = await search.search({
@@ -575,7 +619,7 @@ describe('semantic search', () => {
       },
     });
     await createIndexDocumentProcessor({ prisma, search })(
-      contextFor({
+      contextFor<'search-indexing'>({
         correlationId: 'semantic',
         documentId: document.id,
         workspaceId,
@@ -601,7 +645,7 @@ describe('semantic search', () => {
 
       // Re-indexing the same text must leave the row exactly as it was.
       await createIndexDocumentProcessor({ prisma, search })(
-        contextFor({
+        contextFor<'search-indexing'>({
           correlationId: 'semantic',
           documentId,
           workspaceId,
@@ -643,7 +687,7 @@ describe('semantic search', () => {
 
       // Re-indexing the same text pays for nothing, passages included.
       await createIndexDocumentProcessor({ prisma, search })(
-        contextFor({
+        contextFor<'search-indexing'>({
           correlationId: 'semantic',
           documentId,
           workspaceId,
@@ -670,7 +714,7 @@ describe('semantic search', () => {
         data: { plainText: 'Nur noch ein Satz über Ablage.' },
       });
       await createIndexDocumentProcessor({ prisma, search })(
-        contextFor({
+        contextFor<'search-indexing'>({
           correlationId: 'semantic',
           documentId,
           workspaceId,
@@ -774,6 +818,7 @@ describe('semantic search', () => {
     semanticModel = TEST_EMBEDDING_MODEL;
     try {
       const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
         prisma,
         queues,
         storage: recordingStorage(),
@@ -785,7 +830,7 @@ describe('semantic search', () => {
         }),
       });
       await processor(
-        contextFor({
+        contextFor<'maintenance'>({
           correlationId: 'backfill',
           task: 'backfill-embeddings',
           workspaceId,
@@ -861,6 +906,7 @@ describe('semantic search', () => {
     semanticModel = null;
     const documentId = await indexedPage('Bleibt leer', 'Noch ein Text von vorher.');
     const processor = createMaintenanceProcessor({
+      openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       prisma,
       queues,
       storage: recordingStorage(),
@@ -870,7 +916,7 @@ describe('semantic search', () => {
     });
 
     await processor(
-      contextFor({
+      contextFor<'maintenance'>({
         correlationId: 'backfill',
         task: 'backfill-embeddings',
         workspaceId,
@@ -904,7 +950,7 @@ describe('related documents', () => {
       },
     });
     await createIndexDocumentProcessor({ prisma, search })(
-      contextFor({
+      contextFor<'search-indexing'>({
         correlationId: 'related',
         documentId: document.id,
         workspaceId,
@@ -1095,6 +1141,7 @@ describe('memory retention', () => {
 
   function pruner(overrides: Partial<Settings>) {
     return createMaintenanceProcessor({
+      openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       prisma,
       queues,
       storage: recordingStorage(),
@@ -1106,7 +1153,7 @@ describe('memory retention', () => {
     });
   }
 
-  const job = contextFor({
+  const job = contextFor<'maintenance'>({
     correlationId: 'prune-memories',
     task: 'prune-memories',
     workspaceId: null,
@@ -1257,6 +1304,7 @@ async function createAiRunRow(
  */
 async function drainOutboxBacklog(): Promise<void> {
   const processor = createMaintenanceProcessor({
+    openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
     search,
     prisma,
     queues,
@@ -1270,8 +1318,12 @@ async function drainOutboxBacklog(): Promise<void> {
   for (let pass = 0; pass < 50; pass += 1) {
     if ((await prisma.outboxEvent.count({ where: { processedAt: null } })) === 0) return;
     await processor(
-      contextFor({ correlationId: 'test-outbox-drain', task: 'dispatch-outbox', workspaceId: null })
-        .context,
+      contextFor<'maintenance'>({
+        correlationId: 'test-outbox-drain',
+        task: 'dispatch-outbox',
+        workspaceId: null,
+        documentId: null,
+      }).context,
     );
   }
   throw new Error('The outbox backlog did not drain: the dispatcher stopped making progress.');
@@ -1291,6 +1343,7 @@ describe('maintenance', () => {
     });
 
     const processor = createMaintenanceProcessor({
+      openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       search,
       prisma,
       queues,
@@ -1299,8 +1352,12 @@ describe('maintenance', () => {
       settings: stubSettings(),
     });
     await processor(
-      contextFor({ correlationId: 'test-outbox', task: 'dispatch-outbox', workspaceId: null })
-        .context,
+      contextFor<'maintenance'>({
+        correlationId: 'test-outbox',
+        task: 'dispatch-outbox',
+        workspaceId: null,
+        documentId: null,
+      }).context,
     );
 
     const remaining = await prisma.outboxEvent.count({
@@ -1310,8 +1367,12 @@ describe('maintenance', () => {
 
     // A second run has nothing left to do.
     await processor(
-      contextFor({ correlationId: 'test-outbox', task: 'dispatch-outbox', workspaceId: null })
-        .context,
+      contextFor<'maintenance'>({
+        correlationId: 'test-outbox',
+        task: 'dispatch-outbox',
+        workspaceId: null,
+        documentId: null,
+      }).context,
     );
     const processed = await prisma.outboxEvent.findFirstOrThrow({
       where: { workspaceId, correlationId: 'test-outbox' },
@@ -1349,6 +1410,7 @@ describe('maintenance', () => {
     ]);
 
     const processor = createMaintenanceProcessor({
+      openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       search,
       prisma,
       queues,
@@ -1358,17 +1420,22 @@ describe('maintenance', () => {
     });
 
     const realUpdate = prisma.outboxEvent.update.bind(prisma.outboxEvent);
-    const spy = vi
-      .spyOn(prisma.outboxEvent, 'update')
-      .mockImplementation(async (args: Parameters<typeof realUpdate>[0]) => {
-        await prisma.outboxEvent.deleteMany({ where: { id: doomed.id } });
-        return realUpdate(args);
-      });
+    // Prisma's `update` does not return a promise but a fluent client: the
+    // relations hang off the returned value as further methods. The dispatcher
+    // only ever awaits it, so the stub returns the promise alone, and the cast
+    // is the note that the fluent half is deliberately not modelled here.
+    const spy = vi.spyOn(prisma.outboxEvent, 'update').mockImplementation((async (
+      args: Parameters<typeof realUpdate>[0],
+    ) => {
+      await prisma.outboxEvent.deleteMany({ where: { id: doomed.id } });
+      return realUpdate(args);
+    }) as unknown as typeof prisma.outboxEvent.update);
 
     try {
       await expect(
         processor(
-          contextFor({
+          contextFor<'maintenance'>({
+            documentId: null,
             correlationId: 'test-outbox-vanish',
             task: 'dispatch-outbox',
             workspaceId: null,
@@ -1431,6 +1498,7 @@ describe('maintenance', () => {
     ]);
 
     const processor = createMaintenanceProcessor({
+      openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       search,
       prisma,
       queues,
@@ -1439,7 +1507,8 @@ describe('maintenance', () => {
       settings: stubSettings({ 'ai.runPayloadRetentionDays': 30 }),
     });
     await processor(
-      contextFor({
+      contextFor<'maintenance'>({
+        documentId: null,
         correlationId: 'test-prune-ai-payloads',
         task: 'prune-ai-run-payloads',
         workspaceId: null,
@@ -1475,6 +1544,7 @@ describe('maintenance', () => {
     });
 
     const processor = createMaintenanceProcessor({
+      openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       search,
       prisma,
       queues,
@@ -1483,7 +1553,8 @@ describe('maintenance', () => {
       settings: stubSettings(),
     });
     await processor(
-      contextFor({
+      contextFor<'maintenance'>({
+        documentId: null,
         correlationId: 'test-prune-ai-payloads-off',
         task: 'prune-ai-run-payloads',
         workspaceId: null,
@@ -1546,6 +1617,7 @@ describe('maintenance', () => {
       await snapshotAt(documentId, utcNoon(6));
 
       const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
         search,
         prisma,
         queues,
@@ -1554,7 +1626,12 @@ describe('maintenance', () => {
         settings: retentionSettings(),
       });
       await processor(
-        contextFor({ correlationId: 'test-prune-1', task: 'prune-snapshots', workspaceId }).context,
+        contextFor<'maintenance'>({
+          correlationId: 'test-prune-1',
+          task: 'prune-snapshots',
+          workspaceId,
+          documentId: null,
+        }).context,
       );
 
       expect(await prisma.documentSnapshot.count({ where: { documentId } })).toBe(3);
@@ -1571,6 +1648,7 @@ describe('maintenance', () => {
       const differentDay = await snapshotAt(documentId, utcNoon(15));
 
       const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
         search,
         prisma,
         queues,
@@ -1579,7 +1657,12 @@ describe('maintenance', () => {
         settings: retentionSettings(),
       });
       await processor(
-        contextFor({ correlationId: 'test-prune-2', task: 'prune-snapshots', workspaceId }).context,
+        contextFor<'maintenance'>({
+          correlationId: 'test-prune-2',
+          task: 'prune-snapshots',
+          workspaceId,
+          documentId: null,
+        }).context,
       );
 
       const remaining = await prisma.documentSnapshot.findMany({
@@ -1595,6 +1678,7 @@ describe('maintenance', () => {
       const survivor = await snapshotAt(documentId, utcNoon(200));
 
       const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
         search,
         prisma,
         queues,
@@ -1603,7 +1687,12 @@ describe('maintenance', () => {
         settings: retentionSettings(),
       });
       await processor(
-        contextFor({ correlationId: 'test-prune-3', task: 'prune-snapshots', workspaceId }).context,
+        contextFor<'maintenance'>({
+          correlationId: 'test-prune-3',
+          task: 'prune-snapshots',
+          workspaceId,
+          documentId: null,
+        }).context,
       );
 
       const remainingIds = (
@@ -1619,6 +1708,7 @@ describe('maintenance', () => {
       await snapshotAt(documentId, utcNoon(10, 1));
 
       const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
         search,
         prisma,
         queues,
@@ -1627,7 +1717,12 @@ describe('maintenance', () => {
         settings: retentionSettings({ 'activity.snapshotRetentionDryRun': true }),
       });
       await processor(
-        contextFor({ correlationId: 'test-prune-4', task: 'prune-snapshots', workspaceId }).context,
+        contextFor<'maintenance'>({
+          correlationId: 'test-prune-4',
+          task: 'prune-snapshots',
+          workspaceId,
+          documentId: null,
+        }).context,
       );
 
       expect(await prisma.documentSnapshot.count({ where: { documentId } })).toBe(3);
@@ -1639,6 +1734,7 @@ describe('maintenance', () => {
       await snapshotAt(documentId, utcNoon(400, 1));
 
       const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
         search,
         prisma,
         queues,
@@ -1647,7 +1743,12 @@ describe('maintenance', () => {
         settings: stubSettings(),
       });
       await processor(
-        contextFor({ correlationId: 'test-prune-5', task: 'prune-snapshots', workspaceId }).context,
+        contextFor<'maintenance'>({
+          correlationId: 'test-prune-5',
+          task: 'prune-snapshots',
+          workspaceId,
+          documentId: null,
+        }).context,
       );
 
       expect(await prisma.documentSnapshot.count({ where: { documentId } })).toBe(2);
@@ -1704,6 +1805,7 @@ describe('maintenance', () => {
 
     const deleted: string[] = [];
     const processor = createMaintenanceProcessor({
+      openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       search,
       prisma,
       queues,
@@ -1712,8 +1814,12 @@ describe('maintenance', () => {
       settings: stubSettings(),
     });
     await processor(
-      contextFor({ correlationId: 'test-covers', task: 'collect-orphaned-covers', workspaceId })
-        .context,
+      contextFor<'maintenance'>({
+        correlationId: 'test-covers',
+        task: 'collect-orphaned-covers',
+        workspaceId,
+        documentId: null,
+      }).context,
     );
 
     expect(deleted).toEqual([`${keyPrefix}/alt.png`, `${keyPrefix}/alt.png.preview.webp`]);
@@ -1737,6 +1843,7 @@ describe('maintenance', () => {
 
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
+      openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       search,
       prisma,
       queues,
@@ -1745,8 +1852,12 @@ describe('maintenance', () => {
       settings: stubSettings(),
     });
     await processor(
-      contextFor({ correlationId: 'test-reap-1', task: 'reap-stale-ai-runs', workspaceId: null })
-        .context,
+      contextFor<'maintenance'>({
+        correlationId: 'test-reap-1',
+        task: 'reap-stale-ai-runs',
+        workspaceId: null,
+        documentId: null,
+      }).context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -1767,6 +1878,7 @@ describe('maintenance', () => {
 
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
+      openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       search,
       prisma,
       queues,
@@ -1775,8 +1887,12 @@ describe('maintenance', () => {
       settings: stubSettings(),
     });
     await processor(
-      contextFor({ correlationId: 'test-reap-5', task: 'reap-stale-ai-runs', workspaceId: null })
-        .context,
+      contextFor<'maintenance'>({
+        correlationId: 'test-reap-5',
+        task: 'reap-stale-ai-runs',
+        workspaceId: null,
+        documentId: null,
+      }).context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -1797,6 +1913,7 @@ describe('maintenance', () => {
 
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
+      openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       search,
       prisma,
       queues,
@@ -1805,8 +1922,12 @@ describe('maintenance', () => {
       settings: stubSettings(),
     });
     await processor(
-      contextFor({ correlationId: 'test-reap-2', task: 'reap-stale-ai-runs', workspaceId: null })
-        .context,
+      contextFor<'maintenance'>({
+        correlationId: 'test-reap-2',
+        task: 'reap-stale-ai-runs',
+        workspaceId: null,
+        documentId: null,
+      }).context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -1831,6 +1952,7 @@ describe('maintenance', () => {
 
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
+      openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       search,
       prisma,
       queues,
@@ -1839,8 +1961,12 @@ describe('maintenance', () => {
       settings: stubSettings(),
     });
     await processor(
-      contextFor({ correlationId: 'test-reap-3', task: 'reap-stale-ai-runs', workspaceId: null })
-        .context,
+      contextFor<'maintenance'>({
+        correlationId: 'test-reap-3',
+        task: 'reap-stale-ai-runs',
+        workspaceId: null,
+        documentId: null,
+      }).context,
     );
 
     const runningRow = await prisma.aiRun.findUniqueOrThrow({ where: { id: runningId } });
@@ -1863,6 +1989,7 @@ describe('maintenance', () => {
 
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
+      openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       search,
       prisma,
       queues,
@@ -1871,8 +1998,12 @@ describe('maintenance', () => {
       settings: stubSettings(),
     });
     await processor(
-      contextFor({ correlationId: 'test-reap-4', task: 'reap-stale-ai-runs', workspaceId: null })
-        .context,
+      contextFor<'maintenance'>({
+        correlationId: 'test-reap-4',
+        task: 'reap-stale-ai-runs',
+        workspaceId: null,
+        documentId: null,
+      }).context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -1907,6 +2038,7 @@ describe('maintenance', () => {
       });
 
       const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
         search,
         prisma,
         queues,
@@ -1915,7 +2047,8 @@ describe('maintenance', () => {
         settings: stubSettings(),
       });
       await processor(
-        contextFor({
+        contextFor<'maintenance'>({
+          documentId: null,
           correlationId: 'test-snap-active-1',
           task: 'snapshot-active-documents',
           workspaceId,
@@ -1935,6 +2068,7 @@ describe('maintenance', () => {
       });
 
       const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
         search,
         prisma,
         queues,
@@ -1946,7 +2080,8 @@ describe('maintenance', () => {
         }),
       });
       await processor(
-        contextFor({
+        contextFor<'maintenance'>({
+          documentId: null,
           correlationId: 'test-snap-active-2',
           task: 'snapshot-active-documents',
           workspaceId,
@@ -1977,6 +2112,7 @@ describe('maintenance', () => {
       });
 
       const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
         search,
         prisma,
         queues,
@@ -1988,7 +2124,8 @@ describe('maintenance', () => {
         }),
       });
       await processor(
-        contextFor({
+        contextFor<'maintenance'>({
+          documentId: null,
           correlationId: 'test-snap-active-3',
           task: 'snapshot-active-documents',
           workspaceId,
@@ -2018,6 +2155,7 @@ describe('maintenance', () => {
       });
 
       const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
         search,
         prisma,
         queues,
@@ -2029,7 +2167,8 @@ describe('maintenance', () => {
         }),
       });
       await processor(
-        contextFor({
+        contextFor<'maintenance'>({
+          documentId: null,
           correlationId: 'test-snap-active-4',
           task: 'snapshot-active-documents',
           workspaceId,
@@ -2058,6 +2197,7 @@ describe('maintenance', () => {
       });
 
       const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
         search,
         prisma,
         queues,
@@ -2071,19 +2211,22 @@ describe('maintenance', () => {
 
       const realCreate = prisma.documentSnapshot.create.bind(prisma.documentSnapshot);
       let deleted = false;
-      const spy = vi
-        .spyOn(prisma.documentSnapshot, 'create')
-        .mockImplementation(async (args: Parameters<typeof realCreate>[0]) => {
-          if (!deleted) {
-            deleted = true;
-            await prisma.document.delete({ where: { id: doomedId } });
-          }
-          return realCreate(args);
-        });
+      // Same as the outbox stub above: `create` returns a fluent client, the
+      // sweep only awaits it, and the cast says so out loud.
+      const spy = vi.spyOn(prisma.documentSnapshot, 'create').mockImplementation((async (
+        args: Parameters<typeof realCreate>[0],
+      ) => {
+        if (!deleted) {
+          deleted = true;
+          await prisma.document.delete({ where: { id: doomedId } });
+        }
+        return realCreate(args);
+      }) as unknown as typeof prisma.documentSnapshot.create);
 
       try {
         await processor(
-          contextFor({
+          contextFor<'maintenance'>({
+            documentId: null,
             correlationId: 'test-snap-active-6',
             task: 'snapshot-active-documents',
             workspaceId,
@@ -2109,6 +2252,7 @@ describe('maintenance', () => {
       });
 
       const processor = createMaintenanceProcessor({
+        openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
         search,
         prisma,
         queues,
@@ -2120,7 +2264,8 @@ describe('maintenance', () => {
         }),
       });
       await processor(
-        contextFor({
+        contextFor<'maintenance'>({
+          documentId: null,
           correlationId: 'test-snap-active-5',
           task: 'snapshot-active-documents',
           workspaceId,
@@ -2196,7 +2341,7 @@ describe('cover generation', () => {
       apiClientFor: () => uploadingClient(uploads),
       bus: recordingBus(published),
       settings: stubSettings({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': 'a/b' }),
-    })(contextFor(payload).context);
+    })(contextFor<'document-cover'>(payload).context);
 
     // The upload goes through the REST route, not the database (ADR-014).
     expect(uploads).toHaveLength(1);
@@ -2219,7 +2364,7 @@ describe('cover generation', () => {
       apiClientFor: () => uploadingClient(uploads),
       bus: recordingBus(published),
       settings: stubSettings({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': null }),
-    })(contextFor(payload).context);
+    })(contextFor<'document-cover'>(payload).context);
 
     expect(uploads).toEqual([]);
     expect(published[0]?.payload.status).toBe('failed');
@@ -2239,7 +2384,7 @@ describe('cover generation', () => {
       apiClientFor: () => uploadingClient([]),
       bus: recordingBus(published),
       settings: stubSettings({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': 'a/b' }),
-    })(contextFor(payload).context);
+    })(contextFor<'document-cover'>(payload).context);
 
     // "Try again" would be the wrong advice: the model has to change.
     expect(published[0]?.payload.error).toContain('openai/text-only');
@@ -2259,7 +2404,7 @@ describe('cover generation', () => {
       apiClientFor: () => uploadingClient([]),
       bus: recordingBus(published),
       settings: stubSettings({ 'ai.imageGenerationEnabled': true, 'ai.imageModelSlug': 'a/b' }),
-    })(contextFor(payload).context);
+    })(contextFor<'document-cover'>(payload).context);
 
     expect(published[0]?.payload.status).toBe('failed');
   });
@@ -2278,6 +2423,7 @@ class CapturingAiProvider implements AiProvider {
     usageReporting: true,
     costReporting: true,
     models: [],
+    reasoningControl: false,
   };
 
   public lastRequest: AiGenerateRequest | null = null;
@@ -2344,6 +2490,7 @@ class ScriptedAiProvider implements AiProvider {
     usageReporting: true,
     costReporting: true,
     models: [],
+    reasoningControl: false,
   };
 
   public readonly requests: AiGenerateRequest[] = [];
@@ -2388,6 +2535,7 @@ class SlowStreamingAiProvider implements AiProvider {
     usageReporting: true,
     costReporting: true,
     models: [],
+    reasoningControl: false,
   };
 
   constructor(private readonly pauseMs: number) {}
@@ -2424,6 +2572,7 @@ class HangingAiProvider implements AiProvider {
     usageReporting: true,
     costReporting: true,
     models: [],
+    reasoningControl: false,
   };
 
   async generate(): Promise<AiGenerateResult> {
@@ -2531,6 +2680,7 @@ describe('ai runs', () => {
     const provider = new CapturingAiProvider();
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(provider),
       bus,
@@ -2541,7 +2691,9 @@ describe('ai runs', () => {
       queues,
       modelRegistry: async () => null,
     });
-    await processor(contextFor({ correlationId: 'test-ai-1', runId, workspaceId, userId }).context);
+    await processor(
+      contextFor<'ai'>({ correlationId: 'test-ai-1', runId, workspaceId, userId }).context,
+    );
 
     const messages = provider.lastRequest?.messages ?? [];
     expect(messages[0]?.role).toBe('system');
@@ -2569,6 +2721,7 @@ describe('ai runs', () => {
     const provider = new CapturingAiProvider();
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(provider),
       bus,
@@ -2579,7 +2732,9 @@ describe('ai runs', () => {
       queues,
       modelRegistry: async () => toolCapableModelRow('priced-model'),
     });
-    await processor(contextFor({ correlationId: 'test-ai-1', runId, workspaceId, userId }).context);
+    await processor(
+      contextFor<'ai'>({ correlationId: 'test-ai-1', runId, workspaceId, userId }).context,
+    );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('COMPLETED');
@@ -2599,6 +2754,7 @@ describe('ai runs', () => {
     const provider = new CapturingAiProvider();
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(provider),
       bus,
@@ -2609,7 +2765,9 @@ describe('ai runs', () => {
       queues,
       modelRegistry: async () => null,
     });
-    await processor(contextFor({ correlationId: 'test-ai-2', runId, workspaceId, userId }).context);
+    await processor(
+      contextFor<'ai'>({ correlationId: 'test-ai-2', runId, workspaceId, userId }).context,
+    );
 
     expect(provider.lastRequest?.messages).toEqual([
       { role: 'user', content: 'Was zeigt das Bild?' },
@@ -2631,6 +2789,7 @@ describe('ai runs', () => {
     const provider = new CapturingAiProvider();
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(provider),
       bus,
@@ -2641,7 +2800,9 @@ describe('ai runs', () => {
       queues,
       modelRegistry: async () => null,
     });
-    await processor(contextFor({ correlationId: 'test-ai-3', runId, workspaceId, userId }).context);
+    await processor(
+      contextFor<'ai'>({ correlationId: 'test-ai-3', runId, workspaceId, userId }).context,
+    );
 
     expect(provider.lastRequest?.messages).toEqual([
       { role: 'user', content: 'Was zeigt das Bild?' },
@@ -2656,6 +2817,7 @@ describe('ai runs', () => {
     const provider = new CapturingAiProvider();
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(provider),
       bus,
@@ -2667,7 +2829,7 @@ describe('ai runs', () => {
       modelRegistry: async () => null,
     });
     await processor(
-      contextFor({ correlationId: 'test-ai-limit-1', runId, workspaceId, userId }).context,
+      contextFor<'ai'>({ correlationId: 'test-ai-limit-1', runId, workspaceId, userId }).context,
     );
 
     expect(provider.lastRequest?.maxOutputTokens).toBe(12_288);
@@ -2679,6 +2841,7 @@ describe('ai runs', () => {
     const provider = new CapturingAiProvider();
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(provider),
       bus,
@@ -2690,7 +2853,7 @@ describe('ai runs', () => {
       modelRegistry: async () => ({ ...toolCapableModelRow('test-model'), maxOutputTokens: 8_000 }),
     });
     await processor(
-      contextFor({ correlationId: 'test-ai-limit-2', runId, workspaceId, userId }).context,
+      contextFor<'ai'>({ correlationId: 'test-ai-limit-2', runId, workspaceId, userId }).context,
     );
 
     expect(provider.lastRequest?.maxOutputTokens).toBe(8_000);
@@ -2705,6 +2868,7 @@ describe('ai runs', () => {
     ]);
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(provider),
       bus,
@@ -2716,7 +2880,8 @@ describe('ai runs', () => {
       modelRegistry: async () => null,
     });
     await processor(
-      contextFor({ correlationId: 'test-ai-truncation-1', runId, workspaceId, userId }).context,
+      contextFor<'ai'>({ correlationId: 'test-ai-truncation-1', runId, workspaceId, userId })
+        .context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -2747,6 +2912,7 @@ describe('ai runs', () => {
     ]);
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(provider),
       bus,
@@ -2758,7 +2924,8 @@ describe('ai runs', () => {
       modelRegistry: async () => null,
     });
     await processor(
-      contextFor({ correlationId: 'test-ai-truncation-2', runId, workspaceId, userId }).context,
+      contextFor<'ai'>({ correlationId: 'test-ai-truncation-2', runId, workspaceId, userId })
+        .context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -2780,6 +2947,7 @@ describe('ai runs', () => {
     ]);
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(provider),
       bus,
@@ -2791,7 +2959,8 @@ describe('ai runs', () => {
       modelRegistry: async () => null,
     });
     await processor(
-      contextFor({ correlationId: 'test-ai-tool-call-1', runId, workspaceId, userId }).context,
+      contextFor<'ai'>({ correlationId: 'test-ai-tool-call-1', runId, workspaceId, userId })
+        .context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -2808,6 +2977,7 @@ describe('ai runs', () => {
     ]);
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(provider),
       bus: recordingEventBus(published),
@@ -2819,7 +2989,7 @@ describe('ai runs', () => {
       modelRegistry: async () => null,
     });
     await processor(
-      contextFor({ correlationId: 'test-ai-phase-1', runId, workspaceId, userId }).context,
+      contextFor<'ai'>({ correlationId: 'test-ai-phase-1', runId, workspaceId, userId }).context,
     );
 
     const phases = published.filter((event) => event.type === 'ai.run.phase');
@@ -2842,6 +3012,7 @@ describe('ai runs', () => {
     const runId = await createRun(documentId);
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(new SlowStreamingAiProvider(7_000)),
       bus,
@@ -2853,7 +3024,7 @@ describe('ai runs', () => {
       modelRegistry: async () => null,
     });
     const finished = processor(
-      contextFor({ correlationId: 'test-ai-partial-1', runId, workspaceId, userId }).context,
+      contextFor<'ai'>({ correlationId: 'test-ai-partial-1', runId, workspaceId, userId }).context,
     );
 
     await new Promise<void>((resolve) => setTimeout(resolve, 6_000));
@@ -2873,6 +3044,7 @@ describe('ai runs', () => {
     const published: { type: string; payload: Record<string, unknown> }[] = [];
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(new HangingAiProvider()),
       bus: recordingEventBus(published),
@@ -2884,7 +3056,7 @@ describe('ai runs', () => {
       modelRegistry: async () => null,
     });
     await processor(
-      contextFor({ correlationId: 'test-ai-timeout-1', runId, workspaceId, userId }).context,
+      contextFor<'ai'>({ correlationId: 'test-ai-timeout-1', runId, workspaceId, userId }).context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -2903,6 +3075,7 @@ describe('ai runs', () => {
     const published: { type: string; payload: Record<string, unknown> }[] = [];
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(new HangingAiProvider()),
       bus: recordingEventBus(published),
@@ -2915,7 +3088,7 @@ describe('ai runs', () => {
     });
 
     const runPromise = processor(
-      contextFor({ correlationId: 'test-ai-cancel-1', runId, workspaceId, userId }).context,
+      contextFor<'ai'>({ correlationId: 'test-ai-cancel-1', runId, workspaceId, userId }).context,
     );
 
     // Give the processor a moment to reach RUNNING, then cancel exactly the
@@ -2944,6 +3117,7 @@ describe('ai runs', () => {
     const published: { type: string; payload: Record<string, unknown> }[] = [];
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(new CapturingAiProvider()),
       bus: recordingEventBus(published),
@@ -2955,7 +3129,7 @@ describe('ai runs', () => {
       modelRegistry: async () => null,
     });
     await processor(
-      contextFor({ correlationId: 'test-ai-fresh-1', runId, workspaceId, userId }).context,
+      contextFor<'ai'>({ correlationId: 'test-ai-fresh-1', runId, workspaceId, userId }).context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -2975,6 +3149,7 @@ describe('ai runs', () => {
     const provider = new CapturingAiProvider();
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(provider),
       bus: recordingEventBus(published),
@@ -2986,7 +3161,7 @@ describe('ai runs', () => {
       modelRegistry: async () => null,
     });
     await processor(
-      contextFor({ correlationId: 'test-ai-stale-1', runId, workspaceId, userId }).context,
+      contextFor<'ai'>({ correlationId: 'test-ai-stale-1', runId, workspaceId, userId }).context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -3049,6 +3224,7 @@ describe('conversation-backed tool loop', () => {
     });
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(new MockAiProvider({ chunkDelayMs: 0 })),
       bus,
@@ -3061,7 +3237,7 @@ describe('conversation-backed tool loop', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-tool-loop-1', runId, workspaceId, userId }).context,
+      contextFor<'ai'>({ correlationId: 'test-tool-loop-1', runId, workspaceId, userId }).context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -3098,6 +3274,7 @@ describe('conversation-backed tool loop', () => {
     });
 
     const processor = createAiRunProcessor({
+      search: { hybrid: search, keyword: keywordSearch },
       prisma,
       providerFor: providerFor(new MockAiProvider({ chunkDelayMs: 0 })),
       bus,
@@ -3110,7 +3287,7 @@ describe('conversation-backed tool loop', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-tool-limit-1', runId, workspaceId, userId }).context,
+      contextFor<'ai'>({ correlationId: 'test-tool-limit-1', runId, workspaceId, userId }).context,
     );
 
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
@@ -3147,10 +3324,8 @@ describe('compactIfNeeded', () => {
       runId: 'run_compaction_1',
       conversationId,
       workspaceId,
-      contextWindowTokens: 1_000,
-      reservedOutputTokens: 100,
+      budgetInputTokens: 450,
       systemPromptTokens: 0,
-      thresholdPercent: 50,
       keepRecentMessages: 2,
       summaryModel: 'exocortex-mock-1',
       correlationId: 'test-compact-1',
@@ -3200,10 +3375,8 @@ describe('compactIfNeeded', () => {
       runId: 'run_compaction_2',
       conversationId,
       workspaceId,
-      contextWindowTokens: 100_000,
-      reservedOutputTokens: 1_000,
+      budgetInputTokens: 69_300,
       systemPromptTokens: 0,
-      thresholdPercent: 70,
       keepRecentMessages: 8,
       summaryModel: 'exocortex-mock-1',
       correlationId: 'test-compact-2',
@@ -3258,8 +3431,12 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-1', attachmentId, workspaceId, reason: 'upload' })
-        .context,
+      contextFor<'attachment-text'>({
+        correlationId: 'test-attach-1',
+        attachmentId,
+        workspaceId,
+        reason: 'upload',
+      }).context,
     );
 
     const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
@@ -3277,8 +3454,12 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-2', attachmentId, workspaceId, reason: 'upload' })
-        .context,
+      contextFor<'attachment-text'>({
+        correlationId: 'test-attach-2',
+        attachmentId,
+        workspaceId,
+        reason: 'upload',
+      }).context,
     );
 
     const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
@@ -3317,8 +3498,12 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-3', attachmentId, workspaceId, reason: 'upload' })
-        .context,
+      contextFor<'attachment-text'>({
+        correlationId: 'test-attach-3',
+        attachmentId,
+        workspaceId,
+        reason: 'upload',
+      }).context,
     );
 
     expect(calls).toEqual(['text-only', 'ocr']);
@@ -3355,8 +3540,12 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-5', attachmentId, workspaceId, reason: 'upload' })
-        .context,
+      contextFor<'attachment-text'>({
+        correlationId: 'test-attach-5',
+        attachmentId,
+        workspaceId,
+        reason: 'upload',
+      }).context,
     );
 
     const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
@@ -3382,8 +3571,12 @@ describe('attachment text extraction', () => {
 
     await expect(
       processor(
-        contextFor({ correlationId: 'test-attach-6', attachmentId, workspaceId, reason: 'upload' })
-          .context,
+        contextFor<'attachment-text'>({
+          correlationId: 'test-attach-6',
+          attachmentId,
+          workspaceId,
+          reason: 'upload',
+        }).context,
       ),
     ).rejects.toThrow('docling unreachable');
 
@@ -3413,8 +3606,12 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-4', attachmentId, workspaceId, reason: 'upload' })
-        .context,
+      contextFor<'attachment-text'>({
+        correlationId: 'test-attach-4',
+        attachmentId,
+        workspaceId,
+        reason: 'upload',
+      }).context,
     );
 
     expect(secondCalled).toBe(false);
@@ -3458,8 +3655,12 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-7', attachmentId, workspaceId, reason: 'upload' })
-        .context,
+      contextFor<'attachment-text'>({
+        correlationId: 'test-attach-7',
+        attachmentId,
+        workspaceId,
+        reason: 'upload',
+      }).context,
     );
 
     const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
@@ -3491,8 +3692,12 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-8', attachmentId, workspaceId, reason: 'upload' })
-        .context,
+      contextFor<'attachment-text'>({
+        correlationId: 'test-attach-8',
+        attachmentId,
+        workspaceId,
+        reason: 'upload',
+      }).context,
     );
 
     const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
@@ -3528,8 +3733,12 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-9', attachmentId, workspaceId, reason: 'retry' })
-        .context,
+      contextFor<'attachment-text'>({
+        correlationId: 'test-attach-9',
+        attachmentId,
+        workspaceId,
+        reason: 'retry',
+      }).context,
     );
     expect(calls).toBe(0);
     expect(
@@ -3539,8 +3748,12 @@ describe('attachment text extraction', () => {
     // `forced` is the one reason allowed to skip the guard (issue #2): a
     // successful extraction can still be a wrong one.
     await processor(
-      contextFor({ correlationId: 'test-attach-9b', attachmentId, workspaceId, reason: 'forced' })
-        .context,
+      contextFor<'attachment-text'>({
+        correlationId: 'test-attach-9b',
+        attachmentId,
+        workspaceId,
+        reason: 'forced',
+      }).context,
     );
     expect(calls).toBe(1);
     expect(
@@ -3571,8 +3784,12 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-10', attachmentId, workspaceId, reason: 'forced' })
-        .context,
+      contextFor<'attachment-text'>({
+        correlationId: 'test-attach-10',
+        attachmentId,
+        workspaceId,
+        reason: 'forced',
+      }).context,
     );
 
     const attachment = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
@@ -3593,8 +3810,12 @@ describe('attachment text extraction', () => {
     });
 
     await processor(
-      contextFor({ correlationId: 'test-attach-11', attachmentId, workspaceId, reason: 'upload' })
-        .context,
+      contextFor<'attachment-text'>({
+        correlationId: 'test-attach-11',
+        attachmentId,
+        workspaceId,
+        reason: 'upload',
+      }).context,
     );
 
     const truncated = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
@@ -3611,8 +3832,12 @@ describe('attachment text extraction', () => {
       settings: stubSettings(),
     });
     await processorShort(
-      contextFor({ correlationId: 'test-attach-11b', attachmentId, workspaceId, reason: 'forced' })
-        .context,
+      contextFor<'attachment-text'>({
+        correlationId: 'test-attach-11b',
+        attachmentId,
+        workspaceId,
+        reason: 'forced',
+      }).context,
     );
 
     const reread = await prisma.attachment.findUniqueOrThrow({ where: { id: attachmentId } });
@@ -3662,7 +3887,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
       settings: stubSettings(),
     });
     await processor(
-      contextFor({
+      contextFor<'document-materialization'>({
         correlationId,
         documentId,
         workspaceId,
@@ -3674,6 +3899,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
 
   function maintenance() {
     return createMaintenanceProcessor({
+      openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       search,
       prisma,
       queues,
@@ -3749,7 +3975,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
       },
     });
     await maintenance()(
-      contextFor({
+      contextFor<'maintenance'>({
         correlationId: 'test-links-3b',
         task: 'resolve-document-links',
         workspaceId,
@@ -3797,7 +4023,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
     expect(before.targetDocumentId).toBeNull();
 
     await maintenance()(
-      contextFor({
+      contextFor<'maintenance'>({
         correlationId: 'test-links-repair-2',
         task: 'repair-document-links',
         workspaceId,
@@ -3855,7 +4081,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
       data: { title: 'Ganz anders' },
     });
     await maintenance()(
-      contextFor({
+      contextFor<'maintenance'>({
         correlationId: 'test-links-4b',
         task: 'resolve-document-links',
         workspaceId,
@@ -3878,7 +4104,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
       },
     });
     await maintenance()(
-      contextFor({
+      contextFor<'maintenance'>({
         correlationId: 'test-links-4c',
         task: 'resolve-document-links',
         workspaceId,
@@ -3935,7 +4161,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
       data: { title: 'Heißt jetzt anders' },
     });
     await maintenance()(
-      contextFor({
+      contextFor<'maintenance'>({
         correlationId: 'test-links-identity-b',
         task: 'resolve-document-links',
         workspaceId,
@@ -3960,7 +4186,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
       },
     });
     await maintenance()(
-      contextFor({
+      contextFor<'maintenance'>({
         correlationId: 'test-links-identity-c',
         task: 'resolve-document-links',
         workspaceId,
@@ -4020,7 +4246,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
       data: { title: 'Anders benannt' },
     });
     await maintenance()(
-      contextFor({
+      contextFor<'maintenance'>({
         correlationId: 'test-links-wikimark-b',
         task: 'resolve-document-links',
         workspaceId,
@@ -4037,7 +4263,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
   it('does nothing when the page it should resolve for is gone', async () => {
     await expect(
       maintenance()(
-        contextFor({
+        contextFor<'maintenance'>({
           correlationId: 'test-links-5',
           task: 'resolve-document-links',
           workspaceId,
@@ -4071,7 +4297,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
     });
 
     await maintenance()(
-      contextFor({
+      contextFor<'maintenance'>({
         correlationId: 'test-links-6b',
         task: 'backfill-document-links',
         workspaceId,
@@ -4118,7 +4344,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
 
     const processor = maintenance();
     await processor(
-      contextFor({
+      contextFor<'maintenance'>({
         correlationId: 'test-links-7b',
         task: 'dispatch-outbox',
         workspaceId: null,
@@ -4188,7 +4414,7 @@ describe('rendering', () => {
     const { jobId } = await createRenderJob({ status: 'RUNNING' });
 
     await renderProcessor(stubSettings({ 'render.enabled': true }))(
-      contextFor({ correlationId: 'render-1', jobId, workspaceId, userId }).context,
+      contextFor<'render'>({ correlationId: 'render-1', jobId, workspaceId, userId }).context,
     );
 
     const row = await prisma.renderJob.findUniqueOrThrow({ where: { id: jobId } });
@@ -4200,7 +4426,7 @@ describe('rendering', () => {
     const { jobId } = await createRenderJob({ cancelledAt: new Date() });
 
     await renderProcessor(stubSettings({ 'render.enabled': true }))(
-      contextFor({ correlationId: 'render-2', jobId, workspaceId, userId }).context,
+      contextFor<'render'>({ correlationId: 'render-2', jobId, workspaceId, userId }).context,
     );
 
     const row = await prisma.renderJob.findUniqueOrThrow({ where: { id: jobId } });
@@ -4212,7 +4438,7 @@ describe('rendering', () => {
     const { jobId } = await createRenderJob();
 
     await renderProcessor(stubSettings({ 'render.enabled': false }))(
-      contextFor({ correlationId: 'render-3', jobId, workspaceId, userId }).context,
+      contextFor<'render'>({ correlationId: 'render-3', jobId, workspaceId, userId }).context,
     );
 
     const row = await prisma.renderJob.findUniqueOrThrow({ where: { id: jobId } });
@@ -4230,7 +4456,7 @@ describe('rendering', () => {
     });
 
     await renderProcessor(stubSettings({ 'render.enabled': true }))(
-      contextFor({ correlationId: 'render-4', jobId, workspaceId, userId }).context,
+      contextFor<'render'>({ correlationId: 'render-4', jobId, workspaceId, userId }).context,
     );
 
     const row = await prisma.renderJob.findUniqueOrThrow({ where: { id: jobId } });
@@ -4254,6 +4480,7 @@ describe('rendering', () => {
     });
 
     const maintenance = createMaintenanceProcessor({
+      openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
       prisma,
       queues,
       storage: recordingStorage(),
@@ -4262,7 +4489,7 @@ describe('rendering', () => {
       settings: stubSettings({ 'render.jobRetentionDays': 0 }),
     });
     await maintenance(
-      contextFor({
+      contextFor<'maintenance'>({
         correlationId: 'render-reap',
         task: 'reap-render-jobs',
         workspaceId: null,

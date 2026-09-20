@@ -6,11 +6,10 @@ import {
   EMPTY_DATABASE_FILTER_GROUP,
 } from '@exocortex/contracts';
 
-import { buildDerivedSchema, buildPropertyMap } from './database-derived';
+import { buildDerivedSchema, buildPropertyMap, type DatabaseQueryScope } from './database-derived';
 import {
   compileFilterGroup,
   compileSorts,
-  type DatabaseQueryScope,
   InvalidDatabaseFilterError,
   UnknownDatabasePropertyError,
 } from './database-query';

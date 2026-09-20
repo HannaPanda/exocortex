@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { type Logger } from '@exocortex/logger';
+import { createLogger, type Logger } from '@exocortex/logger';
 
 import { AiProviderError } from './provider';
 import { createOptionalSearxngWebSearcher, createSearxngWebSearcher } from './searxng';
@@ -15,20 +15,9 @@ import { createOptionalSteelWebFetcher, createSteelWebFetcher } from './steel';
  * is exactly the failure a schema is supposed to catch.
  */
 
+/** The real logger, silenced: a hand-rolled one drifts from the interface. */
 function fakeLogger(): Logger {
-  const noop = (): void => {
-    /* no output in tests */
-  };
-  const logger: Logger = {
-    trace: noop,
-    debug: noop,
-    info: noop,
-    warn: noop,
-    error: noop,
-    fatal: noop,
-    child: () => logger,
-  };
-  return logger;
+  return createLogger({ name: 'ai-test', level: 'silent' });
 }
 
 function respondWith(body: unknown, status = 200): void {

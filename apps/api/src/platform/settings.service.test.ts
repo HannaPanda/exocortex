@@ -6,6 +6,7 @@ import { createLogger, type Logger } from '@exocortex/logger';
 
 import { AdminService } from '../admin/admin.service';
 import { type OutboxService } from '../common/outbox.service';
+import { type RealtimeService } from '../realtime/realtime.service';
 
 import { SettingsService } from './settings.service';
 
@@ -80,8 +81,14 @@ describe('SettingsService', () => {
 
   it('hands the ignored rows to the admin area with the settings', async () => {
     const settings = serviceReading([{ key: 'ai.pdfMaxBytes', value: -1 }]);
-    // `AdminService` only reaches Prisma in the methods this test does not call.
-    const admin = new AdminService({} as unknown as PrismaClient, logger, settings);
+    // `AdminService` only reaches Prisma and the realtime bus in the methods
+    // this test does not call.
+    const admin = new AdminService(
+      {} as unknown as PrismaClient,
+      logger,
+      settings,
+      {} as unknown as RealtimeService,
+    );
 
     const response = await admin.getSettings();
 

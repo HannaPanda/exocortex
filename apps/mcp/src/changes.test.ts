@@ -23,7 +23,12 @@ function sseResponse(text: string, status = 200): Response {
  * test can assert what was delivered without the feed's own retries repeating
  * it.
  */
-function servesOnce(text: string): () => Promise<Response> {
+/**
+ * The feed's `fetchImpl`, serving one body and then nothing. Typed with the
+ * arguments the feed passes rather than with none, so a test can read back what
+ * it was called with.
+ */
+function servesOnce(text: string): (url: string, init?: RequestInit) => Promise<Response> {
   let served = false;
   return async () => {
     if (served) return sseResponse('');
@@ -84,8 +89,8 @@ describe('createChangeFeed', () => {
     feed.stop();
 
     expect(seen).toEqual([['exocortex://page/doc_1']]);
-    const [, init] = fetchImpl.mock.calls[0] as [string, RequestInit];
-    expect((init.headers as Record<string, string>).authorization).toBe('Bearer exo_1');
+    const headers = fetchImpl.mock.calls[0]?.[1]?.headers as Record<string, string> | undefined;
+    expect(headers?.authorization).toBe('Bearer exo_1');
   });
 
   it('survives a frame it cannot parse rather than closing the stream', async () => {

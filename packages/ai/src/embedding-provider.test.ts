@@ -15,7 +15,7 @@ const logger = createLogger({ name: 'test', level: 'silent' });
 
 function cosine(a: readonly number[], b: readonly number[]): number {
   let dot = 0;
-  for (let index = 0; index < a.length; index += 1) dot += a[index] * b[index];
+  for (let index = 0; index < a.length; index += 1) dot += (a[index] ?? 0) * (b[index] ?? 0);
   return dot;
 }
 
@@ -99,7 +99,7 @@ describe('OpenRouterEmbeddingProvider', () => {
       correlationId: 'c1',
     });
 
-    const body = JSON.parse(String(fetchMock.mock.calls[0][1]?.body)) as {
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body)) as {
       model: string;
       input: string[];
       dimensions: number;

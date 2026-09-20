@@ -62,7 +62,7 @@ describe('groupAiModelsByVendor', () => {
     ]);
 
     expect(groups.map((group) => group.label)).toEqual(['OpenAI', 'Z.ai']);
-    expect(groups[0].models.map((model) => model.slug)).toEqual([
+    expect(groups[0]?.models.map((model) => model.slug)).toEqual([
       'openai/gpt-5',
       'openai/gpt-5-mini',
     ]);

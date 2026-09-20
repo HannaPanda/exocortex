@@ -12,16 +12,22 @@ import { readMcpAccessTokenClaims } from './mcp-oauth';
 const APP_URL = 'https://exocortex.test';
 const KEY_ID = 'test-key';
 
-let privateKey: CryptoKey;
+/**
+ * `CryptoKey` is a global value in Node's types but not a global type, so the
+ * keys are named by what produced them.
+ */
+type SigningKey = Awaited<ReturnType<typeof generateKeyPair>>['privateKey'];
+
+let privateKey: SigningKey;
 let jwks: JSONWebKeySet;
-let foreignPrivateKey: CryptoKey;
+let foreignPrivateKey: SigningKey;
 
 interface TokenOverrides {
   issuer?: string;
   audience?: string;
   type?: string;
   expiresInSeconds?: number;
-  signWith?: CryptoKey;
+  signWith?: SigningKey;
   claims?: Record<string, unknown>;
 }
 

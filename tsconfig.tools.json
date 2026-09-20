@@ -1,6 +1,7 @@
 {
   // The files that configure the tooling: every `vitest.config.mts`, the
-  // integration guard the suites load, and the Next.js config. They belong to
+  // integration guard the suites load, the Next.js config, and the gate suite
+  // that belongs to the repository rather than to any workspace. They belong to
   // no package's build -- a workspace project emits from `src/` -- and so they
   // were checked by nothing until issue #95.
   //
@@ -9,13 +10,25 @@
   "extends": "./tsconfig.node.json",
   "compilerOptions": {
     "rootDir": ".",
-    "noEmit": true
+    "noEmit": true,
+    // These files are loaded by vitest and by Next, never by `node` against
+    // `package.json`, so they are ES modules whatever the root manifest says.
+    // `NodeNext` would read `scripts/gates.test.ts` as CommonJS and refuse its
+    // `import.meta`.
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    // The gate suite imports one helper straight out of `scripts/lib`, which is
+    // plain JavaScript. Inferred, not checked: what those modules have to
+    // satisfy is the gates they serve.
+    "allowJs": true,
+    "checkJs": false
   },
   "include": [
     "vitest.config.mts",
     "vitest.setup.integration.ts",
     "apps/*/vitest.config.mts",
     "packages/*/vitest.config.mts",
-    "apps/web/next.config.ts"
+    "apps/web/next.config.ts",
+    "scripts/**/*.test.ts"
   ]
 }

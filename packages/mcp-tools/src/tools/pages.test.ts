@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { type DocumentTreeNode, type TrashEntry } from '@exocortex/contracts';
+
 import { type ExocortexApiClient } from '../client.js';
 import { ToolInputValidationError } from '../tool.js';
 
@@ -581,7 +583,7 @@ describe('pageGenerateCoverTool', () => {
 });
 
 describe('pageTreeTool', () => {
-  function node(id: string, title: string, children: unknown[] = []) {
+  function node(id: string, title: string, children: DocumentTreeNode[] = []): DocumentTreeNode {
     return {
       id,
       workspaceId: 'm19i6551nw1eafb88aoisg6x',
@@ -606,12 +608,12 @@ describe('pageTreeTool', () => {
 
   /** A tree response with the bookkeeping fields filled in from the nodes. */
   function treeResponse(
-    nodes: ReturnType<typeof node>[],
-    archived: ReturnType<typeof node>[] = [],
+    nodes: DocumentTreeNode[],
+    archived: DocumentTreeNode[] = [],
     path: { id: string; title: string }[] = [],
   ) {
-    const count = (list: { children: unknown[] }[]): number =>
-      list.reduce((sum, entry) => sum + 1 + count(entry.children as { children: unknown[] }[]), 0);
+    const count = (list: DocumentTreeNode[]): number =>
+      list.reduce((sum, entry) => sum + 1 + count(entry.children), 0);
     return { nodes, archived, path, totalCount: count(nodes) };
   }
 
@@ -933,11 +935,11 @@ describe('pageTrashTool', () => {
     options: {
       archivedAt?: string;
       reason?: 'direct' | 'cascade';
-      children?: ReturnType<typeof trashEntry>[];
+      children?: TrashEntry[];
     } = {},
-  ) {
+  ): TrashEntry {
     const children = options.children ?? [];
-    const countBelow = (list: ReturnType<typeof trashEntry>[]): number =>
+    const countBelow = (list: TrashEntry[]): number =>
       list.reduce((sum, entry) => sum + 1 + entry.descendantCount, 0);
     return {
       id,

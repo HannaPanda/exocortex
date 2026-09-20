@@ -7,6 +7,7 @@ import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 import { type QueueRegistry } from '@exocortex/queue';
 
+import { type AttachmentsService } from '../attachments/attachments.service';
 import { type SettingsService } from '../platform/settings.service';
 
 import { RenderJobsService } from './render-jobs.service';
@@ -64,6 +65,13 @@ const loggerStub = {
   debug: () => undefined,
 } as unknown as Logger;
 
+/**
+ * Deleting a job deletes the PDF it produced, and that is the only thing the
+ * service asks the attachments for. No case here deletes a finished job, so the
+ * stub is empty on purpose: a call would throw rather than pass unnoticed.
+ */
+const attachmentsStub = {} as unknown as AttachmentsService;
+
 async function writeMarkdown(documentId: string, markdown: string): Promise<void> {
   await prisma.documentContent.upsert({
     where: { documentId },
@@ -76,7 +84,7 @@ beforeAll(async () => {
   prisma = createPrismaClient({ databaseUrl: process.env.DATABASE_URL });
   const access = new WorkspaceAccessService(prisma);
   const settings = settingsStubFor(() => workspaceId);
-  jobs = new RenderJobsService(prisma, queueStub, loggerStub, access, settings);
+  jobs = new RenderJobsService(prisma, queueStub, loggerStub, access, settings, attachmentsStub);
   templates = new RenderTemplatesService(prisma, access, settings);
 
   const suffix = Date.now().toString(36);

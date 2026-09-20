@@ -23,16 +23,16 @@
  *      `tsc --showConfig` rather than by re-implementing `include` and
  *      `exclude` here: a glob this gate got subtly wrong would report coverage
  *      nobody has, which is the failure it exists to prevent.
- *   2. every `tsconfig*.json` is named by a `typecheck` script. A project file
- *      that exists and is run by nothing looks exactly like coverage from the
- *      outside.
+ *   2. every `tsconfig*.json` is named by a `typecheck` or a `build` script. A
+ *      project file that exists and is run by nothing looks exactly like
+ *      coverage from the outside. Only the typecheck projects count towards
+ *      (1): a `tsconfig.build.json` is the shorter list that goes into `dist/`,
+ *      and the workspace's `tsconfig.json` beside it is what checks everything.
  *
- * The one carve-out is test files, and it is meant to end. The emitting
- * packages exclude `src/**` test files from their projects, so about 160 of
- * them sit outside every project; putting them in is roughly 200 type errors of
- * its own and belongs to issue #99, not here. The difference that makes it
- * tolerable: a test that is wrong fails the moment it runs, while an operator
- * script that is wrong fails at 2am against the live database.
+ * There is no carve-out. Test files were one until issue #99: the emitting
+ * packages excluded `src/**` test files from their projects, which left about
+ * 160 of them outside every typecheck, and a test that only compiles because
+ * nobody looked at it usually checks something other than what it claims.
  */
 
 import { execFile } from 'node:child_process';
@@ -66,9 +66,6 @@ const SOURCE_FILE = /\.[cm]?tsx?$/;
 /** Shared bases: compiler settings only, no `include`, never run as a project. */
 const SHARED_BASES = new Set(['tsconfig.base.json', 'tsconfig.node.json', 'tsconfig.react.json']);
 
-/** See the carve-out above. Issue #99. */
-const TEST_FILE = /\.(test|spec)\.[cm]?tsx?$/;
-
 /**
  * One walk of the tree, collecting the three things this gate compares:
  * the sources, the manifests that say what gets typechecked, and the project
@@ -95,16 +92,16 @@ function collect(dir = repoRoot, found = { sources: [], manifests: [], projects:
 }
 
 /**
- * The projects a `typecheck` script hands to `tsc`, as `{ dir, config }`.
+ * The projects one named script hands to `tsc`, as `{ dir, config }`.
  *
  * Read out of the scripts rather than off the disk, because a project is
  * covered by being run: `turbo run typecheck` runs exactly what the workspaces
  * declare, and a config file nobody names runs nowhere.
  */
-function typecheckProjects(manifests) {
+function projectsOf(manifests, scriptName) {
   const found = [];
   for (const manifest of manifests) {
-    const script = JSON.parse(readFileSync(join(repoRoot, manifest), 'utf8')).scripts?.typecheck;
+    const script = JSON.parse(readFileSync(join(repoRoot, manifest), 'utf8')).scripts?.[scriptName];
     if (script === undefined) continue;
     const dir = dirname(manifest);
     for (const match of script.matchAll(/-p\s+(\S+)/g)) {
@@ -127,7 +124,8 @@ async function filesOf(project) {
 step('Typecheck coverage (every TypeScript file is handed to a typecheck that runs)');
 
 const tree = collect();
-const projects = typecheckProjects(tree.manifests);
+const projects = projectsOf(tree.manifests, 'typecheck');
+const emitted = projectsOf(tree.manifests, 'build');
 
 const covered = new Set();
 for (const files of await Promise.all(
@@ -149,13 +147,10 @@ for (const files of await Promise.all(
 
 const findings = [];
 let checked = 0;
-let carvedOut = 0;
 
 for (const file of tree.sources) {
   if (covered.has(file)) {
     checked += 1;
-  } else if (TEST_FILE.test(file)) {
-    carvedOut += 1;
   } else {
     findings.push({
       line: `${file}: outside every tsconfig a \`typecheck\` script runs`,
@@ -164,11 +159,13 @@ for (const file of tree.sources) {
   }
 }
 
-const named = new Set(projects.map((project) => join(project.dir, project.config)));
+const named = new Set(
+  [...projects, ...emitted].map((project) => join(project.dir, project.config)),
+);
 for (const config of tree.projects) {
   if (SHARED_BASES.has(config) || named.has(config)) continue;
   findings.push({
-    line: `${config}: no \`typecheck\` script runs this project`,
+    line: `${config}: no \`typecheck\` or \`build\` script runs this project`,
     hint: "Name it in the workspace's `typecheck` script, or delete it. A project file nobody runs reads like coverage and is none.",
   });
 }
@@ -182,7 +179,5 @@ if (findings.length > 0) {
   );
 }
 
-info(
-  `${checked} files across ${projects.length} projects, ${carvedOut} test files carved out (#99)`,
-);
-ok('Every TypeScript file that is not a test is handed to a typecheck.');
+info(`${checked} files across ${projects.length} projects`);
+ok('Every TypeScript file is handed to a typecheck.');

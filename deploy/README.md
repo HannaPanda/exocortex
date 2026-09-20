@@ -315,7 +315,7 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
    | `check-feature-coverage.mjs`       | a tool, screen or automation trigger the feature registry does not describe, and a claim that matches nothing (rule 15, ADR-040)          |
    | `check-docs-current.mjs`           | a package, queue, maintenance task, compose service or unit no central document names, and claims the tree disproves (rule 13, issue #58) |
    | `check-test-split.mjs`             | a unit test that opens a database, and a workspace whose tests no CI run executes (issue #93)                                             |
-   | `check-typecheck-coverage.mjs`     | a TypeScript file outside every tsconfig, and a project file no `typecheck` script runs (issue #95)                                       |
+   | `check-typecheck-coverage.mjs`     | a TypeScript file outside every tsconfig, tests included, and a project file nothing runs (issue #95, issue #99)                          |
    | `check-migrations-reproducible.sh` | a migration history that does not rebuild `schema.prisma` from zero                                                                       |
 
    Each one prints its findings and one sentence on how to fix them. The

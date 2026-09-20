@@ -6,6 +6,7 @@ import {
   createStdioServer,
   type JsonRpcRequest,
   type JsonRpcResponse,
+  type OutgoingMessage,
   type StdioIo,
 } from './stdio.js';
 
@@ -13,11 +14,13 @@ import {
 function createFakeIo(): {
   io: StdioIo;
   input: EventEmitter;
-  writes: JsonRpcResponse[];
+  writes: OutgoingMessage[];
   state: { ended: boolean };
 } {
   const input = new EventEmitter();
-  const writes: JsonRpcResponse[] = [];
+  // Responses and notifications alike: `write` is the one way out of the
+  // server, and a notification is not a response.
+  const writes: OutgoingMessage[] = [];
   const state = { ended: false };
   const io: StdioIo = {
     input: {
