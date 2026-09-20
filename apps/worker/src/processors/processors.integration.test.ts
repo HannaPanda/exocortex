@@ -213,6 +213,8 @@ type QueueKey = (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES];
  * tests that do exercise the sync point `fetch` at this host themselves.
  */
 const OPENROUTER_TEST_BASE_URL = 'https://openrouter.test/api/v1';
+/** What a notification links back to; the sweeps under test never follow it. */
+const APP_TEST_URL = 'https://exocortex.test';
 
 /**
  * Builds a job context with a progress recorder. The processors are invoked
@@ -454,6 +456,7 @@ describe('document materialization', () => {
         bus,
         settings: stubSettings(),
         openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
       })(
         contextFor<'maintenance'>({
           correlationId: 'test-rematerialize-1',
@@ -481,6 +484,7 @@ describe('document materialization', () => {
         bus,
         settings: stubSettings(),
         openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
       })(
         contextFor<'maintenance'>({
           correlationId: 'test-rematerialize-2',
@@ -819,6 +823,7 @@ describe('semantic search', () => {
     try {
       const processor = createMaintenanceProcessor({
         openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
         prisma,
         queues,
         storage: recordingStorage(),
@@ -907,6 +912,7 @@ describe('semantic search', () => {
     const documentId = await indexedPage('Bleibt leer', 'Noch ein Text von vorher.');
     const processor = createMaintenanceProcessor({
       openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+      appUrl: APP_TEST_URL,
       prisma,
       queues,
       storage: recordingStorage(),
@@ -1142,6 +1148,7 @@ describe('memory retention', () => {
   function pruner(overrides: Partial<Settings>) {
     return createMaintenanceProcessor({
       openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+      appUrl: APP_TEST_URL,
       prisma,
       queues,
       storage: recordingStorage(),
@@ -1305,6 +1312,7 @@ async function createAiRunRow(
 async function drainOutboxBacklog(): Promise<void> {
   const processor = createMaintenanceProcessor({
     openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+    appUrl: APP_TEST_URL,
     search,
     prisma,
     queues,
@@ -1344,6 +1352,7 @@ describe('maintenance', () => {
 
     const processor = createMaintenanceProcessor({
       openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+      appUrl: APP_TEST_URL,
       search,
       prisma,
       queues,
@@ -1411,6 +1420,7 @@ describe('maintenance', () => {
 
     const processor = createMaintenanceProcessor({
       openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+      appUrl: APP_TEST_URL,
       search,
       prisma,
       queues,
@@ -1499,6 +1509,7 @@ describe('maintenance', () => {
 
     const processor = createMaintenanceProcessor({
       openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+      appUrl: APP_TEST_URL,
       search,
       prisma,
       queues,
@@ -1545,6 +1556,7 @@ describe('maintenance', () => {
 
     const processor = createMaintenanceProcessor({
       openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+      appUrl: APP_TEST_URL,
       search,
       prisma,
       queues,
@@ -1618,6 +1630,7 @@ describe('maintenance', () => {
 
       const processor = createMaintenanceProcessor({
         openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
         search,
         prisma,
         queues,
@@ -1649,6 +1662,7 @@ describe('maintenance', () => {
 
       const processor = createMaintenanceProcessor({
         openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
         search,
         prisma,
         queues,
@@ -1679,6 +1693,7 @@ describe('maintenance', () => {
 
       const processor = createMaintenanceProcessor({
         openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
         search,
         prisma,
         queues,
@@ -1709,6 +1724,7 @@ describe('maintenance', () => {
 
       const processor = createMaintenanceProcessor({
         openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
         search,
         prisma,
         queues,
@@ -1735,6 +1751,7 @@ describe('maintenance', () => {
 
       const processor = createMaintenanceProcessor({
         openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
         search,
         prisma,
         queues,
@@ -1806,6 +1823,7 @@ describe('maintenance', () => {
     const deleted: string[] = [];
     const processor = createMaintenanceProcessor({
       openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+      appUrl: APP_TEST_URL,
       search,
       prisma,
       queues,
@@ -1844,6 +1862,7 @@ describe('maintenance', () => {
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
       openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+      appUrl: APP_TEST_URL,
       search,
       prisma,
       queues,
@@ -1879,6 +1898,7 @@ describe('maintenance', () => {
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
       openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+      appUrl: APP_TEST_URL,
       search,
       prisma,
       queues,
@@ -1914,6 +1934,7 @@ describe('maintenance', () => {
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
       openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+      appUrl: APP_TEST_URL,
       search,
       prisma,
       queues,
@@ -1953,6 +1974,7 @@ describe('maintenance', () => {
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
       openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+      appUrl: APP_TEST_URL,
       search,
       prisma,
       queues,
@@ -1990,6 +2012,7 @@ describe('maintenance', () => {
     const published: { type: string; payload: Record<string, unknown> }[] = [];
     const processor = createMaintenanceProcessor({
       openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+      appUrl: APP_TEST_URL,
       search,
       prisma,
       queues,
@@ -2039,6 +2062,7 @@ describe('maintenance', () => {
 
       const processor = createMaintenanceProcessor({
         openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
         search,
         prisma,
         queues,
@@ -2069,6 +2093,7 @@ describe('maintenance', () => {
 
       const processor = createMaintenanceProcessor({
         openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
         search,
         prisma,
         queues,
@@ -2113,6 +2138,7 @@ describe('maintenance', () => {
 
       const processor = createMaintenanceProcessor({
         openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
         search,
         prisma,
         queues,
@@ -2156,6 +2182,7 @@ describe('maintenance', () => {
 
       const processor = createMaintenanceProcessor({
         openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
         search,
         prisma,
         queues,
@@ -2198,6 +2225,7 @@ describe('maintenance', () => {
 
       const processor = createMaintenanceProcessor({
         openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
         search,
         prisma,
         queues,
@@ -2253,6 +2281,7 @@ describe('maintenance', () => {
 
       const processor = createMaintenanceProcessor({
         openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+        appUrl: APP_TEST_URL,
         search,
         prisma,
         queues,
@@ -3900,6 +3929,7 @@ Ein Absatz mit [[Zielseite]] mittendrin und einer @[[Zielseite]].
   function maintenance() {
     return createMaintenanceProcessor({
       openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+      appUrl: APP_TEST_URL,
       search,
       prisma,
       queues,
@@ -4481,6 +4511,7 @@ describe('rendering', () => {
 
     const maintenance = createMaintenanceProcessor({
       openRouterBaseUrl: OPENROUTER_TEST_BASE_URL,
+      appUrl: APP_TEST_URL,
       prisma,
       queues,
       storage: recordingStorage(),

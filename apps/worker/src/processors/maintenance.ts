@@ -62,6 +62,8 @@ export interface MaintenanceDependencies {
   embeddingBackfillBatchSize?: number;
   /** Where the OpenRouter catalogue is read from (ADR-032). */
   openRouterBaseUrl: string;
+  /** Public base URL, so a notification can link back to the page it is about. */
+  appUrl: string;
 }
 
 type MaintenanceTaskName = JobContext<typeof QUEUE_NAMES.maintenance>['payload']['task'];
@@ -121,6 +123,7 @@ export function createMaintenanceProcessor(dependencies: MaintenanceDependencies
       bus: dependencies.bus,
       settings: dependencies.settings,
       openRouterBaseUrl: dependencies.openRouterBaseUrl,
+      appUrl: dependencies.appUrl,
       outboxBatchSize: dependencies.outboxBatchSize ?? 100,
       orphanedCoverGraceMs: dependencies.orphanedCoverGraceMs ?? 60 * 60 * 1000,
       linkBackfillBatchSize: dependencies.linkBackfillBatchSize ?? 50,

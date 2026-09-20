@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildReminderMessage, type ReminderContext } from './reminder-message';
+import {
+  buildReminderMessage,
+  buildReminderNotification,
+  type ReminderContext,
+} from './reminder-message';
 
 const context: ReminderContext = {
   title: 'Zahnarzt',
@@ -115,5 +119,42 @@ describe('buildReminderMessage', () => {
 
     // 23:00 Berlin to 03:00 the next day: a bare "bis 03:00" would be ambiguous.
     expect(message).toContain('23:00 Uhr bis 21.08.2026, 03:00 Uhr');
+  });
+});
+
+describe('buildReminderNotification', () => {
+  it('puts the countdown and the title on the first line and the details on the second', () => {
+    const notification = buildReminderNotification(
+      {
+        start: new Date('2026-08-20T14:00:00.000Z'),
+        end: new Date('2026-08-20T15:00:00.000Z'),
+        allDay: false,
+      },
+      { ...context, location: 'Praxis Dr. Meier' },
+    );
+
+    expect(notification).toEqual({
+      title: 'In 28 Minuten: Zahnarzt',
+      body: '16:00 bis 17:00 Uhr · Praxis Dr. Meier',
+    });
+  });
+
+  it('carries no link in its text: tapping the notification is what opens the page', () => {
+    const notification = buildReminderNotification(
+      { start: new Date('2026-08-20T14:00:00.000Z'), end: null, allDay: false },
+      { ...context, url: 'https://exocortex.test/arbeitsbereich/w/seite/p' },
+    );
+
+    expect(notification.body).not.toContain('http');
+    expect(notification.title).not.toContain('http');
+  });
+
+  it('never has an empty body, because a platform renders that differently', () => {
+    const notification = buildReminderNotification(
+      { start: new Date('2026-08-20T00:00:00.000Z'), end: null, allDay: true },
+      { ...context, title: 'Geburtstag', location: null },
+    );
+
+    expect(notification).toEqual({ title: 'Heute: Geburtstag', body: 'Ganztägig' });
   });
 });

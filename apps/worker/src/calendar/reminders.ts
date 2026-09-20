@@ -5,7 +5,12 @@ import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 
 import { type ReminderNotifier } from './notifier';
 import { REMINDER_WINDOW_MS } from './reminder-constants';
-import { buildReminderMessage } from './reminder-message';
+import {
+  buildReminderMessage,
+  buildReminderNotification,
+  type ReminderContext,
+  type ReminderSpan,
+} from './reminder-message';
 import { isDue, type ReminderSchedule, reminderWindowFor } from './reminder-time';
 import { readAllRows, readSpan, readText, valueOf } from './rows';
 
@@ -13,7 +18,29 @@ export interface SendRemindersInput {
   prisma: PrismaClient;
   /** An API client acting as the given user; the sweep reads rows as their owner. */
   apiClientFor: (userId: string) => ExocortexApiClient;
-  notifier: ReminderNotifier;
+  /**
+   * The deployment-wide channel: one messenger, one target, everybody's
+   * appointments. Null when none is configured, which is now an ordinary
+   * state rather than the end of the sweep -- push is the other channel and
+   * either of them alone is enough (issue #30, ADR-048).
+   */
+  notifier: ReminderNotifier | null;
+  /**
+   * Notifies the calendar's *owner* on their own devices.
+   *
+   * The per-person half of the same reminder, and the reason it takes a user
+   * id: the command notifier reaches one configured target, which on a
+   * deployment with two accounts is the wrong person half the time.
+   */
+  pushTo:
+    | ((input: {
+        userId: string;
+        title: string;
+        body: string;
+        url: string;
+        tag: string;
+      }) => Promise<void>)
+    | null;
   logger: Logger;
   /**
    * The schedule in force for one workspace (issue #52, ADR-023).
@@ -126,23 +153,29 @@ export async function sendDueReminders(input: SendRemindersInput): Promise<SendR
       continue;
     }
 
-    const message = buildReminderMessage(span, {
+    const url = `${input.appUrl.replace(/\/$/, '')}/arbeitsbereich/${state.link.account.workspaceId}/seite/${state.rowDocumentId}`;
+    const context = {
       title: row.document.title,
       location: readText(valueOf(row, map.location)),
-      url: `${input.appUrl.replace(/\/$/, '')}/arbeitsbereich/${state.link.account.workspaceId}/seite/${state.rowDocumentId}`,
+      url,
       timeZone: schedule.timeZone,
       now: input.now,
-    });
+    };
 
-    try {
-      await input.notifier.send(message);
-    } catch (error) {
+    const failures = await deliver(input, {
+      span,
+      context,
+      userId: state.link.account.userId,
+      url,
+      rowDocumentId: state.rowDocumentId,
+    });
+    if (failures !== null) {
       // Left unmarked on purpose, so the next sweep tries again while the
       // appointment is still ahead. A reminder that failed silently is worse than
       // no reminder at all, so it is also logged.
       input.logger.warn('Could not deliver a calendar reminder', {
         stateId: state.id,
-        reason: error instanceof Error ? error.message : String(error),
+        reason: failures.join('; '),
       });
       result.failed += 1;
       continue;
@@ -156,4 +189,57 @@ export async function sendDueReminders(input: SendRemindersInput): Promise<SendR
   }
 
   return result;
+}
+
+/**
+ * Sends one reminder on every configured channel.
+ *
+ * Returns null when at least one channel accepted it, and the collected
+ * reasons when none did. One of them succeeding is enough to call the
+ * appointment announced: the alternative -- marking only when both worked --
+ * would re-announce on the channel that already delivered, every minute, until
+ * the broken one came back. That is precisely the failure a reminder must not
+ * have.
+ */
+async function deliver(
+  input: SendRemindersInput,
+  event: {
+    span: ReminderSpan;
+    context: ReminderContext;
+    userId: string;
+    url: string;
+    rowDocumentId: string;
+  },
+): Promise<string[] | null> {
+  let delivered = false;
+  const failures: string[] = [];
+
+  if (input.notifier !== null) {
+    try {
+      await input.notifier.send(buildReminderMessage(event.span, event.context));
+      delivered = true;
+    } catch (error) {
+      failures.push(error instanceof Error ? error.message : String(error));
+    }
+  }
+
+  if (input.pushTo !== null) {
+    const notification = buildReminderNotification(event.span, event.context);
+    try {
+      await input.pushTo({
+        userId: event.userId,
+        title: notification.title,
+        body: notification.body,
+        url: event.url,
+        // Per appointment, so a reminder re-sent after an edit replaces the
+        // earlier one instead of stacking beside it.
+        tag: `calendar:${event.rowDocumentId}`,
+      });
+      delivered = true;
+    } catch (error) {
+      failures.push(error instanceof Error ? error.message : String(error));
+    }
+  }
+
+  return delivered ? null : failures;
 }

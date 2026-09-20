@@ -3,6 +3,7 @@ import { type OutboxEvent, type PrismaClient } from '@exocortex/database';
 import { withSpan } from '@exocortex/logger';
 
 import { fireMatchingAutomations } from './automations';
+import { scheduleCommentNotifications } from './comment-notifications';
 import { isMissingRow, type MaintenanceTask } from './context';
 import { scheduleOverviewRefreshes } from './overviews';
 
@@ -127,6 +128,19 @@ async function dispatchEvent(
       debounceSecondsFor: async (workspaceId) =>
         (await context.settings(workspaceId))['overview.debounceSeconds'],
     },
+    {
+      workspaceId: event.workspaceId,
+      type: event.type,
+      payload: event.payload,
+      correlationId: event.correlationId,
+    },
+  );
+  // A push notification hangs off the outbox for the third time, and for the
+  // same reason (issue #30, ADR-048): this is where a comment passes exactly
+  // once. A deployment with no subscribed device pays for one indexed count
+  // per comment and nothing more.
+  await scheduleCommentNotifications(
+    { prisma, queues, appUrl: context.appUrl },
     {
       workspaceId: event.workspaceId,
       type: event.type,

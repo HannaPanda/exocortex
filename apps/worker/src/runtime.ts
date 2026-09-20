@@ -36,6 +36,8 @@ import { type ObjectStorage, S3ObjectStorage } from '@exocortex/storage';
 import { type AiKeyResolver, createAiKeyResolver, type ResolvedAiKey } from './ai-key';
 import { createCommandNotifier } from './calendar/notifier';
 import { type ResolvedModelRow } from './processors/ai-run';
+import { createPushSender, type PushSender } from './push/send';
+import { vapidKeysFromEnv } from './push/vapid';
 import {
   createToolRunner,
   type ToolRunnerFactory,
@@ -99,6 +101,14 @@ export interface WorkerRuntime {
     baseUrl: string | null;
   }) => { baseUrl: string; username: string; password: string } | null;
   reminderNotifier: ReturnType<typeof createCommandNotifier> | null;
+  /**
+   * How an encrypted notification reaches a device (issue #30, ADR-048).
+   *
+   * Null on a deployment with no VAPID key pair, which is the ordinary state
+   * of a fresh installation: push is then simply off, and every other part of
+   * the worker is unchanged.
+   */
+  pushSender: PushSender | null;
   imageGeneratorFor: (modelSlug: string | null) => ImageGenerator | null;
   /**
    * A vision companion for one model slug, optionally paid for with a
@@ -145,6 +155,9 @@ export interface JobProgressEvent {
     // A project build says the same through `project.build.updated`, and
     // latexmk says nothing about how far through its passes it is either.
     | typeof QUEUE_NAMES.projectBuild
+    // Nor does a push notification: the device it is aimed at is precisely the
+    // one nobody is looking at (issue #30, ADR-048).
+    | typeof QUEUE_NAMES.push
   >;
   workspaceId: string;
   correlationId: string;
@@ -379,6 +392,15 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
           logger,
         });
 
+  /*
+   * Push notifications (issue #30, ADR-048). The key pair is a credential and
+   * lives in the environment, never in the `setting` table (ADR-023). Half a
+   * pair is no pair, which `vapidKeysFromEnv` decides, and an absent one
+   * leaves push off without stopping the boot.
+   */
+  const vapidKeys = vapidKeysFromEnv(env);
+  const pushSender = vapidKeys === null ? null : createPushSender({ keys: vapidKeys });
+
   const { imageGeneratorFor, visionPreprocessorFor, pdfDocumentInfo, pdfExtractorChain } =
     createMediaFactories(env, logger);
 
@@ -424,6 +446,9 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
       // `project.build.updated` carries the status, and latexmk says nothing
       // about how far through its passes it is.
       | typeof QUEUE_NAMES.projectBuild
+      // Nor does a push notification: the device it is aimed at is precisely
+      // the one nobody is looking at (issue #30, ADR-048).
+      | typeof QUEUE_NAMES.push
     >;
     workspaceId: string;
     correlationId: string;
@@ -462,6 +487,7 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
     apiClientFor,
     resolveCalendarCredentials,
     reminderNotifier,
+    pushSender,
     imageGeneratorFor,
     visionPreprocessorFor,
     pdfDocumentInfo,

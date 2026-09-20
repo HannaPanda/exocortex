@@ -36,6 +36,8 @@ export interface MaintenanceContext {
   embeddingBackfillBatchSize: number;
   /** Where the OpenRouter catalogue is read from, for the model route refresh (ADR-032). */
   openRouterBaseUrl: string;
+  /** Public base URL, so a notification can link back to the page it is about. */
+  appUrl: string;
   payload: MaintenanceJob['payload'];
   logger: MaintenanceJob['logger'];
   reportProgress: MaintenanceJob['reportProgress'];

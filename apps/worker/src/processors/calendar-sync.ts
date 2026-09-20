@@ -18,7 +18,7 @@ import {
 } from '../calendar/provision';
 import { pullLink } from '../calendar/pull';
 import { pushLink } from '../calendar/push';
-import { sendDueReminders } from '../calendar/reminders';
+import { sendDueReminders, type SendRemindersInput } from '../calendar/reminders';
 
 export interface CalendarSyncDependencies {
   prisma: PrismaClient;
@@ -45,6 +45,21 @@ export interface CalendarSyncDependencies {
    * half-working.
    */
   notifier: ReminderNotifier | null;
+  /**
+   * Enqueues a push notification for the calendar's owner, or null when this
+   * deployment sends none (issue #30, ADR-048). The second channel beside
+   * `notifier`, and the only one that reaches the right person on a
+   * deployment with more than one account.
+   */
+  pushReminder:
+    | ((input: {
+        userId: string;
+        title: string;
+        body: string;
+        url: string;
+        tag: string;
+      }) => Promise<void>)
+    | null;
   /** Runtime settings, read per job so an admin's change takes effect at once. */
   settings: (workspaceId?: string) => Promise<Settings>;
   /** Public base URL, so a reminder can link back to the page it came from. */
@@ -157,12 +172,13 @@ async function runReminders(input: {
   prisma: PrismaClient;
   apiClientFor: (userId: string) => ExocortexApiClient;
   notifier: ReminderNotifier | null;
+  pushReminder: SendRemindersInput['pushTo'];
   settings: (workspaceId?: string) => Promise<Settings>;
   appUrl: string;
   logger: Logger;
 }): Promise<void> {
-  if (input.notifier === null) {
-    input.logger.debug('Calendar reminders need a sender, and none is configured');
+  if (input.notifier === null && input.pushReminder === null) {
+    input.logger.debug('Calendar reminders need a channel, and neither is configured');
     return;
   }
 
@@ -175,6 +191,7 @@ async function runReminders(input: {
     prisma: input.prisma,
     apiClientFor: input.apiClientFor,
     notifier: input.notifier,
+    pushTo: input.pushReminder,
     logger: input.logger,
     scheduleFor: async (workspaceId) => {
       const settings = await input.settings(workspaceId);

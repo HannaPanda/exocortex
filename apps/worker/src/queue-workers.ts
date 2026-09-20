@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import { type WorkerEnv } from '@exocortex/config';
 import {
   AI_QUEUE_LOCK_DURATION_MS,
@@ -24,11 +26,12 @@ import { createMaterializeDocumentProcessor } from './processors/materialize-doc
 import { createMemoryCaptureProcessor } from './processors/memory-capture';
 import { createMemoryConsolidateProcessor } from './processors/memory-consolidate';
 import { createProjectBuildProcessor } from './processors/project-build';
+import { createPushDeliveryProcessor } from './processors/push-delivery';
 import { createRenderProcessor } from './processors/render';
 import { type WorkerRuntime } from './runtime';
 
 /**
- * The twelve queues this process listens on.
+ * The fifteen queues this process listens on.
  *
  * Concurrency is per queue and deliberately uneven: materialization is cheap
  * and parallel, PDF extraction is CPU-bound and runs one at a time.
@@ -37,7 +40,7 @@ import { type WorkerRuntime } from './runtime';
  * What the shutdown path needs from a started worker, and nothing else.
  *
  * Structural rather than `ReturnType<typeof createTypedWorker>`: each queue has
- * its own payload type, so the twelve of them only share this much.
+ * its own payload type, so the fifteen of them only share this much.
  */
 export interface QueueWorker {
   worker: { close: () => Promise<void> };
@@ -45,7 +48,7 @@ export interface QueueWorker {
 }
 
 /**
- * The twelve queues this process listens on, in two groups.
+ * The fifteen queues this process listens on, in two groups.
  *
  * Concurrency is per queue and deliberately uneven: materialization is cheap
  * and parallel, PDF extraction is an external call and runs one at a time so it
@@ -213,6 +216,7 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
       search,
       settings: readSettings,
       openRouterBaseUrl: env.OPENROUTER_BASE_URL,
+      appUrl: env.APP_URL,
     }),
   });
 
@@ -231,6 +235,7 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     apiClientFor,
     resolveCalendarCredentials,
     reminderNotifier,
+    pushSender,
     imageGeneratorFor,
     pdfDocumentInfo,
     pdfExtractorChain,
@@ -324,6 +329,9 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
       apiClientFor,
       credentialsFor: resolveCalendarCredentials,
       notifier: reminderNotifier,
+      // Null when no VAPID pair is configured, so the sweep keeps its old
+      // shape on a deployment that sends no push notifications.
+      pushReminder: pushSender === null ? null : pushReminderVia(queues),
       settings: readSettings,
       appUrl: env.APP_URL,
     }),
@@ -430,6 +438,18 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     }),
   });
 
+  // Concurrency 4: a notification is one small HTTPS POST per device and the
+  // job spends its life waiting for a push service to answer. Four is enough
+  // that a slow service cannot hold up an appointment reminder for somebody
+  // else, and small enough that a fan-out never looks like an attack.
+  const push = createTypedWorker({
+    name: QUEUE_NAMES.push,
+    redisUrl: env.REDIS_URL,
+    logger,
+    concurrency: 4,
+    handler: createPushDeliveryProcessor({ prisma, sender: pushSender }),
+  });
+
   return [
     attachmentText,
     documentCover,
@@ -441,5 +461,35 @@ function startMediaWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logge
     automation,
     render,
     projectBuild,
+    push,
   ];
+}
+
+/**
+ * Turns a due reminder into a push job for the calendar's owner.
+ *
+ * A separate function rather than a closure inside the worker factory, which
+ * is at its line limit: this is the one piece of the calendar wiring that has
+ * a name of its own (issue #30, ADR-048).
+ */
+function pushReminderVia(queues: WorkerRuntime['queues']) {
+  return async (notification: {
+    userId: string;
+    title: string;
+    body: string;
+    url: string;
+    tag: string;
+  }): Promise<void> => {
+    await queues.enqueue(QUEUE_NAMES.push, {
+      correlationId: randomUUID(),
+      userId: notification.userId,
+      kind: 'CALENDAR_REMINDER',
+      notification: {
+        title: notification.title,
+        body: notification.body,
+        url: notification.url,
+        tag: notification.tag,
+      },
+    });
+  };
 }

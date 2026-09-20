@@ -37,6 +37,30 @@ export function buildReminderMessage(span: ReminderSpan, context: ReminderContex
   return lines.join('\n');
 }
 
+/**
+ * The same reminder as a push notification (issue #30, ADR-048).
+ *
+ * Two fields rather than three lines, because that is the shape a lock screen
+ * has: one line that is read at a glance and one that is read if the first one
+ * earned it. The link is not in the text at all -- tapping the notification is
+ * what opens the page.
+ */
+export function buildReminderNotification(
+  span: ReminderSpan,
+  context: ReminderContext,
+): { title: string; body: string } {
+  const detail = [describeSpan(span, context.timeZone), context.location?.trim()]
+    .filter((part): part is string => part !== undefined && part.length > 0)
+    .join(' · ');
+
+  return {
+    title: `${lead(span, context)}: ${context.title.trim()}`,
+    // Never empty: `describeSpan` always says something, and a notification
+    // with an empty body is rendered differently by every platform.
+    body: detail.length > 0 ? detail : 'Termin',
+  };
+}
+
 /** The part before the title: how far away the appointment is. */
 function lead(span: ReminderSpan, context: ReminderContext): string {
   if (span.allDay) return 'Heute';

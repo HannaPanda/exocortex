@@ -246,6 +246,10 @@ function run(
     prisma,
     apiClientFor: fakeApi(rows),
     notifier,
+    // The push channel has its own suite; this one is about the command
+    // notifier, and a second channel here would make every assertion about
+    // which of the two delivered.
+    pushTo: null,
     logger,
     // Resolved per workspace since issue #52; this suite has exactly one.
     scheduleFor: async () => SCHEDULE,
