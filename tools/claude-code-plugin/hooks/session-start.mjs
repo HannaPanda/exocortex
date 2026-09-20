@@ -43,10 +43,16 @@ async function main() {
     timeoutMs: TIMEOUT_MS,
   });
 
-  if (recalled === null || !Array.isArray(recalled.hits) || recalled.hits.length === 0) return;
+  if (recalled === null) return;
+  const hits = Array.isArray(recalled.hits) ? recalled.hits : [];
+  // Unread mail from other agents (issue #51). It rides along in the recall,
+  // so a session with post but no matching notes is still worth injecting.
+  const messages = Array.isArray(recalled.messages) ? recalled.messages : [];
+  if (hits.length === 0 && messages.length === 0) return;
 
   const context = [
-    `Gedächtnis aus eXocortex zu \`${project}\` (${String(recalled.hits.length)} Einträge):`,
+    `Gedächtnis aus eXocortex zu \`${project}\` (${String(hits.length)} Einträge` +
+      `${messages.length === 0 ? '' : `, ${String(messages.length)} Nachrichten`}):`,
     '',
     recalled.text,
     '',
@@ -62,6 +68,28 @@ async function main() {
       },
     })}\n`,
   );
+
+  await acknowledge(config, messages);
+}
+
+/**
+ * Marks the delivered messages as read.
+ *
+ * After the write above, never before: the recall deliberately does not
+ * acknowledge anything, so the moment delivery actually happened is the moment
+ * the text reached this session's context. A failure here leaves the messages
+ * unread, which repeats them next time -- the safe direction, and the reason
+ * this is not worth a retry.
+ */
+async function acknowledge(config, messages) {
+  const ids = messages.map((message) => message?.id).filter((id) => typeof id === 'string');
+  if (ids.length === 0) return;
+  await callApi(config, {
+    method: 'POST',
+    path: '/api/memory/messages/read',
+    body: { ids },
+    timeoutMs: TIMEOUT_MS,
+  });
 }
 
 main().catch(() => {
