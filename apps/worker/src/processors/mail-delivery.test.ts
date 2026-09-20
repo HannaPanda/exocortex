@@ -78,7 +78,11 @@ describe('createMailDeliveryProcessor', () => {
   });
 
   it('sends each template the catalogue offers', async () => {
-    const send = vi.fn(async () => ({ messageId: null, accepted: ['a@b.de'], rejected: [] }));
+    const templates: string[] = [];
+    const send: Mailer['send'] = async ({ message }) => {
+      templates.push(message.template);
+      return { messageId: null, accepted: ['a@b.de'], rejected: [] };
+    };
     const processor = createMailDeliveryProcessor({ mailer: mailerThat(send) });
 
     await processor(
@@ -96,10 +100,6 @@ describe('createMailDeliveryProcessor', () => {
       }),
     );
 
-    expect(
-      send.mock.calls.map(
-        ([input]) => (input as { message: { template: string } }).message.template,
-      ),
-    ).toEqual(['PASSWORD_RESET', 'EMAIL_VERIFICATION']);
+    expect(templates).toEqual(['PASSWORD_RESET', 'EMAIL_VERIFICATION']);
   });
 });
