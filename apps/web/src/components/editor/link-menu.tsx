@@ -14,7 +14,7 @@ import {
 import { Button, Input, Popover, PopoverContent, PopoverTrigger } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
-import { useDocumentTree } from '@/lib/api/queries';
+import { useDocumentTree } from '@/lib/api/document-queries';
 
 import { FollowLinkContext } from './follow-link-context';
 

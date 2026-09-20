@@ -33,7 +33,8 @@ import {
 } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
-import { useCreateDocument, useWorkspaceOverview } from '@/lib/api/queries';
+import { useCreateDocument } from '@/lib/api/document-queries';
+import { useWorkspaceOverview } from '@/lib/api/workspace-queries';
 import { formatRelativeTime } from '@/lib/relative-time';
 
 /**

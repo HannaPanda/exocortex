@@ -23,7 +23,7 @@ import {
 } from '@exocortex/contracts';
 
 import { apiRequest } from './client';
-import { queryKeys } from './queries';
+import { queryKeys } from './query-keys';
 
 export const databaseQueryKeys = {
   properties: (documentId: string) => ['database', documentId, 'properties'] as const,

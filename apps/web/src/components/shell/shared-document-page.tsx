@@ -2,7 +2,7 @@
 
 import { ErrorState, LoadingState } from '@exocortex/ui';
 
-import { useDocument } from '@/lib/api/queries';
+import { useDocument } from '@/lib/api/document-queries';
 
 import { DocumentView } from './document-view';
 

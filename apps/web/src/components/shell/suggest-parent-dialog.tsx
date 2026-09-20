@@ -26,9 +26,9 @@ import {
 } from '@exocortex/ui';
 
 import { ApiError, apiRequest } from '@/lib/api/client';
+import { useMoveDocument } from '@/lib/api/document-queries';
 import { messageForCode } from '@/lib/api/error-messages';
 import { useSuggestParent } from '@/lib/api/placement-queries';
-import { useMoveDocument } from '@/lib/api/queries';
 import { shareKeys } from '@/lib/api/share-queries';
 
 /**

@@ -24,7 +24,7 @@ import {
 } from '@exocortex/ui';
 
 import { useDatabaseProperties } from '@/lib/api/database-queries';
-import { useDocumentTree } from '@/lib/api/queries';
+import { useDocumentTree } from '@/lib/api/document-queries';
 
 import { PROPERTY_TYPE_LABELS } from './property-types';
 

@@ -32,7 +32,7 @@ import {
   useUpdateAiConversation,
 } from '@/lib/api/ai-queries';
 import { ApiError } from '@/lib/api/client';
-import { useDocument } from '@/lib/api/queries';
+import { useDocument } from '@/lib/api/document-queries';
 import { usePersistentState } from '@/lib/use-persistent-state';
 
 import { useAiSelection } from './ai-selection';

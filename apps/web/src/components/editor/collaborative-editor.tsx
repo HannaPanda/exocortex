@@ -81,7 +81,8 @@ import {
   useDocumentSession,
 } from '@/components/shell/document-session';
 import { attachmentMediaInfoResolver } from '@/lib/api/attachment-info';
-import { uploadAttachment, useDocumentTree } from '@/lib/api/queries';
+import { uploadAttachment } from '@/lib/api/attachment-queries';
+import { useDocumentTree } from '@/lib/api/document-queries';
 
 import {
   type AskSavedQueryEmbed,

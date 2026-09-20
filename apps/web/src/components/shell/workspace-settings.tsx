@@ -47,7 +47,8 @@ import { WorkspaceSettingsForm } from '@/components/settings/workspace-settings-
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import { useRemoveWorkspaceMember, useUpdateWorkspaceMember } from '@/lib/api/invitation-queries';
-import { useSessionQuery, useUpdateWorkspace, useWorkspaceDetail } from '@/lib/api/queries';
+import { useSessionQuery } from '@/lib/api/session-queries';
+import { useUpdateWorkspace, useWorkspaceDetail } from '@/lib/api/workspace-queries';
 
 const WORKSPACE_ADMIN_ROLES = new Set(['OWNER', 'ADMIN']);
 

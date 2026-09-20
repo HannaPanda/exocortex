@@ -40,8 +40,9 @@ import {
 
 import { useApiTokens, useCreateApiToken, useRevokeApiToken } from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
+import { useDocumentTree } from '@/lib/api/document-queries';
 import { messageForCode } from '@/lib/api/error-messages';
-import { useDocumentTree, useWorkspaces } from '@/lib/api/queries';
+import { useWorkspaces } from '@/lib/api/workspace-queries';
 import { connectionSnippets } from '@/lib/connection-snippets';
 
 import { CopyBlock } from './copy-block';

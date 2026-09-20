@@ -14,7 +14,8 @@ import {
 } from '@exocortex/ui';
 
 import { useLinkEntityPage } from '@/lib/api/entity-queries';
-import { useSearch, useWorkspaces } from '@/lib/api/queries';
+import { useSearch } from '@/lib/api/search-queries';
+import { useWorkspaces } from '@/lib/api/workspace-queries';
 
 /**
  * Drawing the edge by hand (issue #47).

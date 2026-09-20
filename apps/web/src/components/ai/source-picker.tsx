@@ -7,8 +7,8 @@ import { type AddAiConversationSourceRequest } from '@exocortex/contracts';
 import { type CommandItem, CommandPalette } from '@exocortex/ui';
 
 import { useDatabaseViews } from '@/lib/api/database-queries';
-import { useSearch } from '@/lib/api/queries';
 import { useSavedQueries } from '@/lib/api/saved-query-queries';
+import { useSearch } from '@/lib/api/search-queries';
 
 export interface SourcePickerProps {
   workspaceId: string;

@@ -17,7 +17,7 @@ import {
 import { Badge, Button, LoadingState } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
-import { usePageLinkResolution } from '@/lib/api/queries';
+import { usePageLinkResolution } from '@/lib/api/page-link-queries';
 
 import { FollowLinkContext } from './follow-link-context';
 import { PageLinkPromptContext } from './page-link-context';

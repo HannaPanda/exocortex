@@ -23,7 +23,10 @@ import { groupOf, SettingRow } from '@/components/settings/setting-row';
 import { useAiModels } from '@/lib/api/ai-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
-import { useUpdateWorkspaceSettings, useWorkspaceSettings } from '@/lib/api/queries';
+import {
+  useUpdateWorkspaceSettings,
+  useWorkspaceSettings,
+} from '@/lib/api/workspace-settings-queries';
 
 /** The workspace form reports refusals as one message, not per field. */
 const NO_INVALID_GROUPS: ReadonlySet<string> = new Set<string>();

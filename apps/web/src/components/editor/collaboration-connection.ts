@@ -12,7 +12,7 @@ import {
   SELF_PRESENCE_COLOR,
   useDocumentSession,
 } from '@/components/shell/document-session';
-import { fetchCollaborationTicket } from '@/lib/api/queries';
+import { fetchCollaborationTicket } from '@/lib/api/document-queries';
 import { type ConnectionDetailValue, logConnection } from '@/lib/connection-log';
 import { onWakeSignals, type WakeReason } from '@/lib/wake-signals';
 

@@ -40,7 +40,8 @@ import {
 } from '@/lib/api/admin-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
-import { useSessionQuery, useWorkspaces } from '@/lib/api/queries';
+import { useSessionQuery } from '@/lib/api/session-queries';
+import { useWorkspaces } from '@/lib/api/workspace-queries';
 
 const ROLE_LABELS: Record<UserRole, string> = { user: 'Nutzer', admin: 'Administrator' };
 

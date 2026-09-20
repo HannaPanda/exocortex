@@ -9,7 +9,7 @@ import * as React from 'react';
 import { type DocumentSummary, type DocumentTreeNode } from '@exocortex/contracts';
 import { documentLinkTitleKey, wikiLinkDocumentId, wikiLinkTitle } from '@exocortex/editor';
 
-import { useDocumentTree } from '@/lib/api/queries';
+import { useDocumentTree } from '@/lib/api/document-queries';
 
 /** Which pages exist right now, in the two shapes a reference can name one. */
 interface KnownPages {

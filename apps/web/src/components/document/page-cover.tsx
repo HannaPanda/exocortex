@@ -23,11 +23,8 @@ import {
   Textarea,
 } from '@exocortex/ui';
 
-import {
-  useGenerateDocumentCover,
-  useUpdateDocument,
-  useUploadDocumentCover,
-} from '@/lib/api/queries';
+import { useGenerateDocumentCover, useUploadDocumentCover } from '@/lib/api/cover-queries';
+import { useUpdateDocument } from '@/lib/api/document-queries';
 import { useRealtimeEvent } from '@/lib/realtime/realtime-provider';
 
 /**

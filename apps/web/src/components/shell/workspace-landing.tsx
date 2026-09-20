@@ -6,7 +6,7 @@ import * as React from 'react';
 
 import { Button, EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
 
-import { useCreateWorkspace, useWorkspaces } from '@/lib/api/queries';
+import { useCreateWorkspace, useWorkspaces } from '@/lib/api/workspace-queries';
 
 /** Resolves the workspace to open, or offers to create the first one. */
 export function WorkspaceLanding() {

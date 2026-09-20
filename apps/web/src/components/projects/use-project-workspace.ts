@@ -14,6 +14,7 @@ import {
   type CollaborationConnectionState,
   useCollaborationConnection,
 } from '@/components/editor/collaboration-connection';
+import { uploadAttachment } from '@/lib/api/attachment-queries';
 import {
   projectKeys,
   useCancelProjectBuild,
@@ -28,7 +29,7 @@ import {
   useStartProjectBuild,
   useUpdateProject,
 } from '@/lib/api/project-queries';
-import { uploadAttachment, useSessionQuery } from '@/lib/api/queries';
+import { useSessionQuery } from '@/lib/api/session-queries';
 
 import { type ProjectSourceSync, useProjectSourceSync } from './use-project-source-sync';
 

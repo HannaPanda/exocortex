@@ -41,7 +41,7 @@ import {
   useDeleteAiConversation,
   useUpdateAiConversation,
 } from '@/lib/api/ai-queries';
-import { useWorkspaces } from '@/lib/api/queries';
+import { useWorkspaces } from '@/lib/api/workspace-queries';
 import { usePersistentState, writePersistentState } from '@/lib/use-persistent-state';
 
 import { ChatList } from './chat-list';

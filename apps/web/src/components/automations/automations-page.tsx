@@ -28,7 +28,7 @@ import {
   useTriggerAutomationRule,
   useUpdateAutomationRule,
 } from '@/lib/api/automation-queries';
-import { useWorkspaceDetail } from '@/lib/api/queries';
+import { useWorkspaceDetail } from '@/lib/api/workspace-queries';
 
 import {
   ACTION_LABELS,

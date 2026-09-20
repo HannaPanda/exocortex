@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from '@exocortex/ui';
 
-import { useRestoreSnapshotBlocks, useSnapshotDiff } from '@/lib/api/queries';
+import { useRestoreSnapshotBlocks, useSnapshotDiff } from '@/lib/api/snapshot-queries';
 
 const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
   dateStyle: 'medium',

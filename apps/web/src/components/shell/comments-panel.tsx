@@ -30,7 +30,9 @@ import {
   useResolveComment,
   useUpdateComment,
 } from '@/lib/api/comment-queries';
-import { useDocument, useSessionQuery, useWorkspaces } from '@/lib/api/queries';
+import { useDocument } from '@/lib/api/document-queries';
+import { useSessionQuery } from '@/lib/api/session-queries';
+import { useWorkspaces } from '@/lib/api/workspace-queries';
 
 export interface CommentsPanelProps {
   workspaceId: string | null;

@@ -19,12 +19,10 @@ import {
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { ApiError } from '@/lib/api/client';
-import {
-  pageLinkQueryOptions,
-  queryKeys,
-  useCreateDocument,
-  useWorkspaces,
-} from '@/lib/api/queries';
+import { useCreateDocument } from '@/lib/api/document-queries';
+import { pageLinkQueryOptions } from '@/lib/api/page-link-queries';
+import { queryKeys } from '@/lib/api/query-keys';
+import { useWorkspaces } from '@/lib/api/workspace-queries';
 
 import { type FollowLink, type FollowLinkOptions } from './follow-link-context';
 

@@ -21,7 +21,7 @@ import {
   Input,
 } from '@exocortex/ui';
 
-import { useCreateWorkspace, useWorkspaces } from '@/lib/api/queries';
+import { useCreateWorkspace, useWorkspaces } from '@/lib/api/workspace-queries';
 
 export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: string | null }) {
   const router = useRouter();

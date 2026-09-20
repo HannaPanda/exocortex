@@ -30,7 +30,7 @@ import {
   useDocumentRow,
   useUpdateDatabaseRowValues,
 } from '@/lib/api/database-queries';
-import { useDocument, useUpdateDocument } from '@/lib/api/queries';
+import { useDocument, useUpdateDocument } from '@/lib/api/document-queries';
 
 /**
  * Values of the row this page is, when it sits inside a database

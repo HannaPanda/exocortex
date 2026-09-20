@@ -43,7 +43,8 @@ import { AiSelectionProvider, useAiSelection } from '@/components/ai/ai-selectio
 import { CommentAnchorProvider, useCommentAnchor } from '@/components/comments/comment-anchor';
 import { SearchCommand } from '@/components/search/search-command';
 import { useFeatures } from '@/lib/api/feature-queries';
-import { queryKeys, useSessionQuery } from '@/lib/api/queries';
+import { queryKeys } from '@/lib/api/query-keys';
+import { useSessionQuery } from '@/lib/api/session-queries';
 import { signOut } from '@/lib/auth/client';
 import { isTypingTarget } from '@/lib/keyboard';
 import { useRealtime, useRealtimeEvent } from '@/lib/realtime/realtime-provider';

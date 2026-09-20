@@ -34,7 +34,7 @@ import {
 } from '@exocortex/contracts';
 
 import { apiRequest } from './client';
-import { queryKeys } from './queries';
+import { queryKeys } from './query-keys';
 
 /**
  * Query keys for AI models, conversations and rule pages.

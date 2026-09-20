@@ -46,18 +46,17 @@ import { PageOverview } from '@/components/document/page-overview';
 import { PagePropertiesDialog } from '@/components/document/page-properties-dialog';
 import { CollaborativeEditor } from '@/components/editor/collaborative-editor';
 import { PageRenderDialog } from '@/components/render/page-render-dialog';
-import { useInbox } from '@/lib/api/inbox-queries';
 import {
   useArchiveDocument,
   useDocument,
-  useExportMarkdown,
-  useImportMarkdown,
   useRestoreDocument,
-  useSessionQuery,
   useUpdateDocument,
-  useWorkspaces,
-} from '@/lib/api/queries';
+} from '@/lib/api/document-queries';
+import { useInbox } from '@/lib/api/inbox-queries';
+import { useExportMarkdown, useImportMarkdown } from '@/lib/api/markdown-queries';
+import { useSessionQuery } from '@/lib/api/session-queries';
 import { useDocumentShares } from '@/lib/api/share-queries';
+import { useWorkspaces } from '@/lib/api/workspace-queries';
 
 import { useDocumentSession } from './document-session';
 import { SaveIndicator } from './save-indicator';

@@ -23,8 +23,9 @@ import {
 } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
+import { uploadAttachment } from '@/lib/api/attachment-queries';
 import { ApiError } from '@/lib/api/client';
-import { uploadAttachment, useDocumentTree } from '@/lib/api/queries';
+import { useDocumentTree } from '@/lib/api/document-queries';
 import { useSavedQueries } from '@/lib/api/saved-query-queries';
 
 /**

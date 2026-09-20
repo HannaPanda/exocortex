@@ -30,14 +30,10 @@ import {
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { ApiError } from '@/lib/api/client';
+import { useRestoreDocument } from '@/lib/api/document-queries';
 import { messageForCode } from '@/lib/api/error-messages';
-import {
-  useDeleteDocuments,
-  useDeletionPreviews,
-  useRestoreDocument,
-  useTrash,
-  useWorkspaceDetail,
-} from '@/lib/api/queries';
+import { useDeleteDocuments, useDeletionPreviews, useTrash } from '@/lib/api/trash-queries';
+import { useWorkspaceDetail } from '@/lib/api/workspace-queries';
 
 interface TrashSheetProps {
   workspaceId: string;

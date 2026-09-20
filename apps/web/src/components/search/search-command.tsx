@@ -8,8 +8,9 @@ import * as React from 'react';
 import { type CommandItem, CommandPalette } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
-import { useCreateDocument, useSearch } from '@/lib/api/queries';
+import { useCreateDocument } from '@/lib/api/document-queries';
 import { useSavedQueries } from '@/lib/api/saved-query-queries';
+import { useSearch } from '@/lib/api/search-queries';
 import { documentHref } from '@/lib/document-href';
 
 export interface SearchCommandProps {

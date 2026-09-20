@@ -30,7 +30,7 @@ import {
 } from '@exocortex/ui';
 
 import { useSetAiRule } from '@/lib/api/ai-queries';
-import { useUpdateDocument } from '@/lib/api/queries';
+import { useUpdateDocument } from '@/lib/api/document-queries';
 
 import { DocumentIcon } from './document-icon';
 import { PageIconPicker } from './page-icon-picker';

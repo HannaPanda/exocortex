@@ -14,7 +14,7 @@ import {
 } from '@exocortex/ui';
 
 import { useProvisionEntityDatabase } from '@/lib/api/entity-queries';
-import { useWorkspaces } from '@/lib/api/queries';
+import { useWorkspaces } from '@/lib/api/workspace-queries';
 
 /**
  * The one-time setup: a database with the two columns the matcher reads, and

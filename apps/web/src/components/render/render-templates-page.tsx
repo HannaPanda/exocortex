@@ -19,8 +19,8 @@ import {
   TableRow,
 } from '@exocortex/ui';
 
-import { useWorkspaceDetail } from '@/lib/api/queries';
 import { useDeleteRenderTemplate, useRenderTemplates } from '@/lib/api/render-queries';
+import { useWorkspaceDetail } from '@/lib/api/workspace-queries';
 
 import { RenderTemplateDialog } from './render-template-dialog';
 

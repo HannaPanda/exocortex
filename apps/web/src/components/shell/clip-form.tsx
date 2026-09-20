@@ -25,7 +25,7 @@ import {
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import { useCapture, useClip } from '@/lib/api/inbox-queries';
-import { useWorkspaces } from '@/lib/api/queries';
+import { useWorkspaces } from '@/lib/api/workspace-queries';
 import { bookmarkletFor, type SharedContent } from '@/lib/share-target';
 
 /**

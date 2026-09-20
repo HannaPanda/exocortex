@@ -36,7 +36,8 @@ import {
   TruncatedText,
 } from '@exocortex/ui';
 
-import { useDocument, useDocumentActivity, useRestoreSnapshot } from '@/lib/api/queries';
+import { useDocument } from '@/lib/api/document-queries';
+import { useDocumentActivity, useRestoreSnapshot } from '@/lib/api/snapshot-queries';
 
 import { type DiffableSnapshot, SnapshotDiffDialog } from './snapshot-diff-dialog';
 

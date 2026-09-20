@@ -36,16 +36,16 @@ import {
 } from '@exocortex/ui';
 
 import { ApiError } from '@/lib/api/client';
-import { messageForCode } from '@/lib/api/error-messages';
-import { useCreateProject } from '@/lib/api/project-queries';
 import {
   useArchiveDocument,
   useCreateDocument,
   useDocumentTree,
   useMoveDocument,
   useUpdateDocument,
-  useWorkspaces,
-} from '@/lib/api/queries';
+} from '@/lib/api/document-queries';
+import { messageForCode } from '@/lib/api/error-messages';
+import { useCreateProject } from '@/lib/api/project-queries';
+import { useWorkspaces } from '@/lib/api/workspace-queries';
 import { documentHref } from '@/lib/document-href';
 import { usePersistentState } from '@/lib/use-persistent-state';
 

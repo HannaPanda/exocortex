@@ -38,8 +38,8 @@ import {
   operatorsForType,
 } from '@/components/database/property-types';
 import { useDatabaseProperties } from '@/lib/api/database-queries';
+import { useDocumentTree } from '@/lib/api/document-queries';
 import { useEntities } from '@/lib/api/entity-queries';
-import { useDocumentTree } from '@/lib/api/queries';
 
 /**
  * The query builder (issue #74): one form for the question behind a saved

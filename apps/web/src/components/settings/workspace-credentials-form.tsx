@@ -11,7 +11,7 @@ import {
   useRemoveWorkspaceCredential,
   useSetWorkspaceCredential,
   useWorkspaceCredentials,
-} from '@/lib/api/queries';
+} from '@/lib/api/workspace-settings-queries';
 
 /**
  * This workspace's own provider key (issue #52, AP7, ADR-023).

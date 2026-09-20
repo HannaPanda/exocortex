@@ -11,7 +11,7 @@ import {
 } from '@exocortex/contracts';
 
 import { apiRequest } from './client';
-import { queryKeys } from './queries';
+import { queryKeys } from './query-keys';
 
 /**
  * The inbox and the capture that fills it (issue #71, ADR-036).

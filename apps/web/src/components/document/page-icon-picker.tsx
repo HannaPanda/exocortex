@@ -23,7 +23,7 @@ import {
   TabsTrigger,
 } from '@exocortex/ui';
 
-import { useUpdateDocument } from '@/lib/api/queries';
+import { useUpdateDocument } from '@/lib/api/document-queries';
 
 import {
   DOCUMENT_ICON_COLOR_CLASS,

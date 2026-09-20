@@ -58,3 +58,26 @@ export async function apiRequest<TResponse>(
   }
   return payload as TResponse;
 }
+
+/**
+ * Posts a file as `multipart/form-data`.
+ *
+ * `fetch` directly rather than `apiRequest`: the browser has to set the
+ * multipart boundary itself, which it only does when no content type is given.
+ */
+export async function uploadRequest<TResponse>(path: string, form: FormData): Promise<TResponse> {
+  const response = await fetch(path, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { accept: 'application/json' },
+    body: form,
+  });
+
+  const text = await response.text();
+  const payload: unknown = text.length > 0 ? JSON.parse(text) : null;
+
+  if (!response.ok) {
+    throw new ApiError(response.status, payload as Partial<ApiErrorResponse> | null);
+  }
+  return payload as TResponse;
+}

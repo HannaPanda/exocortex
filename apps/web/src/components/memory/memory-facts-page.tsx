@@ -21,7 +21,7 @@ import {
 
 import { formatMoment } from '@/components/render/render-labels';
 import { useMemoryFacts, usePromoteMemoryFact } from '@/lib/api/memory-queries';
-import { useWorkspaces } from '@/lib/api/queries';
+import { useWorkspaces } from '@/lib/api/workspace-queries';
 
 /**
  * What the agent memory holds to be true (issue #46, ADR-021).

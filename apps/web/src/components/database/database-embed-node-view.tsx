@@ -9,7 +9,7 @@ import * as React from 'react';
 import { Button, EmptyState, LoadingState } from '@exocortex/ui';
 
 import { DatabaseEmbedPromptContext } from '@/components/editor/database-embed-context';
-import { useDocument } from '@/lib/api/queries';
+import { useDocument } from '@/lib/api/document-queries';
 
 import { DatabaseShell } from './database-shell';
 

@@ -13,7 +13,7 @@ import {
 import { Badge, EmptyState, ErrorState, LoadingState, SectionRule } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
-import { useDocumentLinks, useRelatedDocuments } from '@/lib/api/queries';
+import { useDocumentLinks, useRelatedDocuments } from '@/lib/api/page-link-queries';
 
 export interface BacklinksPanelProps {
   workspaceId: string | null;

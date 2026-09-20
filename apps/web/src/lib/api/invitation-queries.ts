@@ -15,7 +15,7 @@ import {
 } from '@exocortex/contracts';
 
 import { apiRequest } from './client';
-import { queryKeys } from './queries';
+import { queryKeys } from './query-keys';
 
 /**
  * Invitations (issue #3), from both sides: the deployment-wide admin list and a
