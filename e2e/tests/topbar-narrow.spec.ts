@@ -35,7 +35,7 @@ interface BrowserDocument {
 
 /** Jede Fläche, die im Breiten ein eigenes Icon hat, mit ihrem Menü-Eintrag. */
 const AREAS = [
-  { testId: 'open-features', label: /^Hilfe und Funktionen/, href: '/hilfe' },
+  { testId: 'open-features', label: 'Hilfe und Funktionen', href: '/hilfe' },
   { testId: 'open-chats', label: 'Chats', href: '/chats' },
   { testId: 'open-entities', label: 'Entitäten', href: '/entitaeten' },
   { testId: 'open-shared', label: 'Mit mir geteilt', href: '/geteilt' },
@@ -104,7 +104,11 @@ test.describe('Topbar im Hochformat', () => {
     for (const area of AREAS) {
       const item = page.getByTestId(`menu-${area.testId}`);
       await expect(item).toBeVisible();
-      await expect(item).toHaveText(area.label);
+      // `toContainText`, not `toHaveText`: the entry is an icon and a word, so
+      // the text node begins with the space between them, and the count in
+      // "Hilfe und Funktionen" follows it. The address below is what pins the
+      // identity of the entry.
+      await expect(item).toContainText(area.label);
       await expect(item).toHaveAttribute('href', area.href);
     }
     await expect(page.getByTestId('menu-sign-out')).toBeVisible();
