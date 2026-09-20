@@ -67,6 +67,15 @@ export const QUEUE_JOB_OPTIONS: Partial<Record<QueueName, JobsOptions>> = {
   [QUEUE_NAMES.documentOverview]: {
     attempts: 1,
   },
+  // A notification ages out of usefulness faster than anything else in this
+  // list (issue #30, ADR-048): three quick attempts are worth it because a
+  // push service does have bad minutes, but the fourth would arrive long
+  // after the appointment it was about. The processor deletes a subscription
+  // the service says is gone, so a retry never reaches a dead device.
+  [QUEUE_NAMES.push]: {
+    attempts: 3,
+    backoff: { type: 'exponential', delay: 5_000 },
+  },
 };
 
 /** Debounce window for document materialization. */

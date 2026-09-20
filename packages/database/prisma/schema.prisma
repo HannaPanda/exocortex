@@ -84,6 +84,7 @@ model User {
   updatedSavedQueries         SavedQuery[]          @relation("SavedQueryUpdatedBy")
   grantedShares               DocumentShare[]       @relation("DocumentShareCreatedBy")
   receivedShares              DocumentShare[]       @relation("DocumentShareGrantee")
+  pushSubscriptions           PushSubscription[]    @relation("PushSubscriptionOwner")
 
   @@map("user")
 }
@@ -3214,4 +3215,83 @@ model SavedQuery {
   @@index([createdById])
   @@index([updatedById])
   @@map("saved_query")
+}
+
+// ---------------------------------------------------------------------------
+// Push notifications (issue #30, ADR-048)
+// ---------------------------------------------------------------------------
+
+/// What a device may be woken up for.
+///
+/// A short list on purpose. Every member is something that happens while
+/// nobody is looking at the application, which is the only thing a push
+/// notification is good for: anything visible in an open tab is already
+/// delivered by the realtime socket, and a notification for it would be noise.
+enum PushNotificationKind {
+  /// An appointment is about to start. The same sweep that sends the
+  /// deployment's reminder, delivered to the calendar's owner.
+  CALENDAR_REMINDER
+  /// Somebody commented on a page this person wrote, or answered in a thread
+  /// they took part in. Never one's own comment.
+  COMMENT
+  /// An agent said something on purpose: `exo_push_send`, and the test
+  /// notification, which is the same call aimed at oneself.
+  AGENT
+}
+
+/// One browser on one device that has agreed to be notified.
+///
+/// A subscription is a device, not a preference (ADR-048). The endpoint is
+/// minted by the browser's own push service and is the address; the two keys
+/// beside it are what the payload is encrypted to, so this deployment can
+/// write to that device and the push service in between cannot read a word.
+///
+/// Which kinds reach it is stored here rather than on the user, because that
+/// is where the question actually lives: a phone in a pocket and a desktop at
+/// work want different things, and a single per-person switch cannot say so.
+model PushSubscription {
+  id String @id @default(cuid(2))
+
+  userId String
+  user   User   @relation("PushSubscriptionOwner", fields: [userId], references: [id], onDelete: Cascade)
+
+  /// The push service's address for this device. Unique across the
+  /// deployment, not per user: a browser profile mints one endpoint per
+  /// application, so registering it again after signing in as somebody else
+  /// hands the device to the new account. That is the honest reading -- the
+  /// person sitting in front of it changed.
+  endpoint String @unique
+  /// The device's public key (P-256, uncompressed point, base64url) and the
+  /// authentication secret beside it (16 bytes, base64url). Together they are
+  /// what RFC 8291 encrypts a payload to. Not credentials of this deployment:
+  /// they are useless without the endpoint and grant nothing but the right to
+  /// make this one device beep.
+  p256dh   String
+  auth     String
+
+  /// What the person calls this device. Proposed by the browser's user agent
+  /// and editable, because "Chrome auf Linux" is not how anybody thinks about
+  /// their own phone.
+  label String
+
+  /// The kinds this device accepts. An empty list is a device that is
+  /// registered and silent, which is a legitimate state: it keeps the
+  /// permission and the endpoint without the noise.
+  kinds PushNotificationKind[]
+
+  createdAt       DateTime  @default(now())
+  /// Refreshed whenever the browser re-registers, which it does on every
+  /// start. It is what tells a stale row from a live one.
+  lastSeenAt      DateTime  @default(now())
+  lastDeliveredAt DateTime?
+
+  /// Consecutive failures that were not a refusal. A push service answering
+  /// 404 or 410 means the subscription is gone and the row is deleted at
+  /// once; anything else may be a bad afternoon, so it is counted instead.
+  failureCount Int     @default(0)
+  lastError    String?
+
+  /// The person's own device list.
+  @@index([userId, createdAt])
+  @@map("push_subscription")
 }

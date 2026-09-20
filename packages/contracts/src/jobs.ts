@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { automationRunOriginSchema, automationTriggerSchema } from './automations';
 import { idSchema } from './primitives';
+import { pushNotificationKindSchema } from './push';
 
 /**
  * Queue names. Kept in the contracts package so producers (API, collaboration
@@ -22,6 +23,7 @@ export const QUEUE_NAMES = {
   automation: 'automation',
   render: 'render',
   projectBuild: 'project-build',
+  push: 'push',
 } as const;
 
 export const queueNameSchema = z.enum([
@@ -39,6 +41,7 @@ export const queueNameSchema = z.enum([
   QUEUE_NAMES.automation,
   QUEUE_NAMES.render,
   QUEUE_NAMES.projectBuild,
+  QUEUE_NAMES.push,
 ]);
 export type QueueName = z.infer<typeof queueNameSchema>;
 
@@ -465,6 +468,28 @@ export const projectBuildJobSchema = jobBase.extend({
 });
 export type ProjectBuildJob = z.infer<typeof projectBuildJobSchema>;
 
+/**
+ * One notification for one person, fanned out to their devices (issue #30,
+ * ADR-048).
+ *
+ * The job names the recipient and not their subscriptions, which is what makes
+ * it idempotent in the way that matters: a device registered, retired or
+ * switched to a different set of kinds between the enqueue and the send is
+ * read as it is *now*. Enqueueing per subscription would deliver to a device
+ * somebody just turned off.
+ */
+export const pushDeliveryJobSchema = jobBase.extend({
+  userId: idSchema,
+  kind: pushNotificationKindSchema,
+  notification: z.object({
+    title: z.string().min(1).max(200),
+    body: z.string().min(1).max(500),
+    url: z.string().max(2000).nullable(),
+    tag: z.string().max(120).nullable(),
+  }),
+});
+export type PushDeliveryJob = z.infer<typeof pushDeliveryJobSchema>;
+
 export const JOB_SCHEMAS = {
   [QUEUE_NAMES.documentMaterialization]: materializeDocumentJobSchema,
   [QUEUE_NAMES.searchIndexing]: indexDocumentJobSchema,
@@ -480,6 +505,7 @@ export const JOB_SCHEMAS = {
   [QUEUE_NAMES.automation]: automationJobSchema,
   [QUEUE_NAMES.render]: renderJobPayloadSchema,
   [QUEUE_NAMES.projectBuild]: projectBuildJobSchema,
+  [QUEUE_NAMES.push]: pushDeliveryJobSchema,
 } as const;
 
 export type JobPayloadMap = {
@@ -497,4 +523,5 @@ export type JobPayloadMap = {
   [QUEUE_NAMES.automation]: AutomationJob;
   [QUEUE_NAMES.render]: RenderJobPayload;
   [QUEUE_NAMES.projectBuild]: ProjectBuildJob;
+  [QUEUE_NAMES.push]: PushDeliveryJob;
 };
