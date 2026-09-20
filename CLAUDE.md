@@ -105,6 +105,34 @@ file is the contract for automated sessions. Read it before changing code.
     counts, it cannot read: an entry that is complete and wrong passes, which
     is why the summary is written for the person and not for the counter.
 
+## The design skills, and which one answers what
+
+Four skills touch the interface, and they are deliberately not interchangeable.
+Running all four on one screen produces four opinions and no decision, so pick
+by the question being asked.
+
+| Skill                                                                | Role                                                                                                                                            | Ask it                                                                                  |
+| -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `impeccable` (plugin `impeccable@impeccable`)                        | The primary design, redesign and polish workflow. Writes code.                                                                                  | "Build this surface", "polish settings", "this screen has no hierarchy"                 |
+| `frontend-design` (plugin `frontend-design@claude-plugins-official`) | Art direction, and the counterweight to generic AI aesthetics: interchangeable layouts, default typography, decorative gradients.               | "Does this look like every other AI-built app?", "what is this screen's point of view?" |
+| `web-design-guidelines` (`.claude/skills/`, pinned)                  | The objective pass: accessibility, focus states, forms, keyboard handling, responsive behaviour, typography, motion. States defects, not taste. | "Review this component against web best practice"                                       |
+| `anti-ui-slop`                                                       | Not installed. It is `impeccable` 4.1.1 repackaged, so it would be the same skill twice, one version older, under different words.              | --                                                                                      |
+
+Two things that make the order matter: `impeccable` owns `PRODUCT.md` and
+`DESIGN.md` in the repository root and reads them before it designs anything, so
+its context is the product rather than the screen; and `web-design-guidelines`
+runs last, because an objective defect list is worth most against a surface
+somebody has already decided about.
+
+The guidelines skill is pinned on purpose. The upstream version fetches its
+rules from a moving branch on every run, which would mean two reviews of the
+same file could disagree without anybody deciding anything. The copy in
+`.claude/skills/web-design-guidelines/guidelines.md` is verbatim at a reviewed
+commit, and `update.sh` beside it shows the diff before it adopts a new one.
+
+Rule 1 stands unchanged: components still come from the shadcn skill and the
+shadcn MCP server, whichever design skill asked for them.
+
 ## Repository map
 
 | Path                                  | Responsibility                                                                                                                                                                                           |

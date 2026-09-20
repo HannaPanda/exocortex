@@ -63,8 +63,11 @@ e2e/.run-scope
 .serena/
 
 # Per-machine Claude Code state: permission decisions, scheduler locks. Local
-# tooling state like `.serena/`, never shared.
-.claude/
+# tooling state like `.serena/`, never shared. The exception is `skills/`: a
+# project skill is part of the repository, because a review rule that lives on
+# one machine is a rule the other machine does not follow.
+.claude/*
+!.claude/skills/
 
 # Byte code and virtual environments of the Python integration under
 # `integrations/`. Build output like `dist/`, never shared.

@@ -262,35 +262,36 @@ tools/                the Claude Code plugin: MCP server, memory hooks, setup sk
 
 ## Documentation
 
-| Document                                                 | Contents                                                     |
-| -------------------------------------------------------- | ------------------------------------------------------------ |
-| [`docs/architecture.md`](docs/architecture.md)           | system overview, data flow, extension recipes                |
-| [`docs/local-development.md`](docs/local-development.md) | setup, ports, seeding, troubleshooting                       |
-| [`docs/security.md`](docs/security.md)                   | every security rule and where it is enforced                 |
-| [`docs/ui-system.md`](docs/ui-system.md)                 | design tokens, shadcn workflow, accessibility                |
-| [`docs/editor-extensions.md`](docs/editor-extensions.md) | editor schema, adding nodes, migrations                      |
-| [`docs/collaboration.md`](docs/collaboration.md)         | Yjs, Hocuspocus, tickets, offline behaviour                  |
-| [`docs/database-views.md`](docs/database-views.md)       | database properties, the four view types, the query engine   |
-| [`docs/ai-architecture.md`](docs/ai-architecture.md)     | provider contract, runners, isolation rules                  |
-| [`docs/background-jobs.md`](docs/background-jobs.md)     | queues, maintenance tasks, idempotency, failure handling     |
-| [`docs/mail.md`](docs/mail.md)                           | synchronous and queued mail, templates, what is logged       |
-| [`docs/notifications.md`](docs/notifications.md)         | occasions, channels, where a preference is stored            |
-| [`docs/mcp.md`](docs/mcp.md)                             | the tool catalogue, both transports, adding a tool           |
-| [`docs/capability-matrix.md`](docs/capability-matrix.md) | generated: which client reaches which route                  |
-| [`docs/admin.md`](docs/admin.md)                         | settings, their scopes, the admin area                       |
-| [`docs/automations.md`](docs/automations.md)             | triggers, actions, the allowlist                             |
-| [`docs/render.md`](docs/render.md)                       | Markdown to PDF, Pandoc templates, the render container      |
-| [`docs/projects.md`](docs/projects.md)                   | LaTeX projects, the file tree, the build runner              |
-| [`docs/overview-pages.md`](docs/overview-pages.md)       | digests, composition, when a refresh costs anything          |
-| [`docs/templates.md`](docs/templates.md)                 | page templates: the sidecar, the copy, the title pattern     |
-| [`docs/saved-queries.md`](docs/saved-queries.md)         | saved searches, smart views, query blocks, the query model   |
-| [`docs/sharing.md`](docs/sharing.md)                     | page shares, public links, page-scoped tokens                |
-| [`docs/features.md`](docs/features.md)                   | the feature registry, the coverage gate, writing an entry    |
-| [`docs/observability.md`](docs/observability.md)         | logs, health, tracing: what is recorded and what never is    |
-| [`docs/deviations.md`](docs/deviations.md)               | where the implementation deviates from the brief and why     |
-| [`AGENTS.md`](AGENTS.md)                                 | rules for automated agents, including the documentation rule |
-| [`CLAUDE.md`](CLAUDE.md)                                 | rules for Claude Code sessions                               |
-| [`deploy/README.md`](deploy/README.md)                   | production deployment on this host                           |
+| Document                                                               | Contents                                                                |
+| ---------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| [`docs/architecture.md`](docs/architecture.md)                         | system overview, data flow, extension recipes                           |
+| [`docs/local-development.md`](docs/local-development.md)               | setup, ports, seeding, troubleshooting                                  |
+| [`docs/security.md`](docs/security.md)                                 | every security rule and where it is enforced                            |
+| [`docs/ui-system.md`](docs/ui-system.md)                               | design tokens, shadcn workflow, accessibility                           |
+| [`docs/editor-extensions.md`](docs/editor-extensions.md)               | editor schema, adding nodes, migrations                                 |
+| [`docs/collaboration.md`](docs/collaboration.md)                       | Yjs, Hocuspocus, tickets, offline behaviour                             |
+| [`docs/database-views.md`](docs/database-views.md)                     | database properties, the four view types, the query engine              |
+| [`docs/ai-architecture.md`](docs/ai-architecture.md)                   | provider contract, runners, isolation rules                             |
+| [`docs/background-jobs.md`](docs/background-jobs.md)                   | queues, maintenance tasks, idempotency, failure handling                |
+| [`docs/mail.md`](docs/mail.md)                                         | synchronous and queued mail, templates, what is logged                  |
+| [`docs/notifications.md`](docs/notifications.md)                       | occasions, channels, where a preference is stored                       |
+| [`docs/mcp.md`](docs/mcp.md)                                           | the tool catalogue, both transports, adding a tool                      |
+| [`docs/capability-matrix.md`](docs/capability-matrix.md)               | generated: which client reaches which route                             |
+| [`docs/admin.md`](docs/admin.md)                                       | settings, their scopes, the admin area                                  |
+| [`docs/automations.md`](docs/automations.md)                           | triggers, actions, the allowlist                                        |
+| [`docs/render.md`](docs/render.md)                                     | Markdown to PDF, Pandoc templates, the render container                 |
+| [`docs/projects.md`](docs/projects.md)                                 | LaTeX projects, the file tree, the build runner                         |
+| [`docs/overview-pages.md`](docs/overview-pages.md)                     | digests, composition, when a refresh costs anything                     |
+| [`docs/templates.md`](docs/templates.md)                               | page templates: the sidecar, the copy, the title pattern                |
+| [`docs/saved-queries.md`](docs/saved-queries.md)                       | saved searches, smart views, query blocks, the query model              |
+| [`docs/sharing.md`](docs/sharing.md)                                   | page shares, public links, page-scoped tokens                           |
+| [`docs/features.md`](docs/features.md)                                 | the feature registry, the coverage gate, writing an entry               |
+| [`docs/observability.md`](docs/observability.md)                       | logs, health, tracing: what is recorded and what never is               |
+| [`docs/deviations.md`](docs/deviations.md)                             | where the implementation deviates from the brief and why                |
+| [`docs/design-review-2026-09-20.md`](docs/design-review-2026-09-20.md) | a dated snapshot: where the interface drifts from its own design system |
+| [`AGENTS.md`](AGENTS.md)                                               | rules for automated agents, including the documentation rule            |
+| [`CLAUDE.md`](CLAUDE.md)                                               | rules for Claude Code sessions                                          |
+| [`deploy/README.md`](deploy/README.md)                                 | production deployment on this host                                      |
 
 The architecture decision records are in [`docs/adr/`](docs/adr/); `CLAUDE.md`
 lists the ones a change must not silently reverse.
