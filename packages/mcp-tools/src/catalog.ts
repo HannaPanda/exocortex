@@ -1,4 +1,5 @@
 import { type AnyToolDefinition, type ToolSurface } from './tool.js';
+import { AGENT_MESSAGE_TOOLS } from './tools/agent-messages.js';
 import { AGENT_SESSION_TOOLS } from './tools/agent-sessions.js';
 import { AI_RUN_TOOLS } from './tools/ai-runs.js';
 import { ATTACHMENT_TOOLS } from './tools/attachments.js';
@@ -52,6 +53,7 @@ export const EXOCORTEX_TOOLS: readonly AnyToolDefinition[] = [
   ...RESEARCH_TOOLS,
   ...MEMORY_TOOLS,
   ...MEMORY_FACT_TOOLS,
+  ...AGENT_MESSAGE_TOOLS,
   ...ENTITY_TOOLS,
   ...INVITATION_TOOLS,
   ...AGENT_SESSION_TOOLS,
