@@ -284,6 +284,18 @@
     @apply mt-1 shrink-0;
   }
 
+  /* The one control in the product that was still drawing itself: a native
+     checkbox with `accent-color: auto` ticks in the browser's blue, which is
+     the only colour on screen that is not a token. `accent-color` is the whole
+     fix -- restyling the box would mean a node view in `packages/editor`, and
+     the native control is the one a screen reader and a password-free
+     keyboard already understand. The box stays 13px, which passes WCAG 2.5.8
+     through the spacing exception rather than the size one: one checkbox per
+     line, nothing beside it. */
+  .exocortex-editor ul[data-type='taskList'] li > label input[type='checkbox'] {
+    accent-color: var(--primary);
+  }
+
   /* Same cascade caveat as the headings: `.ProseMirror` is needed for `my-8` to
      beat the generic sibling gap. */
   .exocortex-editor .ProseMirror hr {

@@ -267,7 +267,12 @@ export function WorkspaceOverview({ workspaceId }: { workspaceId: string }) {
     <AppPage maxWidth="max-w-4xl">
       <header className="mb-10 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="exocortex-page-title truncate">{data?.workspaceName ?? 'Übersicht'}</h1>
+          {/* No `truncate`: `.exocortex-page-title` already answers a long name
+              by breaking inside it and balancing the wrap, and an ellipsis here
+              would hide the end of the one word that says where you are. The
+              wrapper keeps `min-w-0` so the wrap happens instead of pushing the
+              actions off the row. */}
+          <h1 className="exocortex-page-title">{data?.workspaceName ?? 'Übersicht'}</h1>
           {data === undefined ? (
             <Skeleton className="mt-2 h-4 w-72" />
           ) : (
