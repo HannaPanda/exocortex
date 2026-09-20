@@ -175,6 +175,21 @@ test.describe('editor', () => {
     await page.getByTestId('block-actions-trigger').click();
     await page.getByTestId('block-delete').click();
     await expect(page.locator('.exocortex-editor p', { hasText: 'Ein Block' })).toHaveCount(1);
+
+    // A block that holds other blocks asks first (issue #91), and cancelling it
+    // leaves the document untouched -- unlike the paragraph just deleted, which
+    // is a keystroke to retype and therefore stays unprotected.
+    await page.keyboard.press('End');
+    await page.keyboard.press('Enter');
+    await page.keyboard.type('> Ein Zitat');
+    await expect(page.locator('.exocortex-editor blockquote')).toHaveCount(1);
+    await page.keyboard.press('Home');
+    await page.keyboard.press('Shift+End');
+    await page.getByTestId('block-actions-trigger').click();
+    await page.getByTestId('block-delete').click();
+    await expect(page.getByTestId('destructive-confirm')).toBeVisible();
+    await page.getByTestId('destructive-cancel').click();
+    await expect(page.locator('.exocortex-editor blockquote')).toHaveCount(1);
   });
 
   /*
@@ -347,6 +362,46 @@ test.describe('editor', () => {
     await expect(rows).toHaveCount(rowsBefore);
     await page.getByTestId('table-delete-column').click();
     await expect(cells).toHaveCount(columnsBefore);
+  });
+
+  /**
+   * Issue #91: the two protections against losing a table by accident.
+   *
+   * Both halves only exist in a browser. The dialog is a component that unmounts
+   * with its bubble menu if it is rendered in the wrong place, and the undo runs
+   * through the Yjs undo manager, which no unit test in this repository reaches.
+   */
+  test('asks before deleting a table, and restores it with Strg+Z', async ({ page }) => {
+    await openEditor(page);
+
+    await page.keyboard.type('/tabelle');
+    await page.getByTestId('slash-option-table').click();
+    const tables = page.locator('.exocortex-editor table');
+    await expect(tables).toHaveCount(1);
+    await page.locator('.exocortex-editor table th, .exocortex-editor table td').first().click();
+    await page.keyboard.type('Zelleninhalt');
+
+    // Cancel leaves the document exactly as it was.
+    await expect(page.getByTestId('table-toolbar')).toBeVisible();
+    await page.getByTestId('table-delete').click();
+    await expect(page.getByTestId('destructive-confirm')).toBeVisible();
+    await page.getByTestId('destructive-cancel').click();
+    await expect(page.getByTestId('destructive-confirm')).toBeHidden();
+    await expect(tables).toHaveCount(1);
+
+    // Confirming deletes it.
+    await page.getByTestId('editor-surface').click();
+    await page.locator('.exocortex-editor table th, .exocortex-editor table td').first().click();
+    await page.getByTestId('table-delete').click();
+    await page.getByTestId('destructive-confirm-button').click();
+    await expect(tables).toHaveCount(0);
+
+    // And the deletion is an ordinary undo step, content included. Before the
+    // fix in `packages/editor/src/block-id.ts` this restored nothing at all.
+    await page.getByTestId('editor-surface').click();
+    await page.keyboard.press('Control+z');
+    await expect(tables).toHaveCount(1);
+    await expect(tables.first()).toContainText('Zelleninhalt');
   });
 
   test('inserts a mention through the @ menu', async ({ page }) => {

@@ -46,6 +46,10 @@ import {
   DatabaseEmbedPromptContext,
   type DatabaseEmbedSelection,
 } from '@/components/editor/database-embed-context';
+import {
+  DestructiveConfirmProvider,
+  useDestructiveConfirmDialog,
+} from '@/components/editor/destructive-confirm';
 import { type FollowLink, FollowLinkContext } from '@/components/editor/follow-link-context';
 import { LinkBubble } from '@/components/editor/link-bubble';
 import { useLinkNavigation } from '@/components/editor/link-navigation';
@@ -584,6 +588,9 @@ function EditorChrome({
 
   const prompt = useBlockPrompt({ workspaceId, documentId });
   const linkNavigation = useLinkNavigation({ workspaceId });
+  // Asked before a table or another compound block is thrown away (issue #91).
+  // It belongs here, not in the toolbars: they unmount when the text loses focus.
+  const destructive = useDestructiveConfirmDialog();
 
   // Lets the database embed node view reopen this same picker ("Datenbank
   // wechseln") through the ref `EditorSurface` handed down; see
@@ -641,7 +648,7 @@ function EditorChrome({
   return (
     <>
       {editable ? (
-        <>
+        <DestructiveConfirmProvider value={destructive.confirm}>
           <SelectionToolbar
             editor={editor}
             catalog={catalog}
@@ -652,7 +659,8 @@ function EditorChrome({
           <CodeBlockToolbar editor={editor} />
           <TableToolbar editor={editor} />
           <BlockHandle editor={editor} catalog={catalog} />
-        </>
+          {destructive.element}
+        </DestructiveConfirmProvider>
       ) : null}
       <SlashMenu editor={editor} keyboard={slashKeyboard} catalog={catalog} execute={runEntry} />
       <MentionMenu

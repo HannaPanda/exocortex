@@ -110,6 +110,35 @@ describe('BlockId extension', () => {
     expect(findDuplicateBlockIds(document)).toEqual([]);
   });
 
+  /**
+   * Issue #91: the assignment must not suppress the undo history.
+   *
+   * It used to carry `addToHistory: false`, which reads as "do not record this
+   * bookkeeping" and means something else entirely under Yjs: `ySyncPlugin`
+   * takes the flag from the *last* transaction of a dispatch and applies it to
+   * the whole document diff it then writes, so the user's own change went into
+   * the Yjs document unrecorded. Inserting a table, and deleting one, could not
+   * be undone -- while typing, which creates no block and therefore no appended
+   * transaction, could. Only a browser shows the consequence (`e2e/tests/
+   * editor.spec.ts`); this is the guard at the place that caused it.
+   */
+  it('does not suppress the undo history while assigning an identifier', () => {
+    const instance = createEditor();
+    const { schema } = instance.state;
+    const paragraph = schema.nodes.paragraph?.create(null, schema.text('Neuer Block'));
+    expect(paragraph).toBeDefined();
+    if (paragraph === undefined) return;
+
+    const inserted = instance.state.tr.insert(0, paragraph);
+    const { transactions } = instance.state.applyTransaction(inserted);
+
+    // The insertion plus the identifier assignment the plugin appends.
+    expect(transactions.length).toBeGreaterThan(1);
+    for (const transaction of transactions) {
+      expect(transaction.getMeta('addToHistory')).not.toBe(false);
+    }
+  });
+
   it('keeps identifiers stable across an HTML round trip', () => {
     const instance = createEditor('<p>Mit Id</p>');
     instance.commands.setContent('<p>Mit Id</p>');

@@ -14,13 +14,40 @@ import {
   DropdownMenuSubTrigger,
 } from '@exocortex/ui';
 
+import { describeBlockRemoval } from './block-removal';
 import { ColorItems } from './color-menu';
+import { useDestructiveConfirm } from './destructive-confirm';
 import { TurnIntoItems } from './turn-into-menu';
 
 /** A block and where it starts, which is all any of these actions needs. */
 export interface BlockTarget {
   node: PmNode;
   pos: number;
+}
+
+/**
+ * Where a block stands *now*, which is not where it stood when it was picked.
+ *
+ * The identifier is the reliable handle: a position is only a guess once
+ * anything above the block has changed, and between picking a block and
+ * confirming its deletion there is a dialog's worth of time for that to happen.
+ */
+function currentRangeOf(editor: Editor, block: BlockTarget): { from: number; to: number } | null {
+  const blockId: unknown = block.node.attrs[BLOCK_ID_ATTRIBUTE];
+  if (typeof blockId !== 'string' || blockId.length === 0) {
+    const still = editor.state.doc.nodeAt(block.pos);
+    if (still === null || still.type !== block.node.type) return null;
+    return { from: block.pos, to: block.pos + still.nodeSize };
+  }
+
+  let range: { from: number; to: number } | null = null;
+  editor.state.doc.descendants((node, pos) => {
+    if (range !== null) return false;
+    if (node.attrs[BLOCK_ID_ATTRIBUTE] !== blockId) return true;
+    range = { from: pos, to: pos + node.nodeSize };
+    return false;
+  });
+  return range;
 }
 
 /**
@@ -51,6 +78,7 @@ export function BlockActionItems({
   /** The block to act on, or `null` to use the one the cursor is in. */
   target: BlockTarget | null;
 }) {
+  const confirmDestructive = useDestructiveConfirm();
   const resolve = (): BlockTarget | null => target ?? blockTargetFromSelection(editor);
 
   const duplicate = (): void => {
@@ -63,14 +91,32 @@ export function BlockActionItems({
       .run();
   };
 
+  /**
+   * Deletion, with a question in front of the blocks that are worth one.
+   *
+   * `describeBlockRemoval` decides which those are; a short paragraph is deleted
+   * straight away, because a dialog on every block is a dialog nobody reads
+   * (issue #91).
+   */
   const remove = (): void => {
     const block = resolve();
     if (block === null) return;
-    editor
-      .chain()
-      .focus()
-      .deleteRange({ from: block.pos, to: block.pos + block.node.nodeSize })
-      .run();
+    const warning = describeBlockRemoval(block.node);
+    if (warning === null) {
+      editor
+        .chain()
+        .focus()
+        .deleteRange({ from: block.pos, to: block.pos + block.node.nodeSize })
+        .run();
+      return;
+    }
+    void confirmDestructive(warning).then((confirmed) => {
+      if (!confirmed) return;
+      // The dialog was open for as long as it took to read: a collaborator may
+      // have moved this block in the meantime, so it is looked up again.
+      const range = currentRangeOf(editor, block);
+      if (range !== null) editor.chain().focus().deleteRange(range).run();
+    });
   };
 
   /** Deep link built from the stable block id, never from a document offset. */

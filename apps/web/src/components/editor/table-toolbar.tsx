@@ -1,5 +1,6 @@
 'use client';
 
+import { type Node as PmNode } from '@tiptap/pm/model';
 import { type Editor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
 import {
@@ -14,6 +15,9 @@ import {
 import * as React from 'react';
 
 import { Button, Toolbar, ToolbarButton, ToolbarSeparator } from '@exocortex/ui';
+
+import { describeBlockRemoval } from './block-removal';
+import { useDestructiveConfirm } from './destructive-confirm';
 
 interface TableAction {
   id: string;
@@ -81,8 +85,43 @@ const TABLE_REMOVALS: readonly TableAction[] = [
   },
 ];
 
+/**
+ * The table node the cursor stands in, so the dialog can say how much is lost.
+ *
+ * Walks up from the selection rather than asking the schema: the cursor is in a
+ * cell, and the toolbar only ever shows while it is.
+ */
+function tableAtSelection(editor: Editor): PmNode | null {
+  const { $from } = editor.state.selection;
+  for (let depth = $from.depth; depth > 0; depth -= 1) {
+    const node = $from.node(depth);
+    if (node.type.name === 'table') return node;
+  }
+  return null;
+}
+
 /** Controls for the table the cursor is in. */
 export function TableToolbar({ editor }: { editor: Editor }) {
+  const confirmDestructive = useDestructiveConfirm();
+
+  /*
+   * The one action that loses a whole structure at once, and the one the issue
+   * was written about (#91): the button sits a few pixels from "Spalte löschen"
+   * and took the table with one click. Undo works again, but a question asked
+   * before the fact is cheaper than a recovery after it.
+   */
+  const deleteTable = (): void => {
+    const table = tableAtSelection(editor);
+    const warning = table === null ? null : describeBlockRemoval(table);
+    if (warning === null) {
+      editor.chain().focus().deleteTable().run();
+      return;
+    }
+    void confirmDestructive(warning).then((confirmed) => {
+      if (confirmed) editor.chain().focus().deleteTable().run();
+    });
+  };
+
   return (
     <BubbleMenu
       editor={editor}
@@ -124,7 +163,7 @@ export function TableToolbar({ editor }: { editor: Editor }) {
               data-testid="table-delete"
               className="text-destructive-text"
               onMouseDown={(event) => event.preventDefault()}
-              onClick={() => editor.chain().focus().deleteTable().run()}
+              onClick={deleteTable}
             />
           }
         >

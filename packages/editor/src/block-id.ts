@@ -181,8 +181,22 @@ export const BlockId = Extension.create<BlockIdOptions>({
               [BLOCK_ID_ATTRIBUTE]: assignment.id,
             });
           }
-          // Identifier bookkeeping must not create undo steps or move the caret.
-          transaction.setMeta('addToHistory', false);
+          /*
+           * Deliberately *without* `addToHistory: false` (issue #91).
+           *
+           * Under Yjs that flag does not mark this transaction: `ySyncPlugin`
+           * reads it from the last transaction of the dispatch and then writes
+           * the whole document diff into one Yjs transaction carrying that
+           * value, which the undo manager skips. Since this plugin appends
+           * exactly when a block was created, setting it here erased the user's
+           * own change from the undo stack: inserting a table, and deleting one,
+           * could not be undone at all, while typing -- which creates no block
+           * -- could. The assignment belongs to the change that created the
+           * block, so travelling with it is also the right grouping.
+           *
+           * `preventUpdate` stays: identifier bookkeeping is not an edit the
+           * application needs to hear about.
+           */
           transaction.setMeta('preventUpdate', true);
           return transaction;
         },

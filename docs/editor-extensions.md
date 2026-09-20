@@ -77,10 +77,12 @@ All of it lives in `apps/web/src/components/editor` and contributes **no** schem
 | `slash-menu.tsx`                | `/` block menu, reads the catalog                                                                                                                                                                                                     |
 | `mention-menu.tsx`              | `@` menu for pages, people and dates                                                                                                                                                                                                  |
 | `block-handle.tsx`              | drag handle in the outer lane of the interaction gutter (docs/ui-system.md, and docs/deviations.md 18)                                                                                                                                |
-| `block-actions.tsx`             | duplicate, copy link, delete — shared by handle and toolbar                                                                                                                                                                           |
+| `block-actions.tsx`             | duplicate, copy link, delete — shared by handle and toolbar; a delete that loses a whole structure is confirmed first and re-finds its block by id afterwards                                                                         |
+| `block-removal.ts`              | which blocks are worth a confirmation (compound ones, and anything above 280 characters) and what the dialog says about them (issue #91)                                                                                              |
+| `destructive-confirm.tsx`       | the confirmation dialog itself. Rendered by `EditorChrome` and reached through a context, because every caller is a bubble menu or a drag handle that unmounts as soon as the text loses focus                                        |
 | `suggestion-menu.tsx`           | shared state-driven machinery for `/` and `@`                                                                                                                                                                                         |
 | `code-block-toolbar.tsx`        | language picker and copy                                                                                                                                                                                                              |
-| `table-toolbar.tsx`             | rows, columns, header, merge                                                                                                                                                                                                          |
+| `table-toolbar.tsx`             | rows, columns, header, merge, and the confirmed "Tabelle löschen"                                                                                                                                                                     |
 | `block-prompt.tsx`              | value and file collection for catalog entries                                                                                                                                                                                         |
 | `comment-markers.tsx`           | ProseMirror **decorations** on the blocks that carry an open comment thread, plus the two-way wiring to the Kommentare panel. Never a mark: a comment is not document content, so it must leave no trace in the Yjs state (issue #18) |
 | `page-link-node-view.tsx`       | React node view for `pageLink`, see the exception below                                                                                                                                                                               |
@@ -165,14 +167,25 @@ The `BlockId` extension:
   re-assigns the later occurrence,
 - uses `keepOnSplit: false`, so splitting a paragraph produces a _new_ id instead of
   a duplicate,
-- marks its transactions `addToHistory: false`, so bookkeeping never appears in the
-  undo stack.
+- appends its assignment as an ordinary transaction, marked `preventUpdate` but
+  **not** `addToHistory: false`.
+
+That last point is a trap worth stating, because the obvious flag is the wrong
+one (issue #91). Under Yjs, `addToHistory` does not mark one transaction:
+`ySyncPlugin` reads it from the last transaction of a dispatch and applies it to
+the whole document diff it then writes into the Yjs document, and the undo
+manager skips what is marked. Since this plugin appends exactly when a block was
+created, setting the flag erased the _user's_ change from the undo stack —
+inserting a table, and deleting one, could not be undone at all, while typing,
+which creates no block, could. Nothing in the type system or the tests catches
+it; the guard is in `block-id.test.ts` plus the browser test in
+`e2e/tests/editor.spec.ts`.
 
 Identity is **never** derived from document offsets, Markdown line numbers or array
 indexes.
 
-Covered by `block-id.test.ts` (jsdom, 8 tests) including split, duplicate repair and
-an HTML round trip.
+Covered by `block-id.test.ts` (jsdom, 11 tests) including split, duplicate repair,
+the undo history and an HTML round trip.
 
 ## Markdown
 
