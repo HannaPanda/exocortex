@@ -73,13 +73,23 @@ export function serializeMarkdown(
         return (right.priority ?? 0) - (left.priority ?? 0);
       });
 
-  const wikiLinkOf = (marks: readonly ProseMirrorMark[]): ProseMirrorMark | undefined =>
-    marks.find(
-      (mark) =>
-        mark.type === 'link' &&
-        typeof mark.attrs?.href === 'string' &&
-        mark.attrs.href.startsWith(WIKI_LINK_SCHEME),
-    );
+  /**
+   * The wiki link target of a mark set, or `undefined` if there is none.
+   *
+   * Returning the target rather than the mark is what keeps the caller free of
+   * a cast: the test for "is this a wiki link" and the read of its address are
+   * the same narrowing, so they belong in the same place.
+   */
+  const wikiLinkTargetOf = (marks: readonly ProseMirrorMark[]): string | undefined => {
+    for (const mark of marks) {
+      if (mark.type !== 'link') continue;
+      const href = mark.attrs?.href;
+      if (typeof href === 'string' && href.startsWith(WIKI_LINK_SCHEME)) {
+        return href.slice(WIKI_LINK_SCHEME.length);
+      }
+    }
+    return undefined;
+  };
 
   /**
    * Renders inline content by keeping a stack of open marks.
@@ -122,10 +132,9 @@ export function serializeMarkdown(
       const marks = child.marks ?? [];
 
       // A wiki link owns its whole span: no other delimiter may wrap it.
-      const wikiLink = wikiLinkOf(marks);
-      if (wikiLink !== undefined) {
+      const target = wikiLinkTargetOf(marks);
+      if (target !== undefined) {
         closeDownTo(0);
-        const target = (wikiLink.attrs?.href as string).slice(WIKI_LINK_SCHEME.length);
         const label = child.text ?? '';
         result += label === target ? `[[${target}]]` : `[[${target}|${label}]]`;
         continue;

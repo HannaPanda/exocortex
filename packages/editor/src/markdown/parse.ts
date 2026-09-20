@@ -605,7 +605,7 @@ export function ensureBlockIds(document: ProseMirrorDocument): void {
         let id = createBlockId();
         while (seen.has(id)) id = createBlockId();
         seen.add(id);
-        node.attrs = { ...(node.attrs ?? {}), [BLOCK_ID_ATTRIBUTE]: id };
+        node.attrs = { ...node.attrs, [BLOCK_ID_ATTRIBUTE]: id };
       }
     }
     for (const child of node.content ?? []) walk(child);

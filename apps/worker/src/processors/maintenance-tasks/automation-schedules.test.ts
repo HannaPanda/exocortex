@@ -100,7 +100,7 @@ describe('the schedule sweep', () => {
     });
     expect(updates).toHaveLength(1);
     expect(updates[0]?.guarded).toBe(true);
-    expect((updates[0]?.data.nextRunAt as Date).getTime()).toBeGreaterThan(Date.now());
+    expect((updates[0]!.data.nextRunAt as Date).getTime()).toBeGreaterThan(Date.now());
   });
 
   it('queues nothing when another worker won the claim', async () => {

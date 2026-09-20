@@ -202,7 +202,7 @@ export class AutomationsService {
       where: { id: input.ruleId },
       data: {
         ...merged,
-        ...(schedule ?? {}),
+        ...schedule,
         ...(reenabled ? { consecutiveFailures: 0, disabledReason: null, disabledAt: null } : {}),
         // A webhook rule turned into an AI rule keeps no secret it cannot use.
         ...(merged.action === 'AI_RUN' && row.action === 'WEBHOOK'

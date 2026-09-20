@@ -63,9 +63,9 @@ function wrap(instance: PinoLogger): Logger {
     info: (message, context) => instance.info(context ?? {}, message),
     warn: (message, context) => instance.warn(context ?? {}, message),
     error: (message, error, context) =>
-      instance.error({ ...(context ?? {}), ...normalizeError(error) }, message),
+      instance.error({ ...context, ...normalizeError(error) }, message),
     fatal: (message, error, context) =>
-      instance.fatal({ ...(context ?? {}), ...normalizeError(error) }, message),
+      instance.fatal({ ...context, ...normalizeError(error) }, message),
     child: (context) => wrap(instance.child(context)),
   };
 }

@@ -136,9 +136,11 @@ function BoardColumns({
     .filter((property) => property.id !== groupProperty.id)
     .slice(0, 3);
 
+  const propertyValue = (row: DatabaseRow, propertyId: string) =>
+    row.values.find((entry) => entry.propertyId === propertyId)?.value ?? null;
+
   const columnValue = (row: DatabaseRow): string =>
-    (row.values.find((entry) => entry.propertyId === groupProperty.id)?.value as string | null) ??
-    NO_VALUE_COLUMN;
+    (propertyValue(row, groupProperty.id) as string | null) ?? NO_VALUE_COLUMN;
 
   const rowsByColumn = new Map<string, DatabaseRow[]>();
   for (const row of rowsQuery.data.rows) {
@@ -235,13 +237,13 @@ function BoardColumns({
                       </DropdownMenu>
                     )}
                   </div>
-                  {otherProperties.map((property) => {
-                    const value =
-                      row.values.find((entry) => entry.propertyId === property.id)?.value ?? null;
-                    return (
-                      <PropertyValueDisplay key={property.id} property={property} value={value} />
-                    );
-                  })}
+                  {otherProperties.map((property) => (
+                    <PropertyValueDisplay
+                      key={property.id}
+                      property={property}
+                      value={propertyValue(row, property.id)}
+                    />
+                  ))}
                 </div>
               ))}
 

@@ -86,7 +86,7 @@ export async function applyModelRouteSnapshot(
         endpointsSyncedAt: new Date(),
         // A refresh that got this far describes the model the row names again.
         endpointsStaleSince: null,
-        ...(snapshot.fields ?? {}),
+        ...snapshot.fields,
       },
     });
 

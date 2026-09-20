@@ -28,5 +28,3 @@ import '@tiptap/extension-subscript';
 import '@tiptap/extension-superscript';
 import '@tiptap/extension-table';
 import '@tiptap/extension-underline';
-
-export {};

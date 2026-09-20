@@ -23,7 +23,7 @@ import { serializeMarkdown } from './serialize';
 
 /** Strips block identifiers so two parses can be compared structurally. */
 function withoutBlockIds(node: ProseMirrorNode): ProseMirrorNode {
-  const attrs = { ...(node.attrs ?? {}) };
+  const attrs = { ...node.attrs };
   delete attrs[BLOCK_ID_ATTRIBUTE];
   const result: ProseMirrorNode = { type: node.type };
   if (Object.keys(attrs).length > 0) result.attrs = attrs;

@@ -151,7 +151,7 @@ export class QueueRegistry {
     const queue = new Queue(name, {
       connection: this.connection,
       prefix: this.prefix,
-      defaultJobOptions: { ...DEFAULT_JOB_OPTIONS, ...(QUEUE_JOB_OPTIONS[name] ?? {}) },
+      defaultJobOptions: { ...DEFAULT_JOB_OPTIONS, ...QUEUE_JOB_OPTIONS[name] },
     });
     this.queues.set(name, queue);
     return queue;
