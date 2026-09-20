@@ -19,7 +19,10 @@ explicitly in `scripts/dependency-graph.mjs` and enforced twice:
 
 - `scripts/check-dependency-boundaries.mjs` validates every package manifest and
   detects cycles (run first by `pnpm lint`),
-- `no-restricted-imports` in `eslint.config.mjs` blocks the import at source level.
+- `no-restricted-imports` in `.oxlintrc.json` blocks the import at source level.
+  That file is generated from the same graph by
+  `scripts/generate-oxlint-config.mjs`, and the manifest gate above refuses to
+  pass while it is stale, so the two halves cannot drift apart.
 
 The graph is layered: `config`, `logger`, `contracts`, `editor`, `ui` are leaves;
 `database`, `storage`, `queue`, `ai` are infrastructure; `auth` builds on `database`;

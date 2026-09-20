@@ -47,11 +47,18 @@ TypeScript 5.9.3. 7.0.2 is the current release and it is the native port: the
 package ships platform binaries as optional dependencies and a `getExePath`
 shim rather than a JavaScript compiler.
 
-One blocker, and it is decisive. `typescript-eslint` peers
-`typescript: >=4.8.4 <6.1.0`, in 8.70.0, the newest release and the one
-installed here. That rules out the 6 line as well as the 7 line, and this
-repository lints with type information, so there is no version of this where the
-compiler moves ahead of the linter.
+One blocker, and it is still decisive, though it has got smaller. The lint
+stack no longer contains `typescript-eslint` at all -- issue #84 moved the
+TypeScript rules to oxlint, which does not use `tsc` -- but ESLint still needs a
+parser for the four rules it kept, and `@typescript-eslint/parser` 8.70.0 peers
+`typescript: >=4.8.4 <6.1.0`. That rules out the 6 line as well as the 7 line.
+
+What has changed is the size of the thing in the way: a parser, not a rule set.
+The blocker disappears the day that peer range opens, or the day oxlint grows a
+selector language and `simple-import-sort`'s grouping, whichever comes first.
+(An earlier version of this entry said the repository "lints with type
+information". It never did: nothing in `eslint.config.mjs` ever set
+`parserOptions.project` or `projectService`.)
 
 The other two reasons this entry used to give are not blockers:
 
@@ -69,11 +76,14 @@ The culprit this entry used to name has been cleared: `typescript-eslint` peers
 `eslint: ^8.57.0 || ^9.0.0 || ^10.0.0` in 8.70.0, which is installed here.
 
 The one plugin still holding the line is `eslint-plugin-react`, whose newest
-release, 7.37.5, peers `eslint: … || ^9.7` and has no 10 range. Upgrading also
-pulls `@eslint/js` to 10.x, which peers `eslint: ^10.0.0`. Nothing else in
-`eslint.config.mjs` objects: `eslint-plugin-react-hooks@7.1.1` already lists
-`^10.0.0`, and `eslint-config-prettier` and `eslint-plugin-simple-import-sort`
-have open ranges.
+release, 7.37.5, peers `eslint: … || ^9.7` and has no 10 range. Since issue #84
+it is installed for exactly one rule, `react/no-deprecated`, which cannot fire
+while this codebase has no class components -- so this deviation now costs one
+dependency for one rule, and dropping the rule would end it. Nothing else in
+`eslint.config.mjs` objects: `@typescript-eslint/parser` 8.70.0 and
+`@next/eslint-plugin-next` both accept 10, and `eslint-plugin-simple-import-sort`
+has an open range. `@eslint/js`, `eslint-config-prettier` and
+`eslint-plugin-react-hooks` are gone with the rules they carried.
 
 ## 4. Redis event bus instead of the Socket.IO Redis adapter
 

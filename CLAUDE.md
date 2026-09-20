@@ -24,7 +24,8 @@ file is the contract for automated sessions. Read it before changing code.
    `radix-ui` dependency again.
 4. **Never bypass the package boundaries.** They are enforced twice:
    `scripts/dependency-graph.mjs` (checked by `scripts/check-dependency-boundaries.mjs`
-   during `pnpm lint`) and `no-restricted-imports` in `eslint.config.mjs`.
+   during `pnpm lint`) and `no-restricted-imports` in `.oxlintrc.json`, which
+   is generated from the same graph by `scripts/generate-oxlint-config.mjs`.
    In particular `apps/web` must never import `@exocortex/database`,
    `@exocortex/queue`, `@exocortex/storage`, `@exocortex/ai` or `@exocortex/logger`.
 5. **Markdown is never the canonical collaborative state.** The canonical state is
@@ -166,8 +167,12 @@ The individual commands still exist and are useful while iterating:
 
 ```bash
 pnpm build
-pnpm lint              # dependency boundaries + ESLint, src/ of each package only
-pnpm exec eslint .     # the whole repository, including scripts/ and e2e/
+pnpm lint              # dependency boundaries, then oxlint, then ESLint --
+                       # both linters over the whole repository, scripts/ and
+                       # e2e/ included. oxlint carries almost all of the policy
+                       # (.oxlintrc.json is generated, do not edit it);
+                       # eslint.config.mjs holds only what oxlint cannot say.
+pnpm lint:fix          # the mechanical half of both
 pnpm format            # Prettier over the tree; format:check is what build.sh runs
 pnpm typecheck
 pnpm test:unit         # every test that needs no infrastructure, in every
@@ -406,6 +411,13 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   holds no signing key; a job names a person, so which devices hear it is read
   at send time; and a push service answering 404 or 410 deletes the row,
   because a subscription it has forgotten can never come back.
+- ADR-049: one lint policy in two files. oxlint is the primary linter and
+  `.oxlintrc.json` is generated from `scripts/generate-oxlint-config.mjs` (and
+  from the dependency graph, which is why the boundary gate refuses to pass
+  while it is stale); `eslint.config.mjs` keeps only the rules oxlint cannot
+  express, each with the reason it is still there. Every plugin is enabled
+  repository-wide, because oxlint resolves `categories` against the base plugin
+  list and a plugin scoped to an override silently loses its category rules.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

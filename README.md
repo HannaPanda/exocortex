@@ -198,7 +198,7 @@ Details, ports and troubleshooting: [`docs/local-development.md`](docs/local-dev
 | `pnpm infra:up` / `pnpm infra:down`        | start/stop the Docker infrastructure                  |
 | `pnpm dev`                                 | run web, api, collaboration and worker in watch mode  |
 | `pnpm build`                               | build every package and application                   |
-| `pnpm lint`                                | dependency-boundary check + ESLint                    |
+| `pnpm lint`                                | dependency boundaries, then oxlint, then ESLint       |
 | `pnpm typecheck`                           | strict TypeScript: sources, operator scripts, tooling |
 | `pnpm test:unit`                           | every test that needs no infrastructure               |
 | `pnpm test:integration`                    | `*.integration.test.ts` on a throwaway stack          |

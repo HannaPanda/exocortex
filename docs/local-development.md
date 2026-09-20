@@ -177,7 +177,11 @@ behind nginx in production.
 ## Checks
 
 ```bash
-pnpm lint             # dependency boundaries, then ESLint per package
+pnpm lint             # dependency boundaries, then oxlint, then ESLint
+                      # (both linters walk the whole repository; oxlint
+                      #  carries the policy, ESLint the few rules it cannot
+                      #  express -- see eslint.config.mjs)
+pnpm lint:fix         # the mechanical half of both
 pnpm typecheck
 pnpm test:unit        # everything that needs no infrastructure
 pnpm test:integration # *.integration.test.ts on a throwaway stack (needs Docker)

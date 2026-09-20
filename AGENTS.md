@@ -25,8 +25,9 @@ This file applies to any coding agent (Claude Code, Codex CLI, or another).
    variable.
 9. Every user input is validated at runtime with the zod schemas in
    `packages/contracts`.
-10. Errors are either handled or rethrown, never swallowed. An empty `catch` block
-    fails lint.
+10. Errors are either handled or rethrown, never swallowed. An empty `catch`
+    block fails lint; a comment saying why nothing is done is what makes it not
+    empty.
 11. **Documentation is part of the change, not a follow-up.** See the checklist
     below. `scripts/check-docs-current.mjs` is a hard gate and fails the build
     when a central document stops naming something the repository defines.
@@ -129,7 +130,7 @@ the examples.
 - file names `kebab-case.ts`, React components `PascalCase`
 - one exported concern per file where practical; `index.ts` re-exports the
   public surface of a package
-- imports are sorted by `simple-import-sort` (`pnpm lint --fix`)
+- imports are sorted by `simple-import-sort` (`pnpm lint:fix`)
 - database identifiers are `cuid(2)` and generated server-side
 - every workspace-scoped operation resolves the caller's role through
   `WorkspaceAccessService` and asserts a policy from `@exocortex/auth`

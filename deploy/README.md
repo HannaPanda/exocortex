@@ -326,9 +326,12 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
    comes out of `scripts/dependency-graph.mjs`, so a new package cannot be
    forgotten. `.build-marker` records which commit the artefacts belong to, and
    a matching marker skips the build.
-6. **Soft checks**, skippable with `--skip-checks`: `eslint .` from the root
-   (each package lints `src` only, which leaves the root scripts, `apps/api/scripts`
-   and `e2e` unseen), `pnpm format:check`, `pnpm typecheck`, the gate tests, and
+6. **Soft checks**, skippable with `--skip-checks`: `oxlint` and then
+   `eslint .`, both from the root and both over the whole tree — the root
+   scripts, `apps/api/scripts` and `e2e` are covered by the size policy too, and
+   a per-package `src` run never saw them. Since issue #84 oxlint carries almost
+   all of the policy in under a second and ESLint is left with the handful of
+   rules it cannot express. Then `pnpm format:check`, `pnpm typecheck`, the gate tests, and
    `pnpm test:unit` — every test in every workspace that needs no
    infrastructure. `--full-tests` adds `pnpm test:integration`, which brings up
    a Postgres and a Redis of its own (`docker-compose.test.yml`), migrates
