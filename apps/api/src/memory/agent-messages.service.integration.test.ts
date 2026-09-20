@@ -1,8 +1,9 @@
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+
 import { loadDotEnv } from '@exocortex/config';
 import { resolveSettings, type Settings } from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { type SettingsService } from '../platform/settings.service';
 

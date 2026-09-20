@@ -1,5 +1,6 @@
-import { type AgentMessage } from '@exocortex/contracts';
 import { describe, expect, it } from 'vitest';
+
+import { type AgentMessage } from '@exocortex/contracts';
 
 import { renderMessages } from './agent-messages.service';
 
