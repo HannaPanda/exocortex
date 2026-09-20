@@ -22,7 +22,7 @@ import { DocumentsService } from '../documents/documents.service';
 import { PRISMA } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
-import { normaliseProject, projectLabel } from './memory.service';
+import { normaliseProject, projectLabel } from './memory-project';
 import { memoryWorkspaceFor } from './memory-workspace';
 
 /** Title of the page every project's facts hang under, inside the memory workspace. */

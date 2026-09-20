@@ -29,6 +29,8 @@ import { PRISMA, QUEUES } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 import { SearchService } from '../search/search.service';
 
+import { renderMessages, unreadMessagesForRecall } from './agent-messages.service';
+import { normaliseProject, projectLabel } from './memory-project';
 import { memoryWorkspaceFor } from './memory-workspace';
 
 /** How many hits one workspace may contribute before merging and re-ranking. */
@@ -56,6 +58,15 @@ const FACT_BUDGET_SHARE = 1 / 3;
 const ENTITY_BUDGET_SHARE = 1 / 4;
 /** Entities one recall names. Two, because a question rarely means three. */
 const MAX_RECALL_ENTITIES = 2;
+/**
+ * Share of the budget unread mail may take (issue #51).
+ *
+ * A quarter, and usually nothing: an empty mailbox costs a recall nothing at
+ * all. The share matters on the day somebody has written three messages, and
+ * the point of capping it is that a full mailbox must not push out the notes
+ * the session was actually started to work from.
+ */
+const MESSAGE_BUDGET_SHARE = 1 / 4;
 
 /**
  * A hit from the agents' own area is worth more than an equally ranked hit from
@@ -138,6 +149,26 @@ export class MemoryService {
       maxChars: Math.floor(maxChars * ENTITY_BUDGET_SHARE),
     });
 
+    // Unread mail, ahead of everything else and independent of the query: a
+    // message was addressed to this account, which is a stronger claim on the
+    // first lines of a session than anything a search can rank. Reading it here
+    // does not mark it read (ADR-047).
+    const waiting = await unreadMessagesForRecall(
+      { prisma: this.prisma, logger: this.logger, settings: this.settings },
+      {
+        userId,
+        workspaceId: memoryWorkspaceId,
+        limit: settings['memory.recallMessageLimit'],
+      },
+    );
+    // An empty mailbox contributes nothing at all, not the sentence saying it
+    // is empty: a recall is read by a model deciding what to do next, and
+    // "Keine Post." at the top of every session is a line that only ever costs.
+    const mail =
+      waiting.length === 0
+        ? { text: '', kept: [] }
+        : renderMessages(waiting, 'inbox', Math.floor(maxChars * MESSAGE_BUDGET_SHARE));
+
     // A fact already answered in full above must not take a slot again below.
     // The same goes for an entity's own page: it is the answer, not a hit.
     const stated = new Set([
@@ -152,7 +183,7 @@ export class MemoryService {
     const factsText = renderFacts(facts, Math.floor(maxChars * FACT_BUDGET_SHARE));
     const { text, kept, truncated } = renderRecall(
       ranked,
-      maxChars - factsText.length - entitiesText.length,
+      maxChars - factsText.length - entitiesText.length - mail.text.length,
     );
 
     return {
@@ -160,9 +191,12 @@ export class MemoryService {
       project,
       facts,
       entities,
+      messages: mail.kept,
       hits: kept,
-      text: [entitiesText, factsText, text].filter((block) => block.length > 0).join('\n\n'),
-      truncated,
+      text: [mail.text, entitiesText, factsText, text]
+        .filter((block) => block.length > 0)
+        .join('\n\n'),
+      truncated: truncated || mail.kept.length < waiting.length,
       tookMs: Date.now() - startedAt,
     };
   }
@@ -642,32 +676,6 @@ export function queryNamesEntity(
       [title, ...aliases].map((alias) => ({ entityId: 'q', alias })),
     ).length > 0
   );
-}
-
-/**
- * One spelling per project.
- *
- * A working directory arrives as `/var/www/exocortex`, `/var/www/exocortex/`
- * or with a trailing newline from a shell, and all three mean the same project.
- * Without this, one project would collect three pages.
- */
-export function normaliseProject(raw: string): string {
-  const collapsed = raw.trim().replace(/\s+/g, ' ');
-  const withoutTrailingSlash = collapsed.replace(/\/+$/, '');
-  return withoutTrailingSlash.length === 0 ? collapsed : withoutTrailingSlash;
-}
-
-/**
- * The page title for a project.
- *
- * The full path, not its last segment: `web` under two different repositories
- * is two projects, and a title that cannot tell them apart would merge their
- * memories. Long paths are cut from the front, because the end is the part that
- * identifies the project.
- */
-export function projectLabel(project: string): string {
-  const max = 200;
-  return project.length <= max ? project : `…${project.slice(project.length - max + 1)}`;
 }
 
 function formatDay(date: Date): string {

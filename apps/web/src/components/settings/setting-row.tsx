@@ -227,6 +227,18 @@ export const SETTING_COPY: Record<SettingKey, { label: string; help: string }> =
     label: 'Fakten vor der Trefferliste',
     help: 'Wie viele verdichtete Fakten ein Abruf dem Rest voranstellt. 0 stellt keine voran.',
   },
+  'memory.mailboxEnabled': {
+    label: 'Postfach zwischen Agenten',
+    help: 'Agenten können einander Nachrichten hinterlassen, die beim nächsten Sitzungsstart des Empfängers zuoberst stehen. Aus: Senden wird abgelehnt, und ein Abruf trägt keine Post mehr.',
+  },
+  'memory.messageExpiryDays': {
+    label: 'Nachrichten verfallen nach',
+    help: 'Nach wie vielen Tagen eine Nachricht nicht mehr zugestellt wird, wenn der Absender nichts anderes angibt. Ohne Verfall würde das Postfach zur Halde.',
+  },
+  'memory.recallMessageLimit': {
+    label: 'Nachrichten vor der Trefferliste',
+    help: 'Wie viele ungelesene Nachrichten ein Abruf allem anderen voranstellt. 0 lässt Post aus Abrufen heraus; lesbar bleibt sie über das Werkzeug.',
+  },
   'entities.enabled': {
     label: 'Entitäten aktiviert',
     help: 'Erfasst beim Speichern einer Seite, über welche bekannten Personen, Hosts, Dienste oder Projekte sie spricht. Aus: es wird nichts erfasst, vorhandene Verknüpfungen bleiben lesbar.',

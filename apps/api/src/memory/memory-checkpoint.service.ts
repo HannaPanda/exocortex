@@ -25,7 +25,8 @@ import { LOGGER } from '../common/logger.provider';
 import { AI_DEFAULT_MODEL, AI_PROVIDER, PRISMA } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
-import { MemoryService, normaliseProject } from './memory.service';
+import { MemoryService } from './memory.service';
+import { normaliseProject } from './memory-project';
 import { memoryWorkspaceFor } from './memory-workspace';
 
 /**

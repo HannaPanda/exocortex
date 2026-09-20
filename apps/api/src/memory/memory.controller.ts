@@ -3,6 +3,18 @@ import { ApiBody, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { type VerifiedSession } from '@exocortex/auth';
 import {
+  type AgentMessageListQuery,
+  agentMessageListQuerySchema,
+  type AgentMessageListResponse,
+  agentMessageListResponseSchema,
+  type AgentMessageReadRequest,
+  agentMessageReadRequestSchema,
+  type AgentMessageReadResponse,
+  agentMessageReadResponseSchema,
+  type AgentMessageSendRequest,
+  agentMessageSendRequestSchema,
+  type AgentMessageSendResponse,
+  agentMessageSendResponseSchema,
   type MemoryCaptureRequest,
   memoryCaptureRequestSchema,
   type MemoryCaptureResponse,
@@ -37,6 +49,7 @@ import { CurrentSession } from '../auth/session.guard';
 import { currentCorrelationId } from '../common/correlation';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
+import { AgentMessagesService } from './agent-messages.service';
 import { MemoryService } from './memory.service';
 import { MemoryCheckpointService } from './memory-checkpoint.service';
 import { MemoryFactsService } from './memory-facts.service';
@@ -56,6 +69,7 @@ export class MemoryController {
     private readonly memory: MemoryService,
     private readonly facts: MemoryFactsService,
     private readonly checkpoints: MemoryCheckpointService,
+    private readonly messages: AgentMessagesService,
   ) {}
 
   @Get('recall')
@@ -120,6 +134,51 @@ export class MemoryController {
       request: body,
       correlationId: currentCorrelationId(),
     });
+  }
+
+  /**
+   * The mailbox between agents (issue #51, ADR-047).
+   *
+   * A `GET` to look and a `POST` to acknowledge, split for the reason the whole
+   * controller is split that way: the scope is derived from the method, so a
+   * client that only ever collects its post would otherwise need a `write`
+   * token to read it. It also keeps the promise the other way round -- looking
+   * at the mailbox never empties it.
+   */
+  @Get('messages')
+  @ApiQuery({ name: 'box', required: false })
+  @ApiQuery({ name: 'status', required: false })
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiOkResponse({ schema: openApiResponseSchema(agentMessageListResponseSchema) })
+  async listMessages(
+    @CurrentSession() session: VerifiedSession,
+    @Query(zodPipe(agentMessageListQuerySchema)) query: AgentMessageListQuery,
+  ): Promise<AgentMessageListResponse> {
+    return this.messages.list(session.userId, query);
+  }
+
+  @Post('messages')
+  @ApiBody({ schema: openApiSchema(agentMessageSendRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(agentMessageSendResponseSchema) })
+  async sendMessage(
+    @CurrentSession() session: VerifiedSession,
+    @Body(zodPipe(agentMessageSendRequestSchema)) body: AgentMessageSendRequest,
+  ): Promise<AgentMessageSendResponse> {
+    return this.messages.send({
+      userId: session.userId,
+      request: body,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  @Post('messages/read')
+  @ApiBody({ schema: openApiSchema(agentMessageReadRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(agentMessageReadResponseSchema) })
+  async markMessagesRead(
+    @CurrentSession() session: VerifiedSession,
+    @Body(zodPipe(agentMessageReadRequestSchema)) body: AgentMessageReadRequest,
+  ): Promise<AgentMessageReadResponse> {
+    return this.messages.markRead({ userId: session.userId, ids: body.ids });
   }
 
   /**

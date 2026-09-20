@@ -58,6 +58,8 @@ const MESSAGES: Record<ApiErrorCode, string> = {
     'Diese Installation kann keine eigenen Schlüssel speichern. Dafür fehlt der Schlüssel zum Verschlüsseln (CREDENTIAL_ENCRYPTION_KEY).',
   memory_unavailable:
     'Für dieses Konto ist noch kein Gedächtnisbereich festgelegt. In den Einstellungen eines Arbeitsbereichs lässt sich einer dazu erklären.',
+  agent_message_recipient_unknown:
+    'In diesem Gedächtnisbereich gibt es niemanden mit diesem Namen. Nachrichten gehen nur an Konten, die denselben Bereich teilen.',
   entity_layer_unavailable:
     'Für Entitäten ist noch keine Datenbank hinterlegt. Das lässt sich im Administrationsbereich nachholen.',
   entity_exists:
