@@ -86,7 +86,7 @@ export function createUnimplementedRunner(id: AgentRunnerId): AgentRunner {
       networkAccess: false,
       isolation: 'none',
     },
-    // eslint-disable-next-line require-yield
+    // oxlint-disable-next-line require-yield
     async *run(): AsyncIterable<AgentRunEvent> {
       throw new AgentRunnerNotImplementedError(id);
     },

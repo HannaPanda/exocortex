@@ -592,7 +592,7 @@ function compileBinary(
   return Prisma.sql`(${left} ${Prisma.raw(operator)} ${right})`;
 }
 
-/* eslint-disable-next-line complexity -- one arm per entry of the closed FORMULA_FUNCTIONS table */
+/* oxlint-disable-next-line complexity -- one arm per entry of the closed FORMULA_FUNCTIONS table */
 function compileCall(name: string, args: FormulaNode[], context: FormulaContext): Prisma.Sql {
   const compiled = args.map((argument) => compileFormulaNode(argument, context));
   const [first, second, third] = compiled;

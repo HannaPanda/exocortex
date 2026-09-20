@@ -5,13 +5,14 @@
  * (`@exocortex/*`) dependencies are allowed by `dependency-graph.mjs`. Also
  * detects dependency cycles between workspace packages.
  *
- * This is the second half of a rule ESLint enforces at the import site
- * (`no-restricted-imports`, built from the same graph): a manifest can declare
+ * This is the second half of a rule oxlint enforces at the import site
+ * (`no-restricted-imports`, generated into `.oxlintrc.json` from the same graph): a manifest can declare
  * a dependency long before anything imports it, and the import rule would not
  * see that. Both halves read one list, so they cannot drift apart.
  *
  * Run from `scripts/build.sh` alongside the other gates, and from `pnpm lint`.
  */
+import { spawnSync } from 'node:child_process';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -112,9 +113,25 @@ if (errors.length > 0) {
   fail(
     `${errors.length} package boundary violation(s)`,
     errors,
-    'Either the dependency does not belong there, or the graph in scripts/dependency-graph.mjs is out of date. Change the one that is wrong -- eslint.config.mjs reads the same list, so widening it opens the import rule too.',
+    'Either the dependency does not belong there, or the graph in scripts/dependency-graph.mjs is out of date. Change the one that is wrong -- .oxlintrc.json is generated from the same list, so widening it opens the import rule too.',
+  );
+}
+
+// The import-site half lives in `.oxlintrc.json`, which is generated from the
+// same graph. A file that has not been regenerated is a gate asking last
+// week's question, so the manifest half refuses to pass while it is stale.
+const generator = spawnSync(
+  process.execPath,
+  [join(repositoryRoot, 'scripts', 'generate-oxlint-config.mjs'), '--check'],
+  { encoding: 'utf8' },
+);
+if (generator.status !== 0) {
+  fail(
+    '.oxlintrc.json does not match scripts/dependency-graph.mjs',
+    [(generator.stderr || generator.stdout || '').trim()],
+    'Run `node scripts/generate-oxlint-config.mjs` and commit the result.',
   );
 }
 
 info(`${packages.size} workspace package(s)`);
-ok('Every internal dependency is allowed by the graph.');
+ok('Every internal dependency is allowed by the graph, and .oxlintrc.json matches it.');

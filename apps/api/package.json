@@ -9,7 +9,6 @@
     "dev": "tsx watch src/main.ts",
     "start": "node dist/main.js",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.scripts.json --noEmit",
-    "lint": "eslint src",
     "test": "vitest run",
     "test:unit": "vitest run --exclude '**/*.integration.test.*' --passWithNoTests",
     "test:integration": "vitest run --passWithNoTests integration.test",

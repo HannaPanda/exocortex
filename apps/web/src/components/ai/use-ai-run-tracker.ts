@@ -288,7 +288,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
     if (gapDetected && activeRunId !== null) void runQuery.refetch();
     // `runQuery` is deliberately not a dependency: including it would refetch
     // on every poll result, not on the gap being noticed.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react/exhaustive-deps
   }, [gapDetected, activeRunId]);
 
   const handleCancelRun = async (): Promise<void> => {

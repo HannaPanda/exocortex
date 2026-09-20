@@ -22,7 +22,6 @@
     "build": "prisma generate && tsc -p tsconfig.build.json",
     "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.scripts.json --noEmit",
-    "lint": "eslint src prisma",
     "test": "vitest run",
     "test:unit": "vitest run --exclude '**/*.integration.test.*' --passWithNoTests",
     "test:integration": "vitest run --passWithNoTests integration.test"

@@ -187,7 +187,7 @@ export type ProjectPathProblem =
  * path that means one thing here and another on somebody's laptop is a path
  * that will be exported wrong exactly once.
  */
-// eslint-disable-next-line no-control-regex -- refusing them is the point
+// oxlint-disable-next-line no-control-regex -- refusing them is the point
 const CONTROL_OR_RESERVED = /[\u0000-\u001f\u007f\\:*?"<>|]/;
 
 /** Names the build directory owns. A project file may not shadow one. */

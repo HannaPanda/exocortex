@@ -12,7 +12,6 @@
   "scripts": {
     "build": "echo \"@exocortex/ui is consumed as source via Next transpilePackages\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint src",
     "test": "echo \"no unit tests: UI is covered by Playwright\""
   },
   "dependencies": {

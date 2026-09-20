@@ -127,7 +127,7 @@ function CoverSection({
     <section className="flex flex-col gap-1.5" data-testid="properties-cover">
       <SectionRule as="h3">Titelbild</SectionRule>
       <div className="h-16 w-full overflow-hidden rounded-md bg-surface">
-        {/* eslint-disable-next-line @next/next/no-img-element -- attachment ids are arbitrary user uploads, not build-time-known assets next/image can optimize. */}
+        {/* oxlint-disable-next-line nextjs/no-img-element -- attachment ids are arbitrary user uploads, not build-time-known assets next/image can optimize. */}
         <img
           src={`/api/attachments/${attachmentId}/download?variant=preview`}
           alt=""

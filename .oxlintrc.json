@@ -1,0 +1,2634 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "oxc",
+    "react",
+    "nextjs"
+  ],
+  "categories": {
+    "correctness": "error"
+  },
+  "env": {
+    "builtin": true,
+    "node": true
+  },
+  "ignorePatterns": [
+    "**/node_modules/**",
+    ".claude/worktrees/**",
+    "**/dist/**",
+    "**/.next/**",
+    "**/.turbo/**",
+    "**/coverage/**",
+    "**/generated/**",
+    "**/*.generated.ts",
+    "packages/contracts/src/lucide-icon-names.ts",
+    "**/playwright-report/**",
+    "**/test-results/**",
+    "packages/database/prisma/migrations/**"
+  ],
+  "rules": {
+    "no-array-constructor": "error",
+    "no-case-declarations": "error",
+    "no-empty": "error",
+    "no-fallthrough": "error",
+    "no-prototype-builtins": "error",
+    "no-regex-spaces": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "prefer-rest-params": "error",
+    "prefer-spread": "error",
+    "typescript/ban-ts-comment": "error",
+    "typescript/no-namespace": "error",
+    "typescript/no-require-imports": "error",
+    "typescript/no-unnecessary-type-constraint": "error",
+    "typescript/no-unsafe-function-type": "error",
+    "unicorn/no-useless-spread": "off",
+    "unicorn/no-new-array": "off",
+    "max-lines": [
+      "error",
+      {
+        "max": 600,
+        "skipBlankLines": true,
+        "skipComments": true
+      }
+    ],
+    "max-lines-per-function": [
+      "error",
+      {
+        "max": 200,
+        "skipBlankLines": true,
+        "skipComments": true
+      }
+    ],
+    "complexity": [
+      "error",
+      20
+    ],
+    "max-depth": [
+      "error",
+      4
+    ],
+    "max-params": [
+      "error",
+      5
+    ],
+    "max-nested-callbacks": [
+      "error",
+      3
+    ],
+    "no-console": [
+      "error",
+      {
+        "allow": [
+          "warn",
+          "error"
+        ]
+      }
+    ],
+    "eqeqeq": [
+      "error",
+      "always",
+      {
+        "null": "ignore"
+      }
+    ],
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+    "typescript/no-explicit-any": "error",
+    "typescript/consistent-type-imports": [
+      "error",
+      {
+        "prefer": "type-imports",
+        "fixStyle": "inline-type-imports"
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "packages/config/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/logger",
+                  "@exocortex/logger/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/logger. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/contracts",
+                  "@exocortex/contracts/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/contracts. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/editor",
+                  "@exocortex/editor/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/editor. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/database",
+                  "@exocortex/database/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/database. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/config must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "packages/logger/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/config",
+                  "@exocortex/config/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/config. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/contracts",
+                  "@exocortex/contracts/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/contracts. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/editor",
+                  "@exocortex/editor/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/editor. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/database",
+                  "@exocortex/database/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/database. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/logger must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "packages/contracts/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/config",
+                  "@exocortex/config/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/config. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/logger",
+                  "@exocortex/logger/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/logger. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/editor",
+                  "@exocortex/editor/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/editor. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/database",
+                  "@exocortex/database/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/database. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/contracts must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "packages/editor/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/config",
+                  "@exocortex/config/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/config. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/logger",
+                  "@exocortex/logger/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/logger. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/contracts",
+                  "@exocortex/contracts/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/contracts. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/database",
+                  "@exocortex/database/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/database. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/editor must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "packages/ui/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/config",
+                  "@exocortex/config/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/config. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/logger",
+                  "@exocortex/logger/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/logger. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/contracts",
+                  "@exocortex/contracts/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/contracts. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/editor",
+                  "@exocortex/editor/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/editor. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/database",
+                  "@exocortex/database/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/database. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ui must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "packages/database/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/database must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/database must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/database must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/database must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/database must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/database must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/database must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/database must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/database must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/database must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/database must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/database must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/database must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/database must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "packages/storage/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/contracts",
+                  "@exocortex/contracts/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/contracts. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/editor",
+                  "@exocortex/editor/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/editor. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/database",
+                  "@exocortex/database/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/database. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/storage must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "packages/queue/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/editor",
+                  "@exocortex/editor/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/editor. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/database",
+                  "@exocortex/database/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/database. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/queue must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "packages/ai/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/editor",
+                  "@exocortex/editor/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/editor. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/database",
+                  "@exocortex/database/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/database. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/ai must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "packages/calendar/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/config",
+                  "@exocortex/config/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/config. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/contracts",
+                  "@exocortex/contracts/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/contracts. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/editor",
+                  "@exocortex/editor/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/editor. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/database",
+                  "@exocortex/database/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/database. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/calendar must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "packages/features/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/config",
+                  "@exocortex/config/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/config. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/logger",
+                  "@exocortex/logger/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/logger. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/editor",
+                  "@exocortex/editor/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/editor. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/database",
+                  "@exocortex/database/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/database. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/features must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "packages/auth/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/editor",
+                  "@exocortex/editor/*"
+                ],
+                "message": "Architectural boundary: @exocortex/auth must not import @exocortex/editor. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/auth must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/auth must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/auth must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/auth must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/auth must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/auth must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/auth must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/auth must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/auth must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/auth must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/auth must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/auth must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/auth must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "packages/mcp-tools/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/config",
+                  "@exocortex/config/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/config. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/logger",
+                  "@exocortex/logger/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/logger. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/editor",
+                  "@exocortex/editor/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/editor. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/database",
+                  "@exocortex/database/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/database. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp-tools must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "apps/mcp/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/editor",
+                  "@exocortex/editor/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/editor. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/database",
+                  "@exocortex/database/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/database. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/mcp must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "apps/api/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/api must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/api must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/api must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/api must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/api must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/api must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/api must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "apps/collaboration/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/collaboration must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/collaboration must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/collaboration must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/collaboration must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/collaboration must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/collaboration must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/collaboration must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/collaboration must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/collaboration must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/collaboration must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/collaboration must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "apps/worker/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/worker must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/worker must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/worker must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/worker must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/worker must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/worker must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/worker must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "apps/web/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/config",
+                  "@exocortex/config/*"
+                ],
+                "message": "Architectural boundary: @exocortex/web must not import @exocortex/config. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/logger",
+                  "@exocortex/logger/*"
+                ],
+                "message": "Architectural boundary: @exocortex/web must not import @exocortex/logger. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/database",
+                  "@exocortex/database/*"
+                ],
+                "message": "Architectural boundary: @exocortex/web must not import @exocortex/database. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/web must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/web must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/web must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/web must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/web must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/web must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/web must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/web must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/web must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/web must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/web must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/e2e",
+                  "@exocortex/e2e/*"
+                ],
+                "message": "Architectural boundary: @exocortex/web must not import @exocortex/e2e. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "e2e/**/*.{ts,tsx,mts,cts}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@exocortex/config",
+                  "@exocortex/config/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/config. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/logger",
+                  "@exocortex/logger/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/logger. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/contracts",
+                  "@exocortex/contracts/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/contracts. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/editor",
+                  "@exocortex/editor/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/editor. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ui",
+                  "@exocortex/ui/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/ui. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/database",
+                  "@exocortex/database/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/database. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/storage",
+                  "@exocortex/storage/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/storage. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/queue",
+                  "@exocortex/queue/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/queue. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/ai",
+                  "@exocortex/ai/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/ai. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/calendar",
+                  "@exocortex/calendar/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/calendar. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/features",
+                  "@exocortex/features/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/features. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/auth",
+                  "@exocortex/auth/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/auth. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp-tools",
+                  "@exocortex/mcp-tools/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/mcp-tools. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/mcp",
+                  "@exocortex/mcp/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/mcp. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/api",
+                  "@exocortex/api/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/api. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/collaboration",
+                  "@exocortex/collaboration/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/collaboration. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/worker",
+                  "@exocortex/worker/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/worker. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "@exocortex/web",
+                  "@exocortex/web/*"
+                ],
+                "message": "Architectural boundary: @exocortex/e2e must not import @exocortex/web. See scripts/dependency-graph.mjs."
+              },
+              {
+                "group": [
+                  "../../*/src/*",
+                  "../../../*"
+                ],
+                "message": "Do not reach into another workspace package by relative path. Import its public entry point instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "apps/web/**/*.{ts,tsx}",
+        "packages/ui/**/*.{ts,tsx}"
+      ],
+      "env": {
+        "builtin": true,
+        "browser": true,
+        "node": true
+      },
+      "rules": {
+        "react/display-name": "error",
+        "react/jsx-no-comment-textnodes": "error",
+        "react/jsx-no-target-blank": "error",
+        "react/no-unescaped-entities": "error",
+        "react/require-render-return": "error",
+        "react/rules-of-hooks": "error",
+        "react/unsupported-syntax": "error",
+        "react/no-unknown-property": [
+          "error",
+          {
+            "ignore": [
+              "cmdk-input-wrapper"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "**/*.{js,mjs,cjs}"
+      ],
+      "rules": {
+        "no-undef": "error"
+      }
+    },
+    {
+      "files": [
+        "**/*.tsx"
+      ],
+      "rules": {
+        "max-lines-per-function": [
+          "error",
+          {
+            "max": 300,
+            "skipBlankLines": true,
+            "skipComments": true
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "apps/api/**/*.ts"
+      ],
+      "rules": {
+        "typescript/consistent-type-imports": "off",
+        "max-params": "off"
+      }
+    },
+    {
+      "files": [
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.spec.ts",
+        "**/tests/**/*.ts",
+        "**/test/**/*.ts",
+        "e2e/**/*.ts"
+      ],
+      "rules": {
+        "no-console": "off",
+        "typescript/no-non-null-assertion": "off",
+        "max-nested-callbacks": "off",
+        "max-lines": "off",
+        "max-lines-per-function": "off"
+      }
+    },
+    {
+      "files": [
+        "apps/web/public/sw.js"
+      ],
+      "env": {
+        "builtin": true,
+        "serviceworker": true
+      },
+      "rules": {
+        "no-undef": "error"
+      }
+    },
+    {
+      "files": [
+        "**/prisma/seed*.ts",
+        "**/scripts/**/*.{mjs,ts}"
+      ],
+      "rules": {
+        "no-console": "off",
+        "nextjs/no-assign-module-variable": "off"
+      }
+    },
+    {
+      "files": [
+        "**/*.config.{ts,mts,js,mjs,cjs}",
+        "scripts/**/*.mjs",
+        "**/*.cjs"
+      ],
+      "rules": {
+        "no-console": "off",
+        "typescript/no-require-imports": "off"
+      }
+    }
+  ]
+}

@@ -154,12 +154,19 @@ if [ "$SKIP_CHECKS" -eq 1 ]; then
 else
   step "Step 6 — soft checks"
 
-  # `eslint .` rather than `pnpm lint`: each package lints `src` only, so the
-  # root scripts, the deploy helpers, apps/api/scripts and e2e are never seen by
-  # the per-package runs. The size policy from issue #40 applies to those too.
-  # ESLint is not a typecheck, which is what issue #95 was: those same files had
-  # been outside every tsconfig for as long as they had existed.
-  info "ESLint, whole repository …"
+  # Two linters over the whole repository, in that order. Since issue #84
+  # oxlint carries almost all of the policy and walks the tree in a fifth of a
+  # second; ESLint is left with the handful of rules oxlint cannot express
+  # (`eslint.config.mjs` says which, and why). Both run from the root rather
+  # than per package, because the root scripts, the deploy helpers,
+  # apps/api/scripts and e2e belong to the size policy too and a per-package
+  # `src` run never sees them. Neither is a typecheck, which is what issue #95
+  # was: those same files had been outside every tsconfig for as long as they
+  # had existed.
+  info "oxlint, whole repository …"
+  pnpm exec oxlint || fail "oxlint found problems" "Run 'pnpm exec oxlint --fix' for the mechanical ones."
+
+  info "ESLint, the rules oxlint cannot express …"
   pnpm exec eslint . || fail "ESLint found problems" "Run 'pnpm exec eslint . --fix' for the mechanical ones."
 
   # A soft check and not a hard gate on purpose: an unformatted file is not a

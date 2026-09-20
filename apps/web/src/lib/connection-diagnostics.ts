@@ -64,14 +64,14 @@ export function installConnectionDiagnostics(): void {
   const diagnostics: ExocortexDiagnostics = {
     dump: () => {
       const text = dumpConnectionLog();
-      // eslint-disable-next-line no-console -- printing is the point of the call.
+      // oxlint-disable-next-line no-console -- printing is the point of the call.
       console.log(text);
       return text;
     },
     entries: () => connectionLogEntries(),
     probe: async () => {
       const text = formatProbeReport(await probeConnections());
-      // eslint-disable-next-line no-console -- printing is the point of the call.
+      // oxlint-disable-next-line no-console -- printing is the point of the call.
       console.log(text);
       return text;
     },
@@ -86,7 +86,7 @@ export function installConnectionDiagnostics(): void {
     online: navigator.onLine,
     visibility: document.visibilityState,
   });
-  // eslint-disable-next-line no-console -- the one line that makes the rest discoverable.
+  // oxlint-disable-next-line no-console -- the one line that makes the rest discoverable.
   console.info(
     '%c[exo]%c Verbindungsdiagnose bereit: exocortex.dump(), exocortex.probe()',
     'color:#F9AA33;font-weight:600',

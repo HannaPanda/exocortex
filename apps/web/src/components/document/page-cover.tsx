@@ -368,7 +368,7 @@ export function PageCover({
         onPointerCancel={endDrag}
         onKeyDown={onKeyDown}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element -- attachment ids are arbitrary user uploads, not build-time-known assets next/image can optimize. */}
+        {/* oxlint-disable-next-line nextjs/no-img-element -- attachment ids are arbitrary user uploads, not build-time-known assets next/image can optimize. */}
         <img
           // The downscaled copy, which the route falls back to the original for
           // when there is none. A cover is never drawn larger than a wide

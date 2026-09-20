@@ -111,6 +111,128 @@ describe('package boundaries (check-dependency-boundaries.mjs)', () => {
     expect(result.status).not.toBe(0);
     expect(result.output).toContain('@exocortex/database');
   });
+
+  it('goes red when .oxlintrc.json no longer matches the graph', () => {
+    // The import-site half of the boundary rule is generated into
+    // `.oxlintrc.json`. A hand-edited or simply forgotten file would leave
+    // oxlint enforcing yesterday's graph while this gate reported success.
+    editFile('.oxlintrc.json', (source) => source.replace('"correctness"', '"suspicious"'));
+    const result = gate('check-dependency-boundaries.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('.oxlintrc.json');
+  });
+});
+
+describe('the lint policy still has teeth', () => {
+  /** Runs oxlint over one path with the repository's own configuration. */
+  function oxlint(relativePath: string): GateResult {
+    return run('pnpm', ['exec', 'oxlint', relativePath]);
+  }
+
+  /** Runs the ESLint remainder over one path. */
+  function eslint(relativePath: string): GateResult {
+    return run('pnpm', ['exec', 'eslint', relativePath]);
+  }
+
+  it('is green on the repository as it stands', () => {
+    expect(oxlint('.').status).toBe(0);
+    expect(eslint('.').status).toBe(0);
+  });
+
+  // oxlint's half. These four stand for the four groups the migration in issue
+  // #84 moved across: the architectural boundary, the TypeScript rules, the
+  // size policy, and the per-directory overrides.
+  it('oxlint refuses an import across a package boundary', () => {
+    writeProbe(
+      'apps/web/src/__lint_probe__.ts',
+      "import { x } from '@exocortex/database';\nexport const y = x;\n",
+    );
+    const result = oxlint('apps/web/src/__lint_probe__.ts');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('no-restricted-imports');
+  });
+
+  it('oxlint refuses `any`', () => {
+    writeProbe('packages/ai/src/__lint_probe__.ts', 'export const f = (a: any) => a;\n');
+    const result = oxlint('packages/ai/src/__lint_probe__.ts');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('no-explicit-any');
+  });
+
+  it('oxlint refuses a function with too many parameters', () => {
+    writeProbe(
+      'packages/ai/src/__lint_probe__.ts',
+      'export const f = (a: number, b: number, c: number, d: number, e: number, g: number) =>\n' +
+        '  a + b + c + d + e + g;\n',
+    );
+    const result = oxlint('packages/ai/src/__lint_probe__.ts');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('max-params');
+  });
+
+  it('oxlint lets a NestJS constructor have more parameters than a function may', () => {
+    // The override that makes constructor injection possible. If it stopped
+    // matching, every provider in apps/api would go red at once, which is the
+    // kind of failure that gets fixed by weakening the rule.
+    writeProbe(
+      'apps/api/src/__lint_probe__.service.ts',
+      'export class Probe {\n' +
+        '  constructor(\n' +
+        '    private readonly a: string,\n' +
+        '    private readonly b: string,\n' +
+        '    private readonly c: string,\n' +
+        '    private readonly d: string,\n' +
+        '    private readonly e: string,\n' +
+        '    private readonly f: string,\n' +
+        '  ) {}\n' +
+        '}\n',
+    );
+    expect(oxlint('apps/api/src/__lint_probe__.service.ts').status).toBe(0);
+  });
+
+  it('oxlint refuses an empty catch block but allows one that says why', () => {
+    writeProbe(
+      'packages/ai/src/__lint_probe__.ts',
+      'export function f(): void {\n  try {\n    JSON.parse("{}");\n  } catch {}\n}\n',
+    );
+    const empty = oxlint('packages/ai/src/__lint_probe__.ts');
+    expect(empty.status).not.toBe(0);
+    expect(empty.output).toContain('no-empty');
+
+    writeProbe(
+      'packages/ai/src/__lint_probe__.ts',
+      'export function f(): void {\n  try {\n    JSON.parse("{}");\n  } catch {\n    // Malformed input is the expected case here.\n  }\n}\n',
+    );
+    expect(oxlint('packages/ai/src/__lint_probe__.ts').status).toBe(0);
+  });
+
+  // The ESLint remainder. Both of these are exactly what oxlint cannot express,
+  // which is the only reason ESLint is still installed.
+  it('ESLint refuses unsorted imports', () => {
+    writeProbe(
+      'packages/ai/src/__lint_probe__.ts',
+      "import { z } from 'zod';\nimport { join } from 'node:path';\n\nexport const x = [z, join];\n",
+    );
+    const result = eslint('packages/ai/src/__lint_probe__.ts');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('simple-import-sort');
+  });
+
+  it('ESLint refuses a NestJS class with too many injected dependencies', () => {
+    writeProbe(
+      'apps/api/src/__lint_probe__.service.ts',
+      'export class Probe {\n' +
+        '  constructor(\n' +
+        Array.from({ length: 11 }, (_, index) => `    private readonly d${index}: string,\n`).join(
+          '',
+        ) +
+        '  ) {}\n' +
+        '}\n',
+    );
+    const result = eslint('apps/api/src/__lint_probe__.service.ts');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('too many collaborators');
+  });
 });
 
 describe('configuration example sync (check-env-example.mjs)', () => {

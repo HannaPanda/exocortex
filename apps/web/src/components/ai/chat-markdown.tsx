@@ -357,7 +357,7 @@ function renderReadingBlock(node: ProseMirrorNode, key: string): React.ReactNode
   const src = typeof node.attrs?.src === 'string' ? node.attrs.src : '';
   const alt = typeof node.attrs?.alt === 'string' ? node.attrs.alt : '';
   if (src.length === 0) return null;
-  /* eslint-disable-next-line @next/next/no-img-element --
+  /* oxlint-disable-next-line nextjs/no-img-element --
      the address comes out of a page's content at runtime, so no loader
      configuration could cover it. */
   return <img key={key} src={src} alt={alt} className="mb-3 max-w-full rounded-md" />;

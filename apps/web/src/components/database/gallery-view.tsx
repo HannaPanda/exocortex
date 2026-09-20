@@ -64,7 +64,7 @@ export function GalleryView({
             >
               <div className="flex aspect-video items-center justify-center bg-surface text-muted-foreground">
                 {coverAttachmentId !== undefined ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- attachment ids are arbitrary user uploads, not build-time-known assets next/image can optimize.
+                  // oxlint-disable-next-line nextjs/no-img-element -- attachment ids are arbitrary user uploads, not build-time-known assets next/image can optimize.
                   <img
                     // A grid of thumbnails is where the full-size originals hurt
                     // most; the route serves the original when no preview exists.

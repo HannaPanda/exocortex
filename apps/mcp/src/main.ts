@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint-disable no-console -- the very first statement must shadow console.log/info/warn */
+/* oxlint-disable no-console -- the very first statement must shadow console.log/info/warn */
 // Guard rail: stdout is reserved exclusively for JSON-RPC protocol traffic
 // (see stdio.ts). This runs before any other import can log anything, so a
 // stray `console.log` anywhere in the dependency graph can never corrupt the
@@ -7,7 +7,7 @@
 console.log = console.error;
 console.info = console.error;
 console.warn = console.error;
-/* eslint-enable no-console */
+/* oxlint-enable no-console */
 
 import { randomUUID } from 'node:crypto';
 
