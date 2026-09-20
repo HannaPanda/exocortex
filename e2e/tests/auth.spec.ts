@@ -23,7 +23,8 @@ test.describe('authentication', () => {
     await page.reload();
     await expect(page.getByTestId('workspace-switcher')).toBeVisible();
 
-    await page.getByTestId('sign-out').click();
+    await page.getByTestId('open-global-menu').click();
+    await page.getByTestId('menu-sign-out').click();
     await page.waitForURL(/\/anmelden/, { timeout: 30_000 });
 
     // Protected routes bounce back to the login form.

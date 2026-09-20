@@ -10,19 +10,23 @@ test.beforeAll(() => {
 });
 
 /**
- * Die Topbar auf Telefonbreite (Issue #100).
+ * Die Kopfzeile, auf beiden Breiten (Issues #100 und die Kopfzeilen-Arbeit
+ * danach).
  *
- * Die rechte Gruppe war eine Reihe aus zehn bis zwölf Icons ohne Umbruch und
- * ohne Breakpoint. Bei 360 CSS-Pixeln stand sie zur Hälfte außerhalb des
+ * Zuerst war die rechte Gruppe eine Reihe aus zehn bis zwölf Icons ohne Umbruch
+ * und ohne Breakpoint. Bei 360 CSS-Pixeln stand sie zur Hälfte außerhalb des
  * Bildschirms, und weil die Hülle `overflow-hidden` trägt, *scrollte* dabei
  * nichts: die Knöpfe waren einfach abgeschnitten und unerreichbar. Ein Test auf
  * `scrollWidth` hätte den Fehler also nie gesehen. Deshalb misst diese Suite
  * die Kästen der einzelnen Bedienelemente gegen den Viewport.
  *
- * Dieselbe Frage wie im Kontextbereich auf Minimalbreite (`activity-diff`):
- * keine Reihe beschrifteter Ziele in eine enge Zeile, Aktionen ins Menü.
+ * Danach war dieselbe Reihe auf dem breiten Schirm immer noch da, und das war
+ * derselbe Fehler eine Stufe leiser: neun abstrakte Glyphen, dauerhaft neben
+ * der Seite, die jemand schreibt. Jetzt gibt es eine Form für beide Breiten,
+ * und diese Suite hält fest, dass es genau eine bleibt.
  */
 const PHONE = { width: 360, height: 740 };
+const DESKTOP = { width: 1280, height: 720 };
 
 /**
  * The e2e project is typed against Node alone, so a browser global is named
@@ -33,20 +37,29 @@ interface BrowserDocument {
   document: { documentElement: { scrollWidth: number; clientWidth: number } };
 }
 
-/** Jede Fläche, die im Breiten ein eigenes Icon hat, mit ihrem Menü-Eintrag. */
+/** Jede Fläche hinter dem Kontomenü, mit ihrer Adresse. */
 const AREAS = [
   { testId: 'open-features', label: 'Hilfe und Funktionen', href: '/hilfe' },
   { testId: 'open-chats', label: 'Chats', href: '/chats' },
   { testId: 'open-entities', label: 'Entitäten', href: '/entitaeten' },
   { testId: 'open-shared', label: 'Mit mir geteilt', href: '/geteilt' },
   { testId: 'open-memory', label: 'Gedächtnis', href: '/gedaechtnis' },
-  { testId: 'open-admin', label: 'Verwaltung', href: '/admin' },
   { testId: 'open-api-tokens', label: 'Verbindungen', href: '/einstellungen/verbindungen' },
   {
     testId: 'open-notifications',
     label: 'Benachrichtigungen',
     href: '/einstellungen/benachrichtigungen',
   },
+];
+
+/** Was dauerhaft sichtbar bleiben darf, in Fokusreihenfolge. */
+const PERMANENT = [
+  'toggle-sidebar',
+  'workspace-switcher',
+  'open-capture',
+  'connection-status',
+  'toggle-context',
+  'open-global-menu',
 ];
 
 async function openWorkspace(page: Page): Promise<void> {
@@ -72,14 +85,7 @@ test.describe('Topbar im Hochformat', () => {
   test('kein Bedienelement der Topbar steht außerhalb des Bildschirms', async ({ page }) => {
     await openWorkspace(page);
 
-    for (const testId of [
-      'toggle-sidebar',
-      'workspace-switcher',
-      'open-capture',
-      'connection-status',
-      'toggle-context',
-      'open-global-menu',
-    ]) {
+    for (const testId of PERMANENT) {
       const element = page.getByTestId(testId);
       await expect(element).toBeVisible();
       await expectInsideViewport(element, PHONE.width);
@@ -93,34 +99,6 @@ test.describe('Topbar im Hochformat', () => {
       return root.scrollWidth > root.clientWidth;
     });
     expect(scrolls).toBe(false);
-  });
-
-  test('die Icon-Reihe weicht einem Sammelmenü, das jede Fläche behält', async ({ page }) => {
-    await openWorkspace(page);
-
-    // Im Schmalen ist die Reihe fort ...
-    for (const area of AREAS) {
-      await expect(page.getByTestId(area.testId)).toBeHidden();
-    }
-    await expect(page.getByTestId('sign-out')).toBeHidden();
-
-    // ... und jede Fläche steht mit ihrem Namen im Menü, Abmelden inbegriffen.
-    await page.getByTestId('open-global-menu').click();
-    for (const area of AREAS) {
-      const item = page.getByTestId(`menu-${area.testId}`);
-      await expect(item).toBeVisible();
-      // `toContainText`, not `toHaveText`: the entry is an icon and a word, so
-      // the text node begins with the space between them, and the count in
-      // "Hilfe und Funktionen" follows it. The address below is what pins the
-      // identity of the entry.
-      await expect(item).toContainText(area.label);
-      await expect(item).toHaveAttribute('href', area.href);
-    }
-    await expect(page.getByTestId('menu-sign-out')).toBeVisible();
-
-    // Und ein Eintrag führt auch wirklich hin.
-    await page.getByTestId('menu-open-entities').click();
-    await page.waitForURL(/\/entitaeten/, { timeout: 30_000 });
   });
 
   test('der Hinweis auf neue Funktionen bleibt ohne Öffnen des Menüs sichtbar', async ({
@@ -138,29 +116,100 @@ test.describe('Topbar im Hochformat', () => {
       await expectInsideViewport(page.getByTestId('open-global-menu'), PHONE.width);
       await expect(page.getByTestId('open-global-menu')).toHaveAttribute(
         'aria-label',
-        `Menü (${newCount} neue Funktionen)`,
+        `Konto und Bereiche (${newCount} neue Funktionen)`,
       );
     } else {
       // Nichts Neues heißt: kein Punkt, und das Etikett sagt es auch so.
       await expect(badge).toHaveCount(0);
-      await expect(page.getByTestId('open-global-menu')).toHaveAttribute('aria-label', 'Menü');
+      await expect(page.getByTestId('open-global-menu')).toHaveAttribute(
+        'aria-label',
+        'Konto und Bereiche',
+      );
     }
   });
 });
 
-test.describe('Topbar auf breitem Schirm', () => {
-  test.use({ viewport: { width: 1280, height: 720 } });
+for (const [name, viewport] of [
+  ['Hochformat', PHONE],
+  ['breitem Schirm', DESKTOP],
+] as const) {
+  test.describe(`Kontomenü auf ${name}`, () => {
+    test.use({ viewport });
 
-  test('die Icon-Reihe steht unverändert, das Sammelmenü nicht', async ({ page }) => {
+    test('jede Fläche steht mit ihrem Namen im Menü und nirgends als Icon', async ({ page }) => {
+      await openWorkspace(page);
+
+      // Die alte Icon-Reihe gibt es auf keiner Breite mehr.
+      for (const area of AREAS) {
+        await expect(page.getByTestId(area.testId)).toHaveCount(0);
+      }
+      await expect(page.getByTestId('sign-out')).toHaveCount(0);
+
+      await page.getByTestId('open-global-menu').click();
+      for (const area of AREAS) {
+        const item = page.getByTestId(`menu-${area.testId}`);
+        await expect(item).toBeVisible();
+        // `toContainText`, not `toHaveText`: the entry is an icon and a word, so
+        // the text node begins with the space between them, and the count in
+        // "Hilfe und Funktionen" follows it. The address below is what pins the
+        // identity of the entry.
+        await expect(item).toContainText(area.label);
+        await expect(item).toHaveAttribute('href', area.href);
+        await expectInsideViewport(item, viewport.width);
+      }
+      await expect(page.getByTestId('menu-sign-out')).toBeVisible();
+
+      // Und ein Eintrag führt auch wirklich hin.
+      await page.getByTestId('menu-open-entities').click();
+      await page.waitForURL(/\/entitaeten/, { timeout: 30_000 });
+    });
+
+    /**
+     * Das Testkonto ist bewusst kein globaler Administrator (siehe
+     * `exocortex-e2e-runnable`), also darf ihm die Verwaltung gar nicht erst
+     * angeboten werden. Vorher stand das Schild für jeden im Kopf und führte in
+     * ein „Kein Zugriff".
+     */
+    test('die Verwaltung wird einem Konto ohne Adminrolle nicht angeboten', async ({ page }) => {
+      await openWorkspace(page);
+      await page.getByTestId('open-global-menu').click();
+      await expect(page.getByTestId('menu-open-features')).toBeVisible();
+      await expect(page.getByTestId('menu-open-admin')).toHaveCount(0);
+    });
+  });
+}
+
+test.describe('Topbar auf breitem Schirm', () => {
+  test.use({ viewport: DESKTOP });
+
+  /**
+   * Die Kopfzeile kostet auf dem Weg in den Text nur noch eine Handvoll
+   * Tabstopps. Vorher waren es sechzehn, und jeder davon stand zwischen dem
+   * Sprungziel und der Seite.
+   */
+  test('die Kopfzeile bleibt eine kurze Tabreihe und öffnet das Menü mit der Tastatur', async ({
+    page,
+  }) => {
     await openWorkspace(page);
 
-    for (const area of AREAS) {
-      const icon = page.getByTestId(area.testId);
-      await expect(icon).toBeVisible();
-      await expect(icon).toHaveAttribute('href', area.href);
-      await expectInsideViewport(icon, 1280);
-    }
-    await expect(page.getByTestId('sign-out')).toBeVisible();
-    await expect(page.getByTestId('open-global-menu')).toBeHidden();
+    const menu = page.getByTestId('open-global-menu');
+    await expect(menu).toBeVisible();
+    await expect(page.getByTestId('open-search')).toBeVisible();
+
+    const focusable = await page
+      .locator('header button:visible, header a:visible, header [tabindex="0"]:visible')
+      .count();
+    expect(focusable, 'Die Kopfzeile hat wieder zu viele Tabstopps').toBeLessThanOrEqual(8);
+
+    // Mit der Tastatur: fokussieren, öffnen, erster Eintrag, wieder zu.
+    await menu.focus();
+    await page.keyboard.press('Enter');
+    await expect(page.getByTestId('menu-open-features')).toBeVisible();
+    await expect(page.getByTestId('menu-open-features')).toBeFocused();
+    await page.keyboard.press('ArrowDown');
+    await expect(page.getByTestId('menu-open-chats')).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(page.getByTestId('menu-open-features')).toHaveCount(0);
+    await expect(menu).toBeFocused();
   });
 });

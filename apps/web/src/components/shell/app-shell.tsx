@@ -1,26 +1,19 @@
 'use client';
 
 import { useQueryClient } from '@tanstack/react-query';
-import { InboxIcon, PanelLeftIcon, PanelRightIcon, SearchIcon } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
 import {
   AppBody,
-  AppHeader,
   AppMain,
   AppShell as AppShellFrame,
-  Button,
   cn,
-  ExocortexWordmark,
   ResizablePanel,
   Sheet,
   SheetContent,
   SheetTitle,
   SkipToContentLink,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
   useIsMobile,
 } from '@exocortex/ui';
 
@@ -35,10 +28,8 @@ import { useRealtime, useRealtimeEvent } from '@/lib/realtime/realtime-provider'
 import { usePersistentState } from '@/lib/use-persistent-state';
 
 import { CaptureDialog } from './capture-dialog';
-import { ConnectionStatus } from './connection-status';
 import { ContextPanel } from './context-panel';
 import { DocumentSessionProvider } from './document-session';
-import { GlobalLinks } from './global-links';
 import { JobProgressIndicator } from './job-progress';
 import { PageTree } from './page-tree';
 import {
@@ -49,8 +40,7 @@ import {
   SIDEBAR_DEFAULT,
   SIDEBAR_STORAGE_KEY,
 } from './panel-preferences';
-import { PresenceAvatars } from './presence-avatars';
-import { WorkspaceSwitcher } from './workspace-switcher';
+import { Topbar } from './topbar';
 
 /**
  * Application shell: header, collapsible navigation, document area and optional
@@ -267,103 +257,18 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     <AppShellFrame>
       <SkipToContentLink />
 
-      <AppHeader>
-        {/* The full lockup, one step below its default height: 1.75rem in a
-            3rem header leaves the name room to breathe instead of filling the
-            bar. The mark alone was correct by the One Signal Rule and wrong by
-            eye -- a bare icon in the corner reads as an unfinished product. The
-            lockup earns its amber here because it is the one place the product
-            says its own name, and it never repeats inside the page. */}
-        <ExocortexWordmark className="mr-1 hidden h-7 shrink-0 sm:block" />
-
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label="Navigation ein-/ausblenden"
-                aria-pressed={sidebarOpen}
-                data-testid="toggle-sidebar"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-              >
-                <PanelLeftIcon />
-              </Button>
-            }
-          />
-          <TooltipContent>Navigation (Strg + B)</TooltipContent>
-        </Tooltip>
-
-        <WorkspaceSwitcher activeWorkspaceId={workspaceId} />
-
-        <Button
-          variant="outline"
-          size="sm"
-          // Second in line to give way, after the workspace name: between the
-          // phone and the desktop the field is narrower, and it truncates
-          // rather than pushing the icons off the right edge (issue #100).
-          className="ml-1 hidden w-40 min-w-0 shrink justify-start gap-2 text-muted-foreground sm:flex lg:w-56"
-          data-testid="open-search"
-          onClick={() => setSearchOpen(true)}
-        >
-          <SearchIcon />
-          <span className="flex-1 truncate text-left">Suchen …</span>
-          <kbd className="exocortex-numeric rounded-sm border border-border px-1 text-nano">
-            Strg K
-          </kbd>
-        </Button>
-
-        {workspaceId === null ? null : (
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="Erfassen"
-                  data-testid="open-capture"
-                  onClick={() => setCaptureOpen(true)}
-                >
-                  <InboxIcon />
-                </Button>
-              }
-            />
-            <TooltipContent>Erfassen (Strg + E)</TooltipContent>
-          </Tooltip>
-        )}
-
-        {/* Never squeezed: everything to its left gives way first, which is
-            what keeps the bar inside a 360-pixel viewport (issue #100). */}
-        <div className="ml-auto flex shrink-0 items-center gap-2">
-          <PresenceAvatars />
-          <ConnectionStatus />
-
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="Kontextbereich ein-/ausblenden"
-                  aria-pressed={contextOpen}
-                  data-testid="toggle-context"
-                  onClick={() => setContextOpen(!contextOpen)}
-                >
-                  <PanelRightIcon />
-                </Button>
-              }
-            />
-            <TooltipContent>Kontextbereich (Strg + .)</TooltipContent>
-          </Tooltip>
-
-          <GlobalLinks
-            accountLabel={session.data?.user?.name ?? 'Konto'}
-            onSignOut={() => {
-              void signOut().then(() => router.replace('/anmelden'));
-            }}
-          />
-        </div>
-      </AppHeader>
+      <Topbar
+        workspaceId={workspaceId}
+        sidebarOpen={sidebarOpen}
+        onSidebarOpenChange={setSidebarOpen}
+        contextOpen={contextOpen}
+        onContextOpenChange={setContextOpen}
+        onOpenSearch={() => setSearchOpen(true)}
+        onOpenCapture={() => setCaptureOpen(true)}
+        onSignOut={() => {
+          void signOut().then(() => router.replace('/anmelden'));
+        }}
+      />
 
       <AppBody>
         {workspaceId !== null ? (
