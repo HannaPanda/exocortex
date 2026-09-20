@@ -191,7 +191,7 @@ function LogPane({ buildId, enabled }: { buildId: string; enabled: boolean }) {
   const log = useProjectBuildLog(buildId, enabled);
   if (log.data === undefined) return <LoadingState label="Protokoll wird geladen …" />;
   return (
-    <pre className="whitespace-pre-wrap break-words font-mono text-[11px] leading-relaxed text-muted-foreground">
+    <pre className="whitespace-pre-wrap break-words font-mono text-micro leading-relaxed text-muted-foreground">
       {log.data.log.length === 0 ? 'Kein Protokoll.' : log.data.log}
     </pre>
   );
@@ -335,7 +335,7 @@ function DiagnosticRow({
         />
         <span className="min-w-0">
           {entry.file === null ? null : (
-            <span className="font-mono text-[11px] text-muted-foreground">
+            <span className="font-mono text-micro text-muted-foreground">
               {entry.file}
               {entry.line === null ? '' : `:${String(entry.line)}`}{' '}
             </span>

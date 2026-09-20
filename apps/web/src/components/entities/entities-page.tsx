@@ -56,7 +56,7 @@ export function EntitiesPage() {
     <AppPage maxWidth="max-w-5xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold">Entitäten</h1>
+          <h1 className="exocortex-page-title">Entitäten</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Personen, Hosts, Dienste und Projekte, die in deinen Seiten vorkommen, und was über sie
             bekannt ist.

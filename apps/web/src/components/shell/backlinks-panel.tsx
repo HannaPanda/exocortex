@@ -69,7 +69,7 @@ function LinkRow({
       {context.length > 0 ? (
         <span className="line-clamp-3 text-xs text-muted-foreground">{context}</span>
       ) : null}
-      <span className="text-[0.6875rem] text-muted-foreground">{KIND_LABEL[kind]}</span>
+      <span className="text-micro text-muted-foreground">{KIND_LABEL[kind]}</span>
     </>
   );
 
@@ -166,7 +166,7 @@ function RelatedRow({ entry, workspaceId }: { entry: RelatedDocument; workspaceI
       {entry.snippet.length > 0 ? (
         <span className="line-clamp-2 text-xs text-muted-foreground">{entry.snippet}</span>
       ) : null}
-      <span className="flex items-center gap-2 text-[0.6875rem] text-muted-foreground">
+      <span className="flex items-center gap-2 text-micro text-muted-foreground">
         {location.length > 0 ? <span className="truncate">{location}</span> : null}
         <span className="exocortex-numeric ml-auto shrink-0">
           Ähnlichkeit {entry.similarity.toLocaleString('de-DE', { maximumFractionDigits: 2 })}

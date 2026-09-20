@@ -64,6 +64,9 @@ function SelectTrigger({
         'transition-[color,box-shadow] outline-none',
         'hover:bg-accent hover:text-accent-foreground',
         'focus-visible:ring-[3px] focus-visible:ring-ring/50',
+        // The same refusal treatment `input.tsx` and `textarea.tsx` carry, so a
+        // select that was refused looks refused rather than only announcing it.
+        'aria-invalid:border-destructive aria-invalid:ring-destructive/20',
         'disabled:cursor-not-allowed disabled:opacity-50',
         size === 'sm' ? 'h-8' : 'h-9',
         className,

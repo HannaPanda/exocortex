@@ -264,7 +264,11 @@ export function SnapshotDiffDialog({
           />
         </DialogBody>
 
-        {error === null ? null : <p className="text-sm text-destructive-text">{error}</p>}
+        {error === null ? null : (
+          <p role="alert" className="text-sm text-destructive-text">
+            {error}
+          </p>
+        )}
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>

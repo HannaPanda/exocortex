@@ -75,7 +75,9 @@ export function EntityDatabaseSetup() {
           </Button>
         </div>
         {provision.isError ? (
-          <p className="mt-2 text-xs text-destructive-text">{provision.error.message}</p>
+          <p role="alert" className="mt-2 text-xs text-destructive-text">
+            {provision.error.message}
+          </p>
         ) : null}
       </AlertDescription>
     </Alert>

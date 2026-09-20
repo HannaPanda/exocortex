@@ -239,7 +239,7 @@ function TechnicalSection({ detail }: { detail: DocumentDetail }) {
     <section className="flex flex-col gap-1.5 border-t border-border pt-3">
       <button
         type="button"
-        className="flex items-center gap-2 text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:text-foreground"
+        className="flex items-center gap-2 text-micro font-medium tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:text-foreground"
         aria-expanded={open}
         data-testid="technical-section-toggle"
         onClick={() => setOpen((next) => !next)}

@@ -175,7 +175,7 @@ function TreeLevel({
             {iconFor(node.file)}
             <span className="truncate">{node.name}</span>
             {node.path === rootFile ? (
-              <span className="shrink-0 rounded-sm bg-muted px-1 text-[10px] text-muted-foreground">
+              <span className="shrink-0 rounded-sm bg-muted px-1 text-nano text-muted-foreground">
                 Haupt
               </span>
             ) : null}
@@ -183,7 +183,10 @@ function TreeLevel({
               <Button
                 variant="ghost"
                 size="icon-sm"
-                className="ms-auto opacity-0 group-hover:opacity-100"
+                // Same reason as the page tree: focusable but invisible while
+                // focused is worse than hidden, and a touch device has no
+                // hover to reveal it with.
+                className="ms-auto opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100"
                 aria-label={`${node.name} entfernen`}
                 onClick={(event) => {
                   event.stopPropagation();

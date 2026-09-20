@@ -49,10 +49,16 @@ typography:
     letterSpacing: '-0.035em'
   section-title:
     fontFamily: '{typography.page-title.fontFamily}'
-    fontSize: '1.25rem'
+    fontSize: '1.375rem'
     fontWeight: 600
-    lineHeight: 1.4
-    letterSpacing: '-0.025em'
+    lineHeight: 1.375
+    letterSpacing: '-0.015em'
+  subsection-title:
+    fontFamily: '{typography.page-title.fontFamily}'
+    fontSize: '1.125rem'
+    fontWeight: 600
+    lineHeight: 1.375
+    letterSpacing: '-0.01em'
   body:
     fontFamily: '{typography.page-title.fontFamily}'
     fontSize: '0.9375rem'
@@ -70,6 +76,16 @@ typography:
     fontSize: '0.75rem'
     fontWeight: 400
     lineHeight: 1.333
+    letterSpacing: 'normal'
+  micro:
+    fontFamily: '{typography.page-title.fontFamily}'
+    fontSize: '0.6875rem'
+    fontWeight: 400
+    letterSpacing: 'normal'
+  nano:
+    fontFamily: '{typography.page-title.fontFamily}'
+    fontSize: '0.625rem'
+    fontWeight: 400
     letterSpacing: 'normal'
   mono:
     fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, monospace'
@@ -383,15 +399,31 @@ repository.
 
 ### Hierarchy
 
-| Role           | Size      | Weight | Tracking | Use                                     |
-| -------------- | --------- | ------ | -------- | --------------------------------------- |
-| Page title     | 1.75rem   | 720    | -0.035em | the name of whatever you are looking at |
-| Section title  | 1.375rem  | 600    | -0.015em | H1 inside documents                     |
-| Subsection     | 1.125rem  | 600    | -0.01em  | H2                                      |
-| Sub-subsection | 0.9375rem | 600    | normal   | H3                                      |
-| Body           | 0.9375rem | 400    | normal   | editor content, prose                   |
-| UI             | 0.875rem  | 500    | normal   | buttons, labels, nav                    |
-| Meta           | 0.75rem   | 400    | normal   | timestamps, counts, hints               |
+| Role              | Utility           | Size      | Weight | Tracking | Use                                        |
+| ----------------- | ----------------- | --------- | ------ | -------- | ------------------------------------------ |
+| Page title        | `text-title`      | 1.75rem   | 720    | -0.035em | the name of whatever you are looking at    |
+| Section title     | `text-section`    | 1.375rem  | 600    | -0.015em | H1 inside documents                        |
+| Subsection        | `text-subsection` | 1.125rem  | 600    | -0.01em  | H2                                         |
+| Sub-subsection    | `text-body` + 600 | 0.9375rem | 600    | normal   | H3                                         |
+| Body              | `text-body`       | 0.9375rem | 400    | normal   | editor content, prose                      |
+| UI                | `text-ui`         | 0.875rem  | 500    | normal   | buttons, labels, nav                       |
+| Meta              | `text-meta`       | 0.75rem   | 400    | normal   | timestamps, counts, hints                  |
+| Instrument        | `text-micro`      | 0.6875rem | 400    | normal   | section-rule labels, key caps, chip counts |
+| Instrument, small | `text-nano`       | 0.625rem  | 400    | normal   | avatar initials, a count inside a dot      |
+
+The ladder is theme tokens in `packages/ui/src/styles.css`, not prose: a rung
+nobody can name is a rung every screen decides for itself, which is how the
+application ended up with 44 arbitrary `text-[…]` values, 28 of them the same
+0.6875rem the instrument marks use. The top three rungs carry a full treatment
+(size, leading, weight, tracking) because a heading is a treatment rather than a
+size; the rest set size and leading only, so adopting `text-ui` never silently
+re-weights a call site.
+
+The bottom two rungs were undocumented for a long time and are the reason for
+the invented sizes. They exist because the instrument marks need a tier below
+Meta: an uppercase section label, a key cap, a count riding on a rule. They set
+size alone, because they live inside rows and chips whose height is already set
+by the row.
 
 The ratio tightens on the way down (1.27 → 1.22 → 1.20) and the last step is
 carried by weight alone, so H3 and body share a size. The page title clears the

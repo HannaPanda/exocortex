@@ -67,7 +67,7 @@ export function SignInForm() {
       <CardContent className="pt-6">
         <form className="flex flex-col gap-4" onSubmit={(event) => void onSubmit(event)}>
           <div className="flex flex-col gap-1.5">
-            <h1 className="text-lg font-semibold">Anmelden</h1>
+            <h1 className="exocortex-page-title">Anmelden</h1>
             <p className="text-sm text-muted-foreground">Willkommen zurück.</p>
           </div>
 

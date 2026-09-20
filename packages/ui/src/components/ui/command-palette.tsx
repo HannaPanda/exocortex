@@ -160,7 +160,7 @@ export function CommandPalette({
           ) : (
             groups.map(([group, groupItems]) => (
               <li key={group} role="presentation">
-                <p className="px-2 pt-2 pb-1 text-[0.6875rem] font-medium tracking-wide text-muted-foreground uppercase">
+                <p className="px-2 pt-2 pb-1 text-micro font-medium tracking-wide text-muted-foreground uppercase">
                   {group}
                 </p>
                 <ul role="presentation">

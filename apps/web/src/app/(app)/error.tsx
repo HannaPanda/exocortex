@@ -19,7 +19,7 @@ export default function AppSegmentError({ retry }: { error: Error; retry: () => 
   return (
     <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
       <AlertTriangleIcon className="size-7 text-destructive-text" aria-hidden />
-      <h1 className="text-lg font-semibold">Diese Seite konnte nicht geladen werden</h1>
+      <h1 className="exocortex-page-title">Diese Seite konnte nicht geladen werden</h1>
       <p className="max-w-md text-sm text-muted-foreground">
         Der Rest der Anwendung läuft weiter. Ein gestarteter KI-Lauf arbeitet im Hintergrund weiter;
         sein Verlauf steht nach dem Neuladen vollständig im Chat.

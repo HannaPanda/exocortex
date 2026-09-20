@@ -599,7 +599,7 @@ function TreeHeader({
       {/* The same mark the overview and the context panel use, so "this is a
           section" looks identical wherever the reader meets it. */}
       <span className="size-1 shrink-0 bg-signal-line" aria-hidden />
-      <p className="text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+      <p className="text-micro font-medium tracking-[0.14em] text-muted-foreground uppercase">
         Seiten
       </p>
       <span className="h-px w-6 shrink-0 bg-signal-line" aria-hidden />

@@ -532,17 +532,39 @@ export interface SettingRowProps {
 export function SettingRow({ settingKey, value, onChange, models, error }: SettingRowProps) {
   const copy = SETTING_COPY[settingKey];
   const id = inputId(settingKey);
+  const helpId = `${id}-help`;
   const errorId = `${id}-error`;
 
   const choices = SETTING_CHOICES[settingKey];
   const range = SETTING_NUMBER_RANGES[settingKey];
   const hint = rangeHint(settingKey);
 
+  /*
+   * The description every control on this row carries, whatever kind of control
+   * it turned out to be.
+   *
+   * The help text under a setting is not a hint here, it is the safety
+   * mechanism: it is where a switch says that it lets a model reach addresses
+   * it chooses itself, or that it spends money. Rendered as a loose paragraph
+   * after the control, a screen reader never reads it as belonging to the
+   * switch, so the switch is operated blind. The same goes for a refusal: it
+   * was announced by nothing and reachable only by accident.
+   *
+   * There is no `role="alert"` on the message, and that is deliberate. A save
+   * that is refused moves focus to the first offending field (`settings-form`),
+   * which announces the control together with this description; an alert per
+   * refused field would then say the same thing again, once per field.
+   */
+  const described = {
+    'aria-describedby': error === undefined ? helpId : `${helpId} ${errorId}`,
+    'aria-invalid': error !== undefined,
+  };
+
   let control: React.ReactNode;
   if (choices !== undefined) {
     control = (
       <Select value={typeof value === 'string' ? value : ''} onValueChange={onChange}>
-        <SelectTrigger id={id} className="w-full">
+        <SelectTrigger id={id} className="w-full" {...described}>
           {/* Base UI shows the raw value without a render function. */}
           <SelectValue>
             {() => choices.find((choice) => choice.value === value)?.label ?? ''}
@@ -558,18 +580,23 @@ export function SettingRow({ settingKey, value, onChange, models, error }: Setti
       </Select>
     );
   } else if (typeof value === 'boolean') {
-    control = <Switch id={id} checked={value} onCheckedChange={onChange} />;
+    control = <Switch id={id} checked={value} onCheckedChange={onChange} {...described} />;
   } else if (typeof value === 'number') {
     control = (
       <Input
         id={id}
+        name={settingKey}
         type="number"
+        inputMode="numeric"
+        // A deployment setting is not a thing a password manager or an
+        // autofill heuristic has ever seen before, so neither should offer to
+        // fill it in.
+        autoComplete="off"
         value={value}
         // Bounds come from the schema (`SETTING_NUMBER_RANGES`), so the spinner
         // stops where the API does instead of offering values it will refuse.
         {...(range === undefined ? {} : { min: range.min, max: range.max, step: 1 })}
-        aria-invalid={error !== undefined}
-        aria-describedby={error === undefined ? undefined : errorId}
+        {...described}
         onChange={(event) => {
           const next = Number(event.target.value);
           if (!Number.isNaN(next)) onChange(next);
@@ -582,7 +609,7 @@ export function SettingRow({ settingKey, value, onChange, models, error }: Setti
         value={value ?? AUTO_VALUE}
         onValueChange={(next) => onChange(next === AUTO_VALUE ? null : next)}
       >
-        <SelectTrigger id={id} className="w-full">
+        <SelectTrigger id={id} className="w-full" {...described}>
           <SelectValue>
             {() => models.find((model) => model.slug === value)?.displayName ?? 'Automatisch'}
           </SelectValue>
@@ -601,8 +628,10 @@ export function SettingRow({ settingKey, value, onChange, models, error }: Setti
     control = (
       <Textarea
         id={id}
+        name={settingKey}
         rows={4}
         value={typeof value === 'string' ? value : ''}
+        {...described}
         onChange={(event) => onChange(event.target.value)}
       />
     );
@@ -610,8 +639,13 @@ export function SettingRow({ settingKey, value, onChange, models, error }: Setti
     control = (
       <Input
         id={id}
+        name={settingKey}
         type="text"
+        autoComplete="off"
+        // These are slugs, model identifiers and hosts, not prose.
+        spellCheck={false}
         value={typeof value === 'string' ? value : ''}
+        {...described}
         onChange={(event) => onChange(event.target.value)}
       />
     );
@@ -624,7 +658,7 @@ export function SettingRow({ settingKey, value, onChange, models, error }: Setti
       </Label>
       <div className="flex max-w-md flex-col gap-1">
         {control}
-        <p className="text-xs text-muted-foreground">
+        <p id={helpId} className="text-xs text-muted-foreground">
           {hint === null ? copy.help : `${copy.help} ${hint}`}
         </p>
         {error === undefined ? null : (

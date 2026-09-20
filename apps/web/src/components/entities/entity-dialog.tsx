@@ -132,7 +132,9 @@ export function EntityDialog({
           </div>
 
           {create.isError ? (
-            <p className="text-xs text-destructive-text">{create.error.message}</p>
+            <p role="alert" className="text-xs text-destructive-text">
+              {create.error.message}
+            </p>
           ) : null}
         </div>
 

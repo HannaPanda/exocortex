@@ -30,7 +30,7 @@ export function IncomingSharesPage() {
 
   return (
     <AppPage maxWidth="max-w-3xl">
-      <h1 className="text-lg font-semibold">Mit mir geteilt</h1>
+      <h1 className="exocortex-page-title">Mit mir geteilt</h1>
       <p className="mt-1 text-sm text-muted-foreground">
         Seiten aus Arbeitsbereichen, in denen du kein Mitglied bist. Sie stehen in keiner
         Navigation, nur hier.

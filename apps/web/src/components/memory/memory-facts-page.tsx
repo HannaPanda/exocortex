@@ -58,7 +58,7 @@ export function MemoryFactsPage() {
   return (
     <AppPage maxWidth="max-w-3xl">
       <div>
-        <h1 className="text-xl font-semibold">Gedächtnis</h1>
+        <h1 className="exocortex-page-title">Gedächtnis</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Was die Agenten aus ihren Sitzungsnotizen destilliert haben. Jeder Satz ist eine eigene
           Seite im Memory-Arbeitsbereich.
@@ -229,7 +229,9 @@ function FactRow({
       </div>
 
       {promote.isError ? (
-        <p className="text-xs text-destructive-text">{promote.error.message}</p>
+        <p role="alert" className="text-xs text-destructive-text">
+          {promote.error.message}
+        </p>
       ) : null}
     </li>
   );

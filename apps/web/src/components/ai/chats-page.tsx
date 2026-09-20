@@ -211,7 +211,7 @@ export function ChatsPage() {
   return (
     <AppPage maxWidth="max-w-6xl">
       <div>
-        <h1 className="text-xl font-semibold">Chats</h1>
+        <h1 className="exocortex-page-title">Chats</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Alle KI-Unterhaltungen, über die Arbeitsbereiche hinweg. Die Suche geht über den
           Nachrichtentext, nicht nur über die Titel.

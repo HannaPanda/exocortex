@@ -219,7 +219,7 @@ export function PageCoverAddButton({
         onSubmit={(prompt) => void generation.start(prompt)}
       />
       {upload.isError || generation.error !== null ? (
-        <span role="status" className="text-xs text-destructive-text">
+        <span role="alert" className="text-xs text-destructive-text">
           {generation.error ?? upload.error?.message}
         </span>
       ) : null}
@@ -459,7 +459,7 @@ export function PageCover({
       />
 
       {upload.isError || generation.error !== null ? (
-        <p role="status" className="px-6 pt-2 text-xs text-destructive-text">
+        <p role="alert" className="px-6 pt-2 text-xs text-destructive-text">
           {generation.error ?? upload.error?.message}
         </p>
       ) : null}

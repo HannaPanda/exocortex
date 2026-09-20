@@ -439,6 +439,8 @@ export function PageIconButton({
       icon={document.icon}
       iconColor={document.iconColor}
       type={document.type}
+      // Not a rung of the type ladder: this sizes an emoji glyph to its 3rem
+      // box, so the number belongs to the box and not to the text hierarchy.
       className="size-12 text-[2.75rem]"
     />
   );

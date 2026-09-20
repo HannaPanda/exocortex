@@ -422,7 +422,7 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
             <section key={group.key} className="flex flex-col gap-0.5">
               {/* Quieter than the `SectionRule` above it: this is a marker
                   inside a section, not a second section. */}
-              <h4 className="exocortex-numeric px-2 pb-1 text-[0.6875rem] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              <h4 className="exocortex-numeric px-2 pb-1 text-micro font-medium tracking-[0.12em] text-muted-foreground uppercase">
                 {group.heading}
               </h4>
               {group.entries.map((entry) => (
@@ -471,7 +471,9 @@ export function ActivityPanel({ workspaceId, documentId }: ActivityPanelProps) {
             </DialogDescription>
           </DialogHeader>
           {restoreError !== null ? (
-            <p className="text-sm text-destructive-text">{restoreError}</p>
+            <p role="alert" className="text-sm text-destructive-text">
+              {restoreError}
+            </p>
           ) : null}
           <DialogFooter>
             <Button variant="outline" onClick={() => setPendingRestore(null)}>

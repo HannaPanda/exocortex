@@ -100,7 +100,7 @@ export function OAuthConsentForm() {
     <Card>
       <CardContent className="flex flex-col gap-4 pt-6">
         <div className="flex flex-col gap-1.5">
-          <h1 className="text-lg font-semibold">Zugriff erlauben?</h1>
+          <h1 className="exocortex-page-title">Zugriff erlauben?</h1>
           <p className="text-sm text-muted-foreground">
             {loading
               ? 'Anwendung wird geprüft …'

@@ -136,7 +136,7 @@ export function SavedQueryPage({ workspaceId, savedQueryId }: SavedQueryPageProp
     <AppPage maxWidth="max-w-4xl" className="flex flex-col gap-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-lg font-semibold">{savedQuery?.name ?? 'Suche'}</h1>
+          <h1 className="exocortex-page-title">{savedQuery?.name ?? 'Suche'}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {savedQuery?.description ??
               (savedQueryId === undefined

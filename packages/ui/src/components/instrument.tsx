@@ -40,7 +40,7 @@ export function SectionRule({
   return (
     <div className={cn('flex items-center gap-2.5', className)} {...props}>
       <span className="size-1 shrink-0 bg-signal-line" aria-hidden />
-      <Heading className="min-w-0 truncate text-[0.6875rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+      <Heading className="min-w-0 truncate text-micro font-medium tracking-[0.14em] text-muted-foreground uppercase">
         {children}
       </Heading>
       {/* Short and fixed, not a full-width divider. A rule that crosses the
@@ -49,7 +49,7 @@ export function SectionRule({
           scale mark that ends: it labels a section without cutting the page. */}
       <span className="h-px w-6 shrink-0 bg-signal-line" aria-hidden />
       {trailing === undefined ? null : (
-        <span className="exocortex-numeric shrink-0 text-[0.6875rem] text-muted-foreground">
+        <span className="exocortex-numeric shrink-0 text-micro text-muted-foreground">
           {trailing}
         </span>
       )}

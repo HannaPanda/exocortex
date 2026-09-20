@@ -101,7 +101,7 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
 
   return (
     <AppPage maxWidth="max-w-4xl">
-      <h1 className="text-lg font-semibold">Arbeitsbereich-Einstellungen</h1>
+      <h1 className="exocortex-page-title">Arbeitsbereich-Einstellungen</h1>
       <p className="mt-1 text-sm text-muted-foreground">
         {original.name} · {original.memberCount}{' '}
         {original.memberCount === 1 ? 'Mitglied' : 'Mitglieder'}

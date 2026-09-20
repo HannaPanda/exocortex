@@ -27,7 +27,7 @@ export function ForgotPasswordForm() {
       <CardContent className="pt-6">
         <form className="flex flex-col gap-4" onSubmit={(event) => void onSubmit(event)}>
           <div className="flex flex-col gap-1.5">
-            <h1 className="text-lg font-semibold">Passwort zurücksetzen</h1>
+            <h1 className="exocortex-page-title">Passwort zurücksetzen</h1>
             <p className="text-sm text-muted-foreground">
               Wir senden dir einen Link, mit dem du ein neues Passwort setzen kannst.
             </p>

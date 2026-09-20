@@ -308,7 +308,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
         >
           <SearchIcon />
           <span className="flex-1 truncate text-left">Suchen …</span>
-          <kbd className="exocortex-numeric rounded border border-border px-1 text-[0.625rem]">
+          <kbd className="exocortex-numeric rounded border border-border px-1 text-nano">
             Strg K
           </kbd>
         </Button>

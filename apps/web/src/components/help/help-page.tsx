@@ -223,7 +223,7 @@ export function HelpPage() {
   return (
     <AppPage maxWidth="max-w-5xl">
       <div>
-        <h1 className="text-xl font-semibold">Hilfe und Funktionen</h1>
+        <h1 className="exocortex-page-title">Hilfe und Funktionen</h1>
         <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
           Was diese Installation kann, ausführlich und in ganzen Sätzen: wie es funktioniert, wie du
           es benutzt und wo es aufhört. Die Liste wird beim Bauen erzwungen, eine neue Fähigkeit

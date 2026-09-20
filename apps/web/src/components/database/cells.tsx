@@ -218,7 +218,7 @@ function ExpandableTextCell({
             }}
           />
         )}
-        <p className="px-1 pt-1 text-[0.6875rem] text-muted-foreground">
+        <p className="px-1 pt-1 text-micro text-muted-foreground">
           {multiline ? 'Strg/Cmd + Enter oder Esc übernimmt' : 'Enter oder Esc übernimmt'}
         </p>
       </PopoverContent>

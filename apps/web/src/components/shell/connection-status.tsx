@@ -91,7 +91,7 @@ export function ConnectionStatus() {
             <span className="exocortex-sr-only">{connection.label}</span>
             {connection.short === null ? null : <span>{connection.short}</span>}
             {state.pendingSync ? (
-              <span className="text-[0.625rem]" data-testid="pending-sync">
+              <span className="text-nano" data-testid="pending-sync">
                 offline-Änderungen
               </span>
             ) : null}

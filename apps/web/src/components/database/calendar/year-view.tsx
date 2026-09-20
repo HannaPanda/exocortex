@@ -75,7 +75,7 @@ function MiniMonth({
       </button>
       <div className="grid grid-cols-7 gap-px text-center">
         {WEEKDAY_INITIALS.map((label, index) => (
-          <span key={index} className="text-[0.625rem] text-muted-foreground">
+          <span key={index} className="text-nano text-muted-foreground">
             {label}
           </span>
         ))}
@@ -89,7 +89,7 @@ function MiniMonth({
               type="button"
               onClick={() => onOpenDay(day)}
               title={count === 0 ? undefined : `${count} Einträge`}
-              className={`rounded text-[0.625rem] leading-5 hover:bg-accent ${key === todayKey ? 'font-semibold text-primary-text' : ''} ${busyClass(count)}`}
+              className={`rounded text-nano leading-5 hover:bg-accent ${key === todayKey ? 'font-semibold text-primary-text' : ''} ${busyClass(count)}`}
             >
               {day.getDate()}
             </button>

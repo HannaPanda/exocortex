@@ -75,3 +75,9 @@ __pycache__/
 *.py[cod]
 .venv/
 *.egg-info/
+
+# Impeccable design-detector state. `config.json` carries decisions -- which
+# findings this project has ruled out and why -- so it is shared. The hook
+# cache and the critique snapshots are per-run artifacts of one machine.
+.impeccable/*
+!.impeccable/config.json

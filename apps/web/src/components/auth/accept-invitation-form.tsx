@@ -98,7 +98,7 @@ export function AcceptInvitationForm({ token }: { token: string }) {
     return (
       <Card>
         <CardContent className="flex flex-col gap-4 pt-6">
-          <h1 className="text-lg font-semibold">Einladung nicht gültig</h1>
+          <h1 className="exocortex-page-title">Einladung nicht gültig</h1>
           <Alert variant="destructive" data-testid="invitation-invalid">
             <AlertDescription>{lookupError}</AlertDescription>
           </Alert>
@@ -120,7 +120,7 @@ export function AcceptInvitationForm({ token }: { token: string }) {
     return (
       <Card>
         <CardContent className="flex flex-col gap-4 pt-6">
-          <h1 className="text-lg font-semibold">Konto besteht schon</h1>
+          <h1 className="exocortex-page-title">Konto besteht schon</h1>
           <p className="text-sm text-muted-foreground">
             Für {preview.email} gibt es hier bereits ein Konto. Melde dich damit an.
           </p>
@@ -137,7 +137,7 @@ export function AcceptInvitationForm({ token }: { token: string }) {
       <CardContent className="pt-6">
         <form className="flex flex-col gap-4" onSubmit={(event) => void onSubmit(event)}>
           <div className="flex flex-col gap-1.5">
-            <h1 className="text-lg font-semibold">Konto anlegen</h1>
+            <h1 className="exocortex-page-title">Konto anlegen</h1>
             <p className="text-sm text-muted-foreground">
               {preview.invitedByName} hat dich
               {preview.workspaceName === null

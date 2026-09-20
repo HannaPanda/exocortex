@@ -132,7 +132,10 @@ function OverviewRow({ workspaceId, entry }: { workspaceId: string; entry: Overv
             <span className="text-sm leading-relaxed text-muted-foreground">{entry.summary}</span>
           )}
         </span>
-        <ChevronRightIcon className="mt-1 size-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+        <ChevronRightIcon
+          aria-hidden
+          className="mt-1 size-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
+        />
       </Link>
     </li>
   );

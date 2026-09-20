@@ -54,7 +54,7 @@ export function MonthView({ workspaceId, anchor, entriesByDay, onOpenDay }: Mont
               type="button"
               aria-label={`Tag öffnen: ${day.toLocaleDateString('de-DE')}`}
               onClick={() => onOpenDay(day)}
-              className={`self-start rounded px-1 text-[0.6875rem] hover:bg-accent ${key === todayKey ? 'font-semibold text-primary-text' : 'text-muted-foreground'} ${inMonth ? '' : 'opacity-50'}`}
+              className={`self-start rounded px-1 text-micro hover:bg-accent ${key === todayKey ? 'font-semibold text-primary-text' : 'text-muted-foreground'} ${inMonth ? '' : 'opacity-50'}`}
             >
               {day.getDate()}
             </button>
@@ -63,14 +63,14 @@ export function MonthView({ workspaceId, anchor, entriesByDay, onOpenDay }: Mont
                 key={entry.row.document.id}
                 workspaceId={workspaceId}
                 entry={entry}
-                className="truncate rounded bg-accent px-1 py-0.5 text-[0.6875rem] hover:underline"
+                className="truncate rounded bg-accent px-1 py-0.5 text-micro hover:underline"
               />
             ))}
             {hidden > 0 ? (
               <button
                 type="button"
                 onClick={() => onOpenDay(day)}
-                className="self-start px-1 text-left text-[0.6875rem] text-muted-foreground hover:underline"
+                className="self-start px-1 text-left text-micro text-muted-foreground hover:underline"
               >
                 +{hidden} weitere
               </button>

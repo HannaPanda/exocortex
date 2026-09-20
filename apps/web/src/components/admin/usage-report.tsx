@@ -201,7 +201,7 @@ function DailyChart({ daily }: { daily: readonly AiUsageDay[] }) {
             </div>
           ))}
         </div>
-        <div className="flex gap-px text-[0.625rem] text-muted-foreground">
+        <div className="flex gap-px text-nano text-muted-foreground">
           {daily.map((day, index) => (
             <span key={day.date} className="flex-1 truncate text-center">
               {index % labelEvery === 0 ? formatDayLabel(day.date) : ''}

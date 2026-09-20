@@ -7,28 +7,31 @@ semantic CSS variable; `packages/ui/src/styles.css` maps them onto Tailwind 4's
 `@theme`. Components use utilities such as `bg-card`, `text-muted-foreground` and
 `border-border` — **never** a hexadecimal value.
 
-Base palette — **"Amber Instrument"**, authored in OKLCH. Cool violet-tinted
-graphite surfaces, a warm off-white foreground, and a single amber signal.
+Base palette — **"Schiefer & Signal"**, authored in OKLCH. A mid-tone slate
+sheet (`#344955`), light ink (`#E7E9EB`) and a single amber signal (`#F9AA33`).
 `DESIGN.md` at the repository root explains the system; this table is the
-lookup.
+lookup. Contrast figures are against the surface each colour appears on; the
+full list is the comment at the top of `tokens.css`.
 
-| Token                         | Value                                               | Use                                       |
-| ----------------------------- | --------------------------------------------------- | ----------------------------------------- |
-| `--background`                | `oklch(0.145 0.012 275)`                            | app background                            |
-| `--foreground`                | `oklch(0.94 0.016 85)`                              | body text (16.6:1)                        |
-| `--surface`                   | `oklch(0.195 0.013 275)`                            | shell chrome: header, sidebar, panel      |
-| `--card` / `--popover`        | `oklch(0.235 0.014 275)` / `oklch(0.275 0.015 275)` | raised and floating surfaces              |
-| `--overlay`                   | `oklch(0.075 0.010 275 / 0.76)`                     | modal scrim                               |
-| `--primary`                   | `oklch(0.78 0.150 62)`                              | primary actions, filled                   |
-| `--primary-text`              | `oklch(0.78 0.150 62)`                              | amber as _text_ and icons (9.6:1)         |
-| `--secondary`                 | `oklch(0.31 0.015 275)`                             | secondary actions, deliberately neutral   |
-| `--signal-line`               | `oklch(0.44 0.050 62)`                              | structural rules, leaders, tree guides    |
-| `--accent-solid`              | `oklch(0.315 0.038 62)`                             | hover surfaces, faintly warm              |
-| `--accent-strong`             | `oklch(0.37 0.070 62)`                              | the selected surface (8.9:1)              |
-| `--muted-foreground`          | `oklch(0.74 0.012 275)`                             | secondary text (8.6:1)                    |
-| `--border`                    | `oklch(0.355 0.016 275)`                            | separation only (1.5:1 on card)           |
-| `--border-strong` / `--input` | `oklch(0.56 0.016 275)`                             | perceivable boundaries (3.2:1 on popover) |
-| `--ring`                      | `oklch(0.78 0.150 62)`                              | focus ring (9.6:1)                        |
+| Token                         | Value                           | Use                                         |
+| ----------------------------- | ------------------------------- | ------------------------------------------- |
+| `--sunken`                    | `oklch(0.270 0.029 234)`        | wells cut into the page: code, readouts     |
+| `--surface`                   | `oklch(0.320 0.031 234)`        | shell chrome: header, sidebar, panel        |
+| `--popover`                   | `oklch(0.355 0.032 234)`        | floating surfaces: menus, dialogs, palette  |
+| `--background`                | `oklch(0.393 0.033 234)`        | the page, `#344955`                         |
+| `--card`                      | `oklch(0.437 0.034 234)`        | a block raised off the page                 |
+| `--overlay`                   | `oklch(0.160 0.020 234 / 0.78)` | modal scrim                                 |
+| `--foreground`                | `oklch(0.933 0.003 248)`        | body text (7.7:1 on the page)               |
+| `--muted-foreground`          | `oklch(0.832 0.013 240)`        | secondary text (5.6:1 on the page)          |
+| `--primary`                   | `oklch(0.796 0.155 72)`         | primary actions, filled                     |
+| `--primary-text`              | `oklch(0.860 0.145 74)`         | amber as _text_ and icons (4.9:1 on a card) |
+| `--secondary`                 | `oklch(0.478 0.030 234)`        | secondary actions, deliberately neutral     |
+| `--signal-line`               | `oklch(0.585 0.065 72)`         | structural rules, leaders, tree guides      |
+| `--accent-solid`              | `oklch(0.445 0.045 72)`         | hover surfaces, faintly warm                |
+| `--accent-strong`             | `oklch(0.505 0.080 72)`         | the selected surface (4.9:1 for foreground) |
+| `--border`                    | `oklch(0.510 0.024 234)`        | separation only (1.4:1 on card)             |
+| `--border-strong` / `--input` | `oklch(0.725 0.022 234)`        | perceivable boundaries (3.2:1 on card)      |
+| `--ring`                      | `oklch(0.796 0.155 72)`         | focus ring (4.9:1 on the page)              |
 
 Rules that fall out of the system:
 
@@ -39,23 +42,28 @@ Rules that fall out of the system:
   `--accent-strong` → `--primary`: structure, hover, selection, action. Only the
   last one is a colour you notice. A structural line never wears `--primary`,
   and a control never wears `--signal-line`.
-- **Each surface step is 0.04 of lightness.** Below about 0.03 the eye stops
-  resolving the step on a dark surface, and the ramp stops doing the work
-  shadows are not allowed to do here.
+- **Each surface step is at least 0.035 of lightness.** Below about 0.03 the eye
+  stops resolving the step, and the ramp stops doing the work shadows are not
+  allowed to do here. A new surface that cannot afford a clear step is not a new
+  surface.
 - **Selected is not a stronger hover.** Hover is `--accent-solid`, selection is
   `--accent-strong`, and selection always changes something besides the surface
   as well (weight, or an amber icon). The page tree, the command palette and the
   context tabs use the same treatment, so "this one" looks the same everywhere.
-- **The chrome sits above the canvas.** Header, sidebar and context panel are
-  `--surface`; the document area stays `--background`. The darkest plane in the
-  app is the one you write on.
+- **The chrome sits below the sheet.** Header, sidebar and context panel are
+  `--surface` at 0.320; the page is `--background` at 0.393, the brightest large
+  surface in the product, so the eye lands on the writing before anyone decides
+  to look there. `--popover` is the one break in the ramp and sits _below_ the
+  page: a menu belongs to the housing, not to the sheet, and climbing instead
+  would push the lightest surface past the point where the amber signal still
+  clears 4.5:1.
 - **Fill colours are not text colours.** `--primary` and `--destructive` are
   sized for dark text on top of them. Use `--primary-text` and
   `--destructive-text` when the colour is the text or the icon.
 - **`--border` does not delimit a control.** It separates. Anything the user must
   perceive as a boundary (form fields, scrollbar thumbs, structural rules) uses
   `--input` or `--border-strong`, which clear WCAG 1.4.11 at 3:1.
-- **Warning is not the signal.** `--warning` sits 38 degrees of hue away from
+- **Warning is not the signal.** `--warning` sits 28 degrees of hue away from
   `--primary` so a caution never reads as a primary action.
 - **Content colours are not interface colours.** `--content-*` and `--content-bg-*`
   are the ten colours a _writer_ can apply to text (`packages/editor`'s `textColor`
@@ -63,9 +71,10 @@ Rules that fall out of the system:
   and a document only ever stores the colour _name_, never a value, so it stays
   theme-independent. The syntax highlighting theme is built from the same tokens.
 - `--presence-1…6` are the collaboration cursor colours, spread across both hue
-  _and_ lightness (0.66…0.86) so they stay distinguishable under deuteranopia and
-  protanopia, where hue alone collapses. `--presence-foreground` is the label
-  text on all six, at 5.7:1 or better.
+  _and_ lightness (0.775…0.915) so they stay distinguishable under deuteranopia
+  and protanopia, where hue alone collapses. The band sits high because every one
+  of them has to clear 3:1 on `--card`. `--presence-foreground` is the label text
+  on all six, at 5.7:1 or better.
 - **Amber also marks events, not only places.** The caret carries `--primary`,
   and the save heartbeat (`apps/web/src/components/shell/save-indicator.tsx`)
   fires amber for `--duration-settle` when an edit reaches the server. Everything
@@ -87,6 +96,40 @@ Motion always reports a state change. No entrance choreography, no scroll
 effects, no decorative movement. Reduced motion is handled globally in the base
 layer, so anything that animates must also be readable while standing still.
 
+## Type
+
+The ladder is theme tokens in `packages/ui/src/styles.css`, so a size is chosen
+by naming its role. Reach for a rung; never write `text-[0.6875rem]`.
+
+| Utility           | Size      | Carries                       | Use                                        |
+| ----------------- | --------- | ----------------------------- | ------------------------------------------ |
+| `text-title`      | 1.75rem   | leading, weight 720, tracking | the name of whatever you are looking at    |
+| `text-section`    | 1.375rem  | leading, weight 600, tracking | H1 inside a document                       |
+| `text-subsection` | 1.125rem  | leading, weight 600, tracking | H2                                         |
+| `text-body`       | 0.9375rem | leading                       | editor content, prose (H3 adds weight 600) |
+| `text-ui`         | 0.875rem  | leading                       | buttons, labels, nav                       |
+| `text-meta`       | 0.75rem   | leading                       | timestamps, counts, hints                  |
+| `text-micro`      | 0.6875rem | size only                     | section-rule labels, key caps, chip counts |
+| `text-nano`       | 0.625rem  | size only                     | avatar initials, a count inside a dot      |
+
+Two things about the split. The top three rungs carry a full treatment because a
+heading is a treatment and not a size; the rest set size and leading only, so
+adopting `text-ui` somewhere never silently re-weights it. And the bottom two
+set no leading at all: they live inside rows and chips whose height the row
+already decides.
+
+A page title wears `.exocortex-page-title`, which is `text-title` plus the two
+things a title needs beyond its type: it breaks inside a long word rather than
+leaving the page, and it balances when it wraps. Every `<h1>` in the product
+uses it, with one stated exception — `projects/project-toolbar.tsx`, where the
+project name sits inside a toolbar among controls.
+
+Three arbitrary sizes survive on purpose and are not rungs: `text-[2.75rem]`
+sizes an emoji glyph to its box, `text-[0.85em]` and `text-[0.7em]` are relative
+because inline code and a footnote marker scale with what they sit in, and the
+CodeMirror pane in `projects/project-code-editor.tsx` sizes source code rather
+than interface text.
+
 ## Values versus labels
 
 `.exocortex-numeric` (mono, `tabular-nums`) is for **values**: timestamps,
@@ -99,9 +142,10 @@ as an anti-reference.
 viewport value. Browser chrome cannot read a custom property, so that is the one
 place the value exists twice. Keep them in sync.
 
-The app is dark by design: it is built for long writing sessions, and the cool
-surface is what lets the warm foreground and the amber signal carry the
-hierarchy. The tokens are scoped so a light theme can be added by overriding them
+The app is dark by design: it is built for long writing sessions, and the slate
+surface is what lets the light foreground and the amber signal carry the
+hierarchy. It is a mid-tone rather than a near-black, so the interface is dark
+without hiding. The tokens are scoped so a light theme can be added by overriding them
 under `:root[data-theme='light']` without touching components.
 
 ## Component workflow (mandatory)
@@ -309,7 +353,21 @@ net, which keeps it inside its clipping ancestors.
   removed)
 - `prefers-reduced-motion` disables animations
 - live regions: `role="status"` for progress and sync state, `role="alert"` for
-  errors
+  errors. A refusal that appears in place of nothing is an alert, not a status
+- **a field owns its help text and its refusal.** Both get an `id` and the
+  control points at them with `aria-describedby`; an invalid control also
+  carries `aria-invalid`, which is what draws the red border on `Input`,
+  `Textarea`, `Checkbox` and `SelectTrigger`. A paragraph that merely sits after
+  the control is a paragraph a screen reader never connects to it.
+  `settings/setting-row.tsx` is the worked example: one `described` object, six
+  control branches. Where the refusal moves focus to the offending field, the
+  message carries no `role="alert"` as well — focusing the control already reads
+  its description, and an alert per field would say it twice
+- **a control revealed by hover is revealed by focus and by touch too.**
+  `opacity-0 group-hover:opacity-100 focus-visible:opacity-100
+pointer-coarse:opacity-100`, never `invisible`: `visibility: hidden` takes the
+  control out of the tab order, so it stops existing for a keyboard and for a
+  phone alike
 - the command palette is a real `combobox` + `listbox` with
   `aria-activedescendant`
 - colour is never the only signal — presence also shows initials, connection state

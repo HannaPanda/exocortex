@@ -87,7 +87,7 @@ export function ClipForm({ shared }: { shared: SharedContent }) {
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-4 p-6" data-testid="clip-form">
       <div className="flex flex-col gap-1">
-        <h1 className="text-lg font-semibold">{isClip ? 'Webseite aufheben' : 'Erfassen'}</h1>
+        <h1 className="exocortex-page-title">{isClip ? 'Webseite aufheben' : 'Erfassen'}</h1>
         <p className="text-sm text-muted-foreground">
           Landet im Eingang des Arbeitsbereichs. Einsortiert wird später.
         </p>

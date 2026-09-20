@@ -63,6 +63,9 @@ interface ProjectCodeEditorProps {
  * still agrees with, because a wrapped line is one line.
  */
 const BASE_THEME = EditorView.theme({
+  // 13px is not a rung of the type ladder and is not meant to be one: this
+  // sizes source code in a full-height editor pane, where the question is how
+  // many columns of LaTeX fit, not how a label relates to its value.
   '&': { height: '100%', fontSize: '13px' },
   '.cm-scroller': {
     fontFamily: 'var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace)',

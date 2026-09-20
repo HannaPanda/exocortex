@@ -217,7 +217,14 @@ export function PageTreeRow({
                 type="button"
                 aria-label={`Unterseite in „${node.title}“ anlegen`}
                 onClick={() => createChild(node.id)}
-                className="invisible size-5 shrink-0 rounded text-muted-foreground group-hover:visible hover:text-foreground"
+                // Revealed by the pointer, but never only by the pointer:
+                // `visibility: hidden` took this out of the tab order, so the
+                // one control that creates a page from the tree was
+                // unreachable by keyboard and invisible on a phone. Opacity
+                // keeps it focusable, `focus-visible:` shows it while it is
+                // focused, and a coarse pointer gets it permanently, because
+                // there is no hover to reveal it with.
+                className="size-5 shrink-0 rounded text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-foreground focus-visible:opacity-100 pointer-coarse:opacity-100"
               >
                 <PlusIcon className="size-3.5" />
               </button>

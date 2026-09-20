@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-09-20T19:33:52.595Z",
+        "reason": "Decided, not defaulted: DESIGN.md section 3 chose Inter Variable, self-hosted, because the system-font stack reflowed the same line differently on every OS. The 2026-09-20 design brief ruled out a new typeface for this pass in so many words. The offline page only repeats the application's own stack."
+      }
+    ]
+  }
+}

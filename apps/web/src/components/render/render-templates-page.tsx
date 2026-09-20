@@ -53,7 +53,7 @@ export function RenderTemplatesPage({ workspaceId }: { workspaceId: string }) {
     <AppPage maxWidth="max-w-4xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-lg font-semibold">Vorlagen</h1>
+          <h1 className="exocortex-page-title">Vorlagen</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Womit sich Seiten dieses Arbeitsbereichs als PDF veröffentlichen lassen. Der Satz läuft
             über Pandoc und LaTeX; der Inhalt der Seiten bleibt dabei unberührt.

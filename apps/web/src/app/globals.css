@@ -92,7 +92,7 @@
   }
 
   .exocortex-editor {
-    @apply text-[0.9375rem] leading-relaxed;
+    @apply text-body;
   }
 
   .exocortex-editor .ProseMirror {
@@ -103,9 +103,13 @@
     @apply mt-3;
   }
 
-  /* Heading ladder: 1.375 / 1.125 / 0.9375 rem against a 0.9375 rem body. The
-     ratio tightens on the way down and the last step is carried by weight alone,
-     so a h3 never competes with the page title (1.75 rem) above it.
+  /* Heading ladder: `text-section` / `text-subsection` / `text-body` plus
+     weight, which is 1.375 / 1.125 / 0.9375 rem against a 0.9375 rem body. The
+     sizes, leading and tracking come from the theme tokens in
+     `packages/ui/src/styles.css`, so this file names rungs rather than
+     re-deciding them. The ratio tightens on the way down and the last step is
+     carried by weight alone, so a h3 never competes with the page title
+     (`text-title`, 1.75 rem) above it.
      Space before a heading is several times the space after it: the gap is what
      groups a section, not a rule or a box. The `.ProseMirror` ancestor is load
      bearing — without it these rules lose the cascade to the `> * + *` rule
@@ -118,15 +122,15 @@
   }
 
   .exocortex-editor .ProseMirror h1 {
-    @apply mt-10 mb-1 text-[1.375rem] leading-snug font-semibold tracking-[-0.015em];
+    @apply mt-10 mb-1 text-section;
   }
 
   .exocortex-editor .ProseMirror h2 {
-    @apply mt-8 mb-1 text-lg leading-snug font-semibold tracking-[-0.01em];
+    @apply mt-8 mb-1 text-subsection;
   }
 
   .exocortex-editor .ProseMirror h3 {
-    @apply mt-6 mb-0.5 text-[0.9375rem] font-semibold;
+    @apply mt-6 mb-0.5 text-body font-semibold;
   }
 
   .exocortex-editor .ProseMirror > h1:first-child,
@@ -663,7 +667,7 @@
   }
 
   .exocortex-editor .collaboration-carets__label {
-    @apply absolute -top-[1.4em] -left-px rounded-t-sm px-1 text-[0.6875rem] leading-none font-medium whitespace-nowrap text-presence-foreground;
+    @apply absolute -top-[1.4em] -left-px rounded-t-sm px-1 text-micro leading-none font-medium whitespace-nowrap text-presence-foreground;
     user-select: none;
   }
 }

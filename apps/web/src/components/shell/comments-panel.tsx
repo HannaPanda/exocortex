@@ -49,16 +49,16 @@ function CommentByline({ comment }: { comment: Comment }) {
     <div className="flex items-center gap-2">
       <span
         aria-hidden
-        className="grid size-5 shrink-0 place-items-center rounded-full bg-muted text-[0.625rem] font-medium text-muted-foreground"
+        className="grid size-5 shrink-0 place-items-center rounded-full bg-muted text-nano font-medium text-muted-foreground"
       >
         {initialsOf(comment.createdBy.name)}
       </span>
       <span className="truncate text-xs font-medium">{comment.createdBy.name}</span>
-      <span className="exocortex-numeric shrink-0 text-[0.6875rem] text-muted-foreground">
+      <span className="exocortex-numeric shrink-0 text-micro text-muted-foreground">
         {formatMoment(comment.createdAt)}
       </span>
       {comment.editedAt === null ? null : (
-        <span className="shrink-0 text-[0.6875rem] text-muted-foreground">bearbeitet</span>
+        <span className="shrink-0 text-micro text-muted-foreground">bearbeitet</span>
       )}
     </div>
   );
@@ -162,12 +162,12 @@ function AnchorLine({ thread, onReveal }: { thread: CommentThread; onReveal: () 
   const { blockId, anchorText, orphaned } = thread.root;
 
   if (blockId === null) {
-    return <span className="text-[0.6875rem] text-muted-foreground">Zur ganzen Seite</span>;
+    return <span className="text-micro text-muted-foreground">Zur ganzen Seite</span>;
   }
 
   if (orphaned) {
     return (
-      <span className="flex items-center gap-1.5 text-[0.6875rem] text-muted-foreground">
+      <span className="flex items-center gap-1.5 text-micro text-muted-foreground">
         <Link2OffIcon className="size-3 shrink-0" aria-hidden />
         <Badge variant="muted">Verwaist</Badge>
         {anchorText === null ? 'Die kommentierte Stelle wurde gelöscht.' : `„${anchorText}"`}
@@ -178,7 +178,7 @@ function AnchorLine({ thread, onReveal }: { thread: CommentThread; onReveal: () 
   return (
     <button
       type="button"
-      className="truncate text-left text-[0.6875rem] text-muted-foreground underline decoration-dotted hover:text-foreground"
+      className="truncate text-left text-micro text-muted-foreground underline decoration-dotted hover:text-foreground"
       data-testid="comment-reveal-anchor"
       onClick={onReveal}
     >
@@ -262,7 +262,7 @@ function ThreadCard({
         {resolved ? (
           <button
             type="button"
-            className="flex shrink-0 items-center gap-1 text-[0.6875rem] text-muted-foreground"
+            className="flex shrink-0 items-center gap-1 text-micro text-muted-foreground"
             aria-expanded={expanded}
             data-testid="comment-thread-toggle"
             onClick={() => setCollapsed((closed) => !closed)}
@@ -419,9 +419,9 @@ function NewThreadComposer({
   return (
     <div className="flex flex-col gap-1.5 rounded-md border border-border bg-card px-2 py-2">
       {anchor.blockId === null ? (
-        <span className="text-[0.6875rem] text-muted-foreground">Kommentar zur ganzen Seite</span>
+        <span className="text-micro text-muted-foreground">Kommentar zur ganzen Seite</span>
       ) : (
-        <span className="truncate text-[0.6875rem] text-muted-foreground">
+        <span className="truncate text-micro text-muted-foreground">
           {quote.length === 0 ? 'Kommentar zur markierten Stelle' : `Zur Stelle: „${quote}"`}
         </span>
       )}

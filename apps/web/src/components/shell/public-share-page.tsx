@@ -80,7 +80,7 @@ export function PublicSharePage({ token }: { token: string }) {
             ))}
           </nav>
         ) : null}
-        <h1 className="text-2xl font-semibold">
+        <h1 className="exocortex-page-title">
           {shared.icon === null ? null : <span className="mr-2">{shared.icon}</span>}
           {shared.title}
         </h1>

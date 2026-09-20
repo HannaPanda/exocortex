@@ -114,7 +114,11 @@ export function EntityLinkPage({ entityId }: { entityId: string }) {
         </div>
       ))}
 
-      {link.isError ? <p className="text-xs text-destructive-text">{link.error.message}</p> : null}
+      {link.isError ? (
+        <p role="alert" className="text-xs text-destructive-text">
+          {link.error.message}
+        </p>
+      ) : null}
     </section>
   );
 }

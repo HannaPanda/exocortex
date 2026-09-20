@@ -487,7 +487,10 @@ function AiTranscriptArea({
 
       {notice !== null ? <p className="text-xs text-muted-foreground">{notice}</p> : null}
       {error !== null ? (
-        <p className="rounded-md border border-destructive-text/40 px-3 py-2 text-xs text-destructive-text">
+        <p
+          role="alert"
+          className="rounded-md border border-destructive-text/40 px-3 py-2 text-xs text-destructive-text"
+        >
           {error}
         </p>
       ) : null}

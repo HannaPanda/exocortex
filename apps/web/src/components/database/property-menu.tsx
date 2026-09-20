@@ -345,7 +345,9 @@ function DateFormatEditor({
         Termine über mehrere Tage zeigen.
       </p>
       {updateProperty.isError ? (
-        <p className="text-xs text-destructive-text">{updateProperty.error.message}</p>
+        <p role="alert" className="text-xs text-destructive-text">
+          {updateProperty.error.message}
+        </p>
       ) : null}
     </div>
   );

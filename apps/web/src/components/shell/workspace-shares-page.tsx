@@ -53,7 +53,7 @@ export function WorkspaceSharesPage({ workspaceId }: { workspaceId: string }) {
 
   return (
     <AppPage maxWidth="max-w-5xl">
-      <h1 className="text-lg font-semibold">Freigaben</h1>
+      <h1 className="exocortex-page-title">Freigaben</h1>
       <p className="mt-1 text-sm text-muted-foreground">
         Was aus diesem Arbeitsbereich nach außen gegeben ist: an einzelne Konten und als
         öffentlicher Link. Zurückgezogene Freigaben bleiben stehen, damit nachvollziehbar bleibt,

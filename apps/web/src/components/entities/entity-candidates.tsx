@@ -123,7 +123,9 @@ function CandidateRow({ candidate }: { candidate: EntityCandidate }) {
       </ul>
 
       {confirm.isError ? (
-        <p className="text-xs text-destructive-text">{confirm.error.message}</p>
+        <p role="alert" className="text-xs text-destructive-text">
+          {confirm.error.message}
+        </p>
       ) : null}
     </li>
   );

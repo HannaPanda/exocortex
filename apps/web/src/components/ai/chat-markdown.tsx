@@ -138,8 +138,8 @@ function headingTag(level: number): 'h4' | 'h5' | 'h6' {
 
 function headingClassName(level: number): string {
   return level <= 2
-    ? 'mt-3 mb-1 text-[0.95rem] font-semibold first:mt-0'
-    : 'mt-2 mb-1 text-[0.875rem] font-semibold first:mt-0';
+    ? 'mt-3 mb-1 text-body font-semibold first:mt-0'
+    : 'mt-2 mb-1 text-ui font-semibold first:mt-0';
 }
 
 function renderInlineChildren(

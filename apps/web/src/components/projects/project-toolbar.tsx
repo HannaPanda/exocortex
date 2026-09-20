@@ -75,6 +75,10 @@ export function ProjectToolbar({
 
   return (
     <header className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-2">
+      {/* The one page heading that does not wear `.exocortex-page-title`. A
+          project is a full-bleed editor, so its name sits inside the toolbar
+          among the controls rather than above the content: at 1.75rem it would
+          be a banner across the tool. It is still the h1 of the screen. */}
       <h1 className="me-2 truncate text-sm font-medium">{project.title}</h1>
 
       <Label htmlFor="project-root" className="text-xs text-muted-foreground">

@@ -70,9 +70,7 @@ export function TimeGridView({ workspaceId, days, entriesByDay }: TimeGridViewPr
 
         {hasAllDay ? (
           <div className="flex border-b border-border">
-            <div className="w-14 shrink-0 px-2 py-1 text-[0.6875rem] text-muted-foreground">
-              Ganztags
-            </div>
+            <div className="w-14 shrink-0 px-2 py-1 text-micro text-muted-foreground">Ganztags</div>
             {allDayByColumn.map((column) => (
               <div
                 key={dayKey(column.day)}
@@ -83,7 +81,7 @@ export function TimeGridView({ workspaceId, days, entriesByDay }: TimeGridViewPr
                     key={entry.row.document.id}
                     workspaceId={workspaceId}
                     entry={entry}
-                    className="truncate rounded bg-accent px-1 py-0.5 text-[0.6875rem] hover:underline"
+                    className="truncate rounded bg-accent px-1 py-0.5 text-micro hover:underline"
                   />
                 ))}
               </div>
@@ -105,7 +103,7 @@ export function TimeGridView({ workspaceId, days, entriesByDay }: TimeGridViewPr
                 {HOURS.map((hour) => (
                   <span
                     key={hour}
-                    className="absolute right-2 -translate-y-1/2 text-[0.6875rem] text-muted-foreground"
+                    className="absolute right-2 -translate-y-1/2 text-micro text-muted-foreground"
                     style={{ top: hour * HOUR_HEIGHT }}
                   >
                     {hour === 0 ? '' : `${String(hour).padStart(2, '0')}:00`}
@@ -160,7 +158,7 @@ function DayColumn({
             <CalendarEntryLink
               workspaceId={workspaceId}
               entry={item.entry}
-              className={`block h-full overflow-hidden rounded bg-accent px-1 py-0.5 text-[0.6875rem] leading-tight hover:underline ${item.continuesBefore ? 'rounded-t-none' : ''} ${item.continuesAfter ? 'rounded-b-none' : ''}`}
+              className={`block h-full overflow-hidden rounded bg-accent px-1 py-0.5 text-micro leading-tight hover:underline ${item.continuesBefore ? 'rounded-t-none' : ''} ${item.continuesAfter ? 'rounded-b-none' : ''}`}
             />
           </div>
         );

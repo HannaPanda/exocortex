@@ -111,6 +111,61 @@
   --default-transition-timing-function: var(--ease-out-quint);
   --default-transition-duration: var(--duration-fast);
 
+  /*
+   * The type ladder from DESIGN.md §3, installed as theme tokens.
+   *
+   * It used to be prose and nothing else. With no named rung to reach for, the
+   * application reached for Tailwind's default steps -- two of which happen to
+   * coincide with the ladder, which is why this stayed invisible -- and below
+   * the smallest of them it invented a size per site: 44 arbitrary `text-[…]`
+   * values, 28 of them the same 0.6875rem the instrument marks use. A rung
+   * nobody can name is a rung every screen decides again.
+   *
+   * Three arbitrary sizes survive on purpose and are not rungs: `text-[2.75rem]`
+   * sizes an emoji glyph to its box in the icon picker, and `text-[0.85em]` and
+   * `text-[0.7em]` are relative on purpose, because inline code and a footnote
+   * marker scale with whatever they sit inside.
+   *
+   * The top two rungs carry a full treatment: size, leading, weight and
+   * tracking. A page title is a treatment rather than a size, and the weight is
+   * the whole point of it (720, not 600). The three below them set size and
+   * leading only, because weight there belongs to the component: encoding 500
+   * into `text-ui` would silently re-weight every site that adopted it.
+   *
+   * `text-micro` and `text-nano` are the tier the ladder in DESIGN.md never
+   * had, and they set size alone. They live inside flex rows, chips and key
+   * caps whose height comes from the row, so a leading of their own would
+   * change a layout that is already right.
+   */
+  --text-title: 1.75rem;
+  --text-title--line-height: 1.15;
+  --text-title--font-weight: 720;
+  --text-title--letter-spacing: -0.035em;
+
+  --text-section: 1.375rem;
+  --text-section--line-height: 1.375;
+  --text-section--font-weight: 600;
+  --text-section--letter-spacing: -0.015em;
+
+  --text-subsection: 1.125rem;
+  --text-subsection--line-height: 1.375;
+  --text-subsection--font-weight: 600;
+  --text-subsection--letter-spacing: -0.01em;
+
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.625;
+
+  --text-ui: 0.875rem;
+  --text-ui--line-height: 1.43;
+
+  --text-meta: 0.75rem;
+  --text-meta--line-height: 1.333;
+
+  /* The instrument tier: the uppercase section labels, a count riding on a
+     section rule, a key cap, the initials in an avatar. */
+  --text-micro: 0.6875rem;
+  --text-nano: 0.625rem;
+
   --font-sans:
     'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
     Arial, 'Noto Sans', sans-serif;
@@ -232,14 +287,17 @@
    * unset rather than airy.
    */
   .exocortex-page-title {
-    font-size: 1.75rem;
-    line-height: 1.15;
-    font-weight: 720;
-    letter-spacing: -0.035em;
+    /* The treatment is the `text-title` rung and nothing else, so there is one
+       place to change it. The class still exists because a page title is more
+       than its type: it also has to survive a title that is one long word. */
+    @apply text-title;
     /* A title is one long word often enough -- an identifier, a URL, a file
        name -- and at this size one such word is wider than the measure. Break
        inside it rather than let it leave the page. */
     overflow-wrap: anywhere;
+    /* And when it does wrap, wrap it evenly: at this weight a last line
+       carrying one word reads as a mistake rather than as a title. */
+    text-wrap: balance;
   }
 
   .exocortex-numeric {

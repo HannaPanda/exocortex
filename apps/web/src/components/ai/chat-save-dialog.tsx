@@ -103,7 +103,9 @@ export function ChatSaveDialog({
             </div>
 
             {toPage.isError ? (
-              <p className="text-xs text-destructive-text">{toPage.error.message}</p>
+              <p role="alert" className="text-xs text-destructive-text">
+                {toPage.error.message}
+              </p>
             ) : null}
           </div>
         ) : (

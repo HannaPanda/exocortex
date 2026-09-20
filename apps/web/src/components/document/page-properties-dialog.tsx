@@ -200,11 +200,22 @@ export function PagePropertiesDialog({
               <Label htmlFor="page-title">Titel</Label>
               <Input
                 id="page-title"
+                name="title"
+                autoComplete="off"
                 value={title}
                 readOnly={readOnly}
                 aria-invalid={titleInvalid}
+                aria-describedby={titleInvalid ? 'page-title-error' : undefined}
                 onChange={(event) => setTitle(event.target.value)}
               />
+              {/* The field was marked invalid and said nothing, so the only
+                  clue was a disabled Save button at the other end of the
+                  dialog. */}
+              {titleInvalid ? (
+                <p id="page-title-error" className="text-xs text-destructive-text">
+                  Gib der Seite einen Titel, sonst lässt sie sich nicht speichern.
+                </p>
+              ) : null}
             </div>
           </div>
 
@@ -237,7 +248,7 @@ export function PagePropertiesDialog({
                     ))}
                   </span>
                   <span className="text-sm font-medium">{option.label}</span>
-                  <span className="text-[0.6875rem] leading-tight text-muted-foreground">
+                  <span className="text-micro leading-tight text-muted-foreground">
                     {option.hint}
                   </span>
                 </button>
@@ -297,11 +308,14 @@ export function PagePropertiesDialog({
                   value={trigger}
                   readOnly={readOnly}
                   aria-invalid={triggerInvalid}
+                  // The refusal is the field's own description, or a screen
+                  // reader reads an invalid field and never the reason.
+                  aria-describedby={triggerInvalid ? 'ai-rule-trigger-error' : undefined}
                   onChange={(event) => setTrigger(event.target.value)}
                   placeholder="z. B. Beim Schreiben von Commit-Nachrichten"
                 />
                 {triggerInvalid ? (
-                  <p className="text-xs text-destructive-text">
+                  <p id="ai-rule-trigger-error" className="text-xs text-destructive-text">
                     Für &quot;Auf Anfrage&quot; wird eine Beschreibung benötigt.
                   </p>
                 ) : null}
