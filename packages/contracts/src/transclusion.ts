@@ -22,7 +22,57 @@ export const blockIdSchema = z
   .regex(/^[a-z0-9]{8,32}$/, 'Not a block identifier')
   .describe('Kennung eines adressierbaren Blocks, wie exo_page_read sie ausgibt');
 
-export const documentFragmentRequestSchema = z.object({
+/**
+ * How much text one answer may carry, and how many entries a map may list
+ * (issue #118).
+ *
+ * Shared by the fragment route and the Markdown export, because both answer an
+ * agent that has a context window and neither may hand back a page whose size
+ * nobody bounded. Omitting `maxChars` keeps the old behaviour, which is what
+ * the browser does: rendering a placed transclusion wants the content, not a
+ * map of it.
+ */
+export const responseBudgetSchema = z.object({
+  maxChars: z.coerce.number().int().min(200).max(1_000_000).optional(),
+  maxEntries: z.coerce.number().int().min(4).max(200).optional(),
+  /**
+   * `auto` lets the budget decide, which is what a reader wants: small enough,
+   * and you get the thing itself. `map` asks for the structure whatever the
+   * size, which is what a caller navigating on purpose wants.
+   */
+  want: z.enum(['auto', 'map']).optional(),
+});
+
+/** One addressable part of a page, as a map lists it. Mirrors `DocumentMapEntry`. */
+export const documentMapEntrySchema = z.object({
+  kind: z.enum(['section', 'range']),
+  fromBlockId: blockIdSchema.nullable(),
+  toBlockId: blockIdSchema.nullable(),
+  level: z.number().int().min(1).max(6).nullable(),
+  title: z.string(),
+  chars: z.number().int().nonnegative(),
+  blocks: z.number().int().nonnegative(),
+});
+export type DocumentMapEntryDto = z.infer<typeof documentMapEntrySchema>;
+
+/**
+ * The structure of a page, or of one part of it, instead of its text.
+ *
+ * What a read answers with when the text would not fit the budget. A map is
+ * bounded by construction: it costs the same whether the page holds twenty
+ * thousand characters or three million, which is what makes reading a page
+ * cost what the answer needs rather than what the page weighs.
+ */
+export const documentMapSchema = z.object({
+  mode: z.enum(['sections', 'ranges']),
+  totalChars: z.number().int().nonnegative(),
+  totalBlocks: z.number().int().nonnegative(),
+  entries: z.array(documentMapEntrySchema),
+  coarsened: z.boolean(),
+});
+export type DocumentMapDto = z.infer<typeof documentMapSchema>;
+
+export const documentFragmentRequestSchema = responseBudgetSchema.extend({
   /**
    * The block to show. Omitted means the whole page.
    *
@@ -30,6 +80,12 @@ export const documentFragmentRequestSchema = z.object({
    * everything under it up to the next heading of the same or a higher level.
    */
   blockId: blockIdSchema.optional(),
+  /**
+   * The last block of a range, inclusive. Only with `blockId`, and only for
+   * siblings of it. This is how a map's range entry is read back, and it is
+   * the same description the write side takes (`blockRangeEditSchema`).
+   */
+  toBlockId: blockIdSchema.optional(),
   /**
    * Also list the page's addressable blocks, which is what the block picker
    * needs. Off by default, because rendering a placed transclusion does not
@@ -58,6 +114,8 @@ export const documentFragmentResponseSchema = z.object({
   archivedAt: isoDateTimeSchema.nullable(),
   /** The block that was asked for, `null` for the whole page. */
   blockId: blockIdSchema.nullable(),
+  /** The end of the range that was asked for, `null` when none was. */
+  toBlockId: blockIdSchema.nullable(),
   /**
    * `false` when a block was asked for and no block on the page carries that
    * identifier any more. The reference is dead: the source still exists, the
@@ -66,6 +124,20 @@ export const documentFragmentResponseSchema = z.object({
    * showing a different paragraph is worse than one that says it is broken.
    */
   resolved: z.boolean(),
+  /**
+   * What this answer carries (issue #118).
+   *
+   * `content` is the fragment itself and is what a caller without a budget
+   * always gets. `map` means the fragment is larger than the budget the caller
+   * named: `markdown` and `proseMirrorJson` are then empty and `map` holds the
+   * parts to read instead. Never a prefix of the text, because a prefix is
+   * what makes a reader believe it has the beginning of something.
+   */
+  view: z.enum(['content', 'map']),
+  /** Characters of Markdown the addressed fragment holds, shown or not. */
+  chars: z.number().int().nonnegative(),
+  /** The parts of the fragment, on `view: 'map'`. `null` otherwise. */
+  map: documentMapSchema.nullable(),
   /** The fragment as Markdown, for agents and for the materialized export. */
   markdown: z.string(),
   /** The same fragment as ProseMirror JSON, which is what the browser renders. */
@@ -97,7 +169,7 @@ export type DocumentFragmentResponse = z.infer<typeof documentFragmentResponseSc
 export const transclusionExportModeSchema = z.enum(['reference', 'text']);
 export type TransclusionExportMode = z.infer<typeof transclusionExportModeSchema>;
 
-export const markdownExportRequestSchema = z.object({
+export const markdownExportRequestSchema = responseBudgetSchema.extend({
   transclusions: transclusionExportModeSchema.optional().default('reference'),
   /**
    * Writes each block's identifier after it as an Obsidian-style `^id`

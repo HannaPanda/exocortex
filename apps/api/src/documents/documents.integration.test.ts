@@ -2157,6 +2157,106 @@ describe('reading a fragment of a page', () => {
       fragmentService.read(documentId, outsiderId, { outline: false }),
     ).rejects.toBeInstanceOf(AuthorizationError);
   });
+
+  it('reads a window of blocks when both ends are named', async () => {
+    const { documentId } = await createSource('Quelle Fenster');
+    const outline = await fragmentService.read(documentId, ownerId, { outline: true });
+    const [first, second] = outline.blocks;
+
+    const fragment = await fragmentService.read(documentId, ownerId, {
+      blockId: (first as { blockId: string }).blockId,
+      toBlockId: (second as { blockId: string }).blockId,
+      outline: false,
+    });
+
+    expect(fragment.resolved).toBe(true);
+    expect(fragment.markdown).toContain('Läuft seit gestern.');
+    expect(fragment.markdown).not.toContain('Nichts.');
+  });
+
+  it('answers a page past the budget with its map and no text at all', async () => {
+    // The failure this pins (issue #118): a page larger than the reader's
+    // budget used to come back as its first N characters, which reads like a
+    // beginning and sends an agent looking for the rest one call at a time.
+    const documentId = await createPage('Quelle groß');
+    const sections = Array.from(
+      { length: 6 },
+      (_, index) => `## Abschnitt ${index}\n\n${'Text. '.repeat(200)}`,
+    ).join('\n\n');
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: sections, mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+
+    const fragment = await fragmentService.read(documentId, ownerId, {
+      outline: false,
+      maxChars: 1_000,
+    });
+
+    expect(fragment.view).toBe('map');
+    expect(fragment.markdown).toBe('');
+    expect(fragment.chars).toBeGreaterThan(1_000);
+    expect(fragment.map?.mode).toBe('sections');
+    expect(fragment.map?.entries).toHaveLength(6);
+    // Every entry carries the address to read it with, which is the whole
+    // point of answering with a map.
+    expect(fragment.map?.entries.every((entry) => entry.fromBlockId !== null)).toBe(true);
+
+    // And that address resolves, so the map is navigation and not decoration.
+    const first = fragment.map?.entries[0]?.fromBlockId as string;
+    const section = await fragmentService.read(documentId, ownerId, {
+      blockId: first,
+      outline: false,
+      maxChars: 10_000,
+    });
+    expect(section.view).toBe('content');
+    expect(section.markdown).toContain('## Abschnitt 0');
+    expect(section.markdown).not.toContain('## Abschnitt 1');
+  });
+
+  it('maps a flat part as block windows, because the recursion needs a floor', async () => {
+    const documentId = await createPage('Quelle flach');
+    const flat = Array.from({ length: 40 }, (_, index) => `Absatz ${index}. ${'x'.repeat(200)}`);
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: flat.join('\n\n'), mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+
+    const fragment = await fragmentService.read(documentId, ownerId, {
+      outline: false,
+      maxChars: 1_000,
+      maxEntries: 8,
+    });
+
+    expect(fragment.view).toBe('map');
+    expect(fragment.map?.mode).toBe('ranges');
+    expect(fragment.map?.entries.length).toBeLessThanOrEqual(8);
+
+    const window = fragment.map?.entries[0];
+    const part = await fragmentService.read(documentId, ownerId, {
+      blockId: window?.fromBlockId as string,
+      toBlockId: window?.toBlockId ?? undefined,
+      outline: false,
+      maxChars: 100_000,
+    });
+    expect(part.view).toBe('content');
+    expect(part.markdown).toContain('Absatz 0.');
+  });
+
+  it('hands the whole page to a caller that named no budget', async () => {
+    const { documentId } = await createSource('Quelle ohne Budget');
+    const fragment = await fragmentService.read(documentId, ownerId, { outline: false });
+
+    expect(fragment.view).toBe('content');
+    expect(fragment.map).toBeNull();
+    expect(fragment.markdown).toContain('Nichts.');
+  });
 });
 
 describe('exporting a page that embeds another', () => {
@@ -2185,13 +2285,37 @@ describe('exporting a page that embeds another', () => {
     const embedding = await createEmbedding('Stammdaten A');
     const exported = await markdownService.export(embedding, ownerId);
 
+    expect(exported.view).toBe('content');
     expect(exported.markdown).toContain(':::transclusion Stammdaten A');
     expect(exported.markdown).not.toContain('Der eine Satz');
   });
 
+  it('exports the map instead of the page when the caller named a budget', async () => {
+    const documentId = await createPage('Export groß');
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: {
+        markdown: `## Eins\n\n${'a'.repeat(900)}\n\n## Zwei\n\n${'b'.repeat(900)}`,
+        mode: 'replace',
+      },
+      correlationId,
+      source: 'api',
+    });
+
+    const exported = await markdownService.export(documentId, ownerId, { maxChars: 500 });
+
+    expect(exported.view).toBe('map');
+    expect(exported.markdown).toBe('');
+    expect(exported.map?.entries.map((entry) => entry.title)).toEqual(['Eins', 'Zwei']);
+    // The page's own children still travel: they are the structure, and a map
+    // of the body never says what hangs underneath the page.
+    expect(exported.children).toEqual([]);
+  });
+
   it('puts the source text in place when asked to', async () => {
     const embedding = await createEmbedding('Stammdaten B');
-    const exported = await markdownService.export(embedding, ownerId, 'text');
+    const exported = await markdownService.export(embedding, ownerId, { transclusions: 'text' });
 
     expect(exported.markdown).toContain('Der eine Satz, der überall stehen soll.');
     expect(exported.markdown).not.toContain(':::transclusion');
@@ -2211,7 +2335,7 @@ describe('exporting a page that embeds another', () => {
     });
     await prisma.document.delete({ where: { id: source.id } });
 
-    const exported = await markdownService.export(embedding, ownerId, 'text');
+    const exported = await markdownService.export(embedding, ownerId, { transclusions: 'text' });
     expect(exported.markdown).toContain(':::transclusion Stammdaten C');
   });
 
@@ -2225,7 +2349,7 @@ describe('exporting a page that embeds another', () => {
       source: 'api',
     });
 
-    const exported = await markdownService.export(documentId, ownerId, 'text');
+    const exported = await markdownService.export(documentId, ownerId, { transclusions: 'text' });
     // The reference stays a reference rather than duplicating the page inside
     // itself, which is the one case one level of expansion does not cover.
     expect(exported.markdown).toContain(':::transclusion Selbstbezug');

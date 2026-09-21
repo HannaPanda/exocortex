@@ -46,6 +46,7 @@ import { RealtimeService } from '../realtime/realtime.service';
 import { DocumentFragmentService } from './document-fragment.service';
 import { DOCUMENT_SELECT, toSummary } from './documents.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
+import { applyResponseBudget } from './response-budget';
 import { mayListChildren, visiblePath } from './share-visibility';
 
 function filenameFor(title: string): string {
@@ -77,13 +78,26 @@ export class DocumentMarkdownService {
     private readonly fragments: DocumentFragmentService,
   ) {}
 
+  /**
+   * The page as Markdown, or -- for a caller that named a budget the page does
+   * not fit into -- the map of it (issue #118).
+   *
+   * The options travel as one object rather than as four positional arguments,
+   * because the third of them already read as a mystery at the call site.
+   */
   async export(
     documentId: string,
     userId: string,
-    transclusions: TransclusionExportMode = 'reference',
-    /** Writes `^id` after every block, so a reader can address one (issue #111). */
-    includeBlockIds = false,
+    options: {
+      transclusions?: TransclusionExportMode;
+      /** Writes `^id` after every block, so a reader can address one (issue #111). */
+      blockIds?: boolean;
+      maxChars?: number;
+      maxEntries?: number;
+    } = {},
   ): Promise<MarkdownExportResponse> {
+    const transclusions = options.transclusions ?? 'reference';
+    const includeBlockIds = options.blockIds ?? false;
     const context = await this.access.requireDocumentContext(documentId, userId);
     assertPolicy(canReadDocument(context.role, context.document, context.workspaceId));
 
@@ -152,10 +166,15 @@ export class DocumentMarkdownService {
       },
     });
 
+    const budgeted = applyResponseBudget(proseMirrorJson, markdown, options);
+
     return {
       documentId,
       filename: filenameFor(document.title),
-      markdown,
+      view: budgeted.view,
+      chars: budgeted.chars,
+      map: budgeted.map,
+      markdown: budgeted.markdown,
       // Both lists are cut for a caller who is here through a share (issue
       // #83): an export must not carry the names of the sections above the
       // shared page, nor of sub-pages a page-only grant did not include.

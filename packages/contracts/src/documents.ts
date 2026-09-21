@@ -11,7 +11,7 @@ import {
   idSchema,
   isoDateTimeSchema,
 } from './primitives';
-import { blockIdSchema } from './transclusion';
+import { blockIdSchema, documentMapSchema } from './transclusion';
 
 /**
  * How wide the page body is rendered. `narrow` is the 68ch reading measure,
@@ -553,6 +553,17 @@ export type CollaborationTicketResponse = z.infer<typeof collaborationTicketResp
 export const markdownExportResponseSchema = z.object({
   documentId: idSchema,
   filename: z.string(),
+  /**
+   * `content` carries the page, `map` carries its structure instead because
+   * the caller named a budget the page does not fit into (issue #118). A
+   * caller that names no budget always gets the page, which is what an export
+   * is for.
+   */
+  view: z.enum(['content', 'map']),
+  /** Characters of Markdown the page holds, shown or not. */
+  chars: z.number().int().nonnegative(),
+  /** The parts of the page, on `view: 'map'`. `null` otherwise. */
+  map: documentMapSchema.nullable(),
   markdown: z.string(),
   /** Ancestors of this page, root first. */
   path: z.array(documentPathEntrySchema),

@@ -33,7 +33,10 @@ export class DocumentFragmentController {
 
   @Get(':documentId/fragment')
   @ApiQuery({ name: 'blockId', required: false })
+  @ApiQuery({ name: 'toBlockId', required: false })
   @ApiQuery({ name: 'outline', required: false })
+  @ApiQuery({ name: 'maxChars', required: false })
+  @ApiQuery({ name: 'maxEntries', required: false })
   @ApiOkResponse({ schema: openApiResponseSchema(documentFragmentResponseSchema) })
   async fragment(
     @CurrentSession() session: VerifiedSession,

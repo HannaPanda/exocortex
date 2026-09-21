@@ -10,7 +10,7 @@ import { type PrismaClient } from '@exocortex/database';
 import {
   type CollectedTransclusion,
   collectTransclusions,
-  extractBlockFragment,
+  extractBlockRange,
   outlineBlocks,
   type ProseMirrorDocument,
   type ProseMirrorNode,
@@ -24,6 +24,7 @@ import { PRISMA } from '../platform/platform.module';
 
 import { toIconColor } from './documents.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
+import { applyResponseBudget } from './response-budget';
 
 /**
  * Upper bound on the sources one materialized export will resolve.
@@ -85,9 +86,12 @@ export class DocumentFragmentService {
     );
 
     const blockId = query.blockId ?? null;
-    const fragment = blockId === null ? page : extractBlockFragment(page, blockId);
+    const toBlockId = query.toBlockId ?? null;
+    const fragment =
+      blockId === null ? page : extractBlockRange(page, blockId, toBlockId ?? blockId);
     const resolved = fragment !== null;
     const shown: ProseMirrorDocument = fragment ?? { type: 'doc', content: [] };
+    const budgeted = applyResponseBudget(shown, serializeMarkdown(shown), query);
 
     return {
       documentId,
@@ -96,9 +100,18 @@ export class DocumentFragmentService {
       iconColor: toIconColor(document.iconColor),
       archivedAt: document.archivedAt?.toISOString() ?? null,
       blockId,
+      toBlockId,
       resolved,
-      markdown: serializeMarkdown(shown),
-      proseMirrorJson: shown as { type: 'doc' },
+      view: budgeted.view,
+      chars: budgeted.chars,
+      map: budgeted.map,
+      markdown: budgeted.markdown,
+      // The JSON travels with the text and stays away on a map: it is what the
+      // browser renders, and a browser asking for a fragment to render never
+      // named a budget.
+      proseMirrorJson: (budgeted.view === 'content' ? shown : { type: 'doc', content: [] }) as {
+        type: 'doc';
+      },
       blocks: query.outline ? (outlineBlocks(page) as DocumentOutlineBlock[]) : [],
       nested: collectTransclusions(shown).length,
     };
