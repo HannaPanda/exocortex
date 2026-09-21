@@ -700,7 +700,7 @@ shape changes; what changes is that a question phrased in words the note does
 not contain can still find it, which is the ordinary case when an agent asks
 "what did we do here last time".
 
-A semantic hit also says *where* on the page it sits: the heading above the
+A semantic hit also says _where_ on the page it sits: the heading above the
 passage that matched, with its block identifier, on both surfaces
 ([ADR-058](adr/ADR-058-a-hit-carries-the-section-it-came-from.md)). That is
 what `exo_page_block_read` takes, so a hit on a page of forty thousand

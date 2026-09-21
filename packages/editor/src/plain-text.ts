@@ -199,7 +199,9 @@ function shiftOffsets(
     }
     // An offset inside a match is one whose whitespace is being removed; it
     // moves to where that match begins.
-    shifted.push(match !== undefined && match.index < offset ? match.index + delta : offset + delta);
+    shifted.push(
+      match !== undefined && match.index < offset ? match.index + delta : offset + delta,
+    );
   }
   return shifted;
 }

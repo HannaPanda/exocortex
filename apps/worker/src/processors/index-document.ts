@@ -1,9 +1,5 @@
 import { ATTACHMENT_SEARCH_TEXT_MAX_CHARS, type QUEUE_NAMES } from '@exocortex/contracts';
-import {
-  type PassageAnchor,
-  type PrismaClient,
-  type SearchAdapter,
-} from '@exocortex/database';
+import { type PassageAnchor, type PrismaClient, type SearchAdapter } from '@exocortex/database';
 import { plainTextHeadingAnchors } from '@exocortex/editor';
 import { type JobContext } from '@exocortex/queue';
 
