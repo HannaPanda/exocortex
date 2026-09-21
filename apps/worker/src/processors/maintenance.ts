@@ -28,6 +28,7 @@ import { refreshStaleOverviews } from './maintenance-tasks/overview-sweep';
 import {
   backfillAttachmentSearchText,
   backfillEmbeddings,
+  backfillPassageAnchors,
   vacuumSearchIndex,
 } from './maintenance-tasks/search-index';
 import { pruneSnapshots, snapshotActiveDocuments } from './maintenance-tasks/snapshots';
@@ -95,6 +96,7 @@ const TASKS: Record<MaintenanceTaskName, MaintenanceTask> = {
   'refresh-stale-overviews': refreshStaleOverviews,
   'backfill-embeddings': backfillEmbeddings,
   'backfill-attachment-search-text': backfillAttachmentSearchText,
+  'backfill-passage-anchors': backfillPassageAnchors,
   'prune-memories': pruneMemories,
   'prune-invitations': pruneInvitations,
   'prune-agent-messages': pruneAgentMessages,

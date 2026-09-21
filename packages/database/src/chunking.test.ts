@@ -6,6 +6,7 @@ import {
   chunkPlainText,
   isChunkBlockId,
   MAX_CHUNKS_PER_DOCUMENT,
+  type PassageAnchor,
 } from './chunking';
 
 /** A page of `count` blocks, each one recognisable by its number. */
@@ -102,5 +103,61 @@ describe('chunkBlockId', () => {
     expect(isChunkBlockId(chunkBlockId(0))).toBe(true);
     expect(isChunkBlockId(null)).toBe(false);
     expect(isChunkBlockId('block-abc')).toBe(false);
+  });
+});
+
+describe('the heading a passage sits under', () => {
+  /**
+   * A page of two sections, each long enough to fill more than one passage,
+   * with the headings where the plain-text projection would put them.
+   */
+  function sectioned(): { text: string; anchors: PassageAnchor[] } {
+    const first = `Arzt-Checkliste\n${page(8)}`;
+    const second = `Tumorambulanz\n${page(8)}`;
+    return {
+      text: `${first}\n${second}`,
+      anchors: [
+        { offset: 0, blockId: 'arztcheck01', path: ['Arzt-Checkliste'] },
+        { offset: first.length + 1, blockId: 'tumorambu01', path: ['Tumorambulanz'] },
+      ],
+    };
+  }
+
+  it('gives each passage the last heading that begins at or before it', () => {
+    const { text, anchors } = sectioned();
+
+    const chunks = chunkPlainText(text, { anchors });
+
+    // Where a passage *begins* decides, not what it happens to run into: a
+    // passage that starts in the first section and reaches over the next
+    // heading is still to be found in the first one.
+    expect(chunks.length).toBeGreaterThan(2);
+    const sections = chunks.map((chunk) => chunk.anchor?.blockId);
+    const switched = sections.indexOf('tumorambu01');
+    expect(switched).toBeGreaterThan(0);
+    expect([...new Set(sections.slice(0, switched))]).toEqual(['arztcheck01']);
+    expect([...new Set(sections.slice(switched))]).toEqual(['tumorambu01']);
+  });
+
+  it('says nothing when the caller handed no headings over', () => {
+    const { text } = sectioned();
+
+    expect(chunkPlainText(text).every((chunk) => chunk.anchor === null)).toBe(true);
+  });
+
+  it('leaves the text after the marker under no heading at all', () => {
+    // What the search projection does with attachment text (issue #101): it
+    // hangs behind the page and belongs to none of its sections.
+    const pageText = `Arzt-Checkliste\n${page(6)}`;
+    const text = `${pageText}\n\n${page(6)}`;
+    const anchors: PassageAnchor[] = [
+      { offset: 0, blockId: 'arztcheck01', path: ['Arzt-Checkliste'] },
+      { offset: pageText.length, blockId: null, path: [] },
+    ];
+
+    const chunks = chunkPlainText(text, { anchors });
+
+    expect(chunks[0]?.anchor?.blockId).toBe('arztcheck01');
+    expect(chunks[chunks.length - 1]?.anchor).toBeNull();
   });
 });

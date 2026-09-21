@@ -1952,6 +1952,7 @@ describe('document links', () => {
             iconColor: null,
             type: 'PAGE' as const,
             snippet: 'Ein Auszug.',
+            section: null,
             rank: 0.9 - position / 10,
             archivedAt: null,
             updatedAt: new Date().toISOString(),

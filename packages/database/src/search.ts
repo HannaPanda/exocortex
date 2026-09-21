@@ -1,5 +1,6 @@
 import { type SearchResult } from '@exocortex/contracts';
 
+import { type PassageAnchor } from './chunking';
 import { Prisma, type PrismaClient } from './client';
 
 export interface SearchQuery {
@@ -16,6 +17,16 @@ export interface IndexDocumentInput {
   title: string;
   plainText: string;
   archivedAt: Date | null;
+  /**
+   * The headings of `plainText`, so the passages cut out of it can say which
+   * section they came from (issue #118).
+   *
+   * Only the semantic half uses them, and only a caller holding the page's
+   * structure can produce them. Absent means "not computed", which is a
+   * different thing from a page that has no headings: the first is worth
+   * coming back for, the second is not.
+   */
+  headingAnchors?: readonly PassageAnchor[];
 }
 
 /**
@@ -139,6 +150,12 @@ export class PostgresSearchAdapter implements SearchAdapter {
       iconColor: row.iconColor,
       type: row.type,
       snippet: row.snippet.replace(/\s+/g, ' ').trim(),
+      // A keyword match is a position in a `tsvector`, and nothing maps that
+      // position back onto a block: the offset-to-block table issue #110 needs
+      // anyway does not exist yet, and guessing at one would be worse than
+      // saying nothing. The semantic half does locate its hits, and fusion
+      // keeps that when both halves found the same page.
+      section: null,
       rank: Number(row.rank),
       archivedAt: row.archivedAt === null ? null : row.archivedAt.toISOString(),
       updatedAt: row.updatedAt.toISOString(),

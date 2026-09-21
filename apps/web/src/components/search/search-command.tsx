@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
+import { type SearchResult } from '@exocortex/contracts';
 import { type CommandItem, CommandPalette } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
@@ -21,6 +22,18 @@ export interface SearchCommandProps {
   onOpenChange: (open: boolean) => void;
   /** The shell's own commands, so the palette is one (issue #115). */
   commands: readonly PaletteCommand[];
+}
+
+/**
+ * The hit's own line, with the section it came out of in front (issue #118).
+ *
+ * The innermost heading rather than the whole path: one row of a palette is
+ * about sixty characters wide, and on a long page the last heading is the one
+ * that says which part of it was found.
+ */
+function withSection(section: SearchResult['section'], snippet: string): string {
+  const heading = section?.path[section.path.length - 1];
+  return heading === undefined ? snippet : `${heading} · ${snippet}`;
 }
 
 /** Whether a row answers what has been typed. An empty field matches all. */
@@ -177,7 +190,7 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
         id: result.documentId,
         group: 'Seiten',
         label: result.title,
-        hint: result.snippet.replace(/<\/?mark>/g, '').slice(0, 60),
+        hint: withSection(result.section, result.snippet.replace(/<\/?mark>/g, '').slice(0, 60)),
         icon: (
           <DocumentIcon
             icon={result.icon}

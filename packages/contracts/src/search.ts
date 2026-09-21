@@ -36,6 +36,29 @@ export const searchResultSchema = z.object({
    * vector matched (ADR-034) and otherwise the first lines of the page.
    */
   snippet: z.string(),
+  /**
+   * Where on the page the hit sits (issue #118).
+   *
+   * A page can hold a hundred thousand characters, and a hit that names only
+   * the page is the answer the caller already had: the run this came out of
+   * searched fourteen times and every hit pointed at the page it had just
+   * read. A semantic hit knows its passage (ADR-034) and therefore the heading
+   * above it. `null` means the hit is not located: a match found by keyword
+   * alone has no passage, and mapping a character offset back onto a block
+   * needs a table this deployment does not keep yet (issue #110).
+   */
+  section: z
+    .object({
+      /**
+       * Block to read the section with, for `exo_page_read` and
+       * `exo_page_block_read`. `null` when the heading itself carries no
+       * identifier: the section can be named, not opened.
+       */
+      blockId: z.string().nullable(),
+      /** The heading and the headings it sits under, outermost first. */
+      path: z.array(z.string()),
+    })
+    .nullable(),
   rank: z.number(),
   archivedAt: isoDateTimeSchema.nullable(),
   updatedAt: isoDateTimeSchema,

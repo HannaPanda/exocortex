@@ -31,12 +31,19 @@ import {
 import {
   applyModelRouteSnapshot,
   createPrismaClient,
+  Prisma,
   generateOrderKey,
   HybridSearchAdapter,
   PostgresSearchAdapter,
   type PrismaClient,
 } from '@exocortex/database';
-import { bindPageLinkIdentities, markdownToYjsState } from '@exocortex/editor';
+import {
+  bindPageLinkIdentities,
+  markdownToYjsState,
+  type ProseMirrorDocument,
+  type ProseMirrorNode,
+  serializePlainText,
+} from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type JobContext, QueueRegistry, RedisEventBus, testQueuePrefix } from '@exocortex/queue';
@@ -1211,6 +1218,188 @@ describe('related documents', () => {
 
       expect(result.state).toBe('ready');
       expect(result.hits).toEqual([]);
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+});
+
+/**
+ * Where on a page a semantic hit sits (issue #118).
+ *
+ * A hit used to name the page and nothing else, which is what the caller
+ * already knew: the run this came out of searched fourteen times and every
+ * answer pointed at the page it had just read. A passage now carries the
+ * heading above it, so the answer is an address.
+ */
+describe('a passage says which section it came from', () => {
+  /** A page of two long sections, stored the way materialization stores one. */
+  async function sectionedPage(): Promise<{
+    documentId: string;
+    proseMirrorJson: ProseMirrorDocument;
+  }> {
+    const filler = (word: string): ProseMirrorNode => ({
+      type: 'paragraph',
+      content: [{ type: 'text', text: `${word} `.repeat(120).trim() }],
+    });
+    const proseMirrorJson: ProseMirrorDocument = {
+      type: 'doc',
+      content: [
+        {
+          type: 'heading',
+          attrs: { level: 2, blockId: 'arztcheck01' },
+          content: [{ type: 'text', text: 'Arzt-Checkliste' }],
+        },
+        filler('Blutdruck'),
+        filler('Rezept'),
+        {
+          type: 'heading',
+          attrs: { level: 2, blockId: 'tumorambu01' },
+          content: [{ type: 'text', text: 'Tumorambulanz' }],
+        },
+        filler('Zwiebelkuchenrezept'),
+        filler('Nachsorge'),
+      ],
+    };
+    const plainText = serializePlainText(proseMirrorJson);
+    const document = await prisma.document.create({
+      data: {
+        workspaceId,
+        title: 'Gesundheit',
+        orderKey: generateOrderKey(null, null),
+        createdById: userId,
+        updatedById: userId,
+        content: {
+          create: {
+            yjsState: Buffer.from([]),
+            plainText,
+            proseMirrorJson: proseMirrorJson as unknown as Prisma.InputJsonObject,
+          },
+        },
+      },
+    });
+    return { documentId: document.id, proseMirrorJson };
+  }
+
+  async function reindex(documentId: string): Promise<void> {
+    await createIndexDocumentProcessor({ prisma, search })(
+      contextFor<'search-indexing'>({
+        correlationId: 'anchors',
+        documentId,
+        workspaceId,
+        reason: 'materialized' as const,
+      }).context,
+    );
+  }
+
+  it('stores the heading each passage sits under, and none for the page itself', async () => {
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const { documentId } = await sectionedPage();
+      await reindex(documentId);
+
+      const rows = await prisma.documentEmbedding.findMany({
+        where: { documentId },
+        orderBy: { blockId: 'asc' },
+      });
+      const passages = rows.filter((row) => row.blockId !== null);
+
+      expect(passages.length).toBeGreaterThan(1);
+      expect(passages[0]?.headingBlockId).toBe('arztcheck01');
+      expect(passages[passages.length - 1]?.headingBlockId).toBe('tumorambu01');
+      expect(passages[0]?.headingPath).toEqual(['Arzt-Checkliste']);
+      // The whole-document row is about the page, so it sits in no section.
+      expect(rows.find((row) => row.blockId === null)?.headingPath).toBeNull();
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+
+  it('answers a search with the section, so the hit can be opened', async () => {
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const { documentId } = await sectionedPage();
+      await reindex(documentId);
+
+      const results = await search.search({
+        workspaceId,
+        query: 'Zwiebelkuchenrezept',
+        limit: 10,
+        includeArchived: false,
+      });
+
+      expect(results.find((hit) => hit.documentId === documentId)?.section).toEqual({
+        blockId: 'tumorambu01',
+        path: ['Tumorambulanz'],
+      });
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+
+  it('adds the heading to passages that were embedded without one, and pays no model for it', async () => {
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const { documentId, proseMirrorJson } = await sectionedPage();
+      // A page as it was indexed before headings travelled: the passages exist
+      // and no heading was worked out for them.
+      await prisma.documentContent.update({
+        where: { documentId },
+        data: { proseMirrorJson: Prisma.DbNull },
+      });
+      await reindex(documentId);
+      const before = await prisma.documentEmbedding.findMany({ where: { documentId } });
+      expect(before.every((row) => row.headingPath === null)).toBe(true);
+
+      await prisma.documentContent.update({
+        where: { documentId },
+        data: {
+          proseMirrorJson: proseMirrorJson as unknown as Prisma.InputJsonObject,
+        },
+      });
+      await reindex(documentId);
+
+      const after = await prisma.documentEmbedding.findMany({ where: { documentId } });
+      expect(
+        after.filter((row) => row.blockId !== null && row.headingPath !== null).length,
+      ).toBeGreaterThan(0);
+      // The vectors were not rewritten: the passage text never changed, and
+      // the heading is not part of what was embedded.
+      expect(after.map((row) => row.createdAt.getTime()).sort()).toEqual(
+        before.map((row) => row.createdAt.getTime()).sort(),
+      );
+    } finally {
+      semanticModel = null;
+    }
+  }, 60_000);
+
+  it('lets the sweep find exactly the pages that are still owed a heading', async () => {
+    semanticModel = TEST_EMBEDDING_MODEL;
+    try {
+      const { documentId } = await sectionedPage();
+      await prisma.documentContent.update({
+        where: { documentId },
+        data: { proseMirrorJson: Prisma.DbNull },
+      });
+      await reindex(documentId);
+
+      const owed = await prisma.documentEmbedding.count({
+        where: { documentId, blockId: { not: null }, headingPath: { equals: Prisma.DbNull } },
+      });
+      expect(owed).toBeGreaterThan(0);
+
+      await prisma.documentContent.update({
+        where: { documentId },
+        data: { proseMirrorJson: { type: 'doc', content: [] } },
+      });
+      await reindex(documentId);
+
+      // An empty array, not null: the page really has no headings, so the
+      // sweep is done with it rather than coming back every ten minutes.
+      const stillOwed = await prisma.documentEmbedding.count({
+        where: { documentId, blockId: { not: null }, headingPath: { equals: Prisma.DbNull } },
+      });
+      expect(stillOwed).toBe(0);
     } finally {
       semanticModel = null;
     }

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { documentPathEntrySchema } from './documents';
 import { entityTypeSchema } from './entities';
 import { idSchema, isoDateTimeSchema } from './primitives';
+import { searchResultSchema } from './search';
 
 /**
  * The agent memory surface (issue #34).
@@ -82,6 +83,12 @@ export const memoryHitSchema = z.object({
   path: z.array(documentPathEntrySchema),
   /** A few distilled lines, never a whole page. `fetch` loads the rest. */
   snippet: z.string(),
+  /**
+   * The section the snippet came out of, when the hit was found by meaning
+   * (issue #118). Same field and same meaning as on a search result: `null`
+   * says the hit is not located, never that it sits at the top of the page.
+   */
+  section: searchResultSchema.shape.section,
   source: memorySourceSchema,
   score: z.number(),
   updatedAt: isoDateTimeSchema,

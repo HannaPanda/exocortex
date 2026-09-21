@@ -79,6 +79,54 @@ export const backfillAttachmentSearchText: MaintenanceTask = async ({
   }
 };
 
+/**
+ * Re-indexes the pages whose passages were written before a passage carried
+ * the heading it sits under (issue #118).
+ *
+ * The same shape as the sweep above, for the same reason: an ordinary
+ * re-index writes the anchor, and because the passage text is unchanged it
+ * writes no vector and pays no model. `headingPath IS NULL` is what "nobody
+ * has worked it out" looks like; a passage that really sits under no heading
+ * carries an empty array, so this sweep runs out of work instead of coming
+ * back to the same headingless pages every ten minutes.
+ */
+export const backfillPassageAnchors: MaintenanceTask = async ({
+  prisma,
+  queues,
+  payload,
+  logger,
+}) => {
+  const scope =
+    payload.workspaceId === null
+      ? Prisma.empty
+      : Prisma.sql`AND index."workspaceId" = ${payload.workspaceId}`;
+
+  const pending = await prisma.$queryRaw<{ documentId: string; workspaceId: string }[]>(Prisma.sql`
+    SELECT DISTINCT
+      embedding."documentId" AS "documentId",
+      index."workspaceId"    AS "workspaceId"
+    FROM "document_embedding" AS embedding
+    JOIN "document_search_index" AS index ON index."documentId" = embedding."documentId"
+    WHERE embedding."blockId" IS NOT NULL
+      AND embedding."headingPath" IS NULL
+      ${scope}
+    LIMIT ${ATTACHMENT_SEARCH_BACKFILL_BATCH}
+  `);
+
+  for (const row of pending) {
+    await queues.enqueue(QUEUE_NAMES.searchIndexing, {
+      correlationId: payload.correlationId,
+      documentId: row.documentId,
+      workspaceId: row.workspaceId,
+      reason: 'passage_anchors',
+    });
+  }
+
+  if (pending.length > 0) {
+    logger.info('Re-indexing pages whose passages carry no heading yet', { pages: pending.length });
+  }
+};
+
 /** Fills in vectors for the pages the semantic index has never seen. */
 export const backfillEmbeddings: MaintenanceTask = async (context) => {
   const { prisma, search, payload, logger, reportProgress } = context;

@@ -700,6 +700,14 @@ shape changes; what changes is that a question phrased in words the note does
 not contain can still find it, which is the ordinary case when an agent asks
 "what did we do here last time".
 
+A semantic hit also says *where* on the page it sits: the heading above the
+passage that matched, with its block identifier, on both surfaces
+([ADR-058](adr/ADR-058-a-hit-carries-the-section-it-came-from.md)). That is
+what `exo_page_block_read` takes, so a hit on a page of forty thousand
+characters is an address rather than an invitation to read the page. A hit
+found by keyword alone carries `section: null` and says so, because mapping a
+`tsquery` position back onto a block needs the offset table of issue #110.
+
 `remember` writes into the caller's own memory workspace (`Workspace.isMemory`), under a page
 per project, appending to today's note. It is the same endpoint the capture job
 uses, so a note a person dictated and a note distilled from a session look the

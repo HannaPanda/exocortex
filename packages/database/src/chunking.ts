@@ -78,6 +78,28 @@ export interface EmbeddingChunk {
   ordinal: number;
   /** The passage itself, blocks joined by newlines, without the page title. */
   text: string;
+  /**
+   * The heading this passage sits under, when the caller handed the headings
+   * over. `null` means there is none above it, not that none were looked for.
+   */
+  anchor: PassageAnchor | null;
+}
+
+/**
+ * A heading, and the offset in the plain text from which it applies.
+ *
+ * Structurally the same thing `plainTextHeadingAnchors` produces in
+ * `@exocortex/editor`; declared here so a caller may also say "from here on,
+ * no heading". The search projection appends attachment text after the page
+ * (issue #101), and a passage out of a PDF sits under no heading of the page
+ * it hangs on.
+ */
+export interface PassageAnchor {
+  offset: number;
+  /** `null` when the heading itself carries no identifier, or for the marker above. */
+  blockId: string | null;
+  /** The heading and the headings it sits under, outermost first. Empty for the marker. */
+  path: readonly string[];
 }
 
 export interface ChunkOptions {
@@ -86,6 +108,11 @@ export interface ChunkOptions {
   minTailChars?: number;
   maxChunks?: number;
   thresholdChars?: number;
+  /**
+   * The page's headings by offset, ascending. Passing none means no passage
+   * carries one, which is what a caller without the page's structure says.
+   */
+  anchors?: readonly PassageAnchor[];
 }
 
 /**
@@ -117,38 +144,76 @@ export function chunkPlainText(plainText: string, options: ChunkOptions = {}): E
 
   if (plainText.length <= threshold) return [];
 
-  const chunks: string[] = [];
+  const chunks: PackedChunk[] = [];
   let current = '';
   /** The part of `current` that was repeated from the passage before it. */
   let carried = '';
+  /** Where the first block of `current` that is not repeated text began. */
+  let offset = 0;
+  let opened = false;
 
   for (const block of blocksOf(plainText, target)) {
-    if (current.length > 0 && current.length + 1 + block.length > target) {
-      chunks.push(current);
-      if (chunks.length >= maxChunks) return numbered(chunks);
+    if (current.length > 0 && current.length + 1 + block.text.length > target) {
+      chunks.push({ text: current, offset });
+      if (chunks.length >= maxChunks) return numbered(chunks, options.anchors);
       carried = overlapTail(current, overlap);
       current = carried;
+      opened = false;
     }
-    current = current.length === 0 ? block : `${current}\n${block}`;
+    if (!opened) {
+      offset = block.offset;
+      opened = true;
+    }
+    current = current.length === 0 ? block.text : `${current}\n${block.text}`;
   }
 
   if (current.length > 0 && current !== carried) {
     const previous = chunks[chunks.length - 1];
     if (previous !== undefined && current.length < minTail) {
       // The remnant goes back where it came from, minus the overlap it repeats,
-      // so the merged passage does not say the same sentence twice.
+      // so the merged passage does not say the same sentence twice. It keeps
+      // the offset of the passage it joins, which is where that one still
+      // starts.
       const added = carried.length > 0 ? current.slice(carried.length).replace(/^\n/, '') : current;
-      if (added.length > 0) chunks[chunks.length - 1] = `${previous}\n${added}`;
+      if (added.length > 0) previous.text = `${previous.text}\n${added}`;
     } else {
-      chunks.push(current);
+      chunks.push({ text: current, offset });
     }
   }
 
-  return numbered(chunks);
+  return numbered(chunks, options.anchors);
 }
 
-function numbered(chunks: readonly string[]): EmbeddingChunk[] {
-  return chunks.map((text, ordinal) => ({ ordinal, text }));
+interface PackedChunk {
+  text: string;
+  /** Offset in the plain text the passage starts at, so it can find its heading. */
+  offset: number;
+}
+
+/**
+ * The packed passages, each under the last heading that begins at or before
+ * it.
+ *
+ * Both lists run forwards, so the headings are walked once for all passages
+ * rather than searched per passage.
+ */
+function numbered(
+  chunks: readonly PackedChunk[],
+  anchors: readonly PassageAnchor[] | undefined,
+): EmbeddingChunk[] {
+  let above: PassageAnchor | null = null;
+  let next = 0;
+  return chunks.map((chunk, ordinal) => {
+    while (anchors !== undefined && next < anchors.length) {
+      const candidate = anchors[next];
+      if (candidate === undefined || candidate.offset > chunk.offset) break;
+      above = candidate;
+      next += 1;
+    }
+    // An anchor without a heading is the marker saying the text from here on
+    // belongs to no section of the page.
+    return { ordinal, text: chunk.text, anchor: above?.path.length === 0 ? null : above };
+  });
 }
 
 /**
@@ -159,9 +224,12 @@ function numbered(chunks: readonly string[]): EmbeddingChunk[] {
  * table, a code block. Packing would then produce a passage above the target no
  * matter what, so such a block is cut at word boundaries first.
  */
-function blocksOf(plainText: string, target: number): string[] {
-  const blocks: string[] = [];
+function blocksOf(plainText: string, target: number): { text: string; offset: number }[] {
+  const blocks: { text: string; offset: number }[] = [];
+  let lineStart = 0;
   for (const line of plainText.split('\n')) {
+    let at = lineStart + (line.length - line.trimStart().length);
+    lineStart += line.length + 1;
     let rest = line.trim();
     if (rest.length === 0) continue;
     while (rest.length > target) {
@@ -169,11 +237,12 @@ function blocksOf(plainText: string, target: number): string[] {
       const space = window.lastIndexOf(' ');
       // A cut in the first half would leave a fragment too short to mean
       // anything; there the hard cut at the target is the better one.
-      const at = space > target / 2 ? space : target;
-      blocks.push(rest.slice(0, at).trim());
-      rest = rest.slice(at).trim();
+      const cut = space > target / 2 ? space : target;
+      blocks.push({ text: rest.slice(0, cut).trim(), offset: at });
+      at += cut;
+      rest = rest.slice(cut).trim();
     }
-    if (rest.length > 0) blocks.push(rest);
+    if (rest.length > 0) blocks.push({ text: rest, offset: at });
   }
   return blocks;
 }

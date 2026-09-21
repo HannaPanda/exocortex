@@ -92,6 +92,12 @@ export const indexDocumentJobSchema = jobBase.extend({
      * about it did.
      */
     'attachment_text',
+    /**
+     * The page's passages were embedded before a passage carried the heading
+     * it sits under (issue #118). Nothing about the page changed; this write
+     * adds the address and pays no model call.
+     */
+    'passage_anchors',
   ]),
 });
 export type IndexDocumentJob = z.infer<typeof indexDocumentJobSchema>;
@@ -167,6 +173,17 @@ export const maintenanceJobSchema = jobBase.extend({
      * the attachments under it.
      */
     'backfill-attachment-search-text',
+    /**
+     * Re-indexes the pages whose passage vectors carry no heading yet
+     * (issue #118).
+     *
+     * Every index writes the headings from now on, so this is for the
+     * passages written before they travelled at all. It costs no model call:
+     * the passage text is unchanged, so the re-index updates the anchor and
+     * leaves the vector alone. A no-op once no passage is owed one, which is
+     * what tells the two meanings of an absent heading apart.
+     */
+    'backfill-passage-anchors',
     /**
      * Deletes session notes in the memory workspace that are older than
      * `memory.retentionDays`. Off while that is zero. Never touches the project

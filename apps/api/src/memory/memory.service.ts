@@ -564,6 +564,8 @@ export class MemoryService {
       title: row.title,
       path: projectPage === null ? [] : [{ id: projectPage.id, title: projectPage.title }],
       snippet: snippetFrom(row.content?.plainText ?? ''),
+      // The recent-notes fallback is a list of whole pages, not of passages.
+      section: null,
       source: 'memory' as const,
       // Recency is the only ordering here, and the scores keep that order after
       // the common sort further up.
@@ -591,6 +593,7 @@ export class MemoryService {
       title: result.title,
       path: result.path,
       snippet: snippetFrom(result.snippet),
+      section: result.section,
       source: isMemory ? 'memory' : 'knowledge',
       score,
       updatedAt: result.updatedAt,
@@ -735,7 +738,11 @@ function renderRecall(
   for (const hit of hits) {
     const location =
       hit.path.length === 0 ? hit.workspaceName : hit.path.map((entry) => entry.title).join(' > ');
-    const block = `- **${hit.title}** (${hit.source === 'memory' ? 'Erinnerung' : 'Wissen'}, ${location}, id: ${hit.documentId})\n  ${hit.snippet}`;
+    const section =
+      hit.section === null
+        ? ''
+        : `, Abschnitt: ${hit.section.path.join(' > ')}${hit.section.blockId === null ? '' : ` (^${hit.section.blockId})`}`;
+    const block = `- **${hit.title}** (${hit.source === 'memory' ? 'Erinnerung' : 'Wissen'}, ${location}, id: ${hit.documentId}${section})\n  ${hit.snippet}`;
     if (used + block.length > maxChars && kept.length > 0) {
       truncated = true;
       break;

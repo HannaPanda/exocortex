@@ -215,11 +215,11 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     details: [
       'Strg+K öffnet ein Feld mitten im Bild, in dem du sofort tippen kannst. Gesucht wird in Titeln und im Volltext, mit deutscher Wortstammerkennung, sodass "Rechnungen" auch "Rechnung" findet. Die Treffer zeigen den Pfad, damit du zwei gleichnamige Seiten auseinanderhältst, und die Eingabetaste springt hin.',
       'Ist die semantische Suche eingeschaltet, kommt eine zweite Liste dazu: Seiten, die inhaltlich passen, ohne dass ein Wort übereinstimmt. "Was war mit dem Umzug der Datenbank" findet dann auch die Seite, auf der es "Migration" heißt. Beide Listen werden nach Rang verschmolzen, wie stark die semantische Hälfte zählt, ist eine Einstellung.',
-      'Bei langen Seiten wird nicht nur die Seite gefunden, sondern die Stelle darin: lange Texte werden zusätzlich in Abschnitte von rund zweitausend Zeichen zerlegt, und der beste Abschnitt wird als Auszug angezeigt. Fällt das Modell hinter der semantischen Suche aus, bleibt die Volltextsuche, die Suche fällt also nie ganz aus.',
+      'Bei langen Seiten wird nicht nur die Seite gefunden, sondern die Stelle darin: lange Texte werden zusätzlich in Abschnitte von rund zweitausend Zeichen zerlegt, und der beste Abschnitt wird als Auszug angezeigt. Seit dem 21.09.2026 nennt ein solcher Treffer auch die Überschrift, unter der er steht, sodass du auf einer sehr langen Seite gleich an der richtigen Stelle landest. Fällt das Modell hinter der semantischen Suche aus, bleibt die Volltextsuche, die Suche fällt also nie ganz aus.',
       'Ohne Eingabe ist das Feld nicht leer, sondern zeigt die zuletzt bearbeiteten Seiten: weitermachen, ohne sich an einen Titel zu erinnern. Dasselbe Feld ist die Befehlsliste. Erfassen, Navigation, Kontextbereich und Papierkorb stehen dort mit Namen, statt nur als Tastenkürzel zu existieren, und was du tippst, sucht in beidem.',
     ],
     since: '2026-08-05',
-    references: ['ADR-020', 'ADR-034'],
+    references: ['ADR-020', 'ADR-034', 'ADR-058'],
     ui: { where: 'Die Lupe oben in der Navigation.' },
     shortcuts: ['Strg+K'],
     settings: [

@@ -25,6 +25,7 @@ export const BASE_INSTRUCTIONS = `eXocortex ist ein Arbeitsbereich aus verschach
 
 Bevor du eine Seite anlegst:
 - Sieh nach, was es schon gibt. exo_search findet Seiten zum Thema und nennt ihren Pfad; exo_page_tree mit parentId zeigt, was unter einer Seite hängt (ohne parentId ist der Baum gekürzt und damit keine vollständige Antwort).
+- Nennt ein Treffer einen Abschnitt samt Blockkennung, ist das die Fundstelle: lies sie mit exo_page_block_read, statt die ganze Seite zu laden und darin zu suchen.
 - Lege sie unter die tiefste passende Seite, nicht daneben. Der häufigste Fehler ist eine Ebene zu hoch: die Seite landet direkt unter dem Oberbereich, obwohl darunter der Unterbereich liegt, in den sie gehört.
 - Wenn du unsicher bist, frag exo_page_suggest_parent mit Titel und kurzer Zusammenfassung. Das Werkzeug antwortet mit Kandidaten und nennt die vorhandenen Seiten, die dort schon liegen.
 - Für eine bestehende Seite, die falsch einsortiert ist, gilt dasselbe Werkzeug mit documentId; verschoben wird mit exo_page_move.

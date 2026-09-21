@@ -160,6 +160,7 @@ function hit(documentId: string, rank: number): SearchHit {
     iconColor: null,
     type: 'PAGE',
     snippet: `<mark>${documentId}</mark>`,
+    section: null,
     rank,
     archivedAt: null,
     updatedAt: '2026-09-19T00:00:00.000Z',

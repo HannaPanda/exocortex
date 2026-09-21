@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { CHUNK_THRESHOLD_CHARS, isChunkBlockId } from './chunking';
+import { CHUNK_THRESHOLD_CHARS, isChunkBlockId, type PassageAnchor } from './chunking';
 import { type SearchHit } from './search';
 import { embeddingInputFor, embeddingTargetsFor, embeddingTextHash, fuse } from './semantic-search';
 
@@ -13,10 +13,16 @@ function hit(documentId: string, rank: number): SearchHit {
     iconColor: null,
     type: 'PAGE',
     snippet: `Auszug ${documentId}`,
+    section: null,
     rank,
     archivedAt: null,
     updatedAt: '2026-08-12T00:00:00.000Z',
   };
+}
+
+/** A hit that knows which passage matched, the way the vector half answers. */
+function located(documentId: string, rank: number): SearchHit {
+  return { ...hit(documentId, rank), section: { blockId: 'tumorambu01', path: ['Tumorambulanz'] } };
 }
 
 function ids(hits: readonly SearchHit[]): string[] {
@@ -147,5 +153,72 @@ describe('embeddingTargetsFor', () => {
     const justBelow = 'w'.repeat(CHUNK_THRESHOLD_CHARS);
 
     expect(embeddingTargetsFor(page(justBelow), 24_000, 'm')).toHaveLength(1);
+  });
+});
+
+describe('where a passage says it is', () => {
+  const page = (plainText: string, headingAnchors?: PassageAnchor[]) => ({
+    documentId: 'd1',
+    workspaceId: 'w1',
+    title: 'Gesundheit',
+    plainText,
+    archivedAt: null,
+    headingAnchors,
+  });
+
+  const body = 'Absatz.\n'.repeat(500);
+
+  it('writes the heading a passage sits under, and none for the page itself', () => {
+    const targets = embeddingTargetsFor(
+      page(`Tumorambulanz\n${body}`, [
+        { offset: 0, blockId: 'tumorambu01', path: ['Gesundheit', 'Tumorambulanz'] },
+      ]),
+      24_000,
+      'm',
+    );
+
+    expect(targets[0]).toMatchObject({ blockId: null, headingBlockId: null, headingPath: null });
+    expect(targets[1]).toMatchObject({
+      headingBlockId: 'tumorambu01',
+      headingPath: ['Gesundheit', 'Tumorambulanz'],
+    });
+  });
+
+  it('tells a page nobody worked the headings out for from one that has none', () => {
+    const unknown = embeddingTargetsFor(page(body), 24_000, 'm');
+    const none = embeddingTargetsFor(page(body, []), 24_000, 'm');
+
+    // `null` is what the sweep looks for, `[]` is what makes it stop looking.
+    expect(unknown[1]?.headingPath).toBeNull();
+    expect(none[1]?.headingPath).toEqual([]);
+  });
+
+  it('keeps the hash off the heading, so an anchor costs no second embedding', () => {
+    const before = embeddingTargetsFor(page(body), 24_000, 'm');
+    const after = embeddingTargetsFor(
+      page(body, [{ offset: 0, blockId: 'kopfzeile01', path: ['Kopfzeile'] }]),
+      24_000,
+      'm',
+    );
+
+    expect(after.map((target) => target.hash)).toEqual(before.map((target) => target.hash));
+  });
+});
+
+describe('fusing a located hit with an unlocated one', () => {
+  it('keeps the keyword snippet and takes the section from the semantic half', () => {
+    // Both halves found the same page. The keyword hit carries the highlighted
+    // fragment and no address; the vector hit knows which passage matched. A
+    // reader wants the first and an agent needs the second (issue #118).
+    const [fused] = fuse([hit('a', 0.9)], [located('a', 0.8)], 0.5);
+
+    expect(fused?.snippet).toBe('Auszug a');
+    expect(fused?.section).toEqual({ blockId: 'tumorambu01', path: ['Tumorambulanz'] });
+  });
+
+  it('leaves a page only the keyword half found without one', () => {
+    const [fused] = fuse([hit('b', 0.9)], [], 0.5);
+
+    expect(fused?.section).toBeNull();
   });
 });

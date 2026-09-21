@@ -1156,6 +1156,13 @@ model DocumentEmbedding {
   /// that matched instead of the first 200 characters of the page. `NULL` on a
   /// whole-document row, which has the search index for that.
   chunkText  String?
+  /// The heading this passage sits under, so a hit says where on the page it
+  /// is and not only which page (issue #118). `NULL` on a whole-document row
+  /// and on a passage nobody has worked the heading out for yet; `[]` on a
+  /// passage that sits under none. `backfill-passage-anchors` looks for the
+  /// `NULL`s, which is why the empty array is a different value.
+  headingBlockId String?
+  headingPath    Json?
   createdAt  DateTime                     @default(now())
 
   @@unique([documentId, blockId, model])

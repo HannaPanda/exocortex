@@ -511,6 +511,14 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   `'api'` and `'ai'` marks the internal paths that must stay exempt. The
   narrow writes carry the refusal too, or `exo_page_section_write` is the way
   around the gate.
+- ADR-058: a semantic hit carries the section it came out of. A passage vector
+  stores the heading above it (`headingBlockId`, `headingPath`), so a hit is an
+  address rather than the page the caller already knew; the anchor is not part
+  of the embedding hash, which is what lets an old passage gain one for free.
+  `null` says the hit is not located, and a keyword-only match says exactly
+  that until the offset-to-block table of issue #110 exists. `NULL` and `[]`
+  are different answers: the first is a passage still owed an anchor, the
+  second one that sits under no heading.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

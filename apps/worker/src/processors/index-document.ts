@@ -1,6 +1,13 @@
 import { ATTACHMENT_SEARCH_TEXT_MAX_CHARS, type QUEUE_NAMES } from '@exocortex/contracts';
-import { type PrismaClient, type SearchAdapter } from '@exocortex/database';
+import {
+  type PassageAnchor,
+  type PrismaClient,
+  type SearchAdapter,
+} from '@exocortex/database';
+import { plainTextHeadingAnchors } from '@exocortex/editor';
 import { type JobContext } from '@exocortex/queue';
+
+import { asProseMirrorDocument } from './document-links';
 
 export interface IndexingDependencies {
   prisma: PrismaClient;
@@ -31,7 +38,7 @@ export function createIndexDocumentProcessor(dependencies: IndexingDependencies)
         workspaceId: true,
         title: true,
         archivedAt: true,
-        content: { select: { plainText: true } },
+        content: { select: { plainText: true, proseMirrorJson: true } },
         attachments: {
           where: { deletedAt: null, textStatus: 'READY' },
           // Oldest first, so which attachments fit inside the budget below is
@@ -61,6 +68,11 @@ export function createIndexDocumentProcessor(dependencies: IndexingDependencies)
       title: document.title,
       plainText: attachmentText.length === 0 ? pageText : `${pageText}\n\n${attachmentText}`,
       archivedAt: document.archivedAt,
+      headingAnchors: headingAnchorsOf(
+        document.content?.proseMirrorJson,
+        pageText,
+        attachmentText.length > 0,
+      ),
     });
 
     await reportProgress(100, 'Suchindex aktualisiert');
@@ -70,6 +82,33 @@ export function createIndexDocumentProcessor(dependencies: IndexingDependencies)
       attachmentTextChars: attachmentText.length,
     });
   };
+}
+
+/**
+ * The headings of the indexed text, so a semantic hit can name its section
+ * (issue #118).
+ *
+ * Read off the stored ProseMirror JSON rather than off the canonical Yjs
+ * state: indexing runs on every save, and deserializing a 2.9 million
+ * character page for a list of headings would make it the expensive half of
+ * the job. `undefined` when there is no materialized JSON yet, which is not
+ * the same as a page without headings -- the passages then keep saying
+ * nothing, and materialization enqueues another index shortly.
+ *
+ * Attachment text hangs behind the page text under no heading of the page, so
+ * it gets the marker that ends the last section rather than being attributed
+ * to it.
+ */
+function headingAnchorsOf(
+  proseMirrorJson: unknown,
+  pageText: string,
+  hasAttachmentText: boolean,
+): readonly PassageAnchor[] | undefined {
+  const document = asProseMirrorDocument(proseMirrorJson);
+  if (document === null) return undefined;
+  const anchors: PassageAnchor[] = plainTextHeadingAnchors(document);
+  if (hasAttachmentText) anchors.push({ offset: pageText.length, blockId: null, path: [] });
+  return anchors;
 }
 
 /**

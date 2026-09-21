@@ -34,6 +34,7 @@ function hit(documentId: string, rank: number): SearchHit {
     iconColor: null,
     type: 'PAGE',
     snippet: '',
+    section: null,
     rank,
     archivedAt: null,
     updatedAt: '2026-09-16T00:00:00.000Z',

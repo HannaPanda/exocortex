@@ -110,6 +110,7 @@ function hit(input: {
     type: 'PAGE',
     path: input.path ?? [],
     snippet: `Ausschnitt zu ${input.title}`,
+    section: null,
     rank: input.rank,
     archivedAt: null,
     updatedAt: new Date().toISOString(),
