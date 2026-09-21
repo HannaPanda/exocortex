@@ -5,6 +5,7 @@ import * as React from 'react';
 
 import {
   Button,
+  cn,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -183,5 +184,39 @@ export function UnsavedChangesNotice({
           ? 'Eine Änderung ist noch nicht gespeichert.'
           : `${changedCount} Änderungen sind noch nicht gespeichert.`}
     </p>
+  );
+}
+
+/**
+ * The row the save and discard buttons stand in.
+ *
+ * It pins itself to the bottom of the page while something is unsaved, and
+ * only then. A settings form is over a hundred rows long, so the row that says
+ * what is pending and the button that resolves it were several screen heights
+ * below the switch somebody had just flipped -- on a phone, out of sight
+ * entirely. Pinned always would spend that space on every visit to a form
+ * nobody is editing; pinned while it matters costs nothing the rest of the
+ * time, and the transparent border keeps the height from changing as it
+ * arrives.
+ *
+ * The negative margin reaches the edges of `AppPage`'s own padding, which is
+ * the scroll container both settings forms sit directly inside.
+ */
+export function SettingsActionBar({
+  dirty,
+  children,
+}: {
+  dirty: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        '-mx-6 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-transparent px-6 py-3',
+        dirty && 'sticky bottom-0 border-border bg-background',
+      )}
+    >
+      {children}
+    </div>
   );
 }

@@ -21,6 +21,7 @@ import {
 import { SettingGroupNav } from '@/components/settings/setting-group-nav';
 import { groupOf, SettingRow } from '@/components/settings/setting-row';
 import {
+  SettingsActionBar,
   UnsavedChangesNotice,
   useUnsavedChangesGuard,
 } from '@/components/settings/unsaved-changes-guard';
@@ -249,7 +250,7 @@ export function WorkspaceSettingsForm({
       ) : null}
 
       {canEdit ? (
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <SettingsActionBar dirty={dirty}>
           <div className="flex gap-2">
             <Button onClick={handleSave} disabled={!dirty || update.isPending}>
               Speichern
@@ -262,7 +263,7 @@ export function WorkspaceSettingsForm({
             changedCount={changed.length + reset.length}
             testId="workspace-settings-dirty"
           />
-        </div>
+        </SettingsActionBar>
       ) : (
         <p className="text-sm text-muted-foreground">
           Ändern dürfen das Besitzer und Administratoren dieses Arbeitsbereichs.

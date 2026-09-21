@@ -29,6 +29,7 @@ import {
   SettingRow,
 } from '@/components/settings/setting-row';
 import {
+  SettingsActionBar,
   UnsavedChangesNotice,
   useUnsavedChangesGuard,
 } from '@/components/settings/unsaved-changes-guard';
@@ -278,7 +279,7 @@ export function SettingsForm() {
         </Alert>
       ) : null}
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+      <SettingsActionBar dirty={dirty}>
         <div className="flex gap-2">
           <Button onClick={handleSave} disabled={!dirty || updateSettings.isPending}>
             Speichern
@@ -292,7 +293,7 @@ export function SettingsForm() {
           </Button>
         </div>
         <UnsavedChangesNotice changedCount={changedKeys.length} testId="settings-dirty" />
-      </div>
+      </SettingsActionBar>
 
       {guardDialog}
     </div>
