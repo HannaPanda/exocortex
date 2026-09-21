@@ -147,7 +147,9 @@ test.describe('markdown and search', () => {
           await input.fill('');
           await input.fill(marker);
           await page.waitForTimeout(1_500);
-          return page.getByRole('option').count();
+          // Nur die Seitentreffer zählen: die Palette hält seit Issue #115
+          // immer Zeilen bereit, auch bevor die Suche geantwortet hat.
+          return page.locator('[data-testid^="search-result-"]').count();
         },
         { timeout: 90_000, intervals: [2_000] },
       )
