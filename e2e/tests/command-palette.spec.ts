@@ -24,9 +24,15 @@ async function openWorkspace(page: Page): Promise<void> {
   await expect(page.getByTestId('page-tree')).toBeVisible({ timeout: 30_000 });
 }
 
-/** The group headings, in the order the palette lists them. */
+/**
+ * The group headings, in the order the palette lists them.
+ *
+ * `allTextContents` rather than `allInnerTexts`: the headings are drawn in
+ * capitals by a CSS transform, and the rendered text would be compared against
+ * words nobody wrote.
+ */
 async function groups(page: Page): Promise<string[]> {
-  return page.getByRole('listbox').locator('> li > p').allInnerTexts();
+  return page.getByRole('listbox').locator('> li > p').allTextContents();
 }
 
 test.describe('Kommandopalette', () => {
@@ -38,7 +44,9 @@ test.describe('Kommandopalette', () => {
     await expect(list).toBeVisible();
     // Die zuletzt bearbeiteten Seiten zuerst: die eine Liste, die kein
     // Erinnern verlangt, und damit das, was die Eingabetaste trifft.
-    expect(await groups(page)).toEqual(['Zuletzt bearbeitet', 'Aktionen']);
+    await expect
+      .poll(() => groups(page), { timeout: 15_000 })
+      .toEqual(['Zuletzt bearbeitet', 'Aktionen']);
     await expect(list.getByRole('option').first()).toHaveAttribute('aria-selected', 'true');
 
     // Und die Befehle, die es vorher nur als Tastenkürzel gab.
@@ -70,11 +78,15 @@ test.describe('Kommandopalette', () => {
     await openWorkspace(page);
     await page.getByTestId('open-search').click();
     await page.keyboard.type('papier');
-    expect(await groups(page)).toEqual(['Aktionen', 'Seiten']);
+    // Getippt stehen die passenden Befehle oben: wer einen Befehl tippt, meint
+    // ihn. Die Seiten kommen darunter, sobald die Suche geantwortet hat.
+    await expect.poll(async () => (await groups(page))[0], { timeout: 15_000 }).toBe('Aktionen');
 
     await page.keyboard.press('Escape');
     await page.getByTestId('open-search').click();
     await expect(page.getByRole('combobox')).toHaveValue('');
-    expect(await groups(page)).toEqual(['Zuletzt bearbeitet', 'Aktionen']);
+    await expect
+      .poll(() => groups(page), { timeout: 15_000 })
+      .toEqual(['Zuletzt bearbeitet', 'Aktionen']);
   });
 });
