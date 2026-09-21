@@ -408,15 +408,6 @@ export class AiModelsService {
    * read. A target the list does not contain leaves the alias describing itself,
    * which is wrong but is still better than nothing.
    */
-  /**
-   * The entry whose numbers describe a model: itself, or what an alias resolves
-   * to.
-   *
-   * An alias row (`~z-ai/glm-latest`) carries the figures of the cheapest
-   * endpoint rather than of the model, so its own row is the one thing not to
-   * read. A target the list does not contain leaves the alias describing itself,
-   * which is wrong but is still better than nothing.
-   */
   private sourceOf(live: OpenRouterModel, liveById: Map<string, OpenRouterModel>): OpenRouterModel {
     const targetSlug = aliasTargetOf(live);
     if (targetSlug === null) return live;
