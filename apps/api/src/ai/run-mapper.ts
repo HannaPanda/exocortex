@@ -35,6 +35,11 @@ export interface AiRunRow {
   conversationId: string | null;
   reasoningLevel: AiReasoningLevelPrisma;
   toolIterations: number;
+  toolCalls: number;
+  /** See `aiRunSchema`: what the run was offered and what it weighed (issue #121). */
+  toolsOffered: number | null;
+  toolSchemaChars: number | null;
+  toolDomains: string[];
 }
 
 /**
@@ -64,5 +69,9 @@ export function mapAiRunRow(run: AiRunRow): AiRun {
     conversationId: run.conversationId,
     reasoningLevel: REASONING_LEVEL_TO_CONTRACT[run.reasoningLevel],
     toolIterations: run.toolIterations,
+    toolCalls: run.toolCalls,
+    toolsOffered: run.toolsOffered,
+    toolSchemaChars: run.toolSchemaChars,
+    toolDomains: run.toolDomains,
   };
 }

@@ -66,6 +66,7 @@ export const commentListTool: AnyToolDefinition = defineTool({
       .describe('false blendet erledigte Fäden aus; die Zählung nennt sie trotzdem.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'comments',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -113,6 +114,7 @@ export const commentCreateTool: AnyToolDefinition = defineTool({
       .describe('Erster Kommentar des Fadens, auf den geantwortet wird.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'comments',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -145,6 +147,7 @@ export const commentUpdateTool: AnyToolDefinition = defineTool({
     body: commentBodySchema,
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'comments',
   mutating: true,
   destructive: true,
   target: (input) => `comment:${input.commentId}`,
@@ -169,6 +172,7 @@ export const commentResolveTool: AnyToolDefinition = defineTool({
     resolved: z.boolean().default(true).describe('false öffnet den Faden wieder.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'comments',
   mutating: true,
   target: (input) => `comment:${input.commentId}`,
   async execute(client, input) {
@@ -196,6 +200,7 @@ export const commentDeleteTool: AnyToolDefinition = defineTool({
     commentId: idSchema,
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'comments',
   mutating: true,
   destructive: true,
   irreversible: true,

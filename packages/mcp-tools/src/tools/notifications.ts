@@ -35,6 +35,7 @@ export const notificationPreferencesTool: AnyToolDefinition = defineTool({
     'unterschiedliche Antworten geben dürfen.',
   inputSchema: z.object({}),
   surfaces: ['mcp', 'ai'],
+  domain: 'notifications',
   mutating: false,
   async execute(client) {
     const result = await client.request({
@@ -69,6 +70,7 @@ export const notificationPreferenceSetTool: AnyToolDefinition = defineTool({
     'der falsche Ort, dafür gibt es exo_push_device_update pro Gerät.',
   inputSchema: updateNotificationPreferenceRequestSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'notifications',
   mutating: true,
   target: (input) => `notification-preference:${input.kind}/${input.channel}`,
   async execute(client, input) {

@@ -23,6 +23,7 @@ export const searchTool: AnyToolDefinition = defineTool({
     'Struktur: was unter einer Seite hängt, beantwortet exo_page_tree mit deren parentId.',
   inputSchema: searchInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'core',
   mutating: false,
   async execute(client, input) {
     const { workspaceId, ...query } = input;

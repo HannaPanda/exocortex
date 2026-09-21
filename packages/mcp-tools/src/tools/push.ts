@@ -32,6 +32,7 @@ export const pushDevicesTool: AnyToolDefinition = defineTool({
     'nicht erzeugen.',
   inputSchema: z.object({}),
   surfaces: ['mcp', 'ai'],
+  domain: 'notifications',
   mutating: false,
   async execute(client) {
     const result = await client.request({
@@ -86,6 +87,7 @@ export const pushDeviceUpdateTool: AnyToolDefinition = defineTool({
     kinds: z.array(pushNotificationKindSchema).optional(),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'notifications',
   mutating: true,
   target: (input) => `push-device:${input.deviceId}`,
   async execute(client, input) {
@@ -114,6 +116,7 @@ export const pushDeviceRemoveTool: AnyToolDefinition = defineTool({
     'exo_push_device_update mit einer leeren Liste das mildere Mittel.',
   inputSchema: z.object({ deviceId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'notifications',
   mutating: true,
   target: (input) => `push-device:${input.deviceId}`,
   async execute(client, input) {
@@ -137,6 +140,7 @@ export const pushSendTool: AnyToolDefinition = defineTool({
     'kein Gerät auf Agenten-Nachrichten hört, und die Nachricht ist dann niemandem aufgefallen.',
   inputSchema: sendPushRequestSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'notifications',
   mutating: true,
   target: () => 'push:self',
   async execute(client, input) {

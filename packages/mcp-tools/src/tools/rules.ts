@@ -52,6 +52,7 @@ export const rulesListTool: AnyToolDefinition = defineTool({
     'ON_DEMAND-Regeln zeigen hier nur ihren Auslöser-Satz, ihr Inhalt muss mit exo_rules_load geladen werden.',
   inputSchema: z.object({ workspaceId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'core',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -80,6 +81,7 @@ export const rulesLoadTool: AnyToolDefinition = defineTool({
     'documentId auf, bevor du die Aufgabe bearbeitest.',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'core',
   mutating: false,
   async execute(client, input) {
     try {

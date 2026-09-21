@@ -38,6 +38,7 @@ export const templateListTool: AnyToolDefinition = defineTool({
     'verwechseln mit exo_render_template_list: das sind die Vorlagen für PDF-Ausgaben.',
   inputSchema: z.object({ workspaceId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'templates',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -79,6 +80,7 @@ export const templateCreateTool: AnyToolDefinition = defineTool({
     `markieren. Im Titelmuster erlaubt: ${PLACEHOLDER_HELP}.`,
   inputSchema: z.object({ workspaceId: idSchema }).extend(createTemplateRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
+  domain: 'templates',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -106,6 +108,7 @@ export const templateUpdateTool: AnyToolDefinition = defineTool({
     'exo_page_write bearbeitet.',
   inputSchema: z.object({ documentId: idSchema }).extend(updateTemplateRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
+  domain: 'templates',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -127,6 +130,7 @@ export const templateDeleteTool: AnyToolDefinition = defineTool({
     'soll auch sie weg, danach exo_page_trash.',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'templates',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -154,6 +158,7 @@ export const templateUseTool: AnyToolDefinition = defineTool({
     .extend(instantiateTemplateRequestSchema.shape)
     .describe('documentId ist die Vorlage, parentId der Ort für die neue Seite.'),
   surfaces: ['mcp', 'ai'],
+  domain: 'templates',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {

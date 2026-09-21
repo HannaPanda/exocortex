@@ -298,6 +298,11 @@ const listTools: ChatCommandHandler = async (context) => {
           ...tools.map((tool) => `- ${tool.name} — ${tool.description}`),
           '',
           MUTATION_POLICY_LINE[policy],
+          // The whole list is what the AI *may* call; a single run is offered
+          // the domains its task needs, and opens the rest itself with
+          // exo_toolbox (issue #121, ADR-060).
+          'Ein einzelner Lauf bekommt nicht alle davon angeboten, sondern die Bereiche, die zur ' +
+            'Frage passen. Fehlt einer, schaltet die KI ihn sich mit exo_toolbox selbst frei.',
         ].join('\n');
   return answer(context, 'tools', message);
 };

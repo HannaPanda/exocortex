@@ -29,6 +29,7 @@ export const pageSuggestParentTool: AnyToolDefinition = defineTool({
     'Es wird nichts geschrieben und nichts verschoben; verschieben tut exo_page_move.',
   inputSchema: z.object({ workspaceId: idSchema }).extend(suggestParentRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
+  domain: 'pages',
   mutating: false,
   async execute(client, input) {
     const { workspaceId, ...body } = input;

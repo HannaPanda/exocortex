@@ -34,6 +34,7 @@ export const projectImportTool: AnyToolDefinition = defineTool({
     'landen, wo die \\input-Zeilen sie suchen.',
   inputSchema: importProjectRequestSchema.extend({ projectId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: true,
   // With `overwrite` it replaces files. The project's document takes the same
   // snapshots a page does, so the previous text stays reachable.
@@ -75,6 +76,7 @@ export const projectExportTool: AnyToolDefinition = defineTool({
     'wieder löschen.',
   inputSchema: z.object({ projectId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: true,
   target: (input) => `project:${input.projectId}`,
   async execute(client, input) {

@@ -1871,6 +1871,28 @@ model AiRun {
   reasoningLevel AiReasoningLevel @default(NONE)
   /// Number of tool round-trips this run performed.
   toolIterations Int              @default(0)
+  /// Tool calls this run made, where `toolIterations` counts the rounds they
+  /// arrived in: one round can carry several calls.
+  toolCalls      Int              @default(0)
+
+  /// What the model was offered, and what that weighed (issue #121).
+  ///
+  /// The catalogue used to travel whole in front of every single exchange:
+  /// 163 tools, 144,285 characters of JSON schema, roughly 40,000 tokens, next
+  /// to a system prompt of 600 to 1,600. A run of four turns therefore spent
+  /// more describing tools it would never call than on everything else put
+  /// together. Since #121 the loop is handed the domains the task needs, and
+  /// these columns are what makes that an measurement rather than a claim --
+  /// which is also why they are columns and not a line in `usage`: the
+  /// comparison is over many runs.
+  ///
+  /// Null on a run that was offered no tools at all, and on every run from
+  /// before the column existed.
+  toolsOffered    Int?
+  toolSchemaChars Int?
+  /// The domains behind those numbers, including any the run opened itself
+  /// through `exo_toolbox`.
+  toolDomains     String[] @default([])
 
   /// The usage figures as columns rather than only inside `usage` (issue #10).
   /// The JSON stays for provider-specific extras; these are what every usage

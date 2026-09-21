@@ -155,6 +155,7 @@ tools for the rest of that run (ADR-030, `docs/ai-architecture.md`).
 
 | Tool                            | Mutating | Destructive | REST call                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ------------------------------- | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `exo_toolbox`                   | no       | no          | No REST call, and the built-in AI only (ADR-060) -- names the tool domains of the catalogue and opens one, so a run whose task the keyword selection misread is one call from the tools it needs rather than stuck. An MCP client holds the whole catalogue already and is not offered it                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `exo_list_workspaces`           | no       | no          | `GET /api/workspaces`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `exo_workspace_overview`        | no       | no          | `GET /api/workspaces/:workspaceId/overview` -- recency, databases, sections and loose ends in one answer; the cheap first call for "what was worked on here" without pulling a whole tree                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `exo_workspace_rename`          | yes      | yes         | `PATCH /api/workspaces/:workspaceId` (name and/or slug, independently)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -522,6 +523,44 @@ What this buys is in `/admin/agenten`: what one agent touched, and a button that
 takes all of it back. `exo_agent_session_list` and `exo_agent_session_get` read
 that record; the revert is deliberately not a tool (see `docs/admin.md`).
 
+## Which tools a run is offered
+
+An MCP client reads `tools/list` once and keeps it. The built-in loop has no
+handshake, so the whole list travels in every single request: 163 tools and
+144,285 characters of JSON schema, about 40,000 tokens, in front of a system
+prompt of 600 to 1,600 -- per turn. A four-turn run therefore spent more on
+describing tools it never called than on everything else together
+([issue #121](https://github.com/HannaPanda/exocortex/issues/121),
+[ADR-060](adr/ADR-060-a-run-is-offered-the-tools-its-task-needs.md)).
+
+So the loop is handed the domains its task needs:
+
+1. Every tool declares a `domain` (`TOOL_DOMAINS` in `tool.ts`). The field is
+   required, which makes the compiler the coverage gate.
+2. `selectToolDomains` picks them from the user's own messages -- lowercase
+   substrings, deterministic, no model call -- plus any the caller knows from
+   context, which today means an open database view.
+3. `core` and `pages` are always offered. Reading, writing and moving pages is
+   what nearly every task is, and paying a recovery turn for the normal case
+   would be worse than the thing being fixed.
+4. `exo_toolbox` opens anything the words missed. Without an argument it lists
+   the domains; with one it opens that domain, whose tools are in the next
+   turn's request.
+
+Measured straight after the change: a page task is offered 22 tools and 29,032
+characters where it used to get 164 and 148,119; a database task 39 and 45,751;
+a LaTeX task 45 and 42,639. What each run carried is on its `ai_run` row
+(`toolsOffered`, `toolSchemaChars`, `toolDomains`, `toolCalls`) and in the text
+of `exo_ai_run_get`.
+
+**This is not a permission, and must never be read as one.** A tool that was
+not offered stays in the catalogue, stays reachable through `findTool` and is
+executed if the model names it anyway. What may run is decided where it always
+was: the service token is minted for the run's own user, `decideMutation`
+applies the untrusted-content policy, and `ai.mutatingToolsEnabled` removes the
+writes. The MCP surface is untouched -- `toolsFor` narrows only when a caller
+passes domains, and only the worker does.
+
 ## Recipe: adding a tool
 
 1. **Confirm the REST endpoint exists.** If it does not, add it to `apps/api`
@@ -548,24 +587,31 @@ that record; the revert is deliberately not a tool (see `docs/admin.md`).
    workspace declared `ai.untrustedContentPolicy: 'allow'`. Per tool, not per
    call, like `destructive`. Leave it absent for anything a member of the
    workspace wrote.
-6. **Export it** from the domain file's array (e.g. `PAGE_TOOLS`) and make sure
-   `catalog.ts` re-exports that array into `EXOCORTEX_TOOLS`.
+6. **Set `domain`** to the part of the product the tool belongs to
+   (`TOOL_DOMAINS` in `tool.ts`, ADR-060). It is required, so the compiler is
+   the coverage gate rather than a script. It decides whether a run whose task
+   sounds like this hears about the tool at all; it decides nothing about what
+   a run may do, which is still the service token and `decideMutation`. If the
+   new tool is the first of a kind nobody has words for yet, add the domain and
+   its German keywords in `packages/mcp-tools/src/domains.ts`.
+7. **Export it** from the domain file's array (e.g. `PAGE_TOOLS`) and make sure
+   `catalog.ts` re-exports that array into `CATALOGUED_TOOLS`.
    **Set `surfaces: ['mcp', 'ai']`** unless there is a reason not to, and if
    there is, put it in `SURFACE_EXEMPT` in
    `scripts/check-capability-parity.mjs` (ADR-025). A tool on one agent surface
    with no entry there is a red gate, not a smaller tool.
-7. **Extend `catalog.test.ts`** if the new tool needs a specific assertion
+8. **Extend `catalog.test.ts`** if the new tool needs a specific assertion
    beyond the blanket checks (unique `exo_`-prefixed name, ≥20-char German
    description, `z.toJSONSchema` succeeds, mutating ⇒ has a target). Add a
    focused test in `packages/mcp-tools/src/tools/*.test.ts` for anything with
    non-trivial formatting (truncation, table rendering, branching REST calls).
-8. **No `apps/worker` change is needed.** The built-in AI tool loop reads
+9. **No `apps/worker` change is needed.** The built-in AI tool loop reads
    `toolsFor('ai', ...)` from the same catalogue; the new tool appears there
    automatically once step 6 is done, gated by `ai.mutatingToolsEnabled` and
    `ai.untrustedContentPolicy` if it is mutating.
-9. **Regenerate the matrix**: `node scripts/check-capability-parity.mjs --write`,
-   and commit `docs/capability-matrix.md` with the rest. It is the audit of who
-   can reach what, and the gate fails when it has fallen behind.
+10. **Regenerate the matrix**: `node scripts/check-capability-parity.mjs --write`,
+    and commit `docs/capability-matrix.md` with the rest. It is the audit of who
+    can reach what, and the gate fails when it has fallen behind.
 
 ## Authentication
 

@@ -87,6 +87,7 @@ export const pageBlockWriteTool: AnyToolDefinition = defineTool({
     .extend(documentBlockWriteRequestSchema.shape)
     .extend({ blockId: blockIdSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'pages',
   mutating: true,
   // Not `destructive`: this replaces one block a caller named, where
   // `exo_page_write` replaces a page a caller may not have read. The
@@ -118,6 +119,7 @@ export const pagePatchTool: AnyToolDefinition = defineTool({
     WHERE_THE_REVISION_COMES_FROM,
   inputSchema: z.object({ documentId: idSchema }).extend(documentPatchRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
+  domain: 'pages',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -148,6 +150,7 @@ export const pageSectionWriteTool: AnyToolDefinition = defineTool({
     WHERE_THE_REVISION_COMES_FROM,
   inputSchema: z.object({ documentId: idSchema }).extend(documentSectionWriteRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
+  domain: 'pages',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -183,6 +186,7 @@ export const pageExtractSectionTool: AnyToolDefinition = defineTool({
     WHERE_THE_REVISION_COMES_FROM,
   inputSchema: z.object({ documentId: idSchema }).extend(extractSectionRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
+  domain: 'pages',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {

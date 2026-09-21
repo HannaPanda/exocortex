@@ -36,6 +36,7 @@ export const pageArchiveTool: AnyToolDefinition = defineTool({
     'exo_page_move woanders hin.',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'lifecycle',
   mutating: true,
   destructive: true,
   target: (input) => `document:${input.documentId}`,
@@ -65,6 +66,7 @@ export const pageRestoreTool: AnyToolDefinition = defineTool({
   description: 'Stellt eine archivierte Seite aus dem Papierkorb wieder her.',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'lifecycle',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -116,6 +118,7 @@ export const pageTrashTool: AnyToolDefinition = defineTool({
     'endgültig.',
   inputSchema: z.object({ workspaceId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'lifecycle',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -159,6 +162,7 @@ export const pageDeleteTool: AnyToolDefinition = defineTool({
   // does not belong behind a switch somebody flipped once, so it stays with the
   // surfaces that ask twice.
   surfaces: ['mcp'],
+  domain: 'lifecycle',
   mutating: true,
   destructive: true,
   irreversible: true,
@@ -220,6 +224,7 @@ export const pageSnapshotsTool: AnyToolDefinition = defineTool({
     'Listet die gespeicherten Snapshots einer Seite (für Wiederherstellung nach einem Schreibvorgang).',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'history',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -242,6 +247,7 @@ export const pageRestoreSnapshotTool: AnyToolDefinition = defineTool({
   description: 'Stellt eine Seite auf den Stand eines früheren Snapshots zurück.',
   inputSchema: z.object({ documentId: idSchema, snapshotId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'history',
   mutating: true,
   destructive: true,
   target: (input) => `document:${input.documentId}`,
@@ -284,6 +290,7 @@ export const pageSnapshotDiffTool: AnyToolDefinition = defineTool({
       .describe('Zweiter Snapshot oder "current" für den jetzigen Stand der Seite.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'history',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -321,6 +328,7 @@ export const pageRestoreBlocksTool: AnyToolDefinition = defineTool({
     blockIds: z.array(idSchema).min(1).max(500),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'history',
   mutating: true,
   destructive: true,
   target: (input) => `document:${input.documentId}`,
@@ -384,6 +392,7 @@ export const pageActivityTool: AnyToolDefinition = defineTool({
     'Das ist der Seitenverlauf, kein Prüfprotokoll für die Verwaltung.',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'history',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({

@@ -378,6 +378,18 @@ same `exo_*` tool catalogue the external MCP server serves
   as the conversation's closing `ASSISTANT` message, since otherwise the next
   user message would build its context from a transcript silently missing
   the assistant's own reply.
+- **A run is offered the tools its task needs** (issue #121, ADR-060). The
+  catalogue travels in _every_ request here, not once at a handshake, so the
+  whole of it was 144,285 characters of JSON schema per turn. Each tool
+  declares a `domain`; `selectToolDomains` picks the domains from the user's
+  own messages (lowercase substrings, deterministic, no model call) plus any
+  the caller knows from context, and `core` and `pages` are always offered. A
+  page task now carries 22 tools and 29,032 characters. `exo_toolbox` opens
+  anything the words missed, in one call, and the tools it opened are in the
+  next turn. The offer is never a permission: an unoffered tool is still in the
+  catalogue, still executed if the model names it, and still governed by the
+  service token and `decideMutation`. What a run carried is on its `ai_run` row
+  (`toolsOffered`, `toolSchemaChars`, `toolDomains`, `toolCalls`).
 - **Caps.** `ai.maxToolIterations` (default 8) and `ai.budgetMicroUsdPerRun`
   (summed from every turn's reported usage) stop a runaway loop with
   `ai_tool_limit_exceeded` / `ai_budget_exceeded`. `ai.mutatingToolsEnabled`

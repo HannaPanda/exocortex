@@ -37,6 +37,7 @@ export const projectBuildSourceAtTool: AnyToolDefinition = defineTool({
     y: z.number(),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -64,6 +65,7 @@ export const projectBuildPositionOfTool: AnyToolDefinition = defineTool({
     line: z.number().int().positive(),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({

@@ -49,6 +49,7 @@ export const chatListTool: AnyToolDefinition = defineTool({
     cursor: z.string().min(1).max(200).optional().describe('Weiterblättern: nextCursor von zuvor.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'chats',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -104,6 +105,7 @@ export const chatSearchTool: AnyToolDefinition = defineTool({
     limit: z.number().int().min(1).max(100).optional().describe('Höchstzahl der Treffer'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'chats',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -143,6 +145,7 @@ export const chatReadTool: AnyToolDefinition = defineTool({
     conversationId: idSchema,
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'chats',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -185,6 +188,7 @@ export const chatContextTool: AnyToolDefinition = defineTool({
     conversationId: idSchema,
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'chats',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({

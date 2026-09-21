@@ -289,3 +289,23 @@ export function resolveVisionPreprocessor(input: {
   if (companionSlug === 'off') return null;
   return input.visionPreprocessorFor(companionSlug);
 }
+
+/**
+ * The words the tool selection is made from (issue #121).
+ *
+ * The user's own messages and nothing else: an assistant turn is this system
+ * talking to itself, and a tool result is a page, which would switch domains
+ * on because of what somebody once wrote rather than what was asked for now.
+ * The last few, because a conversation that moved from a database to a page
+ * should stop being about databases eventually -- but not immediately, or a
+ * follow-up of three words ("und jetzt sortieren") would lose the domain the
+ * question before it established.
+ */
+export function taskTextFor(messages: readonly AiMessage[]): string {
+  const RECENT_USER_MESSAGES = 3;
+  return messages
+    .filter((message) => message.role === 'user')
+    .slice(-RECENT_USER_MESSAGES)
+    .map((message) => message.content)
+    .join('\n');
+}

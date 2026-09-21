@@ -26,6 +26,7 @@ const readTool: AnyToolDefinition = defineTool({
   description: 'Liest ein Ding und gibt seinen Namen zurück.',
   inputSchema: z.object({ id: z.string() }),
   surfaces: ['mcp'],
+  domain: 'core',
   mutating: false,
   async execute(_client, input) {
     return { text: `gelesen: ${input.id}` };
@@ -37,6 +38,7 @@ const writeTool: AnyToolDefinition = defineTool({
   description: 'Schreibt ein Ding und verändert damit Daten.',
   inputSchema: z.object({ id: z.string(), body: z.string() }),
   surfaces: ['mcp'],
+  domain: 'core',
   mutating: true,
   target: (input) => `thing:${input.id}`,
   async execute(_client, input) {
@@ -49,6 +51,7 @@ const deleteTool: AnyToolDefinition = defineTool({
   description: 'Löscht ein Ding endgültig, ohne dass ein Snapshot es zurückholt.',
   inputSchema: z.object({ id: z.string() }),
   surfaces: ['mcp'],
+  domain: 'core',
   mutating: true,
   destructive: true,
   irreversible: true,
@@ -146,6 +149,7 @@ describe('createMcpRequestHandler', () => {
       description: 'Holt etwas aus dem Web.',
       inputSchema: z.object({ url: z.string() }),
       surfaces: ['mcp'],
+      domain: 'core',
       mutating: false,
       untrustedOutput: 'web',
       async execute() {
@@ -172,6 +176,7 @@ describe('createMcpRequestHandler', () => {
       description: 'Behauptet zu zerstören, verändert aber nichts.',
       inputSchema: z.object({ id: z.string() }),
       surfaces: ['mcp'],
+      domain: 'core',
       mutating: false,
       destructive: true,
       async execute() {

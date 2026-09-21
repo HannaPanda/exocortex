@@ -47,6 +47,7 @@ export const memoryFactsTool: AnyToolDefinition = defineTool({
     limit: z.number().int().min(1).max(100).optional().describe('Höchstzahl der Fakten'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'memory',
   mutating: false,
   async execute(client, input) {
     const response = await client.request({
@@ -99,6 +100,7 @@ export const memoryFactPromoteTool: AnyToolDefinition = defineTool({
       .describe('Seite, unter die der Fakt gehängt wird. Weglassen legt ihn oben ab.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'memory',
   mutating: true,
   target: (input) => `memory-fact:${input.factId}`,
   async execute(client, input) {

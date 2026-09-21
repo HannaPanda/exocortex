@@ -62,6 +62,7 @@ export const agentMessageSendTool: AnyToolDefinition = defineTool({
       .describe('Nach wie vielen Tagen die Nachricht verfällt. Standard: 14.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'memory',
   mutating: true,
   target: (input) => `agent-message:${input.to}`,
   async execute(client, input) {
@@ -107,6 +108,7 @@ export const agentMessagesTool: AnyToolDefinition = defineTool({
     limit: z.number().int().min(1).max(50).optional().describe('Höchstzahl der Nachrichten'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'memory',
   mutating: false,
   async execute(client, input) {
     const response = await client.request({
@@ -142,6 +144,7 @@ export const agentMessageReadTool: AnyToolDefinition = defineTool({
       .describe('Ids der Nachrichten aus exo_agent_messages'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'memory',
   mutating: true,
   target: (input) => `agent-message:${input.ids.join(',')}`,
   async execute(client, input) {

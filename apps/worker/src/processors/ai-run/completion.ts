@@ -3,6 +3,8 @@ import { type AiUsage, type QUEUE_NAMES } from '@exocortex/contracts';
 import { type AiRun, Prisma, type PrismaClient } from '@exocortex/database';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
+import { type ToolContext } from '../../tool-runner';
+
 import { type ResolvedModelRow, type RunFailure } from './contract';
 
 type AiJob = JobContext<typeof QUEUE_NAMES.ai>;
@@ -12,6 +14,31 @@ interface RunOutcome {
   text: string;
   usage: AiUsage | null;
   toolIterations: number;
+  toolCalls: number;
+  toolContext: ToolContext | null;
+}
+
+/**
+ * The tool-context columns, written by both terminal paths (issue #121).
+ *
+ * A run that failed spent the same tool schema on every turn it managed, so
+ * leaving the numbers off the failure path would take exactly the expensive
+ * runs out of the measurement.
+ */
+function toolColumns(outcome: RunOutcome): {
+  toolIterations: number;
+  toolCalls: number;
+  toolsOffered: number | null;
+  toolSchemaChars: number | null;
+  toolDomains: string[];
+} {
+  return {
+    toolIterations: outcome.toolIterations,
+    toolCalls: outcome.toolCalls,
+    toolsOffered: outcome.toolContext?.offered ?? null,
+    toolSchemaChars: outcome.toolContext?.schemaChars ?? null,
+    toolDomains: outcome.toolContext?.domains ?? [],
+  };
 }
 
 const MICRO_USD_PER_MTOK_DIVISOR = 1_000_000;
@@ -103,7 +130,7 @@ export async function writeFailure(input: {
       finishedAt: new Date(),
       resultText: outcome.text.length > 0 ? outcome.text : null,
       ...usageColumns(outcome.usage, input.modelRow),
-      toolIterations: outcome.toolIterations,
+      ...toolColumns(outcome),
     },
   });
   if (written.count === 0) {
@@ -156,7 +183,7 @@ export async function writeSuccess(input: {
       resultText: outcome.text,
       ...usageColumns(outcome.usage, input.modelRow),
       finishedAt: new Date(),
-      toolIterations: outcome.toolIterations,
+      ...toolColumns(outcome),
     },
   });
   if (written.count === 0) {
@@ -202,5 +229,10 @@ export async function writeSuccess(input: {
     provider: run.provider,
     outputTokens: outcome.usage?.outputTokens ?? 0,
     toolIterations: outcome.toolIterations,
+    toolCalls: outcome.toolCalls,
+    // What the tool catalogue cost this run, per turn (issue #121).
+    toolsOffered: outcome.toolContext?.offered ?? null,
+    toolSchemaChars: outcome.toolContext?.schemaChars ?? null,
+    toolDomains: outcome.toolContext?.domains ?? [],
   });
 }

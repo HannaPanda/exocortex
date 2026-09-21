@@ -46,6 +46,7 @@ export const shareListTool: AnyToolDefinition = defineTool({
     'nur seine ersten Zeichen.',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'shares',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -78,6 +79,7 @@ export const shareInheritedTool: AnyToolDefinition = defineTool({
     'aussieht.',
   inputSchema: z.object({ parentId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'shares',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -107,6 +109,7 @@ export const shareWorkspaceListTool: AnyToolDefinition = defineTool({
     'welchem Recht und bis wann. Der Überblick, um aufzuräumen.',
   inputSchema: z.object({ workspaceId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'shares',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -133,6 +136,7 @@ export const sharedWithMeTool: AnyToolDefinition = defineTool({
     'ist; nur diese Liste führt zu ihnen.',
   inputSchema: z.object({}),
   surfaces: ['mcp', 'ai'],
+  domain: 'shares',
   mutating: false,
   async execute(client) {
     const result = await client.request({
@@ -162,6 +166,7 @@ export const shareCreateTool: AnyToolDefinition = defineTool({
     'und ist danach nicht wieder abrufbar.',
   inputSchema: createShareRequestSchema.and(z.object({ documentId: idSchema })),
   surfaces: ['mcp', 'ai'],
+  domain: 'shares',
   mutating: true,
   // Not destructive: nothing that was there is taken away, and the share is
   // withdrawn with one call. But a public link is irreversible in the only
@@ -198,6 +203,7 @@ export const shareUpdateTool: AnyToolDefinition = defineTool({
     'Wer gerade auf der Seite sitzt, wird neu geprüft.',
   inputSchema: updateShareRequestSchema.extend({ shareId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'shares',
   mutating: true,
   target: (input) => `Freigabe ${input.shareId}`,
   async execute(client, input) {
@@ -219,6 +225,7 @@ export const shareRevokeTool: AnyToolDefinition = defineTool({
     'führt danach ins Leere. Was schon gelesen wurde, holt das nicht zurück.',
   inputSchema: z.object({ shareId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'shares',
   mutating: true,
   target: (input) => `Freigabe ${input.shareId}`,
   async execute(client, input) {

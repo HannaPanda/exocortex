@@ -89,6 +89,7 @@ export const attachmentUploadTool: AnyToolDefinition = defineTool({
     EMBED_RECIPE,
   inputSchema: attachmentUploadInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'attachments',
   mutating: true,
   target: (input) => `workspace:${input.workspaceId}`,
   async execute(client, input) {
@@ -132,6 +133,7 @@ export const attachmentUploadUrlTool: AnyToolDefinition = defineTool({
     .object({ workspaceId: idSchema })
     .extend(uploadAttachmentFromUrlRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
+  domain: 'attachments',
   mutating: true,
   // The file comes from outside this deployment. See the note above.
   untrustedOutput: 'web',
@@ -205,6 +207,7 @@ export const attachmentReadTextTool: AnyToolDefinition = defineTool({
     includeText: z.boolean().default(true),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'attachments',
   mutating: false,
   // A file somebody uploaded. Whatever the extraction found is the author's
   // text, not this workspace's, and a PDF is a perfectly good place to hide a
@@ -266,6 +269,7 @@ export const attachmentReextractTextTool: AnyToolDefinition = defineTool({
     'unangetastet und bleibt die Fassung, die gelesen wird, bis sie geändert oder verworfen wird.',
   inputSchema: z.object({ attachmentId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'attachments',
   mutating: true,
   destructive: true,
   target: (input) => `attachment:${input.attachmentId}`,
@@ -295,6 +299,7 @@ export const attachmentCorrectTextTool: AnyToolDefinition = defineTool({
     text: z.string().max(ATTACHMENT_TEXT_MAX_CHARS).nullable(),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'attachments',
   mutating: true,
   destructive: true,
   target: (input) => `attachment:${input.attachmentId}`,

@@ -47,6 +47,10 @@ const runningRun: AiRun = {
   resultText: 'Ich schreibe jetzt den strukturierten Inhalt',
   conversationId: null,
   reasoningLevel: 'none',
+  toolCalls: 0,
+  toolsOffered: 22,
+  toolSchemaChars: 29_032,
+  toolDomains: ['core', 'pages'],
   toolIterations: 2,
 };
 

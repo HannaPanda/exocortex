@@ -21,6 +21,7 @@ export const listWorkspacesTool: AnyToolDefinition = defineTool({
   description: 'Listet alle Workspaces, auf die der aktuelle Nutzer Zugriff hat.',
   inputSchema: z.object({}),
   surfaces: ['mcp', 'ai'],
+  domain: 'core',
   mutating: false,
   async execute(client) {
     const result = await client.request({
@@ -57,6 +58,7 @@ export const workspaceRenameTool: AnyToolDefinition = defineTool({
     'Braucht die Rolle OWNER oder ADMIN im Arbeitsbereich.',
   inputSchema: workspaceRenameInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'admin',
   mutating: true,
   destructive: true,
   target: (input) => `workspace:${input.workspaceId}`,
@@ -89,6 +91,7 @@ export const workspaceOverviewTool: AnyToolDefinition = defineTool({
     'woran zuletzt gearbeitet wurde, ohne den ganzen Seitenbaum zu laden.',
   inputSchema: z.object({ workspaceId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'core',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({

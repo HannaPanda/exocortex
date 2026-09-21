@@ -21,6 +21,10 @@ const baseRow: AiRunRow = {
   resultText: null,
   conversationId: null,
   reasoningLevel: 'NONE',
+  toolCalls: 0,
+  toolsOffered: null,
+  toolSchemaChars: null,
+  toolDomains: [],
   toolIterations: 0,
 };
 

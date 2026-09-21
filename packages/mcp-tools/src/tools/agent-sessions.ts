@@ -28,6 +28,7 @@ export const agentSessionListTool: AnyToolDefinition = defineTool({
     'wie viele Schreibvorgänge, wie viele Seiten. Als Administrator alle Sitzungen der Installation.',
   inputSchema: z.object({}),
   surfaces: ['mcp', 'ai'],
+  domain: 'memory',
   mutating: false,
   async execute(client) {
     const result = await client.request({
@@ -59,6 +60,7 @@ export const agentSessionGetTool: AnyToolDefinition = defineTool({
     'und ob es zu jedem Schreibvorgang einen Stand davor gibt.',
   inputSchema: z.object({ sessionId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'memory',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({

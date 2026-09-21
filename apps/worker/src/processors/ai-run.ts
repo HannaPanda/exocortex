@@ -24,6 +24,7 @@ import {
   loadConversationMessages,
   resolveModelRow,
   resolveVisionPreprocessor,
+  taskTextFor,
 } from './ai-run/preparation';
 
 export { type ResolvedModelRow } from './ai-run/contract';
@@ -301,6 +302,12 @@ export function createAiRunProcessor(dependencies: AiRunDependencies) {
           webFetchesPerRun: settings['ai.webResearchEnabled']
             ? settings['ai.webResearchMaxFetchesPerRun']
             : 0,
+          // Which part of the catalogue this run hears about (issue #121).
+          // The task's own words decide, plus one fact the words cannot say:
+          // a database view is open, so the row and column tools are needed
+          // before anybody writes the word "Datenbank".
+          taskText: taskTextFor(rest),
+          requiredDomains: run.databaseViewId === null ? [] : ['databases'],
           toolCallTimeoutMs: timeouts.toolCallTimeoutMs,
           // One run, one session (ADR-022): the unit somebody would want back
           // is "what the assistant did while answering that question".

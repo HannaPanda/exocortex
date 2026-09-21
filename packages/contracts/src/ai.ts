@@ -109,6 +109,20 @@ export const aiRunSchema = z.object({
   conversationId: idSchema.nullable(),
   reasoningLevel: aiReasoningLevelSchema,
   toolIterations: z.number().int().nonnegative(),
+  /** Calls made, where `toolIterations` counts the rounds they arrived in. */
+  toolCalls: z.number().int().nonnegative(),
+  /**
+   * What this run was offered, and what that weighed (issue #121).
+   *
+   * The built-in loop is handed the tool domains its task needs rather than
+   * the whole catalogue, and this is what makes that visible per run: how many
+   * tools the request carried, how many characters of JSON schema that was,
+   * and which domains they came from. `null` for a run that was offered no
+   * tools, and for every run from before the measurement existed.
+   */
+  toolsOffered: z.number().int().nonnegative().nullable(),
+  toolSchemaChars: z.number().int().nonnegative().nullable(),
+  toolDomains: z.array(z.string()),
 });
 export type AiRun = z.infer<typeof aiRunSchema>;
 

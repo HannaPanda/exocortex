@@ -97,6 +97,7 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
     blocks: z.boolean().optional(),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'core',
   mutating: false,
   async execute(client, input) {
     const wantsFlatList = input.blocks === true && input.blockId === undefined;

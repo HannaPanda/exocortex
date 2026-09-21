@@ -79,6 +79,7 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
     'deren parentId auf.',
   inputSchema: z.object({ workspaceId: idSchema }).extend(documentTreeRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
+  domain: 'core',
   mutating: false,
   async execute(client, input) {
     const { workspaceId, ...query } = input;
@@ -220,6 +221,7 @@ export const pageReadTool: AnyToolDefinition = defineTool({
     includeBlockIds: z.boolean().optional(),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'core',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -288,6 +290,7 @@ export const pageCreateTool: AnyToolDefinition = defineTool({
     'eine Seite landet sonst leicht eine Ebene zu hoch, über den Unterbereich, in den sie gehört.',
   inputSchema: pageCreateInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'pages',
   mutating: true,
   target: (input) => `workspace:${input.workspaceId}`,
   async execute(client, input) {
@@ -381,6 +384,7 @@ export const pageWriteTool: AnyToolDefinition = defineTool({
     WHERE_THE_REVISION_COMES_FROM,
   inputSchema: pageWriteInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'pages',
   mutating: true,
   destructive: true,
   target: (input) => `document:${input.documentId}`,
@@ -416,6 +420,7 @@ export const pageRenameTool: AnyToolDefinition = defineTool({
   description: 'Benennt eine Seite um und/oder ändert ihr Symbol und dessen Farbe.',
   inputSchema: pageRenameInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'pages',
   mutating: true,
   destructive: true,
   target: (input) => `document:${input.documentId}`,
@@ -439,6 +444,7 @@ export const pageMoveTool: AnyToolDefinition = defineTool({
     'einen anderen Arbeitsbereich; das braucht Schreibrecht in beiden Arbeitsbereichen.',
   inputSchema: z.object({ documentId: idSchema }).extend(moveDocumentRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
+  domain: 'pages',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -466,6 +472,7 @@ export const pageSetAiRuleTool: AnyToolDefinition = defineTool({
     'Markiert eine Seite als KI-Regelseite (immer aktiv oder auf Anfrage geladen) oder hebt diese Markierung auf.',
   inputSchema: pageSetAiRuleInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'appearance',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -486,6 +493,7 @@ export const pageSetLayoutTool: AnyToolDefinition = defineTool({
     'Setzt die Breite des Seitenkörpers: "narrow" (Lesebreite), "wide" (Text mit Tabellen) oder "full" (volle Breite, sinnvoll für Datenbanken).',
   inputSchema: z.object({ documentId: idSchema, layout: documentLayoutSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'appearance',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -521,6 +529,7 @@ export const pageSetCoverTool: AnyToolDefinition = defineTool({
     'Unterkante, 50 die Mitte.',
   inputSchema: pageSetCoverInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'appearance',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -559,6 +568,7 @@ export const pageGenerateCoverTool: AnyToolDefinition = defineTool({
     'Braucht ein eingerichtetes Bildmodell, sonst antwortet die API mit ai_image_unavailable.',
   inputSchema: pageGenerateCoverInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'appearance',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -594,6 +604,7 @@ export const pageResolveLinkTool: AnyToolDefinition = defineTool({
     'gleichnamige Seiten werden alle mit ihrem Pfad zurückgegeben.',
   inputSchema: resolveLinkInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'pages',
   mutating: false,
   async execute(client, input) {
     const { workspaceId, ...query } = input;

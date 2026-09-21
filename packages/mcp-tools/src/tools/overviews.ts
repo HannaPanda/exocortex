@@ -33,6 +33,7 @@ export const pageSetOverviewTool: AnyToolDefinition = defineTool({
     'nicht hergeben. Der Seitenkörper bleibt in jedem Fall unangetastet, die Übersicht steht daneben.',
   inputSchema: z.object({ documentId: idSchema, mode: overviewModeSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'appearance',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -59,6 +60,7 @@ export const pageOverviewReadTool: AnyToolDefinition = defineTool({
     'antwortet das Werkzeug genau das.',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'appearance',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -99,6 +101,7 @@ export const pageOverviewRefreshTool: AnyToolDefinition = defineTool({
     'eine Unterseite ändert. Der Aufruf bestätigt nur den Auftrag, der Text entsteht im Hintergrund.',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'appearance',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {

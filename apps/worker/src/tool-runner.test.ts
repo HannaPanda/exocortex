@@ -28,12 +28,17 @@ function runnerWith(overrides: Partial<CreateToolRunnerInput> = {}) {
     includeMutating: true,
     mutationPolicy: 'guarded',
     webFetchesPerRun: 8,
+    taskText: 'Schreib etwas auf eine Seite.',
+    requiredDomains: [],
     toolCallTimeoutMs: 1_000,
     agentSession: { externalId: 'ai-run-test', label: 'eXocortex KI' },
     logger,
     ...overrides,
   });
 }
+
+/** A task whose words open the `web` domain (issue #121). */
+const WEB_TASK = 'Recherchier im Internet, was das kostet.';
 
 const A_WRITE = {
   name: 'exo_page_write',
@@ -123,7 +128,9 @@ describe('the tool runner as a web-research budget', () => {
   };
 
   it('does not offer the fetch tool when the budget is zero', () => {
-    const names = runnerWith({ webFetchesPerRun: 0 }).definitions.map(
+    // A task that asks for the web, so the domain is offered and the budget
+    // is the only thing that can take the tool away (issue #121).
+    const names = runnerWith({ webFetchesPerRun: 0, taskText: WEB_TASK }).definitions.map(
       (definition) => definition.name,
     );
     expect(names).not.toContain('exo_web_fetch');
@@ -133,7 +140,9 @@ describe('the tool runner as a web-research budget', () => {
   });
 
   it('offers the fetch tool while the budget is positive', () => {
-    const names = runnerWith().definitions.map((definition) => definition.name);
+    const names = runnerWith({ taskText: WEB_TASK }).definitions.map(
+      (definition) => definition.name,
+    );
     expect(names).toContain('exo_web_fetch');
   });
 
@@ -252,5 +261,89 @@ describe('the tool runner as a duplicate guard', () => {
     expect(tallies[0]?.calls).toBe(2);
     expect(tallies[0]?.repeats).toBe(1);
     expect(tallies[0]?.chars).toBeGreaterThan(0);
+  });
+});
+
+/**
+ * Which part of the catalogue a run is told about (issue #121, ADR-060).
+ *
+ * The line this suite has to hold is the one the design rests on: the offer is
+ * an efficiency, never a permission. A tool that was not offered must still
+ * run when the model names it anyway, or "tool selection is not a security
+ * mechanism" is a sentence in a document and nothing else.
+ */
+describe('the tool runner as a tool-context budget', () => {
+  it('offers a fraction of the catalogue, and still a whole agent', () => {
+    const runner = runnerWith({
+      taskText: 'Verschiebe den Abschnitt „Standort Halle 4“ auf eine eigene Unterseite.',
+    });
+    const names = runner.definitions.map((definition) => definition.name);
+
+    expect(names).toContain('exo_page_read');
+    expect(names).toContain('exo_page_extract_section');
+    expect(names).toContain('exo_toolbox');
+    // The specialisms the task never mentioned stay out of the request.
+    expect(names).not.toContain('exo_project_build');
+    expect(names).not.toContain('exo_database_query');
+
+    const context = runner.toolContext();
+    expect(context.domains).toEqual(['core', 'pages']);
+    expect(context.offered).toBe(names.length);
+    expect(context.schemaChars).toBeGreaterThan(0);
+  });
+
+  it('takes the domain a task names', () => {
+    const runner = runnerWith({ taskText: 'Leg in der Datenbank ToDos eine Zeile an.' });
+    expect(runner.definitions.map((definition) => definition.name)).toContain('exo_database_query');
+    expect(runner.toolContext().domains).toContain('databases');
+  });
+
+  it('takes a domain the caller knows about although the words do not', () => {
+    const runner = runnerWith({ taskText: 'Was steht hier drin?', requiredDomains: ['databases'] });
+    expect(runner.toolContext().domains).toContain('databases');
+  });
+
+  it('runs a tool it never offered, because the offer is not the authorization', async () => {
+    const runner = runnerWith({ taskText: 'Schreib einen Satz auf die Seite.' });
+    expect(runner.definitions.map((definition) => definition.name)).not.toContain(
+      'exo_database_query',
+    );
+
+    const result = await runner.run({
+      name: 'exo_database_query',
+      argumentsJson: JSON.stringify({ documentId: 'doc-1' }),
+      correlationId: 'corr-1',
+    });
+
+    // Nothing listens on port 1, so it fails at the network -- which is the
+    // proof: it was executed rather than refused or reported unknown.
+    expect(result.refused).toBe(false);
+    expect(result.text).not.toContain('Unbekanntes Werkzeug');
+  });
+
+  it('opens a domain when the run asks for one, and the next turn carries it', async () => {
+    const runner = runnerWith({ taskText: 'Schreib einen Satz auf die Seite.' });
+    const before = runner.definitions.length;
+    expect(runner.definitions.map((definition) => definition.name)).not.toContain(
+      'exo_render_start',
+    );
+
+    const result = await runner.run({
+      name: 'exo_toolbox',
+      argumentsJson: JSON.stringify({ domain: 'render' }),
+      correlationId: 'corr-1',
+    });
+
+    expect(result.isError).toBe(false);
+    expect(runner.definitions.length).toBeGreaterThan(before);
+    expect(runner.definitions.map((definition) => definition.name)).toContain('exo_render_start');
+    expect(runner.toolContext().domains).toContain('render');
+  });
+
+  it('counts the calls it made, whatever they were', async () => {
+    const runner = runnerWith({ taskText: 'Schreib einen Satz auf die Seite.' });
+    expect(runner.callCount()).toBe(0);
+    await runner.run({ name: 'exo_toolbox', argumentsJson: '{}', correlationId: 'corr-1' });
+    expect(runner.callCount()).toBe(1);
   });
 });

@@ -56,6 +56,7 @@ export const recallTool: AnyToolDefinition = defineTool({
     limit: z.number().int().min(1).max(20).optional().describe('Höchstzahl der Treffer'),
   }),
   surfaces: ['memory'],
+  domain: 'memory',
   mutating: false,
   async execute(client, input) {
     const response = await client.request({
@@ -91,6 +92,7 @@ export const rememberTool: AnyToolDefinition = defineTool({
     tags: z.array(z.string().trim().min(1).max(40)).max(10).optional().describe('Schlagworte'),
   }),
   surfaces: ['memory'],
+  domain: 'memory',
   mutating: true,
   // The project page, not the note: a chat client writes several memories per
   // conversation, and the destination it is being asked to confirm is where

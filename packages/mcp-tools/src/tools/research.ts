@@ -67,6 +67,7 @@ export const researchSearchTool: AnyToolDefinition = defineTool({
     query: z.string().trim().min(1).max(200).describe('Suchbegriff in natürlicher Sprache'),
   }),
   surfaces: ['research'],
+  domain: 'core',
   mutating: false,
   async execute(client, input) {
     const workspaces = await client.request({
@@ -119,6 +120,7 @@ export const researchFetchTool: AnyToolDefinition = defineTool({
   // full" is the same operation there, and a second tool with the same job
   // under a different name would only be one more thing to keep in step.
   surfaces: ['research', 'memory'],
+  domain: 'core',
   mutating: false,
   async execute(client, input) {
     // Two reads, because neither endpoint alone carries both halves: the

@@ -51,6 +51,7 @@ export const invitationListTool: AnyToolDefinition = defineTool({
       .describe('Nur Einladungen dieses Arbeitsbereichs. Weglassen listet die ganze Installation.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'admin',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -113,6 +114,7 @@ export const invitationCreateTool: AnyToolDefinition = defineTool({
       ),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'admin',
   mutating: true,
   target: (input) => `invitation:${input.email}`,
   async execute(client, input) {
@@ -164,6 +166,7 @@ export const invitationResendTool: AnyToolDefinition = defineTool({
       .describe('Über die Arbeitsbereichs-Route gehen statt über die der Installation.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'admin',
   mutating: true,
   // The previous link stops working, so something a person may already be
   // holding is taken away.
@@ -197,6 +200,7 @@ export const invitationRevokeTool: AnyToolDefinition = defineTool({
       .describe('Über die Arbeitsbereichs-Route gehen statt über die der Installation.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'admin',
   mutating: true,
   destructive: true,
   target: (input) => `invitation:${input.invitationId}`,
@@ -220,6 +224,7 @@ export const userListTool: AnyToolDefinition = defineTool({
     'Konto deaktiviert ist. Braucht globale Administratorrechte.',
   inputSchema: z.object({}),
   surfaces: ['mcp', 'ai'],
+  domain: 'admin',
   mutating: false,
   async execute(client) {
     const result = await client.request({
@@ -248,6 +253,7 @@ export const userSetDisabledTool: AnyToolDefinition = defineTool({
     disabled: z.boolean().describe('true schaltet ab, false wieder an'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'admin',
   mutating: true,
   // Switching somebody off takes access away from a person; that is exactly the
   // kind of call a client should be able to put behind a confirmation.
@@ -276,6 +282,7 @@ export const userDeleteTool: AnyToolDefinition = defineTool({
     'Braucht globale Administratorrechte.',
   inputSchema: z.object({ userId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'admin',
   mutating: true,
   destructive: true,
   irreversible: true,

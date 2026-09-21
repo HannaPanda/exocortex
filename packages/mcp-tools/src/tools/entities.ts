@@ -53,6 +53,7 @@ export const entityListTool: AnyToolDefinition = defineTool({
     limit: z.number().int().min(1).max(200).optional().describe('Höchstzahl der Entitäten'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'entities',
   mutating: false,
   async execute(client, input) {
     const response = await client.request({
@@ -109,6 +110,7 @@ export const entityProfileTool: AnyToolDefinition = defineTool({
     entityId: idSchema.describe('Id der Entität aus exo_entity_list'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'entities',
   mutating: false,
   async execute(client, input) {
     const response = await client.request({
@@ -143,6 +145,7 @@ export const entityCreateTool: AnyToolDefinition = defineTool({
       .describe('Markdown für die Seite der Entität. Optional.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'entities',
   mutating: true,
   target: (input) => `entity:${input.title.toLowerCase()}`,
   async execute(client, input) {
@@ -182,6 +185,7 @@ export const entityUpdateTool: AnyToolDefinition = defineTool({
       .describe('Die vollständige neue Liste der Schreibweisen'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'entities',
   mutating: true,
   destructive: true,
   target: (input) => `entity:${input.entityId}`,
@@ -227,6 +231,7 @@ export const entityLinkPageTool: AnyToolDefinition = defineTool({
       .describe('Warum die Seite dazugehört. Steht später im Profil.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'entities',
   mutating: true,
   target: (input) => `entity-page:${input.entityId}:${input.documentId}`,
   async execute(client, input) {
@@ -256,6 +261,7 @@ export const entityUnlinkPageTool: AnyToolDefinition = defineTool({
     documentId: idSchema.describe('Id der Seite'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'entities',
   mutating: true,
   destructive: true,
   target: (input) => `entity-page:${input.entityId}:${input.documentId}`,
@@ -295,6 +301,7 @@ export const entityCandidatesTool: AnyToolDefinition = defineTool({
     limit: z.number().int().min(1).max(100).optional().describe('Höchstzahl der Vorschläge'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'entities',
   mutating: false,
   async execute(client, input) {
     const response = await client.request({
@@ -348,6 +355,7 @@ export const entityCandidateConfirmTool: AnyToolDefinition = defineTool({
       .describe('Weitere Schreibweisen'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'entities',
   mutating: true,
   target: (input) => `entity-candidate:${input.candidateId}`,
   async execute(client, input) {
@@ -379,6 +387,7 @@ export const entityCandidateDismissTool: AnyToolDefinition = defineTool({
     candidateId: idSchema.describe('Id des Vorschlags'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'entities',
   mutating: true,
   destructive: true,
   target: (input) => `entity-candidate:${input.candidateId}`,

@@ -195,6 +195,7 @@ export const automationListTool: AnyToolDefinition = defineTool({
     'eingeschaltet sind und auf welche Hosts ein Webhook zeigen darf.',
   inputSchema: z.object({ workspaceId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'automations',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -228,6 +229,7 @@ export const automationCreateTool: AnyToolDefinition = defineTool({
     'Webhooks steht genau einmal in dieser Antwort und lässt sich später nicht mehr auslesen.',
   inputSchema: ruleBodySchema.extend({ workspaceId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'automations',
   mutating: true,
   target: (input) => `workspace:${input.workspaceId}`,
   async execute(client, input) {
@@ -256,6 +258,7 @@ export const automationUpdateTool: AnyToolDefinition = defineTool({
     'übergeben werden kann.',
   inputSchema: ruleBodySchema.partial().extend({ ruleId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'automations',
   mutating: true,
   target: (input) => `automation:${input.ruleId}`,
   async execute(client, input) {
@@ -277,6 +280,7 @@ export const automationDeleteTool: AnyToolDefinition = defineTool({
     'exo_automation_update mit enabled: false der richtige Weg.',
   inputSchema: z.object({ ruleId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'automations',
   mutating: true,
   destructive: true,
   irreversible: true,
@@ -302,6 +306,7 @@ export const automationRunsTool: AnyToolDefinition = defineTool({
     ruleId: idSchema.optional().describe('Nur die Läufe dieser einen Regel.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'automations',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -349,6 +354,7 @@ export const automationTriggerTool: AnyToolDefinition = defineTool({
     trigger: automationTriggerSchema.default('DOCUMENT_UPDATED'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'automations',
   mutating: true,
   // It really does act: a webhook fires, or a model is paid and a comment is
   // written. "Trying it out" is not a read.

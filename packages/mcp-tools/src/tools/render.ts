@@ -90,6 +90,7 @@ export const renderTemplateListTool: AnyToolDefinition = defineTool({
     'lassen, und sagt, ob die PDF-Ausgabe hier überhaupt eingeschaltet ist.',
   inputSchema: z.object({ workspaceId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'render',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -117,6 +118,7 @@ export const renderTemplateReadTool: AnyToolDefinition = defineTool({
     'sie vorher raten zu müssen.',
   inputSchema: z.object({ templateId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'render',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -140,6 +142,7 @@ export const renderTemplateCreateTool: AnyToolDefinition = defineTool({
     'ADMIN-Rolle im Arbeitsbereich: eine Vorlage ist der Briefkopf aller, die damit bauen.',
   inputSchema: z.object({ workspaceId: idSchema, ...templateBodyShape }),
   surfaces: ['mcp', 'ai'],
+  domain: 'render',
   mutating: true,
   target: (input) => `workspace:${input.workspaceId}`,
   async execute(client, input) {
@@ -164,6 +167,7 @@ export const renderTemplateUpdateTool: AnyToolDefinition = defineTool({
     .object({ templateId: idSchema })
     .extend(z.object(templateBodyShape).partial().shape),
   surfaces: ['mcp', 'ai'],
+  domain: 'render',
   mutating: true,
   target: (input) => `render-template:${input.templateId}`,
   async execute(client, input) {
@@ -186,6 +190,7 @@ export const renderTemplateDeleteTool: AnyToolDefinition = defineTool({
     'entstanden ist. Neu bauen lässt sich damit dann nichts mehr.',
   inputSchema: z.object({ templateId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'render',
   mutating: true,
   destructive: true,
   irreversible: true,
@@ -227,6 +232,7 @@ export const renderStartTool: AnyToolDefinition = defineTool({
       .describe('Neu bauen, auch wenn ein identisches PDF schon existiert.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'render',
   mutating: true,
   // It really does act: a container starts and a file is written into the
   // workspace. Cheap, but not a read.
@@ -254,6 +260,7 @@ export const renderStatusTool: AnyToolDefinition = defineTool({
     'Bei FAILED steht die ausführliche Begründung in exo_render_log.',
   inputSchema: z.object({ jobId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'render',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -279,6 +286,7 @@ export const renderJobsTool: AnyToolDefinition = defineTool({
     documentId: idSchema.optional().describe('Nur die Bauten dieser einen Seite.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'render',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -317,6 +325,7 @@ export const renderLogTool: AnyToolDefinition = defineTool({
     'Datei). Nach einem FAILED zuerst hier nachsehen, dann die Vorlage ändern und neu bauen.',
   inputSchema: z.object({ jobId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'render',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -344,6 +353,7 @@ export const renderArtifactTool: AnyToolDefinition = defineTool({
     'anzunehmen.',
   inputSchema: z.object({ jobId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'render',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -371,6 +381,7 @@ export const renderCancelTool: AnyToolDefinition = defineTool({
     'fertiges PDF bleibt unberührt.',
   inputSchema: z.object({ jobId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'render',
   mutating: true,
   target: (input) => `render-job:${input.jobId}`,
   async execute(client, input) {
@@ -391,6 +402,7 @@ export const renderDeleteTool: AnyToolDefinition = defineTool({
     'Eingaben sind unverändert: derselbe Bau lässt sich mit exo_render_start erneut anfordern.',
   inputSchema: z.object({ jobId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'render',
   mutating: true,
   destructive: true,
   target: (input) => `render-job:${input.jobId}`,

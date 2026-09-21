@@ -8,12 +8,17 @@ import {
 } from '@exocortex/contracts';
 import { currentTraceCarrier, type Logger, withSpan } from '@exocortex/logger';
 import {
+  type AnyToolDefinition,
   createFetchApiClient,
   describeApiError,
   type ExocortexApiClient,
   ExocortexApiError,
   findTool,
+  openedDomain,
+  selectToolDomains,
+  type ToolDomain,
   ToolInputValidationError,
+  toolSchemaChars,
   toolsFor,
 } from '@exocortex/mcp-tools';
 
@@ -33,6 +38,15 @@ const REISSUE_MARGIN_MS = 30_000;
  * second tool needs a budget, that is the moment to build the table.
  */
 const WEB_FETCH_TOOL = 'exo_web_fetch';
+
+/**
+ * The tool that opens a domain of the catalogue (issue #121).
+ *
+ * Named here for the same reason `WEB_FETCH_TOOL` is: what it does belongs to
+ * the loop, not to the catalogue. The catalogue can describe the domains and
+ * list one; only the loop can decide what the next turn is offered.
+ */
+const TOOLBOX_TOOL = 'exo_toolbox';
 
 /**
  * The cut, and what it has to say about itself (issue #118).
@@ -59,6 +73,16 @@ function truncate(text: string): string {
   );
 }
 
+/** What the run was offered, and what that cost it (issue #121). */
+export interface ToolContext {
+  /** Tools in the request, this turn. */
+  offered: number;
+  /** Characters the serialized tool list weighs, this turn. */
+  schemaChars: number;
+  /** The domains behind that number, including any `exo_toolbox` opened. */
+  domains: ToolDomain[];
+}
+
 /**
  * Executes tool calls for an AI run.
  *
@@ -73,7 +97,15 @@ function truncate(text: string): string {
  * decision lives here rather than in each of the eighty tools.
  */
 export interface ToolRunner {
+  /**
+   * The tools this turn is offered. A getter, not a value: `exo_toolbox` can
+   * open a domain mid-run, and the loop reads this again before every turn.
+   */
   readonly definitions: readonly AiToolDefinition[];
+  /** The same set, measured, for the run's row and its log line. */
+  toolContext(): ToolContext;
+  /** Tool calls this run has made, across every tool. */
+  callCount(): number;
   /** Origins of the foreign text this run has read, in the order it arrived. */
   readonly untrustedOrigins: readonly UntrustedOrigin[];
   /**
@@ -115,6 +147,20 @@ export interface CreateToolRunnerInput {
    * a tool that will refuse every call is a tool worth not offering.
    */
   webFetchesPerRun: number;
+  /**
+   * What the run was asked to do, in the user's own words (issue #121).
+   *
+   * The only input the domain selection has, and deliberately so: the system
+   * prompt names every ON_DEMAND rule page in the workspace, so feeding it in
+   * would switch half the domains on for every run.
+   */
+  taskText: string;
+  /**
+   * Domains this run needs whatever its words say. One case today: the open
+   * page is a database view, so the database tools are needed before anybody
+   * mentions a database.
+   */
+  requiredDomains: readonly ToolDomain[];
   logger: Logger;
   /** Ceiling for one tool call; see `AI_TOOL_CALL_TIMEOUT_MS`. */
   toolCallTimeoutMs: number;
@@ -137,25 +183,94 @@ export type ToolRunnerFactoryInput = Pick<
   | 'includeMutating'
   | 'mutationPolicy'
   | 'webFetchesPerRun'
+  | 'taskText'
+  | 'requiredDomains'
   | 'toolCallTimeoutMs'
   | 'agentSession'
 >;
 
 export type ToolRunnerFactory = (input: ToolRunnerFactoryInput) => ToolRunner;
 
-export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
+/** What a run is told about, and how that set can still grow (issue #121). */
+interface ToolOffer {
+  tools: () => readonly AnyToolDefinition[];
+  /** `true` when this call widened the set; `false` when the domain was already open. */
+  open: (domain: ToolDomain) => boolean;
+  domains: () => ToolDomain[];
+}
+
+/**
+ * The part of the catalogue one run hears about.
+ *
+ * Chosen once from the task, and widened only by `exo_toolbox`, which is the
+ * model saying it needs something the words did not name. Its own function
+ * because it is the one piece of `createToolRunner` that is about the
+ * catalogue rather than about executing a call.
+ *
+ * Nothing here is an authorization. Every tool stays executable through
+ * `findTool`, and whether a call may run is still decided by `decideMutation`
+ * and by what the service token can reach.
+ */
+function createToolOffer(input: CreateToolRunnerInput): ToolOffer {
   // `deny` takes the mutating tools out of the catalogue entirely rather than
   // refusing them one by one: a model that is never offered a write does not
   // spend a turn proposing one. `guarded` keeps them, because whether they are
   // allowed depends on what the run reads next.
   const includeMutating = input.includeMutating && input.mutationPolicy !== 'deny';
-  const definitions: AiToolDefinition[] = toolsFor('ai', { includeMutating })
-    .filter((tool) => tool.name !== WEB_FETCH_TOOL || input.webFetchesPerRun > 0)
-    .map((tool) => ({
-      name: tool.name,
-      description: tool.description,
-      parameters: tool.jsonSchema,
-    }));
+  const domains = new Set<ToolDomain>(
+    selectToolDomains({ text: input.taskText, required: input.requiredDomains }),
+  );
+
+  return {
+    tools: () =>
+      toolsFor('ai', { includeMutating, domains: [...domains] }).filter(
+        (tool) => tool.name !== WEB_FETCH_TOOL || input.webFetchesPerRun > 0,
+      ),
+    open: (domain) => {
+      if (domains.has(domain)) return false;
+      domains.add(domain);
+      return true;
+    },
+    domains: () => [...domains],
+  };
+}
+
+/**
+ * Books the finished call, and swaps the answer for a hint when the run
+ * already has that exact answer (issue #118, ADR-059).
+ *
+ * After the call rather than before it: what makes a repeat pointless is that
+ * the answer is the same, and only the answer can say that. A page the model
+ * re-read because somebody changed it comes back changed and passes through
+ * untouched; the fourteenth search that finds what the first one found does
+ * not.
+ */
+function bookCall(
+  ledger: ToolCallLedger,
+  logger: Logger,
+  name: string,
+  argumentsJson: string,
+  result: { text: string; isError: boolean; refused: boolean },
+): { text: string; isError: boolean; refused: boolean } {
+  const mutating = findTool(name)?.mutating ?? true;
+  const verdict = ledger.record({
+    name,
+    argumentsJson,
+    resultText: result.text,
+    comparable: !mutating && !result.isError && !result.refused,
+  });
+  if (verdict.repeatOf === null) return result;
+  logger.info('Answered a repeated tool call with a hint instead of the same text', {
+    tool: name,
+    call: verdict.call,
+    repeatOf: verdict.repeatOf,
+    savedChars: result.text.length,
+  });
+  return { text: repeatHint({ name, repeatOf: verdict.repeatOf }), isError: false, refused: false };
+}
+
+export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
+  const offer = createToolOffer(input);
 
   let tokenExpiresAt = 0;
   let client: ExocortexApiClient | null = null;
@@ -271,6 +386,18 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
     try {
       const result = await tool.run(ensureClient(), args);
       const isError = result.isError ?? false;
+      // The catalogue can say what a domain holds; only the loop can hand its
+      // tools to the next turn (issue #121).
+      if (name === TOOLBOX_TOOL && !isError) {
+        const opened = openedDomain(argumentsJson);
+        if (opened !== null && offer.open(opened)) {
+          input.logger.info('Run opened another tool domain', {
+            domain: opened,
+            correlationId,
+            offered: offer.tools().length,
+          });
+        }
+      }
       // The document is cut first and fenced afterwards, so the closing
       // marker survives a result that ran into `MAX_RESULT_CHARS`: a fence
       // the truncation ate is a fence that is not there. A failed call
@@ -318,44 +445,23 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
     }
   }
 
-  /**
-   * Books the finished call, and swaps the answer for a hint when the run
-   * already has that exact answer (issue #118, ADR-059).
-   *
-   * After the call rather than before it: what makes a repeat pointless is
-   * that the answer is the same, and only the answer can say that. A page the
-   * model re-read because somebody changed it comes back changed and passes
-   * through untouched; the fourteenth search that finds what the first one
-   * found does not.
-   */
-  function bookCall(
-    name: string,
-    argumentsJson: string,
-    result: { text: string; isError: boolean; refused: boolean },
-  ): { text: string; isError: boolean; refused: boolean } {
-    const mutating = findTool(name)?.mutating ?? true;
-    const verdict = ledger.record({
-      name,
-      argumentsJson,
-      resultText: result.text,
-      comparable: !mutating && !result.isError && !result.refused,
-    });
-    if (verdict.repeatOf === null) return result;
-    input.logger.info('Answered a repeated tool call with a hint instead of the same text', {
-      tool: name,
-      call: verdict.call,
-      repeatOf: verdict.repeatOf,
-      savedChars: result.text.length,
-    });
-    return {
-      text: repeatHint({ name, repeatOf: verdict.repeatOf }),
-      isError: false,
-      refused: false,
-    };
-  }
-
   return {
-    definitions,
+    get definitions(): readonly AiToolDefinition[] {
+      return offer.tools().map((tool) => ({
+        name: tool.name,
+        description: tool.description,
+        parameters: tool.jsonSchema,
+      }));
+    },
+    toolContext(): ToolContext {
+      const tools = offer.tools();
+      return {
+        offered: tools.length,
+        schemaChars: toolSchemaChars(tools),
+        domains: offer.domains(),
+      };
+    },
+    callCount: () => ledger.tallies().reduce((total, tally) => total + tally.calls, 0),
     untrustedOrigins,
     noteUntrustedContent,
     tallies: () => ledger.tallies(),
@@ -368,6 +474,8 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
         `ai.tool ${name}`,
         async (span) => {
           const result = bookCall(
+            ledger,
+            input.logger,
             name,
             argumentsJson,
             await executeToolCall(name, argumentsJson, correlationId),

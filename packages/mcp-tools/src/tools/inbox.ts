@@ -29,6 +29,7 @@ export const captureTool: AnyToolDefinition = defineTool({
     'mit exo_page_move verschiebbar.',
   inputSchema: z.object({ workspaceId: idSchema }).extend(captureRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
+  domain: 'inbox',
   mutating: true,
   target: (input) => `workspace:${input.workspaceId}`,
   async execute(client, input) {
@@ -65,6 +66,7 @@ export const inboxTool: AnyToolDefinition = defineTool({
     limit: z.number().int().min(1).max(100).optional(),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'inbox',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -122,6 +124,7 @@ export const clipTool: AnyToolDefinition = defineTool({
     'sourceUrl und bleibst schreibfähig.',
   inputSchema: z.object({ workspaceId: idSchema }).extend(clipRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
+  domain: 'inbox',
   mutating: true,
   untrustedOutput: 'web',
   target: (input) => `workspace:${input.workspaceId}`,

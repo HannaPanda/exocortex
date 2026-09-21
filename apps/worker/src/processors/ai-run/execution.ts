@@ -30,7 +30,7 @@ import { findTool } from '@exocortex/mcp-tools';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
 import { describeToolLoop } from '../../tool-ledger';
-import { type ToolRunner } from '../../tool-runner';
+import { type ToolContext, type ToolRunner } from '../../tool-runner';
 
 import { addUsage, type RunFailure, type TurnResult } from './contract';
 
@@ -137,6 +137,10 @@ export interface RunOutcome {
   usage: AiUsage | null;
   failure: RunFailure | null;
   toolIterations: number;
+  /** Calls made, where `toolIterations` counts the rounds they arrived in. */
+  toolCalls: number;
+  /** What the run was offered and what that weighed (issue #121); `null` without tools. */
+  toolContext: ToolContext | null;
 }
 
 /**
@@ -220,6 +224,11 @@ class RunExecution {
       usage: this.usage,
       failure: this.failure,
       toolIterations: this.toolIterations,
+      toolCalls: this.input.runner?.callCount() ?? 0,
+      // Read at the end rather than at the start: a run that opened a domain
+      // through `exo_toolbox` was offered more in its last turn than in its
+      // first, and the larger number is the one that was paid for.
+      toolContext: this.input.runner?.toolContext() ?? null,
     };
   }
 

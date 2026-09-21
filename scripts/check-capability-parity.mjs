@@ -80,6 +80,11 @@ const SURFACE_EXEMPT = [
       "The deployment's AI cost ledger. Same reason again, and it is an administrator's report rather than a workspace capability.",
   },
   {
+    tool: 'exo_toolbox',
+    reason:
+      "Names the tool domains of the catalogue and opens one (issue #121). It exists because the built-in loop is offered a subset of the catalogue rather than all of it; an MCP client is handed everything at the handshake and has nothing to open, so on that surface the tool's only honest answer would be that it does not apply. It reaches no route and is not a capability: it is how the loop is told what it was not told about.",
+  },
+  {
     tool: 'exo_page_delete',
     reason:
       "The one operation no snapshot brings back. The built-in AI's loop has no confirmation gate -- it is governed by `ai.mutatingToolsEnabled`, one decision for every write there is -- so this stays with the surfaces that ask twice (`packages/mcp-tools/src/confirm.ts`).",

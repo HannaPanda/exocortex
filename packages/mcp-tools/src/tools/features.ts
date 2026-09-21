@@ -44,6 +44,7 @@ export const featuresTool: AnyToolDefinition = defineTool({
       ),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'core',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({

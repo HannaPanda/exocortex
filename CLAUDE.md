@@ -528,6 +528,13 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   out the tally -- tools, calls, characters, repeats -- and that diagnosis is
   stored in `AiRun.errorDetail` in German, beside the English `message` the
   log keeps.
+- ADR-060: the built-in loop is offered the tools its task needs, not the whole
+  catalogue. Every tool declares a `domain` (required, so the compiler is the
+  coverage gate); the domains are picked from the user's own words with no model
+  call, `core` and `pages` are always offered, and `exo_toolbox` opens anything
+  the keywords missed in one call. It is never a permission: an unoffered tool
+  is still executable and still governed by the service token and
+  `decideMutation`. What a run carried is recorded on `ai_run`.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

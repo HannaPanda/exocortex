@@ -101,6 +101,7 @@ export const databaseCreateTool: AnyToolDefinition = defineTool({
   description: 'Legt eine neue Datenbank (Notion-artige Tabelle) mit optionalen Startspalten an.',
   inputSchema: databaseCreateInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: true,
   target: (input) => `workspace:${input.workspaceId}`,
   async execute(client, input) {
@@ -140,6 +141,7 @@ export const databaseSchemaTool: AnyToolDefinition = defineTool({
   description: 'Liest Zeilenanzahl, Spalten und Ansichten einer Datenbank.',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: false,
   async execute(client, input) {
     const [detail, properties, views] = await Promise.all([
@@ -185,6 +187,7 @@ export const databasePropertyCreateTool: AnyToolDefinition = defineTool({
   description: 'Fügt einer Datenbank eine neue Spalte hinzu.',
   inputSchema: databasePropertyCreateInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -220,6 +223,7 @@ export const databasePropertyUpdateTool: AnyToolDefinition = defineTool({
   description: 'Ändert Name oder Konfiguration einer Datenbankspalte.',
   inputSchema: databasePropertyUpdateInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: true,
   destructive: true,
   target: (input) => `document:${input.documentId}`,
@@ -241,6 +245,7 @@ export const databasePropertyDeleteTool: AnyToolDefinition = defineTool({
     'Löscht eine Datenbankspalte unwiderruflich, inklusive aller darin gespeicherten Werte.',
   inputSchema: z.object({ documentId: idSchema, propertyId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: true,
   destructive: true,
   irreversible: true,
@@ -264,6 +269,7 @@ export const databaseOptionCreateTool: AnyToolDefinition = defineTool({
   description: 'Fügt einer Auswahl-Spalte (SELECT/MULTI_SELECT) eine neue Option hinzu.',
   inputSchema: databaseOptionCreateInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -293,6 +299,7 @@ export const databaseOptionUpdateTool: AnyToolDefinition = defineTool({
     'gesetzt haben, behalten sie: die Option bleibt dieselbe, nur ihre Beschriftung ändert sich.',
   inputSchema: databaseOptionUpdateInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: true,
   destructive: true,
   target: (input) => `document:${input.documentId}`,
@@ -315,6 +322,7 @@ export const databaseOptionDeleteTool: AnyToolDefinition = defineTool({
     'den Wert. Vorher exo_database_schema lesen, um zu sehen, welche Option gemeint ist.',
   inputSchema: z.object({ documentId: idSchema, propertyId: idSchema, optionId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: true,
   destructive: true,
   // Same standing as deleting the column it belongs to. Creating the option
@@ -352,6 +360,7 @@ export const databasePropertyReorderTool: AnyToolDefinition = defineTool({
     'Position eindeutig, wenn parallel jemand anders sortiert.',
   inputSchema: databasePropertyReorderInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -376,6 +385,7 @@ export const databaseViewCreateTool: AnyToolDefinition = defineTool({
     'Legt eine neue Ansicht (Tabelle, Board, Galerie oder Kalender) für eine Datenbank an.',
   inputSchema: databaseViewCreateInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -412,6 +422,7 @@ export const databaseViewUpdateTool: AnyToolDefinition = defineTool({
   description: 'Ändert Name, Filter, Sortierung oder Konfiguration einer Ansicht.',
   inputSchema: databaseViewUpdateInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: true,
   destructive: true,
   target: (input) => `document:${input.documentId}`,
@@ -439,6 +450,7 @@ export const databaseViewReorderTool: AnyToolDefinition = defineTool({
     'beim Öffnen der Datenbank gezeigt wird.',
   inputSchema: databaseViewReorderInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -458,6 +470,7 @@ export const databaseViewDeleteTool: AnyToolDefinition = defineTool({
   description: 'Löscht eine Ansicht einer Datenbank.',
   inputSchema: z.object({ documentId: idSchema, viewId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: true,
   destructive: true,
   target: (input) => `document:${input.documentId}`,
@@ -503,6 +516,7 @@ export const databaseQueryTool: AnyToolDefinition = defineTool({
     'Fragt Zeilen einer Datenbank ab, optional über eine gespeicherte Ansicht oder ad-hoc-Filter.',
   inputSchema: databaseQueryInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: false,
   async execute(client, input) {
     const { documentId, ...body } = input;
@@ -535,6 +549,7 @@ export const databaseRowGetTool: AnyToolDefinition = defineTool({
     'keine Zeile ist -- eine gewöhnliche Seite, eine Datenbank selbst oder eine Seite auf oberster Ebene.',
   inputSchema: databaseRowGetInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: false,
   async execute(client, input) {
     const result: DocumentRowResponse = await client.request({
@@ -565,6 +580,7 @@ export const databaseRowCreateTool: AnyToolDefinition = defineTool({
     'Legt eine neue Zeile in einer Datenbank an. Ein Datumswert ist normalerweise ein ISO-String; ist die Eigenschaft ein Zeitraum (isRange), dann { start, end, allDay }.',
   inputSchema: databaseRowCreateInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: true,
   target: (input) => `document:${input.documentId}`,
   async execute(client, input) {
@@ -592,6 +608,7 @@ export const databaseRowUpdateTool: AnyToolDefinition = defineTool({
     'Aktualisiert einzelne Spaltenwerte einer Zeile. Ein Datumswert ist normalerweise ein ISO-String; ist die Eigenschaft ein Zeitraum (isRange), dann { start, end, allDay }.',
   inputSchema: databaseRowUpdateInputSchema,
   surfaces: ['mcp', 'ai'],
+  domain: 'databases',
   mutating: true,
   destructive: true,
   target: (input) => `document:${input.rowId}`,

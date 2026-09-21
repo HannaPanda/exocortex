@@ -49,8 +49,18 @@ function renderRun(run: AiRun): string {
     `Gestartet: ${run.startedAt ?? 'noch nicht'}`,
     `Letztes Lebenszeichen: ${run.heartbeatAt ?? 'keins'}`,
     `Beendet: ${run.finishedAt ?? 'noch nicht'}`,
-    `Werkzeugrunden: ${String(run.toolIterations)}`,
+    `Werkzeugrunden: ${String(run.toolIterations)}, Werkzeugaufrufe: ${String(run.toolCalls)}`,
   ];
+  // What the tool catalogue cost this run (issue #121): a run that answered
+  // slowly and expensively usually carried more schema than it needed, and
+  // that is invisible in the token counts alone.
+  if (run.toolsOffered !== null) {
+    lines.push(
+      `Angebotene Werkzeuge: ${String(run.toolsOffered)} ` +
+        `(${String(run.toolSchemaChars ?? 0)} Zeichen Schema je Runde), Bereiche: ` +
+        `${run.toolDomains.join(', ')}`,
+    );
+  }
   if (run.errorCode !== null) lines.push(`Fehlercode: ${run.errorCode}`);
   // The diagnosis rather than only the code (issue #118): a run that ran out
   // of tool calls says here which tools it spent them on and how many of them
@@ -78,6 +88,7 @@ export const aiRunGetTool: AnyToolDefinition = defineTool({
     'sich unterscheiden, ob ein Lauf noch arbeitet oder längst beendet ist.',
   inputSchema: z.object({ runId: idSchema }),
   surfaces: ['mcp'],
+  domain: 'chats',
   mutating: false,
   async execute(client, input) {
     const run = await client.request({
@@ -97,6 +108,7 @@ export const aiRunCancelTool: AnyToolDefinition = defineTool({
     'nächsten Lebenszeichen und beendet seine Arbeit.',
   inputSchema: z.object({ runId: idSchema }),
   surfaces: ['mcp'],
+  domain: 'chats',
   mutating: true,
   target: (input) => `ai_run:${input.runId}`,
   async execute(client, input) {
@@ -215,6 +227,7 @@ export const aiUsageTool: AnyToolDefinition = defineTool({
     to: z.string().datetime().optional().describe('ISO-Zeitpunkt, Ende des Zeitraums (exklusiv)'),
   }),
   surfaces: ['mcp'],
+  domain: 'chats',
   mutating: false,
   async execute(client, input) {
     const usage = await client.request({

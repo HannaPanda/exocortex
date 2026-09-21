@@ -250,6 +250,32 @@ function createSettingsReader(
   };
 }
 
+/**
+ * The per-run half of the tool loop, bound to the deployment-wide half.
+ *
+ * `SERVICE_TOKEN_SECRET` is optional, so an unset secret returns `null` and
+ * disables tools rather than crashing boot (R2).
+ */
+function buildToolRunnerFactory(env: WorkerEnv, logger: Logger): ToolRunnerFactory | null {
+  if (env.SERVICE_TOKEN_SECRET === undefined) return null;
+  const serviceTokenSecret = env.SERVICE_TOKEN_SECRET;
+  return (input: ToolRunnerFactoryInput) =>
+    createToolRunner({
+      apiUrl: env.API_URL,
+      serviceTokenSecret,
+      serviceTokenTtlSeconds: env.SERVICE_TOKEN_TTL_SECONDS,
+      userId: input.userId,
+      includeMutating: input.includeMutating,
+      mutationPolicy: input.mutationPolicy,
+      webFetchesPerRun: input.webFetchesPerRun,
+      taskText: input.taskText,
+      requiredDomains: input.requiredDomains,
+      toolCallTimeoutMs: input.toolCallTimeoutMs,
+      agentSession: input.agentSession,
+      logger,
+    });
+}
+
 export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRuntime {
   const prisma = createPrismaClient({ databaseUrl: env.DATABASE_URL });
   const queues = new QueueRegistry({ redisUrl: env.REDIS_URL, logger });
@@ -320,24 +346,7 @@ export function createWorkerRuntime(env: WorkerEnv, logger: Logger): WorkerRunti
     logger,
   });
 
-  // Tool loop authentication (D3): `SERVICE_TOKEN_SECRET` is optional, so an
-  // unset secret disables tools without ever crashing boot (R2).
-  const toolRunnerFactory =
-    env.SERVICE_TOKEN_SECRET === undefined
-      ? null
-      : (input: ToolRunnerFactoryInput) =>
-          createToolRunner({
-            apiUrl: env.API_URL,
-            serviceTokenSecret: env.SERVICE_TOKEN_SECRET!,
-            serviceTokenTtlSeconds: env.SERVICE_TOKEN_TTL_SECONDS,
-            userId: input.userId,
-            includeMutating: input.includeMutating,
-            mutationPolicy: input.mutationPolicy,
-            webFetchesPerRun: input.webFetchesPerRun,
-            toolCallTimeoutMs: input.toolCallTimeoutMs,
-            agentSession: input.agentSession,
-            logger,
-          });
+  const toolRunnerFactory = buildToolRunnerFactory(env, logger);
 
   /**
    * An API client acting as one particular human, for a processor that has to

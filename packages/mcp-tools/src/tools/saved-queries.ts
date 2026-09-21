@@ -74,6 +74,7 @@ export const savedQueryListTool: AnyToolDefinition = defineTool({
     'unterscheiden.',
   inputSchema: z.object({ workspaceId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'savedQueries',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -105,6 +106,7 @@ export const savedQueryGetTool: AnyToolDefinition = defineTool({
     'sie in der Navigation steht. Für die Treffer selbst exo_saved_query_run.',
   inputSchema: z.object({ savedQueryId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'savedQueries',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -130,6 +132,7 @@ export const savedQueryPreviewTool: AnyToolDefinition = defineTool({
     definition: savedQueryDefinitionSchema,
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'savedQueries',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -153,6 +156,7 @@ export const savedQueryRunTool: AnyToolDefinition = defineTool({
     limit: z.number().int().min(1).max(200).optional(),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'savedQueries',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -173,6 +177,7 @@ export const savedQueryCreateTool: AnyToolDefinition = defineTool({
     `Frage, nie die Treffer. ${DEFINITION_HELP}`,
   inputSchema: z.object({ workspaceId: idSchema }).extend(createSavedQueryRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
+  domain: 'savedQueries',
   mutating: true,
   target: (input) => `workspace:${input.workspaceId}`,
   async execute(client, input) {
@@ -200,6 +205,7 @@ export const savedQueryUpdateTool: AnyToolDefinition = defineTool({
     `ersetzt, also vorher mit exo_saved_query_get lesen. ${DEFINITION_HELP}`,
   inputSchema: z.object({ savedQueryId: idSchema }).extend(updateSavedQueryRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
+  domain: 'savedQueries',
   mutating: true,
   target: (input) => `saved-query:${input.savedQueryId}`,
   async execute(client, input) {
@@ -224,6 +230,7 @@ export const savedQueryReorderTool: AnyToolDefinition = defineTool({
     .extend(reorderSavedQueryRequestSchema.shape)
     .describe('savedQueryId ist die bewegte Suche, afterId/beforeId der Nachbar.'),
   surfaces: ['mcp', 'ai'],
+  domain: 'savedQueries',
   mutating: true,
   target: (input) => `saved-query:${input.savedQueryId}`,
   async execute(client, input) {
@@ -246,6 +253,7 @@ export const savedQueryDeleteTool: AnyToolDefinition = defineTool({
     'nicht zurück.',
   inputSchema: z.object({ savedQueryId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'savedQueries',
   mutating: true,
   destructive: true,
   target: (input) => `saved-query:${input.savedQueryId}`,

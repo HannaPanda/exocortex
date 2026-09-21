@@ -66,6 +66,7 @@ export const pageBacklinksTool: AnyToolDefinition = defineTool({
       .describe('incoming: wer verweist hierher. outgoing: worauf verweist diese Seite.'),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'pages',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -118,6 +119,7 @@ export const pageRelatedTool: AnyToolDefinition = defineTool({
     documentId: idSchema,
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'pages',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({

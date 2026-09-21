@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { EXOCORTEX_TOOLS, toolsFor } from './catalog.js';
+import { EXOCORTEX_TOOLS, findTool, toolsFor } from './catalog.js';
+import { type ExocortexApiClient } from './client.js';
+import { TOOL_DOMAINS } from './tool.js';
 
 describe('EXOCORTEX_TOOLS', () => {
   it('has unique names', () => {
@@ -230,5 +232,72 @@ describe('EXOCORTEX_TOOLS', () => {
     for (const tool of readOnlyAiTools) {
       expect(tool.mutating).toBe(false);
     }
+  });
+});
+
+/**
+ * The domain every tool carries (issue #121, ADR-060).
+ *
+ * The compiler already refuses a tool without one, so what is left to check is
+ * what a type cannot say: that the domains are actually used, that narrowing
+ * changes nothing about which surface a tool is on, and that the one tool
+ * which exists only for the narrowing behaves like it.
+ */
+describe('tool domains', () => {
+  it('puts every tool in a domain that the vocabulary knows', () => {
+    for (const tool of EXOCORTEX_TOOLS) {
+      expect(TOOL_DOMAINS, tool.name).toContain(tool.domain);
+    }
+  });
+
+  it('spreads the catalogue over the domains instead of parking it in one', () => {
+    // A taxonomy where everything is `core` would pass every other test here
+    // and save nothing.
+    const used = new Set(EXOCORTEX_TOOLS.map((tool) => tool.domain));
+    expect(used.size).toBeGreaterThan(TOOL_DOMAINS.length / 2);
+    const core = EXOCORTEX_TOOLS.filter((tool) => tool.domain === 'core');
+    expect(core.length).toBeLessThan(EXOCORTEX_TOOLS.length / 4);
+  });
+
+  it('narrows within a surface and never across it', () => {
+    const narrowed = toolsFor('ai', { domains: ['core', 'projects'] });
+    expect(narrowed.every((tool) => tool.surfaces.includes('ai'))).toBe(true);
+    expect(narrowed.every((tool) => ['core', 'projects'].includes(tool.domain))).toBe(true);
+    // Leaving the option out is the handshake, unchanged.
+    expect(toolsFor('ai').length).toBe(toolsFor('ai', {}).length);
+  });
+
+  it('keeps narrowing and the mutating switch independent of each other', () => {
+    const readOnly = toolsFor('ai', { domains: ['core', 'pages'], includeMutating: false });
+    expect(readOnly.every((tool) => !tool.mutating)).toBe(true);
+    expect(readOnly.map((tool) => tool.name)).toContain('exo_page_read');
+    expect(readOnly.map((tool) => tool.name)).not.toContain('exo_page_write');
+  });
+
+  it('offers the way back on the surface that needs one, and nowhere else', () => {
+    const toolbox = findTool('exo_toolbox');
+    expect(toolbox).not.toBeNull();
+    // An MCP client holds the whole catalogue already; a tool telling it about
+    // domains it was never denied would be noise with a reason attached.
+    expect(toolbox?.surfaces).toEqual(['ai']);
+    expect(toolbox?.domain).toBe('core');
+    expect(toolbox?.mutating).toBe(false);
+    expect(toolsFor('mcp').map((tool) => tool.name)).not.toContain('exo_toolbox');
+  });
+
+  it('names every domain when it is asked without one, and lists a domain when it is asked with one', async () => {
+    const toolbox = findTool('exo_toolbox');
+    if (toolbox === null) throw new Error('the toolbox is gone');
+    const client = {
+      request: () => Promise.reject(new Error('the toolbox reaches no route')),
+      upload: () => Promise.reject(new Error('the toolbox reaches no route')),
+    } as unknown as ExocortexApiClient;
+
+    const all = await toolbox.run(client, {});
+    for (const domain of TOOL_DOMAINS) expect(all.text).toContain(domain);
+
+    const one = await toolbox.run(client, { domain: 'databases' });
+    expect(one.text).toContain('exo_database_query');
+    expect(one.text).not.toContain('exo_project_build');
   });
 });

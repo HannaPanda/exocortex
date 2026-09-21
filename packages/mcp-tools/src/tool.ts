@@ -18,6 +18,43 @@ import { type ExocortexApiClient } from './client.js';
  */
 export type ToolSurface = 'mcp' | 'ai' | 'research' | 'memory';
 
+/**
+ * The parts of the product the catalogue is divided into (issue #121).
+ *
+ * The vocabulary lives here, beside the descriptor that carries it, so a new
+ * tool cannot be written without saying where it belongs: `domain` is
+ * required, and the compiler is the coverage gate. What each one means, which
+ * words switch it on and which are always offered is in `domains.ts`.
+ *
+ * It is a description of the catalogue, never a permission. See the note at
+ * the top of `domains.ts`.
+ */
+export const TOOL_DOMAINS = [
+  'core',
+  'pages',
+  'history',
+  'lifecycle',
+  'appearance',
+  'inbox',
+  'comments',
+  'databases',
+  'attachments',
+  'templates',
+  'savedQueries',
+  'shares',
+  'entities',
+  'memory',
+  'chats',
+  'automations',
+  'notifications',
+  'projects',
+  'render',
+  'web',
+  'admin',
+] as const;
+
+export type ToolDomain = (typeof TOOL_DOMAINS)[number];
+
 export interface ToolDefinition<TInput> {
   /**
    * Stable, namespaced name. `exo_` prefix so it cannot collide with the other
@@ -29,6 +66,14 @@ export interface ToolDefinition<TInput> {
   inputSchema: z.ZodType<TInput>;
   /** Surfaces this tool is offered on. */
   surfaces: readonly ToolSurface[];
+  /**
+   * Which part of the product this belongs to (issue #121).
+   *
+   * Required, because the built-in loop is offered a subset of the catalogue
+   * and a tool with no domain would be a tool no run ever hears about. There
+   * is no gate script for it: the type is the gate.
+   */
+  domain: ToolDomain;
   /**
    * True when the tool changes data. Drives the confirmation gate and the
    * `ai.mutatingToolsEnabled` setting.
@@ -115,6 +160,8 @@ export interface AnyToolDefinition {
   name: string;
   description: string;
   surfaces: readonly ToolSurface[];
+  /** See `ToolDefinition.domain`. */
+  domain: ToolDomain;
   mutating: boolean;
   /** See `ToolDefinition.destructive`. Always `false` for a read-only tool. */
   destructive: boolean;
@@ -193,6 +240,7 @@ export function defineTool<TInput>(definition: ToolDefinition<TInput>): AnyToolD
     name: definition.name,
     description: definition.description,
     surfaces: definition.surfaces,
+    domain: definition.domain,
     mutating: definition.mutating,
     // A tool that changes nothing cannot destroy anything, whatever it claims.
     destructive: definition.mutating && (definition.destructive ?? false),

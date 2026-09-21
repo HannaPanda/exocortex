@@ -101,6 +101,7 @@ export const projectListTool: AnyToolDefinition = defineTool({
     'sagt, ob hier überhaupt gebaut werden darf.',
   inputSchema: z.object({ workspaceId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -136,6 +137,7 @@ export const projectCreateTool: AnyToolDefinition = defineTool({
     scaffold: z.boolean().default(true),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: true,
   target: (input) => `workspace:${input.workspaceId}`,
   async execute(client, input) {
@@ -157,6 +159,7 @@ export const projectReadTool: AnyToolDefinition = defineTool({
     'Pfade es hält. Für den Dateibaum selbst exo_project_list_files.',
   inputSchema: z.object({ projectId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -181,6 +184,7 @@ export const projectUpdateTool: AnyToolDefinition = defineTool({
     bibliography: projectBibliographySchema.optional(),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: true,
   target: (input) => `project:${input.projectId}`,
   async execute(client, input) {
@@ -206,6 +210,7 @@ export const projectListFilesTool: AnyToolDefinition = defineTool({
     'Einträge, sie sind das Präfix der Pfade darunter.',
   inputSchema: z.object({ projectId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -234,6 +239,7 @@ export const projectReadFileTool: AnyToolDefinition = defineTool({
     'sondern der Pfad zum Herunterladen; dessen Text liest exo_attachment_read_text.',
   inputSchema: z.object({ projectId: idSchema, path: projectPathSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -265,6 +271,7 @@ export const projectWriteFileTool: AnyToolDefinition = defineTool({
     createOnly: z.boolean().default(false),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: true,
   // Overwriting a file discards what was in it, the way `exo_page_write` does.
   // Not irreversible: a project's document takes the same session snapshots a
@@ -298,6 +305,7 @@ export const projectPatchFileTool: AnyToolDefinition = defineTool({
     replaceAll: z.boolean().default(false),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: true,
   target: (input) => `project:${input.projectId}:${input.path}`,
   async execute(client, input) {
@@ -325,6 +333,7 @@ export const projectMoveFileTool: AnyToolDefinition = defineTool({
     recursive: z.boolean().default(false),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: true,
   // A path is an address: `\\input{kapitel/intro}` stops resolving the moment
   // the file moves, which is the same reason `exo_page_rename` is destructive.
@@ -353,6 +362,7 @@ export const projectDeleteFileTool: AnyToolDefinition = defineTool({
     recursive: z.boolean().default(false),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: true,
   destructive: true,
   target: (input) => `project:${input.projectId}:${input.path}`,
@@ -376,6 +386,7 @@ export const projectAddAssetTool: AnyToolDefinition = defineTool({
     'Pfad gebunden, unter dem LaTeX sie dann findet.',
   inputSchema: addProjectAssetRequestSchema.extend({ projectId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: true,
   target: (input) => `project:${input.projectId}:${input.path}`,
   async execute(client, input) {
@@ -409,6 +420,7 @@ export const projectBuildTool: AnyToolDefinition = defineTool({
     force: z.boolean().default(false),
   }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: true,
   target: (input) => `project:${input.projectId}`,
   async execute(client, input) {
@@ -433,6 +445,7 @@ export const projectBuildStatusTool: AnyToolDefinition = defineTool({
     'Fehler und Warnungen und der Anhang-id des PDFs, sobald es eines gibt.',
   inputSchema: z.object({ buildId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -450,6 +463,7 @@ export const projectBuildsTool: AnyToolDefinition = defineTool({
     'Listet die letzten Bauten eines Arbeitsbereichs, wahlweise auf ein Projekt eingeschränkt.',
   inputSchema: z.object({ workspaceId: idSchema, projectId: idSchema.optional() }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: false,
   async execute(client, input) {
     const query = input.projectId === undefined ? '' : `?projectId=${input.projectId}`;
@@ -475,6 +489,7 @@ export const projectBuildDiagnosticsTool: AnyToolDefinition = defineTool({
     'zu werden. Für den ganzen Rest exo_project_build_log.',
   inputSchema: z.object({ buildId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -509,6 +524,7 @@ export const projectBuildLogTool: AnyToolDefinition = defineTool({
     'steht, was den Fehlschlag erklärt.',
   inputSchema: z.object({ buildId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -529,6 +545,7 @@ export const projectBuildArtifactsTool: AnyToolDefinition = defineTool({
     'steht: der Weg, ein sichtbares Ergebnis zu prüfen, ohne es anzusehen.',
   inputSchema: z.object({ buildId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: false,
   async execute(client, input) {
     const result = await client.request({
@@ -560,6 +577,7 @@ export const projectBuildCancelTool: AnyToolDefinition = defineTool({
     'abbrechen.',
   inputSchema: z.object({ buildId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: true,
   target: (input) => `project-build:${input.buildId}`,
   async execute(client, input) {
@@ -580,6 +598,7 @@ export const projectBuildDeleteTool: AnyToolDefinition = defineTool({
     'Bau lässt sich mit exo_project_build erneut anfordern.',
   inputSchema: z.object({ buildId: idSchema }),
   surfaces: ['mcp', 'ai'],
+  domain: 'projects',
   mutating: true,
   destructive: true,
   target: (input) => `project-build:${input.buildId}`,
