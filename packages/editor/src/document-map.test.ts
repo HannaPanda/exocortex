@@ -119,6 +119,49 @@ describe('buildDocumentMap', () => {
     expect(JSON.stringify(map).length).toBeLessThan(10_000);
   });
 
+  it('never maps a fragment to itself, which would be a loop and not a step', () => {
+    // Found on the real 2.9 million character page: reading its one section
+    // handed back a fragment that opens with that same heading, and cutting at
+    // the shallowest level present produced a single entry addressing the
+    // heading again. The next read returned this same map, forever.
+    const fragment = doc(
+      heading(1, 'Higgsfield AI', 'headingaaa1'),
+      paragraph('a'.repeat(200), 'parapara001'),
+      heading(2, 'Teil eins', 'headingaaa2'),
+      paragraph('b'.repeat(200), 'parapara002'),
+      heading(2, 'Teil zwei', 'headingaaa3'),
+      paragraph('c'.repeat(200), 'parapara003'),
+    );
+
+    const map = buildDocumentMap(fragment);
+
+    expect(map.entries.length).toBeGreaterThan(1);
+    const opening = map.entries[0] as { kind: string; fromBlockId: string; toBlockId: string };
+    // The opening heading is named, but as the span it covers rather than as a
+    // section: a section address would bring the whole fragment back.
+    expect(opening).toMatchObject({
+      kind: 'range',
+      fromBlockId: 'headingaaa1',
+      toBlockId: 'parapara001',
+    });
+    expect(map.entries[1]).toMatchObject({ kind: 'section', title: 'Teil eins' });
+
+    // And the address resolves to less than the fragment, which is what makes
+    // the recursion terminate.
+    const opened = extractBlockRange(fragment, opening.fromBlockId, opening.toBlockId);
+    expect(serializeMarkdown(opened as ProseMirrorDocument)).not.toContain('Teil eins');
+  });
+
+  it('reads a one-block range as that block, heading or not', () => {
+    const page = doc(heading(2, 'Titel', 'headingaaa1'), paragraph('drin', 'parapara001'));
+
+    const literal = extractBlockRange(page, 'headingaaa1', 'headingaaa1');
+    const section = extractBlockRange(page, 'headingaaa1', null);
+
+    expect(serializeMarkdown(literal as ProseMirrorDocument)).not.toContain('drin');
+    expect(serializeMarkdown(section as ProseMirrorDocument)).toContain('drin');
+  });
+
   it('carries no address for a part whose blocks have none', () => {
     const map = buildDocumentMap(
       doc({ type: 'paragraph', content: [{ type: 'text', text: 'ohne Kennung' }] }),

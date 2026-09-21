@@ -149,11 +149,16 @@ function sumChars(items: readonly Measured[]): number {
   return items.reduce((total, item) => total + item.chars, 0);
 }
 
-/** The range address of a group: one block addresses itself, several a span. */
+/**
+ * The range address of a group.
+ *
+ * `to` is always stated, even when it is `from`. A range of one block that
+ * left its end open would be read with section semantics, and if that block is
+ * a heading the answer would be the whole section again: the entry would map
+ * to something larger than itself, which is how a map turns into a loop.
+ */
 function rangeOf(items: readonly Measured[]): { from: string | null; to: string | null } {
-  const from = firstAddressable(items);
-  const to = lastAddressable(items);
-  return { from, to: to === from ? null : to };
+  return { from: firstAddressable(items), to: lastAddressable(items) };
 }
 
 /**
@@ -178,18 +183,34 @@ function groupIntoSections(items: readonly Measured[], minLevel: number): Measur
   return groups;
 }
 
-function sectionEntry(group: readonly Measured[]): DocumentMapEntry {
+/**
+ * One group as an entry.
+ *
+ * A group counts as a section only when it *starts* at the level the part was
+ * cut at. That is the guard against a map containing what it is a map of: a
+ * fragment that opens with its own heading (reading a section hands one back)
+ * is cut one level deeper, and its opening heading then leads a group at a
+ * shallower level. Addressed as a section, that group would resolve to the
+ * whole fragment again and the next read would return this same map forever.
+ * Addressed as a range, it resolves to exactly the blocks it names.
+ */
+function sectionEntry(group: readonly Measured[], cutLevel: number): DocumentMapEntry {
   const head = group[0] as Measured;
-  const isSection = head.level !== null;
+  const isSection = head.level === cutLevel;
   const { from, to } = rangeOf(group);
   return {
     kind: isSection ? 'section' : 'range',
     fromBlockId: from,
     // A heading already addresses everything under it (ADR-045), so a section
-    // needs no end. A lead-in without a heading is a plain span and needs one.
+    // needs no end. Anything else is a plain span and needs one.
     toBlockId: isSection ? null : to,
     level: head.level,
-    title: isSection ? textOf(head.node) : 'Vor der ersten Überschrift',
+    title:
+      head.level === null
+        ? 'Vor der ersten Überschrift'
+        : isSection
+          ? textOf(head.node)
+          : `${textOf(head.node)} (Anfang)`,
     chars: sumChars(group),
     blocks: group.length,
   };
@@ -280,19 +301,33 @@ export function buildDocumentMap(
     return { mode: 'sections', ...base, entries: [], coarsened: false };
   }
 
-  const levels = items.map((item) => item.level).filter((level): level is number => level !== null);
-  // A document whose only heading is its first block has no *inner* structure
-  // to cut at: one section covering everything would be the same answer one
-  // level deeper, so it goes to ranges rather than into that loop.
-  const hasSections = levels.length > 0 && !(levels.length === 1 && items[0]?.level !== null);
+  /*
+   * The level to cut at: the shallowest one that actually divides this part
+   * into more than one piece.
+   *
+   * Not simply the shallowest level present, because a fragment that opens
+   * with its own heading has exactly one block at that level and cutting
+   * there would produce a single group covering everything -- the input back
+   * as its own map. Going deeper is what makes reading a section a step
+   * towards the text rather than a step sideways.
+   */
+  const levels = [
+    ...new Set(items.map((item) => item.level).filter((level): level is number => level !== null)),
+  ].sort((a, b) => a - b);
+  const cut = levels
+    .map((level) => ({ level, groups: groupIntoSections(items, level) }))
+    .find(
+      // A part before the first heading counts: it is content, and content that
+      // no entry names is content nobody can reach.
+      (candidate) => candidate.groups.length > 1,
+    );
 
-  if (!hasSections) {
+  if (cut === undefined) {
     const entries = rangeEntries(items, maxEntries);
     return { mode: 'ranges', ...base, entries, coarsened: entries.length < items.length };
   }
 
-  const minLevel = Math.min(...levels);
-  const sections = groupIntoSections(items, minLevel).map(sectionEntry);
+  const sections = cut.groups.map((group) => sectionEntry(group, cut.level));
   const coarsened = sections.length > maxEntries;
   return {
     mode: 'sections',
@@ -311,6 +346,10 @@ export function buildDocumentMap(
  * applies in `resolveBlockRange`: two blocks in different parents describe a
  * shape, not a span.
  *
+ * An end equal to the start is therefore *not* the same as no end: it means
+ * that one block literally, heading or not. A map addresses its ranges that
+ * way on purpose, so an entry can never resolve to more than it named.
+ *
  * `null` when either end is gone. Reported as a dead address rather than
  * answered with the nearest surviving block, for the reason ADR-045 gives.
  */
@@ -319,9 +358,7 @@ export function extractBlockRange(
   fromBlockId: string,
   toBlockId: string | null,
 ): ProseMirrorDocument | null {
-  if (toBlockId === null || toBlockId === fromBlockId) {
-    return extractBlockFragment(document, fromBlockId);
-  }
+  if (toBlockId === null) return extractBlockFragment(document, fromBlockId);
 
   const search = (siblings: readonly ProseMirrorNode[]): ProseMirrorDocument | null => {
     const from = siblings.findIndex((node) => blockIdOf(node) === fromBlockId);

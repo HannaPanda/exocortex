@@ -87,8 +87,7 @@ export class DocumentFragmentService {
 
     const blockId = query.blockId ?? null;
     const toBlockId = query.toBlockId ?? null;
-    const fragment =
-      blockId === null ? page : extractBlockRange(page, blockId, toBlockId ?? blockId);
+    const fragment = blockId === null ? page : extractBlockRange(page, blockId, toBlockId);
     const resolved = fragment !== null;
     const shown: ProseMirrorDocument = fragment ?? { type: 'doc', content: [] };
     const budgeted = applyResponseBudget(shown, serializeMarkdown(shown), query);
