@@ -331,6 +331,24 @@ describe('markdown round trip', () => {
     expect(findDuplicateBlockIds(reimported)).toEqual([]);
   });
 
+  it('gives a picture an identifier and keeps it across a round trip', () => {
+    // A picture is a block here, not an inline node, so it is addressable like
+    // any other. Until it was, a section ending in one could not be moved:
+    // the end of a range has to have a name (issue #118).
+    const { document } = parseMarkdown('# Klinik\n\n![Wegweiser](/api/attachments/x/download)\n');
+    const image = document.content?.[1];
+    expect(image?.type).toBe('image');
+    const id = image?.attrs?.blockId;
+    expect(typeof id).toBe('string');
+
+    const exported = serializeMarkdown(document, { includeBlockIds: true });
+    expect(exported).toContain(`) ^${String(id)}`);
+    const reimported = parseMarkdown(exported).document;
+    expect(reimported.content?.[1]?.attrs?.blockId).toBe(id);
+    expect(reimported.content?.[1]?.attrs?.src).toBe('/api/attachments/x/download');
+    expect(findDuplicateBlockIds(reimported)).toEqual([]);
+  });
+
   it('does not leak block ids into a normal export', () => {
     const { document } = parseMarkdown(BLOCK_ID_MARKDOWN);
     expect(serializeMarkdown(document)).not.toContain('^aaaaaaaaaaaa');

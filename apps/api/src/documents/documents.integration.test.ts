@@ -2780,6 +2780,30 @@ describe('extracting a section', () => {
     expect(await markdownOf(documentId)).toContain('Nur das hier.');
   });
 
+  it('moves a section whose last block is a picture', async () => {
+    // A picture used to carry no identifier, and the end of a range has to
+    // have one, so a section ending in one refused to move at all.
+    const { documentId, blockIds } = await seed(
+      '## Oben\n\nBleibt.\n\n## Klinik\n\nRoute: Ebene 2, dann links.\n\n' +
+        '![Wegweiser](/api/attachments/abc12345/download)',
+    );
+
+    const result = await extractService.extract({
+      documentId,
+      userId: ownerId,
+      request: { blockId: blockIds[2] as string, replacement: 'link' },
+      correlationId,
+      source: 'api',
+    });
+
+    expect(result.movedBlocks).toBe(2);
+    expect(await contentOf(result.document.id)).toContain('![Wegweiser]');
+    expect(result.warnings).toContain(
+      'Die Dateien des Abschnitts gehören weiterhin zur Quellseite.',
+    );
+    expect(await markdownOf(documentId)).not.toContain('![Wegweiser]');
+  });
+
   it('names the cause when both ends of the range were the same heading', async () => {
     const { documentId, blockIds } = await seed(PAGE);
     const heading = blockIds[2] as string;

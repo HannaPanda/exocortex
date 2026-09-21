@@ -88,7 +88,19 @@ export class DocumentBuilder {
 
     const dropEmptyWrapper =
       entry.type === 'paragraph' && entry.content.length === 0 && this.pendingImages.length > 0;
-    if (!dropEmptyWrapper) this.top().content.push(node);
+    if (dropEmptyWrapper) {
+      /*
+       * `![alt](src) ^id` arrives as a paragraph holding the image and the
+       * anchor, and the paragraph is thrown away here because an image is a
+       * block of its own. The anchor was moved onto the paragraph a line
+       * earlier, so without this it would be thrown away with it and the
+       * picture would come back from Markdown as a different block every
+       * time.
+       */
+      this.adoptBlockId(entry);
+    } else {
+      this.top().content.push(node);
+    }
 
     if (this.pendingImages.length > 0 && (entry.type === 'paragraph' || entry.type === 'heading')) {
       this.top().content.push(...this.pendingImages);
@@ -186,6 +198,15 @@ export class DocumentBuilder {
 
   private top(): StackEntry {
     return this.stack[this.stack.length - 1] as StackEntry;
+  }
+
+  /** Hands a dropped wrapper's identifier to the image it wrapped. */
+  private adoptBlockId(entry: StackEntry): void {
+    const id = entry.attrs[BLOCK_ID_ATTRIBUTE];
+    if (!isValidBlockId(id)) return;
+    const image = this.pendingImages[0];
+    if (image === undefined || isValidBlockId(image.attrs?.[BLOCK_ID_ATTRIBUTE])) return;
+    image.attrs = { ...image.attrs, [BLOCK_ID_ATTRIBUTE]: id };
   }
 
   /** Moves a trailing ` ^id` from the last text node into the block attributes. */

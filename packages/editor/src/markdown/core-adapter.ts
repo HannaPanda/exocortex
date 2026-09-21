@@ -109,14 +109,14 @@ function horizontalRule(): string {
   return '---\n\n';
 }
 
-function image(node: ProseMirrorNode): string {
+function image(node: ProseMirrorNode, context: MarkdownSerializerContext): string {
   const src = typeof node.attrs?.src === 'string' ? node.attrs.src : '';
   const alt = typeof node.attrs?.alt === 'string' ? node.attrs.alt : '';
   const title =
     typeof node.attrs?.title === 'string' && node.attrs.title.length > 0
       ? ` "${node.attrs.title}"`
       : '';
-  return `![${alt}](${src}${title})\n\n`;
+  return `![${alt}](${src}${title})${context.blockIdSuffix(node)}\n\n`;
 }
 
 function cellText(node: ProseMirrorNode, context: MarkdownSerializerContext): string {

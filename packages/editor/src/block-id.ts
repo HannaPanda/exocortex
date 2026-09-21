@@ -8,8 +8,16 @@ export const BLOCK_ID_ATTRIBUTE = 'blockId';
 
 /**
  * Block node types that are addressable and therefore carry a stable
- * identifier. Inline nodes (text, hard breaks, images) are intentionally not
+ * identifier. Inline nodes (text, hard breaks) are intentionally not
  * addressable: they are always addressed through their containing block.
+ *
+ * An image is on this list because in this schema it is a block and not an
+ * inline node (`Image.configure({ inline: false })` in `extensions.ts`): it
+ * stands at the top level of the document with nothing around it. While it was
+ * missing, a picture was a block nothing could name, and the damage was not
+ * cosmetic: a section ending in one could not be moved at all, because the end
+ * of a range has to be addressable (issue #118). A read, a narrow write and a
+ * transclusion were blind to it for the same reason.
  *
  * Identity must never be derived from document offsets, Markdown line numbers or
  * array indexes (see ADR-003).
@@ -25,6 +33,7 @@ export const ADDRESSABLE_BLOCK_TYPES = [
   'taskList',
   'taskItem',
   'horizontalRule',
+  'image',
   'table',
   'tableRow',
   'callout',

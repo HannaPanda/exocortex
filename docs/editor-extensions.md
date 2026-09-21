@@ -164,7 +164,11 @@ Two rules hold for this layer, both learned the hard way (docs/deviations.md 16â
 ## Stable block identifiers
 
 Every addressable block carries a `blockId` attribute (rendered as
-`data-block-id`). `ADDRESSABLE_BLOCK_TYPES` lists them.
+`data-block-id`). `ADDRESSABLE_BLOCK_TYPES` lists them. A node that stands at
+the top level of a document belongs on that list, whatever it is called
+elsewhere: an image is a block here (`Image.configure({ inline: false })`), and
+while it was treated as inline it was a block nothing could name, so a section
+ending in a picture could not be moved at all.
 
 The `BlockId` extension:
 
