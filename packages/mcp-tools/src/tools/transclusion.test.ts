@@ -45,16 +45,27 @@ const MAP = {
   ],
 };
 
-function fakeClient(response: unknown): { client: ExocortexApiClient; calls: RecordedCall[] } {
+/**
+ * Answers with `responses` in order, and repeats the last one after that.
+ *
+ * One call per tool run is the normal case; a heading addressed from itself to
+ * itself is read twice, and the two answers have to differ or the test proves
+ * nothing about the second read.
+ */
+function fakeClient(...responses: unknown[]): {
+  client: ExocortexApiClient;
+  calls: RecordedCall[];
+} {
   const calls: RecordedCall[] = [];
+  const answer = (): unknown => responses[Math.min(calls.length - 1, responses.length - 1)];
   const client: ExocortexApiClient = {
     async request(input) {
       calls.push({ path: input.path, query: input.query });
-      return input.responseSchema.parse(response);
+      return input.responseSchema.parse(answer());
     },
     async upload(input) {
       calls.push({ path: input.path });
-      return input.responseSchema.parse(response);
+      return input.responseSchema.parse(answer());
     },
   };
   return { client, calls };
@@ -112,15 +123,41 @@ describe('pageBlockReadTool', () => {
     expect(result.text).toContain('Zweiter Absatz.');
   });
 
-  it('says so when both ends were the same identifier and the answer is a bare heading', async () => {
-    // What a run actually did on 2026-09-21: three reads of one section, one
-    // heading line back each time, and then it moved the section unseen.
-    const { client } = fakeClient({
-      ...PAGE,
+  it('answers with the section when both ends were the same heading, and says it widened', async () => {
+    // What two runs actually did on 2026-09-21: five reads of one section, one
+    // heading line back each time, and then they moved the section unseen. A
+    // sentence explaining the mistake was there for the last two of them.
+    const { client, calls } = fakeClient(
+      {
+        ...PAGE,
+        blockId: 'abc12345',
+        toBlockId: 'abc12345',
+        markdown: '### Tumorambulanz Klinikum Dortmund\n',
+      },
+      {
+        ...PAGE,
+        blockId: 'abc12345',
+        markdown: '### Tumorambulanz Klinikum Dortmund\n\nDie Ambulanz liegt im Haus 3.',
+      },
+    );
+
+    const result = await pageBlockReadTool.run(client, {
+      documentId: 'doc123456',
       blockId: 'abc12345',
       toBlockId: 'abc12345',
-      markdown: '### Tumorambulanz Klinikum Dortmund\n',
     });
+
+    expect(calls).toHaveLength(2);
+    expect(calls[1]?.query).not.toHaveProperty('toBlockId');
+    expect(result.text).toContain('nur die Überschriftszeile');
+    expect(result.text).toContain('Die Ambulanz liegt im Haus 3.');
+  });
+
+  it('carries the same note above the map when the widened section is too large', async () => {
+    const { client } = fakeClient(
+      { ...PAGE, blockId: 'abc12345', toBlockId: 'abc12345', markdown: '## Behandlungen\n' },
+      { ...PAGE, blockId: 'abc12345', view: 'map', chars: 112_000, map: MAP },
+    );
 
     const result = await pageBlockReadTool.run(client, {
       documentId: 'doc123456',
@@ -129,11 +166,11 @@ describe('pageBlockReadTool', () => {
     });
 
     expect(result.text).toContain('nur die Überschriftszeile');
-    expect(result.text).toContain('Ohne toBlockId');
+    expect(result.text).toContain('ist groß');
   });
 
-  it('says nothing extra when a window of one block really is the content', async () => {
-    const { client } = fakeClient({
+  it('reads once and says nothing extra when a window of one block really is the content', async () => {
+    const { client, calls } = fakeClient({
       ...PAGE,
       blockId: 'abc12345',
       toBlockId: 'abc12345',
@@ -146,6 +183,7 @@ describe('pageBlockReadTool', () => {
       toBlockId: 'abc12345',
     });
 
+    expect(calls).toHaveLength(1);
     expect(result.text).not.toContain('Überschriftszeile');
   });
 

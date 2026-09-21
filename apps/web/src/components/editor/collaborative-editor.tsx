@@ -443,7 +443,10 @@ function EditorSurface({
       }),
       editorProps: {
         attributes: {
-          class: 'exocortex-editor',
+          // `exocortex-editor-canvas` marks the page's own editor, as opposed
+          // to the read-only one a transclusion renders inside a block: it is
+          // the one whose hover area reaches into the gutter (`globals.css`).
+          class: 'exocortex-editor exocortex-editor-canvas',
           'data-testid': 'editor-surface',
           'aria-label': 'Seiteninhalt',
         },

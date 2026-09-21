@@ -36,34 +36,38 @@ const MAX_OUTLINE_LINES = 60;
 const MAX_FRAGMENT_CHARS = 20_000;
 
 /**
- * The one answer that is correct and still useless, said out loud.
+ * The one answer that is correct and still useless.
  *
- * A range from a block to itself is that block literally, heading or not, and
- * a map hands out exactly that address for a part it cut into single blocks
- * (`extractBlockRange`). So the meaning stays; what it costs is that a model
- * naming both ends out of habit asks for a heading's section and is handed the
- * heading line, which tells it nothing it did not have and looks like an empty
- * section rather than a misaddressed one. Observed in the wild: a run read a
- * section three times this way, got one line each time, and then moved it
- * unseen.
+ * A range from a block to itself is that block literally, heading or not, and a
+ * map hands out exactly that address for a part it cut into single blocks
+ * (`extractBlockRange`). The meaning has to stay, or a map entry could resolve
+ * to more than it named. What it costs is that a model naming both ends out of
+ * habit asks for a heading's section and is handed the heading line, which
+ * tells it nothing it did not already have and reads like an empty section
+ * rather than a misaddressed one.
  *
- * Only for the two ends being the same identifier. A window that really is one
- * block of prose answered its caller.
+ * Observed twice in the wild: a run read one section three times this way, got
+ * one line each time, and moved it unseen. A sentence explaining the mistake
+ * was added first and changed nothing -- two more runs, five more identical
+ * calls. So the tool stops explaining and answers the question that was meant,
+ * out loud: this is the agent surface, and an answer no caller can use is worse
+ * than a widened one that says it was widened. The range semantics underneath
+ * are untouched, and so is what the browser sees.
+ *
+ * Only when both ends are the same identifier *and* the answer is a lone
+ * heading line. A window that really is one block of prose answered its caller.
  */
-function bareHeadingHint(
-  input: { blockId?: string | undefined; toBlockId?: string | undefined },
-  markdown: string,
-): string {
-  if (input.toBlockId === undefined || input.toBlockId !== input.blockId) return '';
+function isBareHeadingLine(markdown: string): boolean {
   const trimmed = markdown.trim();
-  if (!trimmed.startsWith('#') || trimmed.includes('\n')) return '';
-  return (
-    '\n\nDas ist nur die Überschriftszeile: blockId und toBlockId waren dieselbe Kennung, und ' +
-    'das adressiert genau diesen einen Block. Ohne toBlockId antwortet derselbe Aufruf mit dem ' +
-    'ganzen Abschnitt, also der Überschrift und allem darunter bis zur nächsten gleich hohen ' +
-    'Überschrift.'
-  );
+  return trimmed.startsWith('#') && !trimmed.includes('\n');
 }
+
+/** Said above the content whenever the answer was widened to the section. */
+const WIDENED_NOTE =
+  'Hinweis: blockId und toBlockId waren dieselbe Kennung. Das adressiert genau diesen einen ' +
+  'Block, hier also nur die Überschriftszeile. Beantwortet ist deshalb der ganze Abschnitt, ' +
+  'so wie derselbe Aufruf ohne toBlockId ihn liefert: die Überschrift und alles darunter bis ' +
+  'zur nächsten Überschrift derselben oder einer höheren Ebene.';
 
 export const pageBlockReadTool: AnyToolDefinition = defineTool({
   name: 'exo_page_block_read',
@@ -75,8 +79,9 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
     'Blockfenster: die liest man mit blockId und toBlockId zusammen. ' +
     'Eine Überschrift adressiert ihren ganzen Abschnitt: die Überschrift und alles darunter bis ' +
     'zur nächsten Überschrift derselben oder einer höheren Ebene. Dafür bleibt toBlockId weg. ' +
-    'Dieselbe Kennung in blockId und toBlockId ist kein Abschnitt, sondern genau dieser eine ' +
-    'Block, bei einer Überschrift also nur die Überschriftszeile. ' +
+    'Dieselbe Kennung in blockId und toBlockId meint dagegen genau diesen einen Block; steht ' +
+    'dort eine Überschrift, antwortet das Werkzeug trotzdem mit ihrem ganzen Abschnitt und ' +
+    'sagt dazu, dass es die Anfrage erweitert hat. ' +
     'Mit blocks: true kommt statt der Karte die flache Liste aller adressierbaren Blöcke mit ' +
     'Vorschau, was für eine lange Seite viel und meistens zu viel ist. ' +
     'Das ist auch die Adresse, mit der sich Inhalt einbetten lässt: ein Block ' +
@@ -92,22 +97,34 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
   mutating: false,
   async execute(client, input) {
     const wantsFlatList = input.blocks === true && input.blockId === undefined;
-    const result = await client.request({
-      method: 'GET',
-      path: `/api/documents/${input.documentId}/fragment`,
-      query: {
-        ...(input.blockId === undefined ? {} : { blockId: input.blockId }),
-        ...(input.toBlockId === undefined ? {} : { toBlockId: input.toBlockId }),
-        // Without a block the caller is navigating, so the structure is the
-        // answer whatever the page weighs. With one it wants the content, and
-        // only its size decides.
-        ...(input.blockId === undefined && !wantsFlatList ? { want: 'map' } : {}),
-        ...(wantsFlatList ? { outline: 'true' } : {}),
-        maxChars: String(PAGE_CONTENT_BUDGET_CHARS),
-        maxEntries: String(PAGE_MAP_MAX_ENTRIES),
-      },
-      responseSchema: documentFragmentResponseSchema,
-    });
+    const read = async (toBlockId: string | undefined) =>
+      client.request({
+        method: 'GET',
+        path: `/api/documents/${input.documentId}/fragment`,
+        query: {
+          ...(input.blockId === undefined ? {} : { blockId: input.blockId }),
+          ...(toBlockId === undefined ? {} : { toBlockId }),
+          // Without a block the caller is navigating, so the structure is the
+          // answer whatever the page weighs. With one it wants the content, and
+          // only its size decides.
+          ...(input.blockId === undefined && !wantsFlatList ? { want: 'map' } : {}),
+          ...(wantsFlatList ? { outline: 'true' } : {}),
+          maxChars: String(PAGE_CONTENT_BUDGET_CHARS),
+          maxEntries: String(PAGE_MAP_MAX_ENTRIES),
+        },
+        responseSchema: documentFragmentResponseSchema,
+      });
+
+    let result = await read(input.toBlockId);
+    // A heading addressed from itself to itself: answer the question that was
+    // meant, and say so below (see `WIDENED_NOTE`). The second read costs a
+    // loopback call and nothing the caller can see.
+    const widened =
+      input.toBlockId !== undefined &&
+      input.toBlockId === input.blockId &&
+      result.resolved &&
+      isBareHeadingLine(result.markdown);
+    if (widened) result = await read(undefined);
 
     if (input.blockId !== undefined && !result.resolved) {
       return {
@@ -146,7 +163,8 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
         input.blockId === undefined
           ? `Karte der Seite „${result.title}“`
           : `Der Teil ${input.blockId} der Seite „${result.title}“ ist groß`;
-      return { text: renderDocumentMap(result.map, lead), data: result };
+      const map = renderDocumentMap(result.map, lead);
+      return { text: widened ? `${WIDENED_NOTE}\n\n${map}` : map, data: result };
     }
 
     const nested =
@@ -159,7 +177,9 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
         ? `Seite „${result.title}“`
         : `Block ${input.blockId} der Seite „${result.title}“`;
     return {
-      text: `${what}:\n\n${text}${nested}${bareHeadingHint(input, result.markdown)}`,
+      text: widened
+        ? `${WIDENED_NOTE}\n\n${what}:\n\n${text}${nested}`
+        : `${what}:\n\n${text}${nested}`,
       data: result,
     };
   },

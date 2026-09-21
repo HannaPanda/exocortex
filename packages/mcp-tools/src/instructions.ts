@@ -118,7 +118,7 @@ async function describeWorkspace(
     if (body === null) continue;
     if (body.length > remaining) {
       parts.push(
-        `### ${rule.title}\n(zu lang für den Handshake, lade sie mit exo_rules_load und documentId ${rule.documentId})`,
+        `### ${rule.title}\n(zu lang für den Handshake, lade sie mit exo_rules_load und documentId \`${rule.documentId}\`)`,
       );
       continue;
     }
@@ -128,7 +128,9 @@ async function describeWorkspace(
 
   const onDemand = rules.rules
     .filter((entry) => entry.mode === 'on_demand' && entry.trigger !== null)
-    .map((entry) => `- ${entry.trigger} (exo_rules_load mit documentId ${entry.documentId})`);
+    // The identifier in a code span: it is 24 random characters a model copies
+    // by hand into `exo_rules_load`, and one dropped character is a wasted call.
+    .map((entry) => `- ${entry.trigger} (exo_rules_load mit documentId \`${entry.documentId}\`)`);
   if (onDemand.length > 0) {
     parts.push(['### Regeln auf Anfrage', ...onDemand].join('\n'));
   }

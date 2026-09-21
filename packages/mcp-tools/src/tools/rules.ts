@@ -6,10 +6,44 @@ import {
   markdownExportResponseSchema,
 } from '@exocortex/contracts';
 
+import { ExocortexApiError } from '../client.js';
 import { truncateText } from '../format.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
 const MAX_RULE_CHARS = 60_000;
+
+/**
+ * How long an identifier in this deployment is (`@default(cuid(2))`).
+ *
+ * Only ever used to describe a miss, never to validate one: a shorter string is
+ * refused by the API for being unknown, not for its length, and hardcoding a
+ * check here would refuse a perfectly good identifier the day the generator
+ * changes.
+ */
+const ID_CHARS = 24;
+
+/**
+ * The answer to an identifier that leads nowhere.
+ *
+ * `exo_rules_load` is the one tool whose argument is always copied verbatim out
+ * of the system prompt, 24 random characters of it, and a model that drops one
+ * gets "Document does not exist" -- true, unhelpful, and indistinguishable from
+ * a rule page that was deleted. Two runs on 2026-09-21 lost a call each to
+ * exactly that, one character short both times. So the miss says what is most
+ * likely wrong with the identifier and names the tool that lists the real ones.
+ */
+function missedRule(documentId: string): string {
+  const length =
+    documentId.length === ID_CHARS
+      ? ''
+      : ` Die Kennung ist ${documentId.length} Zeichen lang, Kennungen in eXocortex haben ` +
+        `${ID_CHARS}: vermutlich ist sie beim Abschreiben unvollständig geblieben. Im ` +
+        'Systemprompt steht sie vollständig.';
+  return (
+    `Keine Regelseite mit der Kennung ${documentId} erreichbar.${length} ` +
+    'exo_rules_list mit der workspaceId nennt alle Regelseiten mit ihren Kennungen.'
+  );
+}
 
 export const rulesListTool: AnyToolDefinition = defineTool({
   name: 'exo_rules_list',
@@ -48,13 +82,22 @@ export const rulesLoadTool: AnyToolDefinition = defineTool({
   surfaces: ['mcp', 'ai'],
   mutating: false,
   async execute(client, input) {
-    const result = await client.request({
-      method: 'GET',
-      path: `/api/documents/${input.documentId}/export/markdown`,
-      responseSchema: markdownExportResponseSchema,
-    });
-    const { text } = truncateText(result.markdown, MAX_RULE_CHARS);
-    return { text, data: { ...result, fullLength: result.markdown.length } };
+    try {
+      const result = await client.request({
+        method: 'GET',
+        path: `/api/documents/${input.documentId}/export/markdown`,
+        responseSchema: markdownExportResponseSchema,
+      });
+      const { text } = truncateText(result.markdown, MAX_RULE_CHARS);
+      return { text, data: { ...result, fullLength: result.markdown.length } };
+    } catch (error) {
+      // Only the two ways an identifier can lead nowhere. Everything else --
+      // a broken export, an unreachable API -- is the caller's problem to see.
+      const missed =
+        error instanceof ExocortexApiError && (error.status === 403 || error.status === 404);
+      if (!missed) throw error;
+      return { text: missedRule(input.documentId), isError: true };
+    }
   },
 });
 

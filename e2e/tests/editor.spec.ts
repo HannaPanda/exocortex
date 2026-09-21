@@ -224,6 +224,39 @@ test.describe('editor', () => {
   });
 
   /*
+   * The pointer has to be able to travel from the text to the handle.
+   *
+   * The handle is a sibling of the editor, and the plugin hides it as soon as
+   * the pointer leaves the editor towards anything else. Offsetting the handle
+   * out of the collapse lane (the test below) put a lane of dead space between
+   * the two: the handle vanished halfway there and was unreachable on every
+   * block except a heading, whose disclosure button happens to sit in that
+   * lane and belongs to the editor. The steps matter -- a single jump onto the
+   * handle never crosses the gap.
+   */
+  test('keeps the block handle reachable when the pointer moves out to it', async ({ page }) => {
+    await openEditor(page);
+    await page.keyboard.type('Ein Absatz ohne Überschrift');
+
+    const block = page.locator('.exocortex-editor p', { hasText: 'Ein Absatz ohne' }).first();
+    const box = await block.boundingBox();
+    if (box === null) throw new Error('block has no layout');
+    const middle = box.y + box.height / 2;
+    await page.mouse.move(box.x + box.width / 2, middle);
+    await page.mouse.move(box.x + 8, middle, { steps: 8 });
+
+    const handle = page.getByTestId('block-handle');
+    await expect(handle).toBeVisible();
+    const handleBox = await handle.boundingBox();
+    if (handleBox === null) throw new Error('the handle has no layout');
+
+    await page.mouse.move(handleBox.x + handleBox.width / 2, middle, { steps: 12 });
+    await expect(handle).toBeVisible();
+    await handle.click();
+    await expect(page.getByTestId('block-duplicate')).toBeVisible();
+  });
+
+  /*
    * The interaction gutter has two lanes, and they are not allowed to share
    * pixels (issue #88).
    *

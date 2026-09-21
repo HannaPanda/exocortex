@@ -503,7 +503,10 @@ export async function buildSystemPrompt(
   let onDemandRuleCount = 0;
   const onDemandLines = onDemandRules
     .filter((rule) => rule.aiRuleTrigger !== null && rule.aiRuleTrigger.trim().length > 0)
-    .map((rule) => `- ${rule.aiRuleTrigger} (documentId: ${rule.id})`);
+    // The identifier in a code span: it is 24 random characters the model
+    // copies by hand into `exo_rules_load`, and a run on 2026-09-21 spent a
+    // call on one that had lost its last character.
+    .map((rule) => `- ${rule.aiRuleTrigger} (documentId: \`${rule.id}\`)`);
   if (onDemandLines.length > 0) {
     onDemandRuleCount = onDemandLines.length;
     sections.push(

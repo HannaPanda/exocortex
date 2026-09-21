@@ -99,6 +99,34 @@
     @apply min-h-[60vh] outline-none;
   }
 
+  /*
+   * The editing canvas counts as hovered across the whole gutter.
+   *
+   * The block handle is a sibling of this element rather than a child, and the
+   * drag-handle plugin hides it the moment the pointer leaves the editor
+   * towards anything that is not the handle itself. Once the handle had been
+   * offset out of the inner lane so it stopped covering a heading's disclosure
+   * button (issue #88), everything between the text and the handle was outside
+   * the editor: moving left off a paragraph hid the handle before the pointer
+   * could reach it. A heading stayed reachable only by accident, because its
+   * disclosure button *is* a child of the editor and floats into that lane.
+   *
+   * The negative margin and the padding cancel each other, so no text moves and
+   * the column keeps its width; what changes is where the pointer still counts
+   * as being inside. The gutter the page reserved is the right amount to
+   * reach by: it is exactly the space the handle is positioned into, and on a
+   * page too narrow to reserve one it shrinks to the plain padding rather than
+   * pushing the canvas out of the page.
+   *
+   * Only the page's own editor. A transclusion renders a second editor inside
+   * a block, and widening that one would put its hover area over the gutter of
+   * the page around it.
+   */
+  .exocortex-editor .ProseMirror.exocortex-editor-canvas {
+    margin-left: calc(-1 * var(--page-inline, 0px));
+    padding-left: var(--page-inline, 0px);
+  }
+
   .exocortex-editor .ProseMirror > * + * {
     @apply mt-3;
   }
