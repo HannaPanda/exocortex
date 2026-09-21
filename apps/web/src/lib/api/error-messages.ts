@@ -48,6 +48,14 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   ai_conversation_cursor_invalid: 'Die Liste konnte nicht weitergeblättert werden.',
   document_content_conflict: 'Die Seite wurde zwischenzeitlich geändert.',
   document_content_lossy: 'Anhängen würde eingebettete Datenbanken auf dieser Seite verlieren.',
+  document_block_not_found: 'Diesen Block gibt es auf der Seite nicht mehr.',
+  document_block_range_invalid:
+    'Die beiden Blöcke liegen nicht nebeneinander und beschreiben deshalb keinen Bereich.',
+  document_heading_not_found: 'Auf dieser Seite gibt es keine Überschrift mit diesem Text.',
+  document_heading_not_unique:
+    'Diese Überschrift kommt auf der Seite mehrfach vor; der Abschnitt ist damit nicht eindeutig.',
+  document_patch_not_found: 'Dieser Text kommt auf der Seite nicht vor.',
+  document_patch_not_unique: 'Dieser Text kommt auf der Seite mehrfach vor. Nichts wurde geändert.',
   attachment_text_unavailable: 'Der Text dieser Datei liegt noch nicht vor.',
   setting_unknown: 'Diese Einstellung gibt es nicht.',
   setting_not_overridable:

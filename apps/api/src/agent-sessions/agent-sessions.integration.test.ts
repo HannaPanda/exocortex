@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { WorkspaceAccessService } from '@exocortex/auth';
-import { loadDotEnv } from '@exocortex/config';
+import { type ApiEnv, loadDotEnv } from '@exocortex/config';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import {
   type ProseMirrorDocument,
@@ -22,12 +22,17 @@ import { DocumentContentService } from '../documents/document-content.service';
 import { DocumentMoveService } from '../documents/document-move.service';
 import { DocumentSnapshotService } from '../documents/document-snapshot.service';
 import { DocumentTrashService } from '../documents/document-trash.service';
+import { DocumentWriteCommitService } from '../documents/document-write-commit.service';
 import { DocumentsService } from '../documents/documents.service';
 import { PageLinkIdentityService } from '../documents/page-link-identity.service';
 import { type RealtimeService } from '../realtime/realtime.service';
 
 import { AgentSessionRevertService } from './agent-session-revert.service';
 import { AgentSessionsService } from './agent-sessions.service';
+
+/** `DocumentContentService` reads one value from the environment: the origin
+ * an image's address is judged against (issue #117). */
+const CONTENT_TEST_ENV = { APP_URL: 'https://exocortex.test' } as unknown as ApiEnv;
 
 /**
  * Provenance end to end, against the real database (issue #49, ADR-022).
@@ -145,12 +150,10 @@ beforeAll(async () => {
   );
   content = new DocumentContentService(
     prisma,
-    queues,
     logger,
+    CONTENT_TEST_ENV,
     access,
-    outbox,
-    realtime,
-    collaboration,
+    new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
     new PageLinkIdentityService(prisma),
   );
   const snapshots = new DocumentSnapshotService(

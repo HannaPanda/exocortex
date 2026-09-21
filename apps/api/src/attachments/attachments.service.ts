@@ -14,11 +14,13 @@ import { type ApiEnv } from '@exocortex/config';
 import {
   ALLOWED_ATTACHMENT_MIME_TYPES,
   type Attachment,
+  attachmentDownloadPath,
   attachmentTextEngine,
   type AttachmentTextInfoResponse,
   type AttachmentTextResponse,
   documentTextMetadataSchema,
   QUEUE_NAMES,
+  type UploadAttachmentFromUrlRequest,
   type UploadAttachmentResponse,
 } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
@@ -38,6 +40,8 @@ import { API_ENV, LOGGER } from '../common/logger.provider';
 import { OutboxService } from '../common/outbox.service';
 import { OBJECT_STORAGE, PRISMA, QUEUES } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
+
+import { fetchRemoteFile } from './remote-file';
 
 export interface UploadInput {
   workspaceId: string;
@@ -216,7 +220,63 @@ export class AttachmentsService {
         filename,
         expiresInSeconds: 300,
       }),
+      // Beside the presigned URL, never instead of it: the two answer different
+      // questions, and the one a page needs is this one (issue #117).
+      embedUrl: attachmentDownloadPath(stored.id),
     };
+  }
+
+  /**
+   * Uploads what an address serves (issue #117).
+   *
+   * The step that was missing between an agent holding the address of a picture
+   * and that picture being on a page. Everything after the fetch is the
+   * ordinary upload -- same access check, same magic-byte detection, same size
+   * limit -- so a file that arrives this way is in no way a different kind of
+   * attachment than one somebody dragged into the editor.
+   *
+   * The address is checked before the request and again after every redirect
+   * (ADR-033). The API runs inside this host's Docker network, so a check on
+   * the typed string alone would be no check at all: `checkPublicAddress`
+   * resolves the name and judges the addresses it answers with.
+   */
+  async uploadFromUrl(input: {
+    workspaceId: string;
+    userId: string;
+    request: UploadAttachmentFromUrlRequest;
+    correlationId: string;
+  }): Promise<UploadAttachmentResponse> {
+    // Before the fetch, not only before the upload: the access check is what
+    // decides whether this deployment makes an outgoing request at all.
+    const role = await this.access.requireRoleAnchoredAt(
+      input.workspaceId,
+      input.userId,
+      input.request.documentId,
+    );
+    assertPolicy(canUploadFile(role));
+
+    const fetched = await fetchRemoteFile(input.request.url, {
+      maxBytes: this.env.MAX_UPLOAD_BYTES,
+      logger: this.logger,
+      correlationId: input.correlationId,
+    });
+
+    this.logger.info('Fetched a file for an attachment', {
+      workspaceId: input.workspaceId,
+      url: fetched.url,
+      byteSize: fetched.body.byteLength,
+      correlationId: input.correlationId,
+    });
+
+    return this.upload({
+      workspaceId: input.workspaceId,
+      userId: input.userId,
+      documentId: input.request.documentId,
+      filename: input.request.filename ?? fetched.filename,
+      declaredMimeType: fetched.contentType,
+      body: fetched.body,
+      correlationId: input.correlationId,
+    });
   }
 
   /**

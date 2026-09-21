@@ -28,6 +28,7 @@ import {
 import { truncateText } from '../format.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
+import { PAGE_EDIT_TOOLS } from './page-edits.js';
 import {
   pageActivityTool,
   pageArchiveTool,
@@ -176,10 +177,14 @@ export const pageReadTool: AnyToolDefinition = defineTool({
     'ihr hängt, steht in der Liste der Unterseiten. ' +
     'Ein Block ":::transclusion Titel^blockId" zeigt Inhalt, der einer anderen Seite gehört. ' +
     'Standardmäßig steht er als solcher im Export; mit transclusions "text" steht stattdessen ' +
-    'der Text der Quelle dort, was für einen Export gedacht ist, der diese Installation verlässt.',
+    'der Text der Quelle dort, was für einen Export gedacht ist, der diese Installation verlässt. ' +
+    'Mit includeBlockIds: true steht hinter jedem Block seine Kennung als "^kennung". Das ist die ' +
+    'Adresse für exo_page_block_update, exo_page_patch und exo_page_section_write, also für jede ' +
+    'Änderung, die nicht die ganze Seite neu schreiben soll.',
   inputSchema: z.object({
     documentId: idSchema,
     transclusions: transclusionExportModeSchema.optional(),
+    includeBlockIds: z.boolean().optional(),
   }),
   surfaces: ['mcp', 'ai'],
   mutating: false,
@@ -187,7 +192,10 @@ export const pageReadTool: AnyToolDefinition = defineTool({
     const result = await client.request({
       method: 'GET',
       path: `/api/documents/${input.documentId}/export/markdown`,
-      query: input.transclusions === undefined ? undefined : { transclusions: input.transclusions },
+      query: {
+        ...(input.transclusions === undefined ? {} : { transclusions: input.transclusions }),
+        ...(input.includeBlockIds === true ? { blockIds: 'true' } : {}),
+      },
       responseSchema: markdownExportResponseSchema,
     });
     const { text } = truncateText(result.markdown, MAX_PAGE_READ_CHARS);
@@ -301,7 +309,16 @@ const WRITE_MARKDOWN_DESCRIPTION =
   'Seitenlinks als [[Seitentitel]] schreiben: eXocortex bindet sie beim Schreiben an die Seite ' +
   'mit diesem Titel, sodass der Verweis ein späteres Umbenennen dieser Seite übersteht. ' +
   'Ein Titel, den es noch nicht gibt, bleibt als unaufgelöster Verweis stehen und bietet in ' +
-  'der Oberfläche an, die Seite anzulegen.';
+  'der Oberfläche an, die Seite anzulegen. ' +
+  // The one thing an agent could not know and had no way to find out (issue
+  // #117). It belongs in the parameter description rather than only in the
+  // attachment tools: the mistake is made while writing Markdown, by a caller
+  // that has no reason to have read anything about attachments.
+  'Bilder und andere Dateien müssen aus diesem Workspace kommen: ' +
+  '![Beschreibung](/api/attachments/<id>/download), wobei die id von ' +
+  'exo_attachment_upload oder exo_attachment_upload_url kommt (Feld embedUrl). ' +
+  'Eine Adresse auf einem fremden Server wird vom Browser blockiert und bleibt leer, ' +
+  'auch wenn sie sich anderswo öffnen lässt.';
 
 const pageWriteInputSchema = z
   .object({ documentId: idSchema })
@@ -583,6 +600,7 @@ export const PAGE_TOOLS: readonly AnyToolDefinition[] = [
   pageReadTool,
   pageCreateTool,
   pageWriteTool,
+  ...PAGE_EDIT_TOOLS,
   pageRenameTool,
   pageMoveTool,
   pageArchiveTool,

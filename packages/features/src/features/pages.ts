@@ -26,6 +26,21 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     claims: { screens: ['/arbeitsbereich/:x/seite/:x'] },
   }),
   defineFeature({
+    id: 'seiten-teilweise-schreiben',
+    area: 'seiten',
+    title: 'Ein Agent ändert eine Stelle, nicht die ganze Seite',
+    summary:
+      'Ein Agent kann einen einzelnen Block austauschen, eine Textstelle ersetzen oder unter einer bestimmten Überschrift schreiben. Der Rest der Seite wird dabei nicht angefasst, auch nicht das, was du in derselben Minute getippt hast.',
+    details: [
+      'Bis dahin gab es nur den ganzen Weg: ein Agent, der eine Zeile korrigieren wollte, musste die komplette Seite lesen, sie im Kopf neu zusammensetzen und vollständig zurückschreiben. Auf einer langen Seite ist das teuer, und es überschreibt stillschweigend alles, was in der Zwischenzeit woanders geschrieben wurde.',
+      'Jetzt gibt es drei genauere Wege. exo_page_block_update tauscht genau einen Block, adressiert über seine Kennung. exo_page_patch ersetzt eine Textstelle und schreibt gar nichts, wenn sie mehrfach oder gar nicht vorkommt. exo_page_section_write schreibt unter eine Überschrift, wobei die Überschrift stehen bleibt, weil sie die Adresse ist.',
+      'Was dabei nicht angefasst wird, bleibt buchstäblich unangetastet: gleiche Blockkennungen, also halten Kommentare und Einbettungen, die daran hängen. Wer die Seite gerade offen hat, sieht nur die eine geänderte Stelle aufblinken statt eines neu geladenen Dokuments. Und mit expectedYjsUpdatedAt lehnt der Aufruf lieber ab, als eine fremde Änderung zu überschreiben.',
+    ],
+    since: '2026-09-21',
+    references: ['#111', 'ADR-055'],
+    tools: ['exo_page_block_update', 'exo_page_patch', 'exo_page_section_write'],
+  }),
+  defineFeature({
     id: 'bloecke',
     area: 'seiten',
     title: 'Blöcke über das Schrägstrich-Menü',

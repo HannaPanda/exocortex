@@ -95,9 +95,30 @@ export const attachmentSchema = z.object({
 });
 export type Attachment = z.infer<typeof attachmentSchema>;
 
+/**
+ * The address a file is embedded from, and the only one that works on a page.
+ *
+ * Same-origin, so the Content Security Policy in `apps/web/next.config.ts`
+ * (`img-src 'self' blob: data:`) lets the browser load it, and stable, so it is
+ * still the right address next year. The browser has always built this string
+ * for itself; naming it here is what lets an agent embed a picture without
+ * inventing the route (issue #117).
+ */
+export function attachmentDownloadPath(attachmentId: string): string {
+  return `/api/attachments/${attachmentId}/download`;
+}
+
 export const uploadAttachmentResponseSchema = z.object({
   attachment: attachmentSchema,
+  /**
+   * A presigned object-storage URL, for a client that wants the bytes right
+   * now without going through the API again. It points at a foreign origin and
+   * expires in five minutes, so it must never be written into a page: that
+   * combination is CSP-blocked immediately and dead shortly after (issue #117).
+   */
   downloadUrl: z.string(),
+  /** `attachmentDownloadPath`: the address that belongs in a page's Markdown. */
+  embedUrl: z.string(),
 });
 export type UploadAttachmentResponse = z.infer<typeof uploadAttachmentResponseSchema>;
 
@@ -109,6 +130,27 @@ export const uploadAttachmentFieldsSchema = z.object({
   documentId: idSchema.optional(),
 });
 export type UploadAttachmentFields = z.infer<typeof uploadAttachmentFieldsSchema>;
+
+/**
+ * Body of `POST /api/workspaces/:workspaceId/attachments/from-url` (issue #117).
+ *
+ * The missing step between "an agent holds the address of a picture" and "the
+ * picture is on a page". Without it the only route into the workspace is
+ * Base64 through the tool call, which an agent that never had the bytes cannot
+ * produce -- so it links the foreign host instead, and the reader sees a broken
+ * image.
+ *
+ * The address goes through the same check as every other fetch this deployment
+ * performs on somebody else's behalf (`checkPublicAddress`, ADR-033), before
+ * the request is made and again after each redirect.
+ */
+export const uploadAttachmentFromUrlRequestSchema = z.object({
+  url: z.string().url().max(2048),
+  documentId: idSchema.nullable().default(null),
+  /** Overrides the name derived from the address. The extension is still the file's. */
+  filename: z.string().min(1).max(255).nullable().default(null),
+});
+export type UploadAttachmentFromUrlRequest = z.infer<typeof uploadAttachmentFromUrlRequestSchema>;
 
 /** State machine for the cached text extraction of an attachment (D6). */
 export const attachmentTextStatusSchema = z.enum(['not_applicable', 'pending', 'ready', 'failed']);

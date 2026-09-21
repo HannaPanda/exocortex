@@ -2,7 +2,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { type AiProvider } from '@exocortex/ai';
 import { WorkspaceAccessService } from '@exocortex/auth';
-import { loadDotEnv } from '@exocortex/config';
+import { type ApiEnv, loadDotEnv } from '@exocortex/config';
 import { resolveSettings, type SearchResponse, type Settings } from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { type ProseMirrorDocument, serializePlainText } from '@exocortex/editor';
@@ -18,6 +18,7 @@ import {
 import { DocumentContentService } from '../documents/document-content.service';
 import { DocumentMoveService } from '../documents/document-move.service';
 import { DocumentTrashService } from '../documents/document-trash.service';
+import { DocumentWriteCommitService } from '../documents/document-write-commit.service';
 import { DocumentsService } from '../documents/documents.service';
 import { PageLinkIdentityService } from '../documents/page-link-identity.service';
 import { EntityProfileService } from '../entities/entity-profile.service';
@@ -28,6 +29,10 @@ import { type SearchService } from '../search/search.service';
 
 import { MemoryService } from './memory.service';
 import { MemoryCheckpointService } from './memory-checkpoint.service';
+
+/** `DocumentContentService` reads one value from the environment: the origin
+ * an image's address is judged against (issue #117). */
+const CONTENT_TEST_ENV = { APP_URL: 'https://exocortex.test' } as unknown as ApiEnv;
 
 /**
  * The checkpoint against the real database (issue #92, ADR-046).
@@ -135,12 +140,10 @@ beforeAll(async () => {
   );
   const content = new DocumentContentService(
     prisma,
-    queues,
     logger,
+    CONTENT_TEST_ENV,
     access,
-    outbox,
-    realtime,
-    collaboration,
+    new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
     new PageLinkIdentityService(prisma),
   );
 

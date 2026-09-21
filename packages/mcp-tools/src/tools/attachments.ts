@@ -6,6 +6,7 @@ import {
   attachmentTextResponseSchema,
   type DocumentTextMetadata,
   idSchema,
+  uploadAttachmentFromUrlRequestSchema,
   uploadAttachmentResponseSchema,
 } from '@exocortex/contracts';
 
@@ -18,12 +19,27 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
  * guessed at. Adding that route is out of scope for this brief; see
  * `docs/mcp.md` "Known gaps".
  *
- * Likewise `GET /api/attachments/:attachmentId/download` streams the file
- * bytes directly (it is not a JSON response with a presigned URL), which does
- * not fit the JSON tool-result model this catalogue is built on, so
- * `exo_attachment_download_url` is dropped too. The presigned URL is still
- * reachable through `exo_attachment_upload`'s response at upload time.
+ * `GET /api/attachments/:attachmentId/download` streams the file bytes
+ * directly, which does not fit the JSON tool-result model this catalogue is
+ * built on, so there is no tool that fetches an attachment's content. Its
+ * *address* is a different matter and is returned by both upload tools, because
+ * that address is what a page needs (issue #117).
  */
+
+/**
+ * The two sentences every caller has to have read before it embeds anything.
+ *
+ * Repeated in both upload tools rather than written once and referenced: a
+ * model reads one tool description, not the file they live in, and the whole
+ * failure this text exists to prevent was an agent that had read the one
+ * description that did not say it.
+ */
+const EMBED_RECIPE =
+  'Zum Einbetten in eine Seite gilt embedUrl (/api/attachments/<id>/download), nicht downloadUrl: ' +
+  'downloadUrl zeigt auf den Objektspeicher, läuft nach fünf Minuten ab und wird vom Browser ' +
+  'ohnehin blockiert. Ein Bild kommt also so auf eine Seite: erst hochladen, dann ' +
+  '![Beschreibung](embedUrl) über exo_page_write schreiben. Eine Bildadresse auf einem fremden ' +
+  'Server funktioniert nie, egal ob sie im Browser aufrufbar ist.';
 
 /**
  * The declared type for the formats that carry no signature.
@@ -58,10 +74,19 @@ const attachmentUploadInputSchema = z.object({
   contentBase64: z.string().max(35_000_000),
 });
 
+/** One line both upload tools answer with, so an embed can be written from it. */
+function uploadedText(result: { attachment: { filename: string; id: string }; embedUrl: string }) {
+  return (
+    `Datei hochgeladen: ${result.attachment.filename} (id: ${result.attachment.id}).\n` +
+    `Einbetten mit: ![Beschreibung](${result.embedUrl})`
+  );
+}
+
 export const attachmentUploadTool: AnyToolDefinition = defineTool({
   name: 'exo_attachment_upload',
   description:
-    'Lädt eine Datei (Base64-kodiert) in einen Workspace hoch, optional an eine Seite angehängt.',
+    'Lädt eine Datei (Base64-kodiert) in einen Workspace hoch, optional an eine Seite angehängt. ' +
+    EMBED_RECIPE,
   inputSchema: attachmentUploadInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,
@@ -79,10 +104,47 @@ export const attachmentUploadTool: AnyToolDefinition = defineTool({
       fields: input.documentId !== null ? { documentId: input.documentId } : undefined,
       responseSchema: uploadAttachmentResponseSchema,
     });
-    return {
-      text: `Datei hochgeladen: ${result.attachment.filename} (id: ${result.attachment.id})`,
-      data: result,
-    };
+    return { text: uploadedText(result), data: result };
+  },
+});
+
+/**
+ * The same upload, from an address (issue #117).
+ *
+ * A tool of its own rather than a `sourceUrl` on the one above, and the reason
+ * is `untrustedOutput`: it is declared per tool, not per call. This one fetches
+ * from the open web, so a run that uses it has read something nobody here
+ * wrote and must be fenced (ADR-030) -- even though the answer carries no web
+ * text, exactly as `exo_clip` is fenced, because the bytes land in a workspace
+ * where the same run can read them back. Folding the two together would fence
+ * every Base64 upload as well, which would end a run for having attached a file
+ * it produced itself.
+ */
+export const attachmentUploadUrlTool: AnyToolDefinition = defineTool({
+  name: 'exo_attachment_upload_url',
+  description:
+    'Lädt die Datei unter einer Adresse in einen Workspace hoch, optional an eine Seite angehängt. ' +
+    'Das ist der Weg für ein Bild, das du nur als URL hast: eXocortex holt es und legt es als ' +
+    'Anhang ab. Die Adresse muss öffentlich erreichbar sein (kein localhost, keine internen ' +
+    'Netze). ' +
+    EMBED_RECIPE,
+  inputSchema: z
+    .object({ workspaceId: idSchema })
+    .extend(uploadAttachmentFromUrlRequestSchema.shape),
+  surfaces: ['mcp', 'ai'],
+  mutating: true,
+  // The file comes from outside this deployment. See the note above.
+  untrustedOutput: 'web',
+  target: (input) => `workspace:${input.workspaceId}`,
+  async execute(client, input) {
+    const { workspaceId, ...body } = input;
+    const result = await client.request({
+      method: 'POST',
+      path: `/api/workspaces/${workspaceId}/attachments/from-url`,
+      body,
+      responseSchema: uploadAttachmentResponseSchema,
+    });
+    return { text: uploadedText(result), data: result };
   },
 });
 
@@ -255,6 +317,7 @@ export const attachmentCorrectTextTool: AnyToolDefinition = defineTool({
 
 export const ATTACHMENT_TOOLS: readonly AnyToolDefinition[] = [
   attachmentUploadTool,
+  attachmentUploadUrlTool,
   attachmentReadTextTool,
   attachmentReextractTextTool,
   attachmentCorrectTextTool,

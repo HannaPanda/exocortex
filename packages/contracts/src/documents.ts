@@ -11,6 +11,7 @@ import {
   idSchema,
   isoDateTimeSchema,
 } from './primitives';
+import { blockIdSchema } from './transclusion';
 
 /**
  * How wide the page body is rendered. `narrow` is the 68ch reading measure,
@@ -865,6 +866,91 @@ export const documentContentWriteResponseSchema = z.object({
   warnings: z.array(z.string()),
 });
 export type DocumentContentWriteResponse = z.infer<typeof documentContentWriteResponseSchema>;
+
+/**
+ * Which blocks a narrow write addresses (issue #111).
+ *
+ * Mirrors `BlockRangeEdit` in `@exocortex/editor`, which owns the behaviour.
+ * The two packages are both leaves and neither may import the other, so the
+ * shape is written twice on purpose; it is three fields long, and the API
+ * passes one straight into the other, which is where a drift would surface.
+ */
+export const blockRangeEditSchema = z.object({
+  fromBlockId: blockIdSchema,
+  toBlockId: blockIdSchema.nullable().default(null),
+  placement: z.enum(['replace', 'before', 'after']),
+});
+export type BlockRangeEdit = z.infer<typeof blockRangeEditSchema>;
+
+/**
+ * Replacing one block, or inserting beside it
+ * (`POST /api/documents/:documentId/content/block`, issue #111).
+ *
+ * The primitive the other two are built on, and the one to reach for when the
+ * caller already read the page: `exo_page_read` hands out block identifiers,
+ * and this turns one of them back into an edit that leaves the other four
+ * hundred blocks of the page exactly as they are -- same identifiers, same Yjs
+ * history, including whatever somebody typed while this call was being thought
+ * about.
+ *
+ * A heading addresses only itself here. That is the opposite of a transclusion,
+ * where a heading stands for its whole section (ADR-045), and it is deliberate:
+ * this tool's promise is "exactly one block", and a caller that means the
+ * section has `section` below to say so.
+ */
+export const documentBlockWriteRequestSchema = z.object({
+  blockId: blockIdSchema,
+  markdown: z.string().max(200_000),
+  /** `replace` swaps the block out; `append`/`prepend` insert after/before it. */
+  mode: z.enum(['replace', 'append', 'prepend']).default('replace'),
+  expectedYjsUpdatedAt: isoDateTimeSchema.optional(),
+});
+export type DocumentBlockWriteRequest = z.infer<typeof documentBlockWriteRequestSchema>;
+
+/**
+ * Replacing a piece of text (`POST /api/documents/:documentId/content/patch`).
+ *
+ * Modelled on `exo_project_patch_file`, including the part that matters: a
+ * target that is not unique is not disambiguated, it is refused, and nothing is
+ * written. `oldText` is matched against the page's Markdown, which is the
+ * string `exo_page_read` answers with, so a caller can copy a line out of what
+ * it read and send it back.
+ */
+export const documentPatchRequestSchema = z.object({
+  oldText: z.string().min(1).max(100_000),
+  newText: z.string().max(100_000),
+  /** Allow several matches. Without it, anything but exactly one is refused. */
+  replaceAll: z.boolean().default(false),
+  expectedYjsUpdatedAt: isoDateTimeSchema.optional(),
+});
+export type DocumentPatchRequest = z.infer<typeof documentPatchRequestSchema>;
+
+/**
+ * Writing under a heading (`POST /api/documents/:documentId/content/section`).
+ *
+ * The semantic layer over the block primitive: a section is addressed by the
+ * heading a person would name it by, and `replace` swaps the *body* while the
+ * heading stays, because the heading is the address. A heading that occurs
+ * twice is refused with both identifiers, so the caller can say which one it
+ * meant with `block` instead.
+ */
+export const documentSectionWriteRequestSchema = z.object({
+  /** The heading's text, compared trimmed and without regard to case. */
+  heading: z.string().min(1).max(300),
+  markdown: z.string().max(200_000),
+  mode: z.enum(['replace', 'append', 'prepend']).default('replace'),
+  expectedYjsUpdatedAt: isoDateTimeSchema.optional(),
+});
+export type DocumentSectionWriteRequest = z.infer<typeof documentSectionWriteRequestSchema>;
+
+/** What a narrow write answers with: the page write's response plus where it landed. */
+export const documentGranularWriteResponseSchema = documentContentWriteResponseSchema.extend({
+  /** Identifiers of the blocks that now stand where the edit landed. */
+  blockIds: z.array(z.string()),
+  /** Occurrences replaced. Always 1 except for a patch with `replaceAll`. */
+  replacements: z.number().int().nonnegative(),
+});
+export type DocumentGranularWriteResponse = z.infer<typeof documentGranularWriteResponseSchema>;
 
 export const aiRuleSummarySchema = z.object({
   documentId: idSchema,

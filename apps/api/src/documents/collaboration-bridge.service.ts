@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { issueServiceToken } from '@exocortex/auth';
 import { type ApiEnv } from '@exocortex/config';
 import {
+  type BlockRangeEdit,
   type CollaborationApplyMode,
   collaborationApplyPath,
   type CollaborationApplyRequest,
@@ -66,6 +67,11 @@ export class CollaborationBridgeService {
      * everything its users typed in the meantime.
      */
     proseMirrorJson: ProseMirrorDocument;
+    /**
+     * Set for a narrow write (issue #111): the blocks of the *live* document
+     * this content replaces or is inserted beside. `mode` is then ignored.
+     */
+    edit?: BlockRangeEdit | null;
     correlationId: string;
   }): Promise<ApplyToLiveSessionResult> {
     const unreachable: ApplyToLiveSessionResult = {
@@ -85,6 +91,7 @@ export class CollaborationBridgeService {
     const body: CollaborationApplyRequest = {
       proseMirrorJson: input.proseMirrorJson,
       mode: input.mode,
+      edit: input.edit ?? null,
       correlationId: input.correlationId,
     };
 

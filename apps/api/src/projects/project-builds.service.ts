@@ -8,6 +8,7 @@ import {
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import {
+  attachmentDownloadPath,
   PROJECT_MAX_DIAGNOSTICS,
   PROJECT_MAX_LOG_CHARS,
   PROJECT_MAX_SOURCE_AREAS,
@@ -279,7 +280,7 @@ export class ProjectBuildsService {
               attachmentId: pdf.id,
               filename: pdf.filename,
               byteSize: pdf.byteSize,
-              downloadPath: `/api/attachments/${pdf.id}/download`,
+              downloadPath: attachmentDownloadPath(pdf.id),
               pageCount: row.pageCount,
               textStatus: pdf.textStatus,
             },
@@ -290,7 +291,7 @@ export class ProjectBuildsService {
               attachmentId: map.id,
               filename: map.filename,
               byteSize: map.byteSize,
-              downloadPath: `/api/attachments/${map.id}/download`,
+              downloadPath: attachmentDownloadPath(map.id),
             },
     };
   }

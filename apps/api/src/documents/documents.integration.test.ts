@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
-import { loadDotEnv } from '@exocortex/config';
+import { type ApiEnv, loadDotEnv } from '@exocortex/config';
 import { QUEUE_NAMES, resolveSettings, type Settings } from '@exocortex/contracts';
 import {
   createPrismaClient,
@@ -31,6 +31,7 @@ import {
 } from './collaboration-bridge.service';
 import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
+import { DocumentEditService } from './document-edit.service';
 import { DocumentFragmentService } from './document-fragment.service';
 import { DocumentLinksService } from './document-links.service';
 import { DocumentMarkdownService } from './document-markdown.service';
@@ -38,9 +39,14 @@ import { DocumentMoveService } from './document-move.service';
 import { DocumentSnapshotService } from './document-snapshot.service';
 import { DocumentTrashService } from './document-trash.service';
 import { DocumentTreeService } from './document-tree.service';
+import { DocumentWriteCommitService } from './document-write-commit.service';
 import { DocumentsService } from './documents.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
 import { RelatedDocumentsService } from './related-documents.service';
+
+/** `DocumentContentService` reads one value from the environment: the origin
+ * an image's address is judged against (issue #117). */
+const CONTENT_TEST_ENV = { APP_URL: 'https://exocortex.test' } as unknown as ApiEnv;
 
 /**
  * Document domain tests against the real database.
@@ -60,6 +66,7 @@ let service: DocumentsService;
 let treeService: DocumentTreeService;
 let trashService: DocumentTrashService;
 let contentService: DocumentContentService;
+let editService: DocumentEditService;
 let snapshotService: DocumentSnapshotService;
 let linksService: DocumentLinksService;
 let markdownService: DocumentMarkdownService;
@@ -168,12 +175,18 @@ beforeAll(async () => {
   );
   contentService = new DocumentContentService(
     prisma,
-    queues,
     logger,
+    CONTENT_TEST_ENV,
     access,
-    outbox,
-    realtime,
-    collaboration,
+    new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
+    new PageLinkIdentityService(prisma),
+  );
+  editService = new DocumentEditService(
+    prisma,
+    logger,
+    CONTENT_TEST_ENV,
+    access,
+    new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
     new PageLinkIdentityService(prisma),
   );
   snapshotService = new DocumentSnapshotService(
@@ -2216,5 +2229,175 @@ describe('exporting a page that embeds another', () => {
     // The reference stays a reference rather than duplicating the page inside
     // itself, which is the one case one level of expansion does not cover.
     expect(exported.markdown).toContain(':::transclusion Selbstbezug');
+  });
+});
+
+/**
+ * The narrow writes (issue #111, ADR-055).
+ *
+ * The promise they make is not "the text changed" -- `exo_page_write` already
+ * does that. It is "and nothing else did", which is what these check: the
+ * identifiers of the blocks that were not addressed, and that an ambiguous
+ * target writes nothing at all.
+ */
+describe('editing part of a page', () => {
+  /** Block identifiers of a page's top-level blocks, in reading order. */
+  async function blockIdsOf(documentId: string): Promise<string[]> {
+    const fragment = await fragmentService.read(documentId, ownerId, { outline: true });
+    return fragment.blocks.map((block) => block.blockId);
+  }
+
+  async function markdownOf(documentId: string): Promise<string> {
+    const content = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+    return content.markdown ?? '';
+  }
+
+  async function seed(markdown: string): Promise<{ documentId: string; blockIds: string[] }> {
+    const documentId = await createPage(
+      `Teilweise schreiben ${Math.random().toString(36).slice(2)}`,
+    );
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown, mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+    return { documentId, blockIds: await blockIdsOf(documentId) };
+  }
+
+  it('replaces one block and leaves every other identifier standing', async () => {
+    const { documentId, blockIds } = await seed('## Stand\n\nAlt.\n\nBleibt stehen.');
+
+    const result = await editService.writeBlock({
+      documentId,
+      userId: ownerId,
+      request: { blockId: blockIds[1] as string, markdown: 'Neu.', mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+
+    const after = await markdownOf(documentId);
+    expect(after).toContain('Neu.');
+    expect(after).not.toContain('Alt.');
+    expect(after).toContain('Bleibt stehen.');
+
+    const ids = await blockIdsOf(documentId);
+    expect([ids[0], ids[2]]).toEqual([blockIds[0], blockIds[2]]);
+    expect(result.snapshotId).toBeTruthy();
+    expect(result.blockIds).toHaveLength(1);
+  });
+
+  it('writes a section without rewriting the rest of the page', async () => {
+    const { documentId, blockIds } = await seed('## Stand\n\nAlt.\n\n## Danach\n\nUnberührt.');
+
+    await editService.writeSection({
+      documentId,
+      userId: ownerId,
+      request: { heading: 'stand', markdown: 'Frisch.', mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+
+    const after = await markdownOf(documentId);
+    expect(after).toContain('## Stand');
+    expect(after).toContain('Frisch.');
+    expect(after).not.toContain('Alt.');
+    expect(after).toContain('Unberührt.');
+
+    const ids = await blockIdsOf(documentId);
+    // The heading is the address, so it must be the same heading afterwards.
+    expect(ids[0]).toBe(blockIds[0]);
+  });
+
+  it('patches a line and says how many it replaced', async () => {
+    const { documentId } = await seed('Eine Zeile.\n\nEine andere Zeile.');
+
+    const result = await editService.patch({
+      documentId,
+      userId: ownerId,
+      request: { oldText: 'Eine Zeile.', newText: 'Korrigierte Zeile.', replaceAll: false },
+      correlationId,
+      source: 'api',
+    });
+
+    expect(result.replacements).toBe(1);
+    expect(await markdownOf(documentId)).toContain('Korrigierte Zeile.');
+  });
+
+  it('writes nothing when the text occurs twice', async () => {
+    const { documentId } = await seed('Doppelt.\n\nDoppelt.');
+    const before = await markdownOf(documentId);
+
+    const error = await editService
+      .patch({
+        documentId,
+        userId: ownerId,
+        request: { oldText: 'Doppelt.', newText: 'Einfach.', replaceAll: false },
+        correlationId,
+        source: 'api',
+      })
+      .then(() => null)
+      .catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({ code: 'document_patch_not_unique' });
+    expect(await markdownOf(documentId)).toBe(before);
+  });
+
+  it('refuses a block that is not on the page', async () => {
+    const { documentId } = await seed('Nur ein Absatz.');
+
+    const error = await editService
+      .writeBlock({
+        documentId,
+        userId: ownerId,
+        request: { blockId: 'nichtvorhanden', markdown: 'x', mode: 'replace' },
+        correlationId,
+        source: 'api',
+      })
+      .then(() => null)
+      .catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({ code: 'document_block_not_found' });
+  });
+
+  it('refuses a stale expectedYjsUpdatedAt instead of overwriting', async () => {
+    const { documentId, blockIds } = await seed('Absatz.');
+
+    const error = await editService
+      .writeBlock({
+        documentId,
+        userId: ownerId,
+        request: {
+          blockId: blockIds[0] as string,
+          markdown: 'x',
+          mode: 'replace',
+          expectedYjsUpdatedAt: new Date(0).toISOString(),
+        },
+        correlationId,
+        source: 'api',
+      })
+      .then(() => null)
+      .catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({ code: 'document_content_conflict' });
+  });
+
+  it("warns about an image on somebody else's host (issue #117)", async () => {
+    const { documentId, blockIds } = await seed('Absatz.');
+
+    const result = await editService.writeBlock({
+      documentId,
+      userId: ownerId,
+      request: {
+        blockId: blockIds[0] as string,
+        markdown: '![Schild](https://haushalt.example.de/schild.jpg)',
+        mode: 'replace',
+      },
+      correlationId,
+      source: 'api',
+    });
+
+    expect(result.warnings.join(' ')).toContain('fremden Server');
   });
 });

@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-216 routes are reachable from at least one client; 141 from all three.
+220 routes are reachable from at least one client; 141 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -178,6 +178,9 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/documents/:x/collaboration-ticket` | ✓ | · | · | — |
 | `POST /api/documents/:x/comments` | ✓ | ✓ | ✓ | `exo_comment_create` |
 | `POST /api/documents/:x/content` | · | ✓ | ✓ | `exo_page_write` |
+| `POST /api/documents/:x/content/block` | · | ✓ | ✓ | `exo_page_block_update` |
+| `POST /api/documents/:x/content/patch` | · | ✓ | ✓ | `exo_page_patch` |
+| `POST /api/documents/:x/content/section` | · | ✓ | ✓ | `exo_page_section_write` |
 | `POST /api/documents/:x/cover` | ✓ | · | · | — |
 | `POST /api/documents/:x/cover/generate` | ✓ | ✓ | ✓ | `exo_page_generate_cover` |
 | `POST /api/documents/:x/move` | ✓ | ✓ | ✓ | `exo_page_move` |
@@ -222,6 +225,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/templates/:x/pages` | ✓ | ✓ | ✓ | `exo_template_use` |
 | `POST /api/workspaces` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/attachments` | ✓ | ✓ | ✓ | `exo_attachment_upload` |
+| `POST /api/workspaces/:x/attachments/from-url` | · | ✓ | ✓ | `exo_attachment_upload_url` |
 | `POST /api/workspaces/:x/automations` | ✓ | ✓ | ✓ | `exo_automation_create` |
 | `POST /api/workspaces/:x/capture` | ✓ | ✓ | ✓ | `exo_capture` |
 | `POST /api/workspaces/:x/clip` | ✓ | ✓ | ✓ | `exo_clip` |

@@ -8,6 +8,7 @@ import {
 } from '@exocortex/auth';
 import { type ApiEnv } from '@exocortex/config';
 import {
+  attachmentDownloadPath,
   checkProjectPath,
   detectProjectRootFile,
   type ExportProjectResponse,
@@ -29,7 +30,6 @@ import { PRISMA } from '../platform/platform-tokens';
 import { SettingsService } from '../platform/settings.service';
 
 import { ProjectBridgeService } from './project-bridge.service';
-import { attachmentDownloadPath } from './project-mapper';
 import { createZip, readZip, type ZipEntry, ZipError } from './zip';
 
 /**

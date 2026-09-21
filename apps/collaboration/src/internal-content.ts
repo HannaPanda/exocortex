@@ -13,7 +13,11 @@ import {
   type CollaborationApplyResponse,
 } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
-import { applyProseMirrorDocumentToYDoc, type ProseMirrorDocument } from '@exocortex/editor';
+import {
+  applyBlockRangeEditToYDoc,
+  applyProseMirrorDocumentToYDoc,
+  type ProseMirrorDocument,
+} from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
 
 /**
@@ -181,11 +185,15 @@ export function createInternalContentHandler(options: InternalContentHandlerOpti
     const connection = await instance.openDirectConnection(documentId);
     try {
       await connection.transact((document) => {
-        applyProseMirrorDocumentToYDoc(
-          document,
-          parsed.data.proseMirrorJson as ProseMirrorDocument,
-          parsed.data.mode,
-        );
+        const content = parsed.data.proseMirrorJson as ProseMirrorDocument;
+        // A narrow write addresses blocks of the live document, which is not
+        // the document the API read -- so this can fail where the database
+        // write succeeded, and that failure is the honest answer (issue #111).
+        if (parsed.data.edit !== null) {
+          applyBlockRangeEditToYDoc(document, content, parsed.data.edit);
+          return;
+        }
+        applyProseMirrorDocumentToYDoc(document, content, parsed.data.mode);
       });
     } catch (error) {
       await connection.disconnect();

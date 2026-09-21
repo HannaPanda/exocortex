@@ -484,13 +484,14 @@ export class DocumentsController {
 
   @Get(':documentId/export/markdown')
   @ApiQuery({ name: 'transclusions', required: false })
+  @ApiQuery({ name: 'blockIds', required: false })
   @ApiOkResponse({ schema: openApiResponseSchema(markdownExportResponseSchema) })
   async exportMarkdown(
     @CurrentSession() session: VerifiedSession,
     @Param('documentId') documentId: string,
     @Query(zodPipe(markdownExportRequestSchema)) query: MarkdownExportRequest,
   ): Promise<MarkdownExportResponse> {
-    return this.markdown.export(documentId, session.userId, query.transclusions);
+    return this.markdown.export(documentId, session.userId, query.transclusions, query.blockIds);
   }
 
   @Get(':documentId/snapshots')

@@ -8,6 +8,7 @@ import {
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import {
+  attachmentDownloadPath,
   missingRenderVariables,
   QUEUE_NAMES,
   RENDER_MAX_LOG_CHARS,
@@ -307,7 +308,7 @@ export class RenderJobsService {
       attachmentId: attachment.id,
       filename: attachment.filename,
       byteSize: attachment.byteSize,
-      downloadPath: `/api/attachments/${attachment.id}/download`,
+      downloadPath: attachmentDownloadPath(attachment.id),
       stale: await this.isStale(row),
       textStatus: attachment.textStatus,
     };

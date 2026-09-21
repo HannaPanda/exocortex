@@ -484,6 +484,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   link -- defensible only because the reader is the person who asked. The run
   says `queued`, never sent, because the relay belongs to the mail queue; and
   there is no notification preference for it, since a rule is the decision.
+- ADR-055: a write that changes part of a page names blocks, never offsets. A
+  range is `fromBlockId`, an optional `toBlockId` and a placement, and the same
+  description is resolved twice: against the stored Yjs fragment and again
+  against the living document in the collaboration server, which is what makes
+  it survive three paragraphs somebody typed in between. Everything outside the
+  range is not touched at all, so it keeps its identifiers and its history; the
+  finished document is validated before it is stored, because a fragment that is
+  valid alone may not be valid where it was placed; and ambiguity is refused
+  with the candidates named, never resolved by picking one.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

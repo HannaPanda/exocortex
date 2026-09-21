@@ -151,11 +151,14 @@ tools for the rest of that run (ADR-030, `docs/ai-architecture.md`).
 | `exo_workspace_overview`        | no       | no          | `GET /api/workspaces/:workspaceId/overview` -- recency, databases, sections and loose ends in one answer; the cheap first call for "what was worked on here" without pulling a whole tree                                                                                                                                                                                                                                                                 |
 | `exo_workspace_rename`          | yes      | yes         | `PATCH /api/workspaces/:workspaceId` (name and/or slug, independently)                                                                                                                                                                                                                                                                                                                                                                                    |
 | `exo_page_tree`                 | no       | no          | `GET /api/workspaces/:workspaceId/documents/tree` -- the text answer is the indented tree with ids, capped at 300 pages. The cap is spent breadth-first, so an oversized workspace loses its deepest level rather than its last sections; archived pages are counted, not listed                                                                                                                                                                          |
-| `exo_page_read`                 | no       | no          | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars). `transclusions: 'text'` puts the embedded sources' text in place of the `:::transclusion` references, for an export that leaves this deployment                                                                                                                                                                                                                                |
+| `exo_page_read`                 | no       | no          | `GET /api/documents/:documentId/export/markdown` (capped at 60,000 chars). `transclusions: 'text'` puts the embedded sources' text in place of the `:::transclusion` references, for an export that leaves this deployment. `includeBlockIds: true` writes each block's identifier after it as `^id`, which is the address the three narrow writes take (issue #111)                                                                                      |
 | `exo_page_block_read`           | no       | no          | `GET /api/documents/:documentId/fragment` -- one block of a page instead of the whole page (issue #78, ADR-045). Without `blockId` the addressable blocks with their identifier and a preview; with one, that block's Markdown. A heading addresses its whole section. The way to read a long page one section at a time, and the address a `:::transclusion` block embeds                                                                                |
 | `exo_page_create`               | yes      | no          | `POST /api/workspaces/:workspaceId/import/markdown` when `markdown` is given, else `POST /api/workspaces/:workspaceId/documents`                                                                                                                                                                                                                                                                                                                          |
 | `exo_page_suggest_parent`       | no       | no          | `POST /api/workspaces/:workspaceId/documents/suggest-parent` -- where a page belongs, answered from the pages that already exist: the nearest neighbours are looked up through the search adapter and the parents they sit under are ranked. Answers with candidates, their path, how many pages already hang there and which neighbours argued for them. Writes nothing                                                                                  |
-| `exo_page_write`                | yes      | yes         | `POST /api/documents/:documentId/content`                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `exo_page_write`                | yes      | yes         | `POST /api/documents/:documentId/content` -- the whole page. An image must point at `/api/attachments/<id>/download`; a foreign host is answered with a warning, because the browser refuses to load it (issue #117)                                                                                                                                                                                                                                      |
+| `exo_page_block_update`         | yes      | no          | `POST /api/documents/:documentId/content/block` (issue #111, ADR-055) -- replaces exactly one block, or inserts before/after it. Everything else on the page keeps its identifier, its position and any concurrent edit                                                                                                                                                                                                                                   |
+| `exo_page_patch`                | yes      | no          | `POST /api/documents/:documentId/content/patch` -- replaces a piece of text, matched against the page's Markdown. Zero or several matches write nothing and say how many there were; `replaceAll` is the deliberate exception                                                                                                                                                                                                                             |
+| `exo_page_section_write`        | yes      | no          | `POST /api/documents/:documentId/content/section` -- writes under a heading. `replace` swaps the section's body and leaves the heading, because the heading is the address. A heading that occurs twice is refused with both block identifiers                                                                                                                                                                                                            |
 | `exo_page_rename`               | yes      | yes         | `PATCH /api/documents/:documentId` (title, icon, iconColor)                                                                                                                                                                                                                                                                                                                                                                                               |
 | `exo_page_move`                 | yes      | no          | `POST /api/documents/:documentId/move` -- an optional `workspaceId` moves the whole subtree into a different workspace instead of just re-parenting within the current one                                                                                                                                                                                                                                                                                |
 | `exo_page_archive`              | yes      | yes         | `POST /api/documents/:documentId/archive`                                                                                                                                                                                                                                                                                                                                                                                                                 |
@@ -222,7 +225,8 @@ tools for the rest of that run (ADR-030, `docs/ai-architecture.md`).
 | `exo_database_row_get`          | no       | no          | `GET /api/documents/:documentId/row` -- values of the row this document id names, or `row: null` if it is not a row                                                                                                                                                                                                                                                                                                                                       |
 | `exo_database_row_create`       | yes      | no          | `POST /api/documents/:documentId/rows`                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `exo_database_row_update`       | yes      | yes         | `PATCH /api/documents/:rowId/values`                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `exo_attachment_upload`         | yes      | no          | `POST /api/workspaces/:workspaceId/attachments` (multipart, Base64 input)                                                                                                                                                                                                                                                                                                                                                                                 |
+| `exo_attachment_upload`         | yes      | no          | `POST /api/workspaces/:workspaceId/attachments` (multipart, Base64 input). The response carries `embedUrl`, and that is the one that goes into a page                                                                                                                                                                                                                                                                                                     |
+| `exo_attachment_upload_url`     | yes      | no          | `POST /api/workspaces/:workspaceId/attachments/from-url` (issue #117) -- eXocortex fetches the address and stores what it served. Carries the web fence (`untrustedOutput: 'web'`), because the bytes come from outside this deployment                                                                                                                                                                                                                   |
 | `exo_attachment_read_text`      | no       | no          | `GET /api/attachments/:attachmentId/text` (text plus PDF metadata), or `…/text/info` with `includeText: false` (metadata only, and no extraction is started). Returns the human correction whenever one exists, never the raw machine text on its own.                                                                                                                                                                                                    |
 | `exo_attachment_reextract_text` | yes      | yes         | `POST /api/attachments/:attachmentId/text/reextract` -- forces a fresh extraction even when the current one is already `ready` (issue #2); a plain `exo_attachment_read_text` never does this                                                                                                                                                                                                                                                             |
 | `exo_attachment_correct_text`   | yes      | yes         | `PATCH /api/attachments/:attachmentId/text` -- writes a human correction, or clears one with `text: null` (issue #2)                                                                                                                                                                                                                                                                                                                                      |
@@ -301,6 +305,51 @@ carries it instead of overwriting it ([ADR-016](adr/ADR-016-writes-reach-the-liv
 The response says so in `appliedToLiveSession`. `append` and `prepend` insert
 only the new content there, so a person typing in that session keeps what they
 wrote; `replace` replaces, as asked.
+
+### Changing part of a page
+
+`exo_page_write` is the whole page, and for a page of any size that is the wrong
+tool for a small change: it costs the page in tokens twice, gives every block on
+it a new identifier, and overwrites whatever somebody wrote in between. Three
+tools do the same work through the addresses the page already has
+([issue #111](https://github.com/HannaPanda/exocortex/issues/111),
+[ADR-055](adr/ADR-055-a-narrow-write-addresses-blocks-on-both-sides.md)):
+
+1. `exo_page_read` with `includeBlockIds: true`, or `exo_page_block_read`
+   without a `blockId`. Both hand back the identifiers.
+2. `exo_page_block_update` for one block, `exo_page_section_write` for
+   everything under a heading, `exo_page_patch` for a piece of text.
+
+All three refuse rather than guess: a block that is gone, a heading that occurs
+twice, a text that occurs zero or several times. The response names the
+candidates, so the next call is the unambiguous one. `expectedYjsUpdatedAt`,
+taken from the read, turns "somebody changed this meanwhile" into a refusal
+instead of an overwrite.
+
+### Putting a picture on a page
+
+An image must come from this deployment. The Content Security Policy is
+`img-src 'self' blob: data:`, so a picture on somebody else's host does not load
+slowly or sometimes -- it never appears, and nothing in the page or the editor
+says why ([issue #117](https://github.com/HannaPanda/exocortex/issues/117)).
+Two steps:
+
+1. Upload it. `exo_attachment_upload` with Base64 when you have the bytes,
+   `exo_attachment_upload_url` when you only have an address -- that one fetches
+   it here, through the same address check web research uses
+   ([ADR-033](adr/ADR-033-web-research-is-two-rest-calls.md)).
+2. Write `![Beschreibung](<embedUrl>)` with `exo_page_write`. `embedUrl` is
+   `/api/attachments/<id>/download`, it is stable, and it is checked against the
+   session on every request, so the picture stays as private as the page.
+
+Not `downloadUrl`, which the same response also carries: that is a presigned
+object-storage URL on a foreign origin that expires after five minutes. It
+exists for a client that wants the bytes now, and a page that carries it is
+broken twice over.
+
+A write that points at a foreign host is still carried out -- an address that
+cannot be loaded here is still an address -- but the response says so in
+`warnings`.
 
 Database property tools only accept `IMPLEMENTED_PROPERTY_TYPES` from
 `@exocortex/contracts` (`RELATION`/`ROLLUP`/`FORMULA` are reserved and
@@ -957,10 +1006,11 @@ that nginx rule is added.
 - **No download-URL tool.** `GET /api/attachments/:attachmentId/download` streams
   the file's bytes directly (it is not a JSON response with a presigned URL and
   metadata), which does not fit this catalogue's JSON-only tool-result model.
-  The presigned URL is still reachable through `exo_attachment_upload`'s
-  response at upload time; fetching a fresh one for an already-uploaded
-  attachment requires either a new `apps/api` route or downloading through the
-  web app.
+  The presigned URL is still reachable through the upload tools' response at
+  upload time; fetching a fresh one for an already-uploaded attachment requires
+  either a new `apps/api` route or downloading through the web app. Its
+  _address_ is a different matter and needs no tool: it is
+  `/api/attachments/<id>/download` for every attachment, forever.
 - **No share-links API yet.** Nothing to wrap in a tool until those REST
   endpoints exist. (Comments used to stand here too; they exist since issue #18
   and are in the table above.)

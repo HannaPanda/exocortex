@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
-import { loadDotEnv } from '@exocortex/config';
+import { type ApiEnv, loadDotEnv } from '@exocortex/config';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { type ProseMirrorDocument, serializePlainText } from '@exocortex/editor';
 import { createLogger, type Logger } from '@exocortex/logger';
@@ -20,8 +20,13 @@ import { DocumentContentService } from './document-content.service';
 import { DocumentMoveService } from './document-move.service';
 import { DocumentSnapshotService } from './document-snapshot.service';
 import { DocumentTrashService } from './document-trash.service';
+import { DocumentWriteCommitService } from './document-write-commit.service';
 import { DocumentsService } from './documents.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
+
+/** `DocumentContentService` reads one value from the environment: the origin
+ * an image's address is judged against (issue #117). */
+const CONTENT_TEST_ENV = { APP_URL: 'https://exocortex.test' } as unknown as ApiEnv;
 
 /**
  * `DocumentActivityService` merges three sources that are each incomplete on
@@ -107,12 +112,10 @@ beforeAll(async () => {
   );
   content = new DocumentContentService(
     prisma,
-    queues,
     logger,
+    CONTENT_TEST_ENV,
     access,
-    outbox,
-    realtime,
-    collaboration,
+    new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
     new PageLinkIdentityService(prisma),
   );
   activity = new DocumentActivityService(prisma, access, snapshots);

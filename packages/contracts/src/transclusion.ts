@@ -99,5 +99,16 @@ export type TransclusionExportMode = z.infer<typeof transclusionExportModeSchema
 
 export const markdownExportRequestSchema = z.object({
   transclusions: transclusionExportModeSchema.optional().default('reference'),
+  /**
+   * Writes each block's identifier after it as an Obsidian-style `^id`
+   * (issue #111).
+   *
+   * Off by default, because an exported file is meant to be read and the
+   * identifiers are noise in it. On, it is what makes a narrow write possible
+   * from a single read: the caller sees the page and the address of every line
+   * of it at once, instead of reading the page and then asking a second tool
+   * which blocks it contains.
+   */
+  blockIds: z.coerce.boolean().optional().default(false),
 });
 export type MarkdownExportRequest = z.infer<typeof markdownExportRequestSchema>;

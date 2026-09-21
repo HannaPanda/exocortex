@@ -24,6 +24,8 @@ import {
   attachmentTextInfoResponseSchema,
   type AttachmentTextResponse,
   attachmentTextResponseSchema,
+  type UploadAttachmentFromUrlRequest,
+  uploadAttachmentFromUrlRequestSchema,
   type UploadAttachmentResponse,
   uploadAttachmentResponseSchema,
 } from '@exocortex/contracts';
@@ -66,6 +68,29 @@ export class AttachmentsController {
       filename: file.filename,
       declaredMimeType: file.declaredMimeType,
       body: file.body,
+      correlationId: currentCorrelationId(),
+    });
+  }
+
+  /**
+   * The same upload, given an address instead of the bytes (issue #117).
+   *
+   * Its own route rather than a field on the multipart one: that endpoint reads
+   * a stream and this one makes an outgoing request, and a body that is
+   * sometimes a file and sometimes JSON is two endpoints wearing one name.
+   */
+  @Post('workspaces/:workspaceId/attachments/from-url')
+  @ApiBody({ schema: openApiSchema(uploadAttachmentFromUrlRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(uploadAttachmentResponseSchema) })
+  async uploadFromUrl(
+    @CurrentSession() session: VerifiedSession,
+    @Param('workspaceId') workspaceId: string,
+    @Body(zodPipe(uploadAttachmentFromUrlRequestSchema)) body: UploadAttachmentFromUrlRequest,
+  ): Promise<UploadAttachmentResponse> {
+    return this.attachments.uploadFromUrl({
+      workspaceId,
+      userId: session.userId,
+      request: body,
       correlationId: currentCorrelationId(),
     });
   }

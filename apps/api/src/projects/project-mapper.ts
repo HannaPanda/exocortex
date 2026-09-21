@@ -1,4 +1,5 @@
 import {
+  attachmentDownloadPath,
   type Project,
   type ProjectBuild,
   projectBuildErrorMessage,
@@ -74,11 +75,6 @@ export function projectFileDownloadPath(
   return attachmentDownloadPath(attachmentId);
 }
 
-/** Where an attachment's bytes are fetched from. One spelling of the route. */
-export function attachmentDownloadPath(attachmentId: string): string {
-  return `/api/attachments/${attachmentId}/download`;
-}
-
 export const PROJECT_BUILD_SELECT = {
   id: true,
   workspaceId: true,
@@ -144,7 +140,7 @@ export function mapProjectBuild(row: ProjectBuildRow, options: { stale: boolean 
     warningCount: diagnostics.filter((entry) => entry.severity === 'WARNING').length,
     attachmentId: hasArtifact ? row.attachmentId : null,
     attachmentByteSize: hasArtifact ? (row.attachment?.byteSize ?? null) : null,
-    downloadPath: hasArtifact ? `/api/attachments/${row.attachmentId ?? ''}/download` : null,
+    downloadPath: hasArtifact ? attachmentDownloadPath(row.attachmentId ?? '') : null,
     sourceMapAttachmentId: row.sourceMapAttachmentId,
     pageCount: row.pageCount,
     createdAt: row.createdAt.toISOString(),

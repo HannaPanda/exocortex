@@ -111,6 +111,8 @@ async function applyContent(input: {
   documentId: string;
   markdown: string;
   mode: CollaborationApplyRequest['mode'];
+  /** Set to address blocks instead of the whole document (issue #111). */
+  edit?: CollaborationApplyRequest['edit'];
   token?: string;
 }): Promise<Response> {
   const token =
@@ -128,6 +130,7 @@ async function applyContent(input: {
     body: JSON.stringify({
       proseMirrorJson: parseMarkdown(input.markdown).document,
       mode: input.mode,
+      edit: input.edit ?? null,
       correlationId: 'test-correlation',
     } satisfies CollaborationApplyRequest),
   });

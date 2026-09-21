@@ -1,16 +1,17 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import { assertPolicy, canEditDocument, WorkspaceAccessService } from '@exocortex/auth';
+import { type ApiEnv } from '@exocortex/config';
 import {
   type DocumentContentWriteRequest,
   type DocumentContentWriteResponse,
-  QUEUE_NAMES,
 } from '@exocortex/contracts';
-import { type Prisma, type PrismaClient } from '@exocortex/database';
+import { type PrismaClient } from '@exocortex/database';
 import {
   type AppliedDocumentState,
   applyProseMirrorDocumentToState,
   bindPageLinkIdentities,
+  collectForeignMediaSources,
   EXOCORTEX_SCHEMA_VERSION,
   leadingTitleHeading,
   parseMarkdown,
@@ -22,15 +23,12 @@ import {
   yjsStateToProseMirrorJson,
 } from '@exocortex/editor';
 import { type Logger } from '@exocortex/logger';
-import { QueueRegistry } from '@exocortex/queue';
 
 import { AppError } from '../common/app-error';
-import { LOGGER } from '../common/logger.provider';
-import { OutboxService } from '../common/outbox.service';
-import { PRISMA, QUEUES } from '../platform/platform.module';
-import { RealtimeService } from '../realtime/realtime.service';
+import { API_ENV, LOGGER } from '../common/logger.provider';
+import { PRISMA } from '../platform/platform.module';
 
-import { CollaborationBridgeService } from './collaboration-bridge.service';
+import { DocumentWriteCommitService } from './document-write-commit.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
 
 /** The title `createDocumentRequestSchema` gives a page nobody has named. */
@@ -111,6 +109,46 @@ function containsDatabaseEmbed(node: ProseMirrorNode | null | undefined): boolea
   return (node.content ?? []).some((child) => containsDatabaseEmbed(child));
 }
 
+/** German names for the media types the same-origin policy restricts. */
+const MEDIA_TYPE_LABELS: Readonly<Record<string, string>> = {
+  image: 'Bild',
+  video: 'Video',
+  audio: 'Audio',
+  pdf: 'PDF',
+};
+
+/**
+ * The warning a write earns by pointing at a file on somebody else's host
+ * (issue #117).
+ *
+ * The write itself stands. Refusing it would be worse than the broken image it
+ * prevents: an address that cannot be loaded *here* is still an address, and
+ * this is not the place to decide that nobody may write one down. But a write
+ * response has a warnings channel, and a picture that will never appear with
+ * nothing anywhere saying why is exactly what it is for.
+ *
+ * The sentence names the way out rather than only the problem, because the
+ * reader is usually an agent that has no other way to learn it.
+ */
+export function foreignMediaWarnings(document: ProseMirrorDocument, origin: string): string[] {
+  const foreign = collectForeignMediaSources(document, origin);
+  if (foreign.length === 0) return [];
+
+  const named = foreign
+    .slice(0, 3)
+    .map((entry) => `${MEDIA_TYPE_LABELS[entry.type] ?? entry.type}: ${entry.src}`)
+    .join(', ');
+  const rest = foreign.length > 3 ? ` (und ${foreign.length - 3} weitere)` : '';
+
+  return [
+    `Diese Seite verweist auf ${foreign.length === 1 ? 'eine Datei' : `${foreign.length} Dateien`} ` +
+      `auf einem fremden Server: ${named}${rest}. Der Browser lädt das nicht, die Stelle bleibt ` +
+      'leer. Lade die Datei stattdessen als Anhang hoch (exo_attachment_upload, oder ' +
+      'exo_attachment_upload_url, wenn du nur die Adresse hast) und verweise auf ' +
+      '/api/attachments/<id>/download.',
+  ];
+}
+
 /**
  * Writes Markdown into an existing document's canonical Yjs state (D8).
  *
@@ -130,12 +168,10 @@ function containsDatabaseEmbed(node: ProseMirrorNode | null | undefined): boolea
 export class DocumentContentService {
   constructor(
     @Inject(PRISMA) private readonly prisma: PrismaClient,
-    @Inject(QUEUES) private readonly queues: QueueRegistry,
     @Inject(LOGGER) private readonly logger: Logger,
+    @Inject(API_ENV) private readonly env: ApiEnv,
     private readonly access: WorkspaceAccessService,
-    private readonly outbox: OutboxService,
-    private readonly realtime: RealtimeService,
-    private readonly collaboration: CollaborationBridgeService,
+    private readonly commits: DocumentWriteCommitService,
     private readonly pageLinks: PageLinkIdentityService,
   ) {}
 
@@ -241,116 +277,32 @@ export class DocumentContentService {
       throw AppError.validation('The Markdown document could not be parsed', { reason });
     }
 
-    const now = new Date();
-    const { snapshotId } = await this.prisma.$transaction(async (tx) => {
-      const snapshot = await tx.documentSnapshot.create({
-        data: {
-          documentId: input.documentId,
-          yjsState: existing.yjsState,
-          schemaVersion: existing.schemaVersion,
-          createdById: input.userId,
-          reason: 'API_WRITE',
-        },
-      });
+    // What this write brought in, not what the page already carried: a page
+    // that has had a broken image on it for a month would otherwise warn on
+    // every append, and the warning would stop being read.
+    warnings.push(...foreignMediaWarnings(liveUpdate, this.env.APP_URL));
 
-      await tx.documentContent.update({
-        where: { documentId: input.documentId },
-        data: {
-          yjsState: Buffer.from(applied.yjsState),
-          schemaVersion: EXOCORTEX_SCHEMA_VERSION,
-          yjsUpdatedAt: now,
-          proseMirrorJson: applied.proseMirrorJson as unknown as Prisma.InputJsonObject,
-          plainText: applied.plainText,
-          markdown: effectiveMarkdown,
-          /*
-           * `materializedAt` is deliberately *not* moved forward here.
-           *
-           * These three columns are written so the answer to this request is
-           * consistent immediately, but they are not everything materialization
-           * derives: the reference index and the comment anchors come from the
-           * same content and are only produced by the job enqueued below. That
-           * job skips a document whose `materializedAt` has caught up with its
-           * `yjsUpdatedAt`, so stamping it here would have it decide there is
-           * nothing to do -- and every write through the API or MCP would leave
-           * the references of the page it just rewrote exactly as they were.
-           */
-        },
-      });
-
-      await tx.document.update({
-        where: { id: input.documentId },
-        data: {
-          updatedById: input.userId,
-          ...(incoming.promotedTitle === null ? {} : { title: incoming.promotedTitle }),
-        },
-      });
-
-      await this.outbox.writeEvent(tx, {
-        workspaceId: context.workspaceId,
-        type: 'document.updated',
-        payload: { documentId: input.documentId },
-        correlationId: input.correlationId,
-        // What a bulk revert of this agent's session would go back to
-        // (ADR-022). The snapshot exists either way; naming it here is what
-        // turns "an agent wrote here" into "and here is the way back".
-        snapshotBeforeId: snapshot.id,
-      });
-
-      return { snapshotId: snapshot.id };
-    });
-
-    // Only now, with the snapshot safely committed, is the change handed to the
-    // open session: if the transaction had failed, nothing may have reached the
-    // editors either.
-    const live = await this.collaboration.applyToLiveSession({
-      documentId: input.documentId,
-      userId: input.userId,
-      mode: input.request.mode,
-      proseMirrorJson: liveUpdate,
-      correlationId: input.correlationId,
-    });
-    if (!live.reachable) {
-      warnings.push(
-        'Der Live-Editor konnte nicht benachrichtigt werden. Wer die Seite gerade offen hat, ' +
-          'muss sie neu laden, sonst überschreibt die offene Sitzung diese Änderung.',
-      );
-    }
-
-    await this.realtime.emit(
-      'document.content.replaced',
-      context.workspaceId,
-      input.correlationId,
-      { documentId: input.documentId, snapshotId, source: input.source },
-    );
-
-    // Re-materialize so every derived field is produced by exactly one code path.
-    await this.queues.enqueue(QUEUE_NAMES.documentMaterialization, {
-      correlationId: input.correlationId,
+    const committed = await this.commits.commit({
       documentId: input.documentId,
       workspaceId: context.workspaceId,
-      yjsUpdatedAt: Date.now(),
-      reason: 'manual',
-    });
-
-    this.logger.info('Document content written', {
-      documentId: input.documentId,
-      mode: input.request.mode,
-      byteSize: applied.yjsState.byteLength,
-      snapshotId,
-      appliedToLiveSession: live.applied,
+      userId: input.userId,
       correlationId: input.correlationId,
+      source: input.source,
+      previous: { yjsState: existing.yjsState, schemaVersion: existing.schemaVersion },
+      applied,
+      markdown: effectiveMarkdown,
+      promotedTitle: incoming.promotedTitle,
+      live: { mode: input.request.mode, proseMirrorJson: liveUpdate },
     });
+    warnings.push(...committed.warnings);
 
     return {
       documentId: input.documentId,
-      snapshotId,
-      // When a live session took the change, that session's own store is the
-      // last write, so its timestamp is the one a caller must send back as
-      // `expectedYjsUpdatedAt` on the next write.
-      yjsUpdatedAt: live.yjsUpdatedAt ?? now.toISOString(),
+      snapshotId: committed.snapshotId,
+      yjsUpdatedAt: committed.yjsUpdatedAt,
       schemaVersion: EXOCORTEX_SCHEMA_VERSION,
       byteSize: applied.yjsState.byteLength,
-      appliedToLiveSession: live.applied,
+      appliedToLiveSession: committed.appliedToLiveSession,
       warnings,
     };
   }

@@ -12,6 +12,8 @@ import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
 import { DocumentDiffController } from './document-diff.controller';
 import { DocumentDiffService } from './document-diff.service';
+import { DocumentEditController } from './document-edit.controller';
+import { DocumentEditService } from './document-edit.service';
 import { DocumentFragmentController } from './document-fragment.controller';
 import { DocumentFragmentService } from './document-fragment.service';
 import { DocumentLinksService } from './document-links.service';
@@ -23,6 +25,7 @@ import { DocumentPlacementService } from './document-placement.service';
 import { DocumentSnapshotService } from './document-snapshot.service';
 import { DocumentTrashService } from './document-trash.service';
 import { DocumentTreeService } from './document-tree.service';
+import { DocumentWriteCommitService } from './document-write-commit.service';
 import { DocumentsController, WorkspaceDocumentsController } from './documents.controller';
 import { DocumentsService } from './documents.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
@@ -38,6 +41,7 @@ import { RelatedDocumentsService } from './related-documents.service';
     DocumentOverviewController,
     DocumentDiffController,
     DocumentFragmentController,
+    DocumentEditController,
   ],
   providers: [
     DocumentsService,
@@ -52,6 +56,8 @@ import { RelatedDocumentsService } from './related-documents.service';
     DocumentFragmentService,
     DocumentActivityService,
     DocumentContentService,
+    DocumentEditService,
+    DocumentWriteCommitService,
     DocumentLinksService,
     RelatedDocumentsService,
     DocumentPlacementService,
@@ -67,6 +73,7 @@ import { RelatedDocumentsService } from './related-documents.service';
     DocumentSnapshotService,
     DocumentActivityService,
     DocumentContentService,
+    DocumentEditService,
     DocumentLinksService,
     DocumentFragmentService,
     RelatedDocumentsService,

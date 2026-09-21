@@ -51,6 +51,20 @@ export const API_ERROR_CODES = [
   /** The pagination cursor of a conversation listing is not one this API issued. */
   'ai_conversation_cursor_invalid',
   'document_content_conflict',
+  /**
+   * A narrow write named a block that is not on the page (issue #111). Its own
+   * code rather than `not_found`, because the page was found and the block was
+   * not, and a caller that reads the difference knows to read the page again
+   * instead of checking the page id.
+   */
+  'document_block_not_found',
+  /** Two block identifiers that are not siblings, or in the wrong order. */
+  'document_block_range_invalid',
+  'document_heading_not_found',
+  /** The heading occurs more than once, so the section is not addressed. */
+  'document_heading_not_unique',
+  'document_patch_not_found',
+  'document_patch_not_unique',
   'document_content_lossy',
   'attachment_text_unavailable',
   'setting_unknown',
@@ -186,6 +200,15 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   ai_conversation_locked: 409,
   ai_conversation_cursor_invalid: 400,
   document_content_conflict: 409,
+  document_block_not_found: 404,
+  document_block_range_invalid: 422,
+  document_heading_not_found: 404,
+  // 409 rather than 422: the request is well formed, the page is simply in a
+  // state where it does not name one section. Naming the candidates in the
+  // details is what makes the next call the right one.
+  document_heading_not_unique: 409,
+  document_patch_not_found: 404,
+  document_patch_not_unique: 409,
   document_content_lossy: 422,
   attachment_text_unavailable: 409,
   setting_unknown: 400,

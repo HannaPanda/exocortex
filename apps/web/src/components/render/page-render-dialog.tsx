@@ -5,6 +5,7 @@ import Link from 'next/link';
 import * as React from 'react';
 
 import {
+  attachmentDownloadPath,
   type RenderJob,
   type RenderSource,
   type RenderTemplate,
@@ -461,7 +462,7 @@ function HistoryPanel({
               <div className="ml-auto flex items-center gap-2">
                 {job.attachmentId === null ? null : (
                   <Link
-                    href={`/api/attachments/${job.attachmentId}/download`}
+                    href={attachmentDownloadPath(job.attachmentId)}
                     target="_blank"
                     rel="noreferrer"
                     className="text-xs underline"
@@ -534,7 +535,7 @@ function JobPanel({
               data-testid="render-open"
               render={
                 <Link
-                  href={`/api/attachments/${job.attachmentId}/download`}
+                  href={attachmentDownloadPath(job.attachmentId)}
                   target="_blank"
                   rel="noreferrer"
                 />

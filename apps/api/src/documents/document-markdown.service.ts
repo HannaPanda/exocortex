@@ -81,6 +81,8 @@ export class DocumentMarkdownService {
     documentId: string,
     userId: string,
     transclusions: TransclusionExportMode = 'reference',
+    /** Writes `^id` after every block, so a reader can address one (issue #111). */
+    includeBlockIds = false,
   ): Promise<MarkdownExportResponse> {
     const context = await this.access.requireDocumentContext(documentId, userId);
     assertPolicy(canReadDocument(context.role, context.document, context.workspaceId));
@@ -130,6 +132,7 @@ export class DocumentMarkdownService {
       mode: transclusions,
     });
     const markdown = serializeMarkdown(proseMirrorJson, {
+      includeBlockIds,
       frontmatter: {
         title: document.title,
         icon: document.icon,

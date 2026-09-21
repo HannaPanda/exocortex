@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
-import { loadDotEnv } from '@exocortex/config';
+import { type ApiEnv, loadDotEnv } from '@exocortex/config';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
@@ -13,6 +13,7 @@ import { type CollaborationBridgeService } from '../documents/collaboration-brid
 import { DocumentContentService } from '../documents/document-content.service';
 import { DocumentMoveService } from '../documents/document-move.service';
 import { DocumentTrashService } from '../documents/document-trash.service';
+import { DocumentWriteCommitService } from '../documents/document-write-commit.service';
 import { DocumentsService } from '../documents/documents.service';
 import { PageLinkIdentityService } from '../documents/page-link-identity.service';
 import { SettingsService } from '../platform/settings.service';
@@ -22,6 +23,10 @@ import { AiModelResolverService } from './ai-model-resolver.service';
 import { ConversationArchiveService } from './conversation-archive.service';
 import { ConversationSearchService } from './conversation-search';
 import { ConversationsService } from './conversations.service';
+
+/** `DocumentContentService` reads one value from the environment: the origin
+ * an image's address is judged against (issue #117). */
+const CONTENT_TEST_ENV = { APP_URL: 'https://exocortex.test' } as unknown as ApiEnv;
 
 /**
  * Conversation domain tests against the real database and Redis.
@@ -1008,12 +1013,10 @@ describe('ConversationArchiveService', () => {
     );
     const content = new DocumentContentService(
       prisma,
-      queues,
       logger,
+      CONTENT_TEST_ENV,
       access,
-      outbox,
-      realtime,
-      collaboration,
+      new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
       new PageLinkIdentityService(prisma),
     );
 

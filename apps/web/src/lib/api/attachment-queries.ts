@@ -1,6 +1,6 @@
 'use client';
 
-import { type UploadAttachmentResponse } from '@exocortex/contracts';
+import { attachmentDownloadPath, type UploadAttachmentResponse } from '@exocortex/contracts';
 
 import { uploadRequest } from './client';
 
@@ -30,7 +30,7 @@ export async function uploadAttachment(input: {
     // The id as well as the URL: a project asset is bound to a path by id
     // (issue #43), where the editor only ever needs something to put in a src.
     id: attachment.id,
-    src: `/api/attachments/${attachment.id}/download`,
+    src: attachmentDownloadPath(attachment.id),
     name: attachment.filename,
   };
 }

@@ -167,10 +167,11 @@ export const DATA_FEATURES: readonly RegisteredFeature[] = [
       'Du ziehst eine Datei in den Editor oder fügst sie über das Schrägstrich-Menü ein. Je nach Art wird sie passend dargestellt: Bilder als Bild, Video und Audio mit Abspieler, PDFs im eingebauten Betrachter, alles andere als Anhang mit Namen und Größe.',
       'Die Datei liegt im Objektspeicher dieser Installation. Nichts geht zu einem Fremdanbieter, und die Sicherung deckt sie mit ab. Bilder werden beim Hochladen verkleinert, damit eine Seite mit dreißig Fotos nicht minutenlang lädt.',
       'Welche Art Datei es ist, wird am Inhalt erkannt und nicht an der Endung, weil eine Endung nur eine Behauptung ist. Löschst du eine Seite endgültig, verschwinden ihre Anhänge mit, auch aus dem Speicher.',
+      'Eingebettet wird immer aus dieser Installation heraus, über die Adresse /api/attachments/<id>/download. Ein Bild, das auf einem fremden Server liegt, lädt der Browser nicht: die Sicherheitsrichtlinie erlaubt nur die eigene Herkunft, und die Stelle bliebe stumm leer. Deshalb nennt ein Schreibvorgang, der auf einen fremden Server zeigt, das seit dem 21.09.2026 als Warnung, und ein Agent, der nur die Adresse eines Bildes hat, kann es mit exo_attachment_upload_url hereinholen, statt sie zu verlinken.',
     ],
     since: '2026-08-05',
     ui: { where: 'Datei in den Editor ziehen.' },
-    tools: ['exo_attachment_upload'],
+    tools: ['exo_attachment_upload', 'exo_attachment_upload_url'],
   }),
   defineFeature({
     id: 'texterkennung',

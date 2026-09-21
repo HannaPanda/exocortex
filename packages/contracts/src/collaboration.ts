@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { blockRangeEditSchema } from './documents';
 import { idSchema, isoDateTimeSchema } from './primitives';
 
 /**
@@ -34,6 +35,18 @@ export const collaborationApplyRequestSchema = z.object({
     { message: 'Expected a ProseMirror doc node' },
   ),
   mode: collaborationApplyModeSchema,
+  /**
+   * Set for a narrow write (issue #111): the blocks the content replaces or is
+   * inserted beside, instead of the whole document. `mode` is ignored when this
+   * is present, because the placement is part of the range.
+   *
+   * The range travels as identifiers rather than as positions for the reason
+   * ADR-016 exists at all: the live document is not the document the API read.
+   * Somebody may have typed three paragraphs above the edit in the meantime,
+   * and an index would then address the wrong block, where an identifier still
+   * addresses the right one -- or honestly fails, when the block is gone.
+   */
+  edit: blockRangeEditSchema.nullable().default(null),
   /** Carried through so both processes log the same request. */
   correlationId: z.string(),
 });
