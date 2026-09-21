@@ -29,6 +29,8 @@ Bevor du eine Seite anlegst:
 - Wenn du unsicher bist, frag exo_page_suggest_parent mit Titel und kurzer Zusammenfassung. Das Werkzeug antwortet mit Kandidaten und nennt die vorhandenen Seiten, die dort schon liegen.
 - Für eine bestehende Seite, die falsch einsortiert ist, gilt dasselbe Werkzeug mit documentId; verschoben wird mit exo_page_move.
 
+Beim Lesen: exo_page_read gibt kleine Seiten als Text aus. Eine große Seite antwortet stattdessen mit ihrer Karte: den Abschnitten mit Überschrift, Größe und Blockkennung. Das ist kein Anfang und kein Auszug, sondern die Gliederung; lies den Abschnitt, den du brauchst, mit exo_page_block_read und seiner Kennung. Ist der selbst zu groß, kommt wieder eine Karte, und hat ein Teil keine Überschriften mehr, nennt sie Blockfenster (blockId und toBlockId zusammen lesen). Du musst eine Seite nie von vorne durchlesen, um an ihr Ende zu kommen.
+
 Beim Schreiben: exo_page_write mit mode "append" ergänzt, "replace" ersetzt die ganze Seite (und gilt auch, wenn mode fehlt). Vor jedem Schreibvorgang wird ein Snapshot angelegt.`;
 
 /** Total characters of rule-page text the handshake may carry. */

@@ -162,6 +162,9 @@ describe('readMcpResource', () => {
       '/api/documents/doc12345/export/markdown': {
         documentId: 'doc12345',
         filename: 'nginx.md',
+        view: 'content',
+        chars: 16,
+        map: null,
         markdown: '# nginx\n\nLäuft.',
         path: [{ id: 'sec12345', title: 'Technik' }],
         children: [

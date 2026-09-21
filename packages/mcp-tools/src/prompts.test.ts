@@ -23,7 +23,16 @@ function rule(documentId: string, title: string, mode: string, trigger: string |
 }
 
 function markdown(documentId: string, text: string): unknown {
-  return { documentId, filename: 'regel.md', markdown: text, path: [], children: [] };
+  return {
+    documentId,
+    filename: 'regel.md',
+    view: 'content',
+    chars: text.length,
+    map: null,
+    markdown: text,
+    path: [],
+    children: [],
+  };
 }
 
 function clientReturning(routes: Record<string, unknown>): ExocortexApiClient {

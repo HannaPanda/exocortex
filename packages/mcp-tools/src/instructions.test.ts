@@ -65,6 +65,9 @@ describe('buildServerInstructions', () => {
         '/api/documents/rule123456/export/markdown': {
           documentId: 'rule123456',
           filename: 'ki-regeln.md',
+          view: 'content',
+          chars: 120,
+          map: null,
           markdown:
             '---\ntitle: KI Regeln\nexocortexId: rule123456\n---\n\n' +
             'Schreib Seiten unter die tiefste passende Seite.',

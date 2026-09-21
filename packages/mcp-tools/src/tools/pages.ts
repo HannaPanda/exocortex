@@ -25,7 +25,12 @@ import {
   transclusionExportModeSchema,
 } from '@exocortex/contracts';
 
-import { truncateText } from '../format.js';
+import {
+  PAGE_CONTENT_BUDGET_CHARS,
+  PAGE_MAP_MAX_ENTRIES,
+  renderDocumentMap,
+  truncateText,
+} from '../format.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
 import { PAGE_EDIT_TOOLS } from './page-edits.js';
@@ -178,12 +183,16 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
 function exportQuery(input: {
   transclusions?: string;
   includeBlockIds?: boolean;
-}): Record<string, string> | undefined {
-  const query = {
+}): Record<string, string> {
+  return {
     ...(input.transclusions === undefined ? {} : { transclusions: input.transclusions }),
     ...(input.includeBlockIds === true ? { blockIds: 'true' } : {}),
+    // The budget travels on every read (issue #118). Above it the route
+    // answers with the page's map instead of its text, which is what keeps
+    // one read of one page from filling an agent's whole context.
+    maxChars: String(PAGE_CONTENT_BUDGET_CHARS),
+    maxEntries: String(PAGE_MAP_MAX_ENTRIES),
   };
-  return Object.keys(query).length === 0 ? undefined : query;
 }
 
 export const pageReadTool: AnyToolDefinition = defineTool({
@@ -192,6 +201,9 @@ export const pageReadTool: AnyToolDefinition = defineTool({
     'Exportiert den Inhalt einer Seite als Markdown, mit ihrem Pfad und ihren direkten ' +
     'Unterseiten. Der Fließtext einer Übersichtsseite ist nicht die Struktur: was wirklich unter ' +
     'ihr hängt, steht in der Liste der Unterseiten. ' +
+    'Eine große Seite antwortet nicht mit ihrem Text, sondern mit ihrer Karte: den Abschnitten ' +
+    'mit Größe und Blockkennung. Das ist kein Auszug und kein Anfang, sondern die Gliederung; ' +
+    'den gewünschten Abschnitt liest exo_page_block_read damit gezielt. ' +
     'Ein Block ":::transclusion Titel^blockId" zeigt Inhalt, der einer anderen Seite gehört. ' +
     'Standardmäßig steht er als solcher im Export; mit transclusions "text" steht stattdessen ' +
     'der Text der Quelle dort, was für einen Export gedacht ist, der diese Installation verlässt. ' +
@@ -212,7 +224,10 @@ export const pageReadTool: AnyToolDefinition = defineTool({
       query: exportQuery(input),
       responseSchema: markdownExportResponseSchema,
     });
-    const { text } = truncateText(result.markdown, MAX_PAGE_READ_CHARS);
+    const body =
+      result.view === 'map' && result.map !== null
+        ? renderDocumentMap(result.map, 'Diese Seite ist groß')
+        : truncateText(result.markdown, MAX_PAGE_READ_CHARS).text;
     const header = [
       ...(result.path.length === 0
         ? []
@@ -223,8 +238,8 @@ export const pageReadTool: AnyToolDefinition = defineTool({
           result.children.map((child) => `- ${formatDocumentSummary(child)}`).join('\n'),
     ].join('\n');
     return {
-      text: `${header}\n\n---\n\n${text}`,
-      data: { ...result, fullLength: result.markdown.length },
+      text: `${header}\n\n---\n\n${body}`,
+      data: { ...result, fullLength: result.chars },
     };
   },
 });

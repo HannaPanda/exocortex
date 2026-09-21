@@ -50,17 +50,19 @@ function createFakeClient(response: unknown): {
 }
 
 describe('pageReadTool', () => {
-  it('calls the markdown export endpoint and truncates long content', async () => {
-    const longMarkdown = 'x'.repeat(70_000);
+  it('asks the export route for a budget, so a huge page cannot answer with itself', async () => {
     const { client, calls } = createFakeClient({
       documentId: 'doc123456',
       filename: 'doc.md',
-      markdown: longMarkdown,
+      view: 'content',
+      chars: 12,
+      map: null,
+      markdown: 'Kurze Seite.',
       path: [],
       children: [],
     });
 
-    const result = await pageReadTool.run(client, { documentId: 'doc123456' });
+    await pageReadTool.run(client, { documentId: 'doc123456' });
 
     expect(calls).toEqual([
       {
@@ -68,11 +70,51 @@ describe('pageReadTool', () => {
         method: 'GET',
         path: '/api/documents/doc123456/export/markdown',
         body: undefined,
+        query: { maxChars: '10000', maxEntries: '40' },
       },
     ]);
-    expect(result.text.length).toBeLessThan(longMarkdown.length);
-    expect(result.text.endsWith('… (gekürzt)')).toBe(true);
-    expect((result.data as { fullLength: number }).fullLength).toBe(longMarkdown.length);
+  });
+
+  it('renders the map of a page too large to answer with, never a prefix of it', async () => {
+    // The failure this pins (issue #118): a page whose tail was cut off came
+    // back as its first 30,000 characters plus "gekürzt", and the model spent
+    // twenty calls hunting for a section that sat past the cut. A map names
+    // every part and fits in thirty lines whatever the page weighs.
+    const { client } = createFakeClient({
+      documentId: 'doc123456',
+      filename: 'gesundheit.md',
+      view: 'map',
+      chars: 36_257,
+      map: {
+        mode: 'sections',
+        totalChars: 36_257,
+        totalBlocks: 292,
+        coarsened: false,
+        entries: [
+          {
+            kind: 'section',
+            fromBlockId: 'abc12345',
+            toBlockId: null,
+            level: 2,
+            title: 'Tumorambulanz Klinikum Dortmund',
+            chars: 2_480,
+            blocks: 9,
+          },
+        ],
+      },
+      markdown: '',
+      path: [],
+      children: [],
+    });
+
+    const result = await pageReadTool.run(client, { documentId: 'doc123456' });
+
+    expect(result.text).toContain('Tumorambulanz Klinikum Dortmund');
+    expect(result.text).toContain('^abc12345');
+    expect(result.text).toContain('36.257 Zeichen');
+    expect(result.text).toContain('exo_page_block_read');
+    expect(result.text).not.toContain('gekürzt');
+    expect((result.data as { fullLength: number }).fullLength).toBe(36_257);
   });
 
   it('names the child pages, which the Markdown itself never mentions', async () => {
@@ -82,6 +124,9 @@ describe('pageReadTool', () => {
     const { client } = createFakeClient({
       documentId: 'doc123456',
       filename: 'kreativ.md',
+      view: 'content',
+      chars: 45,
+      map: null,
       markdown: '# Kreativ\n\nBereiche: DIY, Audio, Rezepte.',
       path: [{ id: 'root1234567', title: 'Second Brain' }],
       children: [

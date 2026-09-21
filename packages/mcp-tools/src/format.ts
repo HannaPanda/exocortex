@@ -5,7 +5,65 @@
  * context.
  */
 
+import { type DocumentMapDto, type DocumentMapEntryDto } from '@exocortex/contracts';
+
 const TRUNCATION_NOTE = '… (gekürzt)';
+
+/**
+ * The budget a page read answers within before it answers with a map instead
+ * (issue #118).
+ *
+ * Roughly three quarters of the smallest tool-result cap in the system, so a
+ * page that passes it here is not cut somewhere downstream. Ninety-seven
+ * percent of the pages in a real workspace are below it and are answered with
+ * their text, unchanged.
+ */
+export const PAGE_CONTENT_BUDGET_CHARS = 10_000;
+
+/** Entries a map lists before it merges neighbours instead of growing. */
+export const PAGE_MAP_MAX_ENTRIES = 40;
+
+/** `12345` as `12.345`, because a size is read by a person as often as by a model. */
+function groupDigits(value: number): string {
+  return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function renderEntry(entry: DocumentMapEntryDto): string {
+  const address =
+    entry.fromBlockId === null
+      ? '(ohne Blockkennung, nicht einzeln lesbar)'
+      : entry.toBlockId === null
+        ? `^${entry.fromBlockId}`
+        : `^${entry.fromBlockId} bis ^${entry.toBlockId}`;
+  const kind = entry.level === null ? '' : `H${entry.level} `;
+  const size = `${groupDigits(entry.chars)} Zeichen, ${groupDigits(entry.blocks)} Blöcke`;
+  return `- ${kind}${entry.title} — ${address} (${size})`;
+}
+
+/**
+ * A page, or a part of one, rendered as its structure instead of its text.
+ *
+ * The wording matters as much as the numbers. It must not read like the
+ * beginning of the page, because a reader that believes it has the beginning
+ * reads on; it has to read like a table of contents, so the next call is a
+ * choice and not a continuation (issue #118).
+ */
+export function renderDocumentMap(map: DocumentMapDto, lead: string): string {
+  const size = `${groupDigits(map.totalChars)} Zeichen, ${groupDigits(map.totalBlocks)} Blöcke`;
+  const how =
+    map.mode === 'sections'
+      ? 'Lies einen Abschnitt mit exo_page_block_read (blockId).'
+      : 'Dieser Teil hat keine Überschriften. Lies ein Fenster mit exo_page_block_read ' +
+        '(blockId und toBlockId).';
+  const coarse = map.coarsened
+    ? ' Benachbarte Teile sind hier zusammengefasst; ein Aufruf auf einen davon zeigt ihn feiner.'
+    : '';
+  const entries =
+    map.entries.length === 0
+      ? '(keine adressierbaren Teile)'
+      : map.entries.map(renderEntry).join('\n');
+  return `${lead} (${size}). Kein Textauszug, sondern die Gliederung. ${how}${coarse}\n\n${entries}`;
+}
 
 /** Truncates `text` at `maxLength` characters, appending a German note. */
 export function truncateText(

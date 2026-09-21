@@ -170,6 +170,9 @@ describe('fetch (deep research)', () => {
         '/api/documents/doc1111111/export/markdown': {
           documentId: 'doc1111111',
           filename: 'kalenderplan.md',
+          view: 'content',
+          chars: 38,
+          map: null,
           markdown: '# Kalenderplan\n\neXocortex ist führend.',
           path: [{ id: 'parent11111', title: 'Projekte' }],
           children: [],
@@ -205,6 +208,9 @@ describe('fetch (deep research)', () => {
       '/api/documents/doc1111111/export/markdown': {
         documentId: 'doc1111111',
         filename: 'lang.md',
+        view: 'content',
+        chars: markdown.length,
+        map: null,
         markdown,
         path: [],
         children: [],
