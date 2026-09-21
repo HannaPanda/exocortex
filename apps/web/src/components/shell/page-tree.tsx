@@ -63,11 +63,18 @@ import {
 import { SmartViews } from './smart-views';
 import { SuggestParentDialog } from './suggest-parent-dialog';
 import { TemplatePickerDialog } from './template-picker-dialog';
-import { TrashSheet } from './trash-sheet';
 import { useTreeKeyboard } from './use-tree-keyboard';
 
 interface PageTreeProps {
   workspaceId: string;
+  /**
+   * Opens the trash, which the shell owns.
+   *
+   * It used to live here, which meant it existed only while the navigation was
+   * open -- so the command palette could not reach it, and neither could a
+   * narrow window. The button below is still the way most people get there.
+   */
+  onOpenTrash: () => void;
 }
 
 /**
@@ -95,7 +102,7 @@ const SPRING_OPEN_MS = 700;
  * story at all, which is why the four commands are not a nicety here but the
  * other half of the feature.
  */
-export function PageTree({ workspaceId }: PageTreeProps) {
+export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
   const params = useParams<{ documentId?: string }>();
   const router = useRouter();
   const tree = useDocumentTree(workspaceId);
@@ -111,7 +118,6 @@ export function PageTree({ workspaceId }: PageTreeProps) {
     EMPTY_EXPANDED,
     parseExpanded,
   );
-  const [showTrash, setShowTrash] = React.useState(false);
   const [templatePicker, setTemplatePicker] = React.useState(false);
   // Which row's icon picker is open. One id rather than one flag per row,
   // because two of them can never be open at the same time, and because the
@@ -456,7 +462,7 @@ export function PageTree({ workspaceId }: PageTreeProps) {
         <div className="mt-2 border-t border-border pt-2">
           <button
             type="button"
-            onClick={() => setShowTrash(true)}
+            onClick={onOpenTrash}
             className="flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-accent/60 hover:text-foreground"
             data-testid="toggle-trash"
           >
@@ -466,8 +472,6 @@ export function PageTree({ workspaceId }: PageTreeProps) {
           </button>
         </div>
       </ScrollArea>
-
-      <TrashSheet workspaceId={workspaceId} open={showTrash} onOpenChange={setShowTrash} />
 
       <SuggestParentDialog
         workspaceId={workspaceId}

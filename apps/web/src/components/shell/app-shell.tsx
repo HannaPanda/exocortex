@@ -32,6 +32,7 @@ import { ContextPanel } from './context-panel';
 import { DocumentSessionProvider } from './document-session';
 import { JobProgressIndicator } from './job-progress';
 import { PageTree } from './page-tree';
+import { shellCommands } from './palette-commands';
 import {
   CONTEXT_DEFAULT,
   CONTEXT_STORAGE_KEY,
@@ -41,6 +42,7 @@ import {
   SIDEBAR_STORAGE_KEY,
 } from './panel-preferences';
 import { Topbar } from './topbar';
+import { TrashSheet } from './trash-sheet';
 
 /**
  * Application shell: header, collapsible navigation, document area and optional
@@ -95,6 +97,9 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
   );
   const [searchOpen, setSearchOpen] = React.useState(false);
   const [captureOpen, setCaptureOpen] = React.useState(false);
+  // The trash used to live inside the page tree, so it existed only while the
+  // navigation was open. It is a workspace-wide sheet like the two above.
+  const [trashOpen, setTrashOpen] = React.useState(false);
 
   const sidebarOpen = sidebar.open;
   const contextOpen = context.open;
@@ -211,6 +216,22 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
     });
   });
 
+  // What the palette can do besides finding a page. Built here because this is
+  // where the panels and the dialogs live; the palette only lists them.
+  const paletteCommands = React.useMemo(
+    () =>
+      shellCommands({
+        hasWorkspace: workspaceId !== null,
+        sidebarOpen,
+        contextOpen,
+        onOpenCapture: () => setCaptureOpen(true),
+        onToggleSidebar: () => setSidebarOpen(!sidebarOpen),
+        onToggleContext: () => setContextOpen(!contextOpen),
+        onOpenTrash: () => setTrashOpen(true),
+      }),
+    [contextOpen, setContextOpen, setSidebarOpen, sidebarOpen, workspaceId],
+  );
+
   // Global keyboard shortcuts.
   React.useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
@@ -277,7 +298,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
               <SheetContent side="left" data-testid="sidebar">
                 <SheetTitle className="exocortex-sr-only">Navigation</SheetTitle>
                 <nav aria-label="Seitennavigation" className="flex min-h-0 flex-1 flex-col">
-                  <PageTree workspaceId={workspaceId} />
+                  <PageTree workspaceId={workspaceId} onOpenTrash={() => setTrashOpen(true)} />
                 </nav>
               </SheetContent>
             </Sheet>
@@ -293,7 +314,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
               data-testid="sidebar"
             >
               <nav aria-label="Seitennavigation" className="flex min-h-0 flex-1 flex-col">
-                <PageTree workspaceId={workspaceId} />
+                <PageTree workspaceId={workspaceId} onOpenTrash={() => setTrashOpen(true)} />
               </nav>
             </ResizablePanel>
           ) : null
@@ -328,9 +349,21 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
         ) : null}
       </AppBody>
 
-      <SearchCommand workspaceId={workspaceId} open={searchOpen} onOpenChange={setSearchOpen} />
+      <SearchCommand
+        workspaceId={workspaceId}
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+        commands={paletteCommands}
+      />
       {workspaceId === null ? null : (
-        <CaptureDialog workspaceId={workspaceId} open={captureOpen} onOpenChange={setCaptureOpen} />
+        <>
+          <CaptureDialog
+            workspaceId={workspaceId}
+            open={captureOpen}
+            onOpenChange={setCaptureOpen}
+          />
+          <TrashSheet workspaceId={workspaceId} open={trashOpen} onOpenChange={setTrashOpen} />
+        </>
       )}
       <JobProgressIndicator />
     </AppShellFrame>
