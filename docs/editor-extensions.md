@@ -99,9 +99,16 @@ keeps working without a DOM on the server.
 (`transclusion.ts`). Their schema (attributes, `parseHTML`/`renderHTML`, Markdown
 adapter) lives in `packages/editor` like every other node, but each declares
 no `addNodeView()` — the interactive rendering is a real React node view
-supplied entirely by `apps/web`, wired in via `.extend({ addNodeView: () =>
-ReactNodeViewRenderer(...) })` on the extension instance in
-`collaborative-editor.tsx`.
+supplied entirely by `apps/web`, handed to `buildEditorExtensions()` through
+its `nodeViews` option in `collaborative-editor.tsx`.
+
+The option is the whole mechanism, and passing `Node.extend({ addNodeView })`
+through `additionalExtensions` instead is the mistake it exists to prevent:
+Tiptap does not deduplicate, so the node was registered twice. It warned about
+the duplicate name, built the schema from whichever copy came last, and ran
+both copies' input rules, keyboard shortcuts and ProseMirror plugins (issue
+#114). `nodeViews` applies the renderer to the one canonical instance, the same
+way `mediaInfo` is applied.
 
 For `databaseEmbed` that is a live `DatabaseShell`, the same component the
 full-page database view uses: reusing it outweighs hand-building filters,
@@ -143,8 +150,8 @@ run too late. The guard is the `[data-page-link]` attribute the click handler
 checks for instead.
 
 New interactive embeds should follow this pattern (schema-only node in
-`packages/editor`, `ReactNodeViewRenderer` override in `apps/web`) rather than
-inventing another mechanism.
+`packages/editor`, a `nodeViews` entry in `apps/web`) rather than inventing
+another mechanism.
 
 Two rules hold for this layer, both learned the hard way (docs/deviations.md 16–17):
 

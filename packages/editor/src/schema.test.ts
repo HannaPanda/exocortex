@@ -1,3 +1,4 @@
+import { Node, type NodeViewRenderer } from '@tiptap/core';
 import { describe, expect, it } from 'vitest';
 
 import { BLOCK_ICON_NAMES, filterBlockCatalog, groupBlockCatalog } from './block-catalog';
@@ -6,6 +7,7 @@ import { EXOCORTEX_SCHEMA_VERSION } from './contract';
 import { isEmbeddableUrl, toEmbedUrl } from './embed';
 import {
   buildBlockCatalog,
+  buildEditorExtensions,
   EXOCORTEX_EDITOR_EXTENSIONS,
   registrySchemaVersion,
 } from './extensions';
@@ -213,5 +215,28 @@ describe('embed allow list', () => {
     );
     // Anything already embeddable is left alone.
     expect(toEmbedUrl('https://codepen.io/x/embed/y')).toBe('https://codepen.io/x/embed/y');
+  });
+});
+
+describe('buildEditorExtensions', () => {
+  it('registers no name twice', () => {
+    // Tiptap does not deduplicate: a second extension of the same name warns,
+    // gives the schema to whichever copy came last, and runs both copies'
+    // input rules, keyboard shortcuts and plugins (issue #114).
+    const names = buildEditorExtensions().map((extension) => extension.name);
+    expect([...new Set(names)]).toHaveLength(names.length);
+  });
+
+  it('attaches a node view to the canonical extension rather than a second one', () => {
+    const renderer = (() => ({})) as unknown as NodeViewRenderer;
+    const built = buildEditorExtensions({ nodeViews: { pageLink: renderer } });
+
+    const pageLinks = built.filter((extension) => extension.name === 'pageLink');
+    expect(pageLinks).toHaveLength(1);
+
+    const pageLink = pageLinks[0];
+    expect(pageLink).toBeInstanceOf(Node);
+    if (!(pageLink instanceof Node)) return;
+    expect(pageLink.config.addNodeView?.call(undefined as never)).toBe(renderer);
   });
 });

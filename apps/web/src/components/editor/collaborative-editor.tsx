@@ -22,12 +22,8 @@ import {
   type BreadcrumbCrumb,
   buildBlockCatalog,
   buildEditorExtensions,
-  DatabaseEmbed,
   type LinkTarget,
-  PageLink,
   parseLinkHref,
-  SavedQueryEmbed,
-  Transclusion,
   YJS_DOCUMENT_FIELD,
 } from '@exocortex/editor';
 import { ErrorState, LoadingState } from '@exocortex/ui';
@@ -395,18 +391,20 @@ function EditorSurface({
         // Lets the file and PDF blocks show what is inside them. The editor
         // package knows no routes, so the API side is injected here.
         mediaInfo: attachmentMediaInfoResolver,
+        // Four nodes whose schema lives in `packages/editor` and whose drawing
+        // cannot: a database, a saved query, a transcluded fragment (ADR-045,
+        // read here as this reader) and a link to a page with its resolution
+        // state. Handed to the canonical extension rather than added beside it
+        // -- `Node.extend({ addNodeView })` in `additionalExtensions` left two
+        // copies of each registered, which is what Tiptap was warning about
+        // and what ran every input rule and keyboard shortcut twice (#114).
+        nodeViews: {
+          databaseEmbed: ReactNodeViewRenderer(DatabaseEmbedView),
+          savedQueryEmbed: ReactNodeViewRenderer(SavedQueryView),
+          transclusion: ReactNodeViewRenderer(TransclusionView),
+          pageLink: ReactNodeViewRenderer(PageLinkView),
+        },
         additionalExtensions: [
-          // The schema for `databaseEmbed` lives in `packages/editor`; only the
-          // React node view can live here (see `docs/editor-extensions.md`).
-          DatabaseEmbed.extend({ addNodeView: () => ReactNodeViewRenderer(DatabaseEmbedView) }),
-          // The query block: schema in `packages/editor`, live answer here.
-          SavedQueryEmbed.extend({ addNodeView: () => ReactNodeViewRenderer(SavedQueryView) }),
-          // Transclusion: the reference is schema, what it shows is a read
-          // performed here, as this reader (ADR-045).
-          Transclusion.extend({ addNodeView: () => ReactNodeViewRenderer(TransclusionView) }),
-          // Same pairing for `pageLink`: the schema stays in `packages/editor`,
-          // only its resolution state (icon, path, "does not exist") is React.
-          PageLink.extend({ addNodeView: () => ReactNodeViewRenderer(PageLinkView) }),
           Collaboration.configure({
             document: connection.ydoc,
             field: YJS_DOCUMENT_FIELD,

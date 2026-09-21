@@ -1,4 +1,4 @@
-import { type Extensions, mergeAttributes } from '@tiptap/core';
+import { type Extensions, mergeAttributes, type NodeViewRenderer } from '@tiptap/core';
 import { Blockquote } from '@tiptap/extension-blockquote';
 import { Bold } from '@tiptap/extension-bold';
 import { Code } from '@tiptap/extension-code';
@@ -382,6 +382,19 @@ export interface BuildEditorExtensionsOptions {
    * extension tests free of a network seam.
    */
   mediaInfo?: MediaInfoResolver;
+  /**
+   * A node view per node name, keyed the same way `mediaInfo` is applied.
+   *
+   * Four nodes need a React component to render what they point at -- a
+   * database, a saved query, a transcluded fragment, a link to a page -- and
+   * a React renderer cannot live in this package. Handing them in here rather
+   * than adding `Node.extend({ addNodeView })` to `additionalExtensions` is
+   * what keeps them from being registered a second time: Tiptap kept both
+   * copies, warned about the duplicate names, gave the schema to the last one
+   * and ran the input rules, keyboard shortcuts and ProseMirror plugins of
+   * both (issue #114).
+   */
+  nodeViews?: Readonly<Record<string, NodeViewRenderer>>;
 }
 
 /** Names of the nodes built from `MEDIA_KINDS`; see `media.ts`. */
@@ -390,14 +403,22 @@ const MEDIA_NODE_NAMES = new Set(['fileAttachment', 'video', 'audio', 'pdf']);
 /** Flattens the registry into the array Tiptap expects. */
 export function buildEditorExtensions(options: BuildEditorExtensionsOptions = {}): Extensions {
   const mediaInfo = options.mediaInfo;
+  const nodeViews = options.nodeViews ?? {};
   return [
-    ...EXOCORTEX_EDITOR_EXTENSIONS.flatMap((entry) => entry.extensions).map((extension) =>
+    ...EXOCORTEX_EDITOR_EXTENSIONS.flatMap((entry) => entry.extensions).map((extension) => {
       // `configure` changes options only, never the schema, so the document
       // model stays identical whether or not a resolver was supplied.
-      mediaInfo !== undefined && MEDIA_NODE_NAMES.has(extension.name)
-        ? extension.configure({ mediaInfo })
-        : extension,
-    ),
+      const configured =
+        mediaInfo !== undefined && MEDIA_NODE_NAMES.has(extension.name)
+          ? extension.configure({ mediaInfo })
+          : extension;
+      // Same for a node view: it decides how a node is drawn, never what the
+      // node is, so the canonical schema is untouched either way.
+      const nodeView = nodeViews[extension.name];
+      return nodeView === undefined
+        ? configured
+        : configured.extend({ addNodeView: () => nodeView });
+    }),
     ...(options.additionalExtensions ?? []),
   ];
 }
