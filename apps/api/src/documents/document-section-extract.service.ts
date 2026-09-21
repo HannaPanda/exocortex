@@ -109,7 +109,16 @@ export class DocumentSectionExtractService {
     const moving = section.heading === null ? section.content : section.body;
     if (moving === null || (moving.content ?? []).length === 0) {
       throw AppError.validation(
-        'This section holds nothing but its heading, so there is nothing to move',
+        /*
+         * The same trap `bareHeadingHint` covers on the read side: a range from
+         * a block to itself is that block, so naming both ends out of habit
+         * addresses a heading without its section. Worth saying here, because
+         * the caller that gets this far is about to move something.
+         */
+        input.request.toBlockId === input.request.blockId
+          ? 'A range from a block to itself is that block alone, so this addressed the heading ' +
+            'without its section. Leave toBlockId out to move the whole section'
+          : 'This section holds nothing but its heading, so there is nothing to move',
       );
     }
 

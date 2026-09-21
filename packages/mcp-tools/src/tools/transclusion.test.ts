@@ -112,6 +112,43 @@ describe('pageBlockReadTool', () => {
     expect(result.text).toContain('Zweiter Absatz.');
   });
 
+  it('says so when both ends were the same identifier and the answer is a bare heading', async () => {
+    // What a run actually did on 2026-09-21: three reads of one section, one
+    // heading line back each time, and then it moved the section unseen.
+    const { client } = fakeClient({
+      ...PAGE,
+      blockId: 'abc12345',
+      toBlockId: 'abc12345',
+      markdown: '### Tumorambulanz Klinikum Dortmund\n',
+    });
+
+    const result = await pageBlockReadTool.run(client, {
+      documentId: 'doc123456',
+      blockId: 'abc12345',
+      toBlockId: 'abc12345',
+    });
+
+    expect(result.text).toContain('nur die Überschriftszeile');
+    expect(result.text).toContain('Ohne toBlockId');
+  });
+
+  it('says nothing extra when a window of one block really is the content', async () => {
+    const { client } = fakeClient({
+      ...PAGE,
+      blockId: 'abc12345',
+      toBlockId: 'abc12345',
+      markdown: 'Ein einzelner Absatz, der die Antwort ist.',
+    });
+
+    const result = await pageBlockReadTool.run(client, {
+      documentId: 'doc123456',
+      blockId: 'abc12345',
+      toBlockId: 'abc12345',
+    });
+
+    expect(result.text).not.toContain('Überschriftszeile');
+  });
+
   it('still lists every block flatly when that is what was asked for', async () => {
     const { client, calls } = fakeClient({
       ...PAGE,

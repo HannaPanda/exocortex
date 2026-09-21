@@ -2780,6 +2780,26 @@ describe('extracting a section', () => {
     expect(await markdownOf(documentId)).toContain('Nur das hier.');
   });
 
+  it('names the cause when both ends of the range were the same heading', async () => {
+    const { documentId, blockIds } = await seed(PAGE);
+    const heading = blockIds[2] as string;
+
+    const error = await extractService
+      .extract({
+        documentId,
+        userId: ownerId,
+        request: { blockId: heading, toBlockId: heading, replacement: 'link' },
+        correlationId,
+        source: 'api',
+      })
+      .then(() => null)
+      .catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({ code: 'validation_failed' });
+    expect((error as Error).message).toContain('Leave toBlockId out');
+    expect(await markdownOf(documentId)).toContain('Termin am Montag.');
+  });
+
   it('writes nothing when the address is gone', async () => {
     const { documentId } = await seed(PAGE);
     const before = await markdownOf(documentId);

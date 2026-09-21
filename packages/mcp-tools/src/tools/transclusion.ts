@@ -35,6 +35,36 @@ const MAX_OUTLINE_LINES = 60;
 /** Characters of a fragment an answer carries. A block, not a page. */
 const MAX_FRAGMENT_CHARS = 20_000;
 
+/**
+ * The one answer that is correct and still useless, said out loud.
+ *
+ * A range from a block to itself is that block literally, heading or not, and
+ * a map hands out exactly that address for a part it cut into single blocks
+ * (`extractBlockRange`). So the meaning stays; what it costs is that a model
+ * naming both ends out of habit asks for a heading's section and is handed the
+ * heading line, which tells it nothing it did not have and looks like an empty
+ * section rather than a misaddressed one. Observed in the wild: a run read a
+ * section three times this way, got one line each time, and then moved it
+ * unseen.
+ *
+ * Only for the two ends being the same identifier. A window that really is one
+ * block of prose answered its caller.
+ */
+function bareHeadingHint(
+  input: { blockId?: string | undefined; toBlockId?: string | undefined },
+  markdown: string,
+): string {
+  if (input.toBlockId === undefined || input.toBlockId !== input.blockId) return '';
+  const trimmed = markdown.trim();
+  if (!trimmed.startsWith('#') || trimmed.includes('\n')) return '';
+  return (
+    '\n\nDas ist nur die Überschriftszeile: blockId und toBlockId waren dieselbe Kennung, und ' +
+    'das adressiert genau diesen einen Block. Ohne toBlockId antwortet derselbe Aufruf mit dem ' +
+    'ganzen Abschnitt, also der Überschrift und allem darunter bis zur nächsten gleich hohen ' +
+    'Überschrift.'
+  );
+}
+
 export const pageBlockReadTool: AnyToolDefinition = defineTool({
   name: 'exo_page_block_read',
   description:
@@ -44,7 +74,9 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
     'ist, wieder eine Karte davon. Hat ein Teil keine Überschriften mehr, nennt die Karte ' +
     'Blockfenster: die liest man mit blockId und toBlockId zusammen. ' +
     'Eine Überschrift adressiert ihren ganzen Abschnitt: die Überschrift und alles darunter bis ' +
-    'zur nächsten Überschrift derselben oder einer höheren Ebene. ' +
+    'zur nächsten Überschrift derselben oder einer höheren Ebene. Dafür bleibt toBlockId weg. ' +
+    'Dieselbe Kennung in blockId und toBlockId ist kein Abschnitt, sondern genau dieser eine ' +
+    'Block, bei einer Überschrift also nur die Überschriftszeile. ' +
     'Mit blocks: true kommt statt der Karte die flache Liste aller adressierbaren Blöcke mit ' +
     'Vorschau, was für eine lange Seite viel und meistens zu viel ist. ' +
     'Das ist auch die Adresse, mit der sich Inhalt einbetten lässt: ein Block ' +
@@ -126,7 +158,7 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
       input.blockId === undefined
         ? `Seite „${result.title}“`
         : `Block ${input.blockId} der Seite „${result.title}“`;
-    return { text: `${what}:\n\n${text}${nested}`, data: result };
+    return { text: `${what}:\n\n${text}${nested}${bareHeadingHint(input, result.markdown)}`, data: result };
   },
 });
 
