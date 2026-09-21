@@ -35,15 +35,6 @@ import {
 /** The workspace form reports refusals as one message, not per field. */
 const NO_INVALID_GROUPS: ReadonlySet<string> = new Set<string>();
 
-/**
- * The overrides one workspace has set, and the ones it inherits (issue #52).
- *
- * Deliberately not a second copy of the admin form. It renders the same rows
- * through the same component, but it answers a different question: not "what
- * is this installation configured to do" but "what does this workspace do
- * differently". That is why every row says which of the two it is, and why a
- * row that says nothing is the normal case rather than an empty field.
- */
 /** The overridable settings whose draft value differs from the stored one. */
 function changedOverrides(
   draft: Settings | null,
@@ -53,6 +44,22 @@ function changedOverrides(
   return stored.editableKeys.filter((key) => draft[key] !== stored.settings[key]);
 }
 
+/** What the refusal beside the save button says, given which side refused. */
+function refusalMessage(invalid: boolean, errorCode: string | undefined): string {
+  return invalid
+    ? 'Eine Eingabe ist nicht zulässig, es wurde nichts gespeichert.'
+    : messageForCode(errorCode);
+}
+
+/**
+ * The overrides one workspace has set, and the ones it inherits (issue #52).
+ *
+ * Deliberately not a second copy of the admin form. It renders the same rows
+ * through the same component, but it answers a different question: not "what
+ * is this installation configured to do" but "what does this workspace do
+ * differently". That is why every row says which of the two it is, and why a
+ * row that says nothing is the normal case rather than an empty field.
+ */
 export function WorkspaceSettingsForm({
   workspaceId,
   canEdit,
@@ -67,6 +74,9 @@ export function WorkspaceSettingsForm({
   const [draft, setDraft] = React.useState<Settings | null>(null);
   const [reset, setReset] = React.useState<WorkspaceSettingKey[]>([]);
   const [saved, setSaved] = React.useState(false);
+  // Set when the save was refused before it left the browser. The API's own
+  // rejection is reported through `update.error` instead.
+  const [invalid, setInvalid] = React.useState(false);
   // Which group of rows is on screen. Over forty rows in one column is a
   // scroll no one reads to the end of; the draft lives above this, so
   // switching groups never loses an edit and one save covers all of them.
@@ -131,15 +141,28 @@ export function WorkspaceSettingsForm({
     setDraft(data.settings);
     setReset([]);
     setSaved(false);
+    setInvalid(false);
     update.reset();
   }
 
   function handleSave(): void {
     const patch: Record<string, unknown> = {};
-    for (const key of changed) patch[key] = current[key];
+    // A key queued for reset never travels as a value as well. Queueing one
+    // also puts the deployment's value into the draft, so that the row shows
+    // what it will become -- which made the key differ from the workspace's
+    // own stored value and land in `changed` too. The request schema refuses
+    // "set and reset in one go", `safeParse` failed, and `handleSave` returned
+    // without a word: the reset button did nothing at all, in exactly the case
+    // where resetting means something.
+    for (const key of changed) {
+      if (!reset.includes(key)) patch[key] = current[key];
+    }
     if (reset.length > 0) patch.reset = reset;
 
     const parsed = updateWorkspaceSettingsRequestSchema.safeParse(patch);
+    // Not a silent return: a save button that does nothing and says nothing is
+    // indistinguishable from one that worked.
+    setInvalid(!parsed.success);
     if (!parsed.success) return;
 
     update.mutate(parsed.data, {
@@ -219,9 +242,9 @@ export function WorkspaceSettingsForm({
           <AlertDescription>Einstellungen gespeichert.</AlertDescription>
         </Alert>
       ) : null}
-      {update.isError ? (
+      {update.isError || invalid ? (
         <Alert variant="destructive" data-testid="workspace-settings-error">
-          <AlertDescription>{messageForCode(errorCode)}</AlertDescription>
+          <AlertDescription>{refusalMessage(invalid, errorCode)}</AlertDescription>
         </Alert>
       ) : null}
 
