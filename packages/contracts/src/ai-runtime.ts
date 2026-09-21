@@ -143,7 +143,12 @@ export interface AiRunReconcileInput {
   /** The run this client still believes is in flight. */
   activeRunId: string | null;
   /** The run as the server last reported it, or `null` while none was read. */
-  run: { id: string; status: AiRunStatus; errorCode: string | null } | null;
+  run: {
+    id: string;
+    status: AiRunStatus;
+    errorCode: string | null;
+    errorDetail: string | null;
+  } | null;
   /** `key` of the outcome this client has already reacted to. */
   appliedKey: string | null;
 }
@@ -153,6 +158,8 @@ export interface AiRunReconcileResult {
   key: string;
   status: AiRunStatus;
   errorCode: string | null;
+  /** The German diagnosis the run row carries, when it has one (issue #118). */
+  errorDetail: string | null;
 }
 
 /**
@@ -171,7 +178,7 @@ export function reconcileAiRun(input: AiRunReconcileInput): AiRunReconcileResult
   if (!isAiRunTerminalStatus(run.status)) return null;
   const key = `${run.id}:${run.status}`;
   if (key === appliedKey) return null;
-  return { key, status: run.status, errorCode: run.errorCode };
+  return { key, status: run.status, errorCode: run.errorCode, errorDetail: run.errorDetail };
 }
 
 export interface AiRunTimeouts {

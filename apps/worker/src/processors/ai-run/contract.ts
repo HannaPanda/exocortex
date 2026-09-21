@@ -33,8 +33,19 @@ export interface ResolvedModelRow {
 
 /** Why a run ended without an answer. */
 export interface RunFailure {
+  /** English, for the log and the trace. */
   code: string;
   message: string;
+  /**
+   * The same thing said to the person, in German and in detail (issue #118,
+   * ADR-059).
+   *
+   * Separate from `message` because the two have different readers: `message`
+   * is a log line and stays English by rule 8, while this one is shown in the
+   * panel, stored on the run and read back by `exo_ai_run_get`. Absent
+   * wherever the code alone says everything there is to say.
+   */
+  detail?: string;
 }
 
 /** What one exchange with the provider produced. */

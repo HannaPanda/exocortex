@@ -142,6 +142,12 @@ export const aiRunFailedPayloadSchema = z.object({
   status: aiRunStatusSchema,
   errorCode: z.string(),
   reason: z.string(),
+  /**
+   * The German diagnosis, so the panel can show it without waiting for the
+   * next poll of the run (issue #118). Same text as `AiRun.errorDetail`;
+   * `null` wherever the code alone is the whole story.
+   */
+  detail: z.string().nullable(),
 });
 
 export const aiConversationCompactedPayloadSchema = z.object({

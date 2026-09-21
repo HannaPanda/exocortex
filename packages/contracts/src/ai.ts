@@ -89,6 +89,16 @@ export const aiRunSchema = z.object({
   usage: aiUsageSchema.nullable(),
   errorCode: z.string().nullable(),
   /**
+   * What went wrong, said to the person rather than to the log (issue #118,
+   * ADR-059).
+   *
+   * German, several sentences, and written to stand on its own: for
+   * `ai_tool_limit_exceeded` it names the tools the run spent its calls on,
+   * how many of those calls answered nothing new, and the way in that would
+   * have worked. `null` wherever the code alone is the whole story.
+   */
+  errorDetail: z.string().nullable(),
+  /**
    * The answer as the worker has it so far. Complete once the run reached a
    * terminal status, and the authoritative text *while* it is still running:
    * the worker renews it with every heartbeat, so a client that noticed a gap

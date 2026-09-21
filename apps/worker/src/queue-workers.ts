@@ -196,6 +196,7 @@ function startCoreWorkers(env: WorkerEnv, runtime: WorkerRuntime, logger: Logger
             status: 'failed',
             errorCode: 'ai_run_abandoned',
             reason: 'The job failed and BullMQ has no attempts left',
+            detail: null,
           },
         });
       }

@@ -50,6 +50,7 @@ import { type JobContext, QueueRegistry, RedisEventBus, testQueuePrefix } from '
 import { type ObjectStorage } from '@exocortex/storage';
 
 import { compactIfNeeded } from '../compaction';
+import { ToolCallLedger } from '../tool-ledger';
 import { type ToolRunner } from '../tool-runner';
 
 import { createAiRunProcessor, type ResolvedModelRow } from './ai-run';
@@ -158,16 +159,26 @@ function stubToolRunner(
   responses: readonly { text: string; isError: boolean; refused?: boolean }[],
 ): ToolRunner {
   let callIndex = 0;
+  // The real ledger, so the diagnosis an aborted run reports is built from
+  // the same bookkeeping production uses (issue #118).
+  const ledger = new ToolCallLedger();
   return {
     definitions: [{ name: 'exo_test_tool', description: 'Ein Testwerkzeug', parameters: {} }],
     untrustedOrigins: [],
     noteUntrustedContent() {},
-    async run() {
+    tallies: () => ledger.tallies(),
+    async run({ name, argumentsJson }) {
       const response = responses[callIndex] ?? {
         text: 'Keine weitere Antwort konfiguriert',
         isError: true,
       };
       callIndex += 1;
+      ledger.record({
+        name,
+        argumentsJson,
+        resultText: response.text,
+        comparable: !response.isError,
+      });
       return { text: response.text, isError: response.isError, refused: response.refused ?? false };
     },
   };
@@ -3633,6 +3644,11 @@ describe('conversation-backed tool loop', () => {
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('FAILED');
     expect(run.errorCode).toBe('ai_tool_limit_exceeded');
+    // The code alone was the whole message until issue #118, and the code is
+    // the one thing the reader already knew. The row now keeps the diagnosis
+    // beside it, which is what makes it readable after the tab was closed.
+    expect(run.errorDetail).toContain('Werkzeugrunden');
+    expect(run.errorDetail).toContain('kein einziger Werkzeugaufruf');
   }, 60_000);
 });
 

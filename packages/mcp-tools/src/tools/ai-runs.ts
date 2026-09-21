@@ -52,6 +52,11 @@ function renderRun(run: AiRun): string {
     `Werkzeugrunden: ${String(run.toolIterations)}`,
   ];
   if (run.errorCode !== null) lines.push(`Fehlercode: ${run.errorCode}`);
+  // The diagnosis rather than only the code (issue #118): a run that ran out
+  // of tool calls says here which tools it spent them on and how many of them
+  // answered nothing new, which is what a caller needs to decide what to try
+  // next.
+  if (run.errorDetail !== null) lines.push(`Diagnose: ${run.errorDetail}`);
   if (run.usage !== null) {
     lines.push(
       `Tokens: ${String(run.usage.inputTokens)} hinein, ${String(run.usage.outputTokens)} hinaus`,

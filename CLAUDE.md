@@ -519,6 +519,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   that until the offset-to-block table of issue #110 exists. `NULL` and `[]`
   are different answers: the first is a passage still owed an anchor, the
   second one that sits under no heading.
+- ADR-059: a run says what it spent its calls on, and never answers itself
+  twice. A finished tool call is hashed against what that same call answered
+  earlier in the run; an identical answer is replaced by a short hint naming
+  the earlier call and the three ways to something new. Answers are compared
+  rather than arguments, so a run waiting on a build is never refused, and no
+  list of pollable tools has to be kept right. `ai_tool_limit_exceeded` reads
+  out the tally -- tools, calls, characters, repeats -- and that diagnosis is
+  stored in `AiRun.errorDetail` in German, beside the English `message` the
+  log keeps.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

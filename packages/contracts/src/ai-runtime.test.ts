@@ -68,24 +68,42 @@ describe('deriveAiRunTimeouts', () => {
 });
 
 describe('reconcileAiRun', () => {
-  const run = { id: 'run1234567', status: 'completed', errorCode: null } as const;
+  const run = {
+    id: 'run1234567',
+    status: 'completed',
+    errorCode: null,
+    errorDetail: null,
+  } as const;
 
   it('catches a completion event the socket never delivered (issue #6)', () => {
     // The whole point of the poll: the panel still believes the run is in
     // flight, nothing on the socket ever said otherwise, and the server has
     // known for a while that it is over.
     const result = reconcileAiRun({ activeRunId: run.id, run, appliedKey: null });
-    expect(result).toEqual({ key: 'run1234567:completed', status: 'completed', errorCode: null });
+    expect(result).toEqual({
+      key: 'run1234567:completed',
+      status: 'completed',
+      errorCode: null,
+      errorDetail: null,
+    });
   });
 
   it('carries the error code of a failed run through', () => {
     const result = reconcileAiRun({
       activeRunId: run.id,
-      run: { ...run, status: 'failed', errorCode: 'ai_response_truncated' },
+      run: {
+        ...run,
+        status: 'failed',
+        errorCode: 'ai_response_truncated',
+        errorDetail: 'Die Grenze von 8 Werkzeugrunden ist erreicht',
+      },
       appliedKey: null,
     });
     expect(result?.status).toBe('failed');
     expect(result?.errorCode).toBe('ai_response_truncated');
+    // The panel shows this instead of the canned sentence (issue #118), so it
+    // has to survive the reconcile path as well as the socket one.
+    expect(result?.errorDetail).toBe('Die Grenze von 8 Werkzeugrunden ist erreicht');
   });
 
   it('stays silent while the run is still pending or running', () => {

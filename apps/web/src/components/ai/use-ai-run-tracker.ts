@@ -125,7 +125,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
   const runQuery = useAiRun(activeRunId);
 
   const applyTerminalRunState = React.useCallback(
-    (status: AiRunStatus, errorCode: string | null): void => {
+    (status: AiRunStatus, errorCode: string | null, errorDetail: string | null): void => {
       setActiveRunId(null);
       setToolActivity([]);
       setRunStartedAt(null);
@@ -150,8 +150,14 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
         setNotice('Lauf abgebrochen.');
         return;
       }
+      // The run's own diagnosis wins over the canned sentence when it has one
+      // (issue #118): "zu viele Werkzeugaufrufe" is the fact the reader
+      // already had, and what the run did with those calls is the part that
+      // says what to try instead.
       setError(
-        RUN_ERROR_MESSAGES[errorCode ?? ''] ?? 'Die KI-Antwort konnte nicht erzeugt werden.',
+        errorDetail ??
+          RUN_ERROR_MESSAGES[errorCode ?? ''] ??
+          'Die KI-Antwort konnte nicht erzeugt werden.',
       );
     },
     [activeConversationId, queryClient],
@@ -170,7 +176,11 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
   });
   if (reconciliation !== null) {
     setReconciledRunResultKey(reconciliation.key);
-    applyTerminalRunState(reconciliation.status, reconciliation.errorCode);
+    applyTerminalRunState(
+      reconciliation.status,
+      reconciliation.errorCode,
+      reconciliation.errorDetail,
+    );
   }
 
   // The other half of "abgleichen statt nur zuzuhören": a reconnect of the
@@ -229,12 +239,12 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
 
   useRealtimeEvent('ai.run.completed', (event) => {
     if (event.payload.runId !== activeRunId) return;
-    applyTerminalRunState('completed', null);
+    applyTerminalRunState('completed', null, null);
   });
 
   useRealtimeEvent('ai.run.failed', (event) => {
     if (event.payload.runId !== activeRunId) return;
-    applyTerminalRunState(event.payload.status, event.payload.errorCode);
+    applyTerminalRunState(event.payload.status, event.payload.errorCode, event.payload.detail);
   });
 
   useRealtimeEvent('ai.conversation.compacted', (event) => {
@@ -296,7 +306,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
     const runId = activeRunId;
     try {
       await cancelRun.mutateAsync(runId);
-      applyTerminalRunState('cancelled', null);
+      applyTerminalRunState('cancelled', null, null);
     } catch (caught) {
       if (caught instanceof ApiError && caught.status === 409) {
         // The run finished by itself just before the cancellation reached the

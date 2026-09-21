@@ -99,6 +99,7 @@ export async function writeFailure(input: {
     data: {
       status: terminalStatus,
       errorCode: failure.code,
+      errorDetail: failure.detail ?? null,
       finishedAt: new Date(),
       resultText: outcome.text.length > 0 ? outcome.text : null,
       ...usageColumns(outcome.usage, input.modelRow),
@@ -124,6 +125,7 @@ export async function writeFailure(input: {
             : 'failed',
       errorCode: failure.code,
       reason: failure.message,
+      detail: failure.detail ?? null,
     },
   });
   logger.warn('AI run failed', { runId: run.id, code: failure.code });

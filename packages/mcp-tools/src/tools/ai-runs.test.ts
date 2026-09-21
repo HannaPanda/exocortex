@@ -43,6 +43,7 @@ const runningRun: AiRun = {
   finishedAt: null,
   usage: null,
   errorCode: null,
+  errorDetail: null,
   resultText: 'Ich schreibe jetzt den strukturierten Inhalt',
   conversationId: null,
   reasoningLevel: 'none',
@@ -74,6 +75,21 @@ describe('aiRunGetTool', () => {
 
     expect(result.text).toContain('fehlgeschlagen');
     expect(result.text).toContain('ai_response_truncated');
+  });
+
+  it('reports the diagnosis a failed run carries, not only its code (issue #118)', async () => {
+    const { client } = createFakeClient({
+      ...runningRun,
+      status: 'failed',
+      errorCode: 'ai_tool_limit_exceeded',
+      errorDetail: 'Die Grenze von 8 Werkzeugrunden ist erreicht: exo_search 14 Aufrufe',
+      finishedAt: '2026-08-09T10:01:00.000Z',
+    });
+
+    const result = await aiRunGetTool.run(client, { runId: 'run1234567' });
+
+    expect(result.text).toContain('Diagnose: Die Grenze von 8 Werkzeugrunden');
+    expect(result.text).toContain('exo_search 14 Aufrufe');
   });
 
   it('caps the answer excerpt so a long run cannot flood a tool loop', async () => {

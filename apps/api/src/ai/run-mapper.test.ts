@@ -17,6 +17,7 @@ const baseRow: AiRunRow = {
   finishedAt: null,
   usage: null,
   errorCode: null,
+  errorDetail: null,
   resultText: null,
   conversationId: null,
   reasoningLevel: 'NONE',
@@ -46,5 +47,15 @@ describe('mapAiRunRow', () => {
     // gap in the delta stream has something authoritative to reload.
     const mapped = mapAiRunRow({ ...baseRow, resultText: 'Ich schreibe jetzt' });
     expect(mapped.resultText).toBe('Ich schreibe jetzt');
+  });
+
+  it('carries the diagnosis of a failed run beside its code (issue #118)', () => {
+    const mapped = mapAiRunRow({
+      ...baseRow,
+      status: 'FAILED',
+      errorCode: 'ai_tool_limit_exceeded',
+      errorDetail: 'Die Grenze von 8 Werkzeugrunden ist erreicht',
+    });
+    expect(mapped.errorDetail).toBe('Die Grenze von 8 Werkzeugrunden ist erreicht');
   });
 });

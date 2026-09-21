@@ -17,6 +17,8 @@ import {
   toolsFor,
 } from '@exocortex/mcp-tools';
 
+import { repeatHint, ToolCallLedger, type ToolCallTally } from './tool-ledger';
+
 /** Every tool result is capped here so a single call can never eat the run's whole context. */
 const MAX_RESULT_CHARS = 30_000;
 
@@ -81,6 +83,12 @@ export interface ToolRunner {
    * description is as good a place to hide an instruction as the file is.
    */
   noteUntrustedContent(origin: UntrustedOrigin): void;
+  /**
+   * What this run has spent its tool calls on, per tool (issue #118,
+   * ADR-059). Read when the run ends badly, so the abort names what happened
+   * instead of only the limit it hit.
+   */
+  tallies(): ToolCallTally[];
   run(input: { name: string; argumentsJson: string; correlationId: string }): Promise<{
     text: string;
     isError: boolean;
@@ -153,6 +161,7 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
   let client: ExocortexApiClient | null = null;
   const untrustedOrigins: UntrustedOrigin[] = [];
   let webFetches = 0;
+  const ledger = new ToolCallLedger();
 
   /** Mints (or re-mints, close to expiry) the service token and its client. */
   function ensureClient(): ExocortexApiClient {
@@ -309,10 +318,47 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
     }
   }
 
+  /**
+   * Books the finished call, and swaps the answer for a hint when the run
+   * already has that exact answer (issue #118, ADR-059).
+   *
+   * After the call rather than before it: what makes a repeat pointless is
+   * that the answer is the same, and only the answer can say that. A page the
+   * model re-read because somebody changed it comes back changed and passes
+   * through untouched; the fourteenth search that finds what the first one
+   * found does not.
+   */
+  function bookCall(
+    name: string,
+    argumentsJson: string,
+    result: { text: string; isError: boolean; refused: boolean },
+  ): { text: string; isError: boolean; refused: boolean } {
+    const mutating = findTool(name)?.mutating ?? true;
+    const verdict = ledger.record({
+      name,
+      argumentsJson,
+      resultText: result.text,
+      comparable: !mutating && !result.isError && !result.refused,
+    });
+    if (verdict.repeatOf === null) return result;
+    input.logger.info('Answered a repeated tool call with a hint instead of the same text', {
+      tool: name,
+      call: verdict.call,
+      repeatOf: verdict.repeatOf,
+      savedChars: result.text.length,
+    });
+    return {
+      text: repeatHint({ name, repeatOf: verdict.repeatOf }),
+      isError: false,
+      refused: false,
+    };
+  }
+
   return {
     definitions,
     untrustedOrigins,
     noteUntrustedContent,
+    tallies: () => ledger.tallies(),
     async run({ name, argumentsJson, correlationId }) {
       // Every tool call of the built-in loop passes through here, which makes
       // this the place for its span too (issue #57). The name and the outcome
@@ -321,7 +367,11 @@ export function createToolRunner(input: CreateToolRunnerInput): ToolRunner {
       return withSpan(
         `ai.tool ${name}`,
         async (span) => {
-          const result = await executeToolCall(name, argumentsJson, correlationId);
+          const result = bookCall(
+            name,
+            argumentsJson,
+            await executeToolCall(name, argumentsJson, correlationId),
+          );
           span.setAttributes({
             'ai.tool.refused': result.refused,
             'ai.tool.error': result.isError,

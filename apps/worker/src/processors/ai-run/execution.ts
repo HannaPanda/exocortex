@@ -29,6 +29,7 @@ import { withSpan } from '@exocortex/logger';
 import { findTool } from '@exocortex/mcp-tools';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
+import { describeToolLoop } from '../../tool-ledger';
 import { type ToolRunner } from '../../tool-runner';
 
 import { addUsage, type RunFailure, type TurnResult } from './contract';
@@ -579,6 +580,13 @@ class RunExecution {
       this.failure = {
         code: 'ai_tool_limit_exceeded',
         message: `Reached the tool iteration limit of ${maxToolIterations}`,
+        // The limit is the one fact the reader already had (issue #118). What
+        // the run actually did with its calls is what decides whether the
+        // answer is a higher limit or a different way in, so it is said here.
+        detail: describeToolLoop({
+          limit: maxToolIterations,
+          tallies: this.input.runner?.tallies() ?? [],
+        }),
       };
       return false;
     }

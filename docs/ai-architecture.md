@@ -384,6 +384,23 @@ same `exo_*` tool catalogue the external MCP server serves
   gates whether write tools are offered at all, and
   `ai.untrustedContentPolicy` decides what a run may still change once it has
   read content from outside this deployment (see below).
+- **A run never answers itself twice** (issue #118, ADR-059).
+  `ToolCallLedger` in `apps/worker/src/tool-ledger.ts` hashes each finished
+  tool result against what that same call (same tool, same arguments, key
+  order ignored) answered earlier in the run. An identical answer is replaced
+  by a hint naming the earlier call and the ways to something new — the
+  section anchor of a semantic hit, the page map, `exo_page_block_read`.
+  Answers are compared rather than arguments on purpose: a run polling a
+  build or a render is never refused, because an answer that changed is
+  handed through untouched. Writes, refusals and errors are never booked as
+  repeats.
+- **The abort says what the run did.** The ledger also tallies calls,
+  characters and repeats per tool, and `ai_tool_limit_exceeded` reads that
+  tally out instead of restating the limit. The German diagnosis is stored in
+  `AiRun.errorDetail`, travels on `ai.run.failed` as `detail`, is what the
+  panel shows in place of its canned sentence, and is printed by
+  `exo_ai_run_get` as `Diagnose:`. `RunFailure.message` stays English for the
+  log; `RunFailure.detail` is the one written for a reader.
 - **A truncated turn is never a finished turn.** The `done` event's
   `finishReason` reaches `TurnResult`, and `'length'` (the output cap ended the
   turn) is handled explicitly: a cut-off text answer is picked up with a
@@ -1000,7 +1017,8 @@ leaves messages untouched when a page has no images, completes the run even
 when a referenced attachment cannot be resolved; a conversation-backed run
 executes a tool call through a stub `ToolRunner`, persists the `ASSISTANT` +
 `TOOL` messages and completes with the follow-up turn's text;
-`ai.maxToolIterations: 0` fails with `ai_tool_limit_exceeded`; `compactIfNeeded`
+`ai.maxToolIterations: 0` fails with `ai_tool_limit_exceeded` and stores the
+diagnosis in `errorDetail`; `compactIfNeeded`
 summarizes older messages into one summary message and leaves the recent
 tail active, and does nothing when already within budget; the
 attachment-text processor marks a PNG `NOT_APPLICABLE` and fails clearly when

@@ -1846,6 +1846,12 @@ model AiRun {
   resultText     String?
   usage          Json?
   errorCode      String?
+  /// What went wrong, in German and in enough detail to act on (issue #118,
+  /// ADR-059). The code says which kind of failure it was; this says what this
+  /// run did to get there -- for `ai_tool_limit_exceeded`, which tools it
+  /// spent its calls on and how many of them answered nothing new. Null
+  /// wherever the code alone is the whole story.
+  errorDetail    String?
   createdAt      DateTime      @default(now())
   startedAt      DateTime?
   finishedAt     DateTime?

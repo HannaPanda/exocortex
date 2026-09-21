@@ -128,6 +128,7 @@ export const reapStaleAiRuns: MaintenanceTask = async (context) => {
         status: timedOut ? 'timed_out' : 'failed',
         errorCode,
         reason: `Reaped by maintenance: ${errorCode}`,
+        detail: null,
       },
     });
     reaped += 1;
