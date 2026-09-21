@@ -158,7 +158,10 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
       input.blockId === undefined
         ? `Seite „${result.title}“`
         : `Block ${input.blockId} der Seite „${result.title}“`;
-    return { text: `${what}:\n\n${text}${nested}${bareHeadingHint(input, result.markdown)}`, data: result };
+    return {
+      text: `${what}:\n\n${text}${nested}${bareHeadingHint(input, result.markdown)}`,
+      data: result,
+    };
   },
 });
 

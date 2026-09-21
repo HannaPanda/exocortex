@@ -117,7 +117,7 @@ export class DocumentSectionExtractService {
          */
         input.request.toBlockId === input.request.blockId
           ? 'A range from a block to itself is that block alone, so this addressed the heading ' +
-            'without its section. Leave toBlockId out to move the whole section'
+              'without its section. Leave toBlockId out to move the whole section'
           : 'This section holds nothing but its heading, so there is nothing to move',
       );
     }
