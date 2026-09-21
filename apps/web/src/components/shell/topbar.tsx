@@ -70,7 +70,13 @@ export function Topbar({
           eye -- a bare icon in the corner reads as an unfinished product. The
           lockup earns its amber here because it is the one place the product
           says its own name, and it never repeats inside the page. */}
-      <ExocortexWordmark className="mr-1 hidden h-7 shrink-0 sm:block" />
+      {/* The one cap in pixels in this bar, and deliberately so: at 200 % text
+          zoom everything else here doubles because it is text, and the lockup
+          would double with it into a 490-pixel logo that takes a whole row of
+          its own. WCAG 1.4.4 is about text being resizable; which application
+          you are in is the least urgent thing on this bar to read twice as
+          large. */}
+      <ExocortexWordmark className="mr-1 hidden h-7 max-h-[28px] shrink-0 sm:block" />
 
       <Tooltip>
         <TooltipTrigger
