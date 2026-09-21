@@ -81,6 +81,14 @@ The catalogue **only** talks REST. It never imports `@exocortex/database`,
    are two thin adapters around the same `AnyToolDefinition[]`. There is no
    second place to keep in sync.
 
+One thing the two adapters do not share, and deliberately: the worker's loop
+books every answer it hands its model and refuses to hand it the same one
+twice (ADR-059, `apps/worker/src/tool-ledger.ts`). An external client's
+context is its own to manage, and nothing here knows what it did with the last
+answer. The diagnosis that comes out of the same bookkeeping does reach the
+catalogue: `exo_ai_run_get` prints `AiRun.errorDetail` as `Diagnose:`, which
+is where a run that ran out of tool calls says which tools it spent them on.
+
 ### Instructions at `initialize`
 
 The handshake answers with an `instructions` string, and every client that has
