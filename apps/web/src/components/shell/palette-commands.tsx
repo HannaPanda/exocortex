@@ -63,14 +63,19 @@ export function shellCommands({
   // Named by what the press does, not by the state it leads to: a menu entry
   // that says "Navigation ausblenden" is a promise, and one that says
   // "Navigation" leaves you to find out.
-  commands.push({
-    id: 'command-sidebar',
-    label: sidebarOpen ? 'Navigation ausblenden' : 'Navigation einblenden',
-    hint: 'Strg + B',
-    icon: <PanelLeftIcon className={ICON} />,
-    keywords: ['seitenleiste', 'seitenbaum', 'sidebar'],
-    run: onToggleSidebar,
-  });
+  //
+  // Only inside a workspace, because outside one there is no page tree to show
+  // or hide: the entry would name a thing that does not happen.
+  if (hasWorkspace) {
+    commands.push({
+      id: 'command-sidebar',
+      label: sidebarOpen ? 'Navigation ausblenden' : 'Navigation einblenden',
+      hint: 'Strg + B',
+      icon: <PanelLeftIcon className={ICON} />,
+      keywords: ['seitenleiste', 'seitenbaum', 'sidebar'],
+      run: onToggleSidebar,
+    });
+  }
 
   commands.push({
     id: 'command-context',
