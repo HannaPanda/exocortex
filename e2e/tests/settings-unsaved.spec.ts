@@ -63,7 +63,7 @@ test.describe('Ungespeicherte Einstellungen', () => {
     await expect(page.getByTestId('workspace-settings-dirty')).not.toBeEmpty();
 
     await page.getByTestId('open-global-menu').click();
-    await page.getByTestId('menu-help').click();
+    await page.getByTestId('menu-open-features').click();
 
     const dialog = page.getByTestId('unsaved-changes-dialog');
     await expect(dialog).toBeVisible();
@@ -75,9 +75,17 @@ test.describe('Ungespeicherte Einstellungen', () => {
     await expect(page).toHaveURL(/\/einstellungen$/);
     await expect(page.getByTestId('workspace-settings-dirty')).not.toBeEmpty();
 
+    // Und die Seite ist danach noch bedienbar. Der Wächter hat den Klick
+    // anfangs auch gestoppt statt nur abgebrochen, sodass das Kontomenü nie
+    // zuging und seine Sperrfläche über allem liegen blieb.
+    await expect(page.locator('[data-base-ui-inert]')).toHaveCount(0);
+    await toolsSwitch(page).click();
+    await expect(page.getByTestId('workspace-settings-dirty')).toBeEmpty();
+    await toolsSwitch(page).click();
+
     // Und derselbe Weg noch einmal, diesmal bis zum Ende.
     await page.getByTestId('open-global-menu').click();
-    await page.getByTestId('menu-help').click();
+    await page.getByTestId('menu-open-features').click();
     await page.getByTestId('unsaved-changes-leave').click();
     await page.waitForURL(/\/hilfe/, { timeout: 30_000 });
   });
@@ -91,7 +99,7 @@ test.describe('Ungespeicherte Einstellungen', () => {
     await expect(page.getByTestId('workspace-settings-dirty')).toBeEmpty();
 
     await page.getByTestId('open-global-menu').click();
-    await page.getByTestId('menu-help').click();
+    await page.getByTestId('menu-open-features').click();
     await page.waitForURL(/\/hilfe/, { timeout: 30_000 });
     await expect(page.getByTestId('unsaved-changes-dialog')).toHaveCount(0);
   });
@@ -108,7 +116,7 @@ test.describe('Ungespeicherte Einstellungen', () => {
 
     // Und der Wechsel geht jetzt ohne Rückfrage.
     await page.getByTestId('open-global-menu').click();
-    await page.getByTestId('menu-help').click();
+    await page.getByTestId('menu-open-features').click();
     await page.waitForURL(/\/hilfe/, { timeout: 30_000 });
 
     // Den eigenen Wert wieder wegräumen, damit der Arbeitsbereich bleibt, wie

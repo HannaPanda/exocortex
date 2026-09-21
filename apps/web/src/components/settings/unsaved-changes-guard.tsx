@@ -103,8 +103,12 @@ export function useUnsavedChangesGuard(changedCount: number): React.ReactNode {
     const intercept = (event: MouseEvent): void => {
       const href = navigationTargetOf(event);
       if (href === null) return;
+      // `preventDefault` and nothing more. `next/link` checks
+      // `defaultPrevented` before it navigates, so that is enough to hold the
+      // click -- and stopping the event would also stop the menu or the sheet
+      // the link was inside from closing, leaving its inert backdrop over a
+      // page nobody had left.
       event.preventDefault();
-      event.stopPropagation();
       setPendingHref(href);
     };
     // Capture, because `next/link` listens on the anchor itself and a listener
