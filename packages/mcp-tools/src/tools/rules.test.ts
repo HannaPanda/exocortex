@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ExocortexApiError, type ExocortexApiClient } from '../client.js';
+import { type ExocortexApiClient, ExocortexApiError } from '../client.js';
 
 import { rulesLoadTool } from './rules.js';
 
