@@ -954,6 +954,66 @@ export const documentSectionWriteRequestSchema = z.object({
 });
 export type DocumentSectionWriteRequest = z.infer<typeof documentSectionWriteRequestSchema>;
 
+/**
+ * Moving a section onto a page of its own
+ * (`POST /api/documents/:documentId/content/extract-section`, issue #118).
+ *
+ * The counterpart to reading a page as a map: the map hands out addresses, and
+ * this takes one of them away. Splitting has to be cheaper than appending, or
+ * appending wins -- today the same move is six calls that carry the whole page
+ * through an agent's context twice, which is how pages grow until nothing can
+ * read them.
+ *
+ * The address is the map's address: a heading brings its section along
+ * (ADR-045), two identifiers mean the window between them, and the blocks that
+ * move are the blocks that were named. What stays behind is the caller's
+ * choice, because the three answers mean different things to a reader: a link
+ * says the text moved, a transclusion shows it unchanged in its new home
+ * (ADR-045), and `remove` says it is gone from here.
+ */
+export const extractSectionRequestSchema = z.object({
+  /** The section's heading, or the first block of a window. */
+  blockId: blockIdSchema,
+  /** The last block, for a window. Omitted, a heading means its whole section. */
+  toBlockId: blockIdSchema.optional(),
+  /** Title of the new page. Without it, the heading names it. */
+  title: z.string().min(1).max(300).optional(),
+  /**
+   * Where the new page goes. Omitted, it becomes a child of the page the
+   * section came from, which is what "auf eine eigene Seite" almost always
+   * means and keeps the section where a reader would look for it.
+   */
+  parentId: idSchema.optional(),
+  /**
+   * An existing page to append the section to instead of creating one. The
+   * section lands at its end, and `title` and `parentId` are then unused.
+   */
+  targetDocumentId: idSchema.optional(),
+  /** What stands in the section's place afterwards. */
+  replacement: z.enum(['link', 'transclusion', 'remove']).default('link'),
+  expectedYjsUpdatedAt: isoDateTimeSchema.optional(),
+});
+export type ExtractSectionRequest = z.infer<typeof extractSectionRequestSchema>;
+
+export const extractSectionResponseSchema = z.object({
+  /** The page the section now lives on, created or appended to. */
+  document: documentSummarySchema,
+  /** `true` when that page was created by this call. */
+  created: z.boolean(),
+  sourceDocumentId: idSchema,
+  /** The heading the section was named by, `null` for a window of blocks. */
+  heading: z.string().nullable(),
+  movedBlocks: z.number().int().nonnegative(),
+  movedChars: z.number().int().nonnegative(),
+  replacement: z.enum(['link', 'transclusion', 'remove']),
+  /** The source page's snapshot, to roll the whole move back with. */
+  snapshotId: z.string(),
+  yjsUpdatedAt: isoDateTimeSchema,
+  appliedToLiveSession: z.boolean(),
+  warnings: z.array(z.string()),
+});
+export type ExtractSectionResponse = z.infer<typeof extractSectionResponseSchema>;
+
 /** What a narrow write answers with: the page write's response plus where it landed. */
 export const documentGranularWriteResponseSchema = documentContentWriteResponseSchema.extend({
   /** Identifiers of the blocks that now stand where the edit landed. */

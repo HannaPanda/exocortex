@@ -128,6 +128,45 @@ describe('applyBlockRangeEditToState', () => {
     }
   });
 
+  it('deletes the range when the content is empty, and keeps the rest', () => {
+    // How a section leaves a page it was extracted from (issue #118): nothing
+    // takes its place, and everything around it keeps its identifier.
+    const applied = applyBlockRangeEditToState(
+      state(),
+      { type: 'doc', content: [] },
+      { fromBlockId: 'paraaaaaaaa1', toBlockId: 'paraaaaaaaa2', placement: 'replace' },
+    );
+
+    expect(serializeMarkdown(applied.proseMirrorJson)).not.toContain('Absatz');
+    expect(idsOf(applied.proseMirrorJson)).toEqual(['headingaaaa', 'headingbbbb']);
+    expect(applied.blockIds).toEqual([]);
+  });
+
+  it('refuses to delete a range it was told to insert beside', () => {
+    expect(() =>
+      applyBlockRangeEditToState(
+        state(),
+        { type: 'doc', content: [] },
+        { fromBlockId: 'paraaaaaaaa1', toBlockId: null, placement: 'after' },
+      ),
+    ).toThrow(/deletes a range/);
+  });
+
+  it('leaves an empty page behind when a deletion covers everything', () => {
+    // Not a refusal here: Yjs materializes an emptied fragment as one empty
+    // paragraph, which is a valid page. Whether emptying a page is a sensible
+    // thing to ask for is a question for the caller, and
+    // `DocumentSectionExtractService` refuses it there, where the alternatives
+    // (a link, an embedding) are known.
+    const applied = applyBlockRangeEditToState(
+      state(),
+      { type: 'doc', content: [] },
+      { fromBlockId: 'headingaaaa', toBlockId: 'headingbbbb', placement: 'replace' },
+    );
+
+    expect(serializeMarkdown(applied.proseMirrorJson).trim()).toBe('');
+  });
+
   it('refuses two blocks that are not siblings', () => {
     const nested: ProseMirrorDocument = {
       type: 'doc',

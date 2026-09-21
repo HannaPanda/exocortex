@@ -159,6 +159,7 @@ tools for the rest of that run (ADR-030, `docs/ai-architecture.md`).
 | `exo_page_block_update`         | yes      | no          | `POST /api/documents/:documentId/content/block` (issue #111, ADR-055) -- replaces exactly one block, or inserts before/after it. Everything else on the page keeps its identifier, its position and any concurrent edit                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `exo_page_patch`                | yes      | no          | `POST /api/documents/:documentId/content/patch` -- replaces a piece of text, matched against the page's Markdown. Zero or several matches write nothing and say how many there were; `replaceAll` is the deliberate exception                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `exo_page_section_write`        | yes      | no          | `POST /api/documents/:documentId/content/section` -- writes under a heading. `replace` swaps the section's body and leaves the heading, because the heading is the address. A heading that occurs twice is refused with both block identifiers                                                                                                                                                                                                                                                                                                                                                                                              |
+| `exo_page_extract_section`      | yes      | no          | `POST /api/documents/:documentId/content/extract-section` (issue #118) -- moves a section onto a page of its own in one call: the new page is created, the blocks are copied out of the canonical Yjs state with fresh identifiers, and a link, a transclusion or nothing stays behind. The address is the one `exo_page_block_read` hands out; `toBlockId` moves a window of blocks that has no heading. `targetDocumentId` appends to an existing page instead. The source page is snapshotted first                                                                                                                                      |
 | `exo_page_rename`               | yes      | yes         | `PATCH /api/documents/:documentId` (title, icon, iconColor)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `exo_page_move`                 | yes      | no          | `POST /api/documents/:documentId/move` -- an optional `workspaceId` moves the whole subtree into a different workspace instead of just re-parenting within the current one                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `exo_page_archive`              | yes      | yes         | `POST /api/documents/:documentId/archive`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -325,6 +326,23 @@ twice, a text that occurs zero or several times. The response names the
 candidates, so the next call is the unambiguous one. `expectedYjsUpdatedAt`,
 taken from the read, turns "somebody changed this meanwhile" into a refusal
 instead of an overwrite.
+
+### Dividing a page that has grown too large
+
+A page that no longer fits an agent's budget answers with its map rather than
+its text ([issue #118](https://github.com/HannaPanda/exocortex/issues/118),
+[ADR-056](adr/ADR-056-a-read-is-budgeted-and-answers-with-a-map.md)), and the
+same addresses are what moves a part of it away:
+
+1. `exo_page_block_read` without a `blockId` for the map, then with one for the
+   section itself.
+2. `exo_page_extract_section` with that identifier. The new page is created
+   under the source page and named after the heading; `replacement` decides
+   whether a link, an embedding or nothing stays behind.
+
+One call rather than six, and no page content travels through the agent's
+context on the way. The source page is snapshotted first, so the whole move
+rolls back with `exo_page_restore_snapshot`.
 
 ### Putting a picture on a page
 

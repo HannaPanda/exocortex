@@ -22,6 +22,7 @@ import { DocumentMoveService } from './document-move.service';
 import { DocumentOverviewController } from './document-overview.controller';
 import { DocumentOverviewService } from './document-overview.service';
 import { DocumentPlacementService } from './document-placement.service';
+import { DocumentSectionExtractService } from './document-section-extract.service';
 import { DocumentSnapshotService } from './document-snapshot.service';
 import { DocumentTrashService } from './document-trash.service';
 import { DocumentTreeService } from './document-tree.service';
@@ -57,6 +58,7 @@ import { RelatedDocumentsService } from './related-documents.service';
     DocumentActivityService,
     DocumentContentService,
     DocumentEditService,
+    DocumentSectionExtractService,
     DocumentWriteCommitService,
     DocumentLinksService,
     RelatedDocumentsService,

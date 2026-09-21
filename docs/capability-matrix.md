@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-220 routes are reachable from at least one client; 141 from all three.
+221 routes are reachable from at least one client; 141 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -179,6 +179,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/documents/:x/comments` | ✓ | ✓ | ✓ | `exo_comment_create` |
 | `POST /api/documents/:x/content` | · | ✓ | ✓ | `exo_page_write` |
 | `POST /api/documents/:x/content/block` | · | ✓ | ✓ | `exo_page_block_update` |
+| `POST /api/documents/:x/content/extract-section` | · | ✓ | ✓ | `exo_page_extract_section` |
 | `POST /api/documents/:x/content/patch` | · | ✓ | ✓ | `exo_page_patch` |
 | `POST /api/documents/:x/content/section` | · | ✓ | ✓ | `exo_page_section_write` |
 | `POST /api/documents/:x/cover` | ✓ | · | · | — |

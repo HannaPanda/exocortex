@@ -7,6 +7,8 @@ import {
   documentGranularWriteResponseSchema,
   documentPatchRequestSchema,
   documentSectionWriteRequestSchema,
+  extractSectionRequestSchema,
+  extractSectionResponseSchema,
   idSchema,
 } from '@exocortex/contracts';
 
@@ -139,8 +141,58 @@ export const pageSectionWriteTool: AnyToolDefinition = defineTool({
   },
 });
 
+export const pageExtractSectionTool: AnyToolDefinition = defineTool({
+  name: 'exo_page_extract_section',
+  description:
+    'Verschiebt einen Abschnitt einer Seite auf eine eigene Seite: legt die neue Seite an, ' +
+    'nimmt den Inhalt aus der alten heraus und hinterlässt dort einen Verweis. Ein Aufruf statt ' +
+    'sechs, und die Seiteninhalte laufen dabei nicht durch den Kontext. ' +
+    'blockId ist die Kennung der Überschrift, die den Abschnitt benennt; sie adressiert alles ' +
+    'darunter bis zur nächsten Überschrift derselben oder einer höheren Ebene. Für ein Stück ohne ' +
+    'Überschrift zusätzlich toBlockId angeben, dann werden genau diese Blöcke verschoben. Beide ' +
+    'Kennungen stehen in der Karte, die exo_page_block_read ausgibt. ' +
+    'Die Überschrift bleibt auf der alten Seite stehen und trägt darunter den Verweis, damit die ' +
+    'Gliederung erhalten bleibt. replacement "link" hinterlässt einen Seitenverweis (Standard), ' +
+    '"transclusion" bettet die neue Seite ein, sodass Lesende denselben Text weiter an derselben ' +
+    'Stelle sehen, "remove" nimmt Abschnitt und Überschrift ersatzlos heraus. ' +
+    'Ohne title heißt die neue Seite wie die Überschrift; ohne parentId hängt sie unter der ' +
+    'Seite, aus der der Abschnitt stammt. Mit targetDocumentId wandert der Abschnitt stattdessen ' +
+    'ans Ende einer vorhandenen Seite. ' +
+    'Vor dem Schreiben wird ein Snapshot der Quellseite angelegt; der Aufruf nennt ihn.',
+  inputSchema: z.object({ documentId: idSchema }).extend(extractSectionRequestSchema.shape),
+  surfaces: ['mcp', 'ai'],
+  mutating: true,
+  target: (input) => `document:${input.documentId}`,
+  async execute(client, input) {
+    const { documentId, ...body } = input;
+    const result = await client.request({
+      method: 'POST',
+      path: `/api/documents/${documentId}/content/extract-section`,
+      body,
+      responseSchema: extractSectionResponseSchema,
+    });
+    const where = result.created
+      ? `Neue Seite „${result.document.title}“ (${result.document.id})`
+      : `An Seite „${result.document.title}“ (${result.document.id}) angehängt`;
+    const left =
+      result.replacement === 'remove'
+        ? 'Auf der Quellseite steht an der Stelle nichts mehr.'
+        : result.replacement === 'transclusion'
+          ? 'Die Quellseite bindet den Abschnitt jetzt von dort ein.'
+          : 'Die Quellseite verweist jetzt dorthin.';
+    const warnings = result.warnings.length > 0 ? ` Warnungen: ${result.warnings.join('; ')}` : '';
+    return {
+      text:
+        `${where}: ${result.movedBlocks} Blöcke, ${result.movedChars} Zeichen. ${left} ` +
+        `Snapshot ${result.snapshotId} rollt die Quellseite zurück.${warnings}`,
+      data: result,
+    };
+  },
+});
+
 export const PAGE_EDIT_TOOLS: readonly AnyToolDefinition[] = [
   pageBlockWriteTool,
   pagePatchTool,
   pageSectionWriteTool,
+  pageExtractSectionTool,
 ];

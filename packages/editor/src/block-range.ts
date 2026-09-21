@@ -162,12 +162,34 @@ export function applyBlockRangeEditToYDoc(
   document: ProseMirrorDocument,
   edit: BlockRangeEdit,
 ): void {
-  const validation = validateProseMirrorDocument(document);
-  if (!validation.valid) {
-    throw new Error(`Refusing to apply an invalid document: ${validation.error ?? 'unknown'}`);
+  /*
+   * A document with no blocks is a deletion (issue #118): the range goes and
+   * nothing takes its place. It is spelled this way rather than with a fourth
+   * placement because it is the same surgery on the same range, and because a
+   * deletion has to travel to the collaboration server through the one field
+   * that carries content. The schema refuses an empty document -- `block+` --
+   * so it is not validated here; what matters is the page afterwards, and that
+   * is checked below and in `applyBlockRangeEditToState`.
+   */
+  const deletion = (document.content ?? []).length === 0;
+  if (deletion && edit.placement !== 'replace') {
+    throw new Error('An empty document deletes a range; it cannot be inserted beside one');
+  }
+  if (!deletion) {
+    const validation = validateProseMirrorDocument(document);
+    if (!validation.valid) {
+      throw new Error(`Refusing to apply an invalid document: ${validation.error ?? 'unknown'}`);
+    }
   }
 
   const range = resolveBlockRange(target, edit);
+  if (deletion) {
+    target.transact(() => {
+      range.parent.delete(range.index, range.count);
+    });
+    return;
+  }
+
   const source = prosemirrorJSONToYDoc(getExocortexSchema(), document, YJS_DOCUMENT_FIELD);
   try {
     const nodes = source

@@ -32,6 +32,7 @@ import {
 import { DocumentContentService } from './document-content.service';
 import { DocumentCoverService } from './document-cover.service';
 import { DocumentEditService } from './document-edit.service';
+import { DocumentSectionExtractService } from './document-section-extract.service';
 import { DocumentFragmentService } from './document-fragment.service';
 import { DocumentLinksService } from './document-links.service';
 import { DocumentMarkdownService } from './document-markdown.service';
@@ -67,6 +68,7 @@ let treeService: DocumentTreeService;
 let trashService: DocumentTrashService;
 let contentService: DocumentContentService;
 let editService: DocumentEditService;
+let extractService: DocumentSectionExtractService;
 let snapshotService: DocumentSnapshotService;
 let linksService: DocumentLinksService;
 let markdownService: DocumentMarkdownService;
@@ -188,6 +190,14 @@ beforeAll(async () => {
     access,
     new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
     new PageLinkIdentityService(prisma),
+  );
+  extractService = new DocumentSectionExtractService(
+    prisma,
+    logger,
+    access,
+    new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
+    new PageLinkIdentityService(prisma),
+    service,
   );
   snapshotService = new DocumentSnapshotService(
     prisma,
@@ -2545,5 +2555,251 @@ describe('editing part of a page', () => {
     });
 
     expect(result.warnings.join(' ')).toContain('fremden Server');
+  });
+});
+
+/**
+ * Moving a section onto its own page (issue #118).
+ *
+ * What is checked here is the pair: the new page holds exactly what left the
+ * old one, and the old one keeps everything else -- the identifiers included,
+ * because this is a narrow write like the three above it.
+ */
+describe('extracting a section', () => {
+  async function blockIdsOf(documentId: string): Promise<string[]> {
+    const fragment = await fragmentService.read(documentId, ownerId, { outline: true });
+    return fragment.blocks.map((block) => block.blockId);
+  }
+
+  async function markdownOf(documentId: string): Promise<string> {
+    const content = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+    return content.markdown ?? '';
+  }
+
+  /**
+   * The content of a page nobody has written to yet.
+   *
+   * A page created with content of its own has no Markdown column until
+   * materialization runs, and that is a worker job. Reading it back from the
+   * canonical state is what the browser and the export do anyway.
+   */
+  async function contentOf(documentId: string): Promise<string> {
+    const fragment = await fragmentService.read(documentId, ownerId, { outline: false });
+    return fragment.markdown;
+  }
+
+  async function seed(markdown: string): Promise<{ documentId: string; blockIds: string[] }> {
+    const documentId = await createPage(`Auslagern ${Math.random().toString(36).slice(2)}`);
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown, mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+    return { documentId, blockIds: await blockIdsOf(documentId) };
+  }
+
+  const PAGE =
+    '## Oben\n\nBleibt.\n\n## Tumorambulanz\n\nTermin am Montag.\n\n### Details\n\nRaum 3.\n\n## Unten\n\nAuch da.';
+
+  it('moves a section to a new child page and leaves a link behind', async () => {
+    const { documentId, blockIds } = await seed(PAGE);
+
+    const result = await extractService.extract({
+      documentId,
+      userId: ownerId,
+      request: { blockId: blockIds[2] as string, replacement: 'link' },
+      correlationId,
+      source: 'api',
+    });
+
+    expect(result.created).toBe(true);
+    expect(result.document.title).toBe('Tumorambulanz');
+    expect(result.document.parentId).toBe(documentId);
+    expect(result.heading).toBe('Tumorambulanz');
+    // The subsection travelled with it, the way a heading addresses one; the
+    // heading itself stayed behind, so three blocks moved, not four.
+    expect(result.movedBlocks).toBe(3);
+
+    const moved = await contentOf(result.document.id);
+    expect(moved).toContain('Termin am Montag.');
+    expect(moved).toContain('### Details');
+    // The heading became the page's title, so it does not stand on it twice.
+    expect(moved).not.toContain('## Tumorambulanz');
+
+    const after = await markdownOf(documentId);
+    expect(after).toContain('## Tumorambulanz');
+    expect(after).not.toContain('Termin am Montag.');
+    // The block form of a page link, which is what a reader clicks.
+    expect(after).toContain(':::page Tumorambulanz');
+    expect(after).toContain('Bleibt.');
+    expect(after).toContain('Auch da.');
+
+    // A narrow write: everything outside the section keeps its address.
+    const ids = await blockIdsOf(documentId);
+    expect([ids[0], ids[1], ids[2]]).toEqual([blockIds[0], blockIds[1], blockIds[2]]);
+  });
+
+  it('embeds the new page where the section stood, when asked to', async () => {
+    const { documentId, blockIds } = await seed(PAGE);
+
+    const result = await extractService.extract({
+      documentId,
+      userId: ownerId,
+      request: { blockId: blockIds[2] as string, replacement: 'transclusion' },
+      correlationId,
+      source: 'api',
+    });
+
+    const after = await markdownOf(documentId);
+    expect(after).toContain(':::transclusion Tumorambulanz');
+    // A reader of the source page sees the moved text again, from its new home.
+    const shown = await fragmentService.read(result.document.id, ownerId, { outline: false });
+    expect(shown.markdown).toContain('Termin am Montag.');
+  });
+
+  it('takes the heading too when nothing is to stand in its place', async () => {
+    const { documentId, blockIds } = await seed(PAGE);
+
+    await extractService.extract({
+      documentId,
+      userId: ownerId,
+      request: { blockId: blockIds[2] as string, replacement: 'remove' },
+      correlationId,
+      source: 'api',
+    });
+
+    const after = await markdownOf(documentId);
+    expect(after).not.toContain('Tumorambulanz');
+    expect(after).toContain('## Oben');
+    expect(after).toContain('## Unten');
+  });
+
+  it('moves a window of blocks that has no heading of its own', async () => {
+    const { documentId, blockIds } = await seed('Eins.\n\nZwei.\n\nDrei.');
+
+    const result = await extractService.extract({
+      documentId,
+      userId: ownerId,
+      request: {
+        blockId: blockIds[0] as string,
+        toBlockId: blockIds[1] as string,
+        title: 'Die ersten beiden',
+        replacement: 'link',
+      },
+      correlationId,
+      source: 'api',
+    });
+
+    expect(result.heading).toBeNull();
+    expect(result.movedBlocks).toBe(2);
+    expect(await contentOf(result.document.id)).toContain('Zwei.');
+
+    const after = await markdownOf(documentId);
+    expect(after).not.toContain('Eins.');
+    expect(after).toContain('Drei.');
+    expect(after).toContain(':::page Die ersten beiden');
+  });
+
+  it('appends to an existing page when one is named', async () => {
+    const { documentId, blockIds } = await seed(PAGE);
+    const targetId = await createPage('Sammelseite');
+    await contentService.write({
+      documentId: targetId,
+      userId: ownerId,
+      request: { markdown: 'Schon da.', mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+
+    const result = await extractService.extract({
+      documentId,
+      userId: ownerId,
+      request: { blockId: blockIds[2] as string, targetDocumentId: targetId, replacement: 'link' },
+      correlationId,
+      source: 'api',
+    });
+
+    expect(result.created).toBe(false);
+    expect(result.document.id).toBe(targetId);
+    const target = await markdownOf(targetId);
+    expect(target).toContain('Schon da.');
+    expect(target).toContain('Termin am Montag.');
+  });
+
+  it('refuses to empty the page it was asked to divide', async () => {
+    const { documentId, blockIds } = await seed('## Alles\n\nNur das hier.');
+
+    const error = await extractService
+      .extract({
+        documentId,
+        userId: ownerId,
+        request: { blockId: blockIds[0] as string, replacement: 'remove' },
+        correlationId,
+        source: 'api',
+      })
+      .then(() => null)
+      .catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({ code: 'validation_failed' });
+    expect(await markdownOf(documentId)).toContain('Nur das hier.');
+  });
+
+  it('writes nothing when the address is gone', async () => {
+    const { documentId } = await seed(PAGE);
+    const before = await markdownOf(documentId);
+
+    const error = await extractService
+      .extract({
+        documentId,
+        userId: ownerId,
+        request: { blockId: 'nichtvorhanden', replacement: 'link' },
+        correlationId,
+        source: 'api',
+      })
+      .then(() => null)
+      .catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({ code: 'document_block_not_found' });
+    expect(await markdownOf(documentId)).toBe(before);
+  });
+
+  it('refuses a stale expectedYjsUpdatedAt instead of dividing a page that moved', async () => {
+    const { documentId, blockIds } = await seed(PAGE);
+
+    const error = await extractService
+      .extract({
+        documentId,
+        userId: ownerId,
+        request: {
+          blockId: blockIds[2] as string,
+          replacement: 'link',
+          expectedYjsUpdatedAt: new Date(0).toISOString(),
+        },
+        correlationId,
+        source: 'api',
+      })
+      .then(() => null)
+      .catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({ code: 'document_content_conflict' });
+  });
+
+  it('refuses a guest, the way every other write to this page does', async () => {
+    const { documentId, blockIds } = await seed(PAGE);
+
+    const error = await extractService
+      .extract({
+        documentId,
+        userId: guestId,
+        request: { blockId: blockIds[2] as string, replacement: 'link' },
+        correlationId,
+        source: 'api',
+      })
+      .then(() => null)
+      .catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({ code: 'forbidden' });
   });
 });

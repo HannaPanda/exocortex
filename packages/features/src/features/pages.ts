@@ -41,6 +41,21 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_page_block_update', 'exo_page_patch', 'exo_page_section_write'],
   }),
   defineFeature({
+    id: 'grosse-seiten-karte-und-auslagern',
+    area: 'seiten',
+    title: 'Sehr große Seiten: erst die Gliederung, dann ein Abschnitt, dann eine eigene Seite',
+    summary:
+      'Eine Seite, die für einen Agenten zu groß geworden ist, antwortet ihm nicht mehr mit ihren ersten dreißigtausend Zeichen, sondern mit ihrer Gliederung: welche Abschnitte es gibt, wie groß jeder ist und wie er einzeln zu lesen ist. Und ein Abschnitt, der eine eigene Seite verdient hat, wird mit einem Aufruf eine.',
+    details: [
+      'Vorher las ein Agent eine lange Seite von vorne, bekam am Schnitt nur das Wort "gekürzt" zu sehen und suchte danach im Dunkeln weiter. Bei einer Seite mit 36.000 Zeichen hat das einen Lauf gekostet, ohne die gesuchte Stelle zu finden. Jetzt kommt bei einer großen Seite zuerst ihre Karte, und die ist gleich groß, ob die Seite 20.000 oder drei Millionen Zeichen hat.',
+      'Aus der Karte wird ein Abschnitt einzeln gelesen. Ist der selbst zu groß, kommt wieder eine Karte, eine Ebene feiner. Hat ein Teil keine Überschriften mehr, nennt die Karte Blockfenster, die sich mit zwei Kennungen zusammen lesen lassen. Damit ist jede Stelle einer beliebig großen Seite in wenigen Schritten erreichbar, ohne alles davor zu lesen.',
+      'Dieselben Adressen benutzt exo_page_extract_section: Abschnitt benennen, und er wandert auf eine neue Unterseite, die nach seiner Überschrift heißt. Auf der alten Seite bleibt die Überschrift stehen und darunter wahlweise ein Verweis, eine Einbettung (dann ändert sich für Lesende nichts) oder nichts. Vorher wurde vor der Änderung ein Snapshot angelegt, mit dem sich alles zurückrollen lässt.',
+    ],
+    since: '2026-09-21',
+    references: ['#118', 'ADR-056', 'ADR-045'],
+    tools: ['exo_page_extract_section'],
+  }),
+  defineFeature({
     id: 'bloecke',
     area: 'seiten',
     title: 'Blöcke über das Schrägstrich-Menü',
