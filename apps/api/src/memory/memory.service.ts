@@ -342,6 +342,10 @@ export class MemoryService {
         request: { markdown: body, mode: 'append' },
         correlationId: input.correlationId,
         source: 'ai',
+        // The memory records what agents did; a limit here would stop it
+        // recording and the SessionEnd hook fails silently, so nobody would see
+        // it (issue #118). A session note is also appended to by design.
+        growth: 'exempt',
       });
       return {
         documentId: existing.id,
@@ -365,6 +369,7 @@ export class MemoryService {
       request: { markdown: body, mode: 'replace' },
       correlationId: input.correlationId,
       source: 'ai',
+      growth: 'exempt',
     });
 
     return {
@@ -626,6 +631,7 @@ export class MemoryService {
       },
       correlationId: input.correlationId,
       source: 'ai',
+      growth: 'exempt',
     });
     return { id: created.id, title: created.title };
   }

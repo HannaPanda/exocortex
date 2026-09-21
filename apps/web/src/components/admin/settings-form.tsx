@@ -19,13 +19,13 @@ import {
   TabsContent,
 } from '@exocortex/ui';
 
+import { SETTING_COPY } from '@/components/settings/setting-copy';
 import { SettingGroupNav } from '@/components/settings/setting-group-nav';
 import {
   fieldErrorsFromDetails,
   groupOf,
   inputId,
   invalidMessage,
-  SETTING_COPY,
   SettingRow,
 } from '@/components/settings/setting-row';
 import {

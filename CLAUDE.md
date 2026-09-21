@@ -502,6 +502,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   neighbours merge rather than the list growing. A read starts no new work, so
   no summary and no keywords are computed to fill one, and a caller that names
   no budget still gets the page.
+- ADR-057: an agent's writes are bounded by growth, not by page size. A write is
+  refused only when the page ends up over the limit _and_ larger than it was, so
+  an oversized page can still be shrunk, corrected and edited section by
+  section; the lower threshold refuses nothing and names the page's biggest
+  sections instead. Whether the policy applies is an explicit `growth` parameter
+  with no default, because `source` says something else: every route passes
+  `'api'` and `'ai'` marks the internal paths that must stay exempt. The
+  narrow writes carry the refusal too, or `exo_page_section_write` is the way
+  around the gate.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

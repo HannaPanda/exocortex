@@ -17,6 +17,7 @@ import { DocumentWriteCommitService } from '../documents/document-write-commit.s
 import { DocumentsService } from '../documents/documents.service';
 import { PageLinkIdentityService } from '../documents/page-link-identity.service';
 import { SettingsService } from '../platform/settings.service';
+import { settingsStub } from '../platform/settings.test-support';
 import { type RealtimeService } from '../realtime/realtime.service';
 
 import { AiModelResolverService } from './ai-model-resolver.service';
@@ -1018,6 +1019,7 @@ describe('ConversationArchiveService', () => {
       access,
       new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
       new PageLinkIdentityService(prisma),
+      settingsStub(),
     );
 
     archive = new ConversationArchiveService(

@@ -117,6 +117,9 @@ export class InboxService {
         request: { markdown: note.markdown, mode: 'replace' },
         correlationId: input.correlationId,
         source: 'api',
+        // A capture and a clip may be any size and are never split (issue #118,
+        // section 10): the inbox is where things land before anybody decides.
+        growth: 'exempt',
       });
     }
 
@@ -217,6 +220,7 @@ export class InboxService {
         request: { markdown: INBOX_INTRO, mode: 'replace' },
         correlationId: input.correlationId,
         source: 'api',
+        growth: 'exempt',
       });
       return { parent: inbox, created: true };
     } catch (error) {

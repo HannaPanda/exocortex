@@ -23,6 +23,7 @@ import { type AttachmentsService } from '../attachments/attachments.service';
 import { AppError } from '../common/app-error';
 import { OutboxService } from '../common/outbox.service';
 import { type SettingsService } from '../platform/settings.service';
+import { settingsStub } from '../platform/settings.test-support';
 import { type RealtimeService } from '../realtime/realtime.service';
 
 import {
@@ -182,6 +183,7 @@ beforeAll(async () => {
     access,
     new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
     new PageLinkIdentityService(prisma),
+    settingsStub(),
   );
   editService = new DocumentEditService(
     prisma,
@@ -190,6 +192,7 @@ beforeAll(async () => {
     access,
     new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
     new PageLinkIdentityService(prisma),
+    settingsStub(),
   );
   extractService = new DocumentSectionExtractService(
     prisma,
@@ -1255,6 +1258,7 @@ describe('writing document content', () => {
       request: { markdown: '# Neuer Inhalt\n\nEin Absatz.', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     const after = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
@@ -1285,6 +1289,7 @@ describe('writing document content', () => {
         request: { markdown: '# Mein Plan\n\nEin Absatz.', mode: 'replace' },
         correlationId,
         source: 'api',
+        growth: 'guarded',
       });
 
       const after = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
@@ -1301,6 +1306,7 @@ describe('writing document content', () => {
         request: { markdown: '# Aus dem Text\n\nEin Absatz.', mode: 'replace' },
         correlationId,
         source: 'api',
+        growth: 'guarded',
       });
 
       const document = await prisma.document.findUniqueOrThrow({ where: { id: documentId } });
@@ -1318,6 +1324,7 @@ describe('writing document content', () => {
         request: { markdown: '# Mein Plan für 2026\n\nEin Absatz.', mode: 'replace' },
         correlationId,
         source: 'api',
+        growth: 'guarded',
       });
 
       const after = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
@@ -1332,6 +1339,7 @@ describe('writing document content', () => {
         request: { markdown: 'Erster Absatz.', mode: 'replace' },
         correlationId,
         source: 'api',
+        growth: 'guarded',
       });
 
       await contentService.write({
@@ -1340,6 +1348,7 @@ describe('writing document content', () => {
         request: { markdown: '# Mein Plan\n\nZweiter Absatz.', mode: 'append' },
         correlationId,
         source: 'api',
+        growth: 'guarded',
       });
 
       const after = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
@@ -1378,6 +1387,7 @@ describe('writing document content', () => {
       request: { markdown: 'Ein Absatz mit [[Irgendeinem Verweis]].', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     const after = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
@@ -1395,6 +1405,7 @@ describe('writing document content', () => {
         request: { markdown: 'Text', mode: 'replace', expectedYjsUpdatedAt: stale },
         correlationId,
         source: 'api',
+        growth: 'guarded',
       }),
     ).rejects.toMatchObject({ code: 'document_content_conflict' });
   });
@@ -1409,6 +1420,7 @@ describe('writing document content', () => {
         request: { markdown: 'Text', mode: 'replace' },
         correlationId,
         source: 'api',
+        growth: 'guarded',
       }),
     ).rejects.toBeInstanceOf(AuthorizationError);
   });
@@ -1423,6 +1435,7 @@ describe('restoring a snapshot', () => {
       request: { markdown: 'Fassung A.', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
     const snapshot = await snapshotService.create({
       documentId,
@@ -1435,6 +1448,7 @@ describe('restoring a snapshot', () => {
       request: { markdown: 'Fassung B.', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     await snapshotService.restore({ snapshotId: snapshot.id, userId: ownerId, correlationId });
@@ -1466,6 +1480,7 @@ describe('restoring a snapshot', () => {
       request: { markdown: 'Fassung A.', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
     const snapshot = await snapshotService.create({
       documentId,
@@ -1478,6 +1493,7 @@ describe('restoring a snapshot', () => {
       request: { markdown: 'Fassung B.', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
     liveApplications.length = 0;
 
@@ -1498,6 +1514,7 @@ describe('reaching an open editing session', () => {
       request: { markdown: 'Alles neu.', mode: 'replace' },
       correlationId,
       source: 'ai',
+      growth: 'guarded',
     });
 
     expect(liveApplications).toEqual([{ documentId, mode: 'replace', plainText: 'Alles neu.' }]);
@@ -1515,6 +1532,7 @@ describe('reaching an open editing session', () => {
       request: { markdown: 'Bestehender Text.', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
     liveApplications.length = 0;
 
@@ -1524,6 +1542,7 @@ describe('reaching an open editing session', () => {
       request: { markdown: 'Angehängter Text.', mode: 'append' },
       correlationId,
       source: 'ai',
+      growth: 'guarded',
     });
 
     expect(liveApplications).toEqual([
@@ -1546,6 +1565,7 @@ describe('reaching an open editing session', () => {
       request: { markdown: 'Offen beim Schreiben.', mode: 'replace' },
       correlationId,
       source: 'ai',
+      growth: 'guarded',
     });
 
     // Sending anything else back as `expectedYjsUpdatedAt` would make the very
@@ -1567,6 +1587,7 @@ describe('reaching an open editing session', () => {
       request: { markdown: 'Trotzdem geschrieben.', mode: 'replace' },
       correlationId,
       source: 'ai',
+      growth: 'guarded',
     });
 
     // The write itself must still stand; only the live update was lost.
@@ -2110,6 +2131,7 @@ describe('reading a fragment of a page', () => {
       },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
     const outline = await fragmentService.read(documentId, ownerId, { outline: true });
     const heading = outline.blocks.find((block) => block.preview === 'Stand');
@@ -2149,6 +2171,7 @@ describe('reading a fragment of a page', () => {
       request: { markdown: '## Ganz anders\n\nNeuer Text.', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     const fragment = await fragmentService.read(documentId, ownerId, {
@@ -2199,6 +2222,7 @@ describe('reading a fragment of a page', () => {
       request: { markdown: sections, mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     const fragment = await fragmentService.read(documentId, ownerId, {
@@ -2236,6 +2260,7 @@ describe('reading a fragment of a page', () => {
       request: { markdown: flat.join('\n\n'), mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     const fragment = await fragmentService.read(documentId, ownerId, {
@@ -2270,6 +2295,7 @@ describe('reading a fragment of a page', () => {
       request: { markdown: 'x'.repeat(5_000), mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     const fragment = await fragmentService.read(documentId, ownerId, {
@@ -2300,6 +2326,7 @@ describe('exporting a page that embeds another', () => {
       request: { markdown: 'Der eine Satz, der überall stehen soll.', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     const embedding = await createPage(`Einbettung von ${sourceTitle}`);
@@ -2309,6 +2336,7 @@ describe('exporting a page that embeds another', () => {
       request: { markdown: `Davor.\n\n:::transclusion ${sourceTitle}\n:::`, mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
     return embedding;
   }
@@ -2333,6 +2361,7 @@ describe('exporting a page that embeds another', () => {
       },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     const exported = await markdownService.export(documentId, ownerId, { maxChars: 500 });
@@ -2379,6 +2408,7 @@ describe('exporting a page that embeds another', () => {
       request: { markdown: 'Text.\n\n:::transclusion Selbstbezug\n:::', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     const exported = await markdownService.export(documentId, ownerId, { transclusions: 'text' });
@@ -2418,6 +2448,7 @@ describe('editing part of a page', () => {
       request: { markdown, mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
     return { documentId, blockIds: await blockIdsOf(documentId) };
   }
@@ -2596,6 +2627,7 @@ describe('extracting a section', () => {
       request: { markdown, mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
     return { documentId, blockIds: await blockIdsOf(documentId) };
   }
@@ -2711,6 +2743,7 @@ describe('extracting a section', () => {
       request: { markdown: 'Schon da.', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     const result = await extractService.extract({
@@ -2801,5 +2834,181 @@ describe('extracting a section', () => {
       .catch((caught: unknown) => caught);
 
     expect(error).toMatchObject({ code: 'forbidden' });
+  });
+});
+
+describe('how large an agent may let a page grow', () => {
+  /*
+   * Small limits rather than the real 15,000 and 50,000, because what is being
+   * proved is the policy and its wiring, not the numbers -- and a stub that
+   * answers with different numbers than the deployment defaults is also the
+   * proof that the numbers really do come from the settings (ADR-023).
+   */
+  const limits = {
+    'agents.largePageChars': 400,
+    'agents.oversizedPageChars': 1_200,
+  } as const;
+
+  function guarded(): DocumentContentService {
+    return new DocumentContentService(
+      prisma,
+      logger,
+      CONTENT_TEST_ENV,
+      new WorkspaceAccessService(prisma),
+      new DocumentWriteCommitService(
+        prisma,
+        queues,
+        logger,
+        new OutboxService(prisma, logger),
+        realtime,
+        collaboration,
+      ),
+      new PageLinkIdentityService(prisma),
+      settingsStub(limits),
+    );
+  }
+
+  function narrow(): DocumentEditService {
+    return new DocumentEditService(
+      prisma,
+      logger,
+      CONTENT_TEST_ENV,
+      new WorkspaceAccessService(prisma),
+      new DocumentWriteCommitService(
+        prisma,
+        queues,
+        logger,
+        new OutboxService(prisma, logger),
+        realtime,
+        collaboration,
+      ),
+      new PageLinkIdentityService(prisma),
+      settingsStub(limits),
+    );
+  }
+
+  /** A page of `sections` sections, each about `chars` characters long. */
+  async function seed(sections: number, chars: number): Promise<string> {
+    const documentId = await createPage(`Wächst ${Math.random().toString(36).slice(2)}`);
+    const markdown = Array.from(
+      { length: sections },
+      (_unused, index) => `## Abschnitt ${index + 1}\n\n${'wort '.repeat(chars / 5)}`,
+    ).join('\n\n');
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown, mode: 'replace' },
+      correlationId,
+      source: 'api',
+      // The seeding itself is not what is under test, and a `replace` that
+      // creates the oversized page is exactly the operation the policy allows.
+      growth: 'exempt',
+    });
+    return documentId;
+  }
+
+  it('says nothing about a page that is still small', async () => {
+    const documentId = await seed(1, 50);
+
+    const result = await guarded().write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: 'Noch ein Satz.', mode: 'append' },
+      correlationId,
+      source: 'api',
+      growth: 'guarded',
+    });
+
+    expect(result.warnings.filter((warning) => warning.includes('Zeichen'))).toEqual([]);
+  });
+
+  it('lets an append onto a large page through, and names its biggest sections', async () => {
+    const documentId = await seed(2, 250);
+
+    const result = await guarded().write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: 'Noch ein Satz.', mode: 'append' },
+      correlationId,
+      source: 'api',
+      growth: 'guarded',
+    });
+
+    const warning = result.warnings.find((entry) => entry.includes('Unterseite'));
+    expect(warning).toBeDefined();
+    expect(warning).toContain('Abschnitt 1');
+    // Addressable, or the advice would be something nobody can act on.
+    expect(warning).toMatch(/\^[a-z0-9]+/);
+  });
+
+  it('refuses an append that would make an oversized page bigger, and writes nothing', async () => {
+    const documentId = await seed(4, 400);
+    const before = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+
+    const error = await guarded()
+      .write({
+        documentId,
+        userId: ownerId,
+        request: { markdown: 'Noch ein Satz.', mode: 'append' },
+        correlationId,
+        source: 'api',
+        growth: 'guarded',
+      })
+      .then(() => null)
+      .catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({ code: 'document_page_oversized' });
+    expect((error as Error).message).toContain('exo_page_extract_section');
+    const after = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+    expect(after.yjsUpdatedAt).toEqual(before.yjsUpdatedAt);
+  });
+
+  it('still lets an oversized page be written smaller, or it could never be repaired', async () => {
+    const documentId = await seed(4, 400);
+
+    const result = await guarded().write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: '## Abschnitt 1\n\nKurz.', mode: 'replace' },
+      correlationId,
+      source: 'api',
+      growth: 'guarded',
+    });
+
+    expect(result.snapshotId).toBeTruthy();
+  });
+
+  it('refuses the same append through the narrow write, which is the door beside it', async () => {
+    const documentId = await seed(4, 400);
+
+    const error = await narrow()
+      .writeSection({
+        documentId,
+        userId: ownerId,
+        request: { heading: 'Abschnitt 4', markdown: 'Noch ein Satz.', mode: 'append' },
+        correlationId,
+        source: 'api',
+      })
+      .then(() => null)
+      .catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({ code: 'document_page_oversized' });
+  });
+
+  it('exempts the paths that record rather than decide, the memory among them', async () => {
+    const documentId = await seed(4, 400);
+
+    const result = await guarded().write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: 'Eine Sitzungsnotiz.', mode: 'append' },
+      correlationId,
+      source: 'ai',
+      // What `memory.service.ts` passes. Without it the memory would stop
+      // recording, and the SessionEnd hook fails silently, so nobody would see.
+      growth: 'exempt',
+    });
+
+    expect(result.snapshotId).toBeTruthy();
   });
 });

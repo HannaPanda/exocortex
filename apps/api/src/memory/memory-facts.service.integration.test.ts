@@ -28,6 +28,7 @@ import { PageLinkIdentityService } from '../documents/page-link-identity.service
 import { EntityProfileService } from '../entities/entity-profile.service';
 import { EntityRegistryService } from '../entities/entity-registry.service';
 import { type SettingsService } from '../platform/settings.service';
+import { settingsStub } from '../platform/settings.test-support';
 import { type RealtimeService } from '../realtime/realtime.service';
 import { type SearchService } from '../search/search.service';
 
@@ -165,6 +166,7 @@ beforeAll(async () => {
     access,
     new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
     new PageLinkIdentityService(prisma),
+    settingsStub(),
   );
   const settingsService = {
     get: async () => settings,

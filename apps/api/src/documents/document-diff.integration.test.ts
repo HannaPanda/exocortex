@@ -13,6 +13,7 @@ import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
 import { OutboxService } from '../common/outbox.service';
+import { settingsStub } from '../platform/settings.test-support';
 import { type RealtimeService } from '../realtime/realtime.service';
 
 import {
@@ -122,6 +123,7 @@ beforeAll(async () => {
     access,
     new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
     new PageLinkIdentityService(prisma),
+    settingsStub(),
   );
   diffs = new DocumentDiffService(prisma, logger, access, snapshots);
 
@@ -172,6 +174,7 @@ async function write(documentId: string, markdown: string): Promise<void> {
     request: { markdown, mode: 'replace' },
     correlationId,
     source: 'api',
+    growth: 'guarded',
   });
 }
 

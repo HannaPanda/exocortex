@@ -97,8 +97,8 @@ but it now states how much was shown of how much and that it has no
 continuation to offer. A cut that cannot say what it hid is what turns a big
 answer into a loop.
 
-What this does not do: it does not stop a page from growing (the write-side
-policy is the next step in issue #118), it does not split anything
-automatically, and it does not make a search hit addressable -- a hit still
+What this does not do: it does not stop a page from growing -- the write-side
+policy is ADR-057, and it bounds growth rather than size -- it does not split
+anything automatically, and it does not make a search hit addressable -- a hit still
 names a page rather than a section, which is the other half of the cost of that
 failed run and is sequenced with #110.

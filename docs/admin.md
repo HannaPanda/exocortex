@@ -99,10 +99,10 @@ four layers: defaults < environment < `setting` < `workspace_setting`.
 
 The line is "who can answer this", not "how risky is it":
 
-| Scope        | What lives there                                                                                                                                                                                                |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `workspace`  | Prompt, model choice, budgets and timeouts, vision, compaction, PDF and cover switches, the memory regulators, the calendar reminder schedule.                                                                  |
-| `deployment` | `ai.enabled`, data retention, which PDF engine exists, `search.*` (ADR-020 wants one vector space), `entities.*` (one entity database per deployment), `mcp.*` and `agents.*` (they decide what agents may do). |
+| Scope        | What lives there                                                                                                                                                                                                                   |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `workspace`  | Prompt, model choice, budgets and timeouts, vision, compaction, PDF and cover switches, the memory regulators, the calendar reminder schedule, the two page-size limits agents write under.                                        |
+| `deployment` | `ai.enabled`, data retention, which PDF engine exists, `search.*` (ADR-020 wants one vector space), `entities.*` (one entity database per deployment), `mcp.*` and `agents.journalRetentionDays` (they decide what agents may do). |
 
 Two things about overrides that are easy to get wrong later:
 
@@ -494,6 +494,29 @@ human act.
 
 `agents.journalRetentionDays` under Einstellungen decides how long the list
 reaches back. See `prune-agent-journal` in `docs/background-jobs.md`.
+
+### How large an agent may let a page grow
+
+Two more keys under `agents.*`, and unlike the one above they are
+workspace-overridable with the deployment value as a ceiling, because how big a
+page may get is a fact about what a workspace keeps rather than about what an
+agent is allowed to do (issue #118, ADR-023):
+
+- `agents.largePageChars` (15,000) is where the answer to a write starts naming
+  the page's new size and its biggest sections, and suggests a subpage for the
+  next topic. Nothing is refused.
+- `agents.oversizedPageChars` (50,000) is where a write that would make the page
+  **bigger** is refused with `document_page_oversized`. The message names the
+  biggest sections and `exo_page_extract_section`, which moves one of them onto
+  its own page in a single call.
+
+Three things this deliberately does not do. It is not a limit on page size: a
+clip, an import, the inbox, the entity profiles, the agent memory and anybody
+typing in the editor write past both numbers untouched, and no page is ever
+split automatically (issue #118, section 10). It never blocks a write that
+leaves the page the same size or smaller, or an oversized page would be one
+nothing could repair. And it is judged against the Markdown the write produces,
+never the stored `markdown` column, which a job derives and which lags.
 
 ## Automationen: the two switches only a global admin has
 

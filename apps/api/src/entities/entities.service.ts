@@ -224,6 +224,9 @@ export class EntitiesService {
         request: { markdown: input.request.summary, mode: 'replace' },
         correlationId: input.correlationId,
         source: 'ai',
+        // An entity's profile page is generated from its row, so its size is
+        // a consequence of the data rather than of unattended appending.
+        growth: 'exempt',
       });
     }
 

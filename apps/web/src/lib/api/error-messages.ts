@@ -48,6 +48,8 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   ai_conversation_cursor_invalid: 'Die Liste konnte nicht weitergeblättert werden.',
   document_content_conflict: 'Die Seite wurde zwischenzeitlich geändert.',
   document_content_lossy: 'Anhängen würde eingebettete Datenbanken auf dieser Seite verlieren.',
+  document_page_oversized:
+    'Diese Seite ist zu groß geworden, um noch etwas anzuhängen. Verschiebe einen Abschnitt auf eine eigene Seite.',
   document_block_not_found: 'Diesen Block gibt es auf der Seite nicht mehr.',
   document_block_range_invalid:
     'Die beiden Blöcke liegen nicht nebeneinander und beschreiben deshalb keinen Bereich.',

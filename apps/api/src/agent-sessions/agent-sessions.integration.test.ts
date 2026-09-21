@@ -25,6 +25,7 @@ import { DocumentTrashService } from '../documents/document-trash.service';
 import { DocumentWriteCommitService } from '../documents/document-write-commit.service';
 import { DocumentsService } from '../documents/documents.service';
 import { PageLinkIdentityService } from '../documents/page-link-identity.service';
+import { settingsStub } from '../platform/settings.test-support';
 import { type RealtimeService } from '../realtime/realtime.service';
 
 import { AgentSessionRevertService } from './agent-session-revert.service';
@@ -107,6 +108,7 @@ async function write(documentId: string, markdown: string, userId = agentUserId)
     request: { markdown, mode: 'replace' },
     correlationId,
     source: 'ai',
+    growth: 'guarded',
   });
 }
 
@@ -155,6 +157,7 @@ beforeAll(async () => {
     access,
     new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
     new PageLinkIdentityService(prisma),
+    settingsStub(),
   );
   const snapshots = new DocumentSnapshotService(
     prisma,

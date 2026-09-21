@@ -9,6 +9,7 @@ import { QueueRegistry, testQueuePrefix } from '@exocortex/queue';
 import { type ObjectStorage } from '@exocortex/storage';
 
 import { OutboxService } from '../common/outbox.service';
+import { settingsStub } from '../platform/settings.test-support';
 import { type RealtimeService } from '../realtime/realtime.service';
 
 import {
@@ -117,6 +118,7 @@ beforeAll(async () => {
     access,
     new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
     new PageLinkIdentityService(prisma),
+    settingsStub(),
   );
   activity = new DocumentActivityService(prisma, access, snapshots);
 
@@ -240,6 +242,7 @@ describe('DocumentActivityService.list: merging sources', () => {
       request: { markdown: 'Neuer Inhalt', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     let result = await activity.list(documentId, ownerId);
@@ -356,6 +359,7 @@ describe('restoring a snapshot: permissions (issue #20)', () => {
       request: { markdown: 'v2', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     await expect(
@@ -371,6 +375,7 @@ describe('restoring a snapshot: permissions (issue #20)', () => {
       request: { markdown: 'v2', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     await expect(
@@ -386,6 +391,7 @@ describe('restoring a snapshot: permissions (issue #20)', () => {
       request: { markdown: 'v2', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     await expect(
@@ -404,6 +410,7 @@ describe('restoring a snapshot: permissions (issue #20)', () => {
       request: { markdown: 'v2', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
 
     await expect(

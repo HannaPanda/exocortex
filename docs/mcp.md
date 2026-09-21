@@ -344,6 +344,17 @@ One call rather than six, and no page content travels through the agent's
 context on the way. The source page is snapshotted first, so the whole move
 rolls back with `exo_page_restore_snapshot`.
 
+A write is also what tells an agent that this moment has arrived. Above
+`agents.largePageChars` (15,000) the answer carries a warning naming the page's
+new size and its biggest sections; above `agents.oversizedPageChars` (50,000) a
+write that would make the page **bigger** is refused with
+`document_page_oversized`, and the message names the sections and this recipe.
+Both limits are workspace-overridable downwards
+([ADR-023](adr/ADR-023-settings-have-a-scope.md)). What is never refused: a
+write that leaves the page the same size or smaller, a targeted change to one
+section, and everything written by the inbox, a clip, an import, the entity
+layer or the agent memory.
+
 ### Putting a picture on a page
 
 An image must come from this deployment. The Content Security Policy is

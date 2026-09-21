@@ -343,6 +343,15 @@ export class DocumentsController {
       request: body,
       correlationId: currentCorrelationId(),
       source: 'api',
+      /*
+       * The one route the growth policy is about (issue #118). The browser's
+       * editor does not write here at all -- it writes through the
+       * collaboration server (ADR-016) -- so everything arriving on this route
+       * is somebody, or something, handing over a page's Markdown whole, which
+       * is exactly the operation that makes a page grow without anybody
+       * watching it.
+       */
+      growth: 'guarded',
     });
   }
 

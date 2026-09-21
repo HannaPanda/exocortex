@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { TabsList, TabsTrigger } from '@exocortex/ui';
 
-import { GROUP_LABELS } from '@/components/settings/setting-row';
+import { GROUP_LABELS } from '@/components/settings/setting-copy';
 
 /**
  * The list of setting groups, shared by the two settings forms.

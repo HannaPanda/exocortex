@@ -19,6 +19,7 @@ import { DocumentWriteCommitService } from '../documents/document-write-commit.s
 import { DocumentsService } from '../documents/documents.service';
 import { PageLinkIdentityService } from '../documents/page-link-identity.service';
 import { type SettingsService } from '../platform/settings.service';
+import { settingsStub } from '../platform/settings.test-support';
 import { type RealtimeService } from '../realtime/realtime.service';
 
 import { TemplatesService } from './templates.service';
@@ -96,6 +97,7 @@ beforeAll(async () => {
     access,
     new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
     new PageLinkIdentityService(prisma),
+    settingsStub(),
   );
   templates = new TemplatesService(prisma, logger, access, documents, settings);
 
@@ -140,6 +142,7 @@ async function makeTemplate(title: string, markdown: string): Promise<string> {
     request: { markdown, mode: 'replace' },
     correlationId,
     source: 'api',
+    growth: 'guarded',
   });
   await templates.create({ workspaceId, userId: ownerId, request: { documentId } });
   return documentId;
@@ -238,6 +241,7 @@ describe('using a template', () => {
       request: { markdown: 'Nur in der Kopie', mode: 'replace' },
       correlationId,
       source: 'api',
+      growth: 'guarded',
     });
     const templateAfter = JSON.stringify(yjsStateToProseMirrorJson(await stateOf(templateId)));
     expect(templateAfter).toContain('Gut gelaufen');

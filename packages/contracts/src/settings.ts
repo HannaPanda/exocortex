@@ -519,6 +519,37 @@ export const settingsSchema = z.object({
    * only grows is a table that quietly becomes the largest one here.
    */
   'agents.journalRetentionDays': z.number().int().min(0).max(3_650).default(90),
+  /**
+   * The size at which an agent writing to a page is told the page is getting
+   * large (issue #118).
+   *
+   * Nothing is refused here and nothing is split. What changes is that the
+   * answer to the write names the page's new size and its biggest sections, so
+   * the next decision is made by something that knows how big the page is. An
+   * agent appends to a page it has never seen whole, which is exactly the
+   * condition under which a page grows without anybody deciding that it should.
+   *
+   * 15,000 characters, because on this deployment that is roughly where a page
+   * stops being one topic: 43 of 1,478 pages are above 10,000 and they are the
+   * ones people describe as "that page has everything in it".
+   */
+  'agents.largePageChars': z.number().int().min(1_000).max(1_000_000).default(15_000),
+  /**
+   * The size above which an agent may no longer make a page bigger (#118).
+   *
+   * A refusal rather than a warning, and only for a write that *grows* the
+   * page: shrinking it, rewriting it at the same size, or editing one section
+   * of it stay possible, or an oversized page would be one nothing could ever
+   * repair. The refusal names the page's biggest sections and the tool that
+   * moves one onto its own page, because a refusal without a way out is an
+   * instruction to try again in smaller pieces.
+   *
+   * This is not a limit on how big a page may be. A clip, an import, a person
+   * in the editor and every internal path write past it untouched (ADR-005 and
+   * issue #118 section 10): the thing being bounded is unattended growth, not
+   * size.
+   */
+  'agents.oversizedPageChars': z.number().int().min(1_000).max(5_000_000).default(50_000),
 
   /**
    * Whether automation rules run at all (issue #50, ADR-024).
@@ -742,9 +773,16 @@ export type SettingScope = 'deployment' | 'workspace';
  * - `entities.*`: `entities.databaseId` is documented as one per deployment,
  *   because an entity is a thing in the world and the same host known under
  *   two names in two workspaces is the failure that layer exists to prevent.
- * - `mcp.*` and `agents.*`: these decide what agents may do and how long the
- *   evidence of what they did is kept. Same reason `/api/admin/settings` is
- *   out of reach of a tool.
+ * - `mcp.*` and `agents.journalRetentionDays`: these decide what agents may do
+ *   and how long the evidence of what they did is kept. Same reason
+ *   `/api/admin/settings` is out of reach of a tool.
+ *
+ * The two page-size keys under `agents.*` are the exception to that last one
+ * and are overridable, because they are not about authority: how large a page
+ * may grow before an agent is warned off it is a fact about what a workspace
+ * keeps. A memory area of session notes and a curated brain disagree about it,
+ * and the ceiling means a workspace can only ever be stricter than the
+ * deployment (issue #118).
  */
 export const SETTING_SCOPES = {
   'ai.enabled': 'deployment',
@@ -834,6 +872,8 @@ export const SETTING_SCOPES = {
   'activity.snapshotRetentionDailyDays': 'deployment',
   'activity.snapshotRetentionDryRun': 'deployment',
   'agents.journalRetentionDays': 'deployment',
+  'agents.largePageChars': 'workspace',
+  'agents.oversizedPageChars': 'workspace',
   /**
    * A workspace may switch its own automations off, and a deployment that
    * switches them off switches every workspace off with it (`SETTING_CEILINGS`
@@ -933,6 +973,14 @@ export const SETTING_CEILINGS: readonly WorkspaceSettingKey[] = [
   'ai.webSearchMaxResults',
   'memory.recallMaxChars',
   'memory.recallMaxResults',
+  /*
+   * Lower is stricter for both, so the clamp reads the right way round: a
+   * workspace may warn and refuse earlier than the deployment does, never
+   * later. A deployment that tightens its own number pulls every workspace
+   * that had set a laxer one down with it on the next write (issue #118).
+   */
+  'agents.largePageChars',
+  'agents.oversizedPageChars',
 ];
 
 const CEILING_KEYS = new Set<string>(SETTING_CEILINGS);

@@ -246,6 +246,9 @@ export class MemoryFactsService {
       },
       correlationId: input.correlationId,
       source: 'ai',
+      // Same exemption as the session notes: a fact page is written by the
+      // consolidation run, not by an agent deciding where to put something.
+      growth: 'exempt',
     });
     await this.prisma.memoryFact.update({
       where: { id: fact.id },
@@ -364,6 +367,7 @@ export class MemoryFactsService {
       request: { markdown: factBody(input.verdict), mode: 'replace' },
       correlationId: input.correlationId,
       source: 'ai',
+      growth: 'exempt',
     });
 
     const fact = await this.prisma.memoryFact.create({
@@ -447,6 +451,7 @@ export class MemoryFactsService {
       },
       correlationId: input.correlationId,
       source: 'ai',
+      growth: 'exempt',
     });
     return created.id;
   }

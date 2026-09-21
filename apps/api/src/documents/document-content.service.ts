@@ -27,8 +27,16 @@ import { type Logger } from '@exocortex/logger';
 import { AppError } from '../common/app-error';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
+import { SettingsService } from '../platform/settings.service';
 
 import { DocumentWriteCommitService } from './document-write-commit.service';
+import {
+  judgePageGrowth,
+  largePageWarning,
+  oversizedPageRefusal,
+  pageGrowthLimits,
+  type PageGrowthVerdict,
+} from './page-growth-policy';
 import { PageLinkIdentityService } from './page-link-identity.service';
 
 /** The title `createDocumentRequestSchema` gives a page nobody has named. */
@@ -173,6 +181,7 @@ export class DocumentContentService {
     private readonly access: WorkspaceAccessService,
     private readonly commits: DocumentWriteCommitService,
     private readonly pageLinks: PageLinkIdentityService,
+    private readonly settings: SettingsService,
   ) {}
 
   async write(input: {
@@ -182,6 +191,24 @@ export class DocumentContentService {
     correlationId: string;
     /** 'api' for humans, 'ai' for the built-in assistant / MCP. Recorded in the event. */
     source: 'api' | 'ai';
+    /**
+     * Whether the page growth policy applies to this write (issue #118).
+     *
+     * Deliberately not derived from `source`, and deliberately without a
+     * default. `source` says what the event is labelled and answers a different
+     * question than this one: every REST route passes `'api'`, the agent route
+     * included, while `'ai'` marks the *internal* services -- the memory and
+     * the entity layer -- that have to stay exempt. Reading the policy off it
+     * would gate the browser's own route and let the agent route through, in
+     * that order.
+     *
+     * A default would be wrong in either direction: `'guarded'` would let a new
+     * internal caller stop the memory recording anything and nobody would see
+     * it, since the SessionEnd hook fails silently on purpose; `'exempt'` would
+     * let a new route out from under the policy by omission. So the type makes
+     * every call site say which it is.
+     */
+    growth: 'guarded' | 'exempt';
   }): Promise<DocumentContentWriteResponse> {
     const context = await this.access.requireDocumentContext(input.documentId, input.userId);
     assertPolicy(canEditDocument(context.role, context.document));
@@ -240,6 +267,16 @@ export class DocumentContentService {
           ? `${currentMarkdown}\n\n${incoming.markdown}`
           : `${incoming.markdown}\n\n${currentMarkdown}`;
 
+    const growth =
+      input.growth === 'exempt'
+        ? null
+        : await this.judgeGrowth({
+            workspaceId: context.workspaceId,
+            yjsState: existing.yjsState,
+            before: currentMarkdown.length,
+            after: effectiveMarkdown.length,
+          });
+
     let applied: AppliedDocumentState;
     /**
      * What an open session has to be told. For `replace` that is the finished
@@ -282,6 +319,13 @@ export class DocumentContentService {
     // every append, and the warning would stop being read.
     warnings.push(...foreignMediaWarnings(liveUpdate, this.env.APP_URL));
 
+    // Only for a write that made the page bigger: a correction to a page that
+    // has been large for months is not the moment to say so, and a warning
+    // that arrives on every write is one nobody reads by the third time.
+    if (growth?.level === 'large' && growth.grew) {
+      warnings.push(largePageWarning(applied.proseMirrorJson, growth.chars));
+    }
+
     const committed = await this.commits.commit({
       documentId: input.documentId,
       workspaceId: context.workspaceId,
@@ -305,5 +349,37 @@ export class DocumentContentService {
       appliedToLiveSession: committed.appliedToLiveSession,
       warnings,
     };
+  }
+
+  /**
+   * How big this write leaves the page, and a refusal when that is too big
+   * (issue #118, section 9, ADR-057).
+   *
+   * Judged before any of the write happens, from the Markdown this write
+   * produces rather than the stored `markdown` column, which a job derives and
+   * which is therefore a write or two behind (ADR-005). The limits come from
+   * the page's own workspace, so a memory area and a curated brain may disagree
+   * about them (ADR-023).
+   */
+  private async judgeGrowth(input: {
+    workspaceId: string;
+    yjsState: Uint8Array;
+    before: number;
+    after: number;
+  }): Promise<PageGrowthVerdict> {
+    const limits = pageGrowthLimits(await this.settings.getForWorkspace(input.workspaceId));
+    const growth = judgePageGrowth({ before: input.before, after: input.after, limits });
+    if (growth.level !== 'oversized' || !growth.grew) return growth;
+
+    throw new AppError(
+      'document_page_oversized',
+      // The page as it stands, because that is what the sections being offered
+      // for extraction belong to; this write itself never happens.
+      oversizedPageRefusal(yjsStateToProseMirrorJson(input.yjsState), {
+        current: input.before,
+        after: growth.chars,
+        limit: limits.oversizedChars,
+      }),
+    );
   }
 }

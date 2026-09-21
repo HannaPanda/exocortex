@@ -66,6 +66,13 @@ export const API_ERROR_CODES = [
   'document_patch_not_found',
   'document_patch_not_unique',
   'document_content_lossy',
+  /**
+   * An agent tried to make an already oversized page bigger (issue #118). Its
+   * own code because the answer is a structural one: the message names the
+   * page's biggest sections and the call that moves one away, and a generic
+   * refusal would have the writer retry in halves until it fits.
+   */
+  'document_page_oversized',
   'attachment_text_unavailable',
   'setting_unknown',
   'setting_not_overridable',
@@ -210,6 +217,10 @@ export const API_ERROR_STATUS: Record<ApiErrorCode, number> = {
   document_patch_not_found: 404,
   document_patch_not_unique: 409,
   document_content_lossy: 422,
+  // 409 rather than 422: the request is perfectly well formed, and the same
+  // request against the same page a few sections lighter would succeed. It is
+  // the page's state that refuses it, which is what 409 says.
+  document_page_oversized: 409,
   attachment_text_unavailable: 409,
   setting_unknown: 400,
   // A deployment-wide key arrived in a workspace patch (ADR-023). 400 rather

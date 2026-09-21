@@ -32,9 +32,11 @@ import { type Logger } from '@exocortex/logger';
 import { AppError } from '../common/app-error';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
+import { SettingsService } from '../platform/settings.service';
 
 import { foreignMediaWarnings } from './document-content.service';
 import { DocumentWriteCommitService } from './document-write-commit.service';
+import { judgePageGrowth, oversizedPageRefusal, pageGrowthLimits } from './page-growth-policy';
 import { PageLinkIdentityService } from './page-link-identity.service';
 
 /** What `apply` needs, whichever entrance asked for it. */
@@ -77,6 +79,7 @@ export class DocumentEditService {
     private readonly access: WorkspaceAccessService,
     private readonly commits: DocumentWriteCommitService,
     private readonly pageLinks: PageLinkIdentityService,
+    private readonly settings: SettingsService,
   ) {}
 
   /** Replaces one block, or inserts beside it. */
@@ -200,6 +203,9 @@ export class DocumentEditService {
     }
     if (applied === null) throw AppError.validation('Nothing to write');
 
+    const markdown = serializeMarkdown(applied.proseMirrorJson);
+    await this.refuseUnboundedGrowth(context.workspaceId, page, markdown.length);
+
     const committed = await this.commits.commit({
       documentId: input.documentId,
       workspaceId: context.workspaceId,
@@ -208,7 +214,7 @@ export class DocumentEditService {
       source: input.source,
       previous: { yjsState: existing.yjsState, schemaVersion: existing.schemaVersion },
       applied,
-      markdown: serializeMarkdown(applied.proseMirrorJson),
+      markdown,
       promotedTitle: null,
       /*
        * The open session is handed the same ranged edit, so it performs the
@@ -250,6 +256,42 @@ export class DocumentEditService {
       blockIds,
       replacements: edits.reduce((total, step) => total + step.replacements, 0),
     };
+  }
+
+  /**
+   * Refuses a narrow write that would push an oversized page further (#118).
+   *
+   * The whole-page write is where the growth policy is written down, and this
+   * is the door beside it: a page the policy refuses one more append to could
+   * otherwise be appended to with `exo_page_section_write` and a placement of
+   * `after`, and a limit one call enforces while its neighbour does not is a
+   * limit nobody has.
+   *
+   * Only the refusal, never the warning at `large`. These three calls *are* the
+   * way out the refusal offers -- change a section instead of adding to the
+   * end -- and a sentence about the page's size on every targeted edit would
+   * make the way out feel like the thing being discouraged.
+   *
+   * The page before this write is only serialized when the result is already
+   * over the limit, which is a few pages on this deployment and none of the
+   * ones these calls are usually aimed at.
+   */
+  private async refuseUnboundedGrowth(
+    workspaceId: string,
+    before: ProseMirrorDocument,
+    after: number,
+  ): Promise<void> {
+    const limits = pageGrowthLimits(await this.settings.getForWorkspace(workspaceId));
+    if (after <= limits.oversizedChars) return;
+
+    const current = serializeMarkdown(before).length;
+    const growth = judgePageGrowth({ before: current, after, limits });
+    if (!growth.grew) return;
+
+    throw new AppError(
+      'document_page_oversized',
+      oversizedPageRefusal(before, { current, after, limit: limits.oversizedChars }),
+    );
   }
 
   /** Runs a resolver and turns its refusal into the API's vocabulary. */

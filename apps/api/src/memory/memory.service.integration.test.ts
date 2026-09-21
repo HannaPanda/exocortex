@@ -23,6 +23,7 @@ import { PageLinkIdentityService } from '../documents/page-link-identity.service
 import { EntityProfileService } from '../entities/entity-profile.service';
 import { EntityRegistryService } from '../entities/entity-registry.service';
 import { type SettingsService } from '../platform/settings.service';
+import { settingsStub } from '../platform/settings.test-support';
 import { type RealtimeService } from '../realtime/realtime.service';
 import { type SearchService } from '../search/search.service';
 
@@ -176,6 +177,18 @@ beforeAll(async () => {
     access,
     new DocumentWriteCommitService(prisma, queues, logger, outbox, realtime, collaboration),
     new PageLinkIdentityService(prisma),
+    /*
+     * Limits low enough that every note written here would be refused if the
+     * memory were subject to the page growth policy (issue #118).
+     *
+     * That is the point of setting them: the memory writes its notes through
+     * the ordinary content service, and it passes `growth: 'exempt'` on every
+     * call. If somebody ever changes one of those to `'guarded'`, this whole
+     * file goes red instead of the memory quietly stopping -- which is the
+     * failure the exemption exists to prevent, since the SessionEnd hook fails
+     * silently on purpose and nobody would notice for weeks.
+     */
+    settingsStub({ 'agents.largePageChars': 40, 'agents.oversizedPageChars': 80 }),
   );
 
   const settingsService = {

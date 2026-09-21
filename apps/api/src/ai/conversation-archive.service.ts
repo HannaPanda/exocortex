@@ -276,6 +276,8 @@ export class ConversationArchiveService {
       },
       correlationId: input.correlationId,
       source: 'api',
+      // An archived conversation is as long as the conversation was.
+      growth: 'exempt',
     });
 
     this.logger.info('AI conversation saved as a page', {
