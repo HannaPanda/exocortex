@@ -152,6 +152,27 @@ describe('buildDocumentMap', () => {
     expect(serializeMarkdown(opened as ProseMirrorDocument)).not.toContain('Teil eins');
   });
 
+  it('gives a block that fills a window on its own an entry of its own', () => {
+    // Also found on the real page: nine short paragraphs followed by a 2.8
+    // million character code block came back as one window covering all ten,
+    // whose map was that same window again.
+    const items = [
+      ...Array.from({ length: 9 }, (_, index) => paragraph('kurz', id('parapara', index))),
+      paragraph('x'.repeat(200_000), 'riesigblock1'),
+    ];
+
+    const map = buildDocumentMap(doc(...items), { maxEntries: 20 });
+
+    expect(map.mode).toBe('ranges');
+    expect(map.entries).toHaveLength(2);
+    expect(map.entries[0]?.blocks).toBe(9);
+    expect(map.entries[1]).toMatchObject({
+      fromBlockId: 'riesigblock1',
+      toBlockId: 'riesigblock1',
+      blocks: 1,
+    });
+  });
+
   it('reads a one-block range as that block, heading or not', () => {
     const page = doc(heading(2, 'Titel', 'headingaaa1'), paragraph('drin', 'parapara001'));
 

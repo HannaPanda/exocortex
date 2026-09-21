@@ -28,6 +28,22 @@ function groupDigits(value: number): string {
   return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
+/**
+ * A cut that states its own size.
+ *
+ * Reached only where there is nothing left to divide: a single block bigger
+ * than the budget. A reader that is told "gekürzt" and nothing else cannot
+ * tell that from a block that ends there, and goes looking for the rest.
+ */
+export function truncateWithSize(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return (
+    `${text.slice(0, maxLength)}\n\n… gekürzt: ${groupDigits(maxLength)} von ` +
+    `${groupDigits(text.length)} Zeichen stehen hier. Dieser Teil ist ein einzelner Block und ` +
+    'lässt sich nicht weiter unterteilen; der Rest ist über dieses Werkzeug nicht erreichbar.'
+  );
+}
+
 function renderEntry(entry: DocumentMapEntryDto): string {
   const address =
     entry.fromBlockId === null

@@ -35,10 +35,21 @@ export function applyResponseBudget(
   if (!wantsMap && (budget.maxChars === undefined || chars <= budget.maxChars)) {
     return { view: 'content', markdown, map: null, chars };
   }
-  return {
-    view: 'map',
-    markdown: '',
-    map: buildDocumentMap(document, { maxEntries: budget.maxEntries, totalChars: chars }),
-    chars,
-  };
+
+  const map = buildDocumentMap(document, { maxEntries: budget.maxEntries, totalChars: chars });
+  /*
+   * Some things cannot be divided. A single code block of 2.8 million
+   * characters is one block: its map has one entry, that entry is the block
+   * itself, and handing it back would answer the next read with this same map
+   * forever.
+   *
+   * So a map that is only its own subject is not an answer. The content goes
+   * back instead and the caller's own cap cuts it -- which loses the tail of
+   * one enormous block and says so, where a map would lose the reader.
+   */
+  const whole = map.entries.length === 1 && map.entries[0]?.blocks === map.totalBlocks;
+  if (whole && !wantsMap) {
+    return { view: 'content', markdown, map: null, chars };
+  }
+  return { view: 'map', markdown: '', map, chars };
 }

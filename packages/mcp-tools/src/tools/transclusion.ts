@@ -6,7 +6,7 @@ import {
   PAGE_CONTENT_BUDGET_CHARS,
   PAGE_MAP_MAX_ENTRIES,
   renderDocumentMap,
-  truncateText,
+  truncateWithSize,
 } from '../format.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
@@ -121,7 +121,7 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
       result.nested === 0
         ? ''
         : `\n\n(Enthält ${result.nested} weitere Einbettung(en), die hier nicht aufgelöst werden.)`;
-    const { text } = truncateText(result.markdown, MAX_FRAGMENT_CHARS);
+    const text = truncateWithSize(result.markdown, MAX_FRAGMENT_CHARS);
     const what =
       input.blockId === undefined
         ? `Seite „${result.title}“`

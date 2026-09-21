@@ -2249,6 +2249,28 @@ describe('reading a fragment of a page', () => {
     expect(part.markdown).toContain('Absatz 0.');
   });
 
+  it('hands back the text of a block that cannot be divided, rather than a map of it', async () => {
+    // A map whose only entry is its own subject would answer the next read
+    // with itself, forever. One enormous block has no inside to offer, so the
+    // content goes back and the caller's own cap cuts it.
+    const documentId = await createPage('Quelle unteilbar');
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: 'x'.repeat(5_000), mode: 'replace' },
+      correlationId,
+      source: 'api',
+    });
+
+    const fragment = await fragmentService.read(documentId, ownerId, {
+      outline: false,
+      maxChars: 1_000,
+    });
+
+    expect(fragment.view).toBe('content');
+    expect(fragment.markdown.length).toBeGreaterThan(1_000);
+  });
+
   it('hands the whole page to a caller that named no budget', async () => {
     const { documentId } = await createSource('Quelle ohne Budget');
     const fragment = await fragmentService.read(documentId, ownerId, { outline: false });

@@ -248,6 +248,12 @@ function coarsen(entries: readonly DocumentMapEntry[], maxEntries: number): Docu
  * the part's own length so their number stays inside the entry budget however
  * long it is, which is what keeps a map of a flat million characters the same
  * size as a map of a flat thousand.
+ *
+ * A block larger than a whole window gets one of its own, and the window
+ * before it is closed first. Letting it join the blocks in front of it is what
+ * produced a real loop: nine short paragraphs followed by a 2.8 million
+ * character code block came back as one window covering all ten, whose map was
+ * that same window again.
  */
 function rangeEntries(items: readonly Measured[], maxEntries: number): DocumentMapEntry[] {
   const total = sumChars(items);
@@ -274,8 +280,13 @@ function rangeEntries(items: readonly Measured[], maxEntries: number): DocumentM
   };
 
   for (let index = 0; index < items.length; index += 1) {
+    const item = items[index] as Measured;
+    // Close the window before a block that fills one on its own, so it stands
+    // alone instead of dragging its neighbours into an entry as big as the
+    // part they are supposed to divide.
+    if (window.length > 0 && item.chars >= target) flush(index - 1);
     if (window.length === 0) startIndex = index;
-    window.push(items[index] as Measured);
+    window.push(item);
     if (sumChars(window) >= target) flush(index);
   }
   flush(items.length - 1);
