@@ -169,6 +169,23 @@ export const pageTreeTool: AnyToolDefinition = defineTool({
   },
 });
 
+/**
+ * The export query, or `undefined` when nothing was asked for.
+ *
+ * `undefined` rather than `{}`, so a plain read is the same request it has
+ * always been rather than one carrying an empty query object.
+ */
+function exportQuery(input: {
+  transclusions?: string;
+  includeBlockIds?: boolean;
+}): Record<string, string> | undefined {
+  const query = {
+    ...(input.transclusions === undefined ? {} : { transclusions: input.transclusions }),
+    ...(input.includeBlockIds === true ? { blockIds: 'true' } : {}),
+  };
+  return Object.keys(query).length === 0 ? undefined : query;
+}
+
 export const pageReadTool: AnyToolDefinition = defineTool({
   name: 'exo_page_read',
   description:
@@ -192,10 +209,7 @@ export const pageReadTool: AnyToolDefinition = defineTool({
     const result = await client.request({
       method: 'GET',
       path: `/api/documents/${input.documentId}/export/markdown`,
-      query: {
-        ...(input.transclusions === undefined ? {} : { transclusions: input.transclusions }),
-        ...(input.includeBlockIds === true ? { blockIds: 'true' } : {}),
-      },
+      query: exportQuery(input),
       responseSchema: markdownExportResponseSchema,
     });
     const { text } = truncateText(result.markdown, MAX_PAGE_READ_CHARS);

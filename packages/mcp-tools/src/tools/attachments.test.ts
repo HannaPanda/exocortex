@@ -161,7 +161,10 @@ describe('exo_attachment_upload', () => {
       createdById: 'user12345',
       createdAt: '2026-09-20T00:00:00.000Z',
     },
-    downloadUrl: '/api/attachments/attachment1/download',
+    // A presigned object-storage URL, which is the one that must never end up
+    // in a page; `embedUrl` beside it is the one that belongs there (issue #117).
+    downloadUrl: 'https://storage.example/objects/attachment1?signature=abc',
+    embedUrl: '/api/attachments/attachment1/download',
   };
 
   it('declares the type of a format that has no magic bytes', async () => {
