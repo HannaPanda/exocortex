@@ -79,6 +79,23 @@ describe('resolveSectionEdit', () => {
     expect(!resolved.ok && resolved.reason).toBe('heading_not_found');
   });
 
+  it('refuses a section whose last block carries no identifier', () => {
+    // It used to cast that missing identifier to a string, which made
+    // `replace` swap the section's *first* block and leave the rest standing:
+    // the page came back holding its section twice.
+    const page = parseMarkdown('## Stand\n\nErster Absatz.\n\nZweiter Absatz.').document;
+    const last = (page.content ?? [])[2];
+    if (last !== undefined) last.attrs = {};
+
+    for (const mode of ['replace', 'append'] as const) {
+      const resolved = resolveSectionEdit(page, 'Stand', mode);
+      expect(resolved.ok).toBe(false);
+      expect(!resolved.ok && resolved.reason).toBe('section_end_unaddressable');
+    }
+    // Prepending lands under the heading and never touches the end.
+    expect(resolveSectionEdit(page, 'Stand', 'prepend').ok).toBe(true);
+  });
+
   it('refuses a heading that occurs twice, and names both blocks', () => {
     const twice = parseMarkdown('## Stand\n\nA\n\n## Stand\n\nB').document;
     const resolved = resolveSectionEdit(twice, 'Stand', 'replace');

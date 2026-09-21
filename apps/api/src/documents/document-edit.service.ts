@@ -324,6 +324,13 @@ export class DocumentEditService {
           'That text occurs more than once; nothing was written',
           details,
         );
+      case 'section_end_unaddressable':
+        throw new AppError(
+          'document_block_range_invalid',
+          'The last block of this section carries no identifier, so the end of the section ' +
+            'cannot be addressed. Open the page once in the editor, which gives every block one',
+          details,
+        );
       default:
         throw new AppError(
           'document_block_range_invalid',

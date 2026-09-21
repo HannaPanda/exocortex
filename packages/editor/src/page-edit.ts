@@ -28,7 +28,9 @@ export type PageEditRefusal =
   | 'patch_not_found'
   | 'patch_not_unique'
   /** The page's Markdown could not be mapped back onto its blocks. */
-  | 'patch_not_addressable';
+  | 'patch_not_addressable'
+  /** The section's last block carries no identifier, so its end cannot be named. */
+  | 'section_end_unaddressable';
 
 export type PageEditResult<T> =
   | { readonly ok: true; readonly value: T }
@@ -165,17 +167,27 @@ export function resolveSectionEdit(
       value: { fromBlockId: section.blockId, toBlockId: null, placement: 'after' },
     };
   }
+  /*
+   * Both remaining modes are addressed from the end of the section, and a
+   * block without an identifier has no end to address. It used to be cast to
+   * a string here, which turned a `replace` into "replace the first block of
+   * the section" and left the rest of it standing: the page came back with
+   * its section written twice. Silent duplication of somebody's page is the
+   * worst thing this file can do, so this says no instead (issue #118).
+   */
+  if (section.bodyToBlockId === null) return refuse('section_end_unaddressable', 1);
+
   if (mode === 'append') {
     return {
       ok: true,
-      value: { fromBlockId: section.bodyToBlockId as string, toBlockId: null, placement: 'after' },
+      value: { fromBlockId: section.bodyToBlockId, toBlockId: null, placement: 'after' },
     };
   }
   return {
     ok: true,
     value: {
       fromBlockId: section.bodyFromBlockId as string,
-      toBlockId: section.bodyToBlockId as string,
+      toBlockId: section.bodyToBlockId,
       placement: 'replace',
     },
   };
