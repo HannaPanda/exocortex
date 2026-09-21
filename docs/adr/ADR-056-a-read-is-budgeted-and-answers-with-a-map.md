@@ -16,7 +16,7 @@ characteristic. Somebody asked the built-in AI to move a section onto its own
 page. The section sat at the end of a 36,257-character page, the worker cut the
 read at 30,000, and the note at the cut said `… (gekürzt)` and nothing else:
 not how much was missing, not that anything addressable lay behind it. The
-model concluded the text was hard to *find* rather than withheld, ran fourteen
+model concluded the text was hard to _find_ rather than withheld, ran fourteen
 searches with different wordings, guessed at two block identifiers, and died on
 the tool-iteration limit having written nothing. It cost 1.36 million input
 tokens to not move a paragraph.
@@ -81,7 +81,7 @@ the thing being navigated to, or the map is just a slower read.
 A caller that names no budget is unchanged. The browser rendering a placed
 transclusion, an export, an internal job: all of them still get the content,
 which is what makes this a contract for agents rather than a change to what a
-page *is*.
+page _is_.
 
 ## Consequences
 
