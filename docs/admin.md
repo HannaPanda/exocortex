@@ -541,6 +541,10 @@ A page nobody has marked never reaches a model.
    or the resolved `settings` object in the worker.
 3. Add a control to `apps/web/src/components/admin/settings-form.tsx`. It diffs
    against the loaded values and sends only what changed — keep that property.
+   That diff is also what the unsaved-changes guard counts
+   (`components/settings/unsaved-changes-guard.tsx`, issue #113): a setting
+   that compares unequal to itself would make the form claim an edit nobody
+   made, and warn about losing it on every navigation.
 4. Add the row to the table above.
 
 No migration is needed: the `setting` table is key/value.
