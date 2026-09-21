@@ -213,7 +213,13 @@ export function SettingsActionBar({
     <div
       className={cn(
         '-mx-6 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-transparent px-6 py-3',
-        dirty && 'sticky bottom-0 border-border bg-background',
+        // The negative offset and the padding that answers it: `AppPage` is the
+        // scroll container and it has 2rem of bottom padding, which a sticky
+        // box stops above -- leaving a strip of the form showing underneath the
+        // bar, which reads as the bar floating rather than sitting on the edge.
+        // The negative bottom margin keeps the page from growing by the same
+        // 2rem at the end of the scroll.
+        dirty && 'sticky -bottom-8 -mb-8 border-border bg-background pb-11',
       )}
     >
       {children}
