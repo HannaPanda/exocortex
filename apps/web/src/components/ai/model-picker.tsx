@@ -1,6 +1,11 @@
 'use client';
 
-import { type AiModel, type AiReasoningLevel, groupAiModelsByVendor } from '@exocortex/contracts';
+import {
+  type AiModel,
+  aiModelVendorLabel,
+  type AiReasoningLevel,
+  groupAiModelsByVendor,
+} from '@exocortex/contracts';
 import {
   Badge,
   Select,
@@ -32,6 +37,23 @@ const AUTO_COMPANION = 'auto';
 
 function formatPriceUsd(microUsdPerMillionTokens: number): string {
   return (microUsdPerMillionTokens / 1_000_000).toFixed(2).replace('.', ',');
+}
+
+/**
+ * The model's name without the vendor said twice (issue #116).
+ *
+ * A registry entry may be called "OpenAI: GPT-5.6 Luna Pro", and in a 336-pixel
+ * panel that is cut at "Luna" -- exactly where the difference between two
+ * models sits. The vendor is already the group heading in the open list, and
+ * the trigger's tooltip carries the whole slug, so dropping the prefix loses
+ * nothing and buys back the part that identifies the model. Names that do not
+ * start with their vendor are left exactly as they were entered.
+ */
+function modelLabel(model: AiModel): string {
+  const prefix = `${aiModelVendorLabel(model.slug)}: `;
+  return model.displayName.toLowerCase().startsWith(prefix.toLowerCase())
+    ? model.displayName.slice(prefix.length)
+    : model.displayName;
 }
 
 function modelTooltip(model: AiModel): string {
@@ -99,10 +121,16 @@ export function ModelPicker({
             render={
               <SelectTrigger
                 size="sm"
-                className="min-w-0 max-w-[11rem]"
+                // Takes what the row has left rather than a fixed cap: it is
+                // the one of the three whose value has no bounded length.
+                className="min-w-0 flex-1 basis-40"
                 data-testid="ai-model-picker"
               >
-                <SelectValue>{() => selectedModel?.displayName ?? 'Modell wählen'}</SelectValue>
+                <SelectValue>
+                  {() =>
+                    selectedModel === undefined ? 'Modell wählen' : modelLabel(selectedModel)
+                  }
+                </SelectValue>
               </SelectTrigger>
             }
           />
@@ -119,7 +147,7 @@ export function ModelPicker({
               {group.models.map((model) => (
                 <SelectItem key={model.slug} value={model.slug}>
                   <span className="flex min-w-0 items-center gap-1.5">
-                    <span className="truncate">{model.displayName}</span>
+                    <span className="truncate">{modelLabel(model)}</span>
                     {model.slug === defaultModelSlug ? (
                       <Badge variant="muted">Standard</Badge>
                     ) : null}
