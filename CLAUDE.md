@@ -493,6 +493,15 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   finished document is validated before it is stored, because a fragment that is
   valid alone may not be valid where it was placed; and ambiguity is refused
   with the candidates named, never resolved by picking one.
+- ADR-056: a read carries a budget, and a page over it answers with its map
+  instead of its text -- never with a prefix, because a prefix reads like a
+  beginning and invites reading on. The map is built by `buildDocumentMap` and
+  recurses by one rule (page, section, subsection, block window, content); the
+  floor is block windows addressed by `fromBlockId`/`toBlockId`, because a flat
+  section of 112,000 characters has no heading to cut at. A map is bounded too:
+  neighbours merge rather than the list growing. A read starts no new work, so
+  no summary and no keywords are computed to fill one, and a caller that names
+  no budget still gets the page.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
