@@ -117,7 +117,7 @@ export class DocumentMarkdownService {
       }),
       this.prisma.documentContent.findUnique({
         where: { documentId },
-        select: { yjsState: true, schemaVersion: true },
+        select: { yjsState: true, schemaVersion: true, yjsUpdatedAt: true },
       }),
       // The page's place in the tree: its ancestors and its child pages. Both
       // are read from the same flat list, which is one query instead of a walk
@@ -170,6 +170,11 @@ export class DocumentMarkdownService {
 
     return {
       documentId,
+      // The revision a following write has to send back (issue #120). Read
+      // from the content row, which is the same row the write compares
+      // against; `document.updatedAt` in the frontmatter below is a different
+      // timestamp and deliberately not this one.
+      yjsUpdatedAt: content.yjsUpdatedAt.toISOString(),
       filename: filenameFor(document.title),
       view: budgeted.view,
       chars: budgeted.chars,

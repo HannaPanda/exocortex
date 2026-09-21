@@ -552,6 +552,17 @@ export type CollaborationTicketResponse = z.infer<typeof collaborationTicketResp
 
 export const markdownExportResponseSchema = z.object({
   documentId: idSchema,
+  /**
+   * The revision this answer was read at (issue #120).
+   *
+   * `DocumentContent.yjsUpdatedAt`, which is the one value a write compares
+   * `expectedYjsUpdatedAt` against. It travels on the read because it is the
+   * only way a caller can send a correct one: the frontmatter's `updatedAt` is
+   * the `document` row's own timestamp, it moves when a page is renamed and
+   * stands still when only the content changes, and using it produced a
+   * `document_content_conflict` on every read-then-write.
+   */
+  yjsUpdatedAt: isoDateTimeSchema,
   filename: z.string(),
   /**
    * `content` carries the page, `map` carries its structure instead because

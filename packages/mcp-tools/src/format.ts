@@ -81,6 +81,25 @@ export function renderDocumentMap(map: DocumentMapDto, lead: string): string {
   return `${lead} (${size}). Kein Textauszug, sondern die Gliederung. ${how}${coarse}\n\n${entries}`;
 }
 
+/**
+ * The line every page read ends with, and the only place a write's
+ * `expectedYjsUpdatedAt` may come from (issue #120).
+ *
+ * It is written into the text rather than only into `data`, because the model
+ * sees the text and nothing else: the worker hands `result.text` to the loop
+ * and drops the structured payload. A read that carried the revision only in
+ * `data` is a read that does not carry it.
+ *
+ * Named `Revision` and not `yjsUpdatedAt` in the prose, with the field name
+ * beside it, so the value cannot be mistaken for the `updatedAt` in the
+ * frontmatter above it. That mistake is what this line exists for: every
+ * read-then-write in the first model benchmark sent the frontmatter timestamp
+ * and was refused.
+ */
+export function revisionLine(yjsUpdatedAt: string): string {
+  return `Revision dieser Seite: ${yjsUpdatedAt} (als expectedYjsUpdatedAt beim Schreiben angeben).`;
+}
+
 /** Truncates `text` at `maxLength` characters, appending a German note. */
 export function truncateText(
   text: string,

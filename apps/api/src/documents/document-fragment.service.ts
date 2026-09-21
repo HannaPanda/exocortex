@@ -72,7 +72,7 @@ export class DocumentFragmentService {
       }),
       this.prisma.documentContent.findUnique({
         where: { documentId },
-        select: { yjsState: true },
+        select: { yjsState: true, yjsUpdatedAt: true },
       }),
     ]);
     if (content === null) throw AppError.notFound('Document content');
@@ -98,6 +98,9 @@ export class DocumentFragmentService {
       icon: document.icon,
       iconColor: toIconColor(document.iconColor),
       archivedAt: document.archivedAt?.toISOString() ?? null,
+      // The page's revision, so a caller that read one section can write it
+      // back without reading the whole page first (issue #120).
+      yjsUpdatedAt: content.yjsUpdatedAt.toISOString(),
       blockId,
       toBlockId,
       resolved,

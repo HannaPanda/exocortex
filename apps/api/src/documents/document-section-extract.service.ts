@@ -30,6 +30,7 @@ import { AppError } from '../common/app-error';
 import { LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
 
+import { assertExpectedRevision } from './document-revision';
 import { DOCUMENT_SELECT, toSummary } from './document-shape';
 import { DocumentWriteCommitService } from './document-write-commit.service';
 import { DocumentsService } from './documents.service';
@@ -40,6 +41,8 @@ interface StoredContent {
   yjsState: Uint8Array;
   schemaVersion: number;
   yjsUpdatedAt: Date;
+  /** The `document` row's timestamp, only for the refusal in `assertExpectedRevision`. */
+  documentUpdatedAt: Date;
 }
 
 /**
@@ -93,12 +96,11 @@ export class DocumentSectionExtractService {
     assertPolicy(canEditDocument(context.role, context.document));
 
     const existing = await this.load(input.documentId);
-    if (
-      input.request.expectedYjsUpdatedAt !== undefined &&
-      input.request.expectedYjsUpdatedAt !== existing.yjsUpdatedAt.toISOString()
-    ) {
-      throw new AppError('document_content_conflict', 'The document changed since it was read');
-    }
+    assertExpectedRevision({
+      expected: input.request.expectedYjsUpdatedAt,
+      current: existing.yjsUpdatedAt,
+      documentUpdatedAt: existing.documentUpdatedAt,
+    });
 
     const identities = await this.pageLinks.loadIndex(context.workspaceId);
     const page = resolvePageLinkTitles(yjsStateToProseMirrorJson(existing.yjsState), (documentId) =>
@@ -202,13 +204,20 @@ export class DocumentSectionExtractService {
   private async load(documentId: string): Promise<StoredContent> {
     const content = await this.prisma.documentContent.findUnique({
       where: { documentId },
-      select: { yjsState: true, schemaVersion: true, yjsUpdatedAt: true },
+      select: {
+        yjsState: true,
+        schemaVersion: true,
+        yjsUpdatedAt: true,
+        // See the same select in `DocumentContentService` (issue #120).
+        document: { select: { updatedAt: true } },
+      },
     });
     if (content === null) throw AppError.notFound('Document content');
     return {
       yjsState: content.yjsState as Uint8Array,
       schemaVersion: content.schemaVersion,
       yjsUpdatedAt: content.yjsUpdatedAt,
+      documentUpdatedAt: content.document.updatedAt,
     };
   }
 

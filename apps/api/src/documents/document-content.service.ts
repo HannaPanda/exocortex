@@ -29,6 +29,7 @@ import { API_ENV, LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
+import { assertExpectedRevision } from './document-revision';
 import { DocumentWriteCommitService } from './document-write-commit.service';
 import {
   judgePageGrowth,
@@ -215,19 +216,23 @@ export class DocumentContentService {
 
     const existing = await this.prisma.documentContent.findUnique({
       where: { documentId: input.documentId },
-      select: { yjsState: true, schemaVersion: true, yjsUpdatedAt: true, proseMirrorJson: true },
+      select: {
+        yjsState: true,
+        schemaVersion: true,
+        yjsUpdatedAt: true,
+        proseMirrorJson: true,
+        // Only to tell a stale revision apart from the frontmatter timestamp
+        // when a write is refused (issue #120).
+        document: { select: { updatedAt: true } },
+      },
     });
     if (existing === null) throw AppError.notFound('Document content');
 
-    if (
-      input.request.expectedYjsUpdatedAt !== undefined &&
-      input.request.expectedYjsUpdatedAt !== existing.yjsUpdatedAt.toISOString()
-    ) {
-      throw new AppError(
-        'document_content_conflict',
-        'The document changed since it was last read',
-      );
-    }
+    assertExpectedRevision({
+      expected: input.request.expectedYjsUpdatedAt,
+      current: existing.yjsUpdatedAt,
+      documentUpdatedAt: existing.document.updatedAt,
+    });
 
     const hasEmbed = containsDatabaseEmbed(existing.proseMirrorJson as ProseMirrorNode | null);
     const warnings: string[] = [];

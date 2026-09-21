@@ -112,6 +112,15 @@ export const documentFragmentResponseSchema = z.object({
   icon: z.string().nullable(),
   iconColor: z.enum(DOCUMENT_ICON_COLORS).nullable(),
   archivedAt: isoDateTimeSchema.nullable(),
+  /**
+   * The revision this fragment was read at (issue #120).
+   *
+   * The page's `yjsUpdatedAt`, not the fragment's: a block carries no revision
+   * of its own, and the write this value is handed to compares against the
+   * page. Same field, same meaning and same source as on the Markdown export,
+   * so a caller that read either can write without guessing.
+   */
+  yjsUpdatedAt: isoDateTimeSchema,
   /** The block that was asked for, `null` for the whole page. */
   blockId: blockIdSchema.nullable(),
   /** The end of the range that was asked for, `null` when none was. */

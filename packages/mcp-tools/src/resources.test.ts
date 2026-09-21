@@ -162,6 +162,7 @@ describe('readMcpResource', () => {
       '/api/documents/doc12345/export/markdown': {
         documentId: 'doc12345',
         filename: 'nginx.md',
+        yjsUpdatedAt: '2026-09-21T12:00:00.000Z',
         view: 'content',
         chars: 16,
         map: null,

@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import { type ExocortexApiClient } from '../client.js';
 
-import { pageExtractSectionTool } from './page-edits.js';
+import {
+  pageBlockWriteTool,
+  pageExtractSectionTool,
+  pagePatchTool,
+  pageSectionWriteTool,
+} from './page-edits.js';
+import { pageWriteTool } from './pages.js';
 
 interface RecordedCall {
   path: string;
@@ -96,5 +102,45 @@ describe('pageExtractSectionTool', () => {
 
     expect(result.text).toContain('An Seite „Tumorambulanz“');
     expect(result.text).not.toContain('Neue Seite');
+  });
+});
+
+/**
+ * The concurrency guard, as a caller can actually reach it (issue #120).
+ *
+ * These are description tests, which is unusual and deliberate: the defect was
+ * never in the code. `expectedYjsUpdatedAt` worked exactly as written; what
+ * was wrong was the one sentence telling an agent where the value comes from,
+ * and that sentence pointed at a read which did not return it. So what is
+ * pinned here is that every write says the same thing, and that it names the
+ * timestamp a caller must not use.
+ */
+describe('what the narrow writes say about expectedYjsUpdatedAt', () => {
+  const writes = [
+    pageBlockWriteTool,
+    pagePatchTool,
+    pageSectionWriteTool,
+    pageExtractSectionTool,
+    pageWriteTool,
+  ];
+
+  it('names the read that carries the revision, on every write that takes one', () => {
+    for (const tool of writes) {
+      expect(tool.description, tool.name).toContain('expectedYjsUpdatedAt');
+      expect(tool.description, tool.name).toContain('Revision dieser Seite');
+      expect(tool.description, tool.name).toContain('exo_page_read');
+    }
+  });
+
+  it('warns off the frontmatter timestamp, which is the mistake that was made', () => {
+    for (const tool of writes) {
+      expect(tool.description, tool.name).toContain('Frontmatter');
+    }
+  });
+
+  it('still says that leaving it out writes without the guard', () => {
+    for (const tool of writes) {
+      expect(tool.description, tool.name).toContain('ohne diese Sicherung');
+    }
   });
 });

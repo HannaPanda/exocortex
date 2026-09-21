@@ -35,6 +35,7 @@ import { PRISMA } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
 import { foreignMediaWarnings } from './document-content.service';
+import { assertExpectedRevision } from './document-revision';
 import { DocumentWriteCommitService } from './document-write-commit.service';
 import { judgePageGrowth, oversizedPageRefusal, pageGrowthLimits } from './page-growth-policy';
 import { PageLinkIdentityService } from './page-link-identity.service';
@@ -161,16 +162,21 @@ export class DocumentEditService {
 
     const existing = await this.prisma.documentContent.findUnique({
       where: { documentId: input.documentId },
-      select: { yjsState: true, schemaVersion: true, yjsUpdatedAt: true },
+      select: {
+        yjsState: true,
+        schemaVersion: true,
+        yjsUpdatedAt: true,
+        // See the same select in `DocumentContentService` (issue #120).
+        document: { select: { updatedAt: true } },
+      },
     });
     if (existing === null) throw AppError.notFound('Document content');
 
-    if (
-      input.expectedYjsUpdatedAt !== undefined &&
-      input.expectedYjsUpdatedAt !== existing.yjsUpdatedAt.toISOString()
-    ) {
-      throw new AppError('document_content_conflict', 'The document changed since it was read');
-    }
+    assertExpectedRevision({
+      expected: input.expectedYjsUpdatedAt,
+      current: existing.yjsUpdatedAt,
+      documentUpdatedAt: existing.document.updatedAt,
+    });
 
     // References are read and written as `[[Titel]]`, so both directions go
     // through the identity index for the reason `DocumentContentService`

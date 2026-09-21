@@ -26,6 +26,7 @@ function markdown(documentId: string, text: string): unknown {
   return {
     documentId,
     filename: 'regel.md',
+    yjsUpdatedAt: '2026-09-21T12:00:00.000Z',
     view: 'content',
     chars: text.length,
     map: null,

@@ -65,6 +65,7 @@ describe('buildServerInstructions', () => {
         '/api/documents/rule123456/export/markdown': {
           documentId: 'rule123456',
           filename: 'ki-regeln.md',
+          yjsUpdatedAt: '2026-09-21T12:00:00.000Z',
           view: 'content',
           chars: 120,
           map: null,

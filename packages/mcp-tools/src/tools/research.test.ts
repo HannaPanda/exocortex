@@ -171,6 +171,7 @@ describe('fetch (deep research)', () => {
         '/api/documents/doc1111111/export/markdown': {
           documentId: 'doc1111111',
           filename: 'kalenderplan.md',
+          yjsUpdatedAt: '2026-09-21T12:00:00.000Z',
           view: 'content',
           chars: 38,
           map: null,
@@ -209,6 +210,7 @@ describe('fetch (deep research)', () => {
       '/api/documents/doc1111111/export/markdown': {
         documentId: 'doc1111111',
         filename: 'lang.md',
+        yjsUpdatedAt: '2026-09-21T12:00:00.000Z',
         view: 'content',
         chars: markdown.length,
         map: null,

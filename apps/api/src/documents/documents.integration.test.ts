@@ -3057,3 +3057,219 @@ describe('how large an agent may let a page grow', () => {
     expect(result.snapshotId).toBeTruthy();
   });
 });
+
+/**
+ * The revision a read hands out, and what a write does with it (issue #120).
+ *
+ * The contract has one revision, `DocumentContent.yjsUpdatedAt`, and the whole
+ * point of these tests is that a caller never has to construct it: whatever a
+ * read answered with goes straight into the next write. Before #120 no read
+ * returned it at all, so every agent used the frontmatter's `updatedAt` and
+ * every read-then-write failed with a conflict it could do nothing about.
+ */
+describe('the revision a read publishes (issue #120)', () => {
+  async function seed(markdown: string): Promise<string> {
+    const documentId = await createPage('Revisionsvertrag');
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown, mode: 'replace' },
+      correlationId,
+      source: 'api',
+      growth: 'guarded',
+    });
+    return documentId;
+  }
+
+  it('answers a Markdown export with the revision the write compares against', async () => {
+    const documentId = await seed('## Abschnitt\n\nEin Satz.');
+
+    const exported = await markdownService.export(documentId, ownerId);
+    const stored = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+
+    expect(exported.yjsUpdatedAt).toBe(stored.yjsUpdatedAt.toISOString());
+  });
+
+  it('answers a fragment read with the same revision, so one section is enough to write back', async () => {
+    const documentId = await seed('## Abschnitt\n\nEin Satz.');
+
+    const exported = await markdownService.export(documentId, ownerId);
+    const fragment = await fragmentService.read(documentId, ownerId, { outline: false });
+
+    expect(fragment.yjsUpdatedAt).toBe(exported.yjsUpdatedAt);
+  });
+
+  it('lets a read-then-write through untouched', async () => {
+    const documentId = await seed('## Abschnitt\n\nEin Satz.');
+    const read = await markdownService.export(documentId, ownerId);
+
+    const written = await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: {
+        markdown: '## Abschnitt\n\nEin anderer Satz.',
+        mode: 'replace',
+        expectedYjsUpdatedAt: read.yjsUpdatedAt,
+      },
+      correlationId,
+      source: 'ai',
+      growth: 'guarded',
+    });
+
+    expect(written.snapshotId).toBeTruthy();
+    // And the answer carries the next revision, so a second write needs no
+    // second read.
+    const after = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+    expect(written.yjsUpdatedAt).toBe(after.yjsUpdatedAt.toISOString());
+  });
+
+  it('refuses a write whose revision somebody else moved on in between', async () => {
+    const documentId = await seed('## Abschnitt\n\nEin Satz.');
+    const read = await markdownService.export(documentId, ownerId);
+
+    // Somebody else writes while this caller was thinking.
+    await contentService.write({
+      documentId,
+      userId: ownerId,
+      request: { markdown: '## Abschnitt\n\nJemand anderes war hier.', mode: 'replace' },
+      correlationId,
+      source: 'api',
+      growth: 'guarded',
+    });
+
+    const error = await contentService
+      .write({
+        documentId,
+        userId: ownerId,
+        request: {
+          markdown: 'Mein Stand.',
+          mode: 'replace',
+          expectedYjsUpdatedAt: read.yjsUpdatedAt,
+        },
+        correlationId,
+        source: 'ai',
+        growth: 'guarded',
+      })
+      .then(() => null)
+      .catch((caught: unknown) => caught);
+
+    const current = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+    expect(error).toMatchObject({
+      code: 'document_content_conflict',
+      details: {
+        currentYjsUpdatedAt: current.yjsUpdatedAt.toISOString(),
+        sentDocumentUpdatedAt: false,
+      },
+    });
+    // The page still says what the other writer left there.
+    expect(current.plainText).toContain('Jemand anderes war hier.');
+  });
+
+  it("names the frontmatter timestamp as the mistake it is, rather than only 'changed'", async () => {
+    const documentId = await seed('## Abschnitt\n\nEin Satz.');
+    const document = await prisma.document.findUniqueOrThrow({ where: { id: documentId } });
+
+    const error = await contentService
+      .write({
+        documentId,
+        userId: ownerId,
+        request: {
+          markdown: 'Neuer Text.',
+          mode: 'replace',
+          // Exactly what `updatedAt` in the export's frontmatter says, which is
+          // what every run of the first model benchmark sent.
+          expectedYjsUpdatedAt: document.updatedAt.toISOString(),
+        },
+        correlationId,
+        source: 'ai',
+        growth: 'guarded',
+      })
+      .then(() => null)
+      .catch((caught: unknown) => caught);
+
+    expect(error).toMatchObject({
+      code: 'document_content_conflict',
+      details: { sentDocumentUpdatedAt: true },
+    });
+    expect((error as AppError).details).toMatchObject({
+      reason: expect.stringContaining('Frontmatter') as unknown as string,
+    });
+  });
+
+  it('applies the same semantics to every narrow write', async () => {
+    const documentId = await seed('## Abschnitt\n\nEin Satz.');
+    const fragment = await fragmentService.read(documentId, ownerId, { outline: true });
+    const paragraph = fragment.blocks.find((block) => block.level === null);
+    if (paragraph === undefined) throw new Error('the page has no paragraph to address');
+
+    // The revision straight out of the read works on the block write,
+    const afterBlock = await editService.writeBlock({
+      documentId,
+      userId: ownerId,
+      request: {
+        blockId: paragraph.blockId,
+        markdown: 'Ein geänderter Satz.',
+        mode: 'replace',
+        expectedYjsUpdatedAt: fragment.yjsUpdatedAt,
+      },
+      correlationId,
+      source: 'ai',
+    });
+
+    // on the patch,
+    const afterPatch = await editService.patch({
+      documentId,
+      userId: ownerId,
+      request: {
+        oldText: 'Ein geänderter Satz.',
+        newText: 'Ein dritter Satz.',
+        replaceAll: false,
+        expectedYjsUpdatedAt: afterBlock.yjsUpdatedAt,
+      },
+      correlationId,
+      source: 'ai',
+    });
+
+    // and on the section write.
+    const afterSection = await editService.writeSection({
+      documentId,
+      userId: ownerId,
+      request: {
+        heading: 'Abschnitt',
+        markdown: 'Ein vierter Satz.',
+        mode: 'replace',
+        expectedYjsUpdatedAt: afterPatch.yjsUpdatedAt,
+      },
+      correlationId,
+      source: 'ai',
+    });
+
+    const stored = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+    expect(afterSection.yjsUpdatedAt).toBe(stored.yjsUpdatedAt.toISOString());
+    expect(stored.plainText).toContain('Ein vierter Satz.');
+  });
+
+  it('carries the same guard through a section move', async () => {
+    const documentId = await seed('## Abschnitt\n\nEin Satz.\n\n## Zweiter\n\nNoch einer.');
+    const read = await markdownService.export(documentId, ownerId);
+    const fragment = await fragmentService.read(documentId, ownerId, { outline: true });
+    const heading = fragment.blocks.find((block) => block.level === 2);
+    if (heading === undefined) throw new Error('the page has no heading to move');
+
+    const moved = await extractService.extract({
+      documentId,
+      userId: ownerId,
+      request: {
+        blockId: heading.blockId,
+        replacement: 'link',
+        expectedYjsUpdatedAt: read.yjsUpdatedAt,
+      },
+      correlationId,
+      source: 'ai',
+    });
+
+    expect(moved.created).toBe(true);
+    const stored = await prisma.documentContent.findUniqueOrThrow({ where: { documentId } });
+    expect(moved.yjsUpdatedAt).toBe(stored.yjsUpdatedAt.toISOString());
+  });
+});

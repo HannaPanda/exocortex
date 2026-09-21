@@ -6,6 +6,7 @@ import {
   PAGE_CONTENT_BUDGET_CHARS,
   PAGE_MAP_MAX_ENTRIES,
   renderDocumentMap,
+  revisionLine,
   truncateWithSize,
 } from '../format.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
@@ -84,6 +85,8 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
     'sagt dazu, dass es die Anfrage erweitert hat. ' +
     'Mit blocks: true kommt statt der Karte die flache Liste aller adressierbaren Blöcke mit ' +
     'Vorschau, was für eine lange Seite viel und meistens zu viel ist. ' +
+    'Am Ende jeder Antwort steht die Revision der Seite; genau dieser Wert gehört als ' +
+    'expectedYjsUpdatedAt in den nächsten Schreibaufruf. ' +
     'Das ist auch die Adresse, mit der sich Inhalt einbetten lässt: ein Block ' +
     '":::transclusion <Seitentitel>^<blockId>" auf einer anderen Seite zeigt genau diesen ' +
     'Inhalt, ohne ihn zu kopieren, und ändert sich mit der Quelle mit.',
@@ -115,6 +118,16 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
         responseSchema: documentFragmentResponseSchema,
       });
 
+    /**
+     * Every answer ends with the page's revision (issue #120). Reading one
+     * section and writing it back is the everyday shape of an agent edit, and
+     * it must not need a second, whole-page read to learn what to send as
+     * `expectedYjsUpdatedAt`.
+     */
+    const answer = (text: string, result: { yjsUpdatedAt: string }): { text: string } => ({
+      text: `${text}\n\n${revisionLine(result.yjsUpdatedAt)}`,
+    });
+
     let result = await read(input.toBlockId);
     // A heading addressed from itself to itself: answer the question that was
     // meant, and say so below (see `WIDENED_NOTE`). The second read costs a
@@ -128,10 +141,14 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
 
     if (input.blockId !== undefined && !result.resolved) {
       return {
-        text:
+        ...answer(
           `Die Seite „${result.title}“ hat keinen Block mit der Kennung ${input.blockId} mehr` +
-          (input.toBlockId === undefined ? '' : ` (oder ${input.toBlockId} liegt nicht daneben)`) +
-          '. Ohne blockId nennt dieser Aufruf die Karte der Seite mit den gültigen Kennungen.',
+            (input.toBlockId === undefined
+              ? ''
+              : ` (oder ${input.toBlockId} liegt nicht daneben)`) +
+            '. Ohne blockId nennt dieser Aufruf die Karte der Seite mit den gültigen Kennungen.',
+          result,
+        ),
         data: result,
       };
     }
@@ -150,10 +167,12 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
             '(derselbe Aufruf ohne blocks) ist vollständig und kürzer.'
           : '';
       return {
-        text:
+        ...answer(
           result.blocks.length === 0
             ? `Die Seite „${result.title}“ hat keine adressierbaren Blöcke.`
             : `Blöcke der Seite „${result.title}“:\n${lines}${more}`,
+          result,
+        ),
         data: result,
       };
     }
@@ -164,7 +183,10 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
           ? `Karte der Seite „${result.title}“`
           : `Der Teil ${input.blockId} der Seite „${result.title}“ ist groß`;
       const map = renderDocumentMap(result.map, lead);
-      return { text: widened ? `${WIDENED_NOTE}\n\n${map}` : map, data: result };
+      return {
+        ...answer(widened ? `${WIDENED_NOTE}\n\n${map}` : map, result),
+        data: result,
+      };
     }
 
     const nested =
@@ -177,9 +199,12 @@ export const pageBlockReadTool: AnyToolDefinition = defineTool({
         ? `Seite „${result.title}“`
         : `Block ${input.blockId} der Seite „${result.title}“`;
     return {
-      text: widened
-        ? `${WIDENED_NOTE}\n\n${what}:\n\n${text}${nested}`
-        : `${what}:\n\n${text}${nested}`,
+      ...answer(
+        widened
+          ? `${WIDENED_NOTE}\n\n${what}:\n\n${text}${nested}`
+          : `${what}:\n\n${text}${nested}`,
+        result,
+      ),
       data: result,
     };
   },

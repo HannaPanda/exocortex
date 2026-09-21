@@ -15,6 +15,7 @@ const PAGE = {
   icon: null,
   iconColor: null,
   archivedAt: null,
+  yjsUpdatedAt: '2026-09-21T12:00:00.000Z',
   blockId: null,
   toBlockId: null,
   resolved: true,
@@ -213,5 +214,47 @@ describe('pageBlockReadTool', () => {
 
     expect(result.text).toContain('keinen Block mit der Kennung abc12345 mehr');
     expect(result.text).toContain('Karte der Seite');
+  });
+});
+
+/**
+ * The revision travels in the text, not only in `data` (issue #120).
+ *
+ * The worker hands the model `result.text` and drops the structured payload,
+ * so a value that reaches only `data` reaches nobody. Every answer of this
+ * tool carries it, including the map and the dead-address one: reading a
+ * section and writing it back is one call plus one call, and it must not need
+ * a whole-page read in between just to learn the revision.
+ */
+describe('pageBlockReadTool and the page revision', () => {
+  it('ends a content answer with the revision to write back with', async () => {
+    const { client } = fakeClient({ ...PAGE, markdown: '## Abschnitt\n\nEin Satz.' });
+
+    const result = await pageBlockReadTool.run(client, {
+      documentId: 'doc123456',
+      blockId: 'abc12345',
+    });
+
+    expect(result.text).toContain('Revision dieser Seite: 2026-09-21T12:00:00.000Z');
+    expect(result.text).toContain('expectedYjsUpdatedAt');
+  });
+
+  it('ends a map answer with it too, because that is where navigation starts', async () => {
+    const { client } = fakeClient({ ...PAGE, view: 'map', map: MAP, markdown: '', chars: 36_257 });
+
+    const result = await pageBlockReadTool.run(client, { documentId: 'doc123456' });
+
+    expect(result.text).toContain('Revision dieser Seite: 2026-09-21T12:00:00.000Z');
+  });
+
+  it('ends even a dead address with it, so the recovery read is the last one needed', async () => {
+    const { client } = fakeClient({ ...PAGE, resolved: false, blockId: 'weggefallen' });
+
+    const result = await pageBlockReadTool.run(client, {
+      documentId: 'doc123456',
+      blockId: 'weggefallen',
+    });
+
+    expect(result.text).toContain('Revision dieser Seite: 2026-09-21T12:00:00.000Z');
   });
 });

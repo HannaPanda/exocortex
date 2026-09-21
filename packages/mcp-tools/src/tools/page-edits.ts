@@ -30,6 +30,25 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
  * one read away.
  */
 
+/**
+ * Where the concurrency guard's value comes from, said the same way on every
+ * write that takes one (issue #120).
+ *
+ * The parameter existed before this sentence did, and the description pointed
+ * at `exo_page_read` while no read returned the value. Every agent that
+ * followed the description therefore sent the frontmatter's `updatedAt`, was
+ * refused with `document_content_conflict`, and learned to leave the guard
+ * off. So the sentence names the line the value stands on, names the value it
+ * is not, and says what a conflict means.
+ */
+export const WHERE_THE_REVISION_COMES_FROM =
+  'expectedYjsUpdatedAt ist die Revision der Seite. Sie steht am Ende jeder Antwort von ' +
+  'exo_page_read und exo_page_block_read („Revision dieser Seite: …“) und nur von dort: das ' +
+  'updatedAt aus dem Frontmatter ist ein anderer Zeitstempel. Mit dem Parameter schlägt der ' +
+  'Aufruf fehl, statt eine zwischenzeitliche Änderung zu überschreiben; die Fehlermeldung nennt ' +
+  'dann die aktuelle Revision, also erneut lesen und darauf aufbauend schreiben. Ohne den ' +
+  'Parameter wird ohne diese Sicherung geschrieben.';
+
 /** The one sentence that says where the addresses come from. */
 const WHERE_BLOCK_IDS_COME_FROM =
   'Blockkennungen kommen aus exo_page_block_read (ohne blockId listet es alle Blöcke der Seite) ' +
@@ -60,8 +79,8 @@ export const pageBlockWriteTool: AnyToolDefinition = defineTool({
     'mode "replace" tauscht den Block aus, "append" setzt den neuen Inhalt dahinter, "prepend" ' +
     'davor. Eine Überschrift meint hier nur sich selbst, nicht ihren Abschnitt; dafür gibt es ' +
     'exo_page_section_write. ' +
-    'Mit expectedYjsUpdatedAt (aus exo_page_read) schlägt der Aufruf fehl, statt eine ' +
-    'zwischenzeitliche Änderung zu überschreiben. ' +
+    WHERE_THE_REVISION_COMES_FROM +
+    ' ' +
     WHERE_BLOCK_IDS_COME_FROM,
   inputSchema: z
     .object({ documentId: idSchema })
@@ -95,7 +114,8 @@ export const pagePatchTool: AnyToolDefinition = defineTool({
     'wie oft er den Text gefunden hat. Mehrfach ersetzen geht nur mit replaceAll: true, und das ' +
     'ist eine bewusste Entscheidung, keine Bequemlichkeit. ' +
     'Für eine Änderung, die sich nicht als eindeutige Textstelle sagen lässt, ist ' +
-    'exo_page_block_update der genauere Weg.',
+    'exo_page_block_update der genauere Weg. ' +
+    WHERE_THE_REVISION_COMES_FROM,
   inputSchema: z.object({ documentId: idSchema }).extend(documentPatchRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
   mutating: true,
@@ -124,7 +144,8 @@ export const pageSectionWriteTool: AnyToolDefinition = defineTool({
     'Überschrift. ' +
     'Der Text der Überschrift wird ohne Rücksicht auf Groß- und Kleinschreibung verglichen. ' +
     'Kommt er mehrfach vor, wird nichts geschrieben und der Aufruf nennt die Blockkennungen der ' +
-    'Kandidaten; dann ist exo_page_block_update mit einer davon der eindeutige Weg.',
+    'Kandidaten; dann ist exo_page_block_update mit einer davon der eindeutige Weg. ' +
+    WHERE_THE_REVISION_COMES_FROM,
   inputSchema: z.object({ documentId: idSchema }).extend(documentSectionWriteRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
   mutating: true,
@@ -158,7 +179,8 @@ export const pageExtractSectionTool: AnyToolDefinition = defineTool({
     'Ohne title heißt die neue Seite wie die Überschrift; ohne parentId hängt sie unter der ' +
     'Seite, aus der der Abschnitt stammt. Mit targetDocumentId wandert der Abschnitt stattdessen ' +
     'ans Ende einer vorhandenen Seite. ' +
-    'Vor dem Schreiben wird ein Snapshot der Quellseite angelegt; der Aufruf nennt ihn.',
+    'Vor dem Schreiben wird ein Snapshot der Quellseite angelegt; der Aufruf nennt ihn. ' +
+    WHERE_THE_REVISION_COMES_FROM,
   inputSchema: z.object({ documentId: idSchema }).extend(extractSectionRequestSchema.shape),
   surfaces: ['mcp', 'ai'],
   mutating: true,

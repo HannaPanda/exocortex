@@ -54,6 +54,7 @@ describe('pageReadTool', () => {
     const { client, calls } = createFakeClient({
       documentId: 'doc123456',
       filename: 'doc.md',
+      yjsUpdatedAt: '2026-09-21T12:00:00.000Z',
       view: 'content',
       chars: 12,
       map: null,
@@ -83,6 +84,7 @@ describe('pageReadTool', () => {
     const { client } = createFakeClient({
       documentId: 'doc123456',
       filename: 'gesundheit.md',
+      yjsUpdatedAt: '2026-09-21T12:00:00.000Z',
       view: 'map',
       chars: 36_257,
       map: {
@@ -124,6 +126,7 @@ describe('pageReadTool', () => {
     const { client } = createFakeClient({
       documentId: 'doc123456',
       filename: 'kreativ.md',
+      yjsUpdatedAt: '2026-09-21T12:00:00.000Z',
       view: 'content',
       chars: 45,
       map: null,
@@ -1113,5 +1116,28 @@ describe('pageDeleteTool', () => {
     expect(calls[0]).toMatchObject({ method: 'DELETE', path: '/api/documents/aaaaaaaa1111aaaa' });
     expect(result.text).toContain('2 Seite(n) endgültig gelöscht');
     expect(result.text).toContain('4 Verweis(e) sind jetzt unaufgelöst');
+  });
+});
+
+describe('pageReadTool and the page revision (issue #120)', () => {
+  it('ends the answer with the revision a write has to send back', async () => {
+    const { client } = createFakeClient({
+      documentId: 'doc123456',
+      yjsUpdatedAt: '2026-09-21T12:00:00.000Z',
+      filename: 'doc.md',
+      view: 'content',
+      chars: 12,
+      map: null,
+      markdown: 'Kurze Seite.',
+      path: [],
+      children: [],
+    });
+
+    const result = await pageReadTool.run(client, { documentId: 'doc123456' });
+
+    // The line reads as a revision and names the parameter, so the value
+    // cannot be confused with the `updatedAt` in the frontmatter above it.
+    expect(result.text).toContain('Revision dieser Seite: 2026-09-21T12:00:00.000Z');
+    expect(result.text).toContain('expectedYjsUpdatedAt');
   });
 });

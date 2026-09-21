@@ -29,11 +29,12 @@ import {
   PAGE_CONTENT_BUDGET_CHARS,
   PAGE_MAP_MAX_ENTRIES,
   renderDocumentMap,
+  revisionLine,
   truncateText,
 } from '../format.js';
 import { type AnyToolDefinition, defineTool } from '../tool.js';
 
-import { PAGE_EDIT_TOOLS } from './page-edits.js';
+import { PAGE_EDIT_TOOLS, WHERE_THE_REVISION_COMES_FROM } from './page-edits.js';
 import {
   pageActivityTool,
   pageArchiveTool,
@@ -209,7 +210,10 @@ export const pageReadTool: AnyToolDefinition = defineTool({
     'der Text der Quelle dort, was für einen Export gedacht ist, der diese Installation verlässt. ' +
     'Mit includeBlockIds: true steht hinter jedem Block seine Kennung als "^kennung". Das ist die ' +
     'Adresse für exo_page_block_update, exo_page_patch und exo_page_section_write, also für jede ' +
-    'Änderung, die nicht die ganze Seite neu schreiben soll.',
+    'Änderung, die nicht die ganze Seite neu schreiben soll. ' +
+    'Am Ende der Antwort steht die Revision der Seite. Genau dieser Wert gehört als ' +
+    'expectedYjsUpdatedAt in den nächsten Schreibaufruf; das updatedAt aus dem Frontmatter ist ' +
+    'ein anderer Zeitstempel und führt zu einem Konflikt.',
   inputSchema: z.object({
     documentId: idSchema,
     transclusions: transclusionExportModeSchema.optional(),
@@ -238,7 +242,7 @@ export const pageReadTool: AnyToolDefinition = defineTool({
           result.children.map((child) => `- ${formatDocumentSummary(child)}`).join('\n'),
     ].join('\n');
     return {
-      text: `${header}\n\n---\n\n${body}`,
+      text: `${header}\n\n---\n\n${body}\n\n${revisionLine(result.yjsUpdatedAt)}`,
       data: { ...result, fullLength: result.chars },
     };
   },
@@ -373,7 +377,8 @@ export const pageWriteTool: AnyToolDefinition = defineTool({
     'Der Seitentitel steht über der Seite und gehört nicht in den Text: keine erste ' +
     'Überschrift schreiben, die den Titel wiederholt. Eine solche Überschrift wird beim ' +
     'Schreiben entfernt. ' +
-    'Hat jemand die Seite gerade geöffnet, erscheint die Änderung dort sofort.',
+    'Hat jemand die Seite gerade geöffnet, erscheint die Änderung dort sofort. ' +
+    WHERE_THE_REVISION_COMES_FROM,
   inputSchema: pageWriteInputSchema,
   surfaces: ['mcp', 'ai'],
   mutating: true,
