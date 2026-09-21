@@ -33,6 +33,18 @@ async function openWorkspaceSettings(page: Page): Promise<void> {
   await expect(page.getByTestId('workspace-setting-group-ai')).toBeVisible({ timeout: 30_000 });
 }
 
+/**
+ * The e2e project is typed against Node alone, so a browser global is named
+ * explicitly, and only as much of it as the callback touches.
+ */
+interface BrowserEvent {
+  defaultPrevented: boolean;
+}
+interface BrowserWindow {
+  Event: new (type: string, init: { cancelable: boolean }) => BrowserEvent;
+  dispatchEvent: (event: BrowserEvent) => boolean;
+}
+
 /** The switch used throughout: one click is exactly one unsaved change. */
 function toolsSwitch(page: Page) {
   return page.getByTestId('setting-row-ai.toolsEnabled').getByRole('switch');
@@ -102,6 +114,30 @@ test.describe('Ungespeicherte Einstellungen', () => {
     await page.getByTestId('menu-open-features').click();
     await page.waitForURL(/\/hilfe/, { timeout: 30_000 });
     await expect(page.getByTestId('unsaved-changes-dialog')).toHaveCount(0);
+  });
+
+  /**
+   * Tab schließen und neu laden gehen nicht durch einen Klick auf einen Link,
+   * sondern durch `beforeunload`. Ein echter Abbruch lässt sich im Browser
+   * nicht auslesen, wohl aber, ob überhaupt jemand widerspricht: genau dann,
+   * wenn etwas zu verlieren ist, und sonst nie.
+   */
+  test('widerspricht dem Schließen nur, solange etwas offen ist', async ({ page }) => {
+    await openWorkspaceSettings(page);
+    const guarded = async (): Promise<boolean> =>
+      page.evaluate(() => {
+        const browser = globalThis as unknown as BrowserWindow;
+        const event = new browser.Event('beforeunload', { cancelable: true });
+        browser.dispatchEvent(event);
+        return event.defaultPrevented;
+      });
+
+    expect(await guarded()).toBe(false);
+    await toolsSwitch(page).click();
+    expect(await guarded()).toBe(true);
+    // Hin und zurück ist effektiv keine Änderung, also auch kein Widerspruch.
+    await toolsSwitch(page).click();
+    expect(await guarded()).toBe(false);
   });
 
   test('ist nach dem Speichern wieder sauber', async ({ page }) => {
