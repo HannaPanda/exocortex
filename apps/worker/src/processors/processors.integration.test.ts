@@ -31,10 +31,10 @@ import {
 import {
   applyModelRouteSnapshot,
   createPrismaClient,
-  Prisma,
   generateOrderKey,
   HybridSearchAdapter,
   PostgresSearchAdapter,
+  Prisma,
   type PrismaClient,
 } from '@exocortex/database';
 import {
