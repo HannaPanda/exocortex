@@ -652,7 +652,12 @@ export function SettingRow({ settingKey, value, onChange, models, error }: Setti
   }
 
   return (
-    <div className="grid gap-1.5 sm:grid-cols-[minmax(0,240px)_1fr] sm:items-start sm:gap-4">
+    <div
+      // The row rather than the control, because Base UI puts `id` on a
+      // switch's hidden input: the thing a person clicks has no id of its own.
+      data-testid={`setting-row-${settingKey}`}
+      className="grid gap-1.5 sm:grid-cols-[minmax(0,240px)_1fr] sm:items-start sm:gap-4"
+    >
       <Label htmlFor={id} className="pt-2">
         {copy.label}
       </Label>

@@ -35,7 +35,7 @@ async function openWorkspaceSettings(page: Page): Promise<void> {
 
 /** The switch used throughout: one click is exactly one unsaved change. */
 function toolsSwitch(page: Page) {
-  return page.locator('#setting-ai-toolsEnabled');
+  return page.getByTestId('setting-row-ai.toolsEnabled').getByRole('switch');
 }
 
 test.describe('Ungespeicherte Einstellungen', () => {
