@@ -20,6 +20,10 @@ import {
 
 import { SettingGroupNav } from '@/components/settings/setting-group-nav';
 import { groupOf, SettingRow } from '@/components/settings/setting-row';
+import {
+  UnsavedChangesNotice,
+  useUnsavedChangesGuard,
+} from '@/components/settings/unsaved-changes-guard';
 import { useAiModels } from '@/lib/api/ai-queries';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
@@ -40,6 +44,15 @@ const NO_INVALID_GROUPS: ReadonlySet<string> = new Set<string>();
  * differently". That is why every row says which of the two it is, and why a
  * row that says nothing is the normal case rather than an empty field.
  */
+/** The overridable settings whose draft value differs from the stored one. */
+function changedOverrides(
+  draft: Settings | null,
+  stored: WorkspaceSettingsResponse | undefined,
+): WorkspaceSettingKey[] {
+  if (draft === null || stored === undefined) return [];
+  return stored.editableKeys.filter((key) => draft[key] !== stored.settings[key]);
+}
+
 export function WorkspaceSettingsForm({
   workspaceId,
   canEdit,
@@ -63,6 +76,12 @@ export function WorkspaceSettingsForm({
   // than from an effect.
   if (draft === null && query.data !== undefined) setDraft(query.data.settings);
 
+  // Counted before the loading branch, because the guard is a hook and a hook
+  // cannot sit after a return. A queued reset counts as a change: it is an
+  // edit that has not been sent either.
+  const changedKeys = changedOverrides(draft, query.data);
+  const guardDialog = useUnsavedChangesGuard(changedKeys.length + reset.length);
+
   if (query.isPending || query.data === undefined || draft === null) {
     return <LoadingState label="Einstellungen werden geladen …" variant="skeleton" rows={4} />;
   }
@@ -72,7 +91,7 @@ export function WorkspaceSettingsForm({
   const overridden = new Set<string>(data.overriddenKeys);
   const editable = data.editableKeys;
 
-  const changed = editable.filter((key) => current[key] !== data.settings[key]);
+  const changed = changedKeys;
   const dirty = changed.length > 0 || reset.length > 0;
 
   const groups = new Map<string, WorkspaceSettingKey[]>();
@@ -207,19 +226,27 @@ export function WorkspaceSettingsForm({
       ) : null}
 
       {canEdit ? (
-        <div className="flex gap-2">
-          <Button onClick={handleSave} disabled={!dirty || update.isPending}>
-            Speichern
-          </Button>
-          <Button variant="outline" onClick={handleDiscard} disabled={!dirty || update.isPending}>
-            Verwerfen
-          </Button>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <div className="flex gap-2">
+            <Button onClick={handleSave} disabled={!dirty || update.isPending}>
+              Speichern
+            </Button>
+            <Button variant="outline" onClick={handleDiscard} disabled={!dirty || update.isPending}>
+              Verwerfen
+            </Button>
+          </div>
+          <UnsavedChangesNotice
+            changedCount={changed.length + reset.length}
+            testId="workspace-settings-dirty"
+          />
         </div>
       ) : (
         <p className="text-sm text-muted-foreground">
           Ändern dürfen das Besitzer und Administratoren dieses Arbeitsbereichs.
         </p>
       )}
+
+      {guardDialog}
     </div>
   );
 }

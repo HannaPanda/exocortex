@@ -29,6 +29,10 @@ import {
   SettingRow,
 } from '@/components/settings/setting-row';
 import {
+  UnsavedChangesNotice,
+  useUnsavedChangesGuard,
+} from '@/components/settings/unsaved-changes-guard';
+import {
   useAdminAiModels,
   useAdminSettings,
   useUpdateAdminSettings,
@@ -49,6 +53,12 @@ function refusalSummary(refusedCount: number, errorCode: string | undefined): st
     return 'Eine Einstellung liegt außerhalb ihres zulässigen Bereichs und wurde nicht gespeichert. Sie ist im Formular rot markiert.';
   }
   return `${refusedCount} Einstellungen liegen außerhalb ihres zulässigen Bereichs und wurden nicht gespeichert. Sie sind im Formular rot markiert.`;
+}
+
+/** The settings whose draft value differs from the one on the server. */
+function changedSettingKeys(draft: Settings | null, stored: Settings | undefined): SettingKey[] {
+  if (draft === null || stored === undefined) return [];
+  return SETTING_KEYS.filter((key) => draft[key] !== stored[key]);
 }
 
 export function SettingsForm() {
@@ -76,6 +86,12 @@ export function SettingsForm() {
     setDraft(settingsQuery.data.settings);
   }
 
+  // Which rows differ from what is stored. Read before the loading branch
+  // below, because the guard is a hook and a hook cannot sit after a return --
+  // and while the query is still open there is nothing to lose anyway.
+  const changedKeys = changedSettingKeys(draft, settingsQuery.data?.settings);
+  const guardDialog = useUnsavedChangesGuard(changedKeys.length);
+
   if (settingsQuery.isPending || settingsQuery.data === undefined || draft === null) {
     return <LoadingState label="Einstellungen werden geladen …" variant="skeleton" rows={6} />;
   }
@@ -91,7 +107,7 @@ export function SettingsForm() {
   // row. Named per setting, because "irgendeine Zeile ist kaputt" is what the
   // log already said.
   const ignoredKeys = settingsQuery.data.invalidKeys;
-  const dirty = SETTING_KEYS.some((key) => currentDraft[key] !== original[key]);
+  const dirty = changedKeys.length > 0;
 
   const groups = new Map<string, SettingKey[]>();
   for (const key of SETTING_KEYS) {
@@ -102,9 +118,7 @@ export function SettingsForm() {
 
   const groupNames = [...groups.keys()];
   const activeGroup = group !== null && groups.has(group) ? group : (groupNames[0] ?? '');
-  const pendingGroups = new Set(
-    SETTING_KEYS.filter((key) => currentDraft[key] !== original[key]).map(groupOf),
-  );
+  const pendingGroups = new Set(changedKeys.map(groupOf));
   const invalidGroups = new Set(
     SETTING_KEYS.filter((key) => fieldErrors[key] !== undefined).map(groupOf),
   );
@@ -264,18 +278,23 @@ export function SettingsForm() {
         </Alert>
       ) : null}
 
-      <div className="flex gap-2">
-        <Button onClick={handleSave} disabled={!dirty || updateSettings.isPending}>
-          Speichern
-        </Button>
-        <Button
-          variant="outline"
-          onClick={handleDiscard}
-          disabled={!dirty || updateSettings.isPending}
-        >
-          Verwerfen
-        </Button>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div className="flex gap-2">
+          <Button onClick={handleSave} disabled={!dirty || updateSettings.isPending}>
+            Speichern
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleDiscard}
+            disabled={!dirty || updateSettings.isPending}
+          >
+            Verwerfen
+          </Button>
+        </div>
+        <UnsavedChangesNotice changedCount={changedKeys.length} testId="settings-dirty" />
       </div>
+
+      {guardDialog}
     </div>
   );
 }
