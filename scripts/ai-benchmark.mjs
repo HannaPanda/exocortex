@@ -301,7 +301,15 @@ function printReport(results) {
 }
 
 function parseArgs(argv) {
-  const args = { plan: false, run: false, repeats: 3, out: null, report: null, only: null };
+  const args = {
+    plan: false,
+    run: false,
+    repeats: 3,
+    out: null,
+    report: null,
+    recheck: null,
+    only: null,
+  };
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--plan') args.plan = true;
     else if (argv[i] === '--run') args.run = true;
@@ -310,12 +318,39 @@ function parseArgs(argv) {
     else if (argv[i] === '--report') args.report = argv[++i];
     // One test only, for checking the harness itself without paying for six runs.
     else if (argv[i] === '--only') args.only = argv[++i];
+    // Evaluate the checkpoints again against the pages the runs left behind.
+    else if (argv[i] === '--recheck') args.recheck = argv[++i];
   }
   return args;
 }
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+
+  if (args.recheck !== null) {
+    // A checkpoint that turns out to be wrong must not cost eighteen runs: the
+    // pages are still there, so the evaluation is repeated against them rather
+    // than the measurement.
+    const prisma = createPrismaClient();
+    const stored = JSON.parse(readFileSync(args.recheck, 'utf8'));
+    const results = [];
+    for (const record of stored.results) {
+      const fixture = BENCHMARK_FIXTURES.find((entry) => entry.key === record.test);
+      results.push(
+        await evaluate(prisma, fixture, {
+          ...record,
+          fixtureMarkdown: fixture.markdown(record.model),
+        }),
+      );
+    }
+    await prisma.$disconnect();
+    if (args.out !== null) {
+      const cleaned = results.map(({ fixtureMarkdown: _unused, ...rest }) => rest);
+      writeFileSync(args.out, `${JSON.stringify({ ...stored, results: cleaned }, null, 2)}\n`);
+    }
+    printReport(results);
+    return;
+  }
 
   if (args.report !== null) {
     printReport(JSON.parse(readFileSync(args.report, 'utf8')).results);

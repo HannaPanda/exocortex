@@ -197,6 +197,23 @@ const T2_MARKDOWN =
   T2_SECTIONS.map(([topic, lead]) => `## ${topic}\n\n${t2Body(topic, lead)}`).join('\n\n') +
   '\n';
 
+/**
+ * A page as its content, not as its formatting.
+ *
+ * An export is not the string that was written: it carries frontmatter the
+ * writer never sent, and it re-wraps every paragraph, because Markdown is an
+ * interchange format derived from the canonical Yjs state (ADR-007). Comparing
+ * the two strings therefore reported every page as changed, including the six
+ * that nobody wrote to. What the checkpoint is about is whether the text
+ * changed, so that is what it compares.
+ */
+function contentOf(markdown) {
+  return markdown
+    .replace(/^---\n[\s\S]*?\n---\n/u, '')
+    .replace(/\s+/gu, ' ')
+    .trim();
+}
+
 function checkT2({ source, fixtureMarkdown, answer, toolResultChars }) {
   return [
     { id: 'betrag', passed: answer.includes('480') },
@@ -210,7 +227,10 @@ function checkT2({ source, fixtureMarkdown, answer, toolResultChars }) {
       passed: toolResultChars < source.markdown.length,
       note: `${toolResultChars} Zeichen Werkzeugantworten gegen ${source.markdown.length} Zeichen Seite`,
     },
-    { id: 'seite-unveraendert', passed: source.markdown.trim() === fixtureMarkdown.trim() },
+    {
+      id: 'seite-unveraendert',
+      passed: contentOf(source.markdown) === contentOf(fixtureMarkdown),
+    },
   ];
 }
 
