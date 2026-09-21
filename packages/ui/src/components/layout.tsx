@@ -27,7 +27,13 @@ export function AppHeader({ className, ...props }: React.ComponentPropsWithoutRe
       className={cn(
         // The chrome sits one surface step above the canvas: the darkest plane in
         // the app is the one you write on (docs/ui-system.md, surface ladder).
-        'flex h-[var(--header-height)] shrink-0 items-center gap-2 border-b border-border bg-surface px-3',
+        //
+        // A minimum height and a wrap rather than a fixed height: at 200 % text
+        // zoom every control in here doubles, and a bar that cannot grow pushes
+        // its right-hand end past the window instead -- which is WCAG 1.4.4,
+        // content lost to a resize nobody can scroll to. Nothing wraps at an
+        // ordinary text size, because everything in the bar can shrink first.
+        'flex min-h-[var(--header-height)] shrink-0 flex-wrap items-center gap-2 border-b border-border bg-surface px-3 py-1',
         className,
       )}
       {...props}
