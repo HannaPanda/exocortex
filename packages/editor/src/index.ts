@@ -13,6 +13,7 @@ export * from './database-embed';
 export * from './document-copy';
 export * from './document-diff';
 export * from './document-links';
+export * from './document-map';
 export * from './document-nodes';
 export * from './embed';
 export * from './entity-matching';
