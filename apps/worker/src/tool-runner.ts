@@ -32,8 +32,29 @@ const REISSUE_MARGIN_MS = 30_000;
  */
 const WEB_FETCH_TOOL = 'exo_web_fetch';
 
+/**
+ * The cut, and what it has to say about itself (issue #118).
+ *
+ * A bare `… (gekürzt)` is what produced the failure this envelope exists for.
+ * A model that is handed a prefix and no numbers cannot tell a page that ends
+ * there from a page that was cut, so it keeps asking: the run that named this
+ * issue spent twenty calls looking for a section that sat three thousand
+ * characters past the cut, and never learned there was a past the cut.
+ *
+ * So the note states how much was shown of how much, and that there is no
+ * continuation *here*: this cap is the last resort under every tool, and it
+ * has no cursor to offer. The tools that can be narrowed say so themselves,
+ * and the ones that read pages now answer with a map long before they reach
+ * this line.
+ */
 function truncate(text: string): string {
-  return text.length > MAX_RESULT_CHARS ? `${text.slice(0, MAX_RESULT_CHARS)}\n… (gekürzt)` : text;
+  if (text.length <= MAX_RESULT_CHARS) return text;
+  return (
+    `${text.slice(0, MAX_RESULT_CHARS)}\n\n` +
+    `… gekürzt: ${MAX_RESULT_CHARS} von ${text.length} Zeichen stehen hier, der Rest fehlt. ` +
+    'Es gibt dafür keine Fortsetzung: derselbe Aufruf liefert wieder denselben Anfang. ' +
+    'Frage enger an (einzelner Abschnitt, Filter, kleinere Grenze), statt es zu wiederholen.'
+  );
 }
 
 /**
