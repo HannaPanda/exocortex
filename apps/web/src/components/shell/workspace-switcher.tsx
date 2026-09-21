@@ -59,13 +59,18 @@ export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: st
               // is the only thing there that can be shortened and still be
               // understood (issue #100).
               //
-              // Below `sm` the ceiling is stated rather than left to whatever
-              // space happened to remain. The bar wraps now, and a flex line
-              // wraps on what an item asks for, before any of it is allowed to
-              // shrink: an unstated ceiling here put the right-hand group on a
-              // second row at 320 and 360 pixels, where everything used to fit
-              // on one. The whole name is in the menu either way.
-              className="min-w-0 max-w-24 shrink justify-between gap-1 sm:max-w-52"
+              // The ceiling is stated rather than left to whatever space
+              // happened to remain. The bar wraps now, and a flex line wraps on
+              // what an item asks for, before any of it is allowed to shrink:
+              // an unstated ceiling here put the right-hand group on a second,
+              // nearly empty row at 320 and 360 pixels, where everything used
+              // to fit on one.
+              //
+              // 380 rather than `sm`, because that is where the measurement
+              // turns: every phone from an iPhone 12 upwards keeps the whole
+              // name, and only the narrow ones below it trade it for one row.
+              // The full name is in the menu either way.
+              className="min-w-0 max-w-24 shrink justify-between gap-1 min-[380px]:max-w-52"
               data-testid="workspace-switcher"
             >
               <span className="truncate">{active?.name ?? 'Arbeitsbereich wählen'}</span>
