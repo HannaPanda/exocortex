@@ -489,7 +489,11 @@ function AiTranscriptArea({
       {error !== null ? (
         <p
           role="alert"
-          className="rounded-md border border-destructive-text/40 px-3 py-2 text-xs text-destructive-text"
+          // A run's own diagnosis is written in lines (issue #118): the limit
+          // that ran out, what the run did, what to change. Without this they
+          // run together into one paragraph and the advice is the hardest
+          // part to find.
+          className="whitespace-pre-line rounded-md border border-destructive-text/40 px-3 py-2 text-xs text-destructive-text"
         >
           {error}
         </p>

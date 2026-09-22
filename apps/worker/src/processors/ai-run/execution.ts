@@ -29,6 +29,7 @@ import { withSpan } from '@exocortex/logger';
 import { findTool } from '@exocortex/mcp-tools';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
+import { describeRunTimeout } from '../../run-timeout';
 import { describeToolLoop } from '../../tool-ledger';
 import { type ToolContext, type ToolRunner } from '../../tool-runner';
 
@@ -188,6 +189,14 @@ class RunExecution {
   private routing: AiRoutingRequirements | undefined;
   /** Whether an alias drift was already reported; once per run is enough. */
   private aliasDriftReported = false;
+  /**
+   * What the turn that is in flight has produced so far, for the timeout
+   * diagnosis. A turn that streamed nothing at all and a turn that stopped
+   * mid-sentence are two different failures, and only the first one is
+   * answered by turning the thinking level down.
+   */
+  private turnChars = 0;
+  private turnSawReasoning = false;
 
   constructor(input: RunExecutionInput) {
     this.input = input;
@@ -446,6 +455,8 @@ class RunExecution {
     // from a turn that was cut off at the output cap, and nothing else
     // until this turn produces its first delta.
     this.liveText = this.carriedText;
+    this.turnChars = 0;
+    this.turnSawReasoning = false;
 
     try {
       for await (const event of provider.stream({
@@ -464,6 +475,7 @@ class RunExecution {
           case 'delta': {
             text += event.text;
             this.liveText = this.carriedText + text;
+            this.turnChars = text.length;
             this.sequence += 1;
             await bus.publish({
               type: 'ai.run.progress',
@@ -482,6 +494,7 @@ class RunExecution {
           case 'reasoning':
             // The fragment itself never leaves the provider adapter; only
             // the fact that thinking is going on does.
+            this.turnSawReasoning = true;
             await this.publishPhase('reasoning');
             break;
           case 'tool_calls':
@@ -781,12 +794,14 @@ class RunExecution {
       return {
         code: 'ai_timeout',
         message: `A single model answer exceeded ${timeouts.turnTimeoutMs}ms`,
+        detail: this.describeTimeout('turn', timeouts.turnTimeoutMs),
       };
     }
     if (this.abortReason === 'run_budget') {
       return {
         code: 'ai_timeout',
         message: `The run exceeded its budget of ${timeouts.runBudgetMs}ms`,
+        detail: this.describeTimeout('run', timeouts.runBudgetMs),
       };
     }
     return {
@@ -799,7 +814,26 @@ class RunExecution {
     return {
       code: 'ai_timeout',
       message: `AI run exceeded its budget of ${this.input.timeouts.runBudgetMs}ms`,
+      detail: this.describeTimeout('run', this.input.timeouts.runBudgetMs),
     };
+  }
+
+  /**
+   * The same thing said to the person: which limit ran out, at which thinking
+   * level, and whether any of the answer had arrived by then. Stored on the
+   * run and shown in the panel instead of the canned sentence, the way
+   * `ai_tool_limit_exceeded` already reads out its tally (ADR-059).
+   */
+  private describeTimeout(limit: 'turn' | 'run', limitMs: number): string {
+    return describeRunTimeout({
+      limit,
+      limitMs,
+      model: this.input.run.model,
+      effort: REASONING_LEVEL_TO_LOWER[this.input.run.reasoningLevel],
+      turnChars: this.turnChars,
+      sawReasoning: this.turnSawReasoning,
+      toolIterations: this.toolIterations,
+    });
   }
 
   private budgetFailure(): RunFailure {

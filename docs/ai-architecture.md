@@ -963,7 +963,13 @@ Three independent mechanisms end a run that overruns its budget, so "stuck on
 1. **The worker's own two `AbortController`s.** A per-turn timer aborts a
    single slow answer; a per-run timer aborts the whole thing once
    `ai.maxRunMs` elapses. Either produces `TIMED_OUT` with `errorCode:
-'ai_timeout'`.
+'ai_timeout'`, and `describeRunTimeout` (`apps/worker/src/run-timeout.ts`)
+   writes the German diagnosis beside it: which of the two limits ran out, the
+   model and thinking level the turn was asked for, and whether any of the
+   answer had arrived before the time did. A turn that produced no character
+   at all spent its time thinking, and a lower thinking level is then the
+   answer rather than a higher limit — which the reader cannot know from the
+   code alone.
 2. **The heartbeat as the cancellation channel.** The run writes a
    `heartbeatAt` timestamp every few seconds through a status-filtered
    `updateMany` (`status: 'RUNNING'`); `count === 0` means the row left

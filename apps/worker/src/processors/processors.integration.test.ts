@@ -3415,6 +3415,10 @@ describe('ai runs', () => {
     const run = await prisma.aiRun.findUniqueOrThrow({ where: { id: runId } });
     expect(run.status).toBe('TIMED_OUT');
     expect(run.errorCode).toBe('ai_timeout');
+    // The diagnosis, not just the code: which limit ran out and what the run
+    // was doing is what decides whether a higher limit is even the answer.
+    expect(run.errorDetail).toContain('Grenze');
+    expect(run.errorDetail).toContain('Denkstufe');
     expect(
       published.some(
         (event) => event.type === 'ai.run.failed' && event.payload.status === 'timed_out',
