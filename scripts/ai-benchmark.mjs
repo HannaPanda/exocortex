@@ -49,6 +49,7 @@ const MODELS = [
   { key: 'Luna', slug: 'openai/gpt-5.6-luna-pro' },
   { key: 'GLM', slug: '~z-ai/glm-latest' },
   { key: 'DeepSeek', slug: 'deepseek/deepseek-v4.1-flash' },
+  { key: 'GLM-Flash', slug: 'z-ai/glm-5.3-flash' },
 ];
 
 /** Every model, explicitly. The first comparison differed here and nowhere else it meant to. */
