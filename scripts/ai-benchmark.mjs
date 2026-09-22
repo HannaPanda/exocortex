@@ -168,9 +168,10 @@ async function collectMetrics(prisma, record) {
     .flatMap((message) => message.toolCalls)
     .map((call) => call?.function?.name)
     .filter((name) => typeof name === 'string');
-  const toolResultChars = messages
+  const toolResults = messages
     .filter((message) => message.role === 'TOOL')
-    .reduce((total, message) => total + message.content.length, 0);
+    .map((message) => message.content.length);
+  const toolResultChars = toolResults.reduce((total, length) => total + length, 0);
   const answer =
     messages.filter((message) => message.role === 'ASSISTANT').at(-1)?.content ??
     row.resultText ??
@@ -185,6 +186,7 @@ async function collectMetrics(prisma, record) {
     toolDomains: row.toolDomains,
     toolSequence: toolNames,
     toolResultChars,
+    maxToolResultChars: Math.max(0, ...toolResults),
     inputTokens: row.inputTokens,
     cachedInputTokens: row.cachedInputTokens,
     outputTokens: row.outputTokens,
@@ -216,6 +218,7 @@ async function evaluate(prisma, fixture, metrics) {
     answer: metrics.answer,
     toolNames: metrics.toolSequence,
     toolResultChars: metrics.toolResultChars,
+    maxToolResultChars: metrics.maxToolResultChars,
   });
   return {
     ...metrics,
@@ -344,9 +347,10 @@ async function main() {
     const results = [];
     for (const record of stored.results) {
       const fixture = BENCHMARK_FIXTURES.find((entry) => entry.key === record.test);
+      const metrics = await collectMetrics(prisma, record);
       results.push(
         await evaluate(prisma, fixture, {
-          ...record,
+          ...metrics,
           fixtureMarkdown: fixture.markdown(record.model),
         }),
       );

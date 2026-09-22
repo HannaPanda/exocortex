@@ -214,18 +214,23 @@ function contentOf(markdown) {
     .trim();
 }
 
-function checkT2({ source, fixtureMarkdown, answer, toolResultChars }) {
+function checkT2({ source, fixtureMarkdown, answer, toolResultChars, maxToolResultChars }) {
   return [
     { id: 'betrag', passed: answer.includes('480') },
     { id: 'zustaendig', passed: /Bereichsleitung\s+Technik/u.test(answer) },
     { id: 'abschnitt-benannt', passed: answer.includes('Sofortbestellungen') },
     {
-      // The point of the map (ADR-056): the answer must not have cost the
-      // whole page. Measured rather than judged -- every tool result of the
-      // run together stays under what one full read would have carried.
+      /*
+       * The point of the map (ADR-056): no single answer carried the whole
+       * page. The *largest* result, not the sum of them: a run that reads two
+       * sections and a search hit legitimately adds up past the page's size
+       * without ever having been handed the page, and scoring the sum marked
+       * exactly those runs as failures. What the checkpoint is about is
+       * whether one read returned everything.
+       */
       id: 'nicht-volltext',
-      passed: toolResultChars < source.markdown.length,
-      note: `${toolResultChars} Zeichen Werkzeugantworten gegen ${source.markdown.length} Zeichen Seite`,
+      passed: maxToolResultChars < source.markdown.length,
+      note: `größte Werkzeugantwort ${maxToolResultChars} Zeichen gegen ${source.markdown.length} Zeichen Seite, ${toolResultChars} Zeichen zusammen`,
     },
     {
       id: 'seite-unveraendert',
@@ -274,6 +279,16 @@ ${t3Rows()
 /** The three rows the prompt names. Everything else has to stay `Stück`. */
 const T3_TO_CHANGE = [17, 34, 58];
 
+/**
+ * What counts as the corrected unit.
+ *
+ * The prompt says "das sind Kartons", and the column is singular throughout
+ * ("Stück"), so both spellings are the same answer. Demanding the plural
+ * failed five runs that had changed exactly the right three rows, which made
+ * the checkpoint a test of wording rather than of the edit.
+ */
+const T3_CORRECTED_UNIT = ['Karton', 'Kartons'];
+
 /** Parses the table back out of the page, so the checks are about data and not about text. */
 function parseT3(markdown) {
   return markdown
@@ -293,8 +308,10 @@ function checkT3({ source, toolNames }) {
   const rows = parseT3(source.markdown);
   const expected = t3Rows();
   const numbering = rows.map((cells) => Number(cells[0]));
-  const wrongUnit = rows.filter(
-    (cells) => cells[3] !== (T3_TO_CHANGE.includes(Number(cells[0])) ? 'Kartons' : 'Stück'),
+  const wrongUnit = rows.filter((cells) =>
+    T3_TO_CHANGE.includes(Number(cells[0]))
+      ? !T3_CORRECTED_UNIT.includes(cells[3])
+      : cells[3] !== 'Stück',
   );
   const changedArticles = rows.filter((cells, index) => {
     const row = expected[index];
