@@ -132,11 +132,7 @@ export function useUnsavedChangesGuard(changedCount: number): React.ReactNode {
           <DialogTitle>Ungespeicherte Änderungen verwerfen?</DialogTitle>
           <DialogDescription>{describe(changedCount)}</DialogDescription>
         </DialogHeader>
-        {/* `flex-col` against the footer's own `flex-col-reverse`: that default
-            exists to put the action people came for under the thumb, and here
-            that action is staying. Reversed, the phone showed "Verwerfen und
-            wechseln" directly under the sentence warning about it. */}
-        <DialogFooter className="flex-col sm:flex-row">
+        <DialogFooter>
           <Button
             variant="outline"
             data-testid="unsaved-changes-stay"

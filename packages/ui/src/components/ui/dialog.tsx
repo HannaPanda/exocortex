@@ -101,11 +101,29 @@ function DialogBody({ className, ...props }: React.ComponentPropsWithoutRef<'div
   );
 }
 
+/**
+ * The row of answers, stacked on a phone and in a row from `sm` up.
+ *
+ * `flex-col`, not the registry's `flex-col-reverse`. Reversed, a stacked footer
+ * reads bottom-up: measured at 390 px, "Unwiderruflich löschen" sat at y 441
+ * and the "Abbrechen" it comes after in the DOM at y 485. So the button the
+ * warning sentence warns about was the one directly under it, and Tab moved
+ * focus from the lower control to the upper one -- a visual order that
+ * contradicts the focus order (WCAG 2.4.3).
+ *
+ * The reversal is there to put the primary answer nearest the thumb, and that
+ * argument does not apply to this dialog: it is centred rather than anchored to
+ * the bottom edge, so both buttons land mid-screen either way.
+ *
+ * Every footer in this application therefore lists the safe answer first and
+ * the one it is asking about last, which is the same order on both axes: top to
+ * bottom on a phone, left to right on a desktop.
+ */
 function DialogFooter({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <div
       data-slot="dialog-footer"
-      className={cn('flex shrink-0 flex-col-reverse gap-2 sm:flex-row sm:justify-end', className)}
+      className={cn('flex shrink-0 flex-col gap-2 sm:flex-row sm:justify-end', className)}
       {...props}
     />
   );
