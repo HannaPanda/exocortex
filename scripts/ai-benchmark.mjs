@@ -48,9 +48,10 @@ const TEST_BED = 'r7ffd00lcms1383j5sx26sf8';
 const MODELS = [
   { key: 'Luna', slug: 'openai/gpt-5.6-luna-pro' },
   { key: 'GLM', slug: '~z-ai/glm-latest' },
+  { key: 'DeepSeek', slug: 'deepseek/deepseek-v4.1-flash' },
 ];
 
-/** Both sides, explicitly. The first comparison differed here and nowhere else it meant to. */
+/** Every model, explicitly. The first comparison differed here and nowhere else it meant to. */
 const REASONING_LEVEL = 'high';
 
 const POLL_INTERVAL_MS = 2_000;
@@ -223,9 +224,16 @@ async function evaluate(prisma, fixture, metrics) {
   };
 }
 
-/** The order the two models run in, swapped every repetition. */
+/**
+ * The order the models run in, rotated by one every repetition.
+ *
+ * A swap only balances two. With three, rotating means each model leads once
+ * over three repetitions, so none is systematically the one that warms the
+ * cache or the one that runs into a busy minute.
+ */
 function modelOrder(repetition) {
-  return repetition % 2 === 1 ? MODELS : [...MODELS].reverse();
+  const offset = (repetition - 1) % MODELS.length;
+  return [...MODELS.slice(offset), ...MODELS.slice(0, offset)];
 }
 
 function median(values) {
@@ -360,7 +368,7 @@ async function main() {
   if (!args.run) {
     step('Was gemessen würde');
     info(`${BENCHMARK_FIXTURES.length} Tests × ${MODELS.length} Modelle × ${args.repeats} Läufe`);
-    info(`Denkstufe für beide: ${REASONING_LEVEL}`);
+    info(`Denkstufe für alle: ${REASONING_LEVEL}`);
     for (const fixture of BENCHMARK_FIXTURES) {
       info(
         `${fixture.key}: „${fixture.prompt}" (${fixture.markdown('Luna').length} Zeichen Fixture)`,
