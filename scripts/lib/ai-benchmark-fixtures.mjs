@@ -1,6 +1,6 @@
 /**
- * The three fixtures the built-in AI is measured against, and what counts as
- * having solved them (issue #122).
+ * The fixtures the built-in AI is measured against, and what counts as having
+ * solved them (issue #122).
  *
  * Every word here is invented. No production page and no memory note is ever a
  * fixture: a test that fails against real content costs real content, and this
@@ -345,6 +345,150 @@ function checkT3({ source, toolNames }) {
 }
 
 // ---------------------------------------------------------------------------
+// T4: two sections that read almost the same, and only one is meant
+// ---------------------------------------------------------------------------
+
+/**
+ * The sentence that stands in three sections at once.
+ *
+ * T1 to T3 are about reading a page, budgeting it and writing narrowly. None of
+ * them separated the four models any more: all thirty-six runs passed. What
+ * they never asked is whether a run writes into the *right* place when more
+ * than one place matches the words of the task, which is the failure a person
+ * notices last, because the page still looks edited.
+ */
+const T4_DUTY = 'Zuständig für die Ausgabe ist die Pforte.';
+
+const T4_HEADINGS = [
+  'Zweck',
+  'Schlüsselausgabe Verwaltung',
+  'Schlüsselausgabe Werkstatt',
+  'Schlüsselausgabe Fremdfirmen',
+  'Verlust eines Schlüssels',
+];
+
+/*
+ * The trap is deliberate and it is in the neighbours, not in the target: the
+ * word „Werkstatt" stands twice outside the section that is meant (once in
+ * „Zweck", once as an explicit exclusion in „Verwaltung"), and the sentence the
+ * task replaces stands three times verbatim. A run that searches for the words
+ * of the prompt and writes at the first hit lands in „Verwaltung"; a run that
+ * replaces the sentence everywhere it occurs changes three sections. Both are
+ * visible in the checkpoints, and both leave a page that reads as if it worked.
+ */
+const T4_MARKDOWN = `Synthetisches Testdokument. Alle Namen und Regeln darin sind erfunden.
+
+## Zweck
+
+Diese Ordnung regelt, wer im Werk Nord welchen Schlüssel bekommt und wo er
+ausgegeben wird. Sie gilt für alle Gebäude auf dem Gelände, auch für die
+Werkstatt, für die weiter unten eine eigene Ausgabe geregelt ist.
+
+## Schlüsselausgabe Verwaltung
+
+Die Verwaltung hat einen Generalschlüssel je Etage und drei Einzelschlüssel für
+die Archivräume. ${T4_DUTY} Die Ausgabe ist von Montag bis Donnerstag zwischen
+7 und 15 Uhr möglich, freitags bis 12 Uhr.
+
+Ein Schlüssel wird nur gegen Unterschrift ausgegeben. Wer ihn länger als eine
+Woche braucht, trägt sich in die Dauerliste ein. Für die Werkstatt gilt dieser
+Abschnitt ausdrücklich nicht.
+
+## Schlüsselausgabe Werkstatt
+
+Die Werkstatt hat vier Schlüssel für die Hallentore und zwei für den Raum der
+Werkzeugausgabe. ${T4_DUTY} Die Ausgabe ist an allen Werktagen zwischen 6 und
+14 Uhr möglich.
+
+Ein Schlüssel wird nur gegen Unterschrift ausgegeben. Wer ihn länger als eine
+Woche braucht, trägt sich in die Dauerliste ein.
+
+## Schlüsselausgabe Fremdfirmen
+
+Fremdfirmen bekommen einen Schlüssel nur für die Dauer ihres Auftrags und nie
+für die Hallentore. ${T4_DUTY} Die Ausgabe setzt eine gültige Auftragsnummer
+voraus.
+
+Ein Schlüssel wird nur gegen Unterschrift ausgegeben. Eine Dauerliste gibt es
+für Fremdfirmen nicht.
+
+## Verlust eines Schlüssels
+
+Ein verlorener Schlüssel wird sofort gemeldet, auch wenn er wahrscheinlich
+wieder auftaucht. Bis zur Klärung wird der betroffene Zylinder getauscht; die
+Kosten trägt der Bereich und nicht die Person.
+`;
+
+/**
+ * The page cut into its sections, each one as content rather than as text.
+ *
+ * Same reason as `contentOf`: an export re-wraps every paragraph, so a check
+ * that compares line by line reports a page nobody wrote to as changed.
+ */
+function sectionsOf(markdown) {
+  const sections = new Map();
+  let heading = null;
+  let body = [];
+  const store = () => {
+    if (heading !== null) sections.set(heading, body.join(' ').replace(/\s+/gu, ' ').trim());
+  };
+  for (const line of markdown.split('\n')) {
+    const match = /^##\s+(?<title>.+)$/u.exec(line);
+    if (match === null) {
+      if (heading !== null) body.push(line);
+      continue;
+    }
+    store();
+    heading = match.groups.title.trim();
+    body = [];
+  }
+  store();
+  return sections;
+}
+
+function checkT4({ source, toolNames }) {
+  const sections = sectionsOf(source.markdown);
+  const workshop = sections.get('Schlüsselausgabe Werkstatt') ?? '';
+  const neighbours = ['Schlüsselausgabe Verwaltung', 'Schlüsselausgabe Fremdfirmen'];
+  const lostTheSentence = neighbours.filter(
+    (title) => !(sections.get(title) ?? '').includes(T4_DUTY),
+  );
+  const gotTheForeman = neighbours.filter((title) =>
+    (sections.get(title) ?? '').includes('Schichtmeister'),
+  );
+  const narrow = ['exo_page_block_update', 'exo_page_patch', 'exo_page_section_write'];
+  return [
+    {
+      id: 'werkstatt-geaendert',
+      passed: workshop.includes('Schichtmeister'),
+      note: workshop === '' ? 'Abschnitt „Schlüsselausgabe Werkstatt" fehlt' : '',
+    },
+    {
+      id: 'pforte-ersetzt',
+      passed: workshop !== '' && !workshop.includes(T4_DUTY),
+    },
+    {
+      id: 'nachbarn-unberuehrt',
+      passed: lostTheSentence.length === 0 && gotTheForeman.length === 0,
+      note: [...new Set([...lostTheSentence, ...gotTheForeman])].join(', '),
+    },
+    {
+      id: 'seite-vollstaendig',
+      passed:
+        [...sections.keys()].join(' | ') === T4_HEADINGS.join(' | ') &&
+        (sections.get('Verlust eines Schlüssels') ?? '').includes('Zylinder getauscht'),
+      note: [...sections.keys()].join(' | '),
+    },
+    {
+      id: 'gezielt-geschrieben',
+      passed:
+        toolNames.some((name) => narrow.includes(name)) && !toolNames.includes('exo_page_write'),
+      note: toolNames.filter((name) => name.startsWith('exo_page_')).join(' → '),
+    },
+  ];
+}
+
+// ---------------------------------------------------------------------------
 
 /**
  * The header each fixture page carries above its content.
@@ -384,6 +528,19 @@ Prüfpunkte: genau drei Zeilen geändert; die Tabelle hat danach immer noch 60
 Zeilen; keine Zeile doppelt; die Seite ist nicht neu geschrieben worden,
 sondern gezielt geändert.`;
 
+/**
+ * T4 names neither its prompt nor its checkpoints, and that is not an
+ * inconsistency.
+ *
+ * The leak in T1 to T3 is kept because removing it would break the comparison
+ * with the baseline those three exist for. T4 has no baseline, so it starts
+ * without one: repeating the prompt on the page would hand a keyword search the
+ * exact words of the task, and the words of the task are what this test is
+ * about.
+ */
+const T4_HEADER = (model) =>
+  `> **Test T4 (${model}).** Synthetische Seite, gemessen wird gegen die Abschnitte dieser Seite.`;
+
 export const BENCHMARK_FIXTURES = [
   {
     key: 'T1',
@@ -406,5 +563,13 @@ export const BENCHMARK_FIXTURES = [
     prompt:
       'Bei den Artikeln 17, 34 und 58 ist die Einheit falsch, das sind Kartons und keine Stück. Korrigier das, sonst nichts.',
     check: checkT3,
+  },
+  {
+    key: 'T4',
+    title: 'T4 Ähnliche Abschnitte',
+    markdown: fixturePage(T4_HEADER, T4_MARKDOWN),
+    prompt:
+      'In der Werkstatt gibt nicht mehr die Pforte die Schlüssel aus, sondern der Schichtmeister. Trag das ein, sonst nichts.',
+    check: checkT4,
   },
 ];

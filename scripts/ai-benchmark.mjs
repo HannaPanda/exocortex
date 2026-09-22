@@ -1,6 +1,6 @@
 /**
- * Measures the built-in AI against the same three tasks twice over
- * (issue #122).
+ * Measures the built-in AI against the same handful of tasks, model against
+ * model (issue #122).
  *
  *   node scripts/ai-benchmark.mjs --plan
  *   node scripts/ai-benchmark.mjs --run --repeats 3 --out /tmp/bench.json
