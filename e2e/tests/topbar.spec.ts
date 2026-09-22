@@ -37,6 +37,47 @@ interface BrowserDocument {
   document: { documentElement: { scrollWidth: number; clientWidth: number } };
 }
 
+/** So viel Browser, wie `countHeaderRows` anfasst, und keinen Halm mehr. */
+interface BrowserHeader {
+  document: {
+    documentElement: { style: { fontSize: string } };
+    querySelector: (selector: string) => {
+      children: ArrayLike<{ getBoundingClientRect: () => { y: number; height: number } }>;
+    } | null;
+  };
+}
+
+/**
+ * Wie viele Zeilen die Kopfzeile gerade belegt.
+ *
+ * Gezählt werden die Mitten der Bedienelemente, nicht ihre Oberkanten: in einer
+ * Zeile stehen unterschiedlich hohe Dinge nebeneinander (ein 28 px hoher Knopf
+ * neben einem 32 px hohen Feld), ihre Oberkanten liegen also zwei Pixel
+ * auseinander, während ihre Mitten auf derselben Linie sitzen.
+ *
+ * Optional mit einer gesetzten Wurzel-Schriftgröße: das ist der härtere der
+ * beiden Textzoom-Wege. Stellt jemand die Schriftgröße im Browser um, wandern
+ * die Breakpoints in `rem` mit und die Leiste nimmt von selbst ihre schmale
+ * Form an; wird nur die Wurzelgröße der Seite verdoppelt, verdoppelt sich alles
+ * darin, während die Breakpoints stehen bleiben.
+ */
+async function countHeaderRows(page: Page, rootFontSize?: string): Promise<number> {
+  return page.evaluate((fontSize) => {
+    const doc = (globalThis as unknown as BrowserHeader).document;
+    if (fontSize !== undefined) doc.documentElement.style.fontSize = fontSize;
+    const header = doc.querySelector('[data-testid="topbar"]');
+    if (header === null) throw new Error('Die Kopfzeile ist nicht gelayoutet');
+    const centres: number[] = [];
+    for (const child of Array.from(header.children)) {
+      const box = child.getBoundingClientRect();
+      if (box.height === 0) continue;
+      const centre = box.y + box.height / 2;
+      if (!centres.some((other) => Math.abs(other - centre) < 6)) centres.push(centre);
+    }
+    return centres.length;
+  }, rootFontSize);
+}
+
 /** Jede Fläche hinter dem Kontomenü, mit ihrer Adresse. */
 const AREAS = [
   { testId: 'open-features', label: 'Hilfe und Funktionen', href: '/hilfe' },
@@ -178,6 +219,30 @@ for (const [name, viewport] of [
     });
   });
 }
+
+/**
+ * Die Breite, an der die Leiste am meisten auf einmal einblendet: `sm` liegt
+ * genau hier, und damit kamen Wortmarke und benanntes Suchfeld im selben Atemzug
+ * dazu. Gemessen waren das 736 Pixel Inhalt in einem 640 Pixel breiten Fenster,
+ * also zwei Zeilen, und zwar bis 756 px hinauf. Die Wortmarke wartet seither auf
+ * `lg`: sie ist mit 234 px das Breiteste in der Leiste und sagt als Einzige
+ * nichts, was man hier tun kann.
+ */
+test.describe('Kopfzeile an der Schwelle', () => {
+  test.use({ viewport: { width: 640, height: 900 } });
+
+  test('bleibt einzeilig, und bei 200 % Textzoom bei höchstens zwei Zeilen', async ({ page }) => {
+    await openWorkspace(page);
+    expect(await countHeaderRows(page), 'Die Kopfzeile bricht bei 640 px um').toBe(1);
+
+    // Bei doppelter Schrift darf sie umbrechen, dafür trägt sie `flex-wrap`.
+    // Drei Zeilen waren es vorher, 233 der 900 Pixel Fensterhöhe.
+    expect(
+      await countHeaderRows(page, '32px'),
+      'Die Kopfzeile nimmt bei 200 % wieder drei Zeilen',
+    ).toBeLessThanOrEqual(2);
+  });
+});
 
 test.describe('Topbar auf breitem Schirm', () => {
   test.use({ viewport: DESKTOP });

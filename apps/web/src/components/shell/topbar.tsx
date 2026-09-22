@@ -39,7 +39,7 @@ import { WorkspaceSwitcher } from './workspace-switcher';
  *   button behind which every deployment-wide place stands with its name on it.
  *
  * The same hierarchy at every width. Only two things change shape: the wordmark
- * steps out below `sm`, and search trades its field for its glyph.
+ * waits for `lg`, and search trades its field for its glyph below `sm`.
  */
 export function Topbar({
   workspaceId,
@@ -76,7 +76,14 @@ export function Topbar({
           its own. WCAG 1.4.4 is about text being resizable; which application
           you are in is the least urgent thing on this bar to read twice as
           large. */}
-      <ExocortexWordmark className="mr-1 hidden h-7 max-h-[28px] shrink-0 sm:block" />
+      {/* From `lg`, not `sm`. The lockup is 234 pixels wide, and at `sm` it
+          arrived in the same breath as the named search field: measured at
+          640 px, the bar came to 736 pixels of content in a 640-pixel window
+          and wrapped into two rows, and it stayed two rows up to 756. Every
+          other item here is either the way into something or a piece of
+          state; this one says which application you are in, which the tab
+          title already says. So it is the one that waits for room. */}
+      <ExocortexWordmark className="mr-1 hidden h-7 max-h-[28px] shrink-0 lg:block" />
 
       {/* Only where there is a navigation to show. Outside a workspace the
           sidebar is not rendered at all, so the toggle stood there offering
