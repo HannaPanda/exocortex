@@ -489,6 +489,153 @@ function checkT4({ source, toolNames }) {
 }
 
 // ---------------------------------------------------------------------------
+// T5: the same ambiguity, on a page nobody is handed whole
+// ---------------------------------------------------------------------------
+
+/**
+ * What T4 could not ask.
+ *
+ * T4's page is 1,770 characters, so a run that simply reads it has the whole
+ * text in front of it and the ambiguity dissolves on its own: eleven of twelve
+ * runs extended `oldText` by the neighbouring sentence and were done. The trap
+ * only ever caught the run that went through the search instead.
+ *
+ * T5 takes that decision away. The page is over the read budget (ADR-056), so
+ * a read answers with the map and the run has to choose a section before it
+ * sees a single sentence of one. The sentence it has to change stands verbatim
+ * in three sections whose headings differ by one word, the word the prompt
+ * names stands three more times outside them, and the number stands a fourth
+ * time in a section that has nothing to do with the task.
+ */
+const T5_CALLBACK = 'Die Rückrufzeit beträgt 30 Minuten.';
+
+/** The escalation sentence, which shares the number and nothing else. */
+const T5_ESCALATION =
+  'Meldet sich die gerufene Person nicht innerhalb von 30 Minuten, greift Stufe 2 und die Leitstelle ruft die Teamleitung.';
+
+const T5_SECTIONS = [
+  [
+    'Zweck und Geltungsbereich',
+    'Diese Ordnung regelt die Rufbereitschaft im Rechenzentrum Ost und gilt für alle Teams mit Betriebsverantwortung.',
+  ],
+  [
+    'Begriffe',
+    'Rufbereitschaft ist die Pflicht, erreichbar zu sein; Bereitschaftsdienst wäre Anwesenheit und kommt hier nicht vor.',
+  ],
+  [
+    'Rufbereitschaft Werktag',
+    `Von Montag bis Freitag ist eine Person je Team eingeteilt. ${T5_CALLBACK} Für das Wochenende gilt dieser Abschnitt ausdrücklich nicht.`,
+  ],
+  [
+    'Rufbereitschaft Wochenende',
+    `Samstags und sonntags sind zwei Personen eingeteilt, eine je Halle. ${T5_CALLBACK} Die Einteilung steht spätestens am Mittwoch davor fest.`,
+  ],
+  [
+    'Rufbereitschaft Feiertage',
+    `An gesetzlichen Feiertagen gilt die Einteilung des Wochenendes und zusätzlich eine Person in der Leitstelle. ${T5_CALLBACK} Die Zulage ist eine andere.`,
+  ],
+  [
+    'Eskalation Stufe 1',
+    'Stufe 1 ist die gerufene Person selbst; sie entscheidet, ob sie den Fall allein bearbeitet oder weitergibt.',
+  ],
+  ['Eskalation Stufe 2', T5_ESCALATION],
+  [
+    'Eskalation Stufe 3',
+    'Stufe 3 ist die Bereichsleitung und wird nur beim Ausfall eines ganzen Brandabschnitts gerufen.',
+  ],
+  [
+    'Erreichbarkeit',
+    'Erreichbar heißt über das Diensttelefon, nicht über eine private Nummer und nicht über eine Mail; am Wochenende gilt dieselbe Nummer.',
+  ],
+  [
+    'Übergabe',
+    'Die Übergabe läuft über das Bereitschaftsbuch und dauert höchstens zehn Minuten, weil sie sonst zur Besprechung wird.',
+  ],
+  [
+    'Dokumentation',
+    'Jeder Ruf wird festgehalten, auch der, bei dem sich der Fehler bis zum Rückruf von selbst erledigt hat.',
+  ],
+  [
+    'Werkzeuge',
+    'Der Zugang zum Sprungrechner gehört zur Rufbereitschaft und wird vor dem ersten Dienst geprüft, nicht während des ersten Rufs.',
+  ],
+  [
+    'Schulung',
+    'Vor dem ersten eigenen Dienst läuft eine begleitete Schicht mit; wann jemand so weit ist, entscheidet die Teamleitung.',
+  ],
+  [
+    'Ausnahmen',
+    'Eine Ausnahme von dieser Ordnung, auch am Wochenende, genehmigt ausschließlich die Bereichsleitung und immer mit Enddatum.',
+  ],
+];
+
+/** Filler that names its own section, so no two sections are interchangeable. */
+function t5Body(topic, lead) {
+  return [
+    `${lead} Die Regelung steht so im Betriebshandbuch und ist mit dem Betriebsrat abgestimmt.`,
+    '',
+    `Für ${topic} gilt außerdem: Wer davon abweicht, hält die Abweichung im Bereitschaftsbuch fest, mit Grund und mit Dauer. Eine Abweichung ohne Enddatum gibt es nicht, weil sie sonst zur stillen Regel wird und beim nächsten Streitfall niemand mehr sagen kann, was eigentlich gilt.`,
+    '',
+    `Kommt es bei ${topic} wiederholt zu Rückfragen, wird die Regelung überarbeitet und nicht die Rückfrage einzeln beantwortet. Die Überarbeitung läuft über die Runde im Quartal; wer eine Änderung will, bringt sie dort ein und nicht in der Schicht.`,
+    '',
+    `Fragen zu ${topic} beantwortet die Leitstelle. Eine Antwort, die für mehr als einen Fall gilt, gehört in dieses Handbuch und nicht in eine Mail an die fragende Person.`,
+  ].join('\n');
+}
+
+const T5_MARKDOWN =
+  'Synthetisches Testdokument. Jede Zeit und jede Zuständigkeit darin ist erfunden.\n\n' +
+  T5_SECTIONS.map(([topic, lead]) => `## ${topic}\n\n${t5Body(topic, lead)}`).join('\n\n') +
+  '\n';
+
+function checkT5({ source, toolNames, maxToolResultChars }) {
+  const sections = sectionsOf(source.markdown);
+  const target = sections.get('Rufbereitschaft Wochenende') ?? '';
+  const neighbours = ['Rufbereitschaft Werktag', 'Rufbereitschaft Feiertage'];
+  const changedNeighbours = neighbours.filter(
+    (title) =>
+      !(sections.get(title) ?? '').includes(T5_CALLBACK) ||
+      (sections.get(title) ?? '').includes('20 Minuten'),
+  );
+  const narrow = ['exo_page_block_update', 'exo_page_patch', 'exo_page_section_write'];
+  return [
+    {
+      id: 'wochenende-geaendert',
+      passed: target.includes('20 Minuten') && !target.includes(T5_CALLBACK),
+      note: target === '' ? 'Abschnitt „Rufbereitschaft Wochenende" fehlt' : '',
+    },
+    {
+      id: 'nachbarn-unberuehrt',
+      passed: changedNeighbours.length === 0,
+      note: changedNeighbours.join(', '),
+    },
+    {
+      // The number stands a fourth time, in a section the task never mentions.
+      // A `replaceAll` on „30 Minuten" changes the escalation ladder too.
+      id: 'eskalation-unberuehrt',
+      passed: (sections.get('Eskalation Stufe 2') ?? '').includes(T5_ESCALATION),
+    },
+    {
+      id: 'seite-vollstaendig',
+      passed:
+        [...sections.keys()].join(' | ') === T5_SECTIONS.map(([topic]) => topic).join(' | ') &&
+        (sections.get('Ausnahmen') ?? '').includes('immer mit Enddatum'),
+      note: [...sections.keys()].join(' | '),
+    },
+    {
+      id: 'nicht-volltext',
+      passed: maxToolResultChars < source.markdown.length,
+      note: `größte Werkzeugantwort ${maxToolResultChars} Zeichen gegen ${source.markdown.length} Zeichen Seite`,
+    },
+    {
+      id: 'gezielt-geschrieben',
+      passed:
+        toolNames.some((name) => narrow.includes(name)) && !toolNames.includes('exo_page_write'),
+      note: toolNames.filter((name) => name.startsWith('exo_page_')).join(' → '),
+    },
+  ];
+}
+
+// ---------------------------------------------------------------------------
 
 /**
  * The header each fixture page carries above its content.
@@ -541,6 +688,10 @@ sondern gezielt geändert.`;
 const T4_HEADER = (model) =>
   `> **Test T4 (${model}).** Synthetische Seite, gemessen wird gegen die Abschnitte dieser Seite.`;
 
+/** Same reasoning as T4, and here it matters more: the run only sees the map. */
+const T5_HEADER = (model) =>
+  `> **Test T5 (${model}).** Synthetische Seite, gemessen wird gegen die Abschnitte dieser Seite.`;
+
 export const BENCHMARK_FIXTURES = [
   {
     key: 'T1',
@@ -571,5 +722,13 @@ export const BENCHMARK_FIXTURES = [
     prompt:
       'In der Werkstatt gibt nicht mehr die Pforte die Schlüssel aus, sondern der Schichtmeister. Trag das ein, sonst nichts.',
     check: checkT4,
+  },
+  {
+    key: 'T5',
+    title: 'T5 Ähnliche Abschnitte, große Seite',
+    markdown: fixturePage(T5_HEADER, T5_MARKDOWN),
+    prompt:
+      'Am Wochenende ist die Rückrufzeit jetzt 20 Minuten statt 30. Trag das ein, sonst nichts.',
+    check: checkT5,
   },
 ];
