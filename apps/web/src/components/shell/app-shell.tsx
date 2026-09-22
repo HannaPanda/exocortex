@@ -244,9 +244,13 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
       // replace it, so the page ended up bold *and* the navigation collapsed
       // (issue #81). Formatting wins where text is being written; everywhere
       // else the key is free.
+      // And only where there is a navigation: outside a workspace none is
+      // rendered, so the key would swallow the browser's own Strg+B for a
+      // panel that cannot appear.
       if (
         (event.metaKey || event.ctrlKey) &&
         event.key.toLowerCase() === 'b' &&
+        workspaceId !== null &&
         !isTypingTarget(event.target)
       ) {
         event.preventDefault();

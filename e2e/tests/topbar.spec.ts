@@ -183,6 +183,28 @@ test.describe('Topbar auf breitem Schirm', () => {
   test.use({ viewport: DESKTOP });
 
   /**
+   * Außerhalb eines Arbeitsbereichs wird gar keine Navigation gerendert. Der
+   * Schalter dafür stand trotzdem in der Kopfzeile und tat auf Klick und auf
+   * Strg + B nichts. Ein Bedienelement ohne Wirkung bringt Leuten bei, den
+   * anderen daneben auch nicht zu trauen.
+   */
+  test('bietet den Navigationsschalter nur an, wo es eine Navigation gibt', async ({ page }) => {
+    await openWorkspace(page);
+    await expect(page.getByTestId('toggle-sidebar')).toBeVisible();
+
+    await page.getByTestId('open-global-menu').click();
+    await page.getByTestId('menu-open-features').click();
+    await page.waitForURL(/\/hilfe$/);
+
+    await expect(page.getByTestId('topbar')).toBeVisible();
+    await expect(page.getByTestId('toggle-sidebar')).toHaveCount(0);
+    // Und die Taste gehört hier wieder dem Browser, statt für eine Fläche
+    // eingezogen zu werden, die nicht erscheinen kann.
+    await page.keyboard.press('Control+b');
+    await expect(page.getByTestId('sidebar')).toHaveCount(0);
+  });
+
+  /**
    * Die Kopfzeile kostet auf dem Weg in den Text nur noch eine Handvoll
    * Tabstopps. Vorher waren es sechzehn, und jeder davon stand zwischen dem
    * Sprungziel und der Seite.

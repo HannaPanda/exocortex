@@ -78,23 +78,30 @@ export function Topbar({
           large. */}
       <ExocortexWordmark className="mr-1 hidden h-7 max-h-[28px] shrink-0 sm:block" />
 
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label="Navigation ein-/ausblenden"
-              aria-pressed={sidebarOpen}
-              data-testid="toggle-sidebar"
-              onClick={() => onSidebarOpenChange(!sidebarOpen)}
-            >
-              <PanelLeftIcon />
-            </Button>
-          }
-        />
-        <TooltipContent>Navigation (Strg + B)</TooltipContent>
-      </Tooltip>
+      {/* Only where there is a navigation to show. Outside a workspace the
+          sidebar is not rendered at all, so the toggle stood there offering
+          something that could not happen -- pressed, released, nothing. A
+          control that does nothing teaches people not to trust the ones beside
+          it. The palette's command already refuses for the same reason. */}
+      {workspaceId === null ? null : (
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Navigation ein-/ausblenden"
+                aria-pressed={sidebarOpen}
+                data-testid="toggle-sidebar"
+                onClick={() => onSidebarOpenChange(!sidebarOpen)}
+              >
+                <PanelLeftIcon />
+              </Button>
+            }
+          />
+          <TooltipContent>Navigation (Strg + B)</TooltipContent>
+        </Tooltip>
+      )}
 
       <WorkspaceSwitcher activeWorkspaceId={workspaceId} />
 
