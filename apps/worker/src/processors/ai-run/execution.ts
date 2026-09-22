@@ -1,7 +1,6 @@
 import {
   AI_NO_ELIGIBLE_PROVIDER,
   type AiProvider,
-  type AiReasoningOptions,
   type AiRoutingRequirements,
   type AiToolCall,
   couldCompactionHelp,
@@ -19,14 +18,8 @@ import {
   type deriveAiRunTimeouts,
   type QUEUE_NAMES,
 } from '@exocortex/contracts';
-import {
-  type AiReasoningLevel as AiReasoningLevelPrisma,
-  type AiRun,
-  type Prisma,
-  type PrismaClient,
-} from '@exocortex/database';
+import { type AiRun, type Prisma, type PrismaClient } from '@exocortex/database';
 import { withSpan } from '@exocortex/logger';
-import { findTool } from '@exocortex/mcp-tools';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
 import { describeRunTimeout } from '../../run-timeout';
@@ -34,6 +27,7 @@ import { describeToolLoop } from '../../tool-ledger';
 import { type ToolContext, type ToolRunner } from '../../tool-runner';
 
 import { addUsage, type RunFailure, type TurnResult } from './contract';
+import { REASONING_LEVEL_TO_LOWER, toolCallTarget, toWireToolCalls } from './wire';
 
 type AiJob = JobContext<typeof QUEUE_NAMES.ai>;
 type RunTimeouts = ReturnType<typeof deriveAiRunTimeouts>;
@@ -57,47 +51,6 @@ const TRUNCATION_TOOL_RETRY_PROMPT =
   'Dein letzter Werkzeugaufruf wurde am Ausgabelimit abgeschnitten und deshalb nicht ausgeführt. ' +
   'Wiederhole ihn mit deutlich weniger Inhalt pro Aufruf: schreibe lange Inhalte in mehreren Schritten, ' +
   'den ersten mit mode "replace", die weiteren mit mode "append".';
-
-const REASONING_LEVEL_TO_LOWER: Record<AiReasoningLevelPrisma, AiReasoningOptions['effort']> = {
-  NONE: 'none',
-  MINIMAL: 'minimal',
-  LOW: 'low',
-  MEDIUM: 'medium',
-  HIGH: 'high',
-  XHIGH: 'xhigh',
-  MAX: 'max',
-};
-
-/**
- * Compact identifier of what a tool call touches, e.g. `document:<id>` for
- * `exo_page_write`, taken from the same `target` the catalogue already uses
- * for the confirmation gate (`packages/mcp-tools/src/tool.ts`). Never the
- * full argument payload, and never a thrown error: an unknown tool, invalid
- * JSON or a read-only tool without a target all just mean "nothing to show"
- * (issue #6).
- */
-export function toolCallTarget(name: string, argumentsJson: string): string | null {
-  const tool = findTool(name);
-  if (tool === null) return null;
-  let args: unknown;
-  try {
-    args = JSON.parse(argumentsJson) as unknown;
-  } catch {
-    return null;
-  }
-  return tool.targetOf(args);
-}
-
-/** Wire shape a tool call takes on an assistant message, matching what the provider round-trips. */
-function toWireToolCalls(
-  toolCalls: readonly AiToolCall[],
-): { id: string; type: 'function'; function: { name: string; arguments: string } }[] {
-  return toolCalls.map((call) => ({
-    id: call.id,
-    type: 'function' as const,
-    function: { name: call.name, arguments: call.argumentsJson },
-  }));
-}
 
 /** Everything the turn loop needs to decide who may serve a request (ADR-032). */
 export interface RunRoutingInput {

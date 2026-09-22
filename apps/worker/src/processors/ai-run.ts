@@ -28,7 +28,7 @@ import {
 } from './ai-run/preparation';
 
 export { type ResolvedModelRow } from './ai-run/contract';
-export { toolCallTarget } from './ai-run/execution';
+export { toolCallTarget } from './ai-run/wire';
 
 export interface AiRunDependencies {
   prisma: PrismaClient;
