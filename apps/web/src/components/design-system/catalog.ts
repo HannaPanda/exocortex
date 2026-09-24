@@ -4,7 +4,7 @@
  * One list serves the navigation and the page, so a section cannot be linked
  * without existing or exist without being linked. The grouping follows the
  * taxonomy in `docs/design-system-inventory.md` §1 and its proposed navigation
- * in §6; a group only appears once it has something to show.
+ * in §6.
  */
 
 export interface CatalogEntry {
@@ -52,7 +52,34 @@ export const DESIGN_SYSTEM_CATALOG: readonly CatalogGroup[] = [
     entries: [
       { id: 'zustaende', title: 'Laden, leer, Fehler' },
       { id: 'bestaetigung', title: 'Bestätigung' },
+      { id: 'einstellungszeile', title: 'Einstellungszeile' },
+      { id: 'seitenbaum', title: 'Seitenbaum' },
+      { id: 'suchtreffer', title: 'Suchtreffer' },
+      { id: 'praesenz', title: 'Präsenz' },
+      { id: 'ki-fortschritt', title: 'KI-Lauf in Arbeit' },
     ],
+  },
+  {
+    title: 'Layouts',
+    entries: [
+      { id: 'huelle', title: 'Hülle' },
+      { id: 'inhaltsseite', title: 'Inhaltsseite' },
+      { id: 'einstellungen-layout', title: 'Einstellungen' },
+      { id: 'verwaltung', title: 'Verwaltung' },
+      { id: 'suche-layout', title: 'Suche' },
+      { id: 'tabellenansicht', title: 'Tabellenansicht' },
+    ],
+  },
+  {
+    title: 'Querschnitt',
+    entries: [
+      { id: 'barrierefreiheit', title: 'Barrierefreiheit' },
+      { id: 'sprache', title: 'Sprache' },
+    ],
+  },
+  {
+    title: 'Nicht entschieden',
+    entries: [{ id: 'experimente', title: 'Experimente' }],
   },
 ];
 

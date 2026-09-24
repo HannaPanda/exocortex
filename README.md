@@ -150,10 +150,13 @@ What is deliberately still missing is listed under
   lines (`tools/claude-code-plugin`)
 - audit log and transactional outbox for destructive and reliable operations
 - live background-job progress in the UI
-- a public styleguide at `/design-system` that draws every token, component and
-  canonical pattern with the product's own code and fixture data; token names
-  and values are parsed from the stylesheets rather than written down twice
-  (issue #125, `docs/design-system-inventory.md`)
+- a public styleguide at `/design-system` that draws every token, component,
+  canonical pattern and the main screen layouts (shell wide and narrow, content
+  page, settings, admin, search, table) with the product's own code and fixture
+  data, plus interactive accessibility and UI-language references and a
+  separate area listing the open design decisions; token names and values are
+  parsed from the stylesheets rather than written down twice (issue #125,
+  `docs/design-system-inventory.md`)
 - structured logs with a correlation id per request, and optional distributed
   tracing across API, queue, worker and the AI tool loop (ADR-031). Tracing is
   off, and its SDK is not even loaded, until a collector is configured;

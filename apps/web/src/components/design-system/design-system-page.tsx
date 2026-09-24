@@ -26,6 +26,7 @@ import {
   TablesSection,
 } from './components/display';
 import { DialogsSection, MenusSection } from './components/overlays';
+import { ExperimentsSection } from './experiments/experiments';
 import {
   ColourSection,
   FocusSection,
@@ -34,7 +35,24 @@ import {
   RadiusElevationSection,
   TypographySection,
 } from './foundations/foundations';
+import { AccessibilitySection } from './guides/accessibility';
+import { LanguageSection } from './guides/language';
+import {
+  AdminLayout,
+  ContentPageLayout,
+  SearchLayout,
+  SettingsLayout,
+  ShellLayout,
+  TableLayout,
+} from './layouts/layouts';
 import { ConfirmationPattern, StatesPattern } from './patterns/patterns';
+import {
+  PageTreePattern,
+  PresencePattern,
+  RunProgressPattern,
+  SearchResultsPattern,
+  SettingRowPattern,
+} from './patterns/rows';
 import { DsSection, DsSource } from './showcase';
 
 /**
@@ -77,7 +95,7 @@ function Navigation() {
   );
 }
 
-/** The phone's door into the same list: fourteen links would push the content off screen. */
+/** The phone's door into the same list: thirty-odd links would push the content off screen. */
 function JumpSelect() {
   return (
     <Select
@@ -176,8 +194,9 @@ export function DesignSystemPage({ tokens, ladder, measure }: DesignSystemPagePr
           <div className="flex flex-col gap-4">
             <h1 className="exocortex-page-title">Designsystem</h1>
             <p className="max-w-measure text-sm text-muted-foreground">
-              Das sichtbare Vokabular von eXocortex: Grundlagen, Komponenten und Muster, jeweils mit
-              den Zuständen, die sie wirklich haben.
+              Das sichtbare Vokabular von eXocortex: Grundlagen, Komponenten, Muster und Layouts,
+              jeweils mit den Zuständen, die sie wirklich haben. Was noch nicht entschieden ist,
+              steht getrennt unter Experimente.
             </p>
             <JumpSelect />
           </div>
@@ -200,6 +219,20 @@ export function DesignSystemPage({ tokens, ladder, measure }: DesignSystemPagePr
           <MiscSection />
           <StatesPattern />
           <ConfirmationPattern />
+          <SettingRowPattern />
+          <PageTreePattern />
+          <SearchResultsPattern />
+          <PresencePattern />
+          <RunProgressPattern />
+          <ShellLayout />
+          <ContentPageLayout />
+          <SettingsLayout />
+          <AdminLayout />
+          <SearchLayout />
+          <TableLayout />
+          <AccessibilitySection />
+          <LanguageSection />
+          <ExperimentsSection />
         </main>
       </div>
     </div>

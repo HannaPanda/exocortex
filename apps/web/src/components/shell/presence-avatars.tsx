@@ -4,20 +4,28 @@ import * as React from 'react';
 
 import { Avatar, AvatarFallback, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
 
-import { initialsOf, useDocumentSession } from './document-session';
+import { initialsOf, type PresenceUser, useDocumentSession } from './document-session';
 
 /** Live presence of everyone editing the current page. */
 export function PresenceAvatars() {
   const { state } = useDocumentSession();
-  if (state.presence.length === 0) return null;
+  return <PresenceStack presence={state.presence} />;
+}
+
+/**
+ * The stack itself, apart from the session it is read from, so the styleguide
+ * can draw it with people who are not there.
+ */
+export function PresenceStack({ presence }: { presence: readonly PresenceUser[] }) {
+  if (presence.length === 0) return null;
 
   return (
     <div
       className="flex shrink-0 items-center -space-x-1.5"
       data-testid="presence-avatars"
-      aria-label={`${state.presence.length} Personen bearbeiten diese Seite`}
+      aria-label={`${presence.length} Personen bearbeiten diese Seite`}
     >
-      {state.presence.slice(0, 5).map((user) => (
+      {presence.slice(0, 5).map((user) => (
         <Tooltip key={user.clientId}>
           <TooltipTrigger
             render={
@@ -35,8 +43,8 @@ export function PresenceAvatars() {
           <TooltipContent>{user.self ? `${user.name} (du)` : user.name}</TooltipContent>
         </Tooltip>
       ))}
-      {state.presence.length > 5 ? (
-        <span className="pl-3 text-xs text-muted-foreground">+{state.presence.length - 5}</span>
+      {presence.length > 5 ? (
+        <span className="pl-3 text-xs text-muted-foreground">+{presence.length - 5}</span>
       ) : null}
     </div>
   );

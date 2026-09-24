@@ -60,7 +60,7 @@ test.describe('design system', () => {
     await page.goto('/design-system');
     await expect(page.getByRole('navigation', { name: 'Designsystem' })).toBeHidden();
     await page.getByRole('combobox', { name: 'Zu Abschnitt springen' }).click();
-    await page.getByRole('option', { name: 'Tabellen' }).click();
+    await page.getByRole('option', { name: 'Tabellen', exact: true }).click();
     await expect(page).toHaveURL(/#tabellen$/);
     // Nothing on the page may push it wider than the phone.
     const overflow = await page.evaluate(() => {
@@ -68,5 +68,33 @@ test.describe('design system', () => {
       return root.scrollWidth - root.clientWidth;
     });
     expect(overflow).toBeLessThanOrEqual(0);
+  });
+
+  test('walks the sample page tree with the arrow keys', async ({ page }) => {
+    await page.goto('/design-system#seitenbaum');
+    const tree = page.getByRole('tree', { name: 'Beispielseiten' });
+    const first = tree.getByRole('treeitem', { name: 'Projekte' });
+    await first.focus();
+    await page.keyboard.press('ArrowDown');
+    await expect(tree.getByRole('treeitem', { name: 'Dissertation' })).toBeFocused();
+    await page.keyboard.press('End');
+    await expect(tree.getByRole('treeitem', { name: 'Leseliste' })).toBeFocused();
+    // Enter opens the page, which here means selecting it: no link leaves the styleguide.
+    await page.keyboard.press('Enter');
+    await expect(tree.getByRole('treeitem', { name: 'Leseliste' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    await expect(page).toHaveURL(/\/design-system#seitenbaum$/);
+  });
+
+  test('turns the shell panels into sheets at phone width', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/design-system#huelle');
+    const shell = page.locator('section#huelle');
+    await expect(shell.getByRole('heading', { name: 'Schmale Hülle' })).toBeVisible();
+    await shell.getByRole('button', { name: 'Navigation ein- oder ausblenden' }).click();
+    const sheet = page.getByRole('dialog', { name: 'Navigation' });
+    await expect(sheet.getByRole('tree', { name: 'Seiten im Beispiel' })).toBeVisible();
   });
 });
