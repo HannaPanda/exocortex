@@ -44,7 +44,7 @@ export function DsSection({
 /** Where the canonical implementation lives, as the repository spells it. */
 export function DsSource({ path }: { path: string }) {
   return (
-    <code className="exocortex-numeric rounded-sm bg-sunken px-1.5 py-0.5 text-meta break-all text-muted-foreground">
+    <code className="exocortex-numeric rounded-sm bg-sunken px-1.5 py-0.5 text-meta break-words text-muted-foreground">
       {path}
     </code>
   );
@@ -108,6 +108,6 @@ export function DsStates({
   className?: string;
 }) {
   return (
-    <div className={cn('flex flex-wrap items-end gap-x-8 gap-y-6', className)}>{children}</div>
+    <div className={cn('flex flex-wrap items-start gap-x-8 gap-y-6', className)}>{children}</div>
   );
 }

@@ -37,8 +37,10 @@ function valueOf(tokens: readonly CustomProperty[], name: string): string {
 function TokenMeta({ name, value, role }: { name: string; value: string; role: string }) {
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
-      <span className="exocortex-numeric text-meta break-all text-foreground">{name}</span>
-      <span className="exocortex-numeric text-micro break-all text-muted-foreground">{value}</span>
+      <span className="exocortex-numeric text-meta break-words text-foreground">{name}</span>
+      <span className="exocortex-numeric text-micro break-words text-muted-foreground">
+        {value}
+      </span>
       <span className="text-meta text-muted-foreground">{role}</span>
     </div>
   );

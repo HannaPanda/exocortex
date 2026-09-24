@@ -87,8 +87,9 @@ function JumpSelect() {
     >
       <SelectTrigger className="w-full lg:hidden" aria-label="Zu Abschnitt springen">
         <SelectValue placeholder="Zu Abschnitt springen">
-          {(value: string) =>
-            DESIGN_SYSTEM_ENTRIES.find((entry) => entry.id === value)?.title ?? value
+          {(value: string | null) =>
+            DESIGN_SYSTEM_ENTRIES.find((entry) => entry.id === value)?.title ??
+            'Zu Abschnitt springen'
           }
         </SelectValue>
       </SelectTrigger>
@@ -156,10 +157,10 @@ export function DesignSystemPage({ tokens, ladder, measure }: DesignSystemPagePr
       <header className="border-b border-border bg-surface">
         <div className="mx-auto flex h-12 max-w-7xl items-center gap-4 px-4 sm:px-6">
           <ExocortexWordmark className="h-7" />
-          <span className="text-ui text-muted-foreground">Designsystem</span>
+          <span className="hidden text-ui text-muted-foreground sm:inline">Designsystem</span>
           <Link
             href="/"
-            className="ml-auto text-ui text-primary-text underline-offset-4 hover:underline"
+            className="ml-auto text-ui whitespace-nowrap text-primary-text underline-offset-4 hover:underline"
           >
             Zur Anwendung
           </Link>
