@@ -52,6 +52,27 @@ const BUTTON_LABEL = new Intl.DateTimeFormat('de-DE', {
 const START_MONTH = new Date(1900, 0);
 const END_MONTH = new Date(new Date().getFullYear() + 30, 11);
 
+/** The trigger's look: a field, not a button, in both of its forms. */
+function triggerClassName(
+  variant: 'outline' | 'ghost',
+  size: 'default' | 'sm',
+  empty: boolean,
+  className: string | undefined,
+): string {
+  return cn(
+    'justify-start font-normal tabular-nums',
+    size === 'sm' ? 'h-8 px-2.5' : 'h-9 px-3',
+    // The input border and shadow, so it sits beside a time or text field as
+    // one of them; in a table cell, no chrome until the pointer is on it.
+    variant === 'outline'
+      ? 'border-input shadow-xs'
+      : 'border border-transparent px-1.5 hover:border-input hover:bg-transparent',
+    empty && 'text-muted-foreground',
+    'aria-invalid:border-destructive aria-invalid:ring-destructive/20',
+    className,
+  );
+}
+
 export interface DatePickerProps {
   value: string | null;
   onChange: (value: string | null) => void;
@@ -132,18 +153,7 @@ export function DatePicker({
             aria-invalid={ariaInvalid}
             data-testid={testId}
             data-slot="date-picker"
-            className={cn(
-              'justify-start font-normal tabular-nums',
-              size === 'sm' ? 'h-8 px-2.5' : 'h-9 px-3',
-              // A field, not a button: the input border and shadow, so it sits
-              // beside a time or text field as one of them.
-              variant === 'outline' && 'border-input shadow-xs',
-              variant === 'ghost' &&
-                'border border-transparent px-1.5 hover:border-input hover:bg-transparent',
-              label === null && 'text-muted-foreground',
-              'aria-invalid:border-destructive aria-invalid:ring-destructive/20',
-              className,
-            )}
+            className={triggerClassName(variant, size, label === null, className)}
           />
         }
       >
