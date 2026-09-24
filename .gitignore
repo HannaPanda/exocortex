@@ -78,6 +78,9 @@ __pycache__/
 
 # Impeccable design-detector state. `config.json` carries decisions -- which
 # findings this project has ruled out and why -- so it is shared. The hook
-# cache and the critique snapshots are per-run artifacts of one machine.
+# cache and the critique snapshots are per-run artifacts of one machine. The
+# hook writes its cache next to the workspace it scanned, so the rule has to
+# reach apps/web as well -- Prettier reads this file, not .git/info/exclude.
 .impeccable/*
 !.impeccable/config.json
+apps/web/.impeccable/
