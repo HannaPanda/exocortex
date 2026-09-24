@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  ArchiveIcon,
   DownloadIcon,
   FileTextIcon,
   FolderTreeIcon,
@@ -10,6 +9,7 @@ import {
   RotateCcwIcon,
   Share2Icon,
   SlidersHorizontalIcon,
+  TrashIcon,
   UploadIcon,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -186,7 +186,7 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
           className="border-b border-warning/40 bg-warning/10 px-6 py-1.5 text-xs text-warning"
           data-testid="archived-banner"
         >
-          Diese Seite ist archiviert und deshalb nur lesbar.
+          Diese Seite liegt im Papierkorb und ist deshalb nur lesbar.
         </p>
       ) : null}
 
@@ -623,7 +623,7 @@ function PageActionsMenu({
           data-testid="archive-document"
           onClick={onArchive}
         >
-          <ArchiveIcon /> Archivieren
+          <TrashIcon /> In den Papierkorb
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

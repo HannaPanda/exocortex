@@ -257,7 +257,7 @@ function PageLinkLabel({
         type={match?.type ?? 'PAGE'}
       />
       <span className="truncate">{title}</span>
-      {match?.archivedAt == null ? null : <Badge variant="muted">Archiviert</Badge>}
+      {match?.archivedAt == null ? null : <Badge variant="muted">Im Papierkorb</Badge>}
       {ambiguous ? (
         <span className="text-xs text-muted-foreground">Mehrere Seiten mit diesem Titel</span>
       ) : null}

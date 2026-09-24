@@ -18,7 +18,7 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   unsupported_media_type: 'Dieser Dateityp wird nicht unterstützt.',
   workspace_access_denied: 'Du hast keinen Zugriff auf diesen Arbeitsbereich.',
   document_access_denied: 'Du hast keinen Zugriff auf diese Seite.',
-  document_archived: 'Archivierte Seiten können nicht bearbeitet werden.',
+  document_archived: 'Seiten im Papierkorb können nicht bearbeitet werden.',
   document_move_cycle: 'Eine Seite kann nicht in sich selbst verschoben werden.',
   document_cross_workspace: 'Das übergeordnete Element gehört nicht zu diesem Arbeitsbereich.',
   database_property_config_invalid:

@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  ArchiveIcon,
   ChevronRightIcon,
   CopyIcon,
   FileTextIcon,
@@ -83,8 +82,8 @@ function PageMenuItems() {
       </DropdownMenuGroup>
       <DropdownMenuSeparator />
       <DropdownMenuItem variant="destructive">
-        <ArchiveIcon />
-        Archivieren
+        <TrashIcon />
+        In den Papierkorb
       </DropdownMenuItem>
     </>
   );
@@ -246,7 +245,7 @@ export function DialogsSection() {
             <SheetHeader>
               <SheetTitle>Papierkorb</SheetTitle>
               <SheetDescription>
-                Archivierte Seiten landen hier und bleiben, bis sie jemand wiederherstellt oder
+                Was du in den Papierkorb legst, bleibt hier, bis es jemand wiederherstellt oder
                 endgültig löscht.
               </SheetDescription>
             </SheetHeader>

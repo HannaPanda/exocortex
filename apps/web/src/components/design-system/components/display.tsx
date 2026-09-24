@@ -131,7 +131,7 @@ export function FeedbackSection() {
             <Badge variant="outline">Geteilt</Badge>
           </DsState>
           <DsState label="muted">
-            <Badge variant="muted">Archiviert</Badge>
+            <Badge variant="muted">Im Papierkorb</Badge>
           </DsState>
           <DsState label="destructive">
             <Badge variant="destructive">Fehlgeschlagen</Badge>

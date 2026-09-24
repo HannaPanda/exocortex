@@ -196,9 +196,9 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     area: 'automationen',
     title: 'Regeln, die auf Änderungen reagieren',
     summary:
-      'Eine Regel feuert, wenn eine Seite angelegt, geändert, verschoben, archiviert oder gelöscht wird oder sich eine Datenbankzeile ändert, wahlweise im ganzen Arbeitsbereich, unter einer Seite oder in einer Datenbank. Eine Regel löst sich nie selbst aus, und eine Kette endet nach drei Gliedern.',
+      'Eine Regel feuert, wenn eine Seite angelegt, geändert, verschoben, in den Papierkorb gelegt oder gelöscht wird oder sich eine Datenbankzeile ändert, wahlweise im ganzen Arbeitsbereich, unter einer Seite oder in einer Datenbank. Eine Regel löst sich nie selbst aus, und eine Kette endet nach drei Gliedern.',
     details: [
-      'Eine Regel besteht aus einem Auslöser, einem Geltungsbereich und einer Aktion. Auslöser sind: Seite angelegt, Seite geändert, Seiteninhalt geändert, Seite verschoben, Seite archiviert, Seite gelöscht, Datenbankzeile geändert. Der Geltungsbereich ist der ganze Arbeitsbereich, alles unter einer bestimmten Seite oder eine bestimmte Datenbank.',
+      'Eine Regel besteht aus einem Auslöser, einem Geltungsbereich und einer Aktion. Auslöser sind: Seite angelegt, Seite geändert, Seiteninhalt geändert, Seite verschoben, Seite in den Papierkorb gelegt, Seite gelöscht, Datenbankzeile geändert. Der Geltungsbereich ist der ganze Arbeitsbereich, alles unter einer bestimmten Seite oder eine bestimmte Datenbank.',
       'Ausgelöst wird aus dem Änderungsprotokoll der Anwendung, nicht aus einem Zuruf nebenbei. Deshalb feuert eine Regel auch dann, wenn die Änderung von einem Agenten, einer Einspielung oder einer anderen Automation kam, und sie geht nicht verloren, wenn gerade etwas neu startet.',
       'Zwei Bremsen sind fest eingebaut: eine Regel löst sich nie durch ihre eigene Aktion aus, und eine Kette aus Regeln, die einander auslösen, endet nach drei Gliedern. Eine Regel, die zu oft hintereinander scheitert, wird abgeschaltet. Die Liste der Läufe zeigt zu jedem Lauf Auslöser, Ergebnis und Fehler, und zum Ausprobieren kannst du eine Regel von Hand auslösen.',
     ],

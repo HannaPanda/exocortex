@@ -68,7 +68,7 @@ export function StatesPattern() {
             <EmptyState
               icon={Trash2Icon}
               title="Der Papierkorb ist leer"
-              description="Archivierte Seiten landen hier und bleiben, bis sie jemand wiederherstellt oder endgültig löscht."
+              description="Was du in den Papierkorb legst, bleibt hier, bis es jemand wiederherstellt oder endgültig löscht."
             />
           </div>
           <div className="w-full rounded-md bg-surface">

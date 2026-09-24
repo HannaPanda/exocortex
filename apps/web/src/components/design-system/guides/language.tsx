@@ -10,9 +10,9 @@ import { DsExample, DsSection, DsSource, DsState, DsStates } from '../showcase';
 
 /**
  * The interface's language. The counts are the audit's
- * (`docs/design-system-inventory.md` §2.7); #129 settled every pair but one,
- * and the one still open (archive or trash) is shown as open: choosing it is
- * a decision, not something this page gets to make.
+ * (`docs/design-system-inventory.md` §2.7), and #129 settled every pair.
+ * A pair that starts competing again is shown as competing, not quietly
+ * decided here.
  */
 
 interface Word {
@@ -76,10 +76,10 @@ const TERMS: readonly Word[] = [
     settled: true,
   },
   {
-    use: 'Wohin archivierte Seiten gehen',
+    use: 'Wohin weggeräumte Seiten gehen',
     word: 'Papierkorb',
-    note: 'die Handlung heißt „Archivieren“, die Seiten „Archiviert“; offen',
-    settled: false,
+    note: '„In den Papierkorb“, „Im Papierkorb“. „Archivieren“ gibt es nur bei Chats, die aufbewahrt und ausgeblendet werden',
+    settled: true,
   },
 ];
 

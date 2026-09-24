@@ -68,7 +68,7 @@ function countEntries(entries: readonly TrashEntry[]): number {
  * in a column that has to stay a navigation.
  */
 function archivedCount(count: number): string {
-  return count === 1 ? 'Eine archivierte Seite' : `${count} archivierte Seiten`;
+  return count === 1 ? 'Eine Seite im Papierkorb' : `${count} Seiten im Papierkorb`;
 }
 
 /** What the permanent deletion takes with it, counted, with the number picking each form. */
@@ -236,7 +236,7 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
               <span>{timeFormat.format(new Date(entry.archivedAt))} Uhr</span>
               {entry.reason === 'cascade' ? (
                 <Badge variant="outline" className="font-normal">
-                  mit archiviert
+                  mitgegangen
                 </Badge>
               ) : null}
               {entry.descendantCount > 0 ? (
@@ -273,7 +273,7 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
           <SheetTitle className="text-lg">Papierkorb</SheetTitle>
           <SheetDescription>
             {trash.data === undefined
-              ? 'Archivierte Seiten'
+              ? 'Seiten im Papierkorb'
               : `${archivedCount(trash.data.totalCount)}. Eingerückt heißt: hing darunter. Ein Klick auf den Titel zeigt die Seite schreibgeschützt.`}
           </SheetDescription>
         </SheetHeader>
@@ -284,7 +284,7 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
           {trash.data !== undefined && trash.data.totalCount === 0 ? (
             <EmptyState
               title="Der Papierkorb ist leer"
-              description="Archivierte Seiten landen hier und bleiben, bis sie jemand wiederherstellt oder endgültig löscht."
+              description="Was du in den Papierkorb legst, bleibt hier, bis es jemand wiederherstellt oder endgültig löscht."
             />
           ) : null}
 

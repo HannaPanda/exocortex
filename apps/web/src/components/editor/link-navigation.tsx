@@ -216,7 +216,9 @@ export function useLinkNavigation({
                       <span className="truncate text-xs text-muted-foreground">
                         {match.path.map((ancestor) => ancestor.title).join(' / ')}
                       </span>
-                      {match.archivedAt === null ? null : <Badge variant="muted">Archiviert</Badge>}
+                      {match.archivedAt === null ? null : (
+                        <Badge variant="muted">Im Papierkorb</Badge>
+                      )}
                     </button>
                   </li>
                 ))

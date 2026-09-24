@@ -1,5 +1,4 @@
 import {
-  ArchiveIcon,
   ArrowDownIcon,
   ArrowUpIcon,
   ChevronRightIcon,
@@ -12,6 +11,7 @@ import {
   PlusIcon,
   SmilePlusIcon,
   TableIcon,
+  TrashIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import * as React from 'react';
@@ -417,7 +417,7 @@ function PageTreeRowMenu({
       </Item>
       <Separator />
       <Item variant="destructive" onClick={() => archive(node.id)}>
-        <ArchiveIcon /> Archivieren
+        <TrashIcon /> In den Papierkorb
       </Item>
     </Content>
   );

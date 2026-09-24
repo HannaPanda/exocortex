@@ -21,7 +21,7 @@ export const TRIGGER_LABELS: Record<AutomationTrigger, string> = {
   DOCUMENT_UPDATED: 'Titel oder Eigenschaften geändert',
   DOCUMENT_CONTENT_CHANGED: 'Inhalt geändert',
   DOCUMENT_MOVED: 'Seite verschoben',
-  DOCUMENT_ARCHIVED: 'Seite archiviert',
+  DOCUMENT_ARCHIVED: 'Seite in den Papierkorb gelegt',
   DOCUMENT_DELETED: 'Seite endgültig gelöscht',
   DATABASE_ROW_CHANGED: 'Zeilenwert geändert',
   SCHEDULE: 'Zeitplan',

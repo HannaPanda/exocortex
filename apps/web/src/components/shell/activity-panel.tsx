@@ -229,7 +229,7 @@ function ActivityEntryRow({
         />
       );
     case 'archived':
-      return <Row type={entry.type} title="Archiviert" meta={at} />;
+      return <Row type={entry.type} title="In den Papierkorb gelegt" meta={at} />;
     case 'restored':
       return <Row type={entry.type} title="Wiederhergestellt" meta={at} />;
     case 'snapshotRestored':

@@ -138,12 +138,12 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
   defineFeature({
     id: 'papierkorb',
     area: 'struktur',
-    title: 'Archiv und Papierkorb',
+    title: 'Papierkorb',
     summary:
-      'Eine Seite wird archiviert oder in den Papierkorb gelegt, statt sofort zu verschwinden, und lässt sich von dort zurückholen. Endgültig gelöscht wird nur, was ausdrücklich endgültig gelöscht wird.',
+      'Eine Seite wird in den Papierkorb gelegt, statt sofort zu verschwinden, und lässt sich von dort zurückholen. Endgültig gelöscht wird nur, was ausdrücklich endgültig gelöscht wird.',
     details: [
-      'Archivieren nimmt eine Seite aus der Navigation und legt sie in den Papierkorb, zusammen mit allem, was unter ihr hängt. Das ist Absicht: unter einer archivierten Seite soll keine bearbeitbare Seite zurückbleiben. Willst du nur die eine Seite loswerden, verschiebst du die Unterseiten vorher woandershin.',
-      'Der Papierkorb unten in der Navigation zeigt den Inhalt als Baum, eingerückt so, wie die Seiten zueinander standen. Daran siehst du, was beim Archivieren mitgegangen ist, und holst einen ganzen Ast mit einem Klick zurück.',
+      '„In den Papierkorb“ nimmt eine Seite aus der Navigation, zusammen mit allem, was unter ihr hängt. Das ist Absicht: unter einer Seite im Papierkorb soll keine bearbeitbare Seite zurückbleiben. Willst du nur die eine Seite loswerden, verschiebst du die Unterseiten vorher woandershin.',
+      'Der Papierkorb unten in der Navigation zeigt den Inhalt als Baum, eingerückt so, wie die Seiten zueinander standen. Daran siehst du, was mitgegangen ist, und holst einen ganzen Ast mit einem Klick zurück.',
       'Nichts läuft von selbst ab. Endgültiges Löschen ist ein eigener Schritt mit eigener Rückfrage, und dabei verschwinden Inhalt, Versionsstände, Kommentare und Anhänge wirklich; das ist der einzige Vorgang hier, den kein Schnappschuss mehr auffängt. Den Papierkorb ganz zu leeren ist ein Aufruf und nicht hundert, damit ein Abbruch mittendrin nicht die Hälfte übrig lässt.',
     ],
     since: '2026-08-12',

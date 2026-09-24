@@ -99,7 +99,7 @@ export function TransclusionNodeView({
           type="PAGE"
         />
         <span className="embed-title">{title}</span>
-        {fragment.data?.archivedAt == null ? null : <Badge variant="muted">Archiviert</Badge>}
+        {fragment.data?.archivedAt == null ? null : <Badge variant="muted">Im Papierkorb</Badge>}
         <div className="embed-actions">
           {target === null || self ? null : (
             <Link

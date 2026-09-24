@@ -255,7 +255,7 @@ export function SearchResultsPattern() {
         id="suchtreffer-liste"
         title="Liste"
         source="apps/web/src/components/search/saved-query-results.tsx"
-        note="Dieselbe Komponente dient Suche, intelligenter Ansicht und Abfrageblock. Archivierte Treffer sagen es mit einem Wort."
+        note="Dieselbe Komponente dient Suche, intelligenter Ansicht und Abfrageblock. Treffer im Papierkorb sagen es mit einem Badge."
       >
         <SavedQueryResults hits={FIXTURE_HITS} display={DISPLAY_LIST} truncated={false} />
       </DsExample>
