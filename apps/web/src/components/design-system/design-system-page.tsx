@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import {
   ExocortexWordmark,
+  sectionLabelClassName,
   Select,
   SelectContent,
   SelectGroup,
@@ -12,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
   SkipToContentLink,
-  sectionLabelClassName,
 } from '@exocortex/ui';
 
 import type { CustomProperty, TypeRung } from '@/lib/design-tokens';

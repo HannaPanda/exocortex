@@ -14,8 +14,8 @@ import * as React from 'react';
 
 import {
   Button,
-  CommandPalette,
   type CommandItem,
+  CommandPalette,
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
