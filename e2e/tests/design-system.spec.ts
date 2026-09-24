@@ -9,6 +9,11 @@ import { expect, test } from '@playwright/test';
  * lands, and the components on it are the live ones rather than pictures.
  */
 
+/** As much of the browser as the overflow check touches; e2e compiles without the DOM lib. */
+interface BrowserDocument {
+  document: { documentElement: { scrollWidth: number; clientWidth: number } };
+}
+
 test.describe('design system', () => {
   test('renders without a session and without an uncaught error', async ({ page }) => {
     const failures: string[] = [];
@@ -58,9 +63,10 @@ test.describe('design system', () => {
     await page.getByRole('option', { name: 'Tabellen' }).click();
     await expect(page).toHaveURL(/#tabellen$/);
     // Nothing on the page may push it wider than the phone.
-    const overflow = await page.evaluate(
-      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-    );
+    const overflow = await page.evaluate(() => {
+      const root = (globalThis as unknown as BrowserDocument).document.documentElement;
+      return root.scrollWidth - root.clientWidth;
+    });
     expect(overflow).toBeLessThanOrEqual(0);
   });
 });
