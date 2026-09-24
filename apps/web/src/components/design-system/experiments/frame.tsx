@@ -43,9 +43,11 @@ export function DsExperimentBrief({
           </>
         )}
         <dt>Quelle</dt>
-        <dd className="flex min-w-0 flex-wrap gap-1.5 [overflow-wrap:anywhere]">
+        <dd className="flex min-w-0 flex-wrap gap-1.5">
           {sources.map((source) => (
-            <DsSource key={source} path={source} />
+            <span key={source} className="max-w-full min-w-0">
+              <DsSource path={source} />
+            </span>
           ))}
         </dd>
       </dl>
