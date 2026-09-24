@@ -4,7 +4,7 @@
 #
 #   bash scripts/deploy.sh                 the whole way
 #   bash scripts/deploy.sh --skip-checks   passed to build.sh (hard gates still run)
-#   bash scripts/deploy.sh --full-tests    passed to build.sh (touches the live database)
+#   bash scripts/deploy.sh --full-tests    passed to build.sh (integration tests, styleguide gate)
 #   bash scripts/deploy.sh --dry-run       everything up to the first change, then stop
 #
 # `build.sh` answers "is this commit healthy" and starts nothing. This script

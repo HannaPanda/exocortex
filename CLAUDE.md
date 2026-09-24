@@ -211,6 +211,9 @@ pnpm test:integration  # only `*.integration.test.ts` -- brings up its own
 pnpm test              # both halves at once
 pnpm test:gates        # proves each gate can still go red
 pnpm test:e2e          # Playwright (needs a running deployment)
+pnpm test:styleguide   # screenshot baselines, axe and keyboard checks on
+                       # /design-system (needs the web build and Docker);
+                       # test:styleguide:update rewrites the baselines
 ```
 
 A test belongs to one half or the other by its file name, and the test-split

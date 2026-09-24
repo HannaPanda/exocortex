@@ -87,6 +87,7 @@ export interface AppPageProps extends React.ComponentPropsWithoutRef<'div'> {
 export function AppPage({ maxWidth, className, ...props }: AppPageProps) {
   return (
     <div
+      data-slot="app-page"
       className={cn(
         'relative mx-auto min-h-0 w-full flex-1 overflow-y-auto px-6 py-8',
         maxWidth,

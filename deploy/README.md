@@ -286,7 +286,7 @@ in `build.sh`.
 ```bash
 bash scripts/build.sh                 # validate and build, touch no service
 bash scripts/build.sh --skip-checks   # hard gates only, no lint/typecheck/tests
-bash scripts/build.sh --full-tests    # also the tests that use the live database
+bash scripts/build.sh --full-tests    # also integration tests and the styleguide gate (Docker)
 bash scripts/deploy.sh --dry-run      # everything up to the first change, then stop
 ```
 
@@ -338,7 +338,12 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
    them, runs the suites and removes them again. Until issue #94 those suites
    talked to the **production** database on this host; a guard now refuses any
    connection but the throwaway one, so the flag is a question of half a minute
-   of container startup rather than of risk.
+   of container startup rather than of risk. After them `--full-tests` runs the
+   styleguide gate, `pnpm test:styleguide` (issue #127): screenshot baselines,
+   an axe scan and keyboard smoke tests against `/design-system`, served from
+   the web build this step just made by a `next start` of its own on port 3290,
+   with the browser in the pinned Playwright image. It touches no live unit.
+   `docs/local-development.md` says what to do when a screenshot goes red.
 
    Which half a test is in follows from its name (`*.integration.test.ts`) and
    is enforced by the test-split gate above. Until issue #93 the default step
@@ -495,10 +500,14 @@ the workflow instead of the script is a rule the deploy does not know about.
 It needs no secrets and touches nothing here. Its databases are throwaway
 containers: the migration gate's, and the integration tests' own Postgres and
 Redis, which it runs because the workflow calls `build.sh --full-tests`
-(issue #94).
+(issue #94). The same flag runs the styleguide gate (issue #127): it pulls the
+Playwright image and serves the fresh web build on the runner itself, so a
+change that moves a canonical example, breaks a keyboard path or drops a
+contrast below AA fails here, before anything is deployed. It adds about two
+minutes, most of it the screenshots, plus the image pull.
 
 What it deliberately does not do: the Playwright
-suite, and anything resembling a deployment. `scripts/deploy.sh` on this machine
+suite against a deployment, and anything resembling a deployment. `scripts/deploy.sh` on this machine
 stays the only thing that puts code in front of a user, and it runs `build.sh`
 again rather than trusting a green tick from somewhere else.
 

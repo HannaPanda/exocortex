@@ -452,8 +452,37 @@ pointer-coarse:opacity-100`, never `invisible`: `visibility: hidden` takes the
   `aria-label`, or the name would be composed from the four labels inside the
   row. The three buttons in a row are pointer shortcuts with `tabIndex={-1}`,
   and every command they carry is in the row menu, which is the only reason
-  taking them out of the tab order is allowed at all
+  taking them out of the tab order is allowed at all. A treeitem sits inside
+  its parent's, and React's focus and key events bubble, so each row's handler
+  stops them; otherwise the ancestors claim the tab stop after the child did
+- **text on `bg-muted` is `text-foreground/90`, never `text-muted-foreground`.**
+  That pair measures 3.9:1 and fails AA; the tab track, the muted badge, the
+  avatar fallback and the embed header all had it until the axe scan found them
 - the command palette is a real `combobox` + `listbox` with
   `aria-activedescendant`
 - colour is never the only signal — presence also shows initials, connection state
   also shows text in its tooltip
+
+## Regression gate
+
+The styleguide is also the test surface (issue #127). `pnpm test:styleguide`
+runs in `build.sh --full-tests`, and therefore in CI, against the fresh web
+build:
+
+- **screenshots** of a curated set of canonical examples at 1280 px and, where a
+  pattern has its own breakpoint contract, at 390 px
+  (`e2e/styleguide/visual.spec.ts`). A section needs a shot when it carries a
+  decision somebody would be unhappy to lose, not because it exists
+- **axe** against WCAG 2.2 A and AA on the whole page at both widths, on the
+  phone-width frames and on an open dialog, with the exceptions listed and
+  reasoned in `a11y.spec.ts`
+- **keyboard smoke tests**: a dialog takes, keeps and returns focus; a menu opens
+  from the keyboard and returns focus; the tree keeps one roving tab stop; the
+  hover-only row actions open with Shift + F10; every stop of the focus example
+  draws the ring
+
+A changed screenshot is a difference to review. When it was meant, the new
+baseline is committed on its own with the decision it records;
+`docs/local-development.md` has the commands. `impeccable detect` stays a manual
+check beside it: it finds patterns in code, the screenshots find what changed
+on screen, and neither replaces the other.

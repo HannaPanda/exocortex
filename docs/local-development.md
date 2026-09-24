@@ -187,7 +187,33 @@ pnpm test:unit        # everything that needs no infrastructure
 pnpm test:integration # *.integration.test.ts on a throwaway stack (needs Docker)
 pnpm test             # both halves
 pnpm test:e2e         # Playwright against a running deployment
+pnpm test:styleguide  # screenshots, axe and keyboard checks on /design-system
+                      # (needs the web build and Docker; see below)
 ```
+
+### The styleguide gate
+
+`pnpm test:styleguide` (`scripts/test-styleguide.sh`, issue #127) checks the
+canonical examples on `/design-system` three ways: screenshot baselines
+(`e2e/styleguide/visual.spec.ts`), an axe scan against WCAG 2.2 A and AA plus
+keyboard smoke tests (`a11y.spec.ts`), and the page's own behaviour
+(`design-system.spec.ts`). `test:visual` and `test:a11y` run one file each.
+
+It needs no deployment and no account. The script serves the existing web
+build with `next start` on port 3290 (`STYLEGUIDE_PORT` moves it) and runs the
+browser inside `mcr.microsoft.com/playwright` at the version `e2e` pins, because
+a baseline only compares with a screenshot rasterised by the same Chromium, fonts
+and FreeType. Never run these specs with a bare `playwright test` on the host:
+the antialiasing alone differs, and every shot goes red. Rebuild the web app
+first when the change is in CSS or a component, or the gate checks the old
+build.
+
+A red screenshot is a difference to review, not a verdict. Open the diff in
+`e2e/test-results`, then either fix the code or, when the change is meant, run
+`pnpm test:styleguide:update` and commit the new baselines on their own with the
+decision they record. Rewriting baselines to get a build green defeats the
+gate. An axe exception goes into `EXCEPTIONS` in `a11y.spec.ts` with its reason,
+scoped to the elements it covers; the rule keeps running everywhere else.
 
 ### Which half a test belongs in
 

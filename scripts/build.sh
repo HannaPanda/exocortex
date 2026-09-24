@@ -10,7 +10,8 @@
 #   bash scripts/build.sh                 validate and build
 #   bash scripts/build.sh --skip-checks   hard gates only, no lint/typecheck/tests
 #   bash scripts/build.sh --full-tests    also the tests that need a database,
-#                                         on a throwaway stack of their own
+#                                         on a throwaway stack of their own,
+#                                         and the styleguide gate (Docker)
 #
 # Two kinds of check, and the difference matters:
 #
@@ -38,7 +39,7 @@ for arg in "$@"; do
     --skip-checks) SKIP_CHECKS=1 ;;
     --full-tests)  FULL_TESTS=1 ;;
     -h|--help)
-      sed -n '2,27p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+      sed -n '2,28p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
       exit 0
       ;;
     *)
@@ -208,6 +209,15 @@ else
   if [ "$FULL_TESTS" -eq 1 ]; then
     info "Integration tests on a throwaway Postgres and Redis …"
     pnpm test:integration || fail "Integration tests failed"
+
+    # The styleguide gate (issue #127): screenshot baselines, axe and keyboard
+    # checks against /design-system, served from the web build step 5 just
+    # made on a port of its own, with the browser in the pinned Playwright
+    # image. Here rather than in the default set for the same reason as the
+    # integration tests: it needs Docker, and two minutes.
+    info "Styleguide: screenshots, accessibility, keyboard …"
+    pnpm test:styleguide || fail "Styleguide gate failed" \
+      "A red screenshot is a difference to review, not a verdict: open the diff in e2e/test-results. Meant? Rerun with 'pnpm test:styleguide:update' and commit the baseline on its own. Not meant? Fix the code. Never rewrite baselines just to get green."
   fi
 
   ok "Soft checks green."
