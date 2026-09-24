@@ -57,3 +57,16 @@ jobs:
       # rejects a lockfile that does not match package.json.
       - name: scripts/build.sh --full-tests
         run: bash scripts/build.sh --full-tests
+
+      # Not a check: it hands the styleguide gate's evidence to whoever has to
+      # review a red screenshot (issue #127). The expected, actual and diff
+      # images are the only way to tell a regression from a meant change, and
+      # the runner is gone once the job ends.
+      - name: styleguide diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: styleguide-test-results
+          path: e2e/test-results/
+          if-no-files-found: ignore
+          retention-days: 14

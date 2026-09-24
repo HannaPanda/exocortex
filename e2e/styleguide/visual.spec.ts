@@ -1,4 +1,6 @@
-import { expect, test } from '@playwright/test';
+import { join } from 'node:path';
+
+import { expect, type Locator, test } from '@playwright/test';
 
 import { DESKTOP, NARROW, openStyleguide } from './open';
 
@@ -20,6 +22,26 @@ import { DESKTOP, NARROW, openStyleguide } from './open';
  * A red shot is a difference to review, not a verdict. See
  * `scripts/test-styleguide.sh` for the update step and when it is allowed.
  */
+
+/**
+ * A phone frame is lazy and loads on its own clock: the first baselines caught
+ * it empty on this host and full on the CI runner. A section shot therefore
+ * loads every frame first, so the state is the same everywhere, and then hides
+ * the frame's document; what is inside has its own shot below.
+ */
+const HIDE_FRAMES = join(__dirname, 'hide-frames.css');
+
+/** What a loaded phone frame shows: the list-mode table or a settings row. */
+const FRAME_READY = 'table, [data-testid^="setting-row-"]';
+
+async function loadFrames(section: Locator): Promise<void> {
+  const frames = section.locator('iframe');
+  for (let index = 0; index < (await frames.count()); index += 1) {
+    const frame = frames.nth(index);
+    await frame.scrollIntoViewIfNeeded();
+    await expect(frame.contentFrame().locator(FRAME_READY).first()).toBeVisible();
+  }
+}
 
 /** Shots of whole sections: the section is the unit the styleguide documents. */
 const DESKTOP_SECTIONS = [
@@ -46,7 +68,9 @@ test.describe('styleguide screenshots, desktop', () => {
   for (const id of DESKTOP_SECTIONS) {
     test(`section ${id}`, async ({ page }) => {
       await openStyleguide(page, DESKTOP);
-      await expect(page.locator(`section#${id}`)).toHaveScreenshot(`desktop-${id}.png`);
+      const section = page.locator(`section#${id}`);
+      await loadFrames(section);
+      await expect(section).toHaveScreenshot(`desktop-${id}.png`, { stylePath: HIDE_FRAMES });
     });
   }
 
@@ -100,7 +124,9 @@ test.describe('styleguide screenshots, phone width', () => {
   for (const id of NARROW_SECTIONS) {
     test(`section ${id}`, async ({ page }) => {
       await openStyleguide(page, NARROW);
-      await expect(page.locator(`section#${id}`)).toHaveScreenshot(`narrow-${id}.png`);
+      const section = page.locator(`section#${id}`);
+      await loadFrames(section);
+      await expect(section).toHaveScreenshot(`narrow-${id}.png`, { stylePath: HIDE_FRAMES });
     });
   }
 
@@ -115,13 +141,19 @@ test.describe('styleguide screenshots, phone width', () => {
   // The narrow tables and the settings form are drawn in phone-width frames,
   // because their breakpoints answer to the window. The frame is shot at
   // desktop width: its inside is the phone, whatever the page around it is.
+  const FRAME_CONTENT = {
+    'tabelle-liste': 'table',
+    einstellungen: '[data-testid^="setting-row-"]',
+  } as const;
   for (const probe of ['tabelle-liste', 'einstellungen'] as const) {
     test(`frame ${probe}`, async ({ page }) => {
       await openStyleguide(page, DESKTOP);
       const frameElement = page.getByTestId(`ds-frame-${probe}`);
       await frameElement.scrollIntoViewIfNeeded();
       const inside = page.frameLocator(`[data-testid="ds-frame-${probe}"]`);
-      await expect(inside.locator('body')).toBeVisible();
+      // The content, not just a body: the frame is lazy, and on a slow runner
+      // an empty document is already "visible".
+      await expect(inside.locator(FRAME_CONTENT[probe]).first()).toBeVisible();
       await inside
         .locator('body')
         .evaluate(

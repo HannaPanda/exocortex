@@ -209,7 +209,7 @@ first when the change is in CSS or a component, or the gate checks the old
 build.
 
 A red screenshot is a difference to review, not a verdict. Open the diff in
-`e2e/test-results`, then either fix the code or, when the change is meant, run
+`e2e/test-results` (from CI: `gh run download <run-id> -n styleguide-test-results`), then either fix the code or, when the change is meant, run
 `pnpm test:styleguide:update` and commit the new baselines on their own with the
 decision they record. Rewriting baselines to get a build green defeats the
 gate. An axe exception goes into `EXCEPTIONS` in `a11y.spec.ts` with its reason,

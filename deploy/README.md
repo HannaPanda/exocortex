@@ -504,7 +504,11 @@ Redis, which it runs because the workflow calls `build.sh --full-tests`
 Playwright image and serves the fresh web build on the runner itself, so a
 change that moves a canonical example, breaks a keyboard path or drops a
 contrast below AA fails here, before anything is deployed. It adds about two
-minutes, most of it the screenshots, plus the image pull.
+minutes, most of it the screenshots, plus the image pull. When a run fails, its
+one step after the build uploads `e2e/test-results` as the artifact
+`styleguide-test-results` (expected, actual and diff per screenshot):
+`gh run download <run-id> -n styleguide-test-results`. That step checks nothing;
+it only keeps the evidence a reviewer needs once the runner is gone.
 
 What it deliberately does not do: the Playwright
 suite against a deployment, and anything resembling a deployment. `scripts/deploy.sh` on this machine

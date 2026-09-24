@@ -1,0 +1,6 @@
+/* Applied to the section screenshots only (visual.spec.ts): a phone frame
+   loads on its own clock and has its own shot, so a section shot keeps the
+   frame's box and hides its document. `mask` does not cover an iframe. */
+iframe {
+  visibility: hidden !important;
+}
