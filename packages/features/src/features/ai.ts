@@ -296,7 +296,6 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
       path: '/einstellungen/benachrichtigungen',
     },
     settings: ['automations.maxConsecutiveFailures', 'notifications.digestTimeZone'],
-    tools: ['exo_notification_preference_set', 'exo_automation_runs'],
   }),
   defineFeature({
     id: 'zeitplaene',
