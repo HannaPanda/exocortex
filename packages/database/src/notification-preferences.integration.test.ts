@@ -127,6 +127,9 @@ describe('listNotificationPreferences', () => {
     expect(rows.map((row) => `${row.kind}/${row.channel}`)).toEqual([
       'SHARE/EMAIL',
       'COMMENT/EMAIL',
+      // Issue #107: a rule that switched itself off or a scheduled run that
+      // failed mails its owner, on by default.
+      'FAILURE/EMAIL',
     ]);
     expect(rows[0]).toMatchObject({ mode: 'IMMEDIATE', defaultMode: 'IMMEDIATE' });
     expect(rows[0]?.modes).toEqual(['OFF', 'IMMEDIATE']);
