@@ -85,6 +85,34 @@ export function buildTsQuery(input: string): string {
 }
 
 /**
+ * What makes a row of `document_search_index` a keyword match, and how well.
+ *
+ * Shared by the page search below and the passage search of the context
+ * compiler (issue #110), so the two can never disagree about which pages the
+ * words found: the compiler is meant to cut the same hits finer, not to be a
+ * second search algorithm. Both fragments refer to the index table under the
+ * alias `index`.
+ */
+export function keywordMatchSql(query: string): { predicate: Prisma.Sql; rank: Prisma.Sql } {
+  const tsQuery = buildTsQuery(query);
+  const like = `%${query.trim().toLowerCase()}%`;
+  return {
+    predicate: Prisma.sql`(
+      (${tsQuery} <> '' AND index."searchVector" @@ to_tsquery('simple', ${tsQuery}))
+      OR lower(index."title") LIKE ${like}
+      OR similarity(lower(index."title"), lower(${query})) > 0.25
+    )`,
+    rank: Prisma.sql`(
+      CASE
+        WHEN ${tsQuery} = '' THEN 0
+        ELSE ts_rank_cd(index."searchVector", to_tsquery('simple', ${tsQuery}))
+      END
+      + similarity(lower(index."title"), lower(${query})) * 0.5
+    )`,
+  };
+}
+
+/**
  * PostgreSQL full-text search plus trigram-based tolerant title matching.
  *
  * Ranking combines:
@@ -101,7 +129,7 @@ export class PostgresSearchAdapter implements SearchAdapter {
 
   async search(query: SearchQuery): Promise<SearchHit[]> {
     const tsQuery = buildTsQuery(query.query);
-    const like = `%${query.query.trim().toLowerCase()}%`;
+    const match = keywordMatchSql(query.query);
 
     const rows = await this.prisma.$queryRaw<SearchRow[]>(Prisma.sql`
       SELECT
@@ -120,24 +148,14 @@ export class PostgresSearchAdapter implements SearchAdapter {
             'StartSel=<mark>, StopSel=</mark>, MaxFragments=2, MaxWords=18, MinWords=5'
           )
         END                                                            AS "snippet",
-        (
-          CASE
-            WHEN ${tsQuery} = '' THEN 0
-            ELSE ts_rank_cd(index."searchVector", to_tsquery('simple', ${tsQuery}))
-          END
-          + similarity(lower(index."title"), lower(${query.query})) * 0.5
-        )                                                              AS "rank",
+        ${match.rank}                                                  AS "rank",
         index."archivedAt"                                             AS "archivedAt",
         index."updatedAt"                                              AS "updatedAt"
       FROM "document_search_index" AS index
       JOIN "document" AS document ON document."id" = index."documentId"
       WHERE index."workspaceId" = ${query.workspaceId}
         AND (${query.includeArchived} OR index."archivedAt" IS NULL)
-        AND (
-          (${tsQuery} <> '' AND index."searchVector" @@ to_tsquery('simple', ${tsQuery}))
-          OR lower(index."title") LIKE ${like}
-          OR similarity(lower(index."title"), lower(${query.query})) > 0.25
-        )
+        AND ${match.predicate}
       ORDER BY "rank" DESC, index."updatedAt" DESC
       LIMIT ${query.limit}
     `);
@@ -151,10 +169,11 @@ export class PostgresSearchAdapter implements SearchAdapter {
       type: row.type,
       snippet: row.snippet.replace(/\s+/g, ' ').trim(),
       // A keyword match is a position in a `tsvector`, and nothing maps that
-      // position back onto a block: the offset-to-block table issue #110 needs
-      // anyway does not exist yet, and guessing at one would be worse than
-      // saying nothing. The semantic half does locate its hits, and fusion
-      // keeps that when both halves found the same page.
+      // position back onto a block; guessing at one would be worse than saying
+      // nothing. The semantic half does locate its hits, and fusion keeps that
+      // when both halves found the same page. The context compiler locates
+      // keyword passages by borrowing the heading of the passage vector with
+      // the same text (ADR-061), which a page hit has no passage to do with.
       section: null,
       rank: Number(row.rank),
       archivedAt: row.archivedAt === null ? null : row.archivedAt.toISOString(),
