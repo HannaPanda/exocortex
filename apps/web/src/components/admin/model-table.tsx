@@ -32,13 +32,13 @@ import {
   TableRow,
 } from '@exocortex/ui';
 
+import { useDestructiveConfirmDialog } from '@/components/editor/destructive-confirm';
 import {
   useAdminAiModels,
   useDeleteAiModel,
   useSyncAiModels,
   useUpdateAiModel,
 } from '@/lib/api/admin-queries';
-import { useDestructiveConfirmDialog } from '@/components/editor/destructive-confirm';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 
