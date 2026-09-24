@@ -14,7 +14,8 @@ const badgeVariants = cva(
         secondary: 'border-transparent bg-secondary text-secondary-foreground',
         destructive: 'border-transparent bg-destructive text-destructive-foreground',
         outline: 'border-border text-foreground',
-        muted: 'border-transparent bg-muted text-muted-foreground',
+        // Not muted-foreground: on bg-muted that pair is 3.9:1 (issue #127).
+        muted: 'border-transparent bg-muted text-foreground/90',
       },
     },
     defaultVariants: { variant: 'default' },

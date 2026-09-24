@@ -642,8 +642,9 @@
     @apply flex shrink-0 items-center gap-1;
   }
 
+  /* On the bg-muted header, where muted-foreground would be 3.9:1. */
   :is(.exocortex-database-embed, .exocortex-transclusion) .embed-action {
-    @apply flex items-center gap-1 text-xs text-muted-foreground no-underline hover:text-foreground;
+    @apply flex items-center gap-1 text-xs text-foreground/90 no-underline hover:text-foreground;
   }
 
   :is(.exocortex-database-embed, .exocortex-transclusion) .embed-action svg {

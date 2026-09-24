@@ -310,8 +310,11 @@
     top: 0;
     width: 8rem;
     color: var(--muted-foreground);
+    /* A label is text, even beside a cell that sets figures in mono. */
+    font-family: var(--font-sans);
     font-size: 0.875rem;
     font-weight: 400;
+    letter-spacing: normal;
   }
 
   table[data-narrow='list'] > tbody > tr > td[data-cell='title'] {

@@ -127,7 +127,13 @@ export function PageTreeRow({
       data-tree-item={node.id}
       tabIndex={tabStopId === node.id ? 0 : -1}
       onKeyDown={(event) => onRowKeyDown(event, node.id)}
-      onFocus={() => onRowFocus(node.id)}
+      // React's focus event bubbles, and a tree item sits inside its parent's:
+      // without the stop every ancestor claimed the focus after the child did,
+      // and the tab stop stayed on the outermost branch (issue #127).
+      onFocus={(event) => {
+        event.stopPropagation();
+        onRowFocus(node.id);
+      }}
       // The ring belongs on the row, not on the item: an unfolded item is as
       // tall as its whole branch, and a ring around that says nothing about
       // where focus is. Inset, because the tree sits in a scroll container

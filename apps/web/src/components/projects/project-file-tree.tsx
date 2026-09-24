@@ -175,7 +175,7 @@ function TreeLevel({
             {iconFor(node.file)}
             <span className="truncate">{node.name}</span>
             {node.path === rootFile ? (
-              <span className="shrink-0 rounded-sm bg-muted px-1 text-nano text-muted-foreground">
+              <span className="shrink-0 rounded-sm bg-muted px-1 text-nano text-foreground/90">
                 Haupt
               </span>
             ) : null}

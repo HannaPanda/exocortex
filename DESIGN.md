@@ -26,7 +26,7 @@ colors:
   ring: 'oklch(0.796 0.155 72)'
   destructive: 'oklch(0.545 0.195 25)'
   destructive-foreground: 'oklch(0.975 0.012 25)'
-  destructive-text: 'oklch(0.855 0.130 25)'
+  destructive-text: 'oklch(0.880 0.130 25)'
   warning: 'oklch(0.870 0.135 100)'
   warning-foreground: 'oklch(0.255 0.050 100)'
   success: 'oklch(0.795 0.135 155)'
@@ -275,7 +275,7 @@ All of them are pitched brighter than they were under the near-black palette,
 because they now have to carry against a mid-tone page:
 
 - `destructive` `oklch(0.545 0.195 25)` -- fill. `destructive-text`
-  `oklch(0.855 0.130 25)` -- the same red as text and icons, at 4.4:1 on a card.
+  `oklch(0.880 0.130 25)` -- the same red as text and icons, at 4.6:1 on a card.
 - `warning` `oklch(0.870 0.135 100)` -- yellow-gold, held 28 degrees of hue away
   from the amber signal so a caution never reads as a primary action.
 - `success` `oklch(0.795 0.135 155)`, `info` `oklch(0.815 0.105 235)`.
@@ -324,7 +324,7 @@ is a shade darker than the page still reads as a menu, which is how every
 desktop has drawn one for thirty years.
 
 **The ink moved up, not down.** `muted-foreground` is 0.832 where it used to be
-0.740, `destructive-text` 0.855 where it was 0.815, and the content colours are
+0.740, `destructive-text` 0.880 where it was 0.815, and the content colours are
 all at a single 0.865. On a near-black background those values would have been
 glare. On this one they are the floor.
 

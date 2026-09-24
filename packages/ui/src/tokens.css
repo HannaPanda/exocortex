@@ -56,7 +56,7 @@
  *   --primary-text on --accent-strong          3.7:1  (icon only, WCAG 1.4.11)
  *   --primary-foreground on --primary          8.1:1
  *   --destructive-foreground on --destructive  5.1:1
- *   --destructive-text on --card               4.4:1
+ *   --destructive-text on --card               4.6:1
  *   --warning-foreground on --warning         10.7:1
  *   --success-foreground on --success          9.2:1
  *   --info-foreground on --info                9.7:1
@@ -142,7 +142,7 @@
 
   --destructive: oklch(0.545 0.195 25);
   --destructive-foreground: oklch(0.975 0.012 25);
-  --destructive-text: oklch(0.855 0.13 25);
+  --destructive-text: oklch(0.88 0.13 25);
 
   /* Yellow-gold, held 28 degrees of hue away from the amber signal so a caution
      never reads as a primary action. */

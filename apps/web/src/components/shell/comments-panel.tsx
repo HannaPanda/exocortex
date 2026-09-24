@@ -49,7 +49,7 @@ function CommentByline({ comment }: { comment: Comment }) {
     <div className="flex items-center gap-2">
       <span
         aria-hidden
-        className="grid size-5 shrink-0 place-items-center rounded-full bg-muted text-nano font-medium text-muted-foreground"
+        className="grid size-5 shrink-0 place-items-center rounded-full bg-muted text-nano font-medium text-foreground/90"
       >
         {initialsOf(comment.createdBy.name)}
       </span>

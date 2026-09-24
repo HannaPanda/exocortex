@@ -48,7 +48,10 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
         // row is free to be two lines high, and truncating there would hide
         // the end of "Struktur, Ablage und Vorlagen" for no gain.
         'data-[orientation=horizontal]:truncate',
-        'text-muted-foreground transition-colors select-none',
+        // Not `text-muted-foreground`: on the `bg-muted` track that measures
+        // 3.9:1 and fails AA (axe, issue #127). Foreground at 90 % clears 4.5:1
+        // and still a clear step below the selected tab.
+        'text-foreground/90 transition-colors select-none',
         'hover:text-foreground',
         // `data-active`, not `data-selected`: Base UI's tab puts its selection
         // in `aria-selected` and `data-active`, so the rules this component
