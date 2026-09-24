@@ -298,7 +298,7 @@ P11 and P13.
 Marked, not answered. P9, P11, P12, P13 and the calendar primitive were drawn
 as experiments on `/design-system` (#126) and decided on 2026-09-24; the
 experiments are deleted and the chosen variants live in their canonical
-sections. Nothing is open.
+sections. Nothing is open; the calendar decision is on trial (#132).
 
 | Decision                                          | Question                                                                               | Evidence | Outcome                                                                                                                |
 | ------------------------------------------------- | -------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
@@ -307,7 +307,7 @@ sections. Nothing is open.
 | P12 Dense surfaces narrow (decided 2026-09-24)    | sideways scroll, cards, or sticky key column; settings form narrow                     | 2.5      | a table of records becomes a list, the settings form is set for narrow; `#tabelle-schmal`, `#einstellungszeile-schmal` |
 | P13 Left accent borders (decided 2026-09-24)      | keep the comment rule as a stated exception, drop the transclusion one, or change both | F-3      | both gone: a count for comments, the plain frame for transclusion; `#markierte-bloecke`                                |
 | Archive vs trash (decided 2026-09-24: Papierkorb) | one word for the place and the action                                                  | 2.7      | copy decision, no experiment needed                                                                                    |
-| Calendar primitive (decided 2026-09-24)           | adopt `Calendar` for date entry or remove it                                           | 2.2      | adopted: `DatePicker` everywhere a date is entered; `#feld-datum`                                                      |
+| Calendar primitive (decided 2026-09-24)           | adopt `Calendar` for date entry or remove it                                           | 2.2      | adopted on trial: `DatePicker` everywhere a date is entered; `#feld-datum`; review in #132                             |
 
 ## 6. Proposed navigation for `/design-system`
 

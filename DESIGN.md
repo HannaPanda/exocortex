@@ -622,7 +622,9 @@ experiment "Datumseingabe"): a field-bordered button naming the day as
 with month and year dropdowns, "Heute", and "Entfernen" where the value is
 optional. The time beside it stays the native field, because a time is typed
 rather than browsed. ESLint refuses a literal `type="date"` or
-`type="datetime-local"` in the interface.
+`type="datetime-local"` in the interface. The decision is on trial until Johanna has
+used it for a while (issue #132): the native field, or a better component,
+may still replace it.
 
 Every other input type goes through the same `Input`, and
 `/design-system#feld-typen` shows each one the product uses. The parts the browser draws itself (the date
