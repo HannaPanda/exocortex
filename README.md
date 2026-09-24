@@ -289,6 +289,7 @@ tools/                the Claude Code plugin: MCP server, memory hooks, setup sk
 | [`docs/observability.md`](docs/observability.md)                       | logs, health, tracing: what is recorded and what never is               |
 | [`docs/deviations.md`](docs/deviations.md)                             | where the implementation deviates from the brief and why                |
 | [`docs/design-review-2026-09-20.md`](docs/design-review-2026-09-20.md) | a dated snapshot: where the interface drifts from its own design system |
+| [`docs/design-system-inventory.md`](docs/design-system-inventory.md)   | what the interface owns, what is canonical, duplicate or undecided      |
 | [`AGENTS.md`](AGENTS.md)                                               | rules for automated agents, including the documentation rule            |
 | [`CLAUDE.md`](CLAUDE.md)                                               | rules for Claude Code sessions                                          |
 | [`deploy/README.md`](deploy/README.md)                                 | production deployment on this host                                      |

@@ -1,5 +1,9 @@
 # UI system
 
+This is the technical lookup. The rules and their reasons are in `DESIGN.md`;
+which implementation of each component and pattern is canonical, duplicated or
+still undecided is in `docs/design-system-inventory.md`.
+
 ## Design tokens
 
 `packages/ui/src/tokens.css` defines every colour, radius and layout metric as a
