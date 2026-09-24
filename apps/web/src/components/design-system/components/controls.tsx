@@ -25,6 +25,8 @@ import {
 
 import { DsExample, DsSection, DsState, DsStates } from '../showcase';
 
+import { InputTypesExample } from './input-types';
+
 /**
  * Buttons, form fields, toggles and tabs: the controls a person touches, each
  * in the states it actually implements. Hover, focus and press are left to the
@@ -191,6 +193,8 @@ export function FormsSection() {
           </div>
         </div>
       </DsExample>
+
+      <InputTypesExample />
 
       <DsExample
         id="feld-mehrzeilig"

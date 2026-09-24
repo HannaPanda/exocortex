@@ -28,7 +28,8 @@ const OPEN_DECISIONS: readonly OpenDecision[] = [
     title: 'Kalender-Baustein',
     question: 'Calendar für die Datumseingabe übernehmen oder entfernen?',
     evidence:
-      'Eine Produktentscheidung, kein Experiment. Der Baustein hat heute keine Aufrufstelle.',
+      'Der Baustein hat heute keine Aufrufstelle; alle Datumsfelder nutzen das Feld des Browsers. Beide Varianten stehen unten zum Ausprobieren.',
+    experiment: 'experiment-datum',
   },
 ];
 

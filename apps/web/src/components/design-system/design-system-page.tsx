@@ -26,6 +26,7 @@ import {
   TablesSection,
 } from './components/display';
 import { DialogsSection, MenusSection } from './components/overlays';
+import { DateEntryExperiment } from './experiments/date-entry';
 import { ExperimentsSection } from './experiments/experiments';
 import {
   ColourSection,
@@ -234,6 +235,7 @@ export function DesignSystemPage({ tokens, ladder, measure }: DesignSystemPagePr
           <AccessibilitySection />
           <LanguageSection />
           <ExperimentsSection />
+          <DateEntryExperiment />
         </main>
       </div>
     </div>

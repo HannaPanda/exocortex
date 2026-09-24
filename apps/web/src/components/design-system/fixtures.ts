@@ -20,6 +20,14 @@ import { presenceColor, SELF_PRESENCE_COLOR } from '@/components/shell/document-
  * hydration mismatch. Counted from now, both say the same thing.
  */
 
+/**
+ * A fixed day for the date fields and the date experiment. Fixed rather than
+ * relative: a date field shows the date itself, not an offset, so "today"
+ * would change every screenshot at midnight.
+ */
+export const FIXTURE_DATE = '2026-10-05';
+export const FIXTURE_DATE_TIME = `${FIXTURE_DATE}T09:30`;
+
 export const FIXTURE_WORKSPACE_ID = 'dsworkspace000000000000';
 
 function ago(minutes: number): string {

@@ -83,6 +83,7 @@ docker run --rm --network host --ipc host \
   --user "$(id -u):$(id -g)" \
   -e HOME=/tmp \
   -e CI="${CI:-}" \
+  -e LANGUAGE=de \
   -e STYLEGUIDE_BASE_URL="http://127.0.0.1:${PORT}" \
   -v "$ROOT_DIR:$ROOT_DIR" \
   -w "$ROOT_DIR/e2e" \

@@ -208,6 +208,14 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* The controls the browser draws itself (a range slider, the selection in
+     a native date picker) take their colour from here. Left at the default
+     they are the browser's blue, the one colour on the screen that is not
+     ours; interactive is amber everywhere else. */
+  :root {
+    accent-color: var(--primary);
+  }
+
   /* The caret is where the user's attention actually is, so it carries the
      signal colour. This is the one place amber appears without being asked for,
      and it is the reason the editor feels like the product rather than like a

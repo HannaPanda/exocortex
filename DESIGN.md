@@ -615,6 +615,12 @@ height 2.25rem, `shadow-xs`. Focus moves the border to `ring` and adds a 3px
 `ring/50`. Invalid state moves the border to `destructive` and the ring to
 `destructive/20`, and is always accompanied by a message.
 
+Every input type goes through the same `Input`, and `/design-system#feld-typen`
+shows each one the product uses. The parts the browser draws itself (the date
+and time popups, the spin buttons, a range slider) are dark through
+`color-scheme: dark` and amber through `accent-color: var(--primary)` on the
+root, so no native control is left in the browser's blue.
+
 ### Navigation
 
 The page tree is the primary navigation: `nav-item` at `muted-foreground`,

@@ -3,6 +3,7 @@
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import * as React from 'react';
 import { type DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker';
+import { de } from 'react-day-picker/locale';
 
 import { cn } from '../../lib/utils';
 
@@ -12,6 +13,10 @@ import { Button, buttonVariants } from './button';
  * Installed with the official shadcn CLI (`shadcn add calendar`). Built on
  * `react-day-picker`, not Radix, so nothing needed adapting to Base UI —
  * only the import paths (relative, not the `@/` alias) and quote style.
+ *
+ * German by default (rule 8): the month names, the weekday row, the week
+ * starting on Monday and the navigation's accessible names all come from the
+ * `de` locale, so a caller cannot forget it.
  */
 function Calendar({
   className,
@@ -21,6 +26,7 @@ function Calendar({
   buttonVariant = 'ghost',
   formatters,
   components,
+  locale = de,
   ...props
 }: React.ComponentProps<typeof DayPicker> & {
   buttonVariant?: React.ComponentProps<typeof Button>['variant'];
@@ -37,8 +43,9 @@ function Calendar({
         className,
       )}
       captionLayout={captionLayout}
+      locale={locale}
       formatters={{
-        formatMonthDropdown: (date) => date.toLocaleString('default', { month: 'short' }),
+        formatMonthDropdown: (date) => date.toLocaleString('de-DE', { month: 'short' }),
         ...formatters,
       }}
       classNames={{
