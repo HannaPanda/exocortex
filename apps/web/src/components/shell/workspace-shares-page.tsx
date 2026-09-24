@@ -20,7 +20,12 @@ import {
   TableRow,
 } from '@exocortex/ui';
 
+import { ApiError } from '@/lib/api/client';
+import { messageForCode } from '@/lib/api/error-messages';
 import { useRevokeWorkspaceShare, useWorkspaceShares } from '@/lib/api/share-queries';
+
+import { ShareRevokeConfirm } from './share-revoke-confirm';
+import { SHARE_STATE_LABELS, shareStateOf } from './share-wording';
 
 const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium' });
 
@@ -38,6 +43,8 @@ const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium' });
 export function WorkspaceSharesPage({ workspaceId }: { workspaceId: string }) {
   const shares = useWorkspaceShares(workspaceId);
   const revoke = useRevokeWorkspaceShare(workspaceId);
+  /** The share whose withdrawal is being confirmed, by id. At most one. */
+  const [confirming, setConfirming] = React.useState<string | null>(null);
 
   if (shares.isPending) return <LoadingState label="Freigaben werden geladen …" />;
   if (shares.isError) {
@@ -50,6 +57,8 @@ export function WorkspaceSharesPage({ workspaceId }: { workspaceId: string }) {
   }
 
   const rows = shares.data.shares;
+  // Expiry is judged against the moment the answer arrived, not the render.
+  const now = shares.dataUpdatedAt;
 
   return (
     <AppPage maxWidth="max-w-5xl">
@@ -81,44 +90,73 @@ export function WorkspaceSharesPage({ workspaceId }: { workspaceId: string }) {
           </TableHeader>
           <TableBody>
             {rows.map((share) => (
-              <TableRow key={share.id} data-testid="workspace-share-row">
-                <TableCell>
-                  <Link
-                    href={`/arbeitsbereich/${workspaceId}/seite/${share.documentId}`}
-                    className="font-medium hover:underline"
-                  >
-                    {share.documentTitle}
-                  </Link>
-                </TableCell>
-                <TableCell className="text-sm">{recipientOf(share)}</TableCell>
-                <TableCell>
-                  <Badge variant="muted">
-                    {share.permission === 'WRITE' ? 'Bearbeiten' : 'Lesen'}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {share.scope === 'SUBTREE' ? 'mit Unterseiten' : 'nur die Seite'}
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {share.expiresAt === null ? '–' : dateFormat.format(new Date(share.expiresAt))}
-                </TableCell>
-                <TableCell>
-                  <Badge variant={share.revokedAt === null ? 'default' : 'muted'}>
-                    {share.revokedAt === null ? 'Aktiv' : 'Zurückgezogen'}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={share.revokedAt !== null}
-                    data-testid="workspace-share-revoke"
-                    onClick={() => revoke.mutate(share.id)}
-                  >
-                    Zurückziehen
-                  </Button>
-                </TableCell>
-              </TableRow>
+              <React.Fragment key={share.id}>
+                <TableRow data-testid="workspace-share-row" data-state={shareStateOf(share, now)}>
+                  <TableCell>
+                    <Link
+                      href={`/arbeitsbereich/${workspaceId}/seite/${share.documentId}`}
+                      className="font-medium hover:underline"
+                    >
+                      {share.documentTitle}
+                    </Link>
+                  </TableCell>
+                  <TableCell className="text-sm">{recipientOf(share)}</TableCell>
+                  <TableCell>
+                    <Badge variant="muted">
+                      {share.permission === 'WRITE' ? 'Bearbeiten' : 'Lesen'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {share.scope === 'SUBTREE' ? 'mit Unterseiten' : 'nur die Seite'}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {share.expiresAt === null ? '–' : dateFormat.format(new Date(share.expiresAt))}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={shareStateOf(share, now) === 'active' ? 'default' : 'muted'}>
+                      {SHARE_STATE_LABELS[shareStateOf(share, now)]}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={share.revokedAt !== null || confirming === share.id}
+                      data-testid="workspace-share-revoke"
+                      aria-label={`Zurückziehen: ${share.documentTitle}`}
+                      onClick={() => {
+                        revoke.reset();
+                        setConfirming(share.id);
+                      }}
+                    >
+                      Zurückziehen
+                    </Button>
+                  </TableCell>
+                </TableRow>
+                {confirming === share.id ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="whitespace-normal">
+                      <ShareRevokeConfirm
+                        share={share}
+                        where="list"
+                        testIdPrefix="workspace-share"
+                        pending={revoke.isPending}
+                        error={
+                          revoke.isError
+                            ? revoke.error instanceof ApiError
+                              ? messageForCode(revoke.error.code)
+                              : 'Die Freigabe konnte nicht zurückgezogen werden.'
+                            : null
+                        }
+                        onCancel={() => setConfirming(null)}
+                        onConfirm={() =>
+                          revoke.mutate(share.id, { onSuccess: () => setConfirming(null) })
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
+                ) : null}
+              </React.Fragment>
             ))}
           </TableBody>
         </Table>

@@ -20,9 +20,8 @@ import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import { useMyShares, useRevokeMyShare } from '@/lib/api/share-queries';
 
-import { describeShare, revokeConsequence } from './share-wording';
-
-type ShareState = 'active' | 'expired' | 'revoked';
+import { ShareRevokeConfirm } from './share-revoke-confirm';
+import { describeShare, SHARE_STATE_LABELS, type ShareState, shareStateOf } from './share-wording';
 
 /** Above this many rows a filter earns its place; below it, it is one more field. */
 const FILTER_THRESHOLD = 6;
@@ -61,10 +60,10 @@ export function MySharesList() {
   // the list refetches on focus, so this is never far behind the clock.
   const now = shares.dataUpdatedAt;
   const all = shares.data.shares;
-  const inactiveCount = all.filter((share) => stateOf(share, now) !== 'active').length;
+  const inactiveCount = all.filter((share) => shareStateOf(share, now) !== 'active').length;
   const needle = filter.trim().toLocaleLowerCase('de-DE');
   const rows = all
-    .filter((share) => showInactive || stateOf(share, now) === 'active')
+    .filter((share) => showInactive || shareStateOf(share, now) === 'active')
     .filter(
       (share) =>
         needle.length === 0 ||
@@ -130,7 +129,7 @@ export function MySharesList() {
                 <MyShareRow
                   key={share.id}
                   share={share}
-                  state={stateOf(share, now)}
+                  state={shareStateOf(share, now)}
                   confirming={confirming === share.id}
                   onAskRevoke={() => {
                     revoke.reset();
@@ -208,9 +207,7 @@ function MyShareRow({
             in „{share.workspaceName}“ · {describeShare(share)}
           </span>
         </span>
-        {state === 'active' ? null : (
-          <Badge variant="muted">{state === 'revoked' ? 'Zurückgezogen' : 'Abgelaufen'}</Badge>
-        )}
+        {state === 'active' ? null : <Badge variant="muted">{SHARE_STATE_LABELS[state]}</Badge>}
         {state === 'revoked' || confirming ? null : share.canRevoke ? (
           <Button
             variant="outline"
@@ -231,52 +228,16 @@ function MyShareRow({
       ) : null}
 
       {confirming ? (
-        <div
-          className="flex flex-col gap-2 border-t border-border pt-2"
-          data-testid="my-share-revoke-confirm"
-          onKeyDown={(event) => {
-            if (event.key !== 'Escape') return;
-            event.stopPropagation();
-            onCancelRevoke();
-          }}
-        >
-          <p role="alert" className="text-sm">
-            <span className="font-medium">Zurückziehen?</span>{' '}
-            <span className="text-muted-foreground">{revokeConsequence(share, 'list')}</span>
-          </p>
-          {revokeError === null ? null : (
-            <p role="alert" className="text-xs text-destructive-text">
-              {revokeError}
-            </p>
-          )}
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              autoFocus
-              data-testid="my-share-revoke-cancel"
-              onClick={onCancelRevoke}
-            >
-              Abbrechen
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              disabled={revokePending}
-              data-testid="my-share-revoke-confirm-button"
-              onClick={onConfirmRevoke}
-            >
-              {revokePending ? 'Wird zurückgezogen …' : 'Zurückziehen'}
-            </Button>
-          </div>
-        </div>
+        <ShareRevokeConfirm
+          share={share}
+          where="list"
+          testIdPrefix="my-share"
+          pending={revokePending}
+          error={revokeError}
+          onCancel={onCancelRevoke}
+          onConfirm={onConfirmRevoke}
+        />
       ) : null}
     </li>
   );
-}
-
-function stateOf(share: MyShare, now: number): ShareState {
-  if (share.revokedAt !== null) return 'revoked';
-  if (share.expiresAt !== null && new Date(share.expiresAt).getTime() <= now) return 'expired';
-  return 'active';
 }

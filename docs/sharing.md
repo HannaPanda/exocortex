@@ -6,20 +6,20 @@ the feature.
 
 ## The shape of it
 
-| Thing                                             | Where                                                                                                                                          |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| The grant row                                     | `DocumentShare` in `packages/database/prisma/schema.prisma`                                                                                    |
-| The confinement row                               | `ApiTokenPageScope`, plus `ApiToken.pageScoped`                                                                                                |
-| Pure decisions                                    | `packages/auth/src/document-grants.ts`                                                                                                         |
-| Where every route meets them                      | `packages/auth/src/access.ts`                                                                                                                  |
-| Link tokens                                       | `packages/auth/src/share-token.ts`                                                                                                             |
-| Who may hand a page out                           | `canManageShares`, `canShareAtMost`, `canReadShares`                                                                                           |
-| Writing grants                                    | `apps/api/src/shares/shares.service.ts`                                                                                                        |
-| The anonymous read                                | `apps/api/src/shares/public-shares.service.ts`                                                                                                 |
-| What a shared page may say about its surroundings | `apps/api/src/documents/share-visibility.ts`                                                                                                   |
-| Telling the recipient                             | `apps/worker/src/processors/maintenance-tasks/share-notifications.ts`                                                                          |
-| Tools                                             | `packages/mcp-tools/src/tools/shares.ts`                                                                                                       |
-| Browser                                           | `share-dialog.tsx`, `workspace-shares-page.tsx`, `shares-page.tsx` (`my-shares-list.tsx`, `incoming-shares-list.tsx`), `public-share-page.tsx` |
+| Thing                                             | Where                                                                                                                                                                      |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| The grant row                                     | `DocumentShare` in `packages/database/prisma/schema.prisma`                                                                                                                |
+| The confinement row                               | `ApiTokenPageScope`, plus `ApiToken.pageScoped`                                                                                                                            |
+| Pure decisions                                    | `packages/auth/src/document-grants.ts`                                                                                                                                     |
+| Where every route meets them                      | `packages/auth/src/access.ts`                                                                                                                                              |
+| Link tokens                                       | `packages/auth/src/share-token.ts`                                                                                                                                         |
+| Who may hand a page out                           | `canManageShares`, `canShareAtMost`, `canReadShares`                                                                                                                       |
+| Writing grants                                    | `apps/api/src/shares/shares.service.ts`                                                                                                                                    |
+| The anonymous read                                | `apps/api/src/shares/public-shares.service.ts`                                                                                                                             |
+| What a shared page may say about its surroundings | `apps/api/src/documents/share-visibility.ts`                                                                                                                               |
+| Telling the recipient                             | `apps/worker/src/processors/maintenance-tasks/share-notifications.ts`                                                                                                      |
+| Tools                                             | `packages/mcp-tools/src/tools/shares.ts`                                                                                                                                   |
+| Browser                                           | `share-dialog.tsx`, `workspace-shares-page.tsx`, `shares-page.tsx` (`my-shares-list.tsx`, `incoming-shares-list.tsx`), `share-revoke-confirm.tsx`, `public-share-page.tsx` |
 
 ## Adding a route that answers with pages
 
@@ -97,7 +97,8 @@ Two things to keep in mind when changing this feature:
   may carry several links and only one grant per account.
 - **An archived page answers a link like a missing one.** Putting a page in the
   trash says it is out of use, and a link that kept serving it would disagree.
-- **Withdrawing a grant is asked about before it happens**, and the question
+- **Withdrawing a grant is asked about before it happens**, in the share dialog
+  and in both lists alike (`share-revoke-confirm.tsx`), and the question
   names what it costs: a public link's address stops working for everyone and
   cannot be brought back, while an account can be invited again in the row
   above. The question is inline in the share row rather than a second dialog on

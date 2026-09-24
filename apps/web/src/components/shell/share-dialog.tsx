@@ -35,7 +35,8 @@ import {
   useUpdateShare,
 } from '@/lib/api/share-queries';
 
-import { describeShare as describe, revokeConsequence } from './share-wording';
+import { ShareRevokeConfirm } from './share-revoke-confirm';
+import { describeShare as describe } from './share-wording';
 
 /**
  * Handing a page to somebody who is not in this workspace (issue #83, ADR-044).
@@ -409,54 +410,15 @@ function ShareRow({
       </div>
 
       {confirming ? (
-        <div
-          className="flex flex-col gap-2 border-t border-border pt-2"
-          data-testid="share-revoke-confirm"
-          // Escape backs out of the question, the same key that backs out of
-          // the dialog this sits inside.
-          onKeyDown={(event) => {
-            if (event.key !== 'Escape') return;
-            event.stopPropagation();
-            onCancelRevoke();
-          }}
-        >
-          {/* `role="alert"`: the sentence appears in place of nothing, so this
-              is the only way it reaches a screen reader before the button
-              under it is pressed. */}
-          <p role="alert" className="text-sm">
-            <span className="font-medium">Zurückziehen?</span>{' '}
-            <span className="text-muted-foreground">{revokeConsequence(share, 'dialog')}</span>
-          </p>
-          {revokeError === null ? null : (
-            <p role="alert" className="text-xs text-destructive-text">
-              {revokeError}
-            </p>
-          )}
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              // The trigger this replaces is gone from the DOM, so without
-              // this a keyboard user is left standing on `<body>`. It lands on
-              // the safe half of the choice, and it is a button rather than a
-              // field, so no phone opens a keyboard for it.
-              autoFocus
-              data-testid="share-revoke-cancel"
-              onClick={onCancelRevoke}
-            >
-              Abbrechen
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              disabled={revokePending}
-              data-testid="share-revoke-confirm-button"
-              onClick={onConfirmRevoke}
-            >
-              {revokePending ? 'Wird zurückgezogen …' : 'Zurückziehen'}
-            </Button>
-          </div>
-        </div>
+        <ShareRevokeConfirm
+          share={share}
+          where="dialog"
+          testIdPrefix="share"
+          pending={revokePending}
+          error={revokeError}
+          onCancel={onCancelRevoke}
+          onConfirm={onConfirmRevoke}
+        />
       ) : null}
     </li>
   );

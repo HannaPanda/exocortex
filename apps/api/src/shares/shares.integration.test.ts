@@ -419,6 +419,20 @@ describe("the account's own list of grants", () => {
     expect(mine.shares.map((share) => share.revokedAt === null)).toEqual([true, false]);
   });
 
+  it('puts live grants first in the workspace overview too', async () => {
+    const first = await shares.create({
+      documentId: sharedPageId,
+      userId: ownerId,
+      request: link,
+      correlationId,
+    });
+    await shares.create({ documentId: childPageId, userId: ownerId, request: link, correlationId });
+    await shares.revoke({ shareId: first.share.id, userId: ownerId, correlationId });
+
+    const overview = await shares.listOutgoing(workspaceId, ownerId);
+    expect(overview.shares.map((share) => share.revokedAt === null)).toEqual([true, false]);
+  });
+
   it('keeps a grant the caller can no longer withdraw, and says so', async () => {
     await shares.create({ documentId: otherPageId, userId: ownerId, request: link, correlationId });
     await prisma.workspaceMember.update({

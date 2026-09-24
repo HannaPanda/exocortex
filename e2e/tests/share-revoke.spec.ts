@@ -157,6 +157,32 @@ test.describe('Freigabe zurückziehen', () => {
   });
 });
 
+test.describe('Freigabe zurückziehen in der Übersicht des Arbeitsbereichs', () => {
+  test('auch dort fragt der erste Klick nur, und erst der zweite zieht zurück', async ({
+    page,
+  }) => {
+    const title = `Übersicht ${Date.now().toString(36)}`;
+    const { documentId } = await pageWithShare(title, {
+      kind: 'PUBLIC_LINK',
+      scope: 'PAGE_ONLY',
+    });
+    await page.goto(`/arbeitsbereich/${workspaceId}/freigaben`);
+    const row = page.getByTestId('workspace-share-row').filter({ hasText: title });
+    await expect(row).toHaveAttribute('data-state', 'active');
+
+    await row.getByTestId('workspace-share-revoke').click();
+    await expect(page.getByTestId('workspace-share-revoke-confirm')).toContainText(
+      'lässt sich nicht wiederherstellen',
+    );
+    await expect(page.getByTestId('workspace-share-revoke-cancel')).toBeFocused();
+    expect(await activeShareCount(documentId)).toBe(1);
+
+    await page.getByTestId('workspace-share-revoke-confirm-button').click();
+    await expect(row).toHaveAttribute('data-state', 'revoked');
+    expect(await activeShareCount(documentId)).toBe(0);
+  });
+});
+
 test.describe('Freigabe zurückziehen auf Telefonbreite', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 

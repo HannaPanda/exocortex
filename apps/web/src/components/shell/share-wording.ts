@@ -50,3 +50,21 @@ export function revokeConsequence(share: DocumentShare, where: 'dialog' | 'list'
     `${regrant}${reach}`
   );
 }
+
+export type ShareState = 'active' | 'expired' | 'revoked';
+
+export const SHARE_STATE_LABELS: Record<ShareState, string> = {
+  active: 'Aktiv',
+  expired: 'Abgelaufen',
+  revoked: 'Zurückgezogen',
+};
+
+/**
+ * Whether a grant still works. An expired grant has no `revokedAt` and would
+ * read as live without this, although nobody can use it any more.
+ */
+export function shareStateOf(share: DocumentShare, now: number): ShareState {
+  if (share.revokedAt !== null) return 'revoked';
+  if (share.expiresAt !== null && new Date(share.expiresAt).getTime() <= now) return 'expired';
+  return 'active';
+}

@@ -24,6 +24,7 @@ import {
 } from '@exocortex/contracts';
 import {
   loadAncestorChain,
+  type Prisma,
   type PrismaClient,
   type PrismaTransactionClient,
 } from '@exocortex/database';
@@ -43,6 +44,17 @@ const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
  * and a list nobody reviews is where a forgotten share lives for ever.
  */
 const MAX_SHARES_PER_DOCUMENT = 50;
+
+/**
+ * Live grants first, newest first within each half. Postgres sorts NULL last
+ * in ascending order, and a live grant is exactly the one whose `revokedAt` is
+ * NULL: a bare `revokedAt: 'asc'` put every withdrawn grant on top and, behind
+ * a `take`, could push a live one out of the answer altogether.
+ */
+const LIVE_FIRST: Prisma.DocumentShareOrderByWithRelationInput[] = [
+  { revokedAt: { sort: 'asc', nulls: 'first' } },
+  { createdAt: 'desc' },
+];
 
 /** Upper bound of the personal list; the answer says when it was reached. */
 const MAX_MY_SHARES = 500;
@@ -171,7 +183,7 @@ export class SharesService {
       this.prisma.documentShare.findMany({
         where: { documentId },
         select: SHARE_SELECT,
-        orderBy: [{ revokedAt: 'asc' }, { createdAt: 'desc' }],
+        orderBy: LIVE_FIRST,
       }),
       ancestors.length === 0
         ? Promise.resolve([])
@@ -515,7 +527,7 @@ export class SharesService {
         ...(scoped.documentIds === null ? {} : { documentId: { in: [...scoped.documentIds] } }),
       },
       select: SHARE_SELECT,
-      orderBy: [{ revokedAt: 'asc' }, { createdAt: 'desc' }],
+      orderBy: LIVE_FIRST,
       take: 200,
     });
     return { shares: rows.map((row) => toContract(row)) };
@@ -557,9 +569,7 @@ export class SharesService {
     const rows = await this.prisma.documentShare.findMany({
       where: { createdById: userId, OR: filters },
       select: SHARE_SELECT,
-      // Live grants first. Postgres sorts NULL last in ascending order, and a
-      // live grant is exactly the one whose `revokedAt` is NULL.
-      orderBy: [{ revokedAt: { sort: 'asc', nulls: 'first' } }, { createdAt: 'desc' }],
+      orderBy: LIVE_FIRST,
       take: MAX_MY_SHARES + 1,
     });
     return {
