@@ -57,7 +57,9 @@ export function MySharesList() {
     );
   }
 
-  const now = Date.now();
+  // Expiry is judged against the moment the answer arrived, not the render:
+  // the list refetches on focus, so this is never far behind the clock.
+  const now = shares.dataUpdatedAt;
   const all = shares.data.shares;
   const inactiveCount = all.filter((share) => stateOf(share, now) !== 'active').length;
   const needle = filter.trim().toLocaleLowerCase('de-DE');
