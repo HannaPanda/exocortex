@@ -216,7 +216,10 @@ describe('the lint policy still has teeth', () => {
     );
     const result = oxlint('apps/web/src/components/__lint_probe__.ts');
     expect(result.status).not.toBe(0);
-    expect(result.output).toContain('not a product contract');
+    // The rule name, not the message: in CI oxlint reports in GitHub's
+    // annotation format, which shortens the help text. The probe imports
+    // nothing but a relative path, so no other pattern of the rule can match.
+    expect(result.output).toContain('no-restricted-imports');
     expect(oxlint('apps/web/src/components/design-system/design-system-page.tsx').status).toBe(0);
   });
 
