@@ -25,7 +25,16 @@ const API_SRC = join(repoRoot, 'apps/api/src');
 const WEB_SRC = join(repoRoot, 'apps/web/src');
 const CATALOGUE_SRC = join(repoRoot, 'packages/mcp-tools/src');
 
-const SKIP_DIRS = new Set(['node_modules', 'dist', 'generated', '.turbo', 'coverage', '.next']);
+const SKIP_DIRS = new Set([
+  'node_modules',
+  'dist',
+  'generated',
+  '.turbo',
+  'coverage',
+  '.next',
+  '.next-releases',
+  '.next-live',
+]);
 
 export function walk(dir, acc = []) {
   if (!existsSync(dir)) return acc;

@@ -105,6 +105,8 @@ export default [
       '.claude/worktrees/**',
       '**/dist/**',
       '**/.next/**',
+      '**/.next-releases/**',
+      '**/.next-live/**',
       '**/.turbo/**',
       '**/coverage/**',
       '**/generated/**',

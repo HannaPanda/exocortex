@@ -11,6 +11,9 @@ Group=johanna
 WorkingDirectory=/var/www/exocortex/apps/web
 # Configuration is read from /var/www/exocortex/.env by @exocortex/config.
 Environment=NODE_ENV=production
+# Serve the release scripts/deploy.sh switched to, never the .next directory a
+# build writes into while this process is running (issue #130).
+Environment=EXOCORTEX_WEB_DIST_DIR=.next-live
 ExecStart=/usr/bin/node node_modules/next/dist/bin/next start --port 3210 --hostname 127.0.0.1
 Restart=always
 RestartSec=3

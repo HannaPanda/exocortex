@@ -60,6 +60,8 @@ const tsc = join(
 const SKIP_DIRS = new Set([
   '.git',
   '.next',
+  '.next-live',
+  '.next-releases',
   '.turbo',
   'coverage',
   'dist',

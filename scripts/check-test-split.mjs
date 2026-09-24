@@ -52,7 +52,16 @@ const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const WORKSPACE_ROOTS = ['apps', 'packages'];
 
 /** Directories that hold build output or dependencies, never sources. */
-const SKIP_DIRS = new Set(['node_modules', 'dist', '.next', '.turbo', 'coverage', 'generated']);
+const SKIP_DIRS = new Set([
+  'node_modules',
+  'dist',
+  '.next',
+  '.next-releases',
+  '.next-live',
+  '.turbo',
+  'coverage',
+  'generated',
+]);
 
 /** The canonical scripts. Spelled once here and compared literally. */
 const UNIT_SCRIPT = "vitest run --exclude '**/*.integration.test.*' --passWithNoTests";

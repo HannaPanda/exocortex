@@ -1,6 +1,8 @@
 node_modules
 dist
 .next
+.next-releases
+.next-live
 .turbo
 coverage
 pnpm-lock.yaml

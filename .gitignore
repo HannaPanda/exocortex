@@ -2,6 +2,10 @@ node_modules/
 dist/
 build/
 .next/
+# The web releases scripts/deploy.sh stages, and the symlink the web unit
+# serves (issue #130). No trailing slash on the link: git sees a symlink as a file.
+.next-releases/
+.next-live
 out/
 coverage/
 .turbo/

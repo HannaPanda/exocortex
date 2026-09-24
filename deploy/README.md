@@ -395,7 +395,21 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
     and compiling the graph no longer has Better Auth write its OAuth resource
     rows into production on every deploy.
 
-12. **Restart**, API first (everything talks to it), web last (it is what people
+12. **Web release** (issue #130). The web unit never serves `apps/web/.next`:
+    `next build` rewrites that directory in place for minutes, and a server
+    reading it meanwhile hands out pages whose stylesheets are already gone.
+    The unit sets `EXOCORTEX_WEB_DIST_DIR=.next-live`, which `next.config.ts`
+    reads as `distDir`, and `.next-live` is a symlink into
+    `apps/web/.next-releases/<UTC timestamp>-<sha>`. This step copies the
+    finished build there (without `cache/`, the 750 MB incremental cache
+    `next start` never reads) under a `.partial` name and renames it when
+    complete. A failed build never reaches this step, so the previous release
+    keeps serving.
+13. **systemd units.** The four service units are installed from
+    `deploy/systemd/` when they differ, followed by `daemon-reload`, which
+    restarts nothing. Without it a web unit that lagged behind would quietly
+    keep serving the directory the next build writes into.
+14. **Restart**, API first (everything talks to it), web last (it is what people
     have open):
 
     ```text
@@ -410,12 +424,29 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
     Never `pkill -f`: a pattern like `node dist/main.js` matches the live
     services. Use `systemctl`, or an exact PID.
 
-13. **Readiness**, `/health/ready` with up to fifteen tries two seconds apart,
+    Right before `exocortex-web` restarts, `.next-live` is pointed at the new
+    release with one `rename(2)` (`ln -sfn` alone unlinks first and leaves an
+    instant without the link). The unit then has to answer `/anmelden` on port
+    3210 within thirty seconds; if it does not, the link goes back to the
+    previous release and the unit is restarted on it before the script fails.
+    Switching back by hand is the same two lines against an older directory
+    under `.next-releases/`, followed by `sudo systemctl restart exocortex-web`.
+
+15. **Readiness**, `/health/ready` with up to fifteen tries two seconds apart,
     then `systemctl is-active` for all four.
-14. **The marker.** `.last-deployed-sha` is written last and only on full
+16. **The marker.** `.last-deployed-sha` is written last and only on full
     success, so a rollout that fell over halfway leaves nothing behind claiming
     it worked, and the next run does everything again rather than believing this
     one.
+17. **Old web releases.** The three newest stay, so there is always one to
+    switch back to, and the one being served is never removed whatever its age.
+    Leftover `.partial` copies from an interrupted deploy go too.
+
+    The API, the collaboration server and the worker are not staged this way:
+    they load nearly all of their modules at start, so `tsc` rewriting `dist/`
+    during the build mostly passes a process that already has them in memory.
+    The exception is a module imported lazily, such as the OpenTelemetry SDK
+    in `otel.ts`, which could meet a newer file; no deploy has shown that.
 
 ### Expected right after a deploy
 

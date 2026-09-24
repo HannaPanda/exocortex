@@ -189,6 +189,64 @@ step "Step 5b — the API's module graph"
 bash scripts/test-integration.sh --run 'pnpm --filter @exocortex/api exec vitest run src/app.module.integration.test.ts'   || fail "The API cannot construct its module graph"      "A provider is missing from a module, or a module is not imported. Nothing has been restarted; the deployment is still on the previous build."
 ok "Every provider of every module resolves."
 
+# --- 5c. Web release ---------------------------------------------------------
+# The web unit does not serve `apps/web/.next` (issue #130). `next build`
+# rewrites that directory in place for minutes, and a server reading it
+# meanwhile hands out pages whose stylesheets are already gone. The unit
+# serves `.next-live` instead, a symlink to a finished copy under
+# `.next-releases/`. This step makes the copy; step 6 turns the symlink just
+# before it restarts the unit, so the switch is one rename and the running
+# server never sees a half-written build. A build that failed never got here,
+# and the previous release keeps serving.
+#
+# `cache/` stays behind: it is the build's incremental cache, three quarters of
+# a gigabyte that `next start` does not read.
+step "Step 5c — web release"
+WEB_DIR="$ROOT_DIR/apps/web"
+RELEASES_DIR="$WEB_DIR/.next-releases"
+LIVE_LINK="$WEB_DIR/.next-live"
+KEEP_RELEASES=3
+[ -f "$WEB_DIR/.next/BUILD_ID" ] || fail "apps/web/.next has no BUILD_ID" \
+  "build.sh reported green but left no web build behind. Nothing has been restarted."
+RELEASE="$(date -u +%Y%m%dT%H%M%SZ)-$SHORT"
+mkdir -p "$RELEASES_DIR"
+# Copied under a temporary name and renamed when complete, so a release
+# directory that exists is always a whole one.
+rsync -a --delete --exclude '/cache/' "$WEB_DIR/.next/" "$RELEASES_DIR/$RELEASE.partial/" \
+  || fail "Copying the web build into a release failed" "Nothing has been restarted."
+mv "$RELEASES_DIR/$RELEASE.partial" "$RELEASES_DIR/$RELEASE"
+PREVIOUS_RELEASE="$(readlink "$LIVE_LINK" 2>/dev/null || true)"
+ok "Release $RELEASE staged ($(du -sh "$RELEASES_DIR/$RELEASE" | cut -f1))."
+
+# Point `.next-live` at a release with one rename(2): `ln -sfn` alone unlinks
+# and recreates, which leaves an instant without the link.
+switch_web_release() {
+  ln -sfn ".next-releases/$1" "$LIVE_LINK.next"
+  mv -Tf "$LIVE_LINK.next" "$LIVE_LINK"
+}
+
+# --- 5d. systemd units -------------------------------------------------------
+# The four service units are installed from the repository, the way nginx is:
+# the web unit's EXOCORTEX_WEB_DIST_DIR is what makes the release above the
+# thing it serves, so a unit that lagged behind would quietly keep serving the
+# directory the next build writes into. `daemon-reload` restarts nothing; the
+# restart below is what takes the new definition into use.
+step "Step 5d — systemd units"
+UNITS_CHANGED=0
+for unit in "${UNITS[@]}"; do
+  if ! sudo diff -q "deploy/systemd/$unit.service" "/etc/systemd/system/$unit.service" >/dev/null 2>&1; then
+    sudo cp "deploy/systemd/$unit.service" "/etc/systemd/system/$unit.service"
+    info "$unit.service installed"
+    UNITS_CHANGED=1
+  fi
+done
+if [ "$UNITS_CHANGED" -eq 1 ]; then
+  sudo systemctl daemon-reload
+  ok "Unit definitions installed and reloaded."
+else
+  info "All four identical to the installed ones — skipped."
+fi
+
 # --- 6. Restart --------------------------------------------------------------
 # API first, because everything talks to it; web last, because it is what people
 # have open. SIGTERM is a graceful shutdown everywhere (in-flight jobs finish,
@@ -200,10 +258,35 @@ ok "Every provider of every module resolves."
 step "Step 6 — restart the four units"
 for unit in "${UNITS[@]}"; do
   info "$unit"
+  [ "$unit" = "exocortex-web" ] && switch_web_release "$RELEASE"
   sudo systemctl restart "$unit" || fail "$unit did not restart" \
     "Check: journalctl -u $unit -n 50 --no-pager"
 done
 ok "All four restarted."
+
+# The web unit answers on its own port. A release it cannot serve goes back to
+# the previous one straight away, rather than leaving the site down until
+# somebody reads this output.
+WEB_URL="http://127.0.0.1:3210/anmelden"
+WEB_READY=0
+for attempt in $(seq 1 15); do
+  if curl -fsS -o /dev/null --max-time 5 "$WEB_URL" 2>/dev/null; then
+    WEB_READY=1
+    break
+  fi
+  sleep 2
+done
+if [ "$WEB_READY" -ne 1 ]; then
+  if [ -n "$PREVIOUS_RELEASE" ] && [ -d "$WEB_DIR/$PREVIOUS_RELEASE" ]; then
+    switch_web_release "$(basename "$PREVIOUS_RELEASE")"
+    sudo systemctl restart exocortex-web || true
+    fail "The web unit did not answer on release $RELEASE" \
+      "Switched back to $(basename "$PREVIOUS_RELEASE") and restarted it. Check: journalctl -u exocortex-web -n 50 --no-pager"
+  fi
+  fail "The web unit did not answer on release $RELEASE" \
+    "There is no previous release to go back to. Check: journalctl -u exocortex-web -n 50 --no-pager"
+fi
+ok "Web serves release $RELEASE."
 
 # --- 7. Readiness ------------------------------------------------------------
 # Retried, because the API needs a moment and a single early probe would report
@@ -233,6 +316,22 @@ ok "Ready, and all four units active."
 # Last, and only here. A deploy that fell over halfway leaves no green marker
 # behind, so the next run re-does everything rather than believing this one.
 printf '%s' "$HEAD_SHA" > "$MARKER"
+
+# --- 9. Old web releases -----------------------------------------------------
+# Only now, with the new release answering: the newest three stay, so there is
+# always one to switch back to by hand, and the one being served is never
+# removed whatever its age. Names start with a UTC timestamp, so sorting by
+# name is sorting by age. A `.partial` is a copy an interrupted deploy left.
+step "Step 9 — old web releases"
+LIVE_NAME="$(basename "$(readlink "$LIVE_LINK")")"
+rm -rf "$RELEASES_DIR"/*.partial
+PRUNED=0
+while read -r old; do
+  [ -z "$old" ] || [ "$old" = "$LIVE_NAME" ] && continue
+  rm -rf "${RELEASES_DIR:?}/$old"
+  PRUNED=$((PRUNED + 1))
+done < <(ls -1 "$RELEASES_DIR" | sort -r | tail -n +$((KEEP_RELEASES + 1)))
+info "$PRUNED removed, kept: $(ls -1 "$RELEASES_DIR" | sort -r | tr '\n' ' ')"
 
 step "Done"
 ok "$SHORT is live. Finished $(date -u +%Y-%m-%dT%H:%M:%SZ)."

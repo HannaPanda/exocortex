@@ -88,6 +88,13 @@ const styleguideContentSecurityPolicy = contentSecurityPolicy.replace(
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Where `next start` serves from (issue #130). A build always writes `.next`;
+  // the deployed unit sets EXOCORTEX_WEB_DIST_DIR to `.next-live`, a symlink
+  // that `scripts/deploy.sh` points at a finished copy of that build just
+  // before it restarts the unit. A running server therefore never reads a
+  // directory a build is writing into. Only the unit sets the variable: in the
+  // `.env` it would send the build itself into the live directory.
+  distDir: process.env.EXOCORTEX_WEB_DIST_DIR ?? '.next',
   // Both packages are consumed as TypeScript source: packages/ui so Tailwind can
   // see its class names, packages/editor so the browser bundle shares one ESM
   // copy of prosemirror-* with @tiptap/* (see packages/editor/package.json).

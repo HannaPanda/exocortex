@@ -51,6 +51,10 @@ const NOT_CONFIGURATION = new Set([
   'TERM',
   'VITEST',
   'npm_lifecycle_event',
+  // Set by the web unit alone (deploy/systemd/exocortex-web.service, issue
+  // #130). In a `.env` it would reach `next build` too and send the build into
+  // the directory the live server reads.
+  'EXOCORTEX_WEB_DIST_DIR',
 ]);
 
 /**
@@ -68,6 +72,8 @@ const SKIP_DIRS = new Set([
   'node_modules',
   'dist',
   '.next',
+  '.next-releases',
+  '.next-live',
   '.turbo',
   'coverage',
   'generated',
