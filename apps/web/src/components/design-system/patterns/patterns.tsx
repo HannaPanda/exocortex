@@ -64,7 +64,7 @@ export function StatesPattern() {
               description="Markiere Text, um einen Kommentar anzuhängen."
             />
           </div>
-          <div className="min-w-0 flex-1 rounded-md bg-surface">
+          <div className="min-w-64 flex-1 rounded-md bg-surface">
             <EmptyState
               icon={Trash2Icon}
               title="Der Papierkorb ist leer"
