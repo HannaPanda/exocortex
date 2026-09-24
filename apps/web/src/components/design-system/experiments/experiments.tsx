@@ -6,11 +6,11 @@ import { DsSection, DsSource } from '../showcase';
  * The one part of the styleguide that is not canonical.
  *
  * An undecided variant lives here and nowhere else, and product code never
- * imports from this directory (`docs/design-system-inventory.md` §6). The list
- * below is the audit's list of open decisions, §5. A decision with a variant
- * set gets a section of its own below this one (#126), and a decided one
- * leaves by the steps written out here, as P9, P11, P12 and P13 did on
- * 2026-09-24.
+ * imports from this directory (`DESIGN.md` §7; oxlint refuses it). The list
+ * below is the open decisions of `docs/design-system-inventory.md` §5. A
+ * decision with a variant set gets a section of its own below this one (#126),
+ * and a decided one leaves by the steps written out here, as P9, P11, P12 and
+ * P13 did on 2026-09-24.
  */
 
 interface OpenDecision {
@@ -32,7 +32,10 @@ const OPEN_DECISIONS: readonly OpenDecision[] = [
   },
 ];
 
-/** Issue #126, "Entscheidungsworkflow": what happens once a variant is chosen. */
+/**
+ * What happens once a variant is chosen, in German for the person deciding.
+ * The normative list is `DESIGN.md` §7 (issue #128); change both together.
+ */
 const STEPS = [
   'Die Entscheidung wird im Issue der Entscheidung festgehalten, mit der gewählten Variante.',
   'Der Code der Anwendung wird angepasst, an einer Stelle statt pro Aufrufstelle, wo das geht.',

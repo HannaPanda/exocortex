@@ -38,7 +38,7 @@ there is a level without a page.
 | 11  | Interaction and motion   | the curve, the durations, press, enter and exit            |
 | 12  | Usage rules / Do & Don't | the named rules in `DESIGN.md`                             |
 | 13  | Testing / regression     | what guards each entry today                               |
-| 14  | Governance               | how a new entry is admitted (#128)                         |
+| 14  | Governance               | how a new entry is admitted (`DESIGN.md` §7, #128)         |
 
 ### Status values
 
@@ -244,6 +244,8 @@ the shell's side panels turn into sheets; no e2e test runs at that width.
 | axe                               | `e2e/styleguide/a11y.spec.ts` (#127)                                                                                                       | WCAG 2.2 A/AA on `/design-system` at 1280 and 390 px, the phone frames and an open dialog; runs in `build.sh --full-tests`. One reasoned exception (the `AppPage` scroller). The first run found `muted-foreground` on `bg-muted` (3.9:1) in four components, two more by search, and `destructive-text` at 4.4:1. |
 | Screenshot comparison             | `e2e/styleguide/visual.spec.ts` (#127)                                                                                                     | 23 curated baselines, 1280 and 390 px, rendered in the pinned Playwright image; `pnpm test:styleguide:update` is the deliberate update step. The first run found the mono label in `Table narrow="list"`.                                                                                                          |
 | `impeccable detect`               | manual only                                                                                                                                | Deliberately not in the build: the detector ships with a Claude Code plugin, not with the repository. 2026-09-24 after P13 and #127: 0 warnings (was 2), 2 advisories (`page-icon-picker.tsx:444` emoji size, `project-code-editor.tsx:69` CodeMirror size, both stated exceptions).                               |
+| Literal colours                   | `scripts/check-semantic-colours.mjs` (#128)                                                                                                | Hard gate in `build.sh`: hex values, colour functions and Tailwind palette classes in `apps/web/src` and `packages/ui/src`, six reasoned exemptions (tokens, logo, manifest, theme colour, two console styles). Was clean on its first run.                                                                        |
+| Experiment imports                | `no-restricted-imports` in `.oxlintrc.json` (#128)                                                                                         | Nothing but the styleguide page imports from `design-system/experiments`.                                                                                                                                                                                                                                          |
 
 ## 3. Gaps
 
@@ -346,14 +348,10 @@ example text favours one side. A variant that depends on the window's
 breakpoints is drawn in an iframe onto `/design-system/rahmen/<probe>`, the one
 path with `frame-src 'self'` in the Content-Security-Policy.
 
-Once a variant is chosen:
-
-1. The decision and the chosen variant are written into the decision's issue.
-2. Product code changes, in one place where the rule allows it.
-3. `DESIGN.md` gets the rule; `docs/ui-system.md` and this file get the state.
-4. The chosen variant's example moves into its canonical section.
-5. The rejected variants are deleted, not hidden, and the experiment with them.
-6. The regression baselines are re-approved and `impeccable detect` runs again.
+What happens once a variant is chosen is normative and lives in `DESIGN.md`
+§7, "Experiments come before an unclear decision". Product code cannot import
+from the directory: oxlint refuses it, with the page that lists the
+experiments as the one exception.
 
 ## 7. First canonical examples for regression tests
 

@@ -310,6 +310,7 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
    | `check-dependency-boundaries.mjs`  | a manifest depending on a package the graph forbids                                                                                       |
    | `check-env-example.mjs`            | a variable the code reads and `.env.example` does not document, or the reverse                                                            |
    | `check-brand-spelling.mjs`         | `Exocortex` where a human reads it (rule 10)                                                                                              |
+   | `check-semantic-colours.mjs`       | a literal colour in the interface instead of a token (rule 9, `DESIGN.md` §7, issue #128)                                                 |
    | `check-mcp-catalog.mjs`            | a REST route with no tool behind it, and a tool calling a route that is gone (rule 11, ADR-014)                                           |
    | `check-capability-parity.mjs`      | a tool the built-in AI does not get, a screen no agent can reach, a stale matrix (rule 12, ADR-025)                                       |
    | `check-feature-coverage.mjs`       | a tool, screen or automation trigger the feature registry does not describe, and a claim that matches nothing (rule 15, ADR-040)          |

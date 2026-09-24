@@ -754,3 +754,128 @@ is you, everywhere you look, in every workspace and on every account.
 - Don't animate layout properties, and don't use bounce or elastic easing. Ease
   out with exponential curves.
 - Don't introduce a webfont without measuring the navigation cost first.
+
+## 7. Design System workflow
+
+How a new visual decision enters the system, for people and coding agents
+alike (issue #128). The rules above say what the interface looks like; this
+section says how it is allowed to change. It exists because the way a design
+system dies is not one bad decision but many small parallel ones: a second
+empty state, a third focus style, a colour nobody named.
+
+### Where each thing lives
+
+| Question                                           | Source of truth                                      |
+| -------------------------------------------------- | ---------------------------------------------------- |
+| What the rule is, and why                          | this file (normative)                                |
+| The value of a token                               | `packages/ui/src/tokens.css`                         |
+| Theme mapping, base layer, the focus ring          | `packages/ui/src/styles.css`                         |
+| A reusable primitive, layout or state              | `packages/ui/src` (`@exocortex/ui`)                  |
+| A domain component (page tree, editor, panels)     | `apps/web/src/components`, never `packages/ui`       |
+| What it looks like and how it behaves, today       | `/design-system`, drawn by the components themselves |
+| Which implementation is canonical, duplicate, open | `docs/design-system-inventory.md`                    |
+| Where to find a component, how to install one      | `docs/ui-system.md` (technical lookup)               |
+| Which examples are guarded                         | `e2e/styleguide/` (screenshots, axe, keyboard)       |
+
+When two of these would have to state the same fact by hand, one of them should
+derive it instead. The styleguide's token table is the model: it reads
+`tokens.css`, and a token without a role there fails `design-tokens.test.ts`.
+
+### Search before inventing
+
+Before a new primitive, variant or pattern, in this order:
+
+1. `packages/ui/src/components/ui` and `packages/ui/src/components`
+2. `/design-system` and the inventory: is it already there, or already open?
+3. the domain components in `apps/web/src/components` that solve the same shape
+4. this file, for a rule that already answers the question
+5. the shadcn registry (`docs/ui-system.md`, "Component workflow")
+
+Only then extend, and say in the commit why none of the existing answers fits.
+"It looked slightly different in the mock-up" is not a reason; a state, a
+width or an interaction the existing one cannot carry is.
+
+### What has to appear in `/design-system`
+
+A change is visible design, and gets its example in the canonical section in
+the same commit series, when it introduces any of:
+
+- a semantic token
+- a variant of a control
+- a state that matters (loading, invalid, selected, disabled, empty, error)
+- a pattern that will be reused
+- a responsive behaviour of its own
+- focus or keyboard semantics
+- a way of showing status
+- a layout convention
+
+An internal refactor with no visible contract needs no entry. The test is
+whether somebody building the next screen would have to know about it.
+
+A new token also needs a reason here in §2 (what it is for, and its contrast),
+a role in `foundations/token-catalog.ts`, and no second name for a job an
+existing token already does. A new variant belongs on the component that owns
+the concept, never in a copy of it. A pattern is a new entry when it recurs in
+at least two places and has a shape of its own; until then it is a component
+with a use.
+
+### Experiments come before an unclear decision
+
+When two or more answers are plausible and the choice is mainly visual or
+interactive (responsive transformations, dense toolbars, focus treatments,
+empty states, complex forms, a new information hierarchy):
+
+- do not decide from prose
+- do not build one variant quietly into the product
+- draw the variants side by side under "Experimente" on `/design-system` and
+  let a person decide there
+
+An experiment is not a product contract. It is never called canonical, never
+imported by product code (oxlint refuses it), and never a reference for the
+next screen. The frame, the file layout and the phone-width probes are in the
+inventory, §6. Once a variant is chosen:
+
+1. The decision and the chosen variant are written into the decision's issue.
+2. Product code changes, in one place where the rule allows it.
+3. This file gets the rule; `docs/ui-system.md` and the inventory get the state.
+4. The chosen variant's example moves into its canonical section.
+5. The rejected variants are deleted, not hidden, and the experiment with them.
+6. The screenshot baselines are re-approved and `impeccable detect` runs again.
+
+### Baselines
+
+A screenshot baseline in `e2e/styleguide/__screenshots__/` changes only
+because a decision changed what it shows: a token, a variant, a spacing rule, a
+chosen experiment. It is updated with `pnpm test:styleguide:update`, looked at,
+and committed on its own with the decision it records. A baseline rewritten to
+make a red build green, without anybody deciding the new picture is right,
+defeats the only thing it is for.
+
+### What the machine checks
+
+Where a rule is objective it is a gate, not a sentence:
+
+| Rule                                     | Enforced by                                                     |
+| ---------------------------------------- | --------------------------------------------------------------- |
+| no literal colour outside the tokens     | `check-semantic-colours.mjs`, a hard gate in `build.sh`         |
+| no import from the experiments           | `no-restricted-imports` in the generated `.oxlintrc.json`       |
+| every token has a role in the styleguide | `design-tokens.test.ts`                                         |
+| canonical examples still look the same   | `pnpm test:styleguide`, screenshots, in `build.sh --full-tests` |
+| WCAG 2.2 AA, focus, keyboard             | `pnpm test:styleguide`, axe and keyboard tests                  |
+| the anti-patterns in §6                  | `impeccable detect`, by hand (the detector ships with a plugin) |
+
+Taste is not turned into a regex. Spacing, hierarchy and whether a screen has a
+point of view stay with a person and the design skills.
+
+### Checklist for a UI change
+
+- Is an existing component or pattern reused, and if not, is the reason written
+  down?
+- Is a new token really needed, or does one already do the job?
+- Are all the states there: loading, empty, error, disabled, invalid?
+- Keyboard and touch checked, and the focus ring visible?
+- Checked at 390 px?
+- Is the `/design-system` example updated, or added?
+- Does this file need a rule, or a changed one?
+- Did a screenshot baseline change, and was that intended?
+- Is `pnpm test:styleguide` green?

@@ -31,7 +31,13 @@ This file applies to any coding agent (Claude Code, Codex CLI, or another).
 11. **Documentation is part of the change, not a follow-up.** See the checklist
     below. `scripts/check-docs-current.mjs` is a hard gate and fails the build
     when a central document stops naming something the repository defines.
-12. The licence is **PolyForm Noncommercial 1.0.0**. Call the project _source
+12. **UI changes follow the design system workflow in `DESIGN.md` §7**: search
+    the existing system before inventing, reuse before extending, colours only
+    as tokens (a hard gate refuses a literal), two plausible visual answers go
+    into "Experimente" on `/design-system` instead of into the product, the
+    canonical example moves with a changed contract, and `pnpm test:styleguide`
+    runs before the change is finished. The rules are in `DESIGN.md`, not here.
+13. The licence is **PolyForm Noncommercial 1.0.0**. Call the project _source
     available_, never _open source_. No GPL or AGPL dependency may enter `apps/`
     or `packages/`: copyleft would force the combined work to be something this
     licence cannot be. Contributions carry the grant in `CONTRIBUTING.md`.
@@ -48,25 +54,26 @@ mechanical rather than a matter of judgement.
 Change one of the things on the left, update the documents on the right **in the
 same commit series**:
 
-| If the change touches                                    | Update                                                                                                  |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| a capability a human can use                             | `docs/capability-matrix.md` (regenerate), an entry in `packages/features`, the recipe doc for that area |
-| a queue, a processor, a maintenance task, a schedule     | `docs/background-jobs.md`                                                                               |
-| a package, an application, a package boundary            | `README.md` layout, `CLAUDE.md` repository map                                                          |
-| a process, a socket, the outbox, the event flow          | `docs/architecture.md`                                                                                  |
-| a setting, its scope, its ceiling                        | `docs/admin.md`, `.env.example` if it has a bootstrap fallback                                          |
-| a deployment unit, a container, an nginx route, a backup | `deploy/README.md`                                                                                      |
-| a hard gate, a check in `build.sh`, the CI workflow      | `deploy/README.md`, the command tables in `README.md` and `CLAUDE.md`                                   |
-| the licence, or what a contribution may be used for      | `LICENSE`, `CONTRIBUTING.md`, `LICENSE-GRANTS.md`, `README.md`                                          |
-| a compose service or a host port                         | `docs/local-development.md`                                                                             |
-| an MCP or AI tool                                        | `docs/mcp.md`                                                                                           |
-| a mail template, or what may send mail                   | `docs/mail.md`                                                                                          |
-| a notification occasion, a channel, a delivery mode      | `docs/notifications.md`                                                                                 |
-| a span, a trace attribute, what is recorded about a run  | `docs/observability.md`                                                                                 |
-| who may reach a page, or what a credential may reach     | `docs/sharing.md`, `docs/security.md`                                                                   |
-| where a kind of behaviour is tested, a new test suite    | `docs/local-development.md`                                                                             |
-| a decision that contradicts an ADR                       | a new ADR in `docs/adr/`, and the ADR list in `CLAUDE.md`                                               |
-| what the product can and cannot do                       | the "What works today" and "Not built" sections of `README.md`                                          |
+| If the change touches                                                            | Update                                                                                                    |
+| -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| a capability a human can use                                                     | `docs/capability-matrix.md` (regenerate), an entry in `packages/features`, the recipe doc for that area   |
+| a queue, a processor, a maintenance task, a schedule                             | `docs/background-jobs.md`                                                                                 |
+| a package, an application, a package boundary                                    | `README.md` layout, `CLAUDE.md` repository map                                                            |
+| a process, a socket, the outbox, the event flow                                  | `docs/architecture.md`                                                                                    |
+| a setting, its scope, its ceiling                                                | `docs/admin.md`, `.env.example` if it has a bootstrap fallback                                            |
+| a deployment unit, a container, an nginx route, a backup                         | `deploy/README.md`                                                                                        |
+| a token, a control variant, a reusable UI pattern, focus or responsive behaviour | `DESIGN.md`, its example on `/design-system`, `docs/design-system-inventory.md`, the screenshot baselines |
+| a hard gate, a check in `build.sh`, the CI workflow                              | `deploy/README.md`, the command tables in `README.md` and `CLAUDE.md`                                     |
+| the licence, or what a contribution may be used for                              | `LICENSE`, `CONTRIBUTING.md`, `LICENSE-GRANTS.md`, `README.md`                                            |
+| a compose service or a host port                                                 | `docs/local-development.md`                                                                               |
+| an MCP or AI tool                                                                | `docs/mcp.md`                                                                                             |
+| a mail template, or what may send mail                                           | `docs/mail.md`                                                                                            |
+| a notification occasion, a channel, a delivery mode                              | `docs/notifications.md`                                                                                   |
+| a span, a trace attribute, what is recorded about a run                          | `docs/observability.md`                                                                                   |
+| who may reach a page, or what a credential may reach                             | `docs/sharing.md`, `docs/security.md`                                                                     |
+| where a kind of behaviour is tested, a new test suite                            | `docs/local-development.md`                                                                               |
+| a decision that contradicts an ADR                                               | a new ADR in `docs/adr/`, and the ADR list in `CLAUDE.md`                                                 |
+| what the product can and cannot do                                               | the "What works today" and "Not built" sections of `README.md`                                            |
 
 Three of these are enforced and cannot be forgotten:
 `scripts/check-capability-parity.mjs` and `scripts/check-feature-coverage.mjs`
@@ -98,7 +105,9 @@ pnpm typecheck
 pnpm test:unit
 ```
 
-For UI or flow changes also run `pnpm test:e2e` against a running deployment.
+For UI or flow changes also run `pnpm test:e2e` against a running deployment,
+and `pnpm test:styleguide` for anything the styleguide shows; the checklist at
+the end of `DESIGN.md` §7 is what a UI change is finished against.
 
 Tests come in two halves, told apart by the file name and kept apart by the
 test-split gate. `*.integration.test.ts` may open a database or Redis

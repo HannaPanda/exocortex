@@ -48,13 +48,27 @@ function directoryOf(packageName) {
 }
 
 /**
+ * The styleguide's experiments are not a product contract (DESIGN.md §7,
+ * issue #128): an undecided variant must not become a reference by being
+ * imported. Only the page that lists them, and the experiments themselves,
+ * may reach into the directory.
+ */
+const EXPERIMENTS_DIRECTORY = 'apps/web/src/components/design-system/experiments';
+const EXPERIMENT_IMPORTS = {
+  group: ['**/experiments', '**/experiments/*'],
+  message:
+    'An experiment is not a product contract: nothing outside the styleguide page imports from design-system/experiments. Decide the variant and move it into its canonical place first (DESIGN.md §7).',
+};
+
+/**
  * Forbids every internal package the given one is not allowed to import, plus
  * reaching into another package by relative path.
  *
  * @param {string} packageName
+ * @param {readonly Record<string, unknown>[]} [extraPatterns]
  * @returns {Record<string, unknown>}
  */
-function boundaryRules(packageName) {
+function boundaryRules(packageName, extraPatterns = []) {
   const allowed = ALLOWED_INTERNAL_DEPENDENCIES[packageName] ?? [];
   const forbidden = ALL_INTERNAL_PACKAGES.filter(
     (name) => name !== packageName && !allowed.includes(name),
@@ -73,6 +87,7 @@ function boundaryRules(packageName) {
             message:
               'Do not reach into another workspace package by relative path. Import its public entry point instead.',
           },
+          ...extraPatterns,
         ],
       },
     ],
@@ -212,8 +227,17 @@ const config = {
     // ------------------------------------------------------------- packages
     ...ALL_INTERNAL_PACKAGES.filter((name) => name.startsWith(INTERNAL_SCOPE)).map((name) => ({
       files: [`${directoryOf(name)}/**/*.{ts,tsx,mts,cts}`],
-      rules: boundaryRules(name),
+      rules: boundaryRules(name, name === `${INTERNAL_SCOPE}web` ? [EXPERIMENT_IMPORTS] : []),
     })),
+    {
+      // Later overrides win, so this puts the plain boundary back for the two
+      // places allowed to reach the experiments.
+      files: [
+        'apps/web/src/components/design-system/design-system-page.tsx',
+        `${EXPERIMENTS_DIRECTORY}/**/*.{ts,tsx}`,
+      ],
+      rules: boundaryRules(`${INTERNAL_SCOPE}web`),
+    },
 
     // ---------------------------------------------------------------- react
     {

@@ -1,19 +1,27 @@
 # UI system
 
-This is the technical lookup. The rules and their reasons are in `DESIGN.md`;
-which implementation of each component and pattern is canonical, duplicated or
-still undecided is in `docs/design-system-inventory.md`. What they look like is
-`/design-system`, drawn by the components themselves
-(`apps/web/src/components/design-system`); a new token has to be given a role
-in `foundations/token-catalog.ts` or `design-tokens.test.ts` goes red.
-Undecided variants are on the same page under "Experimente" and follow the
-lifecycle in the inventory (§6, "Experiment lifecycle"); product code never
-imports from `design-system/experiments`. The first four (P9, P11, P12, P13)
-were decided on 2026-09-24 and have left it: one focus ring from the base
-layer, one `EmptyState` shape, `Table narrow="list"` plus the narrow
-`SettingRow`, and no left accent borders in the editor. A styleguide example
-that needs a phone-width window is drawn in an iframe onto
-`/design-system/rahmen/<probe>` (`design-system/narrow/`).
+This is the technical lookup: where a component lives, how one is installed,
+which utility carries which token. It is not where a rule is decided. The
+roles are split on purpose, so nothing has to be maintained twice:
+
+- `DESIGN.md` is normative: the rules and their reasons, and in §7 the
+  workflow every UI change follows (search before inventing, what has to appear
+  in the styleguide, experiments, baselines, the checklist)
+- `/design-system` is the visual reference, drawn by the components themselves
+  (`apps/web/src/components/design-system`); a new token has to be given a role
+  in `foundations/token-catalog.ts` or `design-tokens.test.ts` goes red
+- `docs/design-system-inventory.md` says which implementation of each concept is
+  canonical, duplicated or still undecided
+- this file says where things are and how to add one
+
+Undecided variants are on the styleguide under "Experimente", follow the
+lifecycle in `DESIGN.md` §7, and are out of reach for product code: oxlint
+refuses an import from `design-system/experiments` anywhere but the page that
+lists them. The first four (P9, P11, P12, P13) were decided on 2026-09-24 and
+have left it: one focus ring from the base layer, one `EmptyState` shape,
+`Table narrow="list"` plus the narrow `SettingRow`, and no left accent borders
+in the editor. A styleguide example that needs a phone-width window is drawn in
+an iframe onto `/design-system/rahmen/<probe>` (`design-system/narrow/`).
 
 ## Design tokens
 
@@ -212,6 +220,10 @@ without hiding. The tokens are scoped so a light theme can be added by overridin
 under `:root[data-theme='light']` without touching components.
 
 ## Component workflow (mandatory)
+
+The design half of this (is a new variant justified, does it need an example,
+does it need an experiment first) is `DESIGN.md` §7. The steps below are the
+mechanical half, once a component is the answer.
 
 1. **Search first.** `packages/ui/src/components/ui` and
    `packages/ui/src/components`. If it exists, use it.
@@ -483,6 +495,7 @@ build:
 
 A changed screenshot is a difference to review. When it was meant, the new
 baseline is committed on its own with the decision it records;
-`docs/local-development.md` has the commands. `impeccable detect` stays a manual
-check beside it: it finds patterns in code, the screenshots find what changed
-on screen, and neither replaces the other.
+`docs/local-development.md` has the commands. Literal colours are refused
+earlier, by the hard gate `check-semantic-colours.mjs` in every build.
+`impeccable detect` stays a manual check beside it: it finds patterns in code,
+the screenshots find what changed on screen, and neither replaces the other.

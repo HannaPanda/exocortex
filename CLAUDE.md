@@ -133,6 +133,24 @@ commit, and `update.sh` beside it shows the diff before it adopts a new one.
 Rule 1 stands unchanged: components still come from the shadcn skill and the
 shadcn MCP server, whichever design skill asked for them.
 
+### The design system workflow
+
+Every UI change follows `DESIGN.md` §7. The rules themselves live there and are
+not repeated here; what this file enforces is the order:
+
+- check the existing design system first: `packages/ui`, `/design-system`, the
+  inventory, `DESIGN.md`
+- reuse the existing component or pattern; extend it only with a written reason
+- no arbitrary visual values: colours are tokens (a hard gate refuses a
+  literal), and a new token is a decision with an entry in `DESIGN.md`
+- two plausible visual answers go into "Experimente" on `/design-system` for a
+  person to decide, never quietly into the product; product code never imports
+  an experiment
+- when the public UI contract changes, update the canonical example on
+  `/design-system` in the same commit series
+- run `pnpm test:styleguide`; a changed screenshot baseline is committed on its
+  own, with the decision it records, and never just to turn a build green
+
 ## Repository map
 
 | Path                                  | Responsibility                                                                                                                                                                                           |
@@ -180,11 +198,11 @@ bash scripts/deploy.sh # build.sh, then migrations, nginx, the four units,
                        # readiness, and the deploy marker last.
 ```
 
-`build.sh` is the one to reach for: it runs the ten hard gates that have no
-bypass (package boundaries, `.env.example` sync, brand spelling, MCP catalogue
-completeness, capability parity, feature registry coverage, documentation
-currency, the unit/integration test split, typecheck coverage, migration
-reproducibility) as well as the checks below, in the right order and without
+`build.sh` is the one to reach for: it runs the eleven hard gates that have no
+bypass (package boundaries, `.env.example` sync, brand spelling, semantic
+colours, MCP catalogue completeness, capability parity, feature registry
+coverage, documentation currency, the unit/integration test split, typecheck
+coverage, migration reproducibility) as well as the checks below, in the right order and without
 racing the live units for memory. `deploy/README.md` explains what each step does.
 
 The same script is the whole of `.github/workflows/build.yml`: the CI installs

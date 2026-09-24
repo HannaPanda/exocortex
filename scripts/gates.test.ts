@@ -206,6 +206,20 @@ describe('the lint policy still has teeth', () => {
     expect(oxlint('packages/ai/src/__lint_probe__.ts').status).toBe(0);
   });
 
+  it('oxlint keeps the styleguide experiments out of product code', () => {
+    // DESIGN.md §7: an undecided variant must not become a reference by being
+    // imported. The page that lists the experiments is the one exception.
+    writeProbe(
+      'apps/web/src/components/__lint_probe__.ts',
+      "import { ExperimentsSection } from './design-system/experiments/experiments';\n" +
+        'export const y = ExperimentsSection;\n',
+    );
+    const result = oxlint('apps/web/src/components/__lint_probe__.ts');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('not a product contract');
+    expect(oxlint('apps/web/src/components/design-system/design-system-page.tsx').status).toBe(0);
+  });
+
   // The ESLint remainder. Both of these are exactly what oxlint cannot express,
   // which is the only reason ESLint is still installed.
   it('ESLint refuses unsorted imports', () => {
@@ -289,6 +303,51 @@ describe('brand spelling (check-brand-spelling.mjs)', () => {
         `export class ${BRAND}ProbeClient {}\nexport const id = '@exocortex/ui';\n`,
     );
     expect(gate('check-brand-spelling.mjs').status).toBe(0);
+  });
+});
+
+describe('semantic colours (check-semantic-colours.mjs)', () => {
+  it('is green on the repository as it stands', () => {
+    expect(gate('check-semantic-colours.mjs').status).toBe(0);
+  });
+
+  it.each([
+    ['an arbitrary hex class', "export const c = 'bg-[#1a2b3c]';\n"],
+    ['a colour function in a style', "export const s = { color: 'oklch(0.8 0.1 72)' };\n"],
+    ['a Tailwind palette class', "export const c = 'hover:text-red-500';\n"],
+    ['white from the default palette', "export const c = 'bg-white/10';\n"],
+  ])('goes red for %s', (_name, source) => {
+    writeProbe('apps/web/src/__gate_probe__.ts', source);
+    const result = gate('check-semantic-colours.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('__gate_probe__.ts:1');
+  });
+
+  it('goes red for a literal in a stylesheet', () => {
+    writeProbe('packages/ui/src/__gate_probe__.css', '.probe {\n  color: #fff;\n}\n');
+    expect(gate('check-semantic-colours.mjs').status).not.toBe(0);
+  });
+
+  it('stays green for an issue number, a comment and a token utility', () => {
+    // German UI text names issues with a hash, and the content colours are
+    // tokens whose names happen to end in a palette word.
+    writeProbe(
+      'apps/web/src/__gate_probe__.ts',
+      '// #fff in a comment is prose.\n' +
+        "export const text = 'Entschieden in Issue #129';\n" +
+        "export const c = 'bg-content-bg-gray text-primary';\n" +
+        "export const m = 'color-mix(in oklab, var(--primary) 35%, transparent)';\n",
+    );
+    expect(gate('check-semantic-colours.mjs').status).toBe(0);
+  });
+
+  it('goes red when an exemption no longer matches anything', () => {
+    editFile('apps/web/src/app/layout.tsx', (source) =>
+      source.replace(/themeColor: '#[0-9a-fA-F]+'/, "themeColor: 'var(--background)'"),
+    );
+    const result = gate('check-semantic-colours.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('no longer match');
   });
 });
 
