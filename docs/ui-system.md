@@ -8,7 +8,12 @@ still undecided is in `docs/design-system-inventory.md`. What they look like is
 in `foundations/token-catalog.ts` or `design-tokens.test.ts` goes red.
 Undecided variants are on the same page under "Experimente" and follow the
 lifecycle in the inventory (§6, "Experiment lifecycle"); product code never
-imports from `design-system/experiments`.
+imports from `design-system/experiments`. The first four (P9, P11, P12, P13)
+were decided on 2026-09-24 and have left it: one focus ring from the base
+layer, one `EmptyState` shape, `Table narrow="list"` plus the narrow
+`SettingRow`, and no left accent borders in the editor. A styleguide example
+that needs a phone-width window is drawn in an iframe onto
+`/design-system/rahmen/<probe>` (`design-system/narrow/`).
 
 ## Design tokens
 
@@ -407,8 +412,10 @@ net, which keeps it inside its clipping ancestors.
 ## Accessibility rules
 
 - every icon-only control has an `aria-label`
-- focus is always visible (`:focus-visible` outline in the base layer, never
-  removed)
+- focus is always visible and looks the same everywhere: the 3px
+  `ring-ring/50` ring from `:focus-visible` in the base layer, `ring-inset`
+  where a container clips, a `CanvasText` outline under forced colours; never
+  removed, and no second shape (P11)
 - `prefers-reduced-motion` disables animations
 - live regions: `role="status"` for progress and sync state, `role="alert"` for
   errors. A refusal that appears in place of nothing is an alert, not a status

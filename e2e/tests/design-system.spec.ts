@@ -109,77 +109,75 @@ test.describe('design system', () => {
 });
 
 /**
- * The experiments (issue #126). What they must guarantee is that a variant can
- * be compared at all: both halves are there, they carry the same content, the
- * focus rule really differs under the keyboard, and a phone-width frame really
- * has a phone-width window.
+ * The decisions of 2026-09-24 (P9, P11, P12, P13, issue #126), checked where
+ * they now live: the canonical sections, drawn by the product's own
+ * components. A phone-width frame must really have a phone-width window.
  */
-test.describe('design system experiments', () => {
-  test('shows each accent border with and without the rule', async ({ page }) => {
-    await page.goto('/design-system#experiment-p13');
-    const section = page.locator('section#experiment-p13');
+test.describe('design system decisions', () => {
+  test('marks editor blocks without a left accent border', async ({ page }) => {
+    await page.goto('/design-system#markierte-bloecke');
+    const section = page.locator('section#markierte-bloecke');
     const commented = section.locator('.exocortex-commented');
-    await expect(commented).toHaveCount(2);
-    await expect(commented.nth(0)).toHaveCSS('border-left-width', '2px');
-    await expect(commented.nth(1)).toHaveCSS('border-left-width', '0px');
-    const transclusions = section.locator('.exocortex-transclusion');
-    await expect(transclusions.nth(0)).toHaveCSS('border-left-width', '2px');
-    await expect(transclusions.nth(1)).toHaveCSS('border-left-width', '1px');
+    await expect(commented).toHaveCSS('border-left-width', '0px');
+    await expect(commented.locator('.exocortex-comment-count')).toContainText('2');
+    await expect(section.locator('.exocortex-transclusion')).toHaveCSS('border-left-width', '1px');
   });
 
-  test('draws a different focus per variant under the keyboard', async ({ page }) => {
-    await page.goto('/design-system#experiment-p11');
-    const variant = (key: string) => page.locator(`[data-ds-focus="${key}"]`).first();
-
-    await variant('outline').getByRole('button', { name: 'Speichern' }).first().focus();
+  test('draws one focus ring and no outline', async ({ page }) => {
+    await page.goto('/design-system#fokus');
+    const section = page.locator('section#fokus');
+    await section.getByRole('button', { name: 'Knopf' }).focus();
     await page.keyboard.press('Tab');
-    const outlined = variant('outline').getByRole('button', { name: 'Verwerfen' }).first();
-    await expect(outlined).toBeFocused();
-    await expect(outlined).toHaveCSS('outline-style', 'solid');
+    const field = section.getByRole('textbox', { name: 'Feld' });
+    await expect(field).toBeFocused();
+    await expect(field).toHaveCSS('outline-style', 'none');
+    await expect(field).not.toHaveCSS('box-shadow', 'none');
 
-    await variant('ring').getByRole('button', { name: 'Speichern' }).first().focus();
+    // A link has no ring of its own; the base layer gives it the same one.
+    const link = section.getByRole('link', { name: 'Ein Link' });
+    await link.focus();
+    await page.keyboard.press('Shift+Tab');
     await page.keyboard.press('Tab');
-    const ringed = variant('ring').getByRole('button', { name: 'Verwerfen' }).first();
-    await expect(ringed).toBeFocused();
-    await expect(ringed).toHaveCSS('outline-style', 'none');
-    await expect(ringed).not.toHaveCSS('box-shadow', 'none');
+    await expect(link).toBeFocused();
+    await expect(link).toHaveCSS('outline-style', 'none');
+    await expect(link).not.toHaveCSS('box-shadow', 'none');
   });
 
-  test('keeps the forced focus snapshot out of the tab order', async ({ page }) => {
-    await page.goto('/design-system#experiment-p11');
-    const snapshots = page.locator('section#experiment-p11 [inert]');
-    await expect(snapshots).toHaveCount(3);
-    // `inert` keeps the snapshot out of the tab order: focusing into it has no effect.
-    const frozen = snapshots.first().locator('button').first();
-    await frozen.focus();
-    await expect(frozen).not.toBeFocused();
+  test('takes a select as the way out of an empty state', async ({ page }) => {
+    await page.goto('/design-system#zustand-leer');
+    const section = page.locator('section#zustaende');
+    await expect(section.getByText('Noch nicht gruppiert')).toBeVisible();
+    await expect(section.getByRole('combobox', { name: 'Gruppieren nach' })).toBeVisible();
   });
 
-  test('offers the same action in both empty state shapes', async ({ page }) => {
-    await page.goto('/design-system#experiment-p9');
-    const section = page.locator('section#experiment-p9');
-    await expect(section.getByRole('button', { name: 'Papierkorb schließen' })).toHaveCount(2);
-    await expect(section.getByRole('button', { name: 'Suche zurücksetzen' })).toHaveCount(2);
-    await expect(section.getByText('Der Papierkorb ist leer')).toHaveCount(2);
-  });
-
-  test('draws the dense variants in a window 390 px wide', async ({ page }) => {
-    await page.goto('/design-system#experiment-p12');
-    const list = page.frameLocator('[data-testid="ds-frame-p12-tabelle-b"]');
-    await expect(
-      list.getByRole('heading', { name: 'Nächtlicher Import aus dem Laborrechner' }),
-    ).toBeVisible();
-    await expect(list.getByRole('button', { name: 'Zurückziehen' })).toHaveCount(3);
-    const width = await page
-      .locator('[data-testid="ds-frame-p12-tabelle-b"]')
-      .evaluate(
-        (frame) =>
-          (frame as unknown as { contentWindow: { innerWidth: number } }).contentWindow.innerWidth,
-      );
+  test('turns a table into a list and keeps settings inside a phone', async ({ page }) => {
+    await page.goto('/design-system#tabelle-schmal');
+    const frame = page.locator('[data-testid="ds-frame-tabelle-liste"]');
+    const width = await frame.evaluate(
+      (element) =>
+        (element as unknown as { contentWindow: { innerWidth: number } }).contentWindow.innerWidth,
+    );
     expect(width).toBeLessThanOrEqual(390);
     expect(width).toBeGreaterThan(370);
 
-    const settings = page.frameLocator('[data-testid="ds-frame-p12-einstellungen-a"]');
+    const list = page.frameLocator('[data-testid="ds-frame-tabelle-liste"]');
+    await expect(list.getByRole('columnheader', { name: 'Rechte' })).toBeHidden();
+    await expect(list.getByRole('button', { name: /zurückziehen$/ })).toHaveCount(3);
+    // The action shares the first line with the name instead of sitting off-screen.
+    const scrolls = await list
+      .locator('[data-slot="table-container"]')
+      .evaluate((element) => element.scrollWidth > element.clientWidth);
+    expect(scrolls).toBe(false);
+
+    await page.goto('/design-system#einstellungszeile-schmal');
+    const settings = page.frameLocator('[data-testid="ds-frame-einstellungen"]');
     await expect(settings.getByText(/Nicht gespeichert\./)).toBeVisible();
+    const row = settings.getByTestId('setting-row-ai.enabled');
+    const label = await row.locator('label').first().boundingBox();
+    const toggle = await row.getByRole('switch').boundingBox();
+    expect(label).not.toBeNull();
+    expect(toggle).not.toBeNull();
+    // On the label's line, not under it.
+    expect(Math.abs((toggle?.y ?? 0) - (label?.y ?? 0))).toBeLessThan(16);
   });
 });

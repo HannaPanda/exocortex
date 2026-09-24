@@ -292,12 +292,12 @@ export function FocusSection() {
     <DsSection
       id="fokus"
       title="Fokus"
-      lead="Fokus ist immer sichtbar. Wie er aussieht, ist noch nicht entschieden: heute gibt es mehrere Darstellungen nebeneinander (Entscheidung P11)."
+      lead="Fokus ist immer sichtbar, und er sieht überall gleich aus: ein weicher Ring von 3 px in ring/50, keine Kontur (P11). Wo ein Container abschneidet, liegt der Ring innen."
     >
       <DsExample
-        title="Heutiger Stand"
-        source="docs/design-system-inventory.md, F-1"
-        note="Mit der Tabulatortaste durchgehen. Der Knopf und die Auswahl zeigen einen weichen Ring, das Feld und die Checkbox zusätzlich einen Rand, der Link die globale Kontur aus styles.css."
+        title="Ein Ring"
+        source="packages/ui/src/styles.css (:focus-visible)"
+        note="Mit der Tabulatortaste durchgehen. Knopf, Feld, Auswahl, Checkbox und Link zeigen denselben Ring; das Feld färbt zusätzlich seinen Rand, das gehört zum Feld. Bei erzwungenen Farben ersetzt eine Kontur in der Systemfarbe den Ring."
       >
         <div className="flex flex-wrap items-end gap-6">
           <Button variant="outline">Knopf</Button>
@@ -324,6 +324,24 @@ export function FocusSection() {
             Ein Link
           </a>
         </div>
+      </DsExample>
+      <DsExample
+        title="In einem abschneidenden Container"
+        source="apps/web/src/components/shell/page-tree-row.tsx"
+        note="Die Zeilen sitzen bündig in einem Container mit overflow: hidden, wie der Seitenbaum in seinem Scrollbereich. ring-inset legt den Ring nach innen, statt ihn abschneiden zu lassen."
+      >
+        <ul className="flex w-64 flex-col overflow-hidden rounded-md border border-border">
+          {['Forschung', 'Laborprotokolle', 'Kalibrierung'].map((title) => (
+            <li key={title}>
+              <a
+                href="#fokus"
+                className="block px-3 py-1.5 text-sm hover:bg-accent focus-visible:ring-inset"
+              >
+                {title}
+              </a>
+            </li>
+          ))}
+        </ul>
       </DsExample>
     </DsSection>
   );

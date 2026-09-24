@@ -38,6 +38,8 @@ import {
   TruncatedText,
 } from '@exocortex/ui';
 
+import { DsNarrowFrame } from '../narrow/narrow-frame';
+import { NARROW_PROBE_TITLES } from '../narrow/probes';
 import { DsExample, DsSection, DsState, DsStates } from '../showcase';
 
 /** Tables, feedback, the instrument marks and the smaller building blocks. */
@@ -53,15 +55,15 @@ export function TablesSection() {
     <DsSection
       id="tabellen"
       title="Tabellen"
-      lead="Jede Kopfzelle sagt, was sie überschreibt (scope). Zellen brechen nicht um; auf schmalen Bildschirmen scrollt die Tabelle heute seitwärts, eine Entscheidung dazu steht aus (P12)."
+      lead="Jede Kopfzelle sagt, was sie überschreibt (scope). Zellen brechen nicht um. Unter 640 px wird eine Tabelle von Einträgen zur Liste: Name und Aktion in der ersten Zeile, die übrigen Spalten mit ihrer Überschrift darunter (P12). Nur ein Raster, dessen Spalten der Inhalt sind, scrollt seitwärts: die Datenbank und eine Tabelle in einer KI-Antwort."
     >
       <DsExample
         id="tabelle"
         title="Tabelle mit Aktionen"
         source="packages/ui/src/components/ui/table.tsx"
-        note="Die Aktionsspalte hat eine nur für Screenreader sichtbare Überschrift. Die mittlere Zeile zeigt den Auswahlzustand."
+        note="Die Aktionsspalte hat eine nur für Screenreader sichtbare Überschrift. Die mittlere Zeile zeigt den Auswahlzustand. narrow=list, cell und label legen fest, was auf dem Telefon wohin rückt; das Fenster schmaler ziehen zeigt es."
       >
-        <Table>
+        <Table narrow="list">
           <TableCaption>Mitglieder des Arbeitsbereichs</TableCaption>
           <TableHeader>
             <TableRow>
@@ -76,10 +78,14 @@ export function TablesSection() {
           <TableBody>
             {MEMBERS.map((member) => (
               <TableRow key={member.name} data-state={member.selected ? 'selected' : undefined}>
-                <TableCell className="font-medium">{member.name}</TableCell>
-                <TableCell>{member.role}</TableCell>
-                <TableCell className="exocortex-numeric">{member.since}</TableCell>
-                <TableCell className="text-right">
+                <TableCell cell="title" className="font-medium">
+                  {member.name}
+                </TableCell>
+                <TableCell label="Rolle">{member.role}</TableCell>
+                <TableCell label="Dabei seit" className="exocortex-numeric">
+                  {member.since}
+                </TableCell>
+                <TableCell cell="actions" className="text-right">
                   <Button variant="ghost" size="sm">
                     Entfernen
                   </Button>
@@ -88,6 +94,20 @@ export function TablesSection() {
             ))}
           </TableBody>
         </Table>
+      </DsExample>
+
+      <DsExample
+        id="tabelle-schmal"
+        title="Auf dem Telefon"
+        source="packages/ui/src/styles.css (table[data-narrow='list'])"
+        note="In einem eigenen Fenster von 390 px, damit der Umbruch greift. Die Kopfzeile fällt weg, weil jede Zeile ihre Überschriften selbst trägt; die Aktion bleibt ohne Seitwärtsscrollen neben dem Namen."
+        stageClassName="flex justify-center p-2 sm:p-3"
+      >
+        <DsNarrowFrame
+          probe="tabelle-liste"
+          title={NARROW_PROBE_TITLES['tabelle-liste']}
+          height={440}
+        />
       </DsExample>
     </DsSection>
   );

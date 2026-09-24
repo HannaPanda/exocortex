@@ -52,6 +52,7 @@ export const DESIGN_SYSTEM_CATALOG: readonly CatalogGroup[] = [
     entries: [
       { id: 'zustaende', title: 'Laden, leer, Fehler' },
       { id: 'bestaetigung', title: 'Bestätigung' },
+      { id: 'markierte-bloecke', title: 'Markierte Blöcke' },
       { id: 'einstellungszeile', title: 'Einstellungszeile' },
       { id: 'seitenbaum', title: 'Seitenbaum' },
       { id: 'suchtreffer', title: 'Suchtreffer' },
@@ -79,13 +80,7 @@ export const DESIGN_SYSTEM_CATALOG: readonly CatalogGroup[] = [
   },
   {
     title: 'Nicht entschieden',
-    entries: [
-      { id: 'experimente', title: 'Experimente' },
-      { id: 'experiment-p13', title: 'P13 Akzentränder' },
-      { id: 'experiment-p11', title: 'P11 Fokussprache' },
-      { id: 'experiment-p9', title: 'P9 Leere Zustände' },
-      { id: 'experiment-p12', title: 'P12 Dichte Flächen' },
-    ],
+    entries: [{ id: 'experimente', title: 'Experimente' }],
   },
 ];
 

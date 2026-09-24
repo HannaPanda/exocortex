@@ -1,6 +1,13 @@
 'use client';
 
-import { SearchIcon, Trash2Icon } from 'lucide-react';
+import {
+  ExternalLinkIcon,
+  FileTextIcon,
+  KanbanIcon,
+  MessageSquareIcon,
+  SearchIcon,
+  Trash2Icon,
+} from 'lucide-react';
 import * as React from 'react';
 
 import {
@@ -14,6 +21,11 @@ import {
   EmptyState,
   ErrorState,
   LoadingState,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@exocortex/ui';
 
 import { DsExample, DsSection, DsState } from '../showcase';
@@ -29,7 +41,7 @@ export function StatesPattern() {
     <DsSection
       id="zustaende"
       title="Laden, leer, Fehler"
-      lead="Drei geteilte Zustände statt einer eigenen Lösung pro Liste. Die Form des leeren Zustands ist offen: zentriert und Icon zuerst, oder linksbündig und Handlung zuerst (P9)."
+      lead="Drei geteilte Zustände statt einer eigenen Lösung pro Liste. Ein leerer Zustand steht zentriert, das Icon zuerst, die Aktion als Umrissknopf unter dem Text (P9), überall in derselben Form."
     >
       <DsExample
         id="zustand-laden"
@@ -55,7 +67,7 @@ export function StatesPattern() {
       <DsExample
         id="zustand-leer"
         title="Leer"
-        note="In einem Bereich von 260 px, der echten Mindestbreite des Kontextbereichs, und auf Seitenbreite."
+        note="In einem Bereich von 260 px, der echten Mindestbreite des Kontextbereichs, und auf Seitenbreite. Ist der Ausweg kein einfacher Klick, etwa eine Auswahl, nimmt EmptyState ihn als Kind an die Stelle des Knopfs."
       >
         <div className="flex flex-wrap gap-6">
           <div className="w-[260px] rounded-md bg-surface">
@@ -78,6 +90,31 @@ export function StatesPattern() {
               description="Kein Eintrag passt zu dieser Suche."
               action={{ label: 'Suche zurücksetzen', onClick: () => undefined }}
             />
+          </div>
+          <div className="w-full rounded-md bg-surface">
+            <EmptyState
+              icon={KanbanIcon}
+              title="Noch nicht gruppiert"
+              description="Wähle eine Auswahl-Eigenschaft, nach der die Karten gruppiert werden."
+            >
+              <Select defaultValue={null}>
+                <SelectTrigger className="w-56" aria-label="Gruppieren nach">
+                  <SelectValue>
+                    {(value: string | null) =>
+                      value === null
+                        ? 'Eigenschaft wählen'
+                        : value === 'status'
+                          ? 'Status'
+                          : 'Bereich'
+                    }
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="status">Status</SelectItem>
+                  <SelectItem value="area">Bereich</SelectItem>
+                </SelectContent>
+              </Select>
+            </EmptyState>
           </div>
         </div>
       </DsExample>
@@ -139,6 +176,71 @@ export function ConfirmationPattern() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      </DsExample>
+    </DsSection>
+  );
+}
+
+const PARAGRAPH_BEFORE =
+  'Die erste Messreihe lief an drei aufeinanderfolgenden Tagen, jeweils um neun Uhr, im selben Raum.';
+const PARAGRAPH_COMMENTED =
+  'Die zweite Messreihe wurde verworfen, weil die Raumtemperatur über 24 Grad lag und die Waage bei Wärme messbar abdriftet.';
+const TRANSCLUDED =
+  'Vor jeder Messung wird die Waage mit dem 100-Gramm-Prüfgewicht kalibriert. Weicht die Anzeige um mehr als 0,02 Gramm ab, wird die Messung nicht begonnen.';
+
+/**
+ * Blocks the editor marks (P13, decided 2026-09-24), with the product's own
+ * classes and without an editor. The count is a ProseMirror widget in the
+ * product (`comment-markers.tsx`); this is its markup, drawn by React.
+ */
+export function MarkedBlocksPattern() {
+  return (
+    <DsSection
+      id="markierte-bloecke"
+      title="Markierte Blöcke"
+      lead="Der Editor markiert ohne linke Akzentränder. Ein kommentierter Block trägt eine leichte Warnfläche und rechts die Zahl seiner offenen Kommentare, ein eingebetteter Abschnitt denselben schlichten Rahmen wie eine eingebettete Datenbank."
+    >
+      <DsExample
+        id="block-kommentiert"
+        title="Kommentierter Block"
+        source="apps/web/src/components/editor/comment-markers.tsx"
+        note="Die Zahl zählt Kommentare und Antworten aller offenen Fäden am Block. Sie ist nicht fokussierbar: ein Klick auf den Absatz öffnet den Faden, die Tastatur erreicht ihn über den Kommentarbereich."
+      >
+        <div className="exocortex-editor max-w-measure pl-3">
+          <p>{PARAGRAPH_BEFORE}</p>
+          <p className="exocortex-commented">
+            <span className="exocortex-comment-count">
+              <MessageSquareIcon aria-hidden />2
+              <span className="exocortex-sr-only"> Kommentare</span>
+            </span>
+            {PARAGRAPH_COMMENTED}
+          </p>
+        </div>
+      </DsExample>
+
+      <DsExample
+        id="block-transklusion"
+        title="Eingebetteter Abschnitt"
+        source="apps/web/src/components/editor/transclusion-node-view.tsx"
+        note="Rahmen und Kopfzeile sagen, dass der Inhalt von einer anderen Seite kommt und wo er endet."
+      >
+        <div className="exocortex-editor max-w-measure">
+          <div className="exocortex-transclusion">
+            <div className="embed-header">
+              <FileTextIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+              <span className="embed-title">Laborprotokoll: Kalibrierung</span>
+              <div className="embed-actions">
+                <a href="#block-transklusion" className="embed-action">
+                  <ExternalLinkIcon aria-hidden />
+                  Quelle öffnen
+                </a>
+              </div>
+            </div>
+            <div className="p-3">
+              <p className="my-0">{TRANSCLUDED}</p>
+            </div>
+          </div>
+        </div>
       </DsExample>
     </DsSection>
   );

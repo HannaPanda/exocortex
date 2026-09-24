@@ -7,9 +7,10 @@ import { DsSection, DsSource } from '../showcase';
  *
  * An undecided variant lives here and nowhere else, and product code never
  * imports from this directory (`docs/design-system-inventory.md` §6). The list
- * below is the audit's list of open decisions, §5; each with a variant set has
- * a section of its own below this one (#126), and a decided one leaves by the
- * steps written out here.
+ * below is the audit's list of open decisions, §5. A decision with a variant
+ * set gets a section of its own below this one (#126), and a decided one
+ * leaves by the steps written out here, as P9, P11, P12 and P13 did on
+ * 2026-09-24.
  */
 
 interface OpenDecision {
@@ -22,36 +23,6 @@ interface OpenDecision {
 }
 
 const OPEN_DECISIONS: readonly OpenDecision[] = [
-  {
-    id: 'offen-p13',
-    title: 'P13 Linke Akzentränder',
-    question:
-      'Den Kommentarrand als begründete Ausnahme behalten, den der Transklusion streichen, oder beide ändern?',
-    evidence: 'Zwei Ränder, die DESIGN.md verbietet (F-3).',
-    experiment: 'experiment-p13',
-  },
-  {
-    id: 'offen-p11',
-    title: 'P11 Fokussprache',
-    question:
-      'Eine Kontur oder ein Ring, und was machen dichte Zeilen und abgeschnittene Container damit?',
-    evidence: 'Neun Behandlungen (F-1), DESIGN.md widerspricht den Primitiven (F-2).',
-    experiment: 'experiment-p11',
-  },
-  {
-    id: 'offen-p9',
-    title: 'P9 Form des leeren Zustands',
-    question: 'Zentriert mit Icon zuerst, oder linksbündig mit der Handlung zuerst?',
-    evidence: '63 EmptyState, 3 von Hand gebaut, keine kompakte Variante.',
-    experiment: 'experiment-p9',
-  },
-  {
-    id: 'offen-p12',
-    title: 'P12 Dichte Flächen auf schmalen Bildschirmen',
-    question: 'Seitwärts scrollen, eine Liste, oder angeheftete Spalten?',
-    evidence: 'Inventar 2.5.',
-    experiment: 'experiment-p12',
-  },
   {
     id: 'offen-kalender',
     title: 'Kalender-Baustein',
@@ -105,8 +76,11 @@ export function ExperimentsSection() {
           ))}
         </ul>
         <p className="max-w-measure text-sm text-muted-foreground">
-          Quelle der Liste: <DsSource path="docs/design-system-inventory.md" />, Abschnitt 5. Archiv
-          oder Papierkorb ist seit dem 24.09.2026 entschieden: Papierkorb (Issue #129).
+          Quelle der Liste: <DsSource path="docs/design-system-inventory.md" />, Abschnitt 5. Am
+          24.09.2026 entschieden: Papierkorb statt Archiv (Issue #129), und aus den Experimenten ein
+          Fokusring (P11), der zentrierte leere Zustand (P9), Tabellen als Liste und ein schmales
+          Einstellungsformular auf dem Telefon (P12), keine linken Akzentränder (P13). Sie stehen
+          jetzt in ihren Abschnitten.
         </p>
       </div>
 

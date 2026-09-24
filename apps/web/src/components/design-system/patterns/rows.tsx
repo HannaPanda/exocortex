@@ -7,7 +7,12 @@ import { Button } from '@exocortex/ui';
 
 import { RunActivity } from '@/components/ai/run-activity';
 import { SavedQueryResults } from '@/components/search/saved-query-results';
-import { inputId, invalidMessage, SettingRow } from '@/components/settings/setting-row';
+import {
+  inputId,
+  invalidMessage,
+  SETTING_LIST_CLASS,
+  SettingRow,
+} from '@/components/settings/setting-row';
 import {
   SettingsActionBar,
   UnsavedChangesNotice,
@@ -25,6 +30,8 @@ import {
   FIXTURE_TREE,
   FIXTURE_WORKSPACE_ID,
 } from '../fixtures';
+import { DsNarrowFrame } from '../narrow/narrow-frame';
+import { NARROW_PROBE_TITLES } from '../narrow/probes';
 import { DsExample, DsSection, DsState, DsStates } from '../showcase';
 
 /**
@@ -191,7 +198,7 @@ export function SettingRowPattern() {
     <DsSection
       id="einstellungszeile"
       title="Einstellungszeile"
-      lead="Beschriftung links, Steuerung rechts, der Hilfetext gehört zur Steuerung. Unter 640 px stapelt sich die Zeile."
+      lead="Beschriftung links, Steuerung rechts, der Hilfetext gehört zur Steuerung. Unter 640 px stapelt sich die Zeile, ein Schalter bleibt auf der Zeile seiner Beschriftung, Linien trennen die Zeilen, und die Knöpfe der Leiste teilen sich die volle Breite (P12)."
     >
       <DsExample
         id="einstellungszeile-fehler"
@@ -201,21 +208,27 @@ export function SettingRowPattern() {
         stageClassName="p-6 sm:p-6"
       >
         <div className="flex flex-col gap-4">
-          <SettingRow
-            settingKey="memory.enabled"
-            value={enabled}
-            onChange={(value) => setEnabled(value === true)}
-            models={[]}
-          />
-          <SettingRow
-            settingKey="memory.recallMaxResults"
-            value={results}
-            onChange={(value) => {
-              if (typeof value === 'number') setResults(value);
-            }}
-            models={[]}
-            error={refused ? invalidMessage('memory.recallMaxResults') : undefined}
-          />
+          <div className={SETTING_LIST_CLASS}>
+            <div className="max-sm:py-4">
+              <SettingRow
+                settingKey="memory.enabled"
+                value={enabled}
+                onChange={(value) => setEnabled(value === true)}
+                models={[]}
+              />
+            </div>
+            <div className="max-sm:py-4">
+              <SettingRow
+                settingKey="memory.recallMaxResults"
+                value={results}
+                onChange={(value) => {
+                  if (typeof value === 'number') setResults(value);
+                }}
+                models={[]}
+                error={refused ? invalidMessage('memory.recallMaxResults') : undefined}
+              />
+            </div>
+          </div>
           <SettingsActionBar dirty={changed > 0}>
             <Button
               disabled={changed === 0}
@@ -232,6 +245,16 @@ export function SettingRowPattern() {
             <UnsavedChangesNotice changedCount={changed} testId="ds-unsaved-notice" />
           </SettingsActionBar>
         </div>
+      </DsExample>
+
+      <DsExample
+        id="einstellungszeile-schmal"
+        title="Auf dem Telefon"
+        source="apps/web/src/components/settings/setting-row.tsx"
+        note="In einem eigenen Fenster von 390 px: ein Schalter, eine Auswahl mit langen Einträgen, eine Zahl mit abgelehntem Wert, ein langer Text. Die Leiste steht, wie bei einer ungespeicherten Änderung, am unteren Rand."
+        stageClassName="flex justify-center p-2 sm:p-3"
+      >
+        <DsNarrowFrame probe="einstellungen" title={NARROW_PROBE_TITLES.einstellungen} />
       </DsExample>
     </DsSection>
   );
