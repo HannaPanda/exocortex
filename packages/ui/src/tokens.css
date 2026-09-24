@@ -202,7 +202,7 @@
   --shadow-sm: 0 1px 3px 0 oklch(0.16 0.02 234 / 0.26), 0 1px 2px -1px oklch(0.16 0.02 234 / 0.26);
   --shadow-md:
     0 4px 8px -2px oklch(0.16 0.02 234 / 0.34), 0 2px 4px -2px oklch(0.16 0.02 234 / 0.3);
-  --shadow-md:
+  --shadow-lg:
     0 12px 24px -6px oklch(0.16 0.02 234 / 0.44), 0 4px 8px -4px oklch(0.16 0.02 234 / 0.34);
 
   /* Motion. One curve and two durations are the whole vocabulary.

@@ -111,7 +111,7 @@
   --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
-  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
 
   /* Motion vocabulary from tokens.css. Overriding Tailwind's two `--default-*`
      variables gives every `transition-*` utility in the repository the curve and
