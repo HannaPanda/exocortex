@@ -56,7 +56,9 @@ test.describe('LaTeX-Projekt im Browser', () => {
 
     // The tree is a projection rebuilt by a debounced job, so the row appears a
     // second or two after the write reaches the collaboration server.
-    await expect(page.getByText(`probe-${stamp}.tex`)).toBeVisible({ timeout: 30_000 });
+    await expect(
+      page.getByTestId('project-file-row').filter({ hasText: `probe-${stamp}.tex` }),
+    ).toBeVisible({ timeout: 30_000 });
 
     await page.getByTestId('project-build').click();
 
