@@ -4,9 +4,11 @@ import { expect, test } from '@playwright/test';
  * The styleguide at /design-system (issue #125).
  *
  * Public, so no stored session: the page must work for somebody who has never
- * signed in. What these tests hold is the contract the later gates (#127) build
- * on -- it hydrates, every section the navigation promises exists, a deep link
- * lands, and the components on it are the live ones rather than pictures.
+ * signed in. That is also why it runs in the styleguide gate (#127) against a
+ * bare `next start` rather than in the deployment suite. What these tests hold
+ * is the contract the screenshots and the axe scan build on -- it hydrates,
+ * every section the navigation promises exists, a deep link lands, and the
+ * components on it are the live ones rather than pictures.
  */
 
 /** As much of the browser as the overflow check touches; e2e compiles without the DOM lib. */
