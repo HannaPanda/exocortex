@@ -3310,6 +3310,9 @@ enum NotificationKind {
   /// An agent said something on purpose: `exo_push_send`, and the test
   /// notification, which is the same call aimed at oneself.
   AGENT
+  /// One of this person's automations switched itself off after repeated
+  /// failures, or a scheduled run of it failed (issue #107). Mail only.
+  FAILURE
 }
 
 /// How a notification reaches somebody.

@@ -53,6 +53,7 @@ describe('the notification catalogue', () => {
     expect(ACCOUNT_NOTIFICATION_PAIRS.map((pair) => `${pair.kind}/${pair.channel}`)).toEqual([
       'SHARE/EMAIL',
       'COMMENT/EMAIL',
+      'FAILURE/EMAIL',
     ]);
   });
 
@@ -77,5 +78,14 @@ describe('the notification catalogue', () => {
    */
   it('keeps comment mail off until it is asked for', () => {
     expect(notificationSupport('COMMENT', 'EMAIL')?.defaultMode).toBe('OFF');
+  });
+
+  /**
+   * The failure mail starts out on (issue #107). A rule that switched itself
+   * off does nothing until somebody notices, and nothing else would tell them.
+   */
+  it('reports a failed automation by mail unless somebody switches it off', () => {
+    expect(notificationSupport('FAILURE', 'EMAIL')?.defaultMode).toBe('IMMEDIATE');
+    expect(notificationSupport('FAILURE', 'PUSH')).toBeUndefined();
   });
 });

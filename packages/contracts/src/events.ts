@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { aiRunPhaseSchema, aiRunStatusSchema, aiUsageSchema } from './ai';
+import { automationFailureReasonSchema } from './automations';
 import { commentSchema } from './comments';
 import { documentSummarySchema } from './documents';
 import { idSchema, isoDateTimeSchema } from './primitives';
@@ -48,6 +49,8 @@ export const APPLICATION_EVENT_TYPES = [
   'project.build.updated',
   'saved-query.changed',
   'document.share.changed',
+  'automation.disabled',
+  'automation.run.failed',
 ] as const;
 
 export const applicationEventTypeSchema = z.enum(APPLICATION_EVENT_TYPES);
@@ -344,6 +347,29 @@ export const documentShareChangedPayloadSchema = z.object({
 });
 export type DocumentShareChangedPayload = z.infer<typeof documentShareChangedPayloadSchema>;
 
+/**
+ * An automation reached a final failure its owner has to hear about
+ * (issue #107).
+ *
+ * Two event types share this payload, and neither ever reaches a socket: the
+ * worker writes them to the outbox in the same transaction as the state change,
+ * and the dispatcher turns them into the mail. `automation.disabled` is the
+ * rule switching itself off after `automations.maxConsecutiveFailures`;
+ * `automation.run.failed` is the first failure of a scheduled rule's streak,
+ * because a scheduled run is the one nobody is watching when it breaks.
+ *
+ * Ids and a reason from a closed list, never the error text: the run log
+ * keeps that, behind the deployment's own sign-in.
+ */
+export const automationFailurePayloadSchema = z.object({
+  ruleId: idSchema,
+  runId: idSchema,
+  reason: automationFailureReasonSchema,
+  /** The streak at the moment of the event, so the mail can say how many. */
+  failures: z.number().int().min(1),
+});
+export type AutomationFailurePayload = z.infer<typeof automationFailurePayloadSchema>;
+
 export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('workspace.updated', z.object({ workspace: workspaceSchema.partial() })),
   envelope('document.created', z.object({ document: documentSummarySchema })),
@@ -377,6 +403,8 @@ export const applicationEventSchema = z.discriminatedUnion('type', [
   envelope('project.build.updated', projectBuildUpdatedPayloadSchema),
   envelope('saved-query.changed', savedQueryChangedPayloadSchema),
   envelope('document.share.changed', documentShareChangedPayloadSchema),
+  envelope('automation.disabled', automationFailurePayloadSchema),
+  envelope('automation.run.failed', automationFailurePayloadSchema),
 ]);
 export type ApplicationEvent = z.infer<typeof applicationEventSchema>;
 

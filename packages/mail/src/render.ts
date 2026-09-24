@@ -2,6 +2,7 @@ import { type MailMessage } from '@exocortex/contracts';
 
 import { passwordResetMail, verificationMail } from './templates/auth';
 import { automationPageMail } from './templates/automation';
+import { automationDisabledMail, automationRunFailedMail } from './templates/automation-failure';
 import { commentDigestMail } from './templates/comment-digest';
 import { invitationMail } from './templates/invitation';
 import { shareChangedMail, shareGrantedMail, shareRevokedMail } from './templates/share';
@@ -67,6 +68,24 @@ export function renderMail(message: MailMessage): RenderedMail {
         url: message.url,
         body: message.body,
         truncated: message.truncated,
+      });
+    case 'AUTOMATION_DISABLED':
+      return automationDisabledMail({
+        ruleName: message.ruleName,
+        reason: message.reason,
+        failures: message.failures,
+        occurredAt: message.occurredAt,
+        timeZone: message.timeZone,
+        url: message.url,
+      });
+    case 'AUTOMATION_RUN_FAILED':
+      return automationRunFailedMail({
+        ruleName: message.ruleName,
+        reason: message.reason,
+        occurredAt: message.occurredAt,
+        timeZone: message.timeZone,
+        failuresUntilDisabled: message.failuresUntilDisabled,
+        url: message.url,
       });
   }
 }

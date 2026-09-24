@@ -1,6 +1,9 @@
 import { type AiProvider } from '@exocortex/ai';
 import {
   AUTOMATION_ORIGIN_HEADER,
+  type AutomationFailurePayload,
+  type AutomationFailureReason,
+  type AutomationRunOrigin,
   type AutomationTrigger,
   commentResponseSchema,
   isWebhookHostAllowed,
@@ -15,6 +18,7 @@ import { type Logger } from '@exocortex/logger';
 import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type JobContext, type QueueRegistry } from '@exocortex/queue';
 
+import { classifyAutomationFailure } from './automation/failure';
 import { sendPageToOwner } from './automation/mail';
 import { type AutomationRuleRecord, createRunRecorder, loadRule } from './automation/run-recorder';
 import { signWebhookBody } from './automation/webhook';
@@ -105,8 +109,12 @@ export function createAutomationProcessor(dependencies: AutomationDependencies) 
       await recorder.fail(message, Date.now() - started);
       await noteFailure({
         prisma: dependencies.prisma,
-        ruleId: rule.id,
+        rule,
+        runId: recorder.runId,
+        origin: payload.origin,
+        correlationId: payload.correlationId,
         reason: message,
+        failure: classifyAutomationFailure(rule.action, error),
         limit: settings['automations.maxConsecutiveFailures'],
         logger,
       });
@@ -361,32 +369,71 @@ async function noteSuccess(prisma: PrismaClient, ruleId: string): Promise<void> 
  * A rule pointing at a host that has gone away does not get better by being
  * retried every minute for a week. It fills the run log, and the one signal
  * that something is wrong drowns in the noise it makes.
+ *
+ * It also decides which failures the owner hears about (issue #107), and the
+ * answer is at most two per streak: the first failure of a scheduled run,
+ * because nobody is watching a rule at three in the morning, and the moment the
+ * rule switches itself off, because from then on it does nothing without
+ * saying so. Everything between the two is in the run log. Both go to the
+ * outbox in the transaction that changes the rule, so a mail can neither be
+ * lost to a crash between the two writes nor announce a state that rolled back.
  */
 async function noteFailure(input: {
   prisma: PrismaClient;
-  ruleId: string;
+  rule: AutomationRuleRecord;
+  runId: string;
+  origin: AutomationRunOrigin;
+  correlationId: string;
   reason: string;
+  failure: AutomationFailureReason;
   limit: number;
   logger: Logger;
 }): Promise<void> {
-  const updated = await input.prisma.automationRule.update({
-    where: { id: input.ruleId },
-    data: { consecutiveFailures: { increment: 1 }, lastTriggeredAt: new Date() },
-    select: { consecutiveFailures: true },
-  });
-  if (updated.consecutiveFailures < input.limit) return;
+  const { rule } = input;
+  const outcome = await input.prisma.$transaction(async (tx) => {
+    const updated = await tx.automationRule.update({
+      where: { id: rule.id },
+      data: { consecutiveFailures: { increment: 1 }, lastTriggeredAt: new Date() },
+      select: { consecutiveFailures: true },
+    });
+    const failures = updated.consecutiveFailures;
+    const event = (type: 'automation.disabled' | 'automation.run.failed') =>
+      tx.outboxEvent.create({
+        data: {
+          workspaceId: rule.workspaceId,
+          type,
+          payload: {
+            ruleId: rule.id,
+            runId: input.runId,
+            reason: input.failure,
+            failures,
+          } satisfies AutomationFailurePayload,
+          correlationId: input.correlationId,
+        },
+      });
 
-  await input.prisma.automationRule.update({
-    where: { id: input.ruleId },
-    data: {
-      enabled: false,
-      disabledAt: new Date(),
-      disabledReason: input.reason.slice(0, 500),
-    },
+    if (failures < input.limit) {
+      // The first of a streak and no other: a rule failing every night for
+      // four nights is one piece of news, and the switch-off is the second.
+      if (input.origin === 'SCHEDULE' && failures === 1) await event('automation.run.failed');
+      return { failures, disabled: false };
+    }
+
+    // Conditional on `enabled`, so two runs failing at once cannot both switch
+    // the rule off -- and cannot both write the event that mails its owner.
+    const switched = await tx.automationRule.updateMany({
+      where: { id: rule.id, enabled: true },
+      data: { enabled: false, disabledAt: new Date(), disabledReason: input.reason.slice(0, 500) },
+    });
+    if (switched.count === 1) await event('automation.disabled');
+    return { failures, disabled: switched.count === 1 };
   });
-  input.logger.warn('Automation rule switched itself off after repeated failures', {
-    ruleId: input.ruleId,
-    failures: updated.consecutiveFailures,
-    reason: input.reason,
-  });
+
+  if (outcome.disabled) {
+    input.logger.warn('Automation rule switched itself off after repeated failures', {
+      ruleId: rule.id,
+      failures: outcome.failures,
+      reason: input.reason,
+    });
+  }
 }

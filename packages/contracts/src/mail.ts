@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { automationFailureReasonSchema } from './automations';
 import { sharePermissionSchema, shareScopeSchema } from './shares';
 
 /**
@@ -34,6 +35,12 @@ const mailUrlSchema = z.string().trim().min(1).max(2000);
  * subject line no client shows. The producer shortens; this refuses.
  */
 const mailTitleSchema = z.string().trim().min(1).max(200);
+/**
+ * An IANA zone name for a time a mail shows. The server runs in UTC and the
+ * reader does not, so the producer states the zone rather than the template
+ * guessing one.
+ */
+const mailTimeZoneSchema = z.string().trim().min(1).max(64);
 
 /**
  * The templates, as a discriminated union.
@@ -178,6 +185,40 @@ export const mailMessageSchema = z.discriminatedUnion('template', [
     url: mailUrlSchema,
     body: z.string().max(10_000),
     truncated: z.boolean(),
+  }),
+  /**
+   * An automation switched itself off after failing too often in a row
+   * (issue #107).
+   *
+   * The reason is a name from a closed list and never the error text, which
+   * can carry whatever a remote server or a model said. The rule's name is the
+   * one free string, and it is the owner's own.
+   */
+  z.object({
+    template: z.literal('AUTOMATION_DISABLED'),
+    ruleName: mailNameSchema,
+    reason: automationFailureReasonSchema,
+    /** How many runs in a row failed before it stopped. */
+    failures: z.number().int().min(1),
+    occurredAt: z.iso.datetime(),
+    /** The zone `occurredAt` is shown in: `notifications.digestTimeZone`. */
+    timeZone: mailTimeZoneSchema,
+    /** The rule list, where the run log is and where it is switched back on. */
+    url: mailUrlSchema,
+  }),
+  /** A scheduled run failed, the first of what may become a streak (issue #107). */
+  z.object({
+    template: z.literal('AUTOMATION_RUN_FAILED'),
+    ruleName: mailNameSchema,
+    reason: automationFailureReasonSchema,
+    occurredAt: z.iso.datetime(),
+    timeZone: mailTimeZoneSchema,
+    /**
+     * How many more failures in a row switch the rule off. Never zero: the
+     * failure that reaches the limit sends `AUTOMATION_DISABLED` instead.
+     */
+    failuresUntilDisabled: z.number().int().min(1),
+    url: mailUrlSchema,
   }),
 ]);
 export type MailMessage = z.infer<typeof mailMessageSchema>;

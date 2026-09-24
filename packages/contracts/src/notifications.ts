@@ -21,7 +21,7 @@ import { z } from 'zod';
  * promise the deployment does not keep.
  */
 
-export const notificationKinds = ['SHARE', 'COMMENT', 'CALENDAR', 'AGENT'] as const;
+export const notificationKinds = ['SHARE', 'COMMENT', 'CALENDAR', 'AGENT', 'FAILURE'] as const;
 export const notificationKindSchema = z.enum(notificationKinds);
 export type NotificationKind = z.infer<typeof notificationKindSchema>;
 
@@ -136,6 +136,24 @@ export const NOTIFICATION_CATALOG: Readonly<Record<NotificationKind, Notificatio
       'Ein Agent meldet sich: ein langer Lauf ist fertig, etwas ist schiefgegangen, eine Frage blockiert.',
     channels: {
       PUSH: { modes: SWITCH, defaultMode: 'IMMEDIATE', storedOn: 'device' },
+    },
+  },
+  FAILURE: {
+    label: 'Fehlgeschlagene Automationen',
+    description:
+      'Eine deiner Automationen hat sich nach wiederholten Fehlern abgeschaltet, oder ein geplanter Lauf ist gescheitert.',
+    channels: {
+      /**
+       * Mail, and on by default (issue #107). The other mail rows that start
+       * out on are the ones whose silence costs something, and this is the
+       * clearest of them: a rule that switched itself off does nothing until
+       * somebody switches it back on, and the person who wrote it is the only
+       * one who will. Nothing else in the deployment would ever tell them.
+       *
+       * No push. What this reports is still true tomorrow, and the person it
+       * concerns is by definition not watching the rule when it fails.
+       */
+      EMAIL: { modes: SWITCH, defaultMode: 'IMMEDIATE', storedOn: 'account' },
     },
   },
 };

@@ -10,7 +10,8 @@ encrypted to.
 
 ## The two axes
 
-An **occasion** is what happened: `SHARE`, `COMMENT`, `CALENDAR`, `AGENT`. A
+An **occasion** is what happened: `SHARE`, `COMMENT`, `CALENDAR`, `AGENT`,
+`FAILURE`. A
 **channel** is how it travels: `PUSH` or `EMAIL`. They are separate on purpose.
 Before issue #105 they were not — push knew three kinds on a device, mail knew
 six template names, and the same event was called different things on each
@@ -28,6 +29,7 @@ sender is a promise the deployment does not keep.
 | `COMMENT`  | `EMAIL` | `OFF`/`IMMEDIATE`/`DAILY_DIGEST` | `OFF`       | the account      |
 | `CALENDAR` | `PUSH`  | `OFF`/`IMMEDIATE`                | `IMMEDIATE` | the device       |
 | `AGENT`    | `PUSH`  | `OFF`/`IMMEDIATE`                | `IMMEDIATE` | the device       |
+| `FAILURE`  | `EMAIL` | `OFF`/`IMMEDIATE`                | `IMMEDIATE` | the account      |
 
 `SHARE` has no push row because a share is not a moment: the person it concerns
 is usually not here when it happens, and may have no device registered at all.
@@ -40,6 +42,15 @@ registered a device, so nothing is lost by silence, and a deployment that gains
 a feature must not thereby start writing to people who never asked it to. A
 share, by contrast, is on because a share nobody hears about is a share nobody
 uses.
+
+`FAILURE` is one of the owner's automations switching itself off, or the
+first failed run of a scheduled one (issue #107, `docs/automations.md`). It is
+on by default for the same reason a share is: a rule that stopped working says
+so to nobody else, and the owner is the only person who can switch it back on.
+It has no push row because what it reports is still true tomorrow. It is not
+a channel for background faults in general: a failed queue job, an index that
+could not be rebuilt or a lost worker belongs to the logs and the alerts,
+because the person reading such a mail is not the person who could fix it.
 
 **The mail an automation sends is not in this table, on purpose** (issue #104,
 ADR-054). Everything here is an occasion somebody is _told_ about, where a

@@ -278,6 +278,27 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
     claims: { automationActions: ['EMAIL_SELF'] },
   }),
   defineFeature({
+    id: 'automation-fehlermeldung',
+    area: 'automationen',
+    title: 'Post, wenn eine Automation nicht mehr läuft',
+    summary:
+      'Schaltet sich eine deiner Automationen nach wiederholten Fehlern ab, bekommst du genau eine Mail. Scheitert ein geplanter Lauf, meldet sich eXocortex beim ersten Mal, nicht bei jedem weiteren.',
+    details: [
+      'Eine abgeschaltete Regel tut nichts mehr, bis jemand sie wieder einschaltet, und sie sagt es auch niemandem. Deshalb geht in dem Moment, in dem sie sich abschaltet, eine Mail an die Person, der sie gehört: mit dem Namen der Regel, wann es passiert ist, einem Satz zum Grund und einem Link zu den Automationen, wo der Verlauf steht und wo du sie wieder einschaltest.',
+      'Ein geplanter Lauf läuft meistens, wenn niemand hinsieht. Scheitert er, kommt eine Mail beim ersten Fehlschlag einer Serie und sagt, wie viele weitere Fehlschläge die Regel noch verträgt. Die Fehlschläge dazwischen stehen nur im Verlauf; die nächste Mail ist die über das Abschalten. Läufe, die eine Änderung oder du selbst von Hand ausgelöst hast, melden sich nicht per Mail.',
+      'In der Mail steht nie die Fehlermeldung selbst, sondern nur, welcher Schritt gescheitert ist. Die Meldung kann Text von einem fremden Server oder einem Modell enthalten, und der gehört in den Verlauf, hinter deine Anmeldung. Hintergrundfehler, die du nicht beheben kannst, etwa eine hängende Warteschlange, gehen ebenfalls nicht per Mail raus: die landen im Monitoring.',
+      'Ab Werk ist das eingeschaltet. Abschalten kannst du es unter Einstellungen → Benachrichtigungen, Eintrag „Fehlgeschlagene Automationen“.',
+    ],
+    since: '2026-09-24',
+    references: ['#107', 'ADR-052'],
+    ui: {
+      where: 'Einstellungen, Benachrichtigungen, per E-Mail.',
+      path: '/einstellungen/benachrichtigungen',
+    },
+    settings: ['automations.maxConsecutiveFailures', 'notifications.digestTimeZone'],
+    tools: ['exo_notification_preference_set', 'exo_automation_runs'],
+  }),
+  defineFeature({
     id: 'zeitplaene',
     area: 'automationen',
     title: 'Automationen nach der Uhr',

@@ -101,6 +101,30 @@ export const automationRunOriginSchema = z.enum([
 export type AutomationRunOrigin = z.infer<typeof automationRunOriginSchema>;
 
 /**
+ * Which step of a run went wrong, in a closed vocabulary (issue #107).
+ *
+ * A failed run stores its error as English text for the run log, and that
+ * text can carry anything: a status line from somebody else's server, a
+ * provider's refusal, a message a model wrote. None of it may leave in a
+ * mail. So the worker names the step that failed at the moment it catches the
+ * error, and the mail template turns the name into a German sentence. The
+ * details stay behind the link, in the run log, where the reader is signed in.
+ */
+export const automationFailureReasonSchema = z.enum([
+  /** The receiving server refused, timed out or could not be reached. */
+  'WEBHOOK_FAILED',
+  /** The model failed, answered with nothing, or AI is switched off. */
+  'AI_FAILED',
+  /** The page could not be read or written, as the rule's owner. */
+  'PAGE_UNAVAILABLE',
+  /** The owning account cannot act: switched off, or no confirmed address. */
+  'OWNER_UNAVAILABLE',
+  /** The mail action could not send its page. */
+  'MAIL_FAILED',
+]);
+export type AutomationFailureReason = z.infer<typeof automationFailureReasonSchema>;
+
+/**
  * The shortest quiet period a rule may ask for, in seconds.
  *
  * Ten seconds is not a performance tuning knob, it is the floor under a cost

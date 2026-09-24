@@ -121,3 +121,12 @@ announced.
   mechanism. That was the point.
 - A deployment that never touches the settings page behaves exactly as it did
   before: every default is what the code did unconditionally yesterday.
+
+## Addendum 2026-09-24: `FAILURE`
+
+Issue #107 added the fifth occasion as the consequences above predicted: a
+catalogue entry and a sender, no new mechanism. `FAILURE` over `EMAIL`, stored
+on the account, on by default, and nothing over `PUSH`. It covers an
+automation switching itself off and the first failed run of a scheduled one;
+`docs/automations.md` says which failure writes which event, and why render
+jobs and project builds are deliberately not among them.

@@ -20,7 +20,7 @@ request say so.
 
 **Asynchronous, in the worker.** Everything else: the share notifications of
 issue #103, the comment digests of #106, the automation mail of #104, and
-continuing with #107. They are enqueued on the `mail` queue and sent by `createMailDeliveryProcessor`, so a relay having
+the failure mails of #107. They are enqueued on the `mail` queue and sent by `createMailDeliveryProcessor`, so a relay having
 a bad five minutes delays a mail instead of failing whatever caused it.
 `docs/background-jobs.md` describes the queue, its retry policy and its
 deduplication.
@@ -42,6 +42,7 @@ it.
 | `share-notifications.ts` (worker)             | which grant change becomes which mail, and to whom                   |
 | `comment-digests.ts` (worker)                 | which collected comments become one mail, and to whom                |
 | `automation/mail.ts` (worker)                 | which page an `EMAIL_SELF` rule sends, and that it goes to its owner |
+| `failure-notifications.ts` (worker)           | whether a stopped automation is still news, and to whom              |
 | `apps/worker/src/processors/mail-delivery.ts` | one job, one SMTP hop, retry or do not                               |
 
 `packages/mail` may see `@exocortex/contracts` and `@exocortex/logger` and
@@ -141,6 +142,16 @@ That is also the condition under which it stays defensible. If a rule ever gets
 to name an address, this variant goes back to being a link and the subject
 stops being free text. `docs/automations.md` has the action; ADR-054 has the
 reasoning.
+
+## Failure mail
+
+`AUTOMATION_DISABLED` and `AUTOMATION_RUN_FAILED` tell a rule's owner that it
+stopped working (issue #107). Their reason is a name from
+`automationFailureReasonSchema`, which the template turns into a sentence; the
+error text never enters the payload, because it can carry whatever a remote
+server or a model said. The time is shown in `notifications.digestTimeZone`,
+which the producer puts in the payload since the template cannot read
+settings. Which failure sends which one is in `docs/automations.md`.
 
 ## Why a template and not a subject and a body
 

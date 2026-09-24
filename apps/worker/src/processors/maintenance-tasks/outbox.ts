@@ -5,6 +5,7 @@ import { withSpan } from '@exocortex/logger';
 import { fireMatchingAutomations } from './automations';
 import { scheduleCommentNotifications } from './comment-notifications';
 import { isMissingRow, type MaintenanceTask } from './context';
+import { scheduleFailureNotifications } from './failure-notifications';
 import { scheduleOverviewRefreshes } from './overviews';
 import { scheduleShareNotifications } from './share-notifications';
 
@@ -160,6 +161,20 @@ async function dispatchEvent(
       type: event.type,
       payload: event.payload,
       correlationId: event.correlationId,
+    },
+  );
+  // And for the fifth: an automation that stopped working (issue #107). The
+  // worker wrote the row in the transaction that switched the rule off, so
+  // this is the one place the switch-off passes exactly once.
+  await scheduleFailureNotifications(
+    { prisma, queues, appUrl: context.appUrl, settings: async () => context.settings() },
+    {
+      eventId: event.id,
+      workspaceId: event.workspaceId,
+      type: event.type,
+      payload: event.payload,
+      correlationId: event.correlationId,
+      createdAt: event.createdAt,
     },
   );
   await prisma.outboxEvent.update({

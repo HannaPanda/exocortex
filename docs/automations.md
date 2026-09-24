@@ -223,6 +223,47 @@ A run ends in one of five states. `SKIPPED` is not a failure and does not count
 towards the automatic disabling: it means nothing was attempted, and `error`
 says why (the rule was off, the workspace switch was off, the owner is gone).
 
+## Telling the owner that a rule stopped working
+
+Issue #107. A rule that switches itself off does nothing from then on, and a
+scheduled run fails at an hour nobody is watching. Both are worth a letter to
+the rule's owner, and nothing else a rule does is:
+
+| What happened                                                    | Outbox event            | Template                |
+| ---------------------------------------------------------------- | ----------------------- | ----------------------- |
+| the failure that reaches `automations.maxConsecutiveFailures`    | `automation.disabled`   | `AUTOMATION_DISABLED`   |
+| the first failure of a streak, for a run with `origin: SCHEDULE` | `automation.run.failed` | `AUTOMATION_RUN_FAILED` |
+
+So a streak produces at most two mails, however often the rule fails in
+between. A run that an event or a person started sends none for its own
+failure: an event-driven rule is announced when it switches itself off, and a
+person who pressed "Jetzt ausführen" is looking at the result.
+
+`noteFailure` in `apps/worker/src/processors/automation.ts` writes the event
+in the transaction that counts the failure, and the switch-off is an
+`updateMany` conditional on `enabled: true`, so two runs failing at once
+cannot both announce it. A re-enable resets `consecutiveFailures`, which is
+what lets the next streak be announced again.
+
+The payload carries ids and a reason from `automationFailureReasonSchema`,
+never the error text. `classifyAutomationFailure` in
+`apps/worker/src/processors/automation/failure.ts` names the step while the
+error still has its type: a 403 or 404 from the API is `PAGE_UNAVAILABLE`, an
+owner refusal is `OWNER_UNAVAILABLE`, anything else is the action's own reason.
+The run log keeps the message.
+
+`failure-notifications.ts` in the outbox dispatcher decides at dispatch time,
+from the state that holds then: the rule still exists (and, for a switch-off,
+is still off), the owner exists, is switched on and is still a member of the
+workspace, and the `FAILURE`/`EMAIL` pair is not `OFF`. The mail's job id is
+the outbox row's id. `docs/notifications.md` has the pair.
+
+Render jobs and project builds do not mail when they fail. A compile error is
+the ordinary way a LaTeX build ends while somebody is iterating on it, the
+person who started it is watching the build panel, and a letter per failed
+compile is how a sender ends up in a filter. A lost worker (`worker_lost`) is
+an infrastructure fault and belongs to the alerts.
+
 ## Loop protection
 
 An automation's own writes carry the rule they came from. Two consequences:

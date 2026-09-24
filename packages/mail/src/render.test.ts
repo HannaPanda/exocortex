@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { automationFailureReasonSchema } from '@exocortex/contracts';
+
 import { renderMail } from './render';
 
 /**
@@ -191,5 +193,71 @@ describe('the mail an automation sends', () => {
     const mail = renderMail({ ...base, truncated: true });
     expect(mail.text).toContain('abgeschnitten');
     expect(mail.text).toContain(base.url);
+  });
+});
+
+describe('the mails that say an automation stopped working', () => {
+  const common = {
+    ruleName: 'Hermes benachrichtigen',
+    reason: 'WEBHOOK_FAILED' as const,
+    occurredAt: '2026-09-24T01:05:00.000Z',
+    timeZone: 'Europe/Berlin',
+    url: 'https://exocortex.app/arbeitsbereich/w1/automationen',
+  };
+
+  it('says that a switched-off rule does nothing until it is switched back on', () => {
+    const mail = renderMail({ template: 'AUTOMATION_DISABLED', failures: 5, ...common });
+    expect(mail.subject).toBe(
+      'eXocortex: Automation „Hermes benachrichtigen“ hat sich abgeschaltet',
+    );
+    expect(mail.text).toContain('5-mal hintereinander');
+    expect(mail.text).toContain('tut sie nichts mehr');
+    expect(mail.text).toContain('nicht erreichbar');
+    expect(mail.text).toContain(common.url);
+  });
+
+  it('shows the moment in the zone it was given, not in the server’s', () => {
+    const mail = renderMail({ template: 'AUTOMATION_DISABLED', failures: 5, ...common });
+    // 01:05 UTC is 03:05 in Berlin in September.
+    expect(mail.text).toContain('03:05');
+  });
+
+  it('falls back to UTC, and says so, for a zone it cannot read', () => {
+    const mail = renderMail({
+      template: 'AUTOMATION_DISABLED',
+      failures: 5,
+      ...common,
+      timeZone: 'Mars/Olympus',
+    });
+    expect(mail.text).toContain('01:05');
+    expect(mail.text).toContain('(UTC)');
+  });
+
+  it('counts down to the switch-off after a failed scheduled run', () => {
+    const many = renderMail({
+      template: 'AUTOMATION_RUN_FAILED',
+      failuresUntilDisabled: 4,
+      ...common,
+    });
+    expect(many.subject).toBe(
+      'eXocortex: Geplanter Lauf von „Hermes benachrichtigen“ ist fehlgeschlagen',
+    );
+    expect(many.text).toContain('Nach 4 weiteren Fehlschlägen');
+    expect(many.text).toContain('nicht einzeln');
+
+    const last = renderMail({
+      template: 'AUTOMATION_RUN_FAILED',
+      failuresUntilDisabled: 1,
+      ...common,
+    });
+    expect(last.text).toContain('Scheitert der nächste Lauf auch');
+  });
+
+  it('has a sentence for every reason and never an empty one', () => {
+    for (const reason of automationFailureReasonSchema.options) {
+      const mail = renderMail({ template: 'AUTOMATION_DISABLED', failures: 2, ...common, reason });
+      const line = mail.text.split('\n').find((row) => row.startsWith('Grund: '));
+      expect(line?.length ?? 0, reason).toBeGreaterThan('Grund: '.length + 20);
+    }
   });
 });

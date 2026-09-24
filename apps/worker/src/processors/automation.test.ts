@@ -101,6 +101,7 @@ function harness(input: {
   const mails: { payload: Record<string, unknown>; options?: { jobId?: string } }[] = [];
   const requests: { path: string; body: unknown }[] = [];
   const sent: { url: string; headers: Record<string, string>; body: string }[] = [];
+  const outbox: Record<string, unknown>[] = [];
   const rule = { ...input.rule };
 
   const encrypted = encryptCredential({
@@ -137,9 +138,27 @@ function harness(input: {
         }
         return { consecutiveFailures: rule.consecutiveFailures };
       },
-      updateMany: async ({ data }: { data: Record<string, unknown> }) => {
+      updateMany: async ({
+        where,
+        data,
+      }: {
+        where: Record<string, unknown>;
+        data: Record<string, unknown>;
+      }) => {
         if (data.consecutiveFailures === 0) rule.consecutiveFailures = 0;
+        if (data.enabled === false) {
+          // Conditional, as in the database: a rule already off is not switched off twice.
+          if (where.enabled === true && !rule.enabled) return { count: 0 };
+          rule.enabled = false;
+          rule.disabledReason = String(data.disabledReason);
+        }
         return { count: 1 };
+      },
+    },
+    outboxEvent: {
+      create: async ({ data }: { data: Record<string, unknown> }) => {
+        outbox.push(data);
+        return { id: `event-${String(outbox.length)}` };
       },
     },
     automationRun: {
@@ -164,6 +183,10 @@ function harness(input: {
       findUnique: async () => (input.owner === undefined ? OWNER : input.owner),
     },
   } as unknown as PrismaClient;
+  // The rule's failure bookkeeping is one transaction; the fake runs it inline.
+  (prisma as unknown as { $transaction: unknown }).$transaction = async (
+    work: (tx: PrismaClient) => Promise<unknown>,
+  ) => work(prisma);
 
   const queues = {
     enqueue: async (
@@ -222,7 +245,7 @@ function harness(input: {
     },
   });
 
-  return { processor, runs, requests, sent, rule, headersSeen, mails };
+  return { processor, runs, requests, sent, rule, headersSeen, mails, outbox };
 }
 
 function job(overrides: Partial<AutomationJob> = {}): JobContext<typeof QUEUE_NAMES.automation> {
@@ -307,6 +330,91 @@ describe('a webhook rule', () => {
     await processor(job());
     expect(rule.enabled).toBe(false);
     expect(rule.disabledReason).toContain('502');
+  });
+});
+
+/**
+ * Which failures the owner hears about (issue #107): at most two per streak,
+ * and never the error text.
+ */
+describe('telling the owner that a rule stopped working', () => {
+  const limited = settingsWith([
+    { key: 'automations.enabled', value: true },
+    { key: 'automations.webhookAllowedHosts', value: 'hooks.example.org' },
+    { key: 'automations.maxConsecutiveFailures', value: 3 },
+  ]);
+  const refusing = () => ({ status: 502 });
+
+  it('announces the switch-off exactly once, with a reason and no error text', async () => {
+    const { processor, outbox } = harness({
+      rule: webhookRule({ consecutiveFailures: 2 }),
+      respond: refusing,
+      settings: limited,
+    });
+    await processor(job());
+
+    expect(outbox).toHaveLength(1);
+    expect(outbox[0]).toMatchObject({
+      workspaceId: 'workspace-1',
+      type: 'automation.disabled',
+      payload: { ruleId: 'rule-1', runId: 'run-1', reason: 'WEBHOOK_FAILED', failures: 3 },
+    });
+    expect(JSON.stringify(outbox[0])).not.toContain('502');
+  });
+
+  it('does not announce a switch-off that another run already made', async () => {
+    const { processor, outbox } = harness({
+      rule: webhookRule({ consecutiveFailures: 2, enabled: true }),
+      respond: refusing,
+      settings: limited,
+    });
+    // Two runs past the guard at once: both count a failure over the limit,
+    // and only the one that actually switches the rule off may say so.
+    await Promise.all([processor(job()), processor(job())]);
+    expect(outbox.filter((row) => row.type === 'automation.disabled')).toHaveLength(1);
+  });
+
+  it('reports the first failure of a scheduled rule and stays quiet about the rest', async () => {
+    const { processor, outbox } = harness({
+      rule: webhookRule(),
+      respond: refusing,
+      settings: limited,
+    });
+    await processor(job({ origin: 'SCHEDULE', trigger: 'SCHEDULE' }));
+    await processor(job({ origin: 'SCHEDULE', trigger: 'SCHEDULE' }));
+
+    expect(outbox.map((row) => row.type)).toEqual(['automation.run.failed']);
+    expect(outbox[0]).toMatchObject({ payload: { failures: 1, reason: 'WEBHOOK_FAILED' } });
+  });
+
+  it('says nothing about a failed run that nobody scheduled', async () => {
+    const { processor, outbox } = harness({
+      rule: webhookRule(),
+      respond: refusing,
+      settings: limited,
+    });
+    await processor(job({ origin: 'EVENT' }));
+    await processor(job({ origin: 'MANUAL' }));
+    expect(outbox).toHaveLength(0);
+  });
+
+  it('says nothing when a run succeeds', async () => {
+    const { processor, outbox } = harness({
+      rule: webhookRule(),
+      settings: limited,
+    });
+    await processor(job({ origin: 'SCHEDULE', trigger: 'SCHEDULE' }));
+    expect(outbox).toHaveLength(0);
+  });
+
+  it('names the owner rather than the action when the owner is what failed', async () => {
+    const { processor, outbox } = harness({
+      rule: webhookRule({ action: 'EMAIL_SELF', webhookUrl: null }),
+      owner: { ...OWNER, emailVerified: false },
+      settings: limited,
+    });
+    await processor(job({ origin: 'SCHEDULE', trigger: 'SCHEDULE' }));
+    expect(outbox[0]).toMatchObject({ payload: { reason: 'OWNER_UNAVAILABLE' } });
   });
 });
 
