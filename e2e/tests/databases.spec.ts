@@ -119,7 +119,7 @@ test.describe('databases', () => {
     // Calendar: no DATE property yet, so it asks for one instead of erroring.
     await page.getByTestId('add-view').click();
     await page.getByTestId('add-view-calendar').click();
-    await expect(page.getByText('Wähle eine Datums-Eigenschaft')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText('Noch kein Datum gewählt')).toBeVisible({ timeout: 15_000 });
 
     // Back to Table: the same row is still there. By name, not by position --
     // the tab order follows the views' order keys.

@@ -24,26 +24,26 @@ export function WorkspaceLanding() {
 
   if (workspaces.data.length === 0) {
     return (
-      <div className="flex flex-1 items-center justify-center p-6">
-        <div className="flex max-w-sm flex-col items-center gap-4 text-center">
-          <EmptyState
-            icon={LayersIcon}
-            title="Noch kein Arbeitsbereich"
-            description="Ein Arbeitsbereich bündelt Seiten, Mitglieder und Dateien."
-          />
-          <Button
-            data-testid="create-first-workspace"
-            disabled={createWorkspace.isPending}
-            onClick={() => {
-              void createWorkspace
-                .mutateAsync('Mein Arbeitsbereich')
-                .then((workspace) => router.replace(`/arbeitsbereich/${workspace.id}`));
-            }}
-          >
-            Arbeitsbereich anlegen
-          </Button>
-        </div>
-      </div>
+      <EmptyState
+        className="flex-1"
+        icon={LayersIcon}
+        title="Noch kein Arbeitsbereich"
+        description="Ein Arbeitsbereich bündelt Seiten, Mitglieder und Dateien."
+      >
+        <Button
+          variant="outline"
+          size="sm"
+          data-testid="create-first-workspace"
+          disabled={createWorkspace.isPending}
+          onClick={() => {
+            void createWorkspace
+              .mutateAsync('Mein Arbeitsbereich')
+              .then((workspace) => router.replace(`/arbeitsbereich/${workspace.id}`));
+          }}
+        >
+          Arbeitsbereich anlegen
+        </Button>
+      </EmptyState>
     );
   }
 

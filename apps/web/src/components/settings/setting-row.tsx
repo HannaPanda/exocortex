@@ -10,6 +10,7 @@ import {
   type Settings,
 } from '@exocortex/contracts';
 import {
+  cn,
   Input,
   Label,
   Select,
@@ -100,6 +101,15 @@ export function fieldErrorsFromDetails(details: unknown): Partial<Record<Setting
   }
   return errors;
 }
+
+/**
+ * The list the rows stand in. From sm up the rows are spaced; below it they
+ * are separated by rules, because on a phone the label no longer has a column
+ * of its own and a stack of labels, fields and help texts runs together
+ * without them (P12, decided 2026-09-24). A row's wrapper adds `max-sm:py-4`.
+ */
+export const SETTING_LIST_CLASS =
+  'flex flex-col gap-4 max-sm:gap-0 max-sm:divide-y max-sm:divide-border';
 
 export interface SettingRowProps {
   settingKey: SettingKey;
@@ -237,6 +247,12 @@ export function SettingRow({ settingKey, value, onChange, models, error }: Setti
     );
   }
 
+  // Below sm a switch sits on its label's line, the way a phone sets one
+  // (P12, decided 2026-09-24): the wrapper dissolves into the row's grid, the
+  // switch takes the second column of the first line, and the help text runs
+  // under both. From sm up the row is the same two columns as every other.
+  const isSwitch = typeof value === 'boolean';
+
   return (
     <div
       // The row rather than the control, because Base UI puts `id` on a
@@ -244,12 +260,20 @@ export function SettingRow({ settingKey, value, onChange, models, error }: Setti
       data-testid={`setting-row-${settingKey}`}
       // minmax(0,1fr) below sm too: an auto track grows to the longest
       // select label, and on a phone that pushed the row off the screen.
-      className="grid grid-cols-[minmax(0,1fr)] gap-1.5 sm:grid-cols-[minmax(0,240px)_1fr] sm:items-start sm:gap-4"
+      className={cn(
+        'grid gap-1.5 sm:grid-cols-[minmax(0,240px)_1fr] sm:items-start sm:gap-4',
+        isSwitch ? 'grid-cols-[minmax(0,1fr)_auto] gap-x-3' : 'grid-cols-[minmax(0,1fr)]',
+      )}
     >
-      <Label htmlFor={id} className="pt-2">
+      <Label htmlFor={id} className={cn('pt-2', isSwitch && 'max-sm:self-center max-sm:pt-0')}>
         {copy.label}
       </Label>
-      <div className="flex max-w-md flex-col gap-1">
+      <div
+        className={cn(
+          'flex max-w-md flex-col gap-1',
+          isSwitch && 'max-sm:contents max-sm:[&>:not(:first-child)]:col-span-2',
+        )}
+      >
         {control}
         <p id={helpId} className="text-xs text-muted-foreground">
           {hint === null ? copy.help : `${copy.help} ${hint}`}

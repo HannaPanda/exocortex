@@ -98,7 +98,7 @@ export function ConnectedAppsPanel() {
           className="rounded-lg border border-dashed border-border"
         />
       ) : (
-        <Table>
+        <Table narrow="list">
           <TableCaption className="sr-only">Liste der verbundenen Anwendungen</TableCaption>
           <TableHeader>
             <TableRow>
@@ -114,19 +114,21 @@ export function ConnectedAppsPanel() {
               const host = hostOf(app);
               return (
                 <TableRow key={app.clientId}>
-                  <TableCell>
+                  <TableCell cell="title">
                     <span className="font-medium">{app.name}</span>
                     {host !== null ? (
                       <span className="block text-xs text-muted-foreground">{host}</span>
                     ) : null}
                   </TableCell>
-                  <TableCell>{dateTimeFormat.format(new Date(app.connectedAt))}</TableCell>
-                  <TableCell>
+                  <TableCell label="Verbunden seit">
+                    {dateTimeFormat.format(new Date(app.connectedAt))}
+                  </TableCell>
+                  <TableCell label="Zuletzt angemeldet">
                     {app.lastAuthorizedAt !== null
                       ? dateTimeFormat.format(new Date(app.lastAuthorizedAt))
                       : '–'}
                   </TableCell>
-                  <TableCell>
+                  <TableCell label="Status">
                     {app.disabled ? (
                       <Badge variant="muted">Abgeschaltet</Badge>
                     ) : app.activeGrantCount > 0 ? (
@@ -138,7 +140,7 @@ export function ConnectedAppsPanel() {
                       <Badge variant="muted">Ruht</Badge>
                     )}
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell cell="actions" className="text-right">
                     <Button
                       variant="outline"
                       size="sm"

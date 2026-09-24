@@ -127,7 +127,7 @@ export function AgentSessionTable() {
           description="Sobald ein Agent über MCP oder die eingebaute KI eine Seite schreibt, erscheint die Sitzung hier."
         />
       ) : (
-        <Table>
+        <Table narrow="list">
           <TableCaption className="sr-only">Agenten-Sitzungen dieser Installation</TableCaption>
           <TableHeader>
             <TableRow>
@@ -142,7 +142,7 @@ export function AgentSessionTable() {
           <TableBody>
             {sessions.map((session) => (
               <TableRow key={session.id} data-testid="agent-session-row">
-                <TableCell className="font-medium">
+                <TableCell cell="title" className="font-medium">
                   {session.clientLabel ?? session.externalId}
                   {session.transport === null ? null : (
                     <Badge variant="secondary" className="ml-2">
@@ -150,14 +150,16 @@ export function AgentSessionTable() {
                     </Badge>
                   )}
                 </TableCell>
-                <TableCell className="text-muted-foreground">{session.userName ?? '–'}</TableCell>
-                <TableCell className="whitespace-nowrap text-muted-foreground">
+                <TableCell label="Konto" className="text-muted-foreground">
+                  {session.userName ?? '–'}
+                </TableCell>
+                <TableCell label="Zeitraum" className="whitespace-nowrap text-muted-foreground">
                   {dateTimeFormat.format(new Date(session.startedAt))} bis{' '}
                   {dateTimeFormat.format(new Date(session.lastSeenAt))}
                 </TableCell>
-                <TableCell>{session.writeCount}</TableCell>
-                <TableCell>{session.documentCount}</TableCell>
-                <TableCell className="flex justify-end gap-2">
+                <TableCell label="Schreibvorgänge">{session.writeCount}</TableCell>
+                <TableCell label="Seiten">{session.documentCount}</TableCell>
+                <TableCell cell="actions" className="flex justify-end gap-2">
                   <Button variant="ghost" size="sm" onClick={() => setInspected(session)}>
                     Details
                   </Button>

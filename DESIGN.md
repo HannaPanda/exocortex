@@ -574,8 +574,21 @@ shadcn registry and adapted. One primitive library, no exceptions.
 - **Link** — `primary-text` with underline on hover.
 
 Sizes: `sm` 2rem, default 2.25rem, `lg` 2.5rem, `icon` 2.25rem square, `icon-sm`
-1.75rem square. All focus states use `ring-ring/50` at 3px plus the 2px
-`:focus-visible` outline from the base layer.
+1.75rem square.
+
+### Focus
+
+One ring, everywhere: 3px `ring-ring/50`, and no outline (P11, decided
+2026-09-24). The primitives carry it as `focus-visible:ring-[3px]
+focus-visible:ring-ring/50`; everything without a rule of its own gets the same
+ring from `:focus-visible` in the base layer of `packages/ui/src/styles.css`, so
+a link, a tree row and a button look alike. A field additionally moves its
+border to `ring`; that belongs to the field, not to the focus language. Where a
+container clips (`overflow: hidden`, a scrollport flush with the element), the
+element adds `ring-inset` instead of reaching for another shape. The ring is a
+shadow, so under `forced-colors: active` an unlayered rule in the same file
+replaces it with a 2px `CanvasText` outline. There is no 1px ring, no 2px
+outline and no fill as a focus state.
 
 ### Cards / Containers
 
@@ -732,7 +745,10 @@ is you, everywhere you look, in every workspace and on every account.
 - Don't let a row paint its own background. It does not know which surface it
   is on, and a wrong guess punches a hole into the panel around it.
 - Don't use a coloured left or right border as an accent on cards, list items,
-  callouts or alerts.
+  callouts or alerts. The editor is no exception (P13, decided 2026-09-24): a
+  commented block carries a light `warning` wash and the count of its open
+  comments at the right edge, and a transcluded section carries the same plain
+  frame and header as a database embed.
 - Don't use gradient text, backdrop blur as decoration, or a hero-metric block.
 - Don't reach for a modal first. Exhaust inline and progressive alternatives.
 - Don't animate layout properties, and don't use bounce or elastic easing. Ease

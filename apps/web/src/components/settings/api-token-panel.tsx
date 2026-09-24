@@ -211,7 +211,7 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
           onRetry={() => void tokensQuery.refetch()}
         />
       ) : (
-        <Table>
+        <Table narrow="list">
           <TableCaption className="sr-only">Liste deiner API-Token</TableCaption>
           <TableHeader>
             <TableRow>
@@ -230,9 +230,11 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
               const revoked = token.revokedAt !== null;
               return (
                 <TableRow key={token.id}>
-                  <TableCell>{token.name}</TableCell>
-                  <TableCell className="font-mono text-xs">{token.prefix}</TableCell>
-                  <TableCell>
+                  <TableCell cell="title">{token.name}</TableCell>
+                  <TableCell label="Präfix" className="font-mono text-xs">
+                    {token.prefix}
+                  </TableCell>
+                  <TableCell label="Rechte">
                     {token.scopes.length > 0 ? (
                       <span className="flex flex-wrap gap-1">
                         {token.scopes.map((granted) => (
@@ -247,7 +249,7 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
                       <Badge variant="destructive">Keine</Badge>
                     )}
                   </TableCell>
-                  <TableCell className="text-xs">
+                  <TableCell label="Seiten" className="text-xs">
                     {token.pageScopes.length === 0 ? (
                       <span className="text-muted-foreground">alle</span>
                     ) : (
@@ -261,22 +263,22 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
                       </span>
                     )}
                   </TableCell>
-                  <TableCell>
+                  <TableCell label="Zuletzt benutzt">
                     {token.lastUsedAt !== null
                       ? dateTimeFormat.format(new Date(token.lastUsedAt))
                       : '–'}
                   </TableCell>
-                  <TableCell>
+                  <TableCell label="Läuft ab">
                     {token.expiresAt !== null
                       ? dateTimeFormat.format(new Date(token.expiresAt))
                       : '–'}
                   </TableCell>
-                  <TableCell>
+                  <TableCell label="Status">
                     <Badge variant={revoked ? 'muted' : 'default'}>
                       {revoked ? 'Zurückgezogen' : 'Aktiv'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell cell="actions" className="text-right">
                     <Button
                       variant="outline"
                       size="sm"

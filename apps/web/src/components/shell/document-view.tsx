@@ -378,7 +378,7 @@ function DocumentTitleInput({ initialTitle, readOnly, onCommit }: DocumentTitleI
           'col-start-1 row-start-1 m-0 resize-none overflow-hidden p-0',
           'bg-transparent outline-none placeholder:text-muted-foreground',
           // The caret alone is too faint a focus mark on a heading this size.
-          'rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring/50',
+          'rounded-sm focus-visible:ring-[3px] focus-visible:ring-ring/50',
         )}
         placeholder="Unbenannte Seite"
       />

@@ -128,11 +128,11 @@ export function PageTreeRow({
       tabIndex={tabStopId === node.id ? 0 : -1}
       onKeyDown={(event) => onRowKeyDown(event, node.id)}
       onFocus={() => onRowFocus(node.id)}
-      // The outline belongs on the row, not on the item: an unfolded item is
-      // as tall as its whole branch, and a ring around that says nothing about
-      // where focus is. Inset by its own width, because the tree sits in a
-      // scroll container with one unit of padding and an outset ring would be
-      // clipped on both edges.
+      // The ring belongs on the row, not on the item: an unfolded item is as
+      // tall as its whole branch, and a ring around that says nothing about
+      // where focus is. Inset, because the tree sits in a scroll container
+      // with one unit of padding and an outset ring would be clipped on both
+      // edges.
       className="group/item outline-none"
     >
       <ContextMenu>
@@ -155,7 +155,7 @@ export function PageTreeRow({
               onDrop={(event) => onRowDrop(event, node)}
               className={cn(
                 'group relative flex items-center gap-1 rounded-md pr-1 text-sm transition-colors',
-                'group-focus-visible/item:outline-2 group-focus-visible/item:-outline-offset-2 group-focus-visible/item:outline-ring',
+                'group-focus-visible/item:ring-[3px] group-focus-visible/item:ring-ring/50 group-focus-visible/item:ring-inset',
                 // Where you are is the most important state in the tree, so it
                 // is carried three times over: surface, weight and an amber
                 // icon. Hover stays a hint and never comes close to it.

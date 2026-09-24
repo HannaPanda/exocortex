@@ -219,10 +219,13 @@
   }
 
   /* Focus must always be visible: focus states are part of the contract, not a
-     decoration (docs/ui-system.md). */
+     decoration (docs/ui-system.md). One ring, the primitives' own, for
+     everything that has no rule of its own (P11, decided 2026-09-24). Applied
+     through the ring utilities rather than a raw box-shadow, so it composes
+     with an element's `shadow-*` instead of being replaced by it. Where a
+     container clips, the element adds `ring-inset`. */
   :focus-visible {
-    outline: 2px solid var(--ring);
-    outline-offset: 2px;
+    @apply ring-[3px] ring-ring/50 outline-none;
   }
 
   ::selection {
@@ -256,6 +259,87 @@
       animation-duration: 0.01ms !important;
       transition-duration: 0.01ms !important;
     }
+  }
+}
+
+/* A `Table` with `narrow="list"` below sm (P12, decided 2026-09-24): each row
+   becomes an entry of two columns, title and actions on the first line and
+   every other cell under them with its label in front. Unlayered on purpose:
+   it has to beat the cells' own utilities (`whitespace-nowrap`, `p-2`,
+   `text-right`), which are right for the table and wrong for the entry. A
+   grid blockifies its items, so a cell that is `flex` stays `flex`. The
+   header row is hidden because the labels say what it said, and the table
+   stops being a table for assistive technology at this width, which the
+   labels, as generated content, are read in place of. */
+@media (width < 40rem) {
+  table[data-narrow='list'],
+  table[data-narrow='list'] > tbody {
+    display: block;
+  }
+
+  table[data-narrow='list'] > thead {
+    display: none;
+  }
+
+  table[data-narrow='list'] > tbody > tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 0.75rem;
+    row-gap: 0.25rem;
+    padding-block: 0.75rem;
+  }
+
+  table[data-narrow='list'] > tbody > tr > td {
+    grid-column: 1 / -1;
+    padding: 0;
+    text-align: left;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  table[data-narrow='list'] > tbody > tr > td[data-label] {
+    position: relative;
+    padding-left: 8.5rem;
+    min-height: 1.5rem;
+  }
+
+  table[data-narrow='list'] > tbody > tr > td[data-label]::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 8rem;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    font-weight: 400;
+  }
+
+  table[data-narrow='list'] > tbody > tr > td[data-cell='title'] {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+    font-weight: 500;
+  }
+
+  table[data-narrow='list'] > tbody > tr > td[data-cell='actions'] {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    align-self: start;
+  }
+
+  table[data-narrow='list'] > tbody > tr > td:empty {
+    display: none;
+  }
+}
+
+/* The ring is a shadow, and a window with forced colours paints no shadows.
+   Unlayered, so it beats every primitive's `outline-none`: in that mode, and
+   only there, focus falls back to a system-coloured outline. */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 2px solid CanvasText;
+    outline-offset: 2px;
   }
 }
 

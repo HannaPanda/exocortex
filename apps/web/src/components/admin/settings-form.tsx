@@ -26,6 +26,7 @@ import {
   groupOf,
   inputId,
   invalidMessage,
+  SETTING_LIST_CLASS,
   SettingRow,
 } from '@/components/settings/setting-row';
 import {
@@ -249,16 +250,17 @@ export function SettingsForm() {
 
         <fieldset disabled={updateSettings.isPending} className="min-w-0 flex-1 border-0 p-0">
           {[...groups.entries()].map(([name, keys]) => (
-            <TabsContent key={name} value={name} className="flex flex-col gap-4">
+            <TabsContent key={name} value={name} className={SETTING_LIST_CLASS}>
               {keys.map((key) => (
-                <SettingRow
-                  key={key}
-                  settingKey={key}
-                  value={currentDraft[key]}
-                  onChange={(value) => updateField(key, value)}
-                  models={modelsQuery.data?.models ?? []}
-                  error={fieldErrors[key]}
-                />
+                <div key={key} className="max-sm:py-4">
+                  <SettingRow
+                    settingKey={key}
+                    value={currentDraft[key]}
+                    onChange={(value) => updateField(key, value)}
+                    models={modelsQuery.data?.models ?? []}
+                    error={fieldErrors[key]}
+                  />
+                </div>
               ))}
             </TabsContent>
           ))}

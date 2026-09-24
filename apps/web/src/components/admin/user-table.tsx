@@ -110,7 +110,7 @@ export function UserTable() {
           </Alert>
         ) : null}
 
-        <Table>
+        <Table narrow="list">
           <TableCaption className="sr-only">Liste der Nutzer dieser Installation</TableCaption>
           <TableHeader>
             <TableRow>
@@ -129,7 +129,7 @@ export function UserTable() {
               const disabled = user.disabledAt !== null;
               return (
                 <TableRow key={user.id} className={disabled ? 'opacity-60' : undefined}>
-                  <TableCell>
+                  <TableCell cell="title">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{user.name}</span>
                       {isSelf ? <Badge variant="secondary">Du</Badge> : null}
@@ -140,8 +140,10 @@ export function UserTable() {
                       ) : null}
                     </div>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{user.email}</TableCell>
-                  <TableCell>
+                  <TableCell label="E-Mail" className="text-muted-foreground">
+                    {user.email}
+                  </TableCell>
+                  <TableCell label="Rolle">
                     <Select
                       value={user.role}
                       disabled={isSelf || busy}
@@ -159,14 +161,16 @@ export function UserTable() {
                       </SelectContent>
                     </Select>
                   </TableCell>
-                  <TableCell>{user.workspaceCount}</TableCell>
-                  <TableCell>
+                  <TableCell label="Arbeitsbereiche">{user.workspaceCount}</TableCell>
+                  <TableCell label="Zuletzt aktiv">
                     {user.lastSessionAt !== null
                       ? dateTimeFormat.format(new Date(user.lastSessionAt))
                       : '–'}
                   </TableCell>
-                  <TableCell>{dateFormat.format(new Date(user.createdAt))}</TableCell>
-                  <TableCell>
+                  <TableCell label="Registriert">
+                    {dateFormat.format(new Date(user.createdAt))}
+                  </TableCell>
+                  <TableCell cell="actions">
                     {isSelf ? (
                       <span className="text-xs text-muted-foreground">–</span>
                     ) : (

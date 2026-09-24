@@ -14,7 +14,40 @@ import { useComments } from '@/lib/api/comment-queries';
 /** HTML attribute the marker carries, so a click can find the block it belongs to. */
 export const COMMENT_ANCHOR_ATTRIBUTE = 'data-comment-anchor';
 
-const commentMarkerKey = new PluginKey<Set<string>>('exocortexCommentMarkers');
+/** Open comments per marked block: roots and replies of every unresolved thread. */
+type MarkedBlocks = ReadonlyMap<string, number>;
+
+const commentMarkerKey = new PluginKey<MarkedBlocks>('exocortexCommentMarkers');
+
+/** lucide's `message-square`, the icon the comments panel uses. */
+const COUNT_ICON_PATH =
+  'M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z';
+
+/**
+ * The count at the block's right edge (P13, decided 2026-09-24): an icon and a
+ * number instead of a left rule. Built as plain DOM because a decoration widget
+ * is rendered by ProseMirror, not React. The icon is hidden from assistive
+ * technology and a visually hidden word says what the number counts. It is
+ * not focusable:
+ * the block itself is what a click opens, and the comments panel is the
+ * keyboard's way to the thread.
+ */
+function renderCount(count: number): HTMLElement {
+  const badge = document.createElement('span');
+  badge.className = 'exocortex-comment-count';
+  badge.contentEditable = 'false';
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', COUNT_ICON_PATH);
+  svg.append(path);
+  const label = document.createElement('span');
+  label.className = 'exocortex-sr-only';
+  label.textContent = count === 1 ? ' Kommentar' : ' Kommentare';
+  badge.append(svg, String(count), label);
+  return badge;
+}
 
 /**
  * Marks the blocks that carry an open comment thread.
@@ -35,12 +68,12 @@ export function createCommentMarkers(): Extension {
 
     addProseMirrorPlugins() {
       return [
-        new Plugin<Set<string>>({
+        new Plugin<MarkedBlocks>({
           key: commentMarkerKey,
           state: {
-            init: () => new Set<string>(),
+            init: () => new Map<string, number>(),
             apply: (transaction, value) => {
-              const next = transaction.getMeta(commentMarkerKey) as Set<string> | undefined;
+              const next = transaction.getMeta(commentMarkerKey) as MarkedBlocks | undefined;
               return next ?? value;
             },
           },
@@ -52,13 +85,25 @@ export function createCommentMarkers(): Extension {
               const decorations: Decoration[] = [];
               state.doc.descendants((node, position) => {
                 const id: unknown = node.attrs[BLOCK_ID_ATTRIBUTE];
-                if (isValidBlockId(id) && marked.has(id)) {
+                const count = isValidBlockId(id) ? marked.get(id) : undefined;
+                if (isValidBlockId(id) && count !== undefined) {
                   decorations.push(
                     Decoration.node(position, position + node.nodeSize, {
                       class: 'exocortex-commented',
                       [COMMENT_ANCHOR_ATTRIBUTE]: id,
                     }),
                   );
+                  // A leaf (an image, a divider) has no inside to hold the
+                  // count; its wash alone marks it.
+                  if (!node.isLeaf) {
+                    decorations.push(
+                      Decoration.widget(position + 1, () => renderCount(count), {
+                        side: -1,
+                        key: `comment-count-${id}-${count}`,
+                        ignoreSelection: true,
+                      }),
+                    );
+                  }
                 }
                 return true;
               });
@@ -72,12 +117,12 @@ export function createCommentMarkers(): Extension {
 }
 
 /** Pushes a new set of marked blocks into the running editor. */
-function publishMarkedBlocks(editor: Editor, blockIds: Set<string>): void {
+function publishMarkedBlocks(editor: Editor, blockIds: MarkedBlocks): void {
   const current = commentMarkerKey.getState(editor.state);
   if (
     current !== undefined &&
     current.size === blockIds.size &&
-    [...blockIds].every((id) => current.has(id))
+    [...blockIds].every(([id, count]) => current.get(id) === count)
   ) {
     return;
   }
@@ -98,12 +143,14 @@ export function CommentMarkers({ editor, documentId }: { editor: Editor; documen
   // Only open threads are marked. A resolved one is history: leaving its
   // highlight in the text would make a page look permanently unfinished.
   const markedBlocks = React.useMemo(() => {
-    const ids = new Set<string>();
+    const counts = new Map<string, number>();
     for (const thread of comments.data?.threads ?? []) {
       if (thread.root.resolvedAt !== null) continue;
-      if (thread.root.blockId !== null && !thread.root.orphaned) ids.add(thread.root.blockId);
+      const blockId = thread.root.blockId;
+      if (blockId === null || thread.root.orphaned) continue;
+      counts.set(blockId, (counts.get(blockId) ?? 0) + 1 + thread.replies.length);
     }
-    return ids;
+    return counts;
   }, [comments.data]);
 
   React.useEffect(() => {

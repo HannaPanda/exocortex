@@ -77,7 +77,7 @@ export function WorkspaceSharesPage({ workspaceId }: { workspaceId: string }) {
           description="Keine Seite dieses Arbeitsbereichs ist von außen erreichbar."
         />
       ) : (
-        <Table className="mt-8" data-testid="workspace-shares">
+        <Table narrow="list" className="mt-8" data-testid="workspace-shares">
           <TableHeader>
             <TableRow>
               <TableHead>Seite</TableHead>
@@ -93,7 +93,7 @@ export function WorkspaceSharesPage({ workspaceId }: { workspaceId: string }) {
             {rows.map((share) => (
               <React.Fragment key={share.id}>
                 <TableRow data-testid="workspace-share-row" data-state={shareStateOf(share, now)}>
-                  <TableCell>
+                  <TableCell cell="title">
                     <Link
                       href={`/arbeitsbereich/${workspaceId}/seite/${share.documentId}`}
                       className="font-medium hover:underline"
@@ -101,29 +101,29 @@ export function WorkspaceSharesPage({ workspaceId }: { workspaceId: string }) {
                       {share.documentTitle}
                     </Link>
                   </TableCell>
-                  <TableCell className="max-w-72 text-sm whitespace-normal">
+                  <TableCell label="An wen" className="max-w-72 text-sm whitespace-normal">
                     <div className="flex flex-col gap-1.5">
                       {recipientOf(share)}
                       <ShareLinkAddress share={share} testIdPrefix="workspace-share" />
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell label="Recht">
                     <Badge variant="muted">
                       {share.permission === 'WRITE' ? 'Bearbeiten' : 'Lesen'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell label="Umfang" className="text-sm text-muted-foreground">
                     {share.scope === 'SUBTREE' ? 'mit Unterseiten' : 'nur die Seite'}
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell label="Läuft ab" className="text-sm text-muted-foreground">
                     {share.expiresAt === null ? '–' : dateFormat.format(new Date(share.expiresAt))}
                   </TableCell>
-                  <TableCell>
+                  <TableCell label="Status">
                     <Badge variant={shareStateOf(share, now) === 'active' ? 'default' : 'muted'}>
                       {SHARE_STATE_LABELS[shareStateOf(share, now)]}
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell cell="actions">
                     <Button
                       variant="outline"
                       size="sm"

@@ -90,7 +90,7 @@ export function RenderTemplatesPage({ workspaceId }: { workspaceId: string }) {
             description="Eine Vorlage ohne eigenen Quelltext benutzt die eingebaute Vorlage Eisvogel und braucht keine Zeile LaTeX."
           />
         ) : (
-          <Table data-testid="render-templates">
+          <Table narrow="list" data-testid="render-templates">
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
@@ -102,26 +102,26 @@ export function RenderTemplatesPage({ workspaceId }: { workspaceId: string }) {
             <TableBody>
               {templates.data.templates.map((template) => (
                 <TableRow key={template.id} data-testid="render-template">
-                  <TableCell>
+                  <TableCell cell="title">
                     <div className="font-medium">{template.name}</div>
                     {template.description.length === 0 ? null : (
                       <div className="text-xs text-muted-foreground">{template.description}</div>
                     )}
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell label="Satz" className="text-sm text-muted-foreground">
                     {template.source === null ? (
                       <Badge variant="muted">Eisvogel (eingebaut)</Badge>
                     ) : (
                       <Badge variant="outline">Eigener Quelltext</Badge>
                     )}
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell label="Variablen" className="text-sm text-muted-foreground">
                     {template.variables.length === 0
                       ? '–'
                       : template.variables.map((variable) => variable.name).join(', ')}
                   </TableCell>
                   {canEdit ? (
-                    <TableCell className="flex gap-1">
+                    <TableCell cell="actions" className="flex gap-1">
                       <Button
                         variant="ghost"
                         size="sm"

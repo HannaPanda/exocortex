@@ -157,7 +157,7 @@ export function ModelTable() {
         </Alert>
       ) : null}
 
-      <Table>
+      <Table narrow="list">
         <TableCaption className="sr-only">Liste der KI-Modelle im Register</TableCaption>
         <TableHeader>
           <TableRow>
@@ -179,7 +179,7 @@ export function ModelTable() {
             </TableRow>,
             ...group.models.flatMap((model) => [
               <TableRow key={model.id}>
-                <TableCell>
+                <TableCell cell="title">
                   <div className="flex items-start gap-1.5">
                     <Button
                       variant="ghost"
@@ -202,8 +202,10 @@ export function ModelTable() {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>{numberFormat.format(model.contextWindowTokens)} Tokens</TableCell>
-                <TableCell>
+                <TableCell label="Kontext">
+                  {numberFormat.format(model.contextWindowTokens)} Tokens
+                </TableCell>
+                <TableCell label="Bild">
                   <div className="flex flex-col gap-0.5">
                     <Badge variant={model.supportsVision ? 'default' : 'muted'}>
                       {model.supportsVision ? 'Ja' : 'Nein'}
@@ -215,7 +217,7 @@ export function ModelTable() {
                     ) : null}
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell label="Denkstufen">
                   <div className="flex flex-wrap gap-1">
                     {model.reasoningLevels.map((level) => (
                       <Badge key={level} variant="secondary">
@@ -224,10 +226,10 @@ export function ModelTable() {
                     ))}
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell label="Preis">
                   {formatPrice(model.inputMicroUsdPerMTok, model.outputMicroUsdPerMTok)}
                 </TableCell>
-                <TableCell>
+                <TableCell label="Aktiv">
                   <Switch
                     aria-label={`${model.displayName} aktiv`}
                     checked={model.enabled}
@@ -236,7 +238,7 @@ export function ModelTable() {
                     }
                   />
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell cell="actions" className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger
                       render={

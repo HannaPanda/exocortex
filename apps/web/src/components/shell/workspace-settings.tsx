@@ -465,7 +465,7 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
         </Alert>
       ) : null}
 
-      <Table>
+      <Table narrow="list">
         <TableCaption className="sr-only">Mitglieder dieses Arbeitsbereichs</TableCaption>
         <TableHeader>
           <TableRow>
@@ -478,14 +478,16 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
         <TableBody>
           {workspace.members.map((member) => (
             <TableRow key={member.id}>
-              <TableCell>
+              <TableCell cell="title">
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{member.name}</span>
                   {member.userId === currentUserId ? <Badge variant="secondary">Du</Badge> : null}
                 </div>
               </TableCell>
-              <TableCell className="text-muted-foreground">{member.email}</TableCell>
-              <TableCell>
+              <TableCell label="E-Mail" className="text-muted-foreground">
+                {member.email}
+              </TableCell>
+              <TableCell label="Rolle">
                 <Select
                   value={member.role}
                   disabled={updateMember.isPending || (member.role === 'OWNER' && !isOwner)}
@@ -505,7 +507,7 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
                   </SelectContent>
                 </Select>
               </TableCell>
-              <TableCell className="text-right">
+              <TableCell cell="actions" className="text-right">
                 {/*
                   Removing yourself is refused by the server and left out here:
                   leaving a workspace is a different act from being removed from

@@ -194,11 +194,22 @@
 
   /* A block that carries an open comment thread (issue #18). Applied as a
      ProseMirror *decoration*, never as a stored mark: a comment is not part of
-     the document, so it must leave no trace in the Yjs state. A left rule plus
-     a very light wash, so a page with many remarks still reads as text rather
-     than as a highlighter accident. */
+     the document, so it must leave no trace in the Yjs state. A very light wash
+     plus the count at the right edge (P13, decided 2026-09-24): no left rule,
+     because DESIGN.md forbids accent borders and the count says more, namely
+     how many. The right padding keeps the text clear of the count. */
   .exocortex-editor .exocortex-commented {
-    @apply -ml-3 cursor-pointer rounded-r-sm border-l-2 border-warning bg-warning/8 pl-[calc(0.75rem-2px)];
+    @apply relative -mx-3 cursor-pointer rounded-sm bg-warning/8 pr-9 pl-3;
+  }
+
+  .exocortex-editor .exocortex-comment-count {
+    @apply pointer-events-none absolute top-0.5 right-1.5 inline-flex items-center gap-0.5 text-meta font-normal text-muted-foreground select-none;
+  }
+
+  .exocortex-editor .exocortex-comment-count svg {
+    @apply size-3.5 fill-none stroke-current stroke-2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   .exocortex-editor .exocortex-commented:hover {
@@ -639,12 +650,13 @@
     @apply size-3.5;
   }
 
-  /* Transclusion (issue #78): the frame says the content belongs to another
-     page, the left rule says where it ends. No max height -- a transcluded
-     section is prose the reader is meant to read here, not a table with its
-     own scrollport. */
+  /* Transclusion (issue #78): the frame and its header say the content
+     belongs to another page and where it ends; the same frame as the database
+     embed, and no left rule (P13, decided 2026-09-24). No max height -- a
+     transcluded section is prose the reader is meant to read here, not a table
+     with its own scrollport. */
   .exocortex-transclusion {
-    @apply my-4 flex flex-col overflow-hidden rounded-md border border-border border-l-2 border-l-accent-foreground/30;
+    @apply my-4 flex flex-col overflow-hidden rounded-md border border-border;
   }
 
   /* The fragment is rendered by a second editor, which brings its own top and

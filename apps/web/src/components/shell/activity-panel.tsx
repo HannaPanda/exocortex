@@ -184,7 +184,7 @@ function Row({
           className={cn(
             'flex min-w-0 flex-1 items-start gap-2 rounded-md px-2 py-1.5 text-left transition-colors',
             'hover:bg-accent hover:text-foreground',
-            'focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none',
+            'focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none',
           )}
         >
           {body}

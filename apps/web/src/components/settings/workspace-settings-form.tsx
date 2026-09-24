@@ -19,7 +19,7 @@ import {
 } from '@exocortex/ui';
 
 import { SettingGroupNav } from '@/components/settings/setting-group-nav';
-import { groupOf, SettingRow } from '@/components/settings/setting-row';
+import { groupOf, SETTING_LIST_CLASS, SettingRow } from '@/components/settings/setting-row';
 import {
   SettingsActionBar,
   UnsavedChangesNotice,
@@ -199,9 +199,9 @@ export function WorkspaceSettingsForm({
 
         <fieldset disabled={!canEdit || update.isPending} className="min-w-0 flex-1 border-0 p-0">
           {[...groups.entries()].map(([name, keys]) => (
-            <TabsContent key={name} value={name} className="flex flex-col gap-4">
+            <TabsContent key={name} value={name} className={SETTING_LIST_CLASS}>
               {keys.map((key) => (
-                <div key={key} className="flex flex-col gap-1">
+                <div key={key} className="flex flex-col gap-1 max-sm:py-4">
                   <SettingRow
                     settingKey={key}
                     value={current[key]}

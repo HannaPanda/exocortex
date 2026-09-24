@@ -125,7 +125,7 @@ export function InvitationTable({
         </div>
       ) : null}
 
-      <Table>
+      <Table narrow="list">
         <TableCaption className="sr-only">Einladungen</TableCaption>
         <TableHeader>
           <TableRow>
@@ -142,18 +142,20 @@ export function InvitationTable({
         <TableBody>
           {invitations.data.map((invitation) => (
             <TableRow key={invitation.id}>
-              <TableCell className="font-medium">{invitation.email}</TableCell>
-              <TableCell>
+              <TableCell cell="title" className="font-medium">
+                {invitation.email}
+              </TableCell>
+              <TableCell label="Status">
                 <Badge variant={STATUS_VARIANTS[invitation.status]}>
                   {STATUS_LABELS[invitation.status]}
                 </Badge>
               </TableCell>
               {showWorkspace ? (
-                <TableCell className="text-muted-foreground">
+                <TableCell label="Arbeitsbereich" className="text-muted-foreground">
                   {invitation.workspaceName ?? '–'}
                 </TableCell>
               ) : null}
-              <TableCell className="text-muted-foreground">
+              <TableCell label="Rolle" className="text-muted-foreground">
                 {invitation.workspaceRole ?? '–'}
                 {invitation.role === 'admin' ? (
                   <Badge variant="secondary" className="ml-2">
@@ -161,14 +163,16 @@ export function InvitationTable({
                   </Badge>
                 ) : null}
               </TableCell>
-              <TableCell className="text-muted-foreground">{invitation.invitedByName}</TableCell>
-              <TableCell className="text-muted-foreground">
+              <TableCell label="Eingeladen von" className="text-muted-foreground">
+                {invitation.invitedByName}
+              </TableCell>
+              <TableCell label="Gültig bis" className="text-muted-foreground">
                 {dateFormat.format(new Date(invitation.expiresAt))}
               </TableCell>
-              <TableCell className="text-muted-foreground">
+              <TableCell label="Verschickt" className="text-muted-foreground">
                 {invitation.lastSentAt === null ? 'nicht angekommen' : `${invitation.sentCount}×`}
               </TableCell>
-              <TableCell>
+              <TableCell cell="actions">
                 <InvitationActions
                   invitation={invitation}
                   pending={resend.isPending || revoke.isPending}

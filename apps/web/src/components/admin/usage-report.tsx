@@ -246,7 +246,7 @@ function DailyChart({ daily }: { daily: readonly AiUsageDay[] }) {
 
 function ModelTable({ usage }: { usage: AiUsageResponse }) {
   return (
-    <Table>
+    <Table narrow="list">
       <TableCaption>
         Welches Modell wie oft, was es kostet, wie zuverlässig und wie schnell es antwortet.
       </TableCaption>
@@ -265,28 +265,28 @@ function ModelTable({ usage }: { usage: AiUsageResponse }) {
           const finished = row.completedRuns + row.failedRuns;
           return (
             <TableRow key={`${row.provider}:${row.model}`}>
-              <TableCell>
+              <TableCell cell="title">
                 <div className="font-medium">{row.displayName ?? row.model}</div>
                 <div className="text-xs text-muted-foreground">
                   {row.model} · {row.provider}
                 </div>
               </TableCell>
-              <TableCell className="text-right tabular-nums">
+              <TableCell label="Läufe" className="text-right tabular-nums">
                 {numberFormat.format(row.runs)}
               </TableCell>
-              <TableCell className="text-right tabular-nums">
+              <TableCell label="Erfolg" className="text-right tabular-nums">
                 {finished === 0 ? '–' : percentFormat.format(row.completedRuns / finished)}
               </TableCell>
-              <TableCell className="text-right tabular-nums">
+              <TableCell label="Tokens rein/raus" className="text-right tabular-nums">
                 {numberFormat.format(row.tokens.input)} / {numberFormat.format(row.tokens.output)}
               </TableCell>
-              <TableCell className="text-right tabular-nums">
+              <TableCell label="Kosten" className="text-right tabular-nums">
                 {formatMicroUsd(row.cost.measuredMicroUsd + row.cost.estimatedMicroUsd)}
                 {row.cost.estimatedMicroUsd > 0 ? (
                   <span className="ml-1 text-xs text-muted-foreground">geschätzt</span>
                 ) : null}
               </TableCell>
-              <TableCell className="text-right tabular-nums">
+              <TableCell label="Median" className="text-right tabular-nums">
                 {formatDuration(row.medianDurationMs)}
               </TableCell>
             </TableRow>
@@ -300,7 +300,7 @@ function ModelTable({ usage }: { usage: AiUsageResponse }) {
 function ErrorTable({ usage }: { usage: AiUsageResponse }) {
   const failed = usage.byErrorCode.reduce((sum, row) => sum + row.runs, 0);
   return (
-    <Table>
+    <Table narrow="list">
       <TableCaption>
         Nur gescheiterte Läufe und Zeitüberschreitungen. Ein Abbruch durch einen Menschen ist kein
         Fehler und steht hier nicht.
@@ -316,14 +316,16 @@ function ErrorTable({ usage }: { usage: AiUsageResponse }) {
       <TableBody>
         {usage.byErrorCode.map((row) => (
           <TableRow key={row.errorCode ?? 'ohne-code'}>
-            <TableCell className="font-mono text-xs">{row.errorCode ?? 'ohne Code'}</TableCell>
-            <TableCell className="text-right tabular-nums">
+            <TableCell cell="title" className="font-mono text-xs">
+              {row.errorCode ?? 'ohne Code'}
+            </TableCell>
+            <TableCell label="Läufe" className="text-right tabular-nums">
               {numberFormat.format(row.runs)}
             </TableCell>
-            <TableCell className="text-right tabular-nums">
+            <TableCell label="Anteil" className="text-right tabular-nums">
               {failed === 0 ? '–' : percentFormat.format(row.runs / failed)}
             </TableCell>
-            <TableCell className="text-right tabular-nums">
+            <TableCell label="Zuletzt" className="text-right tabular-nums">
               {new Date(row.lastSeenAt).toLocaleString('de-DE', {
                 dateStyle: 'short',
                 timeStyle: 'short',

@@ -65,7 +65,7 @@ export function AgentSessionDetail({ sessionId }: { sessionId: string }) {
   }
 
   return (
-    <Table>
+    <Table narrow="list">
       <TableCaption className="sr-only">Schreibvorgänge dieser Agenten-Sitzung</TableCaption>
       <TableHeader>
         <TableRow>
@@ -78,12 +78,12 @@ export function AgentSessionDetail({ sessionId }: { sessionId: string }) {
       <TableBody>
         {writes.map((write) => (
           <TableRow key={write.id} data-testid="agent-write-row">
-            <TableCell className="whitespace-nowrap text-muted-foreground">
+            <TableCell label="Zeitpunkt" className="whitespace-nowrap text-muted-foreground">
               {dateTimeFormat.format(new Date(write.createdAt))}
             </TableCell>
-            <TableCell>{write.documentTitle ?? 'Gelöschte Seite'}</TableCell>
-            <TableCell>{ACTION_LABELS[write.action] ?? write.action}</TableCell>
-            <TableCell className="text-muted-foreground">
+            <TableCell cell="title">{write.documentTitle ?? 'Gelöschte Seite'}</TableCell>
+            <TableCell label="Vorgang">{ACTION_LABELS[write.action] ?? write.action}</TableCell>
+            <TableCell label="Stand davor" className="text-muted-foreground">
               {write.snapshotBeforeId === null ? 'keiner' : 'vorhanden'}
             </TableCell>
           </TableRow>

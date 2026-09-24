@@ -98,7 +98,7 @@ function commitOnEnterOrBlur(onCommit: () => void) {
 
 const CELL_BOX = 'flex min-h-8 w-full items-start px-1.5 py-1.5 text-left text-sm';
 const CELL_INTERACTIVE =
-  'rounded-md hover:bg-accent focus-visible:ring-1 focus-visible:ring-ring outline-none';
+  'rounded-md hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 outline-none';
 
 /**
  * A text value that can be longer than its column, in two states.
@@ -251,7 +251,7 @@ function NumberCell({ value, onChange, readOnly }: PropertyCellProps) {
       value={draft}
       readOnly={readOnly}
       placeholder="Leer"
-      className="h-8 border-transparent bg-transparent px-1.5 text-right shadow-none hover:border-input focus-visible:ring-1"
+      className="h-8 border-transparent bg-transparent px-1.5 text-right shadow-none hover:border-input"
       onChange={(event) => setDraft(event.target.value)}
       {...commitOnEnterOrBlur(() => {
         if (draft.trim().length === 0) {
@@ -353,8 +353,7 @@ function DateCell({ property, value, onChange, readOnly }: PropertyCellProps) {
   const includeTime = config.includeTime && !current.allDay;
   const inputType = includeTime ? 'datetime-local' : 'date';
   const toInput = includeTime ? isoToDateTimeLocal : isoDateOnly;
-  const inputClass =
-    'h-8 border-transparent bg-transparent px-1.5 shadow-none hover:border-input focus-visible:ring-1';
+  const inputClass = 'h-8 border-transparent bg-transparent px-1.5 shadow-none hover:border-input';
 
   // A non-span property keeps writing the bare ISO string the API expects for
   // it; only a span property may send the object form.

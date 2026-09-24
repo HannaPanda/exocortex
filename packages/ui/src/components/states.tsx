@@ -59,6 +59,12 @@ export function LoadingState({
   );
 }
 
+/**
+ * The one empty state (P9, decided 2026-09-24): centred, icon first, the
+ * action as an outline button under the words. `children` takes the place of
+ * `action` when the way out is not a plain click, such as a select that
+ * chooses what a view groups by; it sits where the button would.
+ */
 export interface EmptyStateProps extends React.ComponentPropsWithoutRef<'div'> {
   title: string;
   description?: string;
@@ -72,6 +78,7 @@ export function EmptyState({
   icon: Icon = InboxIcon,
   action,
   className,
+  children,
   ...props
 }: EmptyStateProps) {
   return (
@@ -92,6 +99,7 @@ export function EmptyState({
           {action.label}
         </Button>
       ) : null}
+      {children === undefined ? null : <div className="mt-2">{children}</div>}
     </div>
   );
 }

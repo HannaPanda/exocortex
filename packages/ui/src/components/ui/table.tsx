@@ -11,8 +11,19 @@ import { cn } from '../../lib/utils';
 function Table({
   className,
   containerClassName,
+  narrow = 'scroll',
   ...props
 }: React.ComponentProps<'table'> & {
+  /**
+   * What the table does below `sm` (P12, decided 2026-09-24). `list` turns
+   * every row into an entry: the cell marked `cell="title"` and the one marked
+   * `cell="actions"` share the first line, every other cell follows under it
+   * with its `label` in front. A table of records a person acts on (tokens,
+   * members, invitations) uses `list`; `scroll` keeps the table and scrolls it
+   * sideways, for a grid whose columns are the point (a database, a Markdown
+   * table in a chat answer). The rules live in `styles.css`.
+   */
+  narrow?: 'scroll' | 'list';
   /**
    * Styles the scroll container. Added to the installed source because a
    * sticky `thead` only sticks against the element that actually scrolls: a
@@ -29,6 +40,7 @@ function Table({
     >
       <table
         data-slot="table"
+        data-narrow={narrow}
         className={cn('w-full caption-bottom text-sm', className)}
         {...props}
       />
@@ -91,10 +103,22 @@ function TableHead({ className, scope = 'col', ...props }: React.ComponentProps<
   );
 }
 
-function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
+function TableCell({
+  className,
+  label,
+  cell,
+  ...props
+}: React.ComponentProps<'td'> & {
+  /** The column's name, shown in front of the value when a `list` table is narrow. */
+  label?: string;
+  /** Where the cell goes when a `list` table is narrow: the entry's first line. */
+  cell?: 'title' | 'actions';
+}) {
   return (
     <td
       data-slot="table-cell"
+      data-label={label}
+      data-cell={cell}
       className={cn(
         'p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
         className,

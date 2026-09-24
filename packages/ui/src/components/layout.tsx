@@ -163,7 +163,8 @@ export function ResizablePanel({
         tabIndex={0}
         data-testid={`resize-handle-${handle}`}
         className={cn(
-          'absolute top-0 h-full w-1 cursor-col-resize transition-colors hover:bg-primary/50 focus-visible:bg-primary',
+          // Inset: the panel clips, and an outset ring would be cut off.
+          'absolute top-0 h-full w-1 cursor-col-resize transition-colors hover:bg-primary/50 focus-visible:ring-inset',
           handle === 'right' ? 'right-0' : 'left-0',
         )}
         onPointerDown={(event) => {

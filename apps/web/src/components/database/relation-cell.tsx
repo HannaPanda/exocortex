@@ -81,7 +81,7 @@ export function RelationCell({ property, value, onChange, readOnly }: PropertyCe
         render={
           <button
             type="button"
-            className="flex min-h-8 w-full items-start rounded-md px-1.5 py-1.5 text-left outline-none hover:bg-accent focus-visible:ring-1 focus-visible:ring-ring"
+            className="flex min-h-8 w-full items-start rounded-md px-1.5 py-1.5 text-left outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50"
             data-testid={`relation-cell-${property.id}`}
           >
             {chips}

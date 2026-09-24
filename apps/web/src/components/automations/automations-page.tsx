@@ -166,7 +166,7 @@ function RuleTable({
   onToggle: (rule: AutomationRule, enabled: boolean) => void;
 }) {
   return (
-    <Table data-testid="automation-rules">
+    <Table narrow="list" data-testid="automation-rules">
       <TableHeader>
         <TableRow>
           <TableHead>Name</TableHead>
@@ -180,7 +180,7 @@ function RuleTable({
       <TableBody>
         {rules.map((rule) => (
           <TableRow key={rule.id} data-testid="automation-rule">
-            <TableCell>
+            <TableCell cell="title">
               <div className="font-medium">{rule.name}</div>
               {rule.disabledReason === null ? null : (
                 <div className="text-xs text-destructive">
@@ -193,12 +193,12 @@ function RuleTable({
                 </div>
               )}
             </TableCell>
-            <TableCell className="text-sm text-muted-foreground">
+            <TableCell label="Bereich" className="text-sm text-muted-foreground">
               {rule.scope === 'WORKSPACE'
                 ? SCOPE_LABELS.WORKSPACE
                 : (rule.scopeDocumentTitle ?? rule.scopeDocumentId ?? '')}
             </TableCell>
-            <TableCell className="text-sm text-muted-foreground">
+            <TableCell label="Auslöser" className="text-sm text-muted-foreground">
               {rule.triggers.includes('SCHEDULE') ? (
                 <>
                   <div>{describeSchedule(rule)}</div>
@@ -212,11 +212,11 @@ function RuleTable({
                 rule.triggers.map((trigger) => TRIGGER_LABELS[trigger]).join(', ')
               )}
             </TableCell>
-            <TableCell className="text-sm text-muted-foreground">
+            <TableCell label="Aktion" className="text-sm text-muted-foreground">
               {ACTION_LABELS[rule.action]}
               <div className="text-xs">{rule.webhookUrl ?? ''}</div>
             </TableCell>
-            <TableCell className="text-right">
+            <TableCell label="An" className="text-right">
               <Switch
                 checked={rule.enabled}
                 disabled={!isOwner}
@@ -225,7 +225,7 @@ function RuleTable({
               />
             </TableCell>
             {isOwner ? (
-              <TableCell>
+              <TableCell cell="actions">
                 <RuleActions rule={rule} workspaceId={workspaceId} onEdit={onEdit} />
               </TableCell>
             ) : null}
@@ -318,7 +318,7 @@ function RunLog({ workspaceId }: { workspaceId: string }) {
       {runs.data === undefined || runs.data.runs.length === 0 ? (
         <p className="text-sm text-muted-foreground">Noch nichts gelaufen.</p>
       ) : (
-        <Table data-testid="automation-runs">
+        <Table narrow="list" data-testid="automation-runs">
           <TableHeader>
             <TableRow>
               <TableHead>Zeitpunkt</TableHead>
@@ -332,17 +332,19 @@ function RunLog({ workspaceId }: { workspaceId: string }) {
           <TableBody>
             {runs.data.runs.map((run) => (
               <TableRow key={run.id} data-testid="automation-run">
-                <TableCell className="text-sm text-muted-foreground">
+                <TableCell label="Zeitpunkt" className="text-sm text-muted-foreground">
                   {formatMoment(run.createdAt)}
                 </TableCell>
-                <TableCell className="text-sm">{run.ruleName}</TableCell>
-                <TableCell className="text-sm text-muted-foreground">
+                <TableCell cell="title" className="text-sm">
+                  {run.ruleName}
+                </TableCell>
+                <TableCell label="Seite" className="text-sm text-muted-foreground">
                   {run.documentTitle ?? '(gelöscht)'}
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
+                <TableCell label="Start" className="text-sm text-muted-foreground">
                   {RUN_ORIGIN_LABELS[run.origin]}
                 </TableCell>
-                <TableCell>
+                <TableCell label="Ergebnis">
                   <Badge variant={runStatusVariant(run.status)}>
                     {RUN_STATUS_LABELS[run.status]}
                   </Badge>
@@ -350,7 +352,7 @@ function RunLog({ workspaceId }: { workspaceId: string }) {
                     <div className="mt-1 text-xs text-muted-foreground">{run.error}</div>
                   )}
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
+                <TableCell label="Dauer" className="text-sm text-muted-foreground">
                   {formatDuration(run.durationMs)}
                 </TableCell>
               </TableRow>

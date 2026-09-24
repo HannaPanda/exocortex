@@ -1,5 +1,6 @@
 'use client';
 
+import { CalendarDaysIcon } from 'lucide-react';
 import * as React from 'react';
 
 import {
@@ -10,6 +11,7 @@ import {
 import {
   Alert,
   AlertDescription,
+  EmptyState,
   ErrorState,
   LoadingState,
   Select,
@@ -59,46 +61,46 @@ export function CalendarView({
 
   if (dateProperty === undefined) {
     return (
-      <div className="flex flex-1 items-center justify-center p-6">
-        <div className="flex max-w-sm flex-col items-center gap-3 text-center">
-          <p className="text-sm text-muted-foreground">
-            Wähle eine Datums-Eigenschaft, nach der die Zeilen einsortiert werden.
-          </p>
-          {dateProperties.length === 0 ? (
-            <p className="text-xs text-muted-foreground">
-              Diese Datenbank hat noch keine Eigenschaft vom Typ „Datum“.
-            </p>
-          ) : (
-            <Select
-              value={null}
-              onValueChange={(propertyId: string | null) => {
-                if (propertyId === null) return;
-                updateView.mutate({
-                  viewId: view.id,
-                  request: { config: { datePropertyId: propertyId } },
-                });
-              }}
-            >
-              <SelectTrigger className="w-56" data-testid="calendar-date-property">
-                <SelectValue>
-                  {(value: string | null) =>
-                    value === null
-                      ? 'Eigenschaft wählen'
-                      : dateProperties.find((p) => p.id === value)?.name
-                  }
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {dateProperties.map((property) => (
-                  <SelectItem key={property.id} value={property.id}>
-                    {property.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </div>
-      </div>
+      <EmptyState
+        className="flex-1"
+        icon={CalendarDaysIcon}
+        title="Noch kein Datum gewählt"
+        description={
+          dateProperties.length === 0
+            ? 'Diese Datenbank hat noch keine Eigenschaft vom Typ „Datum“.'
+            : 'Wähle eine Datums-Eigenschaft, nach der die Zeilen einsortiert werden.'
+        }
+      >
+        {dateProperties.length === 0 ? null : (
+          <Select
+            value={null}
+            onValueChange={(propertyId: string | null) => {
+              if (propertyId === null) return;
+              updateView.mutate({
+                viewId: view.id,
+                request: { config: { datePropertyId: propertyId } },
+              });
+            }}
+          >
+            <SelectTrigger className="w-56" data-testid="calendar-date-property">
+              <SelectValue>
+                {(value: string | null) =>
+                  value === null
+                    ? 'Eigenschaft wählen'
+                    : dateProperties.find((p) => p.id === value)?.name
+                }
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {dateProperties.map((property) => (
+                <SelectItem key={property.id} value={property.id}>
+                  {property.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      </EmptyState>
     );
   }
 

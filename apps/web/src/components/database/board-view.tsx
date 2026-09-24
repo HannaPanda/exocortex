@@ -1,6 +1,6 @@
 'use client';
 
-import { MoreHorizontalIcon, PlusIcon } from 'lucide-react';
+import { KanbanIcon, MoreHorizontalIcon, PlusIcon } from 'lucide-react';
 import Link from 'next/link';
 import * as React from 'react';
 
@@ -13,6 +13,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  EmptyState,
   ErrorState,
   LoadingState,
   Select,
@@ -56,43 +57,43 @@ export function BoardView({ workspaceId, documentId, view, properties, readOnly 
 
   if (groupProperty === undefined) {
     return (
-      <div className="flex flex-1 items-center justify-center p-6">
-        <div className="flex max-w-sm flex-col items-center gap-3 text-center">
-          <p className="text-sm text-muted-foreground">
-            Wähle eine Auswahl-Eigenschaft, nach der die Karten gruppiert werden.
-          </p>
-          {selectProperties.length === 0 ? (
-            <p className="text-xs text-muted-foreground">
-              Diese Datenbank hat noch keine Eigenschaft vom Typ „Auswahl“.
-            </p>
-          ) : (
-            <Select
-              value={null}
-              onValueChange={(propertyId: string | null) => {
-                if (propertyId === null) return;
-                updateView.mutate({ viewId: view.id, request: { groupByPropertyId: propertyId } });
-              }}
-            >
-              <SelectTrigger className="w-56" data-testid="board-group-by">
-                <SelectValue>
-                  {(value: string | null) =>
-                    value === null
-                      ? 'Eigenschaft wählen'
-                      : selectProperties.find((p) => p.id === value)?.name
-                  }
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {selectProperties.map((property) => (
-                  <SelectItem key={property.id} value={property.id}>
-                    {property.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </div>
-      </div>
+      <EmptyState
+        className="flex-1"
+        icon={KanbanIcon}
+        title="Noch nicht gruppiert"
+        description={
+          selectProperties.length === 0
+            ? 'Diese Datenbank hat noch keine Eigenschaft vom Typ „Auswahl“.'
+            : 'Wähle eine Auswahl-Eigenschaft, nach der die Karten gruppiert werden.'
+        }
+      >
+        {selectProperties.length === 0 ? null : (
+          <Select
+            value={null}
+            onValueChange={(propertyId: string | null) => {
+              if (propertyId === null) return;
+              updateView.mutate({ viewId: view.id, request: { groupByPropertyId: propertyId } });
+            }}
+          >
+            <SelectTrigger className="w-56" data-testid="board-group-by">
+              <SelectValue>
+                {(value: string | null) =>
+                  value === null
+                    ? 'Eigenschaft wählen'
+                    : selectProperties.find((p) => p.id === value)?.name
+                }
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {selectProperties.map((property) => (
+                <SelectItem key={property.id} value={property.id}>
+                  {property.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      </EmptyState>
     );
   }
 
