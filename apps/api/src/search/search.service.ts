@@ -11,7 +11,10 @@ import {
 } from '@exocortex/contracts';
 import {
   collectAncestors,
+  type EmbeddingClient,
   HybridSearchAdapter,
+  type PassageSearchPort,
+  PostgresPassageSearch,
   PostgresSearchAdapter,
   type PrismaClient,
   type SearchAdapter,
@@ -34,6 +37,12 @@ export const SEARCH_ADAPTER = Symbol('EXOCORTEX_SEARCH_ADAPTER');
  * so both adapters stay configured in the same place.
  */
 export const KEYWORD_SEARCH_ADAPTER = Symbol('EXOCORTEX_KEYWORD_SEARCH_ADAPTER');
+
+/**
+ * Passages rather than pages, for the context compiler (issue #110, ADR-061).
+ * Configured beside the page search so both read the same semantic settings.
+ */
+export const PASSAGE_SEARCH = Symbol('EXOCORTEX_PASSAGE_SEARCH');
 
 /**
  * How much more a page-confined search asks the adapter for than it keeps.
@@ -100,14 +109,16 @@ export class SearchService {
   }
 
   /**
-   * The ancestor chain of every hit, root first.
+   * The ancestor chain of every hit, root first. Public because the context
+   * compiler (issue #110) names its sources the same way and must leak no
+   * more of a confined workspace than a search does.
    *
    * One flat read of the workspace's parent links rather than a query per hit:
    * a chain can be any length, and walking it row by row would be a request
    * per level per result. The rows carry three small columns, so even a large
    * workspace stays a single cheap index scan.
    */
-  private async resolvePaths(
+  async resolvePaths(
     workspaceId: string,
     documentIds: readonly string[],
     visibleIds: Set<string> | null,
@@ -140,6 +151,18 @@ export const keywordSearchAdapterProvider = {
   useFactory: (prisma: PrismaClient): SearchAdapter => new PostgresSearchAdapter(prisma),
 };
 
+function embeddingClientFor(env: ApiEnv, logger: Logger): EmbeddingClient | null {
+  return createEmbeddingClient(
+    createEmbeddingProvider({
+      providerId: env.AI_PROVIDER,
+      logger,
+      appUrl: env.APP_URL,
+      apiKey: env.OPENROUTER_API_KEY ?? '',
+      baseUrl: env.OPENROUTER_BASE_URL,
+    }),
+  );
+}
+
 export const searchAdapterProvider = {
   provide: SEARCH_ADAPTER,
   inject: [PRISMA, API_ENV, LOGGER, SettingsService],
@@ -152,15 +175,24 @@ export const searchAdapterProvider = {
     new HybridSearchAdapter({
       prisma,
       keyword: new PostgresSearchAdapter(prisma),
-      embeddings: createEmbeddingClient(
-        createEmbeddingProvider({
-          providerId: env.AI_PROVIDER,
-          logger,
-          appUrl: env.APP_URL,
-          apiKey: env.OPENROUTER_API_KEY ?? '',
-          baseUrl: env.OPENROUTER_BASE_URL,
-        }),
-      ),
+      embeddings: embeddingClientFor(env, logger),
+      options: async () => semanticSearchOptions(await settings.get()),
+      logger,
+    }),
+};
+
+export const passageSearchProvider = {
+  provide: PASSAGE_SEARCH,
+  inject: [PRISMA, API_ENV, LOGGER, SettingsService],
+  useFactory: (
+    prisma: PrismaClient,
+    env: ApiEnv,
+    logger: Logger,
+    settings: SettingsService,
+  ): PassageSearchPort =>
+    new PostgresPassageSearch({
+      prisma,
+      embeddings: embeddingClientFor(env, logger),
       options: async () => semanticSearchOptions(await settings.get()),
       logger,
     }),

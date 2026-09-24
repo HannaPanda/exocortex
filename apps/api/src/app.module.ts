@@ -17,6 +17,7 @@ import { CommentsModule } from './comments/comments.module';
 import { ApiExceptionFilter } from './common/exception.filter';
 import { isHttpContext } from './common/http-context';
 import { API_ENV } from './common/logger.provider';
+import { ContextModule } from './context/context.module';
 import { DatabasesModule } from './databases/databases.module';
 import { DocumentsModule } from './documents/documents.module';
 import { EntitiesModule } from './entities/entities.module';
@@ -71,6 +72,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     CommentsModule,
     DatabasesModule,
     SearchModule,
+    ContextModule,
     SavedQueriesModule,
     AttachmentsModule,
     AiModule,

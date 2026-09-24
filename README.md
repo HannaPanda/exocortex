@@ -111,6 +111,10 @@ What is deliberately still missing is listed under
   snippets, fused by reciprocal rank with `pgvector` nearest neighbours when
   semantic search is on (ADR-020); the text extracted from a page's attachments
   is part of what it is found by, so a PDF is findable by a sentence inside it
+- a context compiler for agents: one question and a character budget in,
+  the verbatim passages out of several pages and workspaces that answer it,
+  each with title, path, date and heading, exact keyword hits protected and no
+  single page allowed the whole budget (`exo_context_compile`, ADR-061)
 - saved searches, smart views and query blocks: a query over words, place,
   type, database properties, entities and a time window is stored as a
   question rather than a result list, answered again with the reader's own

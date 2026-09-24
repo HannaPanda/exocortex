@@ -230,6 +230,22 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     tools: ['exo_search'],
   }),
   defineFeature({
+    id: 'kontext-zusammenstellen',
+    area: 'suche',
+    title: 'Kontext zu einer Frage zusammenstellen, für KI und Agenten',
+    summary:
+      'Die eingebaute KI und angebundene Agenten können zu einer Frage mit einem Aufruf die passenden Stellen aus vielen Seiten bekommen, wörtlich und mit Quelle, statt erst zu suchen und dann Seite um Seite zu lesen.',
+    details: [
+      'Eine Frage wie "Was wissen wir über das Backup?" geht an alle Arbeitsbereiche, in denen du Mitglied bist, oder nur an die genannten. Zurück kommen die Abschnitte, die dazu passen, jeweils mit Seitentitel, Pfad, Arbeitsbereich, Stand und der Überschrift, unter der sie stehen. Nichts davon ist zusammengefasst: jede Passage steht genau so auf ihrer Seite.',
+      'Die Antwort hat eine feste Obergrenze an Zeichen, die der Aufrufer wählt, und sie hält sie ein. Innerhalb davon kommen möglichst viele verschiedene Seiten zu Wort: eine einzelne sehr lange Seite kann höchstens einen Teil des Platzes belegen, mehrere passende Abschnitte derselben Seite dürfen aber gemeinsam kommen. Wird etwas weggelassen oder gekürzt, sagt die Antwort das.',
+      'Gefunden wird wie in der Suche, mit Volltext und, wenn eingeschaltet, nach Bedeutung. Ein exakter Begriff oder Dateiname gewinnt dabei immer, auch wenn die Bedeutungssuche etwas anderes vorne sähe. Fällt das Modell aus, antwortet der Volltext allein und die Antwort sagt dazu, dass es so ist.',
+      'Es gelten genau die Rechte der Suche. Ein Zugang, der auf einen Teilbaum beschränkt ist, bekommt nur Stellen aus diesem Teilbaum und erfährt nicht einmal die Namen der Seiten darüber. Der Gedächtnisbereich der Agenten wird nur durchsucht, wenn er ausdrücklich genannt ist; dafür gibt es das Erinnern. Text aus Anhängen wie PDFs gibt dieser Weg nie heraus: den liest die KI nur ausdrücklich, und danach gilt die Sperre für fremde Inhalte.',
+    ],
+    since: '2026-09-24',
+    references: ['ADR-061', 'ADR-034', 'ADR-044'],
+    tools: ['exo_context_compile'],
+  }),
+  defineFeature({
     id: 'verweise',
     area: 'suche',
     title: 'Verweise, Rückverweise und verwandte Seiten',

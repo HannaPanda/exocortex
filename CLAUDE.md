@@ -556,6 +556,17 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   the keywords missed in one call. It is never a permission: an unoffered tool
   is still executable and still governed by the service token and
   `decideMutation`. What a run carried is recorded on `ai_run`.
+- ADR-061: context is compiled from passages, not pages. `PassageSearchPort`
+  answers beside the page search, which stays page-oriented; the keyword half
+  runs the page search's own predicate and cuts the pages it found the way the
+  embeddings were cut, the semantic half reads passage rows before the fold
+  and above a similarity floor of 0.35, and both are fused by rank per
+  passage. Exact keyword hits are packed first. `packContext` is pure and
+  greedy, measures the rendered text so `maxChars` holds exactly, and caps
+  what one page may take; the answer is verbatim, never generated. A confined
+  credential's pages filter the SQL before ranking, the memory area is only
+  searched when named, and only a page's own text is handed over, never the
+  attachment text behind it in the search projection (ADR-030).
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
