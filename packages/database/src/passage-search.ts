@@ -5,9 +5,9 @@ import { CHUNK_THRESHOLD_CHARS, chunkBlockId, isChunkBlockId } from './chunking'
 import { Prisma, type PrismaClient } from './client';
 import {
   fusePassages,
+  type KeywordPage,
   keywordPassageList,
   keywordTokens,
-  type KeywordPage,
   type PassageCandidate,
   type PassageSection,
   type RankedPassage,
