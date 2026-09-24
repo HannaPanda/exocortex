@@ -2,8 +2,8 @@ import { createHash, randomBytes } from 'node:crypto';
 
 import {
   decryptCredential,
-  type EncryptedCredential,
   encryptCredential,
+  type EncryptedCredential,
 } from './credential-cipher';
 
 /**
