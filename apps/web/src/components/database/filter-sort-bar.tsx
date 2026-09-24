@@ -13,6 +13,7 @@ import {
 import {
   Badge,
   Button,
+  DatePicker,
   Input,
   Popover,
   PopoverContent,
@@ -252,12 +253,17 @@ function AddFilterPopover({
                 ))}
               </SelectContent>
             </Select>
+          ) : property.type === 'DATE' ? (
+            <DatePicker
+              aria-label="Wert"
+              data-testid="filter-value"
+              value={value.length === 0 ? null : value}
+              onChange={(day) => setValue(day ?? '')}
+            />
           ) : (
             <Input
               autoFocus
-              type={
-                property.type === 'NUMBER' ? 'number' : property.type === 'DATE' ? 'date' : 'text'
-              }
+              type={property.type === 'NUMBER' ? 'number' : 'text'}
               value={value}
               placeholder="Wert"
               data-testid="filter-value"

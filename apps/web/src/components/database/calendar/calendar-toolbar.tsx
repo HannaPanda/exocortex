@@ -4,7 +4,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { type DatabaseCalendarMode } from '@exocortex/contracts';
-import { Button, Input, Toggle, ToggleGroup } from '@exocortex/ui';
+import { Button, DatePicker, Toggle, ToggleGroup } from '@exocortex/ui';
 
 import {
   CALENDAR_MODE_LABELS,
@@ -73,13 +73,12 @@ export function CalendarToolbar({
       </div>
 
       <div className="flex items-center gap-2">
-        <Input
-          type="date"
-          aria-label="Datum wählen"
-          className="h-8 w-40"
+        <DatePicker
+          size="sm"
+          aria-label="Springen zu"
           value={toDateInputValue(anchor)}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-            const picked = fromDateInputValue(event.target.value);
+          onChange={(value) => {
+            const picked = value === null ? null : fromDateInputValue(value);
             if (picked !== null) onAnchorChange(picked);
           }}
         />

@@ -16,6 +16,7 @@ import {
 import {
   Badge,
   Button,
+  DatePicker,
   Input,
   Label,
   Popover,
@@ -98,9 +99,9 @@ function flatten(
   return result;
 }
 
-/** The `<input type="date">` value for an ISO timestamp, or an empty field. */
-function dateInputValue(iso: string | null): string {
-  return iso === null ? '' : iso.slice(0, 10);
+/** The picker's `YYYY-MM-DD` for an ISO timestamp, or no date. */
+function dateInputValue(iso: string | null): string | null {
+  return iso === null ? null : iso.slice(0, 10);
 }
 
 export function SavedQueryBuilder({ workspaceId, value, onChange }: SavedQueryBuilderProps) {
@@ -397,28 +398,28 @@ function DateRangeField({
 
       {custom ? (
         <div className="flex items-center gap-2">
-          <Input
-            type="date"
+          <DatePicker
+            clearable
             aria-label={`${label}: ab`}
             value={dateInputValue(range.after)}
-            onChange={(event) =>
+            onChange={(day) =>
               onChange({
                 withinDays: null,
-                after: event.target.value.length === 0 ? null : `${event.target.value}T00:00:00Z`,
+                after: day === null ? null : `${day}T00:00:00Z`,
                 before: range.before,
               })
             }
           />
           <span className="text-xs text-muted-foreground">bis</span>
-          <Input
-            type="date"
+          <DatePicker
+            clearable
             aria-label={`${label}: bis`}
             value={dateInputValue(range.before)}
-            onChange={(event) =>
+            onChange={(day) =>
               onChange({
                 withinDays: null,
                 after: range.after,
-                before: event.target.value.length === 0 ? null : `${event.target.value}T00:00:00Z`,
+                before: day === null ? null : `${day}T00:00:00Z`,
               })
             }
           />

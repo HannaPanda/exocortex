@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { type AutomationScheduleKind } from '@exocortex/contracts';
 import {
+  DateTimePicker,
   Input,
   Label,
   Select,
@@ -75,14 +76,12 @@ export function AutomationScheduleFields({
 
       {kind === 'ONCE' ? (
         <div className="flex flex-col gap-2">
-          <Label htmlFor="automation-schedule-at">Zeitpunkt</Label>
-          <Input
-            id="automation-schedule-at"
+          <Label id="automation-schedule-at-label">Zeitpunkt</Label>
+          <DateTimePicker
+            aria-labelledby="automation-schedule-at-label"
             data-testid="automation-schedule-at"
-            type="datetime-local"
-            value={draft.scheduleAt}
-            onChange={(event) => onChange({ scheduleAt: event.target.value })}
-            className="max-w-60"
+            value={draft.scheduleAt.length === 0 ? null : draft.scheduleAt}
+            onChange={(value) => onChange({ scheduleAt: value ?? '' })}
           />
           <p className="text-xs text-muted-foreground">
             Läuft genau einmal. Danach bleibt die Regel stehen, ohne sich abzuschalten.

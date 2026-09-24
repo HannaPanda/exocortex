@@ -12,8 +12,9 @@
  * part: the moment oxlint grows the rule, the entry and its plugin go.
  *
  *   1. `no-restricted-syntax` -- AST selectors. The two NestJS parameter
- *      limits, which have to be able to tell a constructor from a function.
- *      oxlint has no selector language.
+ *      limits, which have to be able to tell a constructor from a function,
+ *      and the native date field in the interface (`DESIGN.md` §5, "Inputs /
+ *      Fields"). oxlint has no selector language.
  *
  *      A third selector used to live here, forbidding empty catch blocks, and
  *      the migration is what found out that it had never matched anything:
@@ -182,6 +183,16 @@ export default [
       // components, and that is the point: it is what says so.
       'react/no-deprecated': 'error',
       '@next/next/no-location-assign-relative-destination': 'error',
+      // A date is entered with `DatePicker` (decided 2026-09-24). Only the
+      // literal form is caught; a computed `type` is rare enough to review.
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "JSXAttribute[name.name='type'][value.value=/^(?:date|datetime-local)$/]",
+          message:
+            'A date is entered with DatePicker or DateTimePicker from @exocortex/ui, not a native date field (DESIGN.md §5, "Inputs / Fields").',
+        },
+      ],
     },
   },
 ];

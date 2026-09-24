@@ -1,3 +1,4 @@
+export * from './components/date-picker';
 export * from './components/instrument';
 export * from './components/layout';
 export * from './components/logo';

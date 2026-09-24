@@ -334,20 +334,17 @@ test.describe('databases', () => {
 
     // Today, so every mode's window contains it without any navigation.
     //
-    // Read from the browser, not from this process: the calendar anchors on the
-    // browser's clock, which runs in Europe/Berlin by the configuration above,
-    // while the test process runs in the server's UTC. For two hours after
-    // midnight in Berlin the two name different days, and the day grid then
-    // opens on a day the row is not on. The month and the week still contain
-    // both, so only "Tag" went red -- once a night, and never when it was
-    // re-run in the morning. `en-CA` is the locale that formats a date the way
-    // a date input reads it.
-    const isoDay = await page.evaluate(() => new Date().toLocaleDateString('en-CA'));
+    // Picked with the picker's own "Heute", which reads the browser's clock:
+    // the calendar anchors on that clock too, in Europe/Berlin by the
+    // configuration above, while this process runs in the server's UTC. For
+    // two hours after midnight in Berlin the two name different days, and a
+    // date computed here once put the row off the day grid every night.
     await page.getByTestId('add-row').click();
     const row = page.locator('[data-testid^="database-row-"]').first();
     await expect(row).toBeVisible({ timeout: 15_000 });
-    await row.locator('input[type="date"]').fill(isoDay);
-    await row.locator('input[type="date"]').blur();
+    await row.locator('[data-slot="date-picker"]').click();
+    await page.getByRole('button', { name: 'Heute', exact: true }).click();
+    await expect(row.locator('[data-slot="date-picker"]')).not.toContainText('Datum wählen');
 
     await page.getByTestId('add-view').click();
     await page.getByTestId('add-view-calendar').click();

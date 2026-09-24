@@ -9,8 +9,8 @@ import { DsSection, DsSource } from '../showcase';
  * imports from this directory (`DESIGN.md` §7; oxlint refuses it). The list
  * below is the open decisions of `docs/design-system-inventory.md` §5. A
  * decision with a variant set gets a section of its own below this one (#126),
- * and a decided one leaves by the steps written out here, as P9, P11, P12 and
- * P13 did on 2026-09-24.
+ * and a decided one leaves by the steps written out here, as P9, P11, P12,
+ * P13 and the date entry did on 2026-09-24.
  */
 
 interface OpenDecision {
@@ -22,16 +22,8 @@ interface OpenDecision {
   experiment?: string;
 }
 
-const OPEN_DECISIONS: readonly OpenDecision[] = [
-  {
-    id: 'offen-kalender',
-    title: 'Kalender-Baustein',
-    question: 'Calendar für die Datumseingabe übernehmen oder entfernen?',
-    evidence:
-      'Der Baustein hat heute keine Aufrufstelle; alle Datumsfelder nutzen das Feld des Browsers. Beide Varianten stehen unten zum Ausprobieren.',
-    experiment: 'experiment-datum',
-  },
-];
+/** Empty since 2026-09-24: the date entry was the last open one. */
+const OPEN_DECISIONS: readonly OpenDecision[] = [];
 
 /**
  * What happens once a variant is chosen, in German for the person deciding.
@@ -55,7 +47,16 @@ export function ExperimentsSection() {
     >
       <div className="flex flex-col gap-3">
         <SectionRule as="h3">Offene Entscheidungen</SectionRule>
-        <ul className="flex flex-col divide-y divide-border rounded-lg border border-dashed border-border">
+        {OPEN_DECISIONS.length === 0 ? (
+          <p className="max-w-measure rounded-lg border border-dashed border-border p-4 text-sm sm:p-5">
+            Gerade ist nichts offen. Eine neue Frage mit zwei plausiblen Antworten kommt hierher,
+            bevor eine davon gebaut wird.
+          </p>
+        ) : null}
+        <ul
+          hidden={OPEN_DECISIONS.length === 0}
+          className="flex flex-col divide-y divide-border rounded-lg border border-dashed border-border"
+        >
           {OPEN_DECISIONS.map((decision) => (
             <li
               key={decision.id}
@@ -83,8 +84,8 @@ export function ExperimentsSection() {
           Quelle der Liste: <DsSource path="docs/design-system-inventory.md" />, Abschnitt 5. Am
           24.09.2026 entschieden: Papierkorb statt Archiv (Issue #129), und aus den Experimenten ein
           Fokusring (P11), der zentrierte leere Zustand (P9), Tabellen als Liste und ein schmales
-          Einstellungsformular auf dem Telefon (P12), keine linken Akzentränder (P13). Sie stehen
-          jetzt in ihren Abschnitten.
+          Einstellungsformular auf dem Telefon (P12), keine linken Akzentränder (P13) und die
+          Datumseingabe mit dem eigenen Kalender. Sie stehen jetzt in ihren Abschnitten.
         </p>
       </div>
 

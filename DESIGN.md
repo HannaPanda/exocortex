@@ -615,8 +615,17 @@ height 2.25rem, `shadow-xs`. Focus moves the border to `ring` and adds a 3px
 `ring/50`. Invalid state moves the border to `destructive` and the ring to
 `destructive/20`, and is always accompanied by a message.
 
-Every input type goes through the same `Input`, and `/design-system#feld-typen`
-shows each one the product uses. The parts the browser draws itself (the date
+A date is entered with `DatePicker` (and `DateTimePicker` where a time
+belongs to it), never with a native date field (decided 2026-09-24 from the
+experiment "Datumseingabe"): a field-bordered button naming the day as
+"Mo., 05.10.2026", and `Calendar` in a popover that opens on the chosen day,
+with month and year dropdowns, "Heute", and "Entfernen" where the value is
+optional. The time beside it stays the native field, because a time is typed
+rather than browsed. ESLint refuses a literal `type="date"` or
+`type="datetime-local"` in the interface.
+
+Every other input type goes through the same `Input`, and
+`/design-system#feld-typen` shows each one the product uses. The parts the browser draws itself (the date
 and time popups, the spin buttons, a range slider) are dark through
 `color-scheme: dark` and amber through `accent-color: var(--primary)` on the
 root, so no native control is left in the browser's blue.
@@ -865,6 +874,7 @@ Where a rule is objective it is a gate, not a sentence:
 | ---------------------------------------- | --------------------------------------------------------------- |
 | no literal colour outside the tokens     | `check-semantic-colours.mjs`, a hard gate in `build.sh`         |
 | no import from the experiments           | `no-restricted-imports` in the generated `.oxlintrc.json`       |
+| a date is a `DatePicker`, not native     | `no-restricted-syntax` in `eslint.config.mjs`                   |
 | every token has a role in the styleguide | `design-tokens.test.ts`                                         |
 | canonical examples still look the same   | `pnpm test:styleguide`, screenshots, in `build.sh --full-tests` |
 | WCAG 2.2 AA, focus, keyboard             | `pnpm test:styleguide`, axe and keyboard tests                  |

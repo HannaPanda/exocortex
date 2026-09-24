@@ -111,6 +111,17 @@ test.describe('styleguide screenshots, desktop', () => {
     await expect(menu).toHaveScreenshot('desktop-menu.png');
   });
 
+  test('an open date picker', async ({ page }) => {
+    // The calendar marks today, so the shot would change the day October
+    // arrives. A fixed clock outside the month shown keeps it still.
+    await page.clock.setFixedTime(new Date('2026-09-24T12:00:00+02:00'));
+    await openStyleguide(page, DESKTOP);
+    await page.getByRole('button', { name: /^Erinnern am:/ }).click();
+    const popover = page.locator('[data-slot="popover-content"]');
+    await expect(popover.getByRole('grid')).toBeVisible();
+    await expect(popover).toHaveScreenshot('desktop-date-picker.png');
+  });
+
   test('an open popover', async ({ page }) => {
     await openStyleguide(page, DESKTOP);
     await page.getByRole('button', { name: 'Link einfügen' }).click();

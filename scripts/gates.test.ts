@@ -235,6 +235,16 @@ describe('the lint policy still has teeth', () => {
     expect(result.output).toContain('simple-import-sort');
   });
 
+  it('ESLint refuses a native date field in the interface', () => {
+    writeProbe(
+      'apps/web/src/components/__lint_probe__.tsx',
+      'export const Probe = () => <input type="date" />;\n',
+    );
+    const result = eslint('apps/web/src/components/__lint_probe__.tsx');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('DatePicker');
+  });
+
   it('ESLint refuses a NestJS class with too many injected dependencies', () => {
     writeProbe(
       'apps/api/src/__lint_probe__.service.ts',

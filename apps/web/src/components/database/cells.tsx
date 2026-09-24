@@ -7,7 +7,6 @@ import {
   type DatabaseProperty,
   type DatabaseRowHeight,
   type DatabaseRowPropertyValue,
-  parseDatePropertyConfig,
 } from '@exocortex/contracts';
 import {
   Badge,
@@ -20,6 +19,7 @@ import {
   Textarea,
 } from '@exocortex/ui';
 
+import { DateCell, formatDateValue } from './date-cell';
 import {
   ARRAY_PROPERTY_TYPES,
   COMPUTED_PROPERTY_TYPES,
@@ -278,144 +278,6 @@ function CheckboxCell({ value, onChange, readOnly }: PropertyCellProps) {
   );
 }
 
-/**
- * Two input conventions, kept strictly apart because mixing them is how a
- * calendar ends up off by a timezone:
- *
- * - **Whole days** (`includeTime: false`, or an all-day span) use
- *   `<input type="date">` and are stored as UTC midnight. Reading is a plain
- *   `slice(0, 10)` of the ISO string, which is the convention every DATE value
- *   in this codebase already followed.
- * - **Times** (`includeTime: true`) use `<input type="datetime-local">`, which
- *   speaks the viewer's wall clock. `new Date(localString)` parses it as local
- *   and `toISOString()` hands back the UTC instant, so the round-trip is exact.
- */
-function isoDateOnly(iso: string | null): string {
-  return iso === null ? '' : iso.slice(0, 10);
-}
-
-function isoToDateTimeLocal(iso: string | null): string {
-  if (iso === null) return '';
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return '';
-  const pad = (part: number) => String(part).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
-function inputToIso(raw: string, includeTime: boolean): string | null {
-  if (raw.length === 0) return null;
-  const date = includeTime ? new Date(raw) : new Date(`${raw}T00:00:00.000Z`);
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
-}
-
-/** Reads either DATE response shape into one internal form. */
-interface DateCellValue {
-  start: string | null;
-  end: string | null;
-  allDay: boolean;
-}
-
-function readDateValue(value: CellValue): DateCellValue {
-  if (typeof value === 'string') return { start: value, end: null, allDay: false };
-  if (value !== null && typeof value === 'object' && !Array.isArray(value) && 'start' in value) {
-    return { start: value.start, end: value.end, allDay: value.allDay };
-  }
-  return { start: null, end: null, allDay: false };
-}
-
-/**
- * German rendering of a DATE value in either shape. A span on one day shows the
- * day once and both times, which is how an appointment is normally read; a span
- * across days shows both sides in full. Returns null for an empty value so a
- * caller can drop the element entirely.
- */
-export function formatDateValue(property: DatabaseProperty, value: CellValue): string | null {
-  const config = parseDatePropertyConfig(property.config);
-  const { start, end, allDay } = readDateValue(value);
-  if (start === null) return null;
-
-  const withTime = config.includeTime && !allDay;
-  const day = (iso: string) => new Date(iso).toLocaleDateString('de-DE');
-  const time = (iso: string) =>
-    new Date(iso).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-  const full = (iso: string) => (withTime ? `${day(iso)}, ${time(iso)}` : day(iso));
-
-  if (end === null) return full(start);
-  if (day(start) === day(end)) {
-    return withTime ? `${day(start)}, ${time(start)} bis ${time(end)}` : day(start);
-  }
-  return `${full(start)} bis ${full(end)}`;
-}
-
-function DateCell({ property, value, onChange, readOnly }: PropertyCellProps) {
-  const config = parseDatePropertyConfig(property.config);
-  const current = readDateValue(value);
-  const includeTime = config.includeTime && !current.allDay;
-  const inputType = includeTime ? 'datetime-local' : 'date';
-  const toInput = includeTime ? isoToDateTimeLocal : isoDateOnly;
-  const inputClass = 'h-8 border-transparent bg-transparent px-1.5 shadow-none hover:border-input';
-
-  // A non-span property keeps writing the bare ISO string the API expects for
-  // it; only a span property may send the object form.
-  const emit = (next: DateCellValue) => {
-    if (!config.isRange) {
-      onChange(next.start);
-      return;
-    }
-    if (next.start === null) {
-      onChange(null);
-      return;
-    }
-    onChange({ start: next.start, end: next.end, allDay: next.allDay });
-  };
-
-  if (!config.isRange) {
-    return (
-      <Input
-        type={inputType}
-        defaultValue={toInput(current.start)}
-        readOnly={readOnly}
-        className={inputClass}
-        onChange={(event) => {
-          emit({ ...current, start: inputToIso(event.target.value, includeTime) });
-        }}
-      />
-    );
-  }
-
-  return (
-    <div className="flex min-h-8 flex-col gap-0.5">
-      <Input
-        type={inputType}
-        aria-label="Beginn"
-        defaultValue={toInput(current.start)}
-        readOnly={readOnly}
-        className={inputClass}
-        onChange={(event) => {
-          const start = inputToIso(event.target.value, includeTime);
-          // Clearing the start clears the whole span: an end without a
-          // beginning is not a value the API accepts.
-          emit(
-            start === null
-              ? { start: null, end: null, allDay: current.allDay }
-              : { ...current, start },
-          );
-        }}
-      />
-      <Input
-        type={inputType}
-        aria-label="Ende"
-        defaultValue={toInput(current.end)}
-        readOnly={readOnly}
-        className={inputClass}
-        onChange={(event) => {
-          emit({ ...current, end: inputToIso(event.target.value, includeTime) });
-        }}
-      />
-    </div>
-  );
-}
-
 function OptionBadge({ optionId, property }: { optionId: string; property: DatabaseProperty }) {
   const option = property.options.find((entry) => entry.id === optionId);
   if (option === undefined) return null;
@@ -656,8 +518,7 @@ export function isArrayProperty(property: DatabaseProperty): boolean {
  * Compact, non-interactive value display for Board/Gallery card summaries.
  * Deliberately not `<PropertyCell readOnly>`: a card is a summary, not a
  * disabled form, so a DATE value reads as "20.08.2026" here instead of a
- * native `<input type="date">` with its browser-locale chrome and calendar
- * icon still showing through.
+ * picker button with its calendar icon still showing through.
  */
 export function PropertyValueDisplay({
   property,

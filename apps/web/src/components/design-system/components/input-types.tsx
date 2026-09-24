@@ -2,10 +2,10 @@
 
 import * as React from 'react';
 
-import { Input, Label } from '@exocortex/ui';
+import { DatePicker, DateTimePicker, Input, Label } from '@exocortex/ui';
 
 import { FIXTURE_DATE, FIXTURE_DATE_TIME } from '../fixtures';
-import { DsExample } from '../showcase';
+import { DsExample, DsState, DsStates } from '../showcase';
 
 /**
  * Every `type` the product gives an `<input>`, drawn through the same `Input`.
@@ -13,10 +13,10 @@ import { DsExample } from '../showcase';
  * The browser owns most of what these look like: the date and time pickers,
  * the spin buttons of a number, the reveal of a password. What the product
  * owns is the frame around them, and `color-scheme: dark` in `tokens.css`,
- * which is what turns the native popups dark. This example is where both are
- * seen together, and where the native date picker is judged against the
- * `Calendar` experiment. The file inputs are left out on purpose: the product
- * never shows one, every upload is a button that opens a hidden input.
+ * which is what turns the native popups dark. A date is not among them: since
+ * 2026-09-24 it is `DatePicker`, drawn in its own example below. The file
+ * inputs are left out on purpose: the product never shows one, every upload is
+ * a button that opens a hidden input.
  */
 
 interface InputType {
@@ -36,18 +36,11 @@ const INPUT_TYPES: readonly InputType[] = [
     value: '2400',
   },
   {
-    type: 'date',
-    label: 'Datum',
-    usedIn: 'Datenbankzellen, Filter, Kalender, gespeicherte Suchen',
-    value: FIXTURE_DATE,
+    type: 'time',
+    label: 'Uhrzeit',
+    usedIn: 'Zeitpläne, und neben dem Tag im DateTimePicker',
+    value: '07:30',
   },
-  {
-    type: 'datetime-local',
-    label: 'Datum und Uhrzeit',
-    usedIn: 'Datenbankzellen mit Uhrzeit, einmalige Zeitpläne',
-    value: FIXTURE_DATE_TIME,
-  },
-  { type: 'time', label: 'Uhrzeit', usedIn: 'Zeitpläne von Automationen', value: '07:30' },
   {
     type: 'email',
     label: 'E-Mail',
@@ -76,7 +69,7 @@ export function InputTypesExample() {
       id="feld-typen"
       title="Eingabetypen"
       source="packages/ui/src/components/ui/input.tsx"
-      note="Alle Typen, die die Anwendung einem Feld gibt. Die Aufklapper für Datum und Uhrzeit, die Pfeile der Zahl und das Auge am Passwort zeichnet der Browser; dunkel sind sie über color-scheme in tokens.css. Dateifelder zeigt die Anwendung nie, jeder Upload ist ein Knopf."
+      note="Alle Typen, die die Anwendung einem Feld gibt. Den Aufklapper der Uhrzeit, die Pfeile der Zahl und das Auge am Passwort zeichnet der Browser; dunkel sind sie über color-scheme, amber über accent-color. Ein Datum ist kein Feld des Browsers mehr, sondern der Datumswähler darunter. Dateifelder zeigt die Anwendung nie, jeder Upload ist ein Knopf."
     >
       <div className="grid gap-6 sm:grid-cols-2">
         {INPUT_TYPES.map((entry) => {
@@ -118,6 +111,57 @@ export function InputTypesExample() {
           </p>
         </div>
       </div>
+    </DsExample>
+  );
+}
+
+/**
+ * `DatePicker` and `DateTimePicker`, the one way a date is entered (decided
+ * 2026-09-24 from the experiment "Datumseingabe"). Every state a call site
+ * uses: empty, set and removable, disabled, with a time, and the chrome-less
+ * cell form of a database table.
+ */
+export function DatePickerExample() {
+  const [due, setDue] = React.useState<string | null>(FIXTURE_DATE);
+  const [empty, setEmpty] = React.useState<string | null>(null);
+  const [at, setAt] = React.useState<string | null>(FIXTURE_DATE_TIME);
+  const [cell, setCell] = React.useState<string | null>(FIXTURE_DATE);
+  return (
+    <DsExample
+      id="feld-datum"
+      title="Datum"
+      source="packages/ui/src/components/date-picker.tsx"
+      note="Ein Knopf nennt den Tag, darunter öffnet der Kalender auf dem gewählten Tag. Enter öffnet, Pfeile wandern, Bild auf und ab blättern, Enter wählt, Escape schließt. Monat und Jahr lassen sich direkt wählen; Heute und Entfernen stehen unter dem Kalender."
+    >
+      <DsStates>
+        <DsState label="Leer">
+          <DatePicker value={empty} onChange={setEmpty} clearable aria-label="Fällig am" />
+        </DsState>
+        <DsState label="Mit Wert, entfernbar">
+          <DatePicker value={due} onChange={setDue} clearable aria-label="Erinnern am" />
+        </DsState>
+        <DsState label="Deaktiviert">
+          <DatePicker
+            value={FIXTURE_DATE}
+            onChange={() => undefined}
+            disabled
+            aria-label="Angelegt am"
+          />
+        </DsState>
+        <DsState label="Mit Uhrzeit">
+          <DateTimePicker value={at} onChange={setAt} aria-label="Zeitpunkt" />
+        </DsState>
+        <DsState label="In der Tabelle · ghost, sm">
+          <DatePicker
+            value={cell}
+            onChange={setCell}
+            clearable
+            variant="ghost"
+            size="sm"
+            aria-label="Zelle Datum"
+          />
+        </DsState>
+      </DsStates>
     </DsExample>
   );
 }

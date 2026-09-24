@@ -165,6 +165,23 @@ test.describe('styleguide keyboard', () => {
     await expect(tree.getByRole('treeitem', { name: 'Projekte' })).toBeFocused();
   });
 
+  test('the date picker opens on the chosen day and walks by keyboard', async ({ page }) => {
+    await openStyleguide(page, DESKTOP);
+    const trigger = page.getByRole('button', { name: /^Erinnern am:/ });
+    await expect(trigger).toContainText('05.10.2026');
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    const grid = page.getByRole('grid');
+    await expect(grid).toBeVisible();
+    // The chosen day has the focus, not the month dropdown.
+    await expect(page.locator(':focus')).toHaveAttribute('aria-label', /5\. Oktober 2026/);
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('Enter');
+    await expect(grid).toBeHidden();
+    await expect(trigger).toContainText('06.10.2026');
+    await expect(trigger).toBeFocused();
+  });
+
   test('focus is visible on every stop of the focus example', async ({ page }) => {
     await openStyleguide(page, DESKTOP);
     const section = page.locator('section#fokus');
