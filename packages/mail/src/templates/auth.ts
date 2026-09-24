@@ -1,4 +1,4 @@
-import { type RenderedMail } from '../types';
+import { type MailContent } from '../layout/content';
 
 /**
  * The two mails Better Auth asks for: verify this address, set a new password.
@@ -8,38 +8,35 @@ import { type RenderedMail } from '../types';
  * and right here, and it is the whole reason the two live in separate files.
  */
 
-function requestedEmail(title: string, body: string, url: string): string {
-  return [
-    title,
-    '',
-    body,
-    '',
-    url,
-    '',
-    'Wenn du das nicht angefordert hast, kannst du diese E-Mail ignorieren.',
-    '',
-    'eXocortex',
-  ].join('\n');
-}
+const IGNORE_LINE = 'Wenn du das nicht angefordert hast, kannst du diese E-Mail ignorieren.';
 
-export function verificationMail(input: { name: string; url: string }): RenderedMail {
+export function verificationMail(input: { name: string; url: string }): MailContent {
   return {
     subject: 'eXocortex: E-Mail-Adresse bestätigen',
-    text: requestedEmail(
-      `Hallo ${input.name},`,
-      'bitte bestätige deine E-Mail-Adresse für eXocortex über diesen Link:',
-      input.url,
-    ),
+    preheader: 'Ein Klick, dann ist deine Adresse bestätigt.',
+    heading: 'E-Mail-Adresse bestätigen',
+    greeting: `Hallo ${input.name},`,
+    blocks: [
+      { kind: 'paragraph', text: 'bitte bestätige deine E-Mail-Adresse für eXocortex.' },
+      { kind: 'action', label: 'Adresse bestätigen', url: input.url },
+    ],
+    footer: [IGNORE_LINE],
   };
 }
 
-export function passwordResetMail(input: { name: string; url: string }): RenderedMail {
+export function passwordResetMail(input: { name: string; url: string }): MailContent {
   return {
     subject: 'eXocortex: Passwort zurücksetzen',
-    text: requestedEmail(
-      `Hallo ${input.name},`,
-      'über diesen Link kannst du ein neues Passwort für eXocortex setzen:',
-      input.url,
-    ),
+    preheader: 'Über den Link in dieser Mail setzt du ein neues Passwort.',
+    heading: 'Passwort zurücksetzen',
+    greeting: `Hallo ${input.name},`,
+    blocks: [
+      {
+        kind: 'paragraph',
+        text: 'über den Link unten kannst du ein neues Passwort für eXocortex setzen.',
+      },
+      { kind: 'action', label: 'Neues Passwort setzen', url: input.url },
+    ],
+    footer: [IGNORE_LINE],
   };
 }

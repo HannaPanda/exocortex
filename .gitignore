@@ -88,3 +88,4 @@ __pycache__/
 .impeccable/*
 !.impeccable/config.json
 apps/web/.impeccable/
+packages/mail/mail-preview/

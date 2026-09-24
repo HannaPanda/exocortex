@@ -1,0 +1,32 @@
+Hallo,
+
+Ein Absatz.
+Mit einem Zeilenumbruch.
+
+Erlaubt: Nur Lesen
+
+Ein Hinweis, der auffallen soll.
+
+Hauptaktion:
+https://exocortex.app/a
+
+Ein Abschnitt
+- Stefan: „Ein Zitat.“
+- und 2 weitere
+Zur Seite:
+https://exocortex.app/b
+
+---
+
+## Überschrift
+
+- ein Punkt
+
+---
+
+Ein Link:
+https://exocortex.app/c
+
+Warum du diese Mail bekommst.
+
+eXocortex

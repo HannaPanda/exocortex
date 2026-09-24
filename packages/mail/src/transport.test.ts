@@ -19,7 +19,7 @@ function transportOptions(): Record<string, unknown> {
   return createTransportMock.mock.calls[0]?.[0] as unknown as Record<string, unknown>;
 }
 
-const message = { subject: 'eXocortex: Test', text: 'Hallo' };
+const message = { subject: 'eXocortex: Test', text: 'Hallo', html: '<p>Hallo</p>' };
 
 beforeEach(() => {
   createTransportMock.mockClear();
@@ -128,6 +128,14 @@ describe('createMailTransport failure classification', () => {
       accepted: ['a@b.de'],
       rejected: [],
     });
+  });
+
+  it('hands the relay both bodies, so no client is left with nothing to show', async () => {
+    await transport().send({ to: 'a@b.de', message });
+
+    expect(sendMail).toHaveBeenCalledWith(
+      expect.objectContaining({ text: 'Hallo', html: '<p>Hallo</p>' }),
+    );
   });
 
   it('treats a 5xx reply as permanent', async () => {

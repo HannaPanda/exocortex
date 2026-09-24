@@ -36,3 +36,8 @@ docs/capability-matrix.md
 # render by the package-boundary gate. Same loop as the matrix above: Prettier
 # would collapse the arrays, the gate would expand them again.
 .oxlintrc.json
+
+# The mail layout's file snapshots (issue #109) are the renderer's output byte
+# for byte; vitest compares them verbatim, so a formatter would make the test
+# and the format check undo each other on every run.
+packages/mail/src/layout/__snapshots__

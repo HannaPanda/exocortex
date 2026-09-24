@@ -100,6 +100,10 @@ What is deliberately still missing is listed under
   delivers are offered, so there is no switch that quietly does nothing;
   switching one off means no job is enqueued rather than a job that discards
   the result. Share mail is the first notification here a person can refuse
+- every mail in one layout (issue #109): templates hand over words and links,
+  one renderer draws them as HTML for mail clients and as an equivalent plain
+  text part, escapes everything a person or a model wrote, and takes its look
+  from one mail theme; `pnpm --filter @exocortex/mail preview` shows them all
 
 **Search, AI and automation**
 

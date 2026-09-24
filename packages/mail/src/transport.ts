@@ -59,7 +59,10 @@ export function createMailTransport(options: MailTransportOptions): MailTranspor
           from: options.from,
           to,
           subject: message.subject,
+          // nodemailer sends both as multipart/alternative, text first, so a
+          // client that shows no HTML shows the equivalent text instead.
           text: message.text,
+          html: message.html,
         })) as SendMailInfo;
       } catch (error) {
         // Neither the subject nor the body nor the address is logged here; the

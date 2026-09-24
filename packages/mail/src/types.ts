@@ -1,16 +1,17 @@
 import { type MailAcceptance, type MailMessage } from '@exocortex/contracts';
 
 /**
- * A message after a template has chosen its words, and before the relay has
- * seen it.
+ * A message after a template has chosen its words and the layout has drawn
+ * them, and before the relay has seen it.
  *
- * Plain text only, for now deliberately: the three mails this deployment sends
- * are four lines and a link each, and an HTML part would be a second body to
- * keep in step with the first for no gain a reader would notice.
+ * Two bodies, one source: both parts are produced by `composeMail` from the
+ * same `MailContent` (issue #109), so the text part is never an afterthought
+ * and the HTML part never says something the text part does not.
  */
 export interface RenderedMail {
   subject: string;
   text: string;
+  html: string;
 }
 
 /**

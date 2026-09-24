@@ -183,7 +183,7 @@ describe('the mail an automation sends', () => {
   it('carries the page itself and says which rule sent it', () => {
     const mail = renderMail(base);
     expect(mail.subject).toBe('eXocortex: Dein Tag');
-    expect(mail.text).toContain('Automation „Morgenübersicht"');
+    expect(mail.text).toContain('Automation „Morgenübersicht“');
     expect(mail.text).toContain('- Steuer');
     expect(mail.text).toContain(base.url);
     expect(mail.text).not.toContain('abgeschnitten');

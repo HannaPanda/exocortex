@@ -1,4 +1,4 @@
-import { type RenderedMail } from '../types';
+import { type MailContent } from '../layout/content';
 
 /**
  * The mail an `EMAIL_SELF` automation sends (issue #104, ADR-054).
@@ -23,30 +23,32 @@ export function automationPageMail(input: {
   body: string;
   /** Whether the page goes on past what `body` holds. */
   truncated: boolean;
-}): RenderedMail {
-  const tail = input.truncated
-    ? [
-        '',
-        '(Hier ist die Seite abgeschnitten. Den Rest liest du am besten in eXocortex.)',
-        '',
-        input.url,
-      ]
-    : ['', 'Die Seite in eXocortex:', '', input.url];
-
+}): MailContent {
   return {
     // Prefixed like every other mail from here, even though the words after it
     // are the reader's own: a subject line that could be mistaken for a mail
     // somebody else sent is one that gets answered instead of read.
     subject: `eXocortex: ${input.subject}`,
-    text: [
-      `Automation „${input.ruleName}" schickt dir die Seite „${input.documentTitle}".`,
-      '',
-      '---',
-      '',
-      input.body,
-      ...tail,
-      '',
-      'eXocortex',
-    ].join('\n'),
+    preheader: `Automation „${input.ruleName}“ schickt dir „${input.documentTitle}“.`,
+    heading: input.documentTitle,
+    blocks: [
+      {
+        kind: 'paragraph',
+        text: `Automation „${input.ruleName}“ schickt dir die Seite „${input.documentTitle}“.`,
+      },
+      // The page as written: escaped, never rendered. Markdown stays Markdown,
+      // because turning a page into markup is exactly the rich-content decision
+      // this layout leaves to a block of its own (issue #109).
+      { kind: 'excerpt', text: input.body },
+      ...(input.truncated
+        ? [
+            {
+              kind: 'notice' as const,
+              text: 'Hier ist die Seite abgeschnitten. Den Rest liest du am besten in eXocortex.',
+            },
+          ]
+        : []),
+      { kind: 'link', label: 'Die Seite in eXocortex', url: input.url },
+    ],
   };
 }

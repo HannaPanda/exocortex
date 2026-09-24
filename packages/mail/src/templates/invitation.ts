@@ -1,4 +1,4 @@
-import { type RenderedMail } from '../types';
+import { type MailContent } from '../layout/content';
 
 const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'long' });
 
@@ -17,7 +17,7 @@ export function invitationMail(input: {
   workspaceName: string | null;
   url: string;
   expiresAt: Date;
-}): RenderedMail {
+}): MailContent {
   const destination =
     input.workspaceName === null
       ? 'zu eXocortex eingeladen'
@@ -27,21 +27,19 @@ export function invitationMail(input: {
       input.workspaceName === null
         ? 'eXocortex: Einladung'
         : `eXocortex: Einladung zu „${input.workspaceName}“`,
-    text: [
-      'Hallo,',
-      '',
-      `${input.invitedByName} hat dich ${destination}.`,
-      '',
-      'Über diesen Link legst du dein Konto an:',
-      '',
-      input.url,
-      '',
-      `Der Link gilt bis zum ${dateFormat.format(input.expiresAt)} und lässt sich nur einmal verwenden.`,
-      '',
-      'Wenn du damit nichts zu tun hast, brauchst du nichts zu unternehmen: ohne diesen',
-      'Link entsteht kein Konto.',
-      '',
-      'eXocortex',
-    ].join('\n'),
+    preheader: `${input.invitedByName} hat dich ${destination}.`,
+    heading: 'Du bist eingeladen',
+    greeting: 'Hallo,',
+    blocks: [
+      { kind: 'paragraph', text: `${input.invitedByName} hat dich ${destination}.` },
+      { kind: 'action', label: 'Konto anlegen', url: input.url },
+      {
+        kind: 'paragraph',
+        text: `Der Link gilt bis zum ${dateFormat.format(input.expiresAt)} und lässt sich nur einmal verwenden.`,
+      },
+    ],
+    footer: [
+      'Wenn du damit nichts zu tun hast, brauchst du nichts zu unternehmen: ohne diesen Link entsteht kein Konto.',
+    ],
   };
 }

@@ -1,6 +1,6 @@
 import { type SharePermission, type ShareScope } from '@exocortex/contracts';
 
-import { type RenderedMail } from '../types';
+import { type MailBlock, type MailContent } from '../layout/content';
 
 /**
  * The three mails a changed grant sends (issue #103).
@@ -28,20 +28,20 @@ function scopeLine(scope: ShareScope): string {
   return scope === 'SUBTREE' ? 'Die Seite und alles, was darunter hängt' : 'Nur diese eine Seite';
 }
 
-/** What a grant says, as lines. The expiry only when there is one. */
-function grantLines(input: {
+/** What a grant says, as label and value. The expiry only when there is one. */
+function grantFacts(input: {
   permission: SharePermission;
   scope: ShareScope;
   expiresAt: string | null;
-}): string[] {
-  const lines = [
-    `Erlaubt: ${permissionLine(input.permission)}`,
-    `Umfang: ${scopeLine(input.scope)}`,
+}): MailBlock {
+  const rows = [
+    { label: 'Erlaubt', value: permissionLine(input.permission) },
+    { label: 'Umfang', value: scopeLine(input.scope) },
   ];
   if (input.expiresAt !== null) {
-    lines.push(`Gilt bis: ${dateFormat.format(new Date(input.expiresAt))}`);
+    rows.push({ label: 'Gilt bis', value: dateFormat.format(new Date(input.expiresAt)) });
   }
-  return lines;
+  return { kind: 'facts', rows };
 }
 
 export function shareGrantedMail(input: {
@@ -51,25 +51,24 @@ export function shareGrantedMail(input: {
   scope: ShareScope;
   url: string;
   expiresAt: string | null;
-}): RenderedMail {
+}): MailContent {
   return {
     subject: `eXocortex: ${input.sharedByName} hat „${input.documentTitle}“ mit dir geteilt`,
-    text: [
-      'Hallo,',
-      '',
-      `${input.sharedByName} hat die Seite „${input.documentTitle}“ in eXocortex mit dir geteilt.`,
-      '',
-      ...grantLines(input),
-      '',
-      'Hier kommst du hin:',
-      '',
-      input.url,
-      '',
-      'Du musst dafür in keinem Arbeitsbereich Mitglied sein. Die Seite steht ab jetzt',
-      'in deiner Liste „Mit mir geteilt“.',
-      '',
-      'eXocortex',
-    ].join('\n'),
+    preheader: `${permissionLine(input.permission)}. ${scopeLine(input.scope)}.`,
+    heading: `„${input.documentTitle}“ ist mit dir geteilt`,
+    greeting: 'Hallo,',
+    blocks: [
+      {
+        kind: 'paragraph',
+        text: `${input.sharedByName} hat die Seite „${input.documentTitle}“ in eXocortex mit dir geteilt.`,
+      },
+      grantFacts(input),
+      { kind: 'action', label: 'Seite öffnen', url: input.url },
+      {
+        kind: 'paragraph',
+        text: 'Du musst dafür in keinem Arbeitsbereich Mitglied sein. Die Seite steht ab jetzt in deiner Liste „Mit mir geteilt“.',
+      },
+    ],
   };
 }
 
@@ -80,23 +79,20 @@ export function shareChangedMail(input: {
   scope: ShareScope;
   url: string;
   expiresAt: string | null;
-}): RenderedMail {
+}): MailContent {
   return {
     subject: `eXocortex: Deine Freigabe für „${input.documentTitle}“ hat sich geändert`,
-    text: [
-      'Hallo,',
-      '',
-      `${input.changedByName} hat geändert, was du an der Seite „${input.documentTitle}“ darfst.`,
-      'Es gilt ab sofort:',
-      '',
-      ...grantLines(input),
-      '',
-      'Hier kommst du hin:',
-      '',
-      input.url,
-      '',
-      'eXocortex',
-    ].join('\n'),
+    preheader: `Ab sofort: ${permissionLine(input.permission)}. ${scopeLine(input.scope)}.`,
+    heading: 'Deine Freigabe hat sich geändert',
+    greeting: 'Hallo,',
+    blocks: [
+      {
+        kind: 'paragraph',
+        text: `${input.changedByName} hat geändert, was du an der Seite „${input.documentTitle}“ darfst. Es gilt ab sofort:`,
+      },
+      grantFacts(input),
+      { kind: 'action', label: 'Seite öffnen', url: input.url },
+    ],
   };
 }
 
@@ -104,20 +100,20 @@ export function shareRevokedMail(input: {
   revokedByName: string;
   documentTitle: string;
   url: string;
-}): RenderedMail {
+}): MailContent {
   return {
     subject: `eXocortex: Dein Zugang zu „${input.documentTitle}“ ist beendet`,
-    text: [
-      'Hallo,',
-      '',
-      `${input.revokedByName} hat deine Freigabe für die Seite „${input.documentTitle}“ in`,
-      'eXocortex zurückgezogen. Die Seite lässt sich damit nicht mehr öffnen.',
-      '',
-      'Was weiterhin mit dir geteilt ist, steht hier:',
-      '',
-      input.url,
-      '',
-      'eXocortex',
-    ].join('\n'),
+    preheader: `${input.revokedByName} hat die Freigabe zurückgezogen.`,
+    heading: 'Dein Zugang ist beendet',
+    greeting: 'Hallo,',
+    blocks: [
+      {
+        kind: 'paragraph',
+        text: `${input.revokedByName} hat deine Freigabe für die Seite „${input.documentTitle}“ in eXocortex zurückgezogen. Die Seite lässt sich damit nicht mehr öffnen.`,
+      },
+      // A plain link, not a button: nothing here is an action the reader is
+      // being asked to take.
+      { kind: 'link', label: 'Was weiterhin mit dir geteilt ist', url: input.url },
+    ],
   };
 }

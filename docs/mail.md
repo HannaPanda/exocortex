@@ -35,8 +35,10 @@ it.
 | Path                                          | Owns                                                                 |
 | --------------------------------------------- | -------------------------------------------------------------------- |
 | `packages/mail/src/transport.ts`              | the SMTP connection, TLS, credentials, failure classification        |
-| `packages/mail/src/templates/`                | the words, in German                                                 |
-| `packages/mail/src/render.ts`                 | template name plus values becomes subject plus text                  |
+| `packages/mail/src/templates/`                | the words, in German, as layout blocks                               |
+| `packages/mail/src/layout/`                   | the one layout: blocks become HTML and plain text; the mail theme    |
+| `packages/mail/src/render.ts`                 | template name plus values becomes subject, text and HTML             |
+| `packages/mail/src/examples.ts`               | one example message per template, for the tests and the preview      |
 | `packages/mail/src/mailer.ts`                 | transport plus catalogue, and what may be logged                     |
 | `packages/contracts/src/mail.ts`              | the template catalogue as a zod union                                |
 | `share-notifications.ts` (worker)             | which grant change becomes which mail, and to whom                   |
@@ -57,10 +59,16 @@ decision belongs to whoever already knows whether the person still has access.
    a date as an ISO string — and never a rendered subject or body, and never a
    page's text.
 2. Write the template in `packages/mail/src/templates/`, returning a
-   `RenderedMail`. Visible text is German; everything else is English.
-3. Add the branch to `renderMail`. The switch is exhaustive over a closed
-   union, so forgetting this is a type error rather than an empty mail.
-4. Enqueue it: `queues.enqueue(QUEUE_NAMES.mail, { correlationId, recipient, mail })`.
+   `MailContent`: a subject, a preheader, a heading and a list of blocks. No
+   markup and no layout -- see "The layout" below. Visible text is German;
+   everything else is English.
+3. Add the branch to `mailContent` in `render.ts`. The switch is exhaustive
+   over a closed union, so forgetting this is a type error rather than an
+   empty mail.
+4. Add an example to `MAIL_EXAMPLES` in `examples.ts`. The record is typed
+   over every template, so this too is a type error when it is missing, and it
+   is what puts the new mail through the layout tests and into the preview.
+5. Enqueue it: `queues.enqueue(QUEUE_NAMES.mail, { correlationId, recipient, mail })`.
    If the event behind it can be dispatched twice, pass a `jobId` derived from
    the event.
 
@@ -68,6 +76,49 @@ A template is never rendered by its caller. That is the rule the shape exists
 to enforce: everything that will enqueue mail from here on carries text a
 person or a model wrote, and a queue that accepts prose is a relay for whatever
 reaches it.
+
+## The layout
+
+Every mail is drawn by one function, `composeMail` in
+`packages/mail/src/layout/compose.ts` (issue #109). A template says what a mail
+says; the layout decides what that looks like, and it produces both parts of
+the message from the same `MailContent`, so the plain-text part is never a
+stripped copy of the HTML and cannot drift from it. The transport sends them
+together as `multipart/alternative`.
+
+A template builds its body from a closed set of blocks: `paragraph`, `action`
+(the one button), `link`, `facts` (label and value), `notice`, `section` (one
+group of a digest) and `excerpt` (text shown as written). Every block carries
+strings only, and every string is escaped on its way into the HTML, so a page
+title, a comment, a person's name or an automation's output can never become a
+tag or a style. An `href` is only written for `http` and `https`. The page an
+`EMAIL_SELF` rule sends is an `excerpt`: its Markdown arrives as Markdown. A
+mail that should ever carry rendered rich content gets a block of its own for
+it, decided on purpose, never a string that happens to be trusted.
+
+The HTML is written for mail clients rather than browsers: tables for layout,
+every style inline, no script, no web font, no image, a sheet of at most
+600 px that narrows with the screen, and an address written out under every
+button. Nothing a reader needs depends on CSS arriving. The page asks for
+`color-scheme: light`; dark mode is left to the clients that force one.
+
+The look lives in `packages/mail/src/layout/theme.ts`: colours by role (sheet,
+header, action, link, ...), the font stacks, the width and the radius. It is
+the mail's own token layer because a mail cannot read `tokens.css`, and it is
+the one file to change when the corporate design moves. Its current values
+are derived from the three brand colours and are a starting point, not a
+decision about the CD.
+
+`src/layout/__snapshots__/base.html` pins the base template with every block
+in it. A change to that file is a change to every mail this deployment sends;
+commit it with a sentence saying why.
+
+To look at the mails: `pnpm --filter @exocortex/mail preview` writes every
+example as HTML and text into `packages/mail/mail-preview/` (git ignores it)
+with an `index.html`; `-- --smtp 127.0.0.1:1026` also sends them to Mailpit,
+whose UI (http://127.0.0.1:8026) has an HTML compatibility check. The flag
+takes a host and a port and no credentials, and the script never reads
+`SMTP_*`, so it cannot reach the production relay.
 
 ## Which change sends which mail
 

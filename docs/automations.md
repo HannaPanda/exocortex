@@ -159,8 +159,9 @@ That is also why this one request does not use `fetch`: it is made through
 
 ## The mail action
 
-`EMAIL_SELF` sends the page to the account that owns the rule, as plain text,
-with a link underneath. Together with `SCHEDULE` that is a daily agenda, a
+`EMAIL_SELF` sends the page to the account that owns the rule, its Markdown
+shown as written inside the shared mail layout (`docs/mail.md`), with a link
+underneath. Together with `SCHEDULE` that is a daily agenda, a
 weekly review or a one-off "send me this on Friday", and it needs no scheduler
 code of its own.
 

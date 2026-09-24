@@ -1,5 +1,7 @@
 import { type MailMessage } from '@exocortex/contracts';
 
+import { composeMail } from './layout/compose';
+import { type MailContent } from './layout/content';
 import { passwordResetMail, verificationMail } from './templates/auth';
 import { automationPageMail } from './templates/automation';
 import { automationDisabledMail, automationRunFailedMail } from './templates/automation-failure';
@@ -7,6 +9,14 @@ import { commentDigestMail } from './templates/comment-digest';
 import { invitationMail } from './templates/invitation';
 import { shareChangedMail, shareGrantedMail, shareRevokedMail } from './templates/share';
 import { type RenderedMail } from './types';
+
+/**
+ * Turns a named message into the mail a reader sees: the template chooses the
+ * words, `composeMail` draws them, once in HTML and once as plain text.
+ */
+export function renderMail(message: MailMessage): RenderedMail {
+  return composeMail(mailContent(message));
+}
 
 /**
  * Turns a named message into the words a reader sees.
@@ -17,7 +27,7 @@ import { type RenderedMail } from './types';
  * lookup table -- a record keyed by name would be satisfied by a wrong
  * function just as happily.
  */
-export function renderMail(message: MailMessage): RenderedMail {
+export function mailContent(message: MailMessage): MailContent {
   switch (message.template) {
     case 'EMAIL_VERIFICATION':
       return verificationMail({ name: message.name, url: message.url });

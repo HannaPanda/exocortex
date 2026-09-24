@@ -1,4 +1,4 @@
-import { type RenderedMail } from '../types';
+import { type MailBlock, type MailContent } from '../layout/content';
 
 /**
  * The comments somebody has collected, as one mail (issue #106, ADR-053).
@@ -25,52 +25,64 @@ export function commentDigestMail(input: {
   commentCount: number;
   pages: readonly CommentDigestPage[];
   morePages: number;
-}): RenderedMail {
+}): MailContent {
   const pageCount = input.pages.length + input.morePages;
-  const subject =
-    input.commentCount === 1 && input.pages[0] !== undefined
-      ? `eXocortex: Ein neuer Kommentar auf „${input.pages[0].title}“`
-      : `eXocortex: ${input.commentCount} neue Kommentare auf ${pageWord(pageCount)}`;
+  const single = input.commentCount === 1 && input.pages[0] !== undefined;
+  const subject = single
+    ? `eXocortex: Ein neuer Kommentar auf „${input.pages[0]?.title ?? ''}“`
+    : `eXocortex: ${input.commentCount} neue Kommentare auf ${pageWord(pageCount)}`;
 
-  const lines: string[] = ['Hallo,', ''];
-  lines.push(
-    input.commentCount === 1
-      ? 'auf einer Seite, an der du hängst, ist ein neuer Kommentar dazugekommen:'
-      : `auf Seiten, an denen du hängst, sind ${input.commentCount} neue Kommentare dazugekommen:`,
-    '',
-  );
+  const blocks: MailBlock[] = [
+    {
+      kind: 'paragraph',
+      text:
+        input.commentCount === 1
+          ? 'auf einer Seite, an der du hängst, ist ein neuer Kommentar dazugekommen:'
+          : `auf Seiten, an denen du hängst, sind ${input.commentCount} neue Kommentare dazugekommen:`,
+    },
+  ];
 
   for (const page of input.pages) {
-    lines.push(page.title);
-    for (const comment of page.comments) {
-      lines.push(`- ${comment.authorName}: „${comment.preview}“`);
-    }
-    if (page.moreComments > 0) {
-      lines.push(
-        page.moreComments === 1 ? '- und ein weiterer' : `- und ${page.moreComments} weitere`,
-      );
-    }
-    lines.push(page.url, '');
+    blocks.push({
+      kind: 'section',
+      title: page.title,
+      items: page.comments.map((comment) => ({
+        label: comment.authorName,
+        text: comment.preview,
+        quoted: true,
+      })),
+      ...(page.moreComments > 0
+        ? {
+            more: page.moreComments === 1 ? 'und ein weiterer' : `und ${page.moreComments} weitere`,
+          }
+        : {}),
+      link: { label: 'Zur Seite', url: page.url },
+    });
   }
 
   if (input.morePages > 0) {
-    lines.push(
-      input.morePages === 1
-        ? 'Auf einer weiteren Seite ist ebenfalls etwas passiert.'
-        : `Auf ${input.morePages} weiteren Seiten ist ebenfalls etwas passiert.`,
-      '',
-    );
+    blocks.push({
+      kind: 'paragraph',
+      text:
+        input.morePages === 1
+          ? 'Auf einer weiteren Seite ist ebenfalls etwas passiert.'
+          : `Auf ${input.morePages} weiteren Seiten ist ebenfalls etwas passiert.`,
+    });
   }
 
-  lines.push(
-    'Diese Mail bekommst du, weil du unter Einstellungen → Benachrichtigungen',
-    'Kommentare per E-Mail eingeschaltet hast. Dort lässt sie sich auch wieder',
-    'abstellen oder auf einmal täglich umstellen.',
-    '',
-    'eXocortex',
-  );
-
-  return { subject, text: lines.join('\n') };
+  return {
+    subject,
+    preheader: single
+      ? `${input.pages[0]?.comments[0]?.authorName ?? 'Jemand'} hat kommentiert.`
+      : `${input.commentCount} neue Kommentare auf ${pageWord(pageCount)}.`,
+    heading:
+      input.commentCount === 1 ? 'Ein neuer Kommentar' : `${input.commentCount} neue Kommentare`,
+    greeting: 'Hallo,',
+    blocks,
+    footer: [
+      'Diese Mail bekommst du, weil du unter Einstellungen → Benachrichtigungen Kommentare per E-Mail eingeschaltet hast. Dort lässt sie sich auch wieder abstellen oder auf einmal täglich umstellen.',
+    ],
+  };
 }
 
 /** „einer Seite" / „2 Seiten", so the subject reads like a sentence. */

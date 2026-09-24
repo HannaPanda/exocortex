@@ -1,0 +1,13 @@
+{
+  // The preview script under `scripts/`: run with `tsx`, never bundled, and
+  // checked all the same (issue #95 is what an unchecked script costs). Same
+  // base and strictness as `tsconfig.json`, no emit, and `rootDir` at the
+  // workspace root so it can reach `src/`.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true
+  },
+  "include": ["scripts/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
