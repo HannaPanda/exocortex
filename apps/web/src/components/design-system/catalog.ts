@@ -79,7 +79,13 @@ export const DESIGN_SYSTEM_CATALOG: readonly CatalogGroup[] = [
   },
   {
     title: 'Nicht entschieden',
-    entries: [{ id: 'experimente', title: 'Experimente' }],
+    entries: [
+      { id: 'experimente', title: 'Experimente' },
+      { id: 'experiment-p13', title: 'P13 Akzentränder' },
+      { id: 'experiment-p11', title: 'P11 Fokussprache' },
+      { id: 'experiment-p9', title: 'P9 Leere Zustände' },
+      { id: 'experiment-p12', title: 'P12 Dichte Flächen' },
+    ],
   },
 ];
 

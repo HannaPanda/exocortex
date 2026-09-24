@@ -290,16 +290,19 @@ the audit, except F-5.
 
 ## 5. Open design decisions
 
-Marked, not answered. Each becomes an experiment under #126.
+Marked, not answered. Since 2026-09-24 each of P9, P11, P12 and P13 has its
+variants on `/design-system` (#126), one section per decision under
+"Experimente", linked from the Experiment column. The variants are
+comparisons, not proposals: none of them has changed product code.
 
-| Decision                                          | Question                                                                               | Evidence                                                         | Experiment                                              |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------- |
-| P9 Empty state shape                              | centred and icon-first, or left-aligned and action-first                               | 63 `EmptyState` + 3 hand-built; compact contexts have no variant | trash, no search hits                                   |
-| P11 Focus vocabulary                              | one outline or one ring, and what a dense row or `overflow: hidden` does with it       | F-1, F-2                                                         | control set in three variants                           |
-| P12 Dense surfaces narrow                         | sideways scroll, cards, or sticky key column; settings form narrow                     | 2.5                                                              | one table in three strategies, one settings form in two |
-| P13 Left accent borders                           | keep the comment rule as a stated exception, drop the transclusion one, or change both | F-3                                                              | A/B per block                                           |
-| Archive vs trash (decided 2026-09-24: Papierkorb) | one word for the place and the action                                                  | 2.7                                                              | copy decision, no experiment needed                     |
-| Calendar primitive                                | adopt `Calendar` for date entry or remove it                                           | 2.2                                                              | none; product decision                                  |
+| Decision                                          | Question                                                                               | Evidence                                                         | Experiment                                                                                     |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| P9 Empty state shape                              | centred and icon-first, or left-aligned and action-first                               | 63 `EmptyState` + 3 hand-built; compact contexts have no variant | `#experiment-p9`: trash, no search hits, each in A and B                                       |
+| P11 Focus vocabulary                              | one outline or one ring, and what a dense row or `overflow: hidden` does with it       | F-1, F-2                                                         | `#experiment-p11`: control set in three variants, forced snapshot, toolbar, `overflow: hidden` |
+| P12 Dense surfaces narrow                         | sideways scroll, cards, or sticky key column; settings form narrow                     | 2.5                                                              | `#experiment-p12`: one table in three strategies, one settings form in two, iframes at 390 px  |
+| P13 Left accent borders                           | keep the comment rule as a stated exception, drop the transclusion one, or change both | F-3                                                              | `#experiment-p13`: A/B per block                                                               |
+| Archive vs trash (decided 2026-09-24: Papierkorb) | one word for the place and the action                                                  | 2.7                                                              | copy decision, no experiment needed                                                            |
+| Calendar primitive                                | adopt `Calendar` for date entry or remove it                                           | 2.2                                                              | none; product decision                                                                         |
 
 ## 6. Proposed navigation for `/design-system`
 
@@ -323,11 +326,31 @@ Muster               P-1 … P-23 that are canonical or partial
 Layouts              shell, content page, editor page, settings, admin, table view, narrow shell
 Barrierefreiheit     focus, keyboard, field association, live regions, composite widgets, touch
 Sprache              labels, confirmations, errors, empty states, dates and counts, terminology
-Experimente          P9, P11, P12, P13, visibly marked as not canonical
+Experimente          P9, P11, P12, P13, visibly marked as not canonical (built, #126)
 ```
 
 The styleguide renders the real exports with fixtures. Nothing in the
 "Experimente" section may be imported by product code.
+
+### Experiment lifecycle
+
+An experiment lives in `apps/web/src/components/design-system/experiments/`,
+one file per decision, and nowhere else. It says, through the frame in
+`experiments/frame.tsx`: the problem, the width it is judged at, how to
+operate it by keyboard, the product sources, and per variant a name and its
+trade-offs in neutral words. Every variant reads the same fixture, so no
+example text favours one side. A variant that depends on the window's
+breakpoints is drawn in an iframe onto `/design-system/rahmen/<probe>`, the one
+path with `frame-src 'self'` in the Content-Security-Policy.
+
+Once a variant is chosen:
+
+1. The decision and the chosen variant are written into the decision's issue.
+2. Product code changes, in one place where the rule allows it.
+3. `DESIGN.md` gets the rule; `docs/ui-system.md` and this file get the state.
+4. The chosen variant's example moves into its canonical section.
+5. The rejected variants are deleted, not hidden, and the experiment with them.
+6. The regression baselines are re-approved and `impeccable detect` runs again.
 
 ## 7. First canonical examples for regression tests
 

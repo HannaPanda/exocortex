@@ -26,7 +26,11 @@ import {
   TablesSection,
 } from './components/display';
 import { DialogsSection, MenusSection } from './components/overlays';
+import { AccentBordersExperiment } from './experiments/accent-borders';
+import { DenseSurfacesExperiment } from './experiments/dense-surfaces';
+import { EmptyStatesExperiment } from './experiments/empty-states';
 import { ExperimentsSection } from './experiments/experiments';
+import { FocusLanguageExperiment } from './experiments/focus-language';
 import {
   ColourSection,
   FocusSection,
@@ -233,6 +237,10 @@ export function DesignSystemPage({ tokens, ladder, measure }: DesignSystemPagePr
           <AccessibilitySection />
           <LanguageSection />
           <ExperimentsSection />
+          <AccentBordersExperiment />
+          <FocusLanguageExperiment />
+          <EmptyStatesExperiment />
+          <DenseSurfacesExperiment />
         </main>
       </div>
     </div>

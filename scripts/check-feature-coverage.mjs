@@ -49,9 +49,9 @@ const AUTOMATION_CONTRACT = join(repoRoot, 'packages/contracts/src/automations.t
 /**
  * Screens no feature has to describe, each with the reason.
  *
- * Two entries, and neither is a capability: the root path redirects into the
+ * Three entries, and none is a capability: the root path redirects into the
  * workspace the shell resolves (describing it would mean writing "opening
- * eXocortex opens eXocortex"), and the styleguide shows the interface's own
+ * eXocortex opens eXocortex"), and the styleguide and its frames show the interface's own
  * parts with made-up data.
  */
 const SCREEN_EXEMPT = [
@@ -60,6 +60,11 @@ const SCREEN_EXEMPT = [
     screen: '/design-system',
     reason:
       'The styleguide (issue #125): a reference for people and agents building the interface, drawn with fixtures. It does nothing with anybody’s data, so there is no capability to describe.',
+  },
+  {
+    screen: '/design-system/rahmen/:x',
+    reason:
+      'One styleguide experiment alone, for the iframe that shows it at phone width (issue #126). Fixtures only, like the styleguide.',
   },
 ];
 

@@ -6,6 +6,9 @@ still undecided is in `docs/design-system-inventory.md`. What they look like is
 `/design-system`, drawn by the components themselves
 (`apps/web/src/components/design-system`); a new token has to be given a role
 in `foundations/token-catalog.ts` or `design-tokens.test.ts` goes red.
+Undecided variants are on the same page under "Experimente" and follow the
+lifecycle in the inventory (§6, "Experiment lifecycle"); product code never
+imports from `design-system/experiments`.
 
 ## Design tokens
 

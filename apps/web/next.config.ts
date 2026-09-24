@@ -73,6 +73,18 @@ const contentSecurityPolicy = [
   'upgrade-insecure-requests',
 ].join('; ');
 
+/**
+ * The styleguide shows its phone-width experiments in iframes onto its own
+ * `/design-system/rahmen/*` pages (issue #126), because a component's
+ * breakpoints answer to the window and only an iframe has a window of its own.
+ * Same origin only, and on this one path: everywhere else `frame-src` stays
+ * `'none'`.
+ */
+const styleguideContentSecurityPolicy = contentSecurityPolicy.replace(
+  "frame-src 'none'",
+  "frame-src 'self'",
+);
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
@@ -133,6 +145,11 @@ const nextConfig: NextConfig = {
           // Kept alongside `frame-ancestors` for browsers that read only this.
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
         ],
+      },
+      // Later entries win for the same key, so this replaces the policy above.
+      {
+        source: '/design-system',
+        headers: [{ key: 'Content-Security-Policy', value: styleguideContentSecurityPolicy }],
       },
     ];
   },

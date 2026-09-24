@@ -7,9 +7,9 @@ import { DsSection, DsSource } from '../showcase';
  *
  * An undecided variant lives here and nowhere else, and product code never
  * imports from this directory (`docs/design-system-inventory.md` §6). The list
- * below is the audit's list of open decisions, §5; a variant is added under its
- * decision by #126, and a decided one leaves this section by the five steps
- * written out here.
+ * below is the audit's list of open decisions, §5; each with a variant set has
+ * a section of its own below this one (#126), and a decided one leaves by the
+ * steps written out here.
  */
 
 interface OpenDecision {
@@ -17,58 +17,58 @@ interface OpenDecision {
   title: string;
   question: string;
   evidence: string;
+  /** The experiment's own section, when the decision has one. */
+  experiment?: string;
 }
 
 const OPEN_DECISIONS: readonly OpenDecision[] = [
   {
-    id: 'experiment-p9',
-    title: 'P9 Form des leeren Zustands',
-    question: 'Zentriert mit Icon zuerst, oder linksbündig mit der Handlung zuerst?',
-    evidence:
-      '63 EmptyState, 3 von Hand gebaut, keine kompakte Variante. Stand: Muster Laden, leer, Fehler.',
-  },
-  {
-    id: 'experiment-p11',
-    title: 'P11 Fokussprache',
-    question:
-      'Eine Kontur oder ein Ring, und was machen dichte Zeilen und abgeschnittene Container damit?',
-    evidence:
-      'Neun Behandlungen (F-1), DESIGN.md widerspricht den Primitiven (F-2). Stand: Grundlagen Fokus.',
-  },
-  {
-    id: 'experiment-p12',
-    title: 'P12 Dichte Flächen auf schmalen Bildschirmen',
-    question: 'Seitwärts scrollen, Karten, oder eine angeheftete Schlüsselspalte?',
-    evidence: 'Inventar 2.5. Stand: Layout Tabellenansicht.',
-  },
-  {
-    id: 'experiment-p13',
+    id: 'offen-p13',
     title: 'P13 Linke Akzentränder',
     question:
       'Den Kommentarrand als begründete Ausnahme behalten, den der Transklusion streichen, oder beide ändern?',
-    evidence:
-      'Zwei Ränder, die DESIGN.md verbietet (F-3). Transklusion und kommentierter Text stehen deshalb nicht bei den Mustern.',
+    evidence: 'Zwei Ränder, die DESIGN.md verbietet (F-3).',
+    experiment: 'experiment-p13',
   },
   {
-    id: 'experiment-papierkorb',
-    title: 'Archiv oder Papierkorb',
-    question: 'Ein Wort für den Ort und die Handlung.',
-    evidence: 'Eine Wortentscheidung, kein Experiment nötig. Stand: Sprache, Begriffe.',
+    id: 'offen-p11',
+    title: 'P11 Fokussprache',
+    question:
+      'Eine Kontur oder ein Ring, und was machen dichte Zeilen und abgeschnittene Container damit?',
+    evidence: 'Neun Behandlungen (F-1), DESIGN.md widerspricht den Primitiven (F-2).',
+    experiment: 'experiment-p11',
   },
   {
-    id: 'experiment-kalender',
+    id: 'offen-p9',
+    title: 'P9 Form des leeren Zustands',
+    question: 'Zentriert mit Icon zuerst, oder linksbündig mit der Handlung zuerst?',
+    evidence: '63 EmptyState, 3 von Hand gebaut, keine kompakte Variante.',
+    experiment: 'experiment-p9',
+  },
+  {
+    id: 'offen-p12',
+    title: 'P12 Dichte Flächen auf schmalen Bildschirmen',
+    question: 'Seitwärts scrollen, eine Liste, oder angeheftete Spalten?',
+    evidence: 'Inventar 2.5.',
+    experiment: 'experiment-p12',
+  },
+  {
+    id: 'offen-kalender',
     title: 'Kalender-Baustein',
     question: 'Calendar für die Datumseingabe übernehmen oder entfernen?',
-    evidence: 'Eine Produktentscheidung. Der Baustein hat heute keine Aufrufstelle.',
+    evidence:
+      'Eine Produktentscheidung, kein Experiment. Der Baustein hat heute keine Aufrufstelle.',
   },
 ];
 
+/** Issue #126, "Entscheidungsworkflow": what happens once a variant is chosen. */
 const STEPS = [
-  'Die gewählte Variante wird in der Anwendung umgesetzt oder bestätigt.',
-  'Ihr Beispiel zieht in den passenden kanonischen Abschnitt um.',
-  'Die verworfenen Varianten werden gelöscht, nicht versteckt.',
-  'DESIGN.md hält die Entscheidung fest.',
-  'Die Vergleichsbilder der Regressionstests werden neu abgenommen.',
+  'Die Entscheidung wird im Issue der Entscheidung festgehalten, mit der gewählten Variante.',
+  'Der Code der Anwendung wird angepasst, an einer Stelle statt pro Aufrufstelle, wo das geht.',
+  'DESIGN.md bekommt die Regel, docs/ui-system.md und das Inventar den neuen Stand.',
+  'Das Beispiel der gewählten Variante zieht in den passenden kanonischen Abschnitt um.',
+  'Die verworfenen Varianten werden gelöscht, nicht versteckt, und mit ihnen das Experiment.',
+  'Die Vergleichsbilder der Regressionstests werden neu abgenommen, und impeccable detect läuft noch einmal.',
 ];
 
 export function ExperimentsSection() {
@@ -76,7 +76,7 @@ export function ExperimentsSection() {
     <DsSection
       id="experimente"
       title="Experimente"
-      lead="Alles hier ist nicht entschieden. Nichts davon ist ein Vorbild, und Code der Anwendung importiert nichts aus diesem Bereich."
+      lead="Alles hier ist nicht entschieden. Nichts davon ist ein Vorbild, und Code der Anwendung importiert nichts aus diesem Bereich. Jede Variante zeigt dieselben Inhalte, damit kein Beispieltext eine Seite bevorzugt."
     >
       <div className="flex flex-col gap-3">
         <SectionRule as="h3">Offene Entscheidungen</SectionRule>
@@ -93,12 +93,20 @@ export function ExperimentsSection() {
               </div>
               <p className="max-w-measure text-sm">{decision.question}</p>
               <p className="max-w-measure text-meta text-muted-foreground">{decision.evidence}</p>
+              {decision.experiment === undefined ? null : (
+                <a
+                  href={`#${decision.experiment}`}
+                  className="self-start text-sm text-primary-text underline-offset-4 hover:underline"
+                >
+                  Zu den Varianten
+                </a>
+              )}
             </li>
           ))}
         </ul>
         <p className="max-w-measure text-sm text-muted-foreground">
-          Die Varianten dazu gehören zu Issue #126. Quelle der Liste:{' '}
-          <DsSource path="docs/design-system-inventory.md" />, Abschnitt 5.
+          Quelle der Liste: <DsSource path="docs/design-system-inventory.md" />, Abschnitt 5. Archiv
+          oder Papierkorb ist seit dem 24.09.2026 entschieden: Papierkorb (Issue #129).
         </p>
       </div>
 
