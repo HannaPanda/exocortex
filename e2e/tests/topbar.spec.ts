@@ -83,7 +83,7 @@ const AREAS = [
   { testId: 'open-features', label: 'Hilfe und Funktionen', href: '/hilfe' },
   { testId: 'open-chats', label: 'Chats', href: '/chats' },
   { testId: 'open-entities', label: 'Entitäten', href: '/entitaeten' },
-  { testId: 'open-shared', label: 'Mit mir geteilt', href: '/geteilt' },
+  { testId: 'open-shared', label: 'Freigaben', href: '/geteilt' },
   { testId: 'open-memory', label: 'Gedächtnis', href: '/gedaechtnis' },
   { testId: 'open-api-tokens', label: 'Verbindungen', href: '/einstellungen/verbindungen' },
   {

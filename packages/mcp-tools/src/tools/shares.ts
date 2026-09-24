@@ -5,6 +5,7 @@ import {
   type DocumentShare,
   idSchema,
   incomingShareListResponseSchema,
+  myShareListResponseSchema,
   outgoingShareListResponseSchema,
   revokeShareResponseSchema,
   shareListResponseSchema,
@@ -128,6 +129,37 @@ export const shareWorkspaceListTool: AnyToolDefinition = defineTool({
   },
 });
 
+export const shareMineTool: AnyToolDefinition = defineTool({
+  name: 'exo_share_mine',
+  description:
+    'Listet alle Freigaben, die dieses Konto selbst erteilt hat, über alle Arbeitsbereiche ' +
+    'hinweg: welche Seite, in welchem Arbeitsbereich, an wen oder als öffentlicher Link. ' +
+    'Die Antwort auf „welche Seite habe ich eigentlich geteilt?“, ohne jeden Arbeitsbereich ' +
+    'einzeln abzufragen. Zurückziehen geht mit exo_share_revoke und der id.',
+  inputSchema: z.object({}),
+  surfaces: ['mcp', 'ai'],
+  domain: 'shares',
+  mutating: false,
+  async execute(client) {
+    const result = await client.request({
+      method: 'GET',
+      path: '/api/me/outgoing-shares',
+      responseSchema: myShareListResponseSchema,
+    });
+    if (result.shares.length === 0) {
+      return { text: 'Dieses Konto hat nichts freigegeben.', data: result };
+    }
+    const lines = result.shares.map(
+      (share) =>
+        `${share.documentTitle} in „${share.workspaceName}“ (id: ${share.documentId})\n  ` +
+        formatShare(share).slice(2) +
+        (share.canRevoke ? '' : ' · zurückziehen darf hier nur ein ADMIN'),
+    );
+    if (result.truncated) lines.push('… weitere Freigaben nicht gezeigt.');
+    return { text: lines.join('\n'), data: result };
+  },
+});
+
 export const sharedWithMeTool: AnyToolDefinition = defineTool({
   name: 'exo_shared_with_me',
   description:
@@ -242,6 +274,7 @@ export const SHARE_TOOLS: readonly AnyToolDefinition[] = [
   shareListTool,
   shareInheritedTool,
   shareWorkspaceListTool,
+  shareMineTool,
   sharedWithMeTool,
   shareCreateTool,
   shareUpdateTool,

@@ -6,20 +6,20 @@ the feature.
 
 ## The shape of it
 
-| Thing                                             | Where                                                                                                |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| The grant row                                     | `DocumentShare` in `packages/database/prisma/schema.prisma`                                          |
-| The confinement row                               | `ApiTokenPageScope`, plus `ApiToken.pageScoped`                                                      |
-| Pure decisions                                    | `packages/auth/src/document-grants.ts`                                                               |
-| Where every route meets them                      | `packages/auth/src/access.ts`                                                                        |
-| Link tokens                                       | `packages/auth/src/share-token.ts`                                                                   |
-| Who may hand a page out                           | `canManageShares`, `canShareAtMost`, `canReadShares`                                                 |
-| Writing grants                                    | `apps/api/src/shares/shares.service.ts`                                                              |
-| The anonymous read                                | `apps/api/src/shares/public-shares.service.ts`                                                       |
-| What a shared page may say about its surroundings | `apps/api/src/documents/share-visibility.ts`                                                         |
-| Telling the recipient                             | `apps/worker/src/processors/maintenance-tasks/share-notifications.ts`                                |
-| Tools                                             | `packages/mcp-tools/src/tools/shares.ts`                                                             |
-| Browser                                           | `share-dialog.tsx`, `workspace-shares-page.tsx`, `incoming-shares-page.tsx`, `public-share-page.tsx` |
+| Thing                                             | Where                                                                                                                                          |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| The grant row                                     | `DocumentShare` in `packages/database/prisma/schema.prisma`                                                                                    |
+| The confinement row                               | `ApiTokenPageScope`, plus `ApiToken.pageScoped`                                                                                                |
+| Pure decisions                                    | `packages/auth/src/document-grants.ts`                                                                                                         |
+| Where every route meets them                      | `packages/auth/src/access.ts`                                                                                                                  |
+| Link tokens                                       | `packages/auth/src/share-token.ts`                                                                                                             |
+| Who may hand a page out                           | `canManageShares`, `canShareAtMost`, `canReadShares`                                                                                           |
+| Writing grants                                    | `apps/api/src/shares/shares.service.ts`                                                                                                        |
+| The anonymous read                                | `apps/api/src/shares/public-shares.service.ts`                                                                                                 |
+| What a shared page may say about its surroundings | `apps/api/src/documents/share-visibility.ts`                                                                                                   |
+| Telling the recipient                             | `apps/worker/src/processors/maintenance-tasks/share-notifications.ts`                                                                          |
+| Tools                                             | `packages/mcp-tools/src/tools/shares.ts`                                                                                                       |
+| Browser                                           | `share-dialog.tsx`, `workspace-shares-page.tsx`, `shares-page.tsx` (`my-shares-list.tsx`, `incoming-shares-list.tsx`), `public-share-page.tsx` |
 
 ## Adding a route that answers with pages
 
@@ -105,6 +105,16 @@ Two things to keep in mind when changing this feature:
   DESIGN.md rules out reaching for a modal while an inline answer works. The
   safe half of the choice takes focus, so a second Return never destroys
   anything.
+- **There are two outgoing lists, and they answer different questions.**
+  `GET /api/workspaces/:id/shares` is "what did anybody hand out from here" and
+  needs the person to remember the workspace. `GET /api/me/outgoing-shares`
+  (`/geteilt`, tab „Von mir geteilt“, `exo_share_mine`) is "what did I hand
+  out", across every workspace the caller is still a member of: only the
+  caller's own grants, each with its workspace's name and `canRevoke`, because
+  withdrawing needs ADMIN there and a role may have changed since. A grant in a
+  workspace the caller has left is not listed; the row would name a page they
+  may no longer see. A confined credential gets the grants on its branch
+  through `requireScopedRole`, one workspace at a time.
 - **`pageScoped` is a flag.** See ADR-044: the rows cascade with their pages, so
   "the list is empty" must not mean "unconfined".
 - **Attachment addresses on a public page are rewritten textually** to

@@ -168,15 +168,36 @@ export const PUBLISHING_FEATURES: readonly RegisteredFeature[] = [
       'Zwei Listen: alle Freigaben eines Arbeitsbereichs an einer Stelle, zum Aufräumen, und die Seiten, die andere mit dir geteilt haben. Letztere stehen in keiner Navigation, weil du in dem Arbeitsbereich kein Mitglied bist.',
     details: [
       'In den Einstellungen eines Arbeitsbereichs führt „Freigaben öffnen“ auf die Liste dessen, was von hier nach außen gegeben ist: welche Seite, an wen oder als Link, lesend oder schreibend, wie weit, bis wann. Zurückgezogene Freigaben bleiben stehen statt zu verschwinden, weil „das war bis März offen“ zur Antwort gehört. Ohne diese Liste ist „was ist bei uns eigentlich öffentlich“ eine Frage, die nach einem Jahr niemand mehr beantworten kann.',
-      'In der linken Leiste führt „Mit mir geteilt“ auf die Gegenrichtung: Seiten, die jemand dir gegeben hat, über Arbeitsbereiche hinweg. Sie tauchen in keinem Seitenbaum auf, denn du bist dort kein Mitglied; diese Liste ist der einzige Weg dorthin. Eine solche Seite öffnet sich ohne die Navigation des fremden Arbeitsbereichs: du siehst die Seite und, wenn der Bereich mitgegeben wurde, was darunter hängt, sonst nichts.',
+      'Im Kontomenü oben rechts führt „Freigaben“, Reiter „Mit mir geteilt“, auf die Gegenrichtung: Seiten, die jemand dir gegeben hat, über Arbeitsbereiche hinweg. Sie tauchen in keinem Seitenbaum auf, denn du bist dort kein Mitglied; diese Liste ist der einzige Weg dorthin. Eine solche Seite öffnet sich ohne die Navigation des fremden Arbeitsbereichs: du siehst die Seite und, wenn der Bereich mitgegeben wurde, was darunter hängt, sonst nichts.',
       'Was du über eine Freigabe erreichst, kannst du nicht weitergeben. Eine geteilte Seite hat keinen „Teilen“-Knopf: wer sie weiterreichen darf, ist eine Frage an den Arbeitsbereich, aus dem sie kommt.',
     ],
     since: '2026-09-19',
     references: ['#83', 'ADR-044'],
     ui: {
-      where: 'Linke Leiste „Mit mir geteilt“; Arbeitsbereich-Einstellungen, „Freigaben öffnen“.',
+      where:
+        'Kontomenü oben rechts, „Freigaben“, Reiter „Mit mir geteilt“; Arbeitsbereich-Einstellungen, „Freigaben öffnen“.',
     },
     tools: ['exo_shared_with_me', 'exo_share_workspace_list'],
     claims: { screens: ['/geteilt', '/geteilt/:x', '/arbeitsbereich/:x/freigaben'] },
+  }),
+  defineFeature({
+    id: 'von-mir-geteilt',
+    area: 'veroeffentlichen',
+    title: 'Alles, was ich geteilt habe, an einer Stelle',
+    summary:
+      'Eine Liste aller Freigaben, die du selbst erteilt hast, über alle Arbeitsbereiche hinweg. Wenn du weißt, dass du etwas geteilt hast, aber nicht mehr, welche Seite es war, findest du es hier und ziehst es mit einem Klick und einer Rückfrage zurück.',
+    details: [
+      'Im Kontomenü oben rechts führt „Freigaben“ auf eine Seite mit zwei Reitern. „Von mir geteilt“ ist der erste: jede Zeile nennt die Seite, den Arbeitsbereich, in dem sie liegt, an wen sie ging oder ob es ein öffentlicher Link ist, ob gelesen oder bearbeitet werden darf, wie weit es reicht und bis wann. Ab sechs Freigaben gibt es darüber ein Filterfeld für Seitentitel, Arbeitsbereich und Adresse.',
+      'Gezeigt werden zuerst nur die Freigaben, die gerade gelten. Zurückgezogene und abgelaufene holt der Schalter „Beendete zeigen“ dazu, denn „das war bis März offen“ gehört zur Antwort. „Zurückziehen“ fragt vorher nach und sagt, was es kostet: ein öffentlicher Link ist danach für immer weg, eine Freigabe an ein Konto lässt sich im Teilen-Dialog der Seite neu erteilen.',
+      'Die Liste zeigt nur, was du selbst geteilt hast, und nur aus Arbeitsbereichen, in denen du noch Mitglied bist. Was andere in einem Arbeitsbereich freigegeben haben, steht in dessen Übersicht unter „Freigaben öffnen“. Zurückziehen darf nur, wer im jeweiligen Arbeitsbereich Admin ist; hast du diese Rolle dort nicht mehr, bleibt die Zeile stehen und sagt das, statt einen Knopf anzubieten, der scheitern würde.',
+    ],
+    since: '2026-09-24',
+    references: ['#83', 'ADR-044'],
+    ui: {
+      where: 'Kontomenü oben rechts, „Freigaben“, Reiter „Von mir geteilt“.',
+      path: '/geteilt',
+    },
+    tools: ['exo_share_mine'],
+    claims: { screens: ['/geteilt'] },
   }),
 ];

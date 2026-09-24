@@ -133,7 +133,7 @@ export async function scheduleShareNotifications(
             // The list of what is still shared, not the page that is not: a
             // link into a page they can no longer open would be a 404 dressed
             // up as an invitation.
-            url: `${base}/geteilt`,
+            url: `${base}/geteilt?ansicht=mit-mir`,
           };
 
   await dependencies.queues.enqueue(

@@ -88,11 +88,14 @@ function globalLinks(newCount: number, role: UserRole): GlobalLink[] {
       icon: NetworkIcon,
       group: 'rooms',
     },
-    // The only way to a page somebody shared with this account: the reader is
-    // not a member of that workspace, so no tree will ever show it (issue #83).
+    // Both directions of sharing. The incoming half is the only way to a page
+    // somebody shared with this account: the reader is not a member of that
+    // workspace, so no tree will ever show it (issue #83). The outgoing half is
+    // the only place that lists every grant this account made, whatever the
+    // workspace.
     {
       href: '/geteilt',
-      label: 'Mit mir geteilt',
+      label: 'Freigaben',
       testId: 'open-shared',
       icon: Share2Icon,
       group: 'rooms',

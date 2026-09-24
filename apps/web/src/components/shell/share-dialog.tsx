@@ -35,6 +35,8 @@ import {
   useUpdateShare,
 } from '@/lib/api/share-queries';
 
+import { describeShare as describe, revokeConsequence } from './share-wording';
+
 /**
  * Handing a page to somebody who is not in this workspace (issue #83, ADR-044).
  *
@@ -423,7 +425,7 @@ function ShareRow({
               under it is pressed. */}
           <p role="alert" className="text-sm">
             <span className="font-medium">Zurückziehen?</span>{' '}
-            <span className="text-muted-foreground">{revokeConsequence(share)}</span>
+            <span className="text-muted-foreground">{revokeConsequence(share, 'dialog')}</span>
           </p>
           {revokeError === null ? null : (
             <p role="alert" className="text-xs text-destructive-text">
@@ -457,46 +459,5 @@ function ShareRow({
         </div>
       ) : null}
     </li>
-  );
-}
-
-/** One sentence per grant, in the words somebody would use about it. */
-function describe(share: DocumentShare): string {
-  const who =
-    share.kind === 'PUBLIC_LINK'
-      ? `Öffentlicher Link (…${share.tokenPrefix ?? ''})`
-      : (share.grantee?.email ?? 'Unbekanntes Konto');
-  const reach = share.scope === 'SUBTREE' ? ', mit allem darunter' : '';
-  const right = share.permission === 'WRITE' ? 'darf bearbeiten' : 'darf lesen';
-  const until =
-    share.expiresAt === null
-      ? ''
-      : `, bis ${new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium' }).format(new Date(share.expiresAt))}`;
-  return `${who}: ${right}${reach}${until}`;
-}
-
-/**
- * What withdrawing this grant actually costs, in facts the system already
- * knows.
- *
- * The same shape the trash confirmation uses: name what goes, name what cannot
- * be undone, and say nothing that is merely alarming. The two kinds cost
- * different things, and the difference is the whole reason this sentence
- * exists -- a public link's token is gone for good, while an account can be
- * invited again in the row above.
- */
-function revokeConsequence(share: DocumentShare): string {
-  const reach = share.scope === 'SUBTREE' ? ' Das gilt für diese Seite und alles darunter.' : '';
-  if (share.kind === 'PUBLIC_LINK') {
-    return (
-      `Die Adresse funktioniert danach für niemanden mehr, auch nicht für jemanden, ` +
-      `der sie weitergereicht bekommen hat. Sie lässt sich nicht wiederherstellen: ` +
-      `ein neuer Link bekommt eine neue Adresse.${reach}`
-    );
-  }
-  const who = share.grantee?.email ?? 'Dieses Konto';
-  return (
-    `${who} verliert den Zugriff sofort, auch in einer Sitzung, die gerade offen ist. ` +
-    `Du kannst die Freigabe oben jederzeit neu erteilen.${reach}`
   );
 }

@@ -322,6 +322,140 @@ describe('a share hands over the page and nothing around it', () => {
   });
 });
 
+describe("the account's own list of grants", () => {
+  let colleagueId: string;
+  let otherWorkspaceId: string;
+  let otherPageId: string;
+
+  const link = {
+    kind: 'PUBLIC_LINK',
+    permission: 'READ',
+    scope: 'PAGE_ONLY',
+    expiresInDays: null,
+  } as const;
+
+  beforeAll(async () => {
+    const suffix = Date.now().toString(36);
+    const colleague = await prisma.user.create({
+      data: {
+        email: `share-admin-${suffix}@exocortex.test`,
+        name: 'Kollegin',
+        emailVerified: true,
+      },
+    });
+    colleagueId = colleague.id;
+    await prisma.workspaceMember.create({
+      data: { workspaceId, userId: colleagueId, role: 'ADMIN' },
+    });
+
+    const other = await prisma.workspace.create({
+      data: {
+        name: `Shares elsewhere ${suffix}`,
+        slug: `shares-elsewhere-${suffix}`,
+        members: { create: { userId: ownerId, role: 'OWNER' } },
+      },
+    });
+    otherWorkspaceId = other.id;
+    const page = await documents.create({
+      workspaceId: otherWorkspaceId,
+      userId: ownerId,
+      request: { title: 'Rezepte', type: 'PAGE', parentId: null },
+      correlationId,
+    });
+    otherPageId = page.id;
+  });
+
+  afterAll(async () => {
+    await prisma.documentShare.deleteMany({ where: { workspaceId: otherWorkspaceId } });
+    await prisma.workspace.deleteMany({ where: { id: otherWorkspaceId } });
+    await prisma.workspaceMember.deleteMany({ where: { workspaceId, userId: colleagueId } });
+    await prisma.user.deleteMany({ where: { id: colleagueId } });
+  });
+
+  beforeEach(async () => {
+    await prisma.documentShare.deleteMany({ where: { workspaceId: otherWorkspaceId } });
+    await prisma.workspaceMember.update({
+      where: { workspaceId_userId: { workspaceId: otherWorkspaceId, userId: ownerId } },
+      data: { role: 'OWNER' },
+    });
+  });
+
+  it('gathers every workspace, names each one, and leaves out what others shared', async () => {
+    await shares.create({
+      documentId: sharedPageId,
+      userId: ownerId,
+      request: link,
+      correlationId,
+    });
+    await shares.create({ documentId: otherPageId, userId: ownerId, request: link, correlationId });
+    await shares.create({
+      documentId: secretPageId,
+      userId: colleagueId,
+      request: link,
+      correlationId,
+    });
+
+    const mine = await shares.listMine(ownerId);
+    expect(mine.truncated).toBe(false);
+    const named = new Map(mine.shares.map((share) => [share.documentTitle, share.workspaceName]));
+    expect([...named.keys()].sort()).toEqual(['Cyberpunk', 'Rezepte']);
+    expect(named.get('Cyberpunk')).toMatch(/^Shares [a-z0-9]+$/);
+    expect(named.get('Rezepte')).toMatch(/^Shares elsewhere /);
+    expect(mine.shares.every((share) => share.canRevoke)).toBe(true);
+    expect(mine.shares.every((share) => share.token === null)).toBe(true);
+  });
+
+  it('puts live grants before withdrawn ones', async () => {
+    const first = await shares.create({
+      documentId: sharedPageId,
+      userId: ownerId,
+      request: link,
+      correlationId,
+    });
+    await shares.create({ documentId: childPageId, userId: ownerId, request: link, correlationId });
+    await shares.revoke({ shareId: first.share.id, userId: ownerId, correlationId });
+
+    const mine = await shares.listMine(ownerId);
+    expect(mine.shares.map((share) => share.revokedAt === null)).toEqual([true, false]);
+  });
+
+  it('keeps a grant the caller can no longer withdraw, and says so', async () => {
+    await shares.create({ documentId: otherPageId, userId: ownerId, request: link, correlationId });
+    await prisma.workspaceMember.update({
+      where: { workspaceId_userId: { workspaceId: otherWorkspaceId, userId: ownerId } },
+      data: { role: 'MEMBER' },
+    });
+
+    const mine = await shares.listMine(ownerId);
+    const rezepte = mine.shares.find((share) => share.documentId === otherPageId);
+    expect(rezepte?.canRevoke).toBe(false);
+  });
+
+  it('stays inside the branch a confined credential reaches', async () => {
+    await shares.create({
+      documentId: sharedPageId,
+      userId: ownerId,
+      request: link,
+      correlationId,
+    });
+    await shares.create({
+      documentId: secretPageId,
+      userId: ownerId,
+      request: link,
+      correlationId,
+    });
+    await shares.create({ documentId: otherPageId, userId: ownerId, request: link, correlationId });
+
+    restriction = {
+      tokenId: 'test-token',
+      declared: true,
+      scopes: [{ documentId: sectionId, scope: 'SUBTREE' }],
+    };
+    const mine = await shares.listMine(ownerId);
+    expect(mine.shares.map((share) => share.documentTitle)).toEqual(['Cyberpunk']);
+  });
+});
+
 describe('a public link', () => {
   async function createLink(scope: 'PAGE_ONLY' | 'SUBTREE'): Promise<string> {
     const created = await shares.create({

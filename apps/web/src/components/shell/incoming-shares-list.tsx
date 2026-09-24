@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { AppPage, Badge, EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
+import { Badge, EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { useIncomingShares } from '@/lib/api/share-queries';
@@ -10,12 +10,12 @@ import { useIncomingShares } from '@/lib/api/share-queries';
 /**
  * Pages other people have shared with this account (issue #83, ADR-044).
  *
- * The only list in the application that crosses workspace boundaries, and the
- * only way to these pages at all: the reader is not a member of the workspace
- * the page lives in, so no navigation tree will ever show it to them. Without
- * this page a share would be a link somebody has to have kept.
+ * One of the two lists in the application that cross workspace boundaries,
+ * and the only way to these pages at all: the reader is not a member of the
+ * workspace the page lives in, so no navigation tree will ever show it to
+ * them. Without this list a share would be a link somebody has to have kept.
  */
-export function IncomingSharesPage() {
+export function IncomingSharesList() {
   const shares = useIncomingShares();
 
   if (shares.isPending) return <LoadingState label="Freigaben werden geladen …" />;
@@ -29,21 +29,20 @@ export function IncomingSharesPage() {
   }
 
   return (
-    <AppPage maxWidth="max-w-3xl">
-      <h1 className="exocortex-page-title">Mit mir geteilt</h1>
-      <p className="mt-1 max-w-measure text-sm text-muted-foreground">
+    <>
+      <p className="max-w-measure text-sm text-muted-foreground">
         Seiten aus Arbeitsbereichen, in denen du kein Mitglied bist. Sie stehen in keiner
         Navigation, nur hier.
       </p>
 
       {shares.data.shares.length === 0 ? (
         <EmptyState
-          className="mt-8"
+          className="mt-6"
           title="Noch nichts geteilt"
           description="Wenn jemand dir eine Seite freigibt, taucht sie hier auf."
         />
       ) : (
-        <ul className="mt-8 flex flex-col gap-2" data-testid="incoming-shares">
+        <ul className="mt-6 flex flex-col gap-2" data-testid="incoming-shares">
           {shares.data.shares.map((share) => (
             <li key={share.id} data-testid="incoming-share">
               <Link
@@ -70,6 +69,6 @@ export function IncomingSharesPage() {
           ))}
         </ul>
       )}
-    </AppPage>
+    </>
   );
 }

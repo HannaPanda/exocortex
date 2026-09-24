@@ -190,7 +190,7 @@ describe('scheduleShareNotifications', () => {
       template: 'SHARE_REVOKED',
       revokedByName: 'Johanna',
       documentTitle: 'Reisekasse',
-      url: 'https://exocortex.test/geteilt',
+      url: 'https://exocortex.test/geteilt?ansicht=mit-mir',
     });
     expect(jobs[0]?.mail).not.toHaveProperty('permission');
   });

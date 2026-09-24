@@ -7,6 +7,8 @@ import {
   createShareRequestSchema,
   type IncomingShareListResponse,
   incomingShareListResponseSchema,
+  type MyShareListResponse,
+  myShareListResponseSchema,
   type OutgoingShareListResponse,
   outgoingShareListResponseSchema,
   type RevokeShareResponse,
@@ -29,7 +31,7 @@ import { SharesService } from './shares.service';
  * Page shares (issue #83, ADR-044).
  *
  * A share is addressed by the page it is on while it is being made, and by its
- * own id afterwards -- the same shape as a comment. The two personal listings
+ * own id afterwards -- the same shape as a comment. The personal listings
  * hang under `/api/me`, because "what have I been given" is a question about a
  * person and crosses every workspace they are not a member of.
  */
@@ -121,5 +123,12 @@ export class SharesController {
   @ApiOkResponse({ schema: openApiResponseSchema(incomingShareListResponseSchema) })
   async incoming(@CurrentSession() session: VerifiedSession): Promise<IncomingShareListResponse> {
     return this.shares.listIncoming(session.userId);
+  }
+
+  /** The other direction: what this account gave away, in every workspace. */
+  @Get('me/outgoing-shares')
+  @ApiOkResponse({ schema: openApiResponseSchema(myShareListResponseSchema) })
+  async mine(@CurrentSession() session: VerifiedSession): Promise<MyShareListResponse> {
+    return this.shares.listMine(session.userId);
   }
 }

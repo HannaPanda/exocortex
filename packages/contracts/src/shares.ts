@@ -154,6 +154,28 @@ export const outgoingShareListResponseSchema = z.object({
 });
 export type OutgoingShareListResponse = z.infer<typeof outgoingShareListResponseSchema>;
 
+/**
+ * A grant this account handed out, in any workspace.
+ *
+ * The question behind it is "which page did I share, and where": a person who
+ * remembers having made a link and not where cannot answer it with a list per
+ * workspace, only with every page. So the row names its workspace, and it says
+ * whether the caller may still withdraw it, because the right to share is an
+ * ADMIN's and a role can have changed since the grant was made.
+ */
+export const myShareSchema = documentShareSchema.extend({
+  workspaceName: z.string(),
+  canRevoke: z.boolean(),
+});
+export type MyShare = z.infer<typeof myShareSchema>;
+
+export const myShareListResponseSchema = z.object({
+  shares: z.array(myShareSchema),
+  /** True when there were more grants than the answer carries. */
+  truncated: z.boolean(),
+});
+export type MyShareListResponse = z.infer<typeof myShareListResponseSchema>;
+
 // --------------------------------------------------------------------------
 // The public side of a link
 // --------------------------------------------------------------------------

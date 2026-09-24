@@ -14,6 +14,7 @@ import {
   type DocumentShareChangedPayload,
   type IncomingShare,
   type IncomingShareListResponse,
+  type MyShareListResponse,
   type OutgoingShareListResponse,
   type ShareListResponse,
   type SharePermission,
@@ -42,6 +43,9 @@ const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
  * and a list nobody reviews is where a forgotten share lives for ever.
  */
 const MAX_SHARES_PER_DOCUMENT = 50;
+
+/** Upper bound of the personal list; the answer says when it was reached. */
+const MAX_MY_SHARES = 500;
 
 interface ShareRow {
   id: string;
@@ -515,6 +519,57 @@ export class SharesService {
       take: 200,
     });
     return { shares: rows.map((row) => toContract(row)) };
+  }
+
+  /**
+   * What this account has handed out, across every workspace it is a member of.
+   *
+   * Limited to the caller's own grants, because the question is "what did I
+   * share" and the per-workspace overview already answers "what did anybody
+   * share here". Only workspaces the caller still belongs to are asked: a grant
+   * in a workspace they have left is that workspace's business now, and the
+   * row would name a page they may no longer see. A confined credential gets
+   * the grants on the pages it reaches, through the same `requireScopedRole`
+   * the per-workspace list uses.
+   */
+  async listMine(userId: string): Promise<MyShareListResponse> {
+    const memberships = await this.prisma.workspaceMember.findMany({
+      where: { userId },
+      select: { workspaceId: true, role: true, workspace: { select: { name: true } } },
+    });
+
+    const names = new Map<string, string>();
+    const revocable = new Set<string>();
+    const filters: { workspaceId: string; documentId?: { in: string[] } }[] = [];
+    for (const membership of memberships) {
+      if (!canReadShares(membership.role).allowed) continue;
+      const scoped = await this.access.requireScopedRole(membership.workspaceId, userId);
+      names.set(membership.workspaceId, membership.workspace.name);
+      if (canManageShares(scoped.role).allowed) revocable.add(membership.workspaceId);
+      filters.push(
+        scoped.documentIds === null
+          ? { workspaceId: membership.workspaceId }
+          : { workspaceId: membership.workspaceId, documentId: { in: [...scoped.documentIds] } },
+      );
+    }
+    if (filters.length === 0) return { shares: [], truncated: false };
+
+    const rows = await this.prisma.documentShare.findMany({
+      where: { createdById: userId, OR: filters },
+      select: SHARE_SELECT,
+      // Live grants first. Postgres sorts NULL last in ascending order, and a
+      // live grant is exactly the one whose `revokedAt` is NULL.
+      orderBy: [{ revokedAt: { sort: 'asc', nulls: 'first' } }, { createdAt: 'desc' }],
+      take: MAX_MY_SHARES + 1,
+    });
+    return {
+      shares: rows.slice(0, MAX_MY_SHARES).map((row) => ({
+        ...toContract(row),
+        workspaceName: names.get(row.workspaceId) ?? '',
+        canRevoke: revocable.has(row.workspaceId),
+      })),
+      truncated: rows.length > MAX_MY_SHARES,
+    };
   }
 
   /**

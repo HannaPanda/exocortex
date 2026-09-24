@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient, type UseQueryResult } from '@tan
 import {
   type CreateShareRequest,
   type IncomingShareListResponse,
+  type MyShareListResponse,
   type OutgoingShareListResponse,
   type RevokeShareResponse,
   type ShareListResponse,
@@ -34,6 +35,7 @@ export const shareKeys = {
   inherited: (parentId: string) => ['document', parentId, 'inherited-shares'] as const,
   workspace: (workspaceId: string) => ['workspace', workspaceId, 'shares'] as const,
   incoming: () => ['me', 'shares'] as const,
+  mine: () => ['me', 'outgoing-shares'] as const,
 };
 
 export function useDocumentShares(
@@ -68,6 +70,31 @@ export function useIncomingShares(): UseQueryResult<IncomingShareListResponse> {
   });
 }
 
+export function useMyShares(): UseQueryResult<MyShareListResponse> {
+  return useQuery({
+    queryKey: shareKeys.mine(),
+    queryFn: () => apiRequest<MyShareListResponse>('/api/me/outgoing-shares'),
+    staleTime: 0,
+  });
+}
+
+/**
+ * Withdrawing from the account-wide list. The row may belong to any
+ * workspace, so every per-page and per-workspace list is invalidated with it.
+ */
+export function useRevokeMyShare() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (shareId: string) =>
+      apiRequest<RevokeShareResponse>(`/api/shares/${shareId}`, { method: 'DELETE' }),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: shareKeys.mine() });
+      void client.invalidateQueries({ queryKey: ['workspace'] });
+      void client.invalidateQueries({ queryKey: ['document'] });
+    },
+  });
+}
+
 export function useCreateShare(documentId: string) {
   const client = useQueryClient();
   return useMutation({
@@ -79,6 +106,7 @@ export function useCreateShare(documentId: string) {
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: shareKeys.document(documentId) });
       void client.invalidateQueries({ queryKey: ['workspace'] });
+      void client.invalidateQueries({ queryKey: shareKeys.mine() });
     },
   });
 }
@@ -94,6 +122,7 @@ export function useUpdateShare(documentId: string) {
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: shareKeys.document(documentId) });
       void client.invalidateQueries({ queryKey: ['workspace'] });
+      void client.invalidateQueries({ queryKey: shareKeys.mine() });
     },
   });
 }
@@ -111,6 +140,7 @@ export function useRevokeWorkspaceShare(workspaceId: string) {
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: shareKeys.workspace(workspaceId) });
       void client.invalidateQueries({ queryKey: ['document'] });
+      void client.invalidateQueries({ queryKey: shareKeys.mine() });
     },
   });
 }
@@ -123,6 +153,7 @@ export function useRevokeShare(documentId: string) {
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: shareKeys.document(documentId) });
       void client.invalidateQueries({ queryKey: ['workspace'] });
+      void client.invalidateQueries({ queryKey: shareKeys.mine() });
     },
   });
 }
