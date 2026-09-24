@@ -33,7 +33,7 @@ export function DsExperimentBrief({
         <Badge variant="outline">{NOT_CANONICAL}</Badge>
       </div>
       <p>{problem}</p>
-      <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-muted-foreground">
+      <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1.5 text-muted-foreground">
         <dt>Zielbreite</dt>
         <dd>{width}</dd>
         {keyboard === undefined ? null : (
@@ -43,7 +43,7 @@ export function DsExperimentBrief({
           </>
         )}
         <dt>Quelle</dt>
-        <dd className="flex flex-wrap gap-1.5">
+        <dd className="flex min-w-0 flex-wrap gap-1.5 [overflow-wrap:anywhere]">
           {sources.map((source) => (
             <DsSource key={source} path={source} />
           ))}

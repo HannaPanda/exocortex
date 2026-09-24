@@ -149,7 +149,10 @@ test.describe('design system experiments', () => {
     await page.goto('/design-system#experiment-p11');
     const snapshots = page.locator('section#experiment-p11 [inert]');
     await expect(snapshots).toHaveCount(3);
-    await expect(snapshots.first().getByRole('button')).toHaveCount(0);
+    // `inert` keeps the snapshot out of the tab order: focusing into it has no effect.
+    const frozen = snapshots.first().locator('button').first();
+    await frozen.focus();
+    await expect(frozen).not.toBeFocused();
   });
 
   test('offers the same action in both empty state shapes', async ({ page }) => {

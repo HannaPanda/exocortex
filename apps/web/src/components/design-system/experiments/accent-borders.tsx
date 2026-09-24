@@ -88,7 +88,7 @@ export function AccentBordersExperiment() {
 
       <DsVariants>
         <DsVariant
-          name="Kommentar A: linker Warnrand (heute)"
+          name="Kommentar A: Rand (heute)"
           tradeoffs={[
             'Der Rand ist auch ohne Farbsehen als Form erkennbar.',
             'Er steht am linken Rand, wo das Auge beim Zeilenanfang ohnehin vorbeikommt.',
@@ -98,7 +98,7 @@ export function AccentBordersExperiment() {
           <CommentedSample marked="rule" />
         </DsVariant>
         <DsVariant
-          name="Kommentar B: Fläche und Zähler, ohne Rand"
+          name="Kommentar B: Zähler"
           tradeoffs={[
             'Kein linker Rand; Form und Zahl sagen, dass und wie viele Kommentare es gibt.',
             'Der Zähler braucht rechts Platz und kostet eine Zeilenlänge von etwa zwei Zeichen.',
@@ -111,7 +111,7 @@ export function AccentBordersExperiment() {
 
       <DsVariants>
         <DsVariant
-          name="Transklusion A: Rahmen mit linkem Akzentrand (heute)"
+          name="Transklusion A: Rand (heute)"
           tradeoffs={[
             'Der breitere linke Rand markiert zusätzlich, wo der fremde Inhalt anfängt und endet.',
             'Rahmen, Kopfzeile und Titel sagen dasselbe schon; der Rand ist die dritte Markierung.',
@@ -121,7 +121,7 @@ export function AccentBordersExperiment() {
           <TransclusionSample ruled />
         </DsVariant>
         <DsVariant
-          name="Transklusion B: nur der Blockrahmen"
+          name="Transklusion B: nur Rahmen"
           tradeoffs={[
             'Derselbe Rahmen wie Lesezeichen und Datenbank-Einbettung, also eine Form weniger.',
             'Unterscheidet sich von einer eingebetteten Datenbank nur noch durch Kopfzeile und Inhalt.',
