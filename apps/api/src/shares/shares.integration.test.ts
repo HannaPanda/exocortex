@@ -1,3 +1,5 @@
+import { randomBytes } from 'node:crypto';
+
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import {
@@ -39,6 +41,8 @@ loadDotEnv();
 
 const logger: Logger = createLogger({ name: 'api-test', level: 'silent' });
 const correlationId = 'test-correlation';
+/** A key of this test's own, so sealing is exercised without the deployment's. */
+const LINK_KEY = randomBytes(32).toString('base64');
 
 let prisma: PrismaClient;
 let queues: QueueRegistry;
@@ -94,7 +98,9 @@ beforeAll(async () => {
   );
   tree = new DocumentTreeService(prisma, access);
   links = new DocumentLinksService(prisma, access);
-  shares = new SharesService(prisma, logger, access, outbox, realtime);
+  shares = new SharesService(prisma, logger, access, outbox, realtime, {
+    CREDENTIAL_ENCRYPTION_KEY: LINK_KEY,
+  });
   publicShares = new PublicSharesService(prisma, storage);
 
   const suffix = Date.now().toString(36);
@@ -402,7 +408,8 @@ describe("the account's own list of grants", () => {
     expect(named.get('Cyberpunk')).toMatch(/^Shares [a-z0-9]+$/);
     expect(named.get('Rezepte')).toMatch(/^Shares elsewhere /);
     expect(mine.shares.every((share) => share.canRevoke)).toBe(true);
-    expect(mine.shares.every((share) => share.token === null)).toBe(true);
+    // The caller is OWNER in both, so both addresses come back (ADR-044 addendum).
+    expect(mine.shares.every((share) => share.token !== null)).toBe(true);
   });
 
   it('puts live grants before withdrawn ones', async () => {
@@ -557,11 +564,75 @@ describe('a public link', () => {
     ).rejects.toBeTruthy();
   });
 
-  it('never returns the raw address a second time', async () => {
-    await createLink('PAGE_ONLY');
+  it('shows the address again to whoever may manage shares (ADR-044 addendum)', async () => {
+    const token = await createLink('PAGE_ONLY');
     const listed = await shares.list(sharedPageId, ownerId);
-    expect(listed.shares[0]?.token).toBeNull();
-    expect(listed.shares[0]?.tokenPrefix).toHaveLength(8);
+    expect(listed.shares[0]?.token).toBe(token);
+    expect(listed.shares[0]?.tokenSealed).toBe(true);
+    expect(listed.shares[0]?.tokenPrefix).toBe(token.slice(0, 8));
+
+    const overview = await shares.listOutgoing(workspaceId, ownerId);
+    expect(overview.shares[0]?.token).toBe(token);
+    const mine = await shares.listMine(ownerId);
+    expect(mine.shares.find((share) => share.documentId === sharedPageId)?.token).toBe(token);
+  });
+
+  it('keeps the address only sealed, never in the clear', async () => {
+    const token = await createLink('PAGE_ONLY');
+    const row = await prisma.documentShare.findFirstOrThrow({
+      where: { documentId: sharedPageId, kind: 'PUBLIC_LINK' },
+    });
+    expect(JSON.stringify(row)).not.toContain(token);
+    expect(row.tokenCiphertext).not.toBeNull();
+  });
+
+  it('shows a member below ADMIN the prefix and nothing more', async () => {
+    await createLink('PAGE_ONLY');
+    await prisma.workspaceMember.create({
+      data: { workspaceId, userId: strangerId, role: 'MEMBER' },
+    });
+    try {
+      const listed = await shares.list(sharedPageId, strangerId);
+      expect(listed.shares[0]?.token).toBeNull();
+      expect(listed.shares[0]?.tokenSealed).toBe(true);
+      expect(listed.shares[0]?.tokenPrefix).toHaveLength(8);
+      const overview = await shares.listOutgoing(workspaceId, strangerId);
+      expect(overview.shares[0]?.token).toBeNull();
+    } finally {
+      await prisma.workspaceMember.deleteMany({ where: { workspaceId, userId: strangerId } });
+    }
+  });
+
+  it('stops showing the address once the link is withdrawn', async () => {
+    await createLink('PAGE_ONLY');
+    const [live] = (await shares.list(sharedPageId, ownerId)).shares;
+    await shares.revoke({ shareId: live?.id ?? '', userId: ownerId, correlationId });
+    const [withdrawn] = (await shares.list(sharedPageId, ownerId)).shares;
+    expect(withdrawn?.token).toBeNull();
+  });
+
+  it('falls back to a hash alone on a deployment without the key', async () => {
+    const keyless = new SharesService(
+      prisma,
+      logger,
+      access,
+      new OutboxService(prisma, logger),
+      realtime,
+      {
+        CREDENTIAL_ENCRYPTION_KEY: undefined,
+      },
+    );
+    const created = await keyless.create({
+      documentId: sharedPageId,
+      userId: ownerId,
+      request: { kind: 'PUBLIC_LINK', permission: 'READ', scope: 'PAGE_ONLY', expiresInDays: null },
+      correlationId,
+    });
+    expect(created.share.token).not.toBeNull();
+    expect(created.share.tokenSealed).toBe(false);
+    const [listed] = (await shares.list(sharedPageId, ownerId)).shares;
+    expect(listed?.token).toBeNull();
+    expect(listed?.tokenSealed).toBe(false);
   });
 });
 

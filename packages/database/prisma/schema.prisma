@@ -935,13 +935,23 @@ model DocumentShare {
   granteeId String?
   grantee   User?   @relation("DocumentShareGrantee", fields: [granteeId], references: [id], onDelete: Cascade)
 
-  /// SHA-256 of the raw link token, exactly like `ApiToken.tokenHash`: the raw
-  /// value is returned once, at creation, and never stored or logged. Null for
-  /// a `USER` share.
+  /// SHA-256 of the raw link token: what the anonymous read looks a token up
+  /// by, so the lookup never needs the key below. Null for a `USER` share.
   tokenHash   String? @unique
   /// First characters of the raw token, so a link is recognisable in a list
-  /// without the list being able to reconstruct it.
+  /// to somebody who may not see the whole address.
   tokenPrefix String?
+  /// The raw token, AES-256-GCM under `CREDENTIAL_ENCRYPTION_KEY`
+  /// (packages/auth/src/credential-cipher.ts), so the workspace's admins can
+  /// see and copy a link again (ADR-044, addendum 2026-09-24). A link is meant
+  /// to be passed on; hiding it after creation only made people mint a second
+  /// one. Null for a `USER` share, for a link made before the addendum (only
+  /// its hash was ever kept) and on a deployment without the key. All four
+  /// columns are set together or not at all, which a check constraint holds.
+  tokenCiphertext String?
+  tokenIv         String?
+  tokenAuthTag    String?
+  tokenKeyVersion Int?
 
   expiresAt DateTime?
   /// Set the moment the share is withdrawn. Kept rather than deleted so the

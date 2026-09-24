@@ -6,8 +6,12 @@ import {
   canReadShares,
   canShareAtMost,
   generateShareToken,
+  openShareToken,
+  parseCredentialKey,
+  sealShareToken,
   WorkspaceAccessService,
 } from '@exocortex/auth';
+import { type ApiEnv } from '@exocortex/config';
 import {
   type CreateShareRequest,
   type DocumentShare,
@@ -21,6 +25,7 @@ import {
   type ShareResponse,
   type ShareScope,
   type UpdateShareRequest,
+  type WorkspaceRole,
 } from '@exocortex/contracts';
 import {
   loadAncestorChain,
@@ -31,7 +36,7 @@ import {
 import { type Logger } from '@exocortex/logger';
 
 import { AppError } from '../common/app-error';
-import { LOGGER } from '../common/logger.provider';
+import { API_ENV, LOGGER } from '../common/logger.provider';
 import { OutboxService } from '../common/outbox.service';
 import { toSummary } from '../documents/document-shape';
 import { PRISMA } from '../platform/platform.module';
@@ -69,6 +74,10 @@ interface ShareRow {
   granteeId: string | null;
   grantee: { id: string; name: string; email: string } | null;
   tokenPrefix: string | null;
+  tokenCiphertext: string | null;
+  tokenIv: string | null;
+  tokenAuthTag: string | null;
+  tokenKeyVersion: number | null;
   expiresAt: Date | null;
   revokedAt: Date | null;
   createdById: string;
@@ -87,6 +96,10 @@ const SHARE_SELECT = {
   granteeId: true,
   grantee: { select: { id: true, name: true, email: true } },
   tokenPrefix: true,
+  tokenCiphertext: true,
+  tokenIv: true,
+  tokenAuthTag: true,
+  tokenKeyVersion: true,
   expiresAt: true,
   revokedAt: true,
   createdById: true,
@@ -95,7 +108,51 @@ const SHARE_SELECT = {
   document: { select: { title: true, icon: true } },
 } as const;
 
-function toContract(row: ShareRow, secret?: string): DocumentShare {
+/**
+ * How much of a link's address a response may carry.
+ *
+ * `secret` is the raw token of a link created in this very request. `key` is
+ * the deployment's credential key, passed only when the caller may manage the
+ * workspace's shares (ADR-044, addendum 2026-09-24); without it the answer
+ * carries the prefix and nothing more, which is what every member below ADMIN
+ * sees. A withdrawn link is never opened: its address works for nobody.
+ */
+interface Reveal {
+  secret?: string;
+  key?: Buffer | null;
+}
+
+function sealedTokenOf(row: ShareRow) {
+  if (
+    row.tokenCiphertext === null ||
+    row.tokenIv === null ||
+    row.tokenAuthTag === null ||
+    row.tokenKeyVersion === null
+  ) {
+    return null;
+  }
+  return {
+    ciphertext: row.tokenCiphertext,
+    iv: row.tokenIv,
+    authTag: row.tokenAuthTag,
+    keyVersion: row.tokenKeyVersion,
+  };
+}
+
+function revealToken(row: ShareRow, reveal: Reveal): string | null {
+  if (reveal.secret !== undefined) return reveal.secret;
+  const record = sealedTokenOf(row);
+  if (record === null || row.revokedAt !== null || !reveal.key) return null;
+  try {
+    return openShareToken({ key: reveal.key, documentId: row.documentId, record });
+  } catch {
+    // A rotated key or a tampered row. The prefix still names the link, and a
+    // list that failed as a whole over one row would hide every other grant.
+    return null;
+  }
+}
+
+function toContract(row: ShareRow, reveal: Reveal = {}): DocumentShare {
   return {
     id: row.id,
     workspaceId: row.workspaceId,
@@ -106,10 +163,8 @@ function toContract(row: ShareRow, secret?: string): DocumentShare {
     permission: row.permission,
     scope: row.scope,
     grantee: row.grantee,
-    // The raw link exists in exactly one response: the one that created it.
-    // Everywhere else it is the prefix, because a list that could reproduce a
-    // link would make every reader of the list a holder of it.
-    token: secret ?? null,
+    token: revealToken(row, reveal),
+    tokenSealed: sealedTokenOf(row) !== null,
     tokenPrefix: row.tokenPrefix,
     expiresAt: row.expiresAt?.toISOString() ?? null,
     createdById: row.createdById,
@@ -157,7 +212,29 @@ export class SharesService {
     private readonly access: WorkspaceAccessService,
     private readonly outbox: OutboxService,
     private readonly realtime: RealtimeService,
+    @Inject(API_ENV) private readonly env: Pick<ApiEnv, 'CREDENTIAL_ENCRYPTION_KEY'>,
   ) {}
+
+  /**
+   * The key links are sealed with, or `null` when this deployment has none.
+   *
+   * Parsed per call, like the workspace credentials do, and never throwing: a
+   * malformed key costs this feature (links are then stored as a hash only,
+   * as before the addendum) and must not cost sharing itself.
+   */
+  private linkKey(): Buffer | null {
+    try {
+      return parseCredentialKey(this.env.CREDENTIAL_ENCRYPTION_KEY);
+    } catch (error) {
+      this.logger.error('CREDENTIAL_ENCRYPTION_KEY is unusable, links are not sealed', error);
+      return null;
+    }
+  }
+
+  /** The key, for a caller who may see a link's full address; else nothing. */
+  private revealFor(role: WorkspaceRole | null): Reveal {
+    return canManageShares(role).allowed ? { key: this.linkKey() } : {};
+  }
 
   /**
    * Every grant on one page, live ones first, plus the ones it is covered by
@@ -198,9 +275,10 @@ export class SharesService {
             orderBy: { createdAt: 'desc' },
           }),
     ]);
+    const reveal = this.revealFor(context.role);
     return {
-      shares: rows.map((row) => toContract(row)),
-      inherited: inheritedRows.map((row) => toContract(row)),
+      shares: rows.map((row) => toContract(row, reveal)),
+      inherited: inheritedRows.map((row) => toContract(row, reveal)),
     };
   }
 
@@ -337,6 +415,11 @@ export class SharesService {
     expiresAt: Date | null;
   }): Promise<ShareResponse> {
     const token = generateShareToken();
+    const key = this.linkKey();
+    const sealed =
+      key === null
+        ? null
+        : sealShareToken({ key, documentId: input.documentId, secret: token.secret });
     const created = await this.prisma.$transaction(async (tx) => {
       const row = await tx.documentShare.create({
         data: {
@@ -349,6 +432,14 @@ export class SharesService {
           scope: input.request.scope,
           tokenHash: token.tokenHash,
           tokenPrefix: token.prefix,
+          ...(sealed === null
+            ? {}
+            : {
+                tokenCiphertext: sealed.ciphertext,
+                tokenIv: sealed.iv,
+                tokenAuthTag: sealed.authTag,
+                tokenKeyVersion: sealed.keyVersion,
+              }),
           expiresAt: input.expiresAt,
           createdById: input.userId,
         },
@@ -373,7 +464,7 @@ export class SharesService {
       shareId: created.id,
       scope: created.scope,
     });
-    return { share: toContract(created, token.secret) };
+    return { share: toContract(created, { secret: token.secret }) };
   }
 
   async update(input: {
@@ -420,7 +511,8 @@ export class SharesService {
     // under the old grant is replaced rather than patched, so a widened one
     // arrives through a fresh handshake and a narrowed one takes effect now.
     await this.announce(updated, input.correlationId);
-    return { share: toContract(updated) };
+    // `loadManageableShare` has already required ADMIN.
+    return { share: toContract(updated, { key: this.linkKey() }) };
   }
 
   async revoke(input: {
@@ -530,7 +622,8 @@ export class SharesService {
       orderBy: LIVE_FIRST,
       take: 200,
     });
-    return { shares: rows.map((row) => toContract(row)) };
+    const reveal = this.revealFor(scoped.role);
+    return { shares: rows.map((row) => toContract(row, reveal)) };
   }
 
   /**
@@ -565,6 +658,7 @@ export class SharesService {
       );
     }
     if (filters.length === 0) return { shares: [], truncated: false };
+    const key = revocable.size === 0 ? null : this.linkKey();
 
     const rows = await this.prisma.documentShare.findMany({
       where: { createdById: userId, OR: filters },
@@ -574,7 +668,7 @@ export class SharesService {
     });
     return {
       shares: rows.slice(0, MAX_MY_SHARES).map((row) => ({
-        ...toContract(row),
+        ...toContract(row, revocable.has(row.workspaceId) ? { key } : {}),
         workspaceName: names.get(row.workspaceId) ?? '',
         canRevoke: revocable.has(row.workspaceId),
       })),
@@ -674,6 +768,7 @@ export class SharesService {
     });
     // Every one of them is inherited by definition: this route answers about a
     // target, and the target's own grants say nothing about what lands in it.
-    return { shares: [], inherited: rows.map((row) => toContract(row)) };
+    const reveal = this.revealFor(context.role);
+    return { shares: [], inherited: rows.map((row) => toContract(row, reveal)) };
   }
 }

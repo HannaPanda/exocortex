@@ -91,10 +91,16 @@ Two things to keep in mind when changing this feature:
 - **A public link is `READ` in three places**: the contract refines it, the
   service hard-codes it, and the database refuses it. Anonymous writing is not a
   setting that defaults to off, it is absent.
-- **The raw link token appears in exactly one response**, the one that created
-  it. It is not in the list, not in the audit row and not in any log. Rotating a
-  link means creating the new one and withdrawing the old, which is why a page
-  may carry several links and only one grant per account.
+- **A link's address can be seen again, by those who may manage it.** Since
+  the ADR-044 addendum of 2026-09-24 the token is stored sealed
+  (`tokenCiphertext`, `tokenIv`, `tokenAuthTag`, `tokenKeyVersion`, all four or
+  none by a check constraint), and `toContract` opens it only when the caller
+  may manage the workspace's shares and the link is not withdrawn. A member
+  below ADMIN gets `tokenPrefix` alone. `tokenSealed` says whether a copy
+  exists at all: links made before that day have only their hash, and the
+  browser offers to create a fresh one with the same scope beside them
+  (`share-link-address.tsx`). The token is still in no audit row and no log. A
+  deployment without the key stores the hash alone, as before.
 - **An archived page answers a link like a missing one.** Putting a page in the
   trash says it is out of use, and a link that kept serving it would disagree.
 - **Withdrawing a grant is asked about before it happens**, in the share dialog

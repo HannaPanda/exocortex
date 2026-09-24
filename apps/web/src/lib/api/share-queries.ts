@@ -10,6 +10,7 @@ import {
   type RevokeShareResponse,
   type ShareListResponse,
   type ShareResponse,
+  type ShareScope,
   type UpdateShareRequest,
 } from '@exocortex/contracts';
 
@@ -87,6 +88,33 @@ export function useRevokeMyShare() {
   return useMutation({
     mutationFn: (shareId: string) =>
       apiRequest<RevokeShareResponse>(`/api/shares/${shareId}`, { method: 'DELETE' }),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: shareKeys.mine() });
+      void client.invalidateQueries({ queryKey: ['workspace'] });
+      void client.invalidateQueries({ queryKey: ['document'] });
+    },
+  });
+}
+
+/**
+ * A fresh public link beside an old one whose address was never kept
+ * (ADR-044 addendum). Addressed by page in the call rather than the hook, so
+ * one row of an account-wide list can use it; it refreshes every list, since
+ * the new link belongs in all of them.
+ */
+export function useCreateLinkFor() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { documentId: string; scope: ShareScope }) =>
+      apiRequest<ShareResponse>(`/api/documents/${input.documentId}/shares`, {
+        method: 'POST',
+        body: {
+          kind: 'PUBLIC_LINK',
+          permission: 'READ',
+          scope: input.scope,
+          expiresInDays: null,
+        } satisfies CreateShareRequest,
+      }),
     onSuccess: () => {
       void client.invalidateQueries({ queryKey: shareKeys.mine() });
       void client.invalidateQueries({ queryKey: ['workspace'] });

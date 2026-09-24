@@ -1,5 +1,11 @@
 import { createHash, randomBytes } from 'node:crypto';
 
+import {
+  decryptCredential,
+  type EncryptedCredential,
+  encryptCredential,
+} from './credential-cipher';
+
 /**
  * Public share-link tokens (issue #83, ADR-044).
  *
@@ -11,8 +17,11 @@ import { createHash, randomBytes } from 'node:crypto';
  * never be able to arrive as an `Authorization: Bearer` header and be mistaken
  * for one that does. It travels in a path segment and nowhere else.
  *
- * 256 bits of randomness, SHA-256 stored, raw value returned exactly once.
- * There is nothing to brute-force and nothing in the database to replay.
+ * 256 bits of randomness. The hash is what a request is looked up by. Since
+ * the ADR-044 addendum of 2026-09-24 the raw value is also kept, sealed with
+ * the deployment's credential key, so a workspace's admins can copy a link
+ * again: a link exists to be passed on, and hiding it after creation only made
+ * people mint a second one. A database dump alone still yields no link.
  */
 
 /**
@@ -55,4 +64,40 @@ export function looksLikeShareToken(value: string): boolean {
 /** The address a person opens. `appUrl` has no trailing slash by config validation. */
 export function shareUrl(appUrl: string, secret: string): string {
   return `${appUrl}/freigabe/${encodeURIComponent(secret)}`;
+}
+
+/**
+ * The additional authenticated data a sealed token is bound to.
+ *
+ * The page, not the share row: the row's id does not exist before the insert,
+ * and binding to the page is what matters, because a ciphertext copied onto a
+ * grant for another page then fails to open instead of revealing a link that
+ * serves something else.
+ */
+function sealPurpose(documentId: string): string {
+  return `document-share-link:${documentId}`;
+}
+
+export function sealShareToken(input: {
+  key: Buffer;
+  documentId: string;
+  secret: string;
+}): EncryptedCredential {
+  return encryptCredential({
+    key: input.key,
+    purpose: sealPurpose(input.documentId),
+    plaintext: input.secret,
+  });
+}
+
+export function openShareToken(input: {
+  key: Buffer;
+  documentId: string;
+  record: EncryptedCredential;
+}): string {
+  return decryptCredential({
+    key: input.key,
+    purpose: sealPurpose(input.documentId),
+    record: input.record,
+  });
 }

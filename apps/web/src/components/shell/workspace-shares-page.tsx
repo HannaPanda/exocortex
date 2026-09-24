@@ -24,6 +24,7 @@ import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import { useRevokeWorkspaceShare, useWorkspaceShares } from '@/lib/api/share-queries';
 
+import { ShareLinkAddress } from './share-link-address';
 import { ShareRevokeConfirm } from './share-revoke-confirm';
 import { SHARE_STATE_LABELS, shareStateOf } from './share-wording';
 
@@ -100,7 +101,12 @@ export function WorkspaceSharesPage({ workspaceId }: { workspaceId: string }) {
                       {share.documentTitle}
                     </Link>
                   </TableCell>
-                  <TableCell className="text-sm">{recipientOf(share)}</TableCell>
+                  <TableCell className="max-w-72 text-sm whitespace-normal">
+                    <div className="flex flex-col gap-1.5">
+                      {recipientOf(share)}
+                      <ShareLinkAddress share={share} testIdPrefix="workspace-share" />
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <Badge variant="muted">
                       {share.permission === 'WRITE' ? 'Bearbeiten' : 'Lesen'}

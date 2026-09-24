@@ -27,7 +27,19 @@ import { type AnyToolDefinition, defineTool } from '../tool.js';
  * asks twice.
  */
 
-function formatShare(share: DocumentShare): string {
+/**
+ * The address of a link, whole when the answer carries it.
+ *
+ * The API hands the token only to a caller who may manage the workspace's
+ * shares (ADR-044, addendum 2026-09-24). An absolute address when the client
+ * knows where people read this deployment, the path otherwise.
+ */
+function linkAddress(client: { appUrl?: string }, token: string): string {
+  const path = `/freigabe/${encodeURIComponent(token)}`;
+  return client.appUrl === undefined ? path : new URL(path, client.appUrl).toString();
+}
+
+function formatShare(share: DocumentShare, client: { appUrl?: string } = {}): string {
   const who =
     share.kind === 'PUBLIC_LINK'
       ? `öffentlicher Link (${share.tokenPrefix ?? '?'}…)`
@@ -36,15 +48,24 @@ function formatShare(share: DocumentShare): string {
   const right = share.permission === 'WRITE' ? 'darf schreiben' : 'darf lesen';
   const until = share.expiresAt === null ? 'unbefristet' : `bis ${share.expiresAt}`;
   const state = share.revokedAt === null ? '' : ' — WIDERRUFEN';
-  return `- ${who} · ${right} · ${reach} · ${until} (id: ${share.id})${state}`;
+  const address =
+    share.kind !== 'PUBLIC_LINK' || share.revokedAt !== null
+      ? ''
+      : share.token !== null
+        ? ` · Adresse: ${linkAddress(client, share.token)}`
+        : share.tokenSealed
+          ? ''
+          : ' · Adresse nicht mehr abrufbar (vor dem 2026-09-24 angelegt)';
+  return `- ${who} · ${right} · ${reach} · ${until}${address} (id: ${share.id})${state}`;
 }
 
 export const shareListTool: AnyToolDefinition = defineTool({
   name: 'exo_share_list',
   description:
     'Zeigt, wer eine Seite außerhalb des Arbeitsbereichs erreichen kann: Freigaben an einzelne ' +
-    'Konten und öffentliche Links, widerrufene eingeschlossen. Der rohe Link steht hier nie, ' +
-    'nur seine ersten Zeichen.',
+    'Konten und öffentliche Links, widerrufene eingeschlossen. Die volle Adresse eines Links ' +
+    'steht dabei, wenn das Konto im Arbeitsbereich ADMIN oder OWNER ist; sonst nur ihre ersten ' +
+    'Zeichen. Links von vor dem 2026-09-24 haben keine abrufbare Adresse mehr.',
   inputSchema: z.object({ documentId: idSchema }),
   surfaces: ['mcp', 'ai'],
   domain: 'shares',
@@ -59,13 +80,15 @@ export const shareListTool: AnyToolDefinition = defineTool({
       return { text: 'Diese Seite ist nicht freigegeben.', data: result };
     }
     const own =
-      result.shares.length === 0 ? [] : ['Auf dieser Seite:', ...result.shares.map(formatShare)];
+      result.shares.length === 0
+        ? []
+        : ['Auf dieser Seite:', ...result.shares.map((share) => formatShare(share, client))];
     const above =
       result.inherited.length === 0
         ? []
         : [
             'Von weiter oben geerbt (jemand hat einen Bereich darüber freigegeben):',
-            ...result.inherited.map(formatShare),
+            ...result.inherited.map((share) => formatShare(share, client)),
           ];
     return { text: [...own, ...above].join('\n'), data: result };
   },
@@ -97,7 +120,7 @@ export const shareInheritedTool: AnyToolDefinition = defineTool({
     return {
       text:
         'Achtung, alles unter dieser Seite ist damit mit freigegeben:\n' +
-        result.inherited.map(formatShare).join('\n'),
+        result.inherited.map((share) => formatShare(share, client)).join('\n'),
       data: result,
     };
   },
@@ -123,7 +146,7 @@ export const shareWorkspaceListTool: AnyToolDefinition = defineTool({
     }
     const lines = result.shares.map(
       (share) =>
-        `${share.documentTitle} (id: ${share.documentId})\n  ${formatShare(share).slice(2)}`,
+        `${share.documentTitle} (id: ${share.documentId})\n  ${formatShare(share, client).slice(2)}`,
     );
     return { text: lines.join('\n'), data: result };
   },
@@ -152,7 +175,7 @@ export const shareMineTool: AnyToolDefinition = defineTool({
     const lines = result.shares.map(
       (share) =>
         `${share.documentTitle} in „${share.workspaceName}“ (id: ${share.documentId})\n  ` +
-        formatShare(share).slice(2) +
+        formatShare(share, client).slice(2) +
         (share.canRevoke ? '' : ' · zurückziehen darf hier nur ein ADMIN'),
     );
     if (result.truncated) lines.push('… weitere Freigaben nicht gezeigt.');
@@ -194,8 +217,8 @@ export const shareCreateTool: AnyToolDefinition = defineTool({
     'Gibt eine Seite nach außen frei. kind USER teilt sie mit einem vorhandenen Konto (email ' +
     'nötig, permission READ oder WRITE); kind PUBLIC_LINK erzeugt eine Adresse, die jeder ' +
     'öffnen kann, der sie hat, und die immer nur lesend ist. scope PAGE_ONLY meint genau diese ' +
-    'Seite, SUBTREE alles darunter. Der rohe Link kommt genau einmal zurück, in dieser Antwort, ' +
-    'und ist danach nicht wieder abrufbar.',
+    'Seite, SUBTREE alles darunter. Die Adresse steht in der Antwort und ist danach für ' +
+    'ADMIN und OWNER über exo_share_list wieder abrufbar.',
   inputSchema: createShareRequestSchema.and(z.object({ documentId: idSchema })),
   surfaces: ['mcp', 'ai'],
   domain: 'shares',
@@ -220,10 +243,11 @@ export const shareCreateTool: AnyToolDefinition = defineTool({
       responseSchema: shareResponseSchema,
     });
     const link =
-      result.share.token === null
-        ? ''
-        : `\nAdresse (nur jetzt sichtbar): /freigabe/${result.share.token}`;
-    return { text: `Freigabe angelegt.\n${formatShare(result.share)}${link}`, data: result };
+      result.share.token === null ? '' : `\nAdresse: ${linkAddress(client, result.share.token)}`;
+    return {
+      text: `Freigabe angelegt.\n${formatShare({ ...result.share, token: null, tokenSealed: true })}${link}`,
+      data: result,
+    };
   },
 });
 
@@ -246,7 +270,7 @@ export const shareUpdateTool: AnyToolDefinition = defineTool({
       body,
       responseSchema: shareResponseSchema,
     });
-    return { text: `Freigabe geändert.\n${formatShare(result.share)}`, data: result };
+    return { text: `Freigabe geändert.\n${formatShare(result.share, client)}`, data: result };
   },
 });
 

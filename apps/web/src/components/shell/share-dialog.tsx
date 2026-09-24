@@ -35,6 +35,7 @@ import {
   useUpdateShare,
 } from '@/lib/api/share-queries';
 
+import { ShareLinkAddress, shareUrlFor } from './share-link-address';
 import { ShareRevokeConfirm } from './share-revoke-confirm';
 import { describeShare as describe } from './share-wording';
 
@@ -67,11 +68,6 @@ function expiresInDays(value: ExpiryOption): number | null {
   return value === 'never' ? null : Number(value);
 }
 
-function shareUrlFor(token: string): string {
-  const origin = typeof window === 'undefined' ? '' : window.location.origin;
-  return `${origin}/freigabe/${token}`;
-}
-
 export function ShareDialog({
   documentId,
   documentTitle,
@@ -92,16 +88,16 @@ export function ShareDialog({
   const [permission, setPermission] = React.useState<'READ' | 'WRITE'>('READ');
   const [scope, setScope] = React.useState<ShareScope>('PAGE_ONLY');
   const [expiry, setExpiry] = React.useState<ExpiryOption>('never');
-  /** The one moment the raw address exists in the browser. Dropped on close. */
+  /** The address of the link just made, shown at the button that made it. */
   const [freshLink, setFreshLink] = React.useState<string | null>(null);
   const [copied, setCopied] = React.useState(false);
   /** The share whose withdrawal is being confirmed, by id. At most one. */
   const [revoking, setRevoking] = React.useState<string | null>(null);
 
   /*
-   * Closing the dialog forgets the raw address. Done in the handler rather
-   * than in an effect on `open`: the secret leaving the browser is a
-   * consequence of the click, not a state two renders have to agree on.
+   * Closing the dialog clears the form and the confirmation. The new link's
+   * address stays reachable in the list below for as long as the link lives
+   * (ADR-044 addendum), so nothing is lost by forgetting it here.
    */
   const close = (next: boolean): void => {
     if (!next) {
@@ -274,8 +270,8 @@ export function ShareDialog({
                 <CopyIcon /> {copied ? 'Kopiert' : 'Adresse kopieren'}
               </Button>
               <p className="text-xs text-muted-foreground">
-                Die Adresse steht nur jetzt hier. Danach zeigt die Liste unten nur noch ihre ersten
-                Zeichen; brauchst du sie wieder, erzeuge einen neuen Link und zieh den alten zurück.
+                Du findest die Adresse jederzeit wieder, hier in der Liste und unter „Freigaben“ im
+                Kontomenü, solange der Link gilt.
               </p>
             </div>
           )}
@@ -408,6 +404,8 @@ function ShareRow({
           </>
         )}
       </div>
+
+      {confirming ? null : <ShareLinkAddress share={share} testIdPrefix="share" />}
 
       {confirming ? (
         <ShareRevokeConfirm

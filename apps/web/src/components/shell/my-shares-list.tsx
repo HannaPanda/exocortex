@@ -20,6 +20,7 @@ import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import { useMyShares, useRevokeMyShare } from '@/lib/api/share-queries';
 
+import { ShareLinkAddress } from './share-link-address';
 import { ShareRevokeConfirm } from './share-revoke-confirm';
 import { describeShare, SHARE_STATE_LABELS, type ShareState, shareStateOf } from './share-wording';
 
@@ -220,6 +221,8 @@ function MyShareRow({
           </Button>
         ) : null}
       </div>
+
+      {confirming ? null : <ShareLinkAddress share={share} testIdPrefix="my-share" />}
 
       {!share.canRevoke && state !== 'revoked' ? (
         <p className="text-xs text-muted-foreground">

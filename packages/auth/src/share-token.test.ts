@@ -1,7 +1,16 @@
+import { randomBytes } from 'node:crypto';
+
 import { describe, expect, it } from 'vitest';
 
 import { API_TOKEN_PREFIX } from './api-token';
-import { generateShareToken, hashShareToken, looksLikeShareToken, shareUrl } from './share-token';
+import {
+  generateShareToken,
+  hashShareToken,
+  looksLikeShareToken,
+  openShareToken,
+  sealShareToken,
+  shareUrl,
+} from './share-token';
 
 /**
  * Share-link tokens (issue #83, ADR-044).
@@ -54,5 +63,26 @@ describe('shareUrl', () => {
     expect(shareUrl('https://exocortex.app', 'abc-DEF_123')).toBe(
       'https://exocortex.app/freigabe/abc-DEF_123',
     );
+  });
+});
+
+describe('sealShareToken', () => {
+  const key = randomBytes(32);
+
+  it('gives the link back to the key that sealed it', () => {
+    const { secret } = generateShareToken();
+    const record = sealShareToken({ key, documentId: 'page-a', secret });
+    expect(record.ciphertext).not.toContain(secret);
+    expect(openShareToken({ key, documentId: 'page-a', record })).toBe(secret);
+  });
+
+  it('refuses to open a sealed link copied onto another page', () => {
+    const record = sealShareToken({ key, documentId: 'page-a', secret: 'x'.repeat(43) });
+    expect(() => openShareToken({ key, documentId: 'page-b', record })).toThrow();
+  });
+
+  it('refuses to open with another key', () => {
+    const record = sealShareToken({ key, documentId: 'page-a', secret: 'x'.repeat(43) });
+    expect(() => openShareToken({ key: randomBytes(32), documentId: 'page-a', record })).toThrow();
   });
 });

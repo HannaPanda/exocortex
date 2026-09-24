@@ -55,11 +55,20 @@ export const documentShareSchema = z.object({
   /** Present for `USER`, null for a link. */
   grantee: shareGranteeSchema.nullable(),
   /**
-   * The opaque part of the public address, `null` for a `USER` share **and**
-   * for a link that was created in an earlier request: only the response to
-   * the creating call carries the secret, exactly like an API token.
+   * The opaque part of the public address. Present in the response that
+   * created the link and, since the ADR-044 addendum of 2026-09-24, for any
+   * caller who may manage this workspace's shares (ADMIN or OWNER), because a
+   * link is made to be passed on. `null` for a `USER` share, for a caller below
+   * ADMIN, and for a link whose address was never kept (see `tokenSealed`).
    */
   token: z.string().nullable(),
+  /**
+   * Whether this deployment keeps the address of this link. False for every
+   * link made before 2026-09-24, when only a hash was stored: such an address
+   * can never be shown again, only replaced by a new link. Always false for a
+   * `USER` share.
+   */
+  tokenSealed: z.boolean(),
   /** First characters of the token, so a link is recognisable in a list. */
   tokenPrefix: z.string().nullable(),
   expiresAt: isoDateTimeSchema.nullable(),

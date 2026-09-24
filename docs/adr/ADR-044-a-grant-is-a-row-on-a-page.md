@@ -142,3 +142,30 @@ over-fetches and filters afterwards instead.
 **Page scopes as more values in `ApiTokenScope`.** What a credential may _do_
 and what it may do it _to_ are different questions, and folding them together is
 how a list of verbs ends up carrying page ids.
+
+## Addendum 2026-09-24: a link's address can be seen again
+
+The original decision treated a public link's token like an API token: the
+SHA-256 stored, the raw value returned once and never again. That was the wrong
+analogy. An API token authenticates a person and is never meant to leave their
+hands; a link authenticates nobody and exists to be passed on. Hiding it after
+creation protected nothing a person could name, and it had one visible effect:
+somebody who needed the address again minted a second link to the same page,
+and the first stayed live and forgotten.
+
+So the token is now also stored sealed, AES-256-GCM under the deployment's
+`CREDENTIAL_ENCRYPTION_KEY` with the page id as additional authenticated data
+(`sealShareToken` in `packages/auth/src/share-token.ts`). The hash stays the
+lookup key, so the anonymous read never needs the key. The address is returned
+to whoever may manage the workspace's shares (`canManageShares`: ADMIN and
+OWNER), in every list and in the share dialog, and to nobody else: a member
+below ADMIN, a guest and a holder of a share see the prefix, because a list any
+member could copy links out of would make every member a publisher. A withdrawn
+link is never opened. What is kept out of the audit row and the logs is
+unchanged.
+
+Two limits follow and are stated rather than hidden. A link made before this
+addendum has only its hash, so its address can never be shown again; the
+contract says so with `tokenSealed: false`, and the browser offers a fresh link
+with the same scope beside it, leaving the old one live until somebody
+withdraws it. A deployment without the key keeps the old behaviour, hash only.

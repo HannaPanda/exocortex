@@ -40,7 +40,10 @@ test.afterAll(async () => {
   await api.dispose();
 });
 
-async function sharedPage(workspaceId: string, title: string): Promise<string> {
+async function sharedPage(
+  workspaceId: string,
+  title: string,
+): Promise<{ documentId: string; token: string }> {
   const created = await api.post(`${origin}/api/workspaces/${workspaceId}/documents`, {
     data: { title, type: 'PAGE' },
   });
@@ -50,7 +53,8 @@ async function sharedPage(workspaceId: string, title: string): Promise<string> {
     data: { kind: 'PUBLIC_LINK', scope: 'PAGE_ONLY' },
   });
   expect(granted.status(), await granted.text()).toBe(201);
-  return documentId;
+  const { share } = (await granted.json()) as { share: { token: string } };
+  return { documentId, token: share.token };
 }
 
 function row(page: Page, title: string) {
@@ -63,8 +67,8 @@ test('beide Arbeitsbereiche stehen in einer Liste, und Zurückziehen fragt vorhe
   const [first, second] = workspaceIds as [string, string];
   const titleA = `Vergessener Link ${suffix}`;
   const titleB = `Zweiter Link ${suffix}`;
-  const documentA = await sharedPage(first, titleA);
-  await sharedPage(second, titleB);
+  const { documentId: documentA } = await sharedPage(first, titleA);
+  const { token: tokenB } = await sharedPage(second, titleB);
 
   await page.goto('/arbeitsbereich');
   await page.getByTestId('open-global-menu').click();
@@ -74,6 +78,12 @@ test('beide Arbeitsbereiche stehen in einer Liste, und Zurückziehen fragt vorhe
 
   await expect(row(page, titleA)).toContainText(`Von mir A ${suffix}`);
   await expect(row(page, titleB)).toContainText(`Von mir B ${suffix}`);
+
+  // Die volle Adresse steht wieder da (ADR-044, Nachtrag 2026-09-24), nicht nur
+  // ihre ersten Zeichen, und sie ist die, die beim Anlegen herauskam.
+  await expect(row(page, titleB).getByTestId('my-share-link-address')).toContainText(
+    `/freigabe/${tokenB}`,
+  );
 
   await row(page, titleA).getByTestId('my-share-revoke').click();
   await expect(row(page, titleA).getByTestId('my-share-revoke-confirm')).toContainText(

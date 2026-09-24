@@ -275,9 +275,13 @@ above it.
 
 **A public link is read-only by a check constraint**, not by a validation
 somebody has to remember, and `PublicSharesService` has no write path at all. Its
-token is 32 random bytes, SHA-256 stored, returned exactly once, never logged and
-never written into an audit row — an audit log holding link tokens would be a
-list of working links. Unknown, revoked and expired all answer
+token is 32 random bytes. A request is looked up by its SHA-256; since the
+ADR-044 addendum of 2026-09-24 the raw value is also kept, AES-256-GCM under
+`CREDENTIAL_ENCRYPTION_KEY` and bound to the page, and returned to ADMIN and
+OWNER of the workspace only, never to a member below that and never for a
+withdrawn link. A database dump alone still yields no link. The token is never
+logged and never written into an audit row — an audit log holding link tokens
+would be a list of working links. Unknown, revoked and expired all answer
 `share_link_invalid` with the same 404, so a guessed token cannot be told from a
 withdrawn one.
 
