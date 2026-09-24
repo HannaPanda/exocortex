@@ -67,6 +67,35 @@ function countEntries(entries: readonly TrashEntry[]): number {
  * A sheet rather than the sidebar: 145 nested rows with checkboxes do not fit
  * in a column that has to stay a navigation.
  */
+function archivedCount(count: number): string {
+  return count === 1 ? 'Eine archivierte Seite' : `${count} archivierte Seiten`;
+}
+
+/** What the permanent deletion takes with it, counted, with the number picking each form. */
+function describeDeletion(totals: {
+  documents: number;
+  attachments: number;
+  links: number;
+}): string {
+  const pages = totals.documents === 1 ? 'Eine Seite wird' : `${totals.documents} Seiten werden`;
+  const attachments =
+    totals.attachments === 0
+      ? ''
+      : ` Dazu ${totals.attachments === 1 ? 'ein Anhang' : `${totals.attachments} Anhänge`} samt Dateien.`;
+  const links =
+    totals.links === 0
+      ? ''
+      : totals.links === 1
+        ? ' Ein Verweis einer anderen Seite zeigt darauf und wird danach als unaufgelöst angezeigt.'
+        : ` ${totals.links} Verweise anderer Seiten zeigen darauf und werden danach als unaufgelöst angezeigt.`;
+  return (
+    `${pages} mit allem Inhalt, allen Versionsständen und allen Kommentaren gelöscht.` +
+    attachments +
+    links +
+    ' Das lässt sich nicht rückgängig machen, auch nicht über einen Versionsstand.'
+  );
+}
+
 /** „1 Seite“, „3 Seiten“: a count reads as a phrase, never as „Seite(n)“. */
 function pageCount(count: number): string {
   return count === 1 ? '1 Seite' : `${count} Seiten`;
@@ -245,7 +274,7 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
           <SheetDescription>
             {trash.data === undefined
               ? 'Archivierte Seiten'
-              : `${trash.data.totalCount === 1 ? 'Eine archivierte Seite' : `${trash.data.totalCount} archivierte Seiten`}. Eingerückt heißt: hing darunter. Ein Klick auf den Titel zeigt die Seite schreibgeschützt.`}
+              : `${archivedCount(trash.data.totalCount)}. Eingerückt heißt: hing darunter. Ein Klick auf den Titel zeigt die Seite schreibgeschützt.`}
           </SheetDescription>
         </SheetHeader>
 
@@ -299,16 +328,7 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
               <DialogDescription>
                 {previews.isPending
                   ? 'Wird geprüft, was dabei mitgeht …'
-                  : `${previewTotals.documents === 1 ? 'Eine Seite' : `${previewTotals.documents} Seiten`} werden mit allem Inhalt, allen Versionsständen und allen Kommentaren gelöscht.` +
-                    (previewTotals.attachments === 0
-                      ? ''
-                      : ` Dazu ${previewTotals.attachments === 1 ? 'ein Anhang' : `${previewTotals.attachments} Anhänge`} samt Dateien.`) +
-                    (previewTotals.links === 0
-                      ? ''
-                      : previewTotals.links === 1
-                        ? ' Ein Verweis einer anderen Seite zeigt darauf und wird danach als unaufgelöst angezeigt.'
-                        : ` ${previewTotals.links} Verweise anderer Seiten zeigen darauf und werden danach als unaufgelöst angezeigt.`) +
-                    ' Das lässt sich nicht rückgängig machen, auch nicht über einen Versionsstand.'}
+                  : describeDeletion(previewTotals)}
               </DialogDescription>
             </DialogHeader>
 
