@@ -1,0 +1,297 @@
+'use client';
+
+import {
+  ArchiveIcon,
+  ChevronRightIcon,
+  CopyIcon,
+  FileTextIcon,
+  MoreHorizontalIcon,
+  PencilIcon,
+  SearchIcon,
+  TrashIcon,
+} from 'lucide-react';
+import * as React from 'react';
+
+import {
+  Button,
+  CommandPalette,
+  type CommandItem,
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+  Input,
+  Label,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@exocortex/ui';
+
+import { DsExample, DsSection, DsState, DsStates } from '../showcase';
+
+/** Menus, popovers, tooltips, dialogs and sheets: everything that floats. */
+
+function PageMenuItems() {
+  return (
+    <>
+      <DropdownMenuGroup>
+        <DropdownMenuLabel>Seite</DropdownMenuLabel>
+        <DropdownMenuItem>
+          <PencilIcon />
+          Umbenennen
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <CopyIcon />
+          Duplizieren
+        </DropdownMenuItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            Verschieben nach
+            <ChevronRightIcon className="ml-auto size-3.5 opacity-60" />
+          </DropdownMenuSubTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem>Projekte</DropdownMenuItem>
+            <DropdownMenuItem>Notizen</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenuSub>
+        <DropdownMenuItem disabled>Als Vorlage speichern</DropdownMenuItem>
+      </DropdownMenuGroup>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem variant="destructive">
+        <ArchiveIcon />
+        Archivieren
+      </DropdownMenuItem>
+    </>
+  );
+}
+
+export function MenusSection() {
+  return (
+    <DsSection
+      id="menues"
+      title="Menüs und Popover"
+      lead="Ein Eintrag, der etwas zerstört, steht nach einem Trenner am Ende und trägt die destruktive Variante. Jeder Hinweis-Tooltip wiederholt nur, was schon im aria-label steht."
+    >
+      <DsExample
+        id="menue-aufklapp"
+        title="Aufklappmenü"
+        source="packages/ui/src/components/ui/dropdown-menu.tsx"
+        note="Mit Gruppe, Beschriftung, Untermenü, deaktiviertem und destruktivem Eintrag."
+      >
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button variant="ghost" size="icon-sm" aria-label="Seitenaktionen">
+                <MoreHorizontalIcon />
+              </Button>
+            }
+          />
+          <DropdownMenuContent align="start" className="w-56">
+            <PageMenuItems />
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </DsExample>
+
+      <DsExample
+        id="menue-kontext"
+        title="Kontextmenü"
+        source="packages/ui/src/components/ui/context-menu.tsx"
+        note="Öffnet per Rechtsklick oder Umschalt+F10. Ohne sichtbaren Auslöser ist es auf dem Handy nur per langem Drücken erreichbar (Issue #129)."
+      >
+        <ContextMenu>
+          <ContextMenuTrigger
+            render={
+              <div className="flex h-24 items-center justify-center rounded-md border border-dashed border-border-strong text-sm text-muted-foreground">
+                Hier rechts klicken
+              </div>
+            }
+          />
+          <ContextMenuContent className="w-52">
+            <ContextMenuItem>Umbenennen</ContextMenuItem>
+            <ContextMenuItem>Duplizieren</ContextMenuItem>
+            <ContextMenuSeparator />
+            <ContextMenuItem variant="destructive">Löschen</ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
+      </DsExample>
+
+      <DsExample
+        id="popover"
+        title="Popover und Tooltip"
+        source="packages/ui/src/components/ui/popover.tsx, tooltip.tsx"
+      >
+        <DsStates>
+          <DsState label="Popover">
+            <Popover>
+              <PopoverTrigger render={<Button variant="outline">Link einfügen</Button>} />
+              <PopoverContent align="start" className="w-72">
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="ds-popover-url">Adresse</Label>
+                  <Input id="ds-popover-url" placeholder="https://…" />
+                </div>
+              </PopoverContent>
+            </Popover>
+          </DsState>
+          <DsState label="Tooltip (auf Touch ausgeblendet)">
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button variant="ghost" size="icon-sm" aria-label="Suchen">
+                    <SearchIcon />
+                  </Button>
+                }
+              />
+              <TooltipContent>Suchen · Strg+K</TooltipContent>
+            </Tooltip>
+          </DsState>
+        </DsStates>
+      </DsExample>
+    </DsSection>
+  );
+}
+
+const PALETTE_PAGES = ['Wochenplanung', 'Protokoll Infrastruktur', 'Leseliste', 'Rezepte'];
+
+export function DialogsSection() {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [sheetOpen, setSheetOpen] = React.useState(false);
+  const [paletteOpen, setPaletteOpen] = React.useState(false);
+  const [query, setQuery] = React.useState('');
+
+  const items: CommandItem[] = PALETTE_PAGES.filter((title) =>
+    title.toLowerCase().includes(query.toLowerCase()),
+  ).map((title) => ({
+    id: title,
+    label: title,
+    group: 'Seiten',
+    icon: <FileTextIcon className="size-4" />,
+    onSelect: () => setPaletteOpen(false),
+  }));
+
+  return (
+    <DsSection
+      id="dialoge"
+      title="Dialoge und Sheets"
+      lead="Erst die Alternativen im Fluss ausschöpfen, dann ein Modal. Im Fuß steht die sichere Antwort zuerst und die destruktive zuletzt, auf dem Handy untereinander in derselben Reihenfolge."
+    >
+      <DsExample
+        id="dialog"
+        title="Dialog"
+        source="packages/ui/src/components/ui/dialog.tsx"
+        note="Kopf, scrollender Körper, Fuß. Die Reihenfolge im Fuß prüft e2e/tests/dialog-footer.spec.ts."
+      >
+        <Button variant="outline" onClick={() => setDialogOpen(true)}>
+          Dialog öffnen
+        </Button>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Seite umbenennen</DialogTitle>
+              <DialogDescription>
+                Der neue Titel erscheint im Seitenbaum und in allen Verweisen.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogBody>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="ds-dialog-title">Titel</Label>
+                <Input id="ds-dialog-title" defaultValue="Wochenplanung" />
+              </div>
+            </DialogBody>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                Abbrechen
+              </Button>
+              <Button onClick={() => setDialogOpen(false)}>Speichern</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </DsExample>
+
+      <DsExample
+        id="sheet"
+        title="Sheet"
+        source="packages/ui/src/components/ui/sheet.tsx"
+        note="Von links die Navigation, von rechts Kontext und Papierkorb. Unter 768 px werden die Seitenbereiche der Hülle zu Sheets."
+      >
+        <Button variant="outline" onClick={() => setSheetOpen(true)}>
+          Sheet öffnen
+        </Button>
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+          <SheetContent side="right" className="w-full max-w-xl">
+            <SheetHeader>
+              <SheetTitle>Papierkorb</SheetTitle>
+              <SheetDescription>
+                Archivierte Seiten landen hier und bleiben, bis sie jemand wiederherstellt oder
+                endgültig löscht.
+              </SheetDescription>
+            </SheetHeader>
+            <ul className="flex flex-col px-4">
+              {['Alte Notizen', 'Entwurf Q3'].map((title) => (
+                <li
+                  key={title}
+                  className="flex items-center gap-2 border-t border-border py-2 text-sm"
+                >
+                  <FileTextIcon className="size-4 text-muted-foreground" aria-hidden />
+                  <span className="min-w-0 flex-1 truncate">{title}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label={`„${title}“ endgültig löschen`}
+                  >
+                    <TrashIcon />
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </SheetContent>
+        </Sheet>
+      </DsExample>
+
+      <DsExample
+        id="befehlspalette"
+        title="Befehlspalette"
+        source="packages/ui/src/components/ui/command-palette.tsx"
+        note="Combobox mit Listbox und aria-activedescendant: der Fokus bleibt im Feld, die Pfeiltasten wandern durch die Treffer."
+      >
+        <Button variant="outline" onClick={() => setPaletteOpen(true)}>
+          <SearchIcon />
+          Palette öffnen
+        </Button>
+        <CommandPalette
+          open={paletteOpen}
+          onOpenChange={setPaletteOpen}
+          query={query}
+          onQueryChange={setQuery}
+          items={items}
+          placeholder="Seite suchen …"
+          emptyLabel="Keine Treffer"
+        />
+      </DsExample>
+    </DsSection>
+  );
+}

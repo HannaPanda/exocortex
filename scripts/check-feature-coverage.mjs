@@ -49,11 +49,19 @@ const AUTOMATION_CONTRACT = join(repoRoot, 'packages/contracts/src/automations.t
 /**
  * Screens no feature has to describe, each with the reason.
  *
- * One entry, and it is not a capability: the root path redirects into the
- * workspace the shell resolves. Describing it would mean writing "opening
- * eXocortex opens eXocortex".
+ * Two entries, and neither is a capability: the root path redirects into the
+ * workspace the shell resolves (describing it would mean writing "opening
+ * eXocortex opens eXocortex"), and the styleguide shows the interface's own
+ * parts with made-up data.
  */
-const SCREEN_EXEMPT = [{ screen: '/', reason: 'A redirect into /arbeitsbereich, not a screen.' }];
+const SCREEN_EXEMPT = [
+  { screen: '/', reason: 'A redirect into /arbeitsbereich, not a screen.' },
+  {
+    screen: '/design-system',
+    reason:
+      'The styleguide (issue #125): a reference for people and agents building the interface, drawn with fixtures. It does nothing with anybody’s data, so there is no capability to describe.',
+  },
+];
 
 // ---------------------------------------------------------------------------
 // The inventories

@@ -2,7 +2,10 @@
 
 This is the technical lookup. The rules and their reasons are in `DESIGN.md`;
 which implementation of each component and pattern is canonical, duplicated or
-still undecided is in `docs/design-system-inventory.md`.
+still undecided is in `docs/design-system-inventory.md`. What they look like is
+`/design-system`, drawn by the components themselves
+(`apps/web/src/components/design-system`); a new token has to be given a role
+in `foundations/token-catalog.ts` or `design-tokens.test.ts` goes red.
 
 ## Design tokens
 

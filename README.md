@@ -150,6 +150,10 @@ What is deliberately still missing is listed under
   lines (`tools/claude-code-plugin`)
 - audit log and transactional outbox for destructive and reliable operations
 - live background-job progress in the UI
+- a public styleguide at `/design-system` that draws every token, component and
+  canonical pattern with the product's own code and fixture data; token names
+  and values are parsed from the stylesheets rather than written down twice
+  (issue #125, `docs/design-system-inventory.md`)
 - structured logs with a correlation id per request, and optional distributed
   tracing across API, queue, worker and the AI tool loop (ADR-031). Tracing is
   off, and its SDK is not even loaded, until a collector is configured;
@@ -301,7 +305,8 @@ lists the ones a change must not silently reverse.
 
 Deliberately absent, while the architecture leaves room for each:
 
-- public sharing of a page or workspace, billing, subscriptions, native mobile
+- public sharing of a whole workspace (a page and its subtree can be shared,
+  ADR-044), billing, subscriptions, native mobile
   apps
 - real Claude Code / Codex execution. `packages/ai/src/agent-runners.ts`
   defines the contract and `createUnimplementedRunner()` throws rather than
