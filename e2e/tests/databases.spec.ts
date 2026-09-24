@@ -379,6 +379,37 @@ test.describe('databases', () => {
     await page.getByRole('tab', { name: 'Kalender' }).click();
     await expect(page.getByTestId('calendar-agenda')).toBeVisible({ timeout: 15_000 });
   });
+  test('filters by a date picked in a calendar inside the filter popover', async ({ page }) => {
+    // The date picker opens a popover inside the filter's popover. A click on
+    // a day must not read as a click outside the outer one and close it.
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+
+    const title = `Fristen ${Date.now().toString(36)}`;
+    await createDatabase(page, title);
+    await expect(page.getByTestId('add-property')).toBeVisible({ timeout: 15_000 });
+    await addProperty(page, 'Fällig', 'Datum');
+
+    await page.getByTestId('add-row').click();
+    await page.getByTestId('add-row').click();
+    const rows = page.locator('[data-testid^="database-row-"]');
+    await expect(rows).toHaveCount(2, { timeout: 15_000 });
+    await rows.first().locator('[data-slot="date-picker"]').click();
+    await page.getByRole('button', { name: 'Heute', exact: true }).click();
+    await expect(rows.first().locator('[data-slot="date-picker"]')).not.toContainText(
+      'Datum wählen',
+    );
+
+    await page.getByTestId('add-filter').click();
+    await page.getByTestId('filter-property').click();
+    await page.getByRole('option', { name: 'Fällig' }).click();
+    await page.getByTestId('filter-value').click();
+    await page.getByRole('button', { name: 'Heute', exact: true }).click();
+    await expect(page.getByTestId('filter-value')).not.toContainText('Datum wählen');
+    await page.getByRole('button', { name: 'Filter hinzufügen' }).click();
+
+    await expect(rows).toHaveCount(1, { timeout: 15_000 });
+  });
 });
 
 async function addProperty(page: Page, name: string, typeLabel: string): Promise<void> {
