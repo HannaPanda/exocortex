@@ -38,6 +38,7 @@ import {
   useSyncAiModels,
   useUpdateAiModel,
 } from '@/lib/api/admin-queries';
+import { useDestructiveConfirmDialog } from '@/components/editor/destructive-confirm';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 
@@ -78,6 +79,7 @@ export function ModelTable() {
   const [expandedModelId, setExpandedModelId] = React.useState<string | null>(null);
   const [editingModel, setEditingModel] = React.useState<AiModel | undefined>(undefined);
   const [syncSummary, setSyncSummary] = React.useState<string | null>(null);
+  const confirmDialog = useDestructiveConfirmDialog();
 
   if (modelsQuery.isPending) {
     return <LoadingState label="Modelle werden geladen …" variant="skeleton" rows={5} />;
@@ -99,6 +101,7 @@ export function ModelTable() {
 
   return (
     <div className="flex flex-col gap-4">
+      {confirmDialog.element}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span>Standardmodell:</span>
@@ -257,7 +260,18 @@ export function ModelTable() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         variant="destructive"
-                        onClick={() => deleteModel.mutate(model.id)}
+                        onClick={() => {
+                          void confirmDialog
+                            .confirm({
+                              title: `${model.displayName} entfernen?`,
+                              description:
+                                'Das Modell verschwindet aus der Auswahl. Nutzt ein Chat es schon, wird es nur abgeschaltet, damit der Chat es weiter kennt; sonst ist der Eintrag samt Preisen und Einstellungen weg.',
+                              confirmLabel: 'Entfernen',
+                            })
+                            .then((confirmed) => {
+                              if (confirmed) deleteModel.mutate(model.id);
+                            });
+                        }}
                       >
                         Entfernen
                       </DropdownMenuItem>

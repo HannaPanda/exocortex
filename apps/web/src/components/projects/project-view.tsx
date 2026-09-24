@@ -1,7 +1,18 @@
 'use client';
 
+import { FolderTreeIcon } from 'lucide-react';
+import * as React from 'react';
+
 import { type ProjectFile } from '@exocortex/contracts';
-import { EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
+import {
+  Button,
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  Sheet,
+  SheetContent,
+  SheetTitle,
+} from '@exocortex/ui';
 
 import { type CollaborationConnectionState } from '@/components/editor/collaboration-connection';
 
@@ -33,6 +44,10 @@ interface ProjectViewProps {
 
 export function ProjectView({ workspaceId, projectId }: ProjectViewProps) {
   const workspace = useProjectWorkspace(workspaceId, projectId);
+  // Below `lg` the three columns stack and the file tree has no room of its
+  // own, so it opens as a sheet. Without it a file could not be opened on
+  // anything narrower than 1024 px (issue #129).
+  const [filesOpen, setFilesOpen] = React.useState(false);
 
   if (workspace.notFound) return <ErrorState title="Projekt nicht gefunden" />;
   if (workspace.project === null) return <LoadingState label="Projekt wird geladen …" />;
@@ -53,6 +68,20 @@ export function ProjectView({ workspaceId, projectId }: ProjectViewProps) {
         onCancel={workspace.actions.cancel}
       />
 
+      <div className="flex items-center gap-2 border-b border-border px-3 py-1.5 lg:hidden">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setFilesOpen(true)}
+          data-testid="project-files-open"
+        >
+          <FolderTreeIcon /> Dateien
+        </Button>
+        <span className="min-w-0 truncate font-mono text-xs text-muted-foreground">
+          {workspace.selected?.path ?? 'Keine Datei gewählt'}
+        </span>
+      </div>
+
       <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[14rem_1fr_1fr]">
         <div className="hidden min-h-0 border-e border-border lg:block">
           <ProjectFileTree
@@ -65,6 +94,27 @@ export function ProjectView({ workspaceId, projectId }: ProjectViewProps) {
             onCreate={() => workspace.setCreateOpen(true)}
           />
         </div>
+
+        <Sheet open={filesOpen} onOpenChange={setFilesOpen}>
+          <SheetContent side="left" data-testid="project-files-sheet">
+            <SheetTitle className="exocortex-sr-only">Dateien</SheetTitle>
+            <ProjectFileTree
+              files={workspace.files}
+              rootFile={workspace.project.rootFile}
+              selectedPath={workspace.selected?.path ?? null}
+              readOnly={false}
+              onSelect={(file: ProjectFile) => {
+                workspace.openFile(file.path, null);
+                setFilesOpen(false);
+              }}
+              onDelete={(file: ProjectFile) => workspace.actions.deleteFile(file.path)}
+              onCreate={() => {
+                setFilesOpen(false);
+                workspace.setCreateOpen(true);
+              }}
+            />
+          </SheetContent>
+        </Sheet>
 
         <div className="min-h-0 border-e border-border">
           <SourcePane
@@ -131,7 +181,9 @@ function SourcePane({
   if (connection.connection === null || !connection.ready)
     return <LoadingState label="Verbindung wird aufgebaut …" />;
   if (selected === null) {
-    return <EmptyState title="Keine Datei gewählt" description="Links eine Datei anklicken." />;
+    return (
+      <EmptyState title="Keine Datei gewählt" description="Wähle eine Datei aus dem Dateibaum." />
+    );
   }
   if (selected.kind === 'ASSET') {
     return (

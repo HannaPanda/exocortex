@@ -88,6 +88,15 @@ test.describe('design system', () => {
     await expect(page).toHaveURL(/\/design-system#seitenbaum$/);
   });
 
+  test('reaches a tree row menu without a right click', async ({ page }) => {
+    await page.goto('/design-system#seitenbaum');
+    const tree = page.getByRole('tree', { name: 'Beispielseiten' });
+    await tree.getByRole('button', { name: 'Aktionen für „Leseliste“' }).click();
+    await expect(page.getByRole('menuitem', { name: 'Symbol ändern …' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('menuitem', { name: 'Symbol ändern …' })).toBeHidden();
+  });
+
   test('turns the shell panels into sheets at phone width', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/design-system#huelle');

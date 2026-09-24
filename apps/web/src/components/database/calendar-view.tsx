@@ -10,7 +10,7 @@ import {
 import {
   Alert,
   AlertDescription,
-  EmptyState,
+  ErrorState,
   LoadingState,
   Select,
   SelectContent,
@@ -190,7 +190,7 @@ function CalendarBody({
       return <LoadingState variant="skeleton" rows={4} label="Termine werden geladen" />;
     }
     if (rowsQuery.isError) {
-      return <EmptyState title="Termine nicht geladen" description="Bitte versuche es erneut." />;
+      return <ErrorState title="Termine nicht geladen" onRetry={() => void rowsQuery.refetch()} />;
     }
     if (mode === 'DAY' || mode === 'WEEK') {
       // The only mode that scrolls itself: its axis is taller than the box, and

@@ -13,7 +13,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  EmptyState,
+  ErrorState,
   LoadingState,
   Select,
   SelectContent,
@@ -130,7 +130,7 @@ function BoardColumns({
   if (rowsQuery.isPending)
     return <LoadingState variant="skeleton" rows={4} label="Karten werden geladen" />;
   if (rowsQuery.isError)
-    return <EmptyState title="Karten nicht geladen" description="Bitte versuche es erneut." />;
+    return <ErrorState title="Karten nicht geladen" onRetry={() => void rowsQuery.refetch()} />;
 
   const otherProperties = properties
     .filter((property) => property.id !== groupProperty.id)

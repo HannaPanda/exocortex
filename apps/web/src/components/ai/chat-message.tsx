@@ -72,7 +72,7 @@ function ChatMessageBody({ message, streaming }: ChatMessageProps) {
               ) : null}
             </div>
             {message.content.length > 0 ? (
-              <div className="opacity-0 transition-opacity focus-within:opacity-100 group-hover/message:opacity-100">
+              <div className="opacity-0 transition-opacity focus-within:opacity-100 group-hover/message:opacity-100 pointer-coarse:opacity-100">
                 <CopyMarkdownButton markdown={message.content} />
               </div>
             ) : null}

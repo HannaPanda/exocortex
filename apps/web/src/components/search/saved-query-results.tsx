@@ -49,7 +49,7 @@ export function SavedQueryResults({
   if (hits.length === 0) {
     return (
       <EmptyState
-        title="Keine Treffer"
+        title="Nichts gefunden"
         description={
           emptyDescription ??
           'Zu dieser Abfrage gibt es gerade nichts. Das kann sich morgen ändern, die Suche bleibt gespeichert.'
@@ -175,9 +175,19 @@ function HitTable({
       <table className="w-full text-sm">
         <thead className="border-b border-border text-left text-xs text-muted-foreground uppercase">
           <tr>
-            <th className="px-3 py-2 font-medium">Seite</th>
-            {display.showPath ? <th className="px-3 py-2 font-medium">Ort</th> : null}
-            {display.showUpdatedAt ? <th className="px-3 py-2 font-medium">Geändert</th> : null}
+            <th scope="col" className="px-3 py-2 font-medium">
+              Seite
+            </th>
+            {display.showPath ? (
+              <th scope="col" className="px-3 py-2 font-medium">
+                Ort
+              </th>
+            ) : null}
+            {display.showUpdatedAt ? (
+              <th scope="col" className="px-3 py-2 font-medium">
+                Geändert
+              </th>
+            ) : null}
           </tr>
         </thead>
         <tbody className="divide-y divide-border">

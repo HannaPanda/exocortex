@@ -18,6 +18,8 @@ export interface DestructiveConfirmRequest {
   title: string;
   /** Says what disappears. */
   description: string;
+  /** The verb on the confirming button, „Löschen“ unless the action is another one. */
+  confirmLabel?: string;
 }
 
 /** Resolves `true` when the person confirmed, `false` on cancel or escape. */
@@ -26,7 +28,8 @@ export type ConfirmDestructive = (request: DestructiveConfirmRequest) => Promise
 const DestructiveConfirmContext = React.createContext<ConfirmDestructive | null>(null);
 
 /**
- * The confirmation for destructive editor actions (issue #91).
+ * The confirmation for destructive actions: the editor's (issue #91), and the
+ * admin, settings and database rows that removed something on one click (#129).
  *
  * It lives above the toolbars rather than inside them because every caller is a
  * bubble menu or a drag handle, and each of those unmounts the moment focus
@@ -83,7 +86,7 @@ export function useDestructiveConfirmDialog(): {
             data-testid="destructive-confirm-button"
             onClick={() => settle(true)}
           >
-            Löschen
+            {pending?.confirmLabel ?? 'Löschen'}
           </Button>
         </DialogFooter>
       </DialogContent>

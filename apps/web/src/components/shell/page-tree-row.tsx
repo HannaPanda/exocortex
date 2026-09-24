@@ -8,6 +8,7 @@ import {
   FolderTreeIcon,
   IndentDecreaseIcon,
   IndentIncreaseIcon,
+  MoreHorizontalIcon,
   PlusIcon,
   SmilePlusIcon,
   TableIcon,
@@ -23,6 +24,11 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
   TruncatedText,
 } from '@exocortex/ui';
 
@@ -250,10 +256,30 @@ export function PageTreeRow({
               >
                 <PlusIcon className="size-3.5" />
               </button>
+
+              {/* The same menu as the right click, for a hand that has none: a
+                  phone, a pen, a trackpad set to one button. Revealed like the
+                  plus beside it. */}
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      aria-label={`Aktionen für „${node.title}“`}
+                      data-testid={`tree-actions-${node.id}`}
+                      className="grid size-5 shrink-0 place-items-center rounded-sm text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-foreground data-popup-open:opacity-100 pointer-coarse:opacity-100"
+                    >
+                      <MoreHorizontalIcon className="size-3.5" />
+                    </button>
+                  }
+                />
+                <PageTreeRowMenu node={node} context={context} parts={DROPDOWN_PARTS} />
+              </DropdownMenu>
             </div>
           }
         />
-        <PageTreeRowMenu node={node} context={context} />
+        <PageTreeRowMenu node={node} context={context} parts={CONTEXT_PARTS} />
       </ContextMenu>
 
       {isOpen && hasChildren ? (
@@ -278,6 +304,31 @@ export function PageTreeRow({
   );
 }
 
+/** The row's menu is rendered twice, as a context menu and behind the ⋯ button. */
+interface MenuParts {
+  Content: React.ComponentType<{ children: React.ReactNode; align?: 'start' | 'end' }>;
+  Item: React.ComponentType<{
+    children: React.ReactNode;
+    onClick?: () => void;
+    disabled?: boolean;
+    variant?: 'default' | 'destructive';
+    'data-testid'?: string;
+  }>;
+  Separator: React.ComponentType;
+}
+
+const CONTEXT_PARTS: MenuParts = {
+  Content: ContextMenuContent,
+  Item: ContextMenuItem,
+  Separator: ContextMenuSeparator,
+};
+
+const DROPDOWN_PARTS: MenuParts = {
+  Content: DropdownMenuContent,
+  Item: DropdownMenuItem,
+  Separator: DropdownMenuSeparator,
+};
+
 /**
  * The keyboard half of dragging, plus everything else a row can be told to do.
  *
@@ -287,10 +338,13 @@ export function PageTreeRow({
 function PageTreeRowMenu({
   node,
   context,
+  parts,
 }: {
   node: DocumentTreeNode;
   context: PageTreeRowContext;
+  parts: MenuParts;
 }) {
+  const { Content, Item, Separator } = parts;
   const {
     canNudge,
     nudge,
@@ -302,78 +356,69 @@ function PageTreeRowMenu({
     suggestParent,
   } = context;
   return (
-    <ContextMenuContent>
-      <ContextMenuItem
-        data-testid={`tree-change-icon-${node.id}`}
-        onClick={() => setIconPickerFor(node.id)}
-      >
+    <Content>
+      <Item data-testid={`tree-change-icon-${node.id}`} onClick={() => setIconPickerFor(node.id)}>
         <SmilePlusIcon /> Symbol ändern …
-      </ContextMenuItem>
-      <ContextMenuSeparator />
+      </Item>
+      <Separator />
       {/* The keyboard half of dragging. Named with their shortcuts, because
             a command nobody can find is a command that does not exist. */}
-      <ContextMenuItem
+      <Item
         disabled={!canNudge(node.id, 'up')}
         data-testid={`tree-move-up-${node.id}`}
         onClick={() => nudge(node.id, 'up')}
       >
         <ArrowUpIcon /> Nach oben
         <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">Alt ↑</span>
-      </ContextMenuItem>
-      <ContextMenuItem
+      </Item>
+      <Item
         disabled={!canNudge(node.id, 'down')}
         data-testid={`tree-move-down-${node.id}`}
         onClick={() => nudge(node.id, 'down')}
       >
         <ArrowDownIcon /> Nach unten
         <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">Alt ↓</span>
-      </ContextMenuItem>
-      <ContextMenuItem
+      </Item>
+      <Item
         disabled={!canNudge(node.id, 'in')}
         data-testid={`tree-indent-${node.id}`}
         onClick={() => nudge(node.id, 'in')}
       >
         <IndentIncreaseIcon /> Unter die Seite darüber
         <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">Alt →</span>
-      </ContextMenuItem>
-      <ContextMenuItem
+      </Item>
+      <Item
         disabled={!canNudge(node.id, 'out')}
         data-testid={`tree-outdent-${node.id}`}
         onClick={() => nudge(node.id, 'out')}
       >
         <IndentDecreaseIcon /> Eine Ebene höher
         <span className="exocortex-numeric ml-auto pl-4 text-xs text-muted-foreground">Alt ←</span>
-      </ContextMenuItem>
-      <ContextMenuSeparator />
-      <ContextMenuItem onClick={() => createChild(node.id)}>
+      </Item>
+      <Separator />
+      <Item onClick={() => createChild(node.id)}>
         <PlusIcon /> Unterseite anlegen
-      </ContextMenuItem>
-      <ContextMenuItem onClick={() => createChild(node.id, 'COLLECTION')}>
+      </Item>
+      <Item onClick={() => createChild(node.id, 'COLLECTION')}>
         <TableIcon /> Datenbank anlegen
-      </ContextMenuItem>
-      <ContextMenuItem onClick={() => createProject(node.id)}>
+      </Item>
+      <Item onClick={() => createProject(node.id)}>
         <FolderCodeIcon /> LaTeX-Projekt anlegen
-      </ContextMenuItem>
-      <ContextMenuSeparator />
+      </Item>
+      <Separator />
       {/* Filing help rather than a move: the answer is a list of candidates
           with the pages that already live under them, and agreeing with one
           is a second click. */}
-      <ContextMenuItem
-        data-testid={`tree-suggest-parent-${node.id}`}
-        onClick={() => suggestParent(node)}
-      >
+      <Item data-testid={`tree-suggest-parent-${node.id}`} onClick={() => suggestParent(node)}>
         <FolderTreeIcon /> Passenden Ort vorschlagen …
-      </ContextMenuItem>
-      <ContextMenuItem
-        data-testid={`tree-move-workspace-${node.id}`}
-        onClick={() => startWorkspaceMove(node)}
-      >
+      </Item>
+      <Item data-testid={`tree-move-workspace-${node.id}`} onClick={() => startWorkspaceMove(node)}>
         <FolderInputIcon /> In anderen Arbeitsbereich verschieben …
-      </ContextMenuItem>
-      <ContextMenuSeparator />
-      <ContextMenuItem variant="destructive" onClick={() => archive(node.id)}>
+      </Item>
+      <Separator />
+      <Item variant="destructive" onClick={() => archive(node.id)}>
         <ArchiveIcon /> Archivieren
-      </ContextMenuItem>
-    </ContextMenuContent>
+      </Item>
+    </Content>
   );
 }

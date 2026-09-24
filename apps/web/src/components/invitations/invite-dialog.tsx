@@ -168,7 +168,7 @@ export function InviteDialog({
               <Button variant="outline" onClick={reset} data-testid="invite-another">
                 Weitere einladen
               </Button>
-              <Button onClick={close}>Fertig</Button>
+              <Button onClick={close}>Schließen</Button>
             </DialogFooter>
           </div>
         ) : (

@@ -76,11 +76,21 @@ export function ModelEndpoints({ modelId, modelSlug }: ModelEndpointsProps) {
           <table className="w-full text-xs">
             <thead className="text-muted-foreground">
               <tr className="text-left">
-                <th className="py-1 pr-4 font-medium">Anbieter</th>
-                <th className="py-1 pr-4 font-medium">Eingabe</th>
-                <th className="py-1 pr-4 font-medium">Ausgabe</th>
-                <th className="py-1 pr-4 font-medium">Preis</th>
-                <th className="py-1 font-medium">Kann</th>
+                <th scope="col" className="py-1 pr-4 font-medium">
+                  Anbieter
+                </th>
+                <th scope="col" className="py-1 pr-4 font-medium">
+                  Eingabe
+                </th>
+                <th scope="col" className="py-1 pr-4 font-medium">
+                  Ausgabe
+                </th>
+                <th scope="col" className="py-1 pr-4 font-medium">
+                  Preis
+                </th>
+                <th scope="col" className="py-1 font-medium">
+                  Kann
+                </th>
               </tr>
             </thead>
             <tbody>

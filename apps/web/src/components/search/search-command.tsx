@@ -241,7 +241,9 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
       onQueryChange={setQuery}
       items={items}
       emptyLabel={
-        query.trim().length === 1 ? 'Für Seiten mindestens zwei Zeichen eingeben' : 'Keine Treffer'
+        query.trim().length === 1
+          ? 'Für Seiten mindestens zwei Zeichen eingeben'
+          : 'Nichts gefunden'
       }
       footer={
         // A count, a duration and an engine name: a readout, so it gets the

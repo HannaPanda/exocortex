@@ -213,8 +213,8 @@ export function ChatsPage() {
       <div>
         <h1 className="exocortex-page-title">Chats</h1>
         <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-          Alle KI-Unterhaltungen, über die Arbeitsbereiche hinweg. Die Suche geht über den
-          Nachrichtentext, nicht nur über die Titel.
+          Alle KI-Chats, über die Arbeitsbereiche hinweg. Die Suche geht über den Nachrichtentext,
+          nicht nur über die Titel.
         </p>
       </div>
 
@@ -239,7 +239,7 @@ export function ChatsPage() {
               description={
                 searching
                   ? 'Kein Verlauf enthält diese Wörter. Auch archivierte Chats wurden durchsucht.'
-                  : 'Sobald du im Panel etwas fragst, taucht die Unterhaltung hier auf.'
+                  : 'Sobald du im Panel etwas fragst, taucht der Chat hier auf.'
               }
             />
           ) : (
@@ -410,7 +410,7 @@ function RenameDialog({
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Unterhaltung umbenennen</DialogTitle>
+          <DialogTitle>Chat umbenennen</DialogTitle>
         </DialogHeader>
         <label htmlFor="chat-rename-title" className="sr-only">
           Neuer Titel

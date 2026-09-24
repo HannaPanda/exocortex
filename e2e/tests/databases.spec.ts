@@ -127,6 +127,19 @@ test.describe('databases', () => {
     await expect(page.locator('[data-testid^="database-row-"]')).toHaveCount(1, {
       timeout: 15_000,
     });
+
+    // Deleting a view asks first, and the ⋯ beside the tabs reaches it
+    // without a right click. Cancel keeps it, confirm removes it.
+    await page.getByRole('tab', { name: 'Galerie' }).click();
+    await page.getByTestId('view-actions').click();
+    await page.getByRole('menuitem', { name: 'Ansicht löschen' }).click();
+    await expect(page.getByTestId('destructive-confirm')).toBeVisible();
+    await page.getByTestId('destructive-cancel').click();
+    await expect(page.getByRole('tab', { name: 'Galerie' })).toBeVisible();
+    await page.getByTestId('view-actions').click();
+    await page.getByRole('menuitem', { name: 'Ansicht löschen' }).click();
+    await page.getByTestId('destructive-confirm-button').click();
+    await expect(page.getByRole('tab', { name: 'Galerie' })).toHaveCount(0, { timeout: 15_000 });
   });
 
   test('opens a row as a normal, editable page', async ({ page }) => {

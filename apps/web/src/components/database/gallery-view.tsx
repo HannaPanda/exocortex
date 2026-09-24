@@ -5,7 +5,7 @@ import Link from 'next/link';
 import * as React from 'react';
 
 import { type DatabaseProperty, type DatabaseView } from '@exocortex/contracts';
-import { Button, EmptyState, LoadingState } from '@exocortex/ui';
+import { Button, EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
 
 import { useCreateDatabaseRow, useDatabaseRows } from '@/lib/api/database-queries';
 
@@ -38,7 +38,7 @@ export function GalleryView({
   if (rowsQuery.isPending)
     return <LoadingState variant="skeleton" rows={4} label="Karten werden geladen" />;
   if (rowsQuery.isError)
-    return <EmptyState title="Karten nicht geladen" description="Bitte versuche es erneut." />;
+    return <ErrorState title="Karten nicht geladen" onRetry={() => void rowsQuery.refetch()} />;
 
   const coverProperty = properties.find((property) => property.id === view.config.coverPropertyId);
   const otherProperties = properties

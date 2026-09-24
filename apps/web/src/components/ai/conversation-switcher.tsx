@@ -162,7 +162,7 @@ export function ConversationSwitcher({
       <Dialog open={renaming !== null} onOpenChange={(open) => !open && setRenaming(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Unterhaltung umbenennen</DialogTitle>
+            <DialogTitle>Chat umbenennen</DialogTitle>
           </DialogHeader>
           <label htmlFor="ai-conversation-rename" className="sr-only">
             Neuer Titel

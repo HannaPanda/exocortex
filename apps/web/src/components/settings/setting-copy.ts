@@ -87,8 +87,8 @@ export const SETTING_COPY: Record<SettingKey, { label: string; help: string }> =
     help: 'Obergrenze für den mitgeschickten Seitentext. Was darüber liegt, wird gekürzt, und die Kürzung steht sichtbar im Text.',
   },
   'ai.maxPinnedSources': {
-    label: 'Angeheftete Quellen je Unterhaltung',
-    help: 'Wie viele Seiten, Datenbankansichten und gespeicherte Suchen an eine Unterhaltung geheftet werden dürfen. Null schaltet das Anheften für diesen Arbeitsbereich ab.',
+    label: 'Angeheftete Quellen je Chat',
+    help: 'Wie viele Seiten, Datenbankansichten und gespeicherte Suchen an einen Chat geheftet werden dürfen. Null schaltet das Anheften für diesen Arbeitsbereich ab.',
   },
   'ai.pinnedContextMaxChars': {
     label: 'Zeichen aller eingebetteten Quellen',
@@ -104,11 +104,11 @@ export const SETTING_COPY: Record<SettingKey, { label: string; help: string }> =
   },
   'ai.compactionModelSlug': {
     label: 'Modell für Zusammenfassungen',
-    help: 'Automatisch verwendet dasselbe Modell wie die Unterhaltung.',
+    help: 'Automatisch verwendet dasselbe Modell wie der Chat.',
   },
   'ai.runPayloadRetentionDays': {
     label: 'KI-Texte aufbewahren (Tage)',
-    help: 'Bei älteren KI-Läufen werden Frage und Antwort geleert, die Zahlen für die Nutzungsansicht bleiben stehen. 0 bedeutet: nie aufräumen. Verläufe in Unterhaltungen bleiben davon unberührt.',
+    help: 'Bei älteren KI-Läufen werden Frage und Antwort geleert, die Zahlen für die Nutzungsansicht bleiben stehen. 0 bedeutet: nie aufräumen. Verläufe in Chats bleiben davon unberührt.',
   },
   'ai.pdfExtractionEnabled': {
     label: 'PDF-Text extrahieren',

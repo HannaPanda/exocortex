@@ -14,6 +14,7 @@ import {
   Button,
   cn,
   EmptyState,
+  ErrorState,
   LoadingState,
   Table,
   TableBody,
@@ -93,7 +94,7 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
   if (rowsQuery.isPending)
     return <LoadingState variant="skeleton" rows={4} label="Zeilen werden geladen" />;
   if (rowsQuery.isError) {
-    return <EmptyState title="Zeilen nicht geladen" description="Bitte versuche es erneut." />;
+    return <ErrorState title="Zeilen nicht geladen" onRetry={() => void rowsQuery.refetch()} />;
   }
 
   const rows = rowsQuery.data.rows;
@@ -218,7 +219,7 @@ export function TableView({ workspaceId, documentId, view, properties, readOnly 
                     size="icon-sm"
                     aria-label="Zeile öffnen"
                     data-testid="open-row-peek"
-                    className="shrink-0 opacity-0 focus-visible:opacity-100 group-hover:opacity-100"
+                    className="shrink-0 opacity-0 focus-visible:opacity-100 group-hover:opacity-100 pointer-coarse:opacity-100"
                     onClick={() => setPeekRowId(row.document.id)}
                   >
                     <Maximize2Icon />
@@ -306,7 +307,7 @@ function ColumnResizeHandle({ width, label, onDrag, onCommit }: ColumnResizeHand
       className={cn(
         'absolute inset-y-0 -right-px z-10 w-1.5 cursor-col-resize touch-none rounded-full',
         'opacity-0 transition-opacity hover:bg-primary focus-visible:opacity-100 group-hover/head:opacity-100',
-        'hover:opacity-100',
+        'hover:opacity-100 pointer-coarse:w-3 pointer-coarse:bg-border pointer-coarse:opacity-100',
       )}
       onPointerDown={(event) => {
         event.preventDefault();

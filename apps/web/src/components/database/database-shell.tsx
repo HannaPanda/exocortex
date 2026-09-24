@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { EmptyState, LoadingState } from '@exocortex/ui';
+import { ErrorState, LoadingState } from '@exocortex/ui';
 
 import {
   useCreateDatabaseView,
@@ -85,7 +85,15 @@ export function DatabaseShell({
     return <LoadingState variant="skeleton" rows={5} label="Datenbank wird geladen" />;
   }
   if (properties.isError || views.isError) {
-    return <EmptyState title="Datenbank nicht geladen" description="Bitte versuche es erneut." />;
+    return (
+      <ErrorState
+        title="Datenbank nicht geladen"
+        onRetry={() => {
+          void properties.refetch();
+          void views.refetch();
+        }}
+      />
+    );
   }
 
   // Derived, not state: falls back to the first view whenever the explicitly

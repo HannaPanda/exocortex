@@ -71,9 +71,9 @@ export function ChatSaveDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Chat als Seite sichern</DialogTitle>
+          <DialogTitle>Chat als Seite speichern</DialogTitle>
           <DialogDescription>
-            Der Verlauf wird als Seite angelegt. Die Unterhaltung selbst bleibt, wie sie ist.
+            Der Verlauf wird als Seite angelegt. Der Chat selbst bleibt, wie er ist.
           </DialogDescription>
         </DialogHeader>
 
@@ -127,7 +127,7 @@ export function ChatSaveDialog({
           </Button>
           {saved === null ? (
             <Button onClick={save} disabled={toPage.isPending} data-testid="chat-save-submit">
-              Sichern
+              Speichern
             </Button>
           ) : null}
         </DialogFooter>

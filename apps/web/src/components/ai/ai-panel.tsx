@@ -450,8 +450,8 @@ function AiTranscriptArea({
     >
       {errored ? (
         <ErrorState
-          title="Unterhaltung nicht verfügbar"
-          description="Die Unterhaltung konnte nicht geladen werden."
+          title="Chat nicht verfügbar"
+          description="Der Chat konnte nicht geladen werden."
           onRetry={onRetry}
         />
       ) : loading ? (

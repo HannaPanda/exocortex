@@ -67,6 +67,11 @@ function countEntries(entries: readonly TrashEntry[]): number {
  * A sheet rather than the sidebar: 145 nested rows with checkboxes do not fit
  * in a column that has to stay a navigation.
  */
+/** „1 Seite“, „3 Seiten“: a count reads as a phrase, never as „Seite(n)“. */
+function pageCount(count: number): string {
+  return count === 1 ? '1 Seite' : `${count} Seiten`;
+}
+
 export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps) {
   const trash = useTrash(workspaceId, open);
   const workspace = useWorkspaceDetail(workspaceId);
@@ -240,7 +245,7 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
           <SheetDescription>
             {trash.data === undefined
               ? 'Archivierte Seiten'
-              : `${trash.data.totalCount} archivierte Seite(n). Eingerückt heißt: hing darunter. Ein Klick auf den Titel zeigt die Seite schreibgeschützt.`}
+              : `${trash.data.totalCount === 1 ? 'Eine archivierte Seite' : `${trash.data.totalCount} archivierte Seiten`}. Eingerückt heißt: hing darunter. Ein Klick auf den Titel zeigt die Seite schreibgeschützt.`}
           </SheetDescription>
         </SheetHeader>
 
@@ -257,7 +262,7 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
           {groups.map(([day, dayEntries]) => (
             <section key={day} className="mb-3">
               <h3 className="px-2 py-1 text-xs font-medium text-muted-foreground">
-                {dayFormat.format(new Date(day))} · {countEntries(dayEntries)} Seite(n)
+                {dayFormat.format(new Date(day))} · {pageCount(countEntries(dayEntries))}
               </h3>
               <ul>{dayEntries.map((entry) => renderEntry(entry, 0))}</ul>
             </section>
@@ -297,10 +302,12 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
                   : `${previewTotals.documents === 1 ? 'Eine Seite' : `${previewTotals.documents} Seiten`} werden mit allem Inhalt, allen Versionsständen und allen Kommentaren gelöscht.` +
                     (previewTotals.attachments === 0
                       ? ''
-                      : ` Dazu ${previewTotals.attachments} Anhang/Anhänge samt Dateien.`) +
+                      : ` Dazu ${previewTotals.attachments === 1 ? 'ein Anhang' : `${previewTotals.attachments} Anhänge`} samt Dateien.`) +
                     (previewTotals.links === 0
                       ? ''
-                      : ` ${previewTotals.links} Verweis(e) anderer Seiten zeigen darauf und werden danach als unaufgelöst angezeigt.`) +
+                      : previewTotals.links === 1
+                        ? ' Ein Verweis einer anderen Seite zeigt darauf und wird danach als unaufgelöst angezeigt.'
+                        : ` ${previewTotals.links} Verweise anderer Seiten zeigen darauf und werden danach als unaufgelöst angezeigt.`) +
                     ' Das lässt sich nicht rückgängig machen, auch nicht über einen Versionsstand.'}
               </DialogDescription>
             </DialogHeader>
@@ -332,7 +339,7 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
                 }}
                 data-testid="trash-delete-confirm"
               >
-                <Trash2Icon className={cn('size-3.5')} /> Unwiderruflich löschen
+                <Trash2Icon className={cn('size-3.5')} /> Endgültig löschen
               </Button>
             </DialogFooter>
           </DialogContent>

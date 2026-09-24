@@ -273,7 +273,7 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
                   </TableCell>
                   <TableCell>
                     <Badge variant={revoked ? 'muted' : 'default'}>
-                      {revoked ? 'Widerrufen' : 'Aktiv'}
+                      {revoked ? 'Zurückgezogen' : 'Aktiv'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -283,7 +283,7 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
                       disabled={revoked}
                       onClick={() => setRevokeTarget(token)}
                     >
-                      Widerrufen
+                      Zurückziehen
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -346,7 +346,7 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
             </Select>
           </div>
           <Button type="submit" disabled={name.trim().length === 0 || createToken.isPending}>
-            Erstellen
+            Anlegen
           </Button>
         </form>
         <p className="text-xs text-muted-foreground">
@@ -416,7 +416,7 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
       <Dialog open={revokeTarget !== null} onOpenChange={(open) => !open && setRevokeTarget(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Token widerrufen?</DialogTitle>
+            <DialogTitle>Token zurückziehen?</DialogTitle>
             <DialogDescription>
               {revokeTarget !== null
                 ? `„${revokeTarget.name}“ kann danach nicht mehr verwendet werden. Das lässt sich nicht rückgängig machen.`
@@ -434,7 +434,7 @@ export function ApiTokenPanel({ onTokenCreated }: ApiTokenPanelProps = {}) {
                 revokeToken.mutate(revokeTarget.id, { onSuccess: () => setRevokeTarget(null) });
               }}
             >
-              Widerrufen
+              Zurückziehen
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -38,7 +38,7 @@ export function ChatReader({
     return (
       <EmptyState
         title="Kein Chat gewählt"
-        description="Wähle links eine Unterhaltung, um ihren Verlauf zu lesen."
+        description="Wähle links einen Chat, um seinen Verlauf zu lesen."
       />
     );
   }
@@ -47,7 +47,7 @@ export function ChatReader({
     return (
       <ErrorState
         title="Verlauf nicht verfügbar"
-        description="Die Unterhaltung konnte nicht geladen werden."
+        description="Der Chat konnte nicht geladen werden."
         onRetry={() => void detail.refetch()}
       />
     );
@@ -94,7 +94,7 @@ export function ChatReader({
 
       <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3" data-testid="chat-transcript">
         {messages.length === 0 ? (
-          <EmptyState title="Leer" description="In dieser Unterhaltung steht noch nichts." />
+          <EmptyState title="Leer" description="In diesem Chat steht noch nichts." />
         ) : (
           <Transcript messages={messages} />
         )}

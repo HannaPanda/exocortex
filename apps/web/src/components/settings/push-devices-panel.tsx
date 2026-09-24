@@ -22,6 +22,7 @@ import {
   Switch,
 } from '@exocortex/ui';
 
+import { useDestructiveConfirmDialog } from '@/components/editor/destructive-confirm';
 import {
   useBrowserSubscription,
   usePushDevices,
@@ -79,6 +80,7 @@ export function PushDevicesPanel() {
   );
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
+  const confirmDialog = useDestructiveConfirmDialog();
 
   const subscriptionQuery = useBrowserSubscription(support === 'supported');
   const endpoint = subscriptionQuery.data?.endpoint ?? null;
@@ -125,6 +127,7 @@ export function PushDevicesPanel() {
 
   return (
     <section className="flex flex-col gap-3" aria-labelledby="push-devices-heading">
+      {confirmDialog.element}
       <div>
         <h2 id="push-devices-heading" className="text-sm font-semibold">
           Auf deinen Geräten
@@ -239,7 +242,14 @@ export function PushDevicesPanel() {
                       },
                     })
                   }
-                  onRemove={() => {
+                  onRemove={async () => {
+                    const confirmed = await confirmDialog.confirm({
+                      title: `${device.label} entfernen?`,
+                      description:
+                        'Das Gerät bekommt danach keine Benachrichtigungen mehr, und seine Auswahl ist weg. Du kannst es später auf dem Gerät selbst wieder anmelden.',
+                      confirmLabel: 'Entfernen',
+                    });
+                    if (!confirmed) return;
                     // Removing the row this browser is subscribed with has to
                     // end the subscription too, or the browser keeps an
                     // endpoint nothing writes to and never offers to
@@ -266,7 +276,7 @@ function DeviceRow({
   device: PushDevice;
   onRename: (label: string) => void;
   onToggleKind: (kind: PushNotificationKind, enabled: boolean) => void;
-  onRemove: () => void;
+  onRemove: () => Promise<void>;
 }) {
   return (
     <li className="rounded-lg border border-border p-3" data-testid="push-device">
@@ -294,7 +304,7 @@ function DeviceRow({
             <Badge variant="muted">{device.failureCount} Fehlversuche</Badge>
           ) : null}
         </div>
-        <Button variant="ghost" size="sm" onClick={onRemove}>
+        <Button variant="ghost" size="sm" onClick={() => void onRemove()}>
           Entfernen
         </Button>
       </div>

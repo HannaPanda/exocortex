@@ -38,7 +38,7 @@ export function IncomingSharesList() {
       {shares.data.shares.length === 0 ? (
         <EmptyState
           className="mt-6"
-          title="Noch nichts geteilt"
+          title="Nichts für dich freigegeben"
           description="Wenn jemand dir eine Seite freigibt, taucht sie hier auf."
         />
       ) : (

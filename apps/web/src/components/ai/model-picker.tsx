@@ -215,7 +215,7 @@ export function ModelPicker({
             <TooltipContent>
               {visionCompanionEditable
                 ? visionCompanionTooltip(selectedModel.visionCompanionSlug)
-                : 'Wird verfügbar, sobald die Unterhaltung begonnen hat.'}
+                : 'Wird verfügbar, sobald der Chat begonnen hat.'}
             </TooltipContent>
           </Tooltip>
           <SelectContent>

@@ -86,7 +86,7 @@ export function RenderTemplatesPage({ workspaceId }: { workspaceId: string }) {
       <section className="mt-8 flex flex-col gap-3">
         {templates.data.templates.length === 0 ? (
           <EmptyState
-            title="Noch keine Vorlage"
+            title="Noch keine Vorlagen"
             description="Eine Vorlage ohne eigenen Quelltext benutzt die eingebaute Vorlage Eisvogel und braucht keine Zeile LaTeX."
           />
         ) : (

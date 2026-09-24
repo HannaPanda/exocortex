@@ -190,7 +190,7 @@ export function PropertyMenu({
           >
             <Input autoFocus value={name} onChange={(event) => setName(event.target.value)} />
             <Button type="submit" size="sm">
-              Fertig
+              Speichern
             </Button>
           </form>
         </PopoverContent>

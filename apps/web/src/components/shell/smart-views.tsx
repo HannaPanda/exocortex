@@ -70,8 +70,9 @@ export function SmartViews({ workspaceId }: { workspaceId: string }) {
               </Link>
 
               {/* Hidden until the row is hovered or something in it has focus,
-                  so eight rows are eight names and not sixteen buttons. */}
-              <span className="flex opacity-0 transition-opacity group-hover/view:opacity-100 focus-within:opacity-100">
+                  so eight rows are eight names and not sixteen buttons. A
+                  touch screen has no hover, so there they always show. */}
+              <span className="flex opacity-0 transition-opacity group-hover/view:opacity-100 focus-within:opacity-100 pointer-coarse:opacity-100">
                 <Button
                   variant="ghost"
                   size="icon-sm"

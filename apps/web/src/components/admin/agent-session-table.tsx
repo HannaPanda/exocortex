@@ -104,7 +104,8 @@ export function AgentSessionTable() {
         <Alert data-testid="agent-session-revert-result">
           <AlertDescription>
             <span className="font-medium">
-              {result.reverted.length} Seite(n) zurückgesetzt, {result.skipped.length} übersprungen.
+              {result.reverted.length === 1 ? 'Eine Seite' : `${result.reverted.length} Seiten`}{' '}
+              zurückgesetzt, {result.skipped.length} übersprungen.
             </span>
             {result.skipped.length > 0 ? (
               <ul className="mt-2 list-disc pl-5">
@@ -203,7 +204,7 @@ export function AgentSessionTable() {
             <DialogDescription>
               {pending === null
                 ? null
-                : `${pending.documentCount} Seite(n) werden auf den Stand vor dieser Sitzung zurückgesetzt. ` +
+                : `${pending.documentCount === 1 ? 'Eine Seite wird' : `${pending.documentCount} Seiten werden`} auf den Stand vor dieser Sitzung zurückgesetzt. ` +
                   'Der aktuelle Stand jeder Seite wird vorher gesichert, der Schritt ist also selbst umkehrbar.'}
             </DialogDescription>
           </DialogHeader>

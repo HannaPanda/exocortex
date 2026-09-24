@@ -3,7 +3,7 @@
 import { ChevronDownIcon, ImageIcon, MoveVerticalIcon, SettingsIcon, XIcon } from 'lucide-react';
 import * as React from 'react';
 
-import { type DocumentDetail } from '@exocortex/contracts';
+import { type DocumentDetail, type DocumentType } from '@exocortex/contracts';
 import {
   Badge,
   Button,
@@ -288,11 +288,17 @@ function TechnicalSection({ detail }: { detail: DocumentDetail }) {
   );
 }
 
+const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
+  PAGE: 'Seite',
+  COLLECTION: 'Datenbank',
+  PROJECT: 'LaTeX-Projekt',
+};
+
 /** Type and access, always visible: cheap orientation before anything else. */
 function MetaLine({ detail }: { detail: DocumentDetail }) {
   return (
     <div className="flex items-center justify-between text-xs text-muted-foreground">
-      <span>{detail.type === 'PAGE' ? 'Seite' : 'Sammlung'}</span>
+      <span>{DOCUMENT_TYPE_LABELS[detail.type]}</span>
       <Badge variant={detail.access === 'write' ? 'outline' : 'muted'}>
         {detail.access === 'write' ? 'Bearbeiten' : 'Nur lesen'}
       </Badge>

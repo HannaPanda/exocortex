@@ -32,7 +32,7 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   attachment_access_denied: 'Du hast keinen Zugriff auf diese Datei.',
   ai_provider_unavailable: 'Der KI-Anbieter ist gerade nicht erreichbar.',
   ai_no_eligible_provider:
-    'Kein Anbieter dieses Modells kann diese Anfrage bedienen. Wähle ein Modell mit größerem Kontext oder starte eine neue Unterhaltung.',
+    'Kein Anbieter dieses Modells kann diese Anfrage bedienen. Wähle ein Modell mit größerem Kontext oder starte einen neuen Chat.',
   internal_error: 'Unerwarteter Fehler. Bitte versuche es erneut.',
   admin_required: 'Dafür brauchst du Administratorrechte.',
   api_token_invalid: 'Das API-Token ist ungültig.',
@@ -44,7 +44,7 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   ai_image_unavailable:
     'Bilder erzeugen ist für diese Instanz nicht eingerichtet. Im Administrationsbereich lässt sich ein Bildmodell hinterlegen.',
   ai_tool_limit_exceeded: 'Die KI hat zu viele Werkzeugaufrufe gebraucht.',
-  ai_conversation_locked: 'In dieser Unterhaltung läuft noch eine Antwort.',
+  ai_conversation_locked: 'In diesem Chat läuft noch eine Antwort.',
   ai_conversation_cursor_invalid: 'Die Liste konnte nicht weitergeblättert werden.',
   document_content_conflict: 'Die Seite wurde zwischenzeitlich geändert.',
   document_content_lossy: 'Anhängen würde eingebettete Datenbanken auf dieser Seite verlieren.',
@@ -110,7 +110,7 @@ const MESSAGES: Record<ApiErrorCode, string> = {
   pinned_sources_disabled:
     'Quellen anheften ist in diesem Arbeitsbereich abgeschaltet. Das lässt sich in den Einstellungen unter KI wieder einschalten.',
   pinned_sources_limit_reached:
-    'Diese Unterhaltung hat schon so viele Quellen angeheftet, wie erlaubt sind. Nimm eine weg oder hebe die Grenze in den Einstellungen an.',
+    'Dieser Chat hat schon so viele Quellen angeheftet, wie erlaubt sind. Nimm eine weg oder hebe die Grenze in den Einstellungen an.',
   saved_query_access_denied: 'Diese gespeicherte Suche gehört nicht zu diesem Arbeitsbereich.',
   document_not_a_collection: 'Nur eine Datenbankseite hat Ansichten.',
   share_link_invalid:

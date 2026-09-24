@@ -71,9 +71,9 @@ export const AI_FEATURES: readonly RegisteredFeature[] = [
   defineFeature({
     id: 'angeheftete-quellen',
     area: 'ki',
-    title: 'Mehrere Quellen an eine Unterhaltung heften',
+    title: 'Mehrere Quellen an einen Chat heften',
     summary:
-      'Neben der offenen Seite kannst du weitere Seiten, Datenbankansichten und gespeicherte Suchen an eine Unterhaltung heften. Sie bleiben dran, auch wenn du weiterblätterst, und über dem Eingabefeld steht jederzeit vollständig, was mitgeht.',
+      'Neben der offenen Seite kannst du weitere Seiten, Datenbankansichten und gespeicherte Suchen an einen Chat heften. Sie bleiben dran, auch wenn du weiterblätterst, und über dem Eingabefeld steht jederzeit vollständig, was mitgeht.',
     details: [
       'Über dem Eingabefeld sitzt eine Zeile aus Chips. Mit dem Plus suchst du eine Seite, eine Datenbankansicht oder eine gespeicherte Suche und heftest sie an; mit dem Kreuz nimmst du sie wieder weg, und das wirkt ab dem nächsten Zug. Anders als die offene Seite bleibt eine angeheftete Quelle dran, wenn du woanders hinklickst, denn genau dafür heftest du sie an.',
       'Jede Quelle kann auf zweierlei Art mitgehen. Entweder nur als Name: dann weiß das Modell, dass es sie gibt, und holt sie sich selbst, wenn eine Frage sie braucht. Oder mit Inhalt: dann steht ihr Text in jedem Zug mit drin und kostet auch in jedem Zug. Der Chip sagt dir, wie viele Zeichen das gerade sind, damit du nicht raten musst, was eine Frage kostet.',

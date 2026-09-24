@@ -452,7 +452,7 @@ export function TableLayout() {
                       <TableCell>{token.used}</TableCell>
                       <TableCell className="text-right">
                         <Button variant="outline" size="sm">
-                          Widerrufen
+                          Zurückziehen
                         </Button>
                       </TableCell>
                     </TableRow>

@@ -10,9 +10,9 @@ import { DsExample, DsSection, DsSource, DsState, DsStates } from '../showcase';
 
 /**
  * The interface's language. The counts are the audit's
- * (`docs/design-system-inventory.md` §2.7), and a pair of words that still
- * competes is shown as competing: choosing between them is a decision for
- * #129, not for this page.
+ * (`docs/design-system-inventory.md` §2.7); #129 settled every pair but one,
+ * and the one still open (archive or trash) is shown as open: choosing it is
+ * a decision, not something this page gets to make.
  */
 
 interface Word {
@@ -27,20 +27,20 @@ const ACTIONS: readonly Word[] = [
   {
     use: 'Änderungen sichern',
     word: 'Speichern',
-    note: '17 Stellen, einmal „Sichern“',
-    settled: false,
+    note: 'überall, auch beim Chat, der als Seite gespeichert wird',
+    settled: true,
   },
   {
     use: 'Fenster zumachen',
     word: 'Schließen',
-    note: '10 Stellen, zweimal „Fertig“',
-    settled: false,
+    note: 'überall; „Fertig“ gibt es nicht mehr',
+    settled: true,
   },
   {
     use: 'Etwas Neues anlegen',
     word: 'Anlegen',
-    note: '8 Stellen, einmal „Erstellen“',
-    settled: false,
+    note: 'überall, auch für Tokens',
+    settled: true,
   },
   {
     use: 'Weg für immer',
@@ -56,9 +56,9 @@ const ACTIONS: readonly Word[] = [
   },
   {
     use: 'Zugang beenden',
-    word: 'Widerrufen',
-    note: 'Tokens; Freigaben sagen „Zurückziehen“, Agentensitzungen „zurücknehmen“',
-    settled: false,
+    word: 'Zurückziehen',
+    note: 'Freigaben, Einladungen, Tokens. „Zurücknehmen“ ist etwas anderes: es macht die Schreibvorgänge einer Agentensitzung rückgängig',
+    settled: true,
   },
 ];
 
@@ -68,12 +68,12 @@ const TERMS: readonly Word[] = [
   { use: 'Die eingebaute KI', word: 'KI', note: 'einheitlich', settled: true },
   { use: 'Die Kopiervorlage', word: 'Vorlage', note: 'einheitlich', settled: true },
   { use: 'Ein Link auf eine Seite', word: 'Verweis', note: 'einheitlich', settled: true },
-  { use: 'Die Tabelle aus Seiten', word: 'Datenbank', note: 'einmal „Sammlung“', settled: false },
+  { use: 'Die Tabelle aus Seiten', word: 'Datenbank', note: 'einheitlich', settled: true },
   {
     use: 'Ein Gespräch mit der KI',
     word: 'Chat',
-    note: 'im Leser und in Fehlern „Unterhaltung“',
-    settled: false,
+    note: 'einheitlich, auch in Fehlern und Einstellungen',
+    settled: true,
   },
   {
     use: 'Wohin archivierte Seiten gehen',
@@ -154,7 +154,7 @@ export function LanguageSection() {
       <DsExample
         id="sprache-handlungen"
         title="Handlungen"
-        note="Auslöser und Bestätigung benutzen dasselbe Wort: wer „Endgültig löschen“ drückt, bestätigt mit „Endgültig löschen“. Heute antwortet der Papierkorb darauf mit „Unwiderruflich löschen“ (Issue #129)."
+        note="Auslöser und Bestätigung benutzen dasselbe Wort: wer „Endgültig löschen“ drückt, bestätigt mit „Endgültig löschen“, wer „Zurückziehen“ drückt, mit „Zurückziehen“."
       >
         <WordList label="Wörter für Handlungen" words={ACTIONS} />
       </DsExample>
@@ -189,8 +189,8 @@ export function LanguageSection() {
             <span className="font-medium">Leer:</span>{' '}
             <span className="text-muted-foreground">
               „Noch keine …“, wenn es etwas geben kann, „… nicht geladen“, wenn der Abruf
-              scheiterte. Für einen Zustand gibt es heute teils zwei Titel („Nichts gefunden“ und
-              „Keine Treffer“).
+              scheiterte, und „Nichts gefunden“, wenn eine Suche leer ausgeht. Ein Zustand, ein
+              Titel.
             </span>
           </li>
         </ul>

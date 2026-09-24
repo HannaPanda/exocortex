@@ -22,6 +22,7 @@ import {
   TableRow,
 } from '@exocortex/ui';
 
+import { useDestructiveConfirmDialog } from '@/components/editor/destructive-confirm';
 import { ApiError } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import {
@@ -66,6 +67,7 @@ export function InvitationTable({
   /** The link from the most recent resend. Shown until the row changes. */
   const [freshLink, setFreshLink] = React.useState<{ id: string; url: string } | null>(null);
   const [copied, setCopied] = React.useState(false);
+  const confirmDialog = useDestructiveConfirmDialog();
 
   if (invitations.isPending) {
     return <LoadingState label="Einladungen werden geladen …" variant="skeleton" rows={3} />;
@@ -96,6 +98,7 @@ export function InvitationTable({
 
   return (
     <div className="flex flex-col gap-4">
+      {confirmDialog.element}
       {mutationError !== undefined ? (
         <Alert variant="destructive" data-testid="invitation-action-error">
           <AlertDescription>{messageForCode(mutationError)}</AlertDescription>
@@ -176,8 +179,17 @@ export function InvitationTable({
                     });
                   }}
                   onRevoke={() => {
-                    setFreshLink(null);
-                    revoke.mutate(invitation.id);
+                    void confirmDialog
+                      .confirm({
+                        title: 'Einladung zurückziehen?',
+                        description: `Der Link an ${invitation.email} funktioniert danach nicht mehr. Soll die Person doch kommen, braucht sie eine neue Einladung.`,
+                        confirmLabel: 'Zurückziehen',
+                      })
+                      .then((confirmed) => {
+                        if (!confirmed) return;
+                        setFreshLink(null);
+                        revoke.mutate(invitation.id);
+                      });
                   }}
                 />
               </TableCell>
