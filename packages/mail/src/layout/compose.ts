@@ -174,7 +174,7 @@ function htmlBlock(t: MailTheme, block: MailBlock): string {
         )
         .join('')}</table>`;
     case 'notice':
-      return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px 0;"><tr><td style="background-color:${t.panel};border-left:4px solid ${t.panelAccent};padding:12px 16px;font-family:${t.fontFamily};font-size:15px;line-height:1.5;color:${t.text};">${inline(block.text)}</td></tr></table>`;
+      return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px 0;"><tr><td style="background-color:${t.panel};border:1px solid ${t.panelBorder};border-radius:6px;padding:12px 16px;font-family:${t.fontFamily};font-size:15px;line-height:1.5;color:${t.text};">${inline(block.text)}</td></tr></table>`;
     case 'section':
       return sectionBlock(t, block);
     case 'excerpt':

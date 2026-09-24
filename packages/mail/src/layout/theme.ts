@@ -39,10 +39,9 @@ export interface MailTheme {
   rule: string;
   /** Behind an info block and a quoted excerpt. */
   panel: string;
-  /** The stripe at the left edge of an info block. */
-  panelAccent: string;
+  /** The hairline around an info block. */
+  panelBorder: string;
   fontFamily: string;
-  monoFontFamily: string;
   /** The widest the sheet grows, in pixels. 600 is what every client renders. */
   maxWidth: number;
   /** The sheet's corners, in pixels. Clients that ignore it get square ones. */
@@ -62,10 +61,9 @@ export const mailTheme: MailTheme = {
   actionText: '#1F2C33',
   rule: '#DDE1E4',
   panel: '#F4F6F7',
-  panelAccent: '#F9AA33',
+  panelBorder: '#E3C79A',
   fontFamily:
     "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
-  monoFontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace",
   maxWidth: 600,
   radius: 8,
 };
