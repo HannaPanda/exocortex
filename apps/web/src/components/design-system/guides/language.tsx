@@ -2,17 +2,7 @@
 
 import * as React from 'react';
 
-import {
-  Badge,
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TruncatedText,
-} from '@exocortex/ui';
+import { Badge, TruncatedText } from '@exocortex/ui';
 
 import { formatRelativeTime } from '@/lib/relative-time';
 
@@ -93,33 +83,38 @@ const TERMS: readonly Word[] = [
   },
 ];
 
-function WordTable({ caption, words }: { caption: string; words: readonly Word[] }) {
+/**
+ * A list rather than a table: a reference is read on a phone too, and a table
+ * there scrolls sideways with the column that explains the word off screen,
+ * which is exactly the open question P12 is about.
+ */
+function WordList({ label, words }: { label: string; words: readonly Word[] }) {
   return (
-    <Table>
-      <TableCaption className="exocortex-sr-only">{caption}</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Wofür</TableHead>
-          <TableHead>Wort</TableHead>
-          <TableHead>Stand</TableHead>
-          <TableHead>Im Bestand</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {words.map((entry) => (
-          <TableRow key={entry.use}>
-            <TableCell>{entry.use}</TableCell>
-            <TableCell className="font-medium">{entry.word}</TableCell>
-            <TableCell>
-              <Badge variant={entry.settled ? 'secondary' : 'outline'}>
-                {entry.settled ? 'einheitlich' : 'uneinheitlich'}
-              </Badge>
-            </TableCell>
-            <TableCell className="text-muted-foreground">{entry.note}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <ul aria-label={label} className="flex flex-col divide-y divide-border text-sm">
+      {words.map((entry) => (
+        <li
+          key={entry.use}
+          className="grid gap-x-6 gap-y-1 py-2.5 sm:grid-cols-[minmax(0,14rem)_8rem_minmax(0,1fr)] sm:items-baseline"
+        >
+          <span className="text-muted-foreground">{entry.use}</span>
+          <span className="flex items-center gap-2 font-medium sm:block">
+            {entry.word}
+            <Badge variant={entry.settled ? 'secondary' : 'outline'} className="sm:hidden">
+              {entry.settled ? 'einheitlich' : 'uneinheitlich'}
+            </Badge>
+          </span>
+          <span className="flex flex-wrap items-baseline gap-2 text-muted-foreground">
+            <Badge
+              variant={entry.settled ? 'secondary' : 'outline'}
+              className="hidden sm:inline-flex"
+            >
+              {entry.settled ? 'einheitlich' : 'uneinheitlich'}
+            </Badge>
+            {entry.note}
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -161,11 +156,11 @@ export function LanguageSection() {
         title="Handlungen"
         note="Auslöser und Bestätigung benutzen dasselbe Wort: wer „Endgültig löschen“ drückt, bestätigt mit „Endgültig löschen“. Heute antwortet der Papierkorb darauf mit „Unwiderruflich löschen“ (Issue #129)."
       >
-        <WordTable caption="Wörter für Handlungen" words={ACTIONS} />
+        <WordList label="Wörter für Handlungen" words={ACTIONS} />
       </DsExample>
 
       <DsExample id="sprache-begriffe" title="Begriffe">
-        <WordTable caption="Begriffe der Anwendung" words={TERMS} />
+        <WordList label="Begriffe der Anwendung" words={TERMS} />
       </DsExample>
 
       <DsExample

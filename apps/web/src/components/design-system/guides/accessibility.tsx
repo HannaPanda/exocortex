@@ -179,7 +179,7 @@ export function AccessibilitySection() {
         note="Bei reduzierter Bewegung schrumpft jede Animation auf null, der Puls endet im Ruhezustand. Bei grobem Zeiger sind die Knöpfe sichtbar, die sonst erst beim Überfahren erscheinen, und Menüs gehen auch mit langem Druck auf. Vier Stellen erscheinen auf Touch noch gar nicht (Issue #129)."
         source="packages/ui/src/styles.css"
       >
-        <div className="grid max-w-md gap-x-8 gap-y-3 sm:grid-cols-2">
+        <div className="grid max-w-2xl gap-x-8 gap-y-3 md:grid-cols-3">
           <Readout label="Reduzierte Bewegung" value={yesNo(reducedMotion)} />
           <Readout label="Grober Zeiger" value={yesNo(coarsePointer)} />
           <Readout label="Hover möglich" value={yesNo(canHover)} />
