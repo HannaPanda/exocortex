@@ -382,7 +382,8 @@ export const projectAddAssetTool: AnyToolDefinition = defineTool({
   name: 'exo_project_add_asset',
   description:
     'Hängt eine schon hochgeladene Datei (Bild, Schrift, PDF) an einen Pfad im Projekt. Die Bytes ' +
-    'kommen vorher mit exo_attachment_upload in den Arbeitsbereich; hier wird nur die id an den ' +
+    'kommen vorher mit exo_attachment_upload_ticket (oder exo_attachment_upload) und dem Projekt ' +
+    'als documentId in den Arbeitsbereich; hier wird nur die id an den ' +
     'Pfad gebunden, unter dem LaTeX sie dann findet.',
   inputSchema: addProjectAssetRequestSchema.extend({ projectId: idSchema }),
   surfaces: ['mcp', 'ai'],

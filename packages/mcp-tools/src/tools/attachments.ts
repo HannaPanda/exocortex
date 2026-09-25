@@ -46,6 +46,23 @@ const EMBED_RECIPE =
   'Server funktioniert nie, egal ob sie im Browser aufrufbar ist.';
 
 /**
+ * The page a file belongs to, required on every upload tool.
+ *
+ * The REST routes still accept a file without one, but no screen ever makes
+ * such a file and nothing ever collects it: deleting a page for good deletes
+ * the files hanging off it, and a file hanging off none outlives everything.
+ * An agent left the page out of its first ticket because the description
+ * called it optional, and the picture it embedded became exactly that. So the
+ * tools ask for the decision instead of offering a default, the same way the
+ * browser always names the page it uploads into (and a project names itself).
+ */
+const uploadOwnerSchema = idSchema.describe(
+  'Die Seite, auf der die Datei erscheinen soll, oder das Projekt, in das sie kommt. Die Datei ' +
+    'gehört dann zu ihr: wird die Seite endgültig gelöscht, geht die Datei mit. Pflicht, auch ' +
+    'wenn du die Datei erst später einbettest.',
+);
+
+/**
  * The declared type for the formats that carry no signature.
  *
  * Everything binary is identified from its magic bytes server-side, so an
@@ -73,7 +90,7 @@ function declaredTypeFor(filename: string): string {
 
 const attachmentUploadInputSchema = z.object({
   workspaceId: idSchema,
-  documentId: idSchema.nullable().default(null),
+  documentId: uploadOwnerSchema,
   filename: z.string().min(1).max(255),
   contentBase64: z.string().max(35_000_000),
 });
@@ -89,7 +106,7 @@ function uploadedText(result: { attachment: { filename: string; id: string }; em
 export const attachmentUploadTool: AnyToolDefinition = defineTool({
   name: 'exo_attachment_upload',
   description:
-    'Lädt eine Datei (Base64-kodiert) in einen Workspace hoch, optional an eine Seite angehängt. ' +
+    'Lädt eine Datei (Base64-kodiert) auf eine Seite (documentId) eines Workspace hoch. ' +
     'Nur für kleine Inhalte, die du selbst erzeugt hast: du musst jedes Byte als Base64 in den ' +
     'Aufruf schreiben, für ein Foto oder ein PDF ist das zu viel. Liegt die Datei bei dir lokal, ' +
     'nimm exo_attachment_upload_ticket. ' +
@@ -109,7 +126,7 @@ export const attachmentUploadTool: AnyToolDefinition = defineTool({
       // have no magic bytes to sniff (see DECLARED_TYPE_BY_EXTENSION).
       contentType: declaredTypeFor(input.filename),
       bytes,
-      fields: input.documentId !== null ? { documentId: input.documentId } : undefined,
+      fields: { documentId: input.documentId },
       responseSchema: uploadAttachmentResponseSchema,
     });
     return { text: uploadedText(result), data: result };
@@ -131,7 +148,7 @@ export const attachmentUploadTool: AnyToolDefinition = defineTool({
 export const attachmentUploadUrlTool: AnyToolDefinition = defineTool({
   name: 'exo_attachment_upload_url',
   description:
-    'Lädt die Datei unter einer Adresse in einen Workspace hoch, optional an eine Seite angehängt. ' +
+    'Lädt die Datei unter einer Adresse auf eine Seite (documentId) eines Workspace hoch. ' +
     'Das ist der Weg für ein Bild, das schon öffentlich im Netz steht und von dem du nur die ' +
     'Adresse hast: eXocortex holt es und legt es als Anhang ab. Die Adresse muss öffentlich ' +
     'erreichbar sein (kein localhost, keine internen Netze). Eine Datei, die bei dir lokal liegt, ' +
@@ -140,7 +157,8 @@ export const attachmentUploadUrlTool: AnyToolDefinition = defineTool({
     EMBED_RECIPE,
   inputSchema: z
     .object({ workspaceId: idSchema })
-    .extend(uploadAttachmentFromUrlRequestSchema.shape),
+    .extend(uploadAttachmentFromUrlRequestSchema.shape)
+    .extend({ documentId: uploadOwnerSchema }),
   surfaces: ['mcp', 'ai'],
   domain: 'attachments',
   mutating: true,
@@ -183,12 +201,15 @@ export const attachmentUploadTicketTool: AnyToolDefinition = defineTool({
     'curl -F "file=@/pfad/zur/datei" <uploadUrl>. Die Antwort darauf ist JSON mit embedUrl. ' +
     'Die Bytes gehen so nicht durch dein Modell und nicht über einen fremden Server: lege eine ' +
     'Datei nie auf einer anderen Website oder in einem anderen Projekt ab, um sie hierher zu ' +
-    'bekommen. Mit documentId hängt die Datei an dieser Seite, mit filename bekommt sie diesen ' +
-    'Namen. Die Adresse ist ein Geheimnis für genau einen Upload: nicht in Seiten, Commits oder ' +
+    'bekommen. documentId ist Pflicht: die Seite, auf der die Datei erscheinen soll, oder das ' +
+    'Projekt, in das sie kommt. Mit filename bekommt sie einen eigenen Namen. Die Adresse ist ein Geheimnis für genau einen Upload: nicht in Seiten, Commits oder ' +
     'Nachrichten schreiben. Siehst du die Ausgabe des Skripts nicht, nennt ' +
     'exo_attachment_upload_ticket_get Stand und embedUrl. ' +
     EMBED_RECIPE,
-  inputSchema: z.object({ workspaceId: idSchema }).extend(createUploadTicketRequestSchema.shape),
+  inputSchema: z
+    .object({ workspaceId: idSchema })
+    .extend(createUploadTicketRequestSchema.shape)
+    .extend({ documentId: uploadOwnerSchema }),
   surfaces: ['mcp'],
   domain: 'attachments',
   mutating: true,

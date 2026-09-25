@@ -47,6 +47,14 @@ header, so it cannot be mistaken for a bearer credential. It is bound to the
 workspace, the page and the optional filename chosen when it was minted; the
 upload cannot redirect it.
 
+**The page is required.** Deleting a page for good deletes the files hanging
+off it, and nothing else ever removes a file, so one uploaded to no page is
+reachable from no screen and outlives everything. The first agent to use a
+ticket left the page out because it was optional, and the picture it embedded
+became such a file. The browser always names a page (or a project), and the
+ticket route and all three upload tools now insist on one as well; only the
+older REST routes still accept a file without one, for other clients.
+
 **Redeeming acts as the credential that minted it.** The ticket records the
 user and, when an `exo_` token minted it, that token. On redemption the token
 is checked exactly as `SessionGuard` checks one in a header -- the same

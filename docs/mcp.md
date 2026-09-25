@@ -409,6 +409,13 @@ Two steps:
    unrelated projects, publishes the file, and is exactly the detour the ticket
    exists to replace.
 
+   All three take `documentId`, and on the tools it is required: the page the
+   picture will appear on (or the project it goes into). A file belongs to that
+   page, and deleting the page for good is the only thing that ever deletes the
+   file; one uploaded to no page is reachable from no screen and collected by
+   nothing. The REST routes behind the base64 and URL uploads still accept a
+   file without a page for other clients; the ticket route does not.
+
 2. Write `![Beschreibung](<embedUrl>)` with `exo_page_write`. `embedUrl` is
    `/api/attachments/<id>/download`, it is stable, and it is checked against the
    session on every request, so the picture stays as private as the page.

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { type ExocortexApiClient } from '../client.js';
+import { ToolInputValidationError } from '../tool.js';
 
 import {
   attachmentCorrectTextTool,
@@ -9,6 +10,7 @@ import {
   attachmentUploadTicketGetTool,
   attachmentUploadTicketTool,
   attachmentUploadTool,
+  attachmentUploadUrlTool,
 } from './attachments.js';
 
 interface RecordedCall {
@@ -16,6 +18,7 @@ interface RecordedCall {
   path: string;
   body?: unknown;
   contentType?: string;
+  fields?: Record<string, string>;
 }
 
 /** Hand-written fake client: records every call, answers with a fixed response. */
@@ -30,7 +33,7 @@ function createFakeClient(response: unknown): {
       return input.responseSchema.parse(response);
     },
     async upload(input) {
-      calls.push({ path: input.path, contentType: input.contentType });
+      calls.push({ path: input.path, contentType: input.contentType, fields: input.fields });
       return input.responseSchema.parse(response);
     },
   };
@@ -158,7 +161,7 @@ describe('exo_attachment_upload', () => {
     attachment: {
       id: 'attachment1',
       workspaceId: 'workspace1',
-      documentId: null,
+      documentId: 'doc123456',
       filename: 'zahlen.csv',
       mimeType: 'text/csv',
       byteSize: 12,
@@ -178,7 +181,7 @@ describe('exo_attachment_upload', () => {
 
     await attachmentUploadTool.run(client, {
       workspaceId: 'workspace1',
-      documentId: null,
+      documentId: 'doc123456',
       filename: 'zahlen.csv',
       contentBase64: Buffer.from('a,b\n1,2\n').toString('base64'),
     });
@@ -191,13 +194,56 @@ describe('exo_attachment_upload', () => {
 
     await attachmentUploadTool.run(client, {
       workspaceId: 'workspace1',
-      documentId: null,
+      documentId: 'doc123456',
       filename: 'bericht.docx',
       contentBase64: Buffer.from('PK').toString('base64'),
     });
 
     expect(calls[0]?.contentType).toBe('application/octet-stream');
   });
+
+  it('sends the page the file belongs to', async () => {
+    const { client, calls } = createFakeClient(uploadResponse);
+
+    await attachmentUploadTool.run(client, {
+      workspaceId: 'workspace1',
+      documentId: 'doc123456',
+      filename: 'foto.jpg',
+      contentBase64: Buffer.from('x').toString('base64'),
+    });
+
+    expect(calls[0]?.fields).toEqual({ documentId: 'doc123456' });
+  });
+});
+
+/**
+ * A file uploaded to no page is reachable from no screen and deleted by
+ * nothing, and the first agent to use the ticket made one because the page
+ * was optional. So none of the three upload tools accepts a call without it.
+ */
+describe('the page an upload belongs to', () => {
+  const cases = [
+    {
+      tool: attachmentUploadTool,
+      input: { workspaceId: 'ws1234567', filename: 'a.jpg', contentBase64: 'eA==' },
+    },
+    {
+      tool: attachmentUploadUrlTool,
+      input: { workspaceId: 'ws1234567', url: 'https://example.org/a.jpg' },
+    },
+    { tool: attachmentUploadTicketTool, input: { workspaceId: 'ws1234567' } },
+  ];
+
+  for (const { tool, input } of cases) {
+    it(`${tool.name} refuses to upload to no page`, async () => {
+      const { client, calls } = createFakeClient({});
+      await expect(tool.run(client, input)).rejects.toBeInstanceOf(ToolInputValidationError);
+      await expect(tool.run(client, { ...input, documentId: null })).rejects.toBeInstanceOf(
+        ToolInputValidationError,
+      );
+      expect(calls).toEqual([]);
+    });
+  }
 });
 
 const ticket = {

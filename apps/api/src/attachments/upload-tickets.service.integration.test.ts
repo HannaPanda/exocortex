@@ -370,7 +370,7 @@ describe('reading a ticket', () => {
       tickets.mint({
         workspaceId,
         minter: minterFor(undefined),
-        request: { documentId: null, filename: null },
+        request: { documentId: pageId, filename: null },
       }),
     );
     const own = await inRequest(() => tickets.get(minted.ticket.id, ownerId));

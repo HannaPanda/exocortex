@@ -603,7 +603,8 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   default and changes nothing.
 - ADR-064: a local file arrives through an upload ticket, never through a
   third host. `exo_attachment_upload_ticket` mints a one-time address (ten
-  minutes, 256 bits, only the hash stored) that the agent's script POSTs the
+  minutes, 256 bits, only the hash stored, always for a named page, because a
+  file on no page is collected by nothing) that the agent's script POSTs the
   file to; the bytes pass neither through the model nor another site.
   Redeeming acts as the minting credential: its `exo_` token is re-checked by
   the same `assertApiTokenUsable` the guard uses, must still carry `write`,

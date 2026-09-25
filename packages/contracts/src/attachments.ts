@@ -163,9 +163,16 @@ export const UPLOAD_TICKET_TTL_SECONDS = 600;
  * Body of `POST /api/workspaces/:workspaceId/attachments/upload-tickets`.
  * The same target fields as the URL upload: where the file lands and, if the
  * caller wants, what it is called.
+ *
+ * Unlike there, the page is required. A file belongs to the page it hangs
+ * off: deleting that page for good deletes the file with it, and that is the
+ * only thing that ever collects one. A file hanging off no page is reachable
+ * from no screen and removed by nothing, so a ticket that left the page out
+ * produced exactly that the first time an agent used it. The browser has
+ * never uploaded without one either.
  */
 export const createUploadTicketRequestSchema = z.object({
-  documentId: idSchema.nullable().default(null),
+  documentId: idSchema,
   /** Overrides the name the upload carries. The extension is still the file's. */
   filename: z.string().min(1).max(255).nullable().default(null),
 });

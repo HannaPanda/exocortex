@@ -360,7 +360,8 @@ const WRITE_MARKDOWN_DESCRIPTION =
   // that has no reason to have read anything about attachments.
   'Bilder und andere Dateien müssen aus diesem Workspace kommen: ' +
   '![Beschreibung](/api/attachments/<id>/download), wobei die id von ' +
-  'exo_attachment_upload oder exo_attachment_upload_url kommt (Feld embedUrl). ' +
+  'exo_attachment_upload_ticket (Datei liegt bei dir lokal), exo_attachment_upload_url oder ' +
+  'exo_attachment_upload kommt (Feld embedUrl), jeweils mit dieser Seite als documentId. ' +
   'Eine Adresse auf einem fremden Server wird vom Browser blockiert und bleibt leer, ' +
   'auch wenn sie sich anderswo öffnen lässt.';
 
@@ -532,7 +533,8 @@ export const pageSetCoverTool: AnyToolDefinition = defineTool({
   name: 'exo_page_set_cover',
   description:
     'Setzt das Titelbild einer Seite oder entfernt es (attachmentId null). Das Bild muss ein ' +
-    'Bild-Anhang desselben Workspace sein, hochzuladen mit exo_attachment_upload. ' +
+    'Bild-Anhang desselben Workspace sein, hochzuladen mit exo_attachment_upload_ticket (oder ' +
+    'exo_attachment_upload) und dieser Seite als documentId. ' +
     'position ist der senkrechte Bildausschnitt in Prozent: 0 zeigt die Oberkante, 100 die ' +
     'Unterkante, 50 die Mitte.',
   inputSchema: pageSetCoverInputSchema,

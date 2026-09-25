@@ -27,8 +27,9 @@ export const projectImportTool: AnyToolDefinition = defineTool({
   name: 'exo_project_import',
   description:
     'Liest ein ZIP-Archiv in ein Projekt: Textdateien kommen in den Dateibaum, alles andere wird ' +
-    'als Anhang eingebunden. Das Archiv kommt vorher mit exo_attachment_upload in den ' +
-    'Arbeitsbereich; hier wird nur seine id genannt. Vorhandene Dateien bleiben stehen, bis ' +
+    'als Anhang eingebunden. Das Archiv kommt vorher mit exo_attachment_upload_ticket (oder ' +
+    'exo_attachment_upload) und dem Projekt als documentId in den Arbeitsbereich; hier wird ' +
+    'nur seine id genannt. Vorhandene Dateien bleiben stehen, bis ' +
     'overwrite: true gesetzt ist, und die Antwort nennt jeden Eintrag, der nicht hineinkam, mit ' +
     'dem Grund. Ein einzelner gemeinsamer Oberordner im Archiv fällt weg, damit die Pfade dort ' +
     'landen, wo die \\input-Zeilen sie suchen.',
