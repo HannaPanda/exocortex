@@ -375,6 +375,7 @@ export class InvitationsService {
       workspaceName: row.workspace?.name ?? null,
       expiresAt: row.expiresAt.toISOString(),
       accountExists,
+      locale: isLocale(row.locale) ? row.locale : null,
     };
   }
 

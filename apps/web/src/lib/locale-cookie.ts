@@ -13,6 +13,11 @@ export function writeLocaleCookie(locale: Locale): void {
   document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=31536000; samesite=lax${secure}`;
 }
 
+/** Whether this browser was ever given a language, by a person or by an account. */
+export function hasLocaleCookie(): boolean {
+  return document.cookie.split('; ').some((pair) => pair.startsWith(`${LOCALE_COOKIE}=`));
+}
+
 /** Back to the browser's `Accept-Language`, for an account that chose nothing. */
 export function clearLocaleCookie(): void {
   document.cookie = `${LOCALE_COOKIE}=; path=/; max-age=0; samesite=lax`;

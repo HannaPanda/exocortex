@@ -353,6 +353,8 @@ describe('redeeming an invitation', () => {
     expect(sentMails.at(-1)?.locale).toBe('fr');
 
     const token = decodeURIComponent(created.url.split('/einladung/')[1] as string);
+    // The page the mail opens is told too, so it can speak French before anybody signs in.
+    await expect(service.preview(token)).resolves.toMatchObject({ locale: 'fr' });
     await service.accept({ token, name: 'Personne', password: 'ein-sehr-langes-passwort' });
     const user = await prisma.user.findUniqueOrThrow({ where: { email: email.toLowerCase() } });
     createdUserIds.push(user.id);
@@ -371,6 +373,8 @@ describe('redeeming an invitation', () => {
     expect(sentMails.at(-1)?.locale).toBe('de');
 
     const token = decodeURIComponent(created.url.split('/einladung/')[1] as string);
+    // The page gets no guess either: the visitor's browser knows better than the admin's account.
+    await expect(service.preview(token)).resolves.toMatchObject({ locale: null });
     await service.accept({ token, name: 'Neue Person', password: 'ein-sehr-langes-passwort' });
     const user = await prisma.user.findUniqueOrThrow({ where: { email: email.toLowerCase() } });
     createdUserIds.push(user.id);

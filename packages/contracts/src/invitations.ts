@@ -122,6 +122,12 @@ export const invitationPreviewSchema = z.object({
   expiresAt: isoDateTimeSchema,
   /** True when an account for this address already exists; then only sign-in is needed. */
   accountExists: z.boolean(),
+  /**
+   * The language the inviter chose for this person, or null when they chose
+   * none. Only the explicit choice: the inviter's own language is a guess the
+   * visitor's browser can make better (issue #98).
+   */
+  locale: localeSchema.nullable(),
 });
 export type InvitationPreview = z.infer<typeof invitationPreviewSchema>;
 

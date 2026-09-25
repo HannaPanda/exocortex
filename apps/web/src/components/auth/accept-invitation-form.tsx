@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AcceptInvitationResponse, type InvitationPreview } from '@exocortex/contracts';
@@ -20,6 +20,7 @@ import {
 import { ApiError, apiRequest } from '@/lib/api/client';
 import { messageForCode } from '@/lib/api/error-messages';
 import { signIn } from '@/lib/auth/client';
+import { hasLocaleCookie, writeLocaleCookie } from '@/lib/locale-cookie';
 
 /** Better Auth's own minimum, repeated so the form can say so before submitting. */
 const MIN_PASSWORD_LENGTH = 12;
@@ -41,6 +42,7 @@ const MIN_PASSWORD_LENGTH = 12;
 export function AcceptInvitationForm({ token }: { token: string }) {
   const t = useTranslations('auth.invitation');
   const router = useRouter();
+  const locale = useLocale();
 
   const [preview, setPreview] = React.useState<InvitationPreview | null>(null);
   const [lookupError, setLookupError] = React.useState<string | null>(null);
@@ -68,6 +70,18 @@ export function AcceptInvitationForm({ token }: { token: string }) {
       cancelled = true;
     };
   }, [token]);
+
+  // The inviter chose a language for this person, and the mail was written in
+  // it; the page that mail opens speaks it too -- unless this browser was
+  // already given a language, which was a choice as well (issue #98). The
+  // cookie then carries it through the sign-up, where it becomes the
+  // account's starting language anyway.
+  const invitedLocale = preview?.locale ?? null;
+  React.useEffect(() => {
+    if (invitedLocale === null || invitedLocale === locale || hasLocaleCookie()) return;
+    writeLocaleCookie(invitedLocale);
+    router.refresh();
+  }, [invitedLocale, locale, router]);
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
