@@ -611,6 +611,16 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   and its page confinement is installed before the ordinary upload runs. The
   ticket is claimed before the body is read and released when the upload
   fails. MCP only; the built-in AI has no files.
+- ADR-065: an edit notice says what just happened, never what is happening.
+  After a write from outside the editor the collaboration server compares the
+  live page before and after and broadcasts the innermost changed block ids and
+  the writer as a Hocuspocus stateless message on the document's own socket,
+  behind the update it describes; not an application event, not awareness.
+  The writer is an agent when the request named an agent session, a person
+  otherwise. There is no "editing" state, because a write is one transaction;
+  the browser alone decides a conflict, from where its reader was typing; a
+  refused narrow write is announced at the blocks it aimed at. Nothing is
+  stored and nothing is locked.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.

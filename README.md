@@ -32,6 +32,8 @@ What is deliberately still missing is listed under
   deletion, page icons and cover images
 - real-time collaborative editing (Tiptap + Yjs + Hocuspocus) with presence,
   remote cursors, offline editing and resynchronization
+- a marker on the blocks an agent just changed, naming the agent, stronger when
+  it lands where you are typing (ADR-065)
 - binary Yjs persistence in PostgreSQL that survives a full server restart
 - comments with inline markers, an activity panel with snapshots and restore,
   and a references panel backed by a derived link index

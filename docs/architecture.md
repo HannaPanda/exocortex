@@ -69,11 +69,21 @@ loop in the worker calls (ADR-014, ADR-025). See `docs/mcp.md`.
 
 | Channel       | Path        | Transport      | Payload                                   |
 | ------------- | ----------- | -------------- | ----------------------------------------- |
-| collaboration | `/collab`   | Hocuspocus/Yjs | document updates and awareness            |
+| collaboration | `/collab`   | Hocuspocus/Yjs | document updates, awareness, edit notices |
 | application   | `/realtime` | Socket.IO      | domain events, job progress, AI streaming |
 
 Awareness is never persisted. Domain events never travel over the Yjs protocol
 (ADR-008).
+
+One kind of message rides the collaboration socket that is not a Yjs update:
+the edit notice (ADR-065). After a write that did not come from the editor
+(`POST /internal/documents/:id/content`, ADR-016), the collaboration server
+compares the live page before and after and broadcasts a Hocuspocus stateless
+message naming the changed blocks and the writer, which the editor turns into a
+marker that settles after a few seconds (`agent-edit-markers.tsx`). It is not a
+domain event: it is about this document's content only, it reaches exactly the
+connections that read the document, it arrives behind the update it describes,
+and it is never stored.
 
 Both are authorized once, when they open, and then live as long as the tab does.
 A third Redis channel exists for exactly that reason: `exocortex:revocations`
