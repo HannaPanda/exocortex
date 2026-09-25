@@ -64,10 +64,13 @@ export interface NotificationChannelSupport {
   readonly storedOn: NotificationPreferenceScope;
 }
 
+/**
+ * What an occasion is called is not here. It is `account.notifications.kinds`
+ * in the message catalogue, keyed by the kind, so the settings page and the
+ * `label` an agent reads in `GET /api/me/notification-preferences` are the
+ * same words in the reader's language (issue #98, ADR-062).
+ */
 export interface NotificationKindEntry {
-  /** German, and the same words the settings page and an agent both get. */
-  readonly label: string;
-  readonly description: string;
   readonly channels: Readonly<Partial<Record<NotificationChannel, NotificationChannelSupport>>>;
 }
 
@@ -91,9 +94,6 @@ const SWITCH_WITH_DIGEST: readonly NotificationDeliveryMode[] = [
 
 export const NOTIFICATION_CATALOG: Readonly<Record<NotificationKind, NotificationKindEntry>> = {
   SHARE: {
-    label: 'Geteilte Seiten',
-    description:
-      'Jemand teilt eine Seite mit dir, ändert deine Rechte daran oder nimmt sie dir wieder weg.',
     channels: {
       // Mail and nothing else: a share is the one notification whose whole
       // point is to reach somebody who is not looking at this deployment, and
@@ -102,9 +102,6 @@ export const NOTIFICATION_CATALOG: Readonly<Record<NotificationKind, Notificatio
     },
   },
   COMMENT: {
-    label: 'Kommentare',
-    description:
-      'Jemand kommentiert eine Seite, die du geschrieben hast, oder antwortet in einem Faden, in dem du schon steckst.',
     channels: {
       PUSH: { modes: SWITCH, defaultMode: 'IMMEDIATE', storedOn: 'device' },
       /**
@@ -122,8 +119,6 @@ export const NOTIFICATION_CATALOG: Readonly<Record<NotificationKind, Notificatio
     },
   },
   CALENDAR: {
-    label: 'Termine',
-    description: 'Kurz bevor ein Termin aus deinem Kalender anfängt.',
     channels: {
       // No mail, on purpose: a reminder that arrives whenever a mail client
       // next polls is a reminder for the wrong minute.
@@ -131,17 +126,11 @@ export const NOTIFICATION_CATALOG: Readonly<Record<NotificationKind, Notificatio
     },
   },
   AGENT: {
-    label: 'Nachrichten von Agenten',
-    description:
-      'Ein Agent meldet sich: ein langer Lauf ist fertig, etwas ist schiefgegangen, eine Frage blockiert.',
     channels: {
       PUSH: { modes: SWITCH, defaultMode: 'IMMEDIATE', storedOn: 'device' },
     },
   },
   FAILURE: {
-    label: 'Fehlgeschlagene Automationen',
-    description:
-      'Eine deiner Automationen hat sich nach wiederholten Fehlern abgeschaltet, oder ein geplanter Lauf ist gescheitert.',
     channels: {
       /**
        * Mail, and on by default (issue #107). The other mail rows that start
@@ -189,6 +178,7 @@ export function notificationSupport(
 export const notificationPreferenceSchema = z.object({
   kind: notificationKindSchema,
   channel: notificationChannelSchema,
+  /** The occasion's name and meaning, in the requester's language (ADR-062). */
   label: z.string(),
   description: z.string(),
   /** Every mode this pair allows, so a client never offers one that is refused. */

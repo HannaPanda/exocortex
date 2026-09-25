@@ -128,5 +128,18 @@
   "sourceSync": {
     "outsideProject": "Diese Stelle kommt aus {path}, einer Datei außerhalb des Projekts.",
     "noMapping": "Zu dieser Stelle gibt es keine Zuordnung in der SyncTeX-Karte."
+  },
+  "buildErrors": {
+    "builder_unavailable": "Der LaTeX-Bau ist auf diesem Rechner nicht eingerichtet. Ein Administrator muss das Container-Abbild bereitstellen.",
+    "build_failed": "Der Bau ist fehlgeschlagen. Die Fehlerliste sagt, in welcher Datei und Zeile.",
+    "build_timeout": "Der Bau hat zu lange gedauert und wurde abgebrochen. Meist wartet LaTeX auf eine Eingabe.",
+    "artifact_too_large": "Das erzeugte PDF ist größer als erlaubt.",
+    "empty_artifact": "Der Bau lief durch, hat aber kein PDF abgeliefert.",
+    "root_file_missing": "Die Hauptdatei gibt es im Projekt nicht.",
+    "project_empty": "Das Projekt enthält noch keine Dateien.",
+    "project_missing": "Das Projekt gibt es nicht mehr.",
+    "project_not_materialized": "Das Projekt ist noch nicht aufbereitet. Einen Moment warten und erneut bauen.",
+    "worker_lost": "Der Bau wurde abgebrochen, weil der Hintergrunddienst ihn verloren hat.",
+    "unknown": "Der Bau ist fehlgeschlagen."
   }
 }

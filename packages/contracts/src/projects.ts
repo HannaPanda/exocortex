@@ -219,30 +219,34 @@ export function checkProjectPath(path: string): ProjectPathProblem | null {
   return null;
 }
 
-/** German for what is wrong with a path. */
+/**
+ * What is wrong with a path, in English, for an API error message. The
+ * sentence a person reads is `projects.newFile.pathProblems` in the message
+ * catalogue, keyed by the same problem.
+ */
 export function projectPathProblemMessage(problem: ProjectPathProblem): string {
   switch (problem) {
     case 'empty':
-      return 'Der Pfad ist leer.';
+      return 'The path is empty.';
     case 'too_long':
-      return `Der Pfad ist länger als ${String(PROJECT_MAX_PATH_CHARS)} Zeichen.`;
+      return `The path is longer than ${String(PROJECT_MAX_PATH_CHARS)} characters.`;
     case 'absolute':
-      return 'Der Pfad darf nicht mit einem Schrägstrich beginnen.';
+      return 'The path must not start with a slash.';
     case 'traversal':
-      return 'Der Pfad darf nicht aus dem Projekt herausführen.';
+      return 'The path must not lead out of the project.';
     case 'trailing_slash':
-      return 'Der Pfad darf nicht mit einem Schrägstrich enden.';
+      return 'The path must not end with a slash.';
     case 'empty_segment':
-      return 'Der Pfad enthält einen leeren Abschnitt.';
+      return 'The path contains an empty segment.';
     case 'invalid_character':
-      return 'Der Pfad enthält ein unzulässiges Zeichen.';
+      return 'The path contains a character that is not allowed.';
     case 'reserved_name':
-      return 'Dieser Name ist für den Bau reserviert.';
+      return 'This name is reserved for the build.';
   }
 }
 
 export const projectPathSchema = z.string().refine((value) => checkProjectPath(value) === null, {
-  message: 'Ungültiger Pfad im Projekt',
+  message: 'Invalid project path',
 });
 
 /** The directory part of a path, or `''` for a file at the root. */
@@ -671,7 +675,7 @@ export const projectBuildSchema = z.object({
   /** True when the project has changed since this build. Computed on read. */
   stale: z.boolean(),
   errorCode: z.string().nullable(),
-  /** German, user-facing. Null while nothing failed. */
+  /** `errorCode` as a sentence in the requester's language (ADR-062). Null while nothing failed. */
   error: z.string().nullable(),
   /** Counts, so a caller can decide whether to fetch the list at all. */
   errorCount: z.number().int().nonnegative(),
@@ -833,38 +837,32 @@ export const deleteProjectBuildResponseSchema = z.object({ deleted: z.literal(tr
 export type DeleteProjectBuildResponse = z.infer<typeof deleteProjectBuildResponseSchema>;
 
 /**
- * German for what went wrong, from the English code the worker wrote.
- *
- * Here rather than in the worker for the same reason as `renderErrorMessage`:
- * the worker writes for a log, this writes for a person.
+ * The failure codes the build worker writes into `project_build.errorCode`,
+ * and `unknown` for anything it may write later. Each has a sentence under
+ * `projects.buildErrors` in the message catalogue, for the same reason as
+ * `renderErrorKeys` (issue #98, ADR-062).
  */
-export function projectBuildErrorMessage(code: string | null): string | null {
-  switch (code) {
-    case null:
-      return null;
-    case 'builder_unavailable':
-      return 'Der LaTeX-Bau ist auf diesem Rechner nicht eingerichtet. Ein Administrator muss das Container-Abbild bereitstellen.';
-    case 'build_failed':
-      return 'Der Bau ist fehlgeschlagen. Die Fehlerliste sagt, in welcher Datei und Zeile.';
-    case 'build_timeout':
-      return 'Der Bau hat zu lange gedauert und wurde abgebrochen. Meist wartet LaTeX auf eine Eingabe.';
-    case 'artifact_too_large':
-      return 'Das erzeugte PDF ist größer als erlaubt.';
-    case 'empty_artifact':
-      return 'Der Bau lief durch, hat aber kein PDF abgeliefert.';
-    case 'root_file_missing':
-      return 'Die Hauptdatei gibt es im Projekt nicht.';
-    case 'project_empty':
-      return 'Das Projekt enthält noch keine Dateien.';
-    case 'project_missing':
-      return 'Das Projekt gibt es nicht mehr.';
-    case 'project_not_materialized':
-      return 'Das Projekt ist noch nicht aufbereitet. Einen Moment warten und erneut bauen.';
-    case 'worker_lost':
-      return 'Der Bau wurde abgebrochen, weil der Hintergrunddienst ihn verloren hat.';
-    default:
-      return 'Der Bau ist fehlgeschlagen.';
-  }
+export const projectBuildErrorKeys = [
+  'builder_unavailable',
+  'build_failed',
+  'build_timeout',
+  'artifact_too_large',
+  'empty_artifact',
+  'root_file_missing',
+  'project_empty',
+  'project_missing',
+  'project_not_materialized',
+  'worker_lost',
+  'unknown',
+] as const;
+export type ProjectBuildErrorKey = (typeof projectBuildErrorKeys)[number];
+
+const PROJECT_BUILD_ERROR_KEYS: ReadonlySet<string> = new Set(projectBuildErrorKeys);
+
+/** The catalogue key for a stored error code, or null when nothing failed. */
+export function projectBuildErrorKey(code: string | null): ProjectBuildErrorKey | null {
+  if (code === null) return null;
+  return PROJECT_BUILD_ERROR_KEYS.has(code) ? (code as ProjectBuildErrorKey) : 'unknown';
 }
 
 /**

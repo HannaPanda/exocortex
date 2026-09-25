@@ -154,7 +154,7 @@ function assertVariableNamesUnique(variables: readonly { name: string }[]): void
   const seen = new Set<string>();
   for (const variable of variables) {
     if (seen.has(variable.name)) {
-      throw AppError.validation(`Variable "${variable.name}" ist doppelt vergeben`);
+      throw AppError.validation(`Variable "${variable.name}" is declared twice`);
     }
     seen.add(variable.name);
   }

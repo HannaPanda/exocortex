@@ -31,10 +31,10 @@ import {
 /**
  * What an occasion is called and what it means, in the reader's language.
  *
- * Keyed by the kind rather than read from `NOTIFICATION_CATALOG` or from the
- * preference's own `label`: both are German, and an occasion has to be called
- * the same thing in the device rows and in the mail rows, so both panels ask
- * this one hook.
+ * Keyed by the kind rather than read from the preference's own `label`: the
+ * device rows have no such field, and an occasion has to be called the same
+ * thing in the device rows and in the mail rows, so both panels ask this one
+ * hook. The API's `label` comes from the same catalogue entries.
  */
 export function useNotificationKindWording() {
   const t = useTranslations('account.notifications.kinds');

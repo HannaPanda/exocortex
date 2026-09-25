@@ -1,6 +1,5 @@
 import {
   ACCOUNT_NOTIFICATION_PAIRS,
-  NOTIFICATION_CATALOG,
   type NotificationChannel,
   type NotificationDeliveryMode,
   type NotificationKind,
@@ -92,11 +91,18 @@ export async function filterImmediateRecipients(
   return userIds.filter((userId) => (stored.get(userId) ?? support.defaultMode) === 'IMMEDIATE');
 }
 
+/**
+ * A preference without its wording. What an occasion is called depends on who
+ * reads it (ADR-062), and this package reaches no message catalogue, so the API
+ * adds `label` and `description` in the requester's language.
+ */
+export type StoredNotificationPreference = Omit<NotificationPreference, 'label' | 'description'>;
+
 /** Everything the account-wide settings page and `exo_notification_preferences` show. */
 export async function listNotificationPreferences(
   prisma: PrismaClient,
   userId: string,
-): Promise<NotificationPreference[]> {
+): Promise<StoredNotificationPreference[]> {
   const rows = await prisma.notificationPreference.findMany({
     where: { userId },
     select: { kind: true, channel: true, mode: true },
@@ -106,8 +112,6 @@ export async function listNotificationPreferences(
   return ACCOUNT_NOTIFICATION_PAIRS.map(({ kind, channel, support }) => ({
     kind,
     channel,
-    label: NOTIFICATION_CATALOG[kind].label,
-    description: NOTIFICATION_CATALOG[kind].description,
     modes: [...support.modes],
     defaultMode: support.defaultMode,
     mode: stored.get(`${kind}/${channel}`) ?? support.defaultMode,

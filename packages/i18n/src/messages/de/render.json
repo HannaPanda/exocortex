@@ -84,5 +84,16 @@
     "ownSource": "Eigener Quelltext",
     "edit": "Bearbeiten",
     "delete": "Löschen"
+  },
+  "errors": {
+    "renderer_unavailable": "Die PDF-Ausgabe ist auf diesem Rechner nicht eingerichtet. Ein Administrator muss das Container-Abbild bereitstellen.",
+    "render_failed": "Der Bau ist fehlgeschlagen. Das Protokoll sagt, an welcher Stelle.",
+    "render_timeout": "Der Bau hat zu lange gedauert und wurde abgebrochen. Meist wartet die Vorlage auf eine Eingabe.",
+    "artifact_too_large": "Das erzeugte PDF ist größer als erlaubt.",
+    "empty_artifact": "Der Bau lief durch, hat aber keine Datei abgeliefert.",
+    "source_missing": "Die Seite hat noch keinen aufbereiteten Inhalt. Einmal öffnen und kurz warten.",
+    "template_missing": "Die Vorlage gibt es nicht mehr.",
+    "worker_lost": "Der Bau wurde abgebrochen, weil der Hintergrunddienst ihn verloren hat.",
+    "unknown": "Der Bau ist fehlgeschlagen."
   }
 }

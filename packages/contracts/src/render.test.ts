@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   missingRenderVariables,
-  renderErrorMessage,
+  renderErrorKey,
   type RenderVariable,
   renderVariableSchema,
   resolveRenderVariable,
@@ -88,14 +88,16 @@ describe('missingRenderVariables', () => {
   });
 });
 
-describe('renderErrorMessage', () => {
+describe('renderErrorKey', () => {
   it('is silent while nothing has failed', () => {
-    expect(renderErrorMessage(null)).toBeNull();
+    expect(renderErrorKey(null)).toBeNull();
   });
 
-  it('answers in German for a code it knows and for one it does not', () => {
-    expect(renderErrorMessage('render_timeout')).toContain('zu lange');
-    expect(renderErrorMessage('something_new')).toBe('Der Bau ist fehlgeschlagen.');
+  it('keeps a code it knows and folds one it does not into unknown', () => {
+    expect(renderErrorKey('render_timeout')).toBe('render_timeout');
+    expect(renderErrorKey('something_new')).toBe('unknown');
+    // A code out of a database row is a string, and `toString` is not a code.
+    expect(renderErrorKey('toString')).toBe('unknown');
   });
 });
 

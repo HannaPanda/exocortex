@@ -2,7 +2,6 @@ import { gunzipSync } from 'node:zlib';
 
 import {
   PROJECT_MAX_LOG_CHARS,
-  projectBuildErrorMessage,
   type ProjectDiagnostic,
   type QUEUE_NAMES,
   type Settings,
@@ -159,7 +158,10 @@ async function run(context: {
 
   const settings = await dependencies.settings(build.workspaceId);
   if (!settings['projects.enabled']) {
-    await fail('builder_unavailable', 'Der LaTeX-Bau ist für diesen Arbeitsbereich aus.');
+    await fail(
+      'builder_unavailable',
+      '[project] LaTeX builds are switched off for this workspace.',
+    );
     return;
   }
   if (build.projectId === null) {
@@ -294,7 +296,7 @@ async function collectFiles(
 
   for (const asset of project.assets) {
     if (asset.byteSize > MAX_ASSET_BYTES) {
-      notes.push(`[projekt] ${asset.path} ist zu groß für den Bau und wurde ausgelassen.`);
+      notes.push(`[project] ${asset.path} is too large for the build and was left out.`);
       continue;
     }
     try {
@@ -305,7 +307,7 @@ async function collectFiles(
       }
       files.push({ path: asset.path, content: Buffer.concat(chunks) });
     } catch {
-      notes.push(`[projekt] ${asset.path} konnte nicht gelesen werden und fehlt im Bau.`);
+      notes.push(`[project] ${asset.path} could not be read and is missing from the build.`);
     }
   }
 
@@ -504,7 +506,7 @@ async function finish(
     buildId,
     projectId: input.projectId,
     status: input.status,
-    error: projectBuildErrorMessage(input.errorCode ?? null),
+    errorCode: input.errorCode ?? null,
   });
 }
 
@@ -516,7 +518,7 @@ async function publish(
     buildId: string;
     projectId: string | null;
     status: 'RUNNING' | 'COMPLETED' | 'FAILED' | 'CANCELLED';
-    error?: string | null;
+    errorCode?: string | null;
   },
 ): Promise<void> {
   await bus.publish({
@@ -528,7 +530,7 @@ async function publish(
       buildId: input.buildId,
       projectId: input.projectId,
       status: input.status,
-      error: input.error ?? null,
+      errorCode: input.errorCode ?? null,
     },
   });
 }

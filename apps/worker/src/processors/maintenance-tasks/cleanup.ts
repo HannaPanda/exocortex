@@ -129,6 +129,8 @@ export const reapStaleAiRuns: MaintenanceTask = async (context) => {
         errorCode,
         reason: `Reaped by maintenance: ${errorCode}`,
         detail: null,
+        detailKey: null,
+        detailArgs: null,
       },
     });
     reaped += 1;

@@ -7,6 +7,7 @@ import * as React from 'react';
 
 import {
   attachmentDownloadPath,
+  renderErrorKey,
   type RenderJob,
   type RenderSource,
   type RenderTemplate,
@@ -509,9 +510,13 @@ function JobPanel({
   onCancel: () => void;
 }) {
   const t = useTranslations('render.dialog');
+  const tError = useTranslations('render.errors');
   const wording = useRenderWording();
   const format = useBuildFormat();
   const running = job.status === 'PENDING' || job.status === 'RUNNING';
+  // From the code rather than `job.error`: that sentence is in the language of
+  // whoever asked, and the code reads the same in every one (ADR-062).
+  const errorKey = renderErrorKey(job.errorCode);
 
   return (
     <div
@@ -551,9 +556,9 @@ function JobPanel({
         </div>
       </div>
 
-      {job.error === null ? null : (
+      {errorKey === null ? null : (
         <Alert variant="destructive">
-          <AlertDescription>{job.error}</AlertDescription>
+          <AlertDescription>{tError(errorKey)}</AlertDescription>
         </Alert>
       )}
 

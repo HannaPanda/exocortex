@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Patch } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { type VerifiedSession } from '@exocortex/auth';
@@ -10,6 +10,7 @@ import {
 } from '@exocortex/contracts';
 
 import { CurrentSession } from '../auth/session.guard';
+import { type ReaderLocaleHeaders } from '../common/reader-locale';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
 import { NotificationPreferencesService } from './notification-preferences.service';
@@ -30,8 +31,11 @@ export class NotificationPreferencesController {
 
   @Get()
   @ApiOkResponse({ schema: openApiResponseSchema(notificationPreferencesResponseSchema) })
-  async list(@CurrentSession() session: VerifiedSession): Promise<NotificationPreferencesResponse> {
-    return this.preferences.list(session.userId);
+  async list(
+    @CurrentSession() session: VerifiedSession,
+    @Headers() headers: ReaderLocaleHeaders,
+  ): Promise<NotificationPreferencesResponse> {
+    return this.preferences.list(session.userId, headers);
   }
 
   /**
@@ -51,7 +55,8 @@ export class NotificationPreferencesController {
     @CurrentSession() session: VerifiedSession,
     @Body(zodPipe(updateNotificationPreferenceRequestSchema))
     body: UpdateNotificationPreferenceRequest,
+    @Headers() headers: ReaderLocaleHeaders,
   ): Promise<NotificationPreferencesResponse> {
-    return this.preferences.update(session.userId, body);
+    return this.preferences.update(session.userId, body, headers);
   }
 }

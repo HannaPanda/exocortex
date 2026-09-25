@@ -1,7 +1,6 @@
 import {
   type QUEUE_NAMES,
   RENDER_MAX_LOG_CHARS,
-  renderErrorMessage,
   type Settings,
   uploadAttachmentResponseSchema,
 } from '@exocortex/contracts';
@@ -263,7 +262,7 @@ async function collectInputs(
   if (!settings['render.enabled']) {
     return {
       errorCode: 'renderer_unavailable',
-      log: 'Die PDF-Ausgabe ist für diesen Arbeitsbereich aus.',
+      log: '[render] PDF output is switched off for this workspace (render.enabled).',
     };
   }
   if (job.documentId === null) return { errorCode: 'source_missing' };
@@ -412,7 +411,7 @@ async function prepareDocument(input: {
       attachment.byteSize > MAX_ASSET_BYTES
     ) {
       markdown = dropAsset(markdown, id);
-      notes.push(`[render] Bild ${id} konnte nicht eingebettet werden.`);
+      notes.push(`[render] image ${id} could not be embedded.`);
       continue;
     }
 
@@ -425,13 +424,13 @@ async function prepareDocument(input: {
       markdown = bindAssetName(markdown, id, filename);
     } catch {
       markdown = dropAsset(markdown, id);
-      notes.push(`[render] Bild ${id} ließ sich nicht laden.`);
+      notes.push(`[render] image ${id} could not be loaded.`);
     }
   }
 
   for (const id of collected.attachmentIds.slice(MAX_ASSETS)) {
     markdown = dropAsset(markdown, id);
-    notes.push(`[render] Bild ${id} übersprungen: mehr als ${String(MAX_ASSETS)} Bilder.`);
+    notes.push(`[render] image ${id} skipped: more than ${String(MAX_ASSETS)} images.`);
   }
 
   return { markdown: flattenWikiLinks(markdown), assets, notes: notes.join('\n') };
@@ -490,7 +489,7 @@ async function finish(
     jobId,
     documentId: input.documentId,
     status: input.status,
-    error: renderErrorMessage(input.errorCode ?? null),
+    errorCode: input.errorCode ?? null,
   });
 }
 
@@ -502,7 +501,7 @@ async function publish(
     jobId: string;
     documentId: string | null;
     status: 'RUNNING' | 'COMPLETED' | 'FAILED' | 'CANCELLED';
-    error?: string | null;
+    errorCode?: string | null;
   },
 ): Promise<void> {
   await bus.publish({
@@ -514,7 +513,7 @@ async function publish(
       jobId: input.jobId,
       documentId: input.documentId,
       status: input.status,
-      error: input.error ?? null,
+      errorCode: input.errorCode ?? null,
     },
   });
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { type VerifiedSession } from '@exocortex/auth';
@@ -30,6 +30,7 @@ import {
 } from '@exocortex/contracts';
 
 import { CurrentSession } from '../auth/session.guard';
+import { type ReaderLocaleHeaders } from '../common/reader-locale';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
 import { RenderJobsService } from './render-jobs.service';
@@ -73,9 +74,10 @@ export class WorkspaceRenderController {
   async listJobs(
     @CurrentSession() session: VerifiedSession,
     @Param('workspaceId') workspaceId: string,
+    @Headers() headers: ReaderLocaleHeaders,
     @Query('documentId') documentId?: string,
   ): Promise<RenderJobListResponse> {
-    return this.jobs.list({ workspaceId, userId: session.userId, documentId });
+    return this.jobs.list({ workspaceId, userId: session.userId, documentId, headers });
   }
 }
 
@@ -132,8 +134,9 @@ export class RenderController {
   async readJob(
     @CurrentSession() session: VerifiedSession,
     @Param('jobId') jobId: string,
+    @Headers() headers: ReaderLocaleHeaders,
   ): Promise<RenderJobResponse> {
-    return { job: await this.jobs.read(jobId, session.userId) };
+    return { job: await this.jobs.read(jobId, session.userId, headers) };
   }
 
   @Get('jobs/:jobId/log')
@@ -169,8 +172,9 @@ export class RenderController {
   async cancelJob(
     @CurrentSession() session: VerifiedSession,
     @Param('jobId') jobId: string,
+    @Headers() headers: ReaderLocaleHeaders,
   ): Promise<RenderJobResponse> {
-    return { job: await this.jobs.cancel(jobId, session.userId) };
+    return { job: await this.jobs.cancel(jobId, session.userId, headers) };
   }
 }
 
@@ -191,7 +195,8 @@ export class DocumentRenderController {
     @CurrentSession() session: VerifiedSession,
     @Param('documentId') documentId: string,
     @Body(zodPipe(startRenderRequestSchema)) body: StartRenderRequest,
+    @Headers() headers: ReaderLocaleHeaders,
   ): Promise<StartRenderResponse> {
-    return this.jobs.start({ documentId, userId: session.userId, request: body });
+    return this.jobs.start({ documentId, userId: session.userId, request: body, headers });
   }
 }

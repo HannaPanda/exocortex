@@ -160,7 +160,7 @@ to LaTeX; that is what ADR-026 buys.
 
 | Path                                     | What                                                    |
 | ---------------------------------------- | ------------------------------------------------------- |
-| `packages/contracts/src/render.ts`       | DTOs, variable resolution, the German failure messages  |
+| `packages/contracts/src/render.ts`       | DTOs, variable resolution, the failure codes            |
 | `packages/database/src/render-source.ts` | What goes into a build, and the input hash              |
 | `apps/api/src/render/`                   | Templates, jobs, the cache and the staleness comparison |
 | `apps/worker/src/processors/render.ts`   | One build, start to terminal status                     |

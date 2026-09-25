@@ -6,6 +6,7 @@ import * as React from 'react';
 
 import {
   type ProjectBuild,
+  projectBuildErrorKey,
   type ProjectDiagnostic,
   type ProjectSourceArea,
 } from '@exocortex/contracts';
@@ -115,6 +116,10 @@ function BuildPanel({
    * status line, which reads as "it worked".
    */
   const t = useTranslations('projects.panel.tabs');
+  const tError = useTranslations('projects.buildErrors');
+  // From the code rather than `build.error`, which is in the requester's
+  // language and not necessarily this reader's (ADR-062).
+  const errorKey = projectBuildErrorKey(build.errorCode);
   const [chosenTab, setChosenTab] = React.useState<string | null>(null);
   const running = build.status === 'PENDING' || build.status === 'RUNNING';
   const tab = chosenTab ?? (build.status === 'FAILED' ? 'errors' : 'pdf');
@@ -126,9 +131,9 @@ function BuildPanel({
     <div className="flex h-full min-h-0 flex-col">
       <BuildHeader build={build} />
 
-      {build.error === null ? null : (
+      {errorKey === null ? null : (
         <p className="border-b border-border bg-destructive/10 px-3 py-2 text-xs text-destructive">
-          {build.error}
+          {tError(errorKey)}
         </p>
       )}
 

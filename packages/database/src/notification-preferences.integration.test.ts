@@ -133,7 +133,6 @@ describe('listNotificationPreferences', () => {
     ]);
     expect(rows[0]).toMatchObject({ mode: 'IMMEDIATE', defaultMode: 'IMMEDIATE' });
     expect(rows[0]?.modes).toEqual(['OFF', 'IMMEDIATE']);
-    expect(rows[0]?.label.length).toBeGreaterThan(0);
   });
 
   it('shows the stored answer once there is one', async () => {

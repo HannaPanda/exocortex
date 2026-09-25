@@ -10,8 +10,10 @@ import {
   type PrismaClient,
   setNotificationPreference,
 } from '@exocortex/database';
+import { serverTranslator } from '@exocortex/i18n/catalog';
 
 import { AppError } from '../common/app-error';
+import { readerLocale, type ReaderLocaleHeaders } from '../common/reader-locale';
 import { PRISMA } from '../platform/platform-tokens';
 
 /**
@@ -27,13 +29,33 @@ import { PRISMA } from '../platform/platform-tokens';
 export class NotificationPreferencesService {
   constructor(@Inject(PRISMA) private readonly prisma: PrismaClient) {}
 
-  async list(userId: string): Promise<NotificationPreferencesResponse> {
-    return { preferences: await listNotificationPreferences(this.prisma, userId) };
+  /**
+   * Every account-wide pair, named in the requester's language. The words come
+   * from `account.notifications.kinds`, the same entries the settings page
+   * reads, so an agent and the browser call an occasion the same thing.
+   */
+  async list(
+    userId: string,
+    headers: ReaderLocaleHeaders,
+  ): Promise<NotificationPreferencesResponse> {
+    const [locale, stored] = await Promise.all([
+      readerLocale(this.prisma, userId, headers),
+      listNotificationPreferences(this.prisma, userId),
+    ]);
+    const t = serverTranslator(locale, 'account');
+    return {
+      preferences: stored.map((preference) => ({
+        ...preference,
+        label: t(`notifications.kinds.${preference.kind}.label`),
+        description: t(`notifications.kinds.${preference.kind}.description`),
+      })),
+    };
   }
 
   async update(
     userId: string,
     body: UpdateNotificationPreferenceRequest,
+    headers: ReaderLocaleHeaders,
   ): Promise<NotificationPreferencesResponse> {
     const refusal = notificationPreferenceRefusal(body.kind, body.channel, body.mode);
     if (refusal === 'unsupported_pair') {
@@ -56,6 +78,6 @@ export class NotificationPreferencesService {
     }
 
     await setNotificationPreference(this.prisma, userId, body.kind, body.channel, body.mode);
-    return this.list(userId);
+    return this.list(userId, headers);
   }
 }

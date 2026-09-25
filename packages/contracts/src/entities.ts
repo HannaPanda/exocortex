@@ -38,7 +38,14 @@ export const entityTypeSchema = z.enum([
 ]);
 export type EntityType = z.infer<typeof entityTypeSchema>;
 
-/** The German label each type carries as a SELECT option on the row. */
+/**
+ * The label each type carries as a SELECT option in the entity database.
+ *
+ * Stored data, not interface text: the registry matches options by this label,
+ * so it stays German in every locale, the same way `ENTITY_PROPERTY_NAMES`
+ * does. What a reader sees for a type is `entities.types` in the message
+ * catalogue (issue #98, ADR-062).
+ */
 export const ENTITY_TYPE_LABELS: Record<EntityType, string> = {
   person: 'Person',
   host: 'Host',

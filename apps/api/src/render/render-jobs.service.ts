@@ -9,6 +9,7 @@ import {
 } from '@exocortex/auth';
 import {
   attachmentDownloadPath,
+  type Locale,
   missingRenderVariables,
   QUEUE_NAMES,
   RENDER_MAX_LOG_CHARS,
@@ -33,6 +34,7 @@ import { AttachmentsService } from '../attachments/attachments.service';
 import { AppError } from '../common/app-error';
 import { currentCorrelationId } from '../common/correlation';
 import { LOGGER } from '../common/logger.provider';
+import { readerLocale, type ReaderLocaleHeaders } from '../common/reader-locale';
 import { PRISMA, QUEUES } from '../platform/platform-tokens';
 import { SettingsService } from '../platform/settings.service';
 
@@ -77,6 +79,8 @@ export class RenderJobsService {
     documentId: string;
     userId: string;
     request: StartRenderRequest;
+    /** The request's headers, for the language `error` is written in. */
+    headers?: ReaderLocaleHeaders;
   }): Promise<StartRenderResponse> {
     const context = await this.access.requireDocumentContext(input.documentId, input.userId);
     assertPolicy(canReadDocument(context.role, context.document, context.workspaceId));
@@ -107,9 +111,7 @@ export class RenderJobsService {
       source: input.request.source,
     });
     if (assembled === null || assembled.text.trim().length === 0) {
-      throw AppError.validation(
-        'Die Seite hat noch keinen aufbereiteten Inhalt, aus dem sich ein PDF bauen lässt',
-      );
+      throw AppError.validation('The page has no materialized content to build a PDF from yet');
     }
 
     const variables = await this.resolveVariables({
@@ -132,7 +134,13 @@ export class RenderJobsService {
     if (!input.request.force) {
       const reusable = await this.findReusable(context.workspaceId, inputHash);
       if (reusable !== null) {
-        return { job: mapRenderJob(reusable, { stale: false }), reused: true };
+        return {
+          job: mapRenderJob(reusable, {
+            stale: false,
+            locale: await this.locale(input.userId, input.headers),
+          }),
+          reused: true,
+        };
       }
     }
 
@@ -166,18 +174,28 @@ export class RenderJobsService {
       templateId: template.id,
     });
 
-    return { job: mapRenderJob(job, { stale: false }), reused: false };
+    return {
+      job: mapRenderJob(job, {
+        stale: false,
+        locale: await this.locale(input.userId, input.headers),
+      }),
+      reused: false,
+    };
   }
 
-  async read(jobId: string, userId: string): Promise<RenderJob> {
+  async read(jobId: string, userId: string, headers: ReaderLocaleHeaders = {}): Promise<RenderJob> {
     const row = await this.requireJob(jobId, userId);
-    return mapRenderJob(row, { stale: await this.isStale(row) });
+    return mapRenderJob(row, {
+      stale: await this.isStale(row),
+      locale: await this.locale(userId, headers),
+    });
   }
 
   async list(input: {
     workspaceId: string;
     userId: string;
     documentId?: string;
+    headers?: ReaderLocaleHeaders;
   }): Promise<RenderJobListResponse> {
     const role = await this.access.findRole(input.workspaceId, input.userId);
     assertPolicy(canReadWorkspace(role));
@@ -205,7 +223,10 @@ export class RenderJobsService {
       if (await this.isStale(row)) staleJobIds.add(row.id);
     }
 
-    return { jobs: rows.map((row) => mapRenderJob(row, { stale: staleJobIds.has(row.id) })) };
+    const locale = await this.locale(input.userId, input.headers);
+    return {
+      jobs: rows.map((row) => mapRenderJob(row, { locale, stale: staleJobIds.has(row.id) })),
+    };
   }
 
   async readLog(jobId: string, userId: string): Promise<RenderJobLogResponse> {
@@ -231,13 +252,17 @@ export class RenderJobsService {
    * and now, because there is no worker holding it yet and waiting for one to
    * notice would leave a queued build that says it is still coming.
    */
-  async cancel(jobId: string, userId: string): Promise<RenderJob> {
+  async cancel(
+    jobId: string,
+    userId: string,
+    headers: ReaderLocaleHeaders = {},
+  ): Promise<RenderJob> {
     const row = await this.requireJob(jobId, userId);
     const role = await this.access.findRole(row.workspaceId, userId);
     assertPolicy(canStartRender(role));
 
     if (row.status !== 'PENDING' && row.status !== 'RUNNING') {
-      throw AppError.conflict('Dieser Bau ist bereits abgeschlossen');
+      throw AppError.conflict('This build has already finished');
     }
 
     const updated = await this.prisma.renderJob.update({
@@ -248,7 +273,7 @@ export class RenderJobsService {
           : { cancelledAt: new Date() },
       select: RENDER_JOB_SELECT,
     });
-    return mapRenderJob(updated, { stale: false });
+    return mapRenderJob(updated, { stale: false, locale: await this.locale(userId, headers) });
   }
 
   /**
@@ -275,7 +300,7 @@ export class RenderJobsService {
     assertPolicy(canStartRender(role));
 
     if (row.status === 'PENDING' || row.status === 'RUNNING') {
-      throw AppError.conflict('Dieser Bau läuft noch; brich ihn erst ab');
+      throw AppError.conflict('This build is still running; cancel it first');
     }
 
     if (row.attachmentId !== null) {
@@ -312,6 +337,11 @@ export class RenderJobsService {
       stale: await this.isStale(row),
       textStatus: attachment.textStatus,
     };
+  }
+
+  /** The requester's language, for the one field of a job written for a person (ADR-062). */
+  private async locale(userId: string, headers: ReaderLocaleHeaders = {}): Promise<Locale> {
+    return readerLocale(this.prisma, userId, headers);
   }
 
   private async requireJob(

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { type VerifiedSession } from '@exocortex/auth';
@@ -57,6 +57,7 @@ import {
 
 import { CurrentSession } from '../auth/session.guard';
 import { AppError } from '../common/app-error';
+import { type ReaderLocaleHeaders } from '../common/reader-locale';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
 import { ProjectArchiveService } from './project-archive.service';
@@ -106,9 +107,10 @@ export class WorkspaceProjectsController {
   async listBuilds(
     @CurrentSession() session: VerifiedSession,
     @Param('workspaceId') workspaceId: string,
+    @Headers() headers: ReaderLocaleHeaders,
     @Query('projectId') projectId?: string,
   ): Promise<ProjectBuildListResponse> {
-    return this.builds.list({ workspaceId, userId: session.userId, projectId });
+    return this.builds.list({ workspaceId, userId: session.userId, projectId, headers });
   }
 }
 
@@ -269,8 +271,9 @@ export class ProjectsController {
     @CurrentSession() session: VerifiedSession,
     @Param('projectId') projectId: string,
     @Body(zodPipe(startProjectBuildRequestSchema)) body: StartProjectBuildRequest,
+    @Headers() headers: ReaderLocaleHeaders,
   ): Promise<StartProjectBuildResponse> {
-    return this.builds.start({ projectId, userId: session.userId, request: body });
+    return this.builds.start({ projectId, userId: session.userId, request: body, headers });
   }
 }
 
@@ -285,8 +288,9 @@ export class ProjectBuildsController {
   async read(
     @CurrentSession() session: VerifiedSession,
     @Param('buildId') buildId: string,
+    @Headers() headers: ReaderLocaleHeaders,
   ): Promise<ProjectBuildResponse> {
-    return { build: await this.builds.read(buildId, session.userId) };
+    return { build: await this.builds.read(buildId, session.userId, headers) };
   }
 
   @Get('log')
@@ -369,8 +373,9 @@ export class ProjectBuildsController {
   async cancel(
     @CurrentSession() session: VerifiedSession,
     @Param('buildId') buildId: string,
+    @Headers() headers: ReaderLocaleHeaders,
   ): Promise<ProjectBuildResponse> {
-    return { build: await this.builds.cancel(buildId, session.userId) };
+    return { build: await this.builds.cancel(buildId, session.userId, headers) };
   }
 }
 
@@ -384,7 +389,7 @@ export class ProjectBuildsController {
 function readNumber(value: string, name: string): number {
   const parsed = Number.parseFloat(value);
   if (!Number.isFinite(parsed)) {
-    throw AppError.validation(`Der Parameter ${name} muss eine Zahl sein`);
+    throw AppError.validation(`The parameter ${name} must be a number`);
   }
   return parsed;
 }
@@ -392,7 +397,7 @@ function readNumber(value: string, name: string): number {
 function readInteger(value: string, name: string): number {
   const parsed = readNumber(value, name);
   if (!Number.isInteger(parsed) || parsed < 1) {
-    throw AppError.validation(`Der Parameter ${name} muss eine positive ganze Zahl sein`);
+    throw AppError.validation(`The parameter ${name} must be a positive integer`);
   }
   return parsed;
 }

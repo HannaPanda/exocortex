@@ -1241,7 +1241,7 @@ export const updateWorkspaceSettingsRequestSchema = z
     reset: z.array(workspaceSettingKeySchema).max(WORKSPACE_SETTING_KEYS.length).optional(),
   })
   .refine((patch) => (patch.reset ?? []).every((key) => !Object.hasOwn(patch, key)), {
-    message: 'Ein Schlüssel kann nicht gleichzeitig gesetzt und zurückgesetzt werden',
+    message: 'A key cannot be set and reset in the same request',
   });
 export type UpdateWorkspaceSettingsRequest = z.infer<typeof updateWorkspaceSettingsRequestSchema>;
 

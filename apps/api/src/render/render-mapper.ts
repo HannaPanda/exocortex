@@ -1,11 +1,13 @@
 import {
-  renderErrorMessage,
+  type Locale,
+  renderErrorKey,
   type RenderJob,
   type RenderTemplate,
   type RenderVariable,
   renderVariableSchema,
 } from '@exocortex/contracts';
 import { type Prisma } from '@exocortex/database';
+import { serverTranslator } from '@exocortex/i18n/catalog';
 
 /**
  * Row shapes to DTOs (issue #44, ADR-026).
@@ -115,7 +117,21 @@ function variableRecord(value: Prisma.JsonValue): Record<string, string> {
   return result;
 }
 
-export function mapRenderJob(row: RenderJobRow, options: { stale: boolean }): RenderJob {
+/** The stored error code as a sentence in `locale`, or null when nothing failed. */
+function renderErrorText(code: string | null, locale: Locale): string | null {
+  const key = renderErrorKey(code);
+  return key === null ? null : serverTranslator(locale, 'render')(`errors.${key}`);
+}
+
+/**
+ * `locale` is the requester's (ADR-062): `error` is the one field here written
+ * for a person, and the browser renders `errorCode` itself, so in practice it is
+ * what an agent reads.
+ */
+export function mapRenderJob(
+  row: RenderJobRow,
+  options: { stale: boolean; locale: Locale },
+): RenderJob {
   const hasArtifact = row.attachmentId !== null && row.attachment?.deletedAt == null;
   return {
     id: row.id,
@@ -131,7 +147,7 @@ export function mapRenderJob(row: RenderJobRow, options: { stale: boolean }): Re
     inputHash: row.inputHash,
     stale: options.stale,
     errorCode: row.errorCode,
-    error: renderErrorMessage(row.errorCode),
+    error: renderErrorText(row.errorCode, options.locale),
     logTail: logTail(row.log),
     attachmentId: hasArtifact ? row.attachmentId : null,
     attachmentFilename: hasArtifact ? (row.attachment?.filename ?? null) : null,

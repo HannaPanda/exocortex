@@ -22,6 +22,12 @@ table that says which pairs exist. It is not a cross product. A pair appears
 there when something actually delivers it, because a switch that reaches no
 sender is a promise the deployment does not keep.
 
+What an occasion is called is not in that table. It is
+`account.notifications.kinds` in the message catalogue, keyed by the kind: the
+settings page reads it, and the API fills `label` and `description` of
+`GET /api/me/notification-preferences` from the same entries in the
+requester's language (ADR-062).
+
 | Occasion   | Channel | Modes                            | Default     | Preference lives |
 | ---------- | ------- | -------------------------------- | ----------- | ---------------- |
 | `SHARE`    | `EMAIL` | `OFF`/`IMMEDIATE`                | `IMMEDIATE` | the account      |

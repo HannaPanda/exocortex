@@ -238,7 +238,7 @@ export class ProjectsService {
       });
       if (exists === null || exists.kind !== 'TEXT') {
         throw AppError.validation(
-          `Die Hauptdatei "${input.request.rootFile}" gibt es im Projekt nicht`,
+          `The root file "${input.request.rootFile}" does not exist in the project`,
         );
       }
     }
@@ -327,7 +327,7 @@ export class ProjectsService {
       },
     });
     if (file === null) {
-      throw new AppError('project_file_not_found', 'Diese Datei gibt es im Projekt nicht.');
+      throw new AppError('project_file_not_found', 'This file does not exist in the project');
     }
 
     return {
@@ -352,16 +352,14 @@ export class ProjectsService {
 
     const limit = settings['projects.maxFileChars'];
     if (input.request.content.length > limit) {
-      throw AppError.validation(
-        `Diese Datei ist länger als die erlaubten ${String(limit)} Zeichen`,
-      );
+      throw AppError.validation(`This file is longer than the allowed ${String(limit)} characters`);
     }
     // A binary path with text content would produce a file the build treats as
     // an image and the editor as source. Refusing is kinder than either.
     if (!isProjectTextPath(input.request.path)) {
       throw new AppError(
         'project_not_a_text_file',
-        `"${input.request.path}" ist keine Textdatei; binäre Dateien werden als Anhang hochgeladen.`,
+        `"${input.request.path}" is not a text file; binary files are uploaded as attachments`,
       );
     }
 
@@ -401,7 +399,7 @@ export class ProjectsService {
     // Moving a directory into itself would rewrite every path into an ever
     // deeper copy of the same name, one materialization at a time.
     if (input.request.to.startsWith(`${input.request.from}/`)) {
-      throw AppError.validation('Ein Ordner kann nicht in sich selbst verschoben werden');
+      throw AppError.validation('A folder cannot be moved into itself');
     }
 
     const result = await this.applyOperation(
@@ -459,10 +457,7 @@ export class ProjectsService {
       throw AppError.notFound('Attachment');
     }
     if (attachment.workspaceId !== context.workspaceId) {
-      throw new AppError(
-        'attachment_access_denied',
-        'Die Datei gehört zu einem anderen Arbeitsbereich',
-      );
+      throw new AppError('attachment_access_denied', 'The file belongs to another workspace');
     }
 
     return this.applyOperation(input.projectId, input.userId, settings['projects.maxFiles'], {

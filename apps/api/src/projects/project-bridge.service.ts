@@ -48,32 +48,32 @@ const TOKEN_TTL_SECONDS = 30;
 function refusal(code: string, detail: string | null): AppError {
   switch (code) {
     case 'file_not_found':
-      return new AppError('project_file_not_found', 'Diese Datei gibt es im Projekt nicht.');
+      return new AppError('project_file_not_found', 'This file does not exist in the project');
     case 'file_exists':
-      return new AppError('project_file_exists', 'An dieser Stelle liegt schon eine Datei.');
+      return new AppError('project_file_exists', 'A file already exists at this path');
     case 'not_a_text_file':
       return new AppError(
         'project_not_a_text_file',
-        'Diese Datei ist keine Textdatei und lässt sich so nicht bearbeiten.',
+        'This file is not a text file and cannot be edited this way',
       );
     case 'patch_not_found':
       return new AppError(
         'project_patch_not_found',
-        'Der zu ersetzende Text kommt in der Datei nicht vor.',
+        'The text to replace does not occur in the file',
       );
     case 'patch_not_unique':
       return new AppError(
         'project_patch_not_unique',
-        'Der zu ersetzende Text kommt mehrfach vor; mit mehr Kontext eindeutig machen oder alle ersetzen.',
+        'The text to replace occurs more than once; add context to make it unique, or replace all',
         { detail },
       );
     case 'too_many_files':
       return new AppError(
         'project_too_many_files',
-        'Das Projekt hat die erlaubte Anzahl Dateien erreicht.',
+        'The project has reached the allowed number of files',
       );
     default:
-      return new AppError('project_write_failed', 'Die Änderung am Projekt wurde abgelehnt.');
+      return new AppError('project_write_failed', 'The change to the project was refused');
   }
 }
 
@@ -124,7 +124,7 @@ export class ProjectBridgeService {
       });
       throw new AppError(
         'collaboration_unavailable',
-        'Der Kollaborationsdienst ist gerade nicht erreichbar, die Änderung wurde nicht gespeichert',
+        'The collaboration server is unreachable; the change was not saved',
       );
     }
 
@@ -142,18 +142,12 @@ export class ProjectBridgeService {
         correlationId: input.correlationId,
         status: response.status,
       });
-      throw new AppError(
-        'project_write_failed',
-        'Die Änderung am Projekt konnte nicht angewendet werden',
-      );
+      throw new AppError('project_write_failed', 'The change to the project could not be applied');
     }
 
     const parsed = collaborationProjectApplyResponseSchema.safeParse(await response.json());
     if (!parsed.success) {
-      throw new AppError(
-        'project_write_failed',
-        'Die Änderung am Projekt konnte nicht angewendet werden',
-      );
+      throw new AppError('project_write_failed', 'The change to the project could not be applied');
     }
     return parsed.data;
   }

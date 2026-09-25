@@ -1,12 +1,14 @@
 import {
   attachmentDownloadPath,
+  type Locale,
   type Project,
   type ProjectBuild,
-  projectBuildErrorMessage,
+  projectBuildErrorKey,
   type ProjectDiagnostic,
   projectDiagnosticSchema,
 } from '@exocortex/contracts';
 import { type Prisma } from '@exocortex/database';
+import { serverTranslator } from '@exocortex/i18n/catalog';
 
 /**
  * Database rows into contract shapes (issue #43, ADR-027).
@@ -120,7 +122,17 @@ export function parseProjectDiagnostics(value: Prisma.JsonValue): ProjectDiagnos
   return parsed;
 }
 
-export function mapProjectBuild(row: ProjectBuildRow, options: { stale: boolean }): ProjectBuild {
+/** The stored error code as a sentence in `locale`, or null when nothing failed. */
+function buildErrorText(code: string | null, locale: Locale): string | null {
+  const key = projectBuildErrorKey(code);
+  return key === null ? null : serverTranslator(locale, 'projects')(`buildErrors.${key}`);
+}
+
+/** `locale` is the requester's, for `error`, the one field written for a person (ADR-062). */
+export function mapProjectBuild(
+  row: ProjectBuildRow,
+  options: { stale: boolean; locale: Locale },
+): ProjectBuild {
   const diagnostics = parseProjectDiagnostics(row.diagnostics);
   const hasArtifact = row.attachmentId !== null && row.attachment?.deletedAt == null;
   return {
@@ -135,7 +147,7 @@ export function mapProjectBuild(row: ProjectBuildRow, options: { stale: boolean 
     inputHash: row.inputHash,
     stale: options.stale,
     errorCode: row.errorCode,
-    error: projectBuildErrorMessage(row.errorCode),
+    error: buildErrorText(row.errorCode, options.locale),
     errorCount: diagnostics.filter((entry) => entry.severity === 'ERROR').length,
     warningCount: diagnostics.filter((entry) => entry.severity === 'WARNING').length,
     attachmentId: hasArtifact ? row.attachmentId : null,

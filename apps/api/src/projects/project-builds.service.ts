@@ -9,6 +9,7 @@ import {
 } from '@exocortex/auth';
 import {
   attachmentDownloadPath,
+  type Locale,
   PROJECT_MAX_DIAGNOSTICS,
   PROJECT_MAX_LOG_CHARS,
   PROJECT_MAX_SOURCE_AREAS,
@@ -31,6 +32,7 @@ import { AttachmentsService } from '../attachments/attachments.service';
 import { AppError } from '../common/app-error';
 import { currentCorrelationId } from '../common/correlation';
 import { LOGGER } from '../common/logger.provider';
+import { readerLocale, type ReaderLocaleHeaders } from '../common/reader-locale';
 import { PRISMA, QUEUES } from '../platform/platform-tokens';
 import { SettingsService } from '../platform/settings.service';
 
@@ -102,6 +104,8 @@ export class ProjectBuildsService {
     projectId: string;
     userId: string;
     request: StartProjectBuildRequest;
+    /** The request's headers, for the language `error` is written in. */
+    headers?: ReaderLocaleHeaders;
   }): Promise<StartProjectBuildResponse> {
     const context = await this.access.requireDocumentContext(input.projectId, input.userId);
     assertPolicy(canReadDocument(context.role, context.document, context.workspaceId));
@@ -116,12 +120,10 @@ export class ProjectBuildsService {
     const project = await loadProjectBuildInput(this.prisma, input.projectId);
     if (project === null) throw AppError.notFound('Project');
     if (!project.materialized) {
-      throw AppError.conflict(
-        'Das Projekt ist noch nicht aufbereitet. Einen Moment warten und erneut bauen.',
-      );
+      throw AppError.conflict('The project is not materialized yet; wait a moment and build again');
     }
     if (project.texts.length === 0) {
-      throw AppError.validation('Das Projekt enthält noch keine Textdateien');
+      throw AppError.validation('The project contains no text files yet');
     }
 
     const rootFile = input.request.rootFile ?? project.rootFile;
@@ -129,7 +131,7 @@ export class ProjectBuildsService {
     const bibliography = input.request.bibliography ?? project.bibliography;
 
     if (!project.texts.some((file) => file.path === rootFile)) {
-      throw AppError.validation(`Die Hauptdatei "${rootFile}" gibt es im Projekt nicht`);
+      throw AppError.validation(`The root file "${rootFile}" does not exist in the project`);
     }
 
     const inputHash = projectInputHash({
@@ -143,7 +145,13 @@ export class ProjectBuildsService {
     if (!input.request.force) {
       const reusable = await this.findReusable(context.workspaceId, inputHash);
       if (reusable !== null) {
-        return { build: mapProjectBuild(reusable, { stale: false }), reused: true };
+        return {
+          build: mapProjectBuild(reusable, {
+            stale: false,
+            locale: await this.locale(input.userId, input.headers),
+          }),
+          reused: true,
+        };
       }
     }
 
@@ -176,18 +184,32 @@ export class ProjectBuildsService {
       rootFile,
     });
 
-    return { build: mapProjectBuild(build, { stale: false }), reused: false };
+    return {
+      build: mapProjectBuild(build, {
+        stale: false,
+        locale: await this.locale(input.userId, input.headers),
+      }),
+      reused: false,
+    };
   }
 
-  async read(buildId: string, userId: string): Promise<ProjectBuild> {
+  async read(
+    buildId: string,
+    userId: string,
+    headers: ReaderLocaleHeaders = {},
+  ): Promise<ProjectBuild> {
     const row = await this.requireBuild(buildId, userId);
-    return mapProjectBuild(row, { stale: await this.isStale(row) });
+    return mapProjectBuild(row, {
+      stale: await this.isStale(row),
+      locale: await this.locale(userId, headers),
+    });
   }
 
   async list(input: {
     workspaceId: string;
     userId: string;
     projectId?: string;
+    headers?: ReaderLocaleHeaders;
   }): Promise<ProjectBuildListResponse> {
     const role = await this.access.findRole(input.workspaceId, input.userId);
     assertPolicy(canReadWorkspace(role));
@@ -214,7 +236,10 @@ export class ProjectBuildsService {
       if (await this.isStale(row)) stale.add(row.id);
     }
 
-    return { builds: rows.map((row) => mapProjectBuild(row, { stale: stale.has(row.id) })) };
+    const locale = await this.locale(input.userId, input.headers);
+    return {
+      builds: rows.map((row) => mapProjectBuild(row, { locale, stale: stale.has(row.id) })),
+    };
   }
 
   async readLog(buildId: string, userId: string): Promise<ProjectBuildLogResponse> {
@@ -392,7 +417,7 @@ export class ProjectBuildsService {
     const file = await this.attachments.download(row.sourceMapAttachmentId, userId);
     if (file.byteSize > MAX_PARSED_SOURCE_MAP_BYTES) {
       throw AppError.conflict(
-        'Die SyncTeX-Karte dieses Baus ist zu groß, um sie hier auszuwerten. Sie lässt sich als Anhang herunterladen.',
+        'The SyncTeX map of this build is too large to evaluate here; it can be downloaded as an attachment',
       );
     }
 
@@ -429,13 +454,17 @@ export class ProjectBuildsService {
    * and now: no worker is holding it, and waiting for one would leave a queued
    * build claiming it is still coming.
    */
-  async cancel(buildId: string, userId: string): Promise<ProjectBuild> {
+  async cancel(
+    buildId: string,
+    userId: string,
+    headers: ReaderLocaleHeaders = {},
+  ): Promise<ProjectBuild> {
     const row = await this.requireBuild(buildId, userId);
     const role = await this.access.findRole(row.workspaceId, userId);
     assertPolicy(canBuildProject(role));
 
     if (row.status !== 'PENDING' && row.status !== 'RUNNING') {
-      throw AppError.conflict('Dieser Bau ist bereits abgeschlossen');
+      throw AppError.conflict('This build has already finished');
     }
 
     const now = new Date();
@@ -447,7 +476,7 @@ export class ProjectBuildsService {
           : { cancelledAt: now },
       select: PROJECT_BUILD_SELECT,
     });
-    return mapProjectBuild(updated, { stale: false });
+    return mapProjectBuild(updated, { stale: false, locale: await this.locale(userId, headers) });
   }
 
   /**
@@ -468,7 +497,7 @@ export class ProjectBuildsService {
     assertPolicy(canBuildProject(role));
 
     if (row.status === 'PENDING' || row.status === 'RUNNING') {
-      throw AppError.conflict('Dieser Bau läuft noch; brich ihn erst ab');
+      throw AppError.conflict('This build is still running; cancel it first');
     }
 
     for (const attachmentId of [row.attachmentId, row.sourceMapAttachmentId]) {
@@ -481,6 +510,11 @@ export class ProjectBuildsService {
     }
 
     await this.prisma.projectBuild.delete({ where: { id: buildId } });
+  }
+
+  /** The requester's language, for the one field of a job written for a person (ADR-062). */
+  private async locale(userId: string, headers: ReaderLocaleHeaders = {}): Promise<Locale> {
+    return readerLocale(this.prisma, userId, headers);
   }
 
   private async requireBuild(buildId: string, userId: string): Promise<ProjectBuildRow> {

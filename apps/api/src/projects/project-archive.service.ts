@@ -122,10 +122,10 @@ export class ProjectArchiveService {
       if (error instanceof ZipError && error.code === 'archive_too_large') {
         throw new AppError(
           'project_archive_too_large',
-          `Das Archiv enthält mehr als die erlaubten ${String(Math.round(PROJECT_MAX_ARCHIVE_BYTES / 1024 / 1024))} MB.`,
+          `The archive holds more than the allowed ${String(Math.round(PROJECT_MAX_ARCHIVE_BYTES / 1024 / 1024))} MB`,
         );
       }
-      throw new AppError('project_archive_unreadable', 'Diese Datei ist kein lesbares ZIP-Archiv.');
+      throw new AppError('project_archive_unreadable', 'This file is not a readable ZIP archive');
     }
 
     const strippedRoot = input.request.stripCommonRoot ? commonRoot(read.entries) : null;
@@ -404,13 +404,10 @@ export class ProjectArchiveService {
     });
     if (attachment === null || attachment.deletedAt !== null) throw AppError.notFound('Attachment');
     if (attachment.workspaceId !== workspaceId) {
-      throw new AppError(
-        'attachment_access_denied',
-        'Die Datei gehört zu einem anderen Arbeitsbereich',
-      );
+      throw new AppError('attachment_access_denied', 'The file belongs to another workspace');
     }
     if (attachment.mimeType !== 'application/zip') {
-      throw AppError.validation('Diese Datei ist kein ZIP-Archiv');
+      throw AppError.validation('This file is not a ZIP archive');
     }
 
     // Through the attachment service, so the permission check on the file is
@@ -451,7 +448,7 @@ export class ProjectArchiveService {
       orderBy: { path: 'asc' },
     });
     if (rows.length === 0) {
-      throw new AppError('project_empty', 'Das Projekt enthält noch keine Dateien.');
+      throw new AppError('project_empty', 'The project contains no files yet');
     }
 
     const entries: ZipEntry[] = [];
@@ -472,7 +469,7 @@ export class ProjectArchiveService {
       if (total > PROJECT_MAX_ARCHIVE_BYTES) {
         throw new AppError(
           'project_archive_too_large',
-          `Das Projekt ist größer als die erlaubten ${String(Math.round(PROJECT_MAX_ARCHIVE_BYTES / 1024 / 1024))} MB.`,
+          `The project is larger than the allowed ${String(Math.round(PROJECT_MAX_ARCHIVE_BYTES / 1024 / 1024))} MB`,
         );
       }
       entries.push({ name: row.path, content });

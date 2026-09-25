@@ -157,7 +157,7 @@ export const renderJobSchema = z.object({
   stale: z.boolean(),
   /** Machine-readable failure reason, English. Null while nothing failed. */
   errorCode: z.string().nullable(),
-  /** German, user-facing. Null while nothing failed. */
+  /** `errorCode` as a sentence in the requester's language (ADR-062). Null while nothing failed. */
   error: z.string().nullable(),
   /** The last lines of the build log. The whole log is its own route. */
   logTail: z.string().nullable(),
@@ -263,36 +263,31 @@ export const renderArtifactResponseSchema = z.object({
 export type RenderArtifactResponse = z.infer<typeof renderArtifactResponseSchema>;
 
 /**
- * German for what went wrong, from the English code the worker wrote.
- *
- * The mapping is here and not in the worker because the worker writes for a
- * log and this writes for a person: "renderer_unavailable" is the same fact as
- * "Auf diesem Rechner ist die PDF-Ausgabe nicht eingerichtet", and only one of
- * them belongs in a dialog.
+ * The failure codes the render worker writes into `render_job.errorCode`, and
+ * `unknown` for anything it may write later. Each has a sentence under
+ * `render.errors` in the message catalogue (issue #98, ADR-062): the worker
+ * writes for a log, the catalogue for a person, and the person's language is
+ * only known where the job is read.
  */
-export function renderErrorMessage(code: string | null): string | null {
-  switch (code) {
-    case null:
-      return null;
-    case 'renderer_unavailable':
-      return 'Die PDF-Ausgabe ist auf diesem Rechner nicht eingerichtet. Ein Administrator muss das Container-Abbild bereitstellen.';
-    case 'render_failed':
-      return 'Der Bau ist fehlgeschlagen. Das Protokoll sagt, an welcher Stelle.';
-    case 'render_timeout':
-      return 'Der Bau hat zu lange gedauert und wurde abgebrochen. Meist wartet die Vorlage auf eine Eingabe.';
-    case 'artifact_too_large':
-      return 'Das erzeugte PDF ist größer als erlaubt.';
-    case 'empty_artifact':
-      return 'Der Bau lief durch, hat aber keine Datei abgeliefert.';
-    case 'source_missing':
-      return 'Die Seite hat noch keinen aufbereiteten Inhalt. Einmal öffnen und kurz warten.';
-    case 'template_missing':
-      return 'Die Vorlage gibt es nicht mehr.';
-    case 'worker_lost':
-      return 'Der Bau wurde abgebrochen, weil der Hintergrunddienst ihn verloren hat.';
-    default:
-      return 'Der Bau ist fehlgeschlagen.';
-  }
+export const renderErrorKeys = [
+  'renderer_unavailable',
+  'render_failed',
+  'render_timeout',
+  'artifact_too_large',
+  'empty_artifact',
+  'source_missing',
+  'template_missing',
+  'worker_lost',
+  'unknown',
+] as const;
+export type RenderErrorKey = (typeof renderErrorKeys)[number];
+
+const RENDER_ERROR_KEYS: ReadonlySet<string> = new Set(renderErrorKeys);
+
+/** The catalogue key for a stored error code, or null when nothing failed. */
+export function renderErrorKey(code: string | null): RenderErrorKey | null {
+  if (code === null) return null;
+  return RENDER_ERROR_KEYS.has(code) ? (code as RenderErrorKey) : 'unknown';
 }
 
 /**
