@@ -53,6 +53,13 @@ export const COLLABORATION_FEATURES: readonly RegisteredFeature[] = [
     claims: { screens: ['/admin/agenten'] },
   }),
   defineFeature({
+    id: 'agenten-aenderungen-sehen',
+    area: 'zusammenarbeit',
+    since: '2026-09-25',
+    references: ['#112', 'ADR-065'],
+    ui: {},
+  }),
+  defineFeature({
     id: 'agenten-gedaechtnis',
     area: 'gedaechtnis',
     since: '2026-08-12',

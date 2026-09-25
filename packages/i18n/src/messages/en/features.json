@@ -303,6 +303,16 @@
     },
     "where": "Administration, Agents section."
   },
+  "agenten-aenderungen-sehen": {
+    "title": "See what an agent just changed",
+    "summary": "When an agent writes to a page you have open, the paragraphs it changed briefly light up, and a small badge names it: “Changed by Claude Code”. This way, no text shifts beneath you without you knowing why.",
+    "details": {
+      "p1": "Exactly the block that changed is highlighted: an updated list item, not the whole list. After a few seconds, the highlight fades away. None of this is saved, and nothing is locked: you can keep writing anywhere, even in the highlighted paragraph.",
+      "p2": "If you are currently writing in the paragraph the agent is modifying, the highlight becomes more prominent: “Changed at the same time by …”. Your text is not lost—both changes are merged—but the sentence might read differently from how you left it.",
+      "p3": "If a targeted change fails because the paragraph is now gone, that spot shows “Change by … not applied”. The agent provides its own name; the built-in AI is called “eXocortex AI”. If someone changes the page directly via the API, their name appears there instead."
+    },
+    "where": "In any open page, as soon as an agent writes to it."
+  },
   "verlauf": {
     "title": "Restoring versions",
     "summary": "A snapshot is created before every external write operation and at regular intervals while typing. The activity panel lists them with timestamp and author, and a single click restores one of them.",

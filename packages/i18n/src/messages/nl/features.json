@@ -303,6 +303,16 @@
     },
     "where": "Beheer, sectie Agenten."
   },
+  "agenten-aenderungen-sehen": {
+    "title": "Zien wat een agent zojuist heeft gewijzigd",
+    "summary": "Schrijft een agent naar een pagina die je open hebt staan, dan lichten de alinea’s die hij heeft gewijzigd kort op en vermeldt een klein labeltje zijn naam: „Gewijzigd door Claude Code”. Zo verschuift er geen tekst onder je ogen zonder dat je weet waarom.",
+    "details": {
+      "p1": "Precies het blok dat is gewijzigd wordt gemarkeerd: een gecorrigeerd lijstitem, niet de hele lijst. Na een paar seconden vervaagt de markering weer. Er wordt niets van opgeslagen en er wordt ook niets vergrendeld: je kunt overal blijven typen, ook in de gemarkeerde alinea.",
+      "p2": "Typ je op dat moment zelf in de alinea die de agent wijzigt, dan wordt de markering opvallender: „Tegelijkertijd gewijzigd door …”. Je tekst gaat daarbij niet verloren, beide wijzigingen worden samengevoegd, maar de zin leest misschien anders dan je hem had achtergelaten.",
+      "p3": "Mislukt een gerichte wijziging omdat de alinea inmiddels weg is, dan staat er op die plek „Wijziging van … niet overgenomen”. De agent geeft zelf zijn naam door; de ingebouwde AI heet „eXocortex AI”. Wijzigt iemand de pagina rechtstreeks via de API, dan staat daar diens naam."
+    },
+    "where": "Op elke geopende pagina, zodra een agent erin schrijft."
+  },
   "verlauf": {
     "title": "Versies terugzetten",
     "summary": "Vóór elke externe schrijfactie en met regelmatige tussenpozen tijdens het typen ontstaat een momentopname. Het activiteitengedeelte toont ze met tijd en auteur, en met één klik herstel je er een.",

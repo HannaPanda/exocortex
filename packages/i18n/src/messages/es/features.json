@@ -303,6 +303,16 @@
     },
     "where": "Administración, sección Agentes."
   },
+  "agenten-aenderungen-sehen": {
+    "title": "Ver qué acaba de modificar un agente",
+    "summary": "Si un agente escribe en una página que tienes abierta, los párrafos modificados se resaltan brevemente y una pequeña etiqueta indica su autoría: «Modificado por Claude Code». Así, el texto no se moverá bajo tus ojos sin que sepas el motivo.",
+    "details": {
+      "p1": "Se resalta exactamente el bloque modificado: un elemento de lista corregido, no la lista entera. Tras unos segundos, el resaltado se desvanece. No se guarda nada de esto y tampoco se bloquea nada: puedes seguir escribiendo en cualquier parte, incluso en el párrafo resaltado.",
+      "p2": "Si estás escribiendo justo en el párrafo que el agente modifica, el aviso se hace más visible: «Modificado al mismo tiempo por…». Tu texto no se pierde; ambos cambios se fusionan, pero puede que la frase quede redactada de forma distinta a como la dejaste.",
+      "p3": "Si una modificación puntual falla porque el párrafo ya no existe, en ese lugar aparece «Cambio de… no aplicado». El agente proporciona su propio nombre; la IA integrada se llama «eXocortex KI». Si alguien modifica la página directamente a través de la API, se muestra su nombre."
+    },
+    "where": "En cualquier página abierta, en cuanto un agente escribe en ella."
+  },
   "verlauf": {
     "title": "Recuperar versiones",
     "summary": "Antes de cada escritura externa y a intervalos regulares mientras escribes, se genera una instantánea. El panel de actividad las lista con fecha, hora y autoría, y basta un clic para restaurar cualquiera de ellas.",

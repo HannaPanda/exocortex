@@ -436,5 +436,12 @@
       "frameTitle": "Contenu intégré"
     },
     "commentCount": "{count, plural, one {commentaire} many {commentaires} other {commentaires}}"
+  },
+  "agentEdits": {
+    "changed": "Modifié par {name}",
+    "conflict": "Modifié simultanément par {name}",
+    "failed": "Modification de {name} non appliquée",
+    "someAgent": "un agent",
+    "somePerson": "quelqu’un"
   }
 }

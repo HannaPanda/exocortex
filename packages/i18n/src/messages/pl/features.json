@@ -303,6 +303,16 @@
     },
     "where": "Administracja, sekcja Agenci."
   },
+  "agenten-aenderungen-sehen": {
+    "title": "Sprawdzanie, co agent właśnie zmienił",
+    "summary": "Gdy agent pisze na otwartej przez ciebie stronie, zmienione przez niego akapity na chwilę się podświetlają, a mała etykieta wskazuje sprawcę: „Zmienione przez Claude Code”. Dzięki temu żaden tekst nie przesuwa się bez twojej wiedzy.",
+    "details": {
+      "p1": "Wyróżniany jest dokładnie ten blok, który uległ zmianie: poprawiony punkt listy, a nie cała lista. Po kilku sekundach wyróżnienie znika. Nic z tego nie jest zapisywane ani blokowane: możesz pisać dalej w dowolnym miejscu, również w wyróżnionym akapicie.",
+      "p2": "Jeśli akurat piszesz w tym samym akapicie, który zmienia agent, wyróżnienie staje się bardziej widoczne: „Zmienione jednocześnie przez…”. Twój tekst nie przepadnie – obie zmiany zostaną połączone, ale zdanie może brzmieć inaczej, niż gdy zostało przez ciebie opuszczone.",
+      "p3": "Gdy celowa zmiana się nie powiedzie, bo akapit w międzyczasie zniknął, w tym miejscu pojawia się komunikat „Nie zastosowano zmiany od…”. Nazwę podaje sam agent; wbudowana sztuczna inteligencja nazywa się „eXocortex KI”. Jeśli ktoś modyfikuje stronę bezpośrednio przez interfejs, wyświetli się jego imię i nazwisko."
+    },
+    "where": "Na każdej otwartej stronie, gdy tylko agent na niej pisze."
+  },
   "verlauf": {
     "title": "Przywracanie wersji",
     "summary": "Przed każdym zewnętrznym zapisem oraz regularnie podczas pisania tworzona jest migawka. Panel aktywności wyświetla je wraz z czasem i autorem, a jedno kliknięcie przywraca dowolną z nich.",

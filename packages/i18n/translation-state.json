@@ -6328,6 +6328,26 @@
       "source": "423530fafb36034c",
       "output": "cb6f188292dd3615"
     },
+    "editor.agentEdits.changed": {
+      "source": "71666094e4d61d29",
+      "output": "9c271a0f5510f121"
+    },
+    "editor.agentEdits.conflict": {
+      "source": "054952e62a4ffa23",
+      "output": "c4e47a1b2f248ce6"
+    },
+    "editor.agentEdits.failed": {
+      "source": "d34991091e6b8825",
+      "output": "b35612ec81ee95b3"
+    },
+    "editor.agentEdits.someAgent": {
+      "source": "90023e0ca2a622e7",
+      "output": "647936ec3e40783d"
+    },
+    "editor.agentEdits.somePerson": {
+      "source": "ed29b1ef3435bb33",
+      "output": "2a59d59e3809f827"
+    },
     "editor.blockActions.color": {
       "source": "a952c8f76f58ad58",
       "output": "6b73191a0a4b6742"
@@ -8151,6 +8171,30 @@
     "features.ablage-vorschlag.where": {
       "source": "c41c979e7195476c",
       "output": "2a6a258f2c5ff197"
+    },
+    "features.agenten-aenderungen-sehen.details.p1": {
+      "source": "38b753fcda8f7f2d",
+      "output": "1c6fbf08cbded2c3"
+    },
+    "features.agenten-aenderungen-sehen.details.p2": {
+      "source": "f9ce73e882737e58",
+      "output": "e858ac5a104a05e6"
+    },
+    "features.agenten-aenderungen-sehen.details.p3": {
+      "source": "6c7e9b39b3087a7b",
+      "output": "2943a064a34a6785"
+    },
+    "features.agenten-aenderungen-sehen.summary": {
+      "source": "b0045c50ce04243f",
+      "output": "6491f8316fc99fd4"
+    },
+    "features.agenten-aenderungen-sehen.title": {
+      "source": "f3cdfdb4bcc3c7e5",
+      "output": "0390e169b7747944"
+    },
+    "features.agenten-aenderungen-sehen.where": {
+      "source": "d96062679def7491",
+      "output": "f94bd5a52ec41819"
     },
     "features.agenten-datei-hochladen.details.p1": {
       "source": "dd7bc621bdfbe853",
@@ -21098,6 +21142,26 @@
       "source": "423530fafb36034c",
       "output": "08a0ef729540cc7a"
     },
+    "editor.agentEdits.changed": {
+      "source": "71666094e4d61d29",
+      "output": "eede7a7cae7ba9a6"
+    },
+    "editor.agentEdits.conflict": {
+      "source": "054952e62a4ffa23",
+      "output": "8eb0fc645c89bb96"
+    },
+    "editor.agentEdits.failed": {
+      "source": "d34991091e6b8825",
+      "output": "286b55661c83bd89"
+    },
+    "editor.agentEdits.someAgent": {
+      "source": "90023e0ca2a622e7",
+      "output": "830b3e396570a71b"
+    },
+    "editor.agentEdits.somePerson": {
+      "source": "ed29b1ef3435bb33",
+      "output": "ceeda0e109e9a7d6"
+    },
     "editor.blockActions.color": {
       "source": "a952c8f76f58ad58",
       "output": "6b73191a0a4b6742"
@@ -22921,6 +22985,30 @@
     "features.ablage-vorschlag.where": {
       "source": "c41c979e7195476c",
       "output": "d49d34f33982f9bf"
+    },
+    "features.agenten-aenderungen-sehen.details.p1": {
+      "source": "38b753fcda8f7f2d",
+      "output": "69556e7aecac5a0c"
+    },
+    "features.agenten-aenderungen-sehen.details.p2": {
+      "source": "f9ce73e882737e58",
+      "output": "f3f5d74c3f0f5250"
+    },
+    "features.agenten-aenderungen-sehen.details.p3": {
+      "source": "6c7e9b39b3087a7b",
+      "output": "35dd48caf9160e21"
+    },
+    "features.agenten-aenderungen-sehen.summary": {
+      "source": "b0045c50ce04243f",
+      "output": "68404985d4c0bc92"
+    },
+    "features.agenten-aenderungen-sehen.title": {
+      "source": "f3cdfdb4bcc3c7e5",
+      "output": "7fdca4bc2434b190"
+    },
+    "features.agenten-aenderungen-sehen.where": {
+      "source": "d96062679def7491",
+      "output": "d9b035913411835e"
     },
     "features.agenten-datei-hochladen.details.p1": {
       "source": "dd7bc621bdfbe853",
@@ -35868,6 +35956,26 @@
       "source": "423530fafb36034c",
       "output": "ff5e01ee65d44a70"
     },
+    "editor.agentEdits.changed": {
+      "source": "71666094e4d61d29",
+      "output": "d6c1cb8f1d6e829f"
+    },
+    "editor.agentEdits.conflict": {
+      "source": "054952e62a4ffa23",
+      "output": "806006513c3f640e"
+    },
+    "editor.agentEdits.failed": {
+      "source": "d34991091e6b8825",
+      "output": "80f9099ccdb52b96"
+    },
+    "editor.agentEdits.someAgent": {
+      "source": "90023e0ca2a622e7",
+      "output": "500ec2ee94ebab69"
+    },
+    "editor.agentEdits.somePerson": {
+      "source": "ed29b1ef3435bb33",
+      "output": "ff3ad90c19d26cd2"
+    },
     "editor.blockActions.color": {
       "source": "a952c8f76f58ad58",
       "output": "4550720a1879721c"
@@ -37691,6 +37799,30 @@
     "features.ablage-vorschlag.where": {
       "source": "c41c979e7195476c",
       "output": "69e045befdcba265"
+    },
+    "features.agenten-aenderungen-sehen.details.p1": {
+      "source": "38b753fcda8f7f2d",
+      "output": "b5649befaf7e9f42"
+    },
+    "features.agenten-aenderungen-sehen.details.p2": {
+      "source": "f9ce73e882737e58",
+      "output": "071ff7cfe987d2ee"
+    },
+    "features.agenten-aenderungen-sehen.details.p3": {
+      "source": "6c7e9b39b3087a7b",
+      "output": "25155d6f947a540d"
+    },
+    "features.agenten-aenderungen-sehen.summary": {
+      "source": "b0045c50ce04243f",
+      "output": "8ed60ea86c81c34a"
+    },
+    "features.agenten-aenderungen-sehen.title": {
+      "source": "f3cdfdb4bcc3c7e5",
+      "output": "de76d2d0108d7d6b"
+    },
+    "features.agenten-aenderungen-sehen.where": {
+      "source": "d96062679def7491",
+      "output": "b7418d900a43223f"
     },
     "features.agenten-datei-hochladen.details.p1": {
       "source": "dd7bc621bdfbe853",
@@ -50638,6 +50770,26 @@
       "source": "423530fafb36034c",
       "output": "e313cb2d22803d84"
     },
+    "editor.agentEdits.changed": {
+      "source": "71666094e4d61d29",
+      "output": "ed2924eba3ca0bac"
+    },
+    "editor.agentEdits.conflict": {
+      "source": "054952e62a4ffa23",
+      "output": "d537e0dfa1173e2c"
+    },
+    "editor.agentEdits.failed": {
+      "source": "d34991091e6b8825",
+      "output": "64915b111add2db8"
+    },
+    "editor.agentEdits.someAgent": {
+      "source": "90023e0ca2a622e7",
+      "output": "830b3e396570a71b"
+    },
+    "editor.agentEdits.somePerson": {
+      "source": "ed29b1ef3435bb33",
+      "output": "e8ad6a33d5c0e149"
+    },
     "editor.blockActions.color": {
       "source": "a952c8f76f58ad58",
       "output": "245eccd84730f075"
@@ -52461,6 +52613,30 @@
     "features.ablage-vorschlag.where": {
       "source": "c41c979e7195476c",
       "output": "fb617146d019eb05"
+    },
+    "features.agenten-aenderungen-sehen.details.p1": {
+      "source": "38b753fcda8f7f2d",
+      "output": "e6fe764eecdabaed"
+    },
+    "features.agenten-aenderungen-sehen.details.p2": {
+      "source": "f9ce73e882737e58",
+      "output": "f8e4513434411c53"
+    },
+    "features.agenten-aenderungen-sehen.details.p3": {
+      "source": "6c7e9b39b3087a7b",
+      "output": "f552636bf9a79391"
+    },
+    "features.agenten-aenderungen-sehen.summary": {
+      "source": "b0045c50ce04243f",
+      "output": "62240f74f9a9c8c2"
+    },
+    "features.agenten-aenderungen-sehen.title": {
+      "source": "f3cdfdb4bcc3c7e5",
+      "output": "b9affc4c62de656b"
+    },
+    "features.agenten-aenderungen-sehen.where": {
+      "source": "d96062679def7491",
+      "output": "e0b7b5bc2f4ac543"
     },
     "features.agenten-datei-hochladen.details.p1": {
       "source": "dd7bc621bdfbe853",
@@ -65408,6 +65584,26 @@
       "source": "423530fafb36034c",
       "output": "5e5a6f309cc38ced"
     },
+    "editor.agentEdits.changed": {
+      "source": "71666094e4d61d29",
+      "output": "e9b9e005dcb59846"
+    },
+    "editor.agentEdits.conflict": {
+      "source": "054952e62a4ffa23",
+      "output": "a303e10365ec8e10"
+    },
+    "editor.agentEdits.failed": {
+      "source": "d34991091e6b8825",
+      "output": "21ecb9da7157d963"
+    },
+    "editor.agentEdits.someAgent": {
+      "source": "90023e0ca2a622e7",
+      "output": "fd9788eb5f65a46f"
+    },
+    "editor.agentEdits.somePerson": {
+      "source": "ed29b1ef3435bb33",
+      "output": "948f16b958939305"
+    },
     "editor.blockActions.color": {
       "source": "a952c8f76f58ad58",
       "output": "a836e208bf212b98"
@@ -67231,6 +67427,30 @@
     "features.ablage-vorschlag.where": {
       "source": "c41c979e7195476c",
       "output": "5513cf37c136ae81"
+    },
+    "features.agenten-aenderungen-sehen.details.p1": {
+      "source": "38b753fcda8f7f2d",
+      "output": "03937fae6837ded4"
+    },
+    "features.agenten-aenderungen-sehen.details.p2": {
+      "source": "f9ce73e882737e58",
+      "output": "98c0ba35942ff6ac"
+    },
+    "features.agenten-aenderungen-sehen.details.p3": {
+      "source": "6c7e9b39b3087a7b",
+      "output": "dad361c7088559c3"
+    },
+    "features.agenten-aenderungen-sehen.summary": {
+      "source": "b0045c50ce04243f",
+      "output": "dc905c06dacce413"
+    },
+    "features.agenten-aenderungen-sehen.title": {
+      "source": "f3cdfdb4bcc3c7e5",
+      "output": "1f31e899d56277cc"
+    },
+    "features.agenten-aenderungen-sehen.where": {
+      "source": "d96062679def7491",
+      "output": "12da0c6d52693109"
     },
     "features.agenten-datei-hochladen.details.p1": {
       "source": "dd7bc621bdfbe853",
@@ -80178,6 +80398,26 @@
       "source": "423530fafb36034c",
       "output": "a42f227a0f9f61f3"
     },
+    "editor.agentEdits.changed": {
+      "source": "71666094e4d61d29",
+      "output": "0be1a5964f27024c"
+    },
+    "editor.agentEdits.conflict": {
+      "source": "054952e62a4ffa23",
+      "output": "e96aa86863e3cadf"
+    },
+    "editor.agentEdits.failed": {
+      "source": "d34991091e6b8825",
+      "output": "cfb4d574f06a7464"
+    },
+    "editor.agentEdits.someAgent": {
+      "source": "90023e0ca2a622e7",
+      "output": "83a07974bf837c7c"
+    },
+    "editor.agentEdits.somePerson": {
+      "source": "ed29b1ef3435bb33",
+      "output": "cf2f94f0b773afe7"
+    },
     "editor.blockActions.color": {
       "source": "a952c8f76f58ad58",
       "output": "9588fcfe7199e088"
@@ -82001,6 +82241,30 @@
     "features.ablage-vorschlag.where": {
       "source": "c41c979e7195476c",
       "output": "e65d5ad5ed8f8248"
+    },
+    "features.agenten-aenderungen-sehen.details.p1": {
+      "source": "38b753fcda8f7f2d",
+      "output": "68959367d5aeebef"
+    },
+    "features.agenten-aenderungen-sehen.details.p2": {
+      "source": "f9ce73e882737e58",
+      "output": "680b46b1f2dad684"
+    },
+    "features.agenten-aenderungen-sehen.details.p3": {
+      "source": "6c7e9b39b3087a7b",
+      "output": "178604c68cb15782"
+    },
+    "features.agenten-aenderungen-sehen.summary": {
+      "source": "b0045c50ce04243f",
+      "output": "b29f89039716b7a7"
+    },
+    "features.agenten-aenderungen-sehen.title": {
+      "source": "f3cdfdb4bcc3c7e5",
+      "output": "5e4da3fa65b1ddc6"
+    },
+    "features.agenten-aenderungen-sehen.where": {
+      "source": "d96062679def7491",
+      "output": "a13bb1f020d2218d"
     },
     "features.agenten-datei-hochladen.details.p1": {
       "source": "dd7bc621bdfbe853",
@@ -94948,6 +95212,26 @@
       "source": "423530fafb36034c",
       "output": "9878980f3f671a55"
     },
+    "editor.agentEdits.changed": {
+      "source": "71666094e4d61d29",
+      "output": "5a51567cd3e6c971"
+    },
+    "editor.agentEdits.conflict": {
+      "source": "054952e62a4ffa23",
+      "output": "ac37dc672e83658c"
+    },
+    "editor.agentEdits.failed": {
+      "source": "d34991091e6b8825",
+      "output": "0ab4a86b5a3d356f"
+    },
+    "editor.agentEdits.someAgent": {
+      "source": "90023e0ca2a622e7",
+      "output": "ab4433f0cfa7f2f3"
+    },
+    "editor.agentEdits.somePerson": {
+      "source": "ed29b1ef3435bb33",
+      "output": "11bf7e98a3f123c4"
+    },
     "editor.blockActions.color": {
       "source": "a952c8f76f58ad58",
       "output": "2237b88f398fc8ac"
@@ -96771,6 +97055,30 @@
     "features.ablage-vorschlag.where": {
       "source": "c41c979e7195476c",
       "output": "ec5a616cdd10a132"
+    },
+    "features.agenten-aenderungen-sehen.details.p1": {
+      "source": "38b753fcda8f7f2d",
+      "output": "b658a33c76209468"
+    },
+    "features.agenten-aenderungen-sehen.details.p2": {
+      "source": "f9ce73e882737e58",
+      "output": "eeb4c0613994abc0"
+    },
+    "features.agenten-aenderungen-sehen.details.p3": {
+      "source": "6c7e9b39b3087a7b",
+      "output": "2913799ab92ce81c"
+    },
+    "features.agenten-aenderungen-sehen.summary": {
+      "source": "b0045c50ce04243f",
+      "output": "a18ac0ea7bd3305c"
+    },
+    "features.agenten-aenderungen-sehen.title": {
+      "source": "f3cdfdb4bcc3c7e5",
+      "output": "9f0fc12f32e188ae"
+    },
+    "features.agenten-aenderungen-sehen.where": {
+      "source": "d96062679def7491",
+      "output": "4a77cd8ec8a7f5aa"
     },
     "features.agenten-datei-hochladen.details.p1": {
       "source": "dd7bc621bdfbe853",

@@ -436,5 +436,12 @@
       "frameTitle": "Ingesloten inhoud"
     },
     "commentCount": "{count, plural, one {reactie} other {reacties}}"
+  },
+  "agentEdits": {
+    "changed": "Gewijzigd door {name}",
+    "conflict": "Tegelijkertijd gewijzigd door {name}",
+    "failed": "Wijziging van {name} niet toegepast",
+    "someAgent": "een agent",
+    "somePerson": "iemand"
   }
 }

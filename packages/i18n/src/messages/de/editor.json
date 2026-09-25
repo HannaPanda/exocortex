@@ -436,5 +436,12 @@
       "frameTitle": "Eingebetteter Inhalt"
     },
     "commentCount": "{count, plural, one {Kommentar} other {Kommentare}}"
+  },
+  "agentEdits": {
+    "changed": "Von {name} geändert",
+    "conflict": "Gleichzeitig von {name} geändert",
+    "failed": "Änderung von {name} nicht übernommen",
+    "someAgent": "einem Agenten",
+    "somePerson": "jemandem"
   }
 }

@@ -436,5 +436,12 @@
       "frameTitle": "Osadzona zawartość"
     },
     "commentCount": "{count, plural, one {komentarz} few {komentarze} many {komentarzy} other {komentarza}}"
+  },
+  "agentEdits": {
+    "changed": "Zmieniono przez: {name}",
+    "conflict": "Zmieniono jednocześnie przez: {name}",
+    "failed": "Nie zastosowano zmiany od: {name}",
+    "someAgent": "agenta",
+    "somePerson": "kogoś"
   }
 }

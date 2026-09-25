@@ -436,5 +436,12 @@
       "frameTitle": "Contenido incrustado"
     },
     "commentCount": "{count, plural, one {comentario} many {comentarios} other {comentarios}}"
+  },
+  "agentEdits": {
+    "changed": "Modificado por {name}",
+    "conflict": "Modificado a la vez por {name}",
+    "failed": "No se aplicó la modificación de {name}",
+    "someAgent": "un agente",
+    "somePerson": "alguien"
   }
 }

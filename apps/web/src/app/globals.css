@@ -226,6 +226,56 @@
     @apply bg-warning/14;
   }
 
+  /* A block a write from outside the editor just changed (issue #112): an
+     agent, or somebody using the API. A decoration like the comment marker,
+     never stored. The wash fires at full strength and settles over
+     duration-settle when the marker goes (the Signal-Fires-Then-Fades rule);
+     the label tab above the block names the writer, the way a remote cursor's
+     tab names its owner, so the state is readable without the colour. */
+  .exocortex-editor .exocortex-agent-edit {
+    @apply relative -mx-3 rounded-sm px-3;
+    transition: background-color var(--duration-settle) var(--ease-out-quint);
+  }
+
+  .exocortex-editor .exocortex-agent-edit[data-agent-edit='changed'] {
+    @apply bg-info/12;
+  }
+
+  /* The reader was typing in this very block: the stronger signal. */
+  .exocortex-editor .exocortex-agent-edit[data-agent-edit='conflict'] {
+    @apply bg-warning/18;
+  }
+
+  /* Nothing changed here; the write aimed at this block was refused. */
+  .exocortex-editor .exocortex-agent-edit[data-agent-edit='failed'] {
+    @apply bg-muted;
+  }
+
+  .exocortex-editor .exocortex-agent-edit.exocortex-agent-edit-settling {
+    @apply bg-transparent;
+  }
+
+  .exocortex-editor .exocortex-agent-edit-label {
+    @apply pointer-events-none absolute -top-2.5 right-1.5 z-10 rounded-xs px-1.5 text-meta leading-5 font-normal select-none;
+    transition: opacity var(--duration-settle) var(--ease-out-quint);
+  }
+
+  .exocortex-editor [data-agent-edit='changed'] > .exocortex-agent-edit-label {
+    @apply bg-info text-info-foreground;
+  }
+
+  .exocortex-editor [data-agent-edit='conflict'] > .exocortex-agent-edit-label {
+    @apply bg-warning text-warning-foreground;
+  }
+
+  .exocortex-editor [data-agent-edit='failed'] > .exocortex-agent-edit-label {
+    @apply border border-border bg-surface text-muted-foreground;
+  }
+
+  .exocortex-editor .exocortex-agent-edit-settling > .exocortex-agent-edit-label {
+    @apply opacity-0;
+  }
+
   .exocortex-editor code {
     @apply rounded-sm bg-sunken px-1 py-0.5 font-mono text-[0.85em];
   }

@@ -303,6 +303,16 @@
     },
     "where": "Amministrazione, sezione Agenti."
   },
+  "agenten-aenderungen-sehen": {
+    "title": "Vedere cosa ha appena modificato un agente",
+    "summary": "Se un agente scrive in una pagina che hai aperto, i paragrafi modificati si illuminano brevemente e una piccola etichetta ne indica l’autore: „Modificato da Claude Code“. Così il testo non si sposta sotto i tuoi occhi senza che tu ne conosca il motivo.",
+    "details": {
+      "p1": "Viene evidenziato esattamente il blocco modificato: una singola voce di elenco corretta, non l’intero elenco. Dopo alcuni secondi l’evidenziazione svanisce. Nulla di tutto ciò viene salvato né bloccato: puoi continuare a scrivere ovunque, anche nel paragrafo evidenziato.",
+      "p2": "Se stai scrivendo proprio nel paragrafo che l’agente sta modificando, l’evidenziazione diventa più evidente: „Modificato contemporaneamente da …“. Il tuo testo non andrà perso e le due modifiche verranno unite, ma la frase potrebbe risultare diversa da come l’avevi lasciata.",
+      "p3": "Se una modifica mirata non riesce perché il paragrafo nel frattempo non esiste più, in quel punto compare „Modifica di … non applicata“. Il nome viene indicato dall’agente stesso; l’IA integrata si chiama „eXocortex KI“. Se qualcuno modifica la pagina direttamente tramite l’interfaccia, compare il suo nome."
+    },
+    "where": "In qualsiasi pagina aperta, non appena un agente vi scrive dentro."
+  },
   "verlauf": {
     "title": "Ripristinare le versioni",
     "summary": "Prima di ogni operazione di scrittura esterna e a intervalli regolari durante la digitazione viene creata un’istantanea. L’area delle attività le elenca con data, ora e autore, e basta un clic per ripristinarne una.",

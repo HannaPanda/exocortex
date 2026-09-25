@@ -303,6 +303,16 @@
     },
     "where": "Administration, section Agents."
   },
+  "agenten-aenderungen-sehen": {
+    "title": "Voir ce qu’un agent vient de modifier",
+    "summary": "Si un agent écrit dans une page que tu as ouverte, les paragraphes qu’il a modifiés s’allument brièvement et une petite étiquette indique son nom : « Modifié par Claude Code ». Ainsi, aucun texte ne bouge sous tes yeux sans que tu saches pourquoi.",
+    "details": {
+      "p1": "Seul le bloc ayant changé est mis en surbrillance : un élément de liste corrigé, pas toute la liste. La surbrillance s’estompe après quelques secondes. Rien n’est enregistré de tout cela et rien n’est bloqué non plus : tu peux continuer à écrire partout, y compris dans le paragraphe en surbrillance.",
+      "p2": "Si tu es en train d’écrire dans le paragraphe que l’agent modifie, la mise en évidence devient plus visible : « Modifié en même temps par … ». Ton texte n’est pas perdu pour autant, les deux modifications fusionnent, mais la phrase peut se lire différemment de la façon dont tu l’avais laissée.",
+      "p3": "Si une modification ciblée échoue parce que le paragraphe a disparu entre-temps, la mention « Modification de … non appliquée » apparaît à cet endroit. L’agent indique lui-même son nom ; l’IA intégrée s’appelle « eXocortex KI ». Si quelqu’un modifie la page directement via l’API, son nom apparaît."
+    },
+    "where": "Dans chaque page ouverte, dès qu’un agent y écrit."
+  },
   "verlauf": {
     "title": "Restaurer des versions",
     "summary": "Un instantané est créé avant chaque écriture externe et à intervalles réguliers pendant la saisie. Le volet d’activité les liste avec la date, l’heure et l’auteur, et un clic permet d’en restaurer un.",

@@ -303,6 +303,16 @@
     },
     "where": "Administração, área Agentes."
   },
+  "agenten-aenderungen-sehen": {
+    "title": "Ver o que um agente acabou de alterar",
+    "summary": "Se um agente escreve em uma página que você está com ela aberta, os parágrafos alterados por ele se iluminam brevemente, e uma pequena etiqueta informa: „Alterado por Claude Code“. Assim, nenhum texto muda de lugar debaixo dos seus olhos sem você saber o motivo.",
+    "details": {
+      "p1": "O destaque fica exatamente no bloco que foi alterado: um item de lista corrigido, não a lista inteira. Após alguns segundos, o destaque desaparece. Nada disso fica salvo e nada é bloqueado: você pode continuar escrevendo em qualquer lugar, inclusive no parágrafo destacado.",
+      "p2": "Se você estiver escrevendo no mesmo parágrafo que o agente alterar, o destaque fica mais visível: „Alterado simultaneamente por…“. Seu texto não é perdido, ambas as alterações são mescladas, mas a frase pode soar diferente de quando você parou de digitar.",
+      "p3": "Se uma alteração pontual falhar porque o parágrafo desapareceu nesse meio-tempo, aparece no local „Alteração de… não aplicada“. O próprio agente informa seu nome; a IA integrada se chama „IA do eXocortex“. Se alguém alterar a página diretamente pela API, o nome dessa pessoa é exibido."
+    },
+    "where": "Em qualquer página aberta, assim que um agente escrever nela."
+  },
   "verlauf": {
     "title": "Recuperar versões",
     "summary": "Antes de cada operação de escrita externa e em intervalos regulares durante a digitação, um snapshot é criado. A área de atividade lista essas versões com horário e autor, e um clique restaura uma delas.",

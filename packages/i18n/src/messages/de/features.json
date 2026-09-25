@@ -303,6 +303,16 @@
     },
     "where": "Verwaltung, Bereich Agenten."
   },
+  "agenten-aenderungen-sehen": {
+    "title": "Sehen, was ein Agent gerade geändert hat",
+    "summary": "Schreibt ein Agent in eine Seite, die du offen hast, leuchten die Absätze kurz auf, die er geändert hat, und ein kleines Schild nennt ihn: „Von Claude Code geändert“. So verschiebt sich kein Text unter dir, ohne dass du weißt, warum.",
+    "details": {
+      "p1": "Markiert wird genau der Block, der sich geändert hat: ein korrigierter Listenpunkt, nicht die ganze Liste. Nach ein paar Sekunden verblasst die Markierung wieder. Gespeichert wird davon nichts, und gesperrt wird auch nichts: du kannst überall weiterschreiben, auch in dem markierten Absatz.",
+      "p2": "Schreibst du gerade selbst in dem Absatz, den der Agent ändert, wird die Markierung auffälliger: „Gleichzeitig von … geändert“. Dein Text geht dabei nicht verloren, beide Änderungen werden zusammengeführt, aber der Satz liest sich vielleicht anders, als du ihn verlassen hast.",
+      "p3": "Scheitert eine gezielte Änderung, weil der Absatz inzwischen weg ist, steht an der Stelle „Änderung von … nicht übernommen“. Den Namen nennt der Agent selbst; die eingebaute KI heißt „eXocortex KI“. Ändert jemand die Seite direkt über die Schnittstelle, steht dort sein Name."
+    },
+    "where": "In jeder geöffneten Seite, sobald ein Agent hineinschreibt."
+  },
   "verlauf": {
     "title": "Versionen zurückholen",
     "summary": "Vor jedem Schreibvorgang von außen und in regelmäßigen Abständen beim Tippen entsteht ein Schnappschuss. Der Aktivitätsbereich listet sie mit Zeit und Urheber, und ein Klick stellt einen davon wieder her.",

@@ -436,5 +436,12 @@
       "frameTitle": "Embedded content"
     },
     "commentCount": "{count, plural, one {comment} other {comments}}"
+  },
+  "agentEdits": {
+    "changed": "Changed by {name}",
+    "conflict": "Changed concurrently by {name}",
+    "failed": "Changes by {name} not applied",
+    "someAgent": "an agent",
+    "somePerson": "someone"
   }
 }

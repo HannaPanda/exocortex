@@ -38,6 +38,7 @@ import {
   type Connection,
   useCollaborationConnection,
 } from '@/components/editor/collaboration-connection';
+import { AgentEditMarkers, createAgentEditMarkers } from '@/components/editor/agent-edit-markers';
 import { CommentMarkers, createCommentMarkers } from '@/components/editor/comment-markers';
 import {
   type AskDatabaseEmbed,
@@ -341,6 +342,10 @@ function EditorSurface({
   // the comment markers: stateless here, fed from `WikiLinkMarkers` in the
   // chrome.
   const wikiLinkMarkers = React.useMemo(() => createWikiLinkMarkers(), []);
+  // Marks the blocks a write from outside the editor just changed (issue
+  // #112). Stateless too: `AgentEditMarkers` in the chrome feeds it from the
+  // document's socket.
+  const agentEditMarkers = React.useMemo(() => createAgentEditMarkers(), []);
 
   /**
    * Dropped and pasted files. Kept here rather than in the chrome because the
@@ -452,6 +457,7 @@ function EditorSurface({
           mentionExtension,
           commentMarkers,
           wikiLinkMarkers,
+          agentEditMarkers,
           // A peer requirement of the drag handle: dragging selects a whole node
           // range. Without it the handle is registered but never becomes visible,
           // because the plugin cannot resolve a range to grab.
@@ -515,6 +521,7 @@ function EditorSurface({
       mentionExtension,
       commentMarkers,
       wikiLinkMarkers,
+      agentEditMarkers,
       placeholder,
       contentLabel,
       words,
@@ -551,6 +558,7 @@ function EditorSurface({
       {editor === null ? null : (
         <EditorChrome
           editor={editor}
+          provider={connection.provider}
           workspaceId={workspaceId}
           documentId={documentId}
           currentUser={currentUser}
@@ -570,6 +578,7 @@ function EditorSurface({
 
 interface EditorChromeProps {
   editor: Editor;
+  provider: Connection['provider'];
   workspaceId: string;
   documentId: string;
   currentUser: { id: string; name: string };
@@ -591,6 +600,7 @@ interface EditorChromeProps {
  */
 function EditorChrome({
   editor,
+  provider,
   workspaceId,
   documentId,
   currentUser,
@@ -712,6 +722,8 @@ function EditorChrome({
       {/* Renders nothing either: it tells the text which of its `[[Titel]]`
           references point at a page that exists (issue #24). */}
       <WikiLinkMarkers editor={editor} workspaceId={workspaceId} />
+      {/* Renders nothing: it marks what an agent just changed, and who (#112). */}
+      <AgentEditMarkers editor={editor} provider={provider} />
       {prompt.element}
       {linkNavigation.element}
     </>
