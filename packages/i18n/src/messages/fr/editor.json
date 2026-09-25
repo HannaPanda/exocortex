@@ -373,5 +373,68 @@
   },
   "wikiLink": {
     "missing": "« {title} » n’existe pas dans cet espace de travail"
+  },
+  "nodeViews": {
+    "media": {
+      "open": "Ouvrir",
+      "download": "Télécharger",
+      "pages": "{count, plural, one {# page} many {# pages} other {# pages}}",
+      "tables": "{count, plural, one {# tableau} many {# tableaux} other {# tableaux}}",
+      "pictures": "{count, plural, one {# image} many {# images} other {# images}}",
+      "ocrUsed": "lu par reconnaissance optique (OCR)",
+      "status": {
+        "notApplicable": "Pas encore extrait",
+        "pending": "Extraction du texte…",
+        "ready": "Texte extrait",
+        "failed": "Aucun texte lisible"
+      },
+      "corrected": "Corrigé manuellement",
+      "truncated": "Tronqué",
+      "retry": "Réessayer",
+      "extract": "Extraire le texte",
+      "reextract": "Extraire à nouveau",
+      "view": "Afficher",
+      "textErrors": {
+        "pdfDisabled": "L’extraction de PDF est désactivée sur cette installation.",
+        "officeDisabled": "L’extraction de fichiers Office est désactivée sur cette installation.",
+        "tooLarge": "Le fichier dépasse la taille maximale autorisée pour l’extraction.",
+        "noTextLayer": "Le PDF ne contient aucune couche de texte lisible.",
+        "empty": "Le fichier ne contient aucun texte.",
+        "unsupported": "Ce format de fichier ne peut pas être lu.",
+        "malformed": "Le fichier est endommagé et ne contient aucun texte lisible.",
+        "encrypted": "Le fichier est protégé par un mot de passe.",
+        "missingPart": "Il manque une partie au fichier pour pouvoir en extraire le texte.",
+        "resourceLimit": "Le fichier dépasse une limite de sécurité du convertisseur.",
+        "needsOcr": "Le fichier est composé d’images et nécessite une reconnaissance de texte.",
+        "failed": "L’extraction a échoué plusieurs fois.",
+        "unknown": "Impossible de lire le texte du fichier."
+      },
+      "dialog": {
+        "discard": "Abandonner la correction",
+        "save": "Enregistrer",
+        "close": "Fermer",
+        "corrected": "Corrigé manuellement.",
+        "correctedOn": "Corrigé manuellement le {day}.",
+        "truncated": "Le texte extrait a été tronqué et n’est pas complet.",
+        "lastError": "Erreur lors de la dernière extraction : {reason}",
+        "failed": "Une erreur s’est produite. Réessaie."
+      }
+    },
+    "breadcrumb": {
+      "label": "Fil d’Ariane",
+      "empty": "Cette page n’a aucune page parente."
+    },
+    "tableOfContents": {
+      "label": "Table des matières",
+      "empty": "Pas encore d’en-têtes sur cette page."
+    },
+    "toggle": {
+      "collapse": "Replier la section",
+      "expand": "Déplier la section"
+    },
+    "embed": {
+      "frameTitle": "Contenu intégré"
+    },
+    "commentCount": "{count, plural, one {commentaire} many {commentaires} other {commentaires}}"
   }
 }

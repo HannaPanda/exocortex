@@ -24,5 +24,8 @@
     "clear": "Wissen",
     "time": "Tijd",
     "labelledTime": "{label}, tijd"
+  },
+  "layout": {
+    "skipToContent": "Naar inhoud springen"
   }
 }

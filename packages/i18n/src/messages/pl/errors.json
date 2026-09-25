@@ -87,5 +87,12 @@
     "share_grantee_unknown": "Dla tego adresu nie ma tutaj konta.",
     "share_grantee_is_member": "Ta osoba ma już dostęp do strony: jest członkiem tego obszaru roboczego.",
     "token_scope_exceeded": "Ten token jest ważny tylko dla określonych stron i nie ma tutaj dostępu."
+  },
+  "boundary": {
+    "pageTitle": "Nie udało się załadować tej strony",
+    "pageBody": "Reszta aplikacji działa dalej. Uruchomiony proces AI nadal pracuje w tle; jego historia pojawi się w całości na czacie po odświeżeniu.",
+    "viewTitle": "Nie udało się załadować tego widoku",
+    "viewBody": "Spróbuj ponownie. Jeśli problem nie ustąpi, sprawdź swoje połączenie. Uruchomiony proces AI nadal pracuje w tle; jego historia pojawi się w całości na czacie po odświeżeniu.",
+    "retry": "Spróbuj ponownie"
   }
 }

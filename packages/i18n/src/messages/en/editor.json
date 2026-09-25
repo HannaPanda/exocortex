@@ -373,5 +373,68 @@
   },
   "wikiLink": {
     "missing": "“{title}” does not exist in this workspace"
+  },
+  "nodeViews": {
+    "media": {
+      "open": "Open",
+      "download": "Download",
+      "pages": "{count, plural, one {# page} other {# pages}}",
+      "tables": "{count, plural, one {# table} other {# tables}}",
+      "pictures": "{count, plural, one {# image} other {# images}}",
+      "ocrUsed": "read via text recognition",
+      "status": {
+        "notApplicable": "Not yet extracted",
+        "pending": "Extracting text …",
+        "ready": "Text extracted",
+        "failed": "No text readable"
+      },
+      "corrected": "Manually corrected",
+      "truncated": "Truncated",
+      "retry": "Try again",
+      "extract": "Extract text",
+      "reextract": "Extract again",
+      "view": "View",
+      "textErrors": {
+        "pdfDisabled": "PDF text extraction is disabled on this installation.",
+        "officeDisabled": "Office file text extraction is disabled on this installation.",
+        "tooLarge": "The file is larger than the limit up to which files are extracted.",
+        "noTextLayer": "The PDF does not have a readable text layer.",
+        "empty": "The file does not contain any text.",
+        "unsupported": "This file format cannot be read.",
+        "malformed": "The file is corrupted and contains no readable text.",
+        "encrypted": "The file is password-protected.",
+        "missingPart": "The file is missing a part required to produce text.",
+        "resourceLimit": "The file exceeds a converter safety limit.",
+        "needsOcr": "The file consists of images and would require text recognition.",
+        "failed": "Text extraction failed multiple times.",
+        "unknown": "The file’s text could not be read."
+      },
+      "dialog": {
+        "discard": "Discard correction",
+        "save": "Save",
+        "close": "Close",
+        "corrected": "Manually corrected.",
+        "correctedOn": "Manually corrected on {day}.",
+        "truncated": "The extracted text was truncated and is incomplete.",
+        "lastError": "Error during the last extraction: {reason}",
+        "failed": "That didn’t work. Please try again."
+      }
+    },
+    "breadcrumb": {
+      "label": "Breadcrumb navigation",
+      "empty": "This page has no parent pages."
+    },
+    "tableOfContents": {
+      "label": "Table of contents",
+      "empty": "No headings on this page yet."
+    },
+    "toggle": {
+      "collapse": "Collapse section",
+      "expand": "Expand section"
+    },
+    "embed": {
+      "frameTitle": "Embedded content"
+    },
+    "commentCount": "{count, plural, one {comment} other {comments}}"
   }
 }

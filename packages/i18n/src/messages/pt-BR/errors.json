@@ -87,5 +87,12 @@
     "share_grantee_unknown": "Não há nenhuma conta associada a este endereço.",
     "share_grantee_is_member": "Esta pessoa já tem acesso à página: ela é membro deste espaço de trabalho.",
     "token_scope_exceeded": "Este token é válido apenas para determinadas páginas e não tem permissão de acesso aqui."
+  },
+  "boundary": {
+    "pageTitle": "Não foi possível carregar esta página",
+    "pageBody": "O restante do aplicativo continua funcionando. Uma execução de IA iniciada continuará em segundo plano; seu histórico estará completo no chat após recarregar.",
+    "viewTitle": "Não foi possível carregar esta visualização",
+    "viewBody": "Por favor, tente novamente. Se o problema persistir, verifique sua conexão. Uma execução de IA iniciada continuará em segundo plano; seu histórico estará completo no chat após recarregar.",
+    "retry": "Tentar novamente"
   }
 }

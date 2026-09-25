@@ -192,5 +192,19 @@
     "local": "zapisano lokalnie",
     "saved": "zapisano",
     "savedAt": "zapisano <time>{clock}</time>"
+  },
+  "jobProgress": {
+    "failed": "Zadanie w tle nie powiodło się",
+    "steps": {
+      "loading": "Ładowanie strony",
+      "upToDate": "Już aktualne",
+      "readingProject": "Analizowanie plików projektu",
+      "projectDone": "Projekt przetworzony",
+      "readingContent": "Analizowanie zawartości",
+      "storing": "Zapisywanie danych pochodnych",
+      "collectingLinks": "Gromadzenie odnośników",
+      "done": "Strona przetworzona",
+      "failed": "Nie udało się przetworzyć strony"
+    }
   }
 }

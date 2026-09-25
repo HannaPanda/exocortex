@@ -6900,6 +6900,186 @@
       "source": "caa9da780fd67a6e",
       "output": "566181254b293aa6"
     },
+    "editor.nodeViews.breadcrumb.empty": {
+      "source": "724ea4a3c3fc5b48",
+      "output": "445caa7dc60f458b"
+    },
+    "editor.nodeViews.breadcrumb.label": {
+      "source": "35156900c7a9ad77",
+      "output": "a9b1755c9576923f"
+    },
+    "editor.nodeViews.commentCount": {
+      "source": "7841c5a1e2bd7b6e",
+      "output": "01bd16c3e57d38ab"
+    },
+    "editor.nodeViews.embed.frameTitle": {
+      "source": "7ecf51a9ddbe6e5f",
+      "output": "1bca8f5f592811a7"
+    },
+    "editor.nodeViews.media.corrected": {
+      "source": "6a8f78899af40ebb",
+      "output": "b538c39860b18c2e"
+    },
+    "editor.nodeViews.media.dialog.close": {
+      "source": "b808f6e97075772f",
+      "output": "7d9eb7acb13e2462"
+    },
+    "editor.nodeViews.media.dialog.corrected": {
+      "source": "88515b950f0e28f3",
+      "output": "025228d96c7ba755"
+    },
+    "editor.nodeViews.media.dialog.correctedOn": {
+      "source": "18c74886072f932c",
+      "output": "5cd1a3dd3a290418"
+    },
+    "editor.nodeViews.media.dialog.discard": {
+      "source": "8aa7050af8d30290",
+      "output": "525562c9e379c951"
+    },
+    "editor.nodeViews.media.dialog.failed": {
+      "source": "6632d80bc657bb7b",
+      "output": "e0381366aa931174"
+    },
+    "editor.nodeViews.media.dialog.lastError": {
+      "source": "01ae16078350dba8",
+      "output": "64ebc0e066572f3d"
+    },
+    "editor.nodeViews.media.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "1509f561f2416598"
+    },
+    "editor.nodeViews.media.dialog.truncated": {
+      "source": "9713712c70452a98",
+      "output": "71f99b7f4f71a7b9"
+    },
+    "editor.nodeViews.media.download": {
+      "source": "b3025b16bfa6b124",
+      "output": "d6eafe8235910042"
+    },
+    "editor.nodeViews.media.extract": {
+      "source": "0cdfb127a806fdc6",
+      "output": "18ee0698578bb306"
+    },
+    "editor.nodeViews.media.ocrUsed": {
+      "source": "86bc6d843f20b0f4",
+      "output": "32dba44f2f34eaea"
+    },
+    "editor.nodeViews.media.open": {
+      "source": "bc385a30b5378841",
+      "output": "ed077f3d8125d60d"
+    },
+    "editor.nodeViews.media.pages": {
+      "source": "a138bf339522c321",
+      "output": "09e1ce4ae931f8ce"
+    },
+    "editor.nodeViews.media.pictures": {
+      "source": "77fe8f5cb63283a7",
+      "output": "7a0cde65054916a7"
+    },
+    "editor.nodeViews.media.reextract": {
+      "source": "723ce8002244579f",
+      "output": "6bb3ca4fc00ae390"
+    },
+    "editor.nodeViews.media.retry": {
+      "source": "948643cb59e8274f",
+      "output": "d8b8392e2c542950"
+    },
+    "editor.nodeViews.media.status.failed": {
+      "source": "fd23c20884767154",
+      "output": "e4ecf91f683d898f"
+    },
+    "editor.nodeViews.media.status.notApplicable": {
+      "source": "5e2966fb53e3fb59",
+      "output": "1efbe353c4950581"
+    },
+    "editor.nodeViews.media.status.pending": {
+      "source": "4057866d73cac6f8",
+      "output": "7e41174461e833ee"
+    },
+    "editor.nodeViews.media.status.ready": {
+      "source": "2c277a6f0093579a",
+      "output": "33ebbc97006ef696"
+    },
+    "editor.nodeViews.media.tables": {
+      "source": "4e8e61ca7e03c03b",
+      "output": "5cb3b723859884f9"
+    },
+    "editor.nodeViews.media.textErrors.empty": {
+      "source": "43ddc2b9e7110710",
+      "output": "92b02554b28c44bc"
+    },
+    "editor.nodeViews.media.textErrors.encrypted": {
+      "source": "2b392c15e016ca1b",
+      "output": "1a5ae0d011e74bb2"
+    },
+    "editor.nodeViews.media.textErrors.failed": {
+      "source": "9f2267238bceb273",
+      "output": "10f0a98e5f1778d1"
+    },
+    "editor.nodeViews.media.textErrors.malformed": {
+      "source": "8411ce0c34f1ab24",
+      "output": "44531369bed8accb"
+    },
+    "editor.nodeViews.media.textErrors.missingPart": {
+      "source": "8d0b17755c1e9c3c",
+      "output": "5cb270443ef260d2"
+    },
+    "editor.nodeViews.media.textErrors.needsOcr": {
+      "source": "d7d4ab5247705a62",
+      "output": "2d8ee8a87149120f"
+    },
+    "editor.nodeViews.media.textErrors.noTextLayer": {
+      "source": "eb63d75581469358",
+      "output": "26976b85fcc6f7f5"
+    },
+    "editor.nodeViews.media.textErrors.officeDisabled": {
+      "source": "bc9da8ee15bc1018",
+      "output": "e1c5ab3addf78e7e"
+    },
+    "editor.nodeViews.media.textErrors.pdfDisabled": {
+      "source": "cb33bf274939500f",
+      "output": "2ba919f2fc9b54a7"
+    },
+    "editor.nodeViews.media.textErrors.resourceLimit": {
+      "source": "f32aefe2d7e32e5f",
+      "output": "215a3a52859203dc"
+    },
+    "editor.nodeViews.media.textErrors.tooLarge": {
+      "source": "43d347225c4fba59",
+      "output": "238e27ed94607c28"
+    },
+    "editor.nodeViews.media.textErrors.unknown": {
+      "source": "2041ef75fd737404",
+      "output": "2520c187f1b853df"
+    },
+    "editor.nodeViews.media.textErrors.unsupported": {
+      "source": "92767dab69715035",
+      "output": "5bf57b966b6804e6"
+    },
+    "editor.nodeViews.media.truncated": {
+      "source": "ede7f1a1da3be5d4",
+      "output": "d9d9fcf3bd8af345"
+    },
+    "editor.nodeViews.media.view": {
+      "source": "8e31363947a6c737",
+      "output": "dcc839a4015c4b7d"
+    },
+    "editor.nodeViews.tableOfContents.empty": {
+      "source": "67bdaa388cfb896b",
+      "output": "948f96e3ebd0d80b"
+    },
+    "editor.nodeViews.tableOfContents.label": {
+      "source": "a86956017d116971",
+      "output": "e331da0741fb6d05"
+    },
+    "editor.nodeViews.toggle.collapse": {
+      "source": "1f6944cfe5b6567a",
+      "output": "e11e72f5e09ddd1e"
+    },
+    "editor.nodeViews.toggle.expand": {
+      "source": "de1fb1f953783015",
+      "output": "259fb3ec04e552a3"
+    },
     "editor.pageLink.ambiguous": {
       "source": "c0ed400424dc916e",
       "output": "e56fbc569e3d5d74"
@@ -7563,6 +7743,26 @@
     "entities.types.service": {
       "source": "ecc4f77cf2131334",
       "output": "d677190e0a9990e7"
+    },
+    "errors.boundary.pageBody": {
+      "source": "931bc2eaaf007df1",
+      "output": "466158687697dd3a"
+    },
+    "errors.boundary.pageTitle": {
+      "source": "7a4d0bded435b6c1",
+      "output": "75417ec88135efe1"
+    },
+    "errors.boundary.retry": {
+      "source": "948643cb59e8274f",
+      "output": "d8b8392e2c542950"
+    },
+    "errors.boundary.viewBody": {
+      "source": "3857b37bb5b5898d",
+      "output": "d9139c97e975d6d6"
+    },
+    "errors.boundary.viewTitle": {
+      "source": "573251c34e0c574d",
+      "output": "7b4e5e5993f4e0bd"
     },
     "errors.codes.admin_required": {
       "source": "3bf5ba52bc2c27d3",
@@ -13932,6 +14132,46 @@
       "source": "a9bb1962ec13d016",
       "output": "b6902a2621b6ebb3"
     },
+    "shell.jobProgress.failed": {
+      "source": "9abcfa18c8489699",
+      "output": "75137d5f7e09e48e"
+    },
+    "shell.jobProgress.steps.collectingLinks": {
+      "source": "6c282ce7009b728b",
+      "output": "e6a31a7c230d88de"
+    },
+    "shell.jobProgress.steps.done": {
+      "source": "6bfb1887b481dac3",
+      "output": "3366782e82d4ee8f"
+    },
+    "shell.jobProgress.steps.failed": {
+      "source": "c4c6ae896809c7f3",
+      "output": "64cb35e7b4c7ce04"
+    },
+    "shell.jobProgress.steps.loading": {
+      "source": "00da3b797cc63d29",
+      "output": "91bf928d3527fc16"
+    },
+    "shell.jobProgress.steps.projectDone": {
+      "source": "a684d1c5f06e24b9",
+      "output": "5f218d1c2305492d"
+    },
+    "shell.jobProgress.steps.readingContent": {
+      "source": "f67a56bb883e8814",
+      "output": "f5edce3f1a70d9cb"
+    },
+    "shell.jobProgress.steps.readingProject": {
+      "source": "eea22ed586be408b",
+      "output": "b1ee3701cdfa8f08"
+    },
+    "shell.jobProgress.steps.storing": {
+      "source": "0a4604406d16d4d1",
+      "output": "e299cb2d9529d1f4"
+    },
+    "shell.jobProgress.steps.upToDate": {
+      "source": "79dc859a536346fe",
+      "output": "69f2e5f981095e84"
+    },
     "shell.metadata.description": {
       "source": "8321b8879ee0fc17",
       "output": "d83bcfb1612f860a"
@@ -14371,6 +14611,10 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "c8df66c5fe3f97d0"
+    },
+    "ui.layout.skipToContent": {
+      "source": "0223fd4834ed4884",
+      "output": "ac576a66d4563e60"
     },
     "ui.sheet.close": {
       "source": "b808f6e97075772f",
@@ -21294,6 +21538,186 @@
       "source": "caa9da780fd67a6e",
       "output": "90d325badf172704"
     },
+    "editor.nodeViews.breadcrumb.empty": {
+      "source": "724ea4a3c3fc5b48",
+      "output": "ceb898422d43f45b"
+    },
+    "editor.nodeViews.breadcrumb.label": {
+      "source": "35156900c7a9ad77",
+      "output": "21bee151fbaa82f2"
+    },
+    "editor.nodeViews.commentCount": {
+      "source": "7841c5a1e2bd7b6e",
+      "output": "04c16a947609164a"
+    },
+    "editor.nodeViews.embed.frameTitle": {
+      "source": "7ecf51a9ddbe6e5f",
+      "output": "04527a2f0f2366d9"
+    },
+    "editor.nodeViews.media.corrected": {
+      "source": "6a8f78899af40ebb",
+      "output": "935663112e97477b"
+    },
+    "editor.nodeViews.media.dialog.close": {
+      "source": "b808f6e97075772f",
+      "output": "aeccae342e4bd0a7"
+    },
+    "editor.nodeViews.media.dialog.corrected": {
+      "source": "88515b950f0e28f3",
+      "output": "38f8afed675bd0a4"
+    },
+    "editor.nodeViews.media.dialog.correctedOn": {
+      "source": "18c74886072f932c",
+      "output": "12aa31110ee70f74"
+    },
+    "editor.nodeViews.media.dialog.discard": {
+      "source": "8aa7050af8d30290",
+      "output": "176e30c2aaef5dcb"
+    },
+    "editor.nodeViews.media.dialog.failed": {
+      "source": "6632d80bc657bb7b",
+      "output": "ba63061f427d0646"
+    },
+    "editor.nodeViews.media.dialog.lastError": {
+      "source": "01ae16078350dba8",
+      "output": "51ddb2a9a59cb9f9"
+    },
+    "editor.nodeViews.media.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "13e51a210f45ed1b"
+    },
+    "editor.nodeViews.media.dialog.truncated": {
+      "source": "9713712c70452a98",
+      "output": "8891f53bc491c7f0"
+    },
+    "editor.nodeViews.media.download": {
+      "source": "b3025b16bfa6b124",
+      "output": "ed3d9c907370d711"
+    },
+    "editor.nodeViews.media.extract": {
+      "source": "0cdfb127a806fdc6",
+      "output": "b9d2d7d1c1793687"
+    },
+    "editor.nodeViews.media.ocrUsed": {
+      "source": "86bc6d843f20b0f4",
+      "output": "e77a1d7d1d0466c1"
+    },
+    "editor.nodeViews.media.open": {
+      "source": "bc385a30b5378841",
+      "output": "a01a5fce396edb61"
+    },
+    "editor.nodeViews.media.pages": {
+      "source": "a138bf339522c321",
+      "output": "920dc395859d04fc"
+    },
+    "editor.nodeViews.media.pictures": {
+      "source": "77fe8f5cb63283a7",
+      "output": "45598899829478d6"
+    },
+    "editor.nodeViews.media.reextract": {
+      "source": "723ce8002244579f",
+      "output": "2d948c1b1535bebe"
+    },
+    "editor.nodeViews.media.retry": {
+      "source": "948643cb59e8274f",
+      "output": "a9254c5f812829af"
+    },
+    "editor.nodeViews.media.status.failed": {
+      "source": "fd23c20884767154",
+      "output": "e65d543caaa1d96b"
+    },
+    "editor.nodeViews.media.status.notApplicable": {
+      "source": "5e2966fb53e3fb59",
+      "output": "9ff30faeffca5dd1"
+    },
+    "editor.nodeViews.media.status.pending": {
+      "source": "4057866d73cac6f8",
+      "output": "77dab4499d622767"
+    },
+    "editor.nodeViews.media.status.ready": {
+      "source": "2c277a6f0093579a",
+      "output": "0db7f0bceb98011c"
+    },
+    "editor.nodeViews.media.tables": {
+      "source": "4e8e61ca7e03c03b",
+      "output": "2e714c1223df66d0"
+    },
+    "editor.nodeViews.media.textErrors.empty": {
+      "source": "43ddc2b9e7110710",
+      "output": "79ed4bff5d2d2f38"
+    },
+    "editor.nodeViews.media.textErrors.encrypted": {
+      "source": "2b392c15e016ca1b",
+      "output": "fea38957f499d0a5"
+    },
+    "editor.nodeViews.media.textErrors.failed": {
+      "source": "9f2267238bceb273",
+      "output": "b9852c064263f3b3"
+    },
+    "editor.nodeViews.media.textErrors.malformed": {
+      "source": "8411ce0c34f1ab24",
+      "output": "41e132a5c3d767c2"
+    },
+    "editor.nodeViews.media.textErrors.missingPart": {
+      "source": "8d0b17755c1e9c3c",
+      "output": "02888796daced2fe"
+    },
+    "editor.nodeViews.media.textErrors.needsOcr": {
+      "source": "d7d4ab5247705a62",
+      "output": "eb9991018a8dc9f5"
+    },
+    "editor.nodeViews.media.textErrors.noTextLayer": {
+      "source": "eb63d75581469358",
+      "output": "a5966c909976094b"
+    },
+    "editor.nodeViews.media.textErrors.officeDisabled": {
+      "source": "bc9da8ee15bc1018",
+      "output": "cdeeb757e8994b2c"
+    },
+    "editor.nodeViews.media.textErrors.pdfDisabled": {
+      "source": "cb33bf274939500f",
+      "output": "130ee7da643f6707"
+    },
+    "editor.nodeViews.media.textErrors.resourceLimit": {
+      "source": "f32aefe2d7e32e5f",
+      "output": "a3fd794fe6bce695"
+    },
+    "editor.nodeViews.media.textErrors.tooLarge": {
+      "source": "43d347225c4fba59",
+      "output": "94e40501830b69b4"
+    },
+    "editor.nodeViews.media.textErrors.unknown": {
+      "source": "2041ef75fd737404",
+      "output": "28f36f43353fb234"
+    },
+    "editor.nodeViews.media.textErrors.unsupported": {
+      "source": "92767dab69715035",
+      "output": "d993aed21bd2cd77"
+    },
+    "editor.nodeViews.media.truncated": {
+      "source": "ede7f1a1da3be5d4",
+      "output": "c4154ef308358dc0"
+    },
+    "editor.nodeViews.media.view": {
+      "source": "8e31363947a6c737",
+      "output": "20ab386d12d982bd"
+    },
+    "editor.nodeViews.tableOfContents.empty": {
+      "source": "67bdaa388cfb896b",
+      "output": "b9f1a202e104b231"
+    },
+    "editor.nodeViews.tableOfContents.label": {
+      "source": "a86956017d116971",
+      "output": "da8c17d4687ae2a3"
+    },
+    "editor.nodeViews.toggle.collapse": {
+      "source": "1f6944cfe5b6567a",
+      "output": "253baceaabe6454a"
+    },
+    "editor.nodeViews.toggle.expand": {
+      "source": "de1fb1f953783015",
+      "output": "3cda0686c2c8a1b7"
+    },
     "editor.pageLink.ambiguous": {
       "source": "c0ed400424dc916e",
       "output": "6200a18af6ab60bc"
@@ -21957,6 +22381,26 @@
     "entities.types.service": {
       "source": "ecc4f77cf2131334",
       "output": "1efa3b455a06245e"
+    },
+    "errors.boundary.pageBody": {
+      "source": "931bc2eaaf007df1",
+      "output": "8df303033578fa08"
+    },
+    "errors.boundary.pageTitle": {
+      "source": "7a4d0bded435b6c1",
+      "output": "4cf5b45f5f401eac"
+    },
+    "errors.boundary.retry": {
+      "source": "948643cb59e8274f",
+      "output": "a9254c5f812829af"
+    },
+    "errors.boundary.viewBody": {
+      "source": "3857b37bb5b5898d",
+      "output": "735d1f560d6f0761"
+    },
+    "errors.boundary.viewTitle": {
+      "source": "573251c34e0c574d",
+      "output": "0384c288c4568008"
     },
     "errors.codes.admin_required": {
       "source": "3bf5ba52bc2c27d3",
@@ -28326,6 +28770,46 @@
       "source": "a9bb1962ec13d016",
       "output": "ed8f3ce36435a6f2"
     },
+    "shell.jobProgress.failed": {
+      "source": "9abcfa18c8489699",
+      "output": "ea93fb90a34a75fb"
+    },
+    "shell.jobProgress.steps.collectingLinks": {
+      "source": "6c282ce7009b728b",
+      "output": "a7e9d970e4134a0f"
+    },
+    "shell.jobProgress.steps.done": {
+      "source": "6bfb1887b481dac3",
+      "output": "06c99686cbcf72b0"
+    },
+    "shell.jobProgress.steps.failed": {
+      "source": "c4c6ae896809c7f3",
+      "output": "069d28e0962185d2"
+    },
+    "shell.jobProgress.steps.loading": {
+      "source": "00da3b797cc63d29",
+      "output": "6fb745360b677fc1"
+    },
+    "shell.jobProgress.steps.projectDone": {
+      "source": "a684d1c5f06e24b9",
+      "output": "055bfb638afe891a"
+    },
+    "shell.jobProgress.steps.readingContent": {
+      "source": "f67a56bb883e8814",
+      "output": "37804f5a69ec1409"
+    },
+    "shell.jobProgress.steps.readingProject": {
+      "source": "eea22ed586be408b",
+      "output": "6d93659cbd86cc73"
+    },
+    "shell.jobProgress.steps.storing": {
+      "source": "0a4604406d16d4d1",
+      "output": "b36fb4b2b08f9f56"
+    },
+    "shell.jobProgress.steps.upToDate": {
+      "source": "79dc859a536346fe",
+      "output": "a0c7baca4f35fb71"
+    },
     "shell.metadata.description": {
       "source": "8321b8879ee0fc17",
       "output": "c48301998b72476a"
@@ -28765,6 +29249,10 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "6ceb9375943ccda9"
+    },
+    "ui.layout.skipToContent": {
+      "source": "0223fd4834ed4884",
+      "output": "fdab69210d5cdafd"
     },
     "ui.sheet.close": {
       "source": "b808f6e97075772f",
@@ -35688,6 +36176,186 @@
       "source": "caa9da780fd67a6e",
       "output": "477a18d2c0f6cf2b"
     },
+    "editor.nodeViews.breadcrumb.empty": {
+      "source": "724ea4a3c3fc5b48",
+      "output": "ba0169c74bdaf491"
+    },
+    "editor.nodeViews.breadcrumb.label": {
+      "source": "35156900c7a9ad77",
+      "output": "729d5d0dea80f0a8"
+    },
+    "editor.nodeViews.commentCount": {
+      "source": "7841c5a1e2bd7b6e",
+      "output": "c63eb5c5e5cea26d"
+    },
+    "editor.nodeViews.embed.frameTitle": {
+      "source": "7ecf51a9ddbe6e5f",
+      "output": "51b3e46bc635ec0c"
+    },
+    "editor.nodeViews.media.corrected": {
+      "source": "6a8f78899af40ebb",
+      "output": "62d9cb3f8a9dcdb3"
+    },
+    "editor.nodeViews.media.dialog.close": {
+      "source": "b808f6e97075772f",
+      "output": "711e5f2e198df1b6"
+    },
+    "editor.nodeViews.media.dialog.corrected": {
+      "source": "88515b950f0e28f3",
+      "output": "ff2284f373855daa"
+    },
+    "editor.nodeViews.media.dialog.correctedOn": {
+      "source": "18c74886072f932c",
+      "output": "d1de0936c40681a3"
+    },
+    "editor.nodeViews.media.dialog.discard": {
+      "source": "8aa7050af8d30290",
+      "output": "f908d6f692ef498a"
+    },
+    "editor.nodeViews.media.dialog.failed": {
+      "source": "6632d80bc657bb7b",
+      "output": "575bb0e0a94f9363"
+    },
+    "editor.nodeViews.media.dialog.lastError": {
+      "source": "01ae16078350dba8",
+      "output": "44a39028db01cc50"
+    },
+    "editor.nodeViews.media.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "71dc74873e23107d"
+    },
+    "editor.nodeViews.media.dialog.truncated": {
+      "source": "9713712c70452a98",
+      "output": "9cb978b643426a59"
+    },
+    "editor.nodeViews.media.download": {
+      "source": "b3025b16bfa6b124",
+      "output": "cdaaab442d264a76"
+    },
+    "editor.nodeViews.media.extract": {
+      "source": "0cdfb127a806fdc6",
+      "output": "c0bcd14acc79d833"
+    },
+    "editor.nodeViews.media.ocrUsed": {
+      "source": "86bc6d843f20b0f4",
+      "output": "06e73ad41dbe5711"
+    },
+    "editor.nodeViews.media.open": {
+      "source": "bc385a30b5378841",
+      "output": "9fb440435a046647"
+    },
+    "editor.nodeViews.media.pages": {
+      "source": "a138bf339522c321",
+      "output": "9fb3662ba6c91c42"
+    },
+    "editor.nodeViews.media.pictures": {
+      "source": "77fe8f5cb63283a7",
+      "output": "3c2a4602c78a8bdd"
+    },
+    "editor.nodeViews.media.reextract": {
+      "source": "723ce8002244579f",
+      "output": "8db9d99f83688595"
+    },
+    "editor.nodeViews.media.retry": {
+      "source": "948643cb59e8274f",
+      "output": "af273d956b5bec8d"
+    },
+    "editor.nodeViews.media.status.failed": {
+      "source": "fd23c20884767154",
+      "output": "286f16909ed10007"
+    },
+    "editor.nodeViews.media.status.notApplicable": {
+      "source": "5e2966fb53e3fb59",
+      "output": "a8bc3ff10f2efe68"
+    },
+    "editor.nodeViews.media.status.pending": {
+      "source": "4057866d73cac6f8",
+      "output": "9c3cd9ea71b1e4f5"
+    },
+    "editor.nodeViews.media.status.ready": {
+      "source": "2c277a6f0093579a",
+      "output": "2eebd7a1c35fe680"
+    },
+    "editor.nodeViews.media.tables": {
+      "source": "4e8e61ca7e03c03b",
+      "output": "fc4a44ba8e9ebeed"
+    },
+    "editor.nodeViews.media.textErrors.empty": {
+      "source": "43ddc2b9e7110710",
+      "output": "29c83d11fd04359d"
+    },
+    "editor.nodeViews.media.textErrors.encrypted": {
+      "source": "2b392c15e016ca1b",
+      "output": "7e43cfc5f6c87de0"
+    },
+    "editor.nodeViews.media.textErrors.failed": {
+      "source": "9f2267238bceb273",
+      "output": "f1bb5e2b1890c1aa"
+    },
+    "editor.nodeViews.media.textErrors.malformed": {
+      "source": "8411ce0c34f1ab24",
+      "output": "b8bca1bbeba85e3b"
+    },
+    "editor.nodeViews.media.textErrors.missingPart": {
+      "source": "8d0b17755c1e9c3c",
+      "output": "d5f126508ffb8680"
+    },
+    "editor.nodeViews.media.textErrors.needsOcr": {
+      "source": "d7d4ab5247705a62",
+      "output": "6d30def3f1e081e4"
+    },
+    "editor.nodeViews.media.textErrors.noTextLayer": {
+      "source": "eb63d75581469358",
+      "output": "e6cd512e5709fda8"
+    },
+    "editor.nodeViews.media.textErrors.officeDisabled": {
+      "source": "bc9da8ee15bc1018",
+      "output": "69a057911987255b"
+    },
+    "editor.nodeViews.media.textErrors.pdfDisabled": {
+      "source": "cb33bf274939500f",
+      "output": "d858790cde08c57c"
+    },
+    "editor.nodeViews.media.textErrors.resourceLimit": {
+      "source": "f32aefe2d7e32e5f",
+      "output": "66cf61a52c1db9a2"
+    },
+    "editor.nodeViews.media.textErrors.tooLarge": {
+      "source": "43d347225c4fba59",
+      "output": "83caebc361f28ddd"
+    },
+    "editor.nodeViews.media.textErrors.unknown": {
+      "source": "2041ef75fd737404",
+      "output": "bcb01371639b9fdc"
+    },
+    "editor.nodeViews.media.textErrors.unsupported": {
+      "source": "92767dab69715035",
+      "output": "6ab6a16411b8cac2"
+    },
+    "editor.nodeViews.media.truncated": {
+      "source": "ede7f1a1da3be5d4",
+      "output": "954e7f3104c06f9f"
+    },
+    "editor.nodeViews.media.view": {
+      "source": "8e31363947a6c737",
+      "output": "e5adbe81e8aaa15d"
+    },
+    "editor.nodeViews.tableOfContents.empty": {
+      "source": "67bdaa388cfb896b",
+      "output": "35dfd874af1be7ee"
+    },
+    "editor.nodeViews.tableOfContents.label": {
+      "source": "a86956017d116971",
+      "output": "1bfc387e0a8e8d2b"
+    },
+    "editor.nodeViews.toggle.collapse": {
+      "source": "1f6944cfe5b6567a",
+      "output": "7bed64a9d4ff2407"
+    },
+    "editor.nodeViews.toggle.expand": {
+      "source": "de1fb1f953783015",
+      "output": "3d2e0b7405d06deb"
+    },
     "editor.pageLink.ambiguous": {
       "source": "c0ed400424dc916e",
       "output": "a5668c60f3d1cf0f"
@@ -36351,6 +37019,26 @@
     "entities.types.service": {
       "source": "ecc4f77cf2131334",
       "output": "d677190e0a9990e7"
+    },
+    "errors.boundary.pageBody": {
+      "source": "931bc2eaaf007df1",
+      "output": "f234e7f53892fd53"
+    },
+    "errors.boundary.pageTitle": {
+      "source": "7a4d0bded435b6c1",
+      "output": "850ff2789c895b64"
+    },
+    "errors.boundary.retry": {
+      "source": "948643cb59e8274f",
+      "output": "af273d956b5bec8d"
+    },
+    "errors.boundary.viewBody": {
+      "source": "3857b37bb5b5898d",
+      "output": "ca6d2c86680ac523"
+    },
+    "errors.boundary.viewTitle": {
+      "source": "573251c34e0c574d",
+      "output": "a2c1ce4d545c3fbe"
     },
     "errors.codes.admin_required": {
       "source": "3bf5ba52bc2c27d3",
@@ -42720,6 +43408,46 @@
       "source": "a9bb1962ec13d016",
       "output": "811e57a7eb26ad0d"
     },
+    "shell.jobProgress.failed": {
+      "source": "9abcfa18c8489699",
+      "output": "d7cc3965b2cfb346"
+    },
+    "shell.jobProgress.steps.collectingLinks": {
+      "source": "6c282ce7009b728b",
+      "output": "f326b4b20518f0f9"
+    },
+    "shell.jobProgress.steps.done": {
+      "source": "6bfb1887b481dac3",
+      "output": "7aa5ff7ce359192b"
+    },
+    "shell.jobProgress.steps.failed": {
+      "source": "c4c6ae896809c7f3",
+      "output": "582414c946aa82f2"
+    },
+    "shell.jobProgress.steps.loading": {
+      "source": "00da3b797cc63d29",
+      "output": "5a33b58ff2a4920c"
+    },
+    "shell.jobProgress.steps.projectDone": {
+      "source": "a684d1c5f06e24b9",
+      "output": "05d5351d7a4729b8"
+    },
+    "shell.jobProgress.steps.readingContent": {
+      "source": "f67a56bb883e8814",
+      "output": "a4a692f0ab7f95eb"
+    },
+    "shell.jobProgress.steps.readingProject": {
+      "source": "eea22ed586be408b",
+      "output": "eaf701a53195146c"
+    },
+    "shell.jobProgress.steps.storing": {
+      "source": "0a4604406d16d4d1",
+      "output": "deae22dfee5e653f"
+    },
+    "shell.jobProgress.steps.upToDate": {
+      "source": "79dc859a536346fe",
+      "output": "18f06a45d2be0c79"
+    },
     "shell.metadata.description": {
       "source": "8321b8879ee0fc17",
       "output": "d768e6948fd9041a"
@@ -43159,6 +43887,10 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "a9f253794a6bd9cc"
+    },
+    "ui.layout.skipToContent": {
+      "source": "0223fd4834ed4884",
+      "output": "f48f34e89c4b5180"
     },
     "ui.sheet.close": {
       "source": "b808f6e97075772f",
@@ -50082,6 +50814,186 @@
       "source": "caa9da780fd67a6e",
       "output": "c45d6265c7e4b68a"
     },
+    "editor.nodeViews.breadcrumb.empty": {
+      "source": "724ea4a3c3fc5b48",
+      "output": "cb0b638638ee8f71"
+    },
+    "editor.nodeViews.breadcrumb.label": {
+      "source": "35156900c7a9ad77",
+      "output": "856a94b5fd77514c"
+    },
+    "editor.nodeViews.commentCount": {
+      "source": "7841c5a1e2bd7b6e",
+      "output": "206ed6fa48869967"
+    },
+    "editor.nodeViews.embed.frameTitle": {
+      "source": "7ecf51a9ddbe6e5f",
+      "output": "74ab0732bfbc991f"
+    },
+    "editor.nodeViews.media.corrected": {
+      "source": "6a8f78899af40ebb",
+      "output": "7a0edee8b59d7850"
+    },
+    "editor.nodeViews.media.dialog.close": {
+      "source": "b808f6e97075772f",
+      "output": "32d4079b315b720b"
+    },
+    "editor.nodeViews.media.dialog.corrected": {
+      "source": "88515b950f0e28f3",
+      "output": "bdbcc7e02f82def6"
+    },
+    "editor.nodeViews.media.dialog.correctedOn": {
+      "source": "18c74886072f932c",
+      "output": "53b56bc487ab4c4f"
+    },
+    "editor.nodeViews.media.dialog.discard": {
+      "source": "8aa7050af8d30290",
+      "output": "766347130a6bc1e2"
+    },
+    "editor.nodeViews.media.dialog.failed": {
+      "source": "6632d80bc657bb7b",
+      "output": "dcd1a22eb3223c33"
+    },
+    "editor.nodeViews.media.dialog.lastError": {
+      "source": "01ae16078350dba8",
+      "output": "a156f58964341911"
+    },
+    "editor.nodeViews.media.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "c5997e85ae513c07"
+    },
+    "editor.nodeViews.media.dialog.truncated": {
+      "source": "9713712c70452a98",
+      "output": "a1cc860e5872b5e6"
+    },
+    "editor.nodeViews.media.download": {
+      "source": "b3025b16bfa6b124",
+      "output": "723d32f77a1d7e1d"
+    },
+    "editor.nodeViews.media.extract": {
+      "source": "0cdfb127a806fdc6",
+      "output": "527b7a856773129c"
+    },
+    "editor.nodeViews.media.ocrUsed": {
+      "source": "86bc6d843f20b0f4",
+      "output": "67287dbd79353a0d"
+    },
+    "editor.nodeViews.media.open": {
+      "source": "bc385a30b5378841",
+      "output": "12abcf9ee7d648df"
+    },
+    "editor.nodeViews.media.pages": {
+      "source": "a138bf339522c321",
+      "output": "05b349598c6fdcb2"
+    },
+    "editor.nodeViews.media.pictures": {
+      "source": "77fe8f5cb63283a7",
+      "output": "fc37411b8ff396c9"
+    },
+    "editor.nodeViews.media.reextract": {
+      "source": "723ce8002244579f",
+      "output": "78f451925440c0ec"
+    },
+    "editor.nodeViews.media.retry": {
+      "source": "948643cb59e8274f",
+      "output": "20b5f4b8bfd56e4f"
+    },
+    "editor.nodeViews.media.status.failed": {
+      "source": "fd23c20884767154",
+      "output": "5629dedbab251e21"
+    },
+    "editor.nodeViews.media.status.notApplicable": {
+      "source": "5e2966fb53e3fb59",
+      "output": "82e65e916f0ac19f"
+    },
+    "editor.nodeViews.media.status.pending": {
+      "source": "4057866d73cac6f8",
+      "output": "0467ba15432051b0"
+    },
+    "editor.nodeViews.media.status.ready": {
+      "source": "2c277a6f0093579a",
+      "output": "e5d80715cca0b275"
+    },
+    "editor.nodeViews.media.tables": {
+      "source": "4e8e61ca7e03c03b",
+      "output": "8fca436e7eab2556"
+    },
+    "editor.nodeViews.media.textErrors.empty": {
+      "source": "43ddc2b9e7110710",
+      "output": "91fa598bf7a9bdd0"
+    },
+    "editor.nodeViews.media.textErrors.encrypted": {
+      "source": "2b392c15e016ca1b",
+      "output": "83be3fc1ee531588"
+    },
+    "editor.nodeViews.media.textErrors.failed": {
+      "source": "9f2267238bceb273",
+      "output": "28c7cadc413817f0"
+    },
+    "editor.nodeViews.media.textErrors.malformed": {
+      "source": "8411ce0c34f1ab24",
+      "output": "de994f0bd9defbd3"
+    },
+    "editor.nodeViews.media.textErrors.missingPart": {
+      "source": "8d0b17755c1e9c3c",
+      "output": "348fd5a81d5d82b3"
+    },
+    "editor.nodeViews.media.textErrors.needsOcr": {
+      "source": "d7d4ab5247705a62",
+      "output": "0f76094f78e7a2db"
+    },
+    "editor.nodeViews.media.textErrors.noTextLayer": {
+      "source": "eb63d75581469358",
+      "output": "2ef23b81875b4856"
+    },
+    "editor.nodeViews.media.textErrors.officeDisabled": {
+      "source": "bc9da8ee15bc1018",
+      "output": "3833993abc7fec33"
+    },
+    "editor.nodeViews.media.textErrors.pdfDisabled": {
+      "source": "cb33bf274939500f",
+      "output": "775a92295192f6da"
+    },
+    "editor.nodeViews.media.textErrors.resourceLimit": {
+      "source": "f32aefe2d7e32e5f",
+      "output": "b14441b77c802a28"
+    },
+    "editor.nodeViews.media.textErrors.tooLarge": {
+      "source": "43d347225c4fba59",
+      "output": "fe86ebab6c5927cd"
+    },
+    "editor.nodeViews.media.textErrors.unknown": {
+      "source": "2041ef75fd737404",
+      "output": "cd3bb2f9ad717d06"
+    },
+    "editor.nodeViews.media.textErrors.unsupported": {
+      "source": "92767dab69715035",
+      "output": "071eb575f0a2ed3e"
+    },
+    "editor.nodeViews.media.truncated": {
+      "source": "ede7f1a1da3be5d4",
+      "output": "e28664337bd60e2e"
+    },
+    "editor.nodeViews.media.view": {
+      "source": "8e31363947a6c737",
+      "output": "9d6f5c19ad04ac66"
+    },
+    "editor.nodeViews.tableOfContents.empty": {
+      "source": "67bdaa388cfb896b",
+      "output": "b8dfd2bb261369d7"
+    },
+    "editor.nodeViews.tableOfContents.label": {
+      "source": "a86956017d116971",
+      "output": "9b5d6e1473827642"
+    },
+    "editor.nodeViews.toggle.collapse": {
+      "source": "1f6944cfe5b6567a",
+      "output": "555e0d8e1a12fd0e"
+    },
+    "editor.nodeViews.toggle.expand": {
+      "source": "de1fb1f953783015",
+      "output": "cd11581c2ea2fe0d"
+    },
     "editor.pageLink.ambiguous": {
       "source": "c0ed400424dc916e",
       "output": "edaf4b52788fdd40"
@@ -50745,6 +51657,26 @@
     "entities.types.service": {
       "source": "ecc4f77cf2131334",
       "output": "9b5ca3c31ad04283"
+    },
+    "errors.boundary.pageBody": {
+      "source": "931bc2eaaf007df1",
+      "output": "dc0ca669055d05fb"
+    },
+    "errors.boundary.pageTitle": {
+      "source": "7a4d0bded435b6c1",
+      "output": "b74d5b9dda844764"
+    },
+    "errors.boundary.retry": {
+      "source": "948643cb59e8274f",
+      "output": "20b5f4b8bfd56e4f"
+    },
+    "errors.boundary.viewBody": {
+      "source": "3857b37bb5b5898d",
+      "output": "910575a9b24b4d46"
+    },
+    "errors.boundary.viewTitle": {
+      "source": "573251c34e0c574d",
+      "output": "62e17757446d6fc9"
     },
     "errors.codes.admin_required": {
       "source": "3bf5ba52bc2c27d3",
@@ -57114,6 +58046,46 @@
       "source": "a9bb1962ec13d016",
       "output": "188fedab21e9cdbe"
     },
+    "shell.jobProgress.failed": {
+      "source": "9abcfa18c8489699",
+      "output": "cdc670060ff113dc"
+    },
+    "shell.jobProgress.steps.collectingLinks": {
+      "source": "6c282ce7009b728b",
+      "output": "9952e3b48fb2b3de"
+    },
+    "shell.jobProgress.steps.done": {
+      "source": "6bfb1887b481dac3",
+      "output": "01cbcdbf5d5acfdd"
+    },
+    "shell.jobProgress.steps.failed": {
+      "source": "c4c6ae896809c7f3",
+      "output": "a44c9b5c8401b626"
+    },
+    "shell.jobProgress.steps.loading": {
+      "source": "00da3b797cc63d29",
+      "output": "47b22a5263995b4f"
+    },
+    "shell.jobProgress.steps.projectDone": {
+      "source": "a684d1c5f06e24b9",
+      "output": "12ab4e71e68d91cc"
+    },
+    "shell.jobProgress.steps.readingContent": {
+      "source": "f67a56bb883e8814",
+      "output": "2ae53b81a3c4ce55"
+    },
+    "shell.jobProgress.steps.readingProject": {
+      "source": "eea22ed586be408b",
+      "output": "7923379e74998d68"
+    },
+    "shell.jobProgress.steps.storing": {
+      "source": "0a4604406d16d4d1",
+      "output": "84827aa2512318f0"
+    },
+    "shell.jobProgress.steps.upToDate": {
+      "source": "79dc859a536346fe",
+      "output": "f7c06cc04383716f"
+    },
     "shell.metadata.description": {
       "source": "8321b8879ee0fc17",
       "output": "60f7064a0666afb4"
@@ -57553,6 +58525,10 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "91b5441f56cdcde4"
+    },
+    "ui.layout.skipToContent": {
+      "source": "0223fd4834ed4884",
+      "output": "51c5d91d4b1b8e41"
     },
     "ui.sheet.close": {
       "source": "b808f6e97075772f",
@@ -64476,6 +65452,186 @@
       "source": "caa9da780fd67a6e",
       "output": "56310a8c91868aff"
     },
+    "editor.nodeViews.breadcrumb.empty": {
+      "source": "724ea4a3c3fc5b48",
+      "output": "af1e8a4bcf6a3e2a"
+    },
+    "editor.nodeViews.breadcrumb.label": {
+      "source": "35156900c7a9ad77",
+      "output": "c00c64d8cfa1f8a2"
+    },
+    "editor.nodeViews.commentCount": {
+      "source": "7841c5a1e2bd7b6e",
+      "output": "35dbf8128810eed4"
+    },
+    "editor.nodeViews.embed.frameTitle": {
+      "source": "7ecf51a9ddbe6e5f",
+      "output": "78c8485aab40be84"
+    },
+    "editor.nodeViews.media.corrected": {
+      "source": "6a8f78899af40ebb",
+      "output": "3f8029cba512ea18"
+    },
+    "editor.nodeViews.media.dialog.close": {
+      "source": "b808f6e97075772f",
+      "output": "5a468430f8781796"
+    },
+    "editor.nodeViews.media.dialog.corrected": {
+      "source": "88515b950f0e28f3",
+      "output": "45f9b8fff8a4cc8d"
+    },
+    "editor.nodeViews.media.dialog.correctedOn": {
+      "source": "18c74886072f932c",
+      "output": "cad2f1e51955e163"
+    },
+    "editor.nodeViews.media.dialog.discard": {
+      "source": "8aa7050af8d30290",
+      "output": "183cd2b300a5b224"
+    },
+    "editor.nodeViews.media.dialog.failed": {
+      "source": "6632d80bc657bb7b",
+      "output": "051201c590e495c2"
+    },
+    "editor.nodeViews.media.dialog.lastError": {
+      "source": "01ae16078350dba8",
+      "output": "db56b4901be99300"
+    },
+    "editor.nodeViews.media.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "3caa6d88a258af55"
+    },
+    "editor.nodeViews.media.dialog.truncated": {
+      "source": "9713712c70452a98",
+      "output": "64368fd5fa6d87a5"
+    },
+    "editor.nodeViews.media.download": {
+      "source": "b3025b16bfa6b124",
+      "output": "3058e748290b6d3f"
+    },
+    "editor.nodeViews.media.extract": {
+      "source": "0cdfb127a806fdc6",
+      "output": "dff5c4cc6f426e01"
+    },
+    "editor.nodeViews.media.ocrUsed": {
+      "source": "86bc6d843f20b0f4",
+      "output": "a50272a11e68f9ea"
+    },
+    "editor.nodeViews.media.open": {
+      "source": "bc385a30b5378841",
+      "output": "5b1e5c22784e131f"
+    },
+    "editor.nodeViews.media.pages": {
+      "source": "a138bf339522c321",
+      "output": "f464935589caf8bb"
+    },
+    "editor.nodeViews.media.pictures": {
+      "source": "77fe8f5cb63283a7",
+      "output": "d560feb66a7de765"
+    },
+    "editor.nodeViews.media.reextract": {
+      "source": "723ce8002244579f",
+      "output": "b0e0de239af05b9a"
+    },
+    "editor.nodeViews.media.retry": {
+      "source": "948643cb59e8274f",
+      "output": "576434df7a00aeae"
+    },
+    "editor.nodeViews.media.status.failed": {
+      "source": "fd23c20884767154",
+      "output": "23599df820ef4036"
+    },
+    "editor.nodeViews.media.status.notApplicable": {
+      "source": "5e2966fb53e3fb59",
+      "output": "3837b94e5025753c"
+    },
+    "editor.nodeViews.media.status.pending": {
+      "source": "4057866d73cac6f8",
+      "output": "8e435fa6c4e6fff5"
+    },
+    "editor.nodeViews.media.status.ready": {
+      "source": "2c277a6f0093579a",
+      "output": "bc326bfd6ad5143d"
+    },
+    "editor.nodeViews.media.tables": {
+      "source": "4e8e61ca7e03c03b",
+      "output": "7502e2ee877f7a65"
+    },
+    "editor.nodeViews.media.textErrors.empty": {
+      "source": "43ddc2b9e7110710",
+      "output": "1a8b4332401d23b7"
+    },
+    "editor.nodeViews.media.textErrors.encrypted": {
+      "source": "2b392c15e016ca1b",
+      "output": "61c2f95be4fbe468"
+    },
+    "editor.nodeViews.media.textErrors.failed": {
+      "source": "9f2267238bceb273",
+      "output": "0a79afdee7be6f59"
+    },
+    "editor.nodeViews.media.textErrors.malformed": {
+      "source": "8411ce0c34f1ab24",
+      "output": "6805324af28d4d1c"
+    },
+    "editor.nodeViews.media.textErrors.missingPart": {
+      "source": "8d0b17755c1e9c3c",
+      "output": "1670d4c1be725875"
+    },
+    "editor.nodeViews.media.textErrors.needsOcr": {
+      "source": "d7d4ab5247705a62",
+      "output": "2f95c738784a0134"
+    },
+    "editor.nodeViews.media.textErrors.noTextLayer": {
+      "source": "eb63d75581469358",
+      "output": "981dad39f2274d42"
+    },
+    "editor.nodeViews.media.textErrors.officeDisabled": {
+      "source": "bc9da8ee15bc1018",
+      "output": "075963545b19d5be"
+    },
+    "editor.nodeViews.media.textErrors.pdfDisabled": {
+      "source": "cb33bf274939500f",
+      "output": "5bfb69ed8a74a1c9"
+    },
+    "editor.nodeViews.media.textErrors.resourceLimit": {
+      "source": "f32aefe2d7e32e5f",
+      "output": "a51166539bbd63de"
+    },
+    "editor.nodeViews.media.textErrors.tooLarge": {
+      "source": "43d347225c4fba59",
+      "output": "f4c6c930662e5ccd"
+    },
+    "editor.nodeViews.media.textErrors.unknown": {
+      "source": "2041ef75fd737404",
+      "output": "08edcb491cda55db"
+    },
+    "editor.nodeViews.media.textErrors.unsupported": {
+      "source": "92767dab69715035",
+      "output": "e2f647e16ca64589"
+    },
+    "editor.nodeViews.media.truncated": {
+      "source": "ede7f1a1da3be5d4",
+      "output": "72b7b1fcb46c82a5"
+    },
+    "editor.nodeViews.media.view": {
+      "source": "8e31363947a6c737",
+      "output": "cf53280f7d4beb39"
+    },
+    "editor.nodeViews.tableOfContents.empty": {
+      "source": "67bdaa388cfb896b",
+      "output": "d298fdc06c33bff7"
+    },
+    "editor.nodeViews.tableOfContents.label": {
+      "source": "a86956017d116971",
+      "output": "7bb6156618b06034"
+    },
+    "editor.nodeViews.toggle.collapse": {
+      "source": "1f6944cfe5b6567a",
+      "output": "3e3daaf40cd22981"
+    },
+    "editor.nodeViews.toggle.expand": {
+      "source": "de1fb1f953783015",
+      "output": "42e206663c6eac92"
+    },
     "editor.pageLink.ambiguous": {
       "source": "c0ed400424dc916e",
       "output": "1d01f92a06987dec"
@@ -65139,6 +66295,26 @@
     "entities.types.service": {
       "source": "ecc4f77cf2131334",
       "output": "ecc4f77cf2131334"
+    },
+    "errors.boundary.pageBody": {
+      "source": "931bc2eaaf007df1",
+      "output": "3a01595dfc8b45ce"
+    },
+    "errors.boundary.pageTitle": {
+      "source": "7a4d0bded435b6c1",
+      "output": "7a1690431051db44"
+    },
+    "errors.boundary.retry": {
+      "source": "948643cb59e8274f",
+      "output": "576434df7a00aeae"
+    },
+    "errors.boundary.viewBody": {
+      "source": "3857b37bb5b5898d",
+      "output": "02be98abfc07f337"
+    },
+    "errors.boundary.viewTitle": {
+      "source": "573251c34e0c574d",
+      "output": "f185a798af6fe63b"
     },
     "errors.codes.admin_required": {
       "source": "3bf5ba52bc2c27d3",
@@ -71508,6 +72684,46 @@
       "source": "a9bb1962ec13d016",
       "output": "f7a1b1f254af8974"
     },
+    "shell.jobProgress.failed": {
+      "source": "9abcfa18c8489699",
+      "output": "d12ba6c68fac930b"
+    },
+    "shell.jobProgress.steps.collectingLinks": {
+      "source": "6c282ce7009b728b",
+      "output": "a309ea8ff798ed78"
+    },
+    "shell.jobProgress.steps.done": {
+      "source": "6bfb1887b481dac3",
+      "output": "a12e8bdc87afbb82"
+    },
+    "shell.jobProgress.steps.failed": {
+      "source": "c4c6ae896809c7f3",
+      "output": "51508948ead153f5"
+    },
+    "shell.jobProgress.steps.loading": {
+      "source": "00da3b797cc63d29",
+      "output": "ed06afbbcd43a620"
+    },
+    "shell.jobProgress.steps.projectDone": {
+      "source": "a684d1c5f06e24b9",
+      "output": "0540ff2ad784127d"
+    },
+    "shell.jobProgress.steps.readingContent": {
+      "source": "f67a56bb883e8814",
+      "output": "aca5bd4b297b7655"
+    },
+    "shell.jobProgress.steps.readingProject": {
+      "source": "eea22ed586be408b",
+      "output": "3f329ccd559635e8"
+    },
+    "shell.jobProgress.steps.storing": {
+      "source": "0a4604406d16d4d1",
+      "output": "93e851f345a11a6a"
+    },
+    "shell.jobProgress.steps.upToDate": {
+      "source": "79dc859a536346fe",
+      "output": "7b9832efe8ea38ec"
+    },
     "shell.metadata.description": {
       "source": "8321b8879ee0fc17",
       "output": "f8e44c117f49beeb"
@@ -71947,6 +73163,10 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "2b5bd106d339dc3d"
+    },
+    "ui.layout.skipToContent": {
+      "source": "0223fd4834ed4884",
+      "output": "d3f78245f7970857"
     },
     "ui.sheet.close": {
       "source": "b808f6e97075772f",
@@ -78870,6 +80090,186 @@
       "source": "caa9da780fd67a6e",
       "output": "86a1b2a0dd020165"
     },
+    "editor.nodeViews.breadcrumb.empty": {
+      "source": "724ea4a3c3fc5b48",
+      "output": "35c0233edbab8328"
+    },
+    "editor.nodeViews.breadcrumb.label": {
+      "source": "35156900c7a9ad77",
+      "output": "bd513e2620ec3fc5"
+    },
+    "editor.nodeViews.commentCount": {
+      "source": "7841c5a1e2bd7b6e",
+      "output": "0d1076fd451ef613"
+    },
+    "editor.nodeViews.embed.frameTitle": {
+      "source": "7ecf51a9ddbe6e5f",
+      "output": "0eeff16e7a6060c5"
+    },
+    "editor.nodeViews.media.corrected": {
+      "source": "6a8f78899af40ebb",
+      "output": "9a517b960659a1de"
+    },
+    "editor.nodeViews.media.dialog.close": {
+      "source": "b808f6e97075772f",
+      "output": "00b8d851752c5295"
+    },
+    "editor.nodeViews.media.dialog.corrected": {
+      "source": "88515b950f0e28f3",
+      "output": "fbdd9fe30f3a9a8c"
+    },
+    "editor.nodeViews.media.dialog.correctedOn": {
+      "source": "18c74886072f932c",
+      "output": "b660ea4dd1d10875"
+    },
+    "editor.nodeViews.media.dialog.discard": {
+      "source": "8aa7050af8d30290",
+      "output": "1d9fcbcc64881823"
+    },
+    "editor.nodeViews.media.dialog.failed": {
+      "source": "6632d80bc657bb7b",
+      "output": "8d98aea2883e222d"
+    },
+    "editor.nodeViews.media.dialog.lastError": {
+      "source": "01ae16078350dba8",
+      "output": "3c8ddd7ecd3548fc"
+    },
+    "editor.nodeViews.media.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "b6a0c0c469c5b62d"
+    },
+    "editor.nodeViews.media.dialog.truncated": {
+      "source": "9713712c70452a98",
+      "output": "4926b0bf384c8db6"
+    },
+    "editor.nodeViews.media.download": {
+      "source": "b3025b16bfa6b124",
+      "output": "7d189330dadca33e"
+    },
+    "editor.nodeViews.media.extract": {
+      "source": "0cdfb127a806fdc6",
+      "output": "d212e063be49a858"
+    },
+    "editor.nodeViews.media.ocrUsed": {
+      "source": "86bc6d843f20b0f4",
+      "output": "000af5c502e85716"
+    },
+    "editor.nodeViews.media.open": {
+      "source": "bc385a30b5378841",
+      "output": "9488448fb288dbe9"
+    },
+    "editor.nodeViews.media.pages": {
+      "source": "a138bf339522c321",
+      "output": "2b8c031717afc1ad"
+    },
+    "editor.nodeViews.media.pictures": {
+      "source": "77fe8f5cb63283a7",
+      "output": "414af71bda8bc33f"
+    },
+    "editor.nodeViews.media.reextract": {
+      "source": "723ce8002244579f",
+      "output": "00963e097577f5b9"
+    },
+    "editor.nodeViews.media.retry": {
+      "source": "948643cb59e8274f",
+      "output": "7237b73bc691a25b"
+    },
+    "editor.nodeViews.media.status.failed": {
+      "source": "fd23c20884767154",
+      "output": "2913ddc4d5c72a50"
+    },
+    "editor.nodeViews.media.status.notApplicable": {
+      "source": "5e2966fb53e3fb59",
+      "output": "8b975d76324f3c42"
+    },
+    "editor.nodeViews.media.status.pending": {
+      "source": "4057866d73cac6f8",
+      "output": "dd79701545fce1d3"
+    },
+    "editor.nodeViews.media.status.ready": {
+      "source": "2c277a6f0093579a",
+      "output": "ec68222fbc03100f"
+    },
+    "editor.nodeViews.media.tables": {
+      "source": "4e8e61ca7e03c03b",
+      "output": "88b176a1e8544142"
+    },
+    "editor.nodeViews.media.textErrors.empty": {
+      "source": "43ddc2b9e7110710",
+      "output": "e7135b9c61f209e3"
+    },
+    "editor.nodeViews.media.textErrors.encrypted": {
+      "source": "2b392c15e016ca1b",
+      "output": "67b3a4dbb00add59"
+    },
+    "editor.nodeViews.media.textErrors.failed": {
+      "source": "9f2267238bceb273",
+      "output": "dfdf5328a4b090fc"
+    },
+    "editor.nodeViews.media.textErrors.malformed": {
+      "source": "8411ce0c34f1ab24",
+      "output": "f11a39bb45fa39bb"
+    },
+    "editor.nodeViews.media.textErrors.missingPart": {
+      "source": "8d0b17755c1e9c3c",
+      "output": "40995b29a22a717a"
+    },
+    "editor.nodeViews.media.textErrors.needsOcr": {
+      "source": "d7d4ab5247705a62",
+      "output": "a203f89d6b00b804"
+    },
+    "editor.nodeViews.media.textErrors.noTextLayer": {
+      "source": "eb63d75581469358",
+      "output": "cfc448e9878fb720"
+    },
+    "editor.nodeViews.media.textErrors.officeDisabled": {
+      "source": "bc9da8ee15bc1018",
+      "output": "6dd473e4e0bd446a"
+    },
+    "editor.nodeViews.media.textErrors.pdfDisabled": {
+      "source": "cb33bf274939500f",
+      "output": "cab292b980136865"
+    },
+    "editor.nodeViews.media.textErrors.resourceLimit": {
+      "source": "f32aefe2d7e32e5f",
+      "output": "94a1bec0f34d33b6"
+    },
+    "editor.nodeViews.media.textErrors.tooLarge": {
+      "source": "43d347225c4fba59",
+      "output": "7bd3ef8bd0837c95"
+    },
+    "editor.nodeViews.media.textErrors.unknown": {
+      "source": "2041ef75fd737404",
+      "output": "ace7f36fc0ea8b66"
+    },
+    "editor.nodeViews.media.textErrors.unsupported": {
+      "source": "92767dab69715035",
+      "output": "844e6fe2db7c3257"
+    },
+    "editor.nodeViews.media.truncated": {
+      "source": "ede7f1a1da3be5d4",
+      "output": "88b11a679f1fd290"
+    },
+    "editor.nodeViews.media.view": {
+      "source": "8e31363947a6c737",
+      "output": "37c11a877180e842"
+    },
+    "editor.nodeViews.tableOfContents.empty": {
+      "source": "67bdaa388cfb896b",
+      "output": "c7654affc6a60b7a"
+    },
+    "editor.nodeViews.tableOfContents.label": {
+      "source": "a86956017d116971",
+      "output": "2324aa02566f1259"
+    },
+    "editor.nodeViews.toggle.collapse": {
+      "source": "1f6944cfe5b6567a",
+      "output": "4d8d581b5d365897"
+    },
+    "editor.nodeViews.toggle.expand": {
+      "source": "de1fb1f953783015",
+      "output": "d0201dd714189667"
+    },
     "editor.pageLink.ambiguous": {
       "source": "c0ed400424dc916e",
       "output": "99ea0a392ff7ba05"
@@ -79533,6 +80933,26 @@
     "entities.types.service": {
       "source": "ecc4f77cf2131334",
       "output": "8730cefb70ff642e"
+    },
+    "errors.boundary.pageBody": {
+      "source": "931bc2eaaf007df1",
+      "output": "cec8ce03c02c35dc"
+    },
+    "errors.boundary.pageTitle": {
+      "source": "7a4d0bded435b6c1",
+      "output": "e9c540bde34610cd"
+    },
+    "errors.boundary.retry": {
+      "source": "948643cb59e8274f",
+      "output": "7237b73bc691a25b"
+    },
+    "errors.boundary.viewBody": {
+      "source": "3857b37bb5b5898d",
+      "output": "abde0165b1311cfe"
+    },
+    "errors.boundary.viewTitle": {
+      "source": "573251c34e0c574d",
+      "output": "d83cddc843680cce"
     },
     "errors.codes.admin_required": {
       "source": "3bf5ba52bc2c27d3",
@@ -85902,6 +87322,46 @@
       "source": "a9bb1962ec13d016",
       "output": "9e4a8b8820a1fbe5"
     },
+    "shell.jobProgress.failed": {
+      "source": "9abcfa18c8489699",
+      "output": "ea8a042f7b4b70dc"
+    },
+    "shell.jobProgress.steps.collectingLinks": {
+      "source": "6c282ce7009b728b",
+      "output": "b2cefefbca8c2004"
+    },
+    "shell.jobProgress.steps.done": {
+      "source": "6bfb1887b481dac3",
+      "output": "3954dc20ad4161b6"
+    },
+    "shell.jobProgress.steps.failed": {
+      "source": "c4c6ae896809c7f3",
+      "output": "040cd10958c9dec8"
+    },
+    "shell.jobProgress.steps.loading": {
+      "source": "00da3b797cc63d29",
+      "output": "da14504c8f538e21"
+    },
+    "shell.jobProgress.steps.projectDone": {
+      "source": "a684d1c5f06e24b9",
+      "output": "08a2c38c2399552f"
+    },
+    "shell.jobProgress.steps.readingContent": {
+      "source": "f67a56bb883e8814",
+      "output": "da1f39430aaca5a0"
+    },
+    "shell.jobProgress.steps.readingProject": {
+      "source": "eea22ed586be408b",
+      "output": "18d4c2ac66fcb3b9"
+    },
+    "shell.jobProgress.steps.storing": {
+      "source": "0a4604406d16d4d1",
+      "output": "d047d7a24a38cbbd"
+    },
+    "shell.jobProgress.steps.upToDate": {
+      "source": "79dc859a536346fe",
+      "output": "50df05f377fe12c5"
+    },
     "shell.metadata.description": {
       "source": "8321b8879ee0fc17",
       "output": "d6058b59e5b5d4d4"
@@ -86341,6 +87801,10 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "fd66e0f56dd877d3"
+    },
+    "ui.layout.skipToContent": {
+      "source": "0223fd4834ed4884",
+      "output": "0df8acbe189a68e7"
     },
     "ui.sheet.close": {
       "source": "b808f6e97075772f",
@@ -93264,6 +94728,186 @@
       "source": "caa9da780fd67a6e",
       "output": "358ce4a9932842f9"
     },
+    "editor.nodeViews.breadcrumb.empty": {
+      "source": "724ea4a3c3fc5b48",
+      "output": "5cf9118217f9b235"
+    },
+    "editor.nodeViews.breadcrumb.label": {
+      "source": "35156900c7a9ad77",
+      "output": "acd2bcae904ba8e7"
+    },
+    "editor.nodeViews.commentCount": {
+      "source": "7841c5a1e2bd7b6e",
+      "output": "08818f6e461b2e92"
+    },
+    "editor.nodeViews.embed.frameTitle": {
+      "source": "7ecf51a9ddbe6e5f",
+      "output": "6e47f04549a1829d"
+    },
+    "editor.nodeViews.media.corrected": {
+      "source": "6a8f78899af40ebb",
+      "output": "fde704679c054928"
+    },
+    "editor.nodeViews.media.dialog.close": {
+      "source": "b808f6e97075772f",
+      "output": "0f2bd88ef0acbda9"
+    },
+    "editor.nodeViews.media.dialog.corrected": {
+      "source": "88515b950f0e28f3",
+      "output": "6cadd69676d03df7"
+    },
+    "editor.nodeViews.media.dialog.correctedOn": {
+      "source": "18c74886072f932c",
+      "output": "f387a5d04bf3bda5"
+    },
+    "editor.nodeViews.media.dialog.discard": {
+      "source": "8aa7050af8d30290",
+      "output": "d887d017d05bac59"
+    },
+    "editor.nodeViews.media.dialog.failed": {
+      "source": "6632d80bc657bb7b",
+      "output": "e2989639098bd796"
+    },
+    "editor.nodeViews.media.dialog.lastError": {
+      "source": "01ae16078350dba8",
+      "output": "efc3653fc12fa168"
+    },
+    "editor.nodeViews.media.dialog.save": {
+      "source": "f6b2ff39f540eb81",
+      "output": "aef7cd5b2081351d"
+    },
+    "editor.nodeViews.media.dialog.truncated": {
+      "source": "9713712c70452a98",
+      "output": "48e776f9c3f47f0a"
+    },
+    "editor.nodeViews.media.download": {
+      "source": "b3025b16bfa6b124",
+      "output": "b45ae836a031074e"
+    },
+    "editor.nodeViews.media.extract": {
+      "source": "0cdfb127a806fdc6",
+      "output": "8ac520523549db8d"
+    },
+    "editor.nodeViews.media.ocrUsed": {
+      "source": "86bc6d843f20b0f4",
+      "output": "4f858a72ef73d645"
+    },
+    "editor.nodeViews.media.open": {
+      "source": "bc385a30b5378841",
+      "output": "a01a5fce396edb61"
+    },
+    "editor.nodeViews.media.pages": {
+      "source": "a138bf339522c321",
+      "output": "920dc395859d04fc"
+    },
+    "editor.nodeViews.media.pictures": {
+      "source": "77fe8f5cb63283a7",
+      "output": "906fa3542cc0f7b5"
+    },
+    "editor.nodeViews.media.reextract": {
+      "source": "723ce8002244579f",
+      "output": "b1b71c9743f59745"
+    },
+    "editor.nodeViews.media.retry": {
+      "source": "948643cb59e8274f",
+      "output": "b9e10688be012d8b"
+    },
+    "editor.nodeViews.media.status.failed": {
+      "source": "fd23c20884767154",
+      "output": "77d2e61566d8da8a"
+    },
+    "editor.nodeViews.media.status.notApplicable": {
+      "source": "5e2966fb53e3fb59",
+      "output": "903e0e2573b336ef"
+    },
+    "editor.nodeViews.media.status.pending": {
+      "source": "4057866d73cac6f8",
+      "output": "37ab73833203112c"
+    },
+    "editor.nodeViews.media.status.ready": {
+      "source": "2c277a6f0093579a",
+      "output": "48e23d091e192e98"
+    },
+    "editor.nodeViews.media.tables": {
+      "source": "4e8e61ca7e03c03b",
+      "output": "1ae25e51ce441fd6"
+    },
+    "editor.nodeViews.media.textErrors.empty": {
+      "source": "43ddc2b9e7110710",
+      "output": "df0f251402c570de"
+    },
+    "editor.nodeViews.media.textErrors.encrypted": {
+      "source": "2b392c15e016ca1b",
+      "output": "90fe47e012d3cf2c"
+    },
+    "editor.nodeViews.media.textErrors.failed": {
+      "source": "9f2267238bceb273",
+      "output": "4e2f67ed55e2005f"
+    },
+    "editor.nodeViews.media.textErrors.malformed": {
+      "source": "8411ce0c34f1ab24",
+      "output": "637d64e7fceda2de"
+    },
+    "editor.nodeViews.media.textErrors.missingPart": {
+      "source": "8d0b17755c1e9c3c",
+      "output": "d7a56c873882e3c3"
+    },
+    "editor.nodeViews.media.textErrors.needsOcr": {
+      "source": "d7d4ab5247705a62",
+      "output": "5aa2677e349941d8"
+    },
+    "editor.nodeViews.media.textErrors.noTextLayer": {
+      "source": "eb63d75581469358",
+      "output": "e6fb9a375d348ed6"
+    },
+    "editor.nodeViews.media.textErrors.officeDisabled": {
+      "source": "bc9da8ee15bc1018",
+      "output": "7d96b3cba9593f83"
+    },
+    "editor.nodeViews.media.textErrors.pdfDisabled": {
+      "source": "cb33bf274939500f",
+      "output": "ee200b47338530e7"
+    },
+    "editor.nodeViews.media.textErrors.resourceLimit": {
+      "source": "f32aefe2d7e32e5f",
+      "output": "3432dc03b2258431"
+    },
+    "editor.nodeViews.media.textErrors.tooLarge": {
+      "source": "43d347225c4fba59",
+      "output": "c73ff54d41bffe6a"
+    },
+    "editor.nodeViews.media.textErrors.unknown": {
+      "source": "2041ef75fd737404",
+      "output": "96ce2b0884bc35e5"
+    },
+    "editor.nodeViews.media.textErrors.unsupported": {
+      "source": "92767dab69715035",
+      "output": "8d5af97fa0a96bb1"
+    },
+    "editor.nodeViews.media.truncated": {
+      "source": "ede7f1a1da3be5d4",
+      "output": "3632a808f4c505e6"
+    },
+    "editor.nodeViews.media.view": {
+      "source": "8e31363947a6c737",
+      "output": "1acb4b8fd2aa9e2d"
+    },
+    "editor.nodeViews.tableOfContents.empty": {
+      "source": "67bdaa388cfb896b",
+      "output": "6bb4e452c0af44ee"
+    },
+    "editor.nodeViews.tableOfContents.label": {
+      "source": "a86956017d116971",
+      "output": "178a431119b23e1e"
+    },
+    "editor.nodeViews.toggle.collapse": {
+      "source": "1f6944cfe5b6567a",
+      "output": "05f93e105e7a34ac"
+    },
+    "editor.nodeViews.toggle.expand": {
+      "source": "de1fb1f953783015",
+      "output": "59133f6149b2d116"
+    },
     "editor.pageLink.ambiguous": {
       "source": "c0ed400424dc916e",
       "output": "d9a097be990d9be4"
@@ -93927,6 +95571,26 @@
     "entities.types.service": {
       "source": "ecc4f77cf2131334",
       "output": "dfec253a064feb2f"
+    },
+    "errors.boundary.pageBody": {
+      "source": "931bc2eaaf007df1",
+      "output": "105e904555bd081f"
+    },
+    "errors.boundary.pageTitle": {
+      "source": "7a4d0bded435b6c1",
+      "output": "054bb21b95ba7bfb"
+    },
+    "errors.boundary.retry": {
+      "source": "948643cb59e8274f",
+      "output": "b9e10688be012d8b"
+    },
+    "errors.boundary.viewBody": {
+      "source": "3857b37bb5b5898d",
+      "output": "81335595b8d527c5"
+    },
+    "errors.boundary.viewTitle": {
+      "source": "573251c34e0c574d",
+      "output": "4fcf64bd0ea75012"
     },
     "errors.codes.admin_required": {
       "source": "3bf5ba52bc2c27d3",
@@ -100296,6 +101960,46 @@
       "source": "a9bb1962ec13d016",
       "output": "0f2eb07bf377bfde"
     },
+    "shell.jobProgress.failed": {
+      "source": "9abcfa18c8489699",
+      "output": "1d11ed9858531e45"
+    },
+    "shell.jobProgress.steps.collectingLinks": {
+      "source": "6c282ce7009b728b",
+      "output": "ed6682ed25649087"
+    },
+    "shell.jobProgress.steps.done": {
+      "source": "6bfb1887b481dac3",
+      "output": "38d613840c248837"
+    },
+    "shell.jobProgress.steps.failed": {
+      "source": "c4c6ae896809c7f3",
+      "output": "baaf0d6639121c42"
+    },
+    "shell.jobProgress.steps.loading": {
+      "source": "00da3b797cc63d29",
+      "output": "7cd8b767f307798c"
+    },
+    "shell.jobProgress.steps.projectDone": {
+      "source": "a684d1c5f06e24b9",
+      "output": "3d02cd295447663e"
+    },
+    "shell.jobProgress.steps.readingContent": {
+      "source": "f67a56bb883e8814",
+      "output": "b111a86d3e9a4cd3"
+    },
+    "shell.jobProgress.steps.readingProject": {
+      "source": "eea22ed586be408b",
+      "output": "a46260a440cb2b06"
+    },
+    "shell.jobProgress.steps.storing": {
+      "source": "0a4604406d16d4d1",
+      "output": "2253bb3bb114c8f6"
+    },
+    "shell.jobProgress.steps.upToDate": {
+      "source": "79dc859a536346fe",
+      "output": "e04317bd80e0fb30"
+    },
     "shell.metadata.description": {
       "source": "8321b8879ee0fc17",
       "output": "c07f035492470673"
@@ -100735,6 +102439,10 @@
     "ui.dialog.close": {
       "source": "192abd55f1bb3235",
       "output": "5f011295bc883e83"
+    },
+    "ui.layout.skipToContent": {
+      "source": "0223fd4834ed4884",
+      "output": "79b81dfc024738f4"
     },
     "ui.sheet.close": {
       "source": "b808f6e97075772f",

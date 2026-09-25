@@ -192,5 +192,19 @@
     "local": "guardado localmente",
     "saved": "guardado",
     "savedAt": "guardado <time>{clock}</time>"
+  },
+  "jobProgress": {
+    "failed": "Tarea en segundo plano fallida",
+    "steps": {
+      "loading": "Cargando página",
+      "upToDate": "Ya al día",
+      "readingProject": "Analizando archivos del proyecto",
+      "projectDone": "Proyecto procesado",
+      "readingContent": "Analizando contenido",
+      "storing": "Guardando datos derivados",
+      "collectingLinks": "Recopilando enlaces",
+      "done": "Página procesada",
+      "failed": "No se pudo procesar la página"
+    }
   }
 }

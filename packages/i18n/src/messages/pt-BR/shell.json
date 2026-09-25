@@ -192,5 +192,19 @@
     "local": "salvo localmente",
     "saved": "salvo",
     "savedAt": "salvo às <time>{clock}</time>"
+  },
+  "jobProgress": {
+    "failed": "Tarefa em segundo plano com falha",
+    "steps": {
+      "loading": "Carregando página",
+      "upToDate": "Já atualizado",
+      "readingProject": "Analisando arquivos do projeto",
+      "projectDone": "Projeto processado",
+      "readingContent": "Analisando conteúdo",
+      "storing": "Salvando dados derivados",
+      "collectingLinks": "Coletando links",
+      "done": "Página processada",
+      "failed": "Não foi possível processar a página"
+    }
   }
 }

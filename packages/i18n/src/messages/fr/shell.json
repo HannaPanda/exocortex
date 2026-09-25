@@ -192,5 +192,19 @@
     "local": "enregistré localement",
     "saved": "enregistré",
     "savedAt": "enregistré à <time>{clock}</time>"
+  },
+  "jobProgress": {
+    "failed": "Tâche de fond échouée",
+    "steps": {
+      "loading": "Chargement de la page",
+      "upToDate": "Déjà à jour",
+      "readingProject": "Analyse des fichiers du projet",
+      "projectDone": "Projet traité",
+      "readingContent": "Analyse du contenu",
+      "storing": "Enregistrement des données dérivées",
+      "collectingLinks": "Collecte des liens",
+      "done": "Page traitée",
+      "failed": "Impossible de traiter la page"
+    }
   }
 }

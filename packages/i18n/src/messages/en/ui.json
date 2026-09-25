@@ -24,5 +24,8 @@
     "clear": "Remove",
     "time": "Time",
     "labelledTime": "{label}, time"
+  },
+  "layout": {
+    "skipToContent": "Skip to content"
   }
 }

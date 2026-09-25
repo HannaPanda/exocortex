@@ -373,5 +373,68 @@
   },
   "wikiLink": {
     "missing": "“{title}” non esiste in quest’area di lavoro"
+  },
+  "nodeViews": {
+    "media": {
+      "open": "Apri",
+      "download": "Scarica",
+      "pages": "{count, plural, one {# pagina} many {# pagine} other {# pagine}}",
+      "tables": "{count, plural, one {# tabella} many {# tabelle} other {# tabelle}}",
+      "pictures": "{count, plural, one {# immagine} many {# immagini} other {# immagini}}",
+      "ocrUsed": "letto tramite OCR",
+      "status": {
+        "notApplicable": "Non ancora estratto",
+        "pending": "Estrazione del testo in corso…",
+        "ready": "Testo estratto",
+        "failed": "Nessun testo leggibile"
+      },
+      "corrected": "Corretto manualmente",
+      "truncated": "Troncato",
+      "retry": "Riprova",
+      "extract": "Estrai testo",
+      "reextract": "Estrai di nuovo",
+      "view": "Visualizza",
+      "textErrors": {
+        "pdfDisabled": "L’estrazione dai PDF è disattivata in questa installazione.",
+        "officeDisabled": "L’estrazione dai file Office è disattivata in questa installazione.",
+        "tooLarge": "Il file supera la dimensione massima prevista per l’estrazione.",
+        "noTextLayer": "Il PDF non ha un livello di testo leggibile.",
+        "empty": "Il file non contiene testo.",
+        "unsupported": "Questo formato di file non può essere letto.",
+        "malformed": "Il file è danneggiato e non contiene testo leggibile.",
+        "encrypted": "Il file è protetto da password.",
+        "missingPart": "Al file manca una parte necessaria per estrarre il testo.",
+        "resourceLimit": "Il file supera un limite di sicurezza del convertitore.",
+        "needsOcr": "Il file è composto da immagini e richiede il riconoscimento del testo (OCR).",
+        "failed": "L’estrazione non è riuscita dopo vari tentativi.",
+        "unknown": "Non è stato possibile leggere il testo del file."
+      },
+      "dialog": {
+        "discard": "Scarta correzione",
+        "save": "Salva",
+        "close": "Chiudi",
+        "corrected": "Corretto a mano.",
+        "correctedOn": "Corretto a mano il {day}.",
+        "truncated": "Il testo estratto è stato troncato e non è completo.",
+        "lastError": "Errore durante l’ultima estrazione: {reason}",
+        "failed": "Qualcosa è andato storto. Riprova."
+      }
+    },
+    "breadcrumb": {
+      "label": "Percorso di navigazione",
+      "empty": "Questa pagina non ha pagine di livello superiore."
+    },
+    "tableOfContents": {
+      "label": "Indice dei contenuti",
+      "empty": "Ancora nessuna intestazione in questa pagina."
+    },
+    "toggle": {
+      "collapse": "Comprimi sezione",
+      "expand": "Espandi sezione"
+    },
+    "embed": {
+      "frameTitle": "Contenuto incorporato"
+    },
+    "commentCount": "{count, plural, one {commento} many {commenti} other {commenti}}"
   }
 }

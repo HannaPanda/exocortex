@@ -373,5 +373,68 @@
   },
   "wikiLink": {
     "missing": "“{title}” bestaat niet in deze werkruimte"
+  },
+  "nodeViews": {
+    "media": {
+      "open": "Openen",
+      "download": "Downloaden",
+      "pages": "{count, plural, one {# pagina} other {# pagina’s}}",
+      "tables": "{count, plural, one {# tabel} other {# tabellen}}",
+      "pictures": "{count, plural, one {# afbeelding} other {# afbeeldingen}}",
+      "ocrUsed": "gelezen via tekstherkenning",
+      "status": {
+        "notApplicable": "Nog niet uitgelezen",
+        "pending": "Tekst wordt uitgelezen …",
+        "ready": "Tekst gelezen",
+        "failed": "Geen tekst leesbaar"
+      },
+      "corrected": "Handmatig gecorrigeerd",
+      "truncated": "Ingekort",
+      "retry": "Opnieuw proberen",
+      "extract": "Tekst uitlezen",
+      "reextract": "Opnieuw uitlezen",
+      "view": "Bekijken",
+      "textErrors": {
+        "pdfDisabled": "Het uitlezen van pdf’s is uitgeschakeld in deze installatie.",
+        "officeDisabled": "Het uitlezen van Office-bestanden is uitgeschakeld in deze installatie.",
+        "tooLarge": "Het bestand is groter dan de limiet voor het uitlezen van bestanden.",
+        "noTextLayer": "De pdf heeft geen leesbare tekstlaag.",
+        "empty": "Het bestand bevat geen tekst.",
+        "unsupported": "Dit bestandsformaat kan niet worden gelezen.",
+        "malformed": "Het bestand is beschadigd en bevat geen leesbare tekst.",
+        "encrypted": "Het bestand is beveiligd met een wachtwoord.",
+        "missingPart": "Het bestand mist een onderdeel en levert daardoor geen tekst op.",
+        "resourceLimit": "Het bestand overschrijdt een veiligheidslimiet van de converter.",
+        "needsOcr": "Het bestand bestaat uit afbeeldingen en heeft tekstherkenning nodig.",
+        "failed": "Het uitlezen is meerdere keren mislukt.",
+        "unknown": "De tekst van het bestand kon niet worden gelezen."
+      },
+      "dialog": {
+        "discard": "Correctie verwerpen",
+        "save": "Opslaan",
+        "close": "Sluiten",
+        "corrected": "Handmatig gecorrigeerd.",
+        "correctedOn": "Handmatig gecorrigeerd op {day}.",
+        "truncated": "De uitgelezen tekst is ingekort en niet volledig.",
+        "lastError": "Fout bij de laatste uitlezing: {reason}",
+        "failed": "Dat is niet gelukt. Probeer het opnieuw."
+      }
+    },
+    "breadcrumb": {
+      "label": "Kruimelpad",
+      "empty": "Deze pagina heeft geen bovenliggende pagina’s."
+    },
+    "tableOfContents": {
+      "label": "Inhoudsopgave",
+      "empty": "Nog geen koppen op deze pagina."
+    },
+    "toggle": {
+      "collapse": "Sectie inklappen",
+      "expand": "Sectie uitklappen"
+    },
+    "embed": {
+      "frameTitle": "Ingesloten inhoud"
+    },
+    "commentCount": "{count, plural, one {reactie} other {reacties}}"
   }
 }

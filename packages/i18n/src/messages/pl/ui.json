@@ -24,5 +24,8 @@
     "clear": "Wyczyść",
     "time": "Godzina",
     "labelledTime": "{label}, godzina"
+  },
+  "layout": {
+    "skipToContent": "Przejdź do treści"
   }
 }

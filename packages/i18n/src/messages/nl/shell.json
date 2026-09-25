@@ -192,5 +192,19 @@
     "local": "lokaal opgeslagen",
     "saved": "opgeslagen",
     "savedAt": "opgeslagen <time>{clock}</time>"
+  },
+  "jobProgress": {
+    "failed": "Achtergrondtaak mislukt",
+    "steps": {
+      "loading": "Pagina wordt geladen",
+      "upToDate": "Al up-to-date",
+      "readingProject": "Projectbestanden worden geanalyseerd",
+      "projectDone": "Project verwerkt",
+      "readingContent": "Inhoud wordt geanalyseerd",
+      "storing": "Afgeleide gegevens worden opgeslagen",
+      "collectingLinks": "Verwijzingen worden verzameld",
+      "done": "Pagina verwerkt",
+      "failed": "Pagina kon niet worden verwerkt"
+    }
   }
 }

@@ -87,5 +87,12 @@
     "share_grantee_unknown": "Il n’y a aucun compte pour cette adresse ici.",
     "share_grantee_is_member": "Cette personne a déjà accès à la page : elle est membre de cet espace de travail.",
     "token_scope_exceeded": "Ce jeton n’est valable que pour certaines pages et ne peut pas accéder ici."
+  },
+  "boundary": {
+    "pageTitle": "Impossible de charger cette page",
+    "pageBody": "Le reste de l’application continue de fonctionner. Une exécution de l’IA lancée poursuit son travail en arrière-plan ; son historique apparaîtra en entier dans le chat après le rechargement.",
+    "viewTitle": "Impossible de charger cette vue",
+    "viewBody": "Merci de réessayer. Si le problème persiste, vérifie ta connexion. Une exécution de l’IA lancée poursuit son travail en arrière-plan ; son historique apparaîtra en entier dans le chat après le rechargement.",
+    "retry": "Réessayer"
   }
 }

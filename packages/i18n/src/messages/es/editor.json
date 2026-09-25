@@ -373,5 +373,68 @@
   },
   "wikiLink": {
     "missing": "«{title}» no existe en este espacio de trabajo"
+  },
+  "nodeViews": {
+    "media": {
+      "open": "Abrir",
+      "download": "Descargar",
+      "pages": "{count, plural, one {# página} many {# páginas} other {# páginas}}",
+      "tables": "{count, plural, one {# tabla} many {# tablas} other {# tablas}}",
+      "pictures": "{count, plural, one {# imagen} many {# imágenes} other {# imágenes}}",
+      "ocrUsed": "leído mediante OCR",
+      "status": {
+        "notApplicable": "Aún no se ha extraído",
+        "pending": "Extrayendo texto…",
+        "ready": "Texto leído",
+        "failed": "No hay texto legible"
+      },
+      "corrected": "Corregido a mano",
+      "truncated": "Acortado",
+      "retry": "Reintentar",
+      "extract": "Extraer texto",
+      "reextract": "Extraer de nuevo",
+      "view": "Ver",
+      "textErrors": {
+        "pdfDisabled": "La extracción de texto de PDF está desactivada en esta instalación.",
+        "officeDisabled": "La extracción de texto de archivos de Office está desactivada en esta instalación.",
+        "tooLarge": "El archivo supera el tamaño límite para la extracción de texto.",
+        "noTextLayer": "El PDF no tiene una capa de texto legible.",
+        "empty": "El archivo no contiene texto.",
+        "unsupported": "No se puede leer este formato de archivo.",
+        "malformed": "El archivo está dañado y no contiene texto legible.",
+        "encrypted": "El archivo está protegido por contraseña.",
+        "missingPart": "Falta una parte del archivo necesaria para obtener texto.",
+        "resourceLimit": "El archivo supera un límite de seguridad del convertidor.",
+        "needsOcr": "El archivo contiene solo imágenes y requiere reconocimiento de texto (OCR).",
+        "failed": "La extracción de texto ha fallado varias veces.",
+        "unknown": "No se ha podido leer el texto del archivo."
+      },
+      "dialog": {
+        "discard": "Descartar corrección",
+        "save": "Guardar",
+        "close": "Cerrar",
+        "corrected": "Corregido a mano.",
+        "correctedOn": "Corregido a mano el {day}.",
+        "truncated": "El texto extraído se ha acortado y no está completo.",
+        "lastError": "Error en la última extracción: {reason}",
+        "failed": "No ha funcionado. Inténtalo de nuevo."
+      }
+    },
+    "breadcrumb": {
+      "label": "Ruta de navegación",
+      "empty": "Esta página no tiene páginas superiores."
+    },
+    "tableOfContents": {
+      "label": "Índice de contenidos",
+      "empty": "Todavía no hay encabezados en esta página."
+    },
+    "toggle": {
+      "collapse": "Plegar sección",
+      "expand": "Desplegar sección"
+    },
+    "embed": {
+      "frameTitle": "Contenido incrustado"
+    },
+    "commentCount": "{count, plural, one {comentario} many {comentarios} other {comentarios}}"
   }
 }

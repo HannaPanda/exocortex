@@ -24,5 +24,8 @@
     "clear": "Rimuovi",
     "time": "Ora",
     "labelledTime": "{label}, ora"
+  },
+  "layout": {
+    "skipToContent": "Salta al contenuto"
   }
 }

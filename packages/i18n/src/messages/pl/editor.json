@@ -373,5 +373,68 @@
   },
   "wikiLink": {
     "missing": "„{title}” nie istnieje w tym obszarze roboczym"
+  },
+  "nodeViews": {
+    "media": {
+      "open": "Otwórz",
+      "download": "Pobierz",
+      "pages": "{count, plural, one {# strona} few {# strony} many {# stron} other {# strony}}",
+      "tables": "{count, plural, one {# tabela} few {# tabele} many {# tabel} other {# tabeli}}",
+      "pictures": "{count, plural, one {# obraz} few {# obrazy} many {# obrazów} other {# obrazu}}",
+      "ocrUsed": "odczytano za pomocą OCR",
+      "status": {
+        "notApplicable": "Jeszcze nie wyodrębniono",
+        "pending": "Trwa wyodrębnianie tekstu…",
+        "ready": "Tekst odczytany",
+        "failed": "Brak czytelnego tekstu"
+      },
+      "corrected": "Poprawiono ręcznie",
+      "truncated": "Skrócono",
+      "retry": "Spróbuj ponownie",
+      "extract": "Wyodrębnij tekst",
+      "reextract": "Wyodrębnij ponownie",
+      "view": "Podgląd",
+      "textErrors": {
+        "pdfDisabled": "Wyodrębnianie z plików PDF jest wyłączone w tej instalacji.",
+        "officeDisabled": "Wyodrębnianie z plików pakietu Office jest wyłączone w tej instalacji.",
+        "tooLarge": "Plik przekracza limit rozmiaru plików do wyodrębniania tekstu.",
+        "noTextLayer": "Plik PDF nie ma czytelnej warstwy tekstowej.",
+        "empty": "Plik nie zawiera tekstu.",
+        "unsupported": "Ten format pliku nie jest obsługiwany.",
+        "malformed": "Plik jest uszkodzony i nie zawiera czytelnego tekstu.",
+        "encrypted": "Plik jest chroniony hasłem.",
+        "missingPart": "W pliku brakuje części, bez której nie można odczytać tekstu.",
+        "resourceLimit": "Plik przekracza limit bezpieczeństwa konwertera.",
+        "needsOcr": "Plik składa się z obrazów i wymaga rozpoznania tekstu (OCR).",
+        "failed": "Wyodrębnianie tekstu nie powiodło się kilkukrotnie.",
+        "unknown": "Nie udało się odczytać tekstu z pliku."
+      },
+      "dialog": {
+        "discard": "Odrzuć poprawkę",
+        "save": "Zapisz",
+        "close": "Zamknij",
+        "corrected": "Poprawiono ręcznie.",
+        "correctedOn": "Poprawiono ręcznie w dniu {day}.",
+        "truncated": "Wyodrębniony tekst został skrócony i jest niekompletny.",
+        "lastError": "Błąd podczas ostatniej próby wyodrębnienia: {reason}",
+        "failed": "Coś poszło nie tak. Spróbuj ponownie."
+      }
+    },
+    "breadcrumb": {
+      "label": "Ścieżka nawigacji",
+      "empty": "Ta strona nie ma stron nadrzędnych."
+    },
+    "tableOfContents": {
+      "label": "Spis treści",
+      "empty": "Na tej stronie nie ma jeszcze nagłówków."
+    },
+    "toggle": {
+      "collapse": "Zwiń sekcję",
+      "expand": "Rozwiń sekcję"
+    },
+    "embed": {
+      "frameTitle": "Osadzona zawartość"
+    },
+    "commentCount": "{count, plural, one {komentarz} few {komentarze} many {komentarzy} other {komentarza}}"
   }
 }

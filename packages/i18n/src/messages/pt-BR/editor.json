@@ -373,5 +373,68 @@
   },
   "wikiLink": {
     "missing": "“{title}” não existe neste espaço de trabalho"
+  },
+  "nodeViews": {
+    "media": {
+      "open": "Abrir",
+      "download": "Baixar",
+      "pages": "{count, plural, one {# página} many {# páginas} other {# páginas}}",
+      "tables": "{count, plural, one {# tabela} many {# tabelas} other {# tabelas}}",
+      "pictures": "{count, plural, one {# imagem} many {# imagens} other {# imagens}}",
+      "ocrUsed": "lido por reconhecimento de texto",
+      "status": {
+        "notApplicable": "Ainda não extraído",
+        "pending": "Extraindo texto…",
+        "ready": "Texto lido",
+        "failed": "Nenhum texto legível"
+      },
+      "corrected": "Corrigido manualmente",
+      "truncated": "Truncado",
+      "retry": "Tentar novamente",
+      "extract": "Extrair texto",
+      "reextract": "Extrair novamente",
+      "view": "Visualizar",
+      "textErrors": {
+        "pdfDisabled": "A extração de PDFs está desativada nesta instalação.",
+        "officeDisabled": "A extração de arquivos do Office está desativada nesta instalação.",
+        "tooLarge": "O arquivo é maior do que o limite permitido para extração de texto.",
+        "noTextLayer": "O PDF não possui uma camada de texto legível.",
+        "empty": "O arquivo não contém texto.",
+        "unsupported": "Este formato de arquivo não pode ser lido.",
+        "malformed": "O arquivo está corrompido e não contém texto legível.",
+        "encrypted": "O arquivo está protegido por senha.",
+        "missingPart": "O arquivo está incompleto e não é possível obter texto dele.",
+        "resourceLimit": "O arquivo excede um limite de segurança do conversor.",
+        "needsOcr": "O arquivo é composto por imagens e precisa de reconhecimento de texto.",
+        "failed": "A extração falhou várias vezes.",
+        "unknown": "Não foi possível ler o texto do arquivo."
+      },
+      "dialog": {
+        "discard": "Descartar correção",
+        "save": "Salvar",
+        "close": "Fechar",
+        "corrected": "Corrigido manualmente.",
+        "correctedOn": "Corrigido manualmente em {day}.",
+        "truncated": "O texto extraído foi truncado e não está completo.",
+        "lastError": "Erro na última extração: {reason}",
+        "failed": "Algo deu errado. Tente novamente."
+      }
+    },
+    "breadcrumb": {
+      "label": "Caminho de navegação",
+      "empty": "Esta página não possui páginas superiores."
+    },
+    "tableOfContents": {
+      "label": "Sumário",
+      "empty": "Ainda não há títulos nesta página."
+    },
+    "toggle": {
+      "collapse": "Recolher seção",
+      "expand": "Expandir seção"
+    },
+    "embed": {
+      "frameTitle": "Conteúdo incorporado"
+    },
+    "commentCount": "{count, plural, one {comentário} many {comentários} other {comentários}}"
   }
 }

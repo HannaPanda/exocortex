@@ -87,5 +87,12 @@
     "share_grantee_unknown": "Nessun account corrisponde a questo indirizzo.",
     "share_grantee_is_member": "Questa persona può già accedere alla pagina: fa parte di quest’area di lavoro.",
     "token_scope_exceeded": "Questo token è valido solo per determinate pagine e non può accedere qui."
+  },
+  "boundary": {
+    "pageTitle": "Impossibile caricare questa pagina",
+    "pageBody": "Il resto dell’applicazione continua a funzionare. Un’elaborazione IA avviata continuerà in background; la sua cronologia sarà interamente disponibile nella chat dopo aver ricaricato.",
+    "viewTitle": "Impossibile caricare questa vista",
+    "viewBody": "Riprova. Se il problema persiste, controlla la tua connessione. Un’elaborazione IA avviata continuerà in background; la sua cronologia sarà interamente disponibile nella chat dopo aver ricaricato.",
+    "retry": "Riprova"
   }
 }

@@ -192,5 +192,19 @@
     "local": "salvato in locale",
     "saved": "salvato",
     "savedAt": "salvato alle <time>{clock}</time>"
+  },
+  "jobProgress": {
+    "failed": "Attività in background non riuscita",
+    "steps": {
+      "loading": "Caricamento della pagina",
+      "upToDate": "Già aggiornato",
+      "readingProject": "Analisi dei file di progetto",
+      "projectDone": "Progetto elaborato",
+      "readingContent": "Analisi del contenuto",
+      "storing": "Salvataggio dei dati derivati",
+      "collectingLinks": "Rilevamento dei collegamenti",
+      "done": "Pagina elaborata",
+      "failed": "Impossibile elaborare la pagina"
+    }
   }
 }

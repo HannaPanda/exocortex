@@ -87,5 +87,12 @@
     "share_grantee_unknown": "There is no account for this address here.",
     "share_grantee_is_member": "This person can already access the page: they are a member of this workspace.",
     "token_scope_exceeded": "This token is only valid for specific pages and cannot access here."
+  },
+  "boundary": {
+    "pageTitle": "This page could not be loaded",
+    "pageBody": "The rest of the application continues to run. Any started AI run keeps working in the background; its full history will appear in the chat after reloading.",
+    "viewTitle": "This view could not be loaded",
+    "viewBody": "Please try again. If the problem persists, check your connection. Any started AI run keeps working in the background; its full history will appear in the chat after reloading.",
+    "retry": "Try again"
   }
 }

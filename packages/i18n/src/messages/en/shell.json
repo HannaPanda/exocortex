@@ -192,5 +192,19 @@
     "local": "saved locally",
     "saved": "saved",
     "savedAt": "saved at <time>{clock}</time>"
+  },
+  "jobProgress": {
+    "failed": "Background task failed",
+    "steps": {
+      "loading": "Loading page",
+      "upToDate": "Already up to date",
+      "readingProject": "Evaluating project files",
+      "projectDone": "Project processed",
+      "readingContent": "Evaluating content",
+      "storing": "Saving derived data",
+      "collectingLinks": "Collecting links",
+      "done": "Page processed",
+      "failed": "Page could not be processed"
+    }
   }
 }

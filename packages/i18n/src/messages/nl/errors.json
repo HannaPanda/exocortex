@@ -87,5 +87,12 @@
     "share_grantee_unknown": "Er is hier geen account voor dit adres.",
     "share_grantee_is_member": "Deze persoon heeft al toegang tot de pagina: die is lid van deze werkruimte.",
     "token_scope_exceeded": "Dit token geldt alleen voor bepaalde pagina’s en heeft hier geen toegang."
+  },
+  "boundary": {
+    "pageTitle": "Deze pagina kon niet worden geladen",
+    "pageBody": "De rest van de applicatie blijft gewoon werken. Een gestarte AI-run werkt op de achtergrond door; de geschiedenis ervan is na het opnieuw laden volledig beschikbaar in de chat.",
+    "viewTitle": "Deze weergave kon niet worden geladen",
+    "viewBody": "Probeer het opnieuw. Controleer je verbinding als het probleem aanhoudt. Een gestarte AI-run werkt op de achtergrond door; de geschiedenis ervan is na het opnieuw laden volledig beschikbaar in de chat.",
+    "retry": "Opnieuw proberen"
   }
 }
