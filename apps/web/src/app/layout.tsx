@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale } from 'next-intl/server';
 
 import { Providers } from '@/components/providers';
 import { ServiceWorkerRegistration } from '@/components/service-worker-registration';
@@ -34,11 +36,20 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+/**
+ * `lang` follows the resolved interface language (issue #98), so a screen
+ * reader pronounces the page in the language it is written in and the
+ * browser hyphenates and offers translation correctly. The provider hands
+ * the client components the messages of that language only.
+ */
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
   return (
-    <html lang="de" data-theme="dark" suppressHydrationWarning>
+    <html lang={locale} data-theme="dark" suppressHydrationWarning>
       <body>
-        <Providers>{children}</Providers>
+        <NextIntlClientProvider>
+          <Providers>{children}</Providers>
+        </NextIntlClientProvider>
         <ServiceWorkerRegistration />
       </body>
     </html>

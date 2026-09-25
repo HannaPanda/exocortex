@@ -19,6 +19,7 @@ import {
 
 import { AiSelectionProvider, useAiSelection } from '@/components/ai/ai-selection';
 import { CommentAnchorProvider, useCommentAnchor } from '@/components/comments/comment-anchor';
+import { LocaleSync } from '@/components/locale-sync';
 import { SearchCommand } from '@/components/search/search-command';
 import { queryKeys } from '@/lib/api/query-keys';
 import { useSessionQuery } from '@/lib/api/session-queries';
@@ -281,6 +282,7 @@ function AppShellInner({ children }: { children: React.ReactNode }) {
   return (
     <AppShellFrame>
       <SkipToContentLink />
+      <LocaleSync />
 
       <Topbar
         workspaceId={workspaceId}

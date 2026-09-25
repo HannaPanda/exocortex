@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
 
 /**
  * The browser always talks to the same origin:
@@ -162,4 +163,11 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+/**
+ * Points next-intl at `src/i18n/request.ts`, which resolves the interface
+ * language per request (issue #98). No locale routing: the plugin is only the
+ * way the request config reaches server components.
+ */
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+
+export default withNextIntl(nextConfig);

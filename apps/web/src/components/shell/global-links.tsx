@@ -5,6 +5,7 @@ import {
   BrainIcon,
   CircleQuestionMarkIcon,
   KeyIcon,
+  LanguagesIcon,
   LogOutIcon,
   MessagesSquareIcon,
   NetworkIcon,
@@ -13,6 +14,7 @@ import {
   UserRoundIcon,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type UserRole } from '@exocortex/contracts';
@@ -61,7 +63,7 @@ interface GlobalLink {
  * cannot deliver. The API refuses the route regardless (`AdminGuard`); this
  * only stops the promise being made.
  */
-function globalLinks(newCount: number, role: UserRole): GlobalLink[] {
+function globalLinks(newCount: number, role: UserRole, languageLabel: string): GlobalLink[] {
   const links: GlobalLink[] = [
     {
       href: '/hilfe',
@@ -124,6 +126,16 @@ function globalLinks(newCount: number, role: UserRole): GlobalLink[] {
       icon: BellIcon,
       group: 'settings',
     },
+    // The first entry that reads its label from the catalogue (issue #98):
+    // the page it opens is the one a person needs when the rest of this menu
+    // is in a language they cannot read, so it is named in theirs first.
+    {
+      href: '/einstellungen/sprache',
+      label: languageLabel,
+      testId: 'open-language',
+      icon: LanguagesIcon,
+      group: 'settings',
+    },
   ];
 
   if (role === 'admin') {
@@ -175,7 +187,8 @@ export function GlobalLinks({
 }) {
   const features = useFeatures();
   const newCount = features.data?.newCount ?? 0;
-  const links = globalLinks(newCount, role);
+  const t = useTranslations('shell.globalLinks');
+  const links = globalLinks(newCount, role, t('language'));
   const [open, setOpen] = React.useState(false);
 
   return (
