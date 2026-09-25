@@ -16,6 +16,8 @@
     "restore": "Przywróć „{title}”",
     "selectedCount": "{count, plural, one {# zaznaczona strona} few {# zaznaczone strony} many {# zaznaczonych stron} other {# zaznaczonej strony}}",
     "clearSelection": "Wyczyść zaznaczenie",
+    "selectAll": "Zaznacz wszystko",
+    "deselectAll": "Odznacz wszystko",
     "deletePermanently": "Usuń trwale",
     "confirmTitle": "Usunąć trwale?",
     "confirmChecking": "Sprawdzanie elementów powiązanych…",

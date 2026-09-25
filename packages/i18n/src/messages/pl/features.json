@@ -127,7 +127,7 @@
     "details": {
       "p1": "Opcja „Do kosza” usuwa stronę z nawigacji razem ze wszystkim, co znajduje się pod nią. To zamierzone działanie: pod stroną w koszu nie powinna pozostać żadna edytowalna strona. Jeśli chcesz pozbyć się tylko tej jednej strony, przenieś wcześniej podstrony w inne miejsce.",
       "p2": "Kosz na dole w nawigacji pokazuje zawartość w postaci drzewa, z wcięciami odpowiadającymi wcześniejszemu układowi stron. Dzięki temu widzisz, co zostało przeniesione razem z nią, i możesz jednym kliknięciem przywrócić całą gałąź.",
-      "p3": "Nic nie dzieje się automatycznie. Ostateczne usunięcie to osobny krok z osobnym pytaniem potwierdzającym, a wtedy zawartość, wersje, komentarze i załączniki znikają bezpowrotnie; to jedyna operacja w tym miejscu, której nie ochroni już żadna migawka. Całkowite opróżnienie kosza to jedno wywołanie, a nie sto, dzięki czemu przerwanie w połowie nie pozostawi części plików."
+      "p3": "Nic nie dzieje się samo z siebie. Trwałe usunięcie to osobny krok z dodatkowym potwierdzeniem – wtedy treść, wersje historii, komentarze i załączniki naprawdę znikają; to jedyna operacja w tym miejscu, której nie da się odzyskać z żadnej migawki. Opcja „Zaznacz wszystko” zaznacza od razu cały kosz. Usuwanie odbywa się w jednym wywołaniu, a przy ponad stu stronach najwyższego poziomu – w turach po sto; każda tura wykonuje się w całości lub wcale, aby przerwanie w trakcie nie pozostawiło żadnej na wpół usuniętej strony."
     },
     "where": "Kosz na dole w nawigacji."
   },

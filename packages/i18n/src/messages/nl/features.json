@@ -127,7 +127,7 @@
     "details": {
       "p1": "„Naar prullenbak verplaatsen” haalt een pagina uit de navigatie, samen met alles wat eronder hangt. Dat is bewust zo: onder een pagina in de prullenbak mag geen bewerkbare pagina achterblijven. Wil je alleen die ene pagina kwijt, verplaats de subpagina’s dan eerst naar elders.",
       "p2": "De prullenbak onderaan in de navigatie toont de inhoud als een boomstructuur, ingesprongen zoals de pagina’s ten opzichte van elkaar stonden. Daaraan zie je wat er allemaal mee is gegaan, en herstel je een hele tak met één klik.",
-      "p3": "Niets verloopt vanzelf. Definitief verwijderen is een afzonderlijke stap met een eigen bevestigingsvraag, en daarbij verdwijnen inhoud, versies, opmerkingen en bijlagen echt; dat is de enige handeling hier die door geen enkele momentopname meer kan worden opgevangen. De prullenbak helemaal leegmaken is één aanroep en niet honderd, zodat een tussentijdse onderbreking niet de helft laat staan."
+      "p3": "Niets verloopt vanzelf. Definitief verwijderen is een aparte stap met een eigen bevestigingsvraag, en daarbij verdwijnen inhoud, versies, reacties en bijlagen echt; dit is de enige bewerking hier die door geen enkele momentopname meer wordt opgevangen. „Alles selecteren” markeert de hele prullenbak tegelijk. Verwijderen gebeurt in één aanroep, bij meer dan honderd pagina’s op het hoogste niveau in rondes van honderd, en elke ronde geldt helemaal of helemaal niet, zodat een onderbreking halverwege geen halve pagina achterlaat."
     },
     "where": "De prullenbak onderaan in de navigatie."
   },

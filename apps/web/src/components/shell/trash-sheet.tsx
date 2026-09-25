@@ -120,11 +120,27 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
     return covered;
   }, [entries, selected]);
 
+  /** Every id the trash still holds, so a selection outliving a deletion round is ignored. */
+  const presentIds = React.useMemo(() => {
+    const present = new Set<string>();
+    const walk = (list: readonly TrashEntry[]): void => {
+      for (const entry of list) {
+        present.add(entry.id);
+        walk(entry.children);
+      }
+    };
+    walk(entries);
+    return present;
+  }, [entries]);
+
   /** What a deletion would actually be asked to remove: the tops of the selection. */
   const selectionRoots = React.useMemo(
-    () => [...selected].filter((id) => !coveredIds.has(id)),
-    [selected, coveredIds],
+    () => [...selected].filter((id) => presentIds.has(id) && !coveredIds.has(id)),
+    [selected, presentIds, coveredIds],
   );
+
+  /** The roots cover everything below them, so selecting all of them selects the whole trash. */
+  const allSelected = entries.length > 0 && entries.every((entry) => selected.has(entry.id));
 
   const selectedPageCount = React.useMemo(() => {
     let total = 0;
@@ -157,6 +173,10 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
       else next.delete(documentId);
       return next;
     });
+  };
+
+  const toggleAll = (): void => {
+    setSelected(allSelected ? new Set() : new Set(entries.map((entry) => entry.id)));
   };
 
   const openConfirmation = (): void => {
@@ -268,6 +288,14 @@ export function TrashSheet({ workspaceId, open, onOpenChange }: TrashSheetProps)
           {trash.isError ? <ErrorState title={t('loadError')} /> : null}
           {trash.data !== undefined && trash.data.totalCount === 0 ? (
             <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />
+          ) : null}
+
+          {canDelete && entries.length > 0 ? (
+            <div className="flex justify-end px-2 pb-1">
+              <Button variant="ghost" size="sm" onClick={toggleAll} data-testid="trash-select-all">
+                {allSelected ? t('deselectAll') : t('selectAll')}
+              </Button>
+            </div>
           ) : null}
 
           {groups.map(([day, dayEntries]) => (

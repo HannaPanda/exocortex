@@ -127,7 +127,7 @@
     "details": {
       "p1": "“Mover para a lixeira” remove uma página da navegação, junto com tudo o que estiver abaixo dela. Isso é intencional: nenhuma página editável deve sobrar abaixo de uma página na lixeira. Se você quiser se livrar apenas daquela página, mova as subpáginas para outro lugar antes.",
       "p2": "A lixeira na parte inferior da navegação exibe o conteúdo em árvore, recuado conforme a hierarquia original das páginas. Assim, você vê o que foi junto e recupera um ramo inteiro com um clique.",
-      "p3": "Nada expira sozinho. A exclusão definitiva é uma etapa separada com confirmação própria, e nela o conteúdo, os históricos de versão, os comentários e os anexos realmente desaparecem; esse é o único processo aqui que nenhum instantâneo consegue reverter. Esvaziar a lixeira toda é uma única chamada, não cem, para que uma interrupção no meio do caminho não deixe a metade para trás."
+      "p3": "Nada expira por conta própria. A exclusão definitiva é uma etapa separada com sua própria confirmação, e nela o conteúdo, os históricos de versão, os comentários e os anexos desaparecem de verdade; esse é o único procedimento por aqui que nenhum snapshot consegue recuperar. „Selecionar tudo“ marca a lixeira inteira de uma só vez. A exclusão ocorre em uma única chamada — com mais de cem páginas no nível superior, em rodadas de cem —, e cada rodada se aplica por inteiro ou nada feito, para que uma interrupção no meio do caminho não deixe meia página para trás."
     },
     "where": "A lixeira na parte inferior da navegação."
   },

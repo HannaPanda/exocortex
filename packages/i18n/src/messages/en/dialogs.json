@@ -16,6 +16,8 @@
     "restore": "Restore “{title}”",
     "selectedCount": "{count, plural, one {# page selected} other {# pages selected}}",
     "clearSelection": "Clear selection",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
     "deletePermanently": "Delete permanently",
     "confirmTitle": "Delete permanently?",
     "confirmChecking": "Checking what will be removed with it…",

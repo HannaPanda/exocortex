@@ -127,7 +127,7 @@
     "details": {
       "p1": "„In den Papierkorb“ nimmt eine Seite aus der Navigation, zusammen mit allem, was unter ihr hängt. Das ist Absicht: unter einer Seite im Papierkorb soll keine bearbeitbare Seite zurückbleiben. Willst du nur die eine Seite loswerden, verschiebst du die Unterseiten vorher woandershin.",
       "p2": "Der Papierkorb unten in der Navigation zeigt den Inhalt als Baum, eingerückt so, wie die Seiten zueinander standen. Daran siehst du, was mitgegangen ist, und holst einen ganzen Ast mit einem Klick zurück.",
-      "p3": "Nichts läuft von selbst ab. Endgültiges Löschen ist ein eigener Schritt mit eigener Rückfrage, und dabei verschwinden Inhalt, Versionsstände, Kommentare und Anhänge wirklich; das ist der einzige Vorgang hier, den kein Schnappschuss mehr auffängt. Den Papierkorb ganz zu leeren ist ein Aufruf und nicht hundert, damit ein Abbruch mittendrin nicht die Hälfte übrig lässt."
+      "p3": "Nichts läuft von selbst ab. Endgültiges Löschen ist ein eigener Schritt mit eigener Rückfrage, und dabei verschwinden Inhalt, Versionsstände, Kommentare und Anhänge wirklich; das ist der einzige Vorgang hier, den kein Schnappschuss mehr auffängt. „Alle auswählen“ markiert den ganzen Papierkorb auf einmal. Gelöscht wird in einem Aufruf, bei mehr als hundert obersten Seiten in Runden zu hundert, und jede Runde gilt ganz oder gar nicht, damit ein Abbruch mittendrin keine halbe Seite übrig lässt."
     },
     "where": "Der Papierkorb unten in der Navigation."
   },

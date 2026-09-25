@@ -127,7 +127,7 @@
     "details": {
       "p1": "“Move to trash” removes a page from navigation, along with everything nested under it. This is intentional: no editable page should remain beneath a page in the trash. If you only want to get rid of that one page, move the subpages somewhere else first.",
       "p2": "The trash at the bottom of the navigation displays its contents as a tree, indented just as the pages were structured. That lets you see what was moved along with it, and restore an entire branch with a single click.",
-      "p3": "Nothing happens on its own. Permanent deletion is a separate step with its own confirmation prompt, and that is when content, version history, comments, and attachments truly vanish; this is the only operation here that no snapshot can recover. Emptying the trash completely is a single call rather than a hundred, so an interruption midway does not leave half behind."
+      "p3": "Nothing happens automatically. Permanent deletion is a separate step with its own confirmation prompt, and content, version history, comments, and attachments truly disappear; this is the only operation here that no snapshot can restore. “Select all” selects the entire trash at once. Deletion happens in a single call, or in batches of one hundred if there are more than a hundred top-level pages, and each batch applies completely or not at all so that an interruption in between doesn’t leave half a page behind."
     },
     "where": "The trash at the bottom of the navigation."
   },

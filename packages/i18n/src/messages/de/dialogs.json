@@ -16,6 +16,8 @@
     "restore": "„{title}“ wiederherstellen",
     "selectedCount": "{count, plural, one {# Seite ausgewählt} other {# Seiten ausgewählt}}",
     "clearSelection": "Auswahl aufheben",
+    "selectAll": "Alle auswählen",
+    "deselectAll": "Alle abwählen",
     "deletePermanently": "Endgültig löschen",
     "confirmTitle": "Endgültig löschen?",
     "confirmChecking": "Wird geprüft, was dabei mitgeht …",

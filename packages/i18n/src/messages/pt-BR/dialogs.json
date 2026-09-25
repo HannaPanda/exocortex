@@ -16,6 +16,8 @@
     "restore": "Restaurar “{title}”",
     "selectedCount": "{count, plural, one {# página selecionada} many {# páginas selecionadas} other {# páginas selecionadas}}",
     "clearSelection": "Limpar seleção",
+    "selectAll": "Selecionar tudo",
+    "deselectAll": "Desmarcar tudo",
     "deletePermanently": "Excluir definitivamente",
     "confirmTitle": "Excluir definitivamente?",
     "confirmChecking": "Verificando o que vai junto…",

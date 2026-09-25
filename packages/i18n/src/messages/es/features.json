@@ -127,7 +127,7 @@
     "details": {
       "p1": "«Mover a la papelera» quita una página de la navegación junto con todo lo que dependa de ella. Es intencionado: debajo de una página en la papelera no debe quedar ninguna página editable. Si solo quieres deshacerte de esa página, mueve antes las subpáginas a otro lugar.",
       "p2": "La papelera en la parte inferior de la navegación muestra el contenido en forma de árbol, con la misma sangría que tenían las páginas entre sí. Así ves qué se ha ido con ella y puedes recuperar una rama entera con un solo clic.",
-      "p3": "Nada se borra automáticamente. La eliminación definitiva es un paso aparte con su propia confirmación, y en ese proceso el contenido, los historiales de versiones, los comentarios y los adjuntos desaparecen de verdad; es la única operación que ya ninguna instantánea puede recuperar. Vaciar la papelera por completo es una sola llamada y no cien, para que una interrupción a mitad del proceso no deje la mitad pendiente."
+      "p3": "Nada caduca por sí solo. La eliminación definitiva es un paso aparte con su propia confirmación, y en ese proceso el contenido, las versiones, los comentarios y los archivos adjuntos desaparecen de verdad; esta es la única acción aquí que ninguna instantánea puede recuperar. «Seleccionar todo» marca toda la papelera a la vez. La eliminación se realiza en una sola llamada, o en rondas de cien si hay más de cien páginas de nivel superior, y cada ronda se aplica por completo o no se aplica, para que una cancelación a mitad de camino no deje media página atrás."
     },
     "where": "La papelera en la parte inferior de la navegación."
   },

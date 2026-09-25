@@ -127,7 +127,7 @@
     "details": {
       "p1": "«Sposta nel cestino» rimuove una pagina dalla navigazione, insieme a tutto ciò che contiene sotto di sé. È intenzionale: sotto una pagina nel cestino non deve rimanere alcuna pagina modificabile. Se vuoi eliminare solo quella pagina, sposta prima le sottopagine altrove.",
       "p2": "Il cestino in fondo alla navigazione mostra il contenuto sotto forma di albero, rientrato esattamente in base alla gerarchia originaria delle pagine. In questo modo vedi cosa è stato spostato insieme e recuperi un intero ramo con un solo clic.",
-      "p3": "Nulla scade da solo. L’eliminazione definitiva è un passaggio separato con una richiesta di conferma esplicita, e in quel momento contenuti, versioni, commenti e allegati scompaiono per sempre; è l’unica operazione qui che nessuno snapshot può più recuperare. Svuotare del tutto il cestino richiede una sola operazione e non cento, così che un’interruzione a metà non lasci indietro metà dei dati."
+      "p3": "Nulla avviene automaticamente. L’eliminazione definitiva è un passaggio a sé stante con un’apposita richiesta di conferma, e in questo modo contenuti, versioni, commenti e allegati scompaiono per davvero; è l’unica operazione in eXocortex che nessuno snapshot può più recuperare. „Seleziona tutto” seleziona l’intero cestino in una volta sola. L’eliminazione avviene in una sola chiamata, oppure, in presenza di più di cento pagine di livello principale, a scaglioni di cento; ogni tornata viene eseguita completamente o per niente, in modo che un’interruzione a metà non lasci alcuna pagina a metà."
     },
     "where": "Il cestino in fondo alla navigazione."
   },

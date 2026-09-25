@@ -127,7 +127,7 @@
     "details": {
       "p1": "« Mettre à la corbeille » retire une page de la navigation, ainsi que tout ce qui en dépend en dessous. C’est intentionnel : aucune page modifiable ne doit subsister sous une page mise à la corbeille. Si tu veux seulement te débarrasser de cette page-là, déplace d’abord ses sous-pages ailleurs.",
       "p2": "La corbeille en bas de la navigation affiche le contenu sous forme d’arborescence, indentée comme les pages l’étaient entre elles. Tu vois ainsi tout ce qui a suivi, et tu peux restaurer une branche entière en un seul clic.",
-      "p3": "Rien n’expire automatiquement. La suppression définitive est une étape distincte avec sa propre confirmation, et le contenu, l’historique des versions, les commentaires et les pièces jointes disparaissent alors réellement ; c’est la seule opération ici qu’aucun instantané ne peut rattraper. Vider entièrement la corbeille se fait en un seul appel et non en cent, afin qu’une interruption en cours de route ne laisse pas la moitié des éléments."
+      "p3": "Rien ne se fait tout seul. La suppression définitive est une étape distincte avec sa propre confirmation, et lors de celle-ci, le contenu, les versions, les commentaires et les pièces jointes disparaissent pour de bon ; c’est la seule opération ici qu’aucun instantané ne peut rattraper. « Tout sélectionner » sélectionne toute la corbeille d’un coup. La suppression se fait en un seul appel, ou par lots de cent pour plus de cent pages de premier niveau, et chaque lot s’applique entièrement ou pas du tout, afin qu’une interruption en cours de route ne laisse pas de demi-page."
     },
     "where": "La corbeille en bas de la navigation."
   },

@@ -16,6 +16,8 @@
     "restore": "„{title}” herstellen",
     "selectedCount": "{count, plural, one {# pagina geselecteerd} other {# pagina’s geselecteerd}}",
     "clearSelection": "Selectie opheffen",
+    "selectAll": "Alles selecteren",
+    "deselectAll": "Alles deselecteren",
     "deletePermanently": "Definitief verwijderen",
     "confirmTitle": "Definitief verwijderen?",
     "confirmChecking": "Controleren wat er mee wordt verwijderd …",

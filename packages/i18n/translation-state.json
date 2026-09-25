@@ -4916,6 +4916,10 @@
       "source": "2d5d11338ee38b67",
       "output": "7d267c23e52e98e6"
     },
+    "dialogs.trash.deselectAll": {
+      "source": "663e32137db75642",
+      "output": "967549497036d513"
+    },
     "dialogs.trash.emptyDescription": {
       "source": "3358988fc6874e57",
       "output": "9320232e8aa6f395"
@@ -4935,6 +4939,10 @@
     "dialogs.trash.restore": {
       "source": "33d2f1bda4e792a3",
       "output": "2bf6f88d9dedd0e9"
+    },
+    "dialogs.trash.selectAll": {
+      "source": "31f0ae31d4d5dd28",
+      "output": "1fc9a387654d410f"
     },
     "dialogs.trash.selectForDeletion": {
       "source": "578720be5a82a0e7",
@@ -9585,8 +9593,8 @@
       "output": "93c8e00aaab323dc"
     },
     "features.papierkorb.details.p3": {
-      "source": "4d6e28321d605fdd",
-      "output": "493973dffc787083"
+      "source": "dd701acc565f7602",
+      "output": "d5d75864cf26bb3e"
     },
     "features.papierkorb.summary": {
       "source": "caf4747277e73e6e",
@@ -19778,6 +19786,10 @@
       "source": "2d5d11338ee38b67",
       "output": "5b602835585762ac"
     },
+    "dialogs.trash.deselectAll": {
+      "source": "663e32137db75642",
+      "output": "b5e1a3f49770b08b"
+    },
     "dialogs.trash.emptyDescription": {
       "source": "3358988fc6874e57",
       "output": "f0bd2f8e9f094ece"
@@ -19797,6 +19809,10 @@
     "dialogs.trash.restore": {
       "source": "33d2f1bda4e792a3",
       "output": "96dd039cd556f28e"
+    },
+    "dialogs.trash.selectAll": {
+      "source": "31f0ae31d4d5dd28",
+      "output": "f691776fbc8ed669"
     },
     "dialogs.trash.selectForDeletion": {
       "source": "578720be5a82a0e7",
@@ -24447,8 +24463,8 @@
       "output": "9fec2be1ffb720cc"
     },
     "features.papierkorb.details.p3": {
-      "source": "4d6e28321d605fdd",
-      "output": "a944bd7e53c8e944"
+      "source": "dd701acc565f7602",
+      "output": "96d53c2997225008"
     },
     "features.papierkorb.summary": {
       "source": "caf4747277e73e6e",
@@ -34640,6 +34656,10 @@
       "source": "2d5d11338ee38b67",
       "output": "bc8002120e703112"
     },
+    "dialogs.trash.deselectAll": {
+      "source": "663e32137db75642",
+      "output": "dfbf8a80272ccbcc"
+    },
     "dialogs.trash.emptyDescription": {
       "source": "3358988fc6874e57",
       "output": "deab708bd0a4b3a5"
@@ -34659,6 +34679,10 @@
     "dialogs.trash.restore": {
       "source": "33d2f1bda4e792a3",
       "output": "b4cbbc03d06725d4"
+    },
+    "dialogs.trash.selectAll": {
+      "source": "31f0ae31d4d5dd28",
+      "output": "5b6fef95fb92a910"
     },
     "dialogs.trash.selectForDeletion": {
       "source": "578720be5a82a0e7",
@@ -39309,8 +39333,8 @@
       "output": "9235b9dd233ee231"
     },
     "features.papierkorb.details.p3": {
-      "source": "4d6e28321d605fdd",
-      "output": "f49e3306c17c718f"
+      "source": "dd701acc565f7602",
+      "output": "6a060912ba41ff84"
     },
     "features.papierkorb.summary": {
       "source": "caf4747277e73e6e",
@@ -49502,6 +49526,10 @@
       "source": "2d5d11338ee38b67",
       "output": "1a0d4ddab724d99d"
     },
+    "dialogs.trash.deselectAll": {
+      "source": "663e32137db75642",
+      "output": "db81f66d0297820a"
+    },
     "dialogs.trash.emptyDescription": {
       "source": "3358988fc6874e57",
       "output": "662fd67da2ad1fc8"
@@ -49521,6 +49549,10 @@
     "dialogs.trash.restore": {
       "source": "33d2f1bda4e792a3",
       "output": "98d886e2a6b388bf"
+    },
+    "dialogs.trash.selectAll": {
+      "source": "31f0ae31d4d5dd28",
+      "output": "25927af79a660644"
     },
     "dialogs.trash.selectForDeletion": {
       "source": "578720be5a82a0e7",
@@ -54171,8 +54203,8 @@
       "output": "0d9420f9e4726c22"
     },
     "features.papierkorb.details.p3": {
-      "source": "4d6e28321d605fdd",
-      "output": "94637b5b3bc90b09"
+      "source": "dd701acc565f7602",
+      "output": "0aeb8a809e8494ac"
     },
     "features.papierkorb.summary": {
       "source": "caf4747277e73e6e",
@@ -64364,6 +64396,10 @@
       "source": "2d5d11338ee38b67",
       "output": "49e51a6c79e47e41"
     },
+    "dialogs.trash.deselectAll": {
+      "source": "663e32137db75642",
+      "output": "59a86e97e0212717"
+    },
     "dialogs.trash.emptyDescription": {
       "source": "3358988fc6874e57",
       "output": "6e46420239677eec"
@@ -64383,6 +64419,10 @@
     "dialogs.trash.restore": {
       "source": "33d2f1bda4e792a3",
       "output": "153e072971000e38"
+    },
+    "dialogs.trash.selectAll": {
+      "source": "31f0ae31d4d5dd28",
+      "output": "b39d5031b36d2460"
     },
     "dialogs.trash.selectForDeletion": {
       "source": "578720be5a82a0e7",
@@ -69033,8 +69073,8 @@
       "output": "3f1df965ded32e7b"
     },
     "features.papierkorb.details.p3": {
-      "source": "4d6e28321d605fdd",
-      "output": "f06b82c4df1a14d5"
+      "source": "dd701acc565f7602",
+      "output": "d337863b3c1ba0c6"
     },
     "features.papierkorb.summary": {
       "source": "caf4747277e73e6e",
@@ -79226,6 +79266,10 @@
       "source": "2d5d11338ee38b67",
       "output": "9cdefa716431c511"
     },
+    "dialogs.trash.deselectAll": {
+      "source": "663e32137db75642",
+      "output": "47fc4f72ed64104f"
+    },
     "dialogs.trash.emptyDescription": {
       "source": "3358988fc6874e57",
       "output": "24f3e3b0710389c5"
@@ -79245,6 +79289,10 @@
     "dialogs.trash.restore": {
       "source": "33d2f1bda4e792a3",
       "output": "363e5861b644a290"
+    },
+    "dialogs.trash.selectAll": {
+      "source": "31f0ae31d4d5dd28",
+      "output": "e4ccf5e7105b7f97"
     },
     "dialogs.trash.selectForDeletion": {
       "source": "578720be5a82a0e7",
@@ -83895,8 +83943,8 @@
       "output": "8a0a1f557c08da23"
     },
     "features.papierkorb.details.p3": {
-      "source": "4d6e28321d605fdd",
-      "output": "9c089eeabce5e9cf"
+      "source": "dd701acc565f7602",
+      "output": "4f55a121d67bfd0f"
     },
     "features.papierkorb.summary": {
       "source": "caf4747277e73e6e",
@@ -94088,6 +94136,10 @@
       "source": "2d5d11338ee38b67",
       "output": "a1ab46f9e2d11f95"
     },
+    "dialogs.trash.deselectAll": {
+      "source": "663e32137db75642",
+      "output": "2a73b13162ff5d71"
+    },
     "dialogs.trash.emptyDescription": {
       "source": "3358988fc6874e57",
       "output": "bdb981073dbc8dad"
@@ -94107,6 +94159,10 @@
     "dialogs.trash.restore": {
       "source": "33d2f1bda4e792a3",
       "output": "06da55c56cddd6c9"
+    },
+    "dialogs.trash.selectAll": {
+      "source": "31f0ae31d4d5dd28",
+      "output": "6dc56b9dcaea1c08"
     },
     "dialogs.trash.selectForDeletion": {
       "source": "578720be5a82a0e7",
@@ -98757,8 +98813,8 @@
       "output": "135c91793f8d9638"
     },
     "features.papierkorb.details.p3": {
-      "source": "4d6e28321d605fdd",
-      "output": "b0c11b93306076e8"
+      "source": "dd701acc565f7602",
+      "output": "6281b890dc1e080b"
     },
     "features.papierkorb.summary": {
       "source": "caf4747277e73e6e",
