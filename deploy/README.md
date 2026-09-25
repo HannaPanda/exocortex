@@ -418,6 +418,19 @@ every deploy passes through anyway.
     `next start` never reads) under a `.partial` name and renames it when
     complete. A failed build never reaches this step, so the previous release
     keeps serving.
+
+    The build contains symlinks with relative targets: Turbopack writes
+    `.next/node_modules/<package>-<hash>` → `../../../../node_modules/.pnpm/…`
+    for every package it keeps outside the server bundle (today
+    `prosemirror-tables`). A release lies one directory deeper than `.next`, so
+    a verbatim copy points into nothing and every server render that imports
+    the package fails with `ERR_MODULE_NOT_FOUND`. That was the state of every
+    release from #130 until 2026-09-25. The step therefore sets each link again
+    to the target it has in `.next`, relative to its new place, and refuses the
+    release if any link still dangles. The links are kept as links rather than
+    copied as files: Node resolves a package's own imports from its real path,
+    and only the real path inside `.pnpm` has its dependencies beside it.
+
 13. **systemd units.** The four service units are installed from
     `deploy/systemd/` when they differ, followed by `daemon-reload`, which
     restarts nothing. Without it a web unit that lagged behind would quietly
@@ -440,8 +453,11 @@ every deploy passes through anyway.
     Right before `exocortex-web` restarts, `.next-live` is pointed at the new
     release with one `rename(2)` (`ln -sfn` alone unlinks first and leaves an
     instant without the link). The unit then has to answer `/anmelden` on port
-    3210 within thirty seconds; if it does not, the link goes back to the
-    previous release and the unit is restarted on it before the script fails.
+    3210 within thirty seconds, and `/arbeitsbereich` must not answer 5xx:
+    `/anmelden` only proves the process is up, while `/arbeitsbereich` renders
+    the application shell on the server (without a session it redirects). If
+    either fails, the link goes back to the previous release and the unit is
+    restarted on it before the script fails.
     Switching back by hand is the same two lines against an older directory
     under `.next-releases/`, followed by `sudo systemctl restart exocortex-web`.
 

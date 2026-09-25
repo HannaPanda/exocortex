@@ -257,6 +257,37 @@ mkdir -p "$RELEASES_DIR"
 # directory that exists is always a whole one.
 rsync -a --delete --exclude '/cache/' "$WEB_DIR/.next/" "$RELEASES_DIR/$RELEASE.partial/" \
   || fail "Copying the web build into a release failed" "Nothing has been restarted."
+
+# The build's symlinks point back into the repository with *relative* paths:
+# Turbopack writes `.next/node_modules/<package>-<hash>` as
+# `../../../../node_modules/.pnpm/...` for every package it keeps external to
+# the server bundle (prosemirror-tables, so far). A release sits one directory
+# deeper than `.next`, so a verbatim copy of that link points into nothing,
+# and every server render that imports the package fails with
+# ERR_MODULE_NOT_FOUND -- which is what every release did from #130 until this
+# step existed. Each link is therefore set again to the target it has in
+# `.next`, recomputed relative to where the copy lives.
+#
+# Relinked rather than copied as files (`rsync --copy-unsafe-links`): Node
+# resolves a package's own imports from its real path, and only the real path
+# inside `.pnpm` has the package's dependencies beside it.
+relink_release_symlinks() {
+  local release_dir="$1" link rel source_target dest_dir
+  while IFS= read -r -d '' link; do
+    rel="${link#"$release_dir"/}"
+    source_target="$(readlink -f "$WEB_DIR/.next/$rel" || true)"
+    [ -n "$source_target" ] && [ -e "$source_target" ] || return 1
+    dest_dir="$(dirname "$link")"
+    ln -sfn "$(realpath --relative-to="$dest_dir" "$source_target")" "$link" || return 1
+  done < <(find "$release_dir" -type l -print0)
+}
+relink_release_symlinks "$RELEASES_DIR/$RELEASE.partial" \
+  || fail "A symlink in the web build points nowhere, even in apps/web/.next" \
+    "Nothing has been restarted. Check: find apps/web/.next -xtype l"
+# And proven, not assumed: a release with a dangling link never goes live.
+DANGLING="$(find "$RELEASES_DIR/$RELEASE.partial" -xtype l)"
+[ -z "$DANGLING" ] || fail "The staged web release has symlinks that point nowhere" \
+  "Nothing has been restarted. Links: $(echo "$DANGLING" | tr '\n' ' ')"
 mv "$RELEASES_DIR/$RELEASE.partial" "$RELEASES_DIR/$RELEASE"
 PREVIOUS_RELEASE="$(readlink "$LIVE_LINK" 2>/dev/null || true)"
 ok "Release $RELEASE staged ($(du -sh "$RELEASES_DIR/$RELEASE" | cut -f1))."
@@ -311,15 +342,29 @@ ok "All four restarted."
 # The web unit answers on its own port. A release it cannot serve goes back to
 # the previous one straight away, rather than leaving the site down until
 # somebody reads this output.
-WEB_URL="http://127.0.0.1:3210/anmelden"
+#
+# Two probes, because "answers" was not enough. `/anmelden` proves the process
+# is up; it renders nothing of the application, so a release whose server
+# render of the workspace failed on every request passed it for a day (the
+# dangling symlink above). `/arbeitsbereich` renders the application shell on
+# the server; without a session it redirects, and anything from 500 up means
+# the render itself broke.
+WEB_ORIGIN="http://127.0.0.1:3210"
 WEB_READY=0
 for attempt in $(seq 1 15); do
-  if curl -fsS -o /dev/null --max-time 5 "$WEB_URL" 2>/dev/null; then
+  if curl -fsS -o /dev/null --max-time 5 "$WEB_ORIGIN/anmelden" 2>/dev/null; then
     WEB_READY=1
     break
   fi
   sleep 2
 done
+if [ "$WEB_READY" -eq 1 ]; then
+  SSR_STATUS="$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "$WEB_ORIGIN/arbeitsbereich" || echo 000)"
+  if [ "$SSR_STATUS" -ge 500 ] || [ "$SSR_STATUS" = "000" ]; then
+    WEB_READY=0
+    info "GET /arbeitsbereich answered $SSR_STATUS: the server render fails"
+  fi
+fi
 if [ "$WEB_READY" -ne 1 ]; then
   if [ -n "$PREVIOUS_RELEASE" ] && [ -d "$WEB_DIR/$PREVIOUS_RELEASE" ]; then
     switch_web_release "$(basename "$PREVIOUS_RELEASE")"
