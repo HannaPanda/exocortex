@@ -25,6 +25,7 @@ export * from './link-target';
 export * from './markdown';
 export * from './mathematics';
 export * from './media';
+export * from './media-info';
 export * from './mention';
 export * from './migrations';
 export * from './page-edit';

@@ -80,10 +80,10 @@ import {
 import {
   MEDIA_EXTENSIONS,
   mediaBlocks,
-  type MediaInfoResolver,
   mediaMarkdownAdapter,
   mediaPlainTextAdapter,
 } from './media';
+import { type MediaInfoResolver } from './media-info';
 import { Mention, mentionMarkdownAdapter, mentionPlainTextAdapter } from './mention';
 import {
   PageLink,

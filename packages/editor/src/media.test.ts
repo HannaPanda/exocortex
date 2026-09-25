@@ -3,7 +3,11 @@ import { Editor } from '@tiptap/core';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { buildEditorExtensions } from './extensions';
-import { type MediaDocumentDetail, type MediaDocumentInfo, type MediaInfoResolver } from './media';
+import {
+  type MediaDocumentDetail,
+  type MediaDocumentInfo,
+  type MediaInfoResolver,
+} from './media-info';
 
 let editor: Editor | null = null;
 
