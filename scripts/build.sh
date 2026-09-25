@@ -127,6 +127,8 @@ run_gate "documentation"        node scripts/check-docs-current.mjs
 run_gate "test split"           node scripts/check-test-split.mjs
 run_gate "typecheck coverage"   node scripts/check-typecheck-coverage.mjs
 run_gate "migration history"    bash scripts/check-migrations-reproducible.sh
+run_gate "message catalogues"   node scripts/check-i18n.mjs
+run_gate "inline text ratchet"  node scripts/check-i18n-literals.mjs
 ok "All hard gates green."
 
 # --- 5. Build ----------------------------------------------------------------

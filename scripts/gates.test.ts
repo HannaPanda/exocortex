@@ -895,6 +895,157 @@ describe('typecheck coverage (check-typecheck-coverage.mjs)', () => {
   });
 });
 
+describe('message catalogues (check-i18n.mjs)', () => {
+  const english = 'packages/i18n/src/messages/en/settings.json';
+  const german = 'packages/i18n/src/messages/de/settings.json';
+
+  function editJson(path: string, edit: (value: Record<string, Record<string, string>>) => void) {
+    editFile(path, (source) => {
+      const value = JSON.parse(source) as Record<string, Record<string, string>>;
+      edit(value);
+      return `${JSON.stringify(value, null, 2)}\n`;
+    });
+  }
+
+  it('is green on the repository as it stands', () => {
+    expect(gate('check-i18n.mjs').status).toBe(0);
+  });
+
+  it('goes red when a locale lacks a key German has', () => {
+    editJson(english, (value) => {
+      delete value.language?.title;
+    });
+    const result = gate('check-i18n.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('en/settings.json language.title: missing');
+  });
+
+  it('goes red when a translation drops an ICU argument', () => {
+    editJson(english, (value) => {
+      if (value.language !== undefined) value.language.followBrowserHint = 'Follows your browser.';
+    });
+    const result = gate('check-i18n.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('missing argument browser: simple');
+  });
+
+  it('goes red when the German changed and nobody translated again', () => {
+    editJson(german, (value) => {
+      if (value.language !== undefined) value.language.title = 'Sprache der Oberfläche';
+    });
+    const result = gate('check-i18n.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('translated from an older German text');
+  });
+
+  it('goes red when a translation was edited by hand and the German moved on', () => {
+    editJson(english, (value) => {
+      if (value.language !== undefined) value.language.title = 'Interface language';
+    });
+    editJson(german, (value) => {
+      if (value.language !== undefined) value.language.title = 'Sprache der Oberfläche';
+    });
+    const result = gate('check-i18n.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('hand-written, and not confirmed');
+  });
+
+  it('goes red when the generated catalogue no longer matches the files', () => {
+    editFile('packages/i18n/src/catalog.generated.ts', (source) => `${source}// drift\n`);
+    const result = gate('check-i18n.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('catalog.generated.ts: out of date');
+  });
+});
+
+describe('the ICU reader behind the catalogue gate (lib/icu.mjs)', () => {
+  it('finds a plural category the target language needs', async () => {
+    const { compareIcu } = (await import('./lib/icu.mjs')) as {
+      compareIcu: (source: string, translation: string, locale: string) => string[];
+    };
+    const source = '{count, plural, one {# Datei} other {# Dateien}}';
+    expect(compareIcu(source, '{count, plural, one {# plik} other {# plików}}', 'pl')).toEqual([
+      '{count, plural} lacks "few" for pl',
+      '{count, plural} lacks "many" for pl',
+    ]);
+    expect(
+      compareIcu(
+        source,
+        '{count, plural, one {# plik} few {# pliki} many {# plików} other {# pliku}}',
+        'pl',
+      ),
+    ).toEqual([]);
+  });
+
+  it('refuses a changed select option, a lost tag and a broken brace', async () => {
+    const { compareIcu } = (await import('./lib/icu.mjs')) as {
+      compareIcu: (source: string, translation: string, locale: string) => string[];
+    };
+    const select = '{role, select, admin {Verwaltung} other {Lesen}}';
+    expect(compareIcu(select, '{role, select, administrator {Admin} other {Read}}', 'en')).toEqual([
+      'missing select role: admin|other',
+      'unexpected select role: administrator|other',
+    ]);
+    expect(compareIcu('Öffne <link>{title}</link>', 'Open {title}', 'en')).toEqual([
+      'missing tag <link>',
+    ]);
+    expect(compareIcu('Hallo {name}', 'Hello {name', 'en')[0]).toMatch(/^does not parse/);
+  });
+
+  it('reads apostrophes the way use-intl does', async () => {
+    const { parseIcu, icuSignature } = (await import('./lib/icu.mjs')) as {
+      parseIcu: (message: string) => unknown[];
+      icuSignature: (nodes: unknown[]) => string[];
+    };
+    expect(icuSignature(parseIcu("l'état de {name}"))).toEqual(['argument name: simple']);
+    expect(icuSignature(parseIcu("'{literal}' and {real}"))).toEqual(['argument real: simple']);
+  });
+});
+
+describe('the translation state the tool and the gate share (lib/i18n-catalog.mjs)', () => {
+  it('tells current, missing, stale and hand-written apart', async () => {
+    const { hashText, keyStatus } = (await import('./lib/i18n-catalog.mjs')) as {
+      hashText: (text: string) => string;
+      keyStatus: (source: string, target: string | undefined, entry?: object) => string;
+    };
+    const machine = { source: hashText('Alt'), output: hashText('Old') };
+    expect(keyStatus('Neu', undefined, undefined)).toBe('missing');
+    expect(keyStatus('Alt', 'Old', machine)).toBe('current');
+    expect(keyStatus('Neu', 'Old', machine)).toBe('stale');
+    // Somebody corrected the machine's "Old" to "Former": never overwritten.
+    expect(keyStatus('Neu', 'Former', machine)).toBe('review');
+    // An accepted hand-written translation has no output hash.
+    expect(keyStatus('Neu', 'New', { source: hashText('Neu') })).toBe('current');
+  });
+});
+
+describe('inline text ratchet (check-i18n-literals.mjs)', () => {
+  const screen = 'apps/web/src/components/settings/language-page.tsx';
+
+  it('is green on the repository as it stands', () => {
+    expect(gate('check-i18n-literals.mjs').status).toBe(0);
+  });
+
+  it('goes red when a file gains inline German', () => {
+    editFile(screen, (source) => `${source}\nexport const probe = 'Das ist neu';\n`);
+    const result = gate('check-i18n-literals.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain(screen);
+  });
+
+  it('does not count German in a comment', () => {
+    editFile(screen, (source) => `${source}\n// Das ist ein deutscher Kommentar für dich.\n`);
+    expect(gate('check-i18n-literals.mjs').status).toBe(0);
+  });
+
+  it('goes red when a file lost German and the baseline was not lowered', () => {
+    editFile('apps/web/src/app/(app)/error.tsx', () => 'export {};\n');
+    const result = gate('check-i18n-literals.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain('--update');
+  });
+});
+
 describe('build.sh', () => {
   it('refuses to run on a dirty working tree, before touching anything', () => {
     writeProbe('__gate_probe__.txt', 'untracked\n');
