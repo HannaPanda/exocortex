@@ -1,6 +1,7 @@
 'use client';
 
 import { type Editor } from '@tiptap/react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { TEXT_COLOR_NAMES, type TextColorName } from '@exocortex/editor';
@@ -14,20 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@exocortex/ui';
-
-/** German names for the content colours. */
-const COLOR_LABELS: Readonly<Record<TextColorName, string>> = {
-  default: 'Standard',
-  gray: 'Grau',
-  brown: 'Braun',
-  orange: 'Orange',
-  yellow: 'Gelb',
-  green: 'Grün',
-  blue: 'Blau',
-  purple: 'Violett',
-  pink: 'Pink',
-  red: 'Rot',
-};
 
 /**
  * Tailwind classes per colour name.
@@ -72,10 +59,11 @@ const SWATCH_BACKGROUND: Readonly<Record<TextColorName, string>> = {
  * toolbar and as a submenu in the block handle.
  */
 export function ColorItems({ editor }: { editor: Editor }) {
+  const t = useTranslations('editor.colors');
   return (
     <>
       <DropdownMenuGroup>
-        <DropdownMenuLabel>Textfarbe</DropdownMenuLabel>
+        <DropdownMenuLabel>{t('text')}</DropdownMenuLabel>
         {TEXT_COLOR_NAMES.map((name) => (
           <DropdownMenuItem
             key={`text-${name}`}
@@ -94,7 +82,7 @@ export function ColorItems({ editor }: { editor: Editor }) {
             >
               A
             </span>
-            {COLOR_LABELS[name]}
+            {t(`name.${name}`)}
           </DropdownMenuItem>
         ))}
       </DropdownMenuGroup>
@@ -102,7 +90,7 @@ export function ColorItems({ editor }: { editor: Editor }) {
       <DropdownMenuSeparator />
 
       <DropdownMenuGroup>
-        <DropdownMenuLabel>Hintergrund</DropdownMenuLabel>
+        <DropdownMenuLabel>{t('background')}</DropdownMenuLabel>
         {TEXT_COLOR_NAMES.map((name) => (
           <DropdownMenuItem
             key={`background-${name}`}
@@ -113,7 +101,7 @@ export function ColorItems({ editor }: { editor: Editor }) {
               aria-hidden
               className={cn('size-4 rounded-sm border border-border', SWATCH_BACKGROUND[name])}
             />
-            {COLOR_LABELS[name]}
+            {t(`name.${name}`)}
           </DropdownMenuItem>
         ))}
       </DropdownMenuGroup>
@@ -123,7 +111,7 @@ export function ColorItems({ editor }: { editor: Editor }) {
         data-testid="text-color-reset"
         onClick={() => editor.chain().focus().unsetTextColor().run()}
       >
-        Farben entfernen
+        {t('reset')}
       </DropdownMenuItem>
     </>
   );

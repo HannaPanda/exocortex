@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "sharesTitle": "Compartilhamentos",
+    "sharedPageTitle": "Página compartilhada"
+  },
+  "common": {
+    "loading": "Carregando compartilhamentos…",
+    "loadError": "Não foi possível carregar os compartilhamentos",
+    "read": "Visualizar",
+    "write": "Editar",
+    "revoke": "Revogar",
+    "revokeFailed": "Não foi possível revogar o compartilhamento.",
+    "nothingShared": "Nada compartilhado"
+  },
+  "wording": {
+    "publicLink": "Link público (…{prefix})",
+    "unknownAccount": "Conta desconhecida",
+    "grant": "{who}: {permission, select, WRITE {pode editar} other {pode visualizar}}{subtree, select, yes {, com tudo abaixo} other {}}",
+    "grantUntil": "{who}: {permission, select, WRITE {pode editar} other {pode visualizar}}{subtree, select, yes {, com tudo abaixo} other {}}, até {until}",
+    "revokeLink": "Depois disso, o endereço não funcionará para mais ninguém, nem para quem o tiver recebido repassado. Ele não pode ser restaurado: um novo link terá um novo endereço.",
+    "revokeAccount": "{who} perde o acesso imediatamente, inclusive em qualquer sessão aberta no momento.",
+    "thisAccount": "Esta conta",
+    "regrantDialog": "Você pode conceder o compartilhamento novamente acima a qualquer momento.",
+    "regrantList": "Você pode concedê-lo novamente no diálogo de compartilhamento da página a qualquer momento.",
+    "revokeSubtree": "Isso se aplica a esta página e a tudo abaixo dela."
+  },
+  "state": {
+    "active": "Ativo",
+    "expired": "Expirado",
+    "revoked": "Revogado"
+  },
+  "revokeConfirm": {
+    "question": "Revogar?",
+    "cancel": "Cancelar",
+    "confirm": "Revogar",
+    "pending": "Revogando…"
+  },
+  "linkAddress": {
+    "copyLabel": "Copiar endereço",
+    "copiedLabel": "Endereço copiado",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "lost": "O endereço deste link não está salvo: ele foi criado antes de 24/09/2026. Ele continua funcionando. Se precisar do endereço, crie um novo link com o mesmo escopo e revogue este depois.",
+    "replace": "Criar novo link",
+    "replaced": "O novo link está acima"
+  },
+  "dialog": {
+    "title": "Compartilhar “{title}”",
+    "description": "Compartilhar significa: alguém de fora deste espaço de trabalho poderá acessar esta página. Quem já for membro aqui não precisa de compartilhamento.",
+    "inherited": "Esta página já está compartilhada a partir de um nível acima: alguém compartilhou uma área superior junto com tudo abaixo dela. Portanto, ela já pode ser acessada externamente, mesmo sem nada constar aqui.",
+    "scope": "Escopo",
+    "scopePageOnly": "Apenas esta página",
+    "scopeSubtree": "Esta página e tudo abaixo dela",
+    "expiry": "Validade",
+    "expiryNever": "Sem expiração",
+    "expiryDays": "{count, plural, one {# dia} many {# dias} other {# dias}}",
+    "toAccount": "Para uma conta",
+    "emailPlaceholder": "email@exemplo.com",
+    "permission": "Permissão",
+    "share": "Compartilhar",
+    "publicLink": "Link público",
+    "publicLinkExplanation": "Quem tiver o endereço lê a página: sem conta, sem login, mesmo se tiver recebido de outra pessoa. Ninguém pode editar por meio de um link.",
+    "createLink": "Criar link",
+    "copied": "Copiado",
+    "copyAddress": "Copiar endereço",
+    "addressKept": "Você encontra o endereço novamente a qualquer momento, aqui na lista e em “Compartilhamentos” no menu da conta, enquanto o link for válido.",
+    "current": "Compartilhado no momento",
+    "nobody": "Ninguém fora deste espaço de trabalho pode acessar esta página.",
+    "revokeFailed": "Falha ao revogar.",
+    "close": "Fechar",
+    "changePermission": "Alterar permissão",
+    "readOnly": "Somente leitura",
+    "revokeLabel": "Revogar: {description}"
+  },
+  "page": {
+    "title": "Compartilhamentos",
+    "tabMine": "Compartilhados por mim",
+    "tabIncoming": "Compartilhados comigo"
+  },
+  "mine": {
+    "intro": "Tudo o que você compartilhou, de todos os espaços de trabalho: para contas individuais e como link público.",
+    "emptyDescription": "Você ainda não compartilhou nenhuma página. É possível fazer isso no menu da página em “Compartilhar…”.",
+    "filterPlaceholder": "Página, espaço de trabalho ou endereço…",
+    "filterLabel": "Filtrar compartilhamentos",
+    "showInactive": "Mostrar encerrados ({count, number})",
+    "noMatchTitle": "Nada encontrado",
+    "noMatchDescription": "Nenhum compartilhamento corresponde a este filtro.",
+    "noneOpenTitle": "Nada mais em aberto",
+    "noneOpenDescription": "Todos os seus compartilhamentos foram revogados ou expiraram.",
+    "truncated": "Há mais compartilhamentos do que os exibidos aqui. Os encerrados mais antigos não aparecem.",
+    "rowContext": "em “{workspace}” · {description}",
+    "revokeLabel": "Revogar: {title}, {description}",
+    "adminOnly": "Aqui, somente quem for admin no espaço de trabalho “{workspace}” pode revogar."
+  },
+  "incoming": {
+    "intro": "Páginas de espaços de trabalho dos quais você não é membro. Elas não aparecem em nenhuma navegação, apenas aqui.",
+    "emptyTitle": "Nada compartilhado com você",
+    "emptyDescription": "Quando alguém compartilhar uma página com você, ela aparecerá aqui.",
+    "origin": "de “{workspace}”, por {name}"
+  },
+  "workspace": {
+    "title": "Compartilhamentos",
+    "intro": "O que foi compartilhado para fora deste espaço de trabalho: com contas individuais e por link público. Compartilhamentos revogados continuam na lista para que se possa acompanhar o que já esteve acessível.",
+    "emptyDescription": "Nenhuma página deste espaço de trabalho está acessível externamente.",
+    "columnPage": "Página",
+    "columnRecipient": "Para quem",
+    "columnPermission": "Permissão",
+    "columnScope": "Escopo",
+    "columnExpires": "Expira em",
+    "columnStatus": "Status",
+    "scopeSubtree": "com subpáginas",
+    "scopePageOnly": "apenas a página",
+    "revokeLabel": "Revogar: {title}",
+    "publicLink": "Link público",
+    "unknown": "Desconhecido"
+  },
+  "public": {
+    "loading": "Carregando página …",
+    "goneTitle": "Este link não leva mais a uma página",
+    "goneDescription": "Ele foi revogado, expirou ou nunca foi válido. Pergunte à pessoa de quem você o recebeu.",
+    "origin": "Compartilhado de “{workspace}” por {name}",
+    "path": "Caminho",
+    "empty": "Esta página está vazia.",
+    "children": "Subpáginas",
+    "footer": "Esta página foi compartilhada como link. Ela é somente leitura. O <link>eXocortex</link> é auto-hospedado."
+  },
+  "shared": {
+    "loading": "Carregando página …",
+    "unavailableTitle": "Página indisponível",
+    "unavailableDescription": "O compartilhamento foi revogado, expirou ou nunca existiu."
+  }
+}

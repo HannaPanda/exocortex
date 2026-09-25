@@ -1,0 +1,130 @@
+{
+  "route": {
+    "searchTitle": "Suche",
+    "savedQueryTitle": "Gespeicherte Suche"
+  },
+  "chatsRoute": {
+    "title": "Chats",
+    "loading": "Chats werden geladen …"
+  },
+  "builder": {
+    "textLabel": "Suchbegriff",
+    "textPlaceholder": "Leer lassen, um nur nach Ort, Typ und Zeit zu filtern",
+    "semantic": "Auch nach Bedeutung suchen, nicht nur nach dem Wort",
+    "typesLabel": "Art",
+    "typesHint": "Nichts gewählt heißt: alles.",
+    "types": {
+      "PAGE": "Seiten",
+      "COLLECTION": "Datenbanken",
+      "PROJECT": "Projekte"
+    },
+    "underLabel": "Nur unterhalb von",
+    "underAnywhere": "überall",
+    "underHint": "Der Unterbaum wird bei jeder Ausführung neu bestimmt, verschobene Seiten wandern also mit.",
+    "collectionLabel": "Nur Zeilen der Datenbank",
+    "none": "keine",
+    "entityLabel": "Erwähnt die Entität",
+    "updatedLabel": "Geändert",
+    "createdLabel": "Angelegt",
+    "sortLabel": "Reihenfolge",
+    "sort": {
+      "RELEVANCE": "Relevanz",
+      "UPDATED_DESC": "Zuletzt geändert",
+      "UPDATED_ASC": "Am längsten unverändert",
+      "CREATED_DESC": "Zuletzt angelegt",
+      "CREATED_ASC": "Zuerst angelegt",
+      "TITLE_ASC": "Titel A bis Z",
+      "TITLE_DESC": "Titel Z bis A"
+    },
+    "relevanceWithoutText": "Ohne Suchbegriff gibt es keine Relevanz. Sortiert wird dann nach zuletzt geändert.",
+    "limitLabel": "Höchstens",
+    "includeArchived": "Papierkorb einbeziehen",
+    "window": {
+      "any": "egal",
+      "lastDays": "{count, plural, one {letzter Tag} other {letzte # Tage}}",
+      "lastYear": "letztes Jahr",
+      "custom": "eigener Zeitraum"
+    },
+    "rangeFrom": "{label}: ab",
+    "rangeUntil": "{label}: bis",
+    "rangeSeparator": "bis",
+    "noProperties": "Diese Datenbank hat noch keine Eigenschaften, nach denen sich filtern ließe.",
+    "propertiesLabel": "Eigenschaften",
+    "removeFilter": "Filter entfernen",
+    "addProperty": "Eigenschaft",
+    "valuePlaceholder": "Wert",
+    "add": "Hinzufügen"
+  },
+  "page": {
+    "loading": "Gespeicherte Suche wird geladen",
+    "loadFailed": "Gespeicherte Suche nicht geladen",
+    "title": "Suche",
+    "introFresh": "Suche über alle Seiten dieses Arbeitsbereichs, mit Filtern nach Ort, Art, Eigenschaften, Entitäten und Zeitraum. Was sich lohnt, lässt sich speichern.",
+    "introStored": "Eine gespeicherte Suche. Die Treffer werden bei jedem Öffnen neu ermittelt.",
+    "save": "Suche speichern",
+    "delete": "Löschen",
+    "saveChanges": "Änderungen speichern",
+    "deleteTitle": "Gespeicherte Suche löschen",
+    "deleteDescription": "Gelöscht wird nur die Frage. Die Seiten, die sie gefunden hat, bleiben unverändert liegen, wo sie sind.",
+    "cancel": "Abbrechen",
+    "layoutLabel": "Darstellung",
+    "layout": {
+      "LIST": "Liste",
+      "TABLE": "Tabelle",
+      "CARDS": "Karten"
+    },
+    "inSidebar": "In der Navigation zeigen",
+    "resultsHeading": "Treffer",
+    "noQueryTitle": "Noch keine Abfrage",
+    "noQueryDescription": "Gib einen Suchbegriff ein oder grenze oben ein, wo gesucht werden soll.",
+    "resultsLoading": "Treffer werden ermittelt",
+    "queryFailed": "Abfrage nicht ausgeführt",
+    "saveDialog": {
+      "title": "Suche speichern",
+      "description": "Gespeichert wird die Frage, nicht die Trefferliste. Beim nächsten Öffnen wird sie neu beantwortet.",
+      "nameLabel": "Name",
+      "namePlaceholder": "Offene Aufgaben mit hoher Priorität",
+      "descriptionLabel": "Beschreibung",
+      "descriptionPlaceholder": "Optional: wofür diese Suche da ist",
+      "inSidebar": "Als Smart View in die Navigation aufnehmen",
+      "submit": "Speichern"
+    }
+  },
+  "nodeView": {
+    "fallbackName": "Gespeicherte Suche",
+    "open": "Suche öffnen",
+    "change": "Suche wechseln",
+    "noneTitle": "Keine Suche ausgewählt",
+    "noneDescription": "Wähle eine gespeicherte Suche, deren Treffer hier stehen sollen.",
+    "missingDescription": "Diese gespeicherte Suche wurde nicht gefunden. Möglicherweise wurde sie gelöscht.",
+    "pick": "Suche auswählen",
+    "resultsLoading": "Treffer werden ermittelt",
+    "queryFailed": "Abfrage nicht ausgeführt",
+    "allResults": "Alle Treffer ansehen"
+  },
+  "results": {
+    "topLevel": "oberste Ebene",
+    "emptyTitle": "Nichts gefunden",
+    "emptyDescription": "Zu dieser Abfrage gibt es gerade nichts. Das kann sich morgen ändern, die Suche bleibt gespeichert.",
+    "truncated": "Das ist nicht die ganze Antwort. Erhöhe das Limit der Abfrage, um mehr zu sehen.",
+    "inTrash": "im Papierkorb",
+    "columnPage": "Seite",
+    "columnPath": "Ort",
+    "columnUpdated": "Geändert"
+  },
+  "command": {
+    "groupActions": "Aktionen",
+    "groupSavedQueries": "Gespeicherte Suchen",
+    "groupRecent": "Zuletzt bearbeitet",
+    "groupPages": "Seiten",
+    "createPage": "Neue Seite anlegen",
+    "createPageKeywords": "erstellen schreiben",
+    "untitledPage": "Unbenannte Seite",
+    "openSearchPage": "Erweiterte Suche mit Filtern",
+    "openSearchPageKeywords": "finden",
+    "minimumLength": "Für Seiten mindestens zwei Zeichen eingeben",
+    "empty": "Nichts gefunden",
+    "readout": "{count, plural, one {# Treffer} other {# Treffer}} · {tookMs} ms · {adapter}",
+    "idleHint": "Zuletzt bearbeitet, oder tippen für die Volltextsuche"
+  }
+}

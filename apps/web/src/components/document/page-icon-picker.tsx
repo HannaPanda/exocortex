@@ -1,9 +1,11 @@
 'use client';
 
 import { CheckIcon, SmilePlusIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
+  type CuratedDocumentIconName,
   DOCUMENT_ICON_COLORS,
   type DocumentIconColor,
   type DocumentSummary,
@@ -27,14 +29,13 @@ import { useUpdateDocument } from '@/lib/api/document-queries';
 
 import {
   DOCUMENT_ICON_COLOR_CLASS,
-  DOCUMENT_ICON_COLOR_LABELS,
   DOCUMENT_ICON_GROUPS,
   DOCUMENT_ICON_KEYWORDS,
-  DOCUMENT_ICON_LABELS,
   DocumentIcon,
-  documentIconLabel,
+  type DocumentIconGroupKey,
   documentIconName,
   documentIconValue,
+  useDocumentIconLabel,
 } from './document-icon';
 import { EmojiPalette } from './emoji-palette';
 import { searchIconNames } from './icon-search';
@@ -77,17 +78,18 @@ const CURATED_ICON_NAMES: ReadonlySet<string> = new Set(
   DOCUMENT_ICON_GROUPS.flatMap((group) => [...group.names]),
 );
 
-/** Icon names whose German label or extra keywords contain the query. */
+/** Icon names whose label, in the reader's language, or German keywords contain the query. */
 function filterCuratedIconGroups(
   query: string,
-): readonly { label: string; names: readonly string[] }[] {
+  labelOf: (name: CuratedDocumentIconName) => string,
+): readonly { key: DocumentIconGroupKey; names: readonly string[] }[] {
   const needle = query.trim().toLowerCase();
   return DOCUMENT_ICON_GROUPS.map((group) => ({
-    label: group.label,
+    key: group.key,
     names: group.names.filter(
       (name) =>
         needle.length === 0 ||
-        DOCUMENT_ICON_LABELS[name].toLowerCase().includes(needle) ||
+        labelOf(name).toLowerCase().includes(needle) ||
         name.includes(needle) ||
         (DOCUMENT_ICON_KEYWORDS[name] ?? []).some((keyword) => keyword.includes(needle)),
     ),
@@ -157,6 +159,9 @@ function PageIconPickerBody({
   onSelect: (selection: PageIconSelection) => void;
   close: () => void;
 }) {
+  const t = useTranslations('document.iconPicker');
+  const tIcons = useTranslations('document.icons');
+  const iconLabel = useDocumentIconLabel();
   const [query, setQuery] = React.useState('');
   const [color, setColor] = React.useState<DocumentIconColor | null>(iconColor);
   const [visibleIcons, setVisibleIcons] = React.useState(ICON_PAGE_SIZE);
@@ -167,8 +172,14 @@ function PageIconPickerBody({
   const currentName = documentIconName(icon);
   const needle = query.trim();
 
-  const curatedGroups = React.useMemo(() => filterCuratedIconGroups(query), [query]);
-  const iconResults = React.useMemo(() => searchIconNames(query, iconData), [query, iconData]);
+  const curatedGroups = React.useMemo(
+    () => filterCuratedIconGroups(query, iconLabel),
+    [query, iconLabel],
+  );
+  const iconResults = React.useMemo(
+    () => searchIconNames(query, iconData, iconLabel),
+    [query, iconData, iconLabel],
+  );
 
   /** Everything Lucide draws that is not already sitting in a group above. */
   const restIconNames = React.useMemo(
@@ -193,7 +204,7 @@ function PageIconPickerBody({
   const iconCell = (name: string, testId: string): React.ReactNode => (
     <SymbolCell
       key={testId}
-      label={documentIconLabel(name)}
+      label={iconLabel(name)}
       selected={currentName === name}
       testId={testId}
       onClick={() => pickIcon(name)}
@@ -213,9 +224,9 @@ function PageIconPickerBody({
       <Input
         autoFocus
         value={query}
-        aria-label="Symbol suchen"
+        aria-label={t('searchLabel')}
         data-testid="page-icon-search"
-        placeholder="Suchen …"
+        placeholder={t('searchPlaceholder')}
         onChange={(event) => {
           setQuery(event.target.value);
           setVisibleIcons(ICON_PAGE_SIZE);
@@ -225,20 +236,24 @@ function PageIconPickerBody({
       <Tabs defaultValue="symbols" className="mt-2">
         <TabsList>
           <TabsTrigger value="symbols" data-testid="page-icon-tab-symbols">
-            Symbole
+            {t('tabSymbols')}
           </TabsTrigger>
           <TabsTrigger value="emoji" data-testid="page-icon-tab-emoji">
-            Emoji
+            {t('tabEmoji')}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="symbols" className="mt-2">
           {/* The swatches carry a name and, when active, a check mark: colour is
               never the only thing that says which one is picked. */}
-          <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Farbe">
+          <div
+            className="flex flex-wrap items-center gap-1"
+            role="group"
+            aria-label={t('colorGroup')}
+          >
             <button
               type="button"
-              aria-label="Standardfarbe"
+              aria-label={t('defaultColor')}
               aria-pressed={color === null}
               data-testid="page-icon-color-default"
               onClick={() => pickColor(null)}
@@ -258,7 +273,7 @@ function PageIconPickerBody({
               <button
                 key={name}
                 type="button"
-                aria-label={DOCUMENT_ICON_COLOR_LABELS[name]}
+                aria-label={tIcons(`colors.${name}`)}
                 aria-pressed={color === name}
                 data-testid={`page-icon-color-${name}`}
                 onClick={() => pickColor(name)}
@@ -282,7 +297,7 @@ function PageIconPickerBody({
             {needle.length > 0 ? (
               iconResults.length === 0 ? (
                 <p className="px-1 py-2 text-sm text-muted-foreground">
-                  {iconData === null ? 'Symbole werden geladen …' : 'Kein Symbol passt dazu.'}
+                  {iconData === null ? t('loading') : t('noMatch')}
                 </p>
               ) : (
                 <div className="grid grid-cols-8 gap-0.5">
@@ -293,7 +308,7 @@ function PageIconPickerBody({
               <>
                 {recentIcons.length > 0 ? (
                   <div>
-                    <GroupHeading>Zuletzt verwendet</GroupHeading>
+                    <GroupHeading>{t('recent')}</GroupHeading>
                     <div className="grid grid-cols-8 gap-0.5">
                       {recentIcons.map((name) => iconCell(name, `page-icon-recent-${name}`))}
                     </div>
@@ -301,8 +316,8 @@ function PageIconPickerBody({
                 ) : null}
 
                 {curatedGroups.map((group) => (
-                  <div key={group.label}>
-                    <GroupHeading>{group.label}</GroupHeading>
+                  <div key={group.key}>
+                    <GroupHeading>{tIcons(`groups.${group.key}`)}</GroupHeading>
                     <div className="grid grid-cols-8 gap-0.5">
                       {group.names.map((name) => iconCell(name, `page-icon-${name}`))}
                     </div>
@@ -311,8 +326,9 @@ function PageIconPickerBody({
 
                 <div>
                   <GroupHeading>
-                    Alle Symbole
-                    {iconData === null ? ' werden geladen …' : ` (${restIconNames.length})`}
+                    {iconData === null
+                      ? t('allSymbolsLoading')
+                      : t('allSymbols', { count: restIconNames.length })}
                   </GroupHeading>
                   <div className="grid grid-cols-8 gap-0.5">
                     {restIconNames
@@ -352,7 +368,7 @@ function PageIconPickerBody({
             close();
           }}
         >
-          Symbol entfernen
+          {t('remove')}
         </Button>
       ) : null}
     </>
@@ -432,6 +448,7 @@ export function PageIconButton({
   document,
   readOnly,
 }: PageIconControlProps & { readOnly: boolean }) {
+  const t = useTranslations('document.iconPicker');
   const updateDocument = useUpdateDocument(workspaceId);
 
   const icon = (
@@ -459,7 +476,7 @@ export function PageIconButton({
         trigger={
           <button
             type="button"
-            aria-label="Symbol ändern"
+            aria-label={t('change')}
             data-testid="page-icon-button"
             className="grid size-14 place-items-center rounded-md transition-colors hover:bg-accent"
           >
@@ -477,6 +494,7 @@ export function PageIconButton({
  * control for something it does not have.
  */
 export function PageIconAddButton({ workspaceId, document }: PageIconControlProps) {
+  const t = useTranslations('document.iconPicker');
   const updateDocument = useUpdateDocument(workspaceId);
 
   return (
@@ -494,7 +512,7 @@ export function PageIconAddButton({ workspaceId, document }: PageIconControlProp
           data-testid="add-page-icon"
           className="text-muted-foreground opacity-0 transition-opacity group-hover/page:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100"
         >
-          <SmilePlusIcon /> Symbol hinzufügen
+          <SmilePlusIcon /> {t('add')}
         </Button>
       }
     />

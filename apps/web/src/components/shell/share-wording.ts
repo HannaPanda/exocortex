@@ -1,3 +1,5 @@
+import { type useFormatter, type useTranslations } from 'next-intl';
+
 import { type DocumentShare } from '@exocortex/contracts';
 
 /**
@@ -6,19 +8,30 @@ import { type DocumentShare } from '@exocortex/contracts';
  * grant differently would be two answers to "what did I give away".
  */
 
+type WordingTranslator = ReturnType<typeof useTranslations<'shares.wording'>>;
+type Formatter = ReturnType<typeof useFormatter>;
+
 /** One sentence per grant, in the words somebody would use about it. */
-export function describeShare(share: DocumentShare): string {
+export function describeShare(
+  share: DocumentShare,
+  t: WordingTranslator,
+  format: Formatter,
+): string {
   const who =
     share.kind === 'PUBLIC_LINK'
-      ? `Öffentlicher Link (…${share.tokenPrefix ?? ''})`
-      : (share.grantee?.email ?? 'Unbekanntes Konto');
-  const reach = share.scope === 'SUBTREE' ? ', mit allem darunter' : '';
-  const right = share.permission === 'WRITE' ? 'darf bearbeiten' : 'darf lesen';
-  const until =
-    share.expiresAt === null
-      ? ''
-      : `, bis ${new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium' }).format(new Date(share.expiresAt))}`;
-  return `${who}: ${right}${reach}${until}`;
+      ? t('publicLink', { prefix: share.tokenPrefix ?? '' })
+      : (share.grantee?.email ?? t('unknownAccount'));
+  const values = {
+    who,
+    permission: share.permission,
+    subtree: share.scope === 'SUBTREE' ? 'yes' : 'no',
+  };
+  return share.expiresAt === null
+    ? t('grant', values)
+    : t('grantUntil', {
+        ...values,
+        until: format.dateTime(new Date(share.expiresAt), { dateStyle: 'medium' }),
+      });
 }
 
 /**
@@ -31,33 +44,24 @@ export function describeShare(share: DocumentShare): string {
  * exists -- a public link's token is gone for good, while an account can be
  * invited again in the row above.
  */
-export function revokeConsequence(share: DocumentShare, where: 'dialog' | 'list'): string {
-  const reach = share.scope === 'SUBTREE' ? ' Das gilt für diese Seite und alles darunter.' : '';
-  if (share.kind === 'PUBLIC_LINK') {
-    return (
-      `Die Adresse funktioniert danach für niemanden mehr, auch nicht für jemanden, ` +
-      `der sie weitergereicht bekommen hat. Sie lässt sich nicht wiederherstellen: ` +
-      `ein neuer Link bekommt eine neue Adresse.${reach}`
-    );
-  }
-  const who = share.grantee?.email ?? 'Dieses Konto';
-  const regrant =
-    where === 'dialog'
-      ? 'Du kannst die Freigabe oben jederzeit neu erteilen.'
-      : 'Du kannst sie im Teilen-Dialog der Seite jederzeit neu erteilen.';
-  return (
-    `${who} verliert den Zugriff sofort, auch in einer Sitzung, die gerade offen ist. ` +
-    `${regrant}${reach}`
-  );
+export function revokeConsequence(
+  share: DocumentShare,
+  where: 'dialog' | 'list',
+  t: WordingTranslator,
+): string {
+  const sentences =
+    share.kind === 'PUBLIC_LINK'
+      ? [t('revokeLink')]
+      : [
+          t('revokeAccount', { who: share.grantee?.email ?? t('thisAccount') }),
+          where === 'dialog' ? t('regrantDialog') : t('regrantList'),
+        ];
+  if (share.scope === 'SUBTREE') sentences.push(t('revokeSubtree'));
+  return sentences.join(' ');
 }
 
+/** A key of `shares.state`. */
 export type ShareState = 'active' | 'expired' | 'revoked';
-
-export const SHARE_STATE_LABELS: Record<ShareState, string> = {
-  active: 'Aktiv',
-  expired: 'Abgelaufen',
-  revoked: 'Zurückgezogen',
-};
 
 /**
  * Whether a grant still works. An expired grant has no `revokedAt` and would

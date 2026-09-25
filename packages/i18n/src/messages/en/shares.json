@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "sharesTitle": "Shares",
+    "sharedPageTitle": "Shared page"
+  },
+  "common": {
+    "loading": "Loading shares…",
+    "loadError": "Could not load shares",
+    "read": "Read",
+    "write": "Edit",
+    "revoke": "Revoke",
+    "revokeFailed": "The share could not be revoked.",
+    "nothingShared": "Nothing shared"
+  },
+  "wording": {
+    "publicLink": "Public link (…{prefix})",
+    "unknownAccount": "Unknown account",
+    "grant": "{who}: {permission, select, WRITE {can edit} other {can read}}{subtree, select, yes {, including everything underneath} other {}}",
+    "grantUntil": "{who}: {permission, select, WRITE {can edit} other {can read}}{subtree, select, yes {, including everything underneath} other {}}, until {until}",
+    "revokeLink": "The address will no longer work for anyone afterwards, including anyone it was forwarded to. It cannot be restored: a new link gets a new address.",
+    "revokeAccount": "{who} loses access immediately, even in an active session.",
+    "thisAccount": "This account",
+    "regrantDialog": "You can grant the share again above at any time.",
+    "regrantList": "You can grant it again at any time in the page’s share dialog.",
+    "revokeSubtree": "This applies to this page and everything underneath."
+  },
+  "state": {
+    "active": "Active",
+    "expired": "Expired",
+    "revoked": "Revoked"
+  },
+  "revokeConfirm": {
+    "question": "Revoke?",
+    "cancel": "Cancel",
+    "confirm": "Revoke",
+    "pending": "Revoking…"
+  },
+  "linkAddress": {
+    "copyLabel": "Copy address",
+    "copiedLabel": "Address copied",
+    "copy": "Copy",
+    "copied": "Copied",
+    "lost": "The address of this link is not stored: it dates from before 2026-09-24. It continues to work. If you need the address, create a new link with the same scope and revoke this one afterwards.",
+    "replace": "Create new link",
+    "replaced": "New link is listed above"
+  },
+  "dialog": {
+    "title": "Share “{title}”",
+    "description": "Sharing means: someone outside this workspace can access this page. Anyone who is already a member here does not need a share.",
+    "inherited": "This page is already shared from higher up: someone shared an area above it along with everything underneath. It is therefore already accessible from the outside without anything listed here.",
+    "scope": "Scope",
+    "scopePageOnly": "This page only",
+    "scopeSubtree": "This page and everything underneath",
+    "expiry": "Expiration",
+    "expiryNever": "Never",
+    "expiryDays": "{count, plural, one {# day} other {# days}}",
+    "toAccount": "To an account",
+    "emailPlaceholder": "address@example.com",
+    "permission": "Permission",
+    "share": "Share",
+    "publicLink": "Public link",
+    "publicLinkExplanation": "Anyone with the address can view the page: without an account, without signing in, even if it was forwarded to them. Nobody can edit via a link.",
+    "createLink": "Create link",
+    "copied": "Copied",
+    "copyAddress": "Copy address",
+    "addressKept": "You can find the address again anytime, here in the list and under “Shares” in the account menu, as long as the link is active.",
+    "current": "Currently shared",
+    "nobody": "Nobody outside this workspace can access this page.",
+    "revokeFailed": "Failed to revoke.",
+    "close": "Close",
+    "changePermission": "Change permission",
+    "readOnly": "View only",
+    "revokeLabel": "Revoke: {description}"
+  },
+  "page": {
+    "title": "Shares",
+    "tabMine": "Shared by me",
+    "tabIncoming": "Shared with me"
+  },
+  "mine": {
+    "intro": "Everything you have shared yourself, across all workspaces: with individual accounts and via public link.",
+    "emptyDescription": "You haven’t shared a page yet. You can do that in the page menu via “Share…”.",
+    "filterPlaceholder": "Page, workspace, or address…",
+    "filterLabel": "Filter shares",
+    "showInactive": "Show inactive ({count, number})",
+    "noMatchTitle": "Nothing found",
+    "noMatchDescription": "No share matches this filter.",
+    "noneOpenTitle": "Nothing left open",
+    "noneOpenDescription": "All your shares have been revoked or have expired.",
+    "truncated": "There are more shares than shown here. The oldest inactive ones are missing.",
+    "rowContext": "in “{workspace}” · {description}",
+    "revokeLabel": "Revoke: {title}, {description}",
+    "adminOnly": "Only admins in workspace “{workspace}” can revoke here."
+  },
+  "incoming": {
+    "intro": "Pages from workspaces where you aren’t a member. They don’t appear in any navigation, only here.",
+    "emptyTitle": "Nothing shared with you",
+    "emptyDescription": "When someone shares a page with you, it will appear here.",
+    "origin": "from “{workspace}”, by {name}"
+  },
+  "workspace": {
+    "title": "Shares",
+    "intro": "What has been shared externally from this workspace: with individual accounts and as a public link. Revoked shares remain listed so you can keep track of what was once accessible.",
+    "emptyDescription": "No page in this workspace is accessible externally.",
+    "columnPage": "Page",
+    "columnRecipient": "Recipient",
+    "columnPermission": "Permission",
+    "columnScope": "Scope",
+    "columnExpires": "Expires",
+    "columnStatus": "Status",
+    "scopeSubtree": "with subpages",
+    "scopePageOnly": "page only",
+    "revokeLabel": "Revoke: {title}",
+    "publicLink": "Public link",
+    "unknown": "Unknown"
+  },
+  "public": {
+    "loading": "Loading page…",
+    "goneTitle": "This link no longer leads to a page",
+    "goneDescription": "It was revoked, has expired, or was never valid. Ask the person who gave it to you.",
+    "origin": "Shared from “{workspace}” by {name}",
+    "path": "Path",
+    "empty": "This page is empty.",
+    "children": "Subpages",
+    "footer": "This page was shared as a link. It is read-only. <link>eXocortex</link> is self-hosted."
+  },
+  "shared": {
+    "loading": "Loading page…",
+    "unavailableTitle": "Page unavailable",
+    "unavailableDescription": "The share was revoked, has expired, or never existed."
+  }
+}

@@ -1,12 +1,14 @@
 'use client';
 
-import { DOCUMENT_ICON_KEYWORDS, DOCUMENT_ICON_LABELS } from './document-icon';
+import { type CuratedDocumentIconName } from '@exocortex/contracts';
+
+import { DOCUMENT_ICON_KEYWORDS, isCuratedDocumentIconName } from './document-icon';
 import { type LucideIconData } from './lucide-icon-store';
 
 /**
  * German search words for icons that only have an English name.
  *
- * The curated icons carry a German label and German keywords, and the other
+ * The curated icons carry a translated label and German keywords, and the other
  * 1,700 carry Lucide's English name and nothing else. Somebody typing "rakete"
  * into a German search field would find nothing at all, which reads as "we do not
  * have that icon" rather than "we have it, under another word".
@@ -15,6 +17,10 @@ import { type LucideIconData } from './lucide-icon-store';
  * 1,756 names — that would be a dictionary nobody maintains. Just the words a
  * page icon is actually reached for by. A prefix of a key counts as the key, so
  * "rake" already finds the rocket.
+ *
+ * These are search synonyms, not interface text, which is why they stay here
+ * and not in the message catalogue: nothing shows them, and a German word
+ * finding its icon costs a reader in another language nothing.
  */
 const ICON_SEARCH_SYNONYMS: Readonly<Record<string, readonly string[]>> = {
   abfall: ['trash'],
@@ -211,11 +217,16 @@ function scoreName(name: string, terms: readonly string[]): number | null {
 /**
  * Icon names matching the query, best first.
  *
- * German matches on the curated set rank above everything: those icons have a
- * real German name, so somebody typing "Ordner" means that one and not
- * `folder-git-2`.
+ * Matches on the curated set's own names rank above everything: those icons
+ * have a real name in the reader's language (`curatedLabel`, from the message
+ * catalogue) and German keywords, so somebody typing "Ordner" means that one
+ * and not `folder-git-2`.
  */
-export function searchIconNames(query: string, data: LucideIconData | null): readonly string[] {
+export function searchIconNames(
+  query: string,
+  data: LucideIconData | null,
+  curatedLabel: (name: CuratedDocumentIconName) => string,
+): readonly string[] {
   const needle = query.trim().toLowerCase();
   if (needle.length === 0 || data === null) return [];
 
@@ -227,14 +238,10 @@ export function searchIconNames(query: string, data: LucideIconData | null): rea
 
   const scored: { name: string; score: number }[] = [];
   for (const name of Object.keys(data.nodes)) {
-    const german =
-      (DOCUMENT_ICON_LABELS as Readonly<Record<string, string | undefined>>)[name]
-        ?.toLowerCase()
-        .includes(needle) === true ||
-      (
-        (DOCUMENT_ICON_KEYWORDS as Readonly<Record<string, readonly string[] | undefined>>)[name] ??
-        []
-      ).some((keyword) => keyword.includes(needle));
+    const curated =
+      isCuratedDocumentIconName(name) &&
+      (curatedLabel(name).toLowerCase().includes(needle) ||
+        (DOCUMENT_ICON_KEYWORDS[name] ?? []).some((keyword) => keyword.includes(needle)));
 
     const direct = scoreName(name, terms);
     const viaAlias = (aliasesOf.get(name) ?? []).reduce<number | null>((best, alias) => {
@@ -244,7 +251,7 @@ export function searchIconNames(query: string, data: LucideIconData | null): rea
       return best === null || score + 3 < best ? score + 3 : best;
     }, null);
 
-    const score = german ? -1 : direct !== null ? direct : viaAlias;
+    const score = curated ? -1 : direct !== null ? direct : viaAlias;
     if (score !== null) scored.push({ name, score });
   }
 

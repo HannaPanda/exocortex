@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "sharesTitle": "Udostępnienia",
+    "sharedPageTitle": "Udostępniona strona"
+  },
+  "common": {
+    "loading": "Ładowanie udostępnień…",
+    "loadError": "Nie udało się załadować udostępnień",
+    "read": "Odczyt",
+    "write": "Edycja",
+    "revoke": "Wycofaj",
+    "revokeFailed": "Nie udało się wycofać udostępnienia.",
+    "nothingShared": "Nic nie udostępniono"
+  },
+  "wording": {
+    "publicLink": "Link publiczny (…{prefix})",
+    "unknownAccount": "Nieznane konto",
+    "grant": "{who}: {permission, select, WRITE {może edytować} other {może wyświetlać}}{subtree, select, yes {, ze wszystkim poniżej} other {}}",
+    "grantUntil": "{who}: {permission, select, WRITE {może edytować} other {może wyświetlać}}{subtree, select, yes {, ze wszystkim poniżej} other {}}, do {until}",
+    "revokeLink": "Ten adres przestanie działać dla wszystkich, w tym dla osób, którym został przekazany. Nie można go przywrócić: nowy link otrzyma nowy adres.",
+    "revokeAccount": "{who} natychmiast traci dostęp, także w trwającej właśnie sesji.",
+    "thisAccount": "To konto",
+    "regrantDialog": "Możesz w każdej chwili ponownie przyznać udostępnienie powyżej.",
+    "regrantList": "Możesz je w każdej chwili ponownie przyznać w oknie udostępniania strony.",
+    "revokeSubtree": "Dotyczy to tej strony i wszystkiego poniżej."
+  },
+  "state": {
+    "active": "Aktywne",
+    "expired": "Wygasłe",
+    "revoked": "Wycofane"
+  },
+  "revokeConfirm": {
+    "question": "Wycofać?",
+    "cancel": "Anuluj",
+    "confirm": "Wycofaj",
+    "pending": "Wycofywanie…"
+  },
+  "linkAddress": {
+    "copyLabel": "Kopiuj adres",
+    "copiedLabel": "Skopiowano adres",
+    "copy": "Kopiuj",
+    "copied": "Skopiowano",
+    "lost": "Adres tego linku nie jest zapisany: pochodzi sprzed 24.09.2026 r. Link nadal działa. Jeśli potrzebujesz adresu, utwórz nowy link o tym samym zakresie, a następnie wycofaj ten.",
+    "replace": "Utwórz nowy link",
+    "replaced": "Nowy link znajduje się powyżej"
+  },
+  "dialog": {
+    "title": "Udostępnij „{title}”",
+    "description": "Udostępnienie oznacza, że ktoś spoza tego obszaru roboczego ma dostęp do tej strony. Kto już jest tu członkiem, nie potrzebuje udostępnienia.",
+    "inherited": "Ta strona jest już udostępniona z wyższego poziomu: ktoś udostępnił obszar powyżej wraz ze wszystkim poniżej. Jest więc już dostępna z zewnątrz, nawet jeśli tutaj nic nie ma.",
+    "scope": "Zakres",
+    "scopePageOnly": "Tylko ta strona",
+    "scopeSubtree": "Ta strona i wszystko poniżej",
+    "expiry": "Ważność",
+    "expiryNever": "Bezterminowo",
+    "expiryDays": "{count, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}}",
+    "toAccount": "Dla konta",
+    "emailPlaceholder": "adres@przyklad.pl",
+    "permission": "Uprawnienie",
+    "share": "Udostępnij",
+    "publicLink": "Link publiczny",
+    "publicLinkExplanation": "Każdy, kto ma ten adres, może czytać stronę: bez konta, bez logowania, nawet po przekazaniu linku dalej. Przez link nikt nie może edytować.",
+    "createLink": "Utwórz link",
+    "copied": "Skopiowano",
+    "copyAddress": "Kopiuj adres",
+    "addressKept": "Adres ten znajdziesz w każdej chwili tutaj na liście oraz w menu konta w sekcji „Udostępnienia”, dopóki link jest aktywny.",
+    "current": "Aktualnie udostępnione",
+    "nobody": "Nikt spoza tego obszaru roboczego nie ma dostępu do tej strony.",
+    "revokeFailed": "Wycofanie nie powiodło się.",
+    "close": "Zamknij",
+    "changePermission": "Zmień uprawnienie",
+    "readOnly": "Tylko do odczytu",
+    "revokeLabel": "Wycofaj: {description}"
+  },
+  "page": {
+    "title": "Udostępnienia",
+    "tabMine": "Udostępnione przeze mnie",
+    "tabIncoming": "Udostępnione dla mnie"
+  },
+  "mine": {
+    "intro": "Wszystko, co udostępniasz ze wszystkich obszarów roboczych: dla poszczególnych kont i jako link publiczny.",
+    "emptyDescription": "Nie masz jeszcze żadnej udostępnionej strony. Możesz to zrobić w menu strony za pomocą „Udostępnij…”",
+    "filterPlaceholder": "Strona, obszar roboczy lub adres…",
+    "filterLabel": "Filtruj udostępnienia",
+    "showInactive": "Pokaż zakończone ({count, number})",
+    "noMatchTitle": "Nic nie znaleziono",
+    "noMatchDescription": "Żadne udostępnienie nie pasuje do tego filtra.",
+    "noneOpenTitle": "Brak aktywnych",
+    "noneOpenDescription": "Wszystkie twoje udostępnienia zostały wycofane lub wygasły.",
+    "truncated": "Istnieje więcej udostępnień, niż tutaj widać. Brakuje najstarszych zakończonych.",
+    "rowContext": "w „{workspace}” · {description}",
+    "revokeLabel": "Wycofaj: {title}, {description}",
+    "adminOnly": "Wycofać udostępnienie może tutaj tylko administrator obszaru roboczego „{workspace}”."
+  },
+  "incoming": {
+    "intro": "Strony z obszarów roboczych, w których nie masz członkostwa. Nie ma ich w nawigacji, tylko tutaj.",
+    "emptyTitle": "Nic ci nie udostępniono",
+    "emptyDescription": "Gdy ktoś udostępni ci stronę, pojawi się tutaj.",
+    "origin": "z „{workspace}”, od {name}"
+  },
+  "workspace": {
+    "title": "Udostępnienia",
+    "intro": "To, co z tego obszaru roboczego udostępniono na zewnątrz: poszczególnym kontom oraz jako link publiczny. Wycofane udostępnienia pozostają widoczne, aby można było sprawdzić, co kiedyś było otwarte.",
+    "emptyDescription": "Żadna strona z tego obszaru roboczego nie jest dostępna z zewnątrz.",
+    "columnPage": "Strona",
+    "columnRecipient": "Dla kogo",
+    "columnPermission": "Uprawnienie",
+    "columnScope": "Zakres",
+    "columnExpires": "Wygasa",
+    "columnStatus": "Status",
+    "scopeSubtree": "z podstronami",
+    "scopePageOnly": "tylko strona",
+    "revokeLabel": "Wycofaj: {title}",
+    "publicLink": "Link publiczny",
+    "unknown": "Nieznane"
+  },
+  "public": {
+    "loading": "Ładowanie strony …",
+    "goneTitle": "Ten link nie prowadzi już do żadnej strony",
+    "goneDescription": "Został wycofany, wygasł lub nigdy nie był prawidłowy. Zapytaj osobę, od której go masz.",
+    "origin": "Udostępniono z „{workspace}” przez {name}",
+    "path": "Ścieżka",
+    "empty": "Ta strona jest pusta.",
+    "children": "Podstrony",
+    "footer": "Ta strona została udostępniona jako link. Jest tylko do odczytu. <link>eXocortex</link> jest hostowany samodzielnie."
+  },
+  "shared": {
+    "loading": "Ładowanie strony …",
+    "unavailableTitle": "Strona niedostępna",
+    "unavailableDescription": "Udostępnienie zostało wycofane, wygasło lub nigdy nie istniało."
+  }
+}

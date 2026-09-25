@@ -1,0 +1,305 @@
+{
+  "surface": {
+    "unavailable": "Editor nicht verfügbar",
+    "connecting": "Editor wird verbunden …",
+    "uploadFailed": "Eine Datei konnte nicht hochgeladen werden.",
+    "placeholder": "Schreibe etwas oder tippe „/“ für Befehle …",
+    "syncing": "wird synchronisiert …",
+    "contentLabel": "Seiteninhalt"
+  },
+  "connection": {
+    "startFailed": "Die Live-Bearbeitung konnte nicht gestartet werden.",
+    "unknownUser": "Unbekannt"
+  },
+  "blocks": {
+    "paragraph": { "label": "Text", "description": "Ein normaler Absatz" },
+    "heading-1": { "label": "Überschrift 1", "description": "Abschnittstitel der Ebene 1" },
+    "heading-2": { "label": "Überschrift 2", "description": "Abschnittstitel der Ebene 2" },
+    "heading-3": { "label": "Überschrift 3", "description": "Abschnittstitel der Ebene 3" },
+    "blockquote": { "label": "Zitat", "description": "Hervorgehobenes Zitat" },
+    "code-block": { "label": "Codeblock", "description": "Code mit Syntaxhervorhebung" },
+    "horizontal-rule": {
+      "label": "Trennlinie",
+      "description": "Waagerechte Linie zwischen Abschnitten"
+    },
+    "bullet-list": { "label": "Aufzählung", "description": "Liste mit Punkten" },
+    "ordered-list": { "label": "Nummerierte Liste", "description": "Liste mit Zahlen" },
+    "task-list": { "label": "Aufgabenliste", "description": "Liste mit Kontrollkästchen" },
+    "image": { "label": "Bild", "description": "Bild hochladen" },
+    "table": { "label": "Tabelle", "description": "Tabelle mit Kopfzeile" },
+    "callout-info": { "label": "Hinweis", "description": "Hervorgehobener Kasten (hinweis)" },
+    "callout-note": { "label": "Notiz", "description": "Hervorgehobener Kasten (notiz)" },
+    "callout-success": { "label": "Erfolg", "description": "Hervorgehobener Kasten (erfolg)" },
+    "callout-warning": { "label": "Warnung", "description": "Hervorgehobener Kasten (warnung)" },
+    "callout-danger": { "label": "Gefahr", "description": "Hervorgehobener Kasten (gefahr)" },
+    "file": { "label": "Datei", "description": "Datei zum Herunterladen" },
+    "video": { "label": "Video", "description": "Video im Player abspielen" },
+    "audio": { "label": "Audio", "description": "Audiodatei abspielen" },
+    "pdf": { "label": "PDF", "description": "PDF eingebettet anzeigen" },
+    "page-link": {
+      "label": "Seitenlink",
+      "description": "Verweis auf eine andere Seite als eigener Block"
+    },
+    "breadcrumb": {
+      "label": "Navigationspfad",
+      "description": "Pfad zu dieser Seite in der Hierarchie"
+    },
+    "toggle": { "label": "Umschaltliste", "description": "Klappbarer Abschnitt" },
+    "columns": { "label": "Spalten", "description": "Inhalte nebeneinander anordnen" },
+    "database-embed": {
+      "label": "Datenbank einbetten",
+      "description": "Ansicht einer bestehenden Datenbank direkt in dieser Seite"
+    },
+    "block-math": { "label": "Formel", "description": "LaTeX-Formel als eigener Block" },
+    "saved-query": {
+      "label": "Gespeicherte Suche einbetten",
+      "description": "Lebende Trefferliste einer gespeicherten Suche in dieser Seite"
+    },
+    "embed": {
+      "label": "Einbettung",
+      "description": "Externen Inhalt einbetten (YouTube, Figma, …)"
+    },
+    "bookmark": { "label": "Lesezeichen", "description": "Vorschaukarte für einen Link" },
+    "transclusion": {
+      "label": "Inhalt einbetten",
+      "description": "Zeigt Text einer anderen Seite, ohne ihn zu kopieren"
+    },
+    "table-of-contents": {
+      "label": "Inhaltsverzeichnis",
+      "description": "Übersicht aller Überschriften der Seite"
+    }
+  },
+  "blockGroups": {
+    "basic": "Grundlagen",
+    "lists": "Listen",
+    "callout": "Hinweise",
+    "media": "Medien",
+    "advanced": "Erweitert"
+  },
+  "slashMenu": {
+    "label": "Block einfügen",
+    "empty": "Kein Block passt zu „{query}“."
+  },
+  "blockHandle": {
+    "insertBelow": "Block darunter einfügen",
+    "actions": "Blockaktionen"
+  },
+  "blockActions": {
+    "turnInto": "Umwandeln in",
+    "color": "Farbe",
+    "duplicate": "Duplizieren",
+    "copyLink": "Link zum Block kopieren",
+    "delete": "Löschen"
+  },
+  "blockRemoval": {
+    "title": {
+      "table": "Tabelle löschen?",
+      "codeBlock": "Codeblock löschen?",
+      "blockquote": "Zitat löschen?",
+      "bulletList": "Liste löschen?",
+      "orderedList": "Nummerierte Liste löschen?",
+      "taskList": "Aufgabenliste löschen?",
+      "details": "Umschaltblock löschen?",
+      "callout": "Hinweis löschen?",
+      "columnList": "Spaltenlayout löschen?",
+      "databaseEmbed": "Eingebettete Datenbank löschen?",
+      "savedQueryEmbed": "Abfrageblock löschen?",
+      "paragraph": "Absatz löschen?",
+      "heading": "Überschrift löschen?",
+      "block": "Block löschen?"
+    },
+    "table": "Die Tabelle mit {rows, plural, one {# Zeile} other {# Zeilen}} und {columns, plural, one {# Spalte} other {# Spalten}} wird mit ihrem gesamten Inhalt entfernt.",
+    "compound": "Der Block wird mit seinem gesamten Inhalt entfernt.",
+    "text": "{count, plural, one {# Zeichen wird} other {# Zeichen werden}} entfernt.",
+    "undoHint": "Mit Strg+Z lässt sich das Löschen rückgängig machen."
+  },
+  "destructiveConfirm": {
+    "cancel": "Abbrechen",
+    "confirm": "Löschen"
+  },
+  "prompt": {
+    "url": {
+      "title": "Adresse einfügen",
+      "description": "Gib die vollständige Adresse ein, zum Beispiel https://exocortex.app/bild.png",
+      "placeholder": "https://…"
+    },
+    "latex": {
+      "title": "Formel eingeben",
+      "description": "LaTeX-Notation, zum Beispiel {example}",
+      "placeholder": "a^2 + b^2 = c^2"
+    },
+    "page": {
+      "title": "Seite verknüpfen",
+      "description": "Wähle eine Seite aus diesem Arbeitsbereich. Tippst du einen Titel, den es noch nicht gibt, entsteht ein Verweis, der anbietet, die Seite anzulegen.",
+      "placeholder": "Seite suchen …"
+    },
+    "database": {
+      "title": "Datenbank einbetten",
+      "description": "Wähle eine bestehende Datenbank aus diesem Arbeitsbereich.",
+      "placeholder": "Datenbank suchen …"
+    },
+    "savedQuery": {
+      "title": "Gespeicherte Suche einbetten",
+      "description": "Wähle eine gespeicherte Suche. Der Block zeigt ihre Treffer und ermittelt sie bei jedem Öffnen der Seite neu. Neue Suchen entstehen im Suchbereich.",
+      "placeholder": "Gespeicherte Suche suchen …"
+    },
+    "uploadFailed": "Die Datei konnte nicht hochgeladen werden.",
+    "noPageTitle": "Keine Seite gefunden",
+    "noPageDescription": "Tippe einen Titel, um einen Verweis auf eine noch nicht angelegte Seite zu setzen.",
+    "noDatabaseTitle": "Keine Datenbank gefunden",
+    "noDatabaseDescription": "Lege zuerst eine Datenbank in diesem Arbeitsbereich an.",
+    "linkNewTitle": "„{title}“ als noch nicht angelegte Seite verknüpfen",
+    "noSavedQueryTitle": "Keine gespeicherte Suche gefunden",
+    "noSavedQueryDescription": "Im Suchbereich lässt sich eine Suche zusammenstellen und speichern; danach steht sie hier.",
+    "fieldFormula": "Formel",
+    "fieldSearch": "Suche",
+    "fieldValue": "Wert",
+    "cancel": "Abbrechen",
+    "insert": "Einfügen"
+  },
+  "colors": {
+    "name": {
+      "default": "Standard",
+      "gray": "Grau",
+      "brown": "Braun",
+      "orange": "Orange",
+      "yellow": "Gelb",
+      "green": "Grün",
+      "blue": "Blau",
+      "purple": "Violett",
+      "pink": "Pink",
+      "red": "Rot"
+    },
+    "text": "Textfarbe",
+    "background": "Hintergrund",
+    "reset": "Farben entfernen"
+  },
+  "selectionToolbar": {
+    "label": "Formatierung",
+    "turnInto": "Blocktyp: {block}. In anderen Block umwandeln",
+    "mark": {
+      "bold": "Fett",
+      "italic": "Kursiv",
+      "underline": "Unterstrichen",
+      "strike": "Durchgestrichen",
+      "code": "Code",
+      "superscript": "Hochgestellt",
+      "subscript": "Tiefgestellt"
+    },
+    "shortcut": {
+      "bold": "Strg+B",
+      "italic": "Strg+I",
+      "underline": "Strg+U",
+      "strike": "Strg+Shift+S",
+      "subscript": "Strg+,"
+    },
+    "withShortcut": "{label} ({shortcut})",
+    "link": "Link",
+    "color": "Farbe",
+    "textColor": "Textfarbe",
+    "emoji": "Emoji",
+    "comment": "Kommentieren",
+    "sendToAi": "An KI schicken",
+    "blockActions": "Blockaktionen"
+  },
+  "codeBlock": {
+    "language": "Sprache",
+    "noHighlighting": "Ohne Hervorhebung",
+    "copy": "Code kopieren",
+    "copied": "Code kopiert"
+  },
+  "emojiMenu": {
+    "search": "Emoji suchen",
+    "placeholder": "Suchen …"
+  },
+  "table": {
+    "label": "Tabelle",
+    "addRow": "Zeile darunter einfügen",
+    "addColumn": "Spalte rechts einfügen",
+    "toggleHeaderRow": "Kopfzeile umschalten",
+    "mergeOrSplit": "Zellen verbinden oder teilen",
+    "deleteRow": "Zeile löschen",
+    "deleteColumn": "Spalte löschen",
+    "deleteTable": "Tabelle löschen"
+  },
+  "linkBubble": {
+    "label": "Verweis",
+    "open": "Öffnen",
+    "edit": "Bearbeiten",
+    "remove": "Entfernen"
+  },
+  "linkMenu": {
+    "inputLabel": "Adresse oder Seitentitel",
+    "placeholder": "https://… oder Seite suchen",
+    "apply": "Setzen",
+    "suggestions": "Passende Seiten",
+    "remove": "Entfernen",
+    "open": "Öffnen"
+  },
+  "linkNavigation": {
+    "resolveFailed": "Der Verweis konnte nicht aufgelöst werden.",
+    "createFailed": "Die Seite konnte nicht angelegt werden.",
+    "ambiguousTitle": "Mehrere Seiten heißen „{title}“",
+    "ambiguousDescription": "Wähle die gemeinte Seite aus.",
+    "inTrash": "Im Papierkorb",
+    "cancel": "Abbrechen",
+    "missingTitle": "Seite nicht gefunden",
+    "missingDescription": "Es gibt keine Seite mit dem Titel „{title}“ in diesem Arbeitsbereich.",
+    "createPage": "Seite anlegen",
+    "errorTitle": "Verweis konnte nicht geöffnet werden",
+    "close": "Schließen"
+  },
+  "mentionMenu": {
+    "label": "Erwähnung einfügen",
+    "empty": "Nichts gefunden zu „{query}“.",
+    "page": "Seite",
+    "person": "Person",
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "yesterday": "Gestern",
+    "typedDate": "Eingegebenes Datum"
+  },
+  "pageLink": {
+    "unresolved": {
+      "empty": "Kein Ziel gewählt",
+      "deleted": "Zielseite gelöscht",
+      "missing": "Seite existiert nicht"
+    },
+    "unresolvedWithTitle": "{title}: {reason}",
+    "searching": "„{title}“ wird gesucht",
+    "resolving": "Verweis wird aufgelöst",
+    "createPage": "Seite anlegen",
+    "choosePage": "Seite wählen",
+    "changePage": "Seite ändern",
+    "inTrash": "Im Papierkorb",
+    "ambiguous": "Mehrere Seiten mit diesem Titel"
+  },
+  "transclusion": {
+    "fallbackTitle": "Eingebetteter Inhalt",
+    "inTrash": "Im Papierkorb",
+    "openSource": "Quelle öffnen",
+    "changePage": "Seite wechseln",
+    "choosePage": "Seite wählen",
+    "noSourceTitle": "Keine Quelle gewählt",
+    "noSourceDescription": "Wähle die Seite, deren Inhalt hier erscheinen soll. Der Text bleibt dort und wird hier nur gezeigt.",
+    "selfTitle": "Eine Seite kann sich nicht selbst einbetten",
+    "selfDescription": "Wähle eine andere Seite als Quelle.",
+    "loading": "Eingebetteter Inhalt wird geladen",
+    "unreachableTitle": "Quelle nicht erreichbar",
+    "unreachableDescription": "Die eingebettete Seite wurde gelöscht, oder du darfst sie nicht lesen. Der Verweis bleibt bestehen.",
+    "missingBlockTitle": "Der eingebettete Abschnitt ist nicht mehr da",
+    "missingBlockDescription": "Die Seite „{title}“ gibt es noch, der Block mit der Kennung {blockId} darin nicht mehr.",
+    "showWholePage": "Ganze Seite zeigen",
+    "nested": "Enthält {count, plural, one {# weitere Einbettung} other {# weitere Einbettungen}}, die hier nicht aufgelöst werden.",
+    "wholePage": "Ganze Seite",
+    "section": "Abschnitt",
+    "chooserLabel": "Was soll hier stehen?",
+    "chooseWholePage": "Die ganze Seite",
+    "blocksLoading": "Blöcke werden gelesen …",
+    "noBlocks": "Diese Seite hat keine benannten Blöcke.",
+    "headingSection": "Überschrift {level}, mit dem ganzen Abschnitt darunter"
+  },
+  "wikiLink": {
+    "missing": "„{title}“ gibt es in diesem Arbeitsbereich nicht"
+  }
+}

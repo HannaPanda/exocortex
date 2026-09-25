@@ -1,9 +1,10 @@
 'use client';
 
 import { ChevronDownIcon, ImageIcon, MoveVerticalIcon, SettingsIcon, XIcon } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { type DocumentDetail, type DocumentType } from '@exocortex/contracts';
+import { type DocumentDetail } from '@exocortex/contracts';
 import {
   Badge,
   Button,
@@ -21,10 +22,7 @@ import { PROPERTY_TYPE_LABELS } from '@/components/database/property-types';
 import { VIEW_TYPE_LABELS } from '@/components/database/view-tabs';
 import { DocumentIcon } from '@/components/document/document-icon';
 import { PageIconPicker } from '@/components/document/page-icon-picker';
-import {
-  AI_RULE_MODE_LABELS,
-  PagePropertiesDialog,
-} from '@/components/document/page-properties-dialog';
+import { PagePropertiesDialog } from '@/components/document/page-properties-dialog';
 import {
   useDatabaseProperties,
   useDatabaseViews,
@@ -49,23 +47,22 @@ function RowPropertiesSection({
   rowId: string;
   readOnly: boolean;
 }) {
+  const t = useTranslations('document.propertiesPanel');
   const properties = useDatabaseProperties(collectionDocumentId);
   const row = useDocumentRow(rowId);
   const updateValues = useUpdateDatabaseRowValues(collectionDocumentId);
 
   if (properties.isPending) {
-    return <LoadingState variant="skeleton" rows={3} label="Eigenschaften werden geladen …" />;
+    return <LoadingState variant="skeleton" rows={3} label={t('loading')} />;
   }
   if (row.isPending) {
-    return <LoadingState variant="skeleton" rows={3} label="Eigenschaften werden geladen …" />;
+    return <LoadingState variant="skeleton" rows={3} label={t('loading')} />;
   }
   if (properties.isError) {
-    return (
-      <ErrorState title="Eigenschaften nicht verfügbar" onRetry={() => void properties.refetch()} />
-    );
+    return <ErrorState title={t('unavailable')} onRetry={() => void properties.refetch()} />;
   }
   if (row.isError) {
-    return <ErrorState title="Eigenschaften nicht verfügbar" onRetry={() => void row.refetch()} />;
+    return <ErrorState title={t('unavailable')} onRetry={() => void row.refetch()} />;
   }
   // The parent could have stopped being a database, or the row could have been
   // moved out from under it, between the detail load that decided to render
@@ -77,11 +74,9 @@ function RowPropertiesSection({
 
   return (
     <section className="flex flex-col gap-2" data-testid="row-properties">
-      <SectionRule as="h3">Eigenschaften</SectionRule>
+      <SectionRule as="h3">{t('properties')}</SectionRule>
       {properties.data.length === 0 ? (
-        <p className="text-xs text-muted-foreground">
-          Diese Datenbank hat noch keine Eigenschaften.
-        </p>
+        <p className="text-xs text-muted-foreground">{t('noDatabaseProperties')}</p>
       ) : (
         properties.data.map((property) => (
           <div key={property.id} className="flex flex-col gap-1">
@@ -117,6 +112,7 @@ function CoverSection({
   detail: DocumentDetail;
   readOnly: boolean;
 }) {
+  const t = useTranslations('document.propertiesPanel');
   const updateDocument = useUpdateDocument(workspaceId);
   const [repositioning, setRepositioning] = React.useState(false);
   const [draft, setDraft] = React.useState(detail.coverPosition);
@@ -126,7 +122,7 @@ function CoverSection({
 
   return (
     <section className="flex flex-col gap-1.5" data-testid="properties-cover">
-      <SectionRule as="h3">Titelbild</SectionRule>
+      <SectionRule as="h3">{t('cover')}</SectionRule>
       <div className="h-16 w-full overflow-hidden rounded-md bg-surface">
         {/* oxlint-disable-next-line nextjs/no-img-element -- attachment ids are arbitrary user uploads, not build-time-known assets next/image can optimize. */}
         <img
@@ -143,7 +139,7 @@ function CoverSection({
             min={0}
             max={100}
             value={draft}
-            aria-label="Bildausschnitt senkrecht verschieben"
+            aria-label={t('coverPositionLabel')}
             data-testid="properties-cover-position"
             onChange={(event) => setDraft(Number(event.target.value))}
           />
@@ -156,7 +152,7 @@ function CoverSection({
                 setRepositioning(false);
               }}
             >
-              <XIcon /> Abbrechen
+              <XIcon /> {t('cancel')}
             </Button>
             <Button
               size="sm"
@@ -168,7 +164,7 @@ function CoverSection({
                   .then(() => setRepositioning(false));
               }}
             >
-              Speichern
+              {t('save')}
             </Button>
           </div>
         </div>
@@ -180,7 +176,7 @@ function CoverSection({
             data-testid="properties-cover-reposition"
             onClick={() => setRepositioning(true)}
           >
-            <MoveVerticalIcon /> Position ändern
+            <MoveVerticalIcon /> {t('reposition')}
           </Button>
           <Button
             variant="ghost"
@@ -194,7 +190,7 @@ function CoverSection({
               })
             }
           >
-            <ImageIcon /> Entfernen
+            <ImageIcon /> {t('remove')}
           </Button>
         </div>
       )}
@@ -204,27 +200,29 @@ function CoverSection({
 
 /** Who created and last changed the page, and where it sits in the tree. */
 function ProvenanceSection({ detail }: { detail: DocumentDetail }) {
+  const t = useTranslations('document.propertiesPanel');
+  const format = useFormatter();
   const dateTime = (iso: string) =>
-    new Date(iso).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
+    format.dateTime(new Date(iso), { dateStyle: 'medium', timeStyle: 'short' });
 
   return (
     <section className="flex flex-col gap-1.5" data-testid="provenance">
-      <SectionRule as="h3">Herkunft</SectionRule>
+      <SectionRule as="h3">{t('provenance')}</SectionRule>
       <dl className="grid grid-cols-[5.5rem_1fr] gap-x-2 gap-y-1.5 text-xs">
-        <dt className="text-muted-foreground">Angelegt</dt>
+        <dt className="text-muted-foreground">{t('createdAt')}</dt>
         <dd>
           <span className="exocortex-numeric">{dateTime(detail.createdAt)}</span> ·{' '}
           {detail.createdByName}
         </dd>
-        <dt className="text-muted-foreground">Geändert</dt>
+        <dt className="text-muted-foreground">{t('changedAt')}</dt>
         <dd>
           <span className="exocortex-numeric">{dateTime(detail.updatedAt)}</span> ·{' '}
           {detail.updatedByName}
         </dd>
-        <dt className="text-muted-foreground">Pfad</dt>
+        <dt className="text-muted-foreground">{t('path')}</dt>
         <dd className="break-words">
           {detail.breadcrumb.length === 0
-            ? 'Oberste Ebene'
+            ? t('topLevel')
             : detail.breadcrumb.map((entry) => entry.title).join(' / ')}
         </dd>
       </dl>
@@ -234,6 +232,8 @@ function ProvenanceSection({ detail }: { detail: DocumentDetail }) {
 
 /** Schema version and materialization state: useful for debugging, not for a first glance. */
 function TechnicalSection({ detail }: { detail: DocumentDetail }) {
+  const t = useTranslations('document.propertiesPanel');
+  const format = useFormatter();
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -254,7 +254,7 @@ function TechnicalSection({ detail }: { detail: DocumentDetail }) {
         <ChevronDownIcon
           className={cn('size-3.5 transition-transform', open ? 'rotate-180' : undefined)}
         />
-        Technisches
+        {t('technical')}
         <span className="h-px w-6 shrink-0 bg-signal-line" aria-hidden />
       </button>
       {/* Leaders rather than a two-column grid: both values are short and
@@ -263,12 +263,12 @@ function TechnicalSection({ detail }: { detail: DocumentDetail }) {
       {open ? (
         <dl className="flex flex-col gap-1.5 text-xs text-muted-foreground">
           <div className="flex items-baseline gap-2">
-            <dt className="shrink-0">Schema-Version</dt>
+            <dt className="shrink-0">{t('schemaVersion')}</dt>
             <Leader />
             <dd className="exocortex-numeric shrink-0">{detail.schemaVersion}</dd>
           </div>
           <div className="flex items-baseline gap-2">
-            <dt className="shrink-0">Zuletzt verarbeitet</dt>
+            <dt className="shrink-0">{t('lastProcessed')}</dt>
             <Leader />
             <dd
               className={cn(
@@ -278,8 +278,11 @@ function TechnicalSection({ detail }: { detail: DocumentDetail }) {
               data-testid="materialized-at"
             >
               {detail.materializedAt === null
-                ? 'noch nicht'
-                : new Date(detail.materializedAt).toLocaleString('de-DE')}
+                ? t('notYet')
+                : format.dateTime(new Date(detail.materializedAt), {
+                    dateStyle: 'short',
+                    timeStyle: 'medium',
+                  })}
             </dd>
           </div>
         </dl>
@@ -288,19 +291,16 @@ function TechnicalSection({ detail }: { detail: DocumentDetail }) {
   );
 }
 
-const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
-  PAGE: 'Seite',
-  COLLECTION: 'Datenbank',
-  PROJECT: 'LaTeX-Projekt',
-};
-
 /** Type and access, always visible: cheap orientation before anything else. */
 function MetaLine({ detail }: { detail: DocumentDetail }) {
+  const t = useTranslations('document');
   return (
     <div className="flex items-center justify-between text-xs text-muted-foreground">
-      <span>{DOCUMENT_TYPE_LABELS[detail.type]}</span>
+      <span>{t(`types.${detail.type}`)}</span>
       <Badge variant={detail.access === 'write' ? 'outline' : 'muted'}>
-        {detail.access === 'write' ? 'Bearbeiten' : 'Nur lesen'}
+        {detail.access === 'write'
+          ? t('propertiesPanel.accessWrite')
+          : t('propertiesPanel.accessRead')}
       </Badge>
     </div>
   );
@@ -308,6 +308,8 @@ function MetaLine({ detail }: { detail: DocumentDetail }) {
 
 /** Properties tab content for an ordinary page or a database row. */
 function PageProperties({ workspaceId, detail }: { workspaceId: string; detail: DocumentDetail }) {
+  const t = useTranslations('document.propertiesPanel');
+  const tDocument = useTranslations('document');
   const readOnly = detail.access === 'read';
   const updateDocument = useUpdateDocument(workspaceId);
   const [aiRuleDialogOpen, setAiRuleDialogOpen] = React.useState(false);
@@ -332,7 +334,7 @@ function PageProperties({ workspaceId, detail }: { workspaceId: string; detail: 
             <button
               type="button"
               disabled={readOnly}
-              aria-label="Symbol wählen"
+              aria-label={t('chooseSymbol')}
               data-testid="properties-icon-button"
               className="grid size-9 place-items-center rounded-md border border-border transition-colors hover:border-border-strong disabled:opacity-50"
             >
@@ -346,7 +348,7 @@ function PageProperties({ workspaceId, detail }: { workspaceId: string; detail: 
           }
         />
         <span className="text-xs text-muted-foreground">
-          {detail.icon === null ? 'Kein Symbol' : 'Symbol'}
+          {detail.icon === null ? t('noSymbol') : t('symbol')}
         </span>
       </div>
 
@@ -361,10 +363,10 @@ function PageProperties({ workspaceId, detail }: { workspaceId: string; detail: 
       <CoverSection workspaceId={workspaceId} detail={detail} readOnly={readOnly} />
 
       <section className="flex flex-col gap-1.5">
-        <SectionRule as="h3">KI-Regel</SectionRule>
+        <SectionRule as="h3">{t('aiRule')}</SectionRule>
         {detail.aiRuleMode === 'off' ? (
           <p className="text-xs text-muted-foreground">
-            Diese Seite steuert die KI nicht.{' '}
+            {t('aiRuleOff')}{' '}
             {readOnly ? null : (
               <button
                 type="button"
@@ -372,14 +374,14 @@ function PageProperties({ workspaceId, detail }: { workspaceId: string; detail: 
                 data-testid="open-ai-rule-from-properties"
                 onClick={() => setAiRuleDialogOpen(true)}
               >
-                Als Regel festlegen …
+                {t('setAsRule')}
               </button>
             )}
           </p>
         ) : (
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <Badge variant="muted">{AI_RULE_MODE_LABELS[detail.aiRuleMode]}</Badge>
+              <Badge variant="muted">{tDocument(`aiRuleModes.${detail.aiRuleMode}`)}</Badge>
               {readOnly ? null : (
                 <button
                   type="button"
@@ -387,7 +389,7 @@ function PageProperties({ workspaceId, detail }: { workspaceId: string; detail: 
                   data-testid="open-ai-rule-from-properties"
                   onClick={() => setAiRuleDialogOpen(true)}
                 >
-                  Bearbeiten …
+                  {t('editRule')}
                 </button>
               )}
             </div>
@@ -416,15 +418,16 @@ function PageProperties({ workspaceId, detail }: { workspaceId: string; detail: 
 
 /** Properties tab content for a database itself: a different question than a page's. */
 function CollectionProperties({ detail }: { detail: DocumentDetail }) {
+  const t = useTranslations('document.propertiesPanel');
   const properties = useDatabaseProperties(detail.id);
   const views = useDatabaseViews(detail.id);
 
   const propertiesSection = properties.isPending ? (
     <LoadingState variant="skeleton" rows={2} />
   ) : properties.isError ? (
-    <ErrorState title="Eigenschaften nicht verfügbar" onRetry={() => void properties.refetch()} />
+    <ErrorState title={t('unavailable')} onRetry={() => void properties.refetch()} />
   ) : properties.data.length === 0 ? (
-    <p className="text-xs text-muted-foreground">Noch keine Eigenschaften angelegt.</p>
+    <p className="text-xs text-muted-foreground">{t('noPropertiesYet')}</p>
   ) : (
     properties.data.map((property) => (
       <div
@@ -440,9 +443,9 @@ function CollectionProperties({ detail }: { detail: DocumentDetail }) {
   const viewsSection = views.isPending ? (
     <LoadingState variant="skeleton" rows={2} />
   ) : views.isError ? (
-    <ErrorState title="Ansichten nicht verfügbar" onRetry={() => void views.refetch()} />
+    <ErrorState title={t('viewsUnavailable')} onRetry={() => void views.refetch()} />
   ) : views.data.length === 0 ? (
-    <p className="text-xs text-muted-foreground">Noch keine Ansicht angelegt.</p>
+    <p className="text-xs text-muted-foreground">{t('noViewsYet')}</p>
   ) : (
     views.data.map((view) => (
       <div key={view.id} className="rounded-md border border-border px-2 py-1.5 text-xs">
@@ -456,7 +459,7 @@ function CollectionProperties({ detail }: { detail: DocumentDetail }) {
       <MetaLine detail={detail} />
 
       <div>
-        <span className="text-xs text-muted-foreground">Zeilen</span>
+        <span className="text-xs text-muted-foreground">{t('rows')}</span>
         <p className="exocortex-numeric text-lg" data-testid="collection-row-count">
           {detail.rowCount ?? 0}
         </p>
@@ -464,14 +467,14 @@ function CollectionProperties({ detail }: { detail: DocumentDetail }) {
 
       <section className="flex flex-col gap-1.5">
         <SectionRule as="h3" trailing={properties.data?.length}>
-          Eigenschaften
+          {t('properties')}
         </SectionRule>
         {propertiesSection}
       </section>
 
       <section className="flex flex-col gap-1.5">
         <SectionRule as="h3" trailing={views.data?.length}>
-          Ansichten
+          {t('views')}
         </SectionRule>
         {viewsSection}
       </section>
@@ -498,26 +501,27 @@ export interface PropertiesPanelProps {
  * rather than one branching tree of conditionals.
  */
 export function PropertiesPanel({ workspaceId, documentId }: PropertiesPanelProps) {
+  const t = useTranslations('document.propertiesPanel');
   const document = useDocument(documentId ?? undefined);
 
   if (documentId === null || workspaceId === null) {
     return (
       <EmptyState
-        title="Keine Seite geöffnet"
-        description="Öffne eine Seite, um ihre Eigenschaften zu sehen."
+        title={t('noPageTitle')}
+        description={t('noPageDescription')}
         icon={SettingsIcon}
       />
     );
   }
 
   if (document.isPending) {
-    return <LoadingState variant="skeleton" rows={5} label="Eigenschaften werden geladen …" />;
+    return <LoadingState variant="skeleton" rows={5} label={t('loading')} />;
   }
   if (document.isError) {
     return (
       <ErrorState
-        title="Eigenschaften nicht verfügbar"
-        description="Die Seite konnte nicht geladen werden."
+        title={t('unavailable')}
+        description={t('pageLoadFailed')}
         onRetry={() => void document.refetch()}
       />
     );

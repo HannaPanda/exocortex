@@ -2,6 +2,7 @@
 
 import { Link2OffIcon, LinkIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -19,13 +20,6 @@ export interface BacklinksPanelProps {
   workspaceId: string | null;
   documentId: string | null;
 }
-
-/** How a reference was written. Shown so "erwähnt" and "verlinkt" stay distinguishable. */
-const KIND_LABEL: Record<DocumentLinkKind, string> = {
-  pageLink: 'Seitenlink',
-  mention: 'Erwähnung',
-  wikiMark: 'Wiki-Link',
-};
 
 /**
  * The shared instrument rule, at the panel's own scale. Using the same mark the
@@ -59,6 +53,9 @@ function LinkRow({
   context: string;
   trailing?: React.ReactNode;
 }) {
+  // How a reference was written. Shown so "erwähnt" and "verlinkt" stay
+  // distinguishable.
+  const t = useTranslations('document.backlinks');
   const body = (
     <>
       <span className="flex items-center gap-2">
@@ -69,7 +66,7 @@ function LinkRow({
       {context.length > 0 ? (
         <span className="line-clamp-3 text-xs text-muted-foreground">{context}</span>
       ) : null}
-      <span className="text-micro text-muted-foreground">{KIND_LABEL[kind]}</span>
+      <span className="text-micro text-muted-foreground">{t(`kinds.${kind}`)}</span>
     </>
   );
 
@@ -89,6 +86,7 @@ function LinkRow({
 }
 
 function IncomingRow({ link, workspaceId }: { link: IncomingDocumentLink; workspaceId: string }) {
+  const t = useTranslations('document.backlinks');
   return (
     <LinkRow
       href={`/arbeitsbereich/${workspaceId}/seite/${link.source.id}`}
@@ -103,13 +101,14 @@ function IncomingRow({ link, workspaceId }: { link: IncomingDocumentLink; worksp
       kind={link.kind}
       context={link.context}
       trailing={
-        link.source.archivedAt === null ? null : <Badge variant="muted">Im Papierkorb</Badge>
+        link.source.archivedAt === null ? null : <Badge variant="muted">{t('inTrash')}</Badge>
       }
     />
   );
 }
 
 function OutgoingRow({ link, workspaceId }: { link: OutgoingDocumentLink; workspaceId: string }) {
+  const t = useTranslations('document.backlinks');
   if (link.target === null) {
     return (
       <LinkRow
@@ -118,7 +117,7 @@ function OutgoingRow({ link, workspaceId }: { link: OutgoingDocumentLink; worksp
         title={link.targetTitle}
         kind={link.kind}
         context={link.context}
-        trailing={<Badge variant="outline">Kein Ziel</Badge>}
+        trailing={<Badge variant="outline">{t('noTarget')}</Badge>}
       />
     );
   }
@@ -136,7 +135,7 @@ function OutgoingRow({ link, workspaceId }: { link: OutgoingDocumentLink; worksp
       kind={link.kind}
       context={link.context}
       trailing={
-        link.target.archivedAt === null ? null : <Badge variant="muted">Im Papierkorb</Badge>
+        link.target.archivedAt === null ? null : <Badge variant="muted">{t('inTrash')}</Badge>
       }
     />
   );
@@ -151,6 +150,8 @@ function OutgoingRow({ link, workspaceId }: { link: OutgoingDocumentLink; worksp
  * the list honestly and does not pretend to be a percentage of anything.
  */
 function RelatedRow({ entry, workspaceId }: { entry: RelatedDocument; workspaceId: string }) {
+  const t = useTranslations('document.backlinks');
+  const format = useFormatter();
   const location = entry.path.map((step) => step.title).join(' / ');
 
   return (
@@ -165,7 +166,7 @@ function RelatedRow({ entry, workspaceId }: { entry: RelatedDocument; workspaceI
           type={entry.document.type}
         />
         <span className="truncate text-sm font-medium">{entry.document.title}</span>
-        {entry.linked ? <Badge variant="muted">Verlinkt</Badge> : null}
+        {entry.linked ? <Badge variant="muted">{t('linked')}</Badge> : null}
       </span>
       {entry.snippet.length > 0 ? (
         <span className="line-clamp-2 text-xs text-muted-foreground">{entry.snippet}</span>
@@ -173,7 +174,9 @@ function RelatedRow({ entry, workspaceId }: { entry: RelatedDocument; workspaceI
       <span className="flex items-center gap-2 text-micro text-muted-foreground">
         {location.length > 0 ? <span className="truncate">{location}</span> : null}
         <span className="exocortex-numeric ml-auto shrink-0">
-          Ähnlichkeit {entry.similarity.toLocaleString('de-DE', { maximumFractionDigits: 2 })}
+          {t('similarity', {
+            value: format.number(entry.similarity, { maximumFractionDigits: 2 }),
+          })}
         </span>
       </span>
     </Link>
@@ -194,6 +197,7 @@ function RelatedRow({ entry, workspaceId }: { entry: RelatedDocument; workspaceI
  * the Yjs state is canonical and no one else may put a link into it).
  */
 function RelatedSection({ workspaceId, documentId }: { workspaceId: string; documentId: string }) {
+  const t = useTranslations('document.backlinks');
   const related = useRelatedDocuments(documentId);
 
   // Silent while it loads and silent when it breaks: this section is an extra,
@@ -209,16 +213,11 @@ function RelatedSection({ workspaceId, documentId }: { workspaceId: string; docu
 
   return (
     <section className="flex flex-col gap-1.5" data-testid="related-documents">
-      <SectionHeading count={entries.length}>Verwandte Notizen</SectionHeading>
+      <SectionHeading count={entries.length}>{t('related')}</SectionHeading>
       {state === 'pending' ? (
-        <p className="px-1 text-xs text-muted-foreground">
-          Diese Seite wurde noch nicht für die semantische Suche erfasst. Sobald das passiert ist,
-          stehen hier Seiten zum selben Thema.
-        </p>
+        <p className="px-1 text-xs text-muted-foreground">{t('relatedPending')}</p>
       ) : entries.length === 0 ? (
-        <p className="px-1 text-xs text-muted-foreground">
-          Keine andere Seite dieses Arbeitsbereichs ähnelt dieser deutlich genug.
-        </p>
+        <p className="px-1 text-xs text-muted-foreground">{t('relatedNone')}</p>
       ) : (
         entries.map((entry) => (
           <RelatedRow key={entry.document.id} entry={entry} workspaceId={workspaceId} />
@@ -238,27 +237,24 @@ function RelatedSection({ workspaceId, documentId }: { workspaceId: string; docu
  * tell someone, because it is the one nothing else in the application reveals.
  */
 export function BacklinksPanel({ workspaceId, documentId }: BacklinksPanelProps) {
+  const t = useTranslations('document.backlinks');
   const links = useDocumentLinks(documentId ?? undefined);
 
   if (documentId === null || workspaceId === null) {
     return (
-      <EmptyState
-        title="Keine Seite geöffnet"
-        description="Öffne eine Seite, um ihre Verweise zu sehen."
-        icon={LinkIcon}
-      />
+      <EmptyState title={t('noPageTitle')} description={t('noPageDescription')} icon={LinkIcon} />
     );
   }
 
   if (links.isPending) {
-    return <LoadingState variant="skeleton" rows={4} label="Verweise werden geladen …" />;
+    return <LoadingState variant="skeleton" rows={4} label={t('loading')} />;
   }
 
   if (links.isError) {
     return (
       <ErrorState
-        title="Verweise nicht verfügbar"
-        description="Der Verweisindex konnte nicht geladen werden."
+        title={t('unavailableTitle')}
+        description={t('unavailableDescription')}
         onRetry={() => void links.refetch()}
       />
     );
@@ -273,12 +269,8 @@ export function BacklinksPanel({ workspaceId, documentId }: BacklinksPanelProps)
     return (
       <div className="flex flex-col gap-5" data-testid="backlinks-panel">
         <EmptyState
-          title="Keine Verweise"
-          description={
-            pending
-              ? 'Diese Seite wurde noch nicht verarbeitet. Sobald das passiert ist, stehen ihre Verweise hier.'
-              : 'Weder verweist eine andere Seite hierher, noch verweist diese Seite auf eine andere.'
-          }
+          title={t('emptyTitle')}
+          description={pending ? t('emptyPending') : t('emptyNone')}
           icon={LinkIcon}
         />
         <RelatedSection workspaceId={workspaceId} documentId={documentId} />
@@ -289,11 +281,9 @@ export function BacklinksPanel({ workspaceId, documentId }: BacklinksPanelProps)
   return (
     <div className="flex flex-col gap-5" data-testid="backlinks-panel">
       <section className="flex flex-col gap-1.5">
-        <SectionHeading count={incoming.length}>Verweise auf diese Seite</SectionHeading>
+        <SectionHeading count={incoming.length}>{t('incoming')}</SectionHeading>
         {incoming.length === 0 ? (
-          <p className="px-1 text-xs text-muted-foreground">
-            Bisher verweist keine andere Seite hierher.
-          </p>
+          <p className="px-1 text-xs text-muted-foreground">{t('incomingNone')}</p>
         ) : (
           incoming.map((link) => (
             <IncomingRow key={link.id} link={link} workspaceId={workspaceId} />
@@ -302,19 +292,15 @@ export function BacklinksPanel({ workspaceId, documentId }: BacklinksPanelProps)
       </section>
 
       <section className="flex flex-col gap-1.5">
-        <SectionHeading count={outgoing.length}>Diese Seite verweist auf</SectionHeading>
+        <SectionHeading count={outgoing.length}>{t('outgoing')}</SectionHeading>
         {unresolved > 0 ? (
           <p className="px-1 text-xs text-muted-foreground">
-            {unresolved === 1
-              ? 'Ein Verweis zeigt auf einen Titel, zu dem es keine Seite gibt.'
-              : `${unresolved} Verweise zeigen auf Titel, zu denen es keine Seite gibt.`}
+            {t('unresolved', { count: unresolved })}
           </p>
         ) : null}
         {outgoing.length === 0 ? (
           <p className="px-1 text-xs text-muted-foreground">
-            {pending
-              ? 'Diese Seite wurde noch nicht verarbeitet.'
-              : 'Diese Seite verweist auf keine andere Seite.'}
+            {pending ? t('outgoingPending') : t('outgoingNone')}
           </p>
         ) : (
           outgoing.map((link) => (

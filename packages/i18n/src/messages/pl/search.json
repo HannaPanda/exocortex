@@ -1,0 +1,130 @@
+{
+  "route": {
+    "searchTitle": "Wyszukiwanie",
+    "savedQueryTitle": "Zapisane wyszukiwanie"
+  },
+  "chatsRoute": {
+    "title": "Czaty",
+    "loading": "Ładowanie czatów…"
+  },
+  "builder": {
+    "textLabel": "Szukana fraza",
+    "textPlaceholder": "Pozostaw puste, aby filtrować tylko według miejsca, typu i czasu",
+    "semantic": "Szukaj również według znaczenia, nie tylko dosłownych słów",
+    "typesLabel": "Typ",
+    "typesHint": "Brak wyboru oznacza: wszystko.",
+    "types": {
+      "PAGE": "Strony",
+      "COLLECTION": "Bazy danych",
+      "PROJECT": "Projekty"
+    },
+    "underLabel": "Tylko w obrębie",
+    "underAnywhere": "wszędzie",
+    "underHint": "Poddrzewo jest ustalane na nowo przy każdym uruchomieniu, więc przeniesione strony wędrują razem z nim.",
+    "collectionLabel": "Tylko wiersze bazy danych",
+    "none": "brak",
+    "entityLabel": "Wspomina encję",
+    "updatedLabel": "Zmodyfikowano",
+    "createdLabel": "Utworzono",
+    "sortLabel": "Kolejność",
+    "sort": {
+      "RELEVANCE": "Trafność",
+      "UPDATED_DESC": "Ostatnio zmodyfikowane",
+      "UPDATED_ASC": "Najdłużej niezmieniane",
+      "CREATED_DESC": "Ostatnio utworzone",
+      "CREATED_ASC": "Najpierw utworzone",
+      "TITLE_ASC": "Tytuł od A do Z",
+      "TITLE_DESC": "Tytuł od Z do A"
+    },
+    "relevanceWithoutText": "Bez szukanej frazy trafność nie ma zastosowania. Wyniki są wtedy sortowane według daty modyfikacji.",
+    "limitLabel": "Maksymalnie",
+    "includeArchived": "Uwzględnij kosz",
+    "window": {
+      "any": "dowolny",
+      "lastDays": "{count, plural, one {ostatni dzień} few {ostatnie # dni} many {ostatnich # dni} other {ostatnich # dni}}",
+      "lastYear": "ostatni rok",
+      "custom": "własny zakres"
+    },
+    "rangeFrom": "{label}: od",
+    "rangeUntil": "{label}: do",
+    "rangeSeparator": "do",
+    "noProperties": "Ta baza danych nie ma jeszcze właściwości, według których można by filtrować.",
+    "propertiesLabel": "Właściwości",
+    "removeFilter": "Usuń filtr",
+    "addProperty": "Właściwość",
+    "valuePlaceholder": "Wartość",
+    "add": "Dodaj"
+  },
+  "page": {
+    "loading": "Ładowanie zapisanego wyszukiwania",
+    "loadFailed": "Nie udało się załadować zapisanego wyszukiwania",
+    "title": "Wyszukiwanie",
+    "introFresh": "Szukaj na wszystkich stronach tego obszaru roboczego, z filtrami według miejsca, typu, właściwości, encji i przedziału czasu. Przydatne wyszukiwania możesz zapisać.",
+    "introStored": "Zapisane wyszukiwanie. Wyniki są ustalane na nowo przy każdym otwarciu.",
+    "save": "Zapisz wyszukiwanie",
+    "delete": "Usuń",
+    "saveChanges": "Zapisz zmiany",
+    "deleteTitle": "Usuń zapisane wyszukiwanie",
+    "deleteDescription": "Usuwane jest tylko zapytanie. Strony, które zostały znalezione, pozostają bez zmian tam, gdzie są.",
+    "cancel": "Anuluj",
+    "layoutLabel": "Układ",
+    "layout": {
+      "LIST": "Lista",
+      "TABLE": "Tabela",
+      "CARDS": "Karty"
+    },
+    "inSidebar": "Pokaż w nawigacji",
+    "resultsHeading": "Wyniki",
+    "noQueryTitle": "Brak zapytania",
+    "noQueryDescription": "Wpisz szukaną frazę lub określ powyżej, gdzie szukać.",
+    "resultsLoading": "Wyszukiwanie wyników…",
+    "queryFailed": "Nie udało się wykonać zapytania",
+    "saveDialog": {
+      "title": "Zapisz wyszukiwanie",
+      "description": "Zapisywane jest samo zapytanie, a nie lista wyników. Przy kolejnym otwarciu zostanie wykonane ponownie.",
+      "nameLabel": "Nazwa",
+      "namePlaceholder": "Otwarte zadania o wysokim priorytecie",
+      "descriptionLabel": "Opis",
+      "descriptionPlaceholder": "Opcjonalnie: do czego służy to wyszukiwanie",
+      "inSidebar": "Dodaj do nawigacji jako Smart View",
+      "submit": "Zapisz"
+    }
+  },
+  "nodeView": {
+    "fallbackName": "Zapisane wyszukiwanie",
+    "open": "Otwórz wyszukiwanie",
+    "change": "Zmień wyszukiwanie",
+    "noneTitle": "Nie wybrano wyszukiwania",
+    "noneDescription": "Wybierz zapisane wyszukiwanie, którego wyniki mają się tutaj pojawić.",
+    "missingDescription": "Nie znaleziono tego zapisanego wyszukiwania. Prawdopodobnie zostało usunięte.",
+    "pick": "Wybierz wyszukiwanie",
+    "resultsLoading": "Wyszukiwanie wyników",
+    "queryFailed": "Nie udało się wykonać zapytania",
+    "allResults": "Zobacz wszystkie wyniki"
+  },
+  "results": {
+    "topLevel": "najwyższy poziom",
+    "emptyTitle": "Nic nie znaleziono",
+    "emptyDescription": "Brak wyników dla tego zapytania w tej chwili. To może się zmienić jutro – wyszukiwanie pozostaje zapisane.",
+    "truncated": "To nie wszystkie wyniki. Zwiększ limit zapytania, aby zobaczyć więcej.",
+    "inTrash": "w koszu",
+    "columnPage": "Strona",
+    "columnPath": "Lokalizacja",
+    "columnUpdated": "Zmodyfikowano"
+  },
+  "command": {
+    "groupActions": "Działania",
+    "groupSavedQueries": "Zapisane wyszukiwania",
+    "groupRecent": "Ostatnio edytowane",
+    "groupPages": "Strony",
+    "createPage": "Utwórz nową stronę",
+    "createPageKeywords": "utwórz stwórz napisz",
+    "untitledPage": "Strona bez tytułu",
+    "openSearchPage": "Wyszukiwanie zaawansowane z filtrami",
+    "openSearchPageKeywords": "znajdź szukaj",
+    "minimumLength": "Wpisz co najmniej dwa znaki, aby szukać stron",
+    "empty": "Nic nie znaleziono",
+    "readout": "{count, plural, one {# wynik} few {# wyniki} many {# wyników} other {# wyniku}} · {tookMs} ms · {adapter}",
+    "idleHint": "Ostatnio edytowane lub zacznij pisać, aby przeszukać cały tekst"
+  }
+}

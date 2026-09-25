@@ -76,6 +76,7 @@ import {
   ZapIcon,
 } from 'lucide-react';
 import { Icon as LucideIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -184,88 +185,12 @@ const ICON_COMPONENTS: Readonly<
 };
 
 /**
- * German name of every icon, used as its accessible label and as what the search
- * field matches. A picker whose entries are unnamed pictures cannot be searched
- * and cannot be read out.
- */
-export const DOCUMENT_ICON_LABELS: Readonly<Record<CuratedDocumentIconName, string>> = {
-  'file-text': 'Seite',
-  files: 'Mehrere Seiten',
-  folder: 'Ordner',
-  'folder-open': 'Offener Ordner',
-  'folder-tree': 'Ordnerbaum',
-  'book-open': 'Buch',
-  'notebook-pen': 'Notizbuch',
-  'sticky-note': 'Notizzettel',
-  bookmark: 'Lesezeichen',
-  archive: 'Archiv',
-  inbox: 'Eingang',
-  paperclip: 'Anhang',
-  star: 'Stern',
-  heart: 'Herz',
-  flag: 'Fahne',
-  pin: 'Pinnadel',
-  sparkles: 'Funkeln',
-  flame: 'Flamme',
-  zap: 'Blitz',
-  target: 'Ziel',
-  trophy: 'Pokal',
-  bell: 'Glocke',
-  'circle-check': 'Haken',
-  'triangle-alert': 'Warnung',
-  briefcase: 'Aktentasche',
-  calendar: 'Kalender',
-  clock: 'Uhr',
-  timer: 'Timer',
-  'list-checks': 'Aufgabenliste',
-  'clipboard-list': 'Klemmbrett',
-  'chart-bar': 'Balkendiagramm',
-  'chart-line': 'Liniendiagramm',
-  'trending-up': 'Wachstum',
-  users: 'Menschen',
-  mail: 'Post',
-  'message-circle': 'Nachricht',
-  code: 'Quelltext',
-  terminal: 'Terminal',
-  database: 'Datenbank',
-  server: 'Server',
-  cpu: 'Prozessor',
-  'git-branch': 'Git-Branch',
-  bug: 'Fehler',
-  wrench: 'Schraubenschlüssel',
-  settings: 'Einstellungen',
-  lock: 'Schloss',
-  key: 'Schlüssel',
-  shield: 'Schild',
-  network: 'Netzwerk',
-  package: 'Paket',
-  brain: 'Gehirn',
-  lightbulb: 'Idee',
-  'graduation-cap': 'Studium',
-  microscope: 'Mikroskop',
-  palette: 'Farbpalette',
-  'pen-tool': 'Zeichenstift',
-  globe: 'Globus',
-  map: 'Landkarte',
-  compass: 'Kompass',
-  newspaper: 'Zeitung',
-  house: 'Haus',
-  'map-pin': 'Ort',
-  plane: 'Flugzeug',
-  car: 'Auto',
-  coffee: 'Kaffee',
-  utensils: 'Essen',
-  dumbbell: 'Sport',
-  leaf: 'Blatt',
-  mountain: 'Berg',
-  sun: 'Sonne',
-  moon: 'Mond',
-  gift: 'Geschenk',
-};
-
-/**
  * Extra search words per icon, for the times the label is not what someone
  * types. Only where it earns its keep; most icons are found by their name.
+ *
+ * German search synonyms, not interface text: they are never shown, and they
+ * are matched in every language beside the label in the reader's own, like
+ * the German words in `icon-search.ts`.
  */
 export const DOCUMENT_ICON_KEYWORDS: Partial<
   Readonly<Record<CuratedDocumentIconName, readonly string[]>>
@@ -321,13 +246,16 @@ export const DOCUMENT_ICON_KEYWORDS: Partial<
   gift: ['geburtstag', 'geschenk', 'weihnachten'],
 };
 
-/** The icon grid, grouped the way the emoji picker is. */
+export type DocumentIconGroupKey =
+  'filing' | 'marking' | 'work' | 'technology' | 'knowledge' | 'life';
+
+/** The icon grid, grouped the way the emoji picker is; the heading is `document.icons.groups.<key>`. */
 export const DOCUMENT_ICON_GROUPS: readonly {
-  label: string;
+  key: DocumentIconGroupKey;
   names: readonly CuratedDocumentIconName[];
 }[] = [
   {
-    label: 'Ablage',
+    key: 'filing',
     names: [
       'file-text',
       'files',
@@ -344,7 +272,7 @@ export const DOCUMENT_ICON_GROUPS: readonly {
     ],
   },
   {
-    label: 'Markierung',
+    key: 'marking',
     names: [
       'star',
       'heart',
@@ -361,7 +289,7 @@ export const DOCUMENT_ICON_GROUPS: readonly {
     ],
   },
   {
-    label: 'Arbeit',
+    key: 'work',
     names: [
       'briefcase',
       'calendar',
@@ -378,7 +306,7 @@ export const DOCUMENT_ICON_GROUPS: readonly {
     ],
   },
   {
-    label: 'Technik',
+    key: 'technology',
     names: [
       'code',
       'terminal',
@@ -397,7 +325,7 @@ export const DOCUMENT_ICON_GROUPS: readonly {
     ],
   },
   {
-    label: 'Wissen',
+    key: 'knowledge',
     names: [
       'brain',
       'lightbulb',
@@ -412,7 +340,7 @@ export const DOCUMENT_ICON_GROUPS: readonly {
     ],
   },
   {
-    label: 'Leben',
+    key: 'life',
     names: [
       'house',
       'map-pin',
@@ -449,18 +377,6 @@ export const DOCUMENT_ICON_COLOR_CLASS: Readonly<Record<DocumentIconColor, strin
   red: 'text-content-red',
 };
 
-export const DOCUMENT_ICON_COLOR_LABELS: Readonly<Record<DocumentIconColor, string>> = {
-  gray: 'Grau',
-  brown: 'Braun',
-  orange: 'Orange',
-  yellow: 'Gelb',
-  green: 'Grün',
-  blue: 'Blau',
-  purple: 'Violett',
-  pink: 'Pink',
-  red: 'Rot',
-};
-
 /** The name behind a `lucide:` icon, or `null` for an emoji or no icon at all. */
 export function documentIconName(icon: string | null): DocumentIconName | null {
   if (icon === null || !icon.startsWith(DOCUMENT_ICON_NAME_PREFIX)) return null;
@@ -473,20 +389,31 @@ export function documentIconValue(name: DocumentIconName): string {
   return `${DOCUMENT_ICON_NAME_PREFIX}${name}`;
 }
 
+/** Whether a name is one of the curated icons, which carry a name in the catalogue. */
+export function isCuratedDocumentIconName(name: string): name is CuratedDocumentIconName {
+  return Object.hasOwn(ICON_COMPONENTS, name);
+}
+
 /**
- * What to call an icon out loud.
+ * What to call an icon out loud, and what the search field matches.
  *
- * The curated ones have a German name. The other 1,700 have only Lucide's
- * English one, which is at least a real word and beats reading out
+ * The curated ones have a name in the message catalogue
+ * (`document.icons.names`), in the reader's language. The other 1,700 have only
+ * Lucide's English one, which is at least a real word and beats reading out
  * `square-dashed-bottom-code`: it becomes "Square dashed bottom code". A made-up
- * German translation would be worse than the honest English label, because it is
- * not what the search field matches either.
+ * translation would be worse than the honest English label, because it is not
+ * what the search field matches either.
  */
-export function documentIconLabel(name: DocumentIconName): string {
-  const curated = (DOCUMENT_ICON_LABELS as Readonly<Record<string, string | undefined>>)[name];
-  if (curated !== undefined) return curated;
-  const words = name.replaceAll('-', ' ');
-  return words.charAt(0).toUpperCase() + words.slice(1);
+export function useDocumentIconLabel(): (name: DocumentIconName) => string {
+  const t = useTranslations('document.icons.names');
+  return React.useCallback(
+    (name: DocumentIconName): string => {
+      if (isCuratedDocumentIconName(name)) return t(name);
+      const words = name.replaceAll('-', ' ');
+      return words.charAt(0).toUpperCase() + words.slice(1);
+    },
+    [t],
+  );
 }
 
 /**

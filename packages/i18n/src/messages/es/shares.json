@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "sharesTitle": "Usos compartidos",
+    "sharedPageTitle": "Página compartida"
+  },
+  "common": {
+    "loading": "Cargando usos compartidos…",
+    "loadError": "No se han podido cargar los usos compartidos",
+    "read": "Lectura",
+    "write": "Edición",
+    "revoke": "Revocar",
+    "revokeFailed": "No se ha podido revocar el uso compartido.",
+    "nothingShared": "Nada compartido"
+  },
+  "wording": {
+    "publicLink": "Enlace público (…{prefix})",
+    "unknownAccount": "Cuenta desconocida",
+    "grant": "{who}: {permission, select, WRITE {puede editar} other {puede leer}}{subtree, select, yes {, con todo lo que hay debajo} other {}}",
+    "grantUntil": "{who}: {permission, select, WRITE {puede editar} other {puede leer}}{subtree, select, yes {, con todo lo que hay debajo} other {}}, hasta {until}",
+    "revokeLink": "A partir de ese momento, la dirección dejará de funcionar para todo el mundo, incluso si alguien la ha reenviado. No se puede recuperar: un nuevo enlace tendrá una nueva dirección.",
+    "revokeAccount": "{who} perderá el acceso de inmediato, incluso en una sesión que esté abierta en ese momento.",
+    "thisAccount": "Esta cuenta",
+    "regrantDialog": "Puedes volver a conceder el uso compartido arriba en cualquier momento.",
+    "regrantList": "Puedes volver a concederlo en cualquier momento desde el diálogo para compartir de la página.",
+    "revokeSubtree": "Esto se aplica a esta página y a todo lo que hay debajo."
+  },
+  "state": {
+    "active": "Activo",
+    "expired": "Caducado",
+    "revoked": "Revocado"
+  },
+  "revokeConfirm": {
+    "question": "¿Revocar?",
+    "cancel": "Cancelar",
+    "confirm": "Revocar",
+    "pending": "Revocando…"
+  },
+  "linkAddress": {
+    "copyLabel": "Copiar dirección",
+    "copiedLabel": "Dirección copiada",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "lost": "La dirección de este enlace no está guardada: es anterior al 24/09/2026. Sigue funcionando. Si necesitas la dirección, genera un enlace nuevo con el mismo alcance y revoca este después.",
+    "replace": "Generar nuevo enlace",
+    "replaced": "El nuevo enlace aparece arriba"
+  },
+  "dialog": {
+    "title": "Compartir “{title}”",
+    "description": "Compartir significa que alguien ajeno a este espacio de trabajo puede acceder a esta página. Quien ya sea miembro no necesita ningún uso compartido.",
+    "inherited": "Esta página ya está compartida desde un nivel superior: alguien ha compartido una sección superior con todo lo que hay debajo. Por tanto, ya se puede acceder a ella desde fuera sin que aparezca nada aquí.",
+    "scope": "Alcance",
+    "scopePageOnly": "Solo esta página",
+    "scopeSubtree": "Esta página y todo lo que hay debajo",
+    "expiry": "Validez",
+    "expiryNever": "Sin caducidad",
+    "expiryDays": "{count, plural, one {# día} many {# días} other {# días}}",
+    "toAccount": "A una cuenta",
+    "emailPlaceholder": "direccion@ejemplo.es",
+    "permission": "Permiso",
+    "share": "Compartir",
+    "publicLink": "Enlace público",
+    "publicLinkExplanation": "Cualquiera que tenga la dirección puede leer la página: sin cuenta, sin iniciar sesión, incluso si se la han reenviado. Nadie puede escribir a través de un enlace.",
+    "createLink": "Crear enlace",
+    "copied": "Copiado",
+    "copyAddress": "Copiar dirección",
+    "addressKept": "Puedes volver a consultar la dirección en cualquier momento, aquí en la lista y en «Usos compartidos» en el menú de la cuenta, mientras el enlace sea válido.",
+    "current": "Compartido actualmente",
+    "nobody": "Nadie fuera de este espacio de trabajo puede acceder a esta página.",
+    "revokeFailed": "Error al revocar.",
+    "close": "Cerrar",
+    "changePermission": "Cambiar permiso",
+    "readOnly": "Solo lectura",
+    "revokeLabel": "Revocar: {description}"
+  },
+  "page": {
+    "title": "Usos compartidos",
+    "tabMine": "Compartido por mí",
+    "tabIncoming": "Compartido conmigo"
+  },
+  "mine": {
+    "intro": "Todo lo que has compartido directamente, de todos los espacios de trabajo: con cuentas individuales y mediante enlace público.",
+    "emptyDescription": "Aún no has compartido ninguna página. Puedes hacerlo desde el menú de la página con «Compartir…».",
+    "filterPlaceholder": "Página, espacio de trabajo o dirección…",
+    "filterLabel": "Filtrar usos compartidos",
+    "showInactive": "Mostrar finalizados ({count, number})",
+    "noMatchTitle": "No se ha encontrado nada",
+    "noMatchDescription": "Ningún uso compartido coincide con este filtro.",
+    "noneOpenTitle": "No queda nada activo",
+    "noneOpenDescription": "Todos tus usos compartidos se han revocado o han caducado.",
+    "truncated": "Hay más usos compartidos de los que se muestran aquí. Faltan los finalizados más antiguos.",
+    "rowContext": "en «{workspace}» · {description}",
+    "revokeLabel": "Revocar: {title}, {description}",
+    "adminOnly": "Aquí solo puede revocar quien tenga permisos de administración en el espacio de trabajo «{workspace}»."
+  },
+  "incoming": {
+    "intro": "Páginas de espacios de trabajo donde no eres miembro. No aparecen en ninguna navegación, solo aquí.",
+    "emptyTitle": "No hay nada compartido contigo",
+    "emptyDescription": "Cuando alguien comparta una página contigo, aparecerá aquí.",
+    "origin": "de «{workspace}», de {name}"
+  },
+  "workspace": {
+    "title": "Usos compartidos",
+    "intro": "Lo que se comparte al exterior desde este espacio de trabajo: con cuentas individuales y como enlace público. Los usos compartidos revocados se mantienen para que quede constancia de lo que estuvo abierto alguna vez.",
+    "emptyDescription": "Ninguna página de este espacio de trabajo es accesible desde el exterior.",
+    "columnPage": "Página",
+    "columnRecipient": "Destinatario",
+    "columnPermission": "Permiso",
+    "columnScope": "Alcance",
+    "columnExpires": "Caduca",
+    "columnStatus": "Estado",
+    "scopeSubtree": "con subpáginas",
+    "scopePageOnly": "solo la página",
+    "revokeLabel": "Revocar: {title}",
+    "publicLink": "Enlace público",
+    "unknown": "Desconocido"
+  },
+  "public": {
+    "loading": "Cargando página …",
+    "goneTitle": "Este enlace ya no lleva a ninguna página",
+    "goneDescription": "Se ha revocado, ha caducado o nunca fue válido. Pregunta a la persona que te lo facilitó.",
+    "origin": "Compartido desde «{workspace}» por {name}",
+    "path": "Ruta",
+    "empty": "Esta página está vacía.",
+    "children": "Subpáginas",
+    "footer": "Esta página se ha compartido como enlace. Es de solo lectura. <link>eXocortex</link> está autoalojado."
+  },
+  "shared": {
+    "loading": "Cargando página …",
+    "unavailableTitle": "Página no disponible",
+    "unavailableDescription": "El uso compartido se ha revocado, ha caducado o nunca existió."
+  }
+}

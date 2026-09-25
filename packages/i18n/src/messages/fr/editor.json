@@ -1,0 +1,377 @@
+{
+  "surface": {
+    "unavailable": "Éditeur indisponible",
+    "connecting": "Connexion à l’éditeur…",
+    "uploadFailed": "Impossible d’importer un fichier.",
+    "placeholder": "Écris quelque chose ou tape « / » pour les commandes…",
+    "syncing": "synchronisation en cours…",
+    "contentLabel": "Contenu de la page"
+  },
+  "connection": {
+    "startFailed": "Impossible de démarrer l’édition en direct.",
+    "unknownUser": "Inconnu"
+  },
+  "blocks": {
+    "paragraph": {
+      "label": "Texte",
+      "description": "Un paragraphe normal"
+    },
+    "heading-1": {
+      "label": "Titre 1",
+      "description": "Titre de section de niveau 1"
+    },
+    "heading-2": {
+      "label": "Titre 2",
+      "description": "Titre de section de niveau 2"
+    },
+    "heading-3": {
+      "label": "Titre 3",
+      "description": "Titre de section de niveau 3"
+    },
+    "blockquote": {
+      "label": "Citation",
+      "description": "Citation mise en valeur"
+    },
+    "code-block": {
+      "label": "Bloc de code",
+      "description": "Code avec coloration syntaxique"
+    },
+    "horizontal-rule": {
+      "label": "Ligne de séparation",
+      "description": "Ligne horizontale entre les sections"
+    },
+    "bullet-list": {
+      "label": "Liste à puces",
+      "description": "Liste avec des puces"
+    },
+    "ordered-list": {
+      "label": "Liste numérotée",
+      "description": "Liste avec des numéros"
+    },
+    "task-list": {
+      "label": "Liste de tâches",
+      "description": "Liste avec cases à cocher"
+    },
+    "image": {
+      "label": "Image",
+      "description": "Importer une image"
+    },
+    "table": {
+      "label": "Tableau",
+      "description": "Tableau avec ligne d’en-tête"
+    },
+    "callout-info": {
+      "label": "Info",
+      "description": "Encadré mis en valeur (info)"
+    },
+    "callout-note": {
+      "label": "Note",
+      "description": "Encadré mis en valeur (note)"
+    },
+    "callout-success": {
+      "label": "Succès",
+      "description": "Encadré mis en valeur (succès)"
+    },
+    "callout-warning": {
+      "label": "Avertissement",
+      "description": "Encadré mis en valeur (avertissement)"
+    },
+    "callout-danger": {
+      "label": "Danger",
+      "description": "Encadré mis en avant (danger)"
+    },
+    "file": {
+      "label": "Fichier",
+      "description": "Fichier à télécharger"
+    },
+    "video": {
+      "label": "Vidéo",
+      "description": "Lire une vidéo dans un lecteur"
+    },
+    "audio": {
+      "label": "Audio",
+      "description": "Lire un fichier audio"
+    },
+    "pdf": {
+      "label": "PDF",
+      "description": "Afficher un PDF intégré"
+    },
+    "page-link": {
+      "label": "Lien de page",
+      "description": "Lien vers une autre page en tant que bloc distinct"
+    },
+    "breadcrumb": {
+      "label": "Fil d’Ariane",
+      "description": "Chemin vers cette page dans la hiérarchie"
+    },
+    "toggle": {
+      "label": "Liste dépliable",
+      "description": "Section repliable"
+    },
+    "columns": {
+      "label": "Colonnes",
+      "description": "Organiser le contenu côte à côte"
+    },
+    "database-embed": {
+      "label": "Intégrer une base de données",
+      "description": "Vue d’une base de données existante directement dans cette page"
+    },
+    "block-math": {
+      "label": "Formule",
+      "description": "Formule LaTeX en tant que bloc distinct"
+    },
+    "saved-query": {
+      "label": "Intégrer une recherche enregistrée",
+      "description": "Résultats en direct d’une recherche enregistrée sur cette page"
+    },
+    "embed": {
+      "label": "Intégration",
+      "description": "Intégrer du contenu externe (YouTube, Figma…)"
+    },
+    "bookmark": {
+      "label": "Signet",
+      "description": "Carte d’aperçu pour un lien"
+    },
+    "transclusion": {
+      "label": "Intégrer du contenu",
+      "description": "Affiche le texte d’une autre page sans le copier"
+    },
+    "table-of-contents": {
+      "label": "Table des matières",
+      "description": "Aperçu de tous les titres de la page"
+    }
+  },
+  "blockGroups": {
+    "basic": "Éléments de base",
+    "lists": "Listes",
+    "callout": "Encadrés",
+    "media": "Médias",
+    "advanced": "Avancé"
+  },
+  "slashMenu": {
+    "label": "Insérer un bloc",
+    "empty": "Aucun bloc ne correspond à « {query} »."
+  },
+  "blockHandle": {
+    "insertBelow": "Insérer un bloc en dessous",
+    "actions": "Actions de bloc"
+  },
+  "blockActions": {
+    "turnInto": "Transformer en",
+    "color": "Couleur",
+    "duplicate": "Dupliquer",
+    "copyLink": "Copier le lien vers le bloc",
+    "delete": "Supprimer"
+  },
+  "blockRemoval": {
+    "title": {
+      "table": "Supprimer le tableau ?",
+      "codeBlock": "Supprimer le bloc de code ?",
+      "blockquote": "Supprimer la citation ?",
+      "bulletList": "Supprimer la liste à puces ?",
+      "orderedList": "Supprimer la liste numérotée ?",
+      "taskList": "Supprimer la liste de tâches ?",
+      "details": "Supprimer le bloc dépliable ?",
+      "callout": "Supprimer l’encadré ?",
+      "columnList": "Supprimer la disposition en colonnes ?",
+      "databaseEmbed": "Supprimer la base de données intégrée ?",
+      "savedQueryEmbed": "Supprimer le bloc de recherche ?",
+      "paragraph": "Supprimer le paragraphe ?",
+      "heading": "Supprimer le titre ?",
+      "block": "Supprimer le bloc ?"
+    },
+    "table": "Le tableau contenant {rows, plural, one {# ligne} many {# lignes} other {# lignes}} et {columns, plural, one {# colonne} many {# colonnes} other {# colonnes}} sera supprimé avec tout son contenu.",
+    "compound": "Le bloc sera supprimé avec tout son contenu.",
+    "text": "{count, plural, one {# caractère sera supprimé} many {# caractères seront supprimés} other {# caractères seront supprimés}}.",
+    "undoHint": "Tu peux annuler la suppression avec Ctrl+Z."
+  },
+  "destructiveConfirm": {
+    "cancel": "Annuler",
+    "confirm": "Supprimer"
+  },
+  "prompt": {
+    "url": {
+      "title": "Insérer une adresse",
+      "description": "Saisis l’adresse complète, par exemple https://exocortex.app/image.png",
+      "placeholder": "https://…"
+    },
+    "latex": {
+      "title": "Saisir une formule",
+      "description": "Notation LaTeX, par exemple {example}",
+      "placeholder": "a^2 + b^2 = c^2"
+    },
+    "page": {
+      "title": "Lier une page",
+      "description": "Choisis une page de cet espace de travail. Si tu saisis un titre qui n’existe pas encore, un lien sera créé pour te proposer de créer la page.",
+      "placeholder": "Rechercher une page…"
+    },
+    "database": {
+      "title": "Intégrer une base de données",
+      "description": "Choisis une base de données existante dans cet espace de travail.",
+      "placeholder": "Rechercher une base de données…"
+    },
+    "savedQuery": {
+      "title": "Intégrer une recherche enregistrée",
+      "description": "Choisis une recherche enregistrée. Le bloc affiche ses résultats et les actualise à chaque ouverture de la page. Les nouvelles recherches se créent dans la section de recherche.",
+      "placeholder": "Rechercher une recherche enregistrée…"
+    },
+    "uploadFailed": "Impossible d’importer le fichier.",
+    "noPageTitle": "Aucune page trouvée",
+    "noPageDescription": "Saisis un titre pour créer un lien vers une page pas encore créée.",
+    "noDatabaseTitle": "Aucune base de données trouvée",
+    "noDatabaseDescription": "Crée d’abord une base de données dans cet espace de travail.",
+    "linkNewTitle": "Lier « {title} » comme page pas encore créée",
+    "noSavedQueryTitle": "Aucune recherche enregistrée trouvée",
+    "noSavedQueryDescription": "Dans la section de recherche, tu peux configurer et enregistrer une recherche ; elle apparaîtra ensuite ici.",
+    "fieldFormula": "Formule",
+    "fieldSearch": "Recherche",
+    "fieldValue": "Valeur",
+    "cancel": "Annuler",
+    "insert": "Insérer"
+  },
+  "colors": {
+    "name": {
+      "default": "Par défaut",
+      "gray": "Gris",
+      "brown": "Marron",
+      "orange": "Orange",
+      "yellow": "Jaune",
+      "green": "Vert",
+      "blue": "Bleu",
+      "purple": "Violet",
+      "pink": "Rose",
+      "red": "Rouge"
+    },
+    "text": "Couleur du texte",
+    "background": "Arrière-plan",
+    "reset": "Supprimer les couleurs"
+  },
+  "selectionToolbar": {
+    "label": "Mise en forme",
+    "turnInto": "Type de bloc : {block}. Transformer en un autre bloc",
+    "mark": {
+      "bold": "Gras",
+      "italic": "Italique",
+      "underline": "Souligné",
+      "strike": "Barré",
+      "code": "Code",
+      "superscript": "Exposant",
+      "subscript": "Indice"
+    },
+    "shortcut": {
+      "bold": "Ctrl+B",
+      "italic": "Ctrl+I",
+      "underline": "Ctrl+U",
+      "strike": "Ctrl+Maj+S",
+      "subscript": "Ctrl+,"
+    },
+    "withShortcut": "{label} ({shortcut})",
+    "link": "Lien",
+    "color": "Couleur",
+    "textColor": "Couleur du texte",
+    "emoji": "Émoji",
+    "comment": "Commenter",
+    "sendToAi": "Envoyer à l’IA",
+    "blockActions": "Actions de bloc"
+  },
+  "codeBlock": {
+    "language": "Langage",
+    "noHighlighting": "Sans coloration",
+    "copy": "Copier le code",
+    "copied": "Code copié"
+  },
+  "emojiMenu": {
+    "search": "Rechercher un émoji",
+    "placeholder": "Rechercher …"
+  },
+  "table": {
+    "label": "Tableau",
+    "addRow": "Insérer une ligne en dessous",
+    "addColumn": "Insérer une colonne à droite",
+    "toggleHeaderRow": "Activer/désactiver la ligne d’en-tête",
+    "mergeOrSplit": "Fusionner ou scinder les cellules",
+    "deleteRow": "Supprimer la ligne",
+    "deleteColumn": "Supprimer la colonne",
+    "deleteTable": "Supprimer le tableau"
+  },
+  "linkBubble": {
+    "label": "Lien",
+    "open": "Ouvrir",
+    "edit": "Modifier",
+    "remove": "Supprimer"
+  },
+  "linkMenu": {
+    "inputLabel": "Adresse ou titre de page",
+    "placeholder": "https://… ou rechercher une page",
+    "apply": "Appliquer",
+    "suggestions": "Pages correspondantes",
+    "remove": "Supprimer",
+    "open": "Ouvrir"
+  },
+  "linkNavigation": {
+    "resolveFailed": "Impossible de résoudre le lien.",
+    "createFailed": "Impossible de créer la page.",
+    "ambiguousTitle": "Plusieurs pages s’appellent « {title} »",
+    "ambiguousDescription": "Choisis la page souhaitée.",
+    "inTrash": "Dans la corbeille",
+    "cancel": "Annuler",
+    "missingTitle": "Page introuvable",
+    "missingDescription": "Il n’y a aucune page intitulée « {title} » dans cet espace de travail.",
+    "createPage": "Créer la page",
+    "errorTitle": "Impossible d’ouvrir le lien",
+    "close": "Fermer"
+  },
+  "mentionMenu": {
+    "label": "Insérer une mention",
+    "empty": "Aucun résultat pour « {query} ».",
+    "page": "Page",
+    "person": "Personne",
+    "today": "Aujourd’hui",
+    "tomorrow": "Demain",
+    "yesterday": "Hier",
+    "typedDate": "Date saisie"
+  },
+  "pageLink": {
+    "unresolved": {
+      "empty": "Aucune destination sélectionnée",
+      "deleted": "Page de destination supprimée",
+      "missing": "La page n’existe pas"
+    },
+    "unresolvedWithTitle": "{title} : {reason}",
+    "searching": "Recherche de « {title} »",
+    "resolving": "Résolution du lien",
+    "createPage": "Créer la page",
+    "choosePage": "Choisir une page",
+    "changePage": "Changer de page",
+    "inTrash": "Dans la corbeille",
+    "ambiguous": "Plusieurs pages portent ce titre"
+  },
+  "transclusion": {
+    "fallbackTitle": "Contenu intégré",
+    "inTrash": "Dans la corbeille",
+    "openSource": "Ouvrir la source",
+    "changePage": "Changer de page",
+    "choosePage": "Choisir une page",
+    "noSourceTitle": "Aucune source sélectionnée",
+    "noSourceDescription": "Choisis la page dont le contenu doit apparaître ici. Le texte reste sur la page d’origine et est simplement affiché ici.",
+    "selfTitle": "Une page ne peut pas s’intégrer elle-même",
+    "selfDescription": "Choisis une autre page comme source.",
+    "loading": "Chargement du contenu intégré",
+    "unreachableTitle": "Source inaccessible",
+    "unreachableDescription": "La page intégrée a été supprimée ou tu n’as pas l’autorisation de la lire. Le lien est conservé.",
+    "missingBlockTitle": "La section intégrée n’existe plus",
+    "missingBlockDescription": "La page « {title} » existe toujours, mais le bloc avec l’identifiant {blockId} n’y figure plus.",
+    "showWholePage": "Afficher toute la page",
+    "nested": "Contient {count, plural, one {# autre intégration} many {# d’autres intégrations} other {# autres intégrations}}, qui ne sont pas résolues ici.",
+    "wholePage": "Page entière",
+    "section": "Section",
+    "chooserLabel": "Que veux-tu afficher ici ?",
+    "chooseWholePage": "Toute la page",
+    "blocksLoading": "Chargement des blocs…",
+    "noBlocks": "Cette page ne contient aucun bloc nommé.",
+    "headingSection": "Titre {level}, avec toute la section en dessous"
+  },
+  "wikiLink": {
+    "missing": "« {title} » n’existe pas dans cet espace de travail"
+  }
+}

@@ -18,6 +18,7 @@ import {
   SuperscriptIcon,
   UnderlineIcon,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -53,19 +54,21 @@ interface SelectionToolbarProps {
   workspaceId: string;
 }
 
+/** Marks with a keystroke; their key names are in `editor.selectionToolbar.shortcut`. */
+type ShortcutMark = 'bold' | 'italic' | 'underline' | 'strike' | 'subscript';
+
 interface MarkButton {
-  id: string;
-  label: string;
-  /** Absent where the editor has no keystroke for it; see the code entry. */
-  shortcut?: string;
+  /** Also the key of its name in `editor.selectionToolbar.mark`. */
+  id: 'bold' | 'italic' | 'underline' | 'strike' | 'code' | 'superscript' | 'subscript';
+  /**
+   * Key of its keystroke in `editor.selectionToolbar.shortcut`, where the key
+   * names are spelled per language (Strg, Ctrl). Absent where the editor has no
+   * keystroke for it; see the code entry.
+   */
+  shortcut?: ShortcutMark;
   icon: React.ComponentType<{ className?: string }>;
   mark: string;
   toggle: (editor: Editor) => void;
-}
-
-/** Label plus keystroke, or the label alone where there is no keystroke. */
-function markButtonName(button: MarkButton): string {
-  return button.shortcut === undefined ? button.label : `${button.label} (${button.shortcut})`;
 }
 
 /**
@@ -76,39 +79,34 @@ function markButtonName(button: MarkButton): string {
 const MARK_BUTTONS: readonly MarkButton[] = [
   {
     id: 'bold',
-    label: 'Fett',
-    shortcut: 'Strg+B',
+    shortcut: 'bold',
     icon: BoldIcon,
     mark: 'bold',
     toggle: (editor) => editor.chain().focus().toggleBold().run(),
   },
   {
     id: 'italic',
-    label: 'Kursiv',
-    shortcut: 'Strg+I',
+    shortcut: 'italic',
     icon: ItalicIcon,
     mark: 'italic',
     toggle: (editor) => editor.chain().focus().toggleItalic().run(),
   },
   {
     id: 'underline',
-    label: 'Unterstrichen',
-    shortcut: 'Strg+U',
+    shortcut: 'underline',
     icon: UnderlineIcon,
     mark: 'underline',
     toggle: (editor) => editor.chain().focus().toggleUnderline().run(),
   },
   {
     id: 'strike',
-    label: 'Durchgestrichen',
-    shortcut: 'Strg+Shift+S',
+    shortcut: 'strike',
     icon: StrikethroughIcon,
     mark: 'strike',
     toggle: (editor) => editor.chain().focus().toggleStrike().run(),
   },
   {
     id: 'code',
-    label: 'Code',
     // No shortcut: Strg+E belongs to quick capture (issue #81).
     icon: CodeIcon,
     mark: 'code',
@@ -116,7 +114,6 @@ const MARK_BUTTONS: readonly MarkButton[] = [
   },
   {
     id: 'superscript',
-    label: 'Hochgestellt',
     // No shortcut: Strg+. belongs to the context panel (issue #81).
     icon: SuperscriptIcon,
     mark: 'superscript',
@@ -124,8 +121,7 @@ const MARK_BUTTONS: readonly MarkButton[] = [
   },
   {
     id: 'subscript',
-    label: 'Tiefgestellt',
-    shortcut: 'Strg+,',
+    shortcut: 'subscript',
     icon: SubscriptIcon,
     mark: 'subscript',
     toggle: (editor) => editor.chain().focus().toggleSubscript().run(),
@@ -162,8 +158,18 @@ export function SelectionToolbar({
   documentId,
   workspaceId,
 }: SelectionToolbarProps) {
+  const t = useTranslations('editor.selectionToolbar');
   const { handOver } = useAiSelection();
   const { compose } = useCommentAnchor();
+
+  /** Label plus keystroke, or the label alone where there is no keystroke. */
+  const markButtonName = (button: MarkButton): string =>
+    button.shortcut === undefined
+      ? t(`mark.${button.id}`)
+      : t('withShortcut', {
+          label: t(`mark.${button.id}`),
+          shortcut: t(`shortcut.${button.shortcut}`),
+        });
 
   /**
    * Opens a comment thread on the selected passage.
@@ -219,7 +225,7 @@ export function SelectionToolbar({
         return state.doc.textBetween(from, to, ' ').trim().length > 0;
       }}
     >
-      <Toolbar aria-label="Formatierung" data-testid="selection-toolbar">
+      <Toolbar aria-label={t('label')} data-testid="selection-toolbar">
         <TurnIntoMenu
           editor={editor}
           catalog={catalog}
@@ -229,7 +235,7 @@ export function SelectionToolbar({
                 <Button
                   variant="ghost"
                   size="sm"
-                  aria-label={`Blocktyp: ${active.blockLabel}. In anderen Block umwandeln`}
+                  aria-label={t('turnInto', { block: active.blockLabel })}
                   data-testid="turn-into-trigger"
                 />
               }
@@ -279,8 +285,8 @@ export function SelectionToolbar({
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  aria-label="Link"
-                  title="Link"
+                  aria-label={t('link')}
+                  title={t('link')}
                   aria-pressed={active.link}
                   data-pressed={active.link ? '' : undefined}
                   data-testid="mark-link"
@@ -301,8 +307,8 @@ export function SelectionToolbar({
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  aria-label="Farbe"
-                  title="Textfarbe"
+                  aria-label={t('color')}
+                  title={t('textColor')}
                   data-testid="color-trigger"
                 />
               }
@@ -320,8 +326,8 @@ export function SelectionToolbar({
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  aria-label="Emoji"
-                  title="Emoji"
+                  aria-label={t('emoji')}
+                  title={t('emoji')}
                   data-testid="emoji-trigger"
                 />
               }
@@ -338,8 +344,8 @@ export function SelectionToolbar({
             <Button
               variant="ghost"
               size="icon-sm"
-              aria-label="Kommentieren"
-              title="Kommentieren"
+              aria-label={t('comment')}
+              title={t('comment')}
               data-testid="selection-to-comment"
               // Same reason as the mark buttons: taking the focus on mousedown drops
               // the ProseMirror selection, and the quote would be empty.
@@ -356,8 +362,8 @@ export function SelectionToolbar({
             <Button
               variant="ghost"
               size="icon-sm"
-              aria-label="An KI schicken"
-              title="An KI schicken"
+              aria-label={t('sendToAi')}
+              title={t('sendToAi')}
               data-testid="selection-to-ai"
               // Same reason as the mark buttons: focus on mousedown would drop the
               // ProseMirror selection, and there would be nothing left to hand over.
@@ -382,8 +388,8 @@ export function SelectionToolbar({
                   <Button
                     variant="ghost"
                     size="icon-sm"
-                    aria-label="Blockaktionen"
-                    title="Blockaktionen"
+                    aria-label={t('blockActions')}
+                    title={t('blockActions')}
                     data-testid="block-actions-trigger"
                   />
                 }

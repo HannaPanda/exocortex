@@ -3,6 +3,7 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 import { BookmarkPlusIcon, SaveIcon, Trash2Icon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -67,11 +68,7 @@ import { SavedQueryResults } from './saved-query-results';
  * on screen is exactly what will be stored.
  */
 
-const LAYOUT_LABELS: Readonly<Record<SavedQueryLayout, string>> = {
-  LIST: 'Liste',
-  TABLE: 'Tabelle',
-  CARDS: 'Karten',
-};
+const LAYOUTS: readonly SavedQueryLayout[] = ['LIST', 'TABLE', 'CARDS'];
 
 export interface SavedQueryPageProps {
   workspaceId: string;
@@ -81,6 +78,7 @@ export interface SavedQueryPageProps {
 
 export function SavedQueryPage({ workspaceId, savedQueryId }: SavedQueryPageProps) {
   const router = useRouter();
+  const t = useTranslations('search.page');
   const stored = useSavedQuery(savedQueryId);
   const createSavedQuery = useCreateSavedQuery(workspaceId);
   const updateSavedQuery = useUpdateSavedQuery(workspaceId);
@@ -124,24 +122,20 @@ export function SavedQueryPage({ workspaceId, savedQueryId }: SavedQueryPageProp
     .at(0);
 
   if (savedQueryId !== undefined && stored.isPending) {
-    return <LoadingState variant="skeleton" rows={6} label="Gespeicherte Suche wird geladen" />;
+    return <LoadingState variant="skeleton" rows={6} label={t('loading')} />;
   }
   if (savedQueryId !== undefined && stored.isError) {
-    return (
-      <ErrorState title="Gespeicherte Suche nicht geladen" onRetry={() => void stored.refetch()} />
-    );
+    return <ErrorState title={t('loadFailed')} onRetry={() => void stored.refetch()} />;
   }
 
   return (
     <AppPage maxWidth="max-w-4xl" className="flex flex-col gap-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="exocortex-page-title">{savedQuery?.name ?? 'Suche'}</h1>
+          <h1 className="exocortex-page-title">{savedQuery?.name ?? t('title')}</h1>
           <p className="mt-1 max-w-measure text-sm text-muted-foreground">
             {savedQuery?.description ??
-              (savedQueryId === undefined
-                ? 'Suche über alle Seiten dieses Arbeitsbereichs, mit Filtern nach Ort, Art, Eigenschaften, Entitäten und Zeitraum. Was sich lohnt, lässt sich speichern.'
-                : 'Eine gespeicherte Suche. Die Treffer werden bei jedem Öffnen neu ermittelt.')}
+              (savedQueryId === undefined ? t('introFresh') : t('introStored'))}
           </p>
         </div>
         <div className="flex shrink-0 gap-2">
@@ -151,7 +145,7 @@ export function SavedQueryPage({ workspaceId, savedQueryId }: SavedQueryPageProp
               disabled={!isNarrowedSavedQuery(definition)}
               onClick={() => setSaveOpen(true)}
             >
-              <BookmarkPlusIcon /> Suche speichern
+              <BookmarkPlusIcon /> {t('save')}
             </Button>
           ) : (
             <>
@@ -160,7 +154,7 @@ export function SavedQueryPage({ workspaceId, savedQueryId }: SavedQueryPageProp
                 data-testid="saved-query-delete"
                 onClick={() => setConfirmDelete(true)}
               >
-                <Trash2Icon /> Löschen
+                <Trash2Icon /> {t('delete')}
               </Button>
               <Button
                 data-testid="saved-query-update"
@@ -172,7 +166,7 @@ export function SavedQueryPage({ workspaceId, savedQueryId }: SavedQueryPageProp
                   });
                 }}
               >
-                <SaveIcon /> Änderungen speichern
+                <SaveIcon /> {t('saveChanges')}
               </Button>
             </>
           )}
@@ -228,15 +222,12 @@ export function SavedQueryPage({ workspaceId, savedQueryId }: SavedQueryPageProp
       <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Gespeicherte Suche löschen</DialogTitle>
-            <DialogDescription>
-              Gelöscht wird nur die Frage. Die Seiten, die sie gefunden hat, bleiben unverändert
-              liegen, wo sie sind.
-            </DialogDescription>
+            <DialogTitle>{t('deleteTitle')}</DialogTitle>
+            <DialogDescription>{t('deleteDescription')}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setConfirmDelete(false)}>
-              Abbrechen
+              {t('cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -249,7 +240,7 @@ export function SavedQueryPage({ workspaceId, savedQueryId }: SavedQueryPageProp
                 });
               }}
             >
-              Löschen
+              {t('delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -276,10 +267,11 @@ function DisplayOptions({
   onDisplayChange: (next: SavedQueryDisplay) => void;
   onSidebarChange: (next: boolean) => void;
 }) {
+  const t = useTranslations('search.page');
   return (
     <div className="flex flex-wrap items-end gap-4 border-t border-border pt-4">
       <div className="grid gap-1.5">
-        <Label htmlFor="saved-query-layout">Darstellung</Label>
+        <Label htmlFor="saved-query-layout">{t('layoutLabel')}</Label>
         <Select
           value={display.layout}
           onValueChange={(next) =>
@@ -287,12 +279,12 @@ function DisplayOptions({
           }
         >
           <SelectTrigger id="saved-query-layout" data-testid="saved-query-layout">
-            <SelectValue>{() => LAYOUT_LABELS[display.layout]}</SelectValue>
+            <SelectValue>{() => t(`layout.${display.layout}`)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {(Object.keys(LAYOUT_LABELS) as SavedQueryLayout[]).map((layout) => (
+            {LAYOUTS.map((layout) => (
               <SelectItem key={layout} value={layout}>
-                {LAYOUT_LABELS[layout]}
+                {t(`layout.${layout}`)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -300,7 +292,7 @@ function DisplayOptions({
       </div>
       <Label htmlFor="saved-query-sidebar" className="gap-2 pb-2 text-sm font-normal">
         <Switch id="saved-query-sidebar" checked={inSidebar} onCheckedChange={onSidebarChange} />
-        In der Navigation zeigen
+        {t('inSidebar')}
       </Label>
     </div>
   );
@@ -316,10 +308,11 @@ function ResultsSection({
   display: SavedQueryDisplay;
   worthRunning: boolean;
 }) {
+  const t = useTranslations('search.page');
   return (
     <section className="flex flex-col gap-2 border-t border-border pt-4">
       <div className="flex items-baseline justify-between">
-        <h2 className="text-sm font-medium">Treffer</h2>
+        <h2 className="text-sm font-medium">{t('resultsHeading')}</h2>
         {preview.data === undefined ? null : (
           <span className="exocortex-numeric text-xs text-muted-foreground">
             {`${preview.data.results.length} · ${preview.data.tookMs} ms · ${preview.data.adapter}`}
@@ -328,15 +321,12 @@ function ResultsSection({
       </div>
 
       {!worthRunning ? (
-        <EmptyState
-          title="Noch keine Abfrage"
-          description="Gib einen Suchbegriff ein oder grenze oben ein, wo gesucht werden soll."
-        />
+        <EmptyState title={t('noQueryTitle')} description={t('noQueryDescription')} />
       ) : preview.isPending ? (
-        <LoadingState variant="skeleton" rows={5} label="Treffer werden ermittelt" />
+        <LoadingState variant="skeleton" rows={5} label={t('resultsLoading')} />
       ) : preview.isError ? (
         <ErrorState
-          title="Abfrage nicht ausgeführt"
+          title={t('queryFailed')}
           description={
             preview.error instanceof ApiError ? messageForCode(preview.error.code) : undefined
           }
@@ -364,6 +354,8 @@ function SaveDialog({
   onOpenChange: (open: boolean) => void;
   onSave: (input: { name: string; description: string; inSidebar: boolean }) => void;
 }) {
+  const t = useTranslations('search.page.saveDialog');
+  const tPage = useTranslations('search.page');
   const [name, setName] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [inSidebar, setInSidebar] = React.useState(false);
@@ -372,31 +364,28 @@ function SaveDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Suche speichern</DialogTitle>
-          <DialogDescription>
-            Gespeichert wird die Frage, nicht die Trefferliste. Beim nächsten Öffnen wird sie neu
-            beantwortet.
-          </DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-3">
           <div className="grid gap-1.5">
-            <Label htmlFor="saved-query-name">Name</Label>
+            <Label htmlFor="saved-query-name">{t('nameLabel')}</Label>
             <Input
               id="saved-query-name"
               autoFocus
               value={name}
               data-testid="saved-query-name"
-              placeholder="Offene Aufgaben mit hoher Priorität"
+              placeholder={t('namePlaceholder')}
               onChange={(event) => setName(event.target.value)}
             />
           </div>
           <div className="grid gap-1.5">
-            <Label htmlFor="saved-query-description">Beschreibung</Label>
+            <Label htmlFor="saved-query-description">{t('descriptionLabel')}</Label>
             <Textarea
               id="saved-query-description"
               rows={2}
               value={description}
-              placeholder="Optional: wofür diese Suche da ist"
+              placeholder={t('descriptionPlaceholder')}
               onChange={(event) => setDescription(event.target.value)}
             />
           </div>
@@ -406,12 +395,12 @@ function SaveDialog({
               checked={inSidebar}
               onCheckedChange={setInSidebar}
             />
-            Als Smart View in die Navigation aufnehmen
+            {t('inSidebar')}
           </Label>
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Abbrechen
+            {tPage('cancel')}
           </Button>
           <Button
             data-testid="saved-query-save-submit"
@@ -420,7 +409,7 @@ function SaveDialog({
               onSave({ name: name.trim(), description: description.trim(), inSidebar })
             }
           >
-            Speichern
+            {t('submit')}
           </Button>
         </DialogFooter>
       </DialogContent>

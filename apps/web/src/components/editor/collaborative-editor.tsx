@@ -9,6 +9,7 @@ import { Placeholder } from '@tiptap/extension-placeholder';
 import { type Mark as PmMark, type Node as PmNode } from '@tiptap/pm/model';
 import { type EditorView } from '@tiptap/pm/view';
 import { type Editor, EditorContent, ReactNodeViewRenderer, useEditor } from '@tiptap/react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -20,7 +21,6 @@ import {
   type BlockCatalogEntry,
   BREADCRUMB_PATH_ATTRIBUTE,
   type BreadcrumbCrumb,
-  buildBlockCatalog,
   buildEditorExtensions,
   type LinkTarget,
   parseLinkHref,
@@ -30,6 +30,7 @@ import { ErrorState, LoadingState } from '@exocortex/ui';
 
 import { DatabaseEmbedNodeView } from '@/components/database/database-embed-node-view';
 import { BlockHandle } from '@/components/editor/block-handle';
+import { useLocalizedBlockCatalog } from '@/components/editor/block-labels';
 import { useBlockPrompt } from '@/components/editor/block-prompt';
 import { CodeBlockToolbar } from '@/components/editor/code-block-toolbar';
 import {
@@ -233,6 +234,7 @@ export function CollaborativeEditor({
   access,
   breadcrumb,
 }: CollaborativeEditorProps) {
+  const t = useTranslations('editor.surface');
   const { connection, error, synced, ready, retry } = useCollaborationConnection({
     documentId,
     documentTitle,
@@ -240,13 +242,13 @@ export function CollaborativeEditor({
   });
 
   if (error !== null) {
-    return <ErrorState title="Editor nicht verfügbar" description={error} onRetry={retry} />;
+    return <ErrorState title={t('unavailable')} description={error} onRetry={retry} />;
   }
   // `ready`, not just `connection`: an editor built over a document that has
   // not arrived yet leaves an empty paragraph behind on every visit. See
   // `CollaborationConnectionState.ready`.
   if (connection === null || !ready) {
-    return <LoadingState label="Editor wird verbunden …" />;
+    return <LoadingState label={t('connecting')} />;
   }
 
   return (
@@ -296,8 +298,10 @@ function EditorSurface({
   currentUser,
   breadcrumb,
 }: EditorSurfaceProps) {
-  // One catalog for the slash menu, the turn-into menu and the block menu.
-  const catalog = React.useMemo(() => buildBlockCatalog(), []);
+  const t = useTranslations('editor.surface');
+  // One catalog for the slash menu, the turn-into menu and the block menu, with
+  // the block names in the reader's language.
+  const catalog = useLocalizedBlockCatalog();
 
   /*
    * The suggestion plugins must exist before the editor and must never be
@@ -370,7 +374,7 @@ function EditorSurface({
         try {
           uploaded = await uploadAttachment({ workspaceId, documentId, file });
         } catch {
-          setUploadError('Eine Datei konnte nicht hochgeladen werden.');
+          setUploadError(t('uploadFailed'));
           continue;
         }
         instance.chain().focus().insertContentAt(insertAt, mediaNodeFor(file.type, uploaded)).run();
@@ -378,8 +382,14 @@ function EditorSurface({
         insertAt = instance.state.selection.to;
       }
     },
-    [documentId, workspaceId],
+    [documentId, t, workspaceId],
   );
+
+  // Two strings in the editor's own options. They are in the dependency list
+  // below, so a change of language rebuilds the editor once; they are
+  // constant otherwise, which is what that list requires.
+  const placeholder = t('placeholder');
+  const contentLabel = t('contentLabel');
 
   const editor = useEditor(
     {
@@ -414,8 +424,7 @@ function EditorSurface({
             user: { name: currentUser.name, color: presenceColor(currentUser.id) },
           }),
           Placeholder.configure({
-            placeholder: ({ node }) =>
-              node.type.name === 'paragraph' ? 'Schreibe etwas oder tippe „/“ für Befehle …' : '',
+            placeholder: ({ node }) => (node.type.name === 'paragraph' ? placeholder : ''),
             // Every empty block gets the hint, not only the first one.
             showOnlyCurrent: true,
             includeChildren: true,
@@ -448,7 +457,7 @@ function EditorSurface({
           // the one whose hover area reaches into the gutter (`globals.css`).
           class: 'exocortex-editor exocortex-editor-canvas',
           'data-testid': 'editor-surface',
-          'aria-label': 'Seiteninhalt',
+          'aria-label': contentLabel,
         },
         handleClickOn: (view, _pos, node, _nodePos, event) =>
           followFromEvent(view, node, event, followLinkRef),
@@ -487,6 +496,8 @@ function EditorSurface({
       mentionExtension,
       commentMarkers,
       wikiLinkMarkers,
+      placeholder,
+      contentLabel,
     ],
   );
 
@@ -497,7 +508,7 @@ function EditorSurface({
     >
       {!synced ? (
         <p className="absolute top-0 right-0 text-xs text-muted-foreground" role="status">
-          wird synchronisiert …
+          {t('syncing')}
         </p>
       ) : null}
       <DatabaseEmbedPromptContext.Provider value={askDatabaseEmbedRef}>

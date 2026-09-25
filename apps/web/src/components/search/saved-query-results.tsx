@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type SavedQueryDisplay, type SavedQueryHit } from '@exocortex/contracts';
@@ -8,7 +9,6 @@ import { cn, EmptyState } from '@exocortex/ui';
 
 import { DocumentIcon } from '@/components/document/document-icon';
 import { documentHref } from '@/lib/document-href';
-import { formatRelativeTime } from '@/lib/relative-time';
 
 /**
  * The answer to a saved query, in the three layouts `SavedQueryDisplay` offers
@@ -35,8 +35,16 @@ function plainSnippet(snippet: string): string {
   return snippet.replace(/<\/?mark>/g, '');
 }
 
-function pathLabel(hit: SavedQueryHit): string {
-  return hit.path.length === 0 ? 'oberste Ebene' : hit.path.map((entry) => entry.title).join(' › ');
+/** The hit's place in the tree, or the name for the top level from the catalogue. */
+function pathLabel(hit: SavedQueryHit, topLevel: string): string {
+  return hit.path.length === 0 ? topLevel : hit.path.map((entry) => entry.title).join(' › ');
+}
+
+/** "vor 3 Stunden", in the reader's language. */
+function useUpdatedLabel(): (iso: string) => string {
+  const format = useFormatter();
+  const now = new Date();
+  return (iso) => format.relativeTime(new Date(iso), now);
 }
 
 export function SavedQueryResults({
@@ -46,15 +54,10 @@ export function SavedQueryResults({
   emptyDescription,
   className,
 }: SavedQueryResultsProps) {
+  const t = useTranslations('search.results');
   if (hits.length === 0) {
     return (
-      <EmptyState
-        title="Nichts gefunden"
-        description={
-          emptyDescription ??
-          'Zu dieser Abfrage gibt es gerade nichts. Das kann sich morgen ändern, die Suche bleibt gespeichert.'
-        }
-      />
+      <EmptyState title={t('emptyTitle')} description={emptyDescription ?? t('emptyDescription')} />
     );
   }
 
@@ -81,15 +84,15 @@ export function SavedQueryResults({
       )}
 
       {truncated ? (
-        <p className="mt-2 px-1 text-xs text-muted-foreground">
-          Das ist nicht die ganze Antwort. Erhöhe das Limit der Abfrage, um mehr zu sehen.
-        </p>
+        <p className="mt-2 px-1 text-xs text-muted-foreground">{t('truncated')}</p>
       ) : null}
     </div>
   );
 }
 
 function HitRow({ hit, display }: { hit: SavedQueryHit; display: SavedQueryDisplay }) {
+  const t = useTranslations('search.results');
+  const updatedLabel = useUpdatedLabel();
   return (
     <Link
       href={documentHref(hit.workspaceId, hit.documentId, hit.type)}
@@ -107,15 +110,17 @@ function HitRow({ hit, display }: { hit: SavedQueryHit; display: SavedQueryDispl
           <span className="font-medium">{hit.title}</span>
           {display.showUpdatedAt ? (
             <span className="exocortex-numeric text-xs text-muted-foreground">
-              {formatRelativeTime(hit.updatedAt)}
+              {updatedLabel(hit.updatedAt)}
             </span>
           ) : null}
           {hit.archivedAt === null ? null : (
-            <span className="text-xs text-muted-foreground">im Papierkorb</span>
+            <span className="text-xs text-muted-foreground">{t('inTrash')}</span>
           )}
         </span>
         {display.showPath ? (
-          <span className="block truncate text-xs text-muted-foreground">{pathLabel(hit)}</span>
+          <span className="block truncate text-xs text-muted-foreground">
+            {pathLabel(hit, t('topLevel'))}
+          </span>
         ) : null}
         {display.showSnippet && hit.snippet.length > 0 ? (
           <span className="mt-0.5 block line-clamp-2 text-sm text-muted-foreground">
@@ -128,6 +133,8 @@ function HitRow({ hit, display }: { hit: SavedQueryHit; display: SavedQueryDispl
 }
 
 function HitCard({ hit, display }: { hit: SavedQueryHit; display: SavedQueryDisplay }) {
+  const t = useTranslations('search.results');
+  const updatedLabel = useUpdatedLabel();
   return (
     <Link
       href={documentHref(hit.workspaceId, hit.documentId, hit.type)}
@@ -147,7 +154,9 @@ function HitCard({ hit, display }: { hit: SavedQueryHit; display: SavedQueryDisp
         <span className="min-w-0 flex-1 truncate font-medium">{hit.title}</span>
       </span>
       {display.showPath ? (
-        <span className="truncate text-xs text-muted-foreground">{pathLabel(hit)}</span>
+        <span className="truncate text-xs text-muted-foreground">
+          {pathLabel(hit, t('topLevel'))}
+        </span>
       ) : null}
       {display.showSnippet && hit.snippet.length > 0 ? (
         <span className="line-clamp-3 text-sm text-muted-foreground">
@@ -156,7 +165,7 @@ function HitCard({ hit, display }: { hit: SavedQueryHit; display: SavedQueryDisp
       ) : null}
       {display.showUpdatedAt ? (
         <span className="exocortex-numeric mt-auto pt-1 text-xs text-muted-foreground">
-          {formatRelativeTime(hit.updatedAt)}
+          {updatedLabel(hit.updatedAt)}
         </span>
       ) : null}
     </Link>
@@ -170,22 +179,24 @@ function HitTable({
   hits: readonly SavedQueryHit[];
   display: SavedQueryDisplay;
 }) {
+  const t = useTranslations('search.results');
+  const updatedLabel = useUpdatedLabel();
   return (
     <div className="overflow-x-auto rounded-md border border-border">
       <table className="w-full text-sm">
         <thead className="border-b border-border text-left text-xs text-muted-foreground uppercase">
           <tr>
             <th scope="col" className="px-3 py-2 font-medium">
-              Seite
+              {t('columnPage')}
             </th>
             {display.showPath ? (
               <th scope="col" className="px-3 py-2 font-medium">
-                Ort
+                {t('columnPath')}
               </th>
             ) : null}
             {display.showUpdatedAt ? (
               <th scope="col" className="px-3 py-2 font-medium">
-                Geändert
+                {t('columnUpdated')}
               </th>
             ) : null}
           </tr>
@@ -209,11 +220,13 @@ function HitTable({
                 </Link>
               </td>
               {display.showPath ? (
-                <td className="px-3 py-2 text-xs text-muted-foreground">{pathLabel(hit)}</td>
+                <td className="px-3 py-2 text-xs text-muted-foreground">
+                  {pathLabel(hit, t('topLevel'))}
+                </td>
               ) : null}
               {display.showUpdatedAt ? (
                 <td className="exocortex-numeric px-3 py-2 text-xs text-muted-foreground">
-                  {formatRelativeTime(hit.updatedAt)}
+                  {updatedLabel(hit.updatedAt)}
                 </td>
               ) : null}
             </tr>

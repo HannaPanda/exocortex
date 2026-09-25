@@ -1,5 +1,6 @@
 'use client';
 
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -35,27 +36,29 @@ import { useUpdateDocument } from '@/lib/api/document-queries';
 import { DocumentIcon } from './document-icon';
 import { PageIconPicker } from './page-icon-picker';
 
-/** Also reused by the context panel's properties tab (issue #17). */
+/**
+ * The rule modes in the order the select offers them; each one's name is
+ * `document.aiRuleModes.<mode>`, which the context panel's properties tab
+ * reads too (issue #17).
+ */
+export const AI_RULE_MODES: readonly AiRuleMode[] = ['off', 'always', 'on_demand'];
+
+/**
+ * The German names of the rule modes, for `ai-rules-panel.tsx` only, which
+ * has not moved into the catalogues yet. Everything in this namespace reads
+ * `document.aiRuleModes` instead; delete this once that panel does too.
+ */
 export const AI_RULE_MODE_LABELS: Record<AiRuleMode, string> = {
   off: 'Keine Regel',
   always: 'Immer anwenden',
   on_demand: 'Auf Anfrage',
 };
 
-const LAYOUTS: { value: DocumentLayout; label: string; hint: string; bars: string[] }[] = [
-  {
-    value: 'narrow',
-    label: 'Schmal',
-    hint: 'Lesebreite, 68 Zeichen',
-    bars: ['w-1/2', 'w-1/2', 'w-1/3'],
-  },
-  { value: 'wide', label: 'Breit', hint: 'Text mit Tabellen', bars: ['w-3/4', 'w-3/4', 'w-1/2'] },
-  {
-    value: 'full',
-    label: 'Vollbreite',
-    hint: 'Datenbanken, breite Tabellen',
-    bars: ['w-full', 'w-full', 'w-2/3'],
-  },
+/** Label and hint of each are `document.propertiesDialog.layouts.<value>`. */
+const LAYOUTS: { value: DocumentLayout; bars: string[] }[] = [
+  { value: 'narrow', bars: ['w-1/2', 'w-1/2', 'w-1/3'] },
+  { value: 'wide', bars: ['w-3/4', 'w-3/4', 'w-1/2'] },
+  { value: 'full', bars: ['w-full', 'w-full', 'w-2/3'] },
 ];
 
 export interface PagePropertiesDialogProps {
@@ -84,6 +87,9 @@ export function PagePropertiesDialog({
   open,
   onOpenChange,
 }: PagePropertiesDialogProps) {
+  const t = useTranslations('document.propertiesDialog');
+  const tDocument = useTranslations('document');
+  const format = useFormatter();
   const updateDocument = useUpdateDocument(workspaceId);
   const setAiRule = useSetAiRule();
 
@@ -154,17 +160,14 @@ export function PagePropertiesDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Seiteneigenschaften</DialogTitle>
-          <DialogDescription>
-            Titel, Symbol, Breite der Seite, ob sie ihre Unterseiten zusammenfasst und ob die KI sie
-            als Regel behandelt.
-          </DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         <DialogBody className="flex flex-col gap-4">
           <div className="flex gap-2">
             <div className="flex flex-col gap-1.5">
-              <Label>Symbol</Label>
+              <Label>{t('symbol')}</Label>
               {/* The dialog only edits the draft; nothing is written until
                   "Speichern", the same as the title next to it. */}
               <PageIconPicker
@@ -179,7 +182,7 @@ export function PagePropertiesDialog({
                   <button
                     type="button"
                     disabled={readOnly}
-                    aria-label="Symbol wählen"
+                    aria-label={t('chooseSymbol')}
                     data-testid="page-properties-icon"
                     className={cn(
                       'grid size-9 place-items-center rounded-md border border-border transition-colors',
@@ -197,7 +200,7 @@ export function PagePropertiesDialog({
               />
             </div>
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-              <Label htmlFor="page-title">Titel</Label>
+              <Label htmlFor="page-title">{t('titleLabel')}</Label>
               <Input
                 id="page-title"
                 name="title"
@@ -213,15 +216,15 @@ export function PagePropertiesDialog({
                   dialog. */}
               {titleInvalid ? (
                 <p id="page-title-error" className="text-xs text-destructive-text">
-                  Gib der Seite einen Titel, sonst lässt sie sich nicht speichern.
+                  {t('titleMissing')}
                 </p>
               ) : null}
             </div>
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label>Layout</Label>
-            <div className="grid grid-cols-3 gap-2" role="group" aria-label="Layout">
+            <Label>{t('layout')}</Label>
+            <div className="grid grid-cols-3 gap-2" role="group" aria-label={t('layout')}>
               {LAYOUTS.map((option) => (
                 <button
                   key={option.value}
@@ -247,9 +250,9 @@ export function PagePropertiesDialog({
                       />
                     ))}
                   </span>
-                  <span className="text-sm font-medium">{option.label}</span>
+                  <span className="text-sm font-medium">{t(`layouts.${option.value}.label`)}</span>
                   <span className="text-micro leading-tight text-muted-foreground">
-                    {option.hint}
+                    {t(`layouts.${option.value}.hint`)}
                   </span>
                 </button>
               ))}
@@ -265,34 +268,26 @@ export function PagePropertiesDialog({
                 checked={overviewMode === 'auto'}
                 onCheckedChange={(checked) => setOverviewMode(checked ? 'auto' : 'off')}
               />
-              Übersichtsseite
+              {t('overviewPage')}
             </Label>
-            <p className="text-xs text-muted-foreground">
-              Die Seite zeigt ihre Unterseiten mit einer kurzen Beschreibung und einem Vorspann, der
-              beim Ändern der Unterseiten neu geschrieben wird. Dein eigener Seitentext bleibt
-              unangetastet: die Übersicht steht darunter und wird nie hineingeschrieben.
-            </p>
+            <p className="text-xs text-muted-foreground">{t('overviewHint')}</p>
           </div>
 
           <div className="flex flex-col gap-1.5 border-t border-border pt-4">
-            <Label htmlFor="ai-rule-mode">KI-Regel</Label>
-            <p className="text-xs text-muted-foreground">
-              &quot;Immer anwenden&quot; hängt den Seiteninhalt an jeden Systemprompt an. &quot;Auf
-              Anfrage&quot; nennt der KI nur die Beschreibung; den Inhalt lädt sie erst, wenn die
-              Situation passt. Das hält den Kontext klein.
-            </p>
+            <Label htmlFor="ai-rule-mode">{t('aiRule')}</Label>
+            <p className="text-xs text-muted-foreground">{t('aiRuleHint')}</p>
             <Select
               value={mode}
               disabled={readOnly}
               onValueChange={(next) => next !== null && setMode(next as AiRuleMode)}
             >
               <SelectTrigger id="ai-rule-mode" className="w-full">
-                <SelectValue>{() => AI_RULE_MODE_LABELS[mode]}</SelectValue>
+                <SelectValue>{() => tDocument(`aiRuleModes.${mode}`)}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {(Object.keys(AI_RULE_MODE_LABELS) as AiRuleMode[]).map((value) => (
+                {AI_RULE_MODES.map((value) => (
                   <SelectItem key={value} value={value}>
-                    {AI_RULE_MODE_LABELS[value]}
+                    {tDocument(`aiRuleModes.${value}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -302,7 +297,7 @@ export function PagePropertiesDialog({
           {mode !== 'off' ? (
             <>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="ai-rule-trigger">Wann gilt diese Regel?</Label>
+                <Label htmlFor="ai-rule-trigger">{t('triggerLabel')}</Label>
                 <Input
                   id="ai-rule-trigger"
                   value={trigger}
@@ -312,16 +307,16 @@ export function PagePropertiesDialog({
                   // reader reads an invalid field and never the reason.
                   aria-describedby={triggerInvalid ? 'ai-rule-trigger-error' : undefined}
                   onChange={(event) => setTrigger(event.target.value)}
-                  placeholder="z. B. Beim Schreiben von Commit-Nachrichten"
+                  placeholder={t('triggerPlaceholder')}
                 />
                 {triggerInvalid ? (
                   <p id="ai-rule-trigger-error" className="text-xs text-destructive-text">
-                    Für &quot;Auf Anfrage&quot; wird eine Beschreibung benötigt.
+                    {t('triggerMissing')}
                   </p>
                 ) : null}
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="ai-rule-priority">Reihenfolge (kleiner = früher)</Label>
+                <Label htmlFor="ai-rule-priority">{t('priorityLabel')}</Label>
                 <Input
                   id="ai-rule-priority"
                   type="number"
@@ -334,26 +329,26 @@ export function PagePropertiesDialog({
           ) : null}
 
           <dl className="grid grid-cols-[8rem_1fr] gap-x-3 gap-y-1 border-t border-border pt-4 text-xs text-muted-foreground">
-            <dt>Typ</dt>
-            <dd>{detail.type === 'COLLECTION' ? 'Datenbank' : 'Seite'}</dd>
-            <dt>Erstellt</dt>
+            <dt>{t('type')}</dt>
+            <dd>{tDocument(detail.type === 'COLLECTION' ? 'types.COLLECTION' : 'types.PAGE')}</dd>
+            <dt>{t('created')}</dt>
             <dd>
-              {new Date(detail.createdAt).toLocaleString('de-DE', {
+              {format.dateTime(new Date(detail.createdAt), {
                 dateStyle: 'medium',
                 timeStyle: 'short',
               })}
             </dd>
-            <dt>Zuletzt bearbeitet</dt>
+            <dt>{t('lastEdited')}</dt>
             <dd>
-              {new Date(detail.updatedAt).toLocaleString('de-DE', {
+              {format.dateTime(new Date(detail.updatedAt), {
                 dateStyle: 'medium',
                 timeStyle: 'short',
               })}
             </dd>
-            <dt>Pfad</dt>
+            <dt>{t('path')}</dt>
             <dd className="break-words">
               {detail.breadcrumb.length === 0
-                ? 'Oberste Ebene'
+                ? t('topLevel')
                 : detail.breadcrumb.map((entry) => entry.title).join(' / ')}
             </dd>
           </dl>
@@ -361,7 +356,7 @@ export function PagePropertiesDialog({
 
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Abbrechen
+            {t('cancel')}
           </Button>
           <Button
             data-testid="save-page-properties"
@@ -374,7 +369,7 @@ export function PagePropertiesDialog({
             }
             onClick={() => void save()}
           >
-            Speichern
+            {t('save')}
           </Button>
         </DialogFooter>
       </DialogContent>

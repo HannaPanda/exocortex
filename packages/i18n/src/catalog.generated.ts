@@ -3,117 +3,181 @@
 
 import de_auth from './messages/de/auth.json';
 import de_dialogs from './messages/de/dialogs.json';
+import de_document from './messages/de/document.json';
+import de_editor from './messages/de/editor.json';
 import de_errors from './messages/de/errors.json';
+import de_search from './messages/de/search.json';
 import de_settings from './messages/de/settings.json';
+import de_shares from './messages/de/shares.json';
 import de_shell from './messages/de/shell.json';
 import de_ui from './messages/de/ui.json';
 import en_auth from './messages/en/auth.json';
 import en_dialogs from './messages/en/dialogs.json';
+import en_document from './messages/en/document.json';
+import en_editor from './messages/en/editor.json';
 import en_errors from './messages/en/errors.json';
+import en_search from './messages/en/search.json';
 import en_settings from './messages/en/settings.json';
+import en_shares from './messages/en/shares.json';
 import en_shell from './messages/en/shell.json';
 import en_ui from './messages/en/ui.json';
 import es_auth from './messages/es/auth.json';
 import es_dialogs from './messages/es/dialogs.json';
+import es_document from './messages/es/document.json';
+import es_editor from './messages/es/editor.json';
 import es_errors from './messages/es/errors.json';
+import es_search from './messages/es/search.json';
 import es_settings from './messages/es/settings.json';
+import es_shares from './messages/es/shares.json';
 import es_shell from './messages/es/shell.json';
 import es_ui from './messages/es/ui.json';
 import fr_auth from './messages/fr/auth.json';
 import fr_dialogs from './messages/fr/dialogs.json';
+import fr_document from './messages/fr/document.json';
+import fr_editor from './messages/fr/editor.json';
 import fr_errors from './messages/fr/errors.json';
+import fr_search from './messages/fr/search.json';
 import fr_settings from './messages/fr/settings.json';
+import fr_shares from './messages/fr/shares.json';
 import fr_shell from './messages/fr/shell.json';
 import fr_ui from './messages/fr/ui.json';
 import it_auth from './messages/it/auth.json';
 import it_dialogs from './messages/it/dialogs.json';
+import it_document from './messages/it/document.json';
+import it_editor from './messages/it/editor.json';
 import it_errors from './messages/it/errors.json';
+import it_search from './messages/it/search.json';
 import it_settings from './messages/it/settings.json';
+import it_shares from './messages/it/shares.json';
 import it_shell from './messages/it/shell.json';
 import it_ui from './messages/it/ui.json';
 import nl_auth from './messages/nl/auth.json';
 import nl_dialogs from './messages/nl/dialogs.json';
+import nl_document from './messages/nl/document.json';
+import nl_editor from './messages/nl/editor.json';
 import nl_errors from './messages/nl/errors.json';
+import nl_search from './messages/nl/search.json';
 import nl_settings from './messages/nl/settings.json';
+import nl_shares from './messages/nl/shares.json';
 import nl_shell from './messages/nl/shell.json';
 import nl_ui from './messages/nl/ui.json';
 import pl_auth from './messages/pl/auth.json';
 import pl_dialogs from './messages/pl/dialogs.json';
+import pl_document from './messages/pl/document.json';
+import pl_editor from './messages/pl/editor.json';
 import pl_errors from './messages/pl/errors.json';
+import pl_search from './messages/pl/search.json';
 import pl_settings from './messages/pl/settings.json';
+import pl_shares from './messages/pl/shares.json';
 import pl_shell from './messages/pl/shell.json';
 import pl_ui from './messages/pl/ui.json';
 import pt_BR_auth from './messages/pt-BR/auth.json';
 import pt_BR_dialogs from './messages/pt-BR/dialogs.json';
+import pt_BR_document from './messages/pt-BR/document.json';
+import pt_BR_editor from './messages/pt-BR/editor.json';
 import pt_BR_errors from './messages/pt-BR/errors.json';
+import pt_BR_search from './messages/pt-BR/search.json';
 import pt_BR_settings from './messages/pt-BR/settings.json';
+import pt_BR_shares from './messages/pt-BR/shares.json';
 import pt_BR_shell from './messages/pt-BR/shell.json';
 import pt_BR_ui from './messages/pt-BR/ui.json';
 
-export const NAMESPACES = ["auth","dialogs","errors","settings","shell","ui"] as const;
+export const NAMESPACES = ["auth","dialogs","document","editor","errors","search","settings","shares","shell","ui"] as const;
 
 export const CATALOG = {
   'de': {
     "auth": de_auth,
     "dialogs": de_dialogs,
+    "document": de_document,
+    "editor": de_editor,
     "errors": de_errors,
+    "search": de_search,
     "settings": de_settings,
+    "shares": de_shares,
     "shell": de_shell,
     "ui": de_ui,
   },
   'en': {
     "auth": en_auth,
     "dialogs": en_dialogs,
+    "document": en_document,
+    "editor": en_editor,
     "errors": en_errors,
+    "search": en_search,
     "settings": en_settings,
+    "shares": en_shares,
     "shell": en_shell,
     "ui": en_ui,
   },
   'es': {
     "auth": es_auth,
     "dialogs": es_dialogs,
+    "document": es_document,
+    "editor": es_editor,
     "errors": es_errors,
+    "search": es_search,
     "settings": es_settings,
+    "shares": es_shares,
     "shell": es_shell,
     "ui": es_ui,
   },
   'fr': {
     "auth": fr_auth,
     "dialogs": fr_dialogs,
+    "document": fr_document,
+    "editor": fr_editor,
     "errors": fr_errors,
+    "search": fr_search,
     "settings": fr_settings,
+    "shares": fr_shares,
     "shell": fr_shell,
     "ui": fr_ui,
   },
   'it': {
     "auth": it_auth,
     "dialogs": it_dialogs,
+    "document": it_document,
+    "editor": it_editor,
     "errors": it_errors,
+    "search": it_search,
     "settings": it_settings,
+    "shares": it_shares,
     "shell": it_shell,
     "ui": it_ui,
   },
   'nl': {
     "auth": nl_auth,
     "dialogs": nl_dialogs,
+    "document": nl_document,
+    "editor": nl_editor,
     "errors": nl_errors,
+    "search": nl_search,
     "settings": nl_settings,
+    "shares": nl_shares,
     "shell": nl_shell,
     "ui": nl_ui,
   },
   'pl': {
     "auth": pl_auth,
     "dialogs": pl_dialogs,
+    "document": pl_document,
+    "editor": pl_editor,
     "errors": pl_errors,
+    "search": pl_search,
     "settings": pl_settings,
+    "shares": pl_shares,
     "shell": pl_shell,
     "ui": pl_ui,
   },
   'pt-BR': {
     "auth": pt_BR_auth,
     "dialogs": pt_BR_dialogs,
+    "document": pt_BR_document,
+    "editor": pt_BR_editor,
     "errors": pt_BR_errors,
+    "search": pt_BR_search,
     "settings": pt_BR_settings,
+    "shares": pt_BR_shares,
     "shell": pt_BR_shell,
     "ui": pt_BR_ui,
   },

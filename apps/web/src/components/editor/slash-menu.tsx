@@ -4,12 +4,14 @@ import { Extension } from '@tiptap/core';
 import { PluginKey } from '@tiptap/pm/state';
 import { type Editor } from '@tiptap/react';
 import Suggestion, { type SuggestionKeyDownProps } from '@tiptap/suggestion';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type BlockCatalogEntry, filterBlockCatalog, groupBlockCatalog } from '@exocortex/editor';
 import { cn } from '@exocortex/ui';
 
 import { BlockIcon } from './block-icon';
+import { useBlockGroupLabel } from './block-labels';
 import {
   SuggestionKeyboard,
   SuggestionPopup,
@@ -123,6 +125,8 @@ interface SlashMenuListProps {
  * pattern the command palette uses.
  */
 function SlashMenuList({ items, query, activeIndex, onSelect }: SlashMenuListProps) {
+  const t = useTranslations('editor.slashMenu');
+  const groupLabel = useBlockGroupLabel();
   const sections = React.useMemo(() => groupBlockCatalog(items), [items]);
 
   if (items.length === 0) {
@@ -131,7 +135,7 @@ function SlashMenuList({ items, query, activeIndex, onSelect }: SlashMenuListPro
         className="w-72 rounded-md border border-border bg-popover p-3 text-sm text-muted-foreground shadow-md"
         data-testid="slash-menu-empty"
       >
-        Kein Block passt zu „{query}“.
+        {t('empty', { query })}
       </div>
     );
   }
@@ -139,14 +143,16 @@ function SlashMenuList({ items, query, activeIndex, onSelect }: SlashMenuListPro
   return (
     <div
       role="listbox"
-      aria-label="Block einfügen"
+      aria-label={t('label')}
       aria-activedescendant={`slash-option-${items[activeIndex]?.id ?? ''}`}
       data-testid="slash-menu"
       className="max-h-80 w-72 overflow-y-auto rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md"
     >
       {sections.map((section) => (
-        <div key={section.group} role="group" aria-label={section.label}>
-          <p className="px-2 py-1.5 text-xs font-medium text-muted-foreground">{section.label}</p>
+        <div key={section.group} role="group" aria-label={groupLabel(section.group)}>
+          <p className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+            {groupLabel(section.group)}
+          </p>
           {section.entries.map((entry) => {
             const position = items.indexOf(entry);
             return (

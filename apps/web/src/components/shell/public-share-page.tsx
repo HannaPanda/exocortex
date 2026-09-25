@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type PublicShareResponse } from '@exocortex/contracts';
@@ -23,6 +24,7 @@ import { apiRequest } from '@/lib/api/client';
  * path from stored content to raw HTML here either.
  */
 export function PublicSharePage({ token }: { token: string }) {
+  const t = useTranslations('shares.public');
   const [documentId, setDocumentId] = React.useState<string | null>(null);
 
   const page = useQuery({
@@ -36,15 +38,12 @@ export function PublicSharePage({ token }: { token: string }) {
     retry: false,
   });
 
-  if (page.isPending) return <LoadingState label="Seite wird geladen …" />;
+  if (page.isPending) return <LoadingState label={t('loading')} />;
   if (page.isError) {
     return (
       <div className="mx-auto flex min-h-dvh max-w-2xl flex-col items-center justify-center gap-6 px-4">
         <ExocortexWordmark className="h-8" />
-        <EmptyState
-          title="Dieser Link führt nicht mehr zu einer Seite"
-          description="Er wurde zurückgezogen, ist abgelaufen, oder er war nie gültig. Frag die Person, von der du ihn hast."
-        />
+        <EmptyState title={t('goneTitle')} description={t('goneDescription')} />
       </div>
     );
   }
@@ -57,11 +56,14 @@ export function PublicSharePage({ token }: { token: string }) {
         <div className="flex items-center justify-between gap-3">
           <ExocortexWordmark className="h-6" />
           <span className="text-xs text-muted-foreground">
-            Geteilt aus „{shared.workspaceName}“ von {shared.sharedByName}
+            {t('origin', { workspace: shared.workspaceName, name: shared.sharedByName })}
           </span>
         </div>
         {shared.path.length > 1 ? (
-          <nav aria-label="Pfad" className="flex flex-wrap gap-1 text-xs text-muted-foreground">
+          <nav
+            aria-label={t('path')}
+            className="flex flex-wrap gap-1 text-xs text-muted-foreground"
+          >
             {shared.path.slice(0, -1).map((entry) => (
               <React.Fragment key={entry.documentId}>
                 <button
@@ -88,7 +90,7 @@ export function PublicSharePage({ token }: { token: string }) {
 
       <article className="text-sm leading-relaxed">
         {shared.markdown.trim().length === 0 ? (
-          <p className="text-sm text-muted-foreground">Diese Seite ist leer.</p>
+          <p className="text-sm text-muted-foreground">{t('empty')}</p>
         ) : (
           <ReadingMarkdown content={shared.markdown} />
         )}
@@ -96,7 +98,7 @@ export function PublicSharePage({ token }: { token: string }) {
 
       {shared.children.length === 0 ? null : (
         <section className="flex flex-col gap-2 border-t border-border pt-4">
-          <h2 className="text-sm font-semibold">Unterseiten</h2>
+          <h2 className="text-sm font-semibold">{t('children')}</h2>
           <ul className="flex flex-col gap-1">
             {shared.children.map((child) => (
               <li key={child.documentId}>
@@ -115,11 +117,13 @@ export function PublicSharePage({ token }: { token: string }) {
       )}
 
       <footer className="mt-auto border-t border-border pt-4 text-xs text-muted-foreground">
-        Diese Seite wurde als Link geteilt. Sie ist schreibgeschützt.{' '}
-        <Link href="/" className="underline underline-offset-2">
-          eXocortex
-        </Link>{' '}
-        ist selbst gehostet.
+        {t.rich('footer', {
+          link: (chunks) => (
+            <Link href="/" className="underline underline-offset-2">
+              {chunks}
+            </Link>
+          ),
+        })}
       </footer>
     </div>
   );

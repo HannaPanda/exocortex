@@ -4,6 +4,7 @@ import { type NodeViewProps } from '@tiptap/core';
 import { EditorContent, NodeViewWrapper, useEditor } from '@tiptap/react';
 import { ExternalLinkIcon, ListTreeIcon, PencilIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentOutlineBlock } from '@exocortex/contracts';
@@ -64,6 +65,7 @@ export function TransclusionNodeView({
   workspaceId,
   documentId,
 }: TransclusionNodeViewProps) {
+  const t = useTranslations('editor.transclusion');
   const target = transclusionDocumentId(node.attrs);
   const blockId = transclusionBlockId(node.attrs);
   const label = transclusionLabel(node.attrs);
@@ -88,7 +90,7 @@ export function TransclusionNodeView({
     });
   };
 
-  const title = fragment.data?.title ?? (label.length > 0 ? label : 'Eingebetteter Inhalt');
+  const title = fragment.data?.title ?? (label.length > 0 ? label : t('fallbackTitle'));
 
   return (
     <NodeViewWrapper className="exocortex-transclusion" contentEditable={false}>
@@ -99,7 +101,7 @@ export function TransclusionNodeView({
           type="PAGE"
         />
         <span className="embed-title">{title}</span>
-        {fragment.data?.archivedAt == null ? null : <Badge variant="muted">Im Papierkorb</Badge>}
+        {fragment.data?.archivedAt == null ? null : <Badge variant="muted">{t('inTrash')}</Badge>}
         <div className="embed-actions">
           {target === null || self ? null : (
             <Link
@@ -108,7 +110,7 @@ export function TransclusionNodeView({
               data-testid="transclusion-open-source"
             >
               <ExternalLinkIcon aria-hidden />
-              Quelle öffnen
+              {t('openSource')}
             </Link>
           )}
           {editable && target !== null && !self ? (
@@ -127,7 +129,7 @@ export function TransclusionNodeView({
               onClick={() => void retarget()}
             >
               <PencilIcon aria-hidden />
-              Seite wechseln
+              {t('changePage')}
             </Button>
           ) : null}
         </div>
@@ -164,34 +166,31 @@ function TransclusionBody({
   onRetarget: () => void;
   onWholePage: () => void;
 }) {
-  const chooseSource = editable ? { label: 'Seite wählen', onClick: onRetarget } : undefined;
+  const t = useTranslations('editor.transclusion');
+  const chooseSource = editable ? { label: t('choosePage'), onClick: onRetarget } : undefined;
 
   if (target === null) {
     return (
       <EmptyState
-        title="Keine Quelle gewählt"
-        description="Wähle die Seite, deren Inhalt hier erscheinen soll. Der Text bleibt dort und wird hier nur gezeigt."
+        title={t('noSourceTitle')}
+        description={t('noSourceDescription')}
         action={chooseSource}
       />
     );
   }
   if (self) {
     return (
-      <EmptyState
-        title="Eine Seite kann sich nicht selbst einbetten"
-        description="Wähle eine andere Seite als Quelle."
-        action={chooseSource}
-      />
+      <EmptyState title={t('selfTitle')} description={t('selfDescription')} action={chooseSource} />
     );
   }
   if (state.isPending) {
-    return <LoadingState variant="skeleton" rows={3} label="Eingebetteter Inhalt wird geladen" />;
+    return <LoadingState variant="skeleton" rows={3} label={t('loading')} />;
   }
   if (state.isError || state.data === undefined) {
     return (
       <EmptyState
-        title="Quelle nicht erreichbar"
-        description="Die eingebettete Seite wurde gelöscht, oder du darfst sie nicht lesen. Der Verweis bleibt bestehen."
+        title={t('unreachableTitle')}
+        description={t('unreachableDescription')}
         action={chooseSource}
       />
     );
@@ -199,9 +198,12 @@ function TransclusionBody({
   if (!state.data.resolved) {
     return (
       <EmptyState
-        title="Der eingebettete Abschnitt ist nicht mehr da"
-        description={`Die Seite „${state.data.title}“ gibt es noch, der Block mit der Kennung ${blockId ?? ''} darin nicht mehr.`}
-        action={editable ? { label: 'Ganze Seite zeigen', onClick: onWholePage } : undefined}
+        title={t('missingBlockTitle')}
+        description={t('missingBlockDescription', {
+          title: state.data.title,
+          blockId: blockId ?? '',
+        })}
+        action={editable ? { label: t('showWholePage'), onClick: onWholePage } : undefined}
       />
     );
   }
@@ -211,7 +213,7 @@ function TransclusionBody({
       <ReadOnlyFragment content={state.data.proseMirrorJson} />
       {state.data.nested === 0 ? null : (
         <p className="mt-2 text-xs text-muted-foreground">
-          Enthält {state.data.nested} weitere Einbettung(en), die hier nicht aufgelöst werden.
+          {t('nested', { count: state.data.nested })}
         </p>
       )}
     </div>
@@ -257,6 +259,7 @@ function BlockChooser({
   blockId: string | null;
   onChoose: (blockId: string | null) => void;
 }) {
+  const t = useTranslations('editor.transclusion');
   const [open, setOpen] = React.useState(false);
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -269,7 +272,7 @@ function BlockChooser({
             data-testid="transclusion-choose-block"
           >
             <ListTreeIcon aria-hidden />
-            {blockId === null ? 'Ganze Seite' : 'Abschnitt'}
+            {blockId === null ? t('wholePage') : t('section')}
           </Button>
         }
       />
@@ -278,8 +281,8 @@ function BlockChooser({
             Base UI throws when it finds none, which the editor's error
             boundary turns into a blank page rather than a broken menu. */}
         <DropdownMenuGroup>
-          <DropdownMenuLabel>Was soll hier stehen?</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => onChoose(null)}>Die ganze Seite</DropdownMenuItem>
+          <DropdownMenuLabel>{t('chooserLabel')}</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => onChoose(null)}>{t('chooseWholePage')}</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         {open ? <BlockChoices documentId={documentId} onChoose={onChoose} /> : null}
@@ -301,14 +304,15 @@ function BlockChoices({
   documentId: string;
   onChoose: (blockId: string) => void;
 }) {
+  const t = useTranslations('editor.transclusion');
   const outline = useDocumentFragment(documentId, null, { outline: true });
 
   if (outline.isPending) {
-    return <DropdownMenuItem disabled>Blöcke werden gelesen …</DropdownMenuItem>;
+    return <DropdownMenuItem disabled>{t('blocksLoading')}</DropdownMenuItem>;
   }
   const blocks = outline.data?.blocks ?? [];
   if (blocks.length === 0) {
-    return <DropdownMenuItem disabled>Diese Seite hat keine benannten Blöcke.</DropdownMenuItem>;
+    return <DropdownMenuItem disabled>{t('noBlocks')}</DropdownMenuItem>;
   }
   return (
     <DropdownMenuGroup>
@@ -326,6 +330,7 @@ function BlockChoices({
 }
 
 function BlockChoiceLabel({ block }: { block: DocumentOutlineBlock }) {
+  const t = useTranslations('editor.transclusion');
   return (
     <span className="flex min-w-0 flex-col">
       <span className="truncate">
@@ -333,7 +338,7 @@ function BlockChoiceLabel({ block }: { block: DocumentOutlineBlock }) {
       </span>
       {block.level === null ? null : (
         <span className="text-xs text-muted-foreground">
-          Überschrift {block.level}, mit dem ganzen Abschnitt darunter
+          {t('headingSection', { level: block.level })}
         </span>
       )}
     </span>

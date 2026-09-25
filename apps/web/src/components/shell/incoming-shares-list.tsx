@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 import { Badge, EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
 
@@ -16,31 +17,21 @@ import { useIncomingShares } from '@/lib/api/share-queries';
  * them. Without this list a share would be a link somebody has to have kept.
  */
 export function IncomingSharesList() {
+  const t = useTranslations('shares.incoming');
+  const tCommon = useTranslations('shares.common');
   const shares = useIncomingShares();
 
-  if (shares.isPending) return <LoadingState label="Freigaben werden geladen …" />;
+  if (shares.isPending) return <LoadingState label={tCommon('loading')} />;
   if (shares.isError) {
-    return (
-      <ErrorState
-        title="Freigaben konnten nicht geladen werden"
-        onRetry={() => void shares.refetch()}
-      />
-    );
+    return <ErrorState title={tCommon('loadError')} onRetry={() => void shares.refetch()} />;
   }
 
   return (
     <>
-      <p className="max-w-measure text-sm text-muted-foreground">
-        Seiten aus Arbeitsbereichen, in denen du kein Mitglied bist. Sie stehen in keiner
-        Navigation, nur hier.
-      </p>
+      <p className="max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
 
       {shares.data.shares.length === 0 ? (
-        <EmptyState
-          className="mt-6"
-          title="Nichts für dich freigegeben"
-          description="Wenn jemand dir eine Seite freigibt, taucht sie hier auf."
-        />
+        <EmptyState className="mt-6" title={t('emptyTitle')} description={t('emptyDescription')} />
       ) : (
         <ul className="mt-6 flex flex-col gap-2" data-testid="incoming-shares">
           {shares.data.shares.map((share) => (
@@ -58,11 +49,11 @@ export function IncomingSharesList() {
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-medium">{share.document.title}</span>
                   <span className="block truncate text-xs text-muted-foreground">
-                    aus „{share.workspaceName}“, von {share.sharedByName}
+                    {t('origin', { workspace: share.workspaceName, name: share.sharedByName })}
                   </span>
                 </span>
                 <Badge variant="muted">
-                  {share.permission === 'WRITE' ? 'Bearbeiten' : 'Lesen'}
+                  {share.permission === 'WRITE' ? tCommon('write') : tCommon('read')}
                 </Badge>
               </Link>
             </li>

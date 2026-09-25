@@ -3,6 +3,7 @@
 import { type Node as PmNode } from '@tiptap/pm/model';
 import { type Editor } from '@tiptap/react';
 import { ChevronRightIcon, CopyIcon, LinkIcon, Trash2Icon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { BLOCK_ID_ATTRIBUTE, type BlockCatalogEntry } from '@exocortex/editor';
@@ -14,7 +15,7 @@ import {
   DropdownMenuSubTrigger,
 } from '@exocortex/ui';
 
-import { describeBlockRemoval } from './block-removal';
+import { describeBlockRemoval, useBlockRemovalWarning } from './block-removal';
 import { ColorItems } from './color-menu';
 import { useDestructiveConfirm } from './destructive-confirm';
 import { TurnIntoItems } from './turn-into-menu';
@@ -78,7 +79,9 @@ export function BlockActionItems({
   /** The block to act on, or `null` to use the one the cursor is in. */
   target: BlockTarget | null;
 }) {
+  const t = useTranslations('editor.blockActions');
   const confirmDestructive = useDestructiveConfirm();
+  const removalWarning = useBlockRemovalWarning();
   const resolve = (): BlockTarget | null => target ?? blockTargetFromSelection(editor);
 
   const duplicate = (): void => {
@@ -101,8 +104,8 @@ export function BlockActionItems({
   const remove = (): void => {
     const block = resolve();
     if (block === null) return;
-    const warning = describeBlockRemoval(block.node);
-    if (warning === null) {
+    const removal = describeBlockRemoval(block.node);
+    if (removal === null) {
       editor
         .chain()
         .focus()
@@ -110,7 +113,7 @@ export function BlockActionItems({
         .run();
       return;
     }
-    void confirmDestructive(warning).then((confirmed) => {
+    void confirmDestructive(removalWarning(removal)).then((confirmed) => {
       if (!confirmed) return;
       // The dialog was open for as long as it took to read: a collaborator may
       // have moved this block in the meantime, so it is looked up again.
@@ -132,7 +135,7 @@ export function BlockActionItems({
     <>
       <DropdownMenuSub>
         <DropdownMenuSubTrigger data-testid="block-turn-into">
-          Umwandeln in
+          {t('turnInto')}
           <ChevronRightIcon className="ml-auto size-3.5 opacity-60" />
         </DropdownMenuSubTrigger>
         <DropdownMenuContent align="start" className="max-h-80 overflow-y-auto">
@@ -142,7 +145,7 @@ export function BlockActionItems({
 
       <DropdownMenuSub>
         <DropdownMenuSubTrigger data-testid="block-color">
-          Farbe
+          {t('color')}
           <ChevronRightIcon className="ml-auto size-3.5 opacity-60" />
         </DropdownMenuSubTrigger>
         <DropdownMenuContent align="start" className="max-h-80 w-44 overflow-y-auto">
@@ -152,14 +155,14 @@ export function BlockActionItems({
 
       <DropdownMenuSeparator />
       <DropdownMenuItem data-testid="block-duplicate" onClick={duplicate}>
-        <CopyIcon /> Duplizieren
+        <CopyIcon /> {t('duplicate')}
       </DropdownMenuItem>
       <DropdownMenuItem data-testid="block-copy-link" onClick={() => void copyLink()}>
-        <LinkIcon /> Link zum Block kopieren
+        <LinkIcon /> {t('copyLink')}
       </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem variant="destructive" data-testid="block-delete" onClick={remove}>
-        <Trash2Icon /> Löschen
+        <Trash2Icon /> {t('delete')}
       </DropdownMenuItem>
     </>
   );

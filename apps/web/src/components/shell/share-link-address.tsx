@@ -1,6 +1,7 @@
 'use client';
 
 import { CheckIcon, CopyIcon, LinkIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentShare } from '@exocortex/contracts';
@@ -35,6 +36,7 @@ export function ShareLinkAddress({
   share: DocumentShare;
   testIdPrefix: string;
 }) {
+  const t = useTranslations('shares.linkAddress');
   const [copied, setCopied] = React.useState(false);
   const replace = useCreateLinkFor();
 
@@ -51,12 +53,12 @@ export function ShareLinkAddress({
           variant="outline"
           size="sm"
           data-testid={`${testIdPrefix}-link-copy`}
-          aria-label={copied ? 'Adresse kopiert' : 'Adresse kopieren'}
+          aria-label={copied ? t('copiedLabel') : t('copyLabel')}
           onClick={() => {
             void navigator.clipboard.writeText(url).then(() => setCopied(true));
           }}
         >
-          {copied ? <CheckIcon /> : <CopyIcon />} {copied ? 'Kopiert' : 'Kopieren'}
+          {copied ? <CheckIcon /> : <CopyIcon />} {copied ? t('copied') : t('copy')}
         </Button>
       </div>
     );
@@ -69,11 +71,7 @@ export function ShareLinkAddress({
       className="flex flex-col gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center"
       data-testid={`${testIdPrefix}-link-lost`}
     >
-      <p className="min-w-0 flex-1">
-        Die Adresse dieses Links ist nicht gespeichert: er stammt von vor dem 24.09.2026. Er
-        funktioniert weiter. Brauchst du die Adresse, erzeuge einen neuen Link mit demselben Umfang
-        und zieh diesen danach zurück.
-      </p>
+      <p className="min-w-0 flex-1">{t('lost')}</p>
       <Button
         variant="outline"
         size="sm"
@@ -82,7 +80,7 @@ export function ShareLinkAddress({
         data-testid={`${testIdPrefix}-link-replace`}
         onClick={() => replace.mutate({ documentId: share.documentId, scope: share.scope })}
       >
-        <LinkIcon /> {replace.isSuccess ? 'Neuer Link steht darüber' : 'Neuen Link erzeugen'}
+        <LinkIcon /> {replace.isSuccess ? t('replaced') : t('replace')}
       </Button>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { type Editor } from '@tiptap/react';
 import { ExternalLinkIcon, UnlinkIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentSummary, type DocumentTreeNode } from '@exocortex/contracts';
@@ -49,6 +50,7 @@ function flattenTree(nodes: readonly DocumentTreeNode[]): DocumentSummary[] {
  * cache, the same source the `@` menu reads.
  */
 export function LinkMenu({ editor, workspaceId, trigger }: LinkMenuProps) {
+  const t = useTranslations('editor.linkMenu');
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
   const followLinkRef = React.useContext(FollowLinkContext);
@@ -101,9 +103,9 @@ export function LinkMenu({ editor, workspaceId, trigger }: LinkMenuProps) {
           <Input
             autoFocus
             value={value}
-            aria-label="Adresse oder Seitentitel"
+            aria-label={t('inputLabel')}
             data-testid="link-input"
-            placeholder="https://… oder Seite suchen"
+            placeholder={t('placeholder')}
             onChange={(event) => setValue(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === 'Enter') {
@@ -113,7 +115,7 @@ export function LinkMenu({ editor, workspaceId, trigger }: LinkMenuProps) {
             }}
           />
           <Button size="sm" data-testid="link-apply" onClick={apply}>
-            Setzen
+            {t('apply')}
           </Button>
         </div>
 
@@ -121,7 +123,7 @@ export function LinkMenu({ editor, workspaceId, trigger }: LinkMenuProps) {
           <ul
             className="mt-2 max-h-56 overflow-y-auto rounded-md border border-border"
             data-testid="link-page-suggestions"
-            aria-label="Passende Seiten"
+            aria-label={t('suggestions')}
           >
             {suggestions.map((page) => (
               <li key={page.id}>
@@ -153,7 +155,7 @@ export function LinkMenu({ editor, workspaceId, trigger }: LinkMenuProps) {
                 setOpen(false);
               }}
             >
-              <UnlinkIcon /> Entfernen
+              <UnlinkIcon /> {t('remove')}
             </Button>
             {currentHref.startsWith(WIKI_LINK_SCHEME) ? (
               <Button
@@ -173,7 +175,7 @@ export function LinkMenu({ editor, workspaceId, trigger }: LinkMenuProps) {
                   setOpen(false);
                 }}
               >
-                <ExternalLinkIcon /> Öffnen
+                <ExternalLinkIcon /> {t('open')}
               </Button>
             ) : (
               <Button
@@ -181,7 +183,7 @@ export function LinkMenu({ editor, workspaceId, trigger }: LinkMenuProps) {
                 size="sm"
                 render={
                   <a href={currentHref} target="_blank" rel="noopener noreferrer">
-                    <ExternalLinkIcon /> Öffnen
+                    <ExternalLinkIcon /> {t('open')}
                   </a>
                 }
               />

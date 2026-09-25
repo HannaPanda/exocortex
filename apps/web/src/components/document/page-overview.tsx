@@ -2,6 +2,7 @@
 
 import { ChevronRightIcon, RefreshCwIcon, SparklesIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentOverviewResponse, type OverviewEntry } from '@exocortex/contracts';
@@ -30,6 +31,7 @@ export function PageOverview({
   documentId: string;
   readOnly: boolean;
 }) {
+  const t = useTranslations('document.overview');
   const overview = useDocumentOverview(documentId);
   const refresh = useRefreshDocumentOverview();
   const [pending, setPending] = React.useState(false);
@@ -59,9 +61,7 @@ export function PageOverview({
     >
       <OverviewIntro data={data} pending={pending} />
       {data.entries.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          Diese Übersichtsseite hat noch keine Unterseiten.
-        </p>
+        <p className="text-sm text-muted-foreground">{t('noChildren')}</p>
       ) : (
         <ul className="flex flex-col gap-1">
           {data.entries.map((entry) => (
@@ -83,6 +83,7 @@ export function PageOverview({
  * would look the same in all three cases.
  */
 function OverviewIntro({ data, pending }: { data: DocumentOverviewResponse; pending: boolean }) {
+  const t = useTranslations('document.overview');
   if (data.intro !== null) {
     return (
       <div className="flex flex-col gap-2">
@@ -91,22 +92,21 @@ function OverviewIntro({ data, pending }: { data: DocumentOverviewResponse; pend
     );
   }
   if (pending) {
-    return <p className="text-sm text-muted-foreground">Der Vorspann wird geschrieben …</p>;
+    return <p className="text-sm text-muted-foreground">{t('introWriting')}</p>;
   }
   if (data.error !== null) {
     return <p className="text-sm text-muted-foreground">{data.error}</p>;
   }
   return (
     <p className="text-sm text-muted-foreground">
-      {data.state === 'unavailable'
-        ? 'Für diesen Arbeitsbereich wird kein Vorspann geschrieben. Die Unterseiten stehen trotzdem hier.'
-        : 'Der Vorspann wird beim nächsten Durchlauf geschrieben.'}
+      {data.state === 'unavailable' ? t('introUnavailable') : t('introNextRun')}
     </p>
   );
 }
 
 /** One child: icon, title, its own digest, and how much is underneath it. */
 function OverviewRow({ workspaceId, entry }: { workspaceId: string; entry: OverviewEntry }) {
+  const t = useTranslations('document.overview');
   return (
     <li>
       <Link
@@ -124,7 +124,7 @@ function OverviewRow({ workspaceId, entry }: { workspaceId: string; entry: Overv
             <span className="text-sm font-medium break-words text-foreground">{entry.title}</span>
             {entry.childCount > 0 ? (
               <span className="shrink-0 text-xs text-muted-foreground">
-                {entry.childCount === 1 ? '1 Unterseite' : `${entry.childCount} Unterseiten`}
+                {t('childCount', { count: entry.childCount })}
               </span>
             ) : null}
           </span>
@@ -153,17 +153,25 @@ function OverviewFooter({
   readOnly: boolean;
   onRefresh: () => Promise<void>;
 }) {
+  const t = useTranslations('document.overview');
+  const format = useFormatter();
+  const moment = (iso: string): string => {
+    const parsed = new Date(iso);
+    return Number.isNaN(parsed.getTime())
+      ? iso
+      : format.dateTime(parsed, { dateStyle: 'medium', timeStyle: 'short' });
+  };
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted-foreground">
       <SparklesIcon className="size-3.5" aria-hidden />
       <span>
         {data.generatedAt === null
-          ? 'Automatisch aus den Unterseiten zusammengestellt.'
-          : `Automatisch zusammengestellt, Stand ${formatMoment(data.generatedAt)}.`}
+          ? t('sourceAutomatic')
+          : t('sourceGeneratedAt', { time: moment(data.generatedAt) })}
       </span>
       {data.stale ? (
         <Badge variant="outline" className="border-warning/50 text-warning">
-          veraltet
+          {t('stale')}
         </Badge>
       ) : null}
       {readOnly ? null : (
@@ -176,19 +184,9 @@ function OverviewFooter({
           onClick={() => void onRefresh()}
         >
           <RefreshCwIcon className={cn('size-3.5', pending && 'animate-spin')} aria-hidden />
-          {pending ? 'wird aktualisiert …' : 'jetzt aktualisieren'}
+          {pending ? t('refreshing') : t('refresh')}
         </Button>
       )}
     </div>
   );
-}
-
-const MOMENT_FORMAT = new Intl.DateTimeFormat('de-DE', {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-});
-
-function formatMoment(iso: string): string {
-  const parsed = new Date(iso);
-  return Number.isNaN(parsed.getTime()) ? iso : MOMENT_FORMAT.format(parsed);
 }

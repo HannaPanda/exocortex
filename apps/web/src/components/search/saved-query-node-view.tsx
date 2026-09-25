@@ -4,6 +4,7 @@ import { type NodeViewProps } from '@tiptap/core';
 import { NodeViewWrapper } from '@tiptap/react';
 import { ExternalLinkIcon, RefreshCwIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type SavedQueryResultsResponse } from '@exocortex/contracts';
@@ -34,6 +35,7 @@ export function SavedQueryNodeView({
   editor,
   workspaceId,
 }: SavedQueryNodeViewProps) {
+  const t = useTranslations('search.nodeView');
   const savedQueryId = typeof node.attrs.savedQueryId === 'string' ? node.attrs.savedQueryId : '';
   const frozenName = typeof node.attrs.name === 'string' ? node.attrs.name : '';
   const limit = typeof node.attrs.limit === 'number' ? node.attrs.limit : 5;
@@ -54,7 +56,7 @@ export function SavedQueryNodeView({
   };
 
   const name =
-    stored.data?.savedQuery.name ?? (frozenName.length > 0 ? frozenName : 'Gespeicherte Suche');
+    stored.data?.savedQuery.name ?? (frozenName.length > 0 ? frozenName : t('fallbackName'));
   const missing = savedQueryId.length === 0 || stored.isError;
 
   return (
@@ -68,13 +70,13 @@ export function SavedQueryNodeView({
               className="embed-action"
             >
               <ExternalLinkIcon aria-hidden />
-              Suche öffnen
+              {t('open')}
             </Link>
           )}
           {editable ? (
             <Button variant="ghost" size="sm" className="embed-action" onClick={() => void pick()}>
               <RefreshCwIcon aria-hidden />
-              Suche wechseln
+              {t('change')}
             </Button>
           ) : null}
         </div>
@@ -82,18 +84,14 @@ export function SavedQueryNodeView({
 
       {missing ? (
         <EmptyState
-          title="Keine Suche ausgewählt"
-          description={
-            savedQueryId.length === 0
-              ? 'Wähle eine gespeicherte Suche, deren Treffer hier stehen sollen.'
-              : 'Diese gespeicherte Suche wurde nicht gefunden. Möglicherweise wurde sie gelöscht.'
-          }
-          action={editable ? { label: 'Suche auswählen', onClick: () => void pick() } : undefined}
+          title={t('noneTitle')}
+          description={savedQueryId.length === 0 ? t('noneDescription') : t('missingDescription')}
+          action={editable ? { label: t('pick'), onClick: () => void pick() } : undefined}
         />
       ) : results.isPending ? (
-        <LoadingState variant="skeleton" rows={3} label="Treffer werden ermittelt" />
+        <LoadingState variant="skeleton" rows={3} label={t('resultsLoading')} />
       ) : results.isError ? (
-        <ErrorState title="Abfrage nicht ausgeführt" onRetry={() => void results.refetch()} />
+        <ErrorState title={t('queryFailed')} onRetry={() => void results.refetch()} />
       ) : (
         <BlockResults
           savedQueryId={savedQueryId}
@@ -118,6 +116,7 @@ function BlockResults({
   workspaceId: string;
   results: SavedQueryResultsResponse;
 }) {
+  const t = useTranslations('search.nodeView');
   return (
     <div className="p-2">
       <SavedQueryResults
@@ -130,7 +129,7 @@ function BlockResults({
           href={`/arbeitsbereich/${workspaceId}/suche/${savedQueryId}`}
           className="mt-1 block px-2 text-xs text-muted-foreground hover:text-foreground"
         >
-          Alle Treffer ansehen
+          {t('allResults')}
         </Link>
       ) : null}
     </div>

@@ -5,6 +5,7 @@ import { DragHandle } from '@tiptap/extension-drag-handle-react';
 import { type Node as PmNode } from '@tiptap/pm/model';
 import { type Editor } from '@tiptap/react';
 import { GripVerticalIcon, PlusIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type BlockCatalogEntry } from '@exocortex/editor';
@@ -56,6 +57,7 @@ interface BlockHandleProps {
  * a pointer and a keyboard reach every one of them.
  */
 export function BlockHandle({ editor, catalog }: BlockHandleProps) {
+  const t = useTranslations('editor.blockHandle');
   const [target, setTarget] = React.useState<BlockTarget | null>(null);
   /**
    * True while the actions menu is open.
@@ -110,7 +112,7 @@ export function BlockHandle({ editor, catalog }: BlockHandleProps) {
       <Button
         variant="ghost"
         size="icon-sm"
-        aria-label="Block darunter einfügen"
+        aria-label={t('insertBelow')}
         data-testid="block-insert"
         className="text-muted-foreground hover:text-foreground"
         onMouseDown={(event) => event.preventDefault()}
@@ -129,7 +131,7 @@ export function BlockHandle({ editor, catalog }: BlockHandleProps) {
             <Button
               variant="ghost"
               size="icon-sm"
-              aria-label="Blockaktionen"
+              aria-label={t('actions')}
               data-testid="block-handle"
               className="cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing"
             >

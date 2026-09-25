@@ -1,5 +1,6 @@
 'use client';
 
+import { useFormatter, useTranslations } from 'next-intl';
 import { type PDFDocumentProxy } from 'pdfjs-dist';
 import * as React from 'react';
 
@@ -48,6 +49,7 @@ interface PdfViewProps {
 }
 
 export function PdfView({ url, highlights = [], onPickSource }: PdfViewProps) {
+  const t = useTranslations('document.pdf');
   const { document, pageCount, error } = usePdfDocument(url);
   const sizes = usePdfPageSizes(document);
 
@@ -86,9 +88,20 @@ export function PdfView({ url, highlights = [], onPickSource }: PdfViewProps) {
     container.scrollTo({ top: Math.max(target, 0), behavior: 'smooth' });
   }, [first, scale]);
 
-  if (error !== null) return <ErrorState title="PDF nicht lesbar" description={error} />;
+  if (error !== null) {
+    return (
+      <ErrorState
+        title={t('unreadableTitle')}
+        description={
+          error.detail === null
+            ? t('unreadable')
+            : t('unreadableWithReason', { reason: error.detail })
+        }
+      />
+    );
+  }
   if (document === null || sizes.length === 0) {
-    return <LoadingState label="PDF wird geladen …" />;
+    return <LoadingState label={t('loading')} />;
   }
 
   return (
@@ -143,36 +156,38 @@ function ZoomBar({
   onZoom: (zoom: number) => void;
   onFit: () => void;
 }) {
+  const t = useTranslations('document.pdf');
+  const format = useFormatter();
   const current = zoom ?? fitScale;
   return (
     <div className="flex items-center gap-1 border-b border-border px-2 py-1">
       <Button
         variant="ghost"
         size="sm"
-        aria-label="Verkleinern"
+        aria-label={t('zoomOut')}
         disabled={current <= MIN_ZOOM}
         onClick={() => onZoom(Math.max(current - ZOOM_STEP, MIN_ZOOM))}
       >
         −
       </Button>
       <span className="min-w-12 text-center text-xs tabular-nums text-muted-foreground">
-        {Math.round(current * 100)} %
+        {format.number(current, { style: 'percent', maximumFractionDigits: 0 })}
       </span>
       <Button
         variant="ghost"
         size="sm"
-        aria-label="Vergrößern"
+        aria-label={t('zoomIn')}
         disabled={current >= MAX_ZOOM}
         onClick={() => onZoom(Math.min(current + ZOOM_STEP, MAX_ZOOM))}
       >
         +
       </Button>
       <Button variant="ghost" size="sm" onClick={onFit} disabled={zoom === null}>
-        Breite
+        {t('fitWidth')}
       </Button>
       <span className="ms-auto text-xs text-muted-foreground">
-        {pageCount} {pageCount === 1 ? 'Seite' : 'Seiten'}
-        {clickable ? ' · Klick springt in die Quelle' : ''}
+        {t('pageCount', { count: pageCount })}
+        {clickable ? ` · ${t('clickHint')}` : ''}
       </span>
     </div>
   );

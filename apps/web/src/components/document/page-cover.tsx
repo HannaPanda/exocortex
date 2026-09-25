@@ -8,6 +8,7 @@ import {
   Trash2Icon,
   XIcon,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -84,6 +85,7 @@ function useCoverPicker(workspaceId: string, documentId: string) {
  * this page, which also carries the German reason when the drawing failed.
  */
 function useCoverGeneration(documentId: string) {
+  const t = useTranslations('document.cover');
   const generate = useGenerateDocumentCover();
   const [pending, setPending] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -101,7 +103,7 @@ function useCoverGeneration(documentId: string) {
       await generate.mutateAsync({ documentId, prompt });
     } catch (cause) {
       setPending(false);
-      setError(cause instanceof Error ? cause.message : 'Die Anfrage ist fehlgeschlagen.');
+      setError(cause instanceof Error ? cause.message : t('requestFailed'));
     }
   };
 
@@ -116,33 +118,31 @@ interface CoverPromptDialogProps {
 
 /** Asks what the picture should show. One field, because there is one input. */
 function CoverPromptDialog({ open, onOpenChange, onSubmit }: CoverPromptDialogProps) {
+  const t = useTranslations('document.cover');
   const [prompt, setPrompt] = React.useState('');
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Titelbild erzeugen</DialogTitle>
-          <DialogDescription>
-            Beschreibe, was zu sehen sein soll. Das Bild entsteht im Hintergrund und erscheint,
-            sobald es fertig ist.
-          </DialogDescription>
+          <DialogTitle>{t('promptTitle')}</DialogTitle>
+          <DialogDescription>{t('promptDescription')}</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="cover-prompt">Beschreibung</Label>
+          <Label htmlFor="cover-prompt">{t('promptLabel')}</Label>
           <Textarea
             id="cover-prompt"
             rows={4}
             maxLength={1_000}
             data-testid="cover-prompt-input"
-            placeholder="Zum Beispiel: ruhige Berglandschaft im Morgennebel, gedeckte Farben"
+            placeholder={t('promptPlaceholder')}
             value={prompt}
             onChange={(event) => setPrompt(event.target.value)}
           />
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Abbrechen
+            {t('cancel')}
           </Button>
           <Button
             disabled={prompt.trim().length < 3}
@@ -153,7 +153,7 @@ function CoverPromptDialog({ open, onOpenChange, onSubmit }: CoverPromptDialogPr
               onOpenChange(false);
             }}
           >
-            <SparklesIcon /> Erzeugen
+            <SparklesIcon /> {t('generate')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -177,6 +177,7 @@ export function PageCoverAddButton({
   documentId,
   className,
 }: PageCoverAddButtonProps) {
+  const t = useTranslations('document.cover');
   const { input, choose, upload } = useCoverPicker(workspaceId, documentId);
   const generation = useCoverGeneration(documentId);
   const [promptOpen, setPromptOpen] = React.useState(false);
@@ -201,7 +202,7 @@ export function PageCoverAddButton({
         className={cn('text-muted-foreground transition-opacity', revealed)}
         onClick={choose}
       >
-        <ImageIcon /> {upload.isPending ? 'Wird hochgeladen …' : 'Titelbild hinzufügen'}
+        <ImageIcon /> {upload.isPending ? t('uploading') : t('add')}
       </Button>
       <Button
         variant="ghost"
@@ -211,7 +212,7 @@ export function PageCoverAddButton({
         className={cn('text-muted-foreground transition-opacity', revealed)}
         onClick={() => setPromptOpen(true)}
       >
-        <SparklesIcon /> {generation.pending ? 'Wird erzeugt …' : 'Mit KI erzeugen'}
+        <SparklesIcon /> {generation.pending ? t('generating') : t('generateWithAi')}
       </Button>
       <CoverPromptDialog
         open={promptOpen}
@@ -257,6 +258,7 @@ export function PageCover({
   position,
   readOnly,
 }: PageCoverProps) {
+  const t = useTranslations('document.cover');
   const { input, choose, upload } = useCoverPicker(workspaceId, documentId);
   const updateDocument = useUpdateDocument(workspaceId);
   const generation = useCoverGeneration(documentId);
@@ -354,12 +356,12 @@ export function PageCover({
           ? {
               role: 'slider' as const,
               tabIndex: 0,
-              'aria-label': 'Bildausschnitt senkrecht verschieben',
+              'aria-label': t('positionLabel'),
               'aria-orientation': 'vertical' as const,
               'aria-valuemin': 0,
               'aria-valuemax': 100,
               'aria-valuenow': Math.round(shown),
-              'aria-valuetext': `${Math.round(shown)} Prozent von oben`,
+              'aria-valuetext': t('positionValue', { percent: Math.round(shown) }),
             }
           : {})}
         onPointerDown={onPointerDown}
@@ -394,11 +396,9 @@ export function PageCover({
         >
           {repositioning ? (
             <>
-              <span className="px-2 text-xs text-muted-foreground">
-                Ziehen oder Pfeiltasten, dann speichern
-              </span>
+              <span className="px-2 text-xs text-muted-foreground">{t('positionHint')}</span>
               <Button variant="ghost" size="sm" onClick={() => setDraft(null)}>
-                <XIcon /> Abbrechen
+                <XIcon /> {t('cancel')}
               </Button>
               <Button
                 size="sm"
@@ -406,7 +406,7 @@ export function PageCover({
                 data-testid="save-cover-position"
                 onClick={() => void save()}
               >
-                <CheckIcon /> Speichern
+                <CheckIcon /> {t('save')}
               </Button>
             </>
           ) : (
@@ -418,7 +418,7 @@ export function PageCover({
                 data-testid="reposition-cover"
                 onClick={() => setDraft(position)}
               >
-                <MoveVerticalIcon /> Position ändern
+                <MoveVerticalIcon /> {t('reposition')}
               </Button>
               <Button
                 variant="ghost"
@@ -427,7 +427,7 @@ export function PageCover({
                 data-testid="replace-cover"
                 onClick={choose}
               >
-                <ImageIcon /> {upload.isPending ? 'Wird hochgeladen …' : 'Ändern'}
+                <ImageIcon /> {upload.isPending ? t('uploading') : t('replace')}
               </Button>
               <Button
                 variant="ghost"
@@ -436,7 +436,7 @@ export function PageCover({
                 data-testid="generate-cover"
                 onClick={() => setPromptOpen(true)}
               >
-                <SparklesIcon /> {generation.pending ? 'Wird erzeugt …' : 'Neu erzeugen'}
+                <SparklesIcon /> {generation.pending ? t('generating') : t('regenerate')}
               </Button>
               <Button
                 variant="ghost"
@@ -445,7 +445,7 @@ export function PageCover({
                 data-testid="remove-cover"
                 onClick={() => void remove()}
               >
-                <Trash2Icon /> Entfernen
+                <Trash2Icon /> {t('remove')}
               </Button>
             </>
           )}

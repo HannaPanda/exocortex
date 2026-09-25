@@ -3,6 +3,7 @@
 import { ClockIcon, ListFilterIcon, PlusIcon, SlidersHorizontalIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type SearchResult } from '@exocortex/contracts';
@@ -65,6 +66,7 @@ function matcher(query: string): (...haystack: readonly string[]) => boolean {
  */
 export function SearchCommand({ workspaceId, open, onOpenChange, commands }: SearchCommandProps) {
   const router = useRouter();
+  const t = useTranslations('search.command');
   const [query, setQuery] = React.useState('');
   const search = useSearch(workspaceId ?? undefined, query);
   const createDocument = useCreateDocument(workspaceId ?? undefined);
@@ -95,27 +97,27 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
 
     const actions: CommandItem[] = [];
     if (workspaceId !== null) {
-      if (matches('Neue Seite anlegen', 'erstellen', 'schreiben')) {
+      if (matches(t('createPage'), ...t('createPageKeywords').split(' '))) {
         actions.push({
           id: 'action-create-page',
-          group: 'Aktionen',
-          label: 'Neue Seite anlegen',
+          group: t('groupActions'),
+          label: t('createPage'),
           icon: <PlusIcon className="size-4 text-muted-foreground" />,
           onSelect: () => {
             void createDocument
-              .mutateAsync({ title: 'Unbenannte Seite', type: 'PAGE', parentId: null })
+              .mutateAsync({ title: t('untitledPage'), type: 'PAGE', parentId: null })
               .then((document) => {
                 go(`/arbeitsbereich/${workspaceId}/seite/${document.id}`);
               });
           },
         });
       }
-      if (matches('Erweiterte Suche mit Filtern', 'finden')) {
+      if (matches(t('openSearchPage'), ...t('openSearchPageKeywords').split(' '))) {
         const href = `/arbeitsbereich/${workspaceId}/suche`;
         actions.push({
           id: 'action-open-search-page',
-          group: 'Aktionen',
-          label: 'Erweiterte Suche mit Filtern',
+          group: t('groupActions'),
+          label: t('openSearchPage'),
           icon: <SlidersHorizontalIcon className="size-4 text-muted-foreground" />,
           link: <Link href={href} />,
           onSelect: () => go(href),
@@ -127,7 +129,7 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
       if (!matches(command.label, ...command.keywords)) continue;
       actions.push({
         id: command.id,
-        group: 'Aktionen',
+        group: t('groupActions'),
         label: command.label,
         hint: command.hint,
         icon: command.icon,
@@ -146,7 +148,7 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
         const href = `/arbeitsbereich/${savedQuery.workspaceId}/suche/${savedQuery.id}`;
         return {
           id: `saved-query-${savedQuery.id}`,
-          group: 'Gespeicherte Suchen',
+          group: t('groupSavedQueries'),
           label: savedQuery.name,
           hint: savedQuery.description ?? undefined,
           icon: <ListFilterIcon className="size-4 text-muted-foreground" />,
@@ -163,7 +165,7 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
           const href = documentHref(workspaceId ?? '', document.id, document.type);
           return {
             id: `recent-${document.id}`,
-            group: 'Zuletzt bearbeitet',
+            group: t('groupRecent'),
             label: document.title,
             // The path, because a workspace can hold three pages called
             // "Notizen" and a bare title makes the reader guess which one.
@@ -188,7 +190,7 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
       const href = documentHref(result.workspaceId, result.documentId, result.type);
       return {
         id: result.documentId,
-        group: 'Seiten',
+        group: t('groupPages'),
         label: result.title,
         hint: withSection(result.section, result.snippet.replace(/<\/?mark>/g, '').slice(0, 60)),
         icon: (
@@ -229,6 +231,7 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
     router,
     savedQueries.data,
     search.data,
+    t,
     typed,
     workspaceId,
   ]);
@@ -240,22 +243,22 @@ export function SearchCommand({ workspaceId, open, onOpenChange, commands }: Sea
       query={query}
       onQueryChange={setQuery}
       items={items}
-      emptyLabel={
-        query.trim().length === 1
-          ? 'Für Seiten mindestens zwei Zeichen eingeben'
-          : 'Nichts gefunden'
-      }
+      emptyLabel={query.trim().length === 1 ? t('minimumLength') : t('empty')}
       footer={
         // A count, a duration and an engine name: a readout, so it gets the
         // instrument face. The fallback sentence is prose and stays sans.
         search.data !== undefined && query.trim().length > 1 ? (
           <span className="exocortex-numeric">
-            {`${search.data.results.length} Treffer · ${search.data.tookMs} ms · ${search.data.adapter}`}
+            {t('readout', {
+              count: search.data.results.length,
+              tookMs: search.data.tookMs,
+              adapter: search.data.adapter,
+            })}
           </span>
         ) : (
           <span className="flex items-center gap-1.5">
             <ClockIcon className="size-3.5" aria-hidden />
-            Zuletzt bearbeitet, oder tippen für die Volltextsuche
+            {t('idleHint')}
           </span>
         )
       }

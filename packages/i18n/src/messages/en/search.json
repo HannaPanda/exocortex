@@ -1,0 +1,130 @@
+{
+  "route": {
+    "searchTitle": "Search",
+    "savedQueryTitle": "Saved search"
+  },
+  "chatsRoute": {
+    "title": "Chats",
+    "loading": "Loading chats …"
+  },
+  "builder": {
+    "textLabel": "Search term",
+    "textPlaceholder": "Leave blank to filter only by location, type, and time",
+    "semantic": "Also search by meaning, not just exact words",
+    "typesLabel": "Type",
+    "typesHint": "Nothing selected means: everything.",
+    "types": {
+      "PAGE": "Pages",
+      "COLLECTION": "Databases",
+      "PROJECT": "Projects"
+    },
+    "underLabel": "Only under",
+    "underAnywhere": "anywhere",
+    "underHint": "The subtree is determined fresh on every run, so moved pages move along with it.",
+    "collectionLabel": "Only rows in the database",
+    "none": "none",
+    "entityLabel": "Mentions the entity",
+    "updatedLabel": "Updated",
+    "createdLabel": "Created",
+    "sortLabel": "Sort order",
+    "sort": {
+      "RELEVANCE": "Relevance",
+      "UPDATED_DESC": "Last updated",
+      "UPDATED_ASC": "Least recently updated",
+      "CREATED_DESC": "Last created",
+      "CREATED_ASC": "First created",
+      "TITLE_ASC": "Title A to Z",
+      "TITLE_DESC": "Title Z to A"
+    },
+    "relevanceWithoutText": "Without a search term, there is no relevance. Results will then be sorted by last updated.",
+    "limitLabel": "At most",
+    "includeArchived": "Include trash",
+    "window": {
+      "any": "any",
+      "lastDays": "{count, plural, one {last day} other {last # days}}",
+      "lastYear": "last year",
+      "custom": "custom range"
+    },
+    "rangeFrom": "{label}: from",
+    "rangeUntil": "{label}: to",
+    "rangeSeparator": "to",
+    "noProperties": "This database has no properties to filter by yet.",
+    "propertiesLabel": "Properties",
+    "removeFilter": "Remove filter",
+    "addProperty": "Property",
+    "valuePlaceholder": "Value",
+    "add": "Add"
+  },
+  "page": {
+    "loading": "Loading saved search",
+    "loadFailed": "Saved search could not be loaded",
+    "title": "Search",
+    "introFresh": "Search across all pages in this workspace, with filters by place, type, properties, entities, and time range. What’s useful can be saved.",
+    "introStored": "A saved search. The results are freshly determined each time it is opened.",
+    "save": "Save search",
+    "delete": "Delete",
+    "saveChanges": "Save changes",
+    "deleteTitle": "Delete saved search",
+    "deleteDescription": "Only the question will be deleted. The pages it found remain unchanged where they are.",
+    "cancel": "Cancel",
+    "layoutLabel": "Layout",
+    "layout": {
+      "LIST": "List",
+      "TABLE": "Table",
+      "CARDS": "Cards"
+    },
+    "inSidebar": "Show in navigation",
+    "resultsHeading": "Results",
+    "noQueryTitle": "No query yet",
+    "noQueryDescription": "Enter a search term or narrow down above where to search.",
+    "resultsLoading": "Finding results",
+    "queryFailed": "Query could not be executed",
+    "saveDialog": {
+      "title": "Save search",
+      "description": "The question is saved, not the results list. It will be answered anew the next time it is opened.",
+      "nameLabel": "Name",
+      "namePlaceholder": "Open high-priority tasks",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Optional: what this search is for",
+      "inSidebar": "Add to navigation as smart view",
+      "submit": "Save"
+    }
+  },
+  "nodeView": {
+    "fallbackName": "Saved search",
+    "open": "Open search",
+    "change": "Change search",
+    "noneTitle": "No search selected",
+    "noneDescription": "Choose a saved search whose results should appear here.",
+    "missingDescription": "This saved search was not found. It may have been deleted.",
+    "pick": "Select search",
+    "resultsLoading": "Finding matches",
+    "queryFailed": "Query not executed",
+    "allResults": "View all matches"
+  },
+  "results": {
+    "topLevel": "top level",
+    "emptyTitle": "Nothing found",
+    "emptyDescription": "There is nothing matching this query right now. That may change tomorrow; your search stays saved.",
+    "truncated": "This is not the full answer. Increase the query limit to see more.",
+    "inTrash": "in trash",
+    "columnPage": "Page",
+    "columnPath": "Location",
+    "columnUpdated": "Updated"
+  },
+  "command": {
+    "groupActions": "Actions",
+    "groupSavedQueries": "Saved searches",
+    "groupRecent": "Recently edited",
+    "groupPages": "Pages",
+    "createPage": "Create new page",
+    "createPageKeywords": "create write",
+    "untitledPage": "Untitled page",
+    "openSearchPage": "Advanced search with filters",
+    "openSearchPageKeywords": "find",
+    "minimumLength": "Type at least two characters for pages",
+    "empty": "Nothing found",
+    "readout": "{count, plural, one {# match} other {# matches}} · {tookMs} ms · {adapter}",
+    "idleHint": "Recently edited, or type for full-text search"
+  }
+}

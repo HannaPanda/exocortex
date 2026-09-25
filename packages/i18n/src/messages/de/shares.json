@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "sharesTitle": "Freigaben",
+    "sharedPageTitle": "Geteilte Seite"
+  },
+  "common": {
+    "loading": "Freigaben werden geladen …",
+    "loadError": "Freigaben konnten nicht geladen werden",
+    "read": "Lesen",
+    "write": "Bearbeiten",
+    "revoke": "Zurückziehen",
+    "revokeFailed": "Die Freigabe konnte nicht zurückgezogen werden.",
+    "nothingShared": "Nichts freigegeben"
+  },
+  "wording": {
+    "publicLink": "Öffentlicher Link (…{prefix})",
+    "unknownAccount": "Unbekanntes Konto",
+    "grant": "{who}: {permission, select, WRITE {darf bearbeiten} other {darf lesen}}{subtree, select, yes {, mit allem darunter} other {}}",
+    "grantUntil": "{who}: {permission, select, WRITE {darf bearbeiten} other {darf lesen}}{subtree, select, yes {, mit allem darunter} other {}}, bis {until}",
+    "revokeLink": "Die Adresse funktioniert danach für niemanden mehr, auch nicht für jemanden, der sie weitergereicht bekommen hat. Sie lässt sich nicht wiederherstellen: ein neuer Link bekommt eine neue Adresse.",
+    "revokeAccount": "{who} verliert den Zugriff sofort, auch in einer Sitzung, die gerade offen ist.",
+    "thisAccount": "Dieses Konto",
+    "regrantDialog": "Du kannst die Freigabe oben jederzeit neu erteilen.",
+    "regrantList": "Du kannst sie im Teilen-Dialog der Seite jederzeit neu erteilen.",
+    "revokeSubtree": "Das gilt für diese Seite und alles darunter."
+  },
+  "state": {
+    "active": "Aktiv",
+    "expired": "Abgelaufen",
+    "revoked": "Zurückgezogen"
+  },
+  "revokeConfirm": {
+    "question": "Zurückziehen?",
+    "cancel": "Abbrechen",
+    "confirm": "Zurückziehen",
+    "pending": "Wird zurückgezogen …"
+  },
+  "linkAddress": {
+    "copyLabel": "Adresse kopieren",
+    "copiedLabel": "Adresse kopiert",
+    "copy": "Kopieren",
+    "copied": "Kopiert",
+    "lost": "Die Adresse dieses Links ist nicht gespeichert: er stammt von vor dem 24.09.2026. Er funktioniert weiter. Brauchst du die Adresse, erzeuge einen neuen Link mit demselben Umfang und zieh diesen danach zurück.",
+    "replace": "Neuen Link erzeugen",
+    "replaced": "Neuer Link steht darüber"
+  },
+  "dialog": {
+    "title": "„{title}“ teilen",
+    "description": "Teilen heißt: jemand außerhalb dieses Arbeitsbereichs kommt an diese Seite. Wer hier schon Mitglied ist, braucht keine Freigabe.",
+    "inherited": "Diese Seite ist bereits von weiter oben freigegeben: jemand hat einen Bereich darüber mitsamt allem darunter geteilt. Sie ist also schon von außen erreichbar, ohne dass hier etwas steht.",
+    "scope": "Umfang",
+    "scopePageOnly": "Nur diese Seite",
+    "scopeSubtree": "Diese Seite und alles darunter",
+    "expiry": "Gültigkeit",
+    "expiryNever": "Unbefristet",
+    "expiryDays": "{count, plural, one {# Tag} other {# Tage}}",
+    "toAccount": "An ein Konto",
+    "emailPlaceholder": "adresse@beispiel.de",
+    "permission": "Recht",
+    "share": "Teilen",
+    "publicLink": "Öffentlicher Link",
+    "publicLinkExplanation": "Wer die Adresse hat, liest die Seite: ohne Konto, ohne Anmeldung, auch wenn er sie weitergereicht bekommen hat. Schreiben kann über einen Link niemand.",
+    "createLink": "Link erzeugen",
+    "copied": "Kopiert",
+    "copyAddress": "Adresse kopieren",
+    "addressKept": "Du findest die Adresse jederzeit wieder, hier in der Liste und unter „Freigaben“ im Kontomenü, solange der Link gilt.",
+    "current": "Aktuell freigegeben",
+    "nobody": "Niemand außerhalb dieses Arbeitsbereichs kann diese Seite erreichen.",
+    "revokeFailed": "Zurückziehen fehlgeschlagen.",
+    "close": "Schließen",
+    "changePermission": "Recht ändern",
+    "readOnly": "Nur lesen",
+    "revokeLabel": "Zurückziehen: {description}"
+  },
+  "page": {
+    "title": "Freigaben",
+    "tabMine": "Von mir geteilt",
+    "tabIncoming": "Mit mir geteilt"
+  },
+  "mine": {
+    "intro": "Alles, was du selbst freigegeben hast, aus allen Arbeitsbereichen: an einzelne Konten und als öffentlicher Link.",
+    "emptyDescription": "Du hast noch keine Seite geteilt. Das geht im Seitenmenü über „Teilen …“.",
+    "filterPlaceholder": "Seite, Arbeitsbereich oder Adresse …",
+    "filterLabel": "Freigaben filtern",
+    "showInactive": "Beendete zeigen ({count, number})",
+    "noMatchTitle": "Nichts gefunden",
+    "noMatchDescription": "Keine Freigabe passt zu diesem Filter.",
+    "noneOpenTitle": "Nichts mehr offen",
+    "noneOpenDescription": "Alle deine Freigaben sind zurückgezogen oder abgelaufen.",
+    "truncated": "Es gibt mehr Freigaben, als hier stehen. Die ältesten beendeten fehlen.",
+    "rowContext": "in „{workspace}“ · {description}",
+    "revokeLabel": "Zurückziehen: {title}, {description}",
+    "adminOnly": "Zurückziehen kann hier nur, wer im Arbeitsbereich „{workspace}“ Admin ist."
+  },
+  "incoming": {
+    "intro": "Seiten aus Arbeitsbereichen, in denen du kein Mitglied bist. Sie stehen in keiner Navigation, nur hier.",
+    "emptyTitle": "Nichts für dich freigegeben",
+    "emptyDescription": "Wenn jemand dir eine Seite freigibt, taucht sie hier auf.",
+    "origin": "aus „{workspace}“, von {name}"
+  },
+  "workspace": {
+    "title": "Freigaben",
+    "intro": "Was aus diesem Arbeitsbereich nach außen gegeben ist: an einzelne Konten und als öffentlicher Link. Zurückgezogene Freigaben bleiben stehen, damit nachvollziehbar bleibt, was einmal offen war.",
+    "emptyDescription": "Keine Seite dieses Arbeitsbereichs ist von außen erreichbar.",
+    "columnPage": "Seite",
+    "columnRecipient": "An wen",
+    "columnPermission": "Recht",
+    "columnScope": "Umfang",
+    "columnExpires": "Läuft ab",
+    "columnStatus": "Status",
+    "scopeSubtree": "mit Unterseiten",
+    "scopePageOnly": "nur die Seite",
+    "revokeLabel": "Zurückziehen: {title}",
+    "publicLink": "Öffentlicher Link",
+    "unknown": "Unbekannt"
+  },
+  "public": {
+    "loading": "Seite wird geladen …",
+    "goneTitle": "Dieser Link führt nicht mehr zu einer Seite",
+    "goneDescription": "Er wurde zurückgezogen, ist abgelaufen, oder er war nie gültig. Frag die Person, von der du ihn hast.",
+    "origin": "Geteilt aus „{workspace}“ von {name}",
+    "path": "Pfad",
+    "empty": "Diese Seite ist leer.",
+    "children": "Unterseiten",
+    "footer": "Diese Seite wurde als Link geteilt. Sie ist schreibgeschützt. <link>eXocortex</link> ist selbst gehostet."
+  },
+  "shared": {
+    "loading": "Seite wird geladen …",
+    "unavailableTitle": "Seite nicht verfügbar",
+    "unavailableDescription": "Die Freigabe wurde zurückgezogen, ist abgelaufen, oder es gab sie nie."
+  }
+}

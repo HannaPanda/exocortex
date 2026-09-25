@@ -15,6 +15,7 @@ import {
 } from '@exocortex/ui';
 
 import { BlockIcon } from './block-icon';
+import { useBlockGroupLabel } from './block-labels';
 
 /**
  * The menu items of "in anderen Block umwandeln".
@@ -30,6 +31,7 @@ export function TurnIntoItems({
   editor: Editor;
   catalog: readonly BlockCatalogEntry[];
 }) {
+  const groupLabel = useBlockGroupLabel();
   const sections = React.useMemo(
     () => groupBlockCatalog(catalog.filter((entry) => entry.turnInto)),
     [catalog],
@@ -39,7 +41,7 @@ export function TurnIntoItems({
     <>
       {sections.map((section) => (
         <DropdownMenuGroup key={section.group}>
-          <DropdownMenuLabel>{section.label}</DropdownMenuLabel>
+          <DropdownMenuLabel>{groupLabel(section.group)}</DropdownMenuLabel>
           {section.entries.map((entry) => (
             <DropdownMenuItem
               key={entry.id}
@@ -76,10 +78,15 @@ export function TurnIntoMenu({
   );
 }
 
-/** Label of the block the cursor currently sits in, for the toolbar trigger. */
+/**
+ * Label of the block the cursor currently sits in, for the toolbar trigger.
+ *
+ * Falls back to the paragraph's label, which the catalog carries in the
+ * reader's language like every other one.
+ */
 export function currentBlockLabel(editor: Editor, catalog: readonly BlockCatalogEntry[]): string {
   const active = catalog.find((entry) => entry.turnInto && entry.isActive?.(editor) === true);
-  return active?.label ?? 'Text';
+  return (active ?? catalog.find((entry) => entry.id === 'paragraph'))?.label ?? '';
 }
 
 export function TurnIntoTriggerLabel({ label }: { label: string }) {

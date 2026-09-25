@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import { ErrorState, LoadingState } from '@exocortex/ui';
 
 import { useDocument } from '@/lib/api/document-queries';
@@ -22,14 +24,15 @@ import { DocumentView } from './document-view';
  * anyone else.
  */
 export function SharedDocumentPage({ documentId }: { documentId: string }) {
+  const t = useTranslations('shares.shared');
   const document = useDocument(documentId);
 
-  if (document.isPending) return <LoadingState label="Seite wird geladen …" />;
+  if (document.isPending) return <LoadingState label={t('loading')} />;
   if (document.isError || document.data === undefined) {
     return (
       <ErrorState
-        title="Seite nicht verfügbar"
-        description="Die Freigabe wurde zurückgezogen, ist abgelaufen, oder es gab sie nie."
+        title={t('unavailableTitle')}
+        description={t('unavailableDescription')}
         onRetry={() => void document.refetch()}
       />
     );

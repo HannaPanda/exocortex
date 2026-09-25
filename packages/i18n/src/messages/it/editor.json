@@ -1,0 +1,377 @@
+{
+  "surface": {
+    "unavailable": "Editor non disponibile",
+    "connecting": "Connessione all’editor in corso…",
+    "uploadFailed": "Impossibile caricare un file.",
+    "placeholder": "Scrivi qualcosa o digita «/» per i comandi…",
+    "syncing": "Sincronizzazione in corso…",
+    "contentLabel": "Contenuto della pagina"
+  },
+  "connection": {
+    "startFailed": "Impossibile avviare la modifica in tempo reale.",
+    "unknownUser": "Sconosciuto"
+  },
+  "blocks": {
+    "paragraph": {
+      "label": "Testo",
+      "description": "Un paragrafo normale"
+    },
+    "heading-1": {
+      "label": "Titolo 1",
+      "description": "Titolo di sezione di livello 1"
+    },
+    "heading-2": {
+      "label": "Titolo 2",
+      "description": "Titolo di sezione di livello 2"
+    },
+    "heading-3": {
+      "label": "Titolo 3",
+      "description": "Titolo di sezione di livello 3"
+    },
+    "blockquote": {
+      "label": "Citazione",
+      "description": "Citazione in evidenza"
+    },
+    "code-block": {
+      "label": "Blocco di codice",
+      "description": "Codice con evidenziazione della sintassi"
+    },
+    "horizontal-rule": {
+      "label": "Separatore",
+      "description": "Linea orizzontale tra le sezioni"
+    },
+    "bullet-list": {
+      "label": "Elenco puntato",
+      "description": "Elenco con punti"
+    },
+    "ordered-list": {
+      "label": "Elenco numerato",
+      "description": "Elenco con numeri"
+    },
+    "task-list": {
+      "label": "Elenco attività",
+      "description": "Elenco con caselle di controllo"
+    },
+    "image": {
+      "label": "Immagine",
+      "description": "Carica un’immagine"
+    },
+    "table": {
+      "label": "Tabella",
+      "description": "Tabella con riga di intestazione"
+    },
+    "callout-info": {
+      "label": "Info",
+      "description": "Riquadro in evidenza (info)"
+    },
+    "callout-note": {
+      "label": "Nota",
+      "description": "Riquadro in evidenza (nota)"
+    },
+    "callout-success": {
+      "label": "Successo",
+      "description": "Riquadro in evidenza (successo)"
+    },
+    "callout-warning": {
+      "label": "Avviso",
+      "description": "Riquadro in evidenza (avviso)"
+    },
+    "callout-danger": {
+      "label": "Pericolo",
+      "description": "Riquadro in evidenza (pericolo)"
+    },
+    "file": {
+      "label": "File",
+      "description": "File da scaricare"
+    },
+    "video": {
+      "label": "Video",
+      "description": "Riproduci video nel player"
+    },
+    "audio": {
+      "label": "Audio",
+      "description": "Riproduci file audio"
+    },
+    "pdf": {
+      "label": "PDF",
+      "description": "Visualizza PDF incorporato"
+    },
+    "page-link": {
+      "label": "Link a pagina",
+      "description": "Riferimento a un’altra pagina come blocco indipendente"
+    },
+    "breadcrumb": {
+      "label": "Percorso di navigazione",
+      "description": "Percorso verso questa pagina nella gerarchia"
+    },
+    "toggle": {
+      "label": "Elenco a comparsa",
+      "description": "Sezione comprimibile"
+    },
+    "columns": {
+      "label": "Colonne",
+      "description": "Disponi i contenuti l’uno accanto all’altro"
+    },
+    "database-embed": {
+      "label": "Incorpora database",
+      "description": "Vista di un database esistente direttamente in questa pagina"
+    },
+    "block-math": {
+      "label": "Formula",
+      "description": "Formula LaTeX come blocco indipendente"
+    },
+    "saved-query": {
+      "label": "Incorpora ricerca salvata",
+      "description": "Elenco dinamico dei risultati di una ricerca salvata in questa pagina"
+    },
+    "embed": {
+      "label": "Incorporamento",
+      "description": "Incorpora contenuti esterni (YouTube, Figma, …)"
+    },
+    "bookmark": {
+      "label": "Segnalibro",
+      "description": "Scheda di anteprima per un link"
+    },
+    "transclusion": {
+      "label": "Incorpora contenuto",
+      "description": "Mostra il testo di un’altra pagina senza copiarlo"
+    },
+    "table-of-contents": {
+      "label": "Indice",
+      "description": "Panoramica di tutte le intestazioni della pagina"
+    }
+  },
+  "blockGroups": {
+    "basic": "Di base",
+    "lists": "Elenchi",
+    "callout": "Avvisi",
+    "media": "Elementi multimediali",
+    "advanced": "Avanzate"
+  },
+  "slashMenu": {
+    "label": "Inserisci blocco",
+    "empty": "Nessun blocco corrisponde a „{query}“."
+  },
+  "blockHandle": {
+    "insertBelow": "Inserisci blocco sotto",
+    "actions": "Azioni blocco"
+  },
+  "blockActions": {
+    "turnInto": "Trasforma in",
+    "color": "Colore",
+    "duplicate": "Duplica",
+    "copyLink": "Copia link al blocco",
+    "delete": "Elimina"
+  },
+  "blockRemoval": {
+    "title": {
+      "table": "Eliminare la tabella?",
+      "codeBlock": "Eliminare il blocco di codice?",
+      "blockquote": "Eliminare la citazione?",
+      "bulletList": "Eliminare l’elenco puntato?",
+      "orderedList": "Eliminare l’elenco numerato?",
+      "taskList": "Eliminare l’elenco delle attività?",
+      "details": "Eliminare il blocco comprimibile?",
+      "callout": "Eliminare l’avviso?",
+      "columnList": "Eliminare il layout a colonne?",
+      "databaseEmbed": "Eliminare il database incorporato?",
+      "savedQueryEmbed": "Eliminare il blocco query?",
+      "paragraph": "Eliminare il paragrafo?",
+      "heading": "Eliminare l’intestazione?",
+      "block": "Eliminare il blocco?"
+    },
+    "table": "La tabella con {rows, plural, one {# riga} many {# righe} other {# righe}} e {columns, plural, one {# colonna} many {# colonne} other {# colonne}} verrà rimossa con tutto il suo contenuto.",
+    "compound": "Il blocco verrà rimosso con tutto il suo contenuto.",
+    "text": "{count, plural, one {Verrà rimosso # carattere.} many {Verranno rimossi # caratteri.} other {Verranno rimossi # caratteri.}}",
+    "undoHint": "Con Ctrl+Z puoi annullare l’eliminazione."
+  },
+  "destructiveConfirm": {
+    "cancel": "Annulla",
+    "confirm": "Elimina"
+  },
+  "prompt": {
+    "url": {
+      "title": "Inserisci indirizzo",
+      "description": "Inserisci l’indirizzo completo, ad esempio https://exocortex.app/bild.png",
+      "placeholder": "https://…"
+    },
+    "latex": {
+      "title": "Inserisci formula",
+      "description": "Notazione LaTeX, ad esempio {example}",
+      "placeholder": "a^2 + b^2 = c^2"
+    },
+    "page": {
+      "title": "Collega pagina",
+      "description": "Scegli una pagina da quest’area di lavoro. Se digiti un titolo non ancora esistente, verrà creato un riferimento che ti proporrà di creare la pagina.",
+      "placeholder": "Cerca pagina …"
+    },
+    "database": {
+      "title": "Incorpora database",
+      "description": "Scegli un database esistente da quest’area di lavoro.",
+      "placeholder": "Cerca database …"
+    },
+    "savedQuery": {
+      "title": "Incorpora ricerca salvata",
+      "description": "Scegli una ricerca salvata. Il blocco mostra i relativi risultati e li aggiorna a ogni apertura della pagina. Le nuove ricerche vengono create nell’area di ricerca.",
+      "placeholder": "Cerca ricerca salvata …"
+    },
+    "uploadFailed": "Impossibile caricare il file.",
+    "noPageTitle": "Nessuna pagina trovata",
+    "noPageDescription": "Digita un titolo per creare un collegamento a una pagina non ancora creata.",
+    "noDatabaseTitle": "Nessun database trovato",
+    "noDatabaseDescription": "Crea prima un database in questa area di lavoro.",
+    "linkNewTitle": "Collega “{title}” come pagina non ancora creata",
+    "noSavedQueryTitle": "Nessuna ricerca salvata trovata",
+    "noSavedQueryDescription": "Nell’area di ricerca puoi comporre e salvare una ricerca; sarà poi disponibile qui.",
+    "fieldFormula": "Formula",
+    "fieldSearch": "Ricerca",
+    "fieldValue": "Valore",
+    "cancel": "Annulla",
+    "insert": "Inserisci"
+  },
+  "colors": {
+    "name": {
+      "default": "Predefinito",
+      "gray": "Grigio",
+      "brown": "Marrone",
+      "orange": "Arancione",
+      "yellow": "Giallo",
+      "green": "Verde",
+      "blue": "Blu",
+      "purple": "Viola",
+      "pink": "Rosa",
+      "red": "Rosso"
+    },
+    "text": "Colore del testo",
+    "background": "Sfondo",
+    "reset": "Rimuovi colori"
+  },
+  "selectionToolbar": {
+    "label": "Formattazione",
+    "turnInto": "Tipo di blocco: {block}. Trasforma in un altro blocco",
+    "mark": {
+      "bold": "Grassetto",
+      "italic": "Corsivo",
+      "underline": "Sottolineato",
+      "strike": "Barrato",
+      "code": "Codice",
+      "superscript": "Apice",
+      "subscript": "Pedice"
+    },
+    "shortcut": {
+      "bold": "Ctrl+B",
+      "italic": "Ctrl+I",
+      "underline": "Ctrl+U",
+      "strike": "Ctrl+Shift+S",
+      "subscript": "Ctrl+,"
+    },
+    "withShortcut": "{label} ({shortcut})",
+    "link": "Link",
+    "color": "Colore",
+    "textColor": "Colore del testo",
+    "emoji": "Emoji",
+    "comment": "Commenta",
+    "sendToAi": "Invia all’IA",
+    "blockActions": "Azioni blocco"
+  },
+  "codeBlock": {
+    "language": "Linguaggio",
+    "noHighlighting": "Nessuna evidenziazione",
+    "copy": "Copia codice",
+    "copied": "Codice copiato"
+  },
+  "emojiMenu": {
+    "search": "Cerca emoji",
+    "placeholder": "Cerca…"
+  },
+  "table": {
+    "label": "Tabella",
+    "addRow": "Inserisci riga sotto",
+    "addColumn": "Inserisci colonna a destra",
+    "toggleHeaderRow": "Attiva/disattiva riga di intestazione",
+    "mergeOrSplit": "Unisci o dividi celle",
+    "deleteRow": "Elimina riga",
+    "deleteColumn": "Elimina colonna",
+    "deleteTable": "Elimina tabella"
+  },
+  "linkBubble": {
+    "label": "Collegamento",
+    "open": "Apri",
+    "edit": "Modifica",
+    "remove": "Rimuovi"
+  },
+  "linkMenu": {
+    "inputLabel": "Indirizzo o titolo della pagina",
+    "placeholder": "https://… o cerca pagina",
+    "apply": "Applica",
+    "suggestions": "Pagine corrispondenti",
+    "remove": "Rimuovi",
+    "open": "Apri"
+  },
+  "linkNavigation": {
+    "resolveFailed": "Impossibile risolvere il collegamento.",
+    "createFailed": "Impossibile creare la pagina.",
+    "ambiguousTitle": "Più pagine si chiamano “{title}”",
+    "ambiguousDescription": "Scegli la pagina desiderata.",
+    "inTrash": "Nel cestino",
+    "cancel": "Annulla",
+    "missingTitle": "Pagina non trovata",
+    "missingDescription": "Non esiste alcuna pagina con il titolo “{title}” in questa area di lavoro.",
+    "createPage": "Crea pagina",
+    "errorTitle": "Impossibile aprire il collegamento",
+    "close": "Chiudi"
+  },
+  "mentionMenu": {
+    "label": "Inserisci menzione",
+    "empty": "Nessun risultato per “{query}”.",
+    "page": "Pagina",
+    "person": "Persona",
+    "today": "Oggi",
+    "tomorrow": "Domani",
+    "yesterday": "Ieri",
+    "typedDate": "Data inserita"
+  },
+  "pageLink": {
+    "unresolved": {
+      "empty": "Nessuna destinazione selezionata",
+      "deleted": "Pagina di destinazione eliminata",
+      "missing": "La pagina non esiste"
+    },
+    "unresolvedWithTitle": "{title}: {reason}",
+    "searching": "Ricerca di “{title}” in corso",
+    "resolving": "Risoluzione del collegamento",
+    "createPage": "Crea pagina",
+    "choosePage": "Scegli pagina",
+    "changePage": "Cambia pagina",
+    "inTrash": "Nel cestino",
+    "ambiguous": "Più pagine con questo titolo"
+  },
+  "transclusion": {
+    "fallbackTitle": "Contenuto incorporato",
+    "inTrash": "Nel cestino",
+    "openSource": "Apri sorgente",
+    "changePage": "Cambia pagina",
+    "choosePage": "Scegli pagina",
+    "noSourceTitle": "Nessuna sorgente selezionata",
+    "noSourceDescription": "Scegli la pagina il cui contenuto deve apparire qui. Il testo rimane lì e qui viene solo mostrato.",
+    "selfTitle": "Una pagina non può incorporare se stessa",
+    "selfDescription": "Scegli un’altra pagina come sorgente.",
+    "loading": "Caricamento del contenuto incorporato",
+    "unreachableTitle": "Sorgente non raggiungibile",
+    "unreachableDescription": "La pagina incorporata è stata eliminata oppure non puoi leggerla. Il collegamento rimane.",
+    "missingBlockTitle": "La sezione incorporata non è più presente",
+    "missingBlockDescription": "La pagina “{title}” esiste ancora, ma il blocco con l’ID {blockId} al suo interno non è più presente.",
+    "showWholePage": "Mostra l’intera pagina",
+    "nested": "Contiene {count, plural, one {# ulteriore incorporamento che non viene risolto qui} many {# ulteriori incorporamenti che non vengono risolti qui} other {# ulteriori incorporamenti che non vengono risolti qui}}.",
+    "wholePage": "Intera pagina",
+    "section": "Sezione",
+    "chooserLabel": "Cosa vuoi mostrare qui?",
+    "chooseWholePage": "L’intera pagina",
+    "blocksLoading": "Caricamento dei blocchi…",
+    "noBlocks": "Questa pagina non contiene blocchi con nome.",
+    "headingSection": "Intestazione {level}, con tutta la sezione sottostante"
+  },
+  "wikiLink": {
+    "missing": "“{title}” non esiste in quest’area di lavoro"
+  }
+}

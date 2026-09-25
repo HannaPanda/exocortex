@@ -35,8 +35,12 @@ if (typeof window !== 'undefined' && GlobalWorkerOptions.workerSrc === '') {
 export interface PdfDocumentState {
   document: PDFDocumentProxy | null;
   pageCount: number;
-  /** German, user-facing. Null while nothing went wrong. */
-  error: string | null;
+  /**
+   * Why the file did not open, or null while nothing went wrong. `detail` is
+   * pdf.js's own message, when it gave one; the sentence around it is the
+   * viewer's, in the reader's language.
+   */
+  error: { detail: string | null } | null;
 }
 
 const EMPTY: PdfDocumentState = { document: null, pageCount: 0, error: null };
@@ -70,10 +74,9 @@ export function usePdfDocument(url: string | null): PdfDocumentState {
           url,
           document: null,
           pageCount: 0,
-          error:
-            error instanceof Error && error.message.length > 0
-              ? `Das PDF lässt sich nicht anzeigen: ${error.message}`
-              : 'Das PDF lässt sich nicht anzeigen.',
+          error: {
+            detail: error instanceof Error && error.message.length > 0 ? error.message : null,
+          },
         });
       },
     );

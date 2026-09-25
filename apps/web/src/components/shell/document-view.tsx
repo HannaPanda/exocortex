@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentDetail } from '@exocortex/contracts';
@@ -31,6 +32,7 @@ interface DocumentViewProps {
  * editor. No business logic lives here — every action calls an API endpoint.
  */
 export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
+  const t = useTranslations('document.view');
   const session = useSessionQuery();
   const document = useDocument(documentId);
   const updateDocument = useUpdateDocument(workspaceId);
@@ -54,13 +56,13 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
   );
 
   if (document.isPending || session.isPending) {
-    return <LoadingState label="Seite wird geladen …" />;
+    return <LoadingState label={t('loading')} />;
   }
   if (document.isError) {
     return (
       <ErrorState
-        title="Seite nicht verfügbar"
-        description="Die Seite existiert nicht oder du hast keinen Zugriff darauf."
+        title={t('unavailableTitle')}
+        description={t('unavailableDescription')}
         onRetry={() => void document.refetch()}
       />
     );
@@ -136,7 +138,7 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
           className="border-b border-warning/40 bg-warning/10 px-6 py-1.5 text-xs text-warning"
           data-testid="archived-banner"
         >
-          Diese Seite liegt im Papierkorb und ist deshalb nur lesbar.
+          {t('archivedBanner')}
         </p>
       ) : null}
 
@@ -180,7 +182,7 @@ export function DocumentView({ workspaceId, documentId }: DocumentViewProps) {
             <PageOverview workspaceId={workspaceId} documentId={documentId} readOnly={readOnly} />
 
             {user === undefined || user === null ? (
-              <LoadingState label="Sitzung wird geprüft …" />
+              <LoadingState label={t('checkingSession')} />
             ) : (
               <CollaborativeEditor
                 workspaceId={workspaceId}

@@ -1,7 +1,25 @@
 import { describe, expect, it } from 'vitest';
 
-import { MAX_ICON_SEARCH_RESULTS, searchIconNames } from './icon-search';
+import { type CuratedDocumentIconName } from '@exocortex/contracts';
+
+import { MAX_ICON_SEARCH_RESULTS, searchIconNames as searchWith } from './icon-search';
 import { type LucideIconData } from './lucide-icon-store';
+
+/**
+ * The catalogue's names for the curated icons the cases below touch, in German,
+ * the default locale. The component reads them through `useTranslations`.
+ */
+const LABELS: Partial<Record<CuratedDocumentIconName, string>> = {
+  'circle-check': 'Haken',
+  folder: 'Ordner',
+  house: 'Haus',
+};
+
+function searchIconNames(query: string, data: LucideIconData | null): readonly string[] {
+  // A curated icon the cases do not name gets no label at all, rather than its
+  // English name, which would turn every English match into a curated one.
+  return searchWith(query, data, (name) => LABELS[name] ?? '');
+}
 
 /**
  * A stand-in catalogue.
@@ -57,6 +75,13 @@ describe('searchIconNames', () => {
     // `folder` carries a real German label; `folder-git-2` only carries the
     // English name, so "ordner" means the first one.
     expect(searchIconNames('ordner', catalogue(['folder-git-2', 'folder']))[0]).toBe('folder');
+  });
+
+  it('matches a curated label in the reader’s language', () => {
+    const french = (name: CuratedDocumentIconName): string =>
+      name === 'folder' ? 'Dossier' : name;
+
+    expect(searchWith('dossier', catalogue(['folder', 'file']), french)).toEqual(['folder']);
   });
 
   it('sorts equal scores by length, then alphabetically', () => {

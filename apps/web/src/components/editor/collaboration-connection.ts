@@ -1,6 +1,7 @@
 'use client';
 
 import { HocuspocusProvider } from '@hocuspocus/provider';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { IndexeddbPersistence } from 'y-indexeddb';
 import * as Y from 'yjs';
@@ -117,6 +118,8 @@ function attachPresence(
   provider: HocuspocusProvider,
   currentUser: { id: string; name: string },
   publish: PublishSession,
+  /** What to call a peer whose awareness state carries no name. */
+  unknownName: () => string,
 ): void {
   provider.awareness?.setLocalStateField('user', {
     name: currentUser.name,
@@ -133,7 +136,7 @@ function attachPresence(
       const self = clientId === provider.awareness?.clientID;
       users.push({
         clientId,
-        name: user.name ?? 'Unbekannt',
+        name: user.name ?? unknownName(),
         // Your own entry is recoloured on the way in rather than on the way
         // out. The colour in awareness is what everyone else has to see you as,
         // so it stays the hashed one; amber is a local reading of the same
@@ -201,7 +204,7 @@ export interface CollaborationConnectionOptions {
 export interface CollaborationConnectionState {
   /** `null` until the provider exists; the editor is built from it. */
   connection: Connection | null;
-  /** German message for the error state, or `null`. */
+  /** Message for the error state in the reader's language, or `null`. */
   error: string | null;
   /** `true` once the first server handshake has completed. */
   synced: boolean;
@@ -225,6 +228,23 @@ export interface CollaborationConnectionState {
 }
 
 /**
+ * The two strings the connection needs, in the reader's language.
+ *
+ * `unknownUser` is a stable getter rather than a string: presence is attached
+ * once per connection, and a new name must not mean a new connection.
+ */
+function useConnectionText(): { startFailed: string; unknownUser: () => string } {
+  const t = useTranslations('editor.connection');
+  const unknownUser = t('unknownUser');
+  const unknownUserRef = React.useRef(unknownUser);
+  React.useEffect(() => {
+    unknownUserRef.current = unknownUser;
+  }, [unknownUser]);
+  const readUnknownUser = React.useCallback(() => unknownUserRef.current, []);
+  return { startFailed: t('startFailed'), unknownUser: readUnknownUser };
+}
+
+/**
  * Owns the live document: the ticket, the Yjs document, its offline copy, the
  * Hocuspocus provider, presence, and everything the application shell is told
  * about all of that.
@@ -244,7 +264,10 @@ export function useCollaborationConnection({
   // would tear the live connection down and back up on each one.
   const { id: userId, name: userName } = currentUser;
   const [connection, setConnection] = React.useState<Connection | null>(null);
-  const [error, setError] = React.useState<string | null>(null);
+  const { startFailed, unknownUser } = useConnectionText();
+  // A flag rather than the sentence: the text is looked up while rendering, so
+  // it follows the reader's language (and the effect below needs no translator).
+  const [failed, setFailed] = React.useState(false);
   const [synced, setSynced] = React.useState(false);
   const [ready, setReady] = React.useState(false);
   /**
@@ -322,7 +345,7 @@ export function useCollaborationConnection({
     const detachWake = onWakeSignals((reason) => onWake?.(reason));
 
     const connect = async (): Promise<void> => {
-      setError(null);
+      setFailed(false);
       setSynced(false);
       setReady(false);
       update({
@@ -342,7 +365,7 @@ export function useCollaborationConnection({
         record('ticket.failed', {
           message: cause instanceof Error ? cause.message : String(cause),
         });
-        if (!disposed) setError('Die Live-Bearbeitung konnte nicht gestartet werden.');
+        if (!disposed) setFailed(true);
         return;
       }
       record('ticket.granted', {
@@ -475,7 +498,7 @@ export function useCollaborationConnection({
       });
 
       stopSaveIndicator = attachSaveIndicator(ydoc, provider, live, update);
-      attachPresence(provider, { id: userId, name: userName }, update);
+      attachPresence(provider, { id: userId, name: userName }, update, unknownUser);
 
       // A provider that never emits a status change would otherwise never arm
       // the watchdog at all.
@@ -535,10 +558,11 @@ export function useCollaborationConnection({
         savedAt: null,
       });
     };
-    // `update` is stable (useCallback in the provider). `documentTitle` is
+    // `update` and `unknownUser` are stable (useCallback). `documentTitle` is
     // deliberately absent; see the ref above for why. `attempt` is here so the
     // retry button rebuilds the connection from the ticket up.
-  }, [attempt, documentId, retry, update, userId, userName]);
+  }, [attempt, documentId, retry, unknownUser, update, userId, userName]);
 
+  const error = failed ? startFailed : null;
   return { connection, error, synced, ready, retry };
 }

@@ -5,6 +5,7 @@ import { NodeViewWrapper } from '@tiptap/react';
 import { PencilIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentLinkMatch } from '@exocortex/contracts';
@@ -29,12 +30,8 @@ interface PageLinkNodeViewProps extends NodeViewProps {
 /** Layout of the clickable part of the card, shared by the anchor and the button. */
 const TARGET_CLASS = 'flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-left';
 
-/** German for each way a reference can fail to name a page. */
-const UNRESOLVED_TEXT: Readonly<Record<'empty' | 'deleted' | 'missing', string>> = {
-  empty: 'Kein Ziel gewählt',
-  deleted: 'Zielseite gelöscht',
-  missing: 'Seite existiert nicht',
-};
+/** Each way a reference can fail to name a page; the words are in `editor.pageLink.unresolved`. */
+type UnresolvedReason = 'empty' | 'deleted' | 'missing';
 
 /**
  * React node view for the `pageLink` node (`packages/editor/src/page-link.ts`).
@@ -64,6 +61,7 @@ export function PageLinkNodeView({
   updateAttributes,
   workspaceId,
 }: PageLinkNodeViewProps) {
+  const t = useTranslations('editor.pageLink');
   const title = pageLinkTitle(node.attrs);
   const documentId = pageLinkDocumentId(node.attrs);
   const router = useRouter();
@@ -141,7 +139,7 @@ export function PageLinkNodeView({
         <LoadingState
           variant="skeleton"
           rows={1}
-          label={title.length > 0 ? `„${title}“ wird gesucht` : 'Verweis wird aufgelöst'}
+          label={title.length > 0 ? t('searching', { title }) : t('resolving')}
         />
       ) : target.state === 'unresolved' ? (
         <UnresolvedPageLink
@@ -173,25 +171,26 @@ function UnresolvedPageLink({
   onRetarget,
 }: {
   title: string;
-  reason: keyof typeof UNRESOLVED_TEXT;
+  reason: UnresolvedReason;
   editable: boolean;
   onCreate: () => void;
   onRetarget: () => void;
 }) {
+  const t = useTranslations('editor.pageLink');
+  const reasonText = t(`unresolved.${reason}`);
   return (
     <div className="flex flex-1 items-center gap-2">
       <span className="truncate text-muted-foreground">
-        {title.length > 0 ? `${title}: ` : ''}
-        {UNRESOLVED_TEXT[reason]}
+        {title.length > 0 ? t('unresolvedWithTitle', { title, reason: reasonText }) : reasonText}
       </span>
       {editable && reason !== 'empty' ? (
         <Button variant="outline" size="sm" data-testid="page-link-create" onClick={onCreate}>
-          Seite anlegen
+          {t('createPage')}
         </Button>
       ) : null}
       {editable ? (
         <Button variant="ghost" size="sm" data-testid="page-link-retarget" onClick={onRetarget}>
-          <PencilIcon aria-hidden /> Seite wählen
+          <PencilIcon aria-hidden /> {t('choosePage')}
         </Button>
       ) : null}
     </div>
@@ -219,6 +218,7 @@ function ResolvedPageLink({
   onActivate: () => void;
   onRetarget: () => void;
 }) {
+  const t = useTranslations('editor.pageLink');
   return (
     <div className="flex flex-1 items-center gap-2">
       {href === null ? (
@@ -232,7 +232,7 @@ function ResolvedPageLink({
       )}
       {editable ? (
         <Button variant="ghost" size="sm" data-testid="page-link-retarget" onClick={onRetarget}>
-          <PencilIcon aria-hidden /> Seite ändern
+          <PencilIcon aria-hidden /> {t('changePage')}
         </Button>
       ) : null}
     </div>
@@ -249,6 +249,7 @@ function PageLinkLabel({
   title: string;
   ambiguous: boolean;
 }) {
+  const t = useTranslations('editor.pageLink');
   return (
     <>
       <DocumentIcon
@@ -257,10 +258,8 @@ function PageLinkLabel({
         type={match?.type ?? 'PAGE'}
       />
       <span className="truncate">{title}</span>
-      {match?.archivedAt == null ? null : <Badge variant="muted">Im Papierkorb</Badge>}
-      {ambiguous ? (
-        <span className="text-xs text-muted-foreground">Mehrere Seiten mit diesem Titel</span>
-      ) : null}
+      {match?.archivedAt == null ? null : <Badge variant="muted">{t('inTrash')}</Badge>}
+      {ambiguous ? <span className="text-xs text-muted-foreground">{t('ambiguous')}</span> : null}
     </>
   );
 }

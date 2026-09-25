@@ -4,6 +4,7 @@ import { Extension } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import { type Editor } from '@tiptap/react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentSummary, type DocumentTreeNode } from '@exocortex/contracts';
@@ -15,6 +16,11 @@ import { useDocumentTree } from '@/lib/api/document-queries';
 interface KnownPages {
   ids: ReadonlySet<string>;
   titleKeys: ReadonlySet<string>;
+  /**
+   * The tooltip on a dead reference, in the reader's language. Carried with the
+   * pages because the plugin has no translator of its own.
+   */
+  describeMissing: (title: string) => string;
 }
 
 const wikiLinkKey = new PluginKey<KnownPages | null>('exocortexWikiLinkMarkers');
@@ -74,7 +80,7 @@ export function createWikiLinkMarkers(): Extension {
                     Decoration.inline(position, position + node.nodeSize, {
                       class: 'exocortex-wiki-unresolved',
                       'data-resolved': 'missing',
-                      title: `„${title}“ gibt es in diesem Arbeitsbereich nicht`,
+                      title: known.describeMissing(title),
                     }),
                   );
                 }
@@ -98,6 +104,7 @@ export function createWikiLinkMarkers(): Extension {
 function collectKnownPages(
   nodes: readonly DocumentTreeNode[],
   archived: readonly DocumentSummary[],
+  describeMissing: (title: string) => string,
 ): KnownPages {
   const ids = new Set<string>();
   const titleKeys = new Set<string>();
@@ -115,7 +122,7 @@ function collectKnownPages(
 
   for (const node of nodes) walk(node);
   for (const page of archived) add(page);
-  return { ids, titleKeys };
+  return { ids, titleKeys, describeMissing };
 }
 
 /**
@@ -129,6 +136,7 @@ function publishKnownPages(editor: Editor, known: KnownPages): void {
   const current = wikiLinkKey.getState(editor.state);
   if (
     current != null &&
+    current.describeMissing === known.describeMissing &&
     current.ids.size === known.ids.size &&
     current.titleKeys.size === known.titleKeys.size &&
     [...known.ids].every((id) => current.ids.has(id)) &&
@@ -153,12 +161,15 @@ function publishKnownPages(editor: Editor, known: KnownPages): void {
  * between one match, several and none.
  */
 export function WikiLinkMarkers({ editor, workspaceId }: { editor: Editor; workspaceId: string }) {
+  const t = useTranslations('editor.wikiLink');
   const tree = useDocumentTree(workspaceId);
   const data = tree.data;
 
+  const describeMissing = React.useCallback((title: string) => t('missing', { title }), [t]);
   const known = React.useMemo(
-    () => (data === undefined ? null : collectKnownPages(data.nodes, data.archived)),
-    [data],
+    () =>
+      data === undefined ? null : collectKnownPages(data.nodes, data.archived, describeMissing),
+    [data, describeMissing],
   );
 
   React.useEffect(() => {

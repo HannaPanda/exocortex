@@ -1,6 +1,7 @@
 'use client';
 
 import { CopyIcon, GlobeIcon, LinkIcon, MailIcon, TriangleAlertIcon } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentShare, type ShareScope } from '@exocortex/contracts';
@@ -37,7 +38,7 @@ import {
 
 import { ShareLinkAddress, shareUrlFor } from './share-link-address';
 import { ShareRevokeConfirm } from './share-revoke-confirm';
-import { describeShare as describe } from './share-wording';
+import { describeShare } from './share-wording';
 
 /**
  * Handing a page to somebody who is not in this workspace (issue #83, ADR-044).
@@ -50,19 +51,14 @@ import { describeShare as describe } from './share-wording';
  * plain words what an address on the internet means.
  */
 
-const SCOPE_LABELS: Record<ShareScope, string> = {
-  PAGE_ONLY: 'Nur diese Seite',
-  SUBTREE: 'Diese Seite und alles darunter',
-};
+const SCOPE_KEYS = {
+  PAGE_ONLY: 'scopePageOnly',
+  SUBTREE: 'scopeSubtree',
+} as const satisfies Record<ShareScope, string>;
 
-const EXPIRY_OPTIONS = [
-  { value: 'never', label: 'Unbefristet' },
-  { value: '7', label: '7 Tage' },
-  { value: '30', label: '30 Tage' },
-  { value: '90', label: '90 Tage' },
-] as const;
+const EXPIRY_OPTIONS = ['never', '7', '30', '90'] as const;
 
-type ExpiryOption = (typeof EXPIRY_OPTIONS)[number]['value'];
+type ExpiryOption = (typeof EXPIRY_OPTIONS)[number];
 
 function expiresInDays(value: ExpiryOption): number | null {
   return value === 'never' ? null : Number(value);
@@ -79,6 +75,13 @@ export function ShareDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations('shares.dialog');
+  const tCommon = useTranslations('shares.common');
+  const tWording = useTranslations('shares.wording');
+  const format = useFormatter();
+  const describe = (share: DocumentShare): string => describeShare(share, tWording, format);
+  const expiryLabel = (value: ExpiryOption): string =>
+    value === 'never' ? t('expiryNever') : t('expiryDays', { count: Number(value) });
   const shares = useDocumentShares(documentId, { enabled: open });
   const createShare = useCreateShare(documentId);
   const updateShare = useUpdateShare(documentId);
@@ -155,20 +158,15 @@ export function ShareDialog({
     <Dialog open={open} onOpenChange={close}>
       <DialogContent className="max-w-xl" data-testid="share-dialog">
         <DialogHeader>
-          <DialogTitle>„{documentTitle}“ teilen</DialogTitle>
-          <DialogDescription>
-            Teilen heißt: jemand außerhalb dieses Arbeitsbereichs kommt an diese Seite. Wer hier
-            schon Mitglied ist, braucht keine Freigabe.
-          </DialogDescription>
+          <DialogTitle>{t('title', { title: documentTitle })}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         {inherited.length > 0 ? (
           <Alert data-testid="share-inherited">
             <TriangleAlertIcon />
             <AlertDescription>
-              Diese Seite ist bereits von weiter oben freigegeben: jemand hat einen Bereich darüber
-              mitsamt allem darunter geteilt. Sie ist also schon von außen erreichbar, ohne dass
-              hier etwas steht.
+              {t('inherited')}
               <ul className="mt-2 list-disc pl-4">
                 {inherited.map((share) => (
                   <li key={share.id}>{describe(share)}</li>
@@ -185,27 +183,25 @@ export function ShareDialog({
         )}
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="share-scope">Umfang</Label>
+          <Label htmlFor="share-scope">{t('scope')}</Label>
           <div className="flex flex-wrap gap-2">
             <Select value={scope} onValueChange={(next) => setScope(next as ShareScope)}>
               <SelectTrigger id="share-scope" className="w-64">
-                <SelectValue>{() => SCOPE_LABELS[scope]}</SelectValue>
+                <SelectValue>{() => t(SCOPE_KEYS[scope])}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="PAGE_ONLY">{SCOPE_LABELS.PAGE_ONLY}</SelectItem>
-                <SelectItem value="SUBTREE">{SCOPE_LABELS.SUBTREE}</SelectItem>
+                <SelectItem value="PAGE_ONLY">{t(SCOPE_KEYS.PAGE_ONLY)}</SelectItem>
+                <SelectItem value="SUBTREE">{t(SCOPE_KEYS.SUBTREE)}</SelectItem>
               </SelectContent>
             </Select>
             <Select value={expiry} onValueChange={(next) => setExpiry(next as ExpiryOption)}>
-              <SelectTrigger aria-label="Gültigkeit" className="w-40">
-                <SelectValue>
-                  {() => EXPIRY_OPTIONS.find((option) => option.value === expiry)?.label ?? expiry}
-                </SelectValue>
+              <SelectTrigger aria-label={t('expiry')} className="w-40">
+                <SelectValue>{() => expiryLabel(expiry)}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {EXPIRY_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                  <SelectItem key={option} value={option}>
+                    {expiryLabel(option)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -215,12 +211,12 @@ export function ShareDialog({
 
         <form className="flex flex-wrap items-end gap-2" onSubmit={handleInvite}>
           <div className="flex min-w-56 flex-1 flex-col gap-1.5">
-            <Label htmlFor="share-email">An ein Konto</Label>
+            <Label htmlFor="share-email">{t('toAccount')}</Label>
             <Input
               id="share-email"
               type="email"
               value={email}
-              placeholder="adresse@beispiel.de"
+              placeholder={t('emailPlaceholder')}
               data-testid="share-email"
               onChange={(event) => setEmail(event.target.value)}
             />
@@ -229,27 +225,26 @@ export function ShareDialog({
             value={permission}
             onValueChange={(next) => setPermission(next as 'READ' | 'WRITE')}
           >
-            <SelectTrigger aria-label="Recht" className="w-40">
-              <SelectValue>{() => (permission === 'WRITE' ? 'Bearbeiten' : 'Lesen')}</SelectValue>
+            <SelectTrigger aria-label={t('permission')} className="w-40">
+              <SelectValue>
+                {() => (permission === 'WRITE' ? tCommon('write') : tCommon('read'))}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="READ">Lesen</SelectItem>
-              <SelectItem value="WRITE">Bearbeiten</SelectItem>
+              <SelectItem value="READ">{tCommon('read')}</SelectItem>
+              <SelectItem value="WRITE">{tCommon('write')}</SelectItem>
             </SelectContent>
           </Select>
           <Button type="submit" disabled={email.trim().length === 0 || createShare.isPending}>
-            <MailIcon /> Teilen
+            <MailIcon /> {t('share')}
           </Button>
         </form>
 
         <div className="flex flex-col gap-2 rounded-lg border border-border p-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-medium">Öffentlicher Link</p>
-              <p className="text-xs text-muted-foreground">
-                Wer die Adresse hat, liest die Seite: ohne Konto, ohne Anmeldung, auch wenn er sie
-                weitergereicht bekommen hat. Schreiben kann über einen Link niemand.
-              </p>
+              <p className="text-sm font-medium">{t('publicLink')}</p>
+              <p className="text-xs text-muted-foreground">{t('publicLinkExplanation')}</p>
             </div>
             <Button
               variant="outline"
@@ -258,7 +253,7 @@ export function ShareDialog({
               disabled={createShare.isPending}
               onClick={handleCreateLink}
             >
-              <LinkIcon /> Link erzeugen
+              <LinkIcon /> {t('createLink')}
             </Button>
           </div>
           {freshLink === null ? null : (
@@ -267,35 +262,28 @@ export function ShareDialog({
                 {freshLink}
               </div>
               <Button variant="outline" size="sm" onClick={() => void handleCopy(freshLink)}>
-                <CopyIcon /> {copied ? 'Kopiert' : 'Adresse kopieren'}
+                <CopyIcon /> {copied ? t('copied') : t('copyAddress')}
               </Button>
-              <p className="text-xs text-muted-foreground">
-                Du findest die Adresse jederzeit wieder, hier in der Liste und unter „Freigaben“ im
-                Kontomenü, solange der Link gilt.
-              </p>
+              <p className="text-xs text-muted-foreground">{t('addressKept')}</p>
             </div>
           )}
         </div>
 
         <section className="flex flex-col gap-2">
-          <h3 className="text-sm font-semibold">Aktuell freigegeben</h3>
+          <h3 className="text-sm font-semibold">{t('current')}</h3>
           {shares.isPending ? (
-            <LoadingState label="Freigaben werden geladen …" variant="skeleton" rows={2} />
+            <LoadingState label={tCommon('loading')} variant="skeleton" rows={2} />
           ) : shares.isError ? (
-            <ErrorState
-              title="Freigaben konnten nicht geladen werden"
-              onRetry={() => void shares.refetch()}
-            />
+            <ErrorState title={tCommon('loadError')} onRetry={() => void shares.refetch()} />
           ) : active.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Niemand außerhalb dieses Arbeitsbereichs kann diese Seite erreichen.
-            </p>
+            <p className="text-sm text-muted-foreground">{t('nobody')}</p>
           ) : (
             <ul className="flex flex-col gap-2" data-testid="share-list">
               {active.map((share) => (
                 <ShareRow
                   key={share.id}
                   share={share}
+                  description={describe(share)}
                   confirming={revoking === share.id}
                   onAskRevoke={() => {
                     revokeShare.reset();
@@ -313,7 +301,7 @@ export function ShareDialog({
                     revokeShare.isError
                       ? revokeShare.error instanceof ApiError
                         ? messageForCode(revokeShare.error.code)
-                        : 'Zurückziehen fehlgeschlagen.'
+                        : t('revokeFailed')
                       : null
                   }
                 />
@@ -324,7 +312,7 @@ export function ShareDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => close(false)}>
-            Schließen
+            {t('close')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -345,6 +333,7 @@ export function ShareDialog({
  */
 function ShareRow({
   share,
+  description,
   confirming,
   onAskRevoke,
   onCancelRevoke,
@@ -354,6 +343,7 @@ function ShareRow({
   revokeError,
 }: {
   share: DocumentShare;
+  description: string;
   confirming: boolean;
   onAskRevoke: () => void;
   onCancelRevoke: () => void;
@@ -362,6 +352,8 @@ function ShareRow({
   revokePending: boolean;
   revokeError: string | null;
 }) {
+  const t = useTranslations('shares.dialog');
+  const tCommon = useTranslations('shares.common');
   return (
     <li
       className="flex flex-col gap-2 rounded-md border border-border px-3 py-2"
@@ -369,7 +361,7 @@ function ShareRow({
     >
       <div className="flex flex-wrap items-center gap-2">
         {share.kind === 'PUBLIC_LINK' ? <GlobeIcon className="size-4" /> : null}
-        <span className="min-w-0 flex-1 truncate text-sm">{describe(share)}</span>
+        <span className="min-w-0 flex-1 truncate text-sm">{description}</span>
         {confirming ? null : (
           <>
             {share.kind === 'USER' ? (
@@ -377,18 +369,18 @@ function ShareRow({
                 value={share.permission}
                 onValueChange={(next) => onPermissionChange(next as 'READ' | 'WRITE')}
               >
-                <SelectTrigger aria-label="Recht ändern" className="w-32">
+                <SelectTrigger aria-label={t('changePermission')} className="w-32">
                   <SelectValue>
-                    {() => (share.permission === 'WRITE' ? 'Bearbeiten' : 'Lesen')}
+                    {() => (share.permission === 'WRITE' ? tCommon('write') : tCommon('read'))}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="READ">Lesen</SelectItem>
-                  <SelectItem value="WRITE">Bearbeiten</SelectItem>
+                  <SelectItem value="READ">{tCommon('read')}</SelectItem>
+                  <SelectItem value="WRITE">{tCommon('write')}</SelectItem>
                 </SelectContent>
               </Select>
             ) : (
-              <Badge variant="muted">Nur lesen</Badge>
+              <Badge variant="muted">{t('readOnly')}</Badge>
             )}
             <Button
               variant="outline"
@@ -396,10 +388,10 @@ function ShareRow({
               data-testid="share-revoke"
               // The word repeats once per row, so the row's own sentence is
               // what tells a screen reader which grant this button is for.
-              aria-label={`Zurückziehen: ${describe(share)}`}
+              aria-label={t('revokeLabel', { description })}
               onClick={onAskRevoke}
             >
-              Zurückziehen
+              {tCommon('revoke')}
             </Button>
           </>
         )}

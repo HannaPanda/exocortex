@@ -37,18 +37,23 @@ function table(rows: number, columns: number): PmNode {
 
 describe('describeBlockRemoval', () => {
   it('asks before a table goes, and says how big it was', () => {
-    const warning = describeBlockRemoval(table(3, 4));
-    expect(warning?.title).toBe('Tabelle löschen?');
-    expect(warning?.description).toContain('3 Zeilen');
-    expect(warning?.description).toContain('4 Spalten');
-    expect(warning?.description).toContain('Strg+Z');
+    expect(describeBlockRemoval(table(3, 4))).toEqual({
+      kind: 'table',
+      block: 'table',
+      rows: 3,
+      columns: 4,
+    });
   });
 
   it('asks before a compound block goes', () => {
-    expect(describeBlockRemoval(block('codeBlock', 'const x = 1;'))?.title).toBe(
-      'Codeblock löschen?',
-    );
-    expect(describeBlockRemoval(block('blockquote', ''))?.title).toBe('Zitat löschen?');
+    expect(describeBlockRemoval(block('codeBlock', 'const x = 1;'))).toEqual({
+      kind: 'compound',
+      block: 'codeBlock',
+    });
+    expect(describeBlockRemoval(block('blockquote', ''))).toEqual({
+      kind: 'compound',
+      block: 'blockquote',
+    });
   });
 
   it('lets a short paragraph go without a question', () => {
@@ -57,8 +62,10 @@ describe('describeBlockRemoval', () => {
   });
 
   it('asks before a long paragraph goes', () => {
-    const warning = describeBlockRemoval(block('paragraph', 'a'.repeat(300)));
-    expect(warning?.title).toBe('Absatz löschen?');
-    expect(warning?.description).toContain('300 Zeichen');
+    expect(describeBlockRemoval(block('paragraph', 'a'.repeat(300)))).toEqual({
+      kind: 'text',
+      block: 'paragraph',
+      characters: 300,
+    });
   });
 });

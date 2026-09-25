@@ -10,6 +10,7 @@ import {
   RotateCcwIcon,
   Trash2Icon,
 } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -39,12 +40,10 @@ export interface CommentsPanelProps {
   documentId: string | null;
 }
 
-function formatMoment(iso: string): string {
-  return new Date(iso).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
-}
-
 /** Author initials plus name and time. The same line above every remark. */
 function CommentByline({ comment }: { comment: Comment }) {
+  const t = useTranslations('document.comments');
+  const format = useFormatter();
   return (
     <div className="flex items-center gap-2">
       <span
@@ -55,10 +54,10 @@ function CommentByline({ comment }: { comment: Comment }) {
       </span>
       <span className="truncate text-xs font-medium">{comment.createdBy.name}</span>
       <span className="exocortex-numeric shrink-0 text-micro text-muted-foreground">
-        {formatMoment(comment.createdAt)}
+        {format.dateTime(new Date(comment.createdAt), { dateStyle: 'medium', timeStyle: 'short' })}
       </span>
       {comment.editedAt === null ? null : (
-        <span className="shrink-0 text-micro text-muted-foreground">bearbeitet</span>
+        <span className="shrink-0 text-micro text-muted-foreground">{t('edited')}</span>
       )}
     </div>
   );
@@ -80,6 +79,7 @@ function CommentBody({
   onDelete: () => void;
   busy: boolean;
 }) {
+  const t = useTranslations('document.comments');
   const [editing, setEditing] = React.useState(false);
   const [draft, setDraft] = React.useState(comment.body);
 
@@ -90,7 +90,7 @@ function CommentBody({
         <Textarea
           rows={3}
           value={draft}
-          aria-label="Kommentar bearbeiten"
+          aria-label={t('editLabel')}
           data-testid="comment-edit-input"
           className="text-xs"
           onChange={(event) => setDraft(event.target.value)}
@@ -104,7 +104,7 @@ function CommentBody({
               setEditing(false);
             }}
           >
-            Abbrechen
+            {t('cancel')}
           </Button>
           <Button
             size="sm"
@@ -115,7 +115,7 @@ function CommentBody({
               setEditing(false);
             }}
           >
-            Speichern
+            {t('save')}
           </Button>
         </div>
       </div>
@@ -132,23 +132,23 @@ function CommentBody({
             <Button
               variant="ghost"
               size="sm"
-              aria-label="Kommentar bearbeiten"
+              aria-label={t('editLabel')}
               data-testid="comment-edit"
               onClick={() => setEditing(true)}
             >
-              <PencilIcon /> Bearbeiten
+              <PencilIcon /> {t('edit')}
             </Button>
           ) : null}
           {canDelete ? (
             <Button
               variant="ghost"
               size="sm"
-              aria-label="Kommentar löschen"
+              aria-label={t('deleteLabel')}
               data-testid="comment-delete"
               disabled={busy}
               onClick={onDelete}
             >
-              <Trash2Icon /> Löschen
+              <Trash2Icon /> {t('delete')}
             </Button>
           ) : null}
         </div>
@@ -159,18 +159,19 @@ function CommentBody({
 
 /** Where a thread hangs: the whole page, a quoted passage, or a passage that is gone. */
 function AnchorLine({ thread, onReveal }: { thread: CommentThread; onReveal: () => void }) {
+  const t = useTranslations('document.comments');
   const { blockId, anchorText, orphaned } = thread.root;
 
   if (blockId === null) {
-    return <span className="text-micro text-muted-foreground">Zur ganzen Seite</span>;
+    return <span className="text-micro text-muted-foreground">{t('wholePage')}</span>;
   }
 
   if (orphaned) {
     return (
       <span className="flex items-center gap-1.5 text-micro text-muted-foreground">
         <Link2OffIcon className="size-3 shrink-0" aria-hidden />
-        <Badge variant="muted">Verwaist</Badge>
-        {anchorText === null ? 'Die kommentierte Stelle wurde gelöscht.' : `„${anchorText}"`}
+        <Badge variant="muted">{t('orphaned')}</Badge>
+        {anchorText === null ? t('anchorDeleted') : t('anchorQuote', { text: anchorText })}
       </span>
     );
   }
@@ -182,7 +183,7 @@ function AnchorLine({ thread, onReveal }: { thread: CommentThread; onReveal: () 
       data-testid="comment-reveal-anchor"
       onClick={onReveal}
     >
-      {anchorText === null ? 'Zur kommentierten Stelle' : `„${anchorText}"`}
+      {anchorText === null ? t('toAnchor') : t('anchorQuote', { text: anchorText })}
     </button>
   );
 }
@@ -205,6 +206,7 @@ function ThreadCard({
   canModerate,
   highlighted,
 }: ThreadCardProps) {
+  const t = useTranslations('document.comments');
   const { revealBlock } = useCommentAnchor();
   const createComment = useCreateComment(documentId);
   const updateComment = useUpdateComment(documentId);
@@ -270,7 +272,7 @@ function ThreadCard({
             <ChevronDownIcon
               className={cn('size-3 transition-transform', expanded ? 'rotate-180' : undefined)}
             />
-            Erledigt
+            {t('resolved')}
           </button>
         ) : null}
       </div>
@@ -314,15 +316,15 @@ function ThreadCard({
                     rows={2}
                     autoFocus
                     value={replyDraft}
-                    placeholder="Antworten …"
-                    aria-label="Antwort schreiben"
+                    placeholder={t('replyPlaceholder')}
+                    aria-label={t('replyLabel')}
                     data-testid="comment-reply-input"
                     className="text-xs"
                     onChange={(event) => setReplyDraft(event.target.value)}
                   />
                   <div className="flex gap-1.5">
                     <Button variant="ghost" size="sm" onClick={() => setReplyOpen(false)}>
-                      Abbrechen
+                      {t('cancel')}
                     </Button>
                     <Button
                       size="sm"
@@ -337,7 +339,7 @@ function ThreadCard({
                           });
                       }}
                     >
-                      Antworten
+                      {t('reply')}
                     </Button>
                   </div>
                 </>
@@ -349,7 +351,7 @@ function ThreadCard({
                     data-testid="comment-reply"
                     onClick={() => setReplyOpen(true)}
                   >
-                    <CornerDownRightIcon /> Antworten
+                    <CornerDownRightIcon /> {t('reply')}
                   </Button>
                   <Button
                     variant="ghost"
@@ -365,11 +367,11 @@ function ThreadCard({
                   >
                     {resolved ? (
                       <>
-                        <RotateCcwIcon /> Wieder öffnen
+                        <RotateCcwIcon /> {t('reopen')}
                       </>
                     ) : (
                       <>
-                        <CheckIcon /> Erledigt
+                        <CheckIcon /> {t('resolve')}
                       </>
                     )}
                   </Button>
@@ -395,6 +397,7 @@ function NewThreadComposer({
   anchor: { blockId: string | null; quote: string };
   onDone: () => void;
 }) {
+  const t = useTranslations('document.comments');
   const createComment = useCreateComment(documentId);
   const [draft, setDraft] = React.useState('');
   const quote = anchor.quote.trim();
@@ -419,17 +422,17 @@ function NewThreadComposer({
   return (
     <div className="flex flex-col gap-1.5 rounded-md border border-border bg-card px-2 py-2">
       {anchor.blockId === null ? (
-        <span className="text-micro text-muted-foreground">Kommentar zur ganzen Seite</span>
+        <span className="text-micro text-muted-foreground">{t('composerPage')}</span>
       ) : (
         <span className="truncate text-micro text-muted-foreground">
-          {quote.length === 0 ? 'Kommentar zur markierten Stelle' : `Zur Stelle: „${quote}"`}
+          {quote.length === 0 ? t('composerAnchor') : t('composerQuote', { quote })}
         </span>
       )}
       <Textarea
         rows={3}
         value={draft}
-        placeholder="Anmerkung schreiben … Mit @ lassen sich Personen und Seiten erwähnen."
-        aria-label="Neuen Kommentar schreiben"
+        placeholder={t('newPlaceholder')}
+        aria-label={t('newLabel')}
         data-testid="comment-new-input"
         className="text-xs"
         onChange={(event) => setDraft(event.target.value)}
@@ -443,7 +446,7 @@ function NewThreadComposer({
             onDone();
           }}
         >
-          Abbrechen
+          {t('cancel')}
         </Button>
         <Button
           size="sm"
@@ -451,7 +454,7 @@ function NewThreadComposer({
           data-testid="comment-new-submit"
           onClick={submit}
         >
-          Kommentieren
+          {t('submit')}
         </Button>
       </div>
     </div>
@@ -467,6 +470,7 @@ function NewThreadComposer({
  * orphaned, with the quote taken when it was written.
  */
 export function CommentsPanel({ workspaceId, documentId }: CommentsPanelProps) {
+  const t = useTranslations('document.comments');
   const session = useSessionQuery();
   const workspaces = useWorkspaces();
   const document = useDocument(documentId ?? undefined);
@@ -495,21 +499,21 @@ export function CommentsPanel({ workspaceId, documentId }: CommentsPanelProps) {
   if (documentId === null || workspaceId === null) {
     return (
       <EmptyState
-        title="Keine Seite geöffnet"
-        description="Öffne eine Seite, um ihre Kommentare zu sehen."
+        title={t('noPageTitle')}
+        description={t('noPageDescription')}
         icon={MessageSquareIcon}
       />
     );
   }
 
   if (comments.isPending || document.isPending) {
-    return <LoadingState variant="skeleton" rows={4} label="Kommentare werden geladen …" />;
+    return <LoadingState variant="skeleton" rows={4} label={t('loading')} />;
   }
   if (comments.isError) {
     return (
       <ErrorState
-        title="Kommentare nicht verfügbar"
-        description="Die Kommentare dieser Seite konnten nicht geladen werden."
+        title={t('unavailableTitle')}
+        description={t('unavailableDescription')}
         onRetry={() => void comments.refetch()}
       />
     );
@@ -569,16 +573,20 @@ function CommentsList({
   onStartPageWide: () => void;
   onCloseComposer: () => void;
 }) {
+  const t = useTranslations('document.comments');
   return (
     <div className="flex flex-col gap-3" data-testid="comments-panel">
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <span>
-          <span className="exocortex-numeric">{openCount}</span> offen ·{' '}
-          <span className="exocortex-numeric">{resolvedCount}</span> erledigt
+          {t.rich('counts', {
+            open: openCount,
+            resolved: resolvedCount,
+            number: (chunks) => <span className="exocortex-numeric">{chunks}</span>,
+          })}
         </span>
         {canWrite && composing === null ? (
           <Button variant="ghost" size="sm" data-testid="comment-new" onClick={onStartPageWide}>
-            <MessageSquareIcon /> Neu
+            <MessageSquareIcon /> {t('new')}
           </Button>
         ) : null}
       </div>
@@ -596,12 +604,8 @@ function CommentsList({
 
       {threads.length === 0 ? (
         <EmptyState
-          title="Noch keine Kommentare"
-          description={
-            canWrite
-              ? 'Markiere eine Stelle im Text und wähle „Kommentieren“, oder schreibe eine Anmerkung zur ganzen Seite.'
-              : 'Zu dieser Seite wurde noch nichts angemerkt.'
-          }
+          title={t('emptyTitle')}
+          description={canWrite ? t('emptyWritable') : t('emptyReadOnly')}
           icon={MessageSquareIcon}
         />
       ) : (

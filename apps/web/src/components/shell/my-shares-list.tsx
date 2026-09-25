@@ -2,6 +2,7 @@
 
 import { GlobeIcon, UserIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type MyShare } from '@exocortex/contracts';
@@ -22,7 +23,7 @@ import { useMyShares, useRevokeMyShare } from '@/lib/api/share-queries';
 
 import { ShareLinkAddress } from './share-link-address';
 import { ShareRevokeConfirm } from './share-revoke-confirm';
-import { describeShare, SHARE_STATE_LABELS, type ShareState, shareStateOf } from './share-wording';
+import { describeShare, type ShareState, shareStateOf } from './share-wording';
 
 /** Above this many rows a filter earns its place; below it, it is one more field. */
 const FILTER_THRESHOLD = 6;
@@ -40,6 +41,9 @@ const FILTER_THRESHOLD = 6;
  * public until March" is part of the answer too.
  */
 export function MySharesList() {
+  const t = useTranslations('shares.mine');
+  const tCommon = useTranslations('shares.common');
+  const locale = useLocale();
   const shares = useMyShares();
   const revoke = useRevokeMyShare();
   const [showInactive, setShowInactive] = React.useState(false);
@@ -47,14 +51,9 @@ export function MySharesList() {
   /** The share whose withdrawal is being confirmed, by id. At most one. */
   const [confirming, setConfirming] = React.useState<string | null>(null);
 
-  if (shares.isPending) return <LoadingState label="Freigaben werden geladen …" />;
+  if (shares.isPending) return <LoadingState label={tCommon('loading')} />;
   if (shares.isError) {
-    return (
-      <ErrorState
-        title="Freigaben konnten nicht geladen werden"
-        onRetry={() => void shares.refetch()}
-      />
-    );
+    return <ErrorState title={tCommon('loadError')} onRetry={() => void shares.refetch()} />;
   }
 
   // Expiry is judged against the moment the answer arrived, not the render:
@@ -62,29 +61,26 @@ export function MySharesList() {
   const now = shares.dataUpdatedAt;
   const all = shares.data.shares;
   const inactiveCount = all.filter((share) => shareStateOf(share, now) !== 'active').length;
-  const needle = filter.trim().toLocaleLowerCase('de-DE');
+  const needle = filter.trim().toLocaleLowerCase(locale);
   const rows = all
     .filter((share) => showInactive || shareStateOf(share, now) === 'active')
     .filter(
       (share) =>
         needle.length === 0 ||
         `${share.documentTitle} ${share.workspaceName} ${share.grantee?.email ?? ''}`
-          .toLocaleLowerCase('de-DE')
+          .toLocaleLowerCase(locale)
           .includes(needle),
     );
 
   return (
     <>
-      <p className="max-w-measure text-sm text-muted-foreground">
-        Alles, was du selbst freigegeben hast, aus allen Arbeitsbereichen: an einzelne Konten und
-        als öffentlicher Link.
-      </p>
+      <p className="max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
 
       {all.length === 0 ? (
         <EmptyState
           className="mt-6"
-          title="Nichts freigegeben"
-          description="Du hast noch keine Seite geteilt. Das geht im Seitenmenü über „Teilen …“."
+          title={tCommon('nothingShared')}
+          description={t('emptyDescription')}
         />
       ) : (
         <>
@@ -94,8 +90,8 @@ export function MySharesList() {
                 type="search"
                 value={filter}
                 onChange={(event) => setFilter(event.target.value)}
-                placeholder="Seite, Arbeitsbereich oder Adresse …"
-                aria-label="Freigaben filtern"
+                placeholder={t('filterPlaceholder')}
+                aria-label={t('filterLabel')}
                 className="sm:max-w-xs"
                 data-testid="my-shares-filter"
               />
@@ -109,7 +105,7 @@ export function MySharesList() {
                   onCheckedChange={(checked) => setShowInactive(checked)}
                   data-testid="my-shares-show-inactive"
                 />
-                Beendete zeigen ({inactiveCount})
+                {t('showInactive', { count: inactiveCount })}
               </Label>
             ) : null}
           </div>
@@ -117,12 +113,8 @@ export function MySharesList() {
           {rows.length === 0 ? (
             <EmptyState
               className="mt-6"
-              title={needle.length > 0 ? 'Nichts gefunden' : 'Nichts mehr offen'}
-              description={
-                needle.length > 0
-                  ? 'Keine Freigabe passt zu diesem Filter.'
-                  : 'Alle deine Freigaben sind zurückgezogen oder abgelaufen.'
-              }
+              title={needle.length > 0 ? t('noMatchTitle') : t('noneOpenTitle')}
+              description={needle.length > 0 ? t('noMatchDescription') : t('noneOpenDescription')}
             />
           ) : (
             <ul className="mt-4 flex flex-col gap-2" data-testid="my-shares">
@@ -145,7 +137,7 @@ export function MySharesList() {
                     confirming === share.id && revoke.isError
                       ? revoke.error instanceof ApiError
                         ? messageForCode(revoke.error.code)
-                        : 'Die Freigabe konnte nicht zurückgezogen werden.'
+                        : tCommon('revokeFailed')
                       : null
                   }
                 />
@@ -154,9 +146,7 @@ export function MySharesList() {
           )}
 
           {shares.data.truncated ? (
-            <p className="mt-4 text-xs text-muted-foreground">
-              Es gibt mehr Freigaben, als hier stehen. Die ältesten beendeten fehlen.
-            </p>
+            <p className="mt-4 text-xs text-muted-foreground">{t('truncated')}</p>
           ) : null}
         </>
       )}
@@ -188,6 +178,12 @@ function MyShareRow({
   revokePending: boolean;
   revokeError: string | null;
 }) {
+  const t = useTranslations('shares.mine');
+  const tCommon = useTranslations('shares.common');
+  const tState = useTranslations('shares.state');
+  const tWording = useTranslations('shares.wording');
+  const format = useFormatter();
+  const description = describeShare(share, tWording, format);
   const Icon = share.kind === 'PUBLIC_LINK' ? GlobeIcon : UserIcon;
   return (
     <li
@@ -205,19 +201,19 @@ function MyShareRow({
             {share.documentTitle}
           </Link>
           <span className="block truncate text-xs text-muted-foreground">
-            in „{share.workspaceName}“ · {describeShare(share)}
+            {t('rowContext', { workspace: share.workspaceName, description })}
           </span>
         </span>
-        {state === 'active' ? null : <Badge variant="muted">{SHARE_STATE_LABELS[state]}</Badge>}
+        {state === 'active' ? null : <Badge variant="muted">{tState(state)}</Badge>}
         {state === 'revoked' || confirming ? null : share.canRevoke ? (
           <Button
             variant="outline"
             size="sm"
             data-testid="my-share-revoke"
-            aria-label={`Zurückziehen: ${share.documentTitle}, ${describeShare(share)}`}
+            aria-label={t('revokeLabel', { title: share.documentTitle, description })}
             onClick={onAskRevoke}
           >
-            Zurückziehen
+            {tCommon('revoke')}
           </Button>
         ) : null}
       </div>
@@ -226,7 +222,7 @@ function MyShareRow({
 
       {!share.canRevoke && state !== 'revoked' ? (
         <p className="text-xs text-muted-foreground">
-          Zurückziehen kann hier nur, wer im Arbeitsbereich „{share.workspaceName}“ Admin ist.
+          {t('adminOnly', { workspace: share.workspaceName })}
         </p>
       ) : null}
 

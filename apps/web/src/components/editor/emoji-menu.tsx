@@ -1,6 +1,7 @@
 'use client';
 
 import { type Editor } from '@tiptap/react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { Input, Popover, PopoverContent, PopoverTrigger } from '@exocortex/ui';
@@ -26,6 +27,7 @@ export function EmojiMenu({
   editor: Editor;
   trigger: React.ReactElement<Record<string, unknown>>;
 }) {
+  const t = useTranslations('editor.emojiMenu');
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState('');
 
@@ -48,9 +50,9 @@ export function EmojiMenu({
         <Input
           autoFocus
           value={query}
-          aria-label="Emoji suchen"
+          aria-label={t('search')}
           data-testid="emoji-search"
-          placeholder="Suchen …"
+          placeholder={t('placeholder')}
           onChange={(event) => setQuery(event.target.value)}
         />
         {/* Mounted only while open: the palette pulls in 160 kB of emoji names,

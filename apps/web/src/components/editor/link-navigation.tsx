@@ -2,6 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentLinkMatch } from '@exocortex/contracts';
@@ -54,6 +55,7 @@ export interface LinkNavigationController {
 export function useLinkNavigation({
   workspaceId,
 }: UseLinkNavigationOptions): LinkNavigationController {
+  const t = useTranslations('editor.linkNavigation');
   const router = useRouter();
   const queryClient = useQueryClient();
   const workspaces = useWorkspaces();
@@ -87,10 +89,7 @@ export function useLinkNavigation({
       } catch (error) {
         setPending({
           mode: 'error',
-          message:
-            error instanceof ApiError
-              ? error.message
-              : 'Der Verweis konnte nicht aufgelöst werden.',
+          message: error instanceof ApiError ? error.message : t('resolveFailed'),
         });
         return;
       }
@@ -104,7 +103,7 @@ export function useLinkNavigation({
       }
       setPending({ mode: 'ambiguous', title: response.title, matches: response.matches });
     },
-    [goTo, queryClient, workspaceId],
+    [goTo, queryClient, t, workspaceId],
   );
 
   const follow = React.useCallback<FollowLink>(
@@ -176,9 +175,7 @@ export function useLinkNavigation({
       setPending(null);
       router.push(`/arbeitsbereich/${workspaceId}/seite/${created.id}`);
     } catch (error) {
-      setCreateError(
-        error instanceof ApiError ? error.message : 'Die Seite konnte nicht angelegt werden.',
-      );
+      setCreateError(error instanceof ApiError ? error.message : t('createFailed'));
     } finally {
       setCreating(false);
     }
@@ -190,9 +187,9 @@ export function useLinkNavigation({
         <DialogContent data-testid="link-ambiguous-dialog">
           <DialogHeader>
             <DialogTitle>
-              Mehrere Seiten heißen „{pending?.mode === 'ambiguous' ? pending.title : ''}“
+              {t('ambiguousTitle', { title: pending?.mode === 'ambiguous' ? pending.title : '' })}
             </DialogTitle>
-            <DialogDescription>Wähle die gemeinte Seite aus.</DialogDescription>
+            <DialogDescription>{t('ambiguousDescription')}</DialogDescription>
           </DialogHeader>
           <ul className="flex max-h-72 flex-col gap-1 overflow-y-auto">
             {pending?.mode === 'ambiguous'
@@ -217,7 +214,7 @@ export function useLinkNavigation({
                         {match.path.map((ancestor) => ancestor.title).join(' / ')}
                       </span>
                       {match.archivedAt === null ? null : (
-                        <Badge variant="muted">Im Papierkorb</Badge>
+                        <Badge variant="muted">{t('inTrash')}</Badge>
                       )}
                     </button>
                   </li>
@@ -226,7 +223,7 @@ export function useLinkNavigation({
           </ul>
           <DialogFooter>
             <Button variant="ghost" onClick={closeDialog}>
-              Abbrechen
+              {t('cancel')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -235,10 +232,9 @@ export function useLinkNavigation({
       <Dialog open={pending?.mode === 'missing'} onOpenChange={(open) => !open && closeDialog()}>
         <DialogContent data-testid="link-missing-dialog">
           <DialogHeader>
-            <DialogTitle>Seite nicht gefunden</DialogTitle>
+            <DialogTitle>{t('missingTitle')}</DialogTitle>
             <DialogDescription>
-              Es gibt keine Seite mit dem Titel „{pending?.mode === 'missing' ? pending.title : ''}“
-              in diesem Arbeitsbereich.
+              {t('missingDescription', { title: pending?.mode === 'missing' ? pending.title : '' })}
             </DialogDescription>
           </DialogHeader>
           {createError === null ? null : (
@@ -248,7 +244,7 @@ export function useLinkNavigation({
           )}
           <DialogFooter>
             <Button variant="ghost" onClick={closeDialog}>
-              Abbrechen
+              {t('cancel')}
             </Button>
             {canCreate && pending?.mode === 'missing' ? (
               <Button
@@ -256,7 +252,7 @@ export function useLinkNavigation({
                 disabled={creating}
                 onClick={() => void createPage(pending.title)}
               >
-                Seite anlegen
+                {t('createPage')}
               </Button>
             ) : null}
           </DialogFooter>
@@ -266,14 +262,14 @@ export function useLinkNavigation({
       <Dialog open={pending?.mode === 'error'} onOpenChange={(open) => !open && closeDialog()}>
         <DialogContent data-testid="link-error-dialog">
           <DialogHeader>
-            <DialogTitle>Verweis konnte nicht geöffnet werden</DialogTitle>
+            <DialogTitle>{t('errorTitle')}</DialogTitle>
             <DialogDescription>
               {pending?.mode === 'error' ? pending.message : ''}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="ghost" onClick={closeDialog}>
-              Schließen
+              {t('close')}
             </Button>
           </DialogFooter>
         </DialogContent>

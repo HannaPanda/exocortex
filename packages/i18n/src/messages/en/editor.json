@@ -1,0 +1,377 @@
+{
+  "surface": {
+    "unavailable": "Editor unavailable",
+    "connecting": "Connecting editor …",
+    "uploadFailed": "A file could not be uploaded.",
+    "placeholder": "Write something or type “/” for commands …",
+    "syncing": "syncing …",
+    "contentLabel": "Page content"
+  },
+  "connection": {
+    "startFailed": "Live editing could not be started.",
+    "unknownUser": "Unknown"
+  },
+  "blocks": {
+    "paragraph": {
+      "label": "Text",
+      "description": "A normal paragraph"
+    },
+    "heading-1": {
+      "label": "Heading 1",
+      "description": "Level 1 section heading"
+    },
+    "heading-2": {
+      "label": "Heading 2",
+      "description": "Level 2 section heading"
+    },
+    "heading-3": {
+      "label": "Heading 3",
+      "description": "Level 3 section heading"
+    },
+    "blockquote": {
+      "label": "Quote",
+      "description": "Highlighted quote"
+    },
+    "code-block": {
+      "label": "Code block",
+      "description": "Code with syntax highlighting"
+    },
+    "horizontal-rule": {
+      "label": "Divider",
+      "description": "Horizontal line between sections"
+    },
+    "bullet-list": {
+      "label": "Bullet list",
+      "description": "List with bullets"
+    },
+    "ordered-list": {
+      "label": "Numbered list",
+      "description": "List with numbers"
+    },
+    "task-list": {
+      "label": "Task list",
+      "description": "List with checkboxes"
+    },
+    "image": {
+      "label": "Image",
+      "description": "Upload image"
+    },
+    "table": {
+      "label": "Table",
+      "description": "Table with header row"
+    },
+    "callout-info": {
+      "label": "Info",
+      "description": "Callout box (info)"
+    },
+    "callout-note": {
+      "label": "Note",
+      "description": "Callout box (note)"
+    },
+    "callout-success": {
+      "label": "Success",
+      "description": "Callout box (success)"
+    },
+    "callout-warning": {
+      "label": "Warning",
+      "description": "Callout box (warning)"
+    },
+    "callout-danger": {
+      "label": "Danger",
+      "description": "Callout box (danger)"
+    },
+    "file": {
+      "label": "File",
+      "description": "File for download"
+    },
+    "video": {
+      "label": "Video",
+      "description": "Play video in a player"
+    },
+    "audio": {
+      "label": "Audio",
+      "description": "Play an audio file"
+    },
+    "pdf": {
+      "label": "PDF",
+      "description": "Display embedded PDF"
+    },
+    "page-link": {
+      "label": "Page link",
+      "description": "Link to another page as its own block"
+    },
+    "breadcrumb": {
+      "label": "Breadcrumb",
+      "description": "Path to this page in the hierarchy"
+    },
+    "toggle": {
+      "label": "Toggle list",
+      "description": "Collapsible section"
+    },
+    "columns": {
+      "label": "Columns",
+      "description": "Arrange content side by side"
+    },
+    "database-embed": {
+      "label": "Embed database",
+      "description": "View of an existing database directly on this page"
+    },
+    "block-math": {
+      "label": "Formula",
+      "description": "LaTeX formula as its own block"
+    },
+    "saved-query": {
+      "label": "Embed saved search",
+      "description": "Live results of a saved search on this page"
+    },
+    "embed": {
+      "label": "Embed",
+      "description": "Embed external content (YouTube, Figma, …)"
+    },
+    "bookmark": {
+      "label": "Bookmark",
+      "description": "Preview card for a link"
+    },
+    "transclusion": {
+      "label": "Embed content",
+      "description": "Shows text from another page without copying it"
+    },
+    "table-of-contents": {
+      "label": "Table of contents",
+      "description": "Overview of all headings on the page"
+    }
+  },
+  "blockGroups": {
+    "basic": "Basic",
+    "lists": "Lists",
+    "callout": "Callouts",
+    "media": "Media",
+    "advanced": "Advanced"
+  },
+  "slashMenu": {
+    "label": "Insert block",
+    "empty": "No block matches “{query}”."
+  },
+  "blockHandle": {
+    "insertBelow": "Insert block below",
+    "actions": "Block actions"
+  },
+  "blockActions": {
+    "turnInto": "Turn into",
+    "color": "Color",
+    "duplicate": "Duplicate",
+    "copyLink": "Copy link to block",
+    "delete": "Delete"
+  },
+  "blockRemoval": {
+    "title": {
+      "table": "Delete table?",
+      "codeBlock": "Delete code block?",
+      "blockquote": "Delete quote?",
+      "bulletList": "Delete list?",
+      "orderedList": "Delete numbered list?",
+      "taskList": "Delete task list?",
+      "details": "Delete toggle block?",
+      "callout": "Delete callout?",
+      "columnList": "Delete column layout?",
+      "databaseEmbed": "Delete embedded database?",
+      "savedQueryEmbed": "Delete query block?",
+      "paragraph": "Delete paragraph?",
+      "heading": "Delete heading?",
+      "block": "Delete block?"
+    },
+    "table": "The table with {rows, plural, one {# row} other {# rows}} and {columns, plural, one {# column} other {# columns}} will be removed along with all of its content.",
+    "compound": "The block will be removed along with all of its content.",
+    "text": "{count, plural, one {# character will be} other {# characters will be}} removed.",
+    "undoHint": "You can undo the deletion with Ctrl+Z."
+  },
+  "destructiveConfirm": {
+    "cancel": "Cancel",
+    "confirm": "Delete"
+  },
+  "prompt": {
+    "url": {
+      "title": "Insert address",
+      "description": "Enter the full address, for example https://exocortex.app/bild.png",
+      "placeholder": "https://…"
+    },
+    "latex": {
+      "title": "Enter formula",
+      "description": "LaTeX notation, for example {example}",
+      "placeholder": "a^2 + b^2 = c^2"
+    },
+    "page": {
+      "title": "Link page",
+      "description": "Choose a page from this workspace. If you type a title that doesn’t exist yet, a link will be created offering to create the page.",
+      "placeholder": "Search page…"
+    },
+    "database": {
+      "title": "Embed database",
+      "description": "Choose an existing database from this workspace.",
+      "placeholder": "Search database…"
+    },
+    "savedQuery": {
+      "title": "Embed saved search",
+      "description": "Choose a saved search. The block shows its results and refreshes them every time the page is opened. New searches are created in the search section.",
+      "placeholder": "Search saved query…"
+    },
+    "uploadFailed": "The file could not be uploaded.",
+    "noPageTitle": "No page found",
+    "noPageDescription": "Type a title to link to a page that hasn’t been created yet.",
+    "noDatabaseTitle": "No database found",
+    "noDatabaseDescription": "First create a database in this workspace.",
+    "linkNewTitle": "Link “{title}” as a page that hasn’t been created yet",
+    "noSavedQueryTitle": "No saved query found",
+    "noSavedQueryDescription": "You can assemble and save a search in the search area; it will then appear here.",
+    "fieldFormula": "Formula",
+    "fieldSearch": "Search",
+    "fieldValue": "Value",
+    "cancel": "Cancel",
+    "insert": "Insert"
+  },
+  "colors": {
+    "name": {
+      "default": "Default",
+      "gray": "Gray",
+      "brown": "Brown",
+      "orange": "Orange",
+      "yellow": "Yellow",
+      "green": "Green",
+      "blue": "Blue",
+      "purple": "Purple",
+      "pink": "Pink",
+      "red": "Red"
+    },
+    "text": "Text color",
+    "background": "Background",
+    "reset": "Remove colors"
+  },
+  "selectionToolbar": {
+    "label": "Formatting",
+    "turnInto": "Block type: {block}. Turn into another block",
+    "mark": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "strike": "Strikethrough",
+      "code": "Code",
+      "superscript": "Superscript",
+      "subscript": "Subscript"
+    },
+    "shortcut": {
+      "bold": "Ctrl+B",
+      "italic": "Ctrl+I",
+      "underline": "Ctrl+U",
+      "strike": "Ctrl+Shift+S",
+      "subscript": "Ctrl+,"
+    },
+    "withShortcut": "{label} ({shortcut})",
+    "link": "Link",
+    "color": "Color",
+    "textColor": "Text color",
+    "emoji": "Emoji",
+    "comment": "Comment",
+    "sendToAi": "Send to AI",
+    "blockActions": "Block actions"
+  },
+  "codeBlock": {
+    "language": "Language",
+    "noHighlighting": "No highlighting",
+    "copy": "Copy code",
+    "copied": "Code copied"
+  },
+  "emojiMenu": {
+    "search": "Search emoji",
+    "placeholder": "Search…"
+  },
+  "table": {
+    "label": "Table",
+    "addRow": "Insert row below",
+    "addColumn": "Insert column right",
+    "toggleHeaderRow": "Toggle header row",
+    "mergeOrSplit": "Merge or split cells",
+    "deleteRow": "Delete row",
+    "deleteColumn": "Delete column",
+    "deleteTable": "Delete table"
+  },
+  "linkBubble": {
+    "label": "Link",
+    "open": "Open",
+    "edit": "Edit",
+    "remove": "Remove"
+  },
+  "linkMenu": {
+    "inputLabel": "Address or page title",
+    "placeholder": "https://… or search for a page",
+    "apply": "Apply",
+    "suggestions": "Matching pages",
+    "remove": "Remove",
+    "open": "Open"
+  },
+  "linkNavigation": {
+    "resolveFailed": "The link could not be resolved.",
+    "createFailed": "The page could not be created.",
+    "ambiguousTitle": "Multiple pages are named “{title}”",
+    "ambiguousDescription": "Choose the page you meant.",
+    "inTrash": "In trash",
+    "cancel": "Cancel",
+    "missingTitle": "Page not found",
+    "missingDescription": "There is no page titled “{title}” in this workspace.",
+    "createPage": "Create page",
+    "errorTitle": "Could not open link",
+    "close": "Close"
+  },
+  "mentionMenu": {
+    "label": "Insert mention",
+    "empty": "Nothing found for “{query}”.",
+    "page": "Page",
+    "person": "Person",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "yesterday": "Yesterday",
+    "typedDate": "Entered date"
+  },
+  "pageLink": {
+    "unresolved": {
+      "empty": "No target selected",
+      "deleted": "Target page deleted",
+      "missing": "Page does not exist"
+    },
+    "unresolvedWithTitle": "{title}: {reason}",
+    "searching": "Searching for “{title}”",
+    "resolving": "Resolving link",
+    "createPage": "Create page",
+    "choosePage": "Choose page",
+    "changePage": "Change page",
+    "inTrash": "In trash",
+    "ambiguous": "Multiple pages with this title"
+  },
+  "transclusion": {
+    "fallbackTitle": "Embedded content",
+    "inTrash": "In trash",
+    "openSource": "Open source",
+    "changePage": "Change page",
+    "choosePage": "Choose page",
+    "noSourceTitle": "No source selected",
+    "noSourceDescription": "Choose the page whose content should appear here. The text stays there and is only shown here.",
+    "selfTitle": "A page cannot embed itself",
+    "selfDescription": "Choose a different page as the source.",
+    "loading": "Loading embedded content",
+    "unreachableTitle": "Source unreachable",
+    "unreachableDescription": "The embedded page was deleted, or you don’t have permission to read it. The link remains.",
+    "missingBlockTitle": "The embedded section is no longer there",
+    "missingBlockDescription": "The page “{title}” still exists, but the block with the ID {blockId} inside it no longer does.",
+    "showWholePage": "Show whole page",
+    "nested": "Contains {count, plural, one {# additional embed} other {# additional embeds}} that are not resolved here.",
+    "wholePage": "Whole page",
+    "section": "Section",
+    "chooserLabel": "What should go here?",
+    "chooseWholePage": "The whole page",
+    "blocksLoading": "Loading blocks…",
+    "noBlocks": "This page has no named blocks.",
+    "headingSection": "Heading {level}, with the whole section below"
+  },
+  "wikiLink": {
+    "missing": "“{title}” does not exist in this workspace"
+  }
+}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -53,45 +54,20 @@ const PICKER_KINDS = new Set<BlockPromptKind>(['page', 'database', 'saved-query'
 /** What the dialog asks for, and what it does with the answer. */
 interface PendingPrompt {
   kind: Exclude<BlockPromptKind, 'none' | 'file'>;
-  title: string;
-  description: string;
-  placeholder: string;
   resolve: (value: string | null) => void;
 }
 
-const PROMPT_COPY: Readonly<
-  Record<PendingPrompt['kind'], Omit<PendingPrompt, 'kind' | 'resolve'>>
-> = {
-  url: {
-    title: 'Adresse einfügen',
-    description: 'Gib die vollständige Adresse ein, zum Beispiel https://exocortex.app/bild.png',
-    placeholder: 'https://…',
-  },
-  latex: {
-    title: 'Formel eingeben',
-    description: 'LaTeX-Notation, zum Beispiel \\sum_{i=1}^{n} x_i',
-    placeholder: 'a^2 + b^2 = c^2',
-  },
-  page: {
-    title: 'Seite verknüpfen',
-    description:
-      'Wähle eine Seite aus diesem Arbeitsbereich. Tippst du einen Titel, den es noch nicht ' +
-      'gibt, entsteht ein Verweis, der anbietet, die Seite anzulegen.',
-    placeholder: 'Seite suchen …',
-  },
-  database: {
-    title: 'Datenbank einbetten',
-    description: 'Wähle eine bestehende Datenbank aus diesem Arbeitsbereich.',
-    placeholder: 'Datenbank suchen …',
-  },
-  'saved-query': {
-    title: 'Gespeicherte Suche einbetten',
-    description:
-      'Wähle eine gespeicherte Suche. Der Block zeigt ihre Treffer und ermittelt sie bei jedem ' +
-      'Öffnen der Seite neu. Neue Suchen entstehen im Suchbereich.',
-    placeholder: 'Gespeicherte Suche suchen …',
-  },
-};
+/** Where each kind's title, description and placeholder live in `editor.prompt`. */
+const PROMPT_COPY_KEY = {
+  url: 'url',
+  latex: 'latex',
+  page: 'page',
+  database: 'database',
+  'saved-query': 'savedQuery',
+} as const satisfies Record<PendingPrompt['kind'], string>;
+
+/** A LaTeX sample for the formula prompt; notation, so it is never translated. */
+const LATEX_EXAMPLE = '\\sum_{i=1}^{n} x_i';
 
 export interface BlockPromptController {
   /**
@@ -104,7 +80,7 @@ export interface BlockPromptController {
   ask: (kind: BlockPromptKind, initialValue?: string) => Promise<string | null>;
   /** The dialog element; render it once next to the editor. */
   element: React.ReactNode;
-  /** German message of the last failed upload, or `null`. */
+  /** Message of the last failed upload in the reader's language, or `null`. */
   error: string | null;
 }
 
@@ -129,6 +105,7 @@ export function useBlockPrompt({
   workspaceId,
   documentId,
 }: UseBlockPromptOptions): BlockPromptController {
+  const t = useTranslations('editor.prompt');
   const [pending, setPending] = React.useState<PendingPrompt | null>(null);
   const [value, setValue] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
@@ -188,7 +165,7 @@ export function useBlockPrompt({
 
       return new Promise<string | null>((resolve) => {
         setValue(initialValue ?? '');
-        setPending({ kind, ...PROMPT_COPY[kind], resolve });
+        setPending({ kind, resolve });
       });
     },
     [askForFile],
@@ -205,11 +182,7 @@ export function useBlockPrompt({
       const uploaded = await uploadAttachment({ workspaceId, documentId, file });
       resolve(uploaded.src);
     } catch (uploadError) {
-      setError(
-        uploadError instanceof ApiError
-          ? uploadError.message
-          : 'Die Datei konnte nicht hochgeladen werden.',
-      );
+      setError(uploadError instanceof ApiError ? uploadError.message : t('uploadFailed'));
       resolve(null);
     }
   };
@@ -301,6 +274,7 @@ function PickerList({
   onChoose: (entry: { id: string; title: string }) => void;
   onCreate: () => void;
 }) {
+  const t = useTranslations('editor.prompt');
   const isPage = kind === 'page';
   return (
     <ul
@@ -310,12 +284,8 @@ function PickerList({
       {entries.length === 0 && newTitle === null ? (
         <li>
           <EmptyState
-            title={isPage ? 'Keine Seite gefunden' : 'Keine Datenbank gefunden'}
-            description={
-              isPage
-                ? 'Tippe einen Titel, um einen Verweis auf eine noch nicht angelegte Seite zu setzen.'
-                : 'Lege zuerst eine Datenbank in diesem Arbeitsbereich an.'
-            }
+            title={isPage ? t('noPageTitle') : t('noDatabaseTitle')}
+            description={isPage ? t('noPageDescription') : t('noDatabaseDescription')}
           />
         </li>
       ) : (
@@ -345,7 +315,7 @@ function PickerList({
             className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-muted-foreground hover:bg-accent"
             onClick={onCreate}
           >
-            „{newTitle}“ als noch nicht angelegte Seite verknüpfen
+            {t('linkNewTitle', { title: newTitle })}
           </button>
         </li>
       )}
@@ -367,6 +337,7 @@ function SavedQueryPickerList({
   entries: readonly SavedQuery[];
   onChoose: (entry: SavedQuery) => void;
 }) {
+  const t = useTranslations('editor.prompt');
   return (
     <ul
       className="max-h-64 overflow-y-auto rounded-md border border-border"
@@ -374,10 +345,7 @@ function SavedQueryPickerList({
     >
       {entries.length === 0 ? (
         <li>
-          <EmptyState
-            title="Keine gespeicherte Suche gefunden"
-            description="Im Suchbereich lässt sich eine Suche zusammenstellen und speichern; danach steht sie hier."
-          />
+          <EmptyState title={t('noSavedQueryTitle')} description={t('noSavedQueryDescription')} />
         </li>
       ) : (
         entries.map((entry) => (
@@ -428,6 +396,8 @@ function BlockPromptDialog({
   onSubmit: () => void;
   onCancel: () => void;
 }) {
+  const t = useTranslations('editor.prompt');
+  const copy = pending === null ? null : PROMPT_COPY_KEY[pending.kind];
   return (
     <Dialog
       open={pending !== null}
@@ -437,12 +407,18 @@ function BlockPromptDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{pending?.title ?? ''}</DialogTitle>
-          <DialogDescription>{pending?.description ?? ''}</DialogDescription>
+          <DialogTitle>{copy === null ? '' : t(`${copy}.title`)}</DialogTitle>
+          <DialogDescription>
+            {copy === null ? '' : t(`${copy}.description`, { example: LATEX_EXAMPLE })}
+          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-1.5">
           <Label htmlFor="block-prompt-value">
-            {pending?.kind === 'latex' ? 'Formel' : isPicker ? 'Suche' : 'Wert'}
+            {pending?.kind === 'latex'
+              ? t('fieldFormula')
+              : isPicker
+                ? t('fieldSearch')
+                : t('fieldValue')}
           </Label>
           {pending?.kind === 'latex' ? (
             <Textarea
@@ -451,7 +427,7 @@ function BlockPromptDialog({
               rows={3}
               value={value}
               data-testid="block-prompt-input"
-              placeholder={pending.placeholder}
+              placeholder={t('latex.placeholder')}
               className="font-mono text-sm"
               onChange={(event) => onValueChange(event.target.value)}
             />
@@ -461,7 +437,7 @@ function BlockPromptDialog({
               autoFocus
               value={value}
               data-testid="block-prompt-input"
-              placeholder={pending?.placeholder ?? ''}
+              placeholder={copy === null ? '' : t(`${copy}.placeholder`)}
               onChange={(event) => onValueChange(event.target.value)}
               onKeyDown={(event) => {
                 if (
@@ -491,11 +467,11 @@ function BlockPromptDialog({
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={onCancel}>
-            Abbrechen
+            {t('cancel')}
           </Button>
           {pending?.kind === 'database' || pending?.kind === 'saved-query' ? null : (
             <Button data-testid="block-prompt-submit" onClick={onSubmit}>
-              Einfügen
+              {t('insert')}
             </Button>
           )}
         </DialogFooter>

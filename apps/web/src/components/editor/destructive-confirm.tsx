@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -41,6 +42,7 @@ export function useDestructiveConfirmDialog(): {
   confirm: ConfirmDestructive;
   element: React.ReactNode;
 } {
+  const t = useTranslations('editor.destructiveConfirm');
   const [pending, setPending] = React.useState<DestructiveConfirmRequest | null>(null);
   const resolveRef = React.useRef<((confirmed: boolean) => void) | null>(null);
 
@@ -79,14 +81,14 @@ export function useDestructiveConfirmDialog(): {
         </DialogHeader>
         <DialogFooter>
           <Button variant="ghost" data-testid="destructive-cancel" onClick={() => settle(false)}>
-            Abbrechen
+            {t('cancel')}
           </Button>
           <Button
             variant="destructive"
             data-testid="destructive-confirm-button"
             onClick={() => settle(true)}
           >
-            {pending?.confirmLabel ?? 'Löschen'}
+            {pending?.confirmLabel ?? t('confirm')}
           </Button>
         </DialogFooter>
       </DialogContent>

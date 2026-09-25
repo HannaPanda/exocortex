@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "sharesTitle": "Partages",
+    "sharedPageTitle": "Page partagée"
+  },
+  "common": {
+    "loading": "Chargement des partages…",
+    "loadError": "Impossible de charger les partages",
+    "read": "Lecture",
+    "write": "Modification",
+    "revoke": "Révoquer",
+    "revokeFailed": "Le partage n’a pas pu être révoqué.",
+    "nothingShared": "Rien de partagé"
+  },
+  "wording": {
+    "publicLink": "Lien public (…{prefix})",
+    "unknownAccount": "Compte inconnu",
+    "grant": "{who} : {permission, select, WRITE {peut modifier} other {peut lire}}{subtree, select, yes {, avec tout ce qui se trouve en dessous} other {}}",
+    "grantUntil": "{who} : {permission, select, WRITE {peut modifier} other {peut lire}}{subtree, select, yes {, avec tout ce qui se trouve en dessous} other {}}, jusqu’à {until}",
+    "revokeLink": "L’adresse ne fonctionnera plus pour personne par la suite, y compris pour quelqu’un à qui elle a été transmise. Elle ne peut pas être restaurée : un nouveau lien aura une nouvelle adresse.",
+    "revokeAccount": "{who} perd immédiatement l’accès, y compris dans une session actuellement ouverte.",
+    "thisAccount": "Ce compte",
+    "regrantDialog": "Tu peux réaccorder le partage ci-dessus à tout moment.",
+    "regrantList": "Tu peux le réaccorder à tout moment dans la boîte de dialogue de partage de la page.",
+    "revokeSubtree": "Cela s’applique à cette page et à tout ce qui se trouve en dessous."
+  },
+  "state": {
+    "active": "Actif",
+    "expired": "Expiré",
+    "revoked": "Révoqué"
+  },
+  "revokeConfirm": {
+    "question": "Révoquer ?",
+    "cancel": "Annuler",
+    "confirm": "Révoquer",
+    "pending": "Révocation en cours…"
+  },
+  "linkAddress": {
+    "copyLabel": "Copier l’adresse",
+    "copiedLabel": "Adresse copiée",
+    "copy": "Copier",
+    "copied": "Copié",
+    "lost": "L’adresse de ce lien n’est pas enregistrée : elle date d’avant le 24/09/2026. Le lien continue de fonctionner. Si tu as besoin de l’adresse, crée un nouveau lien avec la même portée et révoque ensuite celui-ci.",
+    "replace": "Créer un nouveau lien",
+    "replaced": "Le nouveau lien figure ci-dessus"
+  },
+  "dialog": {
+    "title": "Partager « {title} »",
+    "description": "Partager signifie donner accès à cette page à des personnes en dehors de cet espace de travail. Les personnes qui en sont déjà membres n’ont pas besoin de partage.",
+    "inherited": "Cette page est déjà partagée depuis un niveau supérieur : quelqu’un a partagé un niveau au-dessus avec tout ce qui se trouve en dessous. Elle est donc déjà accessible de l’extérieur, sans que rien ne figure ici.",
+    "scope": "Portée",
+    "scopePageOnly": "Cette page uniquement",
+    "scopeSubtree": "Cette page et tout ce qui se trouve en dessous",
+    "expiry": "Validité",
+    "expiryNever": "Sans expiration",
+    "expiryDays": "{count, plural, one {# jour} many {# jours} other {# jours}}",
+    "toAccount": "À un compte",
+    "emailPlaceholder": "adresse@exemple.fr",
+    "permission": "Autorisation",
+    "share": "Partager",
+    "publicLink": "Lien public",
+    "publicLinkExplanation": "Toute personne disposant de l’adresse peut lire la page : sans compte, sans connexion, même si l’adresse lui a été transmise. Personne ne peut écrire via un lien.",
+    "createLink": "Créer un lien",
+    "copied": "Copié",
+    "copyAddress": "Copier l’adresse",
+    "addressKept": "Tu retrouveras l’adresse à tout moment, ici dans la liste et sous « Partages » dans le menu du compte, tant que le lien reste valide.",
+    "current": "Actuellement partagé",
+    "nobody": "Personne en dehors de cet espace de travail ne peut accéder à cette page.",
+    "revokeFailed": "Échec de la révocation.",
+    "close": "Fermer",
+    "changePermission": "Modifier l’autorisation",
+    "readOnly": "Lecture seule",
+    "revokeLabel": "Révoquer : {description}"
+  },
+  "page": {
+    "title": "Partages",
+    "tabMine": "Partagés par moi",
+    "tabIncoming": "Partagés avec moi"
+  },
+  "mine": {
+    "intro": "Tout ce que tu as partagé toi-même, depuis tous les espaces de travail : avec des comptes individuels et par lien public.",
+    "emptyDescription": "Tu n’as encore partagé aucune page. Tu peux le faire dans le menu de la page via « Partager… ».",
+    "filterPlaceholder": "Page, espace de travail ou adresse…",
+    "filterLabel": "Filtrer les partages",
+    "showInactive": "Afficher les partages terminés ({count, number})",
+    "noMatchTitle": "Aucun résultat",
+    "noMatchDescription": "Aucun partage ne correspond à ce filtre.",
+    "noneOpenTitle": "Plus aucun partage actif",
+    "noneOpenDescription": "Tous tes partages ont été révoqués ou ont expiré.",
+    "truncated": "Il y a plus de partages que ce qui est affiché ici. Les partages terminés les plus anciens manquent.",
+    "rowContext": "dans « {workspace} » · {description}",
+    "revokeLabel": "Révoquer : {title}, {description}",
+    "adminOnly": "Ici, seules les personnes administratrices de l’espace de travail « {workspace} » peuvent effectuer une révocation."
+  },
+  "incoming": {
+    "intro": "Pages issues d’espaces de travail dont tu n’es pas membre. Elles ne figurent dans aucune navigation, uniquement ici.",
+    "emptyTitle": "Rien n’a été partagé avec toi",
+    "emptyDescription": "Dès que quelqu’un partage une page avec toi, elle apparaît ici.",
+    "origin": "depuis « {workspace} », par {name}"
+  },
+  "workspace": {
+    "title": "Partages",
+    "intro": "Ce qui est partagé hors de cet espace de travail : avec des comptes individuels et par lien public. Les partages révoqués restent affichés afin de garder une trace de ce qui a été accessible.",
+    "emptyDescription": "Aucune page de cet espace de travail n’est accessible depuis l’extérieur.",
+    "columnPage": "Page",
+    "columnRecipient": "Destinataire",
+    "columnPermission": "Droit",
+    "columnScope": "Portée",
+    "columnExpires": "Expire",
+    "columnStatus": "Statut",
+    "scopeSubtree": "avec les sous-pages",
+    "scopePageOnly": "uniquement la page",
+    "revokeLabel": "Révoquer : {title}",
+    "publicLink": "Lien public",
+    "unknown": "Inconnu"
+  },
+  "public": {
+    "loading": "Chargement de la page…",
+    "goneTitle": "Ce lien ne mène plus à aucune page",
+    "goneDescription": "Il a été révoqué, a expiré ou n’a jamais été valide. Demande à la personne qui te l’a transmis.",
+    "origin": "Partagé depuis « {workspace} » par {name}",
+    "path": "Chemin",
+    "empty": "Cette page est vide.",
+    "children": "Sous-pages",
+    "footer": "Cette page a été partagée par un lien. Elle est en lecture seule. <link>eXocortex</link> est auto-hébergé."
+  },
+  "shared": {
+    "loading": "Chargement de la page…",
+    "unavailableTitle": "Page non disponible",
+    "unavailableDescription": "Le partage a été révoqué, a expiré ou n’a jamais existé."
+  }
+}

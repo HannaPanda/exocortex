@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowRightLeftIcon, GitCompareIcon, MinusIcon, PencilIcon, PlusIcon } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentDiffBlock } from '@exocortex/contracts';
@@ -26,26 +27,11 @@ import {
 
 import { useRestoreSnapshotBlocks, useSnapshotDiff } from '@/lib/api/snapshot-queries';
 
-const dateTimeFormat = new Intl.DateTimeFormat('de-DE', {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-});
-
-function formatDateTime(iso: string): string {
-  return dateTimeFormat.format(new Date(iso));
+/** A snapshot's moment, in the reader's language and time zone. */
+function useFormatDateTime(): (iso: string) => string {
+  const format = useFormatter();
+  return (iso) => format.dateTime(new Date(iso), { dateStyle: 'medium', timeStyle: 'short' });
 }
-
-/** "1 Block" / "4 Blöcke": a slash in a sentence is not a plural. */
-function countBlocks(count: number): string {
-  return count === 1 ? '1 Block' : `${count} Blöcke`;
-}
-
-const KIND_LABEL: Record<DocumentDiffBlock['kind'], string> = {
-  added: 'Neu',
-  removed: 'Entfernt',
-  changed: 'Geändert',
-  unchanged: 'Unverändert',
-};
 
 function KindIcon({ block }: { block: DocumentDiffBlock }) {
   const className = 'size-4 shrink-0';
@@ -107,6 +93,8 @@ function BlockRow({
   readOnly: boolean;
   onToggle: (blockId: string, next: boolean) => void;
 }) {
+  const t = useTranslations('document.snapshotDiff');
+  const kind = t(`kinds.${block.kind}`);
   const selectable = !readOnly && block.blockId !== null;
   const text = block.kind === 'removed' ? block.beforeText : block.afterText;
 
@@ -122,7 +110,7 @@ function BlockRow({
           className="mt-1"
           checked={selected}
           data-testid="diff-block-checkbox"
-          aria-label={`${KIND_LABEL[block.kind]}: ${block.nodeLabel} auswählen`}
+          aria-label={t('selectBlock', { kind, label: block.nodeLabel })}
           onCheckedChange={(next) => onToggle(block.blockId ?? '', next === true)}
         />
       ) : (
@@ -131,10 +119,10 @@ function BlockRow({
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <KindIcon block={block} />
-          <span>{KIND_LABEL[block.kind]}</span>
+          <span>{kind}</span>
           <span>· {block.nodeLabel}</span>
-          {block.moved ? <span>· verschoben</span> : null}
-          {block.blockId === null ? <span>· ohne Kennung, nicht einzeln wählbar</span> : null}
+          {block.moved ? <span>· {t('moved')}</span> : null}
+          {block.blockId === null ? <span>· {t('noBlockId')}</span> : null}
         </span>
         {block.kind === 'changed' ? (
           <Segments block={block} />
@@ -182,6 +170,8 @@ export function SnapshotDiffDialog({
   readOnly,
   onClose,
 }: SnapshotDiffDialogProps) {
+  const t = useTranslations('document.snapshotDiff');
+  const formatDateTime = useFormatDateTime();
   const [against, setAgainst] = React.useState('current');
   const [selected, setSelected] = React.useState<Set<string>>(new Set());
   const [confirming, setConfirming] = React.useState(false);
@@ -226,11 +216,11 @@ export function SnapshotDiffDialog({
     >
       <DialogContent className="max-w-3xl" data-testid="snapshot-diff-dialog">
         <DialogHeader>
-          <DialogTitle>Stände vergleichen</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>
             {snapshot === null
               ? null
-              : `Stand vom ${formatDateTime(snapshot.createdAt)} im Vergleich mit:`}
+              : t('description', { time: formatDateTime(snapshot.createdAt) })}
           </DialogDescription>
         </DialogHeader>
 
@@ -239,16 +229,21 @@ export function SnapshotDiffDialog({
             <SelectValue>
               {() =>
                 against === 'current'
-                  ? 'dem aktuellen Stand der Seite'
-                  : `dem Stand vom ${formatDateTime(others.find((entry) => entry.id === against)?.createdAt ?? new Date().toISOString())}`
+                  ? t('againstCurrent')
+                  : t('againstSnapshot', {
+                      time: formatDateTime(
+                        others.find((entry) => entry.id === against)?.createdAt ??
+                          new Date().toISOString(),
+                      ),
+                    })
               }
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="current">dem aktuellen Stand der Seite</SelectItem>
+            <SelectItem value="current">{t('againstCurrent')}</SelectItem>
             {others.map((entry) => (
               <SelectItem key={entry.id} value={entry.id}>
-                {`Stand vom ${formatDateTime(entry.createdAt)}`}
+                {t('snapshotOption', { time: formatDateTime(entry.createdAt) })}
               </SelectItem>
             ))}
           </SelectContent>
@@ -272,7 +267,7 @@ export function SnapshotDiffDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            Schließen
+            {t('close')}
           </Button>
           {readOnly || selected.size === 0 ? null : (
             <Button
@@ -296,13 +291,13 @@ export function SnapshotDiffDialog({
                     },
                     onError: (cause) => {
                       setConfirming(false);
-                      setError(cause instanceof Error ? cause.message : 'Unbekannter Fehler');
+                      setError(cause instanceof Error ? cause.message : t('unknownError'));
                     },
                   },
                 );
               }}
             >
-              {confirming ? 'Wirklich zurückholen?' : `${countBlocks(selected.size)} zurückholen`}
+              {confirming ? t('confirmRestore') : t('restoreBlocks', { count: selected.size })}
             </Button>
           )}
         </DialogFooter>
@@ -325,14 +320,11 @@ function DiffBody({
   onToggle: (blockId: string, next: boolean) => void;
   onRetry: () => void;
 }) {
-  if (diff.isPending) return <LoadingState variant="skeleton" rows={4} label="Vergleich läuft …" />;
+  const t = useTranslations('document.snapshotDiff');
+  if (diff.isPending) return <LoadingState variant="skeleton" rows={4} label={t('comparing')} />;
   if (diff.isError) {
     return (
-      <ErrorState
-        title="Vergleich nicht möglich"
-        description="Die beiden Stände konnten nicht verglichen werden."
-        onRetry={onRetry}
-      />
+      <ErrorState title={t('failedTitle')} description={t('failedDescription')} onRetry={onRetry} />
     );
   }
 
@@ -342,8 +334,8 @@ function DiffBody({
   if (interesting.length === 0) {
     return (
       <EmptyState
-        title="Kein Unterschied"
-        description="Die beiden Stände haben denselben Inhalt."
+        title={t('noDifferenceTitle')}
+        description={t('noDifferenceDescription')}
         icon={GitCompareIcon}
       />
     );
@@ -357,7 +349,7 @@ function DiffBody({
     if (skipped === 0) return;
     rows.push(
       <p key={key} className="px-3 py-1 text-xs text-muted-foreground">
-        {skipped === 1 ? '1 unveränderter Block' : `${skipped} unveränderte Blöcke`}
+        {t('unchangedRun', { count: skipped })}
       </p>,
     );
     skipped = 0;
@@ -383,7 +375,12 @@ function DiffBody({
   return (
     <>
       <p className="text-sm text-muted-foreground" data-testid="diff-summary">
-        {`${summary.added} neu, ${summary.removed} entfernt, ${summary.changed} geändert, ${summary.moved} verschoben`}
+        {t('summary', {
+          added: summary.added,
+          removed: summary.removed,
+          changed: summary.changed,
+          moved: summary.moved,
+        })}
       </p>
       {warnings.map((warning) => (
         <p key={warning} className="text-xs text-warning">

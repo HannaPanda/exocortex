@@ -2,6 +2,7 @@
 
 import { GlobeIcon, UserIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentShare } from '@exocortex/contracts';
@@ -26,9 +27,7 @@ import { useRevokeWorkspaceShare, useWorkspaceShares } from '@/lib/api/share-que
 
 import { ShareLinkAddress } from './share-link-address';
 import { ShareRevokeConfirm } from './share-revoke-confirm';
-import { SHARE_STATE_LABELS, shareStateOf } from './share-wording';
-
-const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium' });
+import { shareStateOf } from './share-wording';
 
 /**
  * Everything this workspace has handed out (issue #83, ADR-044).
@@ -42,19 +41,18 @@ const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium' });
  * public until March" is part of the answer too.
  */
 export function WorkspaceSharesPage({ workspaceId }: { workspaceId: string }) {
+  const t = useTranslations('shares.workspace');
+  const tCommon = useTranslations('shares.common');
+  const tState = useTranslations('shares.state');
+  const format = useFormatter();
   const shares = useWorkspaceShares(workspaceId);
   const revoke = useRevokeWorkspaceShare(workspaceId);
   /** The share whose withdrawal is being confirmed, by id. At most one. */
   const [confirming, setConfirming] = React.useState<string | null>(null);
 
-  if (shares.isPending) return <LoadingState label="Freigaben werden geladen …" />;
+  if (shares.isPending) return <LoadingState label={tCommon('loading')} />;
   if (shares.isError) {
-    return (
-      <ErrorState
-        title="Freigaben konnten nicht geladen werden"
-        onRetry={() => void shares.refetch()}
-      />
-    );
+    return <ErrorState title={tCommon('loadError')} onRetry={() => void shares.refetch()} />;
   }
 
   const rows = shares.data.shares;
@@ -63,29 +61,25 @@ export function WorkspaceSharesPage({ workspaceId }: { workspaceId: string }) {
 
   return (
     <AppPage maxWidth="max-w-5xl">
-      <h1 className="exocortex-page-title">Freigaben</h1>
-      <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-        Was aus diesem Arbeitsbereich nach außen gegeben ist: an einzelne Konten und als
-        öffentlicher Link. Zurückgezogene Freigaben bleiben stehen, damit nachvollziehbar bleibt,
-        was einmal offen war.
-      </p>
+      <h1 className="exocortex-page-title">{t('title')}</h1>
+      <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
 
       {rows.length === 0 ? (
         <EmptyState
           className="mt-8"
-          title="Nichts freigegeben"
-          description="Keine Seite dieses Arbeitsbereichs ist von außen erreichbar."
+          title={tCommon('nothingShared')}
+          description={t('emptyDescription')}
         />
       ) : (
         <Table narrow="list" className="mt-8" data-testid="workspace-shares">
           <TableHeader>
             <TableRow>
-              <TableHead>Seite</TableHead>
-              <TableHead>An wen</TableHead>
-              <TableHead>Recht</TableHead>
-              <TableHead>Umfang</TableHead>
-              <TableHead>Läuft ab</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{t('columnPage')}</TableHead>
+              <TableHead>{t('columnRecipient')}</TableHead>
+              <TableHead>{t('columnPermission')}</TableHead>
+              <TableHead>{t('columnScope')}</TableHead>
+              <TableHead>{t('columnExpires')}</TableHead>
+              <TableHead>{t('columnStatus')}</TableHead>
               <TableHead className="w-px" />
             </TableRow>
           </TableHeader>
@@ -101,26 +95,31 @@ export function WorkspaceSharesPage({ workspaceId }: { workspaceId: string }) {
                       {share.documentTitle}
                     </Link>
                   </TableCell>
-                  <TableCell label="An wen" className="max-w-72 text-sm whitespace-normal">
+                  <TableCell
+                    label={t('columnRecipient')}
+                    className="max-w-72 text-sm whitespace-normal"
+                  >
                     <div className="flex flex-col gap-1.5">
-                      {recipientOf(share)}
+                      {recipientOf(share, t)}
                       <ShareLinkAddress share={share} testIdPrefix="workspace-share" />
                     </div>
                   </TableCell>
-                  <TableCell label="Recht">
+                  <TableCell label={t('columnPermission')}>
                     <Badge variant="muted">
-                      {share.permission === 'WRITE' ? 'Bearbeiten' : 'Lesen'}
+                      {share.permission === 'WRITE' ? tCommon('write') : tCommon('read')}
                     </Badge>
                   </TableCell>
-                  <TableCell label="Umfang" className="text-sm text-muted-foreground">
-                    {share.scope === 'SUBTREE' ? 'mit Unterseiten' : 'nur die Seite'}
+                  <TableCell label={t('columnScope')} className="text-sm text-muted-foreground">
+                    {share.scope === 'SUBTREE' ? t('scopeSubtree') : t('scopePageOnly')}
                   </TableCell>
-                  <TableCell label="Läuft ab" className="text-sm text-muted-foreground">
-                    {share.expiresAt === null ? '–' : dateFormat.format(new Date(share.expiresAt))}
+                  <TableCell label={t('columnExpires')} className="text-sm text-muted-foreground">
+                    {share.expiresAt === null
+                      ? '–'
+                      : format.dateTime(new Date(share.expiresAt), { dateStyle: 'medium' })}
                   </TableCell>
-                  <TableCell label="Status">
+                  <TableCell label={t('columnStatus')}>
                     <Badge variant={shareStateOf(share, now) === 'active' ? 'default' : 'muted'}>
-                      {SHARE_STATE_LABELS[shareStateOf(share, now)]}
+                      {tState(shareStateOf(share, now))}
                     </Badge>
                   </TableCell>
                   <TableCell cell="actions">
@@ -129,13 +128,13 @@ export function WorkspaceSharesPage({ workspaceId }: { workspaceId: string }) {
                       size="sm"
                       disabled={share.revokedAt !== null || confirming === share.id}
                       data-testid="workspace-share-revoke"
-                      aria-label={`Zurückziehen: ${share.documentTitle}`}
+                      aria-label={t('revokeLabel', { title: share.documentTitle })}
                       onClick={() => {
                         revoke.reset();
                         setConfirming(share.id);
                       }}
                     >
-                      Zurückziehen
+                      {tCommon('revoke')}
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -151,7 +150,7 @@ export function WorkspaceSharesPage({ workspaceId }: { workspaceId: string }) {
                           revoke.isError
                             ? revoke.error instanceof ApiError
                               ? messageForCode(revoke.error.code)
-                              : 'Die Freigabe konnte nicht zurückgezogen werden.'
+                              : tCommon('revokeFailed')
                             : null
                         }
                         onCancel={() => setConfirming(null)}
@@ -171,18 +170,21 @@ export function WorkspaceSharesPage({ workspaceId }: { workspaceId: string }) {
   );
 }
 
-function recipientOf(share: DocumentShare): React.ReactNode {
+function recipientOf(
+  share: DocumentShare,
+  t: ReturnType<typeof useTranslations<'shares.workspace'>>,
+): React.ReactNode {
   if (share.kind === 'PUBLIC_LINK') {
     return (
       <span className="flex items-center gap-1.5">
-        <GlobeIcon className="size-3.5" /> Öffentlicher Link
+        <GlobeIcon className="size-3.5" /> {t('publicLink')}
         <span className="font-mono text-xs text-muted-foreground">…{share.tokenPrefix ?? ''}</span>
       </span>
     );
   }
   return (
     <span className="flex items-center gap-1.5">
-      <UserIcon className="size-3.5" /> {share.grantee?.email ?? 'Unbekannt'}
+      <UserIcon className="size-3.5" /> {share.grantee?.email ?? t('unknown')}
     </span>
   );
 }

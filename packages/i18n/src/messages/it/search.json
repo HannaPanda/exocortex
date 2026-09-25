@@ -1,0 +1,130 @@
+{
+  "route": {
+    "searchTitle": "Ricerca",
+    "savedQueryTitle": "Ricerca salvata"
+  },
+  "chatsRoute": {
+    "title": "Chat",
+    "loading": "Caricamento chat…"
+  },
+  "builder": {
+    "textLabel": "Termine di ricerca",
+    "textPlaceholder": "Lascia vuoto per filtrare solo per posizione, tipo e data",
+    "semantic": "Cerca anche per significato, non solo per parola",
+    "typesLabel": "Tipo",
+    "typesHint": "Nessuna selezione significa: tutto.",
+    "types": {
+      "PAGE": "Pagine",
+      "COLLECTION": "Database",
+      "PROJECT": "Progetti"
+    },
+    "underLabel": "Solo sotto",
+    "underAnywhere": "ovunque",
+    "underHint": "Il sottoalbero viene ricalcolato a ogni esecuzione, quindi segue anche le pagine spostate.",
+    "collectionLabel": "Solo righe del database",
+    "none": "nessuno",
+    "entityLabel": "Menziona l’entità",
+    "updatedLabel": "Modificato",
+    "createdLabel": "Creato",
+    "sortLabel": "Ordinamento",
+    "sort": {
+      "RELEVANCE": "Rilevanza",
+      "UPDATED_DESC": "Modificato più di recente",
+      "UPDATED_ASC": "Invariato da più tempo",
+      "CREATED_DESC": "Creato più di recente",
+      "CREATED_ASC": "Creato per primo",
+      "TITLE_ASC": "Titolo da A a Z",
+      "TITLE_DESC": "Titolo da Z a A"
+    },
+    "relevanceWithoutText": "Senza un termine di ricerca non c’è rilevanza. L’ordinamento sarà quindi in base all’ultima modifica.",
+    "limitLabel": "Massimo",
+    "includeArchived": "Includi cestino",
+    "window": {
+      "any": "qualsiasi",
+      "lastDays": "{count, plural, one {ultimo giorno} many {ultimi # giorni} other {ultimi # giorni}}",
+      "lastYear": "ultimo anno",
+      "custom": "periodo personalizzato"
+    },
+    "rangeFrom": "{label}: da",
+    "rangeUntil": "{label}: a",
+    "rangeSeparator": "a",
+    "noProperties": "Questo database non ha ancora proprietà con cui filtrare.",
+    "propertiesLabel": "Proprietà",
+    "removeFilter": "Rimuovi filtro",
+    "addProperty": "Proprietà",
+    "valuePlaceholder": "Valore",
+    "add": "Aggiungi"
+  },
+  "page": {
+    "loading": "Caricamento della ricerca salvata",
+    "loadFailed": "Ricerca salvata non caricata",
+    "title": "Ricerca",
+    "introFresh": "Cerca in tutte le pagine di quest’area di lavoro, con filtri per posizione, tipo, proprietà, entità e periodo di tempo. Quel che serve si può salvare.",
+    "introStored": "Una ricerca salvata. I risultati vengono aggiornati a ogni apertura.",
+    "save": "Salva ricerca",
+    "delete": "Elimina",
+    "saveChanges": "Salva modifiche",
+    "deleteTitle": "Elimina ricerca salvata",
+    "deleteDescription": "Viene eliminata solo la domanda. Le pagine trovate rimangono invariate dove sono.",
+    "cancel": "Annulla",
+    "layoutLabel": "Visualizzazione",
+    "layout": {
+      "LIST": "Elenco",
+      "TABLE": "Tabella",
+      "CARDS": "Schede"
+    },
+    "inSidebar": "Mostra nella navigazione",
+    "resultsHeading": "Risultati",
+    "noQueryTitle": "Ancora nessuna query",
+    "noQueryDescription": "Inserisci un termine di ricerca o specifica in alto dove cercare.",
+    "resultsLoading": "Recupero dei risultati in corso",
+    "queryFailed": "Query non eseguita",
+    "saveDialog": {
+      "title": "Salva ricerca",
+      "description": "Viene salvata la domanda, non l’elenco dei risultati. Alla prossima apertura riceverà una nuova risposta.",
+      "nameLabel": "Nome",
+      "namePlaceholder": "Attività aperte ad alta priorità",
+      "descriptionLabel": "Descrizione",
+      "descriptionPlaceholder": "Facoltativo: a cosa serve questa ricerca",
+      "inSidebar": "Aggiungi alla navigazione come Smart View",
+      "submit": "Salva"
+    }
+  },
+  "nodeView": {
+    "fallbackName": "Ricerca salvata",
+    "open": "Apri ricerca",
+    "change": "Cambia ricerca",
+    "noneTitle": "Nessuna ricerca selezionata",
+    "noneDescription": "Scegli una ricerca salvata di cui mostrare qui i risultati.",
+    "missingDescription": "Questa ricerca salvata non è stata trovata. Potrebbe essere stata eliminata.",
+    "pick": "Seleziona ricerca",
+    "resultsLoading": "Ricerca dei risultati in corso",
+    "queryFailed": "Query non eseguita",
+    "allResults": "Vedi tutti i risultati"
+  },
+  "results": {
+    "topLevel": "livello principale",
+    "emptyTitle": "Nessun risultato",
+    "emptyDescription": "Al momento non c’è nulla per questa query. Potrebbe cambiare domani, la ricerca resta salvata.",
+    "truncated": "Questa non è la risposta completa. Aumenta il limite della query per vedere di più.",
+    "inTrash": "nel cestino",
+    "columnPage": "Pagina",
+    "columnPath": "Posizione",
+    "columnUpdated": "Modificato"
+  },
+  "command": {
+    "groupActions": "Azioni",
+    "groupSavedQueries": "Ricerche salvate",
+    "groupRecent": "Modificati di recente",
+    "groupPages": "Pagine",
+    "createPage": "Crea nuova pagina",
+    "createPageKeywords": "crea scrivi",
+    "untitledPage": "Pagina senza titolo",
+    "openSearchPage": "Ricerca avanzata con filtri",
+    "openSearchPageKeywords": "trova",
+    "minimumLength": "Inserisci almeno due caratteri per le pagine",
+    "empty": "Nessun risultato",
+    "readout": "{count, plural, one {# risultato} many {# di risultati} other {# risultati}} · {tookMs} ms · {adapter}",
+    "idleHint": "Modificati di recente, oppure digita per la ricerca a testo intero"
+  }
+}

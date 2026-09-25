@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "sharesTitle": "Delingen",
+    "sharedPageTitle": "Gedeelde pagina"
+  },
+  "common": {
+    "loading": "Delingen laden …",
+    "loadError": "Delingen konden niet worden geladen",
+    "read": "Lezen",
+    "write": "Bewerken",
+    "revoke": "Intrekken",
+    "revokeFailed": "De deling kon niet worden ingetrokken.",
+    "nothingShared": "Niets gedeeld"
+  },
+  "wording": {
+    "publicLink": "Openbare link (…{prefix})",
+    "unknownAccount": "Onbekend account",
+    "grant": "{who}: {permission, select, WRITE {mag bewerken} other {mag lezen}}{subtree, select, yes {, met alles eronder} other {}}",
+    "grantUntil": "{who}: {permission, select, WRITE {mag bewerken} other {mag lezen}}{subtree, select, yes {, met alles eronder} other {}}, tot {until}",
+    "revokeLink": "Het adres werkt daarna voor niemand meer, ook niet voor iemand die het doorgestuurd heeft gekregen. Het kan niet worden hersteld: een nieuwe link krijgt een nieuw adres.",
+    "revokeAccount": "{who} verliest de toegang direct, ook in een sessie die momenteel openstaat.",
+    "thisAccount": "Dit account",
+    "regrantDialog": "Je kunt de deling hierboven op elk moment opnieuw verlenen.",
+    "regrantList": "Je kunt deze in het deelvenster van de pagina op elk moment opnieuw verlenen.",
+    "revokeSubtree": "Dit geldt voor deze pagina en alles eronder."
+  },
+  "state": {
+    "active": "Actief",
+    "expired": "Verlopen",
+    "revoked": "Ingetrokken"
+  },
+  "revokeConfirm": {
+    "question": "Intrekken?",
+    "cancel": "Annuleren",
+    "confirm": "Intrekken",
+    "pending": "Wordt ingetrokken …"
+  },
+  "linkAddress": {
+    "copyLabel": "Adres kopiëren",
+    "copiedLabel": "Adres gekopieerd",
+    "copy": "Kopiëren",
+    "copied": "Gekopieerd",
+    "lost": "Het adres van deze link is niet opgeslagen: hij is van voor 24-09-2026. Hij blijft werken. Heb je het adres nodig, maak dan een nieuwe link met dezelfde omvang en trek deze daarna in.",
+    "replace": "Nieuwe link aanmaken",
+    "replaced": "Nieuwe link staat hierboven"
+  },
+  "dialog": {
+    "title": "„{title}” delen",
+    "description": "Delen betekent: iemand buiten deze werkruimte kan bij deze pagina. Wie hier al lid is, heeft geen deling nodig.",
+    "inherited": "Deze pagina is al van hogerop gedeeld: iemand heeft een bovenliggend deel samen met alles eronder gedeeld. De pagina is dus al van buitenaf bereikbaar, zonder dat hier iets staat.",
+    "scope": "Omvang",
+    "scopePageOnly": "Alleen deze pagina",
+    "scopeSubtree": "Deze pagina en alles eronder",
+    "expiry": "Geldigheid",
+    "expiryNever": "Onbeperkt",
+    "expiryDays": "{count, plural, one {# dag} other {# dagen}}",
+    "toAccount": "Met een account",
+    "emailPlaceholder": "adres@voorbeeld.nl",
+    "permission": "Machtiging",
+    "share": "Delen",
+    "publicLink": "Openbare link",
+    "publicLinkExplanation": "Iedereen met het adres kan de pagina lezen: zonder account, zonder aanmelden, ook als de link is doorgestuurd. Schrijven kan via een link niemand.",
+    "createLink": "Link aanmaken",
+    "copied": "Gekopieerd",
+    "copyAddress": "Adres kopiëren",
+    "addressKept": "Je kunt het adres altijd terugvinden, hier in de lijst en onder ’Delingen’ in het accountmenu, zolang de link geldig is.",
+    "current": "Momenteel gedeeld",
+    "nobody": "Niemand buiten deze werkruimte kan deze pagina bereiken.",
+    "revokeFailed": "Intrekken mislukt.",
+    "close": "Sluiten",
+    "changePermission": "Machtiging wijzigen",
+    "readOnly": "Alleen lezen",
+    "revokeLabel": "Intrekken: {description}"
+  },
+  "page": {
+    "title": "Delingen",
+    "tabMine": "Door mij gedeeld",
+    "tabIncoming": "Met mij gedeeld"
+  },
+  "mine": {
+    "intro": "Alles wat je zelf hebt gedeeld, uit alle werkruimtes: met individuele accounts en als openbare link.",
+    "emptyDescription": "Je hebt nog geen pagina gedeeld. Dat kan in het paginamenu via ’Delen …’.",
+    "filterPlaceholder": "Pagina, werkruimte of adres …",
+    "filterLabel": "Delingen filteren",
+    "showInactive": "Beëindigde tonen ({count, number})",
+    "noMatchTitle": "Niets gevonden",
+    "noMatchDescription": "Geen enkele deling voldoet aan dit filter.",
+    "noneOpenTitle": "Niets meer actief",
+    "noneOpenDescription": "Al je delingen zijn ingetrokken of verlopen.",
+    "truncated": "Er zijn meer delingen dan hier worden getoond. De oudste beëindigde ontbreken.",
+    "rowContext": "in ’{workspace}’ · {description}",
+    "revokeLabel": "Intrekken: {title}, {description}",
+    "adminOnly": "Alleen beheerders in werkruimte ’{workspace}’ kunnen dit intrekken."
+  },
+  "incoming": {
+    "intro": "Pagina’s uit werkruimtes waarin je geen lid bent. Ze staan in geen enkele navigatie, alleen hier.",
+    "emptyTitle": "Niets met jou gedeeld",
+    "emptyDescription": "Wanneer iemand een pagina met je deelt, verschijnt die hier.",
+    "origin": "uit ’{workspace}’, van {name}"
+  },
+  "workspace": {
+    "title": "Delingen",
+    "intro": "Wat vanuit deze werkruimte naar buiten is gedeeld: met individuele accounts en via een openbare link. Ingetrokken delingen blijven zichtbaar, zodat te zien blijft wat ooit toegankelijk was.",
+    "emptyDescription": "Geen enkele pagina van deze werkruimte is van buitenaf bereikbaar.",
+    "columnPage": "Pagina",
+    "columnRecipient": "Aan wie",
+    "columnPermission": "Rechten",
+    "columnScope": "Bereik",
+    "columnExpires": "Verloopt",
+    "columnStatus": "Status",
+    "scopeSubtree": "met subpagina’s",
+    "scopePageOnly": "alleen de pagina",
+    "revokeLabel": "Intrekken: {title}",
+    "publicLink": "Openbare link",
+    "unknown": "Onbekend"
+  },
+  "public": {
+    "loading": "Pagina wordt geladen …",
+    "goneTitle": "Deze link leidt niet meer naar een pagina",
+    "goneDescription": "Hij is ingetrokken, verlopen of was nooit geldig. Vraag het aan de persoon van wie je hem hebt.",
+    "origin": "Gedeeld vanuit „{workspace}” door {name}",
+    "path": "Pad",
+    "empty": "Deze pagina is leeg.",
+    "children": "Subpagina’s",
+    "footer": "Deze pagina is gedeeld via een link. Deze is alleen-lezen. <link>eXocortex</link> wordt zelf gehost."
+  },
+  "shared": {
+    "loading": "Pagina wordt geladen …",
+    "unavailableTitle": "Pagina niet beschikbaar",
+    "unavailableDescription": "De deling is ingetrokken, verlopen of heeft nooit bestaan."
+  }
+}

@@ -1,0 +1,377 @@
+{
+  "surface": {
+    "unavailable": "Editor niet beschikbaar",
+    "connecting": "Editor wordt verbonden …",
+    "uploadFailed": "Een bestand kon niet worden geüpload.",
+    "placeholder": "Schrijf iets of typ ‘/’ voor commando’s …",
+    "syncing": "wordt gesynchroniseerd …",
+    "contentLabel": "Paginainhoud"
+  },
+  "connection": {
+    "startFailed": "Live bewerken kon niet worden gestart.",
+    "unknownUser": "Onbekend"
+  },
+  "blocks": {
+    "paragraph": {
+      "label": "Tekst",
+      "description": "Een gewone alinea"
+    },
+    "heading-1": {
+      "label": "Kop 1",
+      "description": "Sectietitel van niveau 1"
+    },
+    "heading-2": {
+      "label": "Kop 2",
+      "description": "Sectietitel van niveau 2"
+    },
+    "heading-3": {
+      "label": "Kop 3",
+      "description": "Sectietitel van niveau 3"
+    },
+    "blockquote": {
+      "label": "Citaat",
+      "description": "Uitgelicht citaat"
+    },
+    "code-block": {
+      "label": "Codeblok",
+      "description": "Code met syntaxisaccentuering"
+    },
+    "horizontal-rule": {
+      "label": "Scheidingslijn",
+      "description": "Horizontale lijn tussen secties"
+    },
+    "bullet-list": {
+      "label": "Opsomming",
+      "description": "Lijst met opsommingstekens"
+    },
+    "ordered-list": {
+      "label": "Genummerde lijst",
+      "description": "Lijst met nummers"
+    },
+    "task-list": {
+      "label": "Takenlijst",
+      "description": "Lijst met selectievakjes"
+    },
+    "image": {
+      "label": "Afbeelding",
+      "description": "Afbeelding uploaden"
+    },
+    "table": {
+      "label": "Tabel",
+      "description": "Tabel met koprij"
+    },
+    "callout-info": {
+      "label": "Info",
+      "description": "Uitgelicht kader (info)"
+    },
+    "callout-note": {
+      "label": "Notitie",
+      "description": "Uitgelicht kader (notitie)"
+    },
+    "callout-success": {
+      "label": "Succes",
+      "description": "Uitgelicht kader (succes)"
+    },
+    "callout-warning": {
+      "label": "Waarschuwing",
+      "description": "Uitgelicht kader (waarschuwing)"
+    },
+    "callout-danger": {
+      "label": "Gevaar",
+      "description": "Uitgelicht kader (gevaar)"
+    },
+    "file": {
+      "label": "Bestand",
+      "description": "Bestand om te downloaden"
+    },
+    "video": {
+      "label": "Video",
+      "description": "Video in de speler afspelen"
+    },
+    "audio": {
+      "label": "Audio",
+      "description": "Audiobestand afspelen"
+    },
+    "pdf": {
+      "label": "PDF",
+      "description": "PDF ingesloten weergeven"
+    },
+    "page-link": {
+      "label": "Paginalink",
+      "description": "Verwijzing naar een andere pagina als apart blok"
+    },
+    "breadcrumb": {
+      "label": "Kruimelpad",
+      "description": "Pad naar deze pagina in de hiërarchie"
+    },
+    "toggle": {
+      "label": "Inklapbare lijst",
+      "description": "Inklapbaar gedeelte"
+    },
+    "columns": {
+      "label": "Kolommen",
+      "description": "Inhoud naast elkaar plaatsen"
+    },
+    "database-embed": {
+      "label": "Database insluiten",
+      "description": "Weergave van een bestaande database direct op deze pagina"
+    },
+    "block-math": {
+      "label": "Formule",
+      "description": "LaTeX-formule als apart blok"
+    },
+    "saved-query": {
+      "label": "Opgeslagen zoekopdracht insluiten",
+      "description": "Live lijst met resultaten van een opgeslagen zoekopdracht op deze pagina"
+    },
+    "embed": {
+      "label": "Insluiting",
+      "description": "Externe inhoud insluiten (YouTube, Figma, …)"
+    },
+    "bookmark": {
+      "label": "Bladwijzer",
+      "description": "Voorbeeldkaart voor een link"
+    },
+    "transclusion": {
+      "label": "Inhoud insluiten",
+      "description": "Toont tekst van een andere pagina zonder deze te kopiëren"
+    },
+    "table-of-contents": {
+      "label": "Inhoudsopgave",
+      "description": "Overzicht van alle koppen op de pagina"
+    }
+  },
+  "blockGroups": {
+    "basic": "Basis",
+    "lists": "Lijsten",
+    "callout": "Aandachtskaders",
+    "media": "Media",
+    "advanced": "Geavanceerd"
+  },
+  "slashMenu": {
+    "label": "Blok invoegen",
+    "empty": "Geen blok past bij “{query}”."
+  },
+  "blockHandle": {
+    "insertBelow": "Blok hieronder invoegen",
+    "actions": "Blokacties"
+  },
+  "blockActions": {
+    "turnInto": "Omzetten in",
+    "color": "Kleur",
+    "duplicate": "Dupliceren",
+    "copyLink": "Link naar blok kopiëren",
+    "delete": "Verwijderen"
+  },
+  "blockRemoval": {
+    "title": {
+      "table": "Tabel verwijderen?",
+      "codeBlock": "Codeblok verwijderen?",
+      "blockquote": "Citaat verwijderen?",
+      "bulletList": "Lijst verwijderen?",
+      "orderedList": "Genummerde lijst verwijderen?",
+      "taskList": "Takenlijst verwijderen?",
+      "details": "Inklapbaar blok verwijderen?",
+      "callout": "Callout verwijderen?",
+      "columnList": "Kolommenindeling verwijderen?",
+      "databaseEmbed": "Ingesloten database verwijderen?",
+      "savedQueryEmbed": "Zoekopdrachtblok verwijderen?",
+      "paragraph": "Alinea verwijderen?",
+      "heading": "Kop verwijderen?",
+      "block": "Blok verwijderen?"
+    },
+    "table": "De tabel met {rows, plural, one {# rij} other {# rijen}} en {columns, plural, one {# kolom} other {# kolommen}} wordt met de volledige inhoud verwijderd.",
+    "compound": "Het blok wordt met de volledige inhoud verwijderd.",
+    "text": "{count, plural, one {# teken wordt} other {# tekens worden}} verwijderd.",
+    "undoHint": "Met Ctrl+Z kun je het verwijderen ongedaan maken."
+  },
+  "destructiveConfirm": {
+    "cancel": "Annuleren",
+    "confirm": "Verwijderen"
+  },
+  "prompt": {
+    "url": {
+      "title": "Adres invoegen",
+      "description": "Voer het volledige adres in, bijvoorbeeld https://exocortex.app/bild.png",
+      "placeholder": "https://…"
+    },
+    "latex": {
+      "title": "Formule invoeren",
+      "description": "LaTeX-notatie, bijvoorbeeld {example}",
+      "placeholder": "a^2 + b^2 = c^2"
+    },
+    "page": {
+      "title": "Pagina koppelen",
+      "description": "Kies een pagina uit deze werkruimte. Als je een titel typt die nog niet bestaat, ontstaat er een verwijzing die aanbiedt om de pagina aan te maken.",
+      "placeholder": "Pagina zoeken …"
+    },
+    "database": {
+      "title": "Database insluiten",
+      "description": "Kies een bestaande database uit deze werkruimte.",
+      "placeholder": "Database zoeken …"
+    },
+    "savedQuery": {
+      "title": "Opgeslagen zoekopdracht insluiten",
+      "description": "Kies een opgeslagen zoekopdracht. Het blok toont de resultaten en haalt ze telkens wanneer de pagina wordt geopend opnieuw op. Nieuwe zoekopdrachten maak je aan in het zoekgedeelte.",
+      "placeholder": "Opgeslagen zoekopdracht zoeken…"
+    },
+    "uploadFailed": "Het bestand kon niet worden geüpload.",
+    "noPageTitle": "Geen pagina gevonden",
+    "noPageDescription": "Typ een titel om te linken naar een pagina die nog niet bestaat.",
+    "noDatabaseTitle": "Geen database gevonden",
+    "noDatabaseDescription": "Maak eerst een database aan in deze werkruimte.",
+    "linkNewTitle": "“{title}” koppelen als nog niet aangemaakte pagina",
+    "noSavedQueryTitle": "Geen opgeslagen zoekopdracht gevonden",
+    "noSavedQueryDescription": "In het zoekgedeelte kun je een zoekopdracht samenstellen en opslaan; daarna verschijnt deze hier.",
+    "fieldFormula": "Formule",
+    "fieldSearch": "Zoeken",
+    "fieldValue": "Waarde",
+    "cancel": "Annuleren",
+    "insert": "Invoegen"
+  },
+  "colors": {
+    "name": {
+      "default": "Standaard",
+      "gray": "Grijs",
+      "brown": "Bruin",
+      "orange": "Oranje",
+      "yellow": "Geel",
+      "green": "Groen",
+      "blue": "Blauw",
+      "purple": "Paars",
+      "pink": "Roze",
+      "red": "Rood"
+    },
+    "text": "Tekstkleur",
+    "background": "Achtergrond",
+    "reset": "Kleuren verwijderen"
+  },
+  "selectionToolbar": {
+    "label": "Opmaak",
+    "turnInto": "Bloktype: {block}. Omzetten in ander blok",
+    "mark": {
+      "bold": "Vet",
+      "italic": "Cursief",
+      "underline": "Onderstreept",
+      "strike": "Doorgehaald",
+      "code": "Code",
+      "superscript": "Superscript",
+      "subscript": "Subscript"
+    },
+    "shortcut": {
+      "bold": "Ctrl+B",
+      "italic": "Ctrl+I",
+      "underline": "Ctrl+U",
+      "strike": "Ctrl+Shift+S",
+      "subscript": "Ctrl+,"
+    },
+    "withShortcut": "{label} ({shortcut})",
+    "link": "Link",
+    "color": "Kleur",
+    "textColor": "Tekstkleur",
+    "emoji": "Emoji",
+    "comment": "Opmerking toevoegen",
+    "sendToAi": "Naar AI sturen",
+    "blockActions": "Blokacties"
+  },
+  "codeBlock": {
+    "language": "Taal",
+    "noHighlighting": "Zonder markering",
+    "copy": "Code kopiëren",
+    "copied": "Code gekopieerd"
+  },
+  "emojiMenu": {
+    "search": "Emoji zoeken",
+    "placeholder": "Zoeken …"
+  },
+  "table": {
+    "label": "Tabel",
+    "addRow": "Rij hieronder invoegen",
+    "addColumn": "Kolom rechts invoegen",
+    "toggleHeaderRow": "Koprij in-/uitschakelen",
+    "mergeOrSplit": "Cellen samenvoegen of splitsen",
+    "deleteRow": "Rij verwijderen",
+    "deleteColumn": "Kolom verwijderen",
+    "deleteTable": "Tabel verwijderen"
+  },
+  "linkBubble": {
+    "label": "Link",
+    "open": "Openen",
+    "edit": "Bewerken",
+    "remove": "Verwijderen"
+  },
+  "linkMenu": {
+    "inputLabel": "Adres of paginatitel",
+    "placeholder": "https://… of pagina zoeken",
+    "apply": "Toepassen",
+    "suggestions": "Passende pagina’s",
+    "remove": "Verwijderen",
+    "open": "Openen"
+  },
+  "linkNavigation": {
+    "resolveFailed": "De link kon niet worden opgelost.",
+    "createFailed": "De pagina kon niet worden aangemaakt.",
+    "ambiguousTitle": "Meerdere pagina’s heten “{title}”",
+    "ambiguousDescription": "Kies de bedoelde pagina.",
+    "inTrash": "In de prullenbak",
+    "cancel": "Annuleren",
+    "missingTitle": "Pagina niet gevonden",
+    "missingDescription": "Er is geen pagina met de titel “{title}” in deze werkruimte.",
+    "createPage": "Pagina aanmaken",
+    "errorTitle": "Verwijzing kon niet worden geopend",
+    "close": "Sluiten"
+  },
+  "mentionMenu": {
+    "label": "Vermelding invoegen",
+    "empty": "Niets gevonden voor “{query}”.",
+    "page": "Pagina",
+    "person": "Persoon",
+    "today": "Vandaag",
+    "tomorrow": "Morgen",
+    "yesterday": "Gisteren",
+    "typedDate": "Ingevoerde datum"
+  },
+  "pageLink": {
+    "unresolved": {
+      "empty": "Geen doel gekozen",
+      "deleted": "Doelpagina verwijderd",
+      "missing": "Pagina bestaat niet"
+    },
+    "unresolvedWithTitle": "{title}: {reason}",
+    "searching": "“{title}” wordt gezocht",
+    "resolving": "Verwijzing wordt opgelost",
+    "createPage": "Pagina aanmaken",
+    "choosePage": "Pagina kiezen",
+    "changePage": "Pagina wijzigen",
+    "inTrash": "In de prullenbak",
+    "ambiguous": "Meerdere pagina’s met deze titel"
+  },
+  "transclusion": {
+    "fallbackTitle": "Ingesloten inhoud",
+    "inTrash": "In de prullenbak",
+    "openSource": "Bron openen",
+    "changePage": "Pagina wisselen",
+    "choosePage": "Pagina kiezen",
+    "noSourceTitle": "Geen bron gekozen",
+    "noSourceDescription": "Kies de pagina waarvan de inhoud hier moet verschijnen. De tekst blijft daar en wordt hier alleen getoond.",
+    "selfTitle": "Een pagina kan zichzelf niet insluiten",
+    "selfDescription": "Kies een andere pagina als bron.",
+    "loading": "Ingesloten inhoud wordt geladen",
+    "unreachableTitle": "Bron niet bereikbaar",
+    "unreachableDescription": "De ingesloten pagina is verwijderd of je mag deze niet lezen. De verwijzing blijft behouden.",
+    "missingBlockTitle": "Het ingesloten gedeelte is er niet meer",
+    "missingBlockDescription": "De pagina “{title}” bestaat nog, het blok met id {blockId} daarin niet meer.",
+    "showWholePage": "Hele pagina tonen",
+    "nested": "Bevat {count, plural, one {# extra insluiting} other {# extra insluitingen}}, die hier niet worden opgelost.",
+    "wholePage": "Hele pagina",
+    "section": "Sectie",
+    "chooserLabel": "Wat moet hier staan?",
+    "chooseWholePage": "De hele pagina",
+    "blocksLoading": "Blokken worden geladen …",
+    "noBlocks": "Deze pagina heeft geen benoemde blokken.",
+    "headingSection": "Kop {level}, met de hele sectie eronder"
+  },
+  "wikiLink": {
+    "missing": "“{title}” bestaat niet in deze werkruimte"
+  }
+}

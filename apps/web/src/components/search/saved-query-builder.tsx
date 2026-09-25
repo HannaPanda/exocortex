@@ -1,6 +1,7 @@
 'use client';
 
 import { FilterIcon, XIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -60,30 +61,29 @@ export interface SavedQueryBuilderProps {
   onChange: (next: SavedQueryDefinition) => void;
 }
 
-const TYPE_LABELS: Readonly<Record<DocumentType, string>> = {
-  PAGE: 'Seiten',
-  COLLECTION: 'Datenbanken',
-  PROJECT: 'Projekte',
-};
+type BuilderT = ReturnType<typeof useTranslations<'search.builder'>>;
 
-const SORT_LABELS: Readonly<Record<SavedQuerySort, string>> = {
-  RELEVANCE: 'Relevanz',
-  UPDATED_DESC: 'Zuletzt geändert',
-  UPDATED_ASC: 'Am längsten unverändert',
-  CREATED_DESC: 'Zuletzt angelegt',
-  CREATED_ASC: 'Zuerst angelegt',
-  TITLE_ASC: 'Titel A bis Z',
-  TITLE_DESC: 'Titel Z bis A',
-};
+const DOCUMENT_TYPES: readonly DocumentType[] = ['PAGE', 'COLLECTION', 'PROJECT'];
 
-const WINDOW_CHOICES = [
-  { value: 'any', label: 'egal' },
-  { value: '7', label: 'letzte 7 Tage' },
-  { value: '30', label: 'letzte 30 Tage' },
-  { value: '90', label: 'letzte 90 Tage' },
-  { value: '365', label: 'letztes Jahr' },
-  { value: 'custom', label: 'eigener Zeitraum' },
-] as const;
+const SORTS: readonly SavedQuerySort[] = [
+  'RELEVANCE',
+  'UPDATED_DESC',
+  'UPDATED_ASC',
+  'CREATED_DESC',
+  'CREATED_ASC',
+  'TITLE_ASC',
+  'TITLE_DESC',
+];
+
+const WINDOW_CHOICES = ['any', '7', '30', '90', '365', 'custom'] as const;
+
+/** The label of a time window choice; a year is named, not counted in days. */
+function windowLabel(choice: string, t: BuilderT): string {
+  if (choice === 'any') return t('window.any');
+  if (choice === 'custom') return t('window.custom');
+  if (choice === '365') return t('window.lastYear');
+  return t('window.lastDays', { count: Number.parseInt(choice, 10) });
+}
 
 const NO_VALUE = '__none__';
 
@@ -110,18 +110,19 @@ export function SavedQueryBuilder({ workspaceId, value, onChange }: SavedQueryBu
   const collections = entries.filter((entry) => entry.node.type === 'COLLECTION');
   const properties = useDatabaseProperties(value.collectionId ?? undefined);
   const entities = useEntities({ q: '', type: null });
+  const t = useTranslations('search.builder');
 
   const patch = (next: Partial<SavedQueryDefinition>): void => onChange({ ...value, ...next });
 
   return (
     <div className="grid gap-4" data-testid="saved-query-builder">
       <div className="grid gap-1.5">
-        <Label htmlFor="saved-query-text">Suchbegriff</Label>
+        <Label htmlFor="saved-query-text">{t('textLabel')}</Label>
         <Input
           id="saved-query-text"
           data-testid="saved-query-text"
           value={value.text ?? ''}
-          placeholder="Leer lassen, um nur nach Ort, Typ und Zeit zu filtern"
+          placeholder={t('textPlaceholder')}
           onChange={(event) =>
             patch({ text: event.target.value.length === 0 ? null : event.target.value })
           }
@@ -132,30 +133,30 @@ export function SavedQueryBuilder({ workspaceId, value, onChange }: SavedQueryBu
             checked={value.textMode === 'HYBRID'}
             onCheckedChange={(checked) => patch({ textMode: checked ? 'HYBRID' : 'KEYWORD' })}
           />
-          Auch nach Bedeutung suchen, nicht nur nach dem Wort
+          {t('semantic')}
         </Label>
       </div>
 
       <div className="grid gap-1.5">
-        <Label id="saved-query-types-label">Art</Label>
+        <Label id="saved-query-types-label">{t('typesLabel')}</Label>
         <ToggleGroup
           aria-labelledby="saved-query-types-label"
           value={value.types}
           multiple
           onValueChange={(next) => patch({ types: next as DocumentType[] })}
         >
-          {(Object.keys(TYPE_LABELS) as DocumentType[]).map((type) => (
+          {DOCUMENT_TYPES.map((type) => (
             <Toggle key={type} value={type} variant="outline" size="sm">
-              {TYPE_LABELS[type]}
+              {t(`types.${type}`)}
             </Toggle>
           ))}
         </ToggleGroup>
-        <p className="text-xs text-muted-foreground">Nichts gewählt heißt: alles.</p>
+        <p className="text-xs text-muted-foreground">{t('typesHint')}</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="grid gap-1.5">
-          <Label htmlFor="saved-query-under">Nur unterhalb von</Label>
+          <Label htmlFor="saved-query-under">{t('underLabel')}</Label>
           <Select
             value={value.underDocumentId ?? NO_VALUE}
             onValueChange={(next) =>
@@ -166,12 +167,12 @@ export function SavedQueryBuilder({ workspaceId, value, onChange }: SavedQueryBu
               <SelectValue>
                 {() =>
                   entries.find((entry) => entry.node.id === value.underDocumentId)?.node.title ??
-                  'überall'
+                  t('underAnywhere')
                 }
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={NO_VALUE}>überall</SelectItem>
+              <SelectItem value={NO_VALUE}>{t('underAnywhere')}</SelectItem>
               {entries.map((entry) => (
                 <SelectItem key={entry.node.id} value={entry.node.id}>
                   {' '.repeat(entry.depth * 2)}
@@ -180,14 +181,11 @@ export function SavedQueryBuilder({ workspaceId, value, onChange }: SavedQueryBu
               ))}
             </SelectContent>
           </Select>
-          <p className="text-xs text-muted-foreground">
-            Der Unterbaum wird bei jeder Ausführung neu bestimmt, verschobene Seiten wandern also
-            mit.
-          </p>
+          <p className="text-xs text-muted-foreground">{t('underHint')}</p>
         </div>
 
         <div className="grid gap-1.5">
-          <Label htmlFor="saved-query-collection">Nur Zeilen der Datenbank</Label>
+          <Label htmlFor="saved-query-collection">{t('collectionLabel')}</Label>
           <Select
             value={value.collectionId ?? NO_VALUE}
             onValueChange={(next) => {
@@ -202,12 +200,12 @@ export function SavedQueryBuilder({ workspaceId, value, onChange }: SavedQueryBu
               <SelectValue>
                 {() =>
                   collections.find((entry) => entry.node.id === value.collectionId)?.node.title ??
-                  'keine'
+                  t('none')
                 }
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={NO_VALUE}>keine</SelectItem>
+              <SelectItem value={NO_VALUE}>{t('none')}</SelectItem>
               {collections.map((entry) => (
                 <SelectItem key={entry.node.id} value={entry.node.id}>
                   {entry.node.title}
@@ -232,7 +230,7 @@ export function SavedQueryBuilder({ workspaceId, value, onChange }: SavedQueryBu
       )}
 
       <div className="grid gap-1.5">
-        <Label htmlFor="saved-query-entity">Erwähnt die Entität</Label>
+        <Label htmlFor="saved-query-entity">{t('entityLabel')}</Label>
         <Select
           value={value.entityIds[0] ?? NO_VALUE}
           onValueChange={(next) =>
@@ -243,12 +241,12 @@ export function SavedQueryBuilder({ workspaceId, value, onChange }: SavedQueryBu
             <SelectValue>
               {() =>
                 entities.data?.entities.find((entity) => entity.id === value.entityIds[0])?.title ??
-                'keine'
+                t('none')
               }
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={NO_VALUE}>keine</SelectItem>
+            <SelectItem value={NO_VALUE}>{t('none')}</SelectItem>
             {(entities.data?.entities ?? []).map((entity) => (
               <SelectItem key={entity.id} value={entity.id}>
                 {entity.title}
@@ -261,13 +259,13 @@ export function SavedQueryBuilder({ workspaceId, value, onChange }: SavedQueryBu
       <div className="grid gap-4 sm:grid-cols-2">
         <DateRangeField
           id="saved-query-updated"
-          label="Geändert"
+          label={t('updatedLabel')}
           range={value.updated}
           onChange={(updated) => patch({ updated })}
         />
         <DateRangeField
           id="saved-query-created"
-          label="Angelegt"
+          label={t('createdLabel')}
           range={value.created}
           onChange={(created) => patch({ created })}
         />
@@ -275,31 +273,29 @@ export function SavedQueryBuilder({ workspaceId, value, onChange }: SavedQueryBu
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="grid gap-1.5">
-          <Label htmlFor="saved-query-sort">Reihenfolge</Label>
+          <Label htmlFor="saved-query-sort">{t('sortLabel')}</Label>
           <Select
             value={value.sort}
             onValueChange={(next) => patch({ sort: (next ?? 'RELEVANCE') as SavedQuerySort })}
           >
             <SelectTrigger id="saved-query-sort" data-testid="saved-query-sort">
-              <SelectValue>{() => SORT_LABELS[value.sort]}</SelectValue>
+              <SelectValue>{() => t(`sort.${value.sort}`)}</SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {(Object.keys(SORT_LABELS) as SavedQuerySort[]).map((sort) => (
+              {SORTS.map((sort) => (
                 <SelectItem key={sort} value={sort}>
-                  {SORT_LABELS[sort]}
+                  {t(`sort.${sort}`)}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
           {value.sort === 'RELEVANCE' && (value.text ?? '').length === 0 ? (
-            <p className="text-xs text-muted-foreground">
-              Ohne Suchbegriff gibt es keine Relevanz. Sortiert wird dann nach zuletzt geändert.
-            </p>
+            <p className="text-xs text-muted-foreground">{t('relevanceWithoutText')}</p>
           ) : null}
         </div>
 
         <div className="grid gap-1.5">
-          <Label htmlFor="saved-query-limit">Höchstens</Label>
+          <Label htmlFor="saved-query-limit">{t('limitLabel')}</Label>
           <Input
             id="saved-query-limit"
             data-testid="saved-query-limit"
@@ -321,7 +317,7 @@ export function SavedQueryBuilder({ workspaceId, value, onChange }: SavedQueryBu
               checked={value.includeArchived}
               onCheckedChange={(checked) => patch({ includeArchived: checked })}
             />
-            Papierkorb einbeziehen
+            {t('includeArchived')}
           </Label>
         </div>
       </div>
@@ -355,6 +351,7 @@ function DateRangeField({
   range: SavedQueryDateRange;
   onChange: (next: SavedQueryDateRange) => void;
 }) {
+  const t = useTranslations('search.builder');
   const isCustom = range.withinDays === null && (range.after !== null || range.before !== null);
   const [custom, setCustom] = React.useState(isCustom);
   const selection = custom
@@ -383,14 +380,12 @@ function DateRangeField({
         }}
       >
         <SelectTrigger id={id} data-testid={id}>
-          <SelectValue>
-            {() => WINDOW_CHOICES.find((choice) => choice.value === selection)?.label ?? 'egal'}
-          </SelectValue>
+          <SelectValue>{() => windowLabel(selection, t)}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           {WINDOW_CHOICES.map((choice) => (
-            <SelectItem key={choice.value} value={choice.value}>
-              {choice.label}
+            <SelectItem key={choice} value={choice}>
+              {windowLabel(choice, t)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -400,7 +395,7 @@ function DateRangeField({
         <div className="flex items-center gap-2">
           <DatePicker
             clearable
-            aria-label={`${label}: ab`}
+            aria-label={t('rangeFrom', { label })}
             value={dateInputValue(range.after)}
             onChange={(day) =>
               onChange({
@@ -410,10 +405,10 @@ function DateRangeField({
               })
             }
           />
-          <span className="text-xs text-muted-foreground">bis</span>
+          <span className="text-xs text-muted-foreground">{t('rangeSeparator')}</span>
           <DatePicker
             clearable
-            aria-label={`${label}: bis`}
+            aria-label={t('rangeUntil', { label })}
             value={dateInputValue(range.before)}
             onChange={(day) =>
               onChange({
@@ -445,12 +440,9 @@ function PropertyFilterEditor({
   conditions: readonly DatabaseFilterCondition[];
   onChange: (next: readonly DatabaseFilterCondition[]) => void;
 }) {
+  const t = useTranslations('search.builder');
   if (properties.length === 0) {
-    return (
-      <p className="text-xs text-muted-foreground">
-        Diese Datenbank hat noch keine Eigenschaften, nach denen sich filtern ließe.
-      </p>
-    );
+    return <p className="text-xs text-muted-foreground">{t('noProperties')}</p>;
   }
 
   const nameOf = (propertyId: string): string =>
@@ -458,7 +450,7 @@ function PropertyFilterEditor({
 
   return (
     <div className="grid gap-1.5">
-      <Label>Eigenschaften</Label>
+      <Label>{t('propertiesLabel')}</Label>
       <div className="flex flex-wrap items-center gap-1.5">
         {conditions.map((condition, index) => (
           <Badge key={`${condition.propertyId}-${index}`} variant="secondary" className="gap-1">
@@ -471,7 +463,7 @@ function PropertyFilterEditor({
                 )}`}
             <button
               type="button"
-              aria-label="Filter entfernen"
+              aria-label={t('removeFilter')}
               onClick={() => onChange(conditions.filter((_, entry) => entry !== index))}
             >
               <XIcon className="size-3" />
@@ -494,6 +486,7 @@ function AddConditionPopover({
   properties: readonly DatabaseProperty[];
   onAdd: (condition: DatabaseFilterCondition) => void;
 }) {
+  const t = useTranslations('search.builder');
   const [open, setOpen] = React.useState(false);
   const [propertyId, setPropertyId] = React.useState(properties[0]?.id ?? '');
   const property = properties.find((entry) => entry.id === propertyId) ?? properties[0];
@@ -510,7 +503,7 @@ function AddConditionPopover({
       <PopoverTrigger
         render={
           <Button variant="ghost" size="sm" data-testid="saved-query-add-filter">
-            <FilterIcon /> Eigenschaft
+            <FilterIcon /> {t('addProperty')}
           </Button>
         }
       />
@@ -564,7 +557,9 @@ function AddConditionPopover({
             <Select value={value} onValueChange={(next) => setValue(next ?? '')}>
               <SelectTrigger>
                 <SelectValue>
-                  {() => choices.find((choice) => choice.value === value)?.label ?? 'Wert'}
+                  {() =>
+                    choices.find((choice) => choice.value === value)?.label ?? t('valuePlaceholder')
+                  }
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
@@ -578,7 +573,7 @@ function AddConditionPopover({
           ) : (
             <Input
               value={value}
-              placeholder="Wert"
+              placeholder={t('valuePlaceholder')}
               onChange={(event) => setValue(event.target.value)}
             />
           )
@@ -596,7 +591,7 @@ function AddConditionPopover({
             setOpen(false);
           }}
         >
-          Hinzufügen
+          {t('add')}
         </Button>
       </PopoverContent>
     </Popover>

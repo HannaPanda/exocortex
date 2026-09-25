@@ -3,6 +3,7 @@
 import { type Editor, useEditorState } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
 import { CheckIcon, CopyIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { CODE_BLOCK_LANGUAGES } from '@exocortex/editor';
@@ -27,6 +28,10 @@ const COPIED_FEEDBACK_MS = 1_500;
  * why the selection toolbar hides itself there).
  */
 export function CodeBlockToolbar({ editor }: { editor: Editor }) {
+  const t = useTranslations('editor.codeBlock');
+  /** The empty value is "no highlighting"; every other label is a language's own name. */
+  const languageLabel = (entry: { value: string; label: string }): string =>
+    entry.value.length === 0 ? t('noHighlighting') : entry.label;
   const [copied, setCopied] = React.useState(false);
 
   const language = useEditorState({
@@ -70,12 +75,15 @@ export function CodeBlockToolbar({ editor }: { editor: Editor }) {
               .run();
           }}
         >
-          <SelectTrigger size="sm" aria-label="Sprache" data-testid="code-language-trigger">
+          <SelectTrigger size="sm" aria-label={t('language')} data-testid="code-language-trigger">
             {/* Base UI shows the raw value without a render function. */}
             <SelectValue>
-              {() =>
-                CODE_BLOCK_LANGUAGES.find((entry) => entry.value === language)?.label ?? language
-              }
+              {() => {
+                const entry = CODE_BLOCK_LANGUAGES.find(
+                  (candidate) => candidate.value === language,
+                );
+                return entry === undefined ? language : languageLabel(entry);
+              }}
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -85,7 +93,7 @@ export function CodeBlockToolbar({ editor }: { editor: Editor }) {
                 value={entry.value}
                 data-testid={`code-language-${entry.value.length > 0 ? entry.value : 'none'}`}
               >
-                <SelectItemText>{entry.label}</SelectItemText>
+                <SelectItemText>{languageLabel(entry)}</SelectItemText>
               </SelectItem>
             ))}
           </SelectContent>
@@ -94,7 +102,7 @@ export function CodeBlockToolbar({ editor }: { editor: Editor }) {
         <Button
           variant="ghost"
           size="icon-sm"
-          aria-label={copied ? 'Code kopiert' : 'Code kopieren'}
+          aria-label={copied ? t('copied') : t('copy')}
           data-testid="code-copy"
           onClick={() => void copy()}
         >

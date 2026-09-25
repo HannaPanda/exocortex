@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "sharesTitle": "Condivisioni",
+    "sharedPageTitle": "Pagina condivisa"
+  },
+  "common": {
+    "loading": "Caricamento delle condivisioni in corso…",
+    "loadError": "Impossibile caricare le condivisioni",
+    "read": "Lettura",
+    "write": "Modifica",
+    "revoke": "Revoca",
+    "revokeFailed": "Impossibile revocare la condivisione.",
+    "nothingShared": "Nessun elemento condiviso"
+  },
+  "wording": {
+    "publicLink": "Link pubblico (…{prefix})",
+    "unknownAccount": "Account sconosciuto",
+    "grant": "{who}: {permission, select, WRITE {può modificare} other {può leggere}}{subtree, select, yes {, con tutto ciò che si trova sotto} other {}}",
+    "grantUntil": "{who}: {permission, select, WRITE {può modificare} other {può leggere}}{subtree, select, yes {, con tutto ciò che si trova sotto} other {}}, fino a {until}",
+    "revokeLink": "Dopodiché l’indirizzo non funzionerà più per nessuno, nemmeno per chi lo ha ricevuto. Non può essere recuperato: un nuovo link riceverà un nuovo indirizzo.",
+    "revokeAccount": "{who} perde l’accesso immediatamente, anche in una sessione al momento aperta.",
+    "thisAccount": "Questo account",
+    "regrantDialog": "Puoi concedere nuovamente la condivisione in alto in qualsiasi momento.",
+    "regrantList": "Puoi concederla di nuovo nella finestra di dialogo di condivisione della pagina in qualsiasi momento.",
+    "revokeSubtree": "Questo vale per questa pagina e tutto ciò che si trova sotto."
+  },
+  "state": {
+    "active": "Attiva",
+    "expired": "Scaduta",
+    "revoked": "Revocata"
+  },
+  "revokeConfirm": {
+    "question": "Revocare?",
+    "cancel": "Annulla",
+    "confirm": "Revoca",
+    "pending": "Revoca in corso…"
+  },
+  "linkAddress": {
+    "copyLabel": "Copia indirizzo",
+    "copiedLabel": "Indirizzo copiato",
+    "copy": "Copia",
+    "copied": "Copiato",
+    "lost": "L’indirizzo di questo link non è salvato: risale a prima del 24.09.2026. Continua a funzionare. Se ti serve l’indirizzo, genera un nuovo link con lo stesso ambito e poi revoca questo.",
+    "replace": "Genera nuovo link",
+    "replaced": "Il nuovo link si trova sopra"
+  },
+  "dialog": {
+    "title": "Condividi «{title}»",
+    "description": "Condividere significa: chi si trova al di fuori di questa area di lavoro può accedere a questa pagina. Chi ne fa già parte non ha bisogno di alcuna condivisione.",
+    "inherited": "Questa pagina è già condivisa da un livello superiore: qualcuno ha condiviso un’area sovrastante insieme a tutto ciò che contiene. È quindi già raggiungibile dall’esterno, senza dover impostare nulla qui.",
+    "scope": "Ambito",
+    "scopePageOnly": "Solo questa pagina",
+    "scopeSubtree": "Questa pagina e tutto ciò che si trova sotto",
+    "expiry": "Validità",
+    "expiryNever": "Senza scadenza",
+    "expiryDays": "{count, plural, one {# giorno} many {# giorni} other {# giorni}}",
+    "toAccount": "A un account",
+    "emailPlaceholder": "indirizzo@esempio.it",
+    "permission": "Permesso",
+    "share": "Condividi",
+    "publicLink": "Link pubblico",
+    "publicLinkExplanation": "Chiunque abbia l’indirizzo può leggere la pagina: senza un account, senza accedere, anche se il link viene inoltrato. Nessuno può scrivere tramite un link.",
+    "createLink": "Crea link",
+    "copied": "Copiato",
+    "copyAddress": "Copia indirizzo",
+    "addressKept": "Puoi ritrovare l’indirizzo in qualsiasi momento, qui nell’elenco e sotto «Condivisioni» nel menu dell’account, finché il link rimane valido.",
+    "current": "Attualmente condivisa",
+    "nobody": "Nessuno al di fuori di quest’area di lavoro può accedere a questa pagina.",
+    "revokeFailed": "Revoca non riuscita.",
+    "close": "Chiudi",
+    "changePermission": "Modifica permesso",
+    "readOnly": "Sola lettura",
+    "revokeLabel": "Revoca: {description}"
+  },
+  "page": {
+    "title": "Condivisioni",
+    "tabMine": "Condivisi da me",
+    "tabIncoming": "Condivisi con me"
+  },
+  "mine": {
+    "intro": "Tutto ciò che hai condiviso, da tutte le aree di lavoro: con singoli account o tramite link pubblico.",
+    "emptyDescription": "Non hai ancora condiviso alcuna pagina. Puoi farlo dal menu della pagina tramite «Condividi…».",
+    "filterPlaceholder": "Pagina, area di lavoro o indirizzo…",
+    "filterLabel": "Filtra condivisioni",
+    "showInactive": "Mostra terminate ({count, number})",
+    "noMatchTitle": "Nessun risultato",
+    "noMatchDescription": "Nessuna condivisione corrisponde a questo filtro.",
+    "noneOpenTitle": "Nessuna condivisione attiva",
+    "noneOpenDescription": "Tutte le tue condivisioni sono state revocate o sono scadute.",
+    "truncated": "Ci sono più condivisioni di quelle mostrate qui. Mancano le più vecchie tra quelle terminate.",
+    "rowContext": "in «{workspace}» · {description}",
+    "revokeLabel": "Revoca: {title}, {description}",
+    "adminOnly": "Qui può revocare solo chi ha il ruolo di admin nell’area di lavoro «{workspace}»."
+  },
+  "incoming": {
+    "intro": "Pagine da aree di lavoro di cui non fai parte. Non compaiono in nessun menu di navigazione, solo qui.",
+    "emptyTitle": "Nessuna condivisione per te",
+    "emptyDescription": "Quando qualcuno condivide una pagina con te, comparirà qui.",
+    "origin": "da «{workspace}», da {name}"
+  },
+  "workspace": {
+    "title": "Condivisioni",
+    "intro": "Elementi condivisi all’esterno da quest’area di lavoro: con singoli account e tramite link pubblico. Le condivisioni revocate rimangono visibili per tenere traccia di ciò che è stato accessibile.",
+    "emptyDescription": "Nessuna pagina di quest’area di lavoro è accessibile dall’esterno.",
+    "columnPage": "Pagina",
+    "columnRecipient": "A chi",
+    "columnPermission": "Permesso",
+    "columnScope": "Ambito",
+    "columnExpires": "Scade",
+    "columnStatus": "Stato",
+    "scopeSubtree": "con sottopagine",
+    "scopePageOnly": "solo la pagina",
+    "revokeLabel": "Revoca: {title}",
+    "publicLink": "Link pubblico",
+    "unknown": "Sconosciuto"
+  },
+  "public": {
+    "loading": "Caricamento della pagina…",
+    "goneTitle": "Questo link non porta più a una pagina",
+    "goneDescription": "È stato revocato, è scaduto oppure non è mai stato valido. Chiedi alla persona che te l’ha fornito.",
+    "origin": "Condiviso da “{workspace}” da {name}",
+    "path": "Percorso",
+    "empty": "Questa pagina è vuota.",
+    "children": "Sottopagine",
+    "footer": "Questa pagina è stata condivisa tramite link. È in sola lettura. <link>eXocortex</link> è self-hosted."
+  },
+  "shared": {
+    "loading": "Caricamento della pagina…",
+    "unavailableTitle": "Pagina non disponibile",
+    "unavailableDescription": "La condivisione è stata revocata, è scaduta o non è mai esistita."
+  }
+}

@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import { type DocumentShare } from '@exocortex/contracts';
 import { Button } from '@exocortex/ui';
 
@@ -30,6 +32,8 @@ export function ShareRevokeConfirm({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
+  const t = useTranslations('shares.revokeConfirm');
+  const tWording = useTranslations('shares.wording');
   return (
     <div
       className="flex flex-col gap-2 border-t border-border pt-2"
@@ -41,8 +45,8 @@ export function ShareRevokeConfirm({
       }}
     >
       <p role="alert" className="text-sm">
-        <span className="font-medium">Zurückziehen?</span>{' '}
-        <span className="text-muted-foreground">{revokeConsequence(share, where)}</span>
+        <span className="font-medium">{t('question')}</span>{' '}
+        <span className="text-muted-foreground">{revokeConsequence(share, where, tWording)}</span>
       </p>
       {error === null ? null : (
         <p role="alert" className="text-xs text-destructive-text">
@@ -57,7 +61,7 @@ export function ShareRevokeConfirm({
           data-testid={`${testIdPrefix}-revoke-cancel`}
           onClick={onCancel}
         >
-          Abbrechen
+          {t('cancel')}
         </Button>
         <Button
           variant="destructive"
@@ -66,7 +70,7 @@ export function ShareRevokeConfirm({
           data-testid={`${testIdPrefix}-revoke-confirm-button`}
           onClick={onConfirm}
         >
-          {pending ? 'Wird zurückgezogen …' : 'Zurückziehen'}
+          {pending ? t('pending') : t('confirm')}
         </Button>
       </div>
     </div>

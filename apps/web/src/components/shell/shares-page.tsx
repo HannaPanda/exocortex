@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { AppPage, Tabs, TabsContent, TabsList, TabsTrigger } from '@exocortex/ui';
@@ -18,6 +19,7 @@ type Direction = 'von-mir' | 'mit-mir';
  * as `?ansicht=mit-mir` and the address survives a reload.
  */
 export function SharesPage() {
+  const t = useTranslations('shares.page');
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -31,14 +33,14 @@ export function SharesPage() {
 
   return (
     <AppPage maxWidth="max-w-3xl">
-      <h1 className="exocortex-page-title">Freigaben</h1>
+      <h1 className="exocortex-page-title">{t('title')}</h1>
       <Tabs value={active} onValueChange={(value) => select(value as Direction)} className="mt-6">
         <TabsList className="max-w-sm" data-testid="shares-direction">
           <TabsTrigger value="von-mir" data-testid="shares-tab-mine">
-            Von mir geteilt
+            {t('tabMine')}
           </TabsTrigger>
           <TabsTrigger value="mit-mir" data-testid="shares-tab-incoming">
-            Mit mir geteilt
+            {t('tabIncoming')}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="von-mir" className="mt-6">

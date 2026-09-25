@@ -1,0 +1,130 @@
+{
+  "route": {
+    "searchTitle": "Zoeken",
+    "savedQueryTitle": "Opgeslagen zoekopdracht"
+  },
+  "chatsRoute": {
+    "title": "Chats",
+    "loading": "Chats worden geladen …"
+  },
+  "builder": {
+    "textLabel": "Zoekterm",
+    "textPlaceholder": "Leeg laten om alleen op locatie, type en tijd te filteren",
+    "semantic": "Ook op betekenis zoeken, niet alleen op het woord",
+    "typesLabel": "Type",
+    "typesHint": "Niets gekozen betekent: alles.",
+    "types": {
+      "PAGE": "Pagina’s",
+      "COLLECTION": "Databases",
+      "PROJECT": "Projecten"
+    },
+    "underLabel": "Alleen onder",
+    "underAnywhere": "overal",
+    "underHint": "De onderliggende structuur wordt bij elke uitvoering opnieuw bepaald, dus verplaatste pagina’s verhuizen mee.",
+    "collectionLabel": "Alleen rijen van de database",
+    "none": "geen",
+    "entityLabel": "Vermeldt de entiteit",
+    "updatedLabel": "Gewijzigd",
+    "createdLabel": "Aangemaakt",
+    "sortLabel": "Volgorde",
+    "sort": {
+      "RELEVANCE": "Relevantie",
+      "UPDATED_DESC": "Laatst gewijzigd",
+      "UPDATED_ASC": "Langst ongewijzigd",
+      "CREATED_DESC": "Laatst aangemaakt",
+      "CREATED_ASC": "Eerst aangemaakt",
+      "TITLE_ASC": "Titel A tot Z",
+      "TITLE_DESC": "Titel Z tot A"
+    },
+    "relevanceWithoutText": "Zonder zoekterm is er geen relevantie. Er wordt dan gesorteerd op laatst gewijzigd.",
+    "limitLabel": "Maximaal",
+    "includeArchived": "Prullenbak meenemen",
+    "window": {
+      "any": "maakt niet uit",
+      "lastDays": "{count, plural, one {laatste dag} other {laatste # dagen}}",
+      "lastYear": "afgelopen jaar",
+      "custom": "aangepaste periode"
+    },
+    "rangeFrom": "{label}: vanaf",
+    "rangeUntil": "{label}: tot",
+    "rangeSeparator": "tot",
+    "noProperties": "Deze database heeft nog geen eigenschappen om op te filteren.",
+    "propertiesLabel": "Eigenschappen",
+    "removeFilter": "Filter verwijderen",
+    "addProperty": "Eigenschap",
+    "valuePlaceholder": "Waarde",
+    "add": "Toevoegen"
+  },
+  "page": {
+    "loading": "Opgeslagen zoekopdracht wordt geladen",
+    "loadFailed": "Opgeslagen zoekopdracht niet geladen",
+    "title": "Zoeken",
+    "introFresh": "Zoek in alle pagina’s van deze werkruimte, met filters op locatie, type, eigenschappen, entiteiten en periode. Wat de moeite waard is, kun je opslaan.",
+    "introStored": "Een opgeslagen zoekopdracht. De resultaten worden telkens bij het openen opnieuw bepaald.",
+    "save": "Zoekopdracht opslaan",
+    "delete": "Verwijderen",
+    "saveChanges": "Wijzigingen opslaan",
+    "deleteTitle": "Opgeslagen zoekopdracht verwijderen",
+    "deleteDescription": "Alleen de vraag wordt verwijderd. De pagina’s die ermee gevonden zijn, blijven ongewijzigd staan waar ze zijn.",
+    "cancel": "Annuleren",
+    "layoutLabel": "Weergave",
+    "layout": {
+      "LIST": "Lijst",
+      "TABLE": "Tabel",
+      "CARDS": "Kaarten"
+    },
+    "inSidebar": "In de navigatie tonen",
+    "resultsHeading": "Resultaten",
+    "noQueryTitle": "Nog geen zoekopdracht",
+    "noQueryDescription": "Voer een zoekterm in of baken hierboven af waar gezocht moet worden.",
+    "resultsLoading": "Resultaten worden opgehaald",
+    "queryFailed": "Zoekopdracht niet uitgevoerd",
+    "saveDialog": {
+      "title": "Zoekopdracht opslaan",
+      "description": "De vraag wordt opgeslagen, niet de lijst met resultaten. De volgende keer dat je deze opent, wordt hij opnieuw beantwoord.",
+      "nameLabel": "Naam",
+      "namePlaceholder": "Openstaande taken met hoge prioriteit",
+      "descriptionLabel": "Beschrijving",
+      "descriptionPlaceholder": "Optioneel: waar deze zoekopdracht voor dient",
+      "inSidebar": "Als Smart View opnemen in de navigatie",
+      "submit": "Opslaan"
+    }
+  },
+  "nodeView": {
+    "fallbackName": "Opgeslagen zoekopdracht",
+    "open": "Zoekopdracht openen",
+    "change": "Zoekopdracht wijzigen",
+    "noneTitle": "Geen zoekopdracht geselecteerd",
+    "noneDescription": "Kies een opgeslagen zoekopdracht waarvan de resultaten hier moeten staan.",
+    "missingDescription": "Deze opgeslagen zoekopdracht is niet gevonden. Mogelijk is deze verwijderd.",
+    "pick": "Zoekopdracht selecteren",
+    "resultsLoading": "Resultaten worden opgehaald",
+    "queryFailed": "Zoekopdracht niet uitgevoerd",
+    "allResults": "Alle resultaten bekijken"
+  },
+  "results": {
+    "topLevel": "hoogste niveau",
+    "emptyTitle": "Niets gevonden",
+    "emptyDescription": "Er is momenteel niets voor deze zoekopdracht. Dat kan morgen veranderen, de zoekopdracht blijft bewaard.",
+    "truncated": "Dit is niet het hele antwoord. Verhoog de limiet van de zoekopdracht om meer te zien.",
+    "inTrash": "in de prullenbak",
+    "columnPage": "Pagina",
+    "columnPath": "Locatie",
+    "columnUpdated": "Gewijzigd"
+  },
+  "command": {
+    "groupActions": "Acties",
+    "groupSavedQueries": "Opgeslagen zoekopdrachten",
+    "groupRecent": "Recent bewerkt",
+    "groupPages": "Pagina’s",
+    "createPage": "Nieuwe pagina maken",
+    "createPageKeywords": "maken schrijven",
+    "untitledPage": "Naamloze pagina",
+    "openSearchPage": "Geavanceerd zoeken met filters",
+    "openSearchPageKeywords": "vinden",
+    "minimumLength": "Typ minimaal twee tekens voor pagina’s",
+    "empty": "Niets gevonden",
+    "readout": "{count, plural, one {# resultaat} other {# resultaten}} · {tookMs} ms · {adapter}",
+    "idleHint": "Recent bewerkt, of typ voor zoeken in volledige tekst"
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "route": {
+    "searchTitle": "Recherche",
+    "savedQueryTitle": "Recherche enregistrée"
+  },
+  "chatsRoute": {
+    "title": "Chats",
+    "loading": "Chargement des chats…"
+  },
+  "builder": {
+    "textLabel": "Terme de recherche",
+    "textPlaceholder": "Laisser vide pour filtrer uniquement par emplacement, type et date",
+    "semantic": "Chercher aussi par le sens, pas seulement par les mots",
+    "typesLabel": "Type",
+    "typesHint": "Ne rien sélectionner signifie : tout.",
+    "types": {
+      "PAGE": "Pages",
+      "COLLECTION": "Bases de données",
+      "PROJECT": "Projets"
+    },
+    "underLabel": "Uniquement sous",
+    "underAnywhere": "partout",
+    "underHint": "L’arborescence sous-jacente est recalculée à chaque exécution, les pages déplacées suivent donc automatiquement.",
+    "collectionLabel": "Uniquement les lignes de la base de données",
+    "none": "aucune",
+    "entityLabel": "Mentionne l’entité",
+    "updatedLabel": "Modifié",
+    "createdLabel": "Créé",
+    "sortLabel": "Ordre",
+    "sort": {
+      "RELEVANCE": "Pertinence",
+      "UPDATED_DESC": "Dernière modification",
+      "UPDATED_ASC": "Inchangé depuis le plus longtemps",
+      "CREATED_DESC": "Dernière création",
+      "CREATED_ASC": "Première création",
+      "TITLE_ASC": "Titre de A à Z",
+      "TITLE_DESC": "Titre de Z à A"
+    },
+    "relevanceWithoutText": "Sans terme de recherche, il n’y a pas de pertinence. Le tri s’effectue alors par dernière modification.",
+    "limitLabel": "Au maximum",
+    "includeArchived": "Inclure la corbeille",
+    "window": {
+      "any": "peu importe",
+      "lastDays": "{count, plural, one {dernier jour} many {derniers # jours} other {derniers # jours}}",
+      "lastYear": "l’année dernière",
+      "custom": "période personnalisée"
+    },
+    "rangeFrom": "{label} : à partir de",
+    "rangeUntil": "{label} : jusqu’à",
+    "rangeSeparator": "à",
+    "noProperties": "Cette base de données n’a pas encore de propriétés permettant de filtrer.",
+    "propertiesLabel": "Propriétés",
+    "removeFilter": "Supprimer le filtre",
+    "addProperty": "Propriété",
+    "valuePlaceholder": "Valeur",
+    "add": "Ajouter"
+  },
+  "page": {
+    "loading": "Chargement de la recherche enregistrée",
+    "loadFailed": "Recherche enregistrée non chargée",
+    "title": "Recherche",
+    "introFresh": "Recherche sur toutes les pages de cet espace de travail, avec des filtres par emplacement, type, propriétés, entités et période. Tout ce qui est utile peut être enregistré.",
+    "introStored": "Une recherche enregistrée. Les résultats sont actualisés à chaque ouverture.",
+    "save": "Enregistrer la recherche",
+    "delete": "Supprimer",
+    "saveChanges": "Enregistrer les modifications",
+    "deleteTitle": "Supprimer la recherche enregistrée",
+    "deleteDescription": "Seule la question est supprimée. Les pages trouvées restent inchangées, là où elles sont.",
+    "cancel": "Annuler",
+    "layoutLabel": "Affichage",
+    "layout": {
+      "LIST": "Liste",
+      "TABLE": "Tableau",
+      "CARDS": "Cartes"
+    },
+    "inSidebar": "Afficher dans la navigation",
+    "resultsHeading": "Résultats",
+    "noQueryTitle": "Pas encore de requête",
+    "noQueryDescription": "Saisis un terme de recherche ou précise ci-dessus où chercher.",
+    "resultsLoading": "Recherche des résultats en cours",
+    "queryFailed": "Requête non exécutée",
+    "saveDialog": {
+      "title": "Enregistrer la recherche",
+      "description": "C’est la question qui est enregistrée, pas la liste des résultats. Elle sera posée à nouveau à la prochaine ouverture.",
+      "nameLabel": "Nom",
+      "namePlaceholder": "Tâches ouvertes à priorité élevée",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Optionnel : à quoi sert cette recherche",
+      "inSidebar": "Ajouter à la navigation comme Smart View",
+      "submit": "Enregistrer"
+    }
+  },
+  "nodeView": {
+    "fallbackName": "Recherche enregistrée",
+    "open": "Ouvrir la recherche",
+    "change": "Changer de recherche",
+    "noneTitle": "Aucune recherche sélectionnée",
+    "noneDescription": "Choisis une recherche enregistrée dont les résultats doivent apparaître ici.",
+    "missingDescription": "Cette recherche enregistrée n’a pas été trouvée. Elle a peut-être été supprimée.",
+    "pick": "Sélectionner une recherche",
+    "resultsLoading": "Recherche des résultats en cours",
+    "queryFailed": "Requête non exécutée",
+    "allResults": "Voir tous les résultats"
+  },
+  "results": {
+    "topLevel": "premier niveau",
+    "emptyTitle": "Rien trouvé",
+    "emptyDescription": "Il n’y a rien pour cette requête pour le moment. Cela peut changer demain, la recherche reste enregistrée.",
+    "truncated": "Ce n’est pas l’ensemble des réponses. Augmente la limite de la requête pour en voir plus.",
+    "inTrash": "dans la corbeille",
+    "columnPage": "Page",
+    "columnPath": "Emplacement",
+    "columnUpdated": "Modifié"
+  },
+  "command": {
+    "groupActions": "Actions",
+    "groupSavedQueries": "Recherches enregistrées",
+    "groupRecent": "Récemment modifiées",
+    "groupPages": "Pages",
+    "createPage": "Créer une nouvelle page",
+    "createPageKeywords": "créer écrire",
+    "untitledPage": "Page sans titre",
+    "openSearchPage": "Recherche avancée avec filtres",
+    "openSearchPageKeywords": "trouver",
+    "minimumLength": "Saisis au moins deux caractères pour les pages",
+    "empty": "Rien trouvé",
+    "readout": "{count, plural, one {# résultat} many {# de résultats} other {# résultats}} · {tookMs} ms · {adapter}",
+    "idleHint": "Récemment modifiées, ou tape du texte pour la recherche en texte intégral"
+  }
+}

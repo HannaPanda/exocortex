@@ -1,10 +1,19 @@
 import { type Node as PmNode } from '@tiptap/pm/model';
+import { useTranslations } from 'next-intl';
+import * as React from 'react';
 
-/** What a confirmation dialog says before a block is removed. */
-export interface BlockRemovalWarning {
-  title: string;
-  description: string;
-}
+import { type DestructiveConfirmRequest } from './destructive-confirm';
+
+/**
+ * What is about to be lost, without the words for it.
+ *
+ * The sentence is written by `useBlockRemovalWarning` in the reader's language;
+ * this stays a pure description, so it can be tested without a translator.
+ */
+export type BlockRemoval =
+  | { kind: 'table'; block: 'table'; rows: number; columns: number }
+  | { kind: 'compound'; block: CompoundBlock }
+  | { kind: 'text'; block: TextBlock | 'block'; characters: number };
 
 /**
  * The blocks whose removal is worth a question (issue #91).
@@ -14,29 +23,34 @@ export interface BlockRemovalWarning {
  * the whole argument for the dialog: a paragraph is retyped in a second, a table
  * with three filled rows is not.
  *
- * The map is deliberately a list of node names rather than a rule over the
+ * The list is deliberately one of node names rather than a rule over the
  * schema ("does it take block content"): a callout and a details block both do,
  * and so does a list item, which is far too small to ask about.
  */
-const COMPOUND_BLOCK_NAMES: Readonly<Record<string, string>> = {
-  table: 'Tabelle',
-  codeBlock: 'Codeblock',
-  blockquote: 'Zitat',
-  bulletList: 'Liste',
-  orderedList: 'Nummerierte Liste',
-  taskList: 'Aufgabenliste',
-  details: 'Umschaltblock',
-  callout: 'Hinweis',
-  columnList: 'Spaltenlayout',
-  databaseEmbed: 'Eingebettete Datenbank',
-  savedQueryEmbed: 'Abfrageblock',
-};
+const COMPOUND_BLOCKS = [
+  'table',
+  'codeBlock',
+  'blockquote',
+  'bulletList',
+  'orderedList',
+  'taskList',
+  'details',
+  'callout',
+  'columnList',
+  'databaseEmbed',
+  'savedQueryEmbed',
+] as const;
 
-/** Names for the blocks that are only asked about once they carry enough text. */
-const TEXT_BLOCK_NAMES: Readonly<Record<string, string>> = {
-  paragraph: 'Absatz',
-  heading: 'Überschrift',
-};
+type CompoundBlock = (typeof COMPOUND_BLOCKS)[number];
+
+/** The blocks that are only asked about once they carry enough text. */
+const TEXT_BLOCKS = ['paragraph', 'heading'] as const;
+
+type TextBlock = (typeof TEXT_BLOCKS)[number];
+
+function isOneOf<T extends string>(list: readonly T[], name: string): name is T {
+  return (list as readonly string[]).includes(name);
+}
 
 /**
  * How much text turns a plain block into something worth asking about.
@@ -47,36 +61,44 @@ const TEXT_BLOCK_NAMES: Readonly<Record<string, string>> = {
  */
 const SUBSTANTIAL_TEXT_LENGTH = 280;
 
-/** How the table is described, so the dialog says what is actually lost. */
-function describeTable(node: PmNode): string {
-  const rows = node.childCount;
-  const columns = rows === 0 ? 0 : node.child(0).childCount;
-  return `Die Tabelle mit ${rows} Zeilen und ${columns} Spalten wird mit ihrem gesamten Inhalt entfernt.`;
-}
-
 /**
- * The question to ask before this block is deleted, or `null` when it should
- * simply go.
+ * What is lost when this block is deleted, or `null` when it should simply go.
  *
  * Small, cheap edits stay unprotected on purpose: a confirmation on every
  * deletion trains the hand to click it away, and then it protects nothing.
  */
-export function describeBlockRemoval(node: PmNode): BlockRemovalWarning | null {
-  const undoHint = 'Mit Strg+Z lässt sich das Löschen rückgängig machen.';
-
-  const compound = COMPOUND_BLOCK_NAMES[node.type.name];
-  if (compound !== undefined) {
-    const what =
-      node.type.name === 'table'
-        ? describeTable(node)
-        : 'Der Block wird mit seinem gesamten Inhalt entfernt.';
-    return { title: `${compound} löschen?`, description: `${what} ${undoHint}` };
+export function describeBlockRemoval(node: PmNode): BlockRemoval | null {
+  const name = node.type.name;
+  if (name === 'table') {
+    const rows = node.childCount;
+    const columns = rows === 0 ? 0 : node.child(0).childCount;
+    return { kind: 'table', block: 'table', rows, columns };
   }
+  if (isOneOf(COMPOUND_BLOCKS, name)) return { kind: 'compound', block: name };
 
-  if (node.textContent.length < SUBSTANTIAL_TEXT_LENGTH) return null;
-  const name = TEXT_BLOCK_NAMES[node.type.name] ?? 'Block';
-  return {
-    title: `${name} löschen?`,
-    description: `${node.textContent.length} Zeichen werden entfernt. ${undoHint}`,
-  };
+  const characters = node.textContent.length;
+  if (characters < SUBSTANTIAL_TEXT_LENGTH) return null;
+  return { kind: 'text', block: isOneOf(TEXT_BLOCKS, name) ? name : 'block', characters };
+}
+
+/**
+ * The question to ask before a block is deleted, in the reader's language.
+ *
+ * The description says what disappears (the table's size, the amount of text)
+ * and then how to get it back.
+ */
+export function useBlockRemovalWarning(): (removal: BlockRemoval) => DestructiveConfirmRequest {
+  const t = useTranslations('editor.blockRemoval');
+  return React.useCallback(
+    (removal: BlockRemoval): DestructiveConfirmRequest => {
+      const what =
+        removal.kind === 'table'
+          ? t('table', { rows: removal.rows, columns: removal.columns })
+          : removal.kind === 'compound'
+            ? t('compound')
+            : t('text', { count: removal.characters });
+      return { title: t(`title.${removal.block}`), description: `${what} ${t('undoHint')}` };
+    },
+    [t],
+  );
 }

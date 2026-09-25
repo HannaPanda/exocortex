@@ -12,16 +12,19 @@ import {
   Rows3Icon,
   Trash2Icon,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { Button, Toolbar, ToolbarButton, ToolbarSeparator } from '@exocortex/ui';
 
-import { describeBlockRemoval } from './block-removal';
+import { describeBlockRemoval, useBlockRemovalWarning } from './block-removal';
 import { useDestructiveConfirm } from './destructive-confirm';
 
 interface TableAction {
   id: string;
-  label: string;
+  /** Key in `editor.table`. */
+  labelKey:
+    'addRow' | 'addColumn' | 'toggleHeaderRow' | 'mergeOrSplit' | 'deleteRow' | 'deleteColumn';
   icon: React.ComponentType<{ className?: string }>;
   run: (editor: Editor) => void;
   destructive?: boolean;
@@ -38,25 +41,25 @@ interface TableAction {
 const TABLE_ACTIONS: readonly TableAction[] = [
   {
     id: 'add-row',
-    label: 'Zeile darunter einfügen',
+    labelKey: 'addRow',
     icon: ArrowDownToLineIcon,
     run: (editor) => editor.chain().focus().addRowAfter().run(),
   },
   {
     id: 'add-column',
-    label: 'Spalte rechts einfügen',
+    labelKey: 'addColumn',
     icon: ArrowRightToLineIcon,
     run: (editor) => editor.chain().focus().addColumnAfter().run(),
   },
   {
     id: 'toggle-header-row',
-    label: 'Kopfzeile umschalten',
+    labelKey: 'toggleHeaderRow',
     icon: Heading1Icon,
     run: (editor) => editor.chain().focus().toggleHeaderRow().run(),
   },
   {
     id: 'merge-or-split',
-    label: 'Zellen verbinden oder teilen',
+    labelKey: 'mergeOrSplit',
     icon: CombineIcon,
     run: (editor) => editor.chain().focus().mergeOrSplit().run(),
   },
@@ -71,14 +74,14 @@ const TABLE_ACTIONS: readonly TableAction[] = [
 const TABLE_REMOVALS: readonly TableAction[] = [
   {
     id: 'delete-row',
-    label: 'Zeile löschen',
+    labelKey: 'deleteRow',
     icon: Rows3Icon,
     run: (editor) => editor.chain().focus().deleteRow().run(),
     destructive: true,
   },
   {
     id: 'delete-column',
-    label: 'Spalte löschen',
+    labelKey: 'deleteColumn',
     icon: Columns3Icon,
     run: (editor) => editor.chain().focus().deleteColumn().run(),
     destructive: true,
@@ -102,7 +105,9 @@ function tableAtSelection(editor: Editor): PmNode | null {
 
 /** Controls for the table the cursor is in. */
 export function TableToolbar({ editor }: { editor: Editor }) {
+  const t = useTranslations('editor.table');
   const confirmDestructive = useDestructiveConfirm();
+  const removalWarning = useBlockRemovalWarning();
 
   /*
    * The one action that loses a whole structure at once, and the one the issue
@@ -112,12 +117,12 @@ export function TableToolbar({ editor }: { editor: Editor }) {
    */
   const deleteTable = (): void => {
     const table = tableAtSelection(editor);
-    const warning = table === null ? null : describeBlockRemoval(table);
-    if (warning === null) {
+    const removal = table === null ? null : describeBlockRemoval(table);
+    if (removal === null) {
       editor.chain().focus().deleteTable().run();
       return;
     }
-    void confirmDestructive(warning).then((confirmed) => {
+    void confirmDestructive(removalWarning(removal)).then((confirmed) => {
       if (confirmed) editor.chain().focus().deleteTable().run();
     });
   };
@@ -129,7 +134,7 @@ export function TableToolbar({ editor }: { editor: Editor }) {
       options={{ placement: 'top', offset: 8 }}
       shouldShow={({ editor: instance }) => instance.isEditable && instance.isActive('table')}
     >
-      <Toolbar aria-label="Tabelle" data-testid="table-toolbar">
+      <Toolbar aria-label={t('label')} data-testid="table-toolbar">
         {/* `title` because an icon-only control is otherwise unnamed for a pointer
             user: the accessible name alone never appears on screen. */}
         {[...TABLE_ACTIONS, ...TABLE_REMOVALS].map((action, index) => (
@@ -140,8 +145,8 @@ export function TableToolbar({ editor }: { editor: Editor }) {
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  aria-label={action.label}
-                  title={action.label}
+                  aria-label={t(action.labelKey)}
+                  title={t(action.labelKey)}
                   data-testid={`table-${action.id}`}
                   className={action.destructive === true ? 'text-destructive-text' : undefined}
                   // Keeps the cell selection; see the note in `selection-toolbar.tsx`.
@@ -167,7 +172,7 @@ export function TableToolbar({ editor }: { editor: Editor }) {
             />
           }
         >
-          <Trash2Icon /> Tabelle löschen
+          <Trash2Icon /> {t('deleteTable')}
         </ToolbarButton>
       </Toolbar>
     </BubbleMenu>

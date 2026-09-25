@@ -5,6 +5,7 @@ import { PluginKey } from '@tiptap/pm/state';
 import { type Editor } from '@tiptap/react';
 import Suggestion, { type SuggestionKeyDownProps } from '@tiptap/suggestion';
 import { AtSignIcon, CalendarIcon, FileTextIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type DocumentSummary } from '@exocortex/contracts';
@@ -70,25 +71,34 @@ function isoDate(date: Date): string {
   ).padStart(2, '0')}`;
 }
 
+/** The words next to the date shortcuts, in the reader's language. */
+interface DateHints {
+  today: string;
+  tomorrow: string;
+  yesterday: string;
+  typed: string;
+}
+
 /**
  * Date shortcuts offered while typing `@`.
  *
  * Relative labels are resolved to an absolute date at insertion time: „heute" in a
- * document read next month would otherwise mean the wrong day.
+ * document read next month would otherwise mean the wrong day. The hint is also
+ * what a typed word is matched against, so a reader finds today by their own word.
  */
-function dateCandidates(query: string): MentionCandidate[] {
+function dateCandidates(query: string, hints: DateHints): MentionCandidate[] {
   const now = new Date();
   const shift = (days: number): Date => new Date(now.getTime() + days * 86_400_000);
 
   const options: MentionCandidate[] = [
-    { kind: 'date', label: isoDate(now), hint: 'Heute' },
-    { kind: 'date', label: isoDate(shift(1)), hint: 'Morgen' },
-    { kind: 'date', label: isoDate(shift(-1)), hint: 'Gestern' },
+    { kind: 'date', label: isoDate(now), hint: hints.today },
+    { kind: 'date', label: isoDate(shift(1)), hint: hints.tomorrow },
+    { kind: 'date', label: isoDate(shift(-1)), hint: hints.yesterday },
   ];
 
   // A typed ISO date is offered verbatim, so any day is reachable.
   if (/^\d{4}-\d{2}-\d{2}$/.test(query)) {
-    options.unshift({ kind: 'date', label: query, hint: 'Eingegebenes Datum' });
+    options.unshift({ kind: 'date', label: query, hint: hints.typed });
   }
 
   if (query.length === 0) return options;
@@ -114,6 +124,7 @@ export function MentionMenu({
   pages: readonly DocumentSummary[];
   users: readonly { id: string; name: string }[];
 }) {
+  const t = useTranslations('editor.mentionMenu');
   const snapshot = useSuggestionSnapshot(editor, MentionPluginKey);
   const anchor = useSuggestionAnchor(editor, snapshot);
   const { index, setIndex } = useSuggestionHighlight(snapshot?.query ?? null);
@@ -128,14 +139,19 @@ export function MentionMenu({
       ...pages
         .filter((page) => matches(page.title))
         .slice(0, 6)
-        .map<MentionCandidate>((page) => ({ kind: 'page', label: page.title, hint: 'Seite' })),
+        .map<MentionCandidate>((page) => ({ kind: 'page', label: page.title, hint: t('page') })),
       ...users
         .filter((user) => matches(user.name))
         .slice(0, 4)
-        .map<MentionCandidate>((user) => ({ kind: 'user', label: user.name, hint: 'Person' })),
-      ...dateCandidates(needle),
+        .map<MentionCandidate>((user) => ({ kind: 'user', label: user.name, hint: t('person') })),
+      ...dateCandidates(needle, {
+        today: t('today'),
+        tomorrow: t('tomorrow'),
+        yesterday: t('yesterday'),
+        typed: t('typedDate'),
+      }),
     ];
-  }, [pages, snapshot, users]);
+  }, [pages, snapshot, t, users]);
 
   const choose = React.useCallback(
     (chosen: number): void => {
@@ -165,12 +181,12 @@ export function MentionMenu({
           className="w-64 rounded-md border border-border bg-popover p-3 text-sm text-muted-foreground shadow-md"
           data-testid="mention-menu-empty"
         >
-          Nichts gefunden zu „{snapshot.query}“.
+          {t('empty', { query: snapshot.query })}
         </div>
       ) : (
         <div
           role="listbox"
-          aria-label="Erwähnung einfügen"
+          aria-label={t('label')}
           aria-activedescendant={`mention-option-${index}`}
           data-testid="mention-menu"
           className="max-h-72 w-64 overflow-y-auto rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md"

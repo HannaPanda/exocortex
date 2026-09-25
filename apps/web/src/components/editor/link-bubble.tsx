@@ -3,6 +3,7 @@
 import { type Editor, useEditorState } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
 import { ExternalLinkIcon, PencilIcon, UnlinkIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { parseLinkHref, wikiLinkDocumentId } from '@exocortex/editor';
@@ -31,6 +32,7 @@ interface LinkBubbleProps {
  * (`selection-toolbar.tsx`), this one only for `from === to`.
  */
 export function LinkBubble({ editor, workspaceId }: LinkBubbleProps) {
+  const t = useTranslations('editor.linkBubble');
   const followLinkRef = React.useContext(FollowLinkContext);
 
   const href = useEditorState({
@@ -56,7 +58,7 @@ export function LinkBubble({ editor, workspaceId }: LinkBubbleProps) {
         instance.isEditable && from === to && instance.isActive('link')
       }
     >
-      <Toolbar aria-label="Verweis" data-testid="link-bubble">
+      <Toolbar aria-label={t('label')} data-testid="link-bubble">
         <span
           data-testid="link-bubble-target"
           className="max-w-48 truncate px-2 text-xs text-muted-foreground"
@@ -92,7 +94,7 @@ export function LinkBubble({ editor, workspaceId }: LinkBubbleProps) {
             />
           }
         >
-          <ExternalLinkIcon /> Öffnen
+          <ExternalLinkIcon /> {t('open')}
         </ToolbarButton>
 
         <LinkMenu
@@ -102,7 +104,7 @@ export function LinkBubble({ editor, workspaceId }: LinkBubbleProps) {
             <ToolbarButton
               render={<Button variant="ghost" size="sm" data-testid="link-bubble-edit" />}
             >
-              <PencilIcon /> Bearbeiten
+              <PencilIcon /> {t('edit')}
             </ToolbarButton>
           }
         />
@@ -118,7 +120,7 @@ export function LinkBubble({ editor, workspaceId }: LinkBubbleProps) {
             />
           }
         >
-          <UnlinkIcon /> Entfernen
+          <UnlinkIcon /> {t('remove')}
         </ToolbarButton>
       </Toolbar>
     </BubbleMenu>

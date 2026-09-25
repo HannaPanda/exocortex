@@ -1,0 +1,377 @@
+{
+  "surface": {
+    "unavailable": "Edytor niedostępny",
+    "connecting": "Łączenie z edytorem …",
+    "uploadFailed": "Nie udało się przesłać pliku.",
+    "placeholder": "Napisz coś lub wpisz „/” dla poleceń …",
+    "syncing": "trwa synchronizacja …",
+    "contentLabel": "Treść strony"
+  },
+  "connection": {
+    "startFailed": "Nie udało się uruchomić edycji na żywo.",
+    "unknownUser": "Nieznany"
+  },
+  "blocks": {
+    "paragraph": {
+      "label": "Tekst",
+      "description": "Zwykły akapit"
+    },
+    "heading-1": {
+      "label": "Nagłówek 1",
+      "description": "Tytuł sekcji poziomu 1"
+    },
+    "heading-2": {
+      "label": "Nagłówek 2",
+      "description": "Tytuł sekcji poziomu 2"
+    },
+    "heading-3": {
+      "label": "Nagłówek 3",
+      "description": "Tytuł sekcji poziomu 3"
+    },
+    "blockquote": {
+      "label": "Cytat",
+      "description": "Wyróżniony cytat"
+    },
+    "code-block": {
+      "label": "Blok kodu",
+      "description": "Kod z podświetlaniem składni"
+    },
+    "horizontal-rule": {
+      "label": "Linia pozioma",
+      "description": "Pozioma linia między sekcjami"
+    },
+    "bullet-list": {
+      "label": "Lista punktowana",
+      "description": "Lista z punktami"
+    },
+    "ordered-list": {
+      "label": "Lista numerowana",
+      "description": "Lista z liczbami"
+    },
+    "task-list": {
+      "label": "Lista zadań",
+      "description": "Lista z polami wyboru"
+    },
+    "image": {
+      "label": "Obraz",
+      "description": "Prześlij obraz"
+    },
+    "table": {
+      "label": "Tabela",
+      "description": "Tabela z nagłówkiem"
+    },
+    "callout-info": {
+      "label": "Informacja",
+      "description": "Wyróżniona ramka (informacja)"
+    },
+    "callout-note": {
+      "label": "Notatka",
+      "description": "Wyróżniona ramka (notatka)"
+    },
+    "callout-success": {
+      "label": "Sukces",
+      "description": "Wyróżniona ramka (sukces)"
+    },
+    "callout-warning": {
+      "label": "Ostrzeżenie",
+      "description": "Wyróżniona ramka (ostrzeżenie)"
+    },
+    "callout-danger": {
+      "label": "Niebezpieczeństwo",
+      "description": "Wyróżniona ramka (niebezpieczeństwo)"
+    },
+    "file": {
+      "label": "Plik",
+      "description": "Plik do pobrania"
+    },
+    "video": {
+      "label": "Wideo",
+      "description": "Odtwarzaj wideo w odtwarzaczu"
+    },
+    "audio": {
+      "label": "Audio",
+      "description": "Odtwarzaj plik audio"
+    },
+    "pdf": {
+      "label": "PDF",
+      "description": "Wyświetlaj osadzony plik PDF"
+    },
+    "page-link": {
+      "label": "Link do strony",
+      "description": "Odnośnik do innej strony jako osobny blok"
+    },
+    "breadcrumb": {
+      "label": "Ścieżka nawigacji",
+      "description": "Ścieżka do tej strony w hierarchii"
+    },
+    "toggle": {
+      "label": "Zwijana lista",
+      "description": "Zwijana sekcja"
+    },
+    "columns": {
+      "label": "Kolumny",
+      "description": "Rozmieść treści obok siebie"
+    },
+    "database-embed": {
+      "label": "Osadź bazę danych",
+      "description": "Widok istniejącej bazy danych bezpośrednio na tej stronie"
+    },
+    "block-math": {
+      "label": "Wzór",
+      "description": "Wzór LaTeX jako osobny blok"
+    },
+    "saved-query": {
+      "label": "Osadź zapisane wyszukiwanie",
+      "description": "Aktualizowana na bieżąco lista wyników zapisanego wyszukiwania na tej stronie"
+    },
+    "embed": {
+      "label": "Osadzenie",
+      "description": "Osadź zewnętrzną treść (YouTube, Figma…)"
+    },
+    "bookmark": {
+      "label": "Zakładka",
+      "description": "Karta podglądu linku"
+    },
+    "transclusion": {
+      "label": "Osadź treść",
+      "description": "Wyświetla tekst z innej strony bez jego kopiowania"
+    },
+    "table-of-contents": {
+      "label": "Spis treści",
+      "description": "Przegląd wszystkich nagłówków na stronie"
+    }
+  },
+  "blockGroups": {
+    "basic": "Podstawowe",
+    "lists": "Listy",
+    "callout": "Wyróżnienia",
+    "media": "Multimedia",
+    "advanced": "Zaawansowane"
+  },
+  "slashMenu": {
+    "label": "Wstaw blok",
+    "empty": "Żaden blok nie pasuje do „{query}”."
+  },
+  "blockHandle": {
+    "insertBelow": "Wstaw blok poniżej",
+    "actions": "Działania na bloku"
+  },
+  "blockActions": {
+    "turnInto": "Przekształć w",
+    "color": "Kolor",
+    "duplicate": "Duplikuj",
+    "copyLink": "Kopiuj link do bloku",
+    "delete": "Usuń"
+  },
+  "blockRemoval": {
+    "title": {
+      "table": "Usunąć tabelę?",
+      "codeBlock": "Usunąć blok kodu?",
+      "blockquote": "Usunąć cytat?",
+      "bulletList": "Usunąć listę?",
+      "orderedList": "Usunąć listę numerowaną?",
+      "taskList": "Usunąć listę zadań?",
+      "details": "Usunąć blok zwijany?",
+      "callout": "Usunąć wyróżnienie?",
+      "columnList": "Usunąć układ kolumn?",
+      "databaseEmbed": "Usunąć osadzoną bazę danych?",
+      "savedQueryEmbed": "Usunąć blok zapytania?",
+      "paragraph": "Usunąć akapit?",
+      "heading": "Usunąć nagłówek?",
+      "block": "Usunąć blok?"
+    },
+    "table": "Tabela z {rows, plural, one {# wierszem} few {# wierszami} many {# wierszami} other {# wierszami}} i {columns, plural, one {# kolumną} few {# kolumnami} many {# kolumnami} other {# kolumnami}} zostanie usunięta wraz z całą zawartością.",
+    "compound": "Blok zostanie usunięty wraz z całą zawartością.",
+    "text": "{count, plural, one {# znak zostanie usunięty} few {# znaki zostaną usunięte} many {# znaków zostanie usuniętych} other {# znaku zostanie usuniętych}}.",
+    "undoHint": "Usunięcie można cofnąć za pomocą Ctrl+Z."
+  },
+  "destructiveConfirm": {
+    "cancel": "Anuluj",
+    "confirm": "Usuń"
+  },
+  "prompt": {
+    "url": {
+      "title": "Wstaw adres",
+      "description": "Wpisz pełny adres, na przykład https://exocortex.app/bild.png",
+      "placeholder": "https://…"
+    },
+    "latex": {
+      "title": "Wprowadź wzór",
+      "description": "Notacja LaTeX, na przykład {example}",
+      "placeholder": "a^2 + b^2 = c^2"
+    },
+    "page": {
+      "title": "Połącz stronę",
+      "description": "Wybierz stronę z tego obszaru roboczego. Jeśli wpiszesz tytuł, który jeszcze nie istnieje, powstanie odnośnik z propozycją utworzenia strony.",
+      "placeholder": "Szukaj strony…"
+    },
+    "database": {
+      "title": "Osadź bazę danych",
+      "description": "Wybierz istniejącą bazę danych z tego obszaru roboczego.",
+      "placeholder": "Szukaj bazy danych…"
+    },
+    "savedQuery": {
+      "title": "Osadź zapisane wyszukiwanie",
+      "description": "Wybierz zapisane wyszukiwanie. Blok wyświetla jego wyniki i aktualizuje je przy każdym otwarciu strony. Nowe wyszukiwania tworzy się w sekcji wyszukiwania.",
+      "placeholder": "Szukaj zapisanego wyszukiwania…"
+    },
+    "uploadFailed": "Nie udało się przesłać pliku.",
+    "noPageTitle": "Nie znaleziono strony",
+    "noPageDescription": "Wpisz tytuł, aby utworzyć odnośnik do jeszcze nieutworzonej strony.",
+    "noDatabaseTitle": "Nie znaleziono bazy danych",
+    "noDatabaseDescription": "Utwórz najpierw bazę danych w tym obszarze roboczym.",
+    "linkNewTitle": "„{title}” jako jeszcze nieutworzona strona (utwórz odnośnik)",
+    "noSavedQueryTitle": "Nie znaleziono zapisanego wyszukiwania",
+    "noSavedQueryDescription": "W widoku wyszukiwania możesz utworzyć i zapisać wyszukiwanie; wtedy pojawi się ono tutaj.",
+    "fieldFormula": "Formuła",
+    "fieldSearch": "Wyszukiwanie",
+    "fieldValue": "Wartość",
+    "cancel": "Anuluj",
+    "insert": "Wstaw"
+  },
+  "colors": {
+    "name": {
+      "default": "Domyślny",
+      "gray": "Szary",
+      "brown": "Brązowy",
+      "orange": "Pomarańczowy",
+      "yellow": "Żółty",
+      "green": "Zielony",
+      "blue": "Niebieski",
+      "purple": "Fioletowy",
+      "pink": "Różowy",
+      "red": "Czerwony"
+    },
+    "text": "Kolor tekstu",
+    "background": "Tło",
+    "reset": "Usuń kolory"
+  },
+  "selectionToolbar": {
+    "label": "Formatowanie",
+    "turnInto": "Typ bloku: {block}. Przekształć w inny blok",
+    "mark": {
+      "bold": "Pogrubienie",
+      "italic": "Kursywa",
+      "underline": "Podkreślenie",
+      "strike": "Przekreślenie",
+      "code": "Kod",
+      "superscript": "Indeks górny",
+      "subscript": "Indeks dolny"
+    },
+    "shortcut": {
+      "bold": "Ctrl+B",
+      "italic": "Ctrl+I",
+      "underline": "Ctrl+U",
+      "strike": "Ctrl+Shift+S",
+      "subscript": "Ctrl+,"
+    },
+    "withShortcut": "{label} ({shortcut})",
+    "link": "Link",
+    "color": "Kolor",
+    "textColor": "Kolor tekstu",
+    "emoji": "Emoji",
+    "comment": "Dodaj komentarz",
+    "sendToAi": "Wyślij do AI",
+    "blockActions": "Działania na bloku"
+  },
+  "codeBlock": {
+    "language": "Język",
+    "noHighlighting": "Bez wyróżniania",
+    "copy": "Kopiuj kod",
+    "copied": "Skopiowano kod"
+  },
+  "emojiMenu": {
+    "search": "Szukaj emoji",
+    "placeholder": "Szukaj…"
+  },
+  "table": {
+    "label": "Tabela",
+    "addRow": "Wstaw wiersz poniżej",
+    "addColumn": "Wstaw kolumnę po prawej",
+    "toggleHeaderRow": "Przełącz wiersz nagłówka",
+    "mergeOrSplit": "Scal lub podziel komórki",
+    "deleteRow": "Usuń wiersz",
+    "deleteColumn": "Usuń kolumnę",
+    "deleteTable": "Usuń tabelę"
+  },
+  "linkBubble": {
+    "label": "Odnośnik",
+    "open": "Otwórz",
+    "edit": "Edytuj",
+    "remove": "Usuń"
+  },
+  "linkMenu": {
+    "inputLabel": "Adres lub tytuł strony",
+    "placeholder": "https://… lub szukaj strony",
+    "apply": "Zastosuj",
+    "suggestions": "Pasujące strony",
+    "remove": "Usuń",
+    "open": "Otwórz"
+  },
+  "linkNavigation": {
+    "resolveFailed": "Nie udało się otworzyć odnośnika.",
+    "createFailed": "Nie udało się utworzyć strony.",
+    "ambiguousTitle": "Wiele stron ma tytuł „{title}”",
+    "ambiguousDescription": "Wybierz właściwą stronę.",
+    "inTrash": "W koszu",
+    "cancel": "Anuluj",
+    "missingTitle": "Nie znaleziono strony",
+    "missingDescription": "W tym obszarze roboczym nie ma strony o tytule „{title}”.",
+    "createPage": "Utwórz stronę",
+    "errorTitle": "Nie udało się otworzyć odnośnika",
+    "close": "Zamknij"
+  },
+  "mentionMenu": {
+    "label": "Wstaw wzmiankę",
+    "empty": "Nic nie znaleziono dla „{query}”.",
+    "page": "Strona",
+    "person": "Osoba",
+    "today": "Dzisiaj",
+    "tomorrow": "Jutro",
+    "yesterday": "Wczoraj",
+    "typedDate": "Wpisana data"
+  },
+  "pageLink": {
+    "unresolved": {
+      "empty": "Nie wybrano celu",
+      "deleted": "Strona docelowa została usunięta",
+      "missing": "Strona nie istnieje"
+    },
+    "unresolvedWithTitle": "{title}: {reason}",
+    "searching": "Wyszukiwanie „{title}”",
+    "resolving": "Rozwiązywanie odnośnika",
+    "createPage": "Utwórz stronę",
+    "choosePage": "Wybierz stronę",
+    "changePage": "Zmień stronę",
+    "inTrash": "W koszu",
+    "ambiguous": "Wiele stron o tym tytule"
+  },
+  "transclusion": {
+    "fallbackTitle": "Osadzona treść",
+    "inTrash": "W koszu",
+    "openSource": "Otwórz źródło",
+    "changePage": "Zmień stronę",
+    "choosePage": "Wybierz stronę",
+    "noSourceTitle": "Nie wybrano źródła",
+    "noSourceDescription": "Wybierz stronę, której treść ma się tutaj pojawić. Tekst pozostanie na niej i będzie tu tylko wyświetlany.",
+    "selfTitle": "Strona nie może osadzać samej siebie",
+    "selfDescription": "Wybierz inną stronę jako źródło.",
+    "loading": "Wczytywanie osadzonej treści",
+    "unreachableTitle": "Źródło jest niedostępne",
+    "unreachableDescription": "Osadzona strona została usunięta lub nie masz uprawnień do jej odczytu. Odnośnik pozostaje bez zmian.",
+    "missingBlockTitle": "Osadzona sekcja już nie istnieje",
+    "missingBlockDescription": "Strona „{title}” nadal istnieje, ale blok o identyfikatorze {blockId} już nie.",
+    "showWholePage": "Pokaż całą stronę",
+    "nested": "Zawiera {count, plural, one {# dodatkowe osadzenie} few {# dodatkowe osadzenia} many {# dodatkowych osadzeń} other {# dodatkowego osadzenia}}, które nie są tutaj rozwiązywane.",
+    "wholePage": "Cała strona",
+    "section": "Sekcja",
+    "chooserLabel": "Co ma się tutaj znaleźć?",
+    "chooseWholePage": "Cała strona",
+    "blocksLoading": "Wczytywanie bloków…",
+    "noBlocks": "Ta strona nie ma nazwanych bloków.",
+    "headingSection": "Nagłówek {level}, z całą sekcją poniżej"
+  },
+  "wikiLink": {
+    "missing": "„{title}” nie istnieje w tym obszarze roboczym"
+  }
+}
