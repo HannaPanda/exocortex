@@ -62,6 +62,12 @@ import { compareIcu } from '../lib/icu.mjs';
  * drifts with the provider's catalogue.
  */
 const DEFAULT_MODEL = 'google/gemini-3.8-flash';
+/**
+ * Minimal thinking: on a sample of 120 translations it cost a third, ran three
+ * times as fast and read as well as the default effort, which spent 73 % of
+ * its output on reasoning (docs/i18n.md, "The model").
+ */
+const REASONING = { effort: 'minimal' };
 const BATCH_SIZE = 40;
 
 const LANGUAGE_NAMES = {
@@ -252,6 +258,7 @@ async function requestModel(locale, ns, batch, feedback) {
       temperature: 0,
       seed: 0,
       response_format: { type: 'json_object' },
+      reasoning: REASONING,
       messages: [
         { role: 'system', content: systemPrompt(locale) },
         { role: 'user', content: JSON.stringify(payload, null, 2) },
