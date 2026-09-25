@@ -12,7 +12,7 @@
  * happens here: a plan is a set, never an order.
  */
 
-import { type ProviderRouting, providerNameMatches } from '@exocortex/contracts';
+import { providerNameMatches,type ProviderRouting } from '@exocortex/contracts';
 
 /** One provider's offer, as the registry snapshot holds it. */
 export interface RoutingEndpoint {
