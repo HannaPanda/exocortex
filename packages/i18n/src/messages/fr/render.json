@@ -84,5 +84,16 @@
     "ownSource": "Code source propre",
     "edit": "Modifier",
     "delete": "Supprimer"
+  },
+  "errors": {
+    "renderer_unavailable": "L’exportation PDF n’est pas configurée sur cette machine. Un administrateur doit déployer l’image de conteneur.",
+    "render_failed": "La génération a échoué. Le journal indique à quel endroit.",
+    "render_timeout": "La génération a pris trop de temps et a été interrompue. Le modèle attend généralement une saisie.",
+    "artifact_too_large": "Le PDF généré dépasse la taille autorisée.",
+    "empty_artifact": "La génération s’est terminée avec succès, mais aucun fichier n’a été produit.",
+    "source_missing": "La page n’a pas encore de contenu préparé. Ouvre-la une fois et patiente un instant.",
+    "template_missing": "Le modèle n’existe plus.",
+    "worker_lost": "La génération a été interrompue car le service d’arrière-plan l’a perdue.",
+    "unknown": "La génération a échoué."
   }
 }

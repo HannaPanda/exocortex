@@ -1,1 +1,64 @@
-{}
+{
+  "clear": {
+    "done": "Contesto svuotato. La cronologia rimane leggibile."
+  },
+  "new": {
+    "started": "Nuova conversazione «{title}» avviata."
+  },
+  "model": {
+    "switched": "Modello cambiato in {model}."
+  },
+  "think": {
+    "set": "Livello di riflessione impostato su {level}.",
+    "clamped": "{model} non supporta questo livello, viene usato {level}."
+  },
+  "vision": {
+    "auto": "Il modello vision complementare ora segue l’impostazione predefinita dell’amministrazione.",
+    "off": "Modello vision complementare disattivato per questa conversazione.",
+    "set": "Modello vision complementare impostato su {model}."
+  },
+  "compact": {
+    "automatic": "Il contesto viene riassunto automaticamente non appena raggiunge il limite. Usa /clear per svuotarlo subito."
+  },
+  "context": {
+    "noPage": "Al momento non ci sono pagine aperte.",
+    "openPage": "È aperta la pagina «{title}».",
+    "enabledNoPage": "Non appena apri una pagina, l’IA ne apprende titolo e percorso e può caricarne i contenuti da sé se necessario.",
+    "enabled": "L’IA apprende titolo e percorso e può caricarne i contenuti da sé se necessario.",
+    "disabled": "Il contesto della pagina è disattivato: l’IA non ne viene a conoscenza.",
+    "howOff": "Usa /context off per disattivarlo.",
+    "howOn": "Usa /context on per attivarlo.",
+    "nothingPinned": "Nessun elemento fissato.",
+    "pinned": "{count, plural, one {È fissato inoltre: {list}.} many {Sono fissati inoltre: {list}.} other {Sono fissati inoltre: {list}.}}",
+    "sourceEmbedded": "«{title}» (contenuto incluso)",
+    "sourceNamed": "«{title}» (solo menzionata)",
+    "untitled": "Senza titolo"
+  },
+  "rules": {
+    "none": "Nessuna pagina di regole IA attiva in questa area di lavoro.",
+    "always": "sempre attivo",
+    "onRequest": "su richiesta"
+  },
+  "tools": {
+    "none": "Nessuno strumento disponibile.",
+    "policyDeny": "Gli strumenti di modifica sono disattivati in questa area di lavoro.",
+    "policyGuarded": "Gli strumenti di modifica vengono bloccati non appena un’esecuzione legge contenuti esterni (documenti caricati, descrizioni di immagini).",
+    "policyAllow": "Gli strumenti di modifica restano consentiti anche dopo la lettura di contenuti esterni.",
+    "subset": "Una singola esecuzione non riceve tutti gli strumenti, ma solo gli ambiti pertinenti alla domanda. Se ne manca uno, l’IA lo abilita da sé con exo_toolbox."
+  },
+  "help": {
+    "titleArgument": "titolo?",
+    "descriptions": {
+      "clear": "Svuota il contesto, la cronologia rimane leggibile",
+      "new": "Avvia una nuova conversazione",
+      "model": "Cambia il modello di questa conversazione",
+      "think": "Scegli il livello di riflessione",
+      "vision": "Sovrascrivi il modello vision complementare",
+      "compact": "Riassumi il contesto adesso",
+      "context": "Mostra o attiva/disattiva il contesto della pagina e le fonti fissate",
+      "rules": "Mostra le pagine di regole attive",
+      "tools": "Mostra gli strumenti disponibili",
+      "help": "Mostra questo elenco"
+    }
+  }
+}

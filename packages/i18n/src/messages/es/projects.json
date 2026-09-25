@@ -128,5 +128,18 @@
   "sourceSync": {
     "outsideProject": "Esta ubicación proviene de {path}, un archivo fuera del proyecto.",
     "noMapping": "No hay ninguna correspondencia para esta ubicación en el mapa de SyncTeX."
+  },
+  "buildErrors": {
+    "builder_unavailable": "La compilación de LaTeX no está configurada en este equipo. Un administrador debe proporcionar la imagen del contenedor.",
+    "build_failed": "La compilación ha fallado. La lista de errores indica en qué archivo y línea.",
+    "build_timeout": "La compilación ha tardado demasiado y se ha cancelado. Normalmente se debe a que LaTeX espera una entrada.",
+    "artifact_too_large": "El PDF generado es más grande de lo permitido.",
+    "empty_artifact": "La compilación finalizó, pero no generó ningún PDF.",
+    "root_file_missing": "El archivo principal no existe en el proyecto.",
+    "project_empty": "El proyecto aún no contiene archivos.",
+    "project_missing": "El proyecto ya no existe.",
+    "project_not_materialized": "El proyecto aún no está listo. Espera un momento y vuelve a compilar.",
+    "worker_lost": "La compilación se canceló porque el servicio en segundo plano la perdió.",
+    "unknown": "La compilación ha fallado."
   }
 }

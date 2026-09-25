@@ -84,5 +84,16 @@
     "ownSource": "Código-fonte próprio",
     "edit": "Editar",
     "delete": "Excluir"
+  },
+  "errors": {
+    "renderer_unavailable": "A geração de PDF não está configurada nesta máquina. Uma pessoa administradora precisa disponibilizar a imagem de contêiner.",
+    "render_failed": "A compilação falhou. O registro mostra onde ocorreu o erro.",
+    "render_timeout": "A compilação demorou demais e foi cancelada. Geralmente, o modelo está aguardando uma entrada.",
+    "artifact_too_large": "O PDF gerado é maior do que o permitido.",
+    "empty_artifact": "A compilação foi concluída, mas nenhum arquivo foi entregue.",
+    "source_missing": "A página ainda não tem conteúdo processado. Abra-a uma vez e aguarde um momento.",
+    "template_missing": "O modelo não existe mais.",
+    "worker_lost": "A compilação foi cancelada porque o serviço em segundo plano a perdeu.",
+    "unknown": "A compilação falhou."
   }
 }

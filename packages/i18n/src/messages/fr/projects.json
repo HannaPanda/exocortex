@@ -128,5 +128,18 @@
   "sourceSync": {
     "outsideProject": "Cet emplacement provient de {path}, un fichier situé en dehors du projet.",
     "noMapping": "Il n’y a aucune correspondance pour cet emplacement dans la carte SyncTeX."
+  },
+  "buildErrors": {
+    "builder_unavailable": "La compilation LaTeX n’est pas configurée sur cette machine. Une personne administratrice doit fournir l’image de conteneur.",
+    "build_failed": "La compilation a échoué. La liste des erreurs indique le fichier et la ligne concernés.",
+    "build_timeout": "La compilation a pris trop de temps et a été interrompue. La plupart du temps, LaTeX attend une saisie.",
+    "artifact_too_large": "Le PDF généré dépasse la taille autorisée.",
+    "empty_artifact": "La compilation s’est terminée avec succès, mais aucun PDF n’a été produit.",
+    "root_file_missing": "Le fichier principal n’existe pas dans le projet.",
+    "project_empty": "Le projet ne contient encore aucun fichier.",
+    "project_missing": "Le projet n’existe plus.",
+    "project_not_materialized": "Le projet n’est pas encore prêt. Patiente un instant et relance la compilation.",
+    "worker_lost": "La compilation a été interrompue car le service d’arrière-plan en a perdu la trace.",
+    "unknown": "La compilation a échoué."
   }
 }

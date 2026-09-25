@@ -1,1 +1,64 @@
-{}
+{
+  "clear": {
+    "done": "Contexto limpo. O histórico continua visível."
+  },
+  "new": {
+    "started": "Nova conversa „{title}“ iniciada."
+  },
+  "model": {
+    "switched": "Modelo alterado para {model}."
+  },
+  "think": {
+    "set": "Nível de pensamento definido para {level}.",
+    "clamped": "{model} não suporta este nível; usando {level} em vez disso."
+  },
+  "vision": {
+    "auto": "O modelo visual complementar agora segue o padrão da administração.",
+    "off": "Modelo visual complementar desativado para esta conversa.",
+    "set": "Modelo visual complementar definido para {model}."
+  },
+  "compact": {
+    "automatic": "O contexto é resumido automaticamente assim que atinge o limite. Use /clear para limpá-lo imediatamente."
+  },
+  "context": {
+    "noPage": "Nenhuma página aberta no momento.",
+    "openPage": "„{title}“ está aberta.",
+    "enabledNoPage": "Assim que você abrir uma página, a IA saberá o título e o caminho, podendo carregar o conteúdo por conta própria se necessário.",
+    "enabled": "A IA sabe o título e o caminho, podendo carregar o conteúdo por conta própria se necessário.",
+    "disabled": "O contexto da página está desativado: a IA não tem acesso a ele.",
+    "howOff": "Use /context off para desativá-lo.",
+    "howOn": "Use /context on para ativá-lo.",
+    "nothingPinned": "Nada fixado.",
+    "pinned": "{count, plural, one {Também fixado: {list}.} many {Também fixados: {list}.} other {Também fixados: {list}.}}",
+    "sourceEmbedded": "„{title}“ (conteúdo incluído)",
+    "sourceNamed": "„{title}“ (apenas mencionado)",
+    "untitled": "Sem título"
+  },
+  "rules": {
+    "none": "Nenhuma página de regras de IA ativa neste espaço de trabalho.",
+    "always": "sempre ativo",
+    "onRequest": "sob demanda"
+  },
+  "tools": {
+    "none": "Nenhuma ferramenta disponível.",
+    "policyDeny": "Ferramentas de modificação estão desativadas neste espaço de trabalho.",
+    "policyGuarded": "Ferramentas de modificação são bloqueadas assim que uma execução lê conteúdo externo (documentos enviados, descrições de imagens).",
+    "policyAllow": "Ferramentas de modificação continuam permitidas mesmo após ler conteúdo externo.",
+    "subset": "Uma única execução não recebe todas as ferramentas, mas sim as áreas que combinam com a pergunta. Se faltar alguma, a IA a desbloqueia por conta própria com exo_toolbox."
+  },
+  "help": {
+    "titleArgument": "título?",
+    "descriptions": {
+      "clear": "Limpar contexto, o histórico continua visível",
+      "new": "Iniciar nova conversa",
+      "model": "Alterar o modelo desta conversa",
+      "think": "Escolher nível de pensamento",
+      "vision": "Substituir modelo visual complementar",
+      "compact": "Resumir contexto agora",
+      "context": "Exibir ou alternar contexto da página e fontes fixadas",
+      "rules": "Exibir páginas de regras ativas",
+      "tools": "Exibir ferramentas disponíveis",
+      "help": "Exibir esta lista"
+    }
+  }
+}

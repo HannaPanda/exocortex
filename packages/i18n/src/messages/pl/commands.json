@@ -1,1 +1,64 @@
-{}
+{
+  "clear": {
+    "done": "Wyczyszczono kontekst. Historia pozostaje czytelna."
+  },
+  "new": {
+    "started": "Rozpoczęto nową rozmowę „{title}”."
+  },
+  "model": {
+    "switched": "Przełączono model na {model}."
+  },
+  "think": {
+    "set": "Ustawiono poziom myślenia na {level}.",
+    "clamped": "{model} nie obsługuje tego poziomu, używam zamiast tego {level}."
+  },
+  "vision": {
+    "auto": "Model pomocniczy Vision stosuje teraz domyślne ustawienie administratora.",
+    "off": "Wyłączono model pomocniczy Vision dla tej rozmowy.",
+    "set": "Ustawiono model pomocniczy Vision na {model}."
+  },
+  "compact": {
+    "automatic": "Kontekst zostanie automatycznie podsumowany po osiągnięciu limitu. Użyj /clear, aby wyczyścić go natychmiast."
+  },
+  "context": {
+    "noPage": "Żadna strona nie jest obecnie otwarta.",
+    "openPage": "Otwarta strona: „{title}”.",
+    "enabledNoPage": "Gdy tylko otworzysz stronę, AI pozna jej tytuł oraz ścieżkę i w razie potrzeby będzie mogła samodzielnie wczytać treść.",
+    "enabled": "AI poznaje tytuł oraz ścieżkę i w razie potrzeby może samodzielnie wczytać treść.",
+    "disabled": "Kontekst strony jest wyłączony: AI nic o niej nie wie.",
+    "howOff": "Możesz go wyłączyć za pomocą /context off.",
+    "howOn": "Możesz go włączyć za pomocą /context on.",
+    "nothingPinned": "Nic nie jest przypięte.",
+    "pinned": "{count, plural, one {Przypięty jest również: {list}.} few {Przypięte są również: {list}.} many {Przypiętych jest również: {list}.} other {Przypięte jest również: {list}.}}",
+    "sourceEmbedded": "„{title}” (treść jest dołączana)",
+    "sourceNamed": "„{title}” (tylko nazwa)",
+    "untitled": "Bez tytułu"
+  },
+  "rules": {
+    "none": "Brak aktywnych stron reguł AI w tym obszarze roboczym.",
+    "always": "zawsze aktywne",
+    "onRequest": "na żądanie"
+  },
+  "tools": {
+    "none": "Brak dostępnych narzędzi.",
+    "policyDeny": "Narzędzia wprowadzające zmiany są wyłączone w tym obszarze roboczym.",
+    "policyGuarded": "Narzędzia wprowadzające zmiany są blokowane, gdy przebieg odczyta treści z zewnątrz (przesłane dokumenty, opisy obrazów).",
+    "policyAllow": "Narzędzia wprowadzające zmiany pozostają dozwolone również po odczytaniu treści zewnętrznych.",
+    "subset": "Pojedynczy przebieg nie otrzymuje wszystkich narzędzi, lecz tylko obszary pasujące do pytania. Jeśli któregoś brakuje, AI może odblokować go samodzielnie za pomocą exo_toolbox."
+  },
+  "help": {
+    "titleArgument": "tytuł?",
+    "descriptions": {
+      "clear": "Wyczyść kontekst, historia pozostaje czytelna",
+      "new": "Rozpocznij nową rozmowę",
+      "model": "Zmień model w tej rozmowie",
+      "think": "Wybierz poziom myślenia",
+      "vision": "Zastąp model pomocniczy Vision",
+      "compact": "Podsumuj kontekst teraz",
+      "context": "Pokaż lub przełącz kontekst strony i przypięte źródła",
+      "rules": "Pokaż aktywne strony reguł",
+      "tools": "Pokaż dostępne narzędzia",
+      "help": "Pokaż tę listę"
+    }
+  }
+}

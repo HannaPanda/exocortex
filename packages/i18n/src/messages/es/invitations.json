@@ -23,6 +23,8 @@
     "another": "Invitar a otra persona",
     "close": "Cerrar",
     "email": "Dirección de correo electrónico",
+    "language": "Idioma de la invitación",
+    "languageHint": "El correo llegará en este idioma y así se dirigirá eXocortex a la persona tras iniciar sesión, hasta que elija otro.",
     "workspace": "Espacio de trabajo",
     "noWorkspace": "Ninguno",
     "noWorkspaceHint": "Sin espacio de trabajo se crea una cuenta que todavía no puede ver nada. La pertenencia a un espacio de trabajo siempre se asigna de forma explícita.",
@@ -47,6 +49,12 @@
     "status": "Estado",
     "workspace": "Espacio de trabajo",
     "role": "Rol",
+    "roles": {
+      "OWNER": "Propietario",
+      "ADMIN": "Administrador",
+      "MEMBER": "Miembro",
+      "GUEST": "Invitado"
+    },
     "invitedBy": "Invitación de",
     "expiresAt": "Caduca el",
     "sent": "Enviada",

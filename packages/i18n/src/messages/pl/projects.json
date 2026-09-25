@@ -128,5 +128,18 @@
   "sourceSync": {
     "outsideProject": "To miejsce pochodzi z {path}, pliku spoza projektu.",
     "noMapping": "Dla tego miejsca nie ma przypisania w mapie SyncTeX."
+  },
+  "buildErrors": {
+    "builder_unavailable": "Budowanie LaTeX nie jest skonfigurowane na tym komputerze. Administrator musi udostępnić obraz kontenera.",
+    "build_failed": "Budowanie nie powiodło się. Lista błędów wskazuje plik i wiersz.",
+    "build_timeout": "Budowanie trwało zbyt długo i zostało przerwane. Najczęściej LaTeX czeka na dane wejściowe.",
+    "artifact_too_large": "Wygenerowany plik PDF jest większy niż dozwolony limit.",
+    "empty_artifact": "Budowanie zakończyło się, ale nie utworzono pliku PDF.",
+    "root_file_missing": "Plik główny nie istnieje w projekcie.",
+    "project_empty": "Projekt nie zawiera jeszcze żadnych plików.",
+    "project_missing": "Projekt już nie istnieje.",
+    "project_not_materialized": "Projekt nie jest jeszcze przygotowany. Poczekaj chwilę i spróbuj zbudować ponownie.",
+    "worker_lost": "Budowanie zostało przerwane, ponieważ usługa w tle utraciła z nim kontakt.",
+    "unknown": "Budowanie nie powiodło się."
   }
 }

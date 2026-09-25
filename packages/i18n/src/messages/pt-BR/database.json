@@ -239,5 +239,45 @@
   "peek": {
     "openAsPage": "Abrir como página",
     "noProperties": "Este banco de dados ainda não tem propriedades."
+  },
+  "formulaErrors": {
+    "inColumn": "Coluna “{column}”: {message}",
+    "types": {
+      "number": "um número",
+      "text": "texto",
+      "boolean": "um valor booleano",
+      "date": "uma data"
+    },
+    "codes": {
+      "empty": "A fórmula está vazia.",
+      "unterminated_string": "O texto a partir da posição {at} não foi fechado.",
+      "invalid_number": "Número inválido: {raw}",
+      "unexpected_character": "Caractere inesperado “{char}” na posição {at}.",
+      "unexpected_token": "Elemento inesperado “{token}” na posição {at}.",
+      "unexpected_end": "A fórmula termina cedo demais.",
+      "expected_token": "Esperava-se “{expected}”, mas foi encontrado “{found}”.",
+      "too_deep": "A fórmula tem aninhamento profundo demais.",
+      "not_a_function": "“{name}” não é uma função. Para referenciar uma coluna, use prop(\"Nome\").",
+      "unknown_function": "Função desconhecida “{name}”.",
+      "prop_argument": "prop() espera exatamente um nome de coluna entre aspas (posição {at}).",
+      "type_mismatch": "“{operator}” compara {left} com {right}. Os tipos precisam ser iguais.",
+      "operator_not_applicable": "“{operator}” não pode ser aplicado a {type}.",
+      "arity": "{name}() espera {hint}",
+      "argument_type": "{name}(): o argumento {index} é {actual}, mas esperava-se {expected}.",
+      "branch_types": "{name}(): ambos os caminhos precisam ter o mesmo tipo.",
+      "unknown_property": "Coluna desconhecida: {name}",
+      "negate_number": "O sinal de menos espera um número, não {type}.",
+      "property_unusable": "A coluna “{name}” é do tipo {propertyType} e não pode ser usada em uma fórmula.",
+      "cycle": "A coluna “{name}” depende circularmente de si mesma.",
+      "derived_too_deep": "As colunas calculadas têm aninhamento profundo demais.",
+      "formula_column_empty": "A coluna de fórmula “{name}” está vazia.",
+      "unknown_operator": "Operador desconhecido {operator}.",
+      "rollup_needs_target": "“{aggregate}” precisa de uma coluna de destino.",
+      "rollup_target_derived": "Um Rollup não pode calcular sobre uma coluna do tipo {propertyType}. Escolha uma coluna simples.",
+      "rollup_needs_number": "“{aggregate}” precisa de uma coluna de números.",
+      "rollup_needs_date": "“{aggregate}” precisa de uma coluna de datas.",
+      "rollup_incomplete": "A coluna de Rollup “{name}” está incompleta.",
+      "rollup_no_relation": "A coluna de Rollup “{name}” não aponta para nenhuma relação."
+    }
   }
 }

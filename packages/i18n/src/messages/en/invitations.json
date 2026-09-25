@@ -23,6 +23,8 @@
     "another": "Invite another",
     "close": "Close",
     "email": "Email address",
+    "language": "Invitation language",
+    "languageHint": "The email will arrive in this language, and eXocortex will address the person in it after signing in until they choose another one themselves.",
     "workspace": "Workspace",
     "noWorkspace": "None",
     "noWorkspaceHint": "Without a workspace, an account is created that can’t see anything yet. Memberships are always explicitly assigned here.",
@@ -47,6 +49,12 @@
     "status": "Status",
     "workspace": "Workspace",
     "role": "Role",
+    "roles": {
+      "OWNER": "Owner",
+      "ADMIN": "Administrator",
+      "MEMBER": "Member",
+      "GUEST": "Guest"
+    },
     "invitedBy": "Invited by",
     "expiresAt": "Expires",
     "sent": "Sent",

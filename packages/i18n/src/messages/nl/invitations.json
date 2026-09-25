@@ -23,6 +23,8 @@
     "another": "Nog iemand uitnodigen",
     "close": "Sluiten",
     "email": "E-mailadres",
+    "language": "Taal van de uitnodiging",
+    "languageHint": "In deze taal komt de e-mail aan en zo spreekt eXocortex de persoon na het inloggen aan, totdat diegene zelf een andere kiest.",
     "workspace": "Werkruimte",
     "noWorkspace": "Geen",
     "noWorkspaceHint": "Zonder werkruimte ontstaat er een account dat nog niets kan zien. Lidmaatschappen worden hier altijd expliciet toegekend.",
@@ -47,6 +49,12 @@
     "status": "Status",
     "workspace": "Werkruimte",
     "role": "Rol",
+    "roles": {
+      "OWNER": "Eigenaar",
+      "ADMIN": "Beheerder",
+      "MEMBER": "Lid",
+      "GUEST": "Gast"
+    },
     "invitedBy": "Uitgenodigd door",
     "expiresAt": "Geldig tot",
     "sent": "Verzonden",

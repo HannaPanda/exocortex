@@ -1,1 +1,35 @@
-{}
+{
+  "toolLoop": {
+    "limitReached": "The limit of {limit, plural, one {# tool round} other {# tool rounds}} has been reached; the run ended without an answer.",
+    "noCalls": "Not a single tool call ran: the limit is set to zero.",
+    "summary": "This run made {calls, plural, one {# call} other {# calls}} with a total of {chars, number} characters in response:",
+    "tool": "{name}: {calls, plural, one {# call} other {# calls}}, {chars, number} characters",
+    "toolWithRepeats": "{name}: {calls, plural, one {# call} other {# calls}}, {chars, number} characters, including {repeats, number} without new content",
+    "moreTools": "and {count, plural, one {# more tool} other {# more tools}}",
+    "repeats": "{repeats, plural, one {# call returned} other {# calls returned}} exactly what an earlier call had already returned. Asking the same thing again in different words will not find a section that the first call didn’t find.",
+    "wayIn": "The way to a section in a large page: a semantic match from exo_search names the section including its block ID, exo_page_block_read opens that exact section, and for a large page exo_page_read responds with a map instead of text. A higher limit is no substitute for this."
+  },
+  "runTimeout": {
+    "turnLimit": "A single model response exceeded the limit of {duration} (ai.timeoutMs setting). The run ended without an answer.",
+    "runLimit": "The entire run reached its limit of {duration} (ai.maxRunMs setting). It ended without an answer.",
+    "seconds": "{count, plural, one {# second} other {# seconds}}",
+    "minutes": "{count, plural, one {# minute} other {# minutes}}",
+    "ran": "Ran {model} with thinking level “{effort}”.",
+    "ranAfterRounds": "Ran {model} with thinking level “{effort}” {rounds, plural, one {after one tool round} other {after # tool rounds}}.",
+    "received": "{chars, plural, one {One character} other {# characters}} of the response had arrived before time ran out.",
+    "thoughtOnly": "Not a single character of the response arrived: all the time was spent thinking.",
+    "nothing": "Not a single character of the response arrived; the model delivered nothing.",
+    "hintEffort": "A lower thinking level will help more here than a higher limit: the time ran out before the first character, and that is precisely the thinking phase. You can find the level in the AI section next to the model picker, and the limits in administration under “AI”.",
+    "hintRun": "A smaller step will help more here than a higher limit: a task requiring this many tool rounds finishes faster split across two questions than in one. The limits can be found in administration under “AI”.",
+    "hintSmaller": "A smaller question or a faster model will help more here than a higher limit. The limits can be found in administration under “AI”.",
+    "effort": {
+      "none": "none",
+      "minimal": "minimal",
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "very high",
+      "max": "maximum"
+    }
+  }
+}

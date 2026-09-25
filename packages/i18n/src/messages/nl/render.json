@@ -84,5 +84,16 @@
     "ownSource": "Eigen broncode",
     "edit": "Bewerken",
     "delete": "Verwijderen"
+  },
+  "errors": {
+    "renderer_unavailable": "PDF-uitvoer is niet geconfigureerd op deze computer. Een beheerder moet de container-image klaarzetten.",
+    "render_failed": "De build is mislukt. In het logboek staat waar het misging.",
+    "render_timeout": "De build duurde te lang en is afgebroken. Meestal wacht het sjabloon op invoer.",
+    "artifact_too_large": "De gegenereerde PDF is groter dan toegestaan.",
+    "empty_artifact": "De build is voltooid, maar heeft geen bestand opgeleverd.",
+    "source_missing": "De pagina heeft nog geen verwerkte inhoud. Open hem een keer en wacht even.",
+    "template_missing": "Het sjabloon bestaat niet meer.",
+    "worker_lost": "De build is afgebroken omdat de achtergronddienst hem is kwijtgeraakt.",
+    "unknown": "De build is mislukt."
   }
 }

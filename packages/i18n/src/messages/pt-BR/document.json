@@ -143,7 +143,12 @@
     "reposition": "Reposicionar",
     "replace": "Alterar",
     "regenerate": "Gerar novamente",
-    "remove": "Remover"
+    "remove": "Remover",
+    "generationErrors": {
+      "unavailable": "A geração de imagens não está configurada para esta instância.",
+      "no_picture": "O modelo “{model}” não retornou nenhuma imagem. É provável que ele não gere imagens; você pode definir um modelo compatível na área de administração.",
+      "failed": "Não foi possível gerar a imagem de capa. Tente novamente."
+    }
   },
   "overview": {
     "noChildren": "Esta página de visão geral ainda não tem subpáginas.",
@@ -155,7 +160,12 @@
     "sourceGeneratedAt": "Compilado automaticamente, situação em {time}.",
     "stale": "desatualizado",
     "refreshing": "atualizando…",
-    "refresh": "atualizar agora"
+    "refresh": "atualizar agora",
+    "errors": {
+      "no_children": "Esta página de visão geral ainda não tem subpáginas.",
+      "too_many_children": "Esta página de visão geral tem mais de {maxChildren} subpáginas. A lista abaixo permanece completa, mas um resumo inicial não será gerado.",
+      "composition_failed": "Não foi possível gerar o resumo inicial."
+    }
   },
   "propertiesDialog": {
     "title": "Propriedades da página",
@@ -329,7 +339,39 @@
     "noDifferenceTitle": "Nenhuma diferença",
     "noDifferenceDescription": "As duas versões têm o mesmo conteúdo.",
     "unchangedRun": "{count, plural, one {# bloco inalterado} many {# de blocos inalterados} other {# blocos inalterados}}",
-    "summary": "{added} novos, {removed} removidos, {changed} alterados, {moved} movidos"
+    "summary": "{added} novos, {removed} removidos, {changed} alterados, {moved} movidos",
+    "notices": {
+      "olderSchema": "A versão de {time} foi salva com uma versão de esquema mais antiga. Por isso, alguns blocos podem ter uma aparência diferente daquela época.",
+      "truncated": "A página tem mais blocos do que a comparação exibe."
+    },
+    "blockTypes": {
+      "paragraph": "Parágrafo",
+      "heading": "Título",
+      "codeBlock": "Bloco de código",
+      "blockquote": "Citação",
+      "bulletList": "Lista com marcadores",
+      "orderedList": "Lista numerada",
+      "taskList": "Lista de tarefas",
+      "horizontalRule": "Linha divisória",
+      "table": "Tabela",
+      "callout": "Aviso",
+      "details": "Seção expansível",
+      "columnList": "Colunas",
+      "blockMath": "Fórmula",
+      "tableOfContents": "Sumário",
+      "pageLink": "Link para página",
+      "breadcrumb": "Caminho",
+      "databaseEmbed": "Banco de dados incorporado",
+      "savedQueryEmbed": "Busca incorporada",
+      "transclusion": "Conteúdo incorporado",
+      "fileAttachment": "Arquivo",
+      "image": "Imagem",
+      "video": "Vídeo",
+      "audio": "Áudio",
+      "pdf": "PDF",
+      "embed": "Incorporação",
+      "bookmark": "Marcador"
+    }
   },
   "pdf": {
     "unreadableTitle": "PDF ilegível",

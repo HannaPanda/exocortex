@@ -239,5 +239,45 @@
   "peek": {
     "openAsPage": "Apri come pagina",
     "noProperties": "Questo database non ha ancora proprietà."
+  },
+  "formulaErrors": {
+    "inColumn": "Colonna «{column}»: {message}",
+    "types": {
+      "number": "un numero",
+      "text": "testo",
+      "boolean": "un valore booleano",
+      "date": "una data"
+    },
+    "codes": {
+      "empty": "La formula è vuota.",
+      "unterminated_string": "La stringa a partire dalla posizione {at} non è chiusa.",
+      "invalid_number": "Numero non valido: {raw}",
+      "unexpected_character": "Carattere inatteso «{char}» alla posizione {at}.",
+      "unexpected_token": "Elemento inatteso «{token}» alla posizione {at}.",
+      "unexpected_end": "La formula termina troppo presto.",
+      "expected_token": "Atteso «{expected}», trovato «{found}».",
+      "too_deep": "La formula è annidata troppo in profondità.",
+      "not_a_function": "«{name}» non è una funzione. Per fare riferimento a una colonna scrivi prop(\"Nome\").",
+      "unknown_function": "Funzione sconosciuta «{name}».",
+      "prop_argument": "prop() richiede esattamente un nome di colonna tra virgolette (posizione {at}).",
+      "type_mismatch": "«{operator}» confronta {left} con {right}. I tipi devono corrispondere.",
+      "operator_not_applicable": "«{operator}» non può essere applicato a {type}.",
+      "arity": "{name}() richiede {hint}",
+      "argument_type": "{name}(): l’argomento {index} è {actual}, ma è atteso {expected}.",
+      "branch_types": "{name}(): entrambi i rami devono avere lo stesso tipo.",
+      "unknown_property": "Colonna sconosciuta: {name}",
+      "negate_number": "Il segno meno richiede un numero, non {type}.",
+      "property_unusable": "La colonna «{name}» è di tipo {propertyType} e non può essere usata in una formula.",
+      "cycle": "La colonna «{name}» dipende da se stessa in modo circolare.",
+      "derived_too_deep": "Le colonne calcolate sono annidate troppo in profondità.",
+      "formula_column_empty": "La colonna formula «{name}» è vuota.",
+      "unknown_operator": "Operatore sconosciuto {operator}.",
+      "rollup_needs_target": "«{aggregate}» richiede una colonna di destinazione.",
+      "rollup_target_derived": "Un Rollup non può eseguire calcoli su una colonna di tipo {propertyType}. Scegli una colonna semplice.",
+      "rollup_needs_number": "«{aggregate}» richiede una colonna numerica.",
+      "rollup_needs_date": "«{aggregate}» richiede una colonna data.",
+      "rollup_incomplete": "La colonna Rollup «{name}» è incompleta.",
+      "rollup_no_relation": "La colonna Rollup «{name}» non punta ad alcuna relazione."
+    }
   }
 }

@@ -143,7 +143,12 @@
     "reposition": "Reposition",
     "replace": "Change",
     "regenerate": "Regenerate",
-    "remove": "Remove"
+    "remove": "Remove",
+    "generationErrors": {
+      "unavailable": "Image generation is not set up for this instance.",
+      "no_picture": "The model “{model}” returned no image. It probably cannot generate images; an image-capable model can be configured in the administration area.",
+      "failed": "The cover image could not be generated. Please try again."
+    }
   },
   "overview": {
     "noChildren": "This overview page does not have any sub-pages yet.",
@@ -155,7 +160,12 @@
     "sourceGeneratedAt": "Automatically compiled, as of {time}.",
     "stale": "outdated",
     "refreshing": "updating…",
-    "refresh": "update now"
+    "refresh": "update now",
+    "errors": {
+      "no_children": "This overview page does not have any sub-pages yet.",
+      "too_many_children": "This overview page has more than {maxChildren} sub-pages. The list below remains complete, but an introduction is not generated.",
+      "composition_failed": "The introduction could not be generated."
+    }
   },
   "propertiesDialog": {
     "title": "Page properties",
@@ -329,7 +339,39 @@
     "noDifferenceTitle": "No difference",
     "noDifferenceDescription": "Both versions have the same content.",
     "unchangedRun": "{count, plural, one {# unchanged block} other {# unchanged blocks}}",
-    "summary": "{added} added, {removed} removed, {changed} changed, {moved} moved"
+    "summary": "{added} added, {removed} removed, {changed} changed, {moved} moved",
+    "notices": {
+      "olderSchema": "The version from {time} was saved with an older schema version. Individual blocks may look different now than they did back then.",
+      "truncated": "The page has more blocks than the comparison shows."
+    },
+    "blockTypes": {
+      "paragraph": "Paragraph",
+      "heading": "Heading",
+      "codeBlock": "Code block",
+      "blockquote": "Quote",
+      "bulletList": "Bulleted list",
+      "orderedList": "Numbered list",
+      "taskList": "Task list",
+      "horizontalRule": "Divider",
+      "table": "Table",
+      "callout": "Callout",
+      "details": "Collapsible section",
+      "columnList": "Columns",
+      "blockMath": "Formula",
+      "tableOfContents": "Table of contents",
+      "pageLink": "Page link",
+      "breadcrumb": "Breadcrumb",
+      "databaseEmbed": "Embedded database",
+      "savedQueryEmbed": "Embedded search",
+      "transclusion": "Embedded content",
+      "fileAttachment": "File",
+      "image": "Image",
+      "video": "Video",
+      "audio": "Audio",
+      "pdf": "PDF",
+      "embed": "Embed",
+      "bookmark": "Bookmark"
+    }
   },
   "pdf": {
     "unreadableTitle": "PDF unreadable",

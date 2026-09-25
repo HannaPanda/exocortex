@@ -239,5 +239,45 @@
   "peek": {
     "openAsPage": "Open as page",
     "noProperties": "This database has no properties yet."
+  },
+  "formulaErrors": {
+    "inColumn": "Column “{column}”: {message}",
+    "types": {
+      "number": "a number",
+      "text": "text",
+      "boolean": "a boolean",
+      "date": "a date"
+    },
+    "codes": {
+      "empty": "The formula is empty.",
+      "unterminated_string": "Unterminated string starting at position {at}.",
+      "invalid_number": "Not a valid number: {raw}",
+      "unexpected_character": "Unexpected character “{char}” at position {at}.",
+      "unexpected_token": "Unexpected “{token}” at position {at}.",
+      "unexpected_end": "Formula ended unexpectedly.",
+      "expected_token": "Expected “{expected}”, found “{found}”.",
+      "too_deep": "The formula is nested too deeply.",
+      "not_a_function": "“{name}” is not a function. Reference a column with prop(\"Name\").",
+      "unknown_function": "Unknown function “{name}”.",
+      "prop_argument": "prop() expects exactly one column name in quotes (position {at}).",
+      "type_mismatch": "“{operator}” compares {left} with {right}. The types must match.",
+      "operator_not_applicable": "“{operator}” cannot be applied to {type}.",
+      "arity": "{name}() expects {hint}",
+      "argument_type": "{name}(): Argument {index} is {actual}, expected {expected}.",
+      "branch_types": "{name}(): Both branches must have the same type.",
+      "unknown_property": "Unknown column: {name}",
+      "negate_number": "The minus sign expects a number, not {type}.",
+      "property_unusable": "The column “{name}” is of type {propertyType} and cannot be used in a formula.",
+      "cycle": "Column “{name}” circular-references itself.",
+      "derived_too_deep": "Calculated columns are nested too deeply.",
+      "formula_column_empty": "The formula column “{name}” is empty.",
+      "unknown_operator": "Unknown operator {operator}.",
+      "rollup_needs_target": "“{aggregate}” needs a target column.",
+      "rollup_target_derived": "A Rollup cannot calculate over a {propertyType} column. Choose a basic column.",
+      "rollup_needs_number": "“{aggregate}” needs a number column.",
+      "rollup_needs_date": "“{aggregate}” needs a date column.",
+      "rollup_incomplete": "The Rollup column “{name}” is incomplete.",
+      "rollup_no_relation": "The Rollup column “{name}” does not point to a relation."
+    }
   }
 }

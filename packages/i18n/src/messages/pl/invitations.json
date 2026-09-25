@@ -23,6 +23,8 @@
     "another": "Zaproś kolejną osobę",
     "close": "Zamknij",
     "email": "Adres e-mail",
+    "language": "Język zaproszenia",
+    "languageHint": "W tym języku przyjdzie e-mail i w nim eXocortex powita tę osobę po zalogowaniu, dopóki sama nie wybierze innego.",
     "workspace": "Obszar roboczy",
     "noWorkspace": "Brak",
     "noWorkspaceHint": "Bez obszaru roboczego powstanie konto, które jeszcze nic nie widzi. Członkostwa są tutaj zawsze nadawane jawnie.",
@@ -47,6 +49,12 @@
     "status": "Status",
     "workspace": "Obszar roboczy",
     "role": "Rola",
+    "roles": {
+      "OWNER": "Właściciel",
+      "ADMIN": "Administrator",
+      "MEMBER": "Członek",
+      "GUEST": "Gość"
+    },
     "invitedBy": "Zaproszenie od",
     "expiresAt": "Ważne do",
     "sent": "Wysłano",

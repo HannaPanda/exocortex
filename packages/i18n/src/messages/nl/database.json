@@ -239,5 +239,45 @@
   "peek": {
     "openAsPage": "Als pagina openen",
     "noProperties": "Deze database heeft nog geen eigenschappen."
+  },
+  "formulaErrors": {
+    "inColumn": "Kolom „{column}”: {message}",
+    "types": {
+      "number": "een getal",
+      "text": "tekst",
+      "boolean": "een booleaanse waarde",
+      "date": "een datum"
+    },
+    "codes": {
+      "empty": "De formule is leeg.",
+      "unterminated_string": "De tekenreeks vanaf positie {at} wordt niet afgesloten.",
+      "invalid_number": "Geen geldig getal: {raw}",
+      "unexpected_character": "Onverwacht teken „{char}” op positie {at}.",
+      "unexpected_token": "Onverwacht „{token}” op positie {at}.",
+      "unexpected_end": "De formule eindigt te vroeg.",
+      "expected_token": "„{expected}” verwacht, „{found}” gevonden.",
+      "too_deep": "De formule is te diep genest.",
+      "not_a_function": "„{name}” is geen functie. Een kolom schrijf je als prop(\"Naam\").",
+      "unknown_function": "Onbekende functie „{name}”.",
+      "prop_argument": "prop() verwacht precies één kolomnaam tussen aanhalingstekens (positie {at}).",
+      "type_mismatch": "„{operator}” vergelijkt {left} met {right}. De types moeten gelijk zijn.",
+      "operator_not_applicable": "„{operator}” kan niet worden toegepast op {type}.",
+      "arity": "{name}() verwacht {hint}",
+      "argument_type": "{name}(): argument {index} is {actual}, {expected} verwacht.",
+      "branch_types": "{name}(): beide takken moeten hetzelfde type hebben.",
+      "unknown_property": "Onbekende kolom: {name}",
+      "negate_number": "Het minteken verwacht een getal, niet {type}.",
+      "property_unusable": "De kolom „{name}” heeft het type {propertyType} en kan niet in een formule worden gebruikt.",
+      "cycle": "De kolom „{name}” verwijst circulair naar zichzelf.",
+      "derived_too_deep": "De berekende kolommen zijn te diep genest.",
+      "formula_column_empty": "De formulekolom „{name}” is leeg.",
+      "unknown_operator": "Onbekende operator {operator}.",
+      "rollup_needs_target": "„{aggregate}” heeft een doelkolom nodig.",
+      "rollup_target_derived": "Een Rollup kan niet berekenen over een kolom van het type {propertyType}. Kies een eenvoudige kolom.",
+      "rollup_needs_number": "„{aggregate}” heeft een getalkolom nodig.",
+      "rollup_needs_date": "„{aggregate}” heeft een datumkolom nodig.",
+      "rollup_incomplete": "De Rollup-kolom „{name}” is onvolledig.",
+      "rollup_no_relation": "De Rollup-kolom „{name}” verwijst niet naar een relatie."
+    }
   }
 }

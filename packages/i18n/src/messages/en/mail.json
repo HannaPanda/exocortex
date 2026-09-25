@@ -1,1 +1,127 @@
-{}
+{
+  "layout": {
+    "buttonFallback": "If the button does not work, open this address:",
+    "quote": "“{text}”"
+  },
+  "common": {
+    "subject": "eXocortex: {subject}",
+    "greeting": "Hi,",
+    "greetingNamed": "Hi {name},",
+    "untitledPage": "Untitled page",
+    "someone": "Someone",
+    "unnamedRule": "Unnamed automation"
+  },
+  "auth": {
+    "ignore": "If you did not request this, you can safely ignore this email.",
+    "verification": {
+      "subject": "Verify email address",
+      "preheader": "One click, and your address is verified.",
+      "heading": "Verify email address",
+      "body": "please verify your email address for eXocortex.",
+      "action": "Verify address"
+    },
+    "passwordReset": {
+      "subject": "Reset password",
+      "preheader": "Set a new password using the link in this email.",
+      "heading": "Reset password",
+      "body": "you can set a new password for eXocortex using the link below.",
+      "action": "Set new password"
+    }
+  },
+  "invitation": {
+    "subject": "Invitation",
+    "subjectWorkspace": "Invitation to “{workspace}”",
+    "invited": "{inviter} has invited you to eXocortex.",
+    "invitedWorkspace": "{inviter} has invited you to the workspace “{workspace}” in eXocortex.",
+    "heading": "You’re invited",
+    "action": "Create account",
+    "validity": "The link is valid until {date} and can only be used once.",
+    "footer": "If you have nothing to do with this, no action is needed: no account will be created without this link."
+  },
+  "share": {
+    "permission": {
+      "READ": "Read only",
+      "WRITE": "Read and edit"
+    },
+    "scope": {
+      "PAGE_ONLY": "Only this single page",
+      "SUBTREE": "The page and everything under it"
+    },
+    "facts": {
+      "permission": "Allowed",
+      "scope": "Scope",
+      "expiresAt": "Valid until"
+    },
+    "open": "Open page",
+    "granted": {
+      "subject": "{actor} shared “{title}” with you",
+      "preheader": "{permission}. {scope}.",
+      "heading": "“{title}” was shared with you",
+      "body": "{actor} shared the page “{title}” in eXocortex with you.",
+      "noMembership": "You do not need to be a member of any workspace for this. The page is now available in your “Shared with me” list."
+    },
+    "changed": {
+      "subject": "Your share for “{title}” has changed",
+      "preheader": "Starting now: {permission}. {scope}.",
+      "heading": "Your share has changed",
+      "body": "{actor} changed your permissions on the page “{title}”. Effective immediately:"
+    },
+    "revoked": {
+      "subject": "Your access to “{title}” has ended",
+      "preheader": "{actor} revoked the share.",
+      "heading": "Your access has ended",
+      "body": "{actor} revoked your share for the page “{title}” in eXocortex. As a result, the page can no longer be opened.",
+      "stillShared": "What is still shared with you"
+    }
+  },
+  "commentDigest": {
+    "subjectSingle": "A new comment on “{title}”",
+    "subject": "{count, plural, one {# new comment} other {# new comments}} on {pages, plural, one {one page} other {# pages}}",
+    "preheaderSingle": "{author} commented.",
+    "preheader": "{count, plural, one {# new comment} other {# new comments}} on {pages, plural, one {one page} other {# pages}}.",
+    "heading": "{count, plural, one {One new comment} other {# new comments}}",
+    "intro": "{count, plural, one {a new comment was added to a page you follow:} other {# new comments were added to pages you follow:}}",
+    "moreComments": "{count, plural, one {and one more} other {and # more}}",
+    "toPage": "To page",
+    "morePages": "{count, plural, one {Something also happened on one more page.} other {Something also happened on # more pages.}}",
+    "footer": "You are receiving this email because you turned on comment emails under Settings → Notifications. You can also turn them off again there or switch to once daily."
+  },
+  "automationPage": {
+    "preheader": "Automation “{rule}” is sending you “{title}”.",
+    "body": "Automation “{rule}” is sending you the page “{title}”.",
+    "truncated": "The page is cut off here. It is best to read the rest in eXocortex.",
+    "link": "The page in eXocortex"
+  },
+  "automationFailure": {
+    "reason": {
+      "WEBHOOK_FAILED": "The server the rule reports to rejected it or was unreachable.",
+      "AI_FAILED": "The rule’s AI task failed, for example because the model did not respond or AI is turned off.",
+      "PAGE_UNAVAILABLE": "The page the rule operates on could not be read or written to with your account.",
+      "OWNER_UNAVAILABLE": "Your account cannot run the rule right now, for example without a verified email address.",
+      "MAIL_FAILED": "The rule could not send the page as an email."
+    },
+    "momentUtc": "{moment} (UTC)",
+    "facts": {
+      "last": "Last",
+      "when": "When",
+      "reason": "Reason"
+    },
+    "history": "View history",
+    "disabled": {
+      "subject": "Automation “{rule}” has turned itself off",
+      "preheader": "{count, plural, one {After one failure, it is no longer doing anything.} other {After # consecutive failures, it is no longer doing anything.}}",
+      "heading": "An automation has turned itself off",
+      "body": "{count, plural, one {your automation “{rule}” failed and has therefore turned itself off.} other {your automation “{rule}” failed # times in a row and has therefore turned itself off.}}",
+      "notice": "It will not do anything more until you turn it back on.",
+      "whereToLook": "The rule’s history shows what happened during each run. You can also turn it back on there."
+    },
+    "runFailed": {
+      "subject": "Scheduled run of “{rule}” failed",
+      "heading": "A scheduled run failed",
+      "body": "the scheduled run of your automation “{rule}” failed.",
+      "stays": "The rule remains enabled and will try again at the next scheduled time.",
+      "remaining": "{count, plural, one {If the next run also fails, the rule will turn itself off.} other {After # more consecutive failures, the rule will turn itself off.}}",
+      "footer": "We won’t notify you individually about further failures in the same series."
+    }
+  }
+}

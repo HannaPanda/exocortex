@@ -1,1 +1,35 @@
-{}
+{
+  "toolLoop": {
+    "limitReached": "La limite de {limit, plural, one {# tour d’outils} many {# de tours d’outils} other {# tours d’outils}} est atteinte, l’exécution s’est terminée sans réponse.",
+    "noCalls": "Aucun appel d’outil n’a été effectué : la limite est définie à zéro.",
+    "summary": "Cette exécution a effectué {calls, plural, one {# appel} many {# d’appels} other {# appels}} pour un total de {chars, number} caractères de réponse :",
+    "tool": "{name} : {calls, plural, one {# appel} many {# d’appels} other {# appels}}, {chars, number} caractères",
+    "toolWithRepeats": "{name} : {calls, plural, one {# appel} many {# d’appels} other {# appels}}, {chars, number} caractères, dont {repeats, number} sans nouveau contenu",
+    "moreTools": "et {count, plural, one {# autre outil} many {# d’autres outils} other {# autres outils}}",
+    "repeats": "{repeats, plural, one {# appel a} many {# d’appels ont} other {# appels ont}} renvoyé exactement ce qu’un appel précédent avait déjà fourni. Poser la même chose formulée différemment ne trouve aucun passage que le premier appel n’a pas trouvé.",
+    "wayIn": "Pour accéder à un passage dans une grande page : un résultat sémantique d’exo_search indique la section avec son identifiant de bloc, exo_page_block_read ouvre précisément cette section, et exo_page_read répond par un plan au lieu de texte sur une grande page. Une limite plus élevée ne remplace pas cela."
+  },
+  "runTimeout": {
+    "turnLimit": "Une réponse individuelle du modèle a dépassé la limite de {duration} (paramètre ai.timeoutMs). L’exécution s’est terminée sans réponse.",
+    "runLimit": "L’exécution complète a atteint sa limite de {duration} (paramètre ai.maxRunMs). Elle s’est terminée sans réponse.",
+    "seconds": "{count, plural, one {# seconde} many {# de secondes} other {# secondes}}",
+    "minutes": "{count, plural, one {# minute} many {# de minutes} other {# minutes}}",
+    "ran": "{model} a tourné avec le niveau de réflexion « {effort} ».",
+    "ranAfterRounds": "{model} a tourné avec le niveau de réflexion « {effort} » {rounds, plural, one {après un tour d’outils} many {après # de tours d’outils} other {après # tours d’outils}}.",
+    "received": "{chars, plural, one {Un caractère de la réponse était arrivé} many {# de caractères de la réponse étaient arrivés} other {# caractères de la réponse étaient arrivés}}, puis le temps s’est écoulé.",
+    "thoughtOnly": "Pas un seul caractère de la réponse n’est arrivé : tout le temps a été consacré à la réflexion.",
+    "nothing": "Pas un seul caractère de la réponse n’est arrivé ; le modèle n’a rien renvoyé.",
+    "hintEffort": "Un niveau de réflexion plus bas sera plus efficace ici qu’une limite plus élevée : le temps s’est écoulé avant le premier caractère, ce qui correspond précisément à la réflexion. Le niveau se règle dans la section IA à côté de la sélection du modèle, les limites dans l’administration sous « IA ».",
+    "hintRun": "Une étape plus petite sera plus efficace ici qu’une limite plus élevée : une tâche nécessitant autant de tours d’outils se terminera plus vite en deux questions qu’en une seule. Les limites se trouvent dans l’administration sous « IA ».",
+    "hintSmaller": "Une question plus ciblée ou un modèle plus rapide sera plus efficace ici qu’une limite plus élevée. Les limites se trouvent dans l’administration sous « IA ».",
+    "effort": {
+      "none": "aucun",
+      "minimal": "minimal",
+      "low": "faible",
+      "medium": "moyen",
+      "high": "élevé",
+      "xhigh": "très élevé",
+      "max": "maximal"
+    }
+  }
+}

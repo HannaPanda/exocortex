@@ -128,5 +128,18 @@
   "sourceSync": {
     "outsideProject": "Questo punto proviene da {path}, un file all’esterno del progetto.",
     "noMapping": "Non c’è alcuna corrispondenza per questo punto nella mappa SyncTeX."
+  },
+  "buildErrors": {
+    "builder_unavailable": "La compilazione LaTeX non è configurata su questo computer. Chi amministra il sistema deve predisporre l’immagine del container.",
+    "build_failed": "La compilazione non è riuscita. L’elenco degli errori indica il file e la riga esatti.",
+    "build_timeout": "La compilazione ha richiesto troppo tempo ed è stata interrotta. Di solito LaTeX è in attesa di un input.",
+    "artifact_too_large": "Il PDF generato è più grande di quanto consentito.",
+    "empty_artifact": "La compilazione è terminata, ma non ha prodotto alcun PDF.",
+    "root_file_missing": "Il file principale non esiste nel progetto.",
+    "project_empty": "Il progetto non contiene ancora alcun file.",
+    "project_missing": "Il progetto non esiste più.",
+    "project_not_materialized": "Il progetto non è ancora pronto. Attendi un momento e riprova a compilare.",
+    "worker_lost": "La compilazione è stata interrotta perché il servizio in background l’ha persa.",
+    "unknown": "La compilazione non è riuscita."
   }
 }

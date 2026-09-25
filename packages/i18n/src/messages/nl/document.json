@@ -143,7 +143,12 @@
     "reposition": "Positie wijzigen",
     "replace": "Wijzigen",
     "regenerate": "Opnieuw genereren",
-    "remove": "Verwijderen"
+    "remove": "Verwijderen",
+    "generationErrors": {
+      "unavailable": "Het genereren van afbeeldingen is niet ingesteld voor deze instantie.",
+      "no_picture": "Het model „{model}” heeft geen afbeelding opgeleverd. Het kan waarschijnlijk geen afbeeldingen genereren; in het beheergedeelte kun je een geschikt model instellen.",
+      "failed": "De omslagafbeelding kon niet worden gegenereerd. Probeer het opnieuw."
+    }
   },
   "overview": {
     "noChildren": "Deze overzichtspagina heeft nog geen subpagina’s.",
@@ -155,7 +160,12 @@
     "sourceGeneratedAt": "Automatisch samengesteld, stand van {time}.",
     "stale": "verouderd",
     "refreshing": "wordt bijgewerkt …",
-    "refresh": "nu bijwerken"
+    "refresh": "nu bijwerken",
+    "errors": {
+      "no_children": "Deze overzichtspagina heeft nog geen subpagina’s.",
+      "too_many_children": "Deze overzichtspagina heeft meer dan {maxChildren} subpagina’s. De lijst hieronder blijft compleet, maar er wordt geen inleiding gegenereerd.",
+      "composition_failed": "De inleiding kon niet worden gegenereerd."
+    }
   },
   "propertiesDialog": {
     "title": "Pagina-eigenschappen",
@@ -329,7 +339,39 @@
     "noDifferenceTitle": "Geen verschil",
     "noDifferenceDescription": "De twee versies hebben dezelfde inhoud.",
     "unchangedRun": "{count, plural, one {# ongewijzigd blok} other {# ongewijzigde blokken}}",
-    "summary": "{added} nieuw, {removed} verwijderd, {changed} gewijzigd, {moved} verplaatst"
+    "summary": "{added} nieuw, {removed} verwijderd, {changed} gewijzigd, {moved} verplaatst",
+    "notices": {
+      "olderSchema": "De versie van {time} is opgeslagen met een oudere schemaversie. Sommige blokken kunnen er daardoor anders uitzien dan toen.",
+      "truncated": "De pagina bevat meer blokken dan de vergelijking toont."
+    },
+    "blockTypes": {
+      "paragraph": "Alinea",
+      "heading": "Kop",
+      "codeBlock": "Codeblok",
+      "blockquote": "Citaat",
+      "bulletList": "Opsomming",
+      "orderedList": "Genummerde lijst",
+      "taskList": "Takenlijst",
+      "horizontalRule": "Scheidingslijn",
+      "table": "Tabel",
+      "callout": "Notitie",
+      "details": "Uitklapbaar gedeelte",
+      "columnList": "Kolommen",
+      "blockMath": "Formule",
+      "tableOfContents": "Inhoudsopgave",
+      "pageLink": "Paginaverwijzing",
+      "breadcrumb": "Kruimelpad",
+      "databaseEmbed": "Ingebedde database",
+      "savedQueryEmbed": "Ingebedde zoekopdracht",
+      "transclusion": "Ingebedde inhoud",
+      "fileAttachment": "Bestand",
+      "image": "Afbeelding",
+      "video": "Video",
+      "audio": "Audio",
+      "pdf": "PDF",
+      "embed": "Insluiting",
+      "bookmark": "Bladwijzer"
+    }
   },
   "pdf": {
     "unreadableTitle": "PDF niet leesbaar",

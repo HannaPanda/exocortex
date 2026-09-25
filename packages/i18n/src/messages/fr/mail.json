@@ -1,1 +1,127 @@
-{}
+{
+  "layout": {
+    "buttonFallback": "Si le bouton ne fonctionne pas, ouvre cette adresse :",
+    "quote": "« {text} »"
+  },
+  "common": {
+    "subject": "eXocortex : {subject}",
+    "greeting": "Bonjour,",
+    "greetingNamed": "Bonjour {name},",
+    "untitledPage": "Page sans titre",
+    "someone": "Quelqu’un",
+    "unnamedRule": "Automatisation sans nom"
+  },
+  "auth": {
+    "ignore": "Si tu n’es pas à l’origine de cette demande, tu peux ignorer cet e-mail.",
+    "verification": {
+      "subject": "Confirmer ton adresse e-mail",
+      "preheader": "Un clic pour confirmer ton adresse.",
+      "heading": "Confirmer ton adresse e-mail",
+      "body": "merci de confirmer ton adresse e-mail pour eXocortex.",
+      "action": "Confirmer l’adresse"
+    },
+    "passwordReset": {
+      "subject": "Réinitialiser ton mot de passe",
+      "preheader": "Suis le lien dans cet e-mail pour définir un nouveau mot de passe.",
+      "heading": "Réinitialiser ton mot de passe",
+      "body": "tu peux définir un nouveau mot de passe pour eXocortex via le lien ci-dessous.",
+      "action": "Définir un nouveau mot de passe"
+    }
+  },
+  "invitation": {
+    "subject": "Invitation",
+    "subjectWorkspace": "Invitation à rejoindre « {workspace} »",
+    "invited": "{inviter} t’a invité à rejoindre eXocortex.",
+    "invitedWorkspace": "{inviter} t’a invité à rejoindre l’espace de travail « {workspace} » sur eXocortex.",
+    "heading": "Tu as reçu une invitation",
+    "action": "Créer un compte",
+    "validity": "Ce lien est valable jusqu’au {date} et ne peut être utilisé qu’une seule fois.",
+    "footer": "Si tu n’es pas concerné, tu n’as rien à faire : aucun compte ne sera créé sans ce lien."
+  },
+  "share": {
+    "permission": {
+      "READ": "Lecture seule",
+      "WRITE": "Lecture et modification"
+    },
+    "scope": {
+      "PAGE_ONLY": "Cette page uniquement",
+      "SUBTREE": "Cette page et toutes ses sous-pages"
+    },
+    "facts": {
+      "permission": "Accès accordé",
+      "scope": "Étendue",
+      "expiresAt": "Valable jusqu’au"
+    },
+    "open": "Ouvrir la page",
+    "granted": {
+      "subject": "{actor} a partagé « {title} » avec toi",
+      "preheader": "{permission}. {scope}.",
+      "heading": "« {title} » est partagée avec toi",
+      "body": "{actor} a partagé la page « {title} » avec toi sur eXocortex.",
+      "noMembership": "Tu n’as pas besoin d’être membre d’un espace de travail pour y accéder. La page apparaît désormais dans ta liste « Partagé avec moi »."
+    },
+    "changed": {
+      "subject": "Ton partage pour « {title} » a été modifié",
+      "preheader": "Désormais : {permission}. {scope}.",
+      "heading": "Ton partage a été modifié",
+      "body": "{actor} a modifié tes autorisations sur la page « {title} ». Voici ce qui s’applique désormais :"
+    },
+    "revoked": {
+      "subject": "Ton accès à « {title} » a pris fin",
+      "preheader": "{actor} a retiré le partage.",
+      "heading": "Ton accès a pris fin",
+      "body": "{actor} a retiré ton partage pour la page « {title} » dans eXocortex. La page ne peut plus être ouverte.",
+      "stillShared": "Ce qui reste partagé avec toi"
+    }
+  },
+  "commentDigest": {
+    "subjectSingle": "Un nouveau commentaire sur « {title} »",
+    "subject": "{count, plural, one {# nouveau commentaire} many {# de nouveaux commentaires} other {# nouveaux commentaires}} sur {pages, plural, one {une page} many {# de pages} other {# pages}}",
+    "preheaderSingle": "{author} a commenté.",
+    "preheader": "{count, plural, one {# nouveau commentaire} many {# de nouveaux commentaires} other {# nouveaux commentaires}} sur {pages, plural, one {une page} many {# de pages} other {# pages}}.",
+    "heading": "{count, plural, one {Un nouveau commentaire} many {# de nouveaux commentaires} other {# nouveaux commentaires}}",
+    "intro": "{count, plural, one {un nouveau commentaire a été ajouté sur une page que tu suis :} many {# de nouveaux commentaires ont été ajoutés sur des pages que tu suis :} other {# nouveaux commentaires ont été ajoutés sur des pages que tu suis :}}",
+    "moreComments": "{count, plural, one {et un autre} many {et # d’autres} other {et # autres}}",
+    "toPage": "Aller à la page",
+    "morePages": "{count, plural, one {Il y a également du nouveau sur une autre page.} many {Il y a également du nouveau sur # d’autres pages.} other {Il y a également du nouveau sur # autres pages.}}",
+    "footer": "Tu reçois cet e-mail car tu as activé les commentaires par e-mail dans Paramètres → Notifications. C’est également là que tu peux les désactiver ou choisir un récapitulatif quotidien."
+  },
+  "automationPage": {
+    "preheader": "L’automatisation « {rule} » t’envoie « {title} ».",
+    "body": "L’automatisation « {rule} » t’envoie la page « {title} ».",
+    "truncated": "La page est tronquée ici. Le mieux est de lire la suite dans eXocortex.",
+    "link": "La page dans eXocortex"
+  },
+  "automationFailure": {
+    "reason": {
+      "WEBHOOK_FAILED": "Le serveur auquel la règle transmet les informations a rejeté la requête ou était inaccessible.",
+      "AI_FAILED": "La tâche IA de la règle a échoué, par exemple parce que le modèle n’a pas répondu ou que l’IA est désactivée.",
+      "PAGE_UNAVAILABLE": "La page sur laquelle la règle opère n’a pas pu être lue ou modifiée avec ton compte.",
+      "OWNER_UNAVAILABLE": "Ton compte ne peut pas exécuter la règle pour le moment, par exemple sans adresse e-mail confirmée.",
+      "MAIL_FAILED": "La règle n’a pas pu envoyer la page par e-mail."
+    },
+    "momentUtc": "{moment} (UTC)",
+    "facts": {
+      "last": "Dernière exécution",
+      "when": "Quand",
+      "reason": "Raison"
+    },
+    "history": "Voir l’historique",
+    "disabled": {
+      "subject": "L’automatisation « {rule} » s’est désactivée",
+      "preheader": "{count, plural, one {Après un échec, elle ne fait plus rien.} many {Après # d’échecs consécutifs, elle ne fait plus rien.} other {Après # échecs consécutifs, elle ne fait plus rien.}}",
+      "heading": "Une automatisation s’est désactivée",
+      "body": "{count, plural, one {ton automatisation « {rule} » a échoué et s’est donc désactivée d’elle-même.} many {ton automatisation « {rule} » a échoué # fois de suite et s’est donc désactivée d’elle-même.} other {ton automatisation « {rule} » a échoué # fois de suite et s’est donc désactivée d’elle-même.}}",
+      "notice": "Tant que tu ne la réactives pas, elle ne fera plus rien.",
+      "whereToLook": "L’historique de la règle détaille ce qui s’est passé lors de chaque exécution. C’est aussi là que tu pourras la réactiver."
+    },
+    "runFailed": {
+      "subject": "L’exécution planifiée de « {rule} » a échoué",
+      "heading": "Une exécution planifiée a échoué",
+      "body": "l’exécution planifiée de ton automatisation « {rule} » a échoué.",
+      "stays": "La règle reste activée et réessaiera lors de la prochaine échéance.",
+      "remaining": "{count, plural, one {Si la prochaine exécution échoue également, la règle se désactivera.} many {Après # autres échecs consécutifs, la règle se désactivera.} other {Après # autres échecs consécutifs, la règle se désactivera.}}",
+      "footer": "Nous ne te signalerons pas individuellement les autres échecs de la même série."
+    }
+  }
+}

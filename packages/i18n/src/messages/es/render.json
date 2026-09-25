@@ -84,5 +84,16 @@
     "ownSource": "Código fuente propio",
     "edit": "Editar",
     "delete": "Eliminar"
+  },
+  "errors": {
+    "renderer_unavailable": "La exportación a PDF no está configurada en este equipo. Quien administre el sistema debe proporcionar la imagen de contenedor.",
+    "render_failed": "La compilación ha fallado. El registro indica en qué punto.",
+    "render_timeout": "La compilación ha tardado demasiado y se ha cancelado. Por lo general, la plantilla está esperando una entrada.",
+    "artifact_too_large": "El PDF generado supera el tamaño permitido.",
+    "empty_artifact": "La compilación finalizó, pero no generó ningún archivo.",
+    "source_missing": "La página aún no tiene contenido procesado. Ábrela una vez y espera un momento.",
+    "template_missing": "La plantilla ya no existe.",
+    "worker_lost": "La compilación se canceló porque el servicio en segundo plano la ha perdido.",
+    "unknown": "La compilación ha fallado."
   }
 }

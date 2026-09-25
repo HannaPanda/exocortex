@@ -143,7 +143,12 @@
     "reposition": "Repositionner",
     "replace": "Modifier",
     "regenerate": "Régénérer",
-    "remove": "Supprimer"
+    "remove": "Supprimer",
+    "generationErrors": {
+      "unavailable": "La génération d’images n’est pas configurée pour cette instance.",
+      "no_picture": "Le modèle « {model} » n’a renvoyé aucune image. Il ne peut probablement pas en générer ; il est possible d’enregistrer un modèle compatible dans la zone d’administration.",
+      "failed": "Impossible de générer l’image de couverture. Merci de réessayer."
+    }
   },
   "overview": {
     "noChildren": "Cette page de synthèse n’a pas encore de sous-pages.",
@@ -155,7 +160,12 @@
     "sourceGeneratedAt": "Généré automatiquement, état à {time}.",
     "stale": "obsolète",
     "refreshing": "actualisation…",
-    "refresh": "actualiser maintenant"
+    "refresh": "actualiser maintenant",
+    "errors": {
+      "no_children": "Cette page de vue d’ensemble n’a pas encore de sous-pages.",
+      "too_many_children": "Cette page de vue d’ensemble compte plus de {maxChildren} sous-pages. La liste ci-dessous reste complète, mais aucun texte d’introduction n’est généré.",
+      "composition_failed": "Impossible de générer l’introduction."
+    }
   },
   "propertiesDialog": {
     "title": "Propriétés de la page",
@@ -329,7 +339,39 @@
     "noDifferenceTitle": "Aucune différence",
     "noDifferenceDescription": "Les deux versions ont le même contenu.",
     "unchangedRun": "{count, plural, one {# bloc inchangé} many {# blocs inchangés} other {# blocs inchangés}}",
-    "summary": "{added} nouveau, {removed} supprimé, {changed} modifié, {moved} déplacé"
+    "summary": "{added} nouveau, {removed} supprimé, {changed} modifié, {moved} déplacé",
+    "notices": {
+      "olderSchema": "La version du {time} a été enregistrée avec une version de schéma plus ancienne. Certains blocs peuvent donc s’afficher différemment d’alors.",
+      "truncated": "La page contient plus de blocs que la comparaison n’en affiche."
+    },
+    "blockTypes": {
+      "paragraph": "Paragraphe",
+      "heading": "Titre",
+      "codeBlock": "Bloc de code",
+      "blockquote": "Citation",
+      "bulletList": "Liste à puces",
+      "orderedList": "Liste numérotée",
+      "taskList": "Liste de tâches",
+      "horizontalRule": "Ligne de séparation",
+      "table": "Tableau",
+      "callout": "Encart",
+      "details": "Section réductible",
+      "columnList": "Colonnes",
+      "blockMath": "Formule",
+      "tableOfContents": "Table des matières",
+      "pageLink": "Lien de page",
+      "breadcrumb": "Fil d’Ariane",
+      "databaseEmbed": "Base de données intégrée",
+      "savedQueryEmbed": "Recherche intégrée",
+      "transclusion": "Contenu intégré",
+      "fileAttachment": "Fichier",
+      "image": "Image",
+      "video": "Vidéo",
+      "audio": "Audio",
+      "pdf": "PDF",
+      "embed": "Intégration",
+      "bookmark": "Marque-page"
+    }
   },
   "pdf": {
     "unreadableTitle": "PDF illisible",

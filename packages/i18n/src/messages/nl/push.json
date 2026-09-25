@@ -1,1 +1,24 @@
-{}
+{
+  "comment": {
+    "title": "{name} heeft gereageerd",
+    "body": "{page}: {preview}"
+  },
+  "calendar": {
+    "title": "{lead}: {title}",
+    "emptyBody": "Afspraak",
+    "lead": {
+      "today": "Vandaag",
+      "now": "Nu",
+      "minutes": "{minutes, plural, one {Over één minuut} other {Over # minuten}}",
+      "hours": "{hours, plural, one {Over één uur} other {Over # uur}}",
+      "hoursAndMinutes": "{hours, plural, one {Over één uur} other {Over # uur}} en {minutes, plural, one {# minuut} other {# minuten}}"
+    },
+    "span": {
+      "allDay": "De hele dag",
+      "allDayRange": "De hele dag, {from} tot {to}",
+      "time": "{time}",
+      "timeRange": "{from} tot {to}",
+      "timeRangeAcrossDays": "{from} tot {toDate}, {to}"
+    }
+  }
+}

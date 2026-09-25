@@ -128,5 +128,18 @@
   "sourceSync": {
     "outsideProject": "This location comes from {path}, a file outside the project.",
     "noMapping": "There is no mapping for this location in the SyncTeX map."
+  },
+  "buildErrors": {
+    "builder_unavailable": "LaTeX builds are not set up on this machine. An administrator needs to provide the container image.",
+    "build_failed": "The build failed. The error list shows in which file and line.",
+    "build_timeout": "The build took too long and was aborted. Usually LaTeX is waiting for input.",
+    "artifact_too_large": "The generated PDF is larger than allowed.",
+    "empty_artifact": "The build finished, but did not produce a PDF.",
+    "root_file_missing": "The main file does not exist in the project.",
+    "project_empty": "The project does not contain any files yet.",
+    "project_missing": "The project no longer exists.",
+    "project_not_materialized": "The project is not prepared yet. Wait a moment and build again.",
+    "worker_lost": "The build was cancelled because the background service lost track of it.",
+    "unknown": "The build failed."
   }
 }

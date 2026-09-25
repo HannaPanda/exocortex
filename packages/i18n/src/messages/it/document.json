@@ -143,7 +143,12 @@
     "reposition": "Riposiziona",
     "replace": "Sostituisci",
     "regenerate": "Rigenera",
-    "remove": "Rimuovi"
+    "remove": "Rimuovi",
+    "generationErrors": {
+      "unavailable": "La generazione di immagini non è configurata per questa istanza.",
+      "no_picture": "Il modello «{model}» non ha restituito alcuna immagine. Probabilmente non può generare immagini; nell’area di amministrazione è possibile impostare un modello adatto.",
+      "failed": "Impossibile generare l’immagine di copertina. Riprova più tardi."
+    }
   },
   "overview": {
     "noChildren": "Questa pagina panoramica non ha ancora sottopagine.",
@@ -155,7 +160,12 @@
     "sourceGeneratedAt": "Compilata automaticamente, aggiornata a {time}.",
     "stale": "non aggiornata",
     "refreshing": "aggiornamento in corso…",
-    "refresh": "aggiorna ora"
+    "refresh": "aggiorna ora",
+    "errors": {
+      "no_children": "Questa pagina panoramica non ha ancora sottopagine.",
+      "too_many_children": "Questa pagina panoramica ha più di {maxChildren} sottopagine. L’elenco sottostante rimane completo, ma non verrà generata un’introduzione.",
+      "composition_failed": "Impossibile generare l’introduzione."
+    }
   },
   "propertiesDialog": {
     "title": "Proprietà della pagina",
@@ -329,7 +339,39 @@
     "noDifferenceTitle": "Nessuna differenza",
     "noDifferenceDescription": "Le due versioni hanno lo stesso contenuto.",
     "unchangedRun": "{count, plural, one {# blocco invariato} many {# blocchi invariati} other {# blocchi invariati}}",
-    "summary": "{added} nuovi, {removed} rimossi, {changed} modificati, {moved} spostati"
+    "summary": "{added} nuovi, {removed} rimossi, {changed} modificati, {moved} spostati",
+    "notices": {
+      "olderSchema": "La versione del {time} è stata salvata con una versione di schema precedente. Alcuni blocchi potrebbero apparire diversi rispetto ad allora.",
+      "truncated": "La pagina contiene più blocchi di quanti ne mostri il confronto."
+    },
+    "blockTypes": {
+      "paragraph": "Paragrafo",
+      "heading": "Intestazione",
+      "codeBlock": "Blocco di codice",
+      "blockquote": "Citazione",
+      "bulletList": "Elenco puntato",
+      "orderedList": "Elenco numerato",
+      "taskList": "Elenco di attività",
+      "horizontalRule": "Linea divisoria",
+      "table": "Tabella",
+      "callout": "Avviso",
+      "details": "Sezione comprimibile",
+      "columnList": "Colonne",
+      "blockMath": "Formula",
+      "tableOfContents": "Indice",
+      "pageLink": "Collegamento a pagina",
+      "breadcrumb": "Percorso",
+      "databaseEmbed": "Database incorporato",
+      "savedQueryEmbed": "Ricerca incorporata",
+      "transclusion": "Contenuto incorporato",
+      "fileAttachment": "File",
+      "image": "Immagine",
+      "video": "Video",
+      "audio": "Audio",
+      "pdf": "PDF",
+      "embed": "Incorporamento",
+      "bookmark": "Segnalibro"
+    }
   },
   "pdf": {
     "unreadableTitle": "PDF non leggibile",

@@ -1,1 +1,127 @@
-{}
+{
+  "layout": {
+    "buttonFallback": "Jeśli przycisk nie działa, otwórz ten adres:",
+    "quote": "„{text}”"
+  },
+  "common": {
+    "subject": "eXocortex: {subject}",
+    "greeting": "Cześć,",
+    "greetingNamed": "Cześć {name},",
+    "untitledPage": "Strona bez nazwy",
+    "someone": "Ktoś",
+    "unnamedRule": "Automatyzacja bez nazwy"
+  },
+  "auth": {
+    "ignore": "Jeśli to nie twoja prośba, możesz zignorować tę wiadomość.",
+    "verification": {
+      "subject": "Potwierdź adres e-mail",
+      "preheader": "Jedno kliknięcie i twój adres będzie potwierdzony.",
+      "heading": "Potwierdź adres e-mail",
+      "body": "potwierdź swój adres e-mail w eXocortex.",
+      "action": "Potwierdź adres"
+    },
+    "passwordReset": {
+      "subject": "Zresetuj hasło",
+      "preheader": "Użyj linku w tej wiadomości, aby ustawić nowe hasło.",
+      "heading": "Zresetuj hasło",
+      "body": "za pomocą poniższego linku możesz ustawić nowe hasło do eXocortex.",
+      "action": "Ustaw nowe hasło"
+    }
+  },
+  "invitation": {
+    "subject": "Zaproszenie",
+    "subjectWorkspace": "Zaproszenie do „{workspace}”",
+    "invited": "{inviter} zaprasza cię do eXocortex.",
+    "invitedWorkspace": "{inviter} zaprasza cię do obszaru roboczego „{workspace}” w eXocortex.",
+    "heading": "Masz zaproszenie",
+    "action": "Utwórz konto",
+    "validity": "Link jest ważny do {date} i można go użyć tylko raz.",
+    "footer": "Jeśli to pomyłka, nic nie musisz robić: bez tego linku konto nie powstanie."
+  },
+  "share": {
+    "permission": {
+      "READ": "Tylko do odczytu",
+      "WRITE": "Odczyt i edycja"
+    },
+    "scope": {
+      "PAGE_ONLY": "Tylko ta jedna strona",
+      "SUBTREE": "Strona wraz z całą zawartością podrzędną"
+    },
+    "facts": {
+      "permission": "Uprawnienia",
+      "scope": "Zakres",
+      "expiresAt": "Ważne do"
+    },
+    "open": "Otwórz stronę",
+    "granted": {
+      "subject": "{actor} udostępnia ci „{title}”",
+      "preheader": "{permission}. {scope}.",
+      "heading": "Strona „{title}” jest ci udostępniona",
+      "body": "{actor} udostępnia ci stronę „{title}” w eXocortex.",
+      "noMembership": "Nie musisz być członkiem żadnego obszaru roboczego. Strona jest już na twojej liście „Udostępnione dla mnie”."
+    },
+    "changed": {
+      "subject": "Twoje udostępnienie dla „{title}” uległo zmianie",
+      "preheader": "Od teraz: {permission}. {scope}.",
+      "heading": "Twoje udostępnienie uległo zmianie",
+      "body": "{actor} zmienia twoje uprawnienia do strony „{title}”. Od teraz obowiązuje:"
+    },
+    "revoked": {
+      "subject": "Twój dostęp do „{title}” został zakończony",
+      "preheader": "{actor} cofa udostępnienie.",
+      "heading": "Twój dostęp został zakończony",
+      "body": "{actor} cofa twoje udostępnienie strony „{title}” w eXocortex. Nie można już otworzyć tej strony.",
+      "stillShared": "Nadal udostępnione dla ciebie"
+    }
+  },
+  "commentDigest": {
+    "subjectSingle": "Nowy komentarz do „{title}”",
+    "subject": "{count, plural, one {# nowy komentarz} few {# nowe komentarze} many {# nowych komentarzy} other {# nowego komentarza}} na {pages, plural, one {jednej stronie} few {# stronach} many {# stronach} other {# strony}}",
+    "preheaderSingle": "{author} dodaje komentarz.",
+    "preheader": "{count, plural, one {# nowy komentarz} few {# nowe komentarze} many {# nowych komentarzy} other {# nowego komentarza}} na {pages, plural, one {jednej stronie} few {# stronach} many {# stronach} other {# strony}}.",
+    "heading": "{count, plural, one {Nowy komentarz} few {# nowe komentarze} many {# nowych komentarzy} other {# nowego komentarza}}",
+    "intro": "{count, plural, one {na obserwowanej przez ciebie stronie pojawił się nowy komentarz:} few {na obserwowanych przez ciebie stronach pojawiły się # nowe komentarze:} many {na obserwowanych przez ciebie stronach pojawiło się # nowych komentarzy:} other {na obserwowanych przez ciebie stronach pojawiło się # nowego komentarza:}}",
+    "moreComments": "{count, plural, one {i jeszcze jeden} few {i # inne} many {i # innych} other {i # innego}}",
+    "toPage": "Przejdź do strony",
+    "morePages": "{count, plural, one {Również na innej stronie pojawiła się aktywność.} few {Również na # innych stronach pojawiła się aktywność.} many {Również na # innych stronach pojawiła się aktywność.} other {Również na # innej strony pojawiła się aktywność.}}",
+    "footer": "Otrzymujesz tę wiadomość, ponieważ w sekcji Ustawienia → Powiadomienia włączono powiadomienia e-mail o komentarzach. W tym samym miejscu można je wyłączyć lub zmienić częstotliwość na raz dziennie."
+  },
+  "automationPage": {
+    "preheader": "Automatyzacja „{rule}” przesyła stronę „{title}”.",
+    "body": "Automatyzacja „{rule}” przesyła ci stronę „{title}”.",
+    "truncated": "Tutaj strona została ucięta. Resztę najlepiej przeczytać w eXocortex.",
+    "link": "Strona w eXocortex"
+  },
+  "automationFailure": {
+    "reason": {
+      "WEBHOOK_FAILED": "Serwer, do którego reguła wysyła zgłoszenia, odrzucił połączenie lub był nieosiągalny.",
+      "AI_FAILED": "Zadanie AI dla tej reguły nie powiodło się, na przykład z powodu braku odpowiedzi modelu lub wyłączenia AI.",
+      "PAGE_UNAVAILABLE": "Z twojego konta nie udało się odczytać ani zapisać strony, na której działa reguła.",
+      "OWNER_UNAVAILABLE": "Twoje konto nie może obecnie wykonać tej reguły, na przykład z powodu niepotwierdzonego adresu e-mail.",
+      "MAIL_FAILED": "Regule nie udało się wysłać strony pocztą elektroniczną."
+    },
+    "momentUtc": "{moment} (UTC)",
+    "facts": {
+      "last": "Ostatnio",
+      "when": "Kiedy",
+      "reason": "Powód"
+    },
+    "history": "Zobacz historię",
+    "disabled": {
+      "subject": "Automatyzacja „{rule}” została wyłączona",
+      "preheader": "{count, plural, one {Po jednym niepowodzeniu reguła została zatrzymana.} few {Po # niepowodzeniach z rzędu reguła została zatrzymana.} many {Po # niepowodzeniach z rzędu reguła została zatrzymana.} other {Po # niepowodzenia z rzędu reguła została zatrzymana.}}",
+      "heading": "Automatyzacja została wyłączona",
+      "body": "{count, plural, one {twoja automatyzacja „{rule}” nie powiodła się i dlatego została wyłączona.} few {twoja automatyzacja „{rule}” nie powiodła się #-krotnie z rzędu i dlatego została wyłączona.} many {twoja automatyzacja „{rule}” nie powiodła się #-krotnie z rzędu i dlatego została wyłączona.} other {twoja automatyzacja „{rule}” nie powiodła się #-krotnie z rzędu i dlatego została wyłączona.}}",
+      "notice": "Dopóki nie włączysz jej ponownie, nie podejmie żadnych działań.",
+      "whereToLook": "W historii reguły można sprawdzić przebieg każdego wykonania. Tam również można ją ponownie włączyć."
+    },
+    "runFailed": {
+      "subject": "Zaplanowane wykonanie reguły „{rule}” nie powiodło się",
+      "heading": "Zaplanowane uruchomienie nie powiodło się",
+      "body": "zaplanowane uruchomienie twojej automatyzacji „{rule}” nie powiodło się.",
+      "stays": "Reguła pozostaje włączona i spróbuje ponownie w kolejnym terminie.",
+      "remaining": "{count, plural, one {Jeśli kolejne uruchomienie również się nie powiedzie, reguła zostanie wyłączona.} few {Po kolejnych # niepowodzeniach z rzędu reguła zostanie wyłączona.} many {Po kolejnych # niepowodzeniach z rzędu reguła zostanie wyłączona.} other {Po kolejnych # niepowodzenia z rzędu reguła zostanie wyłączona.}}",
+      "footer": "Kolejne niepowodzenia z tej samej serii nie będą zgłaszane pojedynczo."
+    }
+  }
+}

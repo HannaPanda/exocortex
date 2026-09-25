@@ -128,5 +128,18 @@
   "sourceSync": {
     "outsideProject": "Deze locatie komt uit {path}, een bestand buiten het project.",
     "noMapping": "Voor deze locatie is er geen koppeling in de SyncTeX-kaart."
+  },
+  "buildErrors": {
+    "builder_unavailable": "LaTeX bouwen is niet geconfigureerd op deze computer. Een beheerder moet de container-image beschikbaar maken.",
+    "build_failed": "Het bouwen is mislukt. De foutenlijst geeft aan in welk bestand en op welke regel.",
+    "build_timeout": "Het bouwen duurde te lang en is afgebroken. Meestal wacht LaTeX op invoer.",
+    "artifact_too_large": "De gegenereerde pdf is groter dan toegestaan.",
+    "empty_artifact": "Het bouwen is voltooid, maar heeft geen pdf opgeleverd.",
+    "root_file_missing": "Het hoofdbestand bestaat niet in het project.",
+    "project_empty": "Het project bevat nog geen bestanden.",
+    "project_missing": "Het project bestaat niet meer.",
+    "project_not_materialized": "Het project is nog niet klaargemaakt. Wacht een moment en bouw opnieuw.",
+    "worker_lost": "Het bouwen is afgebroken omdat de achtergronddienst het contact ermee is verloren.",
+    "unknown": "Het bouwen is mislukt."
   }
 }

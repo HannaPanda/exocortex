@@ -1,1 +1,64 @@
-{}
+{
+  "clear": {
+    "done": "Contexto vaciado. El historial sigue visible."
+  },
+  "new": {
+    "started": "Nueva conversación «{title}» iniciada."
+  },
+  "model": {
+    "switched": "Modelo cambiado a {model}."
+  },
+  "think": {
+    "set": "Nivel de pensamiento establecido en {level}.",
+    "clamped": "{model} no admite este nivel, se usará {level} en su lugar."
+  },
+  "vision": {
+    "auto": "El modelo complementario de visión ahora sigue la configuración predeterminada de administración.",
+    "off": "Modelo complementario de visión desactivado para esta conversación.",
+    "set": "Modelo complementario de visión establecido en {model}."
+  },
+  "compact": {
+    "automatic": "El contexto se resumirá automáticamente en cuanto alcance el límite. Usa /clear para vaciarlo de inmediato."
+  },
+  "context": {
+    "noPage": "No hay ninguna página abierta en este momento.",
+    "openPage": "Está abierta «{title}».",
+    "enabledNoPage": "En cuanto abras una página, la IA conocerá su título y ruta, y podrá cargar el contenido por su cuenta si lo necesita.",
+    "enabled": "La IA conoce el título y la ruta, y puede cargar el contenido por su cuenta si lo necesita.",
+    "disabled": "El contexto de la página está desactivado: la IA no sabrá nada de ella.",
+    "howOff": "Usa /context off para desactivarlo.",
+    "howOn": "Usa /context on para activarlo.",
+    "nothingPinned": "No hay nada fijado.",
+    "pinned": "{count, plural, one {También está fijado: {list}.} many {También están fijados: {list}.} other {También están fijados: {list}.}}",
+    "sourceEmbedded": "«{title}» (contenido incluido)",
+    "sourceNamed": "«{title}» (solo nombrada)",
+    "untitled": "Sin título"
+  },
+  "rules": {
+    "none": "No hay páginas de reglas de IA activas en este espacio de trabajo.",
+    "always": "siempre activo",
+    "onRequest": "a petición"
+  },
+  "tools": {
+    "none": "No hay herramientas disponibles.",
+    "policyDeny": "Las herramientas de modificación están desactivadas en este espacio de trabajo.",
+    "policyGuarded": "Las herramientas de modificación se bloquean en cuanto una ejecución lee contenido externo (documentos subidos, descripciones de imágenes).",
+    "policyAllow": "Las herramientas de modificación siguen permitidas incluso tras leer contenido externo.",
+    "subset": "Una ejecución individual no recibe todas las herramientas, sino solo las áreas que encajan con la consulta. Si falta alguna, la IA la habilitará por su cuenta con exo_toolbox."
+  },
+  "help": {
+    "titleArgument": "título?",
+    "descriptions": {
+      "clear": "Vaciar contexto, el historial sigue visible",
+      "new": "Iniciar nueva conversación",
+      "model": "Cambiar el modelo de esta conversación",
+      "think": "Elegir nivel de pensamiento",
+      "vision": "Anular modelo complementario de visión",
+      "compact": "Resumir el contexto ahora",
+      "context": "Mostrar o alternar el contexto de la página y las fuentes fijadas",
+      "rules": "Mostrar páginas de reglas activas",
+      "tools": "Mostrar herramientas disponibles",
+      "help": "Mostrar esta lista"
+    }
+  }
+}

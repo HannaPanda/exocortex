@@ -1,1 +1,24 @@
-{}
+{
+  "comment": {
+    "title": "{name} ha commentato",
+    "body": "{page}: {preview}"
+  },
+  "calendar": {
+    "title": "{lead}: {title}",
+    "emptyBody": "Evento",
+    "lead": {
+      "today": "Oggi",
+      "now": "Adesso",
+      "minutes": "{minutes, plural, one {Tra un minuto} many {Tra # minuti} other {Tra # minuti}}",
+      "hours": "{hours, plural, one {Tra un’ora} many {Tra # ore} other {Tra # ore}}",
+      "hoursAndMinutes": "{hours, plural, one {Tra un’ora} many {Tra # ore} other {Tra # ore}} e {minutes, plural, one {# minuto} many {# minuti} other {# minuti}}"
+    },
+    "span": {
+      "allDay": "Tutto il giorno",
+      "allDayRange": "Tutto il giorno, da {from} a {to}",
+      "time": "{time}",
+      "timeRange": "Dalle {from} alle {to}",
+      "timeRangeAcrossDays": "Dalle {from} fino al {toDate}, {to}"
+    }
+  }
+}

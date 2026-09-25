@@ -239,5 +239,45 @@
   "peek": {
     "openAsPage": "Otwórz jako stronę",
     "noProperties": "Ta baza danych nie ma jeszcze żadnych właściwości."
+  },
+  "formulaErrors": {
+    "inColumn": "Kolumna „{column}”: {message}",
+    "types": {
+      "number": "liczba",
+      "text": "tekst",
+      "boolean": "wartość logiczna",
+      "date": "data"
+    },
+    "codes": {
+      "empty": "Formuła jest pusta.",
+      "unterminated_string": "Ciąg znaków od pozycji {at} nie jest zamknięty.",
+      "invalid_number": "Nieprawidłowa liczba: {raw}",
+      "unexpected_character": "Nieoczekiwany znak „{char}” na pozycji {at}.",
+      "unexpected_token": "Nieoczekiwany token „{token}” na pozycji {at}.",
+      "unexpected_end": "Formuła kończy się zbyt wcześnie.",
+      "expected_token": "Oczekiwano „{expected}”, znaleziono „{found}”.",
+      "too_deep": "Formuła jest zbyt głęboko zagnieżdżona.",
+      "not_a_function": "„{name}” nie jest funkcją. Kolumnę zapisuje się jako prop(\"Nazwa\").",
+      "unknown_function": "Nieznana funkcja „{name}”.",
+      "prop_argument": "prop() oczekuje dokładnie jednej nazwy kolumny w cudzysłowie (pozycja {at}).",
+      "type_mismatch": "„{operator}” porównuje {left} z {right}. Typy muszą być takie same.",
+      "operator_not_applicable": "Operatora „{operator}” nie można zastosować do typu: {type}.",
+      "arity": "{name}() oczekuje: {hint}",
+      "argument_type": "{name}(): argument {index} to {actual}, oczekiwano: {expected}.",
+      "branch_types": "{name}(): obie gałęzie muszą mieć ten sam typ.",
+      "unknown_property": "Nieznana kolumna: {name}",
+      "negate_number": "Znak minus oczekuje liczby, a nie: {type}.",
+      "property_unusable": "Kolumna „{name}” ma typ {propertyType} i nie można jej użyć w formule.",
+      "cycle": "Kolumna „{name}” zależy cyklicznie od samej siebie.",
+      "derived_too_deep": "Kolumny obliczane są zbyt głęboko zagnieżdżone.",
+      "formula_column_empty": "Kolumna formuły „{name}” jest pusta.",
+      "unknown_operator": "Nieznany operator {operator}.",
+      "rollup_needs_target": "„{aggregate}” wymaga kolumny docelowej.",
+      "rollup_target_derived": "Rollup nie może obliczać wartości z kolumny o typie {propertyType}. Wybierz zwykłą kolumnę.",
+      "rollup_needs_number": "„{aggregate}” wymaga kolumny liczbowej.",
+      "rollup_needs_date": "„{aggregate}” wymaga kolumny z datą.",
+      "rollup_incomplete": "Kolumna typu Rollup „{name}” jest niekompletna.",
+      "rollup_no_relation": "Kolumna typu Rollup „{name}” nie wskazuje na żadną relację."
+    }
   }
 }

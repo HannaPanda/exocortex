@@ -1,1 +1,64 @@
-{}
+{
+  "clear": {
+    "done": "Context gewist. De geschiedenis blijft leesbaar."
+  },
+  "new": {
+    "started": "Nieuw gesprek „{title}” gestart."
+  },
+  "model": {
+    "switched": "Model gewijzigd naar {model}."
+  },
+  "think": {
+    "set": "Denkniveau ingesteld op {level}.",
+    "clamped": "{model} ondersteunt dit niveau niet, gebruikt in plaats daarvan {level}."
+  },
+  "vision": {
+    "auto": "Vision-begeleidend model volgt nu de standaardinstelling van de beheerder.",
+    "off": "Vision-begeleidend model uitgeschakeld voor dit gesprek.",
+    "set": "Vision-begeleidend model ingesteld op {model}."
+  },
+  "compact": {
+    "automatic": "De context wordt automatisch samengevat zodra deze de limiet bereikt. Gebruik /clear om hem direct te wissen."
+  },
+  "context": {
+    "noPage": "Er is momenteel geen pagina geopend.",
+    "openPage": "Geopend is „{title}”.",
+    "enabledNoPage": "Zodra je een pagina opent, ziet de AI de titel en het pad en kan de inhoud indien nodig zelf laden.",
+    "enabled": "De AI ziet de titel en het pad en kan de inhoud indien nodig zelf laden.",
+    "disabled": "Paginacontext staat uit: de AI weet er niets van.",
+    "howOff": "Met /context off schakel je dit uit.",
+    "howOn": "Met /context on schakel je dit in.",
+    "nothingPinned": "Er is niets vastgezet.",
+    "pinned": "{count, plural, one {Bovendien is vastgezet: {list}.} other {Bovendien zijn vastgezet: {list}.}}",
+    "sourceEmbedded": "„{title}” (inhoud inbegrepen)",
+    "sourceNamed": "„{title}” (alleen genoemd)",
+    "untitled": "Naamloos"
+  },
+  "rules": {
+    "none": "Geen actieve AI-regelpagina’s in deze werkruimte.",
+    "always": "altijd actief",
+    "onRequest": "op verzoek"
+  },
+  "tools": {
+    "none": "Geen gereedschappen beschikbaar.",
+    "policyDeny": "Wijzigende gereedschappen zijn uitgeschakeld in deze werkruimte.",
+    "policyGuarded": "Wijzigende gereedschappen zijn geblokkeerd zodra een sessie externe inhoud heeft gelezen (geüploade documenten, afbeeldingsbeschrijvingen).",
+    "policyAllow": "Wijzigende gereedschappen blijven toegestaan, ook na het lezen van externe inhoud.",
+    "subset": "Een enkele sessie krijgt ze niet allemaal aangeboden, maar alleen de onderdelen die bij de vraag passen. Als er een ontbreekt, ontgrendelt de AI deze zelf via exo_toolbox."
+  },
+  "help": {
+    "titleArgument": "titel?",
+    "descriptions": {
+      "clear": "Context wissen, geschiedenis blijft leesbaar",
+      "new": "Nieuw gesprek starten",
+      "model": "Model van dit gesprek wijzigen",
+      "think": "Denkniveau kiezen",
+      "vision": "Vision-begeleidend model overschrijven",
+      "compact": "Context nu samenvatten",
+      "context": "Paginacontext en vastgezette bronnen weergeven of in-/uitschakelen",
+      "rules": "Actieve regelpagina’s weergeven",
+      "tools": "Beschikbare gereedschappen weergeven",
+      "help": "Deze lijst weergeven"
+    }
+  }
+}

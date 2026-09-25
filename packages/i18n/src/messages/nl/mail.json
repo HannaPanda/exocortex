@@ -1,1 +1,127 @@
-{}
+{
+  "layout": {
+    "buttonFallback": "Als de knop niet werkt, open dan dit adres:",
+    "quote": "„{text}”"
+  },
+  "common": {
+    "subject": "eXocortex: {subject}",
+    "greeting": "Hallo,",
+    "greetingNamed": "Hallo {name},",
+    "untitledPage": "Naamloze pagina",
+    "someone": "Iemand",
+    "unnamedRule": "Naamloze automatisering"
+  },
+  "auth": {
+    "ignore": "Als je dit niet hebt aangevraagd, kun je deze e-mail negeren.",
+    "verification": {
+      "subject": "E-mailadres bevestigen",
+      "preheader": "Eén klik en je adres is bevestigd.",
+      "heading": "E-mailadres bevestigen",
+      "body": "bevestig alsjeblieft je e-mailadres voor eXocortex.",
+      "action": "Adres bevestigen"
+    },
+    "passwordReset": {
+      "subject": "Wachtwoord opnieuw instellen",
+      "preheader": "Via de link in deze mail stel je een nieuw wachtwoord in.",
+      "heading": "Wachtwoord opnieuw instellen",
+      "body": "via de onderstaande link kun je een nieuw wachtwoord instellen voor eXocortex.",
+      "action": "Nieuw wachtwoord instellen"
+    }
+  },
+  "invitation": {
+    "subject": "Uitnodiging",
+    "subjectWorkspace": "Uitnodiging voor „{workspace}”",
+    "invited": "{inviter} heeft je uitgenodigd voor eXocortex.",
+    "invitedWorkspace": "{inviter} heeft je uitgenodigd voor de werkruimte „{workspace}” in eXocortex.",
+    "heading": "Je bent uitgenodigd",
+    "action": "Account aanmaken",
+    "validity": "De link is geldig tot {date} en kan slechts één keer worden gebruikt.",
+    "footer": "Als je hier niets mee te maken hebt, hoef je niets te doen: zonder deze link wordt er geen account aangemaakt."
+  },
+  "share": {
+    "permission": {
+      "READ": "Alleen lezen",
+      "WRITE": "Lezen en bewerken"
+    },
+    "scope": {
+      "PAGE_ONLY": "Alleen deze pagina",
+      "SUBTREE": "Deze pagina en alles eronder"
+    },
+    "facts": {
+      "permission": "Toegestaan",
+      "scope": "Bereik",
+      "expiresAt": "Geldig tot"
+    },
+    "open": "Pagina openen",
+    "granted": {
+      "subject": "{actor} heeft „{title}” met je gedeeld",
+      "preheader": "{permission}. {scope}.",
+      "heading": "„{title}” is met je gedeeld",
+      "body": "{actor} heeft de pagina „{title}” in eXocortex met je gedeeld.",
+      "noMembership": "Je hoeft hiervoor geen lid van een werkruimte te zijn. De pagina staat vanaf nu in je lijst „Met mij gedeeld”."
+    },
+    "changed": {
+      "subject": "Je deling voor „{title}” is gewijzigd",
+      "preheader": "Vanaf nu: {permission}. {scope}.",
+      "heading": "Je deling is gewijzigd",
+      "body": "{actor} heeft gewijzigd wat je mag doen op de pagina „{title}”. Vanaf nu geldt:"
+    },
+    "revoked": {
+      "subject": "Je toegang tot „{title}” is beëindigd",
+      "preheader": "{actor} heeft de deling ingetrokken.",
+      "heading": "Je toegang is beëindigd",
+      "body": "{actor} heeft je deling voor de pagina „{title}” in eXocortex ingetrokken. De pagina kan hierdoor niet meer worden geopend.",
+      "stillShared": "Wat nog steeds met je is gedeeld"
+    }
+  },
+  "commentDigest": {
+    "subjectSingle": "Een nieuwe reactie op „{title}”",
+    "subject": "{count, plural, one {# nieuwe reactie} other {# nieuwe reacties}} op {pages, plural, one {één pagina} other {# pagina’s}}",
+    "preheaderSingle": "{author} heeft gereageerd.",
+    "preheader": "{count, plural, one {# nieuwe reactie} other {# nieuwe reacties}} op {pages, plural, one {één pagina} other {# pagina’s}}.",
+    "heading": "{count, plural, one {Een nieuwe reactie} other {# nieuwe reacties}}",
+    "intro": "{count, plural, one {op een pagina die je volgt, is een nieuwe reactie geplaatst:} other {op pagina’s die je volgt, zijn # nieuwe reacties geplaatst:}}",
+    "moreComments": "{count, plural, one {en nog één} other {en nog #}}",
+    "toPage": "Naar de pagina",
+    "morePages": "{count, plural, one {Op nog een andere pagina is ook iets gebeurd.} other {Op # andere pagina’s is ook iets gebeurd.}}",
+    "footer": "Je ontvangt deze e-mail omdat je onder Instellingen → Meldingen reacties per e-mail hebt ingeschakeld. Daar kun je dit ook weer uitschakelen of wijzigen naar één keer per dag."
+  },
+  "automationPage": {
+    "preheader": "Automatisering „{rule}” stuurt je „{title}”.",
+    "body": "Automatisering „{rule}” stuurt je de pagina „{title}”.",
+    "truncated": "Hier is de pagina afgekapt. De rest kun je het beste in eXocortex lezen.",
+    "link": "De pagina in eXocortex"
+  },
+  "automationFailure": {
+    "reason": {
+      "WEBHOOK_FAILED": "De server waaraan de regel rapporteert, weigerde het verzoek of was niet bereikbaar.",
+      "AI_FAILED": "De AI-taak van de regel is mislukt, bijvoorbeeld omdat het model niet antwoordde of AI is uitgeschakeld.",
+      "PAGE_UNAVAILABLE": "De pagina waarop de regel werkt, kon niet worden gelezen of bewerkt met jouw account.",
+      "OWNER_UNAVAILABLE": "Je account kan de regel op dit moment niet uitvoeren, bijvoorbeeld zonder bevestigd e-mailadres.",
+      "MAIL_FAILED": "De regel kon de pagina niet per e-mail versturen."
+    },
+    "momentUtc": "{moment} (UTC)",
+    "facts": {
+      "last": "Laatst",
+      "when": "Wanneer",
+      "reason": "Reden"
+    },
+    "history": "Geschiedenis bekijken",
+    "disabled": {
+      "subject": "Automatisering „{rule}” is uitgeschakeld",
+      "preheader": "{count, plural, one {Na een fout doet deze niets meer.} other {Na # opeenvolgende fouten doet deze niets meer.}}",
+      "heading": "Een automatisering is uitgeschakeld",
+      "body": "{count, plural, one {je automatisering „{rule}” is mislukt en daarom automatisch uitgeschakeld.} other {je automatisering „{rule}” is # keer achter elkaar mislukt en daarom automatisch uitgeschakeld.}}",
+      "notice": "Totdat je deze weer inschakelt, doet deze niets meer.",
+      "whereToLook": "In de geschiedenis van de regel staat wat er bij elke uitvoering is gebeurd. Daar schakel je hem ook weer in."
+    },
+    "runFailed": {
+      "subject": "Geplande uitvoering van „{rule}” is mislukt",
+      "heading": "Een geplande uitvoering is mislukt",
+      "body": "de geplande uitvoering van je automatisering „{rule}” is mislukt.",
+      "stays": "De regel blijft ingeschakeld en probeert het op het volgende tijdstip opnieuw.",
+      "remaining": "{count, plural, one {Als de volgende uitvoering ook mislukt, schakelt de regel zichzelf uit.} other {Na nog # opeenvolgende mislukkingen schakelt de regel zichzelf uit.}}",
+      "footer": "Verdere mislukkingen in dezelfde reeks melden we niet apart aan je."
+    }
+  }
+}

@@ -239,5 +239,45 @@
   "peek": {
     "openAsPage": "Ouvrir en tant que page",
     "noProperties": "Cette base de données n’a pas encore de propriétés."
+  },
+  "formulaErrors": {
+    "inColumn": "Colonne « {column} » : {message}",
+    "types": {
+      "number": "un nombre",
+      "text": "du texte",
+      "boolean": "un booléen",
+      "date": "une date"
+    },
+    "codes": {
+      "empty": "La formule est vide.",
+      "unterminated_string": "La chaîne de caractères à la position {at} n’est pas fermée.",
+      "invalid_number": "Nombre non valide : {raw}",
+      "unexpected_character": "Caractère inattendu « {char} » à la position {at}.",
+      "unexpected_token": "Élément inattendu « {token} » à la position {at}.",
+      "unexpected_end": "La formule se termine trop tôt.",
+      "expected_token": "« {expected} » attendu, « {found} » trouvé.",
+      "too_deep": "La formule est trop profondément imbriquée.",
+      "not_a_function": "« {name} » n’est pas une fonction. Pour faire référence à une colonne, écris prop(\"Nom\").",
+      "unknown_function": "Fonction inconnue « {name} ».",
+      "prop_argument": "prop() attend exactement un nom de colonne entre guillemets (position {at}).",
+      "type_mismatch": "« {operator} » compare {left} avec {right}. Les types doivent être identiques.",
+      "operator_not_applicable": "« {operator} » ne peut pas s’appliquer à {type}.",
+      "arity": "{name}() attend {hint}",
+      "argument_type": "{name}() : l’argument {index} est {actual}, mais {expected} est attendu.",
+      "branch_types": "{name}() : les deux branches doivent avoir le même type.",
+      "unknown_property": "Colonne inconnue : {name}",
+      "negate_number": "Le signe moins attend un nombre, pas {type}.",
+      "property_unusable": "La colonne « {name} » est de type {propertyType} et ne peut pas être utilisée dans une formule.",
+      "cycle": "La colonne « {name} » dépend d’elle-même de manière circulaire.",
+      "derived_too_deep": "Les colonnes calculées sont trop profondément imbriquées.",
+      "formula_column_empty": "La colonne de formule « {name} » est vide.",
+      "unknown_operator": "Opérateur inconnu {operator}.",
+      "rollup_needs_target": "« {aggregate} » nécessite une colonne cible.",
+      "rollup_target_derived": "Un Rollup ne peut pas effectuer de calcul sur une colonne de type {propertyType}. Choisis une colonne simple.",
+      "rollup_needs_number": "« {aggregate} » nécessite une colonne de nombres.",
+      "rollup_needs_date": "« {aggregate} » nécessite une colonne de dates.",
+      "rollup_incomplete": "La colonne Rollup « {name} » est incomplète.",
+      "rollup_no_relation": "La colonne Rollup « {name} » ne pointe vers aucune relation."
+    }
   }
 }

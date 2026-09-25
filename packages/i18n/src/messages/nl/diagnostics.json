@@ -1,1 +1,35 @@
-{}
+{
+  "toolLoop": {
+    "limitReached": "De limiet van {limit, plural, one {# toolronde} other {# toolrondes}} is bereikt, de run is zonder antwoord beëindigd.",
+    "noCalls": "Er is geen enkele tool-aanroep uitgevoerd: de limiet staat op nul.",
+    "summary": "Deze run heeft {calls, plural, one {# aanroep} other {# aanroepen}} gedaan met in totaal {chars, number} tekens aan antwoord:",
+    "tool": "{name}: {calls, plural, one {# aanroep} other {# aanroepen}}, {chars, number} tekens",
+    "toolWithRepeats": "{name}: {calls, plural, one {# aanroep} other {# aanroepen}}, {chars, number} tekens, waarvan {repeats, number} zonder nieuwe inhoud",
+    "moreTools": "en nog {count, plural, one {# andere tool} other {# andere tools}}",
+    "repeats": "{repeats, plural, one {# aanroep heeft} other {# aanroepen hebben}} precies opgeleverd wat een eerdere aanroep al had opgeleverd. Hetzelfde nog eens vragen, met andere woorden, levert geen passage op die de eerste aanroep niet al heeft gevonden.",
+    "wayIn": "De manier om bij een passage in een grote pagina te komen: een semantisch zoekresultaat van exo_search noemt het gedeelte inclusief blok-id, exo_page_block_read opent precies dat gedeelte, en exo_page_read antwoordt bij een grote pagina met een kaart in plaats van tekst. Een hogere limiet vervangt dat niet."
+  },
+  "runTimeout": {
+    "turnLimit": "Een enkel antwoord van het model heeft de limiet van {duration} overschreden (instelling ai.timeoutMs). De run is zonder antwoord beëindigd.",
+    "runLimit": "De hele run heeft de limiet van {duration} bereikt (instelling ai.maxRunMs). Deze is zonder antwoord beëindigd.",
+    "seconds": "{count, plural, one {# seconde} other {# seconden}}",
+    "minutes": "{count, plural, one {# minuut} other {# minuten}}",
+    "ran": "Uitgevoerd met {model} op denkniveau „{effort}”.",
+    "ranAfterRounds": "Uitgevoerd met {model} op denkniveau „{effort}” {rounds, plural, one {na één toolronde} other {na # toolrondes}}.",
+    "received": "Van het antwoord {chars, plural, one {was één teken} other {waren # tekens}} binnengekomen, daarna liep de tijd af.",
+    "thoughtOnly": "Van het antwoord is geen enkel teken binnengekomen: alle tijd is opgegaan aan nadenken.",
+    "nothing": "Van het antwoord is geen enkel teken binnengekomen; het model heeft niets opgeleverd.",
+    "hintEffort": "Een lager denkniveau helpt hier meer dan een hogere limiet: de tijd is vóór het eerste teken verstreken, en dat is precies het nadenken. Het niveau vind je in het AI-paneel naast de modelkeuze, de limieten in het beheer onder „AI”.",
+    "hintRun": "Een kleinere stap helpt hier meer dan een hogere limiet: een taak die zoveel toolrondes nodig heeft, is in twee vragen sneller klaar dan in één. De limieten vind je in het beheer onder „AI”.",
+    "hintSmaller": "Een kleinere vraag of een sneller model helpt hier meer dan een hogere limiet. De limieten vind je in het beheer onder „AI”.",
+    "effort": {
+      "none": "geen",
+      "minimal": "minimaal",
+      "low": "laag",
+      "medium": "gemiddeld",
+      "high": "hoog",
+      "xhigh": "zeer hoog",
+      "max": "maximaal"
+    }
+  }
+}

@@ -1,1 +1,64 @@
-{}
+{
+  "clear": {
+    "done": "Contexte vidé. L’historique reste lisible."
+  },
+  "new": {
+    "started": "Nouvelle conversation « {title} » démarrée."
+  },
+  "model": {
+    "switched": "Modèle changé pour {model}."
+  },
+  "think": {
+    "set": "Niveau de réflexion défini sur {level}.",
+    "clamped": "{model} ne prend pas en charge ce niveau, utilisation de {level} à la place."
+  },
+  "vision": {
+    "auto": "Le modèle de vision d’accompagnement suit désormais le réglage par défaut de l’admin.",
+    "off": "Modèle de vision d’accompagnement désactivé pour cette conversation.",
+    "set": "Modèle de vision d’accompagnement défini sur {model}."
+  },
+  "compact": {
+    "automatic": "Le contexte est automatiquement condensé dès qu’il atteint la limite. Utilise /clear pour le vider immédiatement."
+  },
+  "context": {
+    "noPage": "Aucune page n’est ouverte actuellement.",
+    "openPage": "« {title} » est ouverte.",
+    "enabledNoPage": "Dès que tu ouvres une page, l’IA reçoit son titre et son chemin, et peut charger le contenu elle-même si besoin.",
+    "enabled": "L’IA reçoit le titre et le chemin, et peut charger le contenu elle-même si besoin.",
+    "disabled": "Le contexte de page est désactivé : l’IA n’en sait rien.",
+    "howOff": "Désactive-le avec /context off.",
+    "howOn": "Active-le avec /context on.",
+    "nothingPinned": "Rien n’est épinglé.",
+    "pinned": "{count, plural, one {Élément également épinglé : {list}.} many {Éléments également épinglés : {list}.} other {Éléments également épinglés : {list}.}}",
+    "sourceEmbedded": "« {title} » (contenu inclus)",
+    "sourceNamed": "« {title} » (seulement mentionné)",
+    "untitled": "Sans titre"
+  },
+  "rules": {
+    "none": "Aucune page de règles IA active dans cet espace de travail.",
+    "always": "toujours actif",
+    "onRequest": "sur demande"
+  },
+  "tools": {
+    "none": "Aucun outil disponible.",
+    "policyDeny": "Les outils de modification sont désactivés dans cet espace de travail.",
+    "policyGuarded": "Les outils de modification sont bloqués dès qu’une exécution lit des contenus externes (documents téléversés, descriptions d’images).",
+    "policyAllow": "Les outils de modification restent autorisés même après la lecture de contenus externes.",
+    "subset": "Une exécution donnée ne reçoit pas tous les outils, mais seulement les domaines adaptés à la question. S’il en manque un, l’IA l’active elle-même avec exo_toolbox."
+  },
+  "help": {
+    "titleArgument": "titre?",
+    "descriptions": {
+      "clear": "Vider le contexte, l’historique reste lisible",
+      "new": "Démarrer une nouvelle conversation",
+      "model": "Changer le modèle de cette conversation",
+      "think": "Choisir le niveau de réflexion",
+      "vision": "Remplacer le modèle de vision d’accompagnement",
+      "compact": "Condenser le contexte maintenant",
+      "context": "Afficher ou basculer le contexte de page et les sources épinglées",
+      "rules": "Afficher les pages de règles actives",
+      "tools": "Afficher les outils disponibles",
+      "help": "Afficher cette liste"
+    }
+  }
+}

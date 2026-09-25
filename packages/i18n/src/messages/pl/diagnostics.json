@@ -1,1 +1,35 @@
-{}
+{
+  "toolLoop": {
+    "limitReached": "Osiągnięto limit {limit, plural, one {# rundy narzędzi} few {# rund narzędzi} many {# rund narzędzi} other {# rundy narzędzi}}, uruchomienie zakończyło się bez odpowiedzi.",
+    "noCalls": "Nie wykonano ani jednego wywołania narzędzia: limit wynosi zero.",
+    "summary": "To uruchomienie wykonało {calls, plural, one {# wywołanie} few {# wywołania} many {# wywołań} other {# wywołania}} z łącznie {chars, number} znakami odpowiedzi:",
+    "tool": "{name}: {calls, plural, one {# wywołanie} few {# wywołania} many {# wywołań} other {# wywołania}}, {chars, number} znaków",
+    "toolWithRepeats": "{name}: {calls, plural, one {# wywołanie} few {# wywołania} many {# wywołań} other {# wywołania}}, {chars, number} znaków, w tym {repeats, number} bez nowej treści",
+    "moreTools": "i {count, plural, one {# inne narzędzie} few {# inne narzędzia} many {# innych narzędzi} other {# innego narzędzia}}",
+    "repeats": "{repeats, plural, one {# wywołanie zwróciło} few {# wywołania zwróciły} many {# wywołań zwróciło} other {# wywołania zwróciło}} dokładnie to, co przyniosło już wcześniejsze wywołanie. Pytanie o to samo innymi słowami nie znajdzie fragmentu, którego nie znalazło pierwsze wywołanie.",
+    "wayIn": "Sposób na dotarcie do miejsca na dużej stronie: trafienie semantyczne z exo_search wskazuje sekcję wraz z identyfikatorem bloku, exo_page_block_read otwiera dokładnie tę sekcję, a exo_page_read w przypadku dużej strony odpowiada mapą zamiast tekstu. Wyższy limit tego nie zastąpi."
+  },
+  "runTimeout": {
+    "turnLimit": "Pojedyncza odpowiedź modelu przekroczyła limit {duration} (ustawienie ai.timeoutMs). Uruchomienie zakończyło się bez odpowiedzi.",
+    "runLimit": "Całe uruchomienie osiągnęło limit {duration} (ustawienie ai.maxRunMs). Zostało zakończone bez odpowiedzi.",
+    "seconds": "{count, plural, one {# sekunda} few {# sekundy} many {# sekund} other {# sekundy}}",
+    "minutes": "{count, plural, one {# minuta} few {# minuty} many {# minut} other {# minuty}}",
+    "ran": "Uruchomiono model {model} z poziomem myślenia „{effort}”.",
+    "ranAfterRounds": "Uruchomiono model {model} z poziomem myślenia „{effort}” {rounds, plural, one {po jednej rundzie narzędzi} few {po # rundach narzędzi} many {po # rundach narzędzi} other {po # rundy narzędzi}}.",
+    "received": "Z odpowiedzi {chars, plural, one {dotarł jeden znak} few {dotarły # znaki} many {dotarło # znaków} other {dotarło # znaku}}, po czym upłynął limit czasu.",
+    "thoughtOnly": "Z odpowiedzi nie dotarł ani jeden znak: cały czas został poświęcony na myślenie.",
+    "nothing": "Z odpowiedzi nie dotarł ani jeden znak; model nic nie zwrócił.",
+    "hintEffort": "Niższy poziom myślenia sprawdzi się tu lepiej niż wyższy limit: czas upłynął przed pierwszym znakiem, a to właśnie czas przeznaczony na myślenie. Poziom znajduje się w sekcji AI obok wyboru modelu, a limity w administracji w sekcji „AI”.",
+    "hintRun": "Mniejszy krok sprawdzi się tu lepiej niż wyższy limit: zadanie wymagające tylu rund narzędzi ukończy się szybciej rozbite na dwa pytania niż w jednym. Limity znajdują się w administracji w sekcji „AI”.",
+    "hintSmaller": "Mniejsze pytanie lub szybszy model sprawdzi się tu lepiej niż wyższy limit. Limity znajdują się w administracji w sekcji „AI”.",
+    "effort": {
+      "none": "brak",
+      "minimal": "minimalny",
+      "low": "niski",
+      "medium": "średni",
+      "high": "wysoki",
+      "xhigh": "bardzo wysoki",
+      "max": "maksymalny"
+    }
+  }
+}

@@ -1,1 +1,35 @@
-{}
+{
+  "toolLoop": {
+    "limitReached": "Se ha alcanzado el límite de {limit, plural, one {# ronda de herramientas} many {# rondas de herramientas} other {# rondas de herramientas}}; la ejecución terminó sin respuesta.",
+    "noCalls": "No se realizó ninguna llamada a herramientas: el límite está en cero.",
+    "summary": "Esta ejecución realizó {calls, plural, one {# llamada} many {# llamadas} other {# llamadas}} con un total de {chars, number} caracteres de respuesta:",
+    "tool": "{name}: {calls, plural, one {# llamada} many {# llamadas} other {# llamadas}}, {chars, number} caracteres",
+    "toolWithRepeats": "{name}: {calls, plural, one {# llamada} many {# llamadas} other {# llamadas}}, {chars, number} caracteres, de las cuales {repeats, number} no aportaron contenido nuevo",
+    "moreTools": "y {count, plural, one {# herramienta más} many {# herramientas más} other {# herramientas más}}",
+    "repeats": "{repeats, plural, one {# llamada devolvió} many {# llamadas devolvieron} other {# llamadas devolvieron}} exactamente lo mismo que ya había devuelto una llamada anterior. Preguntar lo mismo otra vez con otras palabras no encontrará una parte que la primera llamada no haya encontrado.",
+    "wayIn": "La forma de llegar a una sección en una página grande: un resultado semántico de exo_search indica la sección junto con el identificador de bloque, exo_page_block_read abre exactamente esa sección y exo_page_read responde en una página grande con un mapa en lugar de texto. Un límite más alto no sustituye esto."
+  },
+  "runTimeout": {
+    "turnLimit": "Una sola respuesta del modelo superó el límite de {duration} (ajuste ai.timeoutMs). La ejecución terminó sin respuesta.",
+    "runLimit": "Toda la ejecución alcanzó su límite de {duration} (ajuste ai.maxRunMs). Terminó sin respuesta.",
+    "seconds": "{count, plural, one {# segundo} many {# segundos} other {# segundos}}",
+    "minutes": "{count, plural, one {# minuto} many {# minutos} other {# minutos}}",
+    "ran": "Se ejecutó {model} con nivel de reflexión «{effort}».",
+    "ranAfterRounds": "Se ejecutó {model} con nivel de reflexión «{effort}» {rounds, plural, one {tras una ronda de herramientas} many {tras # rondas de herramientas} other {tras # rondas de herramientas}}.",
+    "received": "De la respuesta {chars, plural, one {había llegado un carácter} many {habían llegado # caracteres} other {habían llegado # caracteres}}, y luego se agotó el tiempo.",
+    "thoughtOnly": "De la respuesta no llegó ni un solo carácter: todo el tiempo se fue en reflexionar.",
+    "nothing": "De la respuesta no llegó ni un solo carácter; el modelo no devolvió nada.",
+    "hintEffort": "Un nivel de reflexión más bajo ayuda más aquí que un límite más alto: el tiempo se agotó antes del primer carácter, y eso es justo la reflexión. El nivel se encuentra en el panel de IA junto a la selección de modelo; los límites, en administración bajo «IA».",
+    "hintRun": "Un paso más pequeño ayuda más aquí que un límite más alto: una tarea que necesita tantas rondas de herramientas se completa más rápido en dos preguntas que en una. Los límites están en administración bajo «IA».",
+    "hintSmaller": "Una pregunta más acotada o un modelo más rápido ayuda más aquí que un límite más alto. Los límites están en administración bajo «IA».",
+    "effort": {
+      "none": "ninguno",
+      "minimal": "mínimo",
+      "low": "bajo",
+      "medium": "medio",
+      "high": "alto",
+      "xhigh": "muy alto",
+      "max": "máximo"
+    }
+  }
+}

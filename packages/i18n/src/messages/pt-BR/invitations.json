@@ -23,6 +23,8 @@
     "another": "Convidar outra pessoa",
     "close": "Fechar",
     "email": "Endereço de e-mail",
+    "language": "Idioma do convite",
+    "languageHint": "O e-mail chegará nesse idioma, e será assim que o eXocortex vai se comunicar com a pessoa após o login, até que ela escolha outro.",
     "workspace": "Espaço de trabalho",
     "noWorkspace": "Nenhum",
     "noWorkspaceHint": "Sem um espaço de trabalho, a conta criada ainda não terá acesso a nada. As participações são sempre atribuídas expressamente por aqui.",
@@ -47,6 +49,12 @@
     "status": "Status",
     "workspace": "Espaço de trabalho",
     "role": "Função",
+    "roles": {
+      "OWNER": "Proprietário",
+      "ADMIN": "Administrador",
+      "MEMBER": "Membro",
+      "GUEST": "Convidado"
+    },
     "invitedBy": "Convite enviado por",
     "expiresAt": "Válido até",
     "sent": "Enviado",

@@ -143,7 +143,12 @@
     "reposition": "Zmień pozycję",
     "replace": "Zmień",
     "regenerate": "Wygeneruj ponownie",
-    "remove": "Usuń"
+    "remove": "Usuń",
+    "generationErrors": {
+      "unavailable": "Generowanie obrazów nie jest skonfigurowane dla tej instancji.",
+      "no_picture": "Model „{model}” nie zwrócił żadnego obrazu. Prawdopodobnie nie obsługuje generowania obrazów; w panelu administracyjnym można ustawić model z obsługą obrazów.",
+      "failed": "Nie udało się wygenerować okładki. Spróbuj ponownie."
+    }
   },
   "overview": {
     "noChildren": "Ta strona przeglądowa nie ma jeszcze podstron.",
@@ -155,7 +160,12 @@
     "sourceGeneratedAt": "Zestawione automatycznie, stan z {time}.",
     "stale": "nieaktualne",
     "refreshing": "aktualizowanie…",
-    "refresh": "zaktualizuj teraz"
+    "refresh": "zaktualizuj teraz",
+    "errors": {
+      "no_children": "Ta strona przeglądowa nie ma jeszcze żadnych podstron.",
+      "too_many_children": "Ta strona przeglądowa ma więcej niż {maxChildren} podstron. Poniższa lista pozostaje kompletna, ale wstęp nie zostanie wygenerowany.",
+      "composition_failed": "Nie udało się wygenerować wstępu."
+    }
   },
   "propertiesDialog": {
     "title": "Właściwości strony",
@@ -329,7 +339,39 @@
     "noDifferenceTitle": "Brak różnic",
     "noDifferenceDescription": "Obie wersje mają identyczną treść.",
     "unchangedRun": "{count, plural, one {# niezmieniony blok} few {# niezmienione bloki} many {# niezmienionych bloków} other {# niezmienionego bloku}}",
-    "summary": "{added} dodano, {removed} usunięto, {changed} zmieniono, {moved} przeniesiono"
+    "summary": "{added} dodano, {removed} usunięto, {changed} zmieniono, {moved} przeniesiono",
+    "notices": {
+      "olderSchema": "Wersja z dnia {time} została zapisana przy użyciu starszej wersji schematu. Z tego powodu pojedyncze bloki mogą wyglądać inaczej niż wtedy.",
+      "truncated": "Strona ma więcej bloków, niż wyświetla porównanie."
+    },
+    "blockTypes": {
+      "paragraph": "Akapit",
+      "heading": "Nagłówek",
+      "codeBlock": "Blok kodu",
+      "blockquote": "Cytat",
+      "bulletList": "Lista punktowana",
+      "orderedList": "Lista numerowana",
+      "taskList": "Lista zadań",
+      "horizontalRule": "Linia pozioma",
+      "table": "Tabela",
+      "callout": "Wyróżnienie",
+      "details": "Rozwijana sekcja",
+      "columnList": "Kolumny",
+      "blockMath": "Wzór",
+      "tableOfContents": "Spis treści",
+      "pageLink": "Odnośnik do strony",
+      "breadcrumb": "Ścieżka",
+      "databaseEmbed": "Osadzona baza danych",
+      "savedQueryEmbed": "Osadzone wyszukiwanie",
+      "transclusion": "Osadzona zawartość",
+      "fileAttachment": "Plik",
+      "image": "Obraz",
+      "video": "Wideo",
+      "audio": "Audio",
+      "pdf": "PDF",
+      "embed": "Osadzenie",
+      "bookmark": "Zakładka"
+    }
   },
   "pdf": {
     "unreadableTitle": "Plik PDF nieczytelny",

@@ -84,5 +84,16 @@
     "ownSource": "Codice sorgente personalizzato",
     "edit": "Modifica",
     "delete": "Elimina"
+  },
+  "errors": {
+    "renderer_unavailable": "L’output PDF non è configurato su questa macchina. Chi amministra il sistema deve predisporre l’immagine del container.",
+    "render_failed": "La generazione non è riuscita. Il registro indica dove si è verificato l’errore.",
+    "render_timeout": "La generazione ha richiesto troppo tempo ed è stata interrotta. Di solito il modello è in attesa di un input.",
+    "artifact_too_large": "Il PDF generato supera le dimensioni consentite.",
+    "empty_artifact": "La generazione è terminata, ma non ha prodotto alcun file.",
+    "source_missing": "La pagina non ha ancora contenuti elaborati. Aprila e attendi qualche istante.",
+    "template_missing": "Il modello non esiste più.",
+    "worker_lost": "La generazione è stata interrotta perché il servizio in background non risponde più.",
+    "unknown": "La generazione non è riuscita."
   }
 }

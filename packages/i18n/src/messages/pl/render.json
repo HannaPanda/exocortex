@@ -84,5 +84,16 @@
     "ownSource": "Własny kod źródłowy",
     "edit": "Edytuj",
     "delete": "Usuń"
+  },
+  "errors": {
+    "renderer_unavailable": "Generowanie PDF nie jest skonfigurowane na tym komputerze. Administrator musi udostępnić obraz kontenera.",
+    "render_failed": "Kompilacja się nie powiodła. Dziennik wskazuje miejsce błędu.",
+    "render_timeout": "Kompilacja trwała zbyt długo i została przerwana. Zazwyczaj szablon czeka na dane wejściowe.",
+    "artifact_too_large": "Wygenerowany plik PDF jest większy niż dozwolony limit.",
+    "empty_artifact": "Kompilacja zakończyła się sukcesem, ale nie utworzyła żadnego pliku.",
+    "source_missing": "Ta strona nie ma jeszcze przetworzonej zawartości. Otwórz ją i chwilę poczekaj.",
+    "template_missing": "Ten szablon już nie istnieje.",
+    "worker_lost": "Kompilacja została przerwana, ponieważ usługa w tle utraciła z nią połączenie.",
+    "unknown": "Kompilacja się nie powiodła."
   }
 }

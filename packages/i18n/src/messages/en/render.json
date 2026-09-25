@@ -84,5 +84,16 @@
     "ownSource": "Custom source code",
     "edit": "Edit",
     "delete": "Delete"
+  },
+  "errors": {
+    "renderer_unavailable": "PDF export is not set up on this machine. An administrator needs to provide the container image.",
+    "render_failed": "The build failed. The log shows where it went wrong.",
+    "render_timeout": "The build took too long and was aborted. Usually, the template is waiting for input.",
+    "artifact_too_large": "The generated PDF is larger than allowed.",
+    "empty_artifact": "The build completed, but did not produce a file.",
+    "source_missing": "The page does not have any processed content yet. Open it once and wait a moment.",
+    "template_missing": "The template no longer exists.",
+    "worker_lost": "The build was cancelled because the background service lost track of it.",
+    "unknown": "The build failed."
   }
 }

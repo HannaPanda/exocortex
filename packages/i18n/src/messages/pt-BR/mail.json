@@ -1,1 +1,127 @@
-{}
+{
+  "layout": {
+    "buttonFallback": "Se o botão não funcionar, abra este endereço:",
+    "quote": "“{text}”"
+  },
+  "common": {
+    "subject": "eXocortex: {subject}",
+    "greeting": "Olá,",
+    "greetingNamed": "Olá, {name},",
+    "untitledPage": "Página sem título",
+    "someone": "Alguém",
+    "unnamedRule": "Automação sem nome"
+  },
+  "auth": {
+    "ignore": "Se você não solicitou isso, pode ignorar este e-mail.",
+    "verification": {
+      "subject": "Confirmar endereço de e-mail",
+      "preheader": "Basta um clique para confirmar seu endereço.",
+      "heading": "Confirmar endereço de e-mail",
+      "body": "por favor, confirme seu endereço de e-mail para o eXocortex.",
+      "action": "Confirmar endereço"
+    },
+    "passwordReset": {
+      "subject": "Redefinir senha",
+      "preheader": "Redefina sua senha usando o link neste e-mail.",
+      "heading": "Redefinir senha",
+      "body": "você pode definir uma nova senha para o eXocortex usando o link abaixo.",
+      "action": "Definir nova senha"
+    }
+  },
+  "invitation": {
+    "subject": "Convite",
+    "subjectWorkspace": "Convite para “{workspace}”",
+    "invited": "{inviter} convidou você para o eXocortex.",
+    "invitedWorkspace": "{inviter} convidou você para o espaço de trabalho “{workspace}” no eXocortex.",
+    "heading": "Você recebeu um convite",
+    "action": "Criar conta",
+    "validity": "O link é válido até {date} e só pode ser usado uma vez.",
+    "footer": "Se você não tem relação com isso, não precisa fazer nada: nenhuma conta será criada sem o uso deste link."
+  },
+  "share": {
+    "permission": {
+      "READ": "Somente leitura",
+      "WRITE": "Leitura e edição"
+    },
+    "scope": {
+      "PAGE_ONLY": "Apenas esta página",
+      "SUBTREE": "A página e todo o seu conteúdo subordinado"
+    },
+    "facts": {
+      "permission": "Permissão",
+      "scope": "Escopo",
+      "expiresAt": "Válido até"
+    },
+    "open": "Abrir página",
+    "granted": {
+      "subject": "{actor} compartilhou “{title}” com você",
+      "preheader": "{permission}. {scope}.",
+      "heading": "“{title}” foi compartilhado com você",
+      "body": "{actor} compartilhou a página “{title}” no eXocortex com você.",
+      "noMembership": "Você não precisa ser membro de nenhum espaço de trabalho para isso. A página agora está disponível na sua lista “Compartilhado comigo”."
+    },
+    "changed": {
+      "subject": "Seu compartilhamento de „{title}“ mudou",
+      "preheader": "A partir de agora: {permission}. {scope}.",
+      "heading": "Seu compartilhamento mudou",
+      "body": "{actor} alterou o que você pode fazer na página „{title}“. Vale a partir de agora:"
+    },
+    "revoked": {
+      "subject": "Seu acesso a „{title}“ foi encerrado",
+      "preheader": "{actor} removeu o compartilhamento.",
+      "heading": "Seu acesso foi encerrado",
+      "body": "{actor} removeu seu compartilhamento da página „{title}“ no eXocortex. Com isso, não é mais possível abrir a página.",
+      "stillShared": "O que continua compartilhado com você"
+    }
+  },
+  "commentDigest": {
+    "subjectSingle": "Um novo comentário em „{title}“",
+    "subject": "{count, plural, one {# novo comentário} many {# novos comentários} other {# novos comentários}} em {pages, plural, one {uma página} many {# páginas} other {# páginas}}",
+    "preheaderSingle": "{author} comentou.",
+    "preheader": "{count, plural, one {# novo comentário} many {# novos comentários} other {# novos comentários}} em {pages, plural, one {uma página} many {# páginas} other {# páginas}}.",
+    "heading": "{count, plural, one {Um novo comentário} many {# novos comentários} other {# novos comentários}}",
+    "intro": "{count, plural, one {em uma página que você acompanha, surgiu um novo comentário:} many {em páginas que você acompanha, surgiram # novos comentários:} other {em páginas que você acompanha, surgiram # novos comentários:}}",
+    "moreComments": "{count, plural, one {e mais um} many {e mais #} other {e mais #}}",
+    "toPage": "Ir para a página",
+    "morePages": "{count, plural, one {Também houve atividade em outra página.} many {Também houve atividade em outras # páginas.} other {Também houve atividade em outras # páginas.}}",
+    "footer": "Você recebeu este e-mail porque ativou comentários por e-mail em Configurações → Notificações. Lá você também pode desativá-los ou alterar a frequência para uma vez ao dia."
+  },
+  "automationPage": {
+    "preheader": "A automação „{rule}“ enviou „{title}“ para você.",
+    "body": "A automação „{rule}“ enviou a página „{title}“ para você.",
+    "truncated": "A página foi truncada aqui. Para ler o restante, acesse o eXocortex.",
+    "link": "A página no eXocortex"
+  },
+  "automationFailure": {
+    "reason": {
+      "WEBHOOK_FAILED": "O servidor para o qual a regra envia notificações recusou a conexão ou estava inacessível.",
+      "AI_FAILED": "A tarefa de IA da regra falhou, por exemplo, porque o modelo não respondeu ou a IA está desativada.",
+      "PAGE_UNAVAILABLE": "Não foi possível ler ou editar a página em que a regra opera usando a sua conta.",
+      "OWNER_UNAVAILABLE": "No momento, sua conta não pode executar a regra, por exemplo, por não ter um endereço de e-mail confirmado.",
+      "MAIL_FAILED": "A regra não conseguiu enviar a página por e-mail."
+    },
+    "momentUtc": "{moment} (UTC)",
+    "facts": {
+      "last": "Última execução",
+      "when": "Quando",
+      "reason": "Motivo"
+    },
+    "history": "Ver histórico",
+    "disabled": {
+      "subject": "A automação „{rule}“ foi desativada",
+      "preheader": "{count, plural, one {Após uma falha, ela não executará mais ações.} many {Após # falhas consecutivas, ela não executará mais ações.} other {Após # falhas consecutivas, ela não executará mais ações.}}",
+      "heading": "Uma automação foi desativada",
+      "body": "{count, plural, one {sua automação „{rule}“ falhou e, por isso, foi desativada automaticamente.} many {sua automação „{rule}“ falhou # vezes seguidas e, por isso, foi desativada automaticamente.} other {sua automação „{rule}“ falhou # vezes seguidas e, por isso, foi desativada automaticamente.}}",
+      "notice": "Ela não executará mais ações até que você a reative.",
+      "whereToLook": "O histórico da regra mostra o que aconteceu em cada execução. É lá também que você pode reativá-la."
+    },
+    "runFailed": {
+      "subject": "A execução agendada de „{rule}“ falhou",
+      "heading": "Uma execução agendada falhou",
+      "body": "a execução agendada da sua automação “{rule}” falhou.",
+      "stays": "A regra continua ativada e tentará novamente no próximo horário programado.",
+      "remaining": "{count, plural, one {Se a próxima execução também falhar, a regra será desativada.} many {Após # falhas consecutivas adicionais, a regra será desativada.} other {Após # falhas consecutivas adicionais, a regra será desativada.}}",
+      "footer": "Não notificaremos você individualmente sobre outras falhas desta mesma série."
+    }
+  }
+}

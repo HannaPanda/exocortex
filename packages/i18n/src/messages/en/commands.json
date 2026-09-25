@@ -1,1 +1,64 @@
-{}
+{
+  "clear": {
+    "done": "Context cleared. The history remains readable."
+  },
+  "new": {
+    "started": "Started new conversation “{title}”."
+  },
+  "model": {
+    "switched": "Switched model to {model}."
+  },
+  "think": {
+    "set": "Thinking level set to {level}.",
+    "clamped": "{model} does not support this level, using {level} instead."
+  },
+  "vision": {
+    "auto": "Vision companion model now follows the admin default.",
+    "off": "Vision companion model disabled for this conversation.",
+    "set": "Vision companion model set to {model}."
+  },
+  "compact": {
+    "automatic": "Context is automatically summarized once it reaches the limit. Use /clear to clear it immediately."
+  },
+  "context": {
+    "noPage": "No page is currently open.",
+    "openPage": "“{title}” is open.",
+    "enabledNoPage": "As soon as you open a page, the AI sees its title and path and can load the content itself if needed.",
+    "enabled": "The AI sees the title and path and can load the content itself if needed.",
+    "disabled": "Page context is off: the AI sees nothing of it.",
+    "howOff": "Use /context off to turn it off.",
+    "howOn": "Use /context on to turn it on.",
+    "nothingPinned": "Nothing is pinned.",
+    "pinned": "{count, plural, one {Also pinned: {list}.} other {Also pinned: {list}.}}",
+    "sourceEmbedded": "“{title}” (content included)",
+    "sourceNamed": "“{title}” (mentioned only)",
+    "untitled": "Untitled"
+  },
+  "rules": {
+    "none": "No active AI rule pages in this workspace.",
+    "always": "always active",
+    "onRequest": "on request"
+  },
+  "tools": {
+    "none": "No tools available.",
+    "policyDeny": "Modifying tools are disabled in this workspace.",
+    "policyGuarded": "Modifying tools are locked once a run reads external content (uploaded documents, image descriptions).",
+    "policyAllow": "Modifying tools remain allowed even after reading external content.",
+    "subset": "An individual run is not offered all of them, only the areas that fit the question. If one is missing, the AI enables it itself using exo_toolbox."
+  },
+  "help": {
+    "titleArgument": "title?",
+    "descriptions": {
+      "clear": "Clear context, history remains readable",
+      "new": "Start a new conversation",
+      "model": "Switch model for this conversation",
+      "think": "Choose thinking level",
+      "vision": "Override vision companion model",
+      "compact": "Summarize context now",
+      "context": "Show or toggle page context and pinned sources",
+      "rules": "Show active rule pages",
+      "tools": "Show available tools",
+      "help": "Show this list"
+    }
+  }
+}

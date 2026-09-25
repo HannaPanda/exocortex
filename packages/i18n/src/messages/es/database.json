@@ -239,5 +239,45 @@
   "peek": {
     "openAsPage": "Abrir como página",
     "noProperties": "Esta base de datos aún no tiene propiedades."
+  },
+  "formulaErrors": {
+    "inColumn": "Columna «{column}»: {message}",
+    "types": {
+      "number": "un número",
+      "text": "texto",
+      "boolean": "un valor booleano",
+      "date": "una fecha"
+    },
+    "codes": {
+      "empty": "La fórmula está vacía.",
+      "unterminated_string": "La cadena de texto a partir de la posición {at} no se cierra.",
+      "invalid_number": "Número no válido: {raw}",
+      "unexpected_character": "Carácter inesperado «{char}» en la posición {at}.",
+      "unexpected_token": "Elemento inesperado «{token}» en la posición {at}.",
+      "unexpected_end": "La fórmula termina antes de tiempo.",
+      "expected_token": "Se esperaba «{expected}», pero se encontró «{found}».",
+      "too_deep": "La fórmula tiene demasiados niveles de anidamiento.",
+      "not_a_function": "«{name}» no es una función. Para referirte a una columna escribe prop(\"Nombre\").",
+      "unknown_function": "Función desconocida «{name}».",
+      "prop_argument": "prop() espera exactamente el nombre de una columna entre comillas (posición {at}).",
+      "type_mismatch": "«{operator}» compara {left} con {right}. Los tipos deben coincidir.",
+      "operator_not_applicable": "«{operator}» no se puede aplicar a {type}.",
+      "arity": "{name}() espera {hint}",
+      "argument_type": "{name}(): el argumento {index} es {actual}, pero se esperaba {expected}.",
+      "branch_types": "{name}(): ambas ramas deben tener el mismo tipo.",
+      "unknown_property": "Columna desconocida: {name}",
+      "negate_number": "El signo menos espera un número, no {type}.",
+      "property_unusable": "La columna «{name}» es de tipo {propertyType} y no se puede usar en una fórmula.",
+      "cycle": "La columna «{name}» depende de sí misma de forma circular.",
+      "derived_too_deep": "Las columnas calculadas tienen demasiados niveles de anidamiento.",
+      "formula_column_empty": "La columna de fórmula «{name}» está vacía.",
+      "unknown_operator": "Operador desconocido: {operator}.",
+      "rollup_needs_target": "«{aggregate}» necesita una columna de destino.",
+      "rollup_target_derived": "Un Rollup no puede calcular sobre una columna de tipo {propertyType}. Elige una columna simple.",
+      "rollup_needs_number": "«{aggregate}» necesita una columna numérica.",
+      "rollup_needs_date": "«{aggregate}» necesita una columna de fecha.",
+      "rollup_incomplete": "La columna de Rollup «{name}» está incompleta.",
+      "rollup_no_relation": "La columna de Rollup «{name}» no apunta a ninguna relación."
+    }
   }
 }
