@@ -5,6 +5,7 @@ import {
   documentSummarySchema,
   idSchema,
   overviewModeSchema,
+  type OverviewSkipReason,
   refreshDocumentOverviewResponseSchema,
 } from '@exocortex/contracts';
 
@@ -93,6 +94,13 @@ export const pageOverviewReadTool: AnyToolDefinition = defineTool({
   },
 });
 
+/** The API answers with a code; an agent reads a sentence (issue #98). */
+const SKIP_REASON_TEXT: Record<OverviewSkipReason, string> = {
+  not_overview: 'Diese Seite ist keine Übersichtsseite.',
+  overviews_disabled: 'Übersichtsseiten sind für diesen Arbeitsbereich abgeschaltet.',
+  ai_disabled: 'Die KI ist für diese Installation abgeschaltet.',
+};
+
 export const pageOverviewRefreshTool: AnyToolDefinition = defineTool({
   name: 'exo_page_overview_refresh',
   description:
@@ -114,7 +122,7 @@ export const pageOverviewRefreshTool: AnyToolDefinition = defineTool({
       text:
         result.status === 'pending'
           ? `Die Übersicht von Seite ${result.documentId} wird neu geschrieben.`
-          : `Nicht ausgeführt: ${result.reason ?? 'unbekannter Grund'}`,
+          : `Nicht ausgeführt: ${result.reason === null ? 'unbekannter Grund' : SKIP_REASON_TEXT[result.reason]}`,
       data: result,
     };
   },

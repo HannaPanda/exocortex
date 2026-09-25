@@ -148,7 +148,7 @@ export class DocumentOverviewService {
       return {
         status: 'skipped',
         documentId: input.documentId,
-        reason: 'Diese Seite ist keine Übersichtsseite.',
+        reason: 'not_overview',
       };
     }
 
@@ -157,14 +157,14 @@ export class DocumentOverviewService {
       return {
         status: 'skipped',
         documentId: input.documentId,
-        reason: 'Übersichtsseiten sind für diesen Arbeitsbereich abgeschaltet.',
+        reason: 'overviews_disabled',
       };
     }
     if (!settings['ai.enabled']) {
       return {
         status: 'skipped',
         documentId: input.documentId,
-        reason: 'Die KI ist für diese Installation abgeschaltet.',
+        reason: 'ai_disabled',
       };
     }
 

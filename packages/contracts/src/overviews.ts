@@ -133,9 +133,13 @@ export type DocumentOverviewResponse = z.infer<typeof documentOverviewResponseSc
  * (AI off, overviews off) and `reason` says which, so a button can explain
  * itself instead of spinning.
  */
+export const OVERVIEW_SKIP_REASONS = ['not_overview', 'overviews_disabled', 'ai_disabled'] as const;
+export type OverviewSkipReason = (typeof OVERVIEW_SKIP_REASONS)[number];
+
 export const refreshDocumentOverviewResponseSchema = z.object({
   status: z.enum(['pending', 'skipped']),
   documentId: idSchema,
-  reason: z.string().nullable(),
+  /** A code, never a sentence: whoever shows it words it (issue #98). */
+  reason: z.enum(OVERVIEW_SKIP_REASONS).nullable(),
 });
 export type RefreshDocumentOverviewResponse = z.infer<typeof refreshDocumentOverviewResponseSchema>;
