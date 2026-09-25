@@ -322,11 +322,22 @@ function renderBlock(node: ProseMirrorNode, key: string): React.ReactNode {
     case 'tableRow':
       return <TableRow key={key}>{renderBlockChildren(node.content, key)}</TableRow>;
 
+    // The primitive keeps a cell on one line, which suits a database grid; in
+    // a chat answer a sentence per cell would make the table as wide as its
+    // longest sentence, so the cells wrap and only an unbreakable word scrolls.
     case 'tableHeader':
-      return <TableHead key={key}>{renderTableCellContent(node, key)}</TableHead>;
+      return (
+        <TableHead key={key} className="h-auto py-1.5 align-top whitespace-normal">
+          {renderTableCellContent(node, key)}
+        </TableHead>
+      );
 
     case 'tableCell':
-      return <TableCell key={key}>{renderTableCellContent(node, key)}</TableCell>;
+      return (
+        <TableCell key={key} className="align-top whitespace-normal">
+          {renderTableCellContent(node, key)}
+        </TableCell>
+      );
 
     default:
       // The two blocks only `pruneForReading` keeps, and then nothing:

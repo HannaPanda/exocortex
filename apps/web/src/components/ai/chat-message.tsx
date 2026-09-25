@@ -63,10 +63,10 @@ function ChatMessageBody({ message, streaming }: ChatMessageProps) {
     case 'assistant':
       return (
         <div className="group/message flex justify-start">
-          <div className="flex max-w-[85%] flex-col items-start gap-1">
+          <div className="flex min-w-0 max-w-[85%] flex-col items-start gap-1">
             <div
               data-testid="ai-answer"
-              className="rounded-md bg-muted px-3 py-2 text-sm break-words"
+              className="max-w-full min-w-0 rounded-md bg-muted px-3 py-2 text-sm break-words"
             >
               <ChatMarkdown content={message.content} streaming={streaming} />
               {streaming ? (
