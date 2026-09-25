@@ -38,8 +38,14 @@ file is the contract for automated sessions. Read it before changing code.
    worker or container (`packages/ai/src/agent-runners.ts`, `apps/worker`).
 7. **No `any`.** If an external library forces it, isolate it behind a typed
    wrapper and document why (see `packages/editor/src/yjs.ts`).
-8. **Visible UI text is German. Code, comments, logs, identifiers and API error
-   codes are English.**
+8. **Visible UI text lives in the message catalogues, and German is their
+   source.** `packages/i18n/src/messages/de` is written by a person; the other
+   locales are translated from it with `pnpm i18n:translate` in the same
+   commit series, and `scripts/check-i18n.mjs` refuses a catalogue whose keys,
+   ICU arguments or translation state have drifted (ADR-062). New interface
+   text goes through `useTranslations()`, never inline: the ratchet in
+   `scripts/check-i18n-literals.mjs` lets a file's inline German only shrink.
+   Code, comments, logs, identifiers and API error codes are English.
 9. **No hardcoded colours.** Use the semantic tokens from
    `packages/ui/src/tokens.css` through Tailwind utilities. The single exception
    is the brand amber in `packages/ui/src/components/logo.tsx`: a logo keeps its
@@ -166,6 +172,7 @@ not repeated here; what this file enforces is the order:
 | `packages/database`                   | Prisma schema, migrations, order keys, tree helpers, full-text and hybrid search adapters.                                                                                                               |
 | `packages/auth`                       | Better Auth setup, session verification, authorization policies, collaboration tickets.                                                                                                                  |
 | `packages/features`                   | The feature registry: one hand-written entry per capability, in the words a person would use. Data only, typed against the wire contract.                                                                |
+| `packages/i18n`                       | The interface languages: the message catalogue per locale (German is the source), locale negotiation, the translation state and glossary the translation tool keeps.                                     |
 | `packages/editor`                     | Canonical Tiptap schema, block IDs, block catalog, Markdown, Yjs materialization.                                                                                                                        |
 | `packages/queue`                      | Typed BullMQ queues, workers, Redis event bus.                                                                                                                                                           |
 | `packages/storage`                    | S3-compatible object storage, MIME sniffing, image downscaling.                                                                                                                                          |
@@ -198,11 +205,12 @@ bash scripts/deploy.sh # build.sh, then migrations, nginx, the four units,
                        # readiness, and the deploy marker last.
 ```
 
-`build.sh` is the one to reach for: it runs the eleven hard gates that have no
+`build.sh` is the one to reach for: it runs the thirteen hard gates that have no
 bypass (package boundaries, `.env.example` sync, brand spelling, semantic
 colours, MCP catalogue completeness, capability parity, feature registry
 coverage, documentation currency, the unit/integration test split, typecheck
-coverage, migration reproducibility) as well as the checks below, in the right order and without
+coverage, migration reproducibility, message catalogue parity, the inline
+text ratchet) as well as the checks below, in the right order and without
 racing the live units for memory. `deploy/README.md` explains what each step does.
 
 The same script is the whole of `.github/workflows/build.yml`: the CI installs
@@ -229,6 +237,9 @@ pnpm test:integration  # only `*.integration.test.ts` -- brings up its own
 pnpm test              # both halves at once
 pnpm test:gates        # proves each gate can still go red
 pnpm test:e2e          # Playwright (needs a running deployment)
+pnpm i18n:translate --all  # translate new or changed German messages into
+                       # every locale; hand-corrected ones are reported, not
+                       # overwritten (docs/i18n.md)
 pnpm test:styleguide   # screenshot baselines, axe and keyboard checks on
                        # /design-system (needs the web build and Docker);
                        # test:styleguide:update rewrites the baselines
@@ -567,6 +578,14 @@ scripts, or `turbo run test:unit` walks past it and its tests run nowhere.
   credential's pages filter the SQL before ranking, the memory area is only
   searched when named, and only a page's own text is handed over, never the
   attachment text behind it in the search projection (ADR-030).
+- ADR-062: the interface language is a property of the person, not of the
+  URL. `User.locale` wins, then the `exocortex.locale` cookie, then
+  `Accept-Language`, then German; German is the source catalogue, every other
+  locale is machine-translated from it and remembers the hash of the German it
+  came from, so a changed source is caught by the gate and a hand-corrected
+  translation is never silently overwritten. Text rendered for somebody else
+  (a mail, a push, a diagnosis) follows the reader's locale, not the
+  requester's. Technical orderings stay locale-free.
 - ADR-015: the open page's _text_ reaches the prompt only when
   `ai.pageContextEnabled` is switched on, and that setting defaults to off. The
   page's title and path always do; a selection the user hands over always does.
@@ -587,6 +606,7 @@ Each of these has a step-by-step recipe:
 | new storage backend                                      | `docs/architecture.md`      |
 | new database property type, view type                    | `docs/database-views.md`    |
 | new MCP tool, new AI tool                                | `docs/mcp.md`               |
+| new interface string, message namespace, locale          | `docs/i18n.md`              |
 | new mail template, a sender for a new kind of mail       | `docs/mail.md`              |
 | new notification occasion or channel, a preference       | `docs/notifications.md`     |
 | new admin setting, admin page                            | `docs/admin.md`             |

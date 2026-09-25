@@ -318,6 +318,8 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
    | `check-test-split.mjs`             | a unit test that opens a database, and a workspace whose tests no CI run executes (issue #93)                                             |
    | `check-typecheck-coverage.mjs`     | a TypeScript file outside every tsconfig, tests included, and a project file nothing runs (issue #95, issue #99)                          |
    | `check-migrations-reproducible.sh` | a migration history that does not rebuild `schema.prisma` from zero                                                                       |
+   | `check-i18n.mjs`                   | a locale missing a key German has, a translation whose ICU arguments or plural categories drifted, a stale machine translation (ADR-062)  |
+   | `check-i18n-literals.mjs`          | a file that gained inline German interface text, and a baseline left looser than the code it describes (issue #98)                        |
 
    Each one prints its findings and one sentence on how to fix them. The
    migration gate replays the whole history onto a throwaway Postgres container

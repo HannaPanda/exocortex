@@ -67,6 +67,7 @@ same commit series**:
 | the licence, or what a contribution may be used for                              | `LICENSE`, `CONTRIBUTING.md`, `LICENSE-GRANTS.md`, `README.md`                                            |
 | a compose service or a host port                                                 | `docs/local-development.md`                                                                               |
 | an MCP or AI tool                                                                | `docs/mcp.md`                                                                                             |
+| interface text, a message namespace, a locale, the translation tool              | `docs/i18n.md`, and `pnpm i18n:translate` in the same commit series                                       |
 | a mail template, or what may send mail                                           | `docs/mail.md`                                                                                            |
 | a notification occasion, a channel, a delivery mode                              | `docs/notifications.md`                                                                                   |
 | a span, a trace attribute, what is recorded about a run                          | `docs/observability.md`                                                                                   |

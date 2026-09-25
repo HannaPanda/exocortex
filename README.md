@@ -20,6 +20,11 @@ What is deliberately still missing is listed under
 
 - email/password accounts, sessions, verification and password-reset mail;
   registration is invitation-only
+- an interface language per account (`de`, `en`, `es`, `fr`, `it`, `nl`, `pl`,
+  `pt-BR`), kept across devices and falling back to the browser and then to
+  German; the catalogues and gates are in place, and the screens are being
+  moved into them area by area, so most of the interface is still German in
+  every locale (issue #98, ADR-062)
 - multiple workspaces with `OWNER` / `ADMIN` / `MEMBER` / `GUEST` roles; adding
   and removing members takes effect in open browser tabs, not only on the next
   request (ADR-029)
@@ -236,6 +241,7 @@ Details, ports and troubleshooting: [`docs/local-development.md`](docs/local-dev
 | `pnpm test:styleguide`                     | screenshots, axe and keyboard checks on the styleguide |
 | `pnpm db:migrate` / `db:seed` / `db:reset` | database lifecycle                                     |
 | `pnpm format`                              | Prettier                                               |
+| `pnpm i18n:translate --all`                | translate new or changed German messages               |
 
 Before handing work over there is one entry point rather than ten:
 `bash scripts/build.sh` runs the hard gates, the sequential build and the
@@ -262,6 +268,7 @@ packages/contracts    zod schemas for REST DTOs, WebSocket events, job payloads
 packages/database     Prisma schema, migrations, order keys, tree helpers, search adapters
 packages/editor       canonical Tiptap schema, block ids, Markdown, Yjs materialization
 packages/features     the feature registry: what a person can do here, in a person's words
+packages/i18n         the interface languages: message catalogues, locale negotiation, translator
 packages/logger       structured logging, correlation ids, OpenTelemetry tracing
 packages/mail         SMTP transport and the typed mail templates, shared by API and worker
 packages/mcp-tools    the one tool catalogue, shared by apps/mcp and the built-in AI
@@ -292,6 +299,7 @@ tools/                the Claude Code plugin: MCP server, memory hooks, setup sk
 | [`docs/mail.md`](docs/mail.md)                                         | synchronous and queued mail, templates, what is logged                  |
 | [`docs/notifications.md`](docs/notifications.md)                       | occasions, channels, where a preference is stored                       |
 | [`docs/mcp.md`](docs/mcp.md)                                           | the tool catalogue, both transports, adding a tool                      |
+| [`docs/i18n.md`](docs/i18n.md)                                         | interface languages, message catalogues, the translation tool, gates    |
 | [`docs/capability-matrix.md`](docs/capability-matrix.md)               | generated: which client reaches which route                             |
 | [`docs/admin.md`](docs/admin.md)                                       | settings, their scopes, the admin area                                  |
 | [`docs/automations.md`](docs/automations.md)                           | triggers, actions, the allowlist                                        |
