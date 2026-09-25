@@ -6,6 +6,7 @@ import {
   canReadDocument,
   WorkspaceAccessService,
 } from '@exocortex/auth';
+import { type ApiEnv } from '@exocortex/config';
 import {
   DOCUMENT_ICON_COLORS,
   type DocumentSummary,
@@ -38,11 +39,12 @@ import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 
 import { AppError } from '../common/app-error';
-import { LOGGER } from '../common/logger.provider';
+import { API_ENV, LOGGER } from '../common/logger.provider';
 import { OutboxService } from '../common/outbox.service';
 import { PRISMA, QUEUES } from '../platform/platform.module';
 import { RealtimeService } from '../realtime/realtime.service';
 
+import { foreignMediaWarnings } from './document-content.service';
 import { DocumentFragmentService } from './document-fragment.service';
 import { DOCUMENT_SELECT, toSummary } from './documents.service';
 import { PageLinkIdentityService } from './page-link-identity.service';
@@ -76,6 +78,7 @@ export class DocumentMarkdownService {
     private readonly realtime: RealtimeService,
     private readonly pageLinks: PageLinkIdentityService,
     private readonly fragments: DocumentFragmentService,
+    @Inject(API_ENV) private readonly env: ApiEnv,
   ) {}
 
   /**
@@ -227,13 +230,19 @@ export class DocumentMarkdownService {
   /**
    * Imports Markdown as a new document. The parsed content becomes the canonical
    * Yjs state immediately, so the page is collaborative from the first open.
+   *
+   * Answers with the same warnings a write gives (issue #117): a page created
+   * with a picture on somebody else's server is created, and the caller is told
+   * the picture will never appear. Creating a page with content is where agents
+   * put pictures first, so leaving the warning to `writeMarkdown` alone let the
+   * most common case through without a word.
    */
   async import(input: {
     workspaceId: string;
     userId: string;
     request: MarkdownImportRequest;
     correlationId: string;
-  }): Promise<DocumentSummary> {
+  }): Promise<{ document: DocumentSummary; warnings: string[] }> {
     const parentId = input.request.parentId ?? null;
     // Anchored at the parent, like `DocumentsService.create` (issue #83).
     const role = await this.access.requireRoleAnchoredAt(input.workspaceId, input.userId, parentId);
@@ -386,7 +395,10 @@ export class DocumentMarkdownService {
       byteSize: input.request.markdown.length,
     });
 
-    return summary;
+    return {
+      document: summary,
+      warnings: foreignMediaWarnings(imported.proseMirrorJson, this.env.APP_URL),
+    };
   }
 
   /**

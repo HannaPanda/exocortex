@@ -258,13 +258,12 @@ export class WorkspaceDocumentsController {
     @Param('workspaceId') workspaceId: string,
     @Body(zodPipe(markdownImportRequestSchema)) body: MarkdownImportRequest,
   ): Promise<MarkdownImportResponse> {
-    const document = await this.markdown.import({
+    return this.markdown.import({
       workspaceId,
       userId: session.userId,
       request: body,
       correlationId: currentCorrelationId(),
     });
-    return { document };
   }
 }
 

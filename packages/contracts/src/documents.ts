@@ -605,6 +605,12 @@ export type MarkdownImportRequest = z.infer<typeof markdownImportRequestSchema>;
 
 export const markdownImportResponseSchema = z.object({
   document: documentSummarySchema,
+  /**
+   * What the import did not refuse but the caller should know, the same
+   * channel a write has: today, a picture on another server that will never
+   * load here (issue #117).
+   */
+  warnings: z.array(z.string()),
 });
 export type MarkdownImportResponse = z.infer<typeof markdownImportResponseSchema>;
 

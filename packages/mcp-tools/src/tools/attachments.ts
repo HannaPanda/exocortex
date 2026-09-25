@@ -4,10 +4,14 @@ import {
   ATTACHMENT_TEXT_MAX_CHARS,
   attachmentTextInfoResponseSchema,
   attachmentTextResponseSchema,
+  createUploadTicketRequestSchema,
+  createUploadTicketResponseSchema,
   type DocumentTextMetadata,
   idSchema,
   uploadAttachmentFromUrlRequestSchema,
   uploadAttachmentResponseSchema,
+  type UploadTicket,
+  uploadTicketResponseSchema,
 } from '@exocortex/contracts';
 
 import { type AnyToolDefinition, defineTool } from '../tool.js';
@@ -86,6 +90,9 @@ export const attachmentUploadTool: AnyToolDefinition = defineTool({
   name: 'exo_attachment_upload',
   description:
     'Lädt eine Datei (Base64-kodiert) in einen Workspace hoch, optional an eine Seite angehängt. ' +
+    'Nur für kleine Inhalte, die du selbst erzeugt hast: du musst jedes Byte als Base64 in den ' +
+    'Aufruf schreiben, für ein Foto oder ein PDF ist das zu viel. Liegt die Datei bei dir lokal, ' +
+    'nimm exo_attachment_upload_ticket. ' +
     EMBED_RECIPE,
   inputSchema: attachmentUploadInputSchema,
   surfaces: ['mcp', 'ai'],
@@ -125,9 +132,11 @@ export const attachmentUploadUrlTool: AnyToolDefinition = defineTool({
   name: 'exo_attachment_upload_url',
   description:
     'Lädt die Datei unter einer Adresse in einen Workspace hoch, optional an eine Seite angehängt. ' +
-    'Das ist der Weg für ein Bild, das du nur als URL hast: eXocortex holt es und legt es als ' +
-    'Anhang ab. Die Adresse muss öffentlich erreichbar sein (kein localhost, keine internen ' +
-    'Netze). ' +
+    'Das ist der Weg für ein Bild, das schon öffentlich im Netz steht und von dem du nur die ' +
+    'Adresse hast: eXocortex holt es und legt es als Anhang ab. Die Adresse muss öffentlich ' +
+    'erreichbar sein (kein localhost, keine internen Netze). Eine Datei, die bei dir lokal liegt, ' +
+    'nicht erst auf einem Server veröffentlichen, um sie hiermit zu holen: dafür ist ' +
+    'exo_attachment_upload_ticket da. ' +
     EMBED_RECIPE,
   inputSchema: z
     .object({ workspaceId: idSchema })
@@ -147,6 +156,104 @@ export const attachmentUploadUrlTool: AnyToolDefinition = defineTool({
       responseSchema: uploadAttachmentResponseSchema,
     });
     return { text: uploadedText(result), data: result };
+  },
+});
+
+/**
+ * Upload tickets (ADR-064): the way in for a file that sits on the agent's own
+ * disk.
+ *
+ * The two tools above both failed that case. Base64 makes the model spell out
+ * every byte, which is impossible for a photograph; the URL upload needs the
+ * file somewhere public, and agents solved that by putting pictures on
+ * whatever site they could write to, mixing unrelated projects. A ticket is an
+ * address the agent's own script POSTs the file to, so the bytes go from disk
+ * to here and nowhere else.
+ *
+ * MCP only. The built-in AI runs in the worker and holds no files and no
+ * shell, so on that surface the tool would hand out an address nobody could
+ * use (`SURFACE_EXEMPT` in `scripts/check-capability-parity.mjs`).
+ */
+export const attachmentUploadTicketTool: AnyToolDefinition = defineTool({
+  name: 'exo_attachment_upload_ticket',
+  description:
+    'Der Weg für eine Datei, die bei dir lokal liegt (ein Foto aus einem Chat, ein PDF, ein ' +
+    'Screenshot): gibt eine einmalige Upload-Adresse zurück, zehn Minuten gültig, an die dein ' +
+    'Skript oder deine Shell die Datei direkt schickt, zum Beispiel mit ' +
+    'curl -F "file=@/pfad/zur/datei" <uploadUrl>. Die Antwort darauf ist JSON mit embedUrl. ' +
+    'Die Bytes gehen so nicht durch dein Modell und nicht über einen fremden Server: lege eine ' +
+    'Datei nie auf einer anderen Website oder in einem anderen Projekt ab, um sie hierher zu ' +
+    'bekommen. Mit documentId hängt die Datei an dieser Seite, mit filename bekommt sie diesen ' +
+    'Namen. Die Adresse ist ein Geheimnis für genau einen Upload: nicht in Seiten, Commits oder ' +
+    'Nachrichten schreiben. Siehst du die Ausgabe des Skripts nicht, nennt ' +
+    'exo_attachment_upload_ticket_get Stand und embedUrl. ' +
+    EMBED_RECIPE,
+  inputSchema: z.object({ workspaceId: idSchema }).extend(createUploadTicketRequestSchema.shape),
+  surfaces: ['mcp'],
+  domain: 'attachments',
+  mutating: true,
+  target: (input) => `workspace:${input.workspaceId}`,
+  async execute(client, input) {
+    const { workspaceId, ...body } = input;
+    const result = await client.request({
+      method: 'POST',
+      path: `/api/workspaces/${workspaceId}/attachments/upload-tickets`,
+      body,
+      responseSchema: createUploadTicketResponseSchema,
+    });
+    const text =
+      `Upload-Ticket ${result.ticket.id} erstellt, gültig bis ${result.ticket.expiresAt}, ` +
+      'für genau einen Upload.\n' +
+      'Datei hochladen (eine Datei, als multipart/form-data):\n' +
+      `curl -sS -F "file=@/pfad/zur/datei" '${result.uploadUrl}'\n` +
+      'Die Antwort ist JSON mit embedUrl. Einbetten mit: ![Beschreibung](embedUrl) über ' +
+      'exo_page_write.\n' +
+      `Stand abfragen: exo_attachment_upload_ticket_get mit workspaceId ${result.ticket.workspaceId} ` +
+      `und ticketId ${result.ticket.id}.\n` +
+      'Die Adresse ist ein Geheimnis: nirgends hinschreiben. Schlägt der Upload fehl, gilt das ' +
+      'Ticket weiter, bis es abläuft.';
+    return { text, data: result };
+  },
+});
+
+/** Where a ticket stands, in one sentence the model can act on. */
+function describeTicket(ticket: UploadTicket): string {
+  switch (ticket.state) {
+    case 'open':
+      return (
+        `Upload-Ticket ${ticket.id} ist offen, noch keine Datei angekommen. ` +
+        `Gültig bis ${ticket.expiresAt}.`
+      );
+    case 'expired':
+      return (
+        `Upload-Ticket ${ticket.id} ist abgelaufen, ohne dass eine Datei ankam. ` +
+        'Für einen neuen Versuch ein neues Ticket holen.'
+      );
+    case 'used':
+      return ticket.embedUrl === null
+        ? `Upload-Ticket ${ticket.id} wird gerade eingelöst; die Datei ist noch nicht gespeichert.`
+        : `Upload-Ticket ${ticket.id} ist eingelöst: Anhang ${ticket.attachmentId ?? ''}. ` +
+            `Einbetten mit: ![Beschreibung](${ticket.embedUrl})`;
+  }
+}
+
+export const attachmentUploadTicketGetTool: AnyToolDefinition = defineTool({
+  name: 'exo_attachment_upload_ticket_get',
+  description:
+    'Sagt, wo ein Upload-Ticket aus exo_attachment_upload_ticket steht: offen, eingelöst (dann ' +
+    'mit embedUrl zum Einbetten) oder abgelaufen. Für den Fall, dass du die Antwort deines ' +
+    'Upload-Skripts nicht gesehen hast. Nur Tickets, die du selbst geholt hast.',
+  inputSchema: z.object({ workspaceId: idSchema, ticketId: idSchema }),
+  surfaces: ['mcp'],
+  domain: 'attachments',
+  mutating: false,
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'GET',
+      path: `/api/workspaces/${input.workspaceId}/attachments/upload-tickets/${input.ticketId}`,
+      responseSchema: uploadTicketResponseSchema,
+    });
+    return { text: describeTicket(result.ticket), data: result };
   },
 });
 
@@ -323,6 +430,8 @@ export const attachmentCorrectTextTool: AnyToolDefinition = defineTool({
 export const ATTACHMENT_TOOLS: readonly AnyToolDefinition[] = [
   attachmentUploadTool,
   attachmentUploadUrlTool,
+  attachmentUploadTicketTool,
+  attachmentUploadTicketGetTool,
   attachmentReadTextTool,
   attachmentReextractTextTool,
   attachmentCorrectTextTool,

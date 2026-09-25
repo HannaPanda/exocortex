@@ -152,9 +152,10 @@ export function foreignMediaWarnings(document: ProseMirrorDocument, origin: stri
   return [
     `Diese Seite verweist auf ${foreign.length === 1 ? 'eine Datei' : `${foreign.length} Dateien`} ` +
       `auf einem fremden Server: ${named}${rest}. Der Browser lädt das nicht, die Stelle bleibt ` +
-      'leer. Lade die Datei stattdessen als Anhang hoch (exo_attachment_upload, oder ' +
-      'exo_attachment_upload_url, wenn du nur die Adresse hast) und verweise auf ' +
-      '/api/attachments/<id>/download.',
+      'leer. Lade die Datei stattdessen als Anhang hoch und verweise auf ' +
+      '/api/attachments/<id>/download: eine Datei, die bei dir lokal liegt, mit ' +
+      'exo_attachment_upload_ticket, eine, die schon öffentlich im Netz steht, mit ' +
+      'exo_attachment_upload_url. Lege eine Datei dafür nie auf einem anderen Server ab.',
   ];
 }
 

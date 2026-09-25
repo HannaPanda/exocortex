@@ -175,6 +175,7 @@ beforeAll(async () => {
     realtime,
     new PageLinkIdentityService(prisma),
     fragmentService,
+    CONTENT_TEST_ENV,
   );
   contentService = new DocumentContentService(
     prisma,
@@ -498,7 +499,7 @@ describe('importing Markdown with an icon (issue #37)', () => {
     // The regression: importing content and setting a symbol were two separate
     // paths, and the import one had no icon field. The page arrived complete,
     // the call reported success, and the symbol was gone without a word.
-    const imported = await markdownService.import({
+    const { document: imported } = await markdownService.import({
       workspaceId,
       userId: ownerId,
       request: { markdown: '# Test\n\nInhalt', icon: 'lucide:cpu', iconColor: 'purple' },
@@ -511,7 +512,7 @@ describe('importing Markdown with an icon (issue #37)', () => {
   });
 
   it('still reads the icon out of the frontmatter when the caller sends none', async () => {
-    const imported = await markdownService.import({
+    const { document: imported } = await markdownService.import({
       workspaceId,
       userId: ownerId,
       request: { markdown: '---\nicon: lucide:star\niconColor: blue\n---\n\n# Aus der Datei' },
@@ -522,7 +523,7 @@ describe('importing Markdown with an icon (issue #37)', () => {
   });
 
   it('lets the caller overrule the frontmatter, the way the title already does', async () => {
-    const imported = await markdownService.import({
+    const { document: imported } = await markdownService.import({
       workspaceId,
       userId: ownerId,
       request: {
@@ -534,6 +535,33 @@ describe('importing Markdown with an icon (issue #37)', () => {
     });
 
     expect(imported).toMatchObject({ icon: 'lucide:cpu', iconColor: 'purple' });
+  });
+});
+
+describe('importing Markdown with a picture on another server (issue #117)', () => {
+  it('creates the page and says the picture will not load', async () => {
+    const { document, warnings } = await markdownService.import({
+      workspaceId,
+      userId: ownerId,
+      request: { markdown: 'Text\n\n![Schild](https://elsewhere.example/schild.jpg)' },
+      correlationId,
+    });
+
+    expect(document.id).toBeTruthy();
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0]).toContain('https://elsewhere.example/schild.jpg');
+    expect(warnings[0]).toContain('exo_attachment_upload_ticket');
+  });
+
+  it('stays quiet for a picture that is an attachment here', async () => {
+    const { warnings } = await markdownService.import({
+      workspaceId,
+      userId: ownerId,
+      request: { markdown: '![Schild](/api/attachments/abc123def456/download)' },
+      correlationId,
+    });
+
+    expect(warnings).toEqual([]);
   });
 });
 
@@ -1356,7 +1384,7 @@ describe('writing document content', () => {
     });
 
     it('is left out of an imported file, whose title it became', async () => {
-      const imported = await markdownService.import({
+      const { document: imported } = await markdownService.import({
         workspaceId,
         userId: ownerId,
         request: { markdown: '# Aus der Datei\n\nEin Absatz.' },

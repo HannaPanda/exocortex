@@ -189,7 +189,10 @@ describe('pageCreateTool', () => {
     // The failure this pins: with `markdown` the call goes through the import
     // endpoint, whose body once had no icon field at all. The page appeared,
     // the call reported success, and the symbol was silently gone.
-    const { client, calls } = createFakeClient({ document: summary('lucide:cpu', 'purple') });
+    const { client, calls } = createFakeClient({
+      document: summary('lucide:cpu', 'purple'),
+      warnings: [],
+    });
 
     const result = await pageCreateTool.run(client, {
       workspaceId: 'ws1234567',
@@ -225,6 +228,24 @@ describe('pageCreateTool', () => {
       },
     ]);
     expect(result.text).toContain('Test');
+  });
+
+  it('reads out what the import warned about', async () => {
+    // Issue #117: a page created with a picture on another server is created,
+    // and the picture never shows. The import says so; the tool has to pass
+    // that on, or the agent reports success and the page stays broken.
+    const { client } = createFakeClient({
+      document: summary(null, null),
+      warnings: ['Diese Seite verweist auf eine Datei auf einem fremden Server'],
+    });
+
+    const result = await pageCreateTool.run(client, {
+      workspaceId: 'ws1234567',
+      title: 'Test',
+      markdown: '![Schild](https://elsewhere.example/schild.jpg)',
+    });
+
+    expect(result.text).toContain('Warnungen: Diese Seite verweist auf eine Datei');
   });
 
   it('still posts to the documents endpoint without markdown', async () => {

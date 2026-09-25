@@ -287,7 +287,11 @@ export const pageCreateTool: AnyToolDefinition = defineTool({
     'exo_page_set_overview als Übersichtsseite und schreib keinen eigenen Fließtext hinein: ' +
     'eXocortex hält die Beschreibung der Unterseiten dort selbst aktuell. ' +
     'Weißt du nicht sicher, wohin die Seite gehört, frag vorher exo_page_suggest_parent: ' +
-    'eine Seite landet sonst leicht eine Ebene zu hoch, über den Unterbereich, in den sie gehört.',
+    'eine Seite landet sonst leicht eine Ebene zu hoch, über den Unterbereich, in den sie gehört. ' +
+    'Bilder im Markdown müssen Anhänge dieses Workspace sein, ![Beschreibung](/api/attachments/<id>/download): ' +
+    'eine Datei, die bei dir lokal liegt, kommt mit exo_attachment_upload_ticket herein, eine ' +
+    'öffentliche Adresse mit exo_attachment_upload_url. Eine Adresse auf einem anderen Server ' +
+    'bleibt auf der Seite leer, und eine Datei dafür irgendwo anders abzulegen ist nie der Weg.',
   inputSchema: pageCreateInputSchema,
   surfaces: ['mcp', 'ai'],
   domain: 'pages',
@@ -308,8 +312,12 @@ export const pageCreateTool: AnyToolDefinition = defineTool({
         responseSchema: markdownImportResponseSchema,
       });
       const importHint = await filingHint(client, input.workspaceId, input.parentId);
+      // The same channel `exo_page_write` reads out (issue #117): a picture on
+      // another server is created along with the page and never shows.
+      const warningsText =
+        result.warnings.length > 0 ? ` Warnungen: ${result.warnings.join('; ')}` : '';
       return {
-        text: `Seite erstellt: ${formatDocumentSummary(result.document)}.${importHint}`,
+        text: `Seite erstellt: ${formatDocumentSummary(result.document)}.${importHint}${warningsText}`,
         data: result,
       };
     }
