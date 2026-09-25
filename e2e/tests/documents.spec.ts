@@ -84,6 +84,38 @@ test.describe('documents', () => {
     await expect(page.getByTestId(`tree-item-${childId}`)).toBeVisible({ timeout: 30_000 });
   });
 
+  test('folds the whole tree and unfolds a subtree from the keyboard', async ({ page }) => {
+    await page.goto('/arbeitsbereich');
+    await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });
+    const marker = Date.now().toString(36);
+    const parentId = await createPage(page, `Zuklappen ${marker}`);
+
+    const parentUrl = page.url();
+    await page.getByTestId(`tree-item-${parentId}`).hover();
+    await page
+      .getByTestId(`tree-item-${parentId}`)
+      .getByRole('button', { name: /Unterseite/ })
+      .click();
+    await page.waitForURL(
+      (url) => url.toString() !== parentUrl && /\/seite\/[a-z0-9]+/.test(url.pathname),
+    );
+    const childId = page.url().split('/').pop() as string;
+
+    // Standing on the parent, a root page: folding everything keeps no path.
+    await page.goto(parentUrl);
+    await expect(page.getByTestId(`tree-item-${childId}`)).toBeVisible({ timeout: 30_000 });
+    await page.getByTestId('tree-collapse-all').click();
+    await expect(page.getByTestId(`tree-item-${childId}`)).toBeHidden();
+    await expect(page.getByTestId('tree-collapse-all')).toBeDisabled();
+
+    // The tree item holds focus, the row with the test id sits inside it.
+    await page.locator(`[data-tree-item="${parentId}"]`).focus();
+    await page.keyboard.press('Shift+ArrowRight');
+    await expect(page.getByTestId(`tree-item-${childId}`)).toBeVisible();
+    await page.keyboard.press('Shift+ArrowLeft');
+    await expect(page.getByTestId(`tree-item-${childId}`)).toBeHidden();
+  });
+
   test('archives and restores a page', async ({ page }) => {
     await page.goto('/arbeitsbereich');
     await page.waitForURL(/\/arbeitsbereich\/[a-z0-9]+/, { timeout: 60_000 });

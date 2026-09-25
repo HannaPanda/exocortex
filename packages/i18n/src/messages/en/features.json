@@ -155,7 +155,7 @@
     "summary": "Pages can nest arbitrarily deep, and where a page sits is part of its meaning. A page can be dragged with the mouse to a different spot, along with everything beneath it, and even into another workspace.",
     "details": {
       "p1": "There are no folders alongside pages: a page is both at once, text and container. \"Vacation 2026\" can contain a packing list and sit under \"Trips\" itself. Because of this, filing already answers half the question of what a page is about, and you save yourself categories nobody maintains.",
-      "p2": "In the navigation, you expand a page with the arrow. Dragging moves it: dropping onto a page nests it underneath, dropping between two pages orders it at that position. Everything nested under the dragged page goes along, and links to it remain intact because a link points to the page and not to its path.",
+      "p2": "In the navigation, you expand a page using the arrow. The button next to the plus above the tree collapses everything again, leaving only the path to the open page visible. With the keyboard, Shift and Right Arrow expands a page including everything beneath it, Shift and Left Arrow collapses it again, and the asterisk opens all pages on the same level. Dragging moves things: dropping onto a page nests it underneath, dropping between two pages places it right there. Everything beneath the dragged page moves along with it, and references to it remain intact because a reference points to the page itself, not to its path.",
       "p3": "Ctrl+B hides the navigation when you need room to write, and brings it back. On a phone, it sits as an overlay on top of the page instead of next to it."
     },
     "where": "The navigation on the left, using the mouse."

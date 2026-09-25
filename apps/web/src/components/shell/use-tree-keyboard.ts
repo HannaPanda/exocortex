@@ -54,6 +54,22 @@ function focusTargetFor(key: string, rows: readonly VisibleRow[], index: number)
   }
 }
 
+type FoldMany = 'siblings' | 'open-subtree' | 'close-subtree' | 'nothing';
+
+/**
+ * The keys that fold or unfold more than one row, or `null` for any other key.
+ *
+ * `*` is a shifted key on most layouts, so it is matched by what it types and
+ * before the Shift chords. A Shift chord on a row without pages below it is
+ * still claimed, so it does not fall through to stepping and move focus.
+ */
+function foldManyFor(event: React.KeyboardEvent<HTMLElement>, row: VisibleRow): FoldMany | null {
+  if (event.key === '*') return 'siblings';
+  if (!event.shiftKey || (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft')) return null;
+  if (!row.hasChildren) return 'nothing';
+  return event.key === 'ArrowRight' ? 'open-subtree' : 'close-subtree';
+}
+
 /**
  * Opens the row's own menu from the keyboard.
  *
@@ -99,6 +115,12 @@ function openRowMenu(item: HTMLElement): void {
  *
  * `Alt` plus an arrow stays what it was, the keyboard half of dragging, and is
  * checked first so unfolding never swallows a move.
+ *
+ * Two keys work on more than one row. `*` unfolds every sibling of the row, as
+ * the WAI-ARIA pattern defines it; `Shift` with right or left unfolds or folds
+ * the row's whole subtree, which the pattern leaves open and which is the one
+ * people ask for in a deep workspace. Folding everything at once is the button
+ * in the header, because it needs no row to start from.
  */
 export function useTreeKeyboard({
   containerRef,
@@ -106,6 +128,8 @@ export function useTreeKeyboard({
   expanded,
   activeDocumentId,
   toggle,
+  setSubtreeOpen,
+  expandSiblingsOf,
   nudge,
   openDocument,
 }: {
@@ -114,6 +138,8 @@ export function useTreeKeyboard({
   expanded: ExpandedState;
   activeDocumentId: string | undefined;
   toggle: (documentId: string) => void;
+  setSubtreeOpen: (documentId: string, open: boolean) => void;
+  expandSiblingsOf: (documentId: string) => void;
   nudge: (documentId: string, direction: 'up' | 'down' | 'in' | 'out') => void;
   openDocument: (documentId: string) => void;
 }): TreeKeyboard {
@@ -138,6 +164,11 @@ export function useTreeKeyboard({
     containerRef.current
       ?.querySelector<HTMLElement>(`[data-tree-item="${CSS.escape(documentId)}"]`)
       ?.focus();
+  };
+
+  const foldMany = (many: FoldMany, documentId: string): void => {
+    if (many === 'siblings') expandSiblingsOf(documentId);
+    else if (many !== 'nothing') setSubtreeOpen(documentId, many === 'open-subtree');
   };
 
   const onRowKeyDown = (event: React.KeyboardEvent<HTMLElement>, documentId: string): void => {
@@ -168,6 +199,13 @@ export function useTreeKeyboard({
     // Everything below is a bare key. A browser shortcut carrying a modifier
     // keeps its meaning here rather than being eaten by the tree.
     if (event.altKey || event.ctrlKey || event.metaKey) return;
+
+    const many = foldManyFor(event, row);
+    if (many !== null) {
+      claim();
+      foldMany(many, documentId);
+      return;
+    }
 
     if (event.key === 'Enter' || event.key === ' ') {
       claim();

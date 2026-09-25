@@ -88,7 +88,8 @@
     "createPage": "Pagina aanmaken",
     "createFromTemplate": "Pagina uit sjabloon",
     "createDatabase": "Database aanmaken",
-    "createProject": "LaTeX-project aanmaken"
+    "createProject": "LaTeX-project aanmaken",
+    "collapseAll": "Alle pagina’s inklappen"
   },
   "pageTree": {
     "untitledDatabase": "Naamloze database",

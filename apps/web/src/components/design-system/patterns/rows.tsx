@@ -18,7 +18,13 @@ import {
   UnsavedChangesNotice,
 } from '@/components/settings/unsaved-changes-guard';
 import { PageTreeRow, type PageTreeRowContext } from '@/components/shell/page-tree-row';
-import { type DropZone, type ExpandedState } from '@/components/shell/page-tree-state';
+import {
+  type DropZone,
+  type ExpandedState,
+  expandSiblings,
+  indexTree,
+  setSubtree,
+} from '@/components/shell/page-tree-state';
 import { PresenceStack } from '@/components/shell/presence-avatars';
 import { useTreeKeyboard } from '@/components/shell/use-tree-keyboard';
 
@@ -47,6 +53,8 @@ const noop = (): void => undefined;
  * Moving is refused rather than faked, so the move commands in the row's menu
  * show their disabled state.
  */
+const FIXTURE_POSITIONS = indexTree(FIXTURE_TREE);
+
 function useFixtureTree({
   expandedInitially,
   dropTarget = null,
@@ -69,6 +77,14 @@ function useFixtureTree({
     expanded,
     activeDocumentId: activeId,
     toggle,
+    setSubtreeOpen: (documentId, open) => {
+      const node = FIXTURE_POSITIONS.get(documentId)?.node;
+      if (node !== undefined) setExpanded((current) => setSubtree(current, node, open));
+    },
+    expandSiblingsOf: (documentId) => {
+      const siblings = FIXTURE_POSITIONS.get(documentId)?.siblings;
+      if (siblings !== undefined) setExpanded((current) => expandSiblings(current, siblings));
+    },
     nudge: noop,
     openDocument: setActiveId,
   });

@@ -74,7 +74,11 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     area: 'struktur',
     since: '2026-08-05',
     ui: {},
-    shortcuts: ['Strg+B blendet die Navigation ein und aus, außerhalb von Textfeldern'],
+    shortcuts: [
+      'Strg+B blendet die Navigation ein und aus, außerhalb von Textfeldern',
+      'Umschalt+Pfeil rechts/links klappt eine Seite samt allem darunter auf oder zu',
+      '* klappt alle Seiten derselben Ebene auf',
+    ],
     tools: ['exo_page_tree', 'exo_page_move'],
   }),
   defineFeature({

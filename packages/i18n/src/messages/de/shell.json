@@ -88,7 +88,8 @@
     "createPage": "Seite anlegen",
     "createFromTemplate": "Seite aus Vorlage",
     "createDatabase": "Datenbank anlegen",
-    "createProject": "LaTeX-Projekt anlegen"
+    "createProject": "LaTeX-Projekt anlegen",
+    "collapseAll": "Alle Seiten zuklappen"
   },
   "pageTree": {
     "untitledDatabase": "Unbenannte Datenbank",

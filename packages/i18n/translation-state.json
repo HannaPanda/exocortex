@@ -9853,8 +9853,8 @@
       "output": "ce61fd77626a30b3"
     },
     "features.seitenbaum.details.p2": {
-      "source": "4dfdfd0326fe8c71",
-      "output": "602aafe191c28afe"
+      "source": "256b64b7892b857a",
+      "output": "1b247bc52d1e474e"
     },
     "features.seitenbaum.details.p3": {
       "source": "9822d6ce5d2c283f",
@@ -14379,6 +14379,10 @@
     "shell.pageTree.untitledProject": {
       "source": "eb75d0eb9747f148",
       "output": "1b5a65c3cdba9e16"
+    },
+    "shell.pageTreeHeader.collapseAll": {
+      "source": "658b149884a2244a",
+      "output": "c6be18dd0c30175f"
     },
     "shell.pageTreeHeader.create": {
       "source": "d34c0efb6e98448a",
@@ -24711,8 +24715,8 @@
       "output": "d50de5fe2801886e"
     },
     "features.seitenbaum.details.p2": {
-      "source": "4dfdfd0326fe8c71",
-      "output": "5a2eeaff29714c84"
+      "source": "256b64b7892b857a",
+      "output": "4d16b9f3f7a454bf"
     },
     "features.seitenbaum.details.p3": {
       "source": "9822d6ce5d2c283f",
@@ -29237,6 +29241,10 @@
     "shell.pageTree.untitledProject": {
       "source": "eb75d0eb9747f148",
       "output": "7bef9f090eb175ec"
+    },
+    "shell.pageTreeHeader.collapseAll": {
+      "source": "658b149884a2244a",
+      "output": "ab4ccdb6bee4a0f5"
     },
     "shell.pageTreeHeader.create": {
       "source": "d34c0efb6e98448a",
@@ -39569,8 +39577,8 @@
       "output": "c6bb20a141628877"
     },
     "features.seitenbaum.details.p2": {
-      "source": "4dfdfd0326fe8c71",
-      "output": "c23ee5cd6a48de8c"
+      "source": "256b64b7892b857a",
+      "output": "54c1c8c0601b373c"
     },
     "features.seitenbaum.details.p3": {
       "source": "9822d6ce5d2c283f",
@@ -44095,6 +44103,10 @@
     "shell.pageTree.untitledProject": {
       "source": "eb75d0eb9747f148",
       "output": "45841050cda602e2"
+    },
+    "shell.pageTreeHeader.collapseAll": {
+      "source": "658b149884a2244a",
+      "output": "423b2a20c712daf7"
     },
     "shell.pageTreeHeader.create": {
       "source": "d34c0efb6e98448a",
@@ -54427,8 +54439,8 @@
       "output": "c19571e121c66a88"
     },
     "features.seitenbaum.details.p2": {
-      "source": "4dfdfd0326fe8c71",
-      "output": "c823aae9afe59f93"
+      "source": "256b64b7892b857a",
+      "output": "614b3a9fda6f2da9"
     },
     "features.seitenbaum.details.p3": {
       "source": "9822d6ce5d2c283f",
@@ -58953,6 +58965,10 @@
     "shell.pageTree.untitledProject": {
       "source": "eb75d0eb9747f148",
       "output": "57f93659d447b33f"
+    },
+    "shell.pageTreeHeader.collapseAll": {
+      "source": "658b149884a2244a",
+      "output": "16e1c039deef4afc"
     },
     "shell.pageTreeHeader.create": {
       "source": "d34c0efb6e98448a",
@@ -69285,8 +69301,8 @@
       "output": "0d88f26b659976f7"
     },
     "features.seitenbaum.details.p2": {
-      "source": "4dfdfd0326fe8c71",
-      "output": "4e9d3bc2f402211c"
+      "source": "256b64b7892b857a",
+      "output": "847d6bbf17c416a4"
     },
     "features.seitenbaum.details.p3": {
       "source": "9822d6ce5d2c283f",
@@ -73811,6 +73827,10 @@
     "shell.pageTree.untitledProject": {
       "source": "eb75d0eb9747f148",
       "output": "5ee711f2971f7054"
+    },
+    "shell.pageTreeHeader.collapseAll": {
+      "source": "658b149884a2244a",
+      "output": "b1c0d864fb4dab2a"
     },
     "shell.pageTreeHeader.create": {
       "source": "d34c0efb6e98448a",
@@ -84143,8 +84163,8 @@
       "output": "c12d8bc104253c28"
     },
     "features.seitenbaum.details.p2": {
-      "source": "4dfdfd0326fe8c71",
-      "output": "5721b27e62f67dd2"
+      "source": "256b64b7892b857a",
+      "output": "457394806f8751c4"
     },
     "features.seitenbaum.details.p3": {
       "source": "9822d6ce5d2c283f",
@@ -88669,6 +88689,10 @@
     "shell.pageTree.untitledProject": {
       "source": "eb75d0eb9747f148",
       "output": "c792a7c583130a7d"
+    },
+    "shell.pageTreeHeader.collapseAll": {
+      "source": "658b149884a2244a",
+      "output": "6eb2f8224b3987d8"
     },
     "shell.pageTreeHeader.create": {
       "source": "d34c0efb6e98448a",
@@ -99001,8 +99025,8 @@
       "output": "ed615bdef514ec5e"
     },
     "features.seitenbaum.details.p2": {
-      "source": "4dfdfd0326fe8c71",
-      "output": "b1a78ce77745ca14"
+      "source": "256b64b7892b857a",
+      "output": "64475f0fdbe78bc2"
     },
     "features.seitenbaum.details.p3": {
       "source": "9822d6ce5d2c283f",
@@ -103527,6 +103551,10 @@
     "shell.pageTree.untitledProject": {
       "source": "eb75d0eb9747f148",
       "output": "53d02a124b87e512"
+    },
+    "shell.pageTreeHeader.collapseAll": {
+      "source": "658b149884a2244a",
+      "output": "082f3acfce8b11c1"
     },
     "shell.pageTreeHeader.create": {
       "source": "d34c0efb6e98448a",

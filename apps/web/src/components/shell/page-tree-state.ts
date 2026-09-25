@@ -64,6 +64,79 @@ export function ancestorsOf(
   return null;
 }
 
+/**
+ * Folds everything except the way down to the open page.
+ *
+ * The path stays open on purpose: the unfolding for the active page runs once
+ * per arrival (see `PageTree`), so a fold-all that closed it too would leave
+ * the page you are on marked inside a branch nobody can see, which is exactly
+ * issue #29 again.
+ */
+export function collapseAll(
+  nodes: readonly DocumentTreeNode[],
+  activeDocumentId: string | undefined,
+): ExpandedState {
+  const path = activeDocumentId === undefined ? null : ancestorsOf(nodes, activeDocumentId);
+  if (path === null || path.length === 0) return EMPTY_EXPANDED;
+  return Object.fromEntries(path.map((id) => [id, true]));
+}
+
+/**
+ * Whether folding everything would change anything, which is what decides if
+ * the button for it is worth pressing.
+ */
+export function canCollapseAll(
+  nodes: readonly DocumentTreeNode[],
+  expanded: ExpandedState,
+  activeDocumentId: string | undefined,
+): boolean {
+  const kept = collapseAll(nodes, activeDocumentId);
+  return Object.keys(expanded).some((id) => expanded[id] === true && kept[id] !== true);
+}
+
+/** The ids of `node` and every page below it that has pages below it. */
+function branchIds(node: DocumentTreeNode): string[] {
+  if (node.children.length === 0) return [];
+  return [node.id, ...node.children.flatMap(branchIds)];
+}
+
+/**
+ * Unfolds or folds a whole subtree at once: the row itself and every branch
+ * underneath it.
+ *
+ * Folding clears the ids below as well rather than only the row, because a
+ * branch that is closed but remembers its open children springs back fully
+ * unfolded the next time somebody opens it, which reads as the fold not
+ * having worked.
+ */
+export function setSubtree(
+  expanded: ExpandedState,
+  node: DocumentTreeNode,
+  open: boolean,
+): ExpandedState {
+  const next: Record<string, boolean> = { ...expanded };
+  for (const id of branchIds(node)) {
+    if (open) next[id] = true;
+    else delete next[id];
+  }
+  return next;
+}
+
+/**
+ * Unfolds every sibling of a row that has pages below it, the row included.
+ * The `*` key of the WAI-ARIA tree pattern.
+ */
+export function expandSiblings(
+  expanded: ExpandedState,
+  siblings: readonly DocumentTreeNode[],
+): ExpandedState {
+  const next: Record<string, boolean> = { ...expanded };
+  for (const sibling of siblings) {
+    if (sibling.children.length > 0) next[sibling.id] = true;
+  }
+  return next;
+}
+
 /** One row as the keyboard sees it: what an arrow key needs to know about it. */
 export interface VisibleRow {
   readonly id: string;

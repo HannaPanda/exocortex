@@ -88,7 +88,8 @@
     "createPage": "Créer une page",
     "createFromTemplate": "Page à partir d’un modèle",
     "createDatabase": "Créer une base de données",
-    "createProject": "Créer un projet LaTeX"
+    "createProject": "Créer un projet LaTeX",
+    "collapseAll": "Tout replier"
   },
   "pageTree": {
     "untitledDatabase": "Base de données sans titre",

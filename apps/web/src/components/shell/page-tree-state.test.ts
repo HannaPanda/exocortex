@@ -6,12 +6,16 @@ import { treeBranch } from '@/test-support/document-tree';
 
 import {
   ancestorsOf,
+  canCollapseAll,
+  collapseAll,
   dropRequest,
   dropZoneAt,
+  expandSiblings,
   indexTree,
   isSelfOrDescendant,
   nudgeRequest,
   parseExpanded,
+  setSubtree,
 } from './page-tree-state';
 
 const tree: DocumentTreeNode[] = [
@@ -129,5 +133,38 @@ describe('nudgeRequest', () => {
     expect(nudgeRequest(positions, 'a1', 'in')).toBeNull();
     expect(nudgeRequest(positions, 'b', 'down')).toBeNull();
     expect(nudgeRequest(positions, 'a', 'out')).toBeNull();
+  });
+});
+
+describe('collapseAll', () => {
+  it('folds everything when no page is open', () => {
+    expect(collapseAll(tree, undefined)).toEqual({});
+  });
+
+  it('keeps the way down to the open page', () => {
+    expect(collapseAll(tree, 'a1x')).toEqual({ a: true, a1: true });
+    expect(collapseAll(tree, 'b')).toEqual({});
+  });
+
+  it('only offers itself when something beyond that path is open', () => {
+    expect(canCollapseAll(tree, { a: true, a1: true }, 'a1x')).toBe(false);
+    expect(canCollapseAll(tree, { a: true, a1: true }, undefined)).toBe(true);
+    expect(canCollapseAll(tree, {}, undefined)).toBe(false);
+  });
+});
+
+describe('setSubtree', () => {
+  it('unfolds the row and every branch below it, and no leaf', () => {
+    expect(setSubtree({ b: true }, first, true)).toEqual({ a: true, a1: true, b: true });
+  });
+
+  it('folds the whole branch, so reopening it does not spring back', () => {
+    expect(setSubtree({ a: true, a1: true, b: true }, first, false)).toEqual({ b: true });
+  });
+});
+
+describe('expandSiblings', () => {
+  it('unfolds every sibling that has pages below it', () => {
+    expect(expandSiblings({}, tree)).toEqual({ a: true });
   });
 });

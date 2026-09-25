@@ -88,7 +88,8 @@
     "createPage": "Create page",
     "createFromTemplate": "Page from template",
     "createDatabase": "Create database",
-    "createProject": "Create LaTeX project"
+    "createProject": "Create LaTeX project",
+    "collapseAll": "Collapse all pages"
   },
   "pageTree": {
     "untitledDatabase": "Untitled database",

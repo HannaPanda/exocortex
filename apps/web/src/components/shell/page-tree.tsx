@@ -28,12 +28,16 @@ import { PageTreeHeader } from './page-tree-header';
 import { PageTreeRow, type PageTreeRowContext } from './page-tree-row';
 import {
   ancestorsOf,
+  canCollapseAll,
+  collapseAll,
   EMPTY_EXPANDED,
   type ExpandedState,
+  expandSiblings,
   indexTree,
   type NudgeDirection,
   nudgeRequest,
   parseExpanded,
+  setSubtree,
 } from './page-tree-state';
 import { SmartViews } from './smart-views';
 import { SuggestParentDialog } from './suggest-parent-dialog';
@@ -197,6 +201,14 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
     expanded,
     activeDocumentId,
     toggle,
+    setSubtreeOpen: (documentId, open) => {
+      const target = positions.get(documentId)?.node;
+      if (target !== undefined) setExpanded(setSubtree(expanded, target, open));
+    },
+    expandSiblingsOf: (documentId) => {
+      const siblings = positions.get(documentId)?.siblings;
+      if (siblings !== undefined) setExpanded(expandSiblings(expanded, siblings));
+    },
     nudge,
     openDocument: (documentId) => {
       const target = positions.get(documentId)?.node;
@@ -249,6 +261,8 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
         onCreateFromTemplate={() => setTemplatePicker(true)}
         onCreateDatabase={() => void createChild(null, 'COLLECTION')}
         onCreateProject={() => void createProject(null)}
+        canCollapseAll={canCollapseAll(tree.data.nodes, expanded, activeDocumentId)}
+        onCollapseAll={() => setExpanded(collapseAll(tree.data.nodes, activeDocumentId))}
       />
 
       <ScrollArea className="min-h-0 flex-1" viewportClassName="px-1 pb-2" clampContentWidth>
