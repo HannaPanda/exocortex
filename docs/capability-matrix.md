@@ -20,7 +20,7 @@ counts for nothing here, and the gate goes red until it is rendered or
 deleted. It used to count, which is how a project build history and two
 reorder routes shipped with no way to them in the browser.
 
-227 routes are reachable from at least one client; 144 from all three.
+228 routes are reachable from at least one client; 145 from all three.
 
 | Route | UI | AI | MCP | Tools |
 | --- | :-: | :-: | :-: | --- |
@@ -251,6 +251,7 @@ reorder routes shipped with no way to them in the browser.
 | `POST /api/workspaces/:x/trash/delete` | ✓ | · | · | — |
 | `POST /api/workspaces/:x/trash/deletion-preview` | ✓ | · | · | — |
 | `PUT /api/workspaces/:x/credentials/:x` | ✓ | · | · | — |
+| `PUT /api/workspaces/order` | ✓ | ✓ | ✓ | `exo_workspace_reorder` |
 
 ## Routes the browser reaches and agents do not
 

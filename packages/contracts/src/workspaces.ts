@@ -40,6 +40,23 @@ export const workspaceListResponseSchema = z.object({
 });
 export type WorkspaceListResponse = z.infer<typeof workspaceListResponseSchema>;
 
+/**
+ * The caller's own order of their workspaces; the first one is what opens.
+ *
+ * A prefix, not necessarily the whole list: the named workspaces go first in
+ * this order, and every other one follows in the order it already had. So
+ * "put the Brain first" is one id, and a workspace joined while somebody was
+ * sorting is never lost for not having been named.
+ */
+export const reorderWorkspacesRequestSchema = z.object({
+  workspaceIds: z
+    .array(idSchema)
+    .min(1)
+    .max(500)
+    .refine((ids) => new Set(ids).size === ids.length, { message: 'Duplicate workspace id' }),
+});
+export type ReorderWorkspacesRequest = z.infer<typeof reorderWorkspacesRequestSchema>;
+
 export const workspaceMemberSchema = z.object({
   id: idSchema,
   userId: idSchema,

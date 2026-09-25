@@ -388,3 +388,32 @@ describe('workspace settings (issue #52, ADR-023)', () => {
     });
   });
 });
+
+describe('the personal order of workspaces', () => {
+  it('lists never-placed memberships oldest first', async () => {
+    const ids = (await service.listForUser(ownerId)).map((workspace) => workspace.id);
+    expect(ids).toEqual([workspaceId, otherWorkspaceId]);
+  });
+
+  it('moves the named workspaces to the front and keeps the rest behind them', async () => {
+    const list = await service.reorderForUser(ownerId, { workspaceIds: [otherWorkspaceId] });
+    expect(list.map((workspace) => workspace.id)).toEqual([otherWorkspaceId, workspaceId]);
+    expect((await service.listForUser(ownerId)).map((workspace) => workspace.id)).toEqual([
+      otherWorkspaceId,
+      workspaceId,
+    ]);
+  });
+
+  it("leaves another member's list untouched", async () => {
+    const admins = await prisma.workspaceMember.findUniqueOrThrow({
+      where: { workspaceId_userId: { workspaceId, userId: adminId } },
+    });
+    expect(admins.position).toBeNull();
+  });
+
+  it('refuses a workspace the caller is no member of, as unknown', async () => {
+    await expect(
+      service.reorderForUser(adminId, { workspaceIds: [otherWorkspaceId] }),
+    ).rejects.toMatchObject({ status: 404 });
+  });
+});

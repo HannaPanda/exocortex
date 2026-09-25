@@ -664,6 +664,12 @@ model WorkspaceMember {
   userId      String
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   role        WorkspaceRole @default(MEMBER)
+  /// Where this workspace stands in the member's own list, and so which one
+  /// opens first. On the membership rather than the workspace, because the
+  /// order is one person's and must not move anybody else's list. `null`
+  /// means never placed: such memberships follow the placed ones, oldest
+  /// first, which is exactly the order before this column existed.
+  position    Int?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 

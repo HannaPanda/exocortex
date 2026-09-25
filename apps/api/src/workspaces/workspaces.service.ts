@@ -12,6 +12,7 @@ import {
 } from '@exocortex/auth';
 import {
   type CreateWorkspaceRequest,
+  type ReorderWorkspacesRequest,
   type UpdateWorkspaceRequest,
   type UpdateWorkspaceSettingsRequest,
   type Workspace,
@@ -66,7 +67,9 @@ export class WorkspacesService {
       include: {
         workspace: { include: { _count: { select: { members: true } } } },
       },
-      orderBy: { createdAt: 'asc' },
+      // The person's own order first; never-placed memberships after it,
+      // oldest first, which is the order the list had before it could move.
+      orderBy: [{ position: { sort: 'asc', nulls: 'last' } }, { createdAt: 'asc' }],
     });
 
     return memberships.map((membership) => ({
@@ -79,6 +82,38 @@ export class WorkspacesService {
       memberCount: membership.workspace._count.members,
       isMemory: membership.workspace.isMemory,
     }));
+  }
+
+  /**
+   * Moves the named workspaces to the top of the caller's list, in that order;
+   * the rest keep their relative order behind them. Every membership gets an
+   * explicit position afterwards, so the list no longer depends on join dates.
+   *
+   * Only the caller's own memberships are touched, which is also the whole
+   * permission check: an id the caller is no member of is refused as unknown,
+   * the same answer a workspace that does not exist gets.
+   */
+  async reorderForUser(userId: string, request: ReorderWorkspacesRequest): Promise<Workspace[]> {
+    const current = await this.listForUser(userId);
+    const known = new Set(current.map((workspace) => workspace.id));
+    const unknown = request.workspaceIds.find((id) => !known.has(id));
+    if (unknown !== undefined) throw AppError.notFound(`Workspace ${unknown}`);
+
+    const named = new Set(request.workspaceIds);
+    const order = [
+      ...request.workspaceIds,
+      ...current.map((workspace) => workspace.id).filter((id) => !named.has(id)),
+    ];
+
+    await this.prisma.$transaction(
+      order.map((workspaceId, position) =>
+        this.prisma.workspaceMember.update({
+          where: { workspaceId_userId: { workspaceId, userId } },
+          data: { position },
+        }),
+      ),
+    );
+    return this.listForUser(userId);
   }
 
   /** Creates a workspace and makes the creator its OWNER, atomically. */

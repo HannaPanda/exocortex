@@ -7,6 +7,8 @@ import {
   createWorkspaceRequestSchema,
   type RemoveWorkspaceMemberResponse,
   removeWorkspaceMemberResponseSchema,
+  type ReorderWorkspacesRequest,
+  reorderWorkspacesRequestSchema,
   type SetWorkspaceCredentialRequest,
   setWorkspaceCredentialRequestSchema,
   type UpdateWorkspaceMemberRequest,
@@ -66,6 +68,20 @@ export class WorkspacesController {
     @Body(zodPipe(createWorkspaceRequestSchema)) body: CreateWorkspaceRequest,
   ): Promise<Workspace> {
     return this.workspaces.create(session.userId, body);
+  }
+
+  /**
+   * The caller's own order of their workspaces; the first one opens on start.
+   * PUT, because the answer is the whole list in its new order.
+   */
+  @Put('order')
+  @ApiBody({ schema: openApiSchema(reorderWorkspacesRequestSchema) })
+  @ApiOkResponse({ schema: openApiResponseSchema(workspaceListResponseSchema) })
+  async reorder(
+    @CurrentSession() session: VerifiedSession,
+    @Body(zodPipe(reorderWorkspacesRequestSchema)) body: ReorderWorkspacesRequest,
+  ): Promise<WorkspaceListResponse> {
+    return { workspaces: await this.workspaces.reorderForUser(session.userId, body) };
   }
 
   /** Everything the landing view draws, in one answer. */

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   idSchema,
   type OverviewDocument,
+  reorderWorkspacesRequestSchema,
   type Workspace,
   workspaceListResponseSchema,
   workspaceOverviewResponseSchema,
@@ -71,6 +72,33 @@ export const workspaceRenameTool: AnyToolDefinition = defineTool({
       responseSchema: workspaceSchema,
     });
     return { text: `Arbeitsbereich umbenannt: ${formatWorkspace(result)}`, data: result };
+  },
+});
+
+export const workspaceReorderTool: AnyToolDefinition = defineTool({
+  name: 'exo_workspace_reorder',
+  description:
+    'Ändert die Reihenfolge der eigenen Arbeitsbereiche. Der erste der Liste öffnet sich beim ' +
+    'Start. workspaceIds nennt die Bereiche, die vorne stehen sollen, in dieser Reihenfolge; ' +
+    'alle nicht genannten folgen dahinter in ihrer bisherigen Reihenfolge. Einen Bereich ans ' +
+    'Ende schieben heißt also: alle anderen in gewünschter Reihenfolge nennen. Gilt nur für ' +
+    'dieses Konto, die Liste anderer Mitglieder bleibt, wie sie ist.',
+  inputSchema: reorderWorkspacesRequestSchema,
+  surfaces: ['mcp', 'ai'],
+  domain: 'core',
+  mutating: true,
+  target: () => 'user-preferences:workspace-order',
+  async execute(client, input) {
+    const result = await client.request({
+      method: 'PUT',
+      path: '/api/workspaces/order',
+      body: input,
+      responseSchema: workspaceListResponseSchema,
+    });
+    const text = result.workspaces
+      .map((workspace, i) => `${i + 1}. ${formatWorkspace(workspace)}`)
+      .join('\n');
+    return { text: `Neue Reihenfolge:\n${text}`, data: result };
   },
 });
 
@@ -170,4 +198,5 @@ export const WORKSPACE_TOOLS: readonly AnyToolDefinition[] = [
   listWorkspacesTool,
   workspaceOverviewTool,
   workspaceRenameTool,
+  workspaceReorderTool,
 ];
