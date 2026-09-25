@@ -36,7 +36,7 @@ import { DocumentIcon } from '@/components/document/document-icon';
 import { PageIconPicker, type PageIconSelection } from '@/components/document/page-icon-picker';
 import { documentHref } from '@/lib/document-href';
 
-import { type DropZone, type ExpandedState } from './page-tree-state';
+import { type DropZone, type ExpandedState, type NudgeDirection } from './page-tree-state';
 
 /** Everything a row needs that is not the page it renders. */
 export interface PageTreeRowContext {
@@ -57,8 +57,8 @@ export interface PageTreeRowContext {
   onRowDragOver: (event: React.DragEvent<HTMLDivElement>, node: DocumentTreeNode) => void;
   onRowDrop: (event: React.DragEvent<HTMLDivElement>, node: DocumentTreeNode) => void;
   toggle: (documentId: string) => void;
-  nudge: (documentId: string, direction: 'up' | 'down' | 'in' | 'out') => void;
-  canNudge: (documentId: string, direction: 'up' | 'down' | 'in' | 'out') => boolean;
+  nudge: (documentId: string, direction: NudgeDirection) => void;
+  canNudge: (documentId: string, direction: NudgeDirection) => boolean;
   createChild: (parentId: string, type?: 'PAGE' | 'COLLECTION') => void;
   createProject: (parentId: string) => void;
   setIcon: (documentId: string, selection: PageIconSelection) => void;

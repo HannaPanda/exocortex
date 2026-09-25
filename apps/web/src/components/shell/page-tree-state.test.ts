@@ -4,7 +4,15 @@ import { type DocumentTreeNode } from '@exocortex/contracts';
 
 import { treeBranch } from '@/test-support/document-tree';
 
-import { ancestorsOf, indexTree, isSelfOrDescendant, parseExpanded } from './page-tree-state';
+import {
+  ancestorsOf,
+  dropRequest,
+  dropZoneAt,
+  indexTree,
+  isSelfOrDescendant,
+  nudgeRequest,
+  parseExpanded,
+} from './page-tree-state';
 
 const tree: DocumentTreeNode[] = [
   treeBranch('a', null, [treeBranch('a1', 'a', [treeBranch('a1x', 'a1')]), treeBranch('a2', 'a')]),
@@ -70,5 +78,56 @@ describe('isSelfOrDescendant', () => {
 
   it('allows a row from another branch', () => {
     expect(isSelfOrDescendant(first, 'b')).toBe(false);
+  });
+});
+
+describe('dropZoneAt', () => {
+  it('reads the edges as between and the middle half as into', () => {
+    expect(dropZoneAt(0.1)).toBe('before');
+    expect(dropZoneAt(0.5)).toBe('inside');
+    expect(dropZoneAt(0.9)).toBe('after');
+  });
+});
+
+describe('dropRequest', () => {
+  const positions = indexTree(tree);
+
+  it('drops into a row as its child', () => {
+    expect(dropRequest(positions, 'a1', 'inside')).toEqual({ parentId: 'a1' });
+  });
+
+  it("drops beside a row under that row's parent", () => {
+    expect(dropRequest(positions, 'a2', 'before')).toEqual({
+      parentId: 'a',
+      beforeSiblingId: 'a2',
+    });
+    expect(dropRequest(positions, 'b', 'after')).toEqual({ parentId: null, afterSiblingId: 'b' });
+  });
+
+  it('asks for nothing when the target is not in the tree', () => {
+    expect(dropRequest(positions, 'nope', 'inside')).toBeNull();
+  });
+});
+
+describe('nudgeRequest', () => {
+  const positions = indexTree(tree);
+
+  it('swaps with the neighbour above or below', () => {
+    expect(nudgeRequest(positions, 'a2', 'up')).toEqual({ parentId: 'a', beforeSiblingId: 'a1' });
+    expect(nudgeRequest(positions, 'a1', 'down')).toEqual({ parentId: 'a', afterSiblingId: 'a2' });
+  });
+
+  it('indents into the page above and outdents to after the parent', () => {
+    expect(nudgeRequest(positions, 'a2', 'in')).toEqual({ parentId: 'a1' });
+    expect(nudgeRequest(positions, 'a1x', 'out')).toEqual({ parentId: 'a', afterSiblingId: 'a1' });
+  });
+
+  it('refuses the moves that have nowhere to go', () => {
+    // The first sibling has nothing above it, the last nothing below, and a
+    // root page has no parent to leave.
+    expect(nudgeRequest(positions, 'a1', 'up')).toBeNull();
+    expect(nudgeRequest(positions, 'a1', 'in')).toBeNull();
+    expect(nudgeRequest(positions, 'b', 'down')).toBeNull();
+    expect(nudgeRequest(positions, 'a', 'out')).toBeNull();
   });
 });

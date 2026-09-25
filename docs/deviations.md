@@ -335,7 +335,7 @@ reformatting them costs seconds and nobody reads them.
 ## 21. The page tree drags with the platform, not with a library
 
 Reordering pages in the sidebar is native HTML5 drag and drop
-(`apps/web/src/components/shell/page-tree.tsx`) rather than `dnd-kit` or
+(`apps/web/src/components/shell/use-tree-drag.ts`) rather than `dnd-kit` or
 `react-dnd`. The tree is one column of rows with three drop zones each — before,
 into, after — which `dragover` plus the pointer's offset inside the row already
 answers. A drag-and-drop library is a second interaction framework to keep in step

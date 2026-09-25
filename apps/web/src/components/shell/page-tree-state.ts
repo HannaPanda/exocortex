@@ -1,4 +1,4 @@
-import { type DocumentTreeNode } from '@exocortex/contracts';
+import { type DocumentTreeNode, type MoveDocumentRequest } from '@exocortex/contracts';
 
 /**
  * The tree's pure bookkeeping: what is unfolded, where a page sits, and whether
@@ -139,8 +139,69 @@ export function isSelfOrDescendant(node: DocumentTreeNode, candidateId: string):
 }
 
 /**
- * How long a folded page has to be hovered before it opens under the pointer.
+ * Which zone of a row the pointer is in, from its offset between the row's top
+ * (0) and bottom (1).
  *
- * Long enough that dragging *past* a folded page does not open it, short enough
- * that dropping something three levels down does not need three separate drags.
+ * The middle half of the row means "into", the edges mean "between". A row is
+ * 28 pixels tall, so the edges are seven each: enough to hit on purpose, small
+ * enough that the common drop is the one in the middle.
  */
+export function dropZoneAt(offset: number): DropZone {
+  return offset < 0.25 ? 'before' : offset > 0.75 ? 'after' : 'inside';
+}
+
+/**
+ * Turns "over that row, in its upper third" into a move the server accepts, or
+ * null when the row is not in the tree.
+ */
+export function dropRequest(
+  positions: ReadonlyMap<string, TreePosition>,
+  targetId: string,
+  zone: DropZone,
+): MoveDocumentRequest | null {
+  const target = positions.get(targetId);
+  if (target === undefined) return null;
+  if (zone === 'inside') return { parentId: targetId };
+  return {
+    parentId: target.parentId,
+    ...(zone === 'before' ? { beforeSiblingId: targetId } : { afterSiblingId: targetId }),
+  };
+}
+
+/** The four keyboard moves, `Alt` plus an arrow key. */
+export type NudgeDirection = 'up' | 'down' | 'in' | 'out';
+
+/**
+ * The keyboard half of dragging, or null when the page cannot move that way.
+ *
+ * Up and down swap a page with the neighbour it already has; in and out change
+ * which page it belongs to. Four commands cover every move a drag can make
+ * except moving across a long distance, and that is what the drag is for.
+ */
+export function nudgeRequest(
+  positions: ReadonlyMap<string, TreePosition>,
+  documentId: string,
+  direction: NudgeDirection,
+): MoveDocumentRequest | null {
+  const position = positions.get(documentId);
+  if (position === undefined) return null;
+  const { parentId, siblings, index } = position;
+
+  if (direction === 'up') {
+    const previous = siblings[index - 1];
+    return previous === undefined ? null : { parentId, beforeSiblingId: previous.id };
+  }
+  if (direction === 'down') {
+    const next = siblings[index + 1];
+    return next === undefined ? null : { parentId, afterSiblingId: next.id };
+  }
+  if (direction === 'in') {
+    // Into the page above it, which is where an outline puts it.
+    const previous = siblings[index - 1];
+    return previous === undefined ? null : { parentId: previous.id };
+  }
+  if (parentId === null) return null;
+  const parent = positions.get(parentId);
+  if (parent === undefined) return null;
+  return { parentId: parent.parentId, afterSiblingId: parentId };
+}

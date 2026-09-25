@@ -1,6 +1,6 @@
 'use client';
 
-import { FolderCodeIcon, LayoutTemplateIcon, PlusIcon, TableIcon, Trash2Icon } from 'lucide-react';
+import { Trash2Icon } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
@@ -9,34 +9,8 @@ import {
   type DocumentTreeNode,
   type MoveDocumentRequest,
 } from '@exocortex/contracts';
-import {
-  Alert,
-  AlertDescription,
-  Button,
-  cn,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  EmptyState,
-  ErrorState,
-  LoadingState,
-  ScrollArea,
-  SectionRule,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@exocortex/ui';
+import { cn, EmptyState, ErrorState, LoadingState, ScrollArea } from '@exocortex/ui';
 
-import { ApiError } from '@/lib/api/client';
 import {
   useArchiveDocument,
   useCreateDocument,
@@ -44,25 +18,26 @@ import {
   useMoveDocument,
   useUpdateDocument,
 } from '@/lib/api/document-queries';
-import { messageForCode } from '@/lib/api/error-messages';
 import { useCreateProject } from '@/lib/api/project-queries';
-import { useWorkspaces } from '@/lib/api/workspace-queries';
 import { documentHref } from '@/lib/document-href';
 import { usePersistentState } from '@/lib/use-persistent-state';
 
+import { MoveWorkspaceDialog } from './move-workspace-dialog';
+import { PageTreeHeader } from './page-tree-header';
 import { PageTreeRow, type PageTreeRowContext } from './page-tree-row';
 import {
   ancestorsOf,
-  type DropZone,
   EMPTY_EXPANDED,
   type ExpandedState,
   indexTree,
-  isSelfOrDescendant,
+  type NudgeDirection,
+  nudgeRequest,
   parseExpanded,
 } from './page-tree-state';
 import { SmartViews } from './smart-views';
 import { SuggestParentDialog } from './suggest-parent-dialog';
 import { TemplatePickerDialog } from './template-picker-dialog';
+import { useTreeDrag } from './use-tree-drag';
 import { useTreeKeyboard } from './use-tree-keyboard';
 
 interface PageTreeProps {
@@ -76,15 +51,6 @@ interface PageTreeProps {
    */
   onOpenTrash: () => void;
 }
-
-/**
- * How long a folded page has to be hovered before it opens under the pointer.
- *
- * Long enough that dragging *past* a folded page does not open it, short enough
- * that dropping something three levels down does not need three separate drags.
- */
-
-const SPRING_OPEN_MS = 700;
 
 /**
  * Hierarchical page tree.
@@ -129,35 +95,12 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
   const [moveWorkspaceNode, setMoveWorkspaceNode] = React.useState<DocumentTreeNode | null>(null);
   const [suggestParentNode, setSuggestParentNode] = React.useState<DocumentTreeNode | null>(null);
   const [moveTargetWorkspaceId, setMoveTargetWorkspaceId] = React.useState('');
-  // The row being dragged, and the row it is currently over. Two pieces of state
-  // rather than one: the dragged row stays marked while the pointer travels over
-  // rows that would refuse it.
-  const [draggedId, setDraggedId] = React.useState<string | null>(null);
-  const [dropTarget, setDropTarget] = React.useState<{ id: string; zone: DropZone } | null>(null);
-  const [rootDropActive, setRootDropActive] = React.useState(false);
 
   const treeRef = React.useRef<HTMLUListElement | null>(null);
 
   const activeDocumentId = params.documentId;
   const nodes = tree.data?.nodes;
   const positions = React.useMemo(() => indexTree(nodes ?? []), [nodes]);
-
-  /**
-   * The folded row the pointer is currently resting on, and the timer that will
-   * open it. A ref because it changes on every `dragover` — dozens per second —
-   * and none of those changes belong on screen.
-   */
-  const springOpen = React.useRef<{ id: string; timer: ReturnType<typeof setTimeout> } | null>(
-    null,
-  );
-
-  const cancelSpringOpen = React.useCallback((): void => {
-    if (springOpen.current === null) return;
-    clearTimeout(springOpen.current.timer);
-    springOpen.current = null;
-  }, []);
-
-  React.useEffect(() => cancelSpringOpen, [cancelSpringOpen]);
 
   /**
    * Which document the unfolding below has already been done for.
@@ -233,63 +176,15 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
     void moveDocument.mutateAsync({ documentId, request });
   };
 
-  /** Turns "over that row, in its upper third" into a move the server accepts. */
-  const dropOn = (documentId: string, targetId: string, zone: DropZone): void => {
-    const target = positions.get(targetId);
-    if (target === undefined) return;
+  const drag = useTreeDrag({ positions, expanded, setExpanded, submitMove });
 
-    if (zone === 'inside') {
-      submitMove(documentId, { parentId: targetId });
-      return;
-    }
-    submitMove(documentId, {
-      parentId: target.parentId,
-      ...(zone === 'before' ? { beforeSiblingId: targetId } : { afterSiblingId: targetId }),
-    });
+  const nudge = (documentId: string, direction: NudgeDirection): void => {
+    const request = nudgeRequest(positions, documentId, direction);
+    if (request !== null) submitMove(documentId, request);
   };
 
-  /**
-   * The keyboard half of dragging.
-   *
-   * Up and down swap a page with the neighbour it already has; in and out change
-   * which page it belongs to. Four commands cover every move a drag can make
-   * except moving across a long distance, and that is what the drag is for.
-   */
-  const nudge = (documentId: string, direction: 'up' | 'down' | 'in' | 'out'): void => {
-    const position = positions.get(documentId);
-    if (position === undefined) return;
-    const { parentId, siblings, index } = position;
-
-    if (direction === 'up') {
-      const previous = siblings[index - 1];
-      if (previous !== undefined)
-        submitMove(documentId, { parentId, beforeSiblingId: previous.id });
-      return;
-    }
-    if (direction === 'down') {
-      const next = siblings[index + 1];
-      if (next !== undefined) submitMove(documentId, { parentId, afterSiblingId: next.id });
-      return;
-    }
-    if (direction === 'in') {
-      // Into the page above it, which is where an outline puts it.
-      const previous = siblings[index - 1];
-      if (previous !== undefined) submitMove(documentId, { parentId: previous.id });
-      return;
-    }
-    if (parentId === null) return;
-    const parent = positions.get(parentId);
-    if (parent === undefined) return;
-    submitMove(documentId, { parentId: parent.parentId, afterSiblingId: parentId });
-  };
-
-  const canNudge = (documentId: string, direction: 'up' | 'down' | 'in' | 'out'): boolean => {
-    const position = positions.get(documentId);
-    if (position === undefined) return false;
-    if (direction === 'up' || direction === 'in') return position.index > 0;
-    if (direction === 'down') return position.index < position.siblings.length - 1;
-    return position.parentId !== null;
-  };
+  const canNudge = (documentId: string, direction: NudgeDirection): boolean =>
+    nudgeRequest(positions, documentId, direction) !== null;
 
   // One tab stop, then arrow keys. Declared after `toggle` and `nudge` because
   // it drives both of them, and before the render because the tab stop is a
@@ -308,58 +203,6 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
     },
   });
 
-  const draggedNode = draggedId === null ? null : (positions.get(draggedId)?.node ?? null);
-
-  /** Whether a row is allowed to receive the page currently being dragged. */
-  const acceptsDrop = (targetId: string): boolean =>
-    draggedNode !== null && !isSelfOrDescendant(draggedNode, targetId);
-
-  const onRowDragOver = (event: React.DragEvent<HTMLDivElement>, node: DocumentTreeNode): void => {
-    // No `preventDefault` means "not a drop target", which is how the browser is
-    // told that a page cannot be dropped into itself.
-    if (!acceptsDrop(node.id)) return;
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-
-    const rect = event.currentTarget.getBoundingClientRect();
-    const offset = (event.clientY - rect.top) / rect.height;
-    // The middle half of the row means "into", the edges mean "between". A row
-    // is 28 pixels tall, so the edges are seven each: enough to hit on purpose,
-    // small enough that the common drop is the one in the middle.
-    const zone: DropZone = offset < 0.25 ? 'before' : offset > 0.75 ? 'after' : 'inside';
-
-    if (dropTarget?.id !== node.id || dropTarget.zone !== zone) {
-      setDropTarget({ id: node.id, zone });
-    }
-
-    const shouldSpring =
-      zone === 'inside' && node.children.length > 0 && expanded[node.id] !== true;
-    if (!shouldSpring) {
-      if (springOpen.current?.id === node.id) cancelSpringOpen();
-      return;
-    }
-    if (springOpen.current?.id === node.id) return;
-    cancelSpringOpen();
-    springOpen.current = {
-      id: node.id,
-      timer: setTimeout(() => {
-        springOpen.current = null;
-        setExpanded({ ...expanded, [node.id]: true });
-      }, SPRING_OPEN_MS),
-    };
-  };
-
-  const onRowDrop = (event: React.DragEvent<HTMLDivElement>, node: DocumentTreeNode): void => {
-    event.preventDefault();
-    const zone = dropTarget?.id === node.id ? dropTarget.zone : 'inside';
-    const documentId = draggedId;
-    setDraggedId(null);
-    setDropTarget(null);
-    cancelSpringOpen();
-    if (documentId === null || !acceptsDrop(node.id)) return;
-    dropOn(documentId, node.id, zone);
-  };
-
   if (tree.isPending)
     return <LoadingState variant="skeleton" rows={6} label="Seiten werden geladen" />;
   if (tree.isError) {
@@ -373,15 +216,15 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
     onRowKeyDown,
     onRowFocus,
     expanded,
-    draggedId,
-    dropTarget,
+    draggedId: drag.draggedId,
+    dropTarget: drag.dropTarget,
     iconPickerFor,
     setIconPickerFor,
-    setDraggedId,
-    setDropTarget,
-    cancelSpringOpen,
-    onRowDragOver,
-    onRowDrop,
+    setDraggedId: drag.setDraggedId,
+    setDropTarget: drag.setDropTarget,
+    cancelSpringOpen: drag.cancelSpringOpen,
+    onRowDragOver: drag.onRowDragOver,
+    onRowDrop: drag.onRowDrop,
     toggle,
     nudge,
     canNudge,
@@ -400,7 +243,7 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <TreeHeader
+      <PageTreeHeader
         onCreatePage={() => void createChild(null)}
         onCreateFromTemplate={() => setTemplatePicker(true)}
         onCreateDatabase={() => void createChild(null, 'COLLECTION')}
@@ -425,27 +268,13 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
         {/* Only while something is being dragged, and only for a page that is not
             already at the top level. Without it, a page three levels down can be
             dragged onto any row but never simply out. */}
-        {draggedNode !== null && draggedNode.parentId !== null ? (
+        {drag.draggedNode !== null && drag.draggedNode.parentId !== null ? (
           <div
-            onDragOver={(event) => {
-              event.preventDefault();
-              event.dataTransfer.dropEffect = 'move';
-              setRootDropActive(true);
-            }}
-            onDragLeave={() => setRootDropActive(false)}
-            onDrop={(event) => {
-              event.preventDefault();
-              const documentId = draggedId;
-              setRootDropActive(false);
-              setDraggedId(null);
-              setDropTarget(null);
-              cancelSpringOpen();
-              if (documentId !== null) submitMove(documentId, { parentId: null });
-            }}
+            {...drag.rootDropHandlers}
             data-testid="tree-root-drop"
             className={cn(
               'mt-1 rounded-md border border-dashed px-2 py-1.5 text-xs transition-colors',
-              rootDropActive
+              drag.rootDropActive
                 ? 'border-primary bg-accent text-foreground'
                 : 'border-border text-muted-foreground',
             )}
@@ -494,176 +323,5 @@ export function PageTree({ workspaceId, onOpenTrash }: PageTreeProps) {
         activeDocumentId={activeDocumentId}
       />
     </div>
-  );
-}
-
-/**
- * Moving a page into another workspace, with the one thing that is not obvious
- * spelled out: everything under it comes along, and its members can see it.
- */
-function MoveWorkspaceDialog({
-  workspaceId,
-  node,
-  onClose,
-  targetWorkspaceId,
-  onTargetChange,
-  activeDocumentId,
-}: {
-  workspaceId: string;
-  node: DocumentTreeNode | null;
-  onClose: () => void;
-  targetWorkspaceId: string;
-  onTargetChange: (workspaceId: string) => void;
-  activeDocumentId: string | undefined;
-}) {
-  const router = useRouter();
-  const workspaces = useWorkspaces();
-  const moveDocument = useMoveDocument(workspaceId);
-
-  return (
-    <Dialog
-      open={node !== null}
-      onOpenChange={(open) => {
-        if (!open) onClose();
-      }}
-    >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>In anderen Arbeitsbereich verschieben</DialogTitle>
-          <DialogDescription>
-            „{node?.title}“ wandert mit allen Unterseiten, Anhängen und eingebetteten Datenbanken in
-            den gewählten Arbeitsbereich. Inhalte, die bisher nur du gesehen hast, sind danach für
-            dessen Mitglieder sichtbar wie jede andere Seite dort auch.
-          </DialogDescription>
-        </DialogHeader>
-
-        {moveDocument.isError ? (
-          <Alert variant="destructive" data-testid="move-workspace-error">
-            <AlertDescription>
-              {messageForCode(
-                moveDocument.error instanceof ApiError ? moveDocument.error.code : undefined,
-              )}
-            </AlertDescription>
-          </Alert>
-        ) : null}
-
-        <Select
-          value={targetWorkspaceId.length === 0 ? null : targetWorkspaceId}
-          onValueChange={(next) => onTargetChange(next ?? '')}
-        >
-          <SelectTrigger data-testid="move-workspace-select">
-            <SelectValue>
-              {() =>
-                workspaces.data?.find((option) => option.id === targetWorkspaceId)?.name ??
-                'Zielarbeitsbereich wählen'
-              }
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {(workspaces.data ?? [])
-              .filter((option) => option.id !== workspaceId)
-              .map((option) => (
-                <SelectItem key={option.id} value={option.id}>
-                  {option.name}
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
-
-        <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>
-            Abbrechen
-          </Button>
-          <Button
-            data-testid="move-workspace-submit"
-            disabled={targetWorkspaceId.length === 0 || moveDocument.isPending}
-            onClick={() => {
-              if (node === null) return;
-              const movedId = node.id;
-              const targetId = targetWorkspaceId;
-              void moveDocument
-                .mutateAsync({
-                  documentId: movedId,
-                  request: { parentId: null, workspaceId: targetId },
-                })
-                .then(() => {
-                  onClose();
-                  // The page that just left this workspace can no longer be
-                  // shown under its old workspaceId route.
-                  if (activeDocumentId === movedId) {
-                    router.push(`/arbeitsbereich/${targetId}/seite/${movedId}`);
-                  }
-                });
-            }}
-          >
-            Verschieben
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-/**
- * The "Seiten" label and the menu that creates things under it.
- *
- * Its own component because the three entries each carry a test id, an icon and
- * a label, and forty lines of that in the middle of the tree makes the tree
- * harder to read than the menu is worth.
- */
-function TreeHeader({
-  onCreatePage,
-  onCreateFromTemplate,
-  onCreateDatabase,
-  onCreateProject,
-}: {
-  onCreatePage: () => void;
-  onCreateFromTemplate: () => void;
-  onCreateDatabase: () => void;
-  onCreateProject: () => void;
-}) {
-  return (
-    // The component, not a copy of it. This header drew the square, the label
-    // and the hairline by hand with the comment "the same mark the overview
-    // uses", which is how a mark stops being a system: the three copies of it
-    // had already drifted apart by the time anybody looked.
-    <SectionRule
-      className="px-2 py-1.5"
-      action={
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label="Anlegen"
-                data-testid="create-root-page"
-              >
-                <PlusIcon />
-              </Button>
-            }
-          />
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem data-testid="create-root-page-item" onClick={onCreatePage}>
-              <PlusIcon /> Seite anlegen
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              data-testid="create-root-from-template"
-              onClick={onCreateFromTemplate}
-            >
-              <LayoutTemplateIcon /> Seite aus Vorlage
-            </DropdownMenuItem>
-            <DropdownMenuItem data-testid="create-root-database" onClick={onCreateDatabase}>
-              <TableIcon /> Datenbank anlegen
-            </DropdownMenuItem>
-            <DropdownMenuItem data-testid="create-root-project" onClick={onCreateProject}>
-              <FolderCodeIcon /> LaTeX-Projekt anlegen
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      }
-    >
-      Seiten
-    </SectionRule>
   );
 }
