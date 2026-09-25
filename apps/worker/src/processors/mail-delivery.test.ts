@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { type MailDeliveryJob, type QUEUE_NAMES } from '@exocortex/contracts';
+import {
+  type MailDeliveryJob,
+  mailDeliveryJobSchema,
+  type QUEUE_NAMES,
+} from '@exocortex/contracts';
 import { createLogger } from '@exocortex/logger';
 import { type Mailer, PermanentMailError } from '@exocortex/mail';
 import { type JobContext, UnrecoverableError } from '@exocortex/queue';
@@ -19,6 +23,7 @@ const job: MailDeliveryJob = {
     url: 'https://exocortex.app/einladung/abc',
     expiresAt: '2026-10-01T09:00:00.000Z',
   },
+  locale: 'fr',
 };
 
 function contextFor(payload: MailDeliveryJob): JobContext<typeof QUEUE_NAMES.mail> {
@@ -50,7 +55,21 @@ describe('createMailDeliveryProcessor', () => {
 
     await createMailDeliveryProcessor({ mailer: mailerThat(send) })(contextFor(job));
 
-    expect(send).toHaveBeenCalledWith({ to: job.recipient, message: job.mail });
+    expect(send).toHaveBeenCalledWith({ to: job.recipient, message: job.mail, locale: 'fr' });
+  });
+
+  /**
+   * A job queued before the field existed carries no locale. The schema
+   * defaults it, which is what keeps a deploy from failing the mails that
+   * were already waiting in Redis.
+   */
+  it('reads a job without a locale as German', () => {
+    const parsed = mailDeliveryJobSchema.parse({
+      correlationId: 'test',
+      recipient: job.recipient,
+      mail: job.mail,
+    });
+    expect(parsed.locale).toBe('de');
   });
 
   it('gives up for good when the relay refused the message', async () => {
@@ -89,6 +108,7 @@ describe('createMailDeliveryProcessor', () => {
       contextFor({
         correlationId: 'test',
         recipient: 'a@b.de',
+        locale: 'de',
         mail: { template: 'PASSWORD_RESET', name: 'Johanna', url: 'https://exocortex.app/x' },
       }),
     );
@@ -96,6 +116,7 @@ describe('createMailDeliveryProcessor', () => {
       contextFor({
         correlationId: 'test',
         recipient: 'a@b.de',
+        locale: 'de',
         mail: { template: 'EMAIL_VERIFICATION', name: 'Johanna', url: 'https://exocortex.app/y' },
       }),
     );

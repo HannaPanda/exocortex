@@ -1,4 +1,4 @@
-import { type MailMessage } from '@exocortex/contracts';
+import { type Locale, type MailMessage } from '@exocortex/contracts';
 
 /**
  * What Better Auth's callbacks need in order to send a mail, and nothing else.
@@ -17,5 +17,29 @@ import { type MailMessage } from '@exocortex/contracts';
  * `@exocortex/mail`.
  */
 export interface AuthMailer {
-  send(input: { to: string; message: MailMessage }): Promise<unknown>;
+  send(input: { to: string; message: MailMessage; locale: Locale }): Promise<unknown>;
 }
+
+/**
+ * The headers a mail's language may be negotiated from when the account has
+ * not chosen one: the request that caused the mail was made by its reader.
+ */
+export interface MailLocaleHeaders {
+  cookie?: string | undefined;
+  'accept-language'?: string | undefined;
+}
+
+/**
+ * Which language a mail Better Auth sends is written in (issue #98, ADR-062).
+ *
+ * A port for the same reason as the mailer: the order -- the account's
+ * `User.locale`, then this browser's cookie, then `Accept-Language`, then
+ * German -- lives in `@exocortex/i18n`, and this package depends on neither
+ * it nor the catalogue. Both mails Better Auth sends are read by the person
+ * whose request caused them (a reset they asked for, the verification of the
+ * address they just gave), so the request's headers are theirs.
+ */
+export type AuthMailLocale = (input: {
+  userId: string;
+  headers: MailLocaleHeaders;
+}) => Promise<Locale>;

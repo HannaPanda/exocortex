@@ -1,4 +1,5 @@
 import { type MailContent } from '../layout/content';
+import { type MailLanguage } from '../translator';
 
 /**
  * The two mails Better Auth asks for: verify this address, set a new password.
@@ -8,35 +9,36 @@ import { type MailContent } from '../layout/content';
  * and right here, and it is the whole reason the two live in separate files.
  */
 
-const IGNORE_LINE = 'Wenn du das nicht angefordert hast, kannst du diese E-Mail ignorieren.';
-
-export function verificationMail(input: { name: string; url: string }): MailContent {
+export function verificationMail(
+  input: { name: string; url: string },
+  { t }: MailLanguage,
+): MailContent {
   return {
-    subject: 'eXocortex: E-Mail-Adresse bestätigen',
-    preheader: 'Ein Klick, dann ist deine Adresse bestätigt.',
-    heading: 'E-Mail-Adresse bestätigen',
-    greeting: `Hallo ${input.name},`,
+    subject: t('common.subject', { subject: t('auth.verification.subject') }),
+    preheader: t('auth.verification.preheader'),
+    heading: t('auth.verification.heading'),
+    greeting: t('common.greetingNamed', { name: input.name }),
     blocks: [
-      { kind: 'paragraph', text: 'bitte bestätige deine E-Mail-Adresse für eXocortex.' },
-      { kind: 'action', label: 'Adresse bestätigen', url: input.url },
+      { kind: 'paragraph', text: t('auth.verification.body') },
+      { kind: 'action', label: t('auth.verification.action'), url: input.url },
     ],
-    footer: [IGNORE_LINE],
+    footer: [t('auth.ignore')],
   };
 }
 
-export function passwordResetMail(input: { name: string; url: string }): MailContent {
+export function passwordResetMail(
+  input: { name: string; url: string },
+  { t }: MailLanguage,
+): MailContent {
   return {
-    subject: 'eXocortex: Passwort zurücksetzen',
-    preheader: 'Über den Link in dieser Mail setzt du ein neues Passwort.',
-    heading: 'Passwort zurücksetzen',
-    greeting: `Hallo ${input.name},`,
+    subject: t('common.subject', { subject: t('auth.passwordReset.subject') }),
+    preheader: t('auth.passwordReset.preheader'),
+    heading: t('auth.passwordReset.heading'),
+    greeting: t('common.greetingNamed', { name: input.name }),
     blocks: [
-      {
-        kind: 'paragraph',
-        text: 'über den Link unten kannst du ein neues Passwort für eXocortex setzen.',
-      },
-      { kind: 'action', label: 'Neues Passwort setzen', url: input.url },
+      { kind: 'paragraph', text: t('auth.passwordReset.body') },
+      { kind: 'action', label: t('auth.passwordReset.action'), url: input.url },
     ],
-    footer: [IGNORE_LINE],
+    footer: [t('auth.ignore')],
   };
 }

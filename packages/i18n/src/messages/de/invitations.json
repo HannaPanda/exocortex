@@ -23,6 +23,8 @@
     "another": "Weitere einladen",
     "close": "Schließen",
     "email": "E-Mail-Adresse",
+    "language": "Sprache der Einladung",
+    "languageHint": "In dieser Sprache kommt die E-Mail an, und so spricht eXocortex die Person nach dem Anmelden an, bis sie selbst eine andere wählt.",
     "workspace": "Arbeitsbereich",
     "noWorkspace": "Keiner",
     "noWorkspaceHint": "Ohne Arbeitsbereich entsteht ein Konto, das noch nichts sieht. Mitgliedschaften werden hier immer ausdrücklich vergeben.",
@@ -47,6 +49,12 @@
     "status": "Status",
     "workspace": "Arbeitsbereich",
     "role": "Rolle",
+    "roles": {
+      "OWNER": "Besitzer",
+      "ADMIN": "Administrator",
+      "MEMBER": "Mitglied",
+      "GUEST": "Gast"
+    },
     "invitedBy": "Eingeladen von",
     "expiresAt": "Gültig bis",
     "sent": "Verschickt",

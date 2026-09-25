@@ -1,6 +1,5 @@
 import { type MailContent } from '../layout/content';
-
-const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'long' });
+import { formatDay, type MailLanguage } from '../translator';
 
 /**
  * The invitation mail.
@@ -11,35 +10,45 @@ const dateFormat = new Intl.DateTimeFormat('de-DE', { dateStyle: 'long' });
  * mail that tells you to ignore it reads like phishing, so this one names the
  * person who sent it and says plainly that the address can simply be left
  * alone.
+ *
+ * Its language is the one the inviter chose for it (`Invitation.locale`),
+ * because the reader has no account yet whose choice could be asked.
  */
-export function invitationMail(input: {
-  invitedByName: string;
-  workspaceName: string | null;
-  url: string;
-  expiresAt: Date;
-}): MailContent {
-  const destination =
+export function invitationMail(
+  input: {
+    invitedByName: string;
+    workspaceName: string | null;
+    url: string;
+    expiresAt: Date;
+  },
+  language: MailLanguage,
+): MailContent {
+  const { t } = language;
+  const invited =
     input.workspaceName === null
-      ? 'zu eXocortex eingeladen'
-      : `zum Arbeitsbereich „${input.workspaceName}“ in eXocortex eingeladen`;
+      ? t('invitation.invited', { inviter: input.invitedByName })
+      : t('invitation.invitedWorkspace', {
+          inviter: input.invitedByName,
+          workspace: input.workspaceName,
+        });
   return {
-    subject:
-      input.workspaceName === null
-        ? 'eXocortex: Einladung'
-        : `eXocortex: Einladung zu „${input.workspaceName}“`,
-    preheader: `${input.invitedByName} hat dich ${destination}.`,
-    heading: 'Du bist eingeladen',
-    greeting: 'Hallo,',
+    subject: t('common.subject', {
+      subject:
+        input.workspaceName === null
+          ? t('invitation.subject')
+          : t('invitation.subjectWorkspace', { workspace: input.workspaceName }),
+    }),
+    preheader: invited,
+    heading: t('invitation.heading'),
+    greeting: t('common.greeting'),
     blocks: [
-      { kind: 'paragraph', text: `${input.invitedByName} hat dich ${destination}.` },
-      { kind: 'action', label: 'Konto anlegen', url: input.url },
+      { kind: 'paragraph', text: invited },
+      { kind: 'action', label: t('invitation.action'), url: input.url },
       {
         kind: 'paragraph',
-        text: `Der Link gilt bis zum ${dateFormat.format(input.expiresAt)} und lässt sich nur einmal verwenden.`,
+        text: t('invitation.validity', { date: formatDay(language, input.expiresAt) }),
       },
     ],
-    footer: [
-      'Wenn du damit nichts zu tun hast, brauchst du nichts zu unternehmen: ohne diesen Link entsteht kein Konto.',
-    ],
+    footer: [t('invitation.footer')],
   };
 }

@@ -1,10 +1,13 @@
 import {
   AUTOMATION_MAX_MAIL_CHARS,
   AUTOMATION_ORIGIN_HEADER,
+  type Locale,
   markdownExportResponseSchema,
   QUEUE_NAMES,
 } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
+import { resolveLocale } from '@exocortex/i18n';
+import { serverTranslator } from '@exocortex/i18n/catalog';
 import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type QueueRegistry } from '@exocortex/queue';
 
@@ -52,8 +55,6 @@ export interface MailActionInput {
 
 /** `mailTitleSchema`'s limit; the producer shortens rather than being refused. */
 const MAX_TITLE_LENGTH = 200;
-/** A page with no title still has to be nameable in a subject line. */
-const UNTITLED = 'Unbenannte Seite';
 
 export async function sendPageToOwner(
   input: MailActionInput,
@@ -84,7 +85,10 @@ export async function sendPageToOwner(
     where: { id: payload.documentId },
     select: { title: true },
   });
-  const documentTitle = titleOf(titleRow?.title ?? '');
+  // The owner reads it, so the owner's language (ADR-062) -- for the mail and
+  // for the name an untitled page is given.
+  const untitled = serverTranslator(recipient.locale, 'mail')('common.untitledPage');
+  const documentTitle = titleOf(titleRow?.title ?? '', untitled);
   const { body, truncated } = cut(page.markdown);
   const base = dependencies.appUrl.replace(/\/$/, '');
 
@@ -93,10 +97,11 @@ export async function sendPageToOwner(
     {
       correlationId: payload.correlationId,
       recipient: recipient.email,
+      locale: recipient.locale,
       mail: {
         template: 'AUTOMATION_PAGE',
-        ruleName: titleOf(rule.name),
-        subject: titleOf(rule.mailSubject ?? rule.name),
+        ruleName: titleOf(rule.name, untitled),
+        subject: titleOf(rule.mailSubject ?? rule.name, untitled),
         documentTitle,
         url: `${base}/arbeitsbereich/${payload.workspaceId}/seite/${payload.documentId}`,
         body,
@@ -126,10 +131,10 @@ export async function sendPageToOwner(
 async function recipientFor(
   prisma: PrismaClient,
   userId: string,
-): Promise<{ email: string; domain: string }> {
+): Promise<{ email: string; domain: string; locale: Locale }> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { email: true, emailVerified: true, disabledAt: true },
+    select: { email: true, emailVerified: true, disabledAt: true, locale: true },
   });
   if (user === null) throw new Error('The rule has no owner to act as');
   // Switching an account off withdraws its credentials (issue #3). A mail
@@ -141,7 +146,11 @@ async function recipientFor(
   if (!user.emailVerified) {
     throw new Error('The rule’s owner has no confirmed e-mail address');
   }
-  return { email: user.email, domain: user.email.split('@').pop() ?? '' };
+  return {
+    email: user.email,
+    domain: user.email.split('@').pop() ?? '',
+    locale: resolveLocale({ preference: user.locale }),
+  };
 }
 
 /**
@@ -161,8 +170,8 @@ function cut(markdown: string): { body: string; truncated: boolean } {
 }
 
 /** A name, bounded and never empty, as `mailTitleSchema` insists. */
-function titleOf(value: string): string {
+function titleOf(value: string, untitled: string): string {
   const flat = value.replace(/\s+/g, ' ').trim();
-  if (flat.length === 0) return UNTITLED;
+  if (flat.length === 0) return untitled;
   return flat.length <= MAX_TITLE_LENGTH ? flat : `${flat.slice(0, MAX_TITLE_LENGTH - 1)}…`;
 }

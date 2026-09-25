@@ -1,3 +1,6 @@
+import { type Locale } from '@exocortex/contracts';
+
+import { mailLanguage } from '../translator';
 import { type RenderedMail } from '../types';
 
 import { type MailBlock, type MailContent, type MailListItem } from './content';
@@ -16,11 +19,33 @@ import { type MailTheme, mailTheme } from './theme';
  * beside it, and a client that drops every style still shows a readable
  * sequence of headings, paragraphs and links.
  */
-export function composeMail(content: MailContent, theme: MailTheme = mailTheme): RenderedMail {
+export function composeMail(
+  content: MailContent,
+  locale: Locale,
+  theme: MailTheme = mailTheme,
+): RenderedMail {
   return {
     subject: content.subject,
-    text: renderText(content),
-    html: renderHtml(content, theme),
+    text: renderText(content, locale),
+    html: renderHtml(content, locale, theme),
+  };
+}
+
+/**
+ * The few words the layout says on its own, in the reader's language: the
+ * line under a button and the quotation marks around a quoted item, which are
+ * „so“ in German and "so" in English.
+ */
+interface LayoutWords {
+  buttonFallback: string;
+  quote: (text: string) => string;
+}
+
+function layoutWords(locale: Locale): LayoutWords {
+  const { t } = mailLanguage(locale);
+  return {
+    buttonFallback: t('layout.buttonFallback'),
+    quote: (text) => t('layout.quote', { text }),
   };
 }
 
@@ -31,10 +56,11 @@ export function composeMail(content: MailContent, theme: MailTheme = mailTheme):
  * The text part. Not hard-wrapped: a URL broken at column 72 stops being a
  * link, and every client wraps prose on its own.
  */
-export function renderText(content: MailContent): string {
+export function renderText(content: MailContent, locale: Locale): string {
+  const words = layoutWords(locale);
   const lines: string[] = [];
   if (content.greeting !== undefined) lines.push(content.greeting, '');
-  for (const block of content.blocks) lines.push(...textBlock(block), '');
+  for (const block of content.blocks) lines.push(...textBlock(words, block), '');
   if (content.footer !== undefined && content.footer.length > 0) {
     lines.push(...content.footer, '');
   }
@@ -42,7 +68,7 @@ export function renderText(content: MailContent): string {
   return lines.join('\n');
 }
 
-function textBlock(block: MailBlock): string[] {
+function textBlock(words: LayoutWords, block: MailBlock): string[] {
   switch (block.kind) {
     case 'paragraph':
     case 'notice':
@@ -53,7 +79,7 @@ function textBlock(block: MailBlock): string[] {
     case 'facts':
       return block.rows.map((row) => `${row.label}: ${row.value}`);
     case 'section': {
-      const lines = [block.title, ...block.items.map((item) => `- ${textItem(item)}`)];
+      const lines = [block.title, ...block.items.map((item) => `- ${textItem(words, item)}`)];
       if (block.more !== undefined) lines.push(`- ${block.more}`);
       if (block.link !== undefined) lines.push(`${block.link.label}:`, block.link.url);
       return lines;
@@ -63,8 +89,8 @@ function textBlock(block: MailBlock): string[] {
   }
 }
 
-function textItem(item: MailListItem): string {
-  const text = item.quoted === true ? `„${item.text}“` : item.text;
+function textItem(words: LayoutWords, item: MailListItem): string {
+  const text = item.quoted === true ? words.quote(item.text) : item.text;
   return item.label === undefined ? text : `${item.label}: ${text}`;
 }
 
@@ -97,11 +123,21 @@ function inline(value: string): string {
   return escapeHtml(value).replaceAll('\n', '<br>');
 }
 
-export function renderHtml(content: MailContent, theme: MailTheme = mailTheme): string {
+/**
+ * The HTML part. `locale` is the reader's: it is the document's `lang`, which
+ * is what a screen reader picks its voice by, and it chooses the one sentence
+ * the layout says on its own (the fallback under a button).
+ */
+export function renderHtml(
+  content: MailContent,
+  locale: Locale,
+  theme: MailTheme = mailTheme,
+): string {
   const t = theme;
+  const words = layoutWords(locale);
   const body = [
     content.greeting === undefined ? '' : paragraph(t, inline(content.greeting)),
-    ...content.blocks.map((block) => htmlBlock(t, block)),
+    ...content.blocks.map((block) => htmlBlock(t, words, block)),
   ].join('\n');
 
   const footer =
@@ -118,7 +154,7 @@ export function renderHtml(content: MailContent, theme: MailTheme = mailTheme): 
   // sheet. The ones that invert anyway get a layout without dark-on-dark
   // traps: every text colour sits on a background this file also sets.
   return `<!DOCTYPE html>
-<html lang="de">
+<html lang="${escapeHtml(locale)}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -158,12 +194,12 @@ function anchor(t: MailTheme, label: string, url: string): string {
   return `<a href="${href}" style="color:${t.link};text-decoration:underline;">${escapeHtml(label)}</a>`;
 }
 
-function htmlBlock(t: MailTheme, block: MailBlock): string {
+function htmlBlock(t: MailTheme, words: LayoutWords, block: MailBlock): string {
   switch (block.kind) {
     case 'paragraph':
       return paragraph(t, inline(block.text));
     case 'action':
-      return actionButton(t, block.label, block.url);
+      return actionButton(t, words, block.label, block.url);
     case 'link':
       return paragraph(t, anchor(t, block.label, block.url));
     case 'facts':
@@ -176,7 +212,7 @@ function htmlBlock(t: MailTheme, block: MailBlock): string {
     case 'notice':
       return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px 0;"><tr><td style="background-color:${t.panel};border:1px solid ${t.panelBorder};border-radius:6px;padding:12px 16px;font-family:${t.fontFamily};font-size:15px;line-height:1.5;color:${t.text};">${inline(block.text)}</td></tr></table>`;
     case 'section':
-      return sectionBlock(t, block);
+      return sectionBlock(t, words, block);
     case 'excerpt':
       return `<div style="margin:0 0 16px 0;padding:16px;background-color:${t.panel};border-radius:6px;font-family:${t.fontFamily};font-size:15px;line-height:1.55;color:${t.text};white-space:pre-wrap;">${escapeHtml(block.text)}</div>`;
   }
@@ -188,17 +224,21 @@ function htmlBlock(t: MailTheme, block: MailBlock): string {
  * button is the first thing a client that blocks remote content or strips
  * styles turns into something nobody recognises as clickable.
  */
-function actionButton(t: MailTheme, label: string, url: string): string {
+function actionButton(t: MailTheme, words: LayoutWords, label: string, url: string): string {
   const href = safeHref(url);
   if (href === null) return paragraph(t, escapeHtml(label));
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 12px 0;"><tr><td style="background-color:${t.actionFill};border-radius:6px;"><a href="${href}" style="display:inline-block;padding:12px 22px;font-family:${t.fontFamily};font-size:16px;font-weight:600;line-height:1.2;color:${t.actionText};text-decoration:none;border-radius:6px;">${escapeHtml(label)}</a></td></tr></table>
-<p style="margin:0 0 20px 0;font-family:${t.fontFamily};font-size:13px;line-height:1.5;color:${t.mutedText};">Falls der Knopf nicht funktioniert, öffne diese Adresse:<br><a href="${href}" style="color:${t.link};text-decoration:underline;word-break:break-all;">${escapeHtml(url)}</a></p>`;
+<p style="margin:0 0 20px 0;font-family:${t.fontFamily};font-size:13px;line-height:1.5;color:${t.mutedText};">${escapeHtml(words.buttonFallback)}<br><a href="${href}" style="color:${t.link};text-decoration:underline;word-break:break-all;">${escapeHtml(url)}</a></p>`;
 }
 
-function sectionBlock(t: MailTheme, block: Extract<MailBlock, { kind: 'section' }>): string {
+function sectionBlock(
+  t: MailTheme,
+  words: LayoutWords,
+  block: Extract<MailBlock, { kind: 'section' }>,
+): string {
   const items = block.items
     .map((item) => {
-      const text = item.quoted === true ? `„${escapeHtml(item.text)}“` : escapeHtml(item.text);
+      const text = escapeHtml(item.quoted === true ? words.quote(item.text) : item.text);
       const label =
         item.label === undefined
           ? ''

@@ -13,11 +13,14 @@ import { renderMail } from './render';
  */
 describe('renderMail', () => {
   it('tells someone who asked that they may ignore it', () => {
-    const mail = renderMail({
-      template: 'PASSWORD_RESET',
-      name: 'Johanna',
-      url: 'https://exocortex.app/reset?token=abc',
-    });
+    const mail = renderMail(
+      {
+        template: 'PASSWORD_RESET',
+        name: 'Johanna',
+        url: 'https://exocortex.app/reset?token=abc',
+      },
+      'de',
+    );
 
     expect(mail.subject).toBe('eXocortex: Passwort zurücksetzen');
     expect(mail.text).toContain('https://exocortex.app/reset?token=abc');
@@ -25,13 +28,16 @@ describe('renderMail', () => {
   });
 
   it('never tells an invited person to ignore the mail', () => {
-    const mail = renderMail({
-      template: 'INVITATION',
-      invitedByName: 'Johanna',
-      workspaceName: 'Second Brain',
-      url: 'https://exocortex.app/einladung/abc',
-      expiresAt: '2026-10-01T09:00:00.000Z',
-    });
+    const mail = renderMail(
+      {
+        template: 'INVITATION',
+        invitedByName: 'Johanna',
+        workspaceName: 'Second Brain',
+        url: 'https://exocortex.app/einladung/abc',
+        expiresAt: '2026-10-01T09:00:00.000Z',
+      },
+      'de',
+    );
 
     expect(mail.subject).toBe('eXocortex: Einladung zu „Second Brain“');
     expect(mail.text).toContain('Johanna hat dich zum Arbeitsbereich „Second Brain“');
@@ -40,28 +46,34 @@ describe('renderMail', () => {
   });
 
   it('invites into the deployment itself when there is no workspace', () => {
-    const mail = renderMail({
-      template: 'INVITATION',
-      invitedByName: 'Johanna',
-      workspaceName: null,
-      url: 'https://exocortex.app/einladung/abc',
-      expiresAt: '2026-10-01T09:00:00.000Z',
-    });
+    const mail = renderMail(
+      {
+        template: 'INVITATION',
+        invitedByName: 'Johanna',
+        workspaceName: null,
+        url: 'https://exocortex.app/einladung/abc',
+        expiresAt: '2026-10-01T09:00:00.000Z',
+      },
+      'de',
+    );
 
     expect(mail.subject).toBe('eXocortex: Einladung');
     expect(mail.text).toContain('Johanna hat dich zu eXocortex eingeladen.');
   });
 
   it('names what a new share allows, how far it reaches and when it ends', () => {
-    const mail = renderMail({
-      template: 'SHARE_GRANTED',
-      sharedByName: 'Johanna',
-      documentTitle: 'Reisekasse',
-      permission: 'WRITE',
-      scope: 'SUBTREE',
-      url: 'https://exocortex.app/geteilt/doc1',
-      expiresAt: '2026-10-01T09:00:00.000Z',
-    });
+    const mail = renderMail(
+      {
+        template: 'SHARE_GRANTED',
+        sharedByName: 'Johanna',
+        documentTitle: 'Reisekasse',
+        permission: 'WRITE',
+        scope: 'SUBTREE',
+        url: 'https://exocortex.app/geteilt/doc1',
+        expiresAt: '2026-10-01T09:00:00.000Z',
+      },
+      'de',
+    );
 
     expect(mail.subject).toBe('eXocortex: Johanna hat „Reisekasse“ mit dir geteilt');
     expect(mail.text).toContain('Erlaubt: Lesen und Bearbeiten');
@@ -71,15 +83,18 @@ describe('renderMail', () => {
   });
 
   it('says nothing about an expiry a grant does not have', () => {
-    const mail = renderMail({
-      template: 'SHARE_CHANGED',
-      changedByName: 'Stefan',
-      documentTitle: 'Reisekasse',
-      permission: 'READ',
-      scope: 'PAGE_ONLY',
-      url: 'https://exocortex.app/geteilt/doc1',
-      expiresAt: null,
-    });
+    const mail = renderMail(
+      {
+        template: 'SHARE_CHANGED',
+        changedByName: 'Stefan',
+        documentTitle: 'Reisekasse',
+        permission: 'READ',
+        scope: 'PAGE_ONLY',
+        url: 'https://exocortex.app/geteilt/doc1',
+        expiresAt: null,
+      },
+      'de',
+    );
 
     expect(mail.subject).toBe('eXocortex: Deine Freigabe für „Reisekasse“ hat sich geändert');
     expect(mail.text).toContain('Erlaubt: Nur Lesen');
@@ -93,12 +108,15 @@ describe('renderMail', () => {
    * a permission line would be telling them about access they do not have.
    */
   it('hands a withdrawal no way back into the page', () => {
-    const mail = renderMail({
-      template: 'SHARE_REVOKED',
-      revokedByName: 'Johanna',
-      documentTitle: 'Reisekasse',
-      url: 'https://exocortex.app/geteilt',
-    });
+    const mail = renderMail(
+      {
+        template: 'SHARE_REVOKED',
+        revokedByName: 'Johanna',
+        documentTitle: 'Reisekasse',
+        url: 'https://exocortex.app/geteilt',
+      },
+      'de',
+    );
 
     expect(mail.subject).toBe('eXocortex: Dein Zugang zu „Reisekasse“ ist beendet');
     expect(mail.text).toContain('zurückgezogen');
@@ -108,11 +126,14 @@ describe('renderMail', () => {
   });
 
   it('greets the person a verification mail is addressed to', () => {
-    const mail = renderMail({
-      template: 'EMAIL_VERIFICATION',
-      name: 'Stefan',
-      url: 'https://exocortex.app/verify?token=abc',
-    });
+    const mail = renderMail(
+      {
+        template: 'EMAIL_VERIFICATION',
+        name: 'Stefan',
+        url: 'https://exocortex.app/verify?token=abc',
+      },
+      'de',
+    );
 
     expect(mail.subject).toBe('eXocortex: E-Mail-Adresse bestätigen');
     expect(mail.text.startsWith('Hallo Stefan,')).toBe(true);
@@ -124,22 +145,25 @@ describe('renderMail', () => {
    * list, and it never puts a whole comment in a mail.
    */
   it('lists comments per page and counts the rest', () => {
-    const mail = renderMail({
-      template: 'COMMENT_DIGEST',
-      commentCount: 9,
-      morePages: 2,
-      pages: [
-        {
-          title: 'Claude Code Setup',
-          url: 'https://exocortex.app/arbeitsbereich/w1/seite/d1',
-          moreComments: 3,
-          comments: [
-            { authorName: 'Stefan', preview: 'Sollen wir den Hook rauswerfen?' },
-            { authorName: 'Johanna', preview: 'Ja, der läuft doppelt.' },
-          ],
-        },
-      ],
-    });
+    const mail = renderMail(
+      {
+        template: 'COMMENT_DIGEST',
+        commentCount: 9,
+        morePages: 2,
+        pages: [
+          {
+            title: 'Claude Code Setup',
+            url: 'https://exocortex.app/arbeitsbereich/w1/seite/d1',
+            moreComments: 3,
+            comments: [
+              { authorName: 'Stefan', preview: 'Sollen wir den Hook rauswerfen?' },
+              { authorName: 'Johanna', preview: 'Ja, der läuft doppelt.' },
+            ],
+          },
+        ],
+      },
+      'de',
+    );
 
     expect(mail.subject).toBe('eXocortex: 9 neue Kommentare auf 3 Seiten');
     expect(mail.text).toContain('- Stefan: „Sollen wir den Hook rauswerfen?“');
@@ -149,19 +173,22 @@ describe('renderMail', () => {
   });
 
   it('reads as a sentence when there is exactly one comment', () => {
-    const mail = renderMail({
-      template: 'COMMENT_DIGEST',
-      commentCount: 1,
-      morePages: 0,
-      pages: [
-        {
-          title: 'Projektideen',
-          url: 'https://exocortex.app/arbeitsbereich/w1/seite/d2',
-          moreComments: 0,
-          comments: [{ authorName: 'Stefan', preview: 'Kurz notiert.' }],
-        },
-      ],
-    });
+    const mail = renderMail(
+      {
+        template: 'COMMENT_DIGEST',
+        commentCount: 1,
+        morePages: 0,
+        pages: [
+          {
+            title: 'Projektideen',
+            url: 'https://exocortex.app/arbeitsbereich/w1/seite/d2',
+            moreComments: 0,
+            comments: [{ authorName: 'Stefan', preview: 'Kurz notiert.' }],
+          },
+        ],
+      },
+      'de',
+    );
 
     expect(mail.subject).toBe('eXocortex: Ein neuer Kommentar auf „Projektideen“');
     expect(mail.text).not.toContain('weitere');
@@ -181,7 +208,7 @@ describe('the mail an automation sends', () => {
   };
 
   it('carries the page itself and says which rule sent it', () => {
-    const mail = renderMail(base);
+    const mail = renderMail(base, 'de');
     expect(mail.subject).toBe('eXocortex: Dein Tag');
     expect(mail.text).toContain('Automation „Morgenübersicht“');
     expect(mail.text).toContain('- Steuer');
@@ -190,7 +217,7 @@ describe('the mail an automation sends', () => {
   });
 
   it('says when it was cut rather than ending mid-sentence', () => {
-    const mail = renderMail({ ...base, truncated: true });
+    const mail = renderMail({ ...base, truncated: true }, 'de');
     expect(mail.text).toContain('abgeschnitten');
     expect(mail.text).toContain(base.url);
   });
@@ -206,7 +233,7 @@ describe('the mails that say an automation stopped working', () => {
   };
 
   it('says that a switched-off rule does nothing until it is switched back on', () => {
-    const mail = renderMail({ template: 'AUTOMATION_DISABLED', failures: 5, ...common });
+    const mail = renderMail({ template: 'AUTOMATION_DISABLED', failures: 5, ...common }, 'de');
     expect(mail.subject).toBe(
       'eXocortex: Automation „Hermes benachrichtigen“ hat sich abgeschaltet',
     );
@@ -217,47 +244,92 @@ describe('the mails that say an automation stopped working', () => {
   });
 
   it('shows the moment in the zone it was given, not in the server’s', () => {
-    const mail = renderMail({ template: 'AUTOMATION_DISABLED', failures: 5, ...common });
+    const mail = renderMail({ template: 'AUTOMATION_DISABLED', failures: 5, ...common }, 'de');
     // 01:05 UTC is 03:05 in Berlin in September.
     expect(mail.text).toContain('03:05');
   });
 
   it('falls back to UTC, and says so, for a zone it cannot read', () => {
-    const mail = renderMail({
-      template: 'AUTOMATION_DISABLED',
-      failures: 5,
-      ...common,
-      timeZone: 'Mars/Olympus',
-    });
+    const mail = renderMail(
+      {
+        template: 'AUTOMATION_DISABLED',
+        failures: 5,
+        ...common,
+        timeZone: 'Mars/Olympus',
+      },
+      'de',
+    );
     expect(mail.text).toContain('01:05');
     expect(mail.text).toContain('(UTC)');
   });
 
   it('counts down to the switch-off after a failed scheduled run', () => {
-    const many = renderMail({
-      template: 'AUTOMATION_RUN_FAILED',
-      failuresUntilDisabled: 4,
-      ...common,
-    });
+    const many = renderMail(
+      {
+        template: 'AUTOMATION_RUN_FAILED',
+        failuresUntilDisabled: 4,
+        ...common,
+      },
+      'de',
+    );
     expect(many.subject).toBe(
       'eXocortex: Geplanter Lauf von „Hermes benachrichtigen“ ist fehlgeschlagen',
     );
     expect(many.text).toContain('Nach 4 weiteren Fehlschlägen');
     expect(many.text).toContain('nicht einzeln');
 
-    const last = renderMail({
-      template: 'AUTOMATION_RUN_FAILED',
-      failuresUntilDisabled: 1,
-      ...common,
-    });
+    const last = renderMail(
+      {
+        template: 'AUTOMATION_RUN_FAILED',
+        failuresUntilDisabled: 1,
+        ...common,
+      },
+      'de',
+    );
     expect(last.text).toContain('Scheitert der nächste Lauf auch');
   });
 
   it('has a sentence for every reason and never an empty one', () => {
     for (const reason of automationFailureReasonSchema.options) {
-      const mail = renderMail({ template: 'AUTOMATION_DISABLED', failures: 2, ...common, reason });
+      const mail = renderMail(
+        { template: 'AUTOMATION_DISABLED', failures: 2, ...common, reason },
+        'de',
+      );
       const line = mail.text.split('\n').find((row) => row.startsWith('Grund: '));
       expect(line?.length ?? 0, reason).toBeGreaterThan('Grund: '.length + 20);
+    }
+  });
+});
+
+/**
+ * The reader's language (issue #98, ADR-062). The words come from the
+ * catalogue, which the translation tool fills; what the template decides
+ * itself is the document language and how a date is written.
+ */
+describe('a mail in the reader’s language', () => {
+  const invitation = {
+    template: 'INVITATION' as const,
+    invitedByName: 'Johanna',
+    workspaceName: null,
+    url: 'https://exocortex.app/einladung/abc',
+    expiresAt: '2026-10-01T09:00:00.000Z',
+  };
+
+  it('declares the reader’s locale as the document language', () => {
+    expect(renderMail(invitation, 'en').html).toContain('<html lang="en">');
+    expect(renderMail(invitation, 'pt-BR').html).toContain('<html lang="pt-BR">');
+  });
+
+  it('writes a date the way the reader’s locale does', () => {
+    expect(renderMail(invitation, 'en').text).toContain('October 1, 2026');
+    expect(renderMail(invitation, 'fr').text).toContain('1 octobre 2026');
+  });
+
+  it('never leaves a key where a sentence belongs', () => {
+    for (const locale of ['de', 'en', 'pl'] as const) {
+      const mail = renderMail(invitation, locale);
+      expect(mail.text, locale).not.toMatch(/\binvitation\.\w+/);
+      expect(mail.subject, locale).toMatch(/^eXocortex/);
     }
   });
 });

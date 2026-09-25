@@ -15,7 +15,7 @@ export interface MailListItem {
   /** Shown bold in HTML and before a colon in text, e.g. the author. */
   label?: string;
   text: string;
-  /** Whether the text is a quotation, which puts it in „“. */
+  /** Whether the text is a quotation, which puts it in the reader's quotation marks. */
   quoted?: boolean;
 }
 

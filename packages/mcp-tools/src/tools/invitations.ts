@@ -8,6 +8,7 @@ import {
   type Invitation,
   invitationListResponseSchema,
   invitationWithLinkSchema,
+  localeSchema,
   revokeInvitationResponseSchema,
 } from '@exocortex/contracts';
 
@@ -98,6 +99,12 @@ export const invitationCreateTool: AnyToolDefinition = defineTool({
       .default('user')
       .describe('Globale Rolle des neuen Kontos. admin nur mit globalen Administratorrechten.'),
     expiresInDays: z.number().int().min(1).max(90).default(7).describe('Gültigkeit in Tagen'),
+    locale: localeSchema
+      .optional()
+      .describe(
+        'Sprache der Einladungsmail und des neuen Kontos, bis die Person selbst eine wählt. ' +
+          'Weglassen: die Mail folgt der Sprache deines Kontos, das neue Konto seinem Browser.',
+      ),
     /**
      * Which of the two REST routes to use. Explicit rather than inferred from
      * `workspaceId`, because the two differ in what they are allowed to grant and
@@ -127,6 +134,7 @@ export const invitationCreateTool: AnyToolDefinition = defineTool({
       workspaceRole: input.workspaceRole,
       role: input.role,
       expiresInDays: input.expiresInDays,
+      ...(input.locale === undefined ? {} : { locale: input.locale }),
       // The workspace route takes it from the path; repeating it in the body
       // would be ignored there.
       ...(input.via === 'admin' && input.workspaceId !== undefined

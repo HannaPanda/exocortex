@@ -2,11 +2,12 @@
  * Renders every mail template with its example values, to look at (issue #109).
  *
  * Usage:
- *   pnpm --filter @exocortex/mail preview -- [--out <dir>] [--smtp <host:port>]
+ *   pnpm --filter @exocortex/mail preview -- [--out <dir>] [--smtp <host:port>] [--locale <tag>]
  *
  * Writes `<TEMPLATE>.html` and `<TEMPLATE>.txt` per template plus an
  * `index.html` linking them into `--out` (default `mail-preview/` in the
- * package, which git ignores). Open the index in a browser.
+ * package, which git ignores). Open the index in a browser. `--locale` renders
+ * them in another interface language (default German, the source).
  *
  * `--smtp` additionally sends each one to that relay, for Mailpit
  * (`127.0.0.1:1026` with the compose file's defaults, UI on
@@ -18,6 +19,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
+import { DEFAULT_LOCALE, isLocale } from '@exocortex/contracts';
 import { createLogger } from '@exocortex/logger';
 
 import { MAIL_EXAMPLES } from '../src/examples';
@@ -33,6 +35,9 @@ function argument(name: string): string | undefined {
 async function main(): Promise<void> {
   const out = resolve(argument('--out') ?? join(__dirname, '..', 'mail-preview'));
   const smtp = argument('--smtp');
+  const requested = argument('--locale') ?? DEFAULT_LOCALE;
+  if (!isLocale(requested)) throw new Error(`Unknown locale: ${requested}`);
+  const locale = requested;
   mkdirSync(out, { recursive: true });
 
   const logger = createLogger({ name: 'mail-preview', level: 'warn' });
@@ -48,7 +53,7 @@ async function main(): Promise<void> {
 
   const rows: string[] = [];
   for (const message of Object.values(MAIL_EXAMPLES)) {
-    const mail = renderMail(message);
+    const mail = renderMail(message, locale);
     writeFileSync(join(out, `${message.template}.html`), mail.html);
     writeFileSync(join(out, `${message.template}.txt`), mail.text);
     rows.push(
@@ -60,7 +65,7 @@ async function main(): Promise<void> {
   }
   writeFileSync(
     join(out, 'index.html'),
-    `<!DOCTYPE html><html lang="de"><meta charset="utf-8"><title>eXocortex: Mailvorschau</title><ul>${rows.join('')}</ul></html>\n`,
+    `<!DOCTYPE html><html lang="${locale}"><meta charset="utf-8"><title>eXocortex: Mailvorschau</title><ul>${rows.join('')}</ul></html>\n`,
   );
   await transport?.close();
 

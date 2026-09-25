@@ -3,7 +3,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AuthorizationError, WorkspaceAccessService } from '@exocortex/auth';
 import { loadDotEnv } from '@exocortex/config';
 import { type ApiEnv } from '@exocortex/config';
-import { type MailMessage } from '@exocortex/contracts';
+import { type Locale, type MailMessage } from '@exocortex/contracts';
 import { createPrismaClient, type PrismaClient } from '@exocortex/database';
 import { createLogger, type Logger } from '@exocortex/logger';
 import { type Mailer } from '@exocortex/mail';
@@ -40,7 +40,7 @@ let memberId: string;
 let workspaceId: string;
 const createdUserIds: string[] = [];
 
-const sentMails: { to: string; workspaceName: string | null; url: string }[] = [];
+const sentMails: { to: string; workspaceName: string | null; url: string; locale: Locale }[] = [];
 let mailShouldFail = false;
 
 const authService = {
@@ -52,7 +52,7 @@ const authService = {
 } as unknown as AuthService;
 
 const mailer = {
-  send: async (input: { to: string; message: MailMessage }) => {
+  send: async (input: { to: string; message: MailMessage; locale: Locale }) => {
     if (mailShouldFail) throw new Error('relay unreachable');
     const message = input.message;
     if (message.template !== 'INVITATION')
@@ -61,6 +61,7 @@ const mailer = {
       to: input.to,
       workspaceName: message.workspaceName,
       url: message.url,
+      locale: input.locale,
     });
     return { messageId: '<test@relay>', accepted: [input.to], rejected: [] };
   },
@@ -327,6 +328,53 @@ describe('redeeming an invitation', () => {
     expect(user.accounts[0]?.accountId).toBe(user.id);
     expect(user.memberships).toHaveLength(1);
     expect(user.memberships[0]?.role).toBe('MEMBER');
+  });
+
+  /**
+   * The invited person has no account to ask, so the inviter chooses the
+   * language (issue #98): the mail is written in it, and the account that
+   * comes out of it starts in it.
+   */
+  it('speaks the language the inviter chose, in the mail and in the account', async () => {
+    const email = addressFor('locale');
+    const created = await service.createAsAdmin({
+      request: {
+        email,
+        workspaceId,
+        workspaceRole: 'MEMBER',
+        role: 'user',
+        expiresInDays: 7,
+        locale: 'fr',
+      },
+      actorUserId: adminId,
+      correlationId,
+    });
+    expect(created.invitation.locale).toBe('fr');
+    expect(sentMails.at(-1)?.locale).toBe('fr');
+
+    const token = decodeURIComponent(created.url.split('/einladung/')[1] as string);
+    await service.accept({ token, name: 'Personne', password: 'ein-sehr-langes-passwort' });
+    const user = await prisma.user.findUniqueOrThrow({ where: { email: email.toLowerCase() } });
+    createdUserIds.push(user.id);
+    expect(user.locale).toBe('fr');
+  });
+
+  it('leaves the account undecided when nobody chose a language', async () => {
+    const email = addressFor('nolocale');
+    const created = await service.createAsAdmin({
+      request: { email, workspaceId, workspaceRole: 'MEMBER', role: 'user', expiresInDays: 7 },
+      actorUserId: adminId,
+      correlationId,
+    });
+    expect(created.invitation.locale).toBeNull();
+    // The admin never chose a language either, so the mail is German.
+    expect(sentMails.at(-1)?.locale).toBe('de');
+
+    const token = decodeURIComponent(created.url.split('/einladung/')[1] as string);
+    await service.accept({ token, name: 'Neue Person', password: 'ein-sehr-langes-passwort' });
+    const user = await prisma.user.findUniqueOrThrow({ where: { email: email.toLowerCase() } });
+    createdUserIds.push(user.id);
+    expect(user.locale).toBeNull();
   });
 
   it('refuses the same token a second time', async () => {

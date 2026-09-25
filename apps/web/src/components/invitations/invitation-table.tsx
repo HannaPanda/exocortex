@@ -54,6 +54,7 @@ export function InvitationTable({
 }) {
   const t = useTranslations('invitations.table');
   const statusLabel = useTranslations('invitations.statuses');
+  const roleLabel = useTranslations('invitations.table.roles');
   const format = useFormatter();
   const invitations = useInvitations(scope);
   const resend = useResendInvitation(scope);
@@ -139,7 +140,7 @@ export function InvitationTable({
                 </TableCell>
               ) : null}
               <TableCell label={t('role')} className="text-muted-foreground">
-                {invitation.workspaceRole ?? '–'}
+                {invitation.workspaceRole === null ? '–' : roleLabel(invitation.workspaceRole)}
                 {invitation.role === 'admin' ? (
                   <Badge variant="secondary" className="ml-2">
                     {t('admin')}

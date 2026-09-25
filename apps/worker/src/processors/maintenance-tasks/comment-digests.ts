@@ -1,5 +1,12 @@
-import { lastLocalHourSlot, type MailMessage, QUEUE_NAMES } from '@exocortex/contracts';
+import {
+  lastLocalHourSlot,
+  type Locale,
+  type MailMessage,
+  QUEUE_NAMES,
+} from '@exocortex/contracts';
 import { type PrismaClient, resolveNotificationMode } from '@exocortex/database';
+import { resolveLocale } from '@exocortex/i18n';
+import { serverTranslator } from '@exocortex/i18n/catalog';
 import { type QueueRegistry } from '@exocortex/queue';
 
 import { commentPreview, filterUsersWithPageAccess } from './comment-recipients';
@@ -44,8 +51,6 @@ const MAX_PAGES = 10;
 const MAX_COMMENTS_PER_PAGE = 5;
 /** `mailTitleSchema`'s limit; the producer shortens rather than being refused. */
 const MAX_TITLE_LENGTH = 200;
-/** A page with no title still has to be nameable in a mail. */
-const UNTITLED = 'Unbenannte Seite';
 
 export const sendCommentDigests: MaintenanceTask = async (context) => {
   const { prisma, queues, logger } = context;
@@ -134,7 +139,7 @@ async function sendOneDigest(
 
   const recipient = await prisma.user.findUnique({
     where: { id: userId },
-    select: { email: true, disabledAt: true },
+    select: { email: true, disabledAt: true, locale: true },
   });
   // A switched-off account is not written to. Disabling it withdrew its
   // credentials (issue #3); posting it a link would be the one thing that
@@ -199,11 +204,15 @@ async function sendOneDigest(
     return false;
   }
 
-  const mail = buildDigest(pages, base);
+  // The reader's language (ADR-062), for the mail and for the two words this
+  // producer supplies itself: the name of an untitled page and of an author
+  // without one.
+  const locale = resolveLocale({ preference: recipient.locale });
+  const mail = buildDigest(pages, base, fallbackWords(locale));
 
   await queues.enqueue(
     QUEUE_NAMES.mail,
-    { correlationId, recipient: recipient.email, mail },
+    { correlationId, recipient: recipient.email, mail, locale },
     // Derived from the person and the slot, so the retry after a sweep that
     // died before it could mark its entries is a no-op rather than a second
     // letter.
@@ -215,6 +224,17 @@ async function sendOneDigest(
     data: { sentAt: new Date() },
   });
   return true;
+}
+
+/** What stands in for an empty title or name, in the reader's language. */
+interface FallbackWords {
+  untitledPage: string;
+  someone: string;
+}
+
+function fallbackWords(locale: Locale): FallbackWords {
+  const t = serverTranslator(locale, 'mail');
+  return { untitledPage: t('common.untitledPage'), someone: t('common.someone') };
 }
 
 interface DigestEntry {
@@ -233,6 +253,7 @@ interface DigestEntry {
 function buildDigest(
   pages: readonly { documentId: string; group: readonly DigestEntry[] }[],
   base: string,
+  words: FallbackWords,
 ): MailMessage {
   const commentCount = pages.reduce((total, page) => total + page.group.length, 0);
   const listed = pages.slice(0, MAX_PAGES);
@@ -245,11 +266,11 @@ function buildDigest(
       const first = page.group[0];
       const comments = page.group.slice(0, MAX_COMMENTS_PER_PAGE);
       return {
-        title: titleOf(first?.document.title ?? ''),
+        title: titleOf(first?.document.title ?? '', words),
         url: `${base}/arbeitsbereich/${first?.workspaceId ?? ''}/seite/${page.documentId}`,
         moreComments: page.group.length - comments.length,
         comments: comments.map((entry) => ({
-          authorName: nameOf(entry.comment.createdBy.name),
+          authorName: nameOf(entry.comment.createdBy.name, words),
           preview: commentPreview(entry.comment.body),
         })),
       };
@@ -258,14 +279,14 @@ function buildDigest(
 }
 
 /** The page's name, bounded and never empty. */
-function titleOf(title: string): string {
+function titleOf(title: string, words: FallbackWords): string {
   const flat = title.replace(/\s+/g, ' ').trim();
-  if (flat.length === 0) return UNTITLED;
+  if (flat.length === 0) return words.untitledPage;
   return flat.length <= MAX_TITLE_LENGTH ? flat : `${flat.slice(0, MAX_TITLE_LENGTH - 1)}…`;
 }
 
 /** A name the schema will accept. An account with an empty name still wrote it. */
-function nameOf(name: string): string {
+function nameOf(name: string, words: FallbackWords): string {
   const flat = name.replace(/\s+/g, ' ').trim();
-  return flat.length === 0 ? 'Jemand' : flat.slice(0, 200);
+  return flat.length === 0 ? words.someone : flat.slice(0, 200);
 }

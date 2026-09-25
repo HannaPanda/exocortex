@@ -6,7 +6,7 @@ import { jwt } from 'better-auth/plugins';
 import { type PrismaClient } from '@exocortex/database';
 import { type Logger } from '@exocortex/logger';
 
-import { type AuthMailer } from './auth-mailer';
+import { type AuthMailer, type AuthMailLocale, type MailLocaleHeaders } from './auth-mailer';
 
 export const AUTH_BASE_PATH = '/api/auth';
 
@@ -53,6 +53,18 @@ export function mcpResourceIdentifier(appUrl: string): string {
   return `${appUrl.replace(/\/+$/, '')}/api/mcp`;
 }
 
+/**
+ * The two headers a mail's language may come from. A callback Better Auth
+ * runs outside a request (a server-side call) has none, and German follows.
+ */
+function localeHeaders(request: Request | undefined): MailLocaleHeaders {
+  if (request === undefined) return {};
+  return {
+    cookie: request.headers.get('cookie') ?? undefined,
+    'accept-language': request.headers.get('accept-language') ?? undefined,
+  };
+}
+
 export interface CreateAuthOptions {
   prisma: PrismaClient;
   /** Signing secret; validated to be >= 32 characters by @exocortex/config. */
@@ -60,6 +72,8 @@ export interface CreateAuthOptions {
   /** Public origin of the application, e.g. https://exocortex.app */
   appUrl: string;
   mailer: AuthMailer;
+  /** The language of each of the two mails above; see `AuthMailLocale`. */
+  mailLocale: AuthMailLocale;
   logger: Logger;
   /** Additional origins allowed to send credentialed requests. */
   trustedOrigins?: string[];
@@ -146,7 +160,7 @@ function createMcpPlugin(appUrl: string) {
  * `httpOnly` + `sameSite=lax`. See docs/security.md.
  */
 export function createAuth(options: CreateAuthOptions) {
-  const { prisma, mailer, logger } = options;
+  const { prisma, mailer, mailLocale, logger } = options;
 
   return betterAuth({
     appName: 'eXocortex',
@@ -177,10 +191,11 @@ export function createAuth(options: CreateAuthOptions) {
       // The cost is real and the remaining benefit is not, so it stays off until
       // there is a reason beyond tidiness.
       requireEmailVerification: false,
-      sendResetPassword: async ({ user, url }) => {
+      sendResetPassword: async ({ user, url }, request) => {
         await mailer.send({
           to: user.email,
           message: { template: 'PASSWORD_RESET', name: user.name, url },
+          locale: await mailLocale({ userId: user.id, headers: localeHeaders(request) }),
         });
       },
     },
@@ -188,10 +203,13 @@ export function createAuth(options: CreateAuthOptions) {
     emailVerification: {
       sendOnSignUp: true,
       autoSignInAfterVerification: true,
-      sendVerificationEmail: async ({ user, url }) => {
+      sendVerificationEmail: async ({ user, url }, request) => {
         await mailer.send({
           to: user.email,
           message: { template: 'EMAIL_VERIFICATION', name: user.name, url },
+          // A brand-new account has no `User.locale` yet, so this is usually
+          // the language of the browser that just signed up.
+          locale: await mailLocale({ userId: user.id, headers: localeHeaders(request) }),
         });
       },
     },

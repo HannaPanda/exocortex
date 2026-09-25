@@ -1,1 +1,127 @@
-{}
+{
+  "layout": {
+    "buttonFallback": "Falls der Knopf nicht funktioniert, öffne diese Adresse:",
+    "quote": "„{text}“"
+  },
+  "common": {
+    "subject": "eXocortex: {subject}",
+    "greeting": "Hallo,",
+    "greetingNamed": "Hallo {name},",
+    "untitledPage": "Unbenannte Seite",
+    "someone": "Jemand",
+    "unnamedRule": "Unbenannte Automation"
+  },
+  "auth": {
+    "ignore": "Wenn du das nicht angefordert hast, kannst du diese E-Mail ignorieren.",
+    "verification": {
+      "subject": "E-Mail-Adresse bestätigen",
+      "preheader": "Ein Klick, dann ist deine Adresse bestätigt.",
+      "heading": "E-Mail-Adresse bestätigen",
+      "body": "bitte bestätige deine E-Mail-Adresse für eXocortex.",
+      "action": "Adresse bestätigen"
+    },
+    "passwordReset": {
+      "subject": "Passwort zurücksetzen",
+      "preheader": "Über den Link in dieser Mail setzt du ein neues Passwort.",
+      "heading": "Passwort zurücksetzen",
+      "body": "über den Link unten kannst du ein neues Passwort für eXocortex setzen.",
+      "action": "Neues Passwort setzen"
+    }
+  },
+  "invitation": {
+    "subject": "Einladung",
+    "subjectWorkspace": "Einladung zu „{workspace}“",
+    "invited": "{inviter} hat dich zu eXocortex eingeladen.",
+    "invitedWorkspace": "{inviter} hat dich zum Arbeitsbereich „{workspace}“ in eXocortex eingeladen.",
+    "heading": "Du bist eingeladen",
+    "action": "Konto anlegen",
+    "validity": "Der Link gilt bis zum {date} und lässt sich nur einmal verwenden.",
+    "footer": "Wenn du damit nichts zu tun hast, brauchst du nichts zu unternehmen: ohne diesen Link entsteht kein Konto."
+  },
+  "share": {
+    "permission": {
+      "READ": "Nur Lesen",
+      "WRITE": "Lesen und Bearbeiten"
+    },
+    "scope": {
+      "PAGE_ONLY": "Nur diese eine Seite",
+      "SUBTREE": "Die Seite und alles, was darunter hängt"
+    },
+    "facts": {
+      "permission": "Erlaubt",
+      "scope": "Umfang",
+      "expiresAt": "Gilt bis"
+    },
+    "open": "Seite öffnen",
+    "granted": {
+      "subject": "{actor} hat „{title}“ mit dir geteilt",
+      "preheader": "{permission}. {scope}.",
+      "heading": "„{title}“ ist mit dir geteilt",
+      "body": "{actor} hat die Seite „{title}“ in eXocortex mit dir geteilt.",
+      "noMembership": "Du musst dafür in keinem Arbeitsbereich Mitglied sein. Die Seite steht ab jetzt in deiner Liste „Mit mir geteilt“."
+    },
+    "changed": {
+      "subject": "Deine Freigabe für „{title}“ hat sich geändert",
+      "preheader": "Ab sofort: {permission}. {scope}.",
+      "heading": "Deine Freigabe hat sich geändert",
+      "body": "{actor} hat geändert, was du an der Seite „{title}“ darfst. Es gilt ab sofort:"
+    },
+    "revoked": {
+      "subject": "Dein Zugang zu „{title}“ ist beendet",
+      "preheader": "{actor} hat die Freigabe zurückgezogen.",
+      "heading": "Dein Zugang ist beendet",
+      "body": "{actor} hat deine Freigabe für die Seite „{title}“ in eXocortex zurückgezogen. Die Seite lässt sich damit nicht mehr öffnen.",
+      "stillShared": "Was weiterhin mit dir geteilt ist"
+    }
+  },
+  "commentDigest": {
+    "subjectSingle": "Ein neuer Kommentar auf „{title}“",
+    "subject": "{count, plural, one {# neuer Kommentar} other {# neue Kommentare}} auf {pages, plural, one {einer Seite} other {# Seiten}}",
+    "preheaderSingle": "{author} hat kommentiert.",
+    "preheader": "{count, plural, one {# neuer Kommentar} other {# neue Kommentare}} auf {pages, plural, one {einer Seite} other {# Seiten}}.",
+    "heading": "{count, plural, one {Ein neuer Kommentar} other {# neue Kommentare}}",
+    "intro": "{count, plural, one {auf einer Seite, an der du hängst, ist ein neuer Kommentar dazugekommen:} other {auf Seiten, an denen du hängst, sind # neue Kommentare dazugekommen:}}",
+    "moreComments": "{count, plural, one {und ein weiterer} other {und # weitere}}",
+    "toPage": "Zur Seite",
+    "morePages": "{count, plural, one {Auf einer weiteren Seite ist ebenfalls etwas passiert.} other {Auf # weiteren Seiten ist ebenfalls etwas passiert.}}",
+    "footer": "Diese Mail bekommst du, weil du unter Einstellungen → Benachrichtigungen Kommentare per E-Mail eingeschaltet hast. Dort lässt sie sich auch wieder abstellen oder auf einmal täglich umstellen."
+  },
+  "automationPage": {
+    "preheader": "Automation „{rule}“ schickt dir „{title}“.",
+    "body": "Automation „{rule}“ schickt dir die Seite „{title}“.",
+    "truncated": "Hier ist die Seite abgeschnitten. Den Rest liest du am besten in eXocortex.",
+    "link": "Die Seite in eXocortex"
+  },
+  "automationFailure": {
+    "reason": {
+      "WEBHOOK_FAILED": "Der Server, an den die Regel meldet, hat abgelehnt oder war nicht erreichbar.",
+      "AI_FAILED": "Der KI-Auftrag der Regel ist gescheitert, zum Beispiel weil das Modell nicht geantwortet hat oder die KI ausgeschaltet ist.",
+      "PAGE_UNAVAILABLE": "Die Seite, auf der die Regel arbeitet, ließ sich mit deinem Konto nicht lesen oder beschreiben.",
+      "OWNER_UNAVAILABLE": "Dein Konto kann die Regel gerade nicht ausführen, zum Beispiel ohne bestätigte E-Mail-Adresse.",
+      "MAIL_FAILED": "Die Regel konnte die Seite nicht als Mail verschicken."
+    },
+    "momentUtc": "{moment} (UTC)",
+    "facts": {
+      "last": "Zuletzt",
+      "when": "Wann",
+      "reason": "Grund"
+    },
+    "history": "Verlauf ansehen",
+    "disabled": {
+      "subject": "Automation „{rule}“ hat sich abgeschaltet",
+      "preheader": "{count, plural, one {Nach einem Fehlschlag tut sie nichts mehr.} other {Nach # Fehlschlägen in Folge tut sie nichts mehr.}}",
+      "heading": "Eine Automation hat sich abgeschaltet",
+      "body": "{count, plural, one {deine Automation „{rule}“ ist fehlgeschlagen und hat sich deshalb selbst abgeschaltet.} other {deine Automation „{rule}“ ist #-mal hintereinander fehlgeschlagen und hat sich deshalb selbst abgeschaltet.}}",
+      "notice": "Bis du sie wieder einschaltest, tut sie nichts mehr.",
+      "whereToLook": "Im Verlauf der Regel steht, was bei jedem Lauf passiert ist. Dort schaltest du sie auch wieder ein."
+    },
+    "runFailed": {
+      "subject": "Geplanter Lauf von „{rule}“ ist fehlgeschlagen",
+      "heading": "Ein geplanter Lauf ist fehlgeschlagen",
+      "body": "der geplante Lauf deiner Automation „{rule}“ ist fehlgeschlagen.",
+      "stays": "Die Regel bleibt eingeschaltet und versucht es zum nächsten Termin wieder.",
+      "remaining": "{count, plural, one {Scheitert der nächste Lauf auch, schaltet sich die Regel ab.} other {Nach # weiteren Fehlschlägen in Folge schaltet sich die Regel ab.}}",
+      "footer": "Weitere Fehlschläge derselben Serie melden wir dir nicht einzeln."
+    }
+  }
+}

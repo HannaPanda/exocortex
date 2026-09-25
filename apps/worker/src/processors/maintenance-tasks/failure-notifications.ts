@@ -5,6 +5,8 @@ import {
   type Settings,
 } from '@exocortex/contracts';
 import { type PrismaClient, resolveNotificationMode } from '@exocortex/database';
+import { resolveLocale } from '@exocortex/i18n';
+import { serverTranslator } from '@exocortex/i18n/catalog';
 import { type QueueRegistry } from '@exocortex/queue';
 
 /**
@@ -68,7 +70,7 @@ export async function scheduleFailureNotifications(
       name: true,
       enabled: true,
       workspaceId: true,
-      createdBy: { select: { id: true, email: true, disabledAt: true } },
+      createdBy: { select: { id: true, email: true, disabledAt: true, locale: true } },
     },
   });
   // Deleted in between. A rule nobody has any more is nothing to repair.
@@ -93,8 +95,11 @@ export async function scheduleFailureNotifications(
 
   const settings = await dependencies.settings();
   const base = dependencies.appUrl.replace(/\/$/, '');
+  // The owner's language (ADR-062), which is also the language of the name a
+  // rule without one is given.
+  const locale = resolveLocale({ preference: owner.locale });
   const common = {
-    ruleName: nameOf(rule.name),
+    ruleName: nameOf(rule.name, serverTranslator(locale, 'mail')('common.unnamedRule')),
     reason,
     occurredAt: event.createdAt.toISOString(),
     timeZone: settings['notifications.digestTimeZone'],
@@ -116,7 +121,7 @@ export async function scheduleFailureNotifications(
 
   await dependencies.queues.enqueue(
     QUEUE_NAMES.mail,
-    { correlationId: event.correlationId, recipient: owner.email, mail },
+    { correlationId: event.correlationId, recipient: owner.email, mail, locale },
     // One event, one letter: a dispatch that failed after this line is
     // retried with the same row, and BullMQ ignores the second job.
     { jobId: `failure-mail-${event.eventId}` },
@@ -124,8 +129,8 @@ export async function scheduleFailureNotifications(
 }
 
 /** The rule's name, bounded and never empty. */
-function nameOf(name: string): string {
+function nameOf(name: string, unnamed: string): string {
   const flat = name.replace(/\s+/g, ' ').trim();
-  if (flat.length === 0) return 'Unbenannte Automation';
+  if (flat.length === 0) return unnamed;
   return flat.length <= MAX_NAME_LENGTH ? flat : `${flat.slice(0, MAX_NAME_LENGTH - 1)}…`;
 }

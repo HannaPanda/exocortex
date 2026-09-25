@@ -48,7 +48,7 @@ describe('every template in the shared layout', () => {
   it.each(examples.map((message) => [message.template, message] as const))(
     '%s renders well-formed HTML and a text part',
     (_template, message) => {
-      const mail = renderMail(message);
+      const mail = renderMail(message, 'de');
 
       expect(mail.html.startsWith('<!DOCTYPE html>')).toBe(true);
       expect(mail.html).toContain('<html lang="de">');
@@ -63,7 +63,7 @@ describe('every template in the shared layout', () => {
   it.each(examples.map((message) => [message.template, message] as const))(
     '%s links the same addresses in both parts',
     (_template, message) => {
-      const mail = renderMail(message);
+      const mail = renderMail(message, 'de');
       const hrefs = [...mail.html.matchAll(/href="([^"]+)"/g)].map((match) =>
         (match[1] ?? '').replaceAll('&amp;', '&'),
       );
@@ -78,19 +78,22 @@ describe('escaping', () => {
   const hostile = '<script>alert(1)</script><img src=x onerror="alert(2)">';
 
   it('never lets a title, a name or a comment become markup', () => {
-    const mail = renderMail({
-      template: 'COMMENT_DIGEST',
-      commentCount: 1,
-      morePages: 0,
-      pages: [
-        {
-          title: hostile,
-          url: 'https://exocortex.app/arbeitsbereich/w1/seite/d1',
-          moreComments: 0,
-          comments: [{ authorName: hostile, preview: `"><style>*{display:none}</style>` }],
-        },
-      ],
-    });
+    const mail = renderMail(
+      {
+        template: 'COMMENT_DIGEST',
+        commentCount: 1,
+        morePages: 0,
+        pages: [
+          {
+            title: hostile,
+            url: 'https://exocortex.app/arbeitsbereich/w1/seite/d1',
+            moreComments: 0,
+            comments: [{ authorName: hostile, preview: `"><style>*{display:none}</style>` }],
+          },
+        ],
+      },
+      'de',
+    );
 
     expect(mail.html).not.toContain('<script');
     expect(mail.html).not.toContain('<img');
@@ -102,10 +105,13 @@ describe('escaping', () => {
   });
 
   it('keeps an automation page as text rather than rendering it', () => {
-    const mail = renderMail({
-      ...MAIL_EXAMPLES.AUTOMATION_PAGE,
-      body: `# Überschrift\n\n${hostile}\n\n<a href="https://evil.example">klick</a>`,
-    });
+    const mail = renderMail(
+      {
+        ...MAIL_EXAMPLES.AUTOMATION_PAGE,
+        body: `# Überschrift\n\n${hostile}\n\n<a href="https://evil.example">klick</a>`,
+      },
+      'de',
+    );
 
     expect(mail.html).not.toContain('<script');
     expect(mail.html).not.toContain('href="https://evil.example"');
@@ -113,15 +119,18 @@ describe('escaping', () => {
   });
 
   it('turns no address into a link that is not http or https', () => {
-    const mail = composeMail({
-      subject: 'Test',
-      preheader: 'Test',
-      heading: 'Test',
-      blocks: [
-        { kind: 'action', label: 'Los', url: 'javascript:alert(1)' },
-        { kind: 'link', label: 'Weiter', url: 'data:text/html,<b>x</b>' },
-      ],
-    });
+    const mail = composeMail(
+      {
+        subject: 'Test',
+        preheader: 'Test',
+        heading: 'Test',
+        blocks: [
+          { kind: 'action', label: 'Los', url: 'javascript:alert(1)' },
+          { kind: 'link', label: 'Weiter', url: 'data:text/html,<b>x</b>' },
+        ],
+      },
+      'de',
+    );
 
     expect(mail.html).not.toContain('href="javascript:');
     expect(mail.html).not.toContain('href="data:');
@@ -139,17 +148,20 @@ describe('the parts of the layout', () => {
   };
 
   it('draws no button for a mail without an action', () => {
-    const mail = composeMail(plain);
+    const mail = composeMail(plain, 'de');
     expect(mail.html).not.toContain('Falls der Knopf nicht funktioniert');
     expect(mail.html).not.toContain('href=');
   });
 
   it('draws a button with its address written out beneath it', () => {
     const url = 'https://exocortex.app/einladung/abc';
-    const mail = composeMail({
-      ...plain,
-      blocks: [...plain.blocks, { kind: 'action', label: 'Konto anlegen', url }],
-    });
+    const mail = composeMail(
+      {
+        ...plain,
+        blocks: [...plain.blocks, { kind: 'action', label: 'Konto anlegen', url }],
+      },
+      'de',
+    );
 
     expect(mail.html.match(new RegExp(`href="${url}"`, 'g'))?.length).toBe(2);
     expect(mail.html).toContain('Falls der Knopf nicht funktioniert');
@@ -157,7 +169,7 @@ describe('the parts of the layout', () => {
   });
 
   it('carries the preheader hidden and the subject as the document title', () => {
-    const mail = composeMail(plain);
+    const mail = composeMail(plain, 'de');
     expect(mail.html).toContain('display:none');
     expect(mail.html).toContain('Vorschauzeile');
     expect(mail.html).toContain('<title>eXocortex: Ohne Knopf</title>');
@@ -168,7 +180,7 @@ describe('the parts of the layout', () => {
   it('lets long titles and addresses wrap instead of widening the sheet', () => {
     const url = `https://exocortex.app/arbeitsbereich/w1/seite/${'x'.repeat(400)}`;
     const title = 'Ein sehr langer Titel '.repeat(9).trim();
-    const mail = renderMail({ ...MAIL_EXAMPLES.SHARE_GRANTED, documentTitle: title, url });
+    const mail = renderMail({ ...MAIL_EXAMPLES.SHARE_GRANTED, documentTitle: title, url }, 'de');
 
     expect(mail.html).toContain('max-width:600px');
     expect(mail.html).toContain('overflow-wrap:anywhere');
@@ -179,7 +191,7 @@ describe('the parts of the layout', () => {
   });
 
   it('gives every page of a digest its own section', () => {
-    const mail = renderMail(MAIL_EXAMPLES.COMMENT_DIGEST);
+    const mail = renderMail(MAIL_EXAMPLES.COMMENT_DIGEST, 'de');
     expect(mail.html.match(/<h2 /g)?.length).toBe(2);
     expect(mail.html).toContain('Claude Code Setup');
     expect(mail.html).toContain('Projektideen');
@@ -188,7 +200,7 @@ describe('the parts of the layout', () => {
 
   it('says the same thing in both parts', () => {
     for (const message of examples) {
-      const mail = renderMail(message);
+      const mail = renderMail(message, 'de');
       for (const line of mail.text.split('\n')) {
         const words = line.replace(/^- /, '').replace(/:$/, '').trim();
         if (words.length === 0 || words === '---') continue;
@@ -213,28 +225,31 @@ describe('the parts of the layout', () => {
  */
 describe('the base template', () => {
   it('matches the recorded markup', async () => {
-    const mail = composeMail({
-      subject: 'eXocortex: Alle Bausteine',
-      preheader: 'Jeder Baustein des Layouts einmal.',
-      heading: 'Alle Bausteine',
-      greeting: 'Hallo,',
-      blocks: [
-        { kind: 'paragraph', text: 'Ein Absatz.\nMit einem Zeilenumbruch.' },
-        { kind: 'facts', rows: [{ label: 'Erlaubt', value: 'Nur Lesen' }] },
-        { kind: 'notice', text: 'Ein Hinweis, der auffallen soll.' },
-        { kind: 'action', label: 'Hauptaktion', url: 'https://exocortex.app/a' },
-        {
-          kind: 'section',
-          title: 'Ein Abschnitt',
-          items: [{ label: 'Stefan', text: 'Ein Zitat.', quoted: true }],
-          more: 'und 2 weitere',
-          link: { label: 'Zur Seite', url: 'https://exocortex.app/b' },
-        },
-        { kind: 'excerpt', text: '## Überschrift\n\n- ein Punkt' },
-        { kind: 'link', label: 'Ein Link', url: 'https://exocortex.app/c' },
-      ],
-      footer: ['Warum du diese Mail bekommst.'],
-    });
+    const mail = composeMail(
+      {
+        subject: 'eXocortex: Alle Bausteine',
+        preheader: 'Jeder Baustein des Layouts einmal.',
+        heading: 'Alle Bausteine',
+        greeting: 'Hallo,',
+        blocks: [
+          { kind: 'paragraph', text: 'Ein Absatz.\nMit einem Zeilenumbruch.' },
+          { kind: 'facts', rows: [{ label: 'Erlaubt', value: 'Nur Lesen' }] },
+          { kind: 'notice', text: 'Ein Hinweis, der auffallen soll.' },
+          { kind: 'action', label: 'Hauptaktion', url: 'https://exocortex.app/a' },
+          {
+            kind: 'section',
+            title: 'Ein Abschnitt',
+            items: [{ label: 'Stefan', text: 'Ein Zitat.', quoted: true }],
+            more: 'und 2 weitere',
+            link: { label: 'Zur Seite', url: 'https://exocortex.app/b' },
+          },
+          { kind: 'excerpt', text: '## Überschrift\n\n- ein Punkt' },
+          { kind: 'link', label: 'Ein Link', url: 'https://exocortex.app/c' },
+        ],
+        footer: ['Warum du diese Mail bekommst.'],
+      },
+      'de',
+    );
 
     await expect(mail.html).toMatchFileSnapshot('./__snapshots__/base.html');
     await expect(mail.text).toMatchFileSnapshot('./__snapshots__/base.txt');

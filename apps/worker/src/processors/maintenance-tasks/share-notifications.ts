@@ -4,6 +4,8 @@ import {
   QUEUE_NAMES,
 } from '@exocortex/contracts';
 import { type PrismaClient, resolveNotificationMode } from '@exocortex/database';
+import { resolveLocale } from '@exocortex/i18n';
+import { serverTranslator } from '@exocortex/i18n/catalog';
 import { type QueueRegistry } from '@exocortex/queue';
 
 /**
@@ -45,8 +47,6 @@ export interface ShareNotificationEvent {
   correlationId: string;
 }
 
-/** A page with no title still has to be nameable in a subject line. */
-const UNTITLED = 'Unbenannte Seite';
 /** `mailTitleSchema`'s limit; the producer shortens rather than being refused. */
 const MAX_TITLE_LENGTH = 200;
 
@@ -69,7 +69,7 @@ export async function scheduleShareNotifications(
       revokedAt: true,
       // The address comes from the account, never from what the sharing
       // request typed: the two agree only until somebody changes their mail.
-      grantee: { select: { id: true, email: true, disabledAt: true } },
+      grantee: { select: { id: true, email: true, disabledAt: true, locale: true } },
       document: { select: { title: true } },
     },
   });
@@ -107,11 +107,16 @@ export async function scheduleShareNotifications(
     where: { id: actorId },
     select: { name: true },
   });
-  // A deleted account still did the thing. "Jemand" is less informative than a
-  // name and more honest than the workspace's, which did not share anything.
+  // The grantee's language (ADR-062), for the mail and for the two words this
+  // producer supplies itself.
+  const locale = resolveLocale({ preference: share.grantee.locale });
+  const t = serverTranslator(locale, 'mail');
+  // A deleted account still did the thing. "Somebody" is less informative
+  // than a name and more honest than the workspace's, which did not share
+  // anything.
   const actorName = actor?.name.trim() ?? '';
-  const byName = actorName.length === 0 ? 'Jemand' : actorName;
-  const documentTitle = titleOf(share.document.title);
+  const byName = actorName.length === 0 ? t('common.someone') : actorName;
+  const documentTitle = titleOf(share.document.title, t('common.untitledPage'));
   const base = dependencies.appUrl.replace(/\/$/, '');
 
   const grant = {
@@ -138,14 +143,14 @@ export async function scheduleShareNotifications(
 
   await dependencies.queues.enqueue(
     QUEUE_NAMES.mail,
-    { correlationId: event.correlationId, recipient: share.grantee.email, mail },
+    { correlationId: event.correlationId, recipient: share.grantee.email, mail, locale },
     { jobId: `share-mail-${event.eventId}` },
   );
 }
 
-/** The page's name, bounded and never empty. */
-function titleOf(title: string): string {
+/** The page's name, bounded and never empty: a subject line has to name it. */
+function titleOf(title: string, untitled: string): string {
   const flat = title.replace(/\s+/g, ' ').trim();
-  if (flat.length === 0) return UNTITLED;
+  if (flat.length === 0) return untitled;
   return flat.length <= MAX_TITLE_LENGTH ? flat : `${flat.slice(0, MAX_TITLE_LENGTH - 1)}…`;
 }

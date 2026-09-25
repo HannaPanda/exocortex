@@ -32,23 +32,24 @@ it.
 
 ## The packages
 
-| Path                                          | Owns                                                                 |
-| --------------------------------------------- | -------------------------------------------------------------------- |
-| `packages/mail/src/transport.ts`              | the SMTP connection, TLS, credentials, failure classification        |
-| `packages/mail/src/templates/`                | the words, in German, as layout blocks                               |
-| `packages/mail/src/layout/`                   | the one layout: blocks become HTML and plain text; the mail theme    |
-| `packages/mail/src/render.ts`                 | template name plus values becomes subject, text and HTML             |
-| `packages/mail/src/examples.ts`               | one example message per template, for the tests and the preview      |
-| `packages/mail/src/mailer.ts`                 | transport plus catalogue, and what may be logged                     |
-| `packages/contracts/src/mail.ts`              | the template catalogue as a zod union                                |
-| `share-notifications.ts` (worker)             | which grant change becomes which mail, and to whom                   |
-| `comment-digests.ts` (worker)                 | which collected comments become one mail, and to whom                |
-| `automation/mail.ts` (worker)                 | which page an `EMAIL_SELF` rule sends, and that it goes to its owner |
-| `failure-notifications.ts` (worker)           | whether a stopped automation is still news, and to whom              |
-| `apps/worker/src/processors/mail-delivery.ts` | one job, one SMTP hop, retry or do not                               |
+| Path                                          | Owns                                                                   |
+| --------------------------------------------- | ---------------------------------------------------------------------- |
+| `packages/mail/src/transport.ts`              | the SMTP connection, TLS, credentials, failure classification          |
+| `packages/mail/src/templates/`                | which words go where, as layout blocks; the words are in the catalogue |
+| `packages/mail/src/layout/`                   | the one layout: blocks become HTML and plain text; the mail theme      |
+| `packages/mail/src/render.ts`                 | template name plus values becomes subject, text and HTML               |
+| `packages/mail/src/examples.ts`               | one example message per template, for the tests and the preview        |
+| `packages/mail/src/translator.ts`             | the reader's `mail` namespace and how a date is written for them       |
+| `packages/mail/src/mailer.ts`                 | transport plus catalogue, and what may be logged                       |
+| `packages/contracts/src/mail.ts`              | the template catalogue as a zod union                                  |
+| `share-notifications.ts` (worker)             | which grant change becomes which mail, and to whom                     |
+| `comment-digests.ts` (worker)                 | which collected comments become one mail, and to whom                  |
+| `automation/mail.ts` (worker)                 | which page an `EMAIL_SELF` rule sends, and that it goes to its owner   |
+| `failure-notifications.ts` (worker)           | whether a stopped automation is still news, and to whom                |
+| `apps/worker/src/processors/mail-delivery.ts` | one job, one SMTP hop, retry or do not                                 |
 
-`packages/mail` may see `@exocortex/contracts` and `@exocortex/logger` and
-nothing else. In particular not `@exocortex/database`: a package that could look
+`packages/mail` may see `@exocortex/contracts`, `@exocortex/logger` and
+`@exocortex/i18n` (for its words) and nothing else. In particular not `@exocortex/database`: a package that could look
 up an address would sooner or later be asked to decide who gets mail, and that
 decision belongs to whoever already knows whether the person still has access.
 
@@ -60,15 +61,19 @@ decision belongs to whoever already knows whether the person still has access.
    page's text.
 2. Write the template in `packages/mail/src/templates/`, returning a
    `MailContent`: a subject, a preheader, a heading and a list of blocks. No
-   markup and no layout -- see "The layout" below. Visible text is German;
-   everything else is English.
+   markup and no layout -- see "The layout" below. Every word a reader sees
+   comes from the `mail` namespace (`packages/i18n/src/messages/de/mail.json`,
+   German at the source, then `pnpm i18n:translate`) through the
+   `MailLanguage` the template is handed; dates go through `formatDay` or an
+   `Intl` formatter on `language.locale`, never a fixed `'de-DE'`.
 3. Add the branch to `mailContent` in `render.ts`. The switch is exhaustive
    over a closed union, so forgetting this is a type error rather than an
    empty mail.
 4. Add an example to `MAIL_EXAMPLES` in `examples.ts`. The record is typed
    over every template, so this too is a type error when it is missing, and it
    is what puts the new mail through the layout tests and into the preview.
-5. Enqueue it: `queues.enqueue(QUEUE_NAMES.mail, { correlationId, recipient, mail })`.
+5. Enqueue it: `queues.enqueue(QUEUE_NAMES.mail, { correlationId, recipient, mail, locale })`,
+   with `locale` resolved from the recipient (see "The reader's language").
    If the event behind it can be dispatched twice, pass a `jobId` derived from
    the event.
 
@@ -76,6 +81,39 @@ A template is never rendered by its caller. That is the rule the shape exists
 to enforce: everything that will enqueue mail from here on carries text a
 person or a model wrote, and a queue that accepts prose is a relay for whatever
 reaches it.
+
+## The reader's language
+
+A mail is written in the language of the person who reads it (issue #98,
+ADR-062), never in the requester's by accident. `renderMail(message, locale)`,
+`mailContent(message, locale)` and `Mailer.send({ to, message, locale })` all
+take it, and none of them defaults it: only the caller knows who the reader is.
+The locale also becomes the HTML part's `lang`, and it decides how dates are
+written and which quotation marks the layout puts around a quoted comment.
+
+Who decides, per mail:
+
+| Mail                              | Locale                                                                                                 |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| share, comment digest, automation | the recipient's `User.locale` through `resolveLocale({ preference })`, German when they never chose    |
+| verification, password reset      | the account's `User.locale`, else the cookie and `Accept-Language` of the request that caused the mail |
+| invitation                        | `Invitation.locale`, chosen by the inviter; without one the inviter's own `User.locale`, else German   |
+
+Better Auth's two mails go through the `mailLocale` port of `createAuth`,
+which the API answers with `readerLocale`; `packages/auth` depends on neither
+the catalogue nor the negotiation. An invitation is the one mail to somebody
+without an account, so the inviter chooses: the dialog offers every language
+by its endonym and starts at the inviter's own interface language, and
+`exo_invitation_create` takes the same optional `locale`. Accepting the
+invitation copies it to the new account's `User.locale`; an invitation with
+none leaves the account undecided, so its browser decides.
+
+A queued job carries the locale beside the address (`mailDeliveryJobSchema`),
+resolved by the producer that already read the account. The field defaults to
+German, so a job that was waiting in Redis during a deploy still parses. The
+few words a producer supplies itself (the name of an untitled page, "Jemand"
+for an author without a name) come from the same namespace in the same
+language.
 
 ## The layout
 
@@ -115,7 +153,8 @@ commit it with a sentence saying why.
 
 To look at the mails: `pnpm --filter @exocortex/mail preview` writes every
 example as HTML and text into `packages/mail/mail-preview/` (git ignores it)
-with an `index.html`; `-- --smtp 127.0.0.1:1026` also sends them to Mailpit,
+with an `index.html`; `-- --locale en` renders them in another language, and
+`-- --smtp 127.0.0.1:1026` also sends them to Mailpit,
 whose UI (http://127.0.0.1:8026) has an HTML compatibility check. The flag
 takes a host and a port and no credentials, and the script never reads
 `SMTP_*`, so it cannot reach the production relay.

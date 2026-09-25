@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { localeSchema } from './locale';
 import { idSchema, isoDateTimeSchema, workspaceRoleSchema } from './primitives';
 
 /**
@@ -48,6 +49,12 @@ export const invitationSchema = z.object({
   sentCount: z.number().int().nonnegative(),
   /** Null when every send attempt failed -- that is when the link has to be copied. */
   lastSentAt: isoDateTimeSchema.nullable(),
+  /**
+   * The language the invitation speaks: its mail, and the new account's
+   * interface until the person chooses one (issue #98). Null when nobody
+   * chose one: then the mail follows the inviter's account language.
+   */
+  locale: localeSchema.nullable(),
   createdAt: isoDateTimeSchema,
 });
 export type Invitation = z.infer<typeof invitationSchema>;
@@ -73,6 +80,14 @@ export const createInvitationRequestSchema = z.object({
   /** Global admin rights for the new account. Rejected unless the caller has them. */
   role: z.enum(['user', 'admin']).default('user'),
   expiresInDays: z.number().int().min(1).max(90).default(INVITATION_DEFAULT_TTL_DAYS),
+  /**
+   * The language of the mail and of the account it creates (issue #98). The
+   * invited person has no account whose choice could be asked, so the inviter
+   * decides; the dialog offers the inviter's own interface language. Left
+   * out, the mail follows the inviter's account language (German when they
+   * never chose one) and the new account follows its browser.
+   */
+  locale: localeSchema.optional(),
 });
 export type CreateInvitationRequest = z.infer<typeof createInvitationRequestSchema>;
 

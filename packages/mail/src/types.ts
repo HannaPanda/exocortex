@@ -1,4 +1,4 @@
-import { type MailAcceptance, type MailMessage } from '@exocortex/contracts';
+import { type Locale, type MailAcceptance, type MailMessage } from '@exocortex/contracts';
 
 /**
  * A message after a template has chosen its words and the layout has drawn
@@ -40,9 +40,13 @@ export interface MailTransport {
  * `send` takes a named message rather than a subject and a body, so no caller
  * anywhere in this repository is in a position to put a string of its own in
  * front of a reader. See `mailMessageSchema`.
+ *
+ * `locale` is required, not defaulted: the language is the reader's
+ * (ADR-062), and only the caller knows who that is. A default here would be
+ * the place where a French account quietly gets German post.
  */
 export interface Mailer {
-  send(input: { to: string; message: MailMessage }): Promise<MailAcceptance>;
+  send(input: { to: string; message: MailMessage; locale: Locale }): Promise<MailAcceptance>;
   close(): Promise<void>;
 }
 

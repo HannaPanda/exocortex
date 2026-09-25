@@ -40,7 +40,11 @@ export function createMailDeliveryProcessor(dependencies: MailDeliveryDependenci
   return async ({ payload, logger }: JobContext<typeof QUEUE_NAMES.mail>): Promise<void> => {
     const job: MailDeliveryJob = payload;
     try {
-      const acceptance = await mailer.send({ to: job.recipient, message: job.mail });
+      const acceptance = await mailer.send({
+        to: job.recipient,
+        message: job.mail,
+        locale: job.locale,
+      });
       // "accepted", not "delivered": the relay owes us the next hop and
       // nothing here can know whether an inbox ever shows it.
       logger.debug('Mail handed to the relay', {

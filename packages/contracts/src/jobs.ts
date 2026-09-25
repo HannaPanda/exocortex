@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { automationRunOriginSchema, automationTriggerSchema } from './automations';
+import { DEFAULT_LOCALE, localeSchema } from './locale';
 import { mailMessageSchema, mailRecipientSchema } from './mail';
 import { idSchema } from './primitives';
 import { pushNotificationKindSchema } from './push';
@@ -561,10 +562,16 @@ export type PushDeliveryJob = z.infer<typeof pushDeliveryJobSchema>;
  * to Redis, which is `removeOnComplete` (an hour) rather than for ever. That is
  * the right window for the case this exists for: an outbox row redelivered
  * seconds later.
+ *
+ * `locale` is the recipient's language (issue #98, ADR-062), resolved by the
+ * producer for the same reason the address is: it already read the account.
+ * German by default, so a job queued before the field existed still parses
+ * and still reads the way it would have.
  */
 export const mailDeliveryJobSchema = jobBase.extend({
   recipient: mailRecipientSchema,
   mail: mailMessageSchema,
+  locale: localeSchema.default(DEFAULT_LOCALE),
 });
 export type MailDeliveryJob = z.infer<typeof mailDeliveryJobSchema>;
 

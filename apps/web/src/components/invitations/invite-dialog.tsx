@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -9,6 +9,7 @@ import {
   type InvitationWorkspaceRole,
   type Workspace,
 } from '@exocortex/contracts';
+import { isLocale, type Locale, LOCALE_ENDONYMS, SUPPORTED_LOCALES } from '@exocortex/i18n';
 import {
   Alert,
   AlertDescription,
@@ -60,6 +61,12 @@ export interface InviteDialogProps {
  * the API enforces it regardless, so this only decides which fields are worth
  * showing.
  *
+ * The language is the inviter's decision because the invited person has no
+ * account yet whose choice could be asked (issue #98): it is the language of
+ * the mail and of the new account until that person picks another. It starts
+ * at the inviter's own interface language, which is the right guess far more
+ * often than not.
+ *
  * After a successful invitation the dialog does not close. It shows the link,
  * because the mail can fail and a link nobody copied is an invitation nobody
  * received: `emailSent: false` with a working link is recoverable, and staying
@@ -75,11 +82,14 @@ export function InviteDialog({
   const t = useTranslations('invitations.dialog');
   const roleLabel = useTranslations('invitations.roles');
   const createInvitation = useCreateInvitation(scope);
+  const uiLocale = useLocale();
+  const defaultLocale: Locale = isLocale(uiLocale) ? uiLocale : 'de';
 
   const [email, setEmail] = React.useState('');
   const [workspaceId, setWorkspaceId] = React.useState<string>(NO_WORKSPACE);
   const [workspaceRole, setWorkspaceRole] = React.useState<InvitationWorkspaceRole>('MEMBER');
   const [grantAdmin, setGrantAdmin] = React.useState(false);
+  const [locale, setLocale] = React.useState<Locale>(defaultLocale);
   const [copied, setCopied] = React.useState(false);
 
   const result = createInvitation.data ?? null;
@@ -91,6 +101,7 @@ export function InviteDialog({
     setWorkspaceId(NO_WORKSPACE);
     setWorkspaceRole('MEMBER');
     setGrantAdmin(false);
+    setLocale(defaultLocale);
     setCopied(false);
     createInvitation.reset();
   };
@@ -107,6 +118,7 @@ export function InviteDialog({
       workspaceRole,
       role: grantAdmin ? 'admin' : 'user',
       expiresInDays: INVITATION_DEFAULT_TTL_DAYS,
+      locale,
       ...(scope.kind === 'admin' && workspaceId !== NO_WORKSPACE ? { workspaceId } : {}),
     };
     createInvitation.mutate(request);
@@ -181,6 +193,32 @@ export function InviteDialog({
                 onChange={(event) => setEmail(event.target.value)}
                 data-testid="invite-email"
               />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="invite-locale">{t('language')}</Label>
+              <Select
+                value={locale}
+                onValueChange={(next) => {
+                  if (isLocale(next)) setLocale(next);
+                }}
+              >
+                <SelectTrigger
+                  id="invite-locale"
+                  aria-label={t('language')}
+                  data-testid="invite-locale"
+                >
+                  <SelectValue>{() => LOCALE_ENDONYMS[locale]}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {SUPPORTED_LOCALES.map((option) => (
+                    <SelectItem key={option} value={option} lang={option}>
+                      {LOCALE_ENDONYMS[option]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">{t('languageHint')}</p>
             </div>
 
             {scope.kind === 'admin' && workspaces !== undefined ? (

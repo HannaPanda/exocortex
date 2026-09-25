@@ -17,12 +17,15 @@ import {
   type Invitation,
   type InvitationPreview,
   type InvitationStatus,
+  isLocale,
+  type Locale,
 } from '@exocortex/contracts';
 import {
   type PrismaClient,
   type UserRole as UserRolePrisma,
   type WorkspaceRole as WorkspaceRolePrisma,
 } from '@exocortex/database';
+import { resolveLocale } from '@exocortex/i18n';
 import { type Logger } from '@exocortex/logger';
 import { type Mailer } from '@exocortex/mail';
 
@@ -36,7 +39,7 @@ const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
 /** Everything the list and the create response need. Kept in one place so the two can never disagree. */
 const INVITATION_INCLUDE = {
-  invitedBy: { select: { name: true, email: true } },
+  invitedBy: { select: { name: true, email: true, locale: true } },
   workspace: { select: { name: true } },
 } as const;
 
@@ -51,8 +54,9 @@ interface InvitationRow {
   revokedAt: Date | null;
   sentCount: number;
   lastSentAt: Date | null;
+  locale: string | null;
   createdAt: Date;
-  invitedBy: { name: string; email: string };
+  invitedBy: { name: string; email: string; locale: string | null };
   workspace: { name: string } | null;
 }
 
@@ -89,8 +93,23 @@ function toContract(row: InvitationRow): Invitation {
     revokedAt: row.revokedAt?.toISOString() ?? null,
     sentCount: row.sentCount,
     lastSentAt: row.lastSentAt?.toISOString() ?? null,
+    locale: isLocale(row.locale) ? row.locale : null,
     createdAt: row.createdAt.toISOString(),
   };
+}
+
+/**
+ * The language the invitation mail is written in (issue #98, ADR-062).
+ *
+ * The reader has no account yet, so there is no `User.locale` to ask: the
+ * inviter's choice for this invitation wins, then the inviter's own account
+ * language, then German. A tag the deployment no longer speaks is skipped.
+ */
+function invitationMailLocale(row: {
+  locale: string | null;
+  invitedBy: { locale: string | null };
+}): Locale {
+  return isLocale(row.locale) ? row.locale : resolveLocale({ preference: row.invitedBy.locale });
 }
 
 /** Addresses are compared and stored lowercased, so one person cannot hold two invitations. */
@@ -199,6 +218,7 @@ export class InvitationsService {
       workspaceRole: input.request.workspaceId === undefined ? null : input.request.workspaceRole,
       globalRole: input.request.role === 'admin' ? 'ADMIN' : 'USER',
       expiresInDays: input.request.expiresInDays,
+      locale: input.request.locale ?? null,
       actorUserId: input.actorUserId,
       correlationId: input.correlationId,
     });
@@ -229,6 +249,7 @@ export class InvitationsService {
       workspaceRole: input.request.workspaceRole,
       globalRole: 'USER',
       expiresInDays: input.request.expiresInDays,
+      locale: input.request.locale ?? null,
       actorUserId: input.actorUserId,
       correlationId: input.correlationId,
     });
@@ -288,6 +309,7 @@ export class InvitationsService {
       url,
       expiresAt,
       invitationId: updated.id,
+      locale: invitationMailLocale(updated),
     });
 
     return {
@@ -404,6 +426,11 @@ export class InvitationsService {
           // The token was mailed to this address and came back from it. There is
           // nothing left for a verification mail to establish.
           emailVerified: true,
+          // The language the invitation spoke becomes the account's until the
+          // person picks another (issue #98). A fresh account has no choice of
+          // its own to overrule, and an invitation nobody chose a language for
+          // leaves it undecided, so the browser decides.
+          locale: isLocale(row.locale) ? row.locale : null,
         },
         select: { id: true },
       });
@@ -511,6 +538,7 @@ export class InvitationsService {
     workspaceRole: WorkspaceRolePrisma | null;
     globalRole: UserRolePrisma;
     expiresInDays: number;
+    locale: Locale | null;
     actorUserId: string;
     correlationId: string;
   }): Promise<CreatedInvitation> {
@@ -545,6 +573,7 @@ export class InvitationsService {
           workspaceRole: input.workspaceRole,
           role: input.globalRole,
           expiresAt,
+          locale: input.locale,
         },
         include: INVITATION_INCLUDE,
       });
@@ -573,6 +602,7 @@ export class InvitationsService {
       url,
       expiresAt,
       invitationId: created.id,
+      locale: invitationMailLocale(created),
     });
 
     this.logger.info('Invitation created', {
@@ -605,10 +635,12 @@ export class InvitationsService {
     url: string;
     expiresAt: Date;
     invitationId: string;
+    locale: Locale;
   }): Promise<Date | null> {
     try {
       await this.mailer.send({
         to: input.email,
+        locale: input.locale,
         message: {
           template: 'INVITATION',
           invitedByName: input.invitedByName,

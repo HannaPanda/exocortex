@@ -8,18 +8,19 @@ import { type Mailer, type MailTransport } from './types';
 /**
  * A mailer over a transport: render, send, log what may be logged.
  *
- * What may be logged is the template name and the recipient's domain. Not the
- * address, not the subject, not a line of the body -- a mail is somebody's
- * post, and a log file is read by more people and kept for longer than
- * anything the mail itself passes through (`docs/observability.md`).
+ * What may be logged is the template name and the recipient's domain
+ * (ADR-051). Not the address, not the subject, not a line of the body -- a
+ * mail is somebody's post, and a log file is read by more people and kept for
+ * longer than anything the mail itself passes through
+ * (`docs/observability.md`).
  */
 export function createMailer(options: { transport: MailTransport; logger: Logger }): Mailer {
   const { transport, logger } = options;
   return {
-    async send({ to, message }): Promise<MailAcceptance> {
+    async send({ to, message, locale }): Promise<MailAcceptance> {
       const template = message.template;
       try {
-        const acceptance = await transport.send({ to, message: renderMail(message) });
+        const acceptance = await transport.send({ to, message: renderMail(message, locale) });
         // "accepted", not "delivered": the relay has the message and owes us
         // the next hop. Whether an inbox ever shows it is not knowable here.
         logger.info('Mail accepted by the relay', {

@@ -15,6 +15,7 @@ import { type Logger } from '@exocortex/logger';
 import { type Mailer } from '@exocortex/mail';
 
 import { API_ENV, LOGGER } from '../common/logger.provider';
+import { readerLocale } from '../common/reader-locale';
 import { MAILER, PRISMA } from '../platform/platform.module';
 
 /** The OAuth provider's authorization endpoint, relative to the app origin. */
@@ -120,6 +121,10 @@ export class AuthService {
       secret: env.BETTER_AUTH_SECRET,
       appUrl: env.APP_URL,
       mailer,
+      // The reader of both mails is the person whose request caused them, so
+      // the requester's order applies: their account's choice, then their
+      // browser, then German (issue #98).
+      mailLocale: ({ userId, headers }) => readerLocale(prisma, userId, headers),
       logger,
       secureCookies: env.APP_URL.startsWith('https://'),
       trustedOrigins: [env.BETTER_AUTH_URL, env.PUBLIC_API_URL],

@@ -1,4 +1,5 @@
 import { type MailContent } from '../layout/content';
+import { type MailLanguage } from '../translator';
 
 /**
  * The mail an `EMAIL_SELF` automation sends (issue #104, ADR-054).
@@ -15,40 +16,36 @@ import { type MailContent } from '../layout/content';
  * is one somebody deletes as a newsletter.
  */
 
-export function automationPageMail(input: {
-  ruleName: string;
-  subject: string;
-  documentTitle: string;
-  url: string;
-  body: string;
-  /** Whether the page goes on past what `body` holds. */
-  truncated: boolean;
-}): MailContent {
+export function automationPageMail(
+  input: {
+    ruleName: string;
+    subject: string;
+    documentTitle: string;
+    url: string;
+    body: string;
+    /** Whether the page goes on past what `body` holds. */
+    truncated: boolean;
+  },
+  { t }: MailLanguage,
+): MailContent {
+  const words = { rule: input.ruleName, title: input.documentTitle };
   return {
     // Prefixed like every other mail from here, even though the words after it
     // are the reader's own: a subject line that could be mistaken for a mail
     // somebody else sent is one that gets answered instead of read.
-    subject: `eXocortex: ${input.subject}`,
-    preheader: `Automation „${input.ruleName}“ schickt dir „${input.documentTitle}“.`,
+    subject: t('common.subject', { subject: input.subject }),
+    preheader: t('automationPage.preheader', words),
     heading: input.documentTitle,
     blocks: [
-      {
-        kind: 'paragraph',
-        text: `Automation „${input.ruleName}“ schickt dir die Seite „${input.documentTitle}“.`,
-      },
+      { kind: 'paragraph', text: t('automationPage.body', words) },
       // The page as written: escaped, never rendered. Markdown stays Markdown,
       // because turning a page into markup is exactly the rich-content decision
       // this layout leaves to a block of its own (issue #109).
       { kind: 'excerpt', text: input.body },
       ...(input.truncated
-        ? [
-            {
-              kind: 'notice' as const,
-              text: 'Hier ist die Seite abgeschnitten. Den Rest liest du am besten in eXocortex.',
-            },
-          ]
+        ? [{ kind: 'notice' as const, text: t('automationPage.truncated') }]
         : []),
-      { kind: 'link', label: 'Die Seite in eXocortex', url: input.url },
+      { kind: 'link', label: t('automationPage.link'), url: input.url },
     ],
   };
 }
