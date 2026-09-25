@@ -362,6 +362,17 @@ bash scripts/deploy.sh --dry-run      # everything up to the first change, then 
 
 ### What deploy.sh adds
 
+Before any of the steps below, and again right before the migrations and right
+before the restart, the script refuses while an AI run is alive: `RUNNING`
+with a heartbeat younger than 60 seconds, or `PENDING` and younger than five
+minutes (the reaper's own thresholds from `packages/contracts/src/ai-runtime.ts`,
+so a run the reaper would close blocks nothing). A restart cuts a run off in
+the middle of writing pages, so there is no flag around this, and a database
+that cannot be asked counts as a refusal, not as "nothing running". The third
+check exists because a run can start while the build is going; if it trips,
+the migrations have run and the old code is still serving, which is the state
+every deploy passes through anyway.
+
 7. **Where we are.** Refuses when `origin/master` has commits this checkout does
    not; warns when HEAD is unpushed. No `git pull` — development and deployment
    are the same host here, so there is nothing to fetch.

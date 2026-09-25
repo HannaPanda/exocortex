@@ -57,7 +57,49 @@ MARKER="$ROOT_DIR/.last-deployed-sha"
 UNITS=(exocortex-api exocortex-collaboration exocortex-worker exocortex-web)
 HEALTH_URL="http://127.0.0.1:3211/health/ready"
 
+# Refuse while an AI run is alive. Restarting the worker cuts a run off in
+# the middle of writing pages, and the API and collaboration restarts pull the
+# ground from under its tool calls. There is no flag around this: a deploy can
+# wait, a half-edited page is damage.
+#
+# "Alive" mirrors the reaper's own definition (`reapStaleAiRuns`,
+# apps/worker/src/processors/maintenance-tasks/cleanup.ts): RUNNING with a
+# heartbeat younger than AI_RUN_HEARTBEAT_STALE_MS (60 s), or PENDING and
+# younger than AI_RUN_PICKUP_GRACE_MS (5 min), both in
+# packages/contracts/src/ai-runtime.ts. A run the reaper would close does not
+# block a deploy. It fails closed: a database that cannot be asked is not an
+# answer of "nothing running".
+#
+# Asked three times: before the build (fail before ten minutes of work),
+# before the first write to the live system, and right before the restart,
+# because a run can start while the build is going.
+DATABASE_URL_PSQL="$(grep -m1 '^DATABASE_URL=' "$ROOT_DIR/.env" 2>/dev/null | cut -d= -f2- || true)"
+DATABASE_URL_PSQL="${DATABASE_URL_PSQL%%\?*}" # libpq refuses Prisma's ?schema=
+refuse_while_ai_runs_active() {
+  local runs
+  [ -n "$DATABASE_URL_PSQL" ] || fail "No DATABASE_URL in .env — cannot check for active AI runs" \
+    "The deploy refuses rather than guess that nothing is running."
+  runs=$(psql "$DATABASE_URL_PSQL" -XAtq -v ON_ERROR_STOP=1 -F ' | ' -c "
+    SELECT id, status, model, to_char(\"createdAt\" AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS') || ' UTC'
+      FROM ai_run
+     WHERE (status = 'RUNNING'
+            AND COALESCE(\"heartbeatAt\", \"startedAt\", \"createdAt\") > now() - interval '60 seconds')
+        OR (status = 'PENDING' AND \"createdAt\" > now() - interval '5 minutes')
+     ORDER BY \"createdAt\"") \
+    || fail "Could not ask the database for active AI runs" \
+      "The deploy refuses rather than guess that nothing is running. Nothing has been touched by this check."
+  if [ -n "$runs" ]; then
+    printf '%s\n' "$runs" | while IFS= read -r line; do info "$line"; done
+    fail "An AI run is active — $1" \
+      "Wait until it has finished (or cancel it in the chat), then run the deploy again."
+  fi
+  ok "No active AI run."
+}
+
 printf '%beXocortex deploy%b — started %s\n' "$BOLD" "$NC" "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+step "Step 0 — active AI runs"
+refuse_while_ai_runs_active "nothing was built and nothing was touched"
 
 # --- 1. Where we are ---------------------------------------------------------
 step "Step 1 — the commit being rolled out"
@@ -125,6 +167,7 @@ fi
 # is applied. Never `migrate dev` against this database: it offers a reset when
 # it sees drift, and the drift it sees here is the search index it cannot model.
 step "Step 3 — database migrations"
+refuse_while_ai_runs_active "the build is done, but nothing on the live system was touched"
 if ! pnpm --filter @exocortex/database exec prisma migrate status; then
   info 'migrate status exits non-zero whenever migrations are pending, which is the normal case here.'
 fi
@@ -256,6 +299,7 @@ fi
 #
 # Never `pkill -f`: a pattern like "node dist/main.js" matches the live services.
 step "Step 6 — restart the four units"
+refuse_while_ai_runs_active "migrations have run, but no unit was restarted and the old code is still serving"
 for unit in "${UNITS[@]}"; do
   info "$unit"
   [ "$unit" = "exocortex-web" ] && switch_web_release "$RELEASE"
