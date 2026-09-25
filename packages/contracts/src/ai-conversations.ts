@@ -227,6 +227,10 @@ export type UpdateAiConversationSourceRequest = z.infer<
 /**
  * Slash commands. Parsed server-side from the leading `/` of a user message so
  * every client (side panel, MCP, future clients) behaves identically.
+ *
+ * `description` is the German reference only: the panel reads
+ * `ai.commands.<name>` and `/help` reads `commands.help.descriptions.<name>`
+ * from the catalogue, in the reader's language.
  */
 export const CHAT_COMMANDS = [
   { name: 'clear', argument: null, description: 'Kontext leeren, Verlauf bleibt lesbar' },
@@ -255,7 +259,10 @@ export type ChatCommandName = z.infer<typeof chatCommandNameSchema>;
 
 export const chatCommandResultSchema = z.object({
   command: chatCommandNameSchema,
-  /** German text rendered as a system bubble in the chat. */
+  /**
+   * Rendered as a system bubble in the chat, in the language of whoever typed
+   * the command (`commands` namespace, ADR-062).
+   */
   message: z.string(),
   /** Set when the command created or switched conversations. */
   conversationId: idSchema.nullable(),

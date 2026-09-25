@@ -13,7 +13,6 @@ import {
   type DatabasePropertyRef,
   type DatabaseQueryScope,
   derivedPropertiesOf,
-  DerivedPropertyError,
   type PrismaClient,
 } from '@exocortex/database';
 
@@ -73,8 +72,20 @@ export function assertDerivedPropertiesCompile(
     try {
       compileDerived(property, scope.schema);
     } catch (error) {
-      if (error instanceof FormulaError || error instanceof DerivedPropertyError) {
-        throw new AppError(code, error.message);
+      // `DerivedPropertyError` is a `FormulaError`, so one branch serves both.
+      // The column is named because it need not be the one being edited: a
+      // rename breaks the formula that names it. `reason` is the code an agent
+      // reads (describeApiError), `formula` what the browser renders from
+      // `database.formulaErrors` in its reader's language.
+      if (error instanceof FormulaError) {
+        throw new AppError(code, `Column "${property.name ?? property.id}": ${error.message}`, {
+          reason: error.code,
+          formula: {
+            ...error.detail,
+            propertyId: property.id,
+            propertyName: property.name ?? null,
+          },
+        });
       }
       throw error;
     }
@@ -98,12 +109,12 @@ export async function normalizeDerivedConfig(input: {
   workspaceId: string;
 }): Promise<Record<string, unknown>> {
   if (input.config === null || input.config === undefined) {
-    throw AppError.validation(`Eine Spalte vom Typ ${input.type} braucht eine Konfiguration`);
+    throw AppError.validation(`A column of type ${input.type} needs a configuration`);
   }
   if (input.type === 'RELATION') {
     const parsed = databaseRelationPropertyConfigSchema.safeParse(input.config);
     if (!parsed.success) {
-      throw AppError.validation('Eine Verknüpfung braucht { targetCollectionId, allowMultiple }');
+      throw AppError.validation('A relation needs { targetCollectionId, allowMultiple }');
     }
     await assertRelationTargetIsReachable({
       prisma: input.prisma,
@@ -116,14 +127,14 @@ export async function normalizeDerivedConfig(input: {
     const parsed = databaseRollupPropertyConfigSchema.safeParse(input.config);
     if (!parsed.success) {
       throw AppError.validation(
-        'Ein Rollup braucht { relationPropertyId, targetPropertyId, aggregate }',
+        'A rollup needs { relationPropertyId, targetPropertyId, aggregate }',
       );
     }
     return { ...parsed.data };
   }
   const parsed = databaseFormulaPropertyConfigSchema.safeParse(input.config);
   if (!parsed.success) {
-    throw AppError.validation('Eine Formelspalte braucht { expression }');
+    throw AppError.validation('A formula column needs { expression }');
   }
   return { ...parsed.data };
 }
@@ -149,10 +160,10 @@ async function assertRelationTargetIsReachable(input: {
     select: { type: true, workspaceId: true, archivedAt: true },
   });
   if (target === null || target.archivedAt !== null || target.type !== 'COLLECTION') {
-    throw AppError.validation('Das Ziel einer Verknüpfung muss eine Datenbank sein');
+    throw AppError.validation('The target of a relation must be a database');
   }
   if (target.workspaceId !== input.workspaceId) {
-    throw AppError.validation('Das Ziel einer Verknüpfung muss im selben Arbeitsbereich liegen');
+    throw AppError.validation('The target of a relation must be in the same workspace');
   }
 }
 
@@ -176,20 +187,18 @@ export async function normalizeRelationValue(input: {
 }): Promise<string[]> {
   const config = parseRelationConfig(input.property.config);
   if (config === null) {
-    throw AppError.validation(`Die Verknüpfung ${input.property.id} ist nicht konfiguriert`);
+    throw AppError.validation(`Relation ${input.property.id} is not configured`);
   }
   if (!Array.isArray(input.value)) {
-    throw AppError.validation(`Die Spalte ${input.property.id} erwartet eine Liste von Zeilen-Ids`);
+    throw AppError.validation(`Column ${input.property.id} expects a list of row ids`);
   }
   const ids = [...new Set(input.value.map(String))];
   if (ids.length === 0) return ids;
   if (!config.allowMultiple && ids.length > 1) {
-    throw AppError.validation(`Die Spalte ${input.property.id} verknüpft höchstens eine Zeile`);
+    throw AppError.validation(`Column ${input.property.id} links at most one row`);
   }
   if (ids.length > DATABASE_RELATION_MAX_TARGETS) {
-    throw AppError.validation(
-      `Eine Verknüpfung fasst höchstens ${DATABASE_RELATION_MAX_TARGETS} Zeilen`,
-    );
+    throw AppError.validation(`A relation holds at most ${DATABASE_RELATION_MAX_TARGETS} rows`);
   }
 
   const found = await input.prisma.document.findMany({
@@ -200,7 +209,7 @@ export async function normalizeRelationValue(input: {
     const known = new Set(found.map((row) => row.id));
     const missing = ids.filter((id) => !known.has(id));
     throw AppError.validation(
-      `Diese Zeilen gehören nicht zur verknüpften Datenbank: ${missing.join(', ')}`,
+      `These rows do not belong to the related database: ${missing.join(', ')}`,
     );
   }
   return ids;

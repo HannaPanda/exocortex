@@ -1,0 +1,1 @@
+The answers of the slash commands in the AI chat panel (/clear, /model, /think, /context, /rules, /tools, /help and the rest), shown as a system line to the person who typed the command. Short, matter-of-fact sentences addressed with "du"; command names, their arguments such as `on`/`off`, model slugs and tool names like exo_toolbox stay exactly as written.

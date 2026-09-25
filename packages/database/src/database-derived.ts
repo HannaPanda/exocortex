@@ -4,6 +4,8 @@ import {
   type DatabaseRollupAggregate,
   type DatabaseRollupPropertyConfig,
   FormulaError,
+  type FormulaErrorArgs,
+  type FormulaErrorCode,
   type FormulaNode,
   type FormulaPropertyResolver,
   type FormulaValueType,
@@ -297,10 +299,16 @@ function relationIdsExpression(relationPropertyId: string): Prisma.Sql {
 // ROLLUP
 // ---------------------------------------------------------------------------
 
-/** A derived property whose configuration does not describe a column. */
-export class DerivedPropertyError extends Error {
-  constructor(message: string) {
-    super(message);
+/**
+ * A derived property whose configuration does not describe a column.
+ *
+ * A `FormulaError` underneath, so it carries a code from the same table and
+ * reaches the reader the same way (issue #98); the class of its own is what
+ * tells a rollup's mistake from a formula's in a test.
+ */
+export class DerivedPropertyError extends FormulaError {
+  constructor(code: FormulaErrorCode, args: FormulaErrorArgs = {}) {
+    super(code, args);
     this.name = 'DerivedPropertyError';
   }
 }
@@ -324,15 +332,13 @@ export function assertRollupTargetIsUsable(
 ): void {
   if (aggregate === 'count') return;
   if (target === undefined) {
-    throw new DerivedPropertyError(`Das Rollup "${aggregate}" braucht eine Zielspalte`);
+    throw new DerivedPropertyError('rollup_needs_target', { aggregate });
   }
   if (isDerivedColumn(target.type) || target.type === 'RELATION') {
-    throw new DerivedPropertyError(
-      `Ein Rollup kann nicht über eine Spalte vom Typ ${target.type} rechnen; wähle eine einfache Spalte`,
-    );
+    throw new DerivedPropertyError('rollup_target_derived', { propertyType: target.type });
   }
   if (NUMERIC_AGGREGATES.has(aggregate) && target.type !== 'NUMBER') {
-    throw new DerivedPropertyError(`Das Rollup "${aggregate}" erwartet eine Zahlenspalte`);
+    throw new DerivedPropertyError('rollup_needs_number', { aggregate });
   }
   if (
     DATE_AGGREGATES.has(aggregate) &&
@@ -340,7 +346,7 @@ export function assertRollupTargetIsUsable(
     target.type !== 'CREATED_TIME' &&
     target.type !== 'UPDATED_TIME'
   ) {
-    throw new DerivedPropertyError(`Das Rollup "${aggregate}" erwartet eine Datumsspalte`);
+    throw new DerivedPropertyError('rollup_needs_date', { aggregate });
   }
 }
 
@@ -377,11 +383,11 @@ function rollupParts(
   const label = property.name ?? property.id;
   const config = parseRollupConfig(property.config);
   if (config === null) {
-    throw new DerivedPropertyError(`Die Rollup-Spalte "${label}" ist unvollständig`);
+    throw new DerivedPropertyError('rollup_incomplete', { name: label });
   }
   const relation = schema.byId.get(config.relationPropertyId);
   if (relation === undefined || relation.type !== 'RELATION') {
-    throw new DerivedPropertyError(`Die Rollup-Spalte "${label}" zeigt auf keine Verknüpfung`);
+    throw new DerivedPropertyError('rollup_no_relation', { name: label });
   }
   return { config, relation };
 }
@@ -396,7 +402,8 @@ function compileRollup(property: DatabasePropertyRef, schema: DerivedSchema): Pr
   const target =
     config.targetPropertyId === null ? undefined : schema.byId.get(config.targetPropertyId);
   assertRollupTargetIsUsable(config.aggregate, target);
-  if (target === undefined) throw new DerivedPropertyError('Rollup ohne Zielspalte');
+  if (target === undefined)
+    throw new DerivedPropertyError('rollup_needs_target', { aggregate: config.aggregate });
 
   const targetValue = isComputedColumn(target.type)
     ? computedValueExpression(target.type, LINK_TABLE)
@@ -472,20 +479,16 @@ export function formulaTypeOf(
         formulaResolver(property, schema, guard(property, seen)),
       );
     default:
-      throw new FormulaError(
-        `Die Spalte "${label}" hat den Typ ${property.type} und lässt sich in einer Formel nicht verwenden`,
-      );
+      throw new FormulaError('property_unusable', { name: label, propertyType: property.type });
   }
 }
 
 function guard(property: DatabasePropertyRef, seen: ReadonlySet<string>): ReadonlySet<string> {
   if (seen.has(property.id)) {
-    throw new FormulaError(
-      `Die Spalte "${property.name ?? property.id}" hängt im Kreis von sich selbst ab`,
-    );
+    throw new FormulaError('cycle', { name: property.name ?? property.id });
   }
   if (seen.size >= MAX_DERIVED_DEPTH) {
-    throw new FormulaError('Die berechneten Spalten sind zu tief verschachtelt');
+    throw new FormulaError('derived_too_deep');
   }
   return new Set([...seen, property.id]);
 }
@@ -493,7 +496,7 @@ function guard(property: DatabasePropertyRef, seen: ReadonlySet<string>): Readon
 function formulaNodeOf(property: DatabasePropertyRef): FormulaNode {
   const config = parseFormulaConfig(property.config);
   if (config === null) {
-    throw new FormulaError(`Die Formelspalte "${property.name ?? property.id}" ist leer`);
+    throw new FormulaError('formula_column_empty', { name: property.name ?? property.id });
   }
   return parseFormula(config.expression);
 }
@@ -546,7 +549,7 @@ function compileFormulaNode(node: FormulaNode, context: FormulaContext): Prisma.
 
 function compilePropertyRef(ref: string, context: FormulaContext): Prisma.Sql {
   const property = resolveRef(ref, context.schema, context.collectionId);
-  if (property === undefined) throw new FormulaError(`Unbekannte Spalte: ${ref}`);
+  if (property === undefined) throw new FormulaError('unknown_property', { name: ref });
   if (isComputedColumn(property.type)) {
     return Prisma.sql`(${computedValueExpression(property.type, ROW_TABLE)})`;
   }
@@ -588,7 +591,8 @@ function compileBinary(
   if (node.operator === '/') return Prisma.sql`(${left} / NULLIF(${right}, 0))`;
   if (node.operator === '%') return Prisma.sql`(${left} % NULLIF(${right}, 0))`;
   const operator = SQL_BINARY[node.operator];
-  if (operator === undefined) throw new FormulaError(`Unbekannter Operator ${node.operator}`);
+  if (operator === undefined)
+    throw new FormulaError('unknown_operator', { operator: node.operator });
   return Prisma.sql`(${left} ${Prisma.raw(operator)} ${right})`;
 }
 
@@ -647,7 +651,7 @@ function compileCall(name: string, args: FormulaNode[], context: FormulaContext)
     case 'day':
       return Prisma.sql`EXTRACT(DAY FROM ${first})::numeric`;
     default:
-      throw new FormulaError(`Unbekannte Funktion "${name}"`);
+      throw new FormulaError('unknown_function', { name });
   }
 }
 

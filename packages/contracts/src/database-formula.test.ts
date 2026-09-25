@@ -7,6 +7,7 @@ import {
   formulaPropertyRefs,
   type FormulaPropertyResolver,
   parseFormula,
+  readFormulaErrorDetail,
   renameFormulaProperty,
 } from './database-formula';
 
@@ -75,7 +76,7 @@ describe('analyzeFormula', () => {
 
   it('refuses arithmetic on text', () => {
     expect(() => compileFormulaSource('prop("Titel") + 1', resolve)).toThrow(
-      /Typen müssen gleich sein|nicht anwendbar/,
+      /types have to match|does not apply/,
     );
   });
 
@@ -98,7 +99,7 @@ describe('analyzeFormula', () => {
   it('refuses an if whose branches disagree', () => {
     expect(() =>
       compileFormulaSource('if(prop("Erledigt"); prop("Preis"); "nein")', resolve),
-    ).toThrow(/beide Zweige/);
+    ).toThrow(/both branches/);
   });
 
   it('accepts empty() on any column and answers a yes/no', () => {
@@ -117,7 +118,7 @@ describe('analyzeFormula', () => {
 
   it('refuses a formula nested past the depth limit', () => {
     const deep = `${'('.repeat(40)}1${')'.repeat(40)}`;
-    expect(() => parseFormula(deep)).toThrow(/verschachtelt/);
+    expect(() => parseFormula(deep)).toThrow(/nested too deeply/);
   });
 
   it('reports the type of a date function', () => {
@@ -130,9 +131,35 @@ describe('analyzeFormula', () => {
     const node = parseFormula('prop("Anhänge")');
     expect(() =>
       analyzeFormula(node, () => {
-        throw new FormulaError('Die Spalte "Anhänge" lässt sich nicht verwenden');
+        throw new FormulaError('property_unusable', { name: 'Anhänge', propertyType: 'FILES' });
       }),
     ).toThrow(/Anhänge/);
+  });
+});
+
+describe('FormulaError', () => {
+  it('carries a code and its arguments, not a sentence', () => {
+    try {
+      parseFormula('frobnicate(1)');
+      expect.unreachable();
+    } catch (error) {
+      expect(error).toBeInstanceOf(FormulaError);
+      const formulaError = error as FormulaError;
+      expect(formulaError.detail).toEqual({
+        code: 'unknown_function',
+        args: { name: 'frobnicate' },
+      });
+      expect(formulaError.message).toBe('Unknown function "frobnicate"');
+    }
+  });
+
+  it('reads a detail back out of an untyped value and drops what is not one', () => {
+    expect(readFormulaErrorDetail({ code: 'cycle', args: { name: 'A', nested: {} } })).toEqual({
+      code: 'cycle',
+      args: { name: 'A' },
+    });
+    expect(readFormulaErrorDetail({ code: 'toString', args: {} })).toBeNull();
+    expect(readFormulaErrorDetail('cycle')).toBeNull();
   });
 });
 

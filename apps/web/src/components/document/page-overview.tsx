@@ -94,6 +94,17 @@ function OverviewIntro({ data, pending }: { data: DocumentOverviewResponse; pend
   if (pending) {
     return <p className="text-sm text-muted-foreground">{t('introWriting')}</p>;
   }
+  // A code is worded here, in the reader's language (issue #98); a row older
+  // than the codes still carries its stored sentence in `error`.
+  if (data.errorDetail !== null) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        {data.errorDetail.code === 'too_many_children'
+          ? t('errors.too_many_children', { maxChildren: data.errorDetail.maxChildren })
+          : t(`errors.${data.errorDetail.code}`)}
+      </p>
+    );
+  }
   if (data.error !== null) {
     return <p className="text-sm text-muted-foreground">{data.error}</p>;
   }

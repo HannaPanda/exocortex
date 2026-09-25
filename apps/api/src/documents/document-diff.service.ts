@@ -7,6 +7,7 @@ import {
   WorkspaceAccessService,
 } from '@exocortex/auth';
 import {
+  type DocumentDiffNotice,
   type DocumentDiffResponse,
   type RestoreSnapshotBlocksResponse,
 } from '@exocortex/contracts';
@@ -164,16 +165,14 @@ export class DocumentDiffService {
       this.derive(to, input.documentId),
     );
 
-    const warnings: string[] = [];
+    // Codes, not sentences: the browser and the agent tool each word them
+    // for their own reader (issue #98).
+    const notices: DocumentDiffNotice[] = [];
     for (const state of [from, to]) {
       if (state.schemaVersion === EXOCORTEX_SCHEMA_VERSION) continue;
-      warnings.push(
-        `Der Stand vom ${state.createdAt.toISOString()} wurde mit einer älteren Schemaversion gespeichert. Einzelne Blöcke können dadurch anders aussehen als damals.`,
-      );
+      notices.push({ code: 'older_schema', stateCreatedAt: state.createdAt.toISOString() });
     }
-    if (diff.truncated) {
-      warnings.push('Die Seite hat mehr Blöcke, als der Vergleich anzeigt.');
-    }
+    if (diff.truncated) notices.push({ code: 'truncated' });
 
     return {
       documentId: input.documentId,
@@ -187,7 +186,7 @@ export class DocumentDiffService {
       })),
       summary: diff.summary,
       truncated: diff.truncated,
-      warnings,
+      notices,
     };
   }
 

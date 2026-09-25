@@ -49,6 +49,53 @@ export type OverviewEntry = z.infer<typeof overviewEntrySchema>;
 export const overviewStateSchema = z.enum(['off', 'pending', 'ready', 'unavailable']);
 export type OverviewState = z.infer<typeof overviewStateSchema>;
 
+/**
+ * Why the last refresh of an overview produced nothing, as a code (issue #98).
+ *
+ * Stored as JSON in `DocumentDigest.lastError`, so the browser words it in
+ * its reader's language (`document.overview.errors`) and an agent can branch
+ * on it. A row written before the codes existed holds a German sentence
+ * instead; `readStoredOverviewError` answers `null` for it, and the sentence
+ * is still served as `error`.
+ */
+export const overviewErrorDetailSchema = z.discriminatedUnion('code', [
+  /** The page is an overview and has no sub-pages yet. */
+  z.object({ code: z.literal('no_children') }),
+  /** More sub-pages than `overview.maxChildren`; the list stays, no intro is composed. */
+  z.object({ code: z.literal('too_many_children'), maxChildren: z.number().int().nonnegative() }),
+  /** The model call failed; the reason is in the worker's log. */
+  z.object({ code: z.literal('composition_failed') }),
+]);
+export type OverviewErrorDetail = z.infer<typeof overviewErrorDetailSchema>;
+
+/** English, for the log and for `error`. */
+export function overviewErrorMessage(detail: OverviewErrorDetail): string {
+  switch (detail.code) {
+    case 'no_children':
+      return 'This overview page has no sub-pages yet.';
+    case 'too_many_children':
+      return `This overview page has more than ${detail.maxChildren} sub-pages; the list stays complete, no intro is composed.`;
+    case 'composition_failed':
+      return 'The intro could not be composed.';
+  }
+}
+
+/** The form a code is stored in `DocumentDigest.lastError`. */
+export function storeOverviewError(detail: OverviewErrorDetail): string {
+  return JSON.stringify(detail);
+}
+
+/** A stored `lastError` read back as a code, or `null` for an older row's sentence. */
+export function readStoredOverviewError(stored: string): OverviewErrorDetail | null {
+  if (!stored.startsWith('{')) return null;
+  try {
+    const parsed = overviewErrorDetailSchema.safeParse(JSON.parse(stored));
+    return parsed.success ? parsed.data : null;
+  } catch {
+    return null;
+  }
+}
+
 export const documentOverviewResponseSchema = z.object({
   documentId: idSchema,
   mode: overviewModeSchema,
@@ -64,8 +111,13 @@ export const documentOverviewResponseSchema = z.object({
    * and this is what the badge beside it says.
    */
   stale: z.boolean(),
-  /** Why the last refresh produced nothing, or `null`. */
+  /**
+   * Why the last refresh produced nothing, or `null`: English for a coded
+   * failure, the stored German sentence for a row older than the codes.
+   */
   error: z.string().nullable(),
+  /** The same failure as a code, `null` when there is none or the row predates codes. */
+  errorDetail: overviewErrorDetailSchema.nullable(),
   entries: z.array(overviewEntrySchema),
 });
 export type DocumentOverviewResponse = z.infer<typeof documentOverviewResponseSchema>;

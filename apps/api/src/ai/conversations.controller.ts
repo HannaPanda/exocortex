@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { type FastifyRequest } from 'fastify';
 import { z } from 'zod';
 
 import { type VerifiedSession } from '@exocortex/auth';
@@ -267,12 +268,14 @@ export class ConversationsController {
     @CurrentSession() session: VerifiedSession,
     @Param('conversationId') conversationId: string,
     @Body(zodPipe(postConversationMessageRequestSchema)) body: PostConversationMessageRequest,
+    @Req() request: FastifyRequest,
   ): Promise<PostConversationMessageResponse> {
     return this.conversations.postMessage({
       conversationId,
       userId: session.userId,
       request: body,
       correlationId: currentCorrelationId(),
+      headers: request.headers,
     });
   }
 }

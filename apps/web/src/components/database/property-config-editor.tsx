@@ -9,6 +9,8 @@ import {
   type DatabaseRollupAggregate,
   type DocumentTreeNode,
   FORMULA_FUNCTIONS,
+  FormulaError,
+  parseFormula,
   parseFormulaConfig,
   parseRelationConfig,
   parseRollupConfig,
@@ -27,6 +29,7 @@ import {
 import { useDatabaseProperties } from '@/lib/api/database-queries';
 import { useDocumentTree } from '@/lib/api/document-queries';
 
+import { apiFormulaError, useFormulaErrorMessage, useFormulaFunctionHint } from './formula-error';
 import { usePropertyTypeLabel } from './property-types';
 
 /**
@@ -63,6 +66,21 @@ export function isPropertyConfigComplete(
   }
   if (type === 'FORMULA') return parseFormulaConfig(config) !== null;
   return true;
+}
+
+/**
+ * Why the API refused a configuration. A formula or rollup problem is
+ * rendered from its code (issue #98); anything else reads as its error code.
+ */
+export function PropertyConfigErrorMessage({ error }: { error: Error | null }) {
+  const formulaErrorMessage = useFormulaErrorMessage();
+  if (error === null) return null;
+  const formula = apiFormulaError(error);
+  return (
+    <p role="alert" className="text-xs text-destructive-text" data-testid="property-config-error">
+      {formula === null ? error.message : formulaErrorMessage(formula, formula.propertyName)}
+    </p>
+  );
 }
 
 export function PropertyConfigEditor(props: EditorProps) {
@@ -245,48 +263,25 @@ function RollupConfigEditor({ documentId, config, onChange }: EditorProps) {
 // FORMULA
 // ---------------------------------------------------------------------------
 
-/**
- * The functions whose one-line help lives in `database.config.formula.functions`.
- * The catalogue in `packages/contracts` keeps its German `hint`, because the
- * formula checker on the server quotes it in its errors; a function missing
- * here (added to the catalogue but not yet to the messages) keeps that hint.
- */
-const TRANSLATED_FORMULA_FUNCTIONS = [
-  'if',
-  'not',
-  'and',
-  'or',
-  'empty',
-  'format',
-  'concat',
-  'length',
-  'upper',
-  'lower',
-  'contains',
-  'abs',
-  'floor',
-  'ceil',
-  'round',
-  'min',
-  'max',
-  'now',
-  'dateAdd',
-  'dateDiffDays',
-  'year',
-  'month',
-  'day',
-] as const;
-
-type TranslatedFormulaFunction = (typeof TRANSLATED_FORMULA_FUNCTIONS)[number];
-
-function isTranslatedFormulaFunction(name: string): name is TranslatedFormulaFunction {
-  return (TRANSLATED_FORMULA_FUNCTIONS as readonly string[]).includes(name);
-}
-
 function FormulaConfigEditor({ documentId, config, onChange }: EditorProps) {
   const own = useDatabaseProperties(documentId);
   const expression = parseFormulaConfig(config)?.expression ?? '';
   const t = useTranslations('database.config.formula');
+  const functionHint = useFormulaFunctionHint();
+  const formulaErrorMessage = useFormulaErrorMessage();
+  // Only the syntax is checked here: whether a column exists and what type it
+  // has is the API's answer on save, because only the API sees the whole
+  // schema. A formula that does not even parse is told while it is typed.
+  const syntaxError = React.useMemo(() => {
+    if (expression.trim().length === 0) return null;
+    try {
+      parseFormula(expression);
+      return null;
+    } catch (error) {
+      if (error instanceof FormulaError) return error.detail;
+      throw error;
+    }
+  }, [expression]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -299,7 +294,14 @@ function FormulaConfigEditor({ documentId, config, onChange }: EditorProps) {
         value={expression}
         onChange={(event) => onChange({ expression: event.target.value })}
         data-testid="formula-expression"
+        aria-invalid={syntaxError !== null}
+        aria-describedby={syntaxError !== null ? 'formula-expression-error' : undefined}
       />
+      {syntaxError !== null ? (
+        <p id="formula-expression-error" className="text-xs text-destructive-text">
+          {formulaErrorMessage(syntaxError)}
+        </p>
+      ) : null}
       <p className="text-xs text-muted-foreground">
         {/* The operators are the formula language itself, the same in every
             locale, so they are arguments rather than part of the sentence. */}
@@ -316,11 +318,7 @@ function FormulaConfigEditor({ documentId, config, onChange }: EditorProps) {
           {(own.data ?? []).map((property) => `prop("${property.name}")`).join(' · ')}
         </p>
         <p className="mt-1 break-words">
-          {Object.entries(FORMULA_FUNCTIONS)
-            .map(([name, spec]) =>
-              isTranslatedFormulaFunction(name) ? t(`functions.${name}`) : spec.hint,
-            )
-            .join(' · ')}
+          {Object.keys(FORMULA_FUNCTIONS).map(functionHint).join(' · ')}
         </p>
       </details>
     </div>

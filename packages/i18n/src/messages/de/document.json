@@ -143,7 +143,12 @@
     "reposition": "Position ändern",
     "replace": "Ändern",
     "regenerate": "Neu erzeugen",
-    "remove": "Entfernen"
+    "remove": "Entfernen",
+    "generationErrors": {
+      "unavailable": "Die Bilderzeugung ist für diese Instanz nicht eingerichtet.",
+      "no_picture": "Das Modell „{model}“ hat kein Bild geliefert. Es kann vermutlich keine Bilder erzeugen; im Administrationsbereich lässt sich ein bildfähiges Modell eintragen.",
+      "failed": "Das Titelbild konnte nicht erzeugt werden. Bitte erneut versuchen."
+    }
   },
   "overview": {
     "noChildren": "Diese Übersichtsseite hat noch keine Unterseiten.",
@@ -155,7 +160,12 @@
     "sourceGeneratedAt": "Automatisch zusammengestellt, Stand {time}.",
     "stale": "veraltet",
     "refreshing": "wird aktualisiert …",
-    "refresh": "jetzt aktualisieren"
+    "refresh": "jetzt aktualisieren",
+    "errors": {
+      "no_children": "Diese Übersichtsseite hat noch keine Unterseiten.",
+      "too_many_children": "Diese Übersichtsseite hat mehr als {maxChildren} Unterseiten. Die Liste unten bleibt vollständig, ein Vorspann wird nicht erzeugt.",
+      "composition_failed": "Der Vorspann konnte nicht erzeugt werden."
+    }
   },
   "propertiesDialog": {
     "title": "Seiteneigenschaften",
@@ -329,7 +339,39 @@
     "noDifferenceTitle": "Kein Unterschied",
     "noDifferenceDescription": "Die beiden Stände haben denselben Inhalt.",
     "unchangedRun": "{count, plural, one {# unveränderter Block} other {# unveränderte Blöcke}}",
-    "summary": "{added} neu, {removed} entfernt, {changed} geändert, {moved} verschoben"
+    "summary": "{added} neu, {removed} entfernt, {changed} geändert, {moved} verschoben",
+    "notices": {
+      "olderSchema": "Der Stand vom {time} wurde mit einer älteren Schemaversion gespeichert. Einzelne Blöcke können dadurch anders aussehen als damals.",
+      "truncated": "Die Seite hat mehr Blöcke, als der Vergleich anzeigt."
+    },
+    "blockTypes": {
+      "paragraph": "Absatz",
+      "heading": "Überschrift",
+      "codeBlock": "Codeblock",
+      "blockquote": "Zitat",
+      "bulletList": "Aufzählung",
+      "orderedList": "Nummerierte Liste",
+      "taskList": "Aufgabenliste",
+      "horizontalRule": "Trennlinie",
+      "table": "Tabelle",
+      "callout": "Hinweis",
+      "details": "Ausklappbarer Abschnitt",
+      "columnList": "Spalten",
+      "blockMath": "Formel",
+      "tableOfContents": "Inhaltsverzeichnis",
+      "pageLink": "Seitenverweis",
+      "breadcrumb": "Pfad",
+      "databaseEmbed": "Eingebettete Datenbank",
+      "savedQueryEmbed": "Eingebettete Suche",
+      "transclusion": "Eingebetteter Inhalt",
+      "fileAttachment": "Datei",
+      "image": "Bild",
+      "video": "Video",
+      "audio": "Audio",
+      "pdf": "PDF",
+      "embed": "Einbettung",
+      "bookmark": "Lesezeichen"
+    }
   },
   "pdf": {
     "unreadableTitle": "PDF nicht lesbar",

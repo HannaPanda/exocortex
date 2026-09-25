@@ -1,5 +1,11 @@
 import { type AiProvider } from '@exocortex/ai';
-import { QUEUE_NAMES, type Settings } from '@exocortex/contracts';
+import {
+  type OverviewErrorDetail,
+  overviewErrorMessage,
+  QUEUE_NAMES,
+  type Settings,
+  storeOverviewError,
+} from '@exocortex/contracts';
 import {
   digestInputHash,
   type OverviewChild,
@@ -39,7 +45,7 @@ const MAX_ANSWER_TOKENS = 700;
 /** The composition's own timeout. Nobody is waiting, but nothing may hang. */
 const COMPOSE_TIMEOUT_MS = 90_000;
 /** What a failed composition says on the page. The reason itself is in the log. */
-const FAILURE_MESSAGE = 'Der Vorspann konnte nicht erzeugt werden.';
+const COMPOSITION_FAILED: OverviewErrorDetail = { code: 'composition_failed' };
 /** How far the cascade may walk up the tree before it gives up. */
 const MAX_CASCADE_DEPTH = 8;
 
@@ -68,7 +74,12 @@ export function createDocumentOverviewProcessor(dependencies: DocumentOverviewDe
       workspaceId: payload.workspaceId,
       correlationId: payload.correlationId,
       emittedAt: new Date().toISOString(),
-      payload: { documentId: payload.documentId, status: outcome.status, error: outcome.error },
+      payload: {
+        documentId: payload.documentId,
+        status: outcome.status,
+        error: outcome.error === null ? null : overviewErrorMessage(outcome.error),
+        errorDetail: outcome.error,
+      },
     });
   };
 }
@@ -76,7 +87,8 @@ export function createDocumentOverviewProcessor(dependencies: DocumentOverviewDe
 /** What one refresh ended as, or `null` when there was nothing to answer for. */
 interface Outcome {
   status: OverviewStatus;
-  error: string | null;
+  /** A code, never a sentence: the page words it for its reader (issue #98). */
+  error: OverviewErrorDetail | null;
 }
 
 /**
@@ -130,7 +142,7 @@ async function refreshPage(input: {
     await writeDigest(prisma, page.id, {
       ...(plan.needSummary ? { summaryInputHash: plan.summaryHash } : {}),
       ...(plan.needIntro ? { introInputHash: plan.introHash } : {}),
-      lastError: refusal,
+      lastError: storeOverviewError(refusal),
       failedAt: new Date(),
     });
     return { status: 'unchanged', error: refusal };
@@ -169,10 +181,10 @@ async function composeAndStore(input: {
     // The hashes stay untouched, so the next change to this page tries again.
     // What is already on the page stays: yesterday's overview beats none.
     await writeDigest(dependencies.prisma, page.id, {
-      lastError: FAILURE_MESSAGE,
+      lastError: storeOverviewError(COMPOSITION_FAILED),
       failedAt: new Date(),
     });
-    return { status: 'failed', error: FAILURE_MESSAGE };
+    return { status: 'failed', error: COMPOSITION_FAILED };
   }
 
   const summary = plan.needSummary ? composition.summary : null;
@@ -245,12 +257,12 @@ function refuseReason(input: {
   page: OverviewPage;
   children: readonly OverviewChild[];
   settings: Settings;
-}): string | null {
+}): OverviewErrorDetail | null {
   if (input.page.isOverview && input.children.length === 0) {
-    return 'Diese Übersichtsseite hat noch keine Unterseiten.';
+    return { code: 'no_children' };
   }
   if (input.page.isOverview && input.children.length > input.settings['overview.maxChildren']) {
-    return `Diese Übersichtsseite hat mehr als ${input.settings['overview.maxChildren']} Unterseiten. Die Liste unten bleibt vollständig, ein Vorspann wird nicht erzeugt.`;
+    return { code: 'too_many_children', maxChildren: input.settings['overview.maxChildren'] };
   }
   return null;
 }

@@ -9,8 +9,11 @@ import {
 import {
   type DocumentOverviewResponse,
   type OverviewEntry,
+  type OverviewErrorDetail,
+  overviewErrorMessage,
   type OverviewState,
   QUEUE_NAMES,
+  readStoredOverviewError,
   type RefreshDocumentOverviewResponse,
 } from '@exocortex/contracts';
 import {
@@ -33,6 +36,25 @@ import { toIconColor } from './document-shape';
  * what the browser shows from the digest row and the tree, and the refresh only
  * enqueues the job that recomposes. The worker owns the model call and the row.
  */
+/**
+ * A stored `lastError` as the response carries it (issue #98).
+ *
+ * A code is served twice: as `errorDetail` for the browser to word in its
+ * reader's language and an agent to branch on, and as an English `error`. A
+ * row written before the codes holds a German sentence, which stays readable
+ * as `error` with no detail beside it.
+ */
+function overviewError(stored: string | null): {
+  error: string | null;
+  errorDetail: OverviewErrorDetail | null;
+} {
+  if (stored === null) return { error: null, errorDetail: null };
+  const detail = readStoredOverviewError(stored);
+  return detail === null
+    ? { error: stored, errorDetail: null }
+    : { error: overviewErrorMessage(detail), errorDetail: detail };
+}
+
 @Injectable()
 export class DocumentOverviewService {
   constructor(
@@ -71,6 +93,7 @@ export class DocumentOverviewService {
         model: null,
         stale: false,
         error: null,
+        errorDetail: null,
         entries: [],
       };
     }
@@ -97,7 +120,7 @@ export class DocumentOverviewService {
       // A composition nobody has run yet is not stale, it is missing; saying
       // both would put a "veraltet" badge on a page that never had a version.
       stale: digest?.intro != null && digest.introInputHash !== liveHash,
-      error: digest?.lastError ?? null,
+      ...overviewError(digest?.lastError ?? null),
       entries: children.map(toEntry),
     };
   }

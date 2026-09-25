@@ -305,6 +305,12 @@ refused; the way to change one is to change the linked rows or the expression.
 Creating, changing or deleting a property re-compiles every derived column of
 the database first, so deleting a column a formula reads fails with
 `database_property_in_use` rather than leaving a table that will not render.
+The refusal carries the problem as a code, not a sentence:
+`details.formula` holds `{ code, args, propertyId, propertyName }` (codes in
+`FORMULA_ERROR_CODES`, `packages/contracts/src/database-formula.ts`), and
+`details.reason` the bare code for an agent. The property editor words it in
+the reader's language and checks the syntax locally while the formula is
+typed.
 Renaming is the one case that gets help instead of a refusal: the formulas of
 that database are rewritten through the tokenizer in the same transaction, so
 `prop("Preis")` follows the column it names — and a string literal that merely

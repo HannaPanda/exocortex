@@ -110,7 +110,7 @@ describe('compileDerived for a rollup', () => {
       aggregate: 'sum',
     });
     expect(() => compileDerived(property, buildDerivedSchema([...BASE, property]))).toThrow(
-      /Zahlenspalte/,
+      /number column/,
     );
   });
 
@@ -131,7 +131,7 @@ describe('compileDerived for a rollup', () => {
       targetPropertyId: null,
       aggregate: 'count',
     });
-    expect(() => assertRollupTargetIsUsable('sum', inner)).toThrow(/einfache Spalte/);
+    expect(() => assertRollupTargetIsUsable('sum', inner)).toThrow(/plain column/);
   });
 
   it('answers a number for a count and a date for a latest', () => {
@@ -167,7 +167,7 @@ describe('compileDerived for a formula', () => {
   it('does not see a column of another database', () => {
     const property = formula('prop_wrong', 'prop("Kosten") + 1');
     expect(() => compileDerived(property, buildDerivedSchema([...BASE, property]))).toThrow(
-      /Unbekannte Spalte/,
+      /Unknown column/,
     );
   });
 
@@ -201,7 +201,7 @@ describe('compileDerived for a formula', () => {
     const left = formula('prop_left', 'prop("prop_right") + 1');
     const right = formula('prop_right', 'prop("prop_left") + 1');
     expect(() => compileDerived(left, buildDerivedSchema([...BASE, left, right]))).toThrow(
-      /Kreis|verschachtelt/,
+      /depends on itself|nested too deeply/,
     );
   });
 

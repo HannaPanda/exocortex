@@ -5,6 +5,7 @@ import {
   deleteDocumentsResponseSchema,
   documentActivityResponseSchema,
   documentDeletionPreviewSchema,
+  type DocumentDiffNotice,
   documentDiffResponseSchema,
   documentSnapshotListResponseSchema,
   documentSummarySchema,
@@ -275,6 +276,13 @@ function formatDiffBlock(
   return `${marker} ${id} ${block.nodeLabel}${moved}: ${(text ?? '').replace(/\s+/g, ' ').slice(0, 160)}`;
 }
 
+/** A notice of the comparison, worded for the agent reading this tool's text. */
+function formatDiffNotice(notice: DocumentDiffNotice): string {
+  return notice.code === 'older_schema'
+    ? `Der Stand vom ${notice.stateCreatedAt} wurde mit einer älteren Schemaversion gespeichert. Einzelne Blöcke können dadurch anders aussehen als damals.`
+    : 'Die Seite hat mehr Blöcke, als der Vergleich anzeigt.';
+}
+
 export const pageSnapshotDiffTool: AnyToolDefinition = defineTool({
   name: 'exo_page_snapshot_diff',
   description:
@@ -309,7 +317,7 @@ export const pageSnapshotDiffTool: AnyToolDefinition = defineTool({
         ? 'Keine inhaltlichen Unterschiede.'
         : changed.map(formatDiffBlock).join('\n');
     return {
-      text: [header, body, ...result.warnings].join('\n'),
+      text: [header, body, ...result.notices.map(formatDiffNotice)].join('\n'),
       data: result,
     };
   },

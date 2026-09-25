@@ -16,11 +16,13 @@ import {
   type Prisma,
   type PrismaClient,
 } from '@exocortex/database';
+import { serverTranslator } from '@exocortex/i18n/catalog';
 import { type Logger } from '@exocortex/logger';
 import { QueueRegistry } from '@exocortex/queue';
 
 import { AppError } from '../common/app-error';
 import { LOGGER } from '../common/logger.provider';
+import { readerLocale, type ReaderLocaleHeaders } from '../common/reader-locale';
 import { PRISMA, QUEUES } from '../platform/platform.module';
 import { SettingsService } from '../platform/settings.service';
 
@@ -304,6 +306,8 @@ export class ConversationsService {
     userId: string;
     request: PostConversationMessageRequest;
     correlationId: string;
+    /** The request's cookie and `Accept-Language`, for a command's answer. */
+    headers?: ReaderLocaleHeaders;
   }): Promise<PostConversationMessageResponse> {
     const conversation = await this.loadOwned(input.conversationId, input.userId);
 
@@ -320,7 +324,12 @@ export class ConversationsService {
 
     const parsedCommand = parseChatCommand(input.request.content);
     if (parsedCommand !== null) {
-      return this.executeCommand({ conversation, command: parsedCommand });
+      return this.executeCommand({
+        conversation,
+        command: parsedCommand,
+        userId: input.userId,
+        headers: input.headers ?? {},
+      });
     }
 
     const { documentId: boundDocumentId, documentTitle } = await this.resolvePageContext({
@@ -471,11 +480,17 @@ export class ConversationsService {
   private async executeCommand(input: {
     conversation: ConversationRow;
     command: ParsedChatCommand;
+    userId: string;
+    headers: ReaderLocaleHeaders;
   }): Promise<PostConversationMessageResponse> {
     const { conversation, command } = input;
+    // The answer is read by whoever typed the command, so it follows their
+    // language (ADR-062). It is not stored: the panel shows it and forgets it.
+    const locale = await readerLocale(this.prisma, input.userId, input.headers);
 
     const result = await runChatCommand({
       prisma: this.prisma,
+      t: serverTranslator(locale, 'commands'),
       modelResolver: this.modelResolver,
       settings: this.settings,
       conversation,

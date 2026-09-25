@@ -4,7 +4,7 @@ import { ArrowRightLeftIcon, GitCompareIcon, MinusIcon, PencilIcon, PlusIcon } f
 import { useFormatter, useTranslations } from 'next-intl';
 import * as React from 'react';
 
-import { type DocumentDiffBlock } from '@exocortex/contracts';
+import { type DocumentDiffBlock, type DocumentDiffNotice } from '@exocortex/contracts';
 import {
   Button,
   Checkbox,
@@ -31,6 +31,63 @@ import { useRestoreSnapshotBlocks, useSnapshotDiff } from '@/lib/api/snapshot-qu
 function useFormatDateTime(): (iso: string) => string {
   const format = useFormatter();
   return (iso) => format.dateTime(new Date(iso), { dateStyle: 'medium', timeStyle: 'short' });
+}
+
+/**
+ * The block types the catalogue names. `DIFF_BLOCK_TYPE_LABELS` in
+ * `packages/editor` is the German reference the agent tool reads; a type
+ * missing here reads as its raw name, as it does there.
+ */
+const NAMED_BLOCK_TYPES = [
+  'paragraph',
+  'heading',
+  'codeBlock',
+  'blockquote',
+  'bulletList',
+  'orderedList',
+  'taskList',
+  'horizontalRule',
+  'table',
+  'callout',
+  'details',
+  'columnList',
+  'blockMath',
+  'tableOfContents',
+  'pageLink',
+  'breadcrumb',
+  'databaseEmbed',
+  'savedQueryEmbed',
+  'transclusion',
+  'fileAttachment',
+  'image',
+  'video',
+  'audio',
+  'pdf',
+  'embed',
+  'bookmark',
+] as const;
+type NamedBlockType = (typeof NAMED_BLOCK_TYPES)[number];
+
+function isNamedBlockType(nodeType: string): nodeType is NamedBlockType {
+  return (NAMED_BLOCK_TYPES as readonly string[]).includes(nodeType);
+}
+
+/** A block type's name in the reader's language, from `nodeType` rather than the server's label. */
+function useBlockTypeLabel(): (nodeType: string) => string {
+  const t = useTranslations('document.snapshotDiff.blockTypes');
+  return (nodeType) => (isNamedBlockType(nodeType) ? t(nodeType) : nodeType);
+}
+
+function DiffNotice({ notice }: { notice: DocumentDiffNotice }) {
+  const t = useTranslations('document.snapshotDiff.notices');
+  const formatDateTime = useFormatDateTime();
+  return (
+    <p className="text-xs text-warning">
+      {notice.code === 'older_schema'
+        ? t('olderSchema', { time: formatDateTime(notice.stateCreatedAt) })
+        : t('truncated')}
+    </p>
+  );
 }
 
 function KindIcon({ block }: { block: DocumentDiffBlock }) {
@@ -94,7 +151,9 @@ function BlockRow({
   onToggle: (blockId: string, next: boolean) => void;
 }) {
   const t = useTranslations('document.snapshotDiff');
+  const blockTypeLabel = useBlockTypeLabel();
   const kind = t(`kinds.${block.kind}`);
+  const label = blockTypeLabel(block.nodeType);
   const selectable = !readOnly && block.blockId !== null;
   const text = block.kind === 'removed' ? block.beforeText : block.afterText;
 
@@ -110,7 +169,7 @@ function BlockRow({
           className="mt-1"
           checked={selected}
           data-testid="diff-block-checkbox"
-          aria-label={t('selectBlock', { kind, label: block.nodeLabel })}
+          aria-label={t('selectBlock', { kind, label })}
           onCheckedChange={(next) => onToggle(block.blockId ?? '', next === true)}
         />
       ) : (
@@ -120,7 +179,7 @@ function BlockRow({
         <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <KindIcon block={block} />
           <span>{kind}</span>
-          <span>· {block.nodeLabel}</span>
+          <span>· {label}</span>
           {block.moved ? <span>· {t('moved')}</span> : null}
           {block.blockId === null ? <span>· {t('noBlockId')}</span> : null}
         </span>
@@ -328,7 +387,7 @@ function DiffBody({
     );
   }
 
-  const { blocks, summary, warnings } = diff.data;
+  const { blocks, summary, notices } = diff.data;
   const interesting = blocks.filter((block) => block.kind !== 'unchanged' || block.moved);
 
   if (interesting.length === 0) {
@@ -382,10 +441,11 @@ function DiffBody({
           moved: summary.moved,
         })}
       </p>
-      {warnings.map((warning) => (
-        <p key={warning} className="text-xs text-warning">
-          {warning}
-        </p>
+      {notices.map((notice) => (
+        <DiffNotice
+          key={notice.code === 'older_schema' ? notice.stateCreatedAt : notice.code}
+          notice={notice}
+        />
       ))}
       {rows}
     </>

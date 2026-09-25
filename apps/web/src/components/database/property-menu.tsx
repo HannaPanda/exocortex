@@ -55,6 +55,7 @@ import {
   isPropertyConfigComplete,
   type PropertyConfig,
   PropertyConfigEditor,
+  PropertyConfigErrorMessage,
 } from './property-config-editor';
 import {
   CONFIGURED_PROPERTY_TYPE_SET,
@@ -478,8 +479,12 @@ function DerivedConfigEditor({
       onSubmit={(event) => {
         event.preventDefault();
         if (!ready) return;
-        updateProperty.mutate({ propertyId: property.id, request: { config } });
-        onDone();
+        // Closed on success only: a refused formula has to stay on screen
+        // next to the reason, or the person cannot correct it.
+        updateProperty.mutate(
+          { propertyId: property.id, request: { config } },
+          { onSuccess: () => onDone() },
+        );
       }}
     >
       <PropertyConfigEditor
@@ -489,6 +494,7 @@ function DerivedConfigEditor({
         config={config}
         onChange={setConfig}
       />
+      <PropertyConfigErrorMessage error={updateProperty.error} />
       <Button type="submit" size="sm" disabled={!ready}>
         {t('save')}
       </Button>

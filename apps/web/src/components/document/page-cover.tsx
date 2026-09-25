@@ -11,6 +11,7 @@ import {
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
+import { type DocumentCoverErrorDetail } from '@exocortex/contracts';
 import {
   Button,
   cn,
@@ -82,30 +83,48 @@ function useCoverPicker(workspaceId: string, documentId: string) {
  *
  * The request only queues the work, so "pending" cannot come from the mutation
  * — it ends immediately. It ends when `document.cover.generated` arrives for
- * this page, which also carries the German reason when the drawing failed.
+ * this page, which also carries the reason as a code when the drawing failed.
  */
 function useCoverGeneration(documentId: string) {
   const t = useTranslations('document.cover');
   const generate = useGenerateDocumentCover();
   const [pending, setPending] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  // The failure is kept as the worker's code and worded while rendering, so a
+  // message still on screen follows a change of language (issue #98). `text`
+  // is for a failed request, whose `message` resolves itself, and for a
+  // worker older than the codes.
+  const [failure, setFailure] = React.useState<
+    { detail: DocumentCoverErrorDetail } | { text: string } | null
+  >(null);
 
   useRealtimeEvent('document.cover.generated', (event) => {
     if (event.payload.documentId !== documentId) return;
     setPending(false);
-    setError(event.payload.error);
+    const { error, errorDetail } = event.payload;
+    setFailure(
+      errorDetail !== null ? { detail: errorDetail } : error !== null ? { text: error } : null,
+    );
   });
 
   const start = async (prompt: string): Promise<void> => {
-    setError(null);
+    setFailure(null);
     setPending(true);
     try {
       await generate.mutateAsync({ documentId, prompt });
     } catch (cause) {
       setPending(false);
-      setError(cause instanceof Error ? cause.message : t('requestFailed'));
+      setFailure({ text: cause instanceof Error ? cause.message : t('requestFailed') });
     }
   };
+
+  const error =
+    failure === null
+      ? null
+      : 'text' in failure
+        ? failure.text
+        : failure.detail.code === 'no_picture'
+          ? t('generationErrors.no_picture', { model: failure.detail.model })
+          : t(`generationErrors.${failure.detail.code}`);
 
   return { pending, error, start };
 }

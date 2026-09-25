@@ -46,11 +46,141 @@ export type FormulaNode =
   | { kind: 'binary'; operator: FormulaBinaryOperator; left: FormulaNode; right: FormulaNode }
   | { kind: 'call'; name: string; args: FormulaNode[] };
 
-/** A formula that cannot be parsed or does not type-check. Carries a German message. */
+/**
+ * Why a derived column does not compile, as a code (issue #98).
+ *
+ * The first group comes out of this file (parse and type check), the second
+ * out of `packages/database` (the schema around a formula, and rollups). A
+ * code is what travels: the browser renders it from `database.formulaErrors`
+ * in the reader's language, an agent reads it from the error's `details`, and
+ * the English `message` built from the same arguments is for the log.
+ */
+export const FORMULA_ERROR_CODES = [
+  'empty',
+  'unterminated_string',
+  'invalid_number',
+  'unexpected_character',
+  'unexpected_token',
+  'unexpected_end',
+  'expected_token',
+  'too_deep',
+  'not_a_function',
+  'unknown_function',
+  'prop_argument',
+  'type_mismatch',
+  'operator_not_applicable',
+  'arity',
+  'argument_type',
+  'branch_types',
+  'unknown_property',
+  'negate_number',
+  'property_unusable',
+  'cycle',
+  'derived_too_deep',
+  'formula_column_empty',
+  'unknown_operator',
+  'rollup_needs_target',
+  'rollup_target_derived',
+  'rollup_needs_number',
+  'rollup_needs_date',
+  'rollup_incomplete',
+  'rollup_no_relation',
+] as const;
+export type FormulaErrorCode = (typeof FORMULA_ERROR_CODES)[number];
+
+/**
+ * The arguments of a code. Values named in `FORMULA_ERROR_TYPE_ARGS` are a
+ * `FormulaValueType` and are translated before they reach a sentence;
+ * `propertyType` is a `DatabasePropertyType`.
+ */
+export type FormulaErrorArgs = Readonly<Record<string, string | number>>;
+
+/** Argument names whose value is a `FormulaValueType`. */
+export const FORMULA_ERROR_TYPE_ARGS: ReadonlySet<string> = new Set([
+  'left',
+  'right',
+  'type',
+  'actual',
+  'expected',
+]);
+
+export interface FormulaErrorDetail {
+  code: FormulaErrorCode;
+  args: FormulaErrorArgs;
+}
+
+/** English, for logs and for the developer message of an API error. */
+const FORMULA_ERROR_MESSAGES: Record<FormulaErrorCode, string> = {
+  empty: 'The formula is empty',
+  unterminated_string: 'The string starting at position {at} is not closed',
+  invalid_number: 'Not a valid number: {raw}',
+  unexpected_character: 'Unexpected character "{char}" at position {at}',
+  unexpected_token: 'Unexpected "{token}" at position {at}',
+  unexpected_end: 'The formula ends too early',
+  expected_token: 'Expected "{expected}", found "{found}"',
+  too_deep: 'The formula is nested too deeply',
+  not_a_function: '"{name}" is not a function; a column is written as prop("Name")',
+  unknown_function: 'Unknown function "{name}"',
+  prop_argument: 'prop() takes exactly one quoted column name (position {at})',
+  type_mismatch: '"{operator}" compares {left} with {right}; the types have to match',
+  operator_not_applicable: '"{operator}" does not apply to {type}',
+  arity: '{name}() was called with {count} arguments',
+  argument_type: '{name}(): argument {index} is {actual}, expected {expected}',
+  branch_types: '{name}(): both branches must have the same type',
+  unknown_property: 'Unknown column: {name}',
+  negate_number: 'The minus sign expects a number, not {type}',
+  property_unusable: 'Column "{name}" has type {propertyType} and cannot be used in a formula',
+  cycle: 'Column "{name}" depends on itself',
+  derived_too_deep: 'The computed columns are nested too deeply',
+  formula_column_empty: 'Formula column "{name}" is empty',
+  unknown_operator: 'Unknown operator {operator}',
+  rollup_needs_target: 'Rollup "{aggregate}" needs a target column',
+  rollup_target_derived:
+    'A rollup cannot aggregate over a column of type {propertyType}; choose a plain column',
+  rollup_needs_number: 'Rollup "{aggregate}" expects a number column',
+  rollup_needs_date: 'Rollup "{aggregate}" expects a date column',
+  rollup_incomplete: 'Rollup column "{name}" is incomplete',
+  rollup_no_relation: 'Rollup column "{name}" does not point at a relation',
+};
+
+/** The English sentence for a code, with its arguments filled in. */
+export function formulaErrorMessage(code: FormulaErrorCode, args: FormulaErrorArgs = {}): string {
+  return FORMULA_ERROR_MESSAGES[code].replace(/\{(\w+)\}/g, (whole, name: string) => {
+    const value = args[name];
+    return value === undefined ? whole : String(value);
+  });
+}
+
+const KNOWN_FORMULA_ERROR_CODES: ReadonlySet<string> = new Set(FORMULA_ERROR_CODES);
+
+/** Reads a `FormulaErrorDetail` back out of an untyped value, e.g. an API error's `details`. */
+export function readFormulaErrorDetail(value: unknown): FormulaErrorDetail | null {
+  if (typeof value !== 'object' || value === null) return null;
+  const { code, args } = value as { code?: unknown; args?: unknown };
+  if (typeof code !== 'string' || !KNOWN_FORMULA_ERROR_CODES.has(code)) return null;
+  const safeArgs: Record<string, string | number> = {};
+  if (typeof args === 'object' && args !== null) {
+    for (const [key, entry] of Object.entries(args)) {
+      if (typeof entry === 'string' || typeof entry === 'number') safeArgs[key] = entry;
+    }
+  }
+  return { code: code as FormulaErrorCode, args: safeArgs };
+}
+
+/** A formula that cannot be parsed or does not type-check. Carries a code and its arguments. */
 export class FormulaError extends Error {
-  constructor(message: string) {
-    super(message);
+  readonly code: FormulaErrorCode;
+  readonly args: FormulaErrorArgs;
+
+  constructor(code: FormulaErrorCode, args: FormulaErrorArgs = {}) {
+    super(formulaErrorMessage(code, args));
     this.name = 'FormulaError';
+    this.code = code;
+    this.args = args;
+  }
+
+  get detail(): FormulaErrorDetail {
+    return { code: this.code, args: this.args };
   }
 }
 
@@ -69,7 +199,10 @@ interface FormulaFunctionSpec {
   returns: FormulaValueType | 'branches';
   /** `if`: the two branches must agree, and their common type is the result. */
   branchesFrom?: readonly [number, number];
-  /** Shown in the formula editor's help list. */
+  /**
+   * The German reference for the formula editor's help list, which reads
+   * `database.config.formula.functions.<name>` from the catalogue instead.
+   */
   hint: string;
 }
 
@@ -156,7 +289,7 @@ function readString(source: string, start: number): Token {
     index += 1;
   }
   if (index >= source.length) {
-    throw new FormulaError(`Zeichenkette ab Position ${start} wird nicht geschlossen`);
+    throw new FormulaError('unterminated_string', { at: start });
   }
   return { type: 'string', value, at: start, end: index + 1 };
 }
@@ -168,7 +301,7 @@ function readNumber(source: string, start: number): Token {
   }
   const raw = source.slice(start, index);
   const parsed = Number(raw);
-  if (!Number.isFinite(parsed)) throw new FormulaError(`Keine gültige Zahl: ${raw}`);
+  if (!Number.isFinite(parsed)) throw new FormulaError('invalid_number', { raw });
   return { type: 'number', value: raw, at: start, end: index };
 }
 
@@ -210,7 +343,7 @@ export function tokenizeFormula(source: string): Token[] {
       tokens.push({ type: 'punct', value: char, at, end: at + 1 });
       index += 1;
     } else {
-      throw new FormulaError(`Unerwartetes Zeichen "${char}" an Position ${index}`);
+      throw new FormulaError('unexpected_character', { char, at: index });
     }
   }
   return tokens;
@@ -249,7 +382,7 @@ class FormulaParser {
     const node = this.parseExpression(0, 0);
     const leftover = this.tokens[this.position];
     if (leftover !== undefined) {
-      throw new FormulaError(`Unerwartetes "${leftover.value}" an Position ${leftover.at}`);
+      throw new FormulaError('unexpected_token', { token: leftover.value, at: leftover.at });
     }
     return node;
   }
@@ -260,7 +393,7 @@ class FormulaParser {
 
   private take(): Token {
     const token = this.tokens[this.position];
-    if (token === undefined) throw new FormulaError('Die Formel endet zu früh');
+    if (token === undefined) throw new FormulaError('unexpected_end');
     this.position += 1;
     return token;
   }
@@ -268,7 +401,7 @@ class FormulaParser {
   private expect(value: string): void {
     const token = this.take();
     if (token.value !== value) {
-      throw new FormulaError(`"${value}" erwartet, "${token.value}" gefunden`);
+      throw new FormulaError('expected_token', { expected: value, found: token.value });
     }
   }
 
@@ -283,7 +416,7 @@ class FormulaParser {
   }
 
   private parseExpression(minPrecedence: number, depth: number): FormulaNode {
-    if (depth > MAX_FORMULA_DEPTH) throw new FormulaError('Die Formel ist zu tief verschachtelt');
+    if (depth > MAX_FORMULA_DEPTH) throw new FormulaError('too_deep');
     let left = this.parseUnary(depth);
     for (;;) {
       const operator = this.binaryOperatorAhead();
@@ -308,7 +441,7 @@ class FormulaParser {
   }
 
   private parsePrimary(depth: number): FormulaNode {
-    if (depth > MAX_FORMULA_DEPTH) throw new FormulaError('Die Formel ist zu tief verschachtelt');
+    if (depth > MAX_FORMULA_DEPTH) throw new FormulaError('too_deep');
     const token = this.take();
     if (token.type === 'number') return { kind: 'number', value: Number(token.value) };
     if (token.type === 'string') return { kind: 'text', value: token.value };
@@ -318,7 +451,7 @@ class FormulaParser {
       return inner;
     }
     if (token.type !== 'identifier') {
-      throw new FormulaError(`Unerwartetes "${token.value}" an Position ${token.at}`);
+      throw new FormulaError('unexpected_token', { token: token.value, at: token.at });
     }
     if (token.value === 'true') return { kind: 'boolean', value: true };
     if (token.value === 'false') return { kind: 'boolean', value: false };
@@ -327,9 +460,7 @@ class FormulaParser {
 
   private parseCall(name: Token, depth: number): FormulaNode {
     if (this.peek()?.value !== '(') {
-      throw new FormulaError(
-        `"${name.value}" ist keine Funktion; eine Spalte schreibst du als prop("Name")`,
-      );
+      throw new FormulaError('not_a_function', { name: name.value });
     }
     this.expect('(');
     const args: FormulaNode[] = [];
@@ -350,7 +481,7 @@ class FormulaParser {
 
     if (name.value === 'prop') return toPropertyNode(args, name.at);
     if (FORMULA_FUNCTIONS[name.value] === undefined) {
-      throw new FormulaError(`Unbekannte Funktion "${name.value}"`);
+      throw new FormulaError('unknown_function', { name: name.value });
     }
     return { kind: 'call', name: name.value, args };
   }
@@ -359,16 +490,14 @@ class FormulaParser {
 function toPropertyNode(args: readonly FormulaNode[], at: number): FormulaNode {
   const first = args[0];
   if (args.length !== 1 || first === undefined || first.kind !== 'text') {
-    throw new FormulaError(
-      `prop() erwartet genau einen Spaltennamen in Anführungszeichen (Position ${at})`,
-    );
+    throw new FormulaError('prop_argument', { at });
   }
   return { kind: 'property', ref: first.value };
 }
 
 export function parseFormula(source: string): FormulaNode {
   const trimmed = source.trim();
-  if (trimmed.length === 0) throw new FormulaError('Die Formel ist leer');
+  if (trimmed.length === 0) throw new FormulaError('empty');
   return new FormulaParser(tokenizeFormula(trimmed)).parse();
 }
 
@@ -408,13 +537,11 @@ function checkBinary(
   right: FormulaValueType,
 ): FormulaValueType {
   if (left !== right) {
-    throw new FormulaError(
-      `"${operator}" vergleicht ${left} mit ${right}; die Typen müssen gleich sein`,
-    );
+    throw new FormulaError('type_mismatch', { operator, left, right });
   }
   const allowed = COMPARABLE[operator];
   if (allowed !== 'same' && !allowed.includes(left)) {
-    throw new FormulaError(`"${operator}" ist auf ${left} nicht anwendbar`);
+    throw new FormulaError('operator_not_applicable', { operator, type: left });
   }
   if (ARITHMETIC.has(operator)) return 'number';
   if (LOGICAL.has(operator)) return 'boolean';
@@ -425,22 +552,20 @@ function checkArity(name: string, spec: FormulaFunctionSpec, count: number): voi
   const required = spec.params.length - (spec.optional ?? 0);
   const maximum = spec.rest === undefined ? spec.params.length : Number.POSITIVE_INFINITY;
   if (count < required || count > maximum) {
-    throw new FormulaError(`${name}() erwartet ${spec.hint}`);
+    throw new FormulaError('arity', { name, count });
   }
 }
 
 function checkCall(name: string, args: readonly FormulaValueType[]): FormulaValueType {
   const spec = FORMULA_FUNCTIONS[name];
-  if (spec === undefined) throw new FormulaError(`Unbekannte Funktion "${name}"`);
+  if (spec === undefined) throw new FormulaError('unknown_function', { name });
   checkArity(name, spec, args.length);
 
   args.forEach((actual, index) => {
     const expected = spec.params[index] ?? spec.rest;
     if (expected === undefined || expected === 'any') return;
     if (actual !== expected) {
-      throw new FormulaError(
-        `${name}(): Argument ${index + 1} ist ${actual}, erwartet wird ${expected}`,
-      );
+      throw new FormulaError('argument_type', { name, index: index + 1, actual, expected });
     }
   });
 
@@ -449,14 +574,14 @@ function checkCall(name: string, args: readonly FormulaValueType[]): FormulaValu
   const left = args[first];
   const right = args[second];
   if (left === undefined || right === undefined || left !== right) {
-    throw new FormulaError(`${name}(): beide Zweige müssen denselben Typ haben`);
+    throw new FormulaError('branch_types', { name });
   }
   return left;
 }
 
 /**
  * Types a parsed formula, which is also what proves it can be compiled to SQL.
- * Throws `FormulaError` with a German message the property editor shows as is.
+ * Throws `FormulaError` with a code the property editor renders in the reader's language.
  */
 export function analyzeFormula(
   node: FormulaNode,
@@ -471,13 +596,12 @@ export function analyzeFormula(
       return 'boolean';
     case 'property': {
       const type = resolve(node.ref);
-      if (type === null) throw new FormulaError(`Unbekannte Spalte: ${node.ref}`);
+      if (type === null) throw new FormulaError('unknown_property', { name: node.ref });
       return type;
     }
     case 'negate': {
       const inner = analyzeFormula(node.operand, resolve);
-      if (inner !== 'number')
-        throw new FormulaError(`Das Minuszeichen erwartet eine Zahl, nicht ${inner}`);
+      if (inner !== 'number') throw new FormulaError('negate_number', { type: inner });
       return 'number';
     }
     case 'binary':

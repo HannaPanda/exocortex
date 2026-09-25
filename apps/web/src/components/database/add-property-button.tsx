@@ -24,6 +24,7 @@ import {
   isPropertyConfigComplete,
   type PropertyConfig,
   PropertyConfigEditor,
+  PropertyConfigErrorMessage,
 } from './property-config-editor';
 import {
   CONFIGURED_PROPERTY_TYPE_SET,
@@ -61,6 +62,7 @@ export function AddPropertyButton({
           setName('');
           setType('TEXT');
           setConfig(null);
+          createProperty.reset();
         }
       }}
     >
@@ -84,12 +86,13 @@ export function AddPropertyButton({
             const trimmed = name.trim();
             if (trimmed.length === 0) return;
             if (!ready) return;
-            createProperty.mutate({
-              name: trimmed,
-              type,
-              config: needsConfig ? config : undefined,
-            });
-            setOpen(false);
+            // A column that needs a configuration closes on success only, so
+            // a refused formula stays on screen beside its reason.
+            createProperty.mutate(
+              { name: trimmed, type, config: needsConfig ? config : undefined },
+              { onSuccess: () => setOpen(false) },
+            );
+            if (!needsConfig) setOpen(false);
           }}
         >
           <Input
@@ -119,13 +122,16 @@ export function AddPropertyButton({
             </SelectContent>
           </Select>
           {needsConfig ? (
-            <PropertyConfigEditor
-              documentId={documentId}
-              workspaceId={workspaceId}
-              type={type}
-              config={config}
-              onChange={setConfig}
-            />
+            <>
+              <PropertyConfigEditor
+                documentId={documentId}
+                workspaceId={workspaceId}
+                type={type}
+                config={config}
+                onChange={setConfig}
+              />
+              <PropertyConfigErrorMessage error={createProperty.error} />
+            </>
           ) : null}
           <Button type="submit" size="sm" disabled={!ready}>
             {t('submit')}

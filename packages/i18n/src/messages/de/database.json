@@ -239,5 +239,45 @@
   "peek": {
     "openAsPage": "Als Seite öffnen",
     "noProperties": "Diese Datenbank hat noch keine Eigenschaften."
+  },
+  "formulaErrors": {
+    "inColumn": "Spalte „{column}“: {message}",
+    "types": {
+      "number": "eine Zahl",
+      "text": "Text",
+      "boolean": "ein Wahrheitswert",
+      "date": "ein Datum"
+    },
+    "codes": {
+      "empty": "Die Formel ist leer.",
+      "unterminated_string": "Die Zeichenkette ab Position {at} wird nicht geschlossen.",
+      "invalid_number": "Keine gültige Zahl: {raw}",
+      "unexpected_character": "Unerwartetes Zeichen „{char}“ an Position {at}.",
+      "unexpected_token": "Unerwartetes „{token}“ an Position {at}.",
+      "unexpected_end": "Die Formel endet zu früh.",
+      "expected_token": "„{expected}“ erwartet, „{found}“ gefunden.",
+      "too_deep": "Die Formel ist zu tief verschachtelt.",
+      "not_a_function": "„{name}“ ist keine Funktion. Eine Spalte schreibst du als prop(\"Name\").",
+      "unknown_function": "Unbekannte Funktion „{name}“.",
+      "prop_argument": "prop() erwartet genau einen Spaltennamen in Anführungszeichen (Position {at}).",
+      "type_mismatch": "„{operator}“ vergleicht {left} mit {right}. Die Typen müssen gleich sein.",
+      "operator_not_applicable": "„{operator}“ lässt sich nicht auf {type} anwenden.",
+      "arity": "{name}() erwartet {hint}",
+      "argument_type": "{name}(): Argument {index} ist {actual}, erwartet wird {expected}.",
+      "branch_types": "{name}(): Beide Zweige müssen denselben Typ haben.",
+      "unknown_property": "Unbekannte Spalte: {name}",
+      "negate_number": "Das Minuszeichen erwartet eine Zahl, nicht {type}.",
+      "property_unusable": "Die Spalte „{name}“ hat den Typ {propertyType} und lässt sich in einer Formel nicht verwenden.",
+      "cycle": "Die Spalte „{name}“ hängt im Kreis von sich selbst ab.",
+      "derived_too_deep": "Die berechneten Spalten sind zu tief verschachtelt.",
+      "formula_column_empty": "Die Formelspalte „{name}“ ist leer.",
+      "unknown_operator": "Unbekannter Operator {operator}.",
+      "rollup_needs_target": "„{aggregate}“ braucht eine Zielspalte.",
+      "rollup_target_derived": "Ein Rollup kann nicht über eine Spalte vom Typ {propertyType} rechnen. Wähle eine einfache Spalte.",
+      "rollup_needs_number": "„{aggregate}“ braucht eine Zahlenspalte.",
+      "rollup_needs_date": "„{aggregate}“ braucht eine Datumsspalte.",
+      "rollup_incomplete": "Die Rollup-Spalte „{name}“ ist unvollständig.",
+      "rollup_no_relation": "Die Rollup-Spalte „{name}“ zeigt auf keine Verknüpfung."
+    }
   }
 }

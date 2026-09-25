@@ -1,5 +1,10 @@
 import { AiProviderError, type ImageGenerator } from '@exocortex/ai';
-import { documentSummarySchema, type QUEUE_NAMES, type Settings } from '@exocortex/contracts';
+import {
+  type DocumentCoverErrorDetail,
+  documentSummarySchema,
+  type QUEUE_NAMES,
+  type Settings,
+} from '@exocortex/contracts';
 import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
@@ -16,6 +21,18 @@ export interface DocumentCoverDependencies {
   apiClientFor: ((userId: string) => ExocortexApiClient) | null;
   bus: RedisEventBus;
   settings: (workspaceId?: string) => Promise<Settings>;
+}
+
+/** English, for the log and for clients that read `error`. */
+function coverErrorMessage(detail: DocumentCoverErrorDetail): string {
+  switch (detail.code) {
+    case 'unavailable':
+      return 'Image generation is not set up for this deployment.';
+    case 'no_picture':
+      return `The model "${detail.model}" returned no image; it most likely cannot generate images.`;
+    case 'failed':
+      return 'The cover could not be generated.';
+  }
 }
 
 /**
@@ -42,13 +59,22 @@ export function createDocumentCoverProcessor(dependencies: DocumentCoverDependen
     payload,
     logger,
   }: JobContext<typeof QUEUE_NAMES.documentCover>): Promise<void> => {
-    const publish = async (status: 'ready' | 'failed', error: string | null): Promise<void> => {
+    // A code, never a sentence: the page words it for its reader (issue #98).
+    const publish = async (
+      status: 'ready' | 'failed',
+      errorDetail: DocumentCoverErrorDetail | null,
+    ): Promise<void> => {
       await bus.publish({
         type: 'document.cover.generated',
         workspaceId: payload.workspaceId,
         correlationId: payload.correlationId,
         emittedAt: new Date().toISOString(),
-        payload: { documentId: payload.documentId, status, error },
+        payload: {
+          documentId: payload.documentId,
+          status,
+          error: errorDetail === null ? null : coverErrorMessage(errorDetail),
+          errorDetail,
+        },
       });
     };
 
@@ -60,7 +86,7 @@ export function createDocumentCoverProcessor(dependencies: DocumentCoverDependen
 
     if (generator === null || dependencies.apiClientFor === null) {
       logger.info('Cover generation unavailable', { documentId: payload.documentId });
-      await publish('failed', 'Die Bilderzeugung ist für diese Instanz nicht eingerichtet.');
+      await publish('failed', { code: 'unavailable' });
       return;
     }
 
@@ -102,8 +128,8 @@ export function createDocumentCoverProcessor(dependencies: DocumentCoverDependen
       await publish(
         'failed',
         answeredWithoutPicture
-          ? `Das Modell „${generator.model}" hat kein Bild geliefert. Es kann vermutlich keine Bilder erzeugen; im Administrationsbereich lässt sich ein bildfähiges Modell eintragen.`
-          : 'Das Titelbild konnte nicht erzeugt werden. Bitte erneut versuchen.',
+          ? { code: 'no_picture', model: generator.model }
+          : { code: 'failed' },
       );
     }
   };

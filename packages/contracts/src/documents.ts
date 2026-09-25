@@ -668,7 +668,11 @@ export const documentDiffBlockSchema = z.object({
   /** `null` for a block that carries no identifier; it cannot be restored alone. */
   blockId: idSchema.nullable(),
   nodeType: z.string(),
-  /** Visible German name of the block type, e.g. "Absatz". */
+  /**
+   * German name of the block type, e.g. "Absatz", for the agent-facing text
+   * of `exo_page_snapshot_diff`. The browser names `nodeType` from its own
+   * catalogue (`document.snapshotDiff.blockTypes`) in the reader's language.
+   */
   nodeLabel: z.string(),
   beforeIndex: z.number().int().nonnegative().nullable(),
   afterIndex: z.number().int().nonnegative().nullable(),
@@ -680,6 +684,19 @@ export const documentDiffBlockSchema = z.object({
   coarse: z.boolean(),
 });
 export type DocumentDiffBlock = z.infer<typeof documentDiffBlockSchema>;
+
+/**
+ * One thing a comparison could not do.
+ *
+ * `older_schema`: a state was written under an older schema version, so some
+ * blocks may look different from how they looked then. `truncated`: the page
+ * has more blocks than the comparison reports.
+ */
+export const documentDiffNoticeSchema = z.discriminatedUnion('code', [
+  z.object({ code: z.literal('older_schema'), stateCreatedAt: isoDateTimeSchema }),
+  z.object({ code: z.literal('truncated') }),
+]);
+export type DocumentDiffNotice = z.infer<typeof documentDiffNoticeSchema>;
 
 export const documentDiffResponseSchema = z.object({
   documentId: idSchema,
@@ -700,10 +717,10 @@ export const documentDiffResponseSchema = z.object({
   /** True when the page had more blocks than the diff reports. */
   truncated: z.boolean(),
   /**
-   * German notes about what the comparison could not do, e.g. a snapshot
-   * written under an older schema whose content no longer derives.
+   * What the comparison could not do, as codes (issue #98): each client words
+   * them in its reader's language, the browser from `document.snapshotDiff`.
    */
-  warnings: z.array(z.string()),
+  notices: z.array(documentDiffNoticeSchema),
 });
 export type DocumentDiffResponse = z.infer<typeof documentDiffResponseSchema>;
 

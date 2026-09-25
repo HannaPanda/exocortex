@@ -1,1 +1,64 @@
-{}
+{
+  "clear": {
+    "done": "Kontext geleert. Der Verlauf bleibt lesbar."
+  },
+  "new": {
+    "started": "Neue Unterhaltung „{title}“ gestartet."
+  },
+  "model": {
+    "switched": "Modell gewechselt zu {model}."
+  },
+  "think": {
+    "set": "Denkstufe auf {level} gesetzt.",
+    "clamped": "{model} unterstützt diese Stufe nicht, verwende stattdessen {level}."
+  },
+  "vision": {
+    "auto": "Vision-Begleitmodell folgt jetzt der Admin-Voreinstellung.",
+    "off": "Vision-Begleitmodell für diese Unterhaltung deaktiviert.",
+    "set": "Vision-Begleitmodell auf {model} gesetzt."
+  },
+  "compact": {
+    "automatic": "Der Kontext wird automatisch zusammengefasst, sobald er das Limit erreicht. Nutze /clear, um ihn sofort zu leeren."
+  },
+  "context": {
+    "noPage": "Es ist gerade keine Seite geöffnet.",
+    "openPage": "Geöffnet ist „{title}“.",
+    "enabledNoPage": "Sobald du eine Seite öffnest, erfährt die KI Titel und Pfad und kann den Inhalt bei Bedarf selbst laden.",
+    "enabled": "Die KI erfährt Titel und Pfad und kann den Inhalt bei Bedarf selbst laden.",
+    "disabled": "Der Seitenkontext ist aus: die KI erfährt nichts davon.",
+    "howOff": "Mit /context off schaltest du ihn ab.",
+    "howOn": "Mit /context on schaltest du ihn an.",
+    "nothingPinned": "Angeheftet ist nichts.",
+    "pinned": "{count, plural, one {Angeheftet ist außerdem: {list}.} other {Angeheftet sind außerdem: {list}.}}",
+    "sourceEmbedded": "„{title}“ (Inhalt geht mit)",
+    "sourceNamed": "„{title}“ (nur genannt)",
+    "untitled": "Unbenannt"
+  },
+  "rules": {
+    "none": "Keine aktiven KI-Regelseiten in diesem Arbeitsbereich.",
+    "always": "immer aktiv",
+    "onRequest": "auf Anfrage"
+  },
+  "tools": {
+    "none": "Keine Werkzeuge verfügbar.",
+    "policyDeny": "Verändernde Werkzeuge sind in diesem Arbeitsbereich abgeschaltet.",
+    "policyGuarded": "Verändernde Werkzeuge sind gesperrt, sobald ein Lauf Inhalte von außerhalb gelesen hat (hochgeladene Dokumente, Bildbeschreibungen).",
+    "policyAllow": "Verändernde Werkzeuge bleiben auch nach dem Lesen von Fremdinhalten erlaubt.",
+    "subset": "Ein einzelner Lauf bekommt nicht alle davon angeboten, sondern die Bereiche, die zur Frage passen. Fehlt einer, schaltet die KI ihn sich mit exo_toolbox selbst frei."
+  },
+  "help": {
+    "titleArgument": "titel?",
+    "descriptions": {
+      "clear": "Kontext leeren, Verlauf bleibt lesbar",
+      "new": "Neue Unterhaltung starten",
+      "model": "Modell dieser Unterhaltung wechseln",
+      "think": "Denkstufe wählen",
+      "vision": "Vision-Begleitmodell überschreiben",
+      "compact": "Kontext jetzt zusammenfassen",
+      "context": "Seitenkontext und angeheftete Quellen anzeigen oder umschalten",
+      "rules": "Aktive Regelseiten anzeigen",
+      "tools": "Verfügbare Werkzeuge anzeigen",
+      "help": "Diese Liste anzeigen"
+    }
+  }
+}

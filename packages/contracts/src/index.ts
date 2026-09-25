@@ -2,6 +2,7 @@ export * from './admin';
 export * from './agent-sessions';
 export * from './ai';
 export * from './ai-conversations';
+export * from './ai-diagnosis';
 export * from './ai-models';
 export * from './ai-runtime';
 export * from './ai-trust';

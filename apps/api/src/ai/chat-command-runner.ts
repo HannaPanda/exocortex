@@ -9,6 +9,7 @@ import {
   type AiReasoningLevel as AiReasoningLevelPrisma,
   type PrismaClient,
 } from '@exocortex/database';
+import { type serverTranslator } from '@exocortex/i18n/catalog';
 import { toolsFor } from '@exocortex/mcp-tools';
 
 import { AppError } from '../common/app-error';
@@ -34,8 +35,15 @@ export interface ChatCommandConversation {
   model: { slug: string } | null;
 }
 
+/**
+ * The `commands` namespace in the locale of whoever typed the command
+ * (issue #98, ADR-062). The answer is read by that person and nobody else.
+ */
+export type ChatCommandTranslator = ReturnType<typeof serverTranslator<'commands'>>;
+
 export interface ChatCommandContext {
   prisma: PrismaClient;
+  t: ChatCommandTranslator;
   modelResolver: AiModelResolverService;
   settings: SettingsService;
   conversation: ChatCommandConversation;
@@ -77,7 +85,7 @@ const clear: ChatCommandHandler = async (context) => {
     where: { id: conversation.id },
     data: { estimatedTokens: 0 },
   });
-  return answer(context, 'clear', 'Kontext geleert. Der Verlauf bleibt lesbar.');
+  return answer(context, 'clear', context.t('clear.done'));
 };
 
 /** Starts a second conversation beside this one, with the same model settings. */
@@ -95,7 +103,7 @@ const startNew: ChatCommandHandler = async (context) => {
   });
   return {
     command: 'new',
-    message: `Neue Unterhaltung „${title}“ gestartet.`,
+    message: context.t('new.started', { title }),
     conversationId: created.id,
     conversationChanged: true,
   };
@@ -114,7 +122,7 @@ const switchModel: ChatCommandHandler = async (context) => {
   return answer(
     context,
     'model',
-    `Modell gewechselt zu ${await displayNameOf(prisma, resolved.id)}.`,
+    context.t('model.switched', { model: await displayNameOf(prisma, resolved.id) }),
   );
 };
 
@@ -139,8 +147,11 @@ const setReasoning: ChatCommandHandler = async (context) => {
   });
   const message =
     clamped === parsedLevel.data
-      ? `Denkstufe auf ${clamped} gesetzt.`
-      : `${await displayNameOf(prisma, modelRow.id)} unterstützt diese Stufe nicht, verwende stattdessen ${clamped}.`;
+      ? context.t('think.set', { level: clamped })
+      : context.t('think.clamped', {
+          model: await displayNameOf(prisma, modelRow.id),
+          level: clamped,
+        });
   return answer(context, 'think', message);
 };
 
@@ -157,18 +168,18 @@ const setVision: ChatCommandHandler = async (context) => {
 
   if (argument === 'auto') {
     await update(null);
-    return answer(context, 'vision', 'Vision-Begleitmodell folgt jetzt der Admin-Voreinstellung.');
+    return answer(context, 'vision', context.t('vision.auto'));
   }
   if (argument === 'off') {
     await update('off');
-    return answer(context, 'vision', 'Vision-Begleitmodell für diese Unterhaltung deaktiviert.');
+    return answer(context, 'vision', context.t('vision.off'));
   }
   const resolved = await modelResolver.resolve({ slug: argument });
   await update(resolved.slug);
   return answer(
     context,
     'vision',
-    `Vision-Begleitmodell auf ${await displayNameOf(prisma, resolved.id)} gesetzt.`,
+    context.t('vision.set', { model: await displayNameOf(prisma, resolved.id) }),
   );
 };
 
@@ -180,17 +191,11 @@ const setVision: ChatCommandHandler = async (context) => {
  * (docs/ai-architecture.md).
  */
 const compact: ChatCommandHandler = (context) =>
-  Promise.resolve(
-    answer(
-      context,
-      'compact',
-      'Der Kontext wird automatisch zusammengefasst, sobald er das Limit erreicht. Nutze /clear, um ihn sofort zu leeren.',
-    ),
-  );
+  Promise.resolve(answer(context, 'compact', context.t('compact.automatic')));
 
 /** Reports, and optionally switches, whether the open page reaches the prompt. */
 const pageContext: ChatCommandHandler = async (context) => {
-  const { prisma, conversation, command } = context;
+  const { prisma, conversation, command, t } = context;
   const argument = command.argument?.toLowerCase() ?? null;
   if (argument !== null && argument !== 'on' && argument !== 'off') {
     throw AppError.validation('The /context command accepts "on" or "off"');
@@ -214,16 +219,13 @@ const pageContext: ChatCommandHandler = async (context) => {
           select: { title: true },
         });
 
-  const where =
-    page === null ? 'Es ist gerade keine Seite geöffnet.' : `Geöffnet ist „${page.title}“.`;
+  const where = page === null ? t('context.noPage') : t('context.openPage', { title: page.title });
   const what = enabled
     ? page === null
-      ? 'Sobald du eine Seite öffnest, erfährt die KI Titel und Pfad und kann den Inhalt bei Bedarf selbst laden.'
-      : 'Die KI erfährt Titel und Pfad und kann den Inhalt bei Bedarf selbst laden.'
-    : 'Der Seitenkontext ist aus: die KI erfährt nichts davon.';
-  const how = enabled
-    ? 'Mit /context off schaltest du ihn ab.'
-    : 'Mit /context on schaltest du ihn an.';
+      ? t('context.enabledNoPage')
+      : t('context.enabled')
+    : t('context.disabled');
+  const how = enabled ? t('context.howOff') : t('context.howOn');
 
   // The pinned sources belong in the same answer, because the promise the chip
   // row makes is about all of them together: naming only the open page here
@@ -239,13 +241,19 @@ const pageContext: ChatCommandHandler = async (context) => {
   });
   const sources =
     pinned.length === 0
-      ? 'Angeheftet ist nichts.'
-      : `Angeheftet ${pinned.length === 1 ? 'ist' : 'sind'} außerdem: ${pinned
-          .map((source) => {
-            const title = source.document?.title ?? source.savedQuery?.name ?? 'Unbenannt';
-            return `„${title}“ (${source.mode === 'EMBED' ? 'Inhalt geht mit' : 'nur genannt'})`;
-          })
-          .join(', ')}.`;
+      ? t('context.nothingPinned')
+      : t('context.pinned', {
+          count: pinned.length,
+          list: pinned
+            .map((source) => {
+              const title =
+                source.document?.title ?? source.savedQuery?.name ?? t('context.untitled');
+              return source.mode === 'EMBED'
+                ? t('context.sourceEmbedded', { title })
+                : t('context.sourceNamed', { title });
+            })
+            .join(', '),
+        });
 
   return answer(context, 'context', [where, what, how, sources].join(' '));
 };
@@ -263,10 +271,13 @@ const listRules: ChatCommandHandler = async (context) => {
   });
   const message =
     rules.length === 0
-      ? 'Keine aktiven KI-Regelseiten in diesem Arbeitsbereich.'
+      ? context.t('rules.none')
       : rules
           .map((rule) => {
-            const kind = rule.aiRuleMode === 'ALWAYS' ? 'immer aktiv' : 'auf Anfrage';
+            const kind =
+              rule.aiRuleMode === 'ALWAYS'
+                ? context.t('rules.always')
+                : context.t('rules.onRequest');
             const trigger = rule.aiRuleTrigger !== null ? `: ${rule.aiRuleTrigger}` : '';
             return `- ${rule.title} (${kind})${trigger}`;
           })
@@ -274,14 +285,12 @@ const listRules: ChatCommandHandler = async (context) => {
   return answer(context, 'rules', message);
 };
 
-/** How the workspace's `ai.untrustedContentPolicy` reads to a human. */
-const MUTATION_POLICY_LINE: Record<AiMutationPolicy, string> = {
-  deny: 'Verändernde Werkzeuge sind in diesem Arbeitsbereich abgeschaltet.',
-  guarded:
-    'Verändernde Werkzeuge sind gesperrt, sobald ein Lauf Inhalte von außerhalb gelesen hat ' +
-    '(hochgeladene Dokumente, Bildbeschreibungen).',
-  allow: 'Verändernde Werkzeuge bleiben auch nach dem Lesen von Fremdinhalten erlaubt.',
-};
+/** How the workspace's `ai.untrustedContentPolicy` reads to a human: a key in `commands.tools`. */
+const MUTATION_POLICY_LINE = {
+  deny: 'tools.policyDeny',
+  guarded: 'tools.policyGuarded',
+  allow: 'tools.policyAllow',
+} as const satisfies Record<AiMutationPolicy, string>;
 
 /** Lists the tools the AI may call right now, and under which conditions. */
 const listTools: ChatCommandHandler = async (context) => {
@@ -293,16 +302,17 @@ const listTools: ChatCommandHandler = async (context) => {
   // is the question somebody asks right after a refused write (issue #56).
   const message =
     tools.length === 0
-      ? 'Keine Werkzeuge verfügbar.'
+      ? context.t('tools.none')
       : [
+          // The description is the model-facing text of the catalogue, and
+          // stays as the catalogue writes it (docs/i18n.md).
           ...tools.map((tool) => `- ${tool.name} — ${tool.description}`),
           '',
-          MUTATION_POLICY_LINE[policy],
+          context.t(MUTATION_POLICY_LINE[policy]),
           // The whole list is what the AI *may* call; a single run is offered
           // the domains its task needs, and opens the rest itself with
           // exo_toolbox (issue #121, ADR-060).
-          'Ein einzelner Lauf bekommt nicht alle davon angeboten, sondern die Bereiche, die zur ' +
-            'Frage passen. Fehlt einer, schaltet die KI ihn sich mit exo_toolbox selbst frei.',
+          context.t('tools.subset'),
         ].join('\n');
   return answer(context, 'tools', message);
 };
@@ -312,10 +322,15 @@ const help: ChatCommandHandler = (context) =>
     answer(
       context,
       'help',
-      CHAT_COMMANDS.map(
-        (entry) =>
-          `/${entry.name}${entry.argument !== null ? ` <${entry.argument}>` : ''} — ${entry.description}`,
-      ).join('\n'),
+      CHAT_COMMANDS.map((entry) => {
+        // `/new`'s argument is a placeholder the reader fills in; the others
+        // are syntax the parser reads, the same in every language.
+        const argument =
+          entry.argument === null
+            ? ''
+            : ` <${entry.name === 'new' ? context.t('help.titleArgument') : entry.argument}>`;
+        return `/${entry.name}${argument} — ${context.t(`help.descriptions.${entry.name}`)}`;
+      }).join('\n'),
     ),
   );
 
