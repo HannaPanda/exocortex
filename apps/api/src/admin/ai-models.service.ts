@@ -116,6 +116,36 @@ function matchesLiveEntry(
 }
 
 /**
+ * The plain columns of a registry update. The vision companion is a relation
+ * and needs a lookup, so it stays with the caller.
+ */
+function updateDataFrom(request: UpdateAiModelRequest): Prisma.AiModelUpdateInput {
+  const data: Prisma.AiModelUpdateInput = {};
+  if (request.slug !== undefined) data.slug = request.slug;
+  if (request.provider !== undefined) data.provider = request.provider;
+  if (request.displayName !== undefined) data.displayName = request.displayName;
+  if (request.description !== undefined) data.description = request.description;
+  if (request.contextWindowTokens !== undefined)
+    data.contextWindowTokens = request.contextWindowTokens;
+  if (request.maxOutputTokens !== undefined) data.maxOutputTokens = request.maxOutputTokens;
+  if (request.supportsVision !== undefined) data.supportsVision = request.supportsVision;
+  if (request.supportsTools !== undefined) data.supportsTools = request.supportsTools;
+  if (request.reasoningLevels !== undefined) {
+    data.reasoningLevels = request.reasoningLevels.map((level) => REASONING_LEVEL_TO_PRISMA[level]);
+  }
+  if (request.inputMicroUsdPerMTok !== undefined)
+    data.inputMicroUsdPerMTok = request.inputMicroUsdPerMTok;
+  if (request.outputMicroUsdPerMTok !== undefined)
+    data.outputMicroUsdPerMTok = request.outputMicroUsdPerMTok;
+  if (request.enabled !== undefined) data.enabled = request.enabled;
+  if (request.sortOrder !== undefined) data.sortOrder = request.sortOrder;
+  if (request.providerRouting !== undefined) {
+    data.providerRouting = request.providerRouting ?? Prisma.DbNull;
+  }
+  return data;
+}
+
+/**
  * Admin CRUD and OpenRouter sync for the AI model registry.
  *
  * `AuditLog.workspaceId` is non-nullable and this is deployment-global
@@ -185,30 +215,7 @@ export class AiModelsService {
     const existing = await this.prisma.aiModel.findUnique({ where: { id: modelId } });
     if (existing === null) throw AppError.notFound('AI model');
 
-    const data: Prisma.AiModelUpdateInput = {};
-    if (request.slug !== undefined) data.slug = request.slug;
-    if (request.provider !== undefined) data.provider = request.provider;
-    if (request.displayName !== undefined) data.displayName = request.displayName;
-    if (request.description !== undefined) data.description = request.description;
-    if (request.contextWindowTokens !== undefined)
-      data.contextWindowTokens = request.contextWindowTokens;
-    if (request.maxOutputTokens !== undefined) data.maxOutputTokens = request.maxOutputTokens;
-    if (request.supportsVision !== undefined) data.supportsVision = request.supportsVision;
-    if (request.supportsTools !== undefined) data.supportsTools = request.supportsTools;
-    if (request.reasoningLevels !== undefined) {
-      data.reasoningLevels = request.reasoningLevels.map(
-        (level) => REASONING_LEVEL_TO_PRISMA[level],
-      );
-    }
-    if (request.inputMicroUsdPerMTok !== undefined)
-      data.inputMicroUsdPerMTok = request.inputMicroUsdPerMTok;
-    if (request.outputMicroUsdPerMTok !== undefined)
-      data.outputMicroUsdPerMTok = request.outputMicroUsdPerMTok;
-    if (request.enabled !== undefined) data.enabled = request.enabled;
-    if (request.sortOrder !== undefined) data.sortOrder = request.sortOrder;
-    if (request.providerRouting !== undefined) {
-      data.providerRouting = request.providerRouting ?? Prisma.DbNull;
-    }
+    const data = updateDataFrom(request);
 
     if (request.visionCompanionSlug !== undefined) {
       if (request.visionCompanionSlug === null) {
