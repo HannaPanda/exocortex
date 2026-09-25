@@ -361,10 +361,29 @@ function renderReadingBlock(node: ProseMirrorNode, key: string): React.ReactNode
   const src = typeof node.attrs?.src === 'string' ? node.attrs.src : '';
   const alt = typeof node.attrs?.alt === 'string' ? node.attrs.alt : '';
   if (src.length === 0) return null;
-  /* oxlint-disable-next-line nextjs/no-img-element --
-     the address comes out of a page's content at runtime, so no loader
-     configuration could cover it. */
-  return <img key={key} src={src} alt={alt} className="mb-3 max-w-full rounded-md" />;
+  return <ZoomableImage key={key} src={src} alt={alt} />;
+}
+
+/**
+ * An image a reader can open larger (issue #134). The button is what makes it
+ * reachable by keyboard; the click itself is handled by `ImageLightboxArea`
+ * around the page, which is why there is no handler here.
+ */
+function ZoomableImage({ src, alt }: { src: string; alt: string }) {
+  const t = useTranslations('ui.imageLightbox');
+  return (
+    <button
+      type="button"
+      data-zoomable-trigger=""
+      aria-label={alt.trim().length > 0 ? t('open', { alt }) : t('openUntitled')}
+      className="mb-3 block max-w-full cursor-zoom-in rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+    >
+      {/* oxlint-disable-next-line nextjs/no-img-element --
+          the address comes out of a page's content at runtime, so no loader
+          configuration could cover it. */}
+      <img src={src} alt={alt} data-zoomable="" className="max-w-full rounded-md" />
+    </button>
+  );
 }
 
 export interface ChatMarkdownProps {

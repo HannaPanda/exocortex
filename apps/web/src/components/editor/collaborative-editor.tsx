@@ -29,6 +29,7 @@ import {
 import { ErrorState, LoadingState } from '@exocortex/ui';
 
 import { DatabaseEmbedNodeView } from '@/components/database/database-embed-node-view';
+import { ImageLightboxArea } from '@/components/document/image-lightbox-area';
 import { BlockHandle } from '@/components/editor/block-handle';
 import { useLocalizedBlockCatalog } from '@/components/editor/block-labels';
 import { useBlockPrompt } from '@/components/editor/block-prompt';
@@ -525,7 +526,9 @@ function EditorSurface({
         <SavedQueryEmbedPromptContext.Provider value={askSavedQueryEmbedRef}>
           <PageLinkPromptContext.Provider value={askPageLinkRef}>
             <FollowLinkContext.Provider value={followLinkRef}>
-              <EditorContent editor={editor} className="exocortex-editor" />
+              <ImageLightboxArea>
+                <EditorContent editor={editor} className="exocortex-editor" />
+              </ImageLightboxArea>
             </FollowLinkContext.Provider>
           </PageLinkPromptContext.Provider>
         </SavedQueryEmbedPromptContext.Provider>

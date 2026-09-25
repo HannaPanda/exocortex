@@ -127,6 +127,16 @@
     padding-left: var(--page-inline, 0px);
   }
 
+  /*
+   * An embedded image opens larger (issue #134). A read-only editor opens it
+   * on the first click; one being written in selects it first, so only the
+   * selected image says it can be enlarged (`image-lightbox-area.tsx`).
+   */
+  .exocortex-editor .ProseMirror[contenteditable='false'] img[data-zoomable],
+  .exocortex-editor .ProseMirror img[data-zoomable].ProseMirror-selectednode {
+    cursor: zoom-in;
+  }
+
   .exocortex-editor .ProseMirror > * + * {
     @apply mt-3;
   }

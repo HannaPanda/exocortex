@@ -9,6 +9,7 @@ import { type PublicShareResponse } from '@exocortex/contracts';
 import { EmptyState, ExocortexWordmark, LoadingState } from '@exocortex/ui';
 
 import { ReadingMarkdown } from '@/components/ai/chat-markdown';
+import { ImageLightboxArea } from '@/components/document/image-lightbox-area';
 import { apiRequest } from '@/lib/api/client';
 
 /**
@@ -92,7 +93,9 @@ export function PublicSharePage({ token }: { token: string }) {
         {shared.markdown.trim().length === 0 ? (
           <p className="text-sm text-muted-foreground">{t('empty')}</p>
         ) : (
-          <ReadingMarkdown content={shared.markdown} />
+          <ImageLightboxArea>
+            <ReadingMarkdown content={shared.markdown} />
+          </ImageLightboxArea>
         )}
       </article>
 

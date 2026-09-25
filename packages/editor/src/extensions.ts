@@ -340,7 +340,15 @@ export const EXOCORTEX_EDITOR_EXTENSIONS: readonly ExocortexEditorExtension[] = 
   {
     name: 'media',
     schemaVersion: 1,
-    extensions: [Image.configure({ inline: false, allowBase64: false })],
+    // `data-zoomable` is only drawn, never stored: it is what the web app's
+    // lightbox listens for (issue #134), so the schema stays unchanged.
+    extensions: [
+      Image.configure({
+        inline: false,
+        allowBase64: false,
+        HTMLAttributes: { 'data-zoomable': '' },
+      }),
+    ],
     blocks: imageBlocks,
   },
   {
