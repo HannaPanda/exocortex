@@ -1,4 +1,4 @@
-import { type Locale,LOCALE_COOKIE } from '@exocortex/i18n';
+import { type Locale, LOCALE_COOKIE } from '@exocortex/i18n';
 
 /**
  * The browser's copy of the interface language (issue #98). The server reads
