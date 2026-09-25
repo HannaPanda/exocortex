@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import { cn, Progress, Tooltip, TooltipContent, TooltipTrigger } from '@exocortex/ui';
 
 export interface ContextMeterProps {
@@ -21,11 +23,12 @@ export function ContextMeter({
   contextUsagePercent,
   contextWindowTokens,
 }: ContextMeterProps) {
+  const t = useTranslations('ai.meter');
   const warm = contextUsagePercent >= 70;
   const tokenLine =
     contextWindowTokens === null
-      ? `Geschätzt ${estimatedTokens.toLocaleString('de-DE')} Tokens belegt.`
-      : `Geschätzt ${estimatedTokens.toLocaleString('de-DE')} von ${contextWindowTokens.toLocaleString('de-DE')} Tokens belegt.`;
+      ? t('estimated', { used: estimatedTokens })
+      : t('estimatedOf', { used: estimatedTokens, total: contextWindowTokens });
 
   return (
     <Tooltip>
@@ -34,11 +37,11 @@ export function ContextMeter({
           <div className="flex min-w-0 items-center gap-1.5" data-testid="ai-context-meter">
             <Progress
               value={contextUsagePercent}
-              label="Kontextauslastung"
+              label={t('label')}
               className={cn('h-1.5 w-16', warm && '[&>div]:bg-warning')}
             />
             <span className={cn('text-xs', warm ? 'text-foreground' : 'text-muted-foreground')}>
-              {contextUsagePercent} %
+              {t('percent', { percent: contextUsagePercent })}
             </span>
           </div>
         }
@@ -46,7 +49,7 @@ export function ContextMeter({
       <TooltipContent>
         {tokenLine}
         <br />
-        Ab etwa 70 % wird älterer Verlauf automatisch zusammengefasst.
+        {t('compactionHint')}
       </TooltipContent>
     </Tooltip>
   );

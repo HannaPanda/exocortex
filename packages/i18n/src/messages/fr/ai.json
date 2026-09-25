@@ -1,0 +1,226 @@
+{
+  "panel": {
+    "chooseWorkspace": "Choisis un espace de travail.",
+    "requestFailed": "La requête n’a pas pu être lancée.",
+    "newChat": "Nouveau chat"
+  },
+  "transcript": {
+    "unavailableTitle": "Chat indisponible",
+    "unavailableDescription": "Le chat n’a pas pu être chargé.",
+    "introTitle": "Assistance IA",
+    "introHint": "Pose une question ou utilise /help pour voir les commandes.",
+    "boundarySummarized": "Historique plus ancien résumé",
+    "boundaryCleared": "Contexte effacé"
+  },
+  "message": {
+    "superseded": "Ne fait plus partie du contexte.",
+    "summary": "Résumé",
+    "showHistory": "Afficher l’historique",
+    "toolFallback": "Outil",
+    "showToolResult": "{tool} : afficher le résultat de l’outil",
+    "wikiLink": "Lien de page (non cliquable dans le chat)",
+    "copyMarkdown": "Copier la réponse en Markdown",
+    "copiedMarkdown": "Réponse copiée en Markdown",
+    "copyTooltip": "Copier en Markdown",
+    "copiedTooltip": "Copié"
+  },
+  "composer": {
+    "label": "Message à l’IA",
+    "placeholder": "Pose une question ou /help pour les commandes…",
+    "send": "Envoyer la question",
+    "commandsLabel": "Commandes"
+  },
+  "commands": {
+    "clear": "Effacer le contexte, l’historique reste lisible",
+    "new": "Démarrer une nouvelle conversation",
+    "model": "Changer le modèle de cette conversation",
+    "think": "Choisir le niveau de réflexion",
+    "vision": "Remplacer le modèle Vision associé",
+    "compact": "Résumer le contexte maintenant",
+    "context": "Afficher ou basculer le contexte de la page et les sources épinglées",
+    "rules": "Afficher les pages de règles actives",
+    "tools": "Afficher les outils disponibles",
+    "help": "Afficher cette liste",
+    "titleArgument": "titre ?"
+  },
+  "run": {
+    "toolLine": {
+      "started": "Outil {tool}{hasTarget, select, yes { ({target})} other {}} en cours d’exécution…",
+      "succeeded": "Outil {tool}{hasTarget, select, yes { ({target})} other {}}… terminé",
+      "failed": "Outil {tool}{hasTarget, select, yes { ({target})} other {}}… échec",
+      "refused": "Outil {tool}{hasTarget, select, yes { ({target})} other {}}… refusé car cette exécution a lu du contenu externe"
+    },
+    "target": {
+      "document": "Page {id}",
+      "workspace": "Espace de travail {id}"
+    },
+    "phase": {
+      "tool": "Exécution de l’outil {tool}{hasTarget, select, yes { ({target})} other {}}",
+      "reasoning": "L’IA réfléchit",
+      "compacting": "Synthèse de l’historique plus ancien",
+      "writing": "Rédaction de la réponse",
+      "generating": "Génération de la réponse"
+    },
+    "elapsedSeconds": "{seconds} s",
+    "elapsedMinutes": "{minutes} min {seconds} s",
+    "since": "{phase} · depuis {elapsed}",
+    "cancel": "Annuler",
+    "cancelling": "Annulation en cours…",
+    "quietHint": "Aucun nouveau retour pour l’instant. Une étape de réflexion ou un appel d’outil peut durer plusieurs minutes ; tu peux interrompre l’exécution avec « Annuler ».",
+    "gapHint": "Une partie du texte a été perdue en route. L’aperçu a été rechargé depuis le serveur.",
+    "cancelled": "Exécution annulée.",
+    "compacted": "L’historique plus ancien a été résumé.",
+    "cancelFailed": "Impossible d’annuler l’exécution.",
+    "failed": "Impossible de générer la réponse de l’IA.",
+    "errors": {
+      "ai_response_truncated": "La réponse a été tronquée en raison de la limite de sortie. Demande une étape plus petite, ou augmente « Longueur maximale de réponse (tokens) » dans l’administration.",
+      "ai_tool_limit_exceeded": "L’IA a effectué trop d’appels d’outils.",
+      "ai_tool_call_invalid": "Un appel d’outil est arrivé incomplet et n’a pas été exécuté.",
+      "ai_budget_exceeded": "La réponse aurait dépassé la limite de coût de cette exécution.",
+      "ai_timeout": "L’IA a mis trop de temps."
+    }
+  },
+  "context": {
+    "selection": "Sélection ({count, plural, one {# bloc} many {# blocs} other {# blocs}})",
+    "selectionRemove": "Ne pas inclure la sélection",
+    "doNotSend": "Ne pas inclure",
+    "pageChip": "{collection, select, yes {Cette base de données} other {Cette page}} : {title}",
+    "pageRemove": "Ne pas inclure {collection, select, yes {cette base de données} other {cette page}}",
+    "pageAdd": "Inclure {collection, select, yes {cette base de données} other {cette page}}",
+    "kinds": {
+      "PAGE": "Page",
+      "DATABASE_VIEW": "Vue de base de données",
+      "SAVED_QUERY": "Recherche enregistrée"
+    },
+    "sourceLabel": "{kind} : {title}",
+    "sourceLabelWithSubtitle": "{kind} : {title} ({subtitle})",
+    "sourceActions": "Actions pour {label}",
+    "costReference": "mentionné uniquement",
+    "costEmpty": "encore vide",
+    "costChars": "env. {chars, number} car.",
+    "costCharsTruncated": "env. {chars, number} car., tronqué",
+    "referenceOnly": "Mentionner le nom uniquement",
+    "embed": "Inclure le contenu",
+    "unpin": "Ne plus épingler",
+    "pin": "Épingler la source",
+    "pinHint": "Épingler de façon permanente une page, une vue de base de données ou une recherche enregistrée",
+    "pinFull": "Pas plus de {count, plural, one {# source n’est autorisée} many {# de sources ne sont autorisées} other {# sources ne sont autorisées}} ici.",
+    "pinFailed": "Impossible d’épingler la source."
+  },
+  "meter": {
+    "label": "Utilisation du contexte",
+    "percent": "{percent, number} %",
+    "estimated": "Environ {used, number} tokens occupés.",
+    "estimatedOf": "Environ {used, number} sur {total, number} tokens occupés.",
+    "compactionHint": "À partir d’environ 70 %, l’historique plus ancien est automatiquement résumé."
+  },
+  "models": {
+    "choose": "Choisir un modèle",
+    "default": "Par défaut",
+    "reasoningLevels": {
+      "none": "aucun",
+      "minimal": "minimal",
+      "low": "faible",
+      "medium": "moyen",
+      "high": "élevé",
+      "xhigh": "très élevé",
+      "max": "maximal"
+    },
+    "noReasoning": "Ce modèle ne propose aucun niveau de réflexion sélectionnable.",
+    "tooltipContext": "Contexte : {tokens, number} tokens",
+    "tooltipVisionYes": "Compréhension visuelle : oui",
+    "tooltipVisionNo": "Compréhension visuelle : non",
+    "tooltipVisionCompanion": "Compréhension visuelle : non (modèle associé : {slug})",
+    "tooltipPrice": "Prix : {input} / {output} par million de tokens",
+    "companionOff": "Désactivé",
+    "companionAuto": "Automatique",
+    "companionAutoWith": "Automatique ({slug})",
+    "companionAutoNone": "Automatique (aucun)",
+    "companionTooltip": "Compagnon automatique pour la compréhension visuelle : {slug}",
+    "companionTooltipNone": "Compagnon automatique pour la compréhension visuelle : aucun configuré",
+    "companionUnavailable": "Sera disponible dès que le chat aura commencé."
+  },
+  "conversations": {
+    "newChat": "Nouveau chat",
+    "allChats": "Tous les chats",
+    "rename": "Renommer",
+    "archive": "Archiver",
+    "renameTitle": "Renommer le chat",
+    "newTitle": "Nouveau titre",
+    "cancel": "Annuler",
+    "save": "Enregistrer"
+  },
+  "chats": {
+    "title": "Chats",
+    "intro": "Tous les chats IA, sur l’ensemble des espaces de travail. La recherche porte sur le texte des messages, pas seulement sur les titres.",
+    "loading": "Chargement des chats…",
+    "nothingFoundTitle": "Aucun résultat",
+    "nothingFoundDescription": "Aucun historique ne contient ces mots. Les chats archivés ont aussi été examinés.",
+    "emptyTitle": "Aucun chat",
+    "emptyDescription": "Dès que tu poses une question dans le volet, le chat apparaît ici.",
+    "loadMore": "Charger plus",
+    "search": "Rechercher",
+    "searchPlaceholder": "Mot de l’historique…",
+    "workspace": "Espace de travail",
+    "all": "Tous",
+    "state": "État",
+    "archivedFilter": {
+      "open": "Ouverts",
+      "archived": "Archivés",
+      "all": "Tous"
+    },
+    "deleteTitle": "Supprimer définitivement",
+    "deleteDescription": "« {title} » sera supprimé avec tous ses messages. Cette opération ne peut pas être annulée. L’archivage conserve l’historique et le masque simplement.",
+    "deleteConfirm": "Supprimer définitivement"
+  },
+  "chatList": {
+    "archived": "archivé",
+    "matches": "{count, plural, one {# résultat} many {# de résultats} other {# résultats}}",
+    "notInContext": "(plus dans le contexte)",
+    "rename": "Renommer",
+    "archive": "Archiver",
+    "restore": "Restaurer"
+  },
+  "reader": {
+    "noneTitle": "Aucun chat sélectionné",
+    "noneDescription": "Sélectionne un chat à gauche pour lire son historique.",
+    "unavailableTitle": "Historique indisponible",
+    "unavailableDescription": "Impossible de charger le chat.",
+    "archived": "archivé",
+    "messages": "{count, plural, one {# message} many {# de messages} other {# messages}}",
+    "continue": "Continuer dans le volet",
+    "saveAsPage": "Enregistrer comme page",
+    "delete": "Supprimer définitivement",
+    "emptyTitle": "Vide",
+    "emptyDescription": "Ce chat ne contient encore rien."
+  },
+  "saveDialog": {
+    "title": "Enregistrer le chat comme page",
+    "description": "L’historique sera créé sous forme de page. Le chat lui-même reste inchangé.",
+    "titleLabel": "Titre",
+    "where": "Emplacement",
+    "rootLabel": "Racine",
+    "rootHint": "Directement dans l’espace de travail",
+    "childCount": "{count, plural, one {# sous-page} many {# sous-pages} other {# sous-pages}}",
+    "pathHint": "{path} · {count, plural, one {# sous-page} many {# sous-pages} other {# sous-pages}}",
+    "savedAs": "Enregistré sous <link>{title}</link>.",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "save": "Enregistrer"
+  },
+  "sourcePicker": {
+    "groupViews": "Vues de cette base de données",
+    "groupPages": "Pages",
+    "groupSavedQueries": "Recherches enregistrées",
+    "untitled": "Page sans titre",
+    "placeholder": "Rechercher une page, une base de données ou une recherche enregistrée …",
+    "empty": "Rien trouvé. Saisis au moins deux caractères.",
+    "footer": "Seul le nom est épinglé au départ. Tu décides ensuite sur la puce si le contenu est inclus."
+  },
+  "rules": {
+    "loading": "Chargement des règles …",
+    "empty": "Aucune page n’est marquée comme règle. Tu peux le faire dans les propriétés d’une page, sous « Règle IA ».",
+    "trigger": "Déclencheur : {trigger}",
+    "rank": "Rang {rank}"
+  }
+}

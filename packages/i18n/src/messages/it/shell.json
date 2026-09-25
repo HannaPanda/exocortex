@@ -187,5 +187,10 @@
   "adminLayout": {
     "title": "Amministrazione",
     "intro": "Impostazioni, modelli IA e gestione utenti di questa installazione."
+  },
+  "saveIndicator": {
+    "local": "salvato in locale",
+    "saved": "salvato",
+    "savedAt": "salvato alle <time>{clock}</time>"
   }
 }

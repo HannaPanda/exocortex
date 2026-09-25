@@ -1,0 +1,226 @@
+{
+  "panel": {
+    "chooseWorkspace": "Kies een werkruimte.",
+    "requestFailed": "Het verzoek kon niet worden gestart.",
+    "newChat": "Nieuwe chat"
+  },
+  "transcript": {
+    "unavailableTitle": "Chat niet beschikbaar",
+    "unavailableDescription": "De chat kon niet worden geladen.",
+    "introTitle": "AI-assistent",
+    "introHint": "Stel een vraag of gebruik /help voor commando’s.",
+    "boundarySummarized": "Oudere geschiedenis samengevat",
+    "boundaryCleared": "Context gewist"
+  },
+  "message": {
+    "superseded": "Geen deel meer van de context.",
+    "summary": "Samenvatting",
+    "showHistory": "Geschiedenis weergeven",
+    "toolFallback": "Tool",
+    "showToolResult": "{tool}: toolresultaat weergeven",
+    "wikiLink": "Paginaverwijzing (in chat niet aanklikbaar)",
+    "copyMarkdown": "Antwoord als Markdown kopiëren",
+    "copiedMarkdown": "Antwoord als Markdown gekopieerd",
+    "copyTooltip": "Markdown kopiëren",
+    "copiedTooltip": "Gekopieerd"
+  },
+  "composer": {
+    "label": "Bericht aan de AI",
+    "placeholder": "Vraag stellen of /help voor commando’s …",
+    "send": "Vraag verzenden",
+    "commandsLabel": "Commando’s"
+  },
+  "commands": {
+    "clear": "Context wissen, geschiedenis blijft leesbaar",
+    "new": "Nieuw gesprek starten",
+    "model": "Model van dit gesprek wijzigen",
+    "think": "Denkniveau kiezen",
+    "vision": "Vision-begeleidend model overschrijven",
+    "compact": "Context nu samenvatten",
+    "context": "Paginacontext en vastgezette bronnen weergeven of omschakelen",
+    "rules": "Actieve regelpagina’s weergeven",
+    "tools": "Beschikbare tools weergeven",
+    "help": "Deze lijst weergeven",
+    "titleArgument": "titel?"
+  },
+  "run": {
+    "toolLine": {
+      "started": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} wordt uitgevoerd …",
+      "succeeded": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} … klaar",
+      "failed": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} … mislukt",
+      "refused": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} … geweigerd, omdat deze run externe inhoud heeft gelezen"
+    },
+    "target": {
+      "document": "Pagina {id}",
+      "workspace": "Werkruimte {id}"
+    },
+    "phase": {
+      "tool": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} wordt uitgevoerd",
+      "reasoning": "AI denkt na",
+      "compacting": "Oudere geschiedenis wordt samengevat",
+      "writing": "Antwoord wordt geschreven",
+      "generating": "Antwoord wordt gegenereerd"
+    },
+    "elapsedSeconds": "{seconds} s",
+    "elapsedMinutes": "{minutes} min {seconds} s",
+    "since": "{phase} · sinds {elapsed}",
+    "cancel": "Annuleren",
+    "cancelling": "Wordt geannuleerd …",
+    "quietHint": "Nog geen nieuwe reactie. Een denkstap of tool-aanroep mag enkele minuten duren; met ’Annuleren’ beëindig je de uitvoering.",
+    "gapHint": "Een deel van de tekst is onderweg verloren gegaan. Het voorbeeld is opnieuw geladen vanaf de server.",
+    "cancelled": "Uitvoering geannuleerd.",
+    "compacted": "Oudere geschiedenis is samengevat.",
+    "cancelFailed": "De uitvoering kon niet worden geannuleerd.",
+    "failed": "Het AI-antwoord kon niet worden gegenereerd.",
+    "errors": {
+      "ai_response_truncated": "Het antwoord is afgekapt vanwege de uitvoerlimiet. Vraag om een kleinere stap of verhoog ’Maximale antwoordlengte (tokens)’ in het beheer.",
+      "ai_tool_limit_exceeded": "De AI heeft te veel tool-aanroepen gebruikt.",
+      "ai_tool_call_invalid": "Een tool-aanroep kwam onvolledig binnen en is niet uitgevoerd.",
+      "ai_budget_exceeded": "Het antwoord zou de kostenlimiet van deze uitvoering hebben overschreden.",
+      "ai_timeout": "De AI deed er te lang over."
+    }
+  },
+  "context": {
+    "selection": "Selectie ({count, plural, one {# blok} other {# blokken}})",
+    "selectionRemove": "Selectie niet meesturen",
+    "doNotSend": "Niet meesturen",
+    "pageChip": "{collection, select, yes {Deze database} other {Deze pagina}}: {title}",
+    "pageRemove": "{collection, select, yes {Deze database} other {Deze pagina}} niet meesturen",
+    "pageAdd": "{collection, select, yes {Deze database} other {Deze pagina}} meesturen",
+    "kinds": {
+      "PAGE": "Pagina",
+      "DATABASE_VIEW": "Databaseweergave",
+      "SAVED_QUERY": "Opgeslagen zoekopdracht"
+    },
+    "sourceLabel": "{kind}: {title}",
+    "sourceLabelWithSubtitle": "{kind}: {title} ({subtitle})",
+    "sourceActions": "Acties voor {label}",
+    "costReference": "alleen vermeld",
+    "costEmpty": "nog leeg",
+    "costChars": "ongeveer {chars, number} tek.",
+    "costCharsTruncated": "ongeveer {chars, number} tek., ingekort",
+    "referenceOnly": "Alleen de naam vermelden",
+    "embed": "Inhoud meesturen",
+    "unpin": "Niet meer vastmaken",
+    "pin": "Bron vastmaken",
+    "pinHint": "Pagina, databaseweergave of opgeslagen zoekopdracht permanent vastmaken",
+    "pinFull": "Meer dan {count, plural, one {# bron is} other {# bronnen zijn}} hier niet toegestaan.",
+    "pinFailed": "De bron kon niet worden vastgemaakt."
+  },
+  "meter": {
+    "label": "Contextgebruik",
+    "percent": "{percent, number} %",
+    "estimated": "Geschat {used, number} tokens in gebruik.",
+    "estimatedOf": "Geschat {used, number} van {total, number} tokens in gebruik.",
+    "compactionHint": "Vanaf ongeveer 70 % wordt eerdere geschiedenis automatisch samengevat."
+  },
+  "models": {
+    "choose": "Model kiezen",
+    "default": "Standaard",
+    "reasoningLevels": {
+      "none": "geen",
+      "minimal": "minimaal",
+      "low": "laag",
+      "medium": "gemiddeld",
+      "high": "hoog",
+      "xhigh": "zeer hoog",
+      "max": "maximaal"
+    },
+    "noReasoning": "Dit model biedt geen instelbaar denkniveau.",
+    "tooltipContext": "Context: {tokens, number} tokens",
+    "tooltipVisionYes": "Beeldbegrip: ja",
+    "tooltipVisionNo": "Beeldbegrip: nee",
+    "tooltipVisionCompanion": "Beeldbegrip: nee (begeleidend model: {slug})",
+    "tooltipPrice": "Prijs: {input} / {output} per mln. tokens",
+    "companionOff": "Uit",
+    "companionAuto": "Automatisch",
+    "companionAutoWith": "Automatisch ({slug})",
+    "companionAutoNone": "Automatisch (geen)",
+    "companionTooltip": "Automatisch begeleidend model voor beeldbegrip: {slug}",
+    "companionTooltipNone": "Automatisch begeleidend model voor beeldbegrip: geen geconfigureerd",
+    "companionUnavailable": "Beschikbaar zodra de chat is gestart."
+  },
+  "conversations": {
+    "newChat": "Nieuwe chat",
+    "allChats": "Alle chats",
+    "rename": "Hernoemen",
+    "archive": "Archiveren",
+    "renameTitle": "Chat hernoemen",
+    "newTitle": "Nieuwe titel",
+    "cancel": "Annuleren",
+    "save": "Opslaan"
+  },
+  "chats": {
+    "title": "Chats",
+    "intro": "Alle AI-chats, over alle werkruimtes heen. De zoekfunctie doorzoekt de berichttekst, niet alleen de titels.",
+    "loading": "Chats worden geladen …",
+    "nothingFoundTitle": "Niets gevonden",
+    "nothingFoundDescription": "Geen enkele geschiedenis bevat deze woorden. Ook gearchiveerde chats zijn doorzocht.",
+    "emptyTitle": "Geen chats",
+    "emptyDescription": "Zodra je iets vraagt in het paneel, verschijnt de chat hier.",
+    "loadMore": "Meer laden",
+    "search": "Zoeken",
+    "searchPlaceholder": "Woord uit de geschiedenis …",
+    "workspace": "Werkruimte",
+    "all": "Alle",
+    "state": "Status",
+    "archivedFilter": {
+      "open": "Open",
+      "archived": "Gearchiveerd",
+      "all": "Alle"
+    },
+    "deleteTitle": "Definitief verwijderen",
+    "deleteDescription": "“{title}” wordt met alle berichten verwijderd. Dit kan niet ongedaan worden gemaakt. Archiveren bewaart de geschiedenis en verbergt deze alleen.",
+    "deleteConfirm": "Definitief verwijderen"
+  },
+  "chatList": {
+    "archived": "gearchiveerd",
+    "matches": "{count, plural, one {# resultaat} other {# resultaten}}",
+    "notInContext": "(niet meer in context)",
+    "rename": "Hernoemen",
+    "archive": "Archiveren",
+    "restore": "Herstellen"
+  },
+  "reader": {
+    "noneTitle": "Geen chat geselecteerd",
+    "noneDescription": "Kies links een chat om de geschiedenis ervan te lezen.",
+    "unavailableTitle": "Geschiedenis niet beschikbaar",
+    "unavailableDescription": "De chat kon niet worden geladen.",
+    "archived": "gearchiveerd",
+    "messages": "{count, plural, one {# bericht} other {# berichten}}",
+    "continue": "Voortzetten in paneel",
+    "saveAsPage": "Opslaan als pagina",
+    "delete": "Definitief verwijderen",
+    "emptyTitle": "Leeg",
+    "emptyDescription": "Er staat nog niets in deze chat."
+  },
+  "saveDialog": {
+    "title": "Chat opslaan als pagina",
+    "description": "De geschiedenis wordt als pagina aangemaakt. De chat zelf blijft zoals die is.",
+    "titleLabel": "Titel",
+    "where": "Waarheen",
+    "rootLabel": "Bovenste niveau",
+    "rootHint": "Direct in de werkruimte",
+    "childCount": "{count, plural, one {# subpagina} other {# subpagina’s}}",
+    "pathHint": "{path} · {count, plural, one {# subpagina} other {# subpagina’s}}",
+    "savedAs": "Opgeslagen als <link>{title}</link>.",
+    "cancel": "Annuleren",
+    "close": "Sluiten",
+    "save": "Opslaan"
+  },
+  "sourcePicker": {
+    "groupViews": "Weergaven van deze database",
+    "groupPages": "Pagina’s",
+    "groupSavedQueries": "Opgeslagen zoekopdrachten",
+    "untitled": "Naamloze pagina",
+    "placeholder": "Pagina, database of opgeslagen zoekopdracht zoeken …",
+    "empty": "Niets gevonden. Typ minstens twee tekens.",
+    "footer": "Vastgemaakt wordt eerst alleen de naam. Of de inhoud meegaat, bepaal je daarna bij de chip."
+  },
+  "rules": {
+    "loading": "Regels laden …",
+    "empty": "Geen pagina is als regel gemarkeerd. Dit doe je in de eigenschappen van een pagina, onder „AI-regel”.",
+    "trigger": "Trigger: {trigger}",
+    "rank": "Rang {rank}"
+  }
+}

@@ -1,13 +1,14 @@
 'use client';
 
 import { SparklesIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type * as React from 'react';
 
 import { type AiConversationMessage } from '@exocortex/contracts';
 import { ErrorState, LoadingState } from '@exocortex/ui';
 
 import { ChatMessage } from './chat-message';
-import { toolActivityLine } from './run-labels';
+import { toolActivityLine, useRunLabels } from './run-labels';
 import { Transcript } from './transcript';
 import { type ToolActivityEntry } from './use-ai-run-tracker';
 
@@ -42,6 +43,8 @@ export function AiTranscriptArea({
   notice: string | null;
   error: string | null;
 }) {
+  const t = useTranslations('ai.transcript');
+  const runLabel = useRunLabels();
   return (
     <div
       ref={scrollRef}
@@ -51,8 +54,8 @@ export function AiTranscriptArea({
     >
       {errored ? (
         <ErrorState
-          title="Chat nicht verfügbar"
-          description="Der Chat konnte nicht geladen werden."
+          title={t('unavailableTitle')}
+          description={t('unavailableDescription')}
           onRetry={onRetry}
         />
       ) : loading ? (
@@ -62,10 +65,8 @@ export function AiTranscriptArea({
           {showIntro ? (
             <div className="flex flex-col items-center gap-2 px-2 py-8 text-center">
               <SparklesIcon className="size-5 text-muted-foreground" aria-hidden />
-              <p className="text-sm font-medium">KI-Assistenz</p>
-              <p className="text-xs text-muted-foreground">
-                Stelle eine Frage oder nutze /help für Befehle.
-              </p>
+              <p className="text-sm font-medium">{t('introTitle')}</p>
+              <p className="text-xs text-muted-foreground">{t('introHint')}</p>
             </div>
           ) : null}
 
@@ -75,7 +76,7 @@ export function AiTranscriptArea({
           {toolActivity.length > 0 ? (
             <div className="space-y-0.5 text-xs text-muted-foreground">
               {toolActivity.map((entry) => (
-                <p key={entry.key}>{toolActivityLine(entry)}</p>
+                <p key={entry.key}>{runLabel(toolActivityLine(entry))}</p>
               ))}
             </div>
           ) : null}

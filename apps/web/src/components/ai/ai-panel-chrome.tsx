@@ -1,6 +1,7 @@
 'use client';
 
 import { PlusIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import {
   type AiConversation,
@@ -37,6 +38,7 @@ export function AiPanelHeader({
   onSelect: (conversationId: string | null) => void;
   onCreateNew: () => void;
 }) {
+  const t = useTranslations('ai.panel');
   return (
     <div className="flex items-center justify-between gap-2 border-b border-border px-2 py-1.5">
       <ConversationSwitcher
@@ -48,12 +50,12 @@ export function AiPanelHeader({
       <Tooltip>
         <TooltipTrigger
           render={
-            <Button variant="ghost" size="icon-sm" aria-label="Neuer Chat" onClick={onCreateNew}>
+            <Button variant="ghost" size="icon-sm" aria-label={t('newChat')} onClick={onCreateNew}>
               <PlusIcon />
             </Button>
           }
         />
-        <TooltipContent>Neuer Chat</TooltipContent>
+        <TooltipContent>{t('newChat')}</TooltipContent>
       </Tooltip>
     </div>
   );

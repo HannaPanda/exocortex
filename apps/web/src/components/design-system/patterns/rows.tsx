@@ -9,9 +9,9 @@ import { RunActivity } from '@/components/ai/run-activity';
 import { SavedQueryResults } from '@/components/search/saved-query-results';
 import {
   inputId,
-  invalidMessage,
   SETTING_LIST_CLASS,
   SettingRow,
+  useSettingMessages,
 } from '@/components/settings/setting-row';
 import {
   SettingsActionBar,
@@ -187,6 +187,7 @@ export function PageTreePattern() {
 }
 
 export function SettingRowPattern() {
+  const { invalidMessage } = useSettingMessages();
   // What is stored, and the draft on screen. The draft starts with one edit
   // the last save refused, because that is the state worth seeing.
   const [stored, setStored] = React.useState({ enabled: true, results: 5 });

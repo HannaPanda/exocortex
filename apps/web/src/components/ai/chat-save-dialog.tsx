@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AiConversation, type ParentSuggestion } from '@exocortex/contracts';
@@ -41,6 +42,7 @@ export function ChatSaveDialog({
   // keys this component on the conversation id, so choosing another one
   // remounts it and the fields start over. An effect that pushed the new title
   // into state would be a render behind on the first paint.
+  const t = useTranslations('ai.saveDialog');
   const [title, setTitle] = React.useState(conversation?.title ?? '');
   const [parentId, setParentId] = React.useState<string | null>(null);
   const toPage = useConversationToPage();
@@ -71,16 +73,14 @@ export function ChatSaveDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Chat als Seite speichern</DialogTitle>
-          <DialogDescription>
-            Der Verlauf wird als Seite angelegt. Der Chat selbst bleibt, wie er ist.
-          </DialogDescription>
+          <DialogTitle>{t('title')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         {saved === null ? (
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="chat-save-title">Titel</Label>
+              <Label htmlFor="chat-save-title">{t('titleLabel')}</Label>
               <Input
                 id="chat-save-title"
                 value={title}
@@ -90,7 +90,7 @@ export function ChatSaveDialog({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <span className="text-sm font-medium">Wohin</span>
+              <span className="text-sm font-medium">{t('where')}</span>
               {suggestions.isPending ? (
                 <LoadingState variant="skeleton" rows={2} />
               ) : (
@@ -110,24 +110,27 @@ export function ChatSaveDialog({
           </div>
         ) : (
           <p className="text-sm" data-testid="chat-save-done">
-            Gesichert als{' '}
-            <Link
-              href={`/arbeitsbereich/${saved.workspaceId}/seite/${saved.documentId}`}
-              className="underline underline-offset-2"
-            >
-              {saved.title}
-            </Link>
-            .
+            {t.rich('savedAs', {
+              title: saved.title,
+              link: (chunks) => (
+                <Link
+                  href={`/arbeitsbereich/${saved.workspaceId}/seite/${saved.documentId}`}
+                  className="underline underline-offset-2"
+                >
+                  {chunks}
+                </Link>
+              ),
+            })}
           </p>
         )}
 
         <DialogFooter>
           <Button variant="ghost" onClick={onClose}>
-            {saved === null ? 'Abbrechen' : 'Schließen'}
+            {saved === null ? t('cancel') : t('close')}
           </Button>
           {saved === null ? (
             <Button onClick={save} disabled={toPage.isPending} data-testid="chat-save-submit">
-              Speichern
+              {t('save')}
             </Button>
           ) : null}
         </DialogFooter>
@@ -146,8 +149,9 @@ function ParentChoice({
   suggestions: readonly ParentSuggestion[];
   onChange: (parentId: string | null) => void;
 }) {
+  const t = useTranslations('ai.saveDialog');
   const options: { id: string | null; label: string; hint: string }[] = [
-    { id: null, label: 'Oberste Ebene', hint: 'Direkt im Arbeitsbereich' },
+    { id: null, label: t('rootLabel'), hint: t('rootHint') },
     ...suggestions
       .filter((suggestion) => suggestion.parentId !== null)
       .map((suggestion) => ({
@@ -155,8 +159,11 @@ function ParentChoice({
         label: suggestion.title,
         hint:
           suggestion.path.length === 0
-            ? `${String(suggestion.childCount)} Unterseiten`
-            : `${suggestion.path.map((entry) => entry.title).join(' › ')} · ${String(suggestion.childCount)} Unterseiten`,
+            ? t('childCount', { count: suggestion.childCount })
+            : t('pathHint', {
+                path: suggestion.path.map((entry) => entry.title).join(' › '),
+                count: suggestion.childCount,
+              }),
       })),
   ];
 

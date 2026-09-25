@@ -1,0 +1,226 @@
+{
+  "panel": {
+    "chooseWorkspace": "Escolha um espaço de trabalho.",
+    "requestFailed": "Não foi possível iniciar a solicitação.",
+    "newChat": "Novo chat"
+  },
+  "transcript": {
+    "unavailableTitle": "Chat indisponível",
+    "unavailableDescription": "Não foi possível carregar o chat.",
+    "introTitle": "Assistente de IA",
+    "introHint": "Faça uma pergunta ou use /help para ver comandos.",
+    "boundarySummarized": "Histórico anterior resumido",
+    "boundaryCleared": "Contexto limpo"
+  },
+  "message": {
+    "superseded": "Não faz mais parte do contexto.",
+    "summary": "Resumo",
+    "showHistory": "Mostrar histórico",
+    "toolFallback": "Ferramenta",
+    "showToolResult": "{tool}: mostrar resultado da ferramenta",
+    "wikiLink": "Link de página (não clicável no chat)",
+    "copyMarkdown": "Copiar resposta como Markdown",
+    "copiedMarkdown": "Resposta copiada como Markdown",
+    "copyTooltip": "Copiar Markdown",
+    "copiedTooltip": "Copiado"
+  },
+  "composer": {
+    "label": "Mensagem para a IA",
+    "placeholder": "Faça uma pergunta ou use /help para comandos…",
+    "send": "Enviar pergunta",
+    "commandsLabel": "Comandos"
+  },
+  "commands": {
+    "clear": "Limpar contexto, histórico continua visível",
+    "new": "Iniciar nova conversa",
+    "model": "Trocar o modelo desta conversa",
+    "think": "Escolher nível de pensamento",
+    "vision": "Substituir modelo complementar de visão",
+    "compact": "Resumir contexto agora",
+    "context": "Mostrar ou alternar contexto da página e fontes fixadas",
+    "rules": "Mostrar páginas de regras ativas",
+    "tools": "Mostrar ferramentas disponíveis",
+    "help": "Mostrar esta lista",
+    "titleArgument": "título?"
+  },
+  "run": {
+    "toolLine": {
+      "started": "Ferramenta {tool}{hasTarget, select, yes { ({target})} other {}} em execução …",
+      "succeeded": "Ferramenta {tool}{hasTarget, select, yes { ({target})} other {}} … concluída",
+      "failed": "Ferramenta {tool}{hasTarget, select, yes { ({target})} other {}} … falhou",
+      "refused": "Ferramenta {tool}{hasTarget, select, yes { ({target})} other {}} … recusada porque esta execução leu conteúdo externo"
+    },
+    "target": {
+      "document": "Página {id}",
+      "workspace": "Espaço de trabalho {id}"
+    },
+    "phase": {
+      "tool": "Executando ferramenta {tool}{hasTarget, select, yes { ({target})} other {}}",
+      "reasoning": "IA pensando",
+      "compacting": "Resumindo histórico anterior",
+      "writing": "Escrevendo resposta",
+      "generating": "Gerando resposta"
+    },
+    "elapsedSeconds": "{seconds} s",
+    "elapsedMinutes": "{minutes} min {seconds} s",
+    "since": "{phase} · há {elapsed}",
+    "cancel": "Cancelar",
+    "cancelling": "Cancelando…",
+    "quietHint": "Nenhuma resposta nova ainda. Uma etapa de raciocínio ou chamada de ferramenta pode levar vários minutos; você pode encerrar a execução com “Cancelar”.",
+    "gapHint": "Parte do texto se perdeu no caminho. A pré-visualização foi recarregada do servidor.",
+    "cancelled": "Execução cancelada.",
+    "compacted": "O histórico anterior foi resumido.",
+    "cancelFailed": "Não foi possível cancelar a execução.",
+    "failed": "Não foi possível gerar a resposta da IA.",
+    "errors": {
+      "ai_response_truncated": "A resposta foi truncada no limite de saída. Peça uma etapa menor ou aumente o “Comprimento máximo da resposta (tokens)” na administração.",
+      "ai_tool_limit_exceeded": "A IA fez chamadas de ferramenta demais.",
+      "ai_tool_call_invalid": "Uma chamada de ferramenta chegou incompleta e não foi executada.",
+      "ai_budget_exceeded": "A resposta teria excedido o limite de custo desta execução.",
+      "ai_timeout": "A IA demorou tempo demais."
+    }
+  },
+  "context": {
+    "selection": "Seleção ({count, plural, one {# bloco} many {# blocos} other {# blocos}})",
+    "selectionRemove": "Não enviar seleção",
+    "doNotSend": "Não enviar",
+    "pageChip": "{collection, select, yes {Este banco de dados} other {Esta página}}: {title}",
+    "pageRemove": "Não enviar {collection, select, yes {este banco de dados} other {esta página}}",
+    "pageAdd": "Enviar {collection, select, yes {este banco de dados} other {esta página}}",
+    "kinds": {
+      "PAGE": "Página",
+      "DATABASE_VIEW": "Visualização de banco de dados",
+      "SAVED_QUERY": "Busca salva"
+    },
+    "sourceLabel": "{kind}: {title}",
+    "sourceLabelWithSubtitle": "{kind}: {title} ({subtitle})",
+    "sourceActions": "Ações para {label}",
+    "costReference": "apenas mencionado",
+    "costEmpty": "ainda vazio",
+    "costChars": "aprox. {chars, number} car.",
+    "costCharsTruncated": "aprox. {chars, number} car., truncado",
+    "referenceOnly": "Apenas mencionar o nome",
+    "embed": "Enviar conteúdo",
+    "unpin": "Desafixar",
+    "pin": "Fixar fonte",
+    "pinHint": "Fixar permanentemente página, visualização de banco de dados ou busca salva",
+    "pinFull": "Mais de {count, plural, one {# fonte não é permitida} many {# fontes não são permitidas} other {# fontes não são permitidas}} aqui.",
+    "pinFailed": "Não foi possível fixar a fonte."
+  },
+  "meter": {
+    "label": "Uso de contexto",
+    "percent": "{percent, number} %",
+    "estimated": "Estimativa de {used, number} tokens ocupados.",
+    "estimatedOf": "Estimativa de {used, number} de {total, number} tokens ocupados.",
+    "compactionHint": "A partir de cerca de 70%, o histórico mais antigo é resumido automaticamente."
+  },
+  "models": {
+    "choose": "Escolher modelo",
+    "default": "Padrão",
+    "reasoningLevels": {
+      "none": "nenhum",
+      "minimal": "mínimo",
+      "low": "baixo",
+      "medium": "médio",
+      "high": "alto",
+      "xhigh": "muito alto",
+      "max": "máximo"
+    },
+    "noReasoning": "Este modelo não oferece nível de raciocínio selecionável.",
+    "tooltipContext": "Contexto: {tokens, number} tokens",
+    "tooltipVisionYes": "Compreensão de imagem: sim",
+    "tooltipVisionNo": "Compreensão de imagem: não",
+    "tooltipVisionCompanion": "Compreensão de imagem: não (modelo complementar: {slug})",
+    "tooltipPrice": "Preço: {input} / {output} por milhão de tokens",
+    "companionOff": "Desativado",
+    "companionAuto": "Automático",
+    "companionAutoWith": "Automático ({slug})",
+    "companionAutoNone": "Automático (nenhum)",
+    "companionTooltip": "Modelo complementar automático para compreensão de imagem: {slug}",
+    "companionTooltipNone": "Modelo complementar automático para compreensão de imagem: nenhum configurado",
+    "companionUnavailable": "Fica disponível assim que o chat começar."
+  },
+  "conversations": {
+    "newChat": "Novo chat",
+    "allChats": "Todos os chats",
+    "rename": "Renomear",
+    "archive": "Arquivar",
+    "renameTitle": "Renomear chat",
+    "newTitle": "Novo título",
+    "cancel": "Cancelar",
+    "save": "Salvar"
+  },
+  "chats": {
+    "title": "Chats",
+    "intro": "Todos os chats de IA em todos os espaços de trabalho. A busca pesquisa no texto das mensagens, não apenas nos títulos.",
+    "loading": "Carregando chats…",
+    "nothingFoundTitle": "Nada encontrado",
+    "nothingFoundDescription": "Nenhum histórico contém essas palavras. Os chats arquivados também foram pesquisados.",
+    "emptyTitle": "Nenhum chat",
+    "emptyDescription": "Assim que você perguntar algo no painel, o chat aparecerá aqui.",
+    "loadMore": "Carregar mais",
+    "search": "Buscar",
+    "searchPlaceholder": "Palavra do histórico…",
+    "workspace": "Espaço de trabalho",
+    "all": "Todos",
+    "state": "Status",
+    "archivedFilter": {
+      "open": "Abertos",
+      "archived": "Arquivados",
+      "all": "Todos"
+    },
+    "deleteTitle": "Excluir permanentemente",
+    "deleteDescription": "“{title}” será excluído com todas as mensagens. Isso não pode ser desfeito. Arquivar mantém o histórico e apenas o oculta.",
+    "deleteConfirm": "Excluir permanentemente"
+  },
+  "chatList": {
+    "archived": "arquivado",
+    "matches": "{count, plural, one {# resultado} many {# resultados} other {# resultados}}",
+    "notInContext": "(não está mais no contexto)",
+    "rename": "Renomear",
+    "archive": "Arquivar",
+    "restore": "Restaurar"
+  },
+  "reader": {
+    "noneTitle": "Nenhum chat selecionado",
+    "noneDescription": "Selecione um chat à esquerda para ler o histórico.",
+    "unavailableTitle": "Histórico indisponível",
+    "unavailableDescription": "Não foi possível carregar o chat.",
+    "archived": "arquivado",
+    "messages": "{count, plural, one {# mensagem} many {# mensagens} other {# mensagens}}",
+    "continue": "Continuar no painel",
+    "saveAsPage": "Salvar como página",
+    "delete": "Excluir permanentemente",
+    "emptyTitle": "Vazio",
+    "emptyDescription": "Ainda não há nada neste chat."
+  },
+  "saveDialog": {
+    "title": "Salvar chat como página",
+    "description": "O histórico será criado como uma página. O chat em si permanece como está.",
+    "titleLabel": "Título",
+    "where": "Destino",
+    "rootLabel": "Nível superior",
+    "rootHint": "Direto no espaço de trabalho",
+    "childCount": "{count, plural, one {# subpágina} many {# subpáginas} other {# subpáginas}}",
+    "pathHint": "{path} · {count, plural, one {# subpágina} many {# subpáginas} other {# subpáginas}}",
+    "savedAs": "Salvo como <link>{title}</link>.",
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "save": "Salvar"
+  },
+  "sourcePicker": {
+    "groupViews": "Visualizações deste banco de dados",
+    "groupPages": "Páginas",
+    "groupSavedQueries": "Buscas salvas",
+    "untitled": "Página sem título",
+    "placeholder": "Buscar página, banco de dados ou busca salva …",
+    "empty": "Nada encontrado. Digite pelo menos dois caracteres.",
+    "footer": "A princípio, apenas o nome é fixado. Você decide depois no chip se o conteúdo vai junto."
+  },
+  "rules": {
+    "loading": "Carregando regras …",
+    "empty": "Nenhuma página está marcada como regra. Isso pode ser feito nas propriedades de uma página, em “Regra de IA”.",
+    "trigger": "Gatilho: {trigger}",
+    "rank": "Posição {rank}"
+  }
+}

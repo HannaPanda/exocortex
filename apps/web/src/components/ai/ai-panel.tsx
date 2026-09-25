@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { useDocumentSession } from '@/components/shell/document-session';
@@ -25,7 +26,7 @@ import {
   resolvePageHandover,
 } from './panel-view';
 import { RunActivity } from './run-activity';
-import { currentPhaseLabel } from './run-labels';
+import { currentPhaseLabel, useRunLabels } from './run-labels';
 import { SourcePicker } from './source-picker';
 import { useAiRunTracker } from './use-ai-run-tracker';
 import { useConversationSettings } from './use-conversation-settings';
@@ -52,6 +53,8 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
     parseConversationId,
   );
 
+  const t = useTranslations('ai.panel');
+  const runLabel = useRunLabels();
   const modelsQuery = useAiModels();
   const conversationQuery = useAiConversation(activeConversationId);
   const createConversation = useCreateAiConversation();
@@ -196,9 +199,7 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
 
       if (response.run !== null) run.beginRun(response.run.id);
     } catch (caught) {
-      setError(
-        caught instanceof ApiError ? caught.message : 'Die Anfrage konnte nicht gestartet werden.',
-      );
+      setError(caught instanceof ApiError ? caught.message : t('requestFailed'));
     }
   };
 
@@ -208,7 +209,7 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
         className="flex min-h-0 flex-1 items-center justify-center p-6 text-center text-sm text-muted-foreground"
         data-testid="ai-panel"
       >
-        Wähle einen Arbeitsbereich.
+        {t('chooseWorkspace')}
       </div>
     );
   }
@@ -249,7 +250,7 @@ export function AiPanel({ workspaceId, documentId }: AiPanelProps) {
 
       {activeRunId !== null ? (
         <RunActivity
-          phaseLabel={currentPhaseLabel(toolActivity, streamText, run.runPhase)}
+          phaseLabel={runLabel(currentPhaseLabel(toolActivity, streamText, run.runPhase))}
           elapsedMs={run.elapsedMs}
           quiet={run.runQuiet}
           gapDetected={run.gapDetected}

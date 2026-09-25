@@ -187,5 +187,10 @@
   "adminLayout": {
     "title": "Beheer",
     "intro": "Instellingen, AI-modellen en gebruikersbeheer van deze installatie."
+  },
+  "saveIndicator": {
+    "local": "lokaal opgeslagen",
+    "saved": "opgeslagen",
+    "savedAt": "opgeslagen <time>{clock}</time>"
   }
 }

@@ -1,0 +1,226 @@
+{
+  "panel": {
+    "chooseWorkspace": "Elige un espacio de trabajo.",
+    "requestFailed": "No se pudo iniciar la solicitud.",
+    "newChat": "Nuevo chat"
+  },
+  "transcript": {
+    "unavailableTitle": "Chat no disponible",
+    "unavailableDescription": "No se pudo cargar el chat.",
+    "introTitle": "Asistencia de IA",
+    "introHint": "Haz una pregunta o usa /help para ver los comandos.",
+    "boundarySummarized": "Historial anterior resumido",
+    "boundaryCleared": "Contexto vaciado"
+  },
+  "message": {
+    "superseded": "Ya no forma parte del contexto.",
+    "summary": "Resumen",
+    "showHistory": "Mostrar historial",
+    "toolFallback": "Herramienta",
+    "showToolResult": "{tool}: mostrar resultado de la herramienta",
+    "wikiLink": "Enlace a página (no se puede abrir en el chat)",
+    "copyMarkdown": "Copiar respuesta como Markdown",
+    "copiedMarkdown": "Respuesta copiada como Markdown",
+    "copyTooltip": "Copiar Markdown",
+    "copiedTooltip": "Copiado"
+  },
+  "composer": {
+    "label": "Mensaje a la IA",
+    "placeholder": "Haz una pregunta o usa /help para ver comandos …",
+    "send": "Enviar pregunta",
+    "commandsLabel": "Comandos"
+  },
+  "commands": {
+    "clear": "Vaciar contexto, el historial sigue siendo legible",
+    "new": "Iniciar una conversación nueva",
+    "model": "Cambiar el modelo de esta conversación",
+    "think": "Elegir nivel de reflexión",
+    "vision": "Reemplazar modelo complementario de visión",
+    "compact": "Resumir el contexto ahora",
+    "context": "Mostrar o alternar el contexto de la página y las fuentes fijadas",
+    "rules": "Mostrar páginas de reglas activas",
+    "tools": "Mostrar herramientas disponibles",
+    "help": "Mostrar esta lista",
+    "titleArgument": "título?"
+  },
+  "run": {
+    "toolLine": {
+      "started": "Herramienta {tool}{hasTarget, select, yes { ({target})} other {}} en ejecución …",
+      "succeeded": "Herramienta {tool}{hasTarget, select, yes { ({target})} other {}} … completada",
+      "failed": "Herramienta {tool}{hasTarget, select, yes { ({target})} other {}} … fallida",
+      "refused": "Herramienta {tool}{hasTarget, select, yes { ({target})} other {}} … rechazada porque esta ejecución leyó contenido externo"
+    },
+    "target": {
+      "document": "Página {id}",
+      "workspace": "Espacio de trabajo {id}"
+    },
+    "phase": {
+      "tool": "Ejecutando herramienta {tool}{hasTarget, select, yes { ({target})} other {}}",
+      "reasoning": "La IA está pensando",
+      "compacting": "Resumiendo el historial anterior",
+      "writing": "Escribiendo respuesta",
+      "generating": "Generando respuesta"
+    },
+    "elapsedSeconds": "{seconds} s",
+    "elapsedMinutes": "{minutes} min {seconds} s",
+    "since": "{phase} · desde hace {elapsed}",
+    "cancel": "Cancelar",
+    "cancelling": "Cancelando…",
+    "quietHint": "Sin novedades todavía. Un paso de razonamiento o una llamada a herramienta puede tardar varios minutos; usa «Cancelar» para detener la ejecución.",
+    "gapHint": "Parte del texto se perdió por el camino. Se ha vuelto a cargar la vista previa desde el servidor.",
+    "cancelled": "Ejecución cancelada.",
+    "compacted": "Se ha resumido el historial anterior.",
+    "cancelFailed": "No se ha podido cancelar la ejecución.",
+    "failed": "No se ha podido generar la respuesta de la IA.",
+    "errors": {
+      "ai_response_truncated": "La respuesta se ha cortado al llegar al límite de salida. Pide un paso más pequeño o aumenta la «Longitud máxima de respuesta (tokens)» en la administración.",
+      "ai_tool_limit_exceeded": "La IA ha necesitado demasiadas llamadas a herramientas.",
+      "ai_tool_call_invalid": "Una llamada a herramienta llegó incompleta y no se ejecutó.",
+      "ai_budget_exceeded": "La respuesta habría superado el límite de coste de esta ejecución.",
+      "ai_timeout": "La IA ha tardado demasiado tiempo."
+    }
+  },
+  "context": {
+    "selection": "Selección ({count, plural, one {# bloque} many {# bloques} other {# bloques}})",
+    "selectionRemove": "No incluir la selección",
+    "doNotSend": "No incluir",
+    "pageChip": "{collection, select, yes {Esta base de datos} other {Esta página}}: {title}",
+    "pageRemove": "No incluir {collection, select, yes {esta base de datos} other {esta página}}",
+    "pageAdd": "Incluir {collection, select, yes {esta base de datos} other {esta página}}",
+    "kinds": {
+      "PAGE": "Página",
+      "DATABASE_VIEW": "Vista de base de datos",
+      "SAVED_QUERY": "Búsqueda guardada"
+    },
+    "sourceLabel": "{kind}: {title}",
+    "sourceLabelWithSubtitle": "{kind}: {title} ({subtitle})",
+    "sourceActions": "Acciones para {label}",
+    "costReference": "solo mencionada",
+    "costEmpty": "aún vacía",
+    "costChars": "aprox. {chars, number} car.",
+    "costCharsTruncated": "aprox. {chars, number} car., recortado",
+    "referenceOnly": "Mencionar solo el nombre",
+    "embed": "Incluir contenido",
+    "unpin": "Desanclar",
+    "pin": "Fijar fuente",
+    "pinHint": "Fijar de forma permanente una página, vista de base de datos o búsqueda guardada",
+    "pinFull": "No se {count, plural, one {permite más de # fuente} many {permiten más de # fuentes} other {permiten más de # fuentes}} aquí.",
+    "pinFailed": "No se pudo fijar la fuente."
+  },
+  "meter": {
+    "label": "Uso del contexto",
+    "percent": "{percent, number} %",
+    "estimated": "Aproximadamente {used, number} tokens ocupados.",
+    "estimatedOf": "Aproximadamente {used, number} de {total, number} tokens ocupados.",
+    "compactionHint": "A partir de aproximadamente el 70 %, el historial más antiguo se resume automáticamente."
+  },
+  "models": {
+    "choose": "Elegir modelo",
+    "default": "Predeterminado",
+    "reasoningLevels": {
+      "none": "ninguno",
+      "minimal": "mínimo",
+      "low": "bajo",
+      "medium": "medio",
+      "high": "alto",
+      "xhigh": "muy alto",
+      "max": "máximo"
+    },
+    "noReasoning": "Este modelo no ofrece niveles de razonamiento seleccionables.",
+    "tooltipContext": "Contexto: {tokens, number} tokens",
+    "tooltipVisionYes": "Comprensión de imágenes: sí",
+    "tooltipVisionNo": "Comprensión de imágenes: no",
+    "tooltipVisionCompanion": "Comprensión de imágenes: no (modelo complementario: {slug})",
+    "tooltipPrice": "Precio: {input} / {output} por millón de tokens",
+    "companionOff": "Desactivado",
+    "companionAuto": "Automático",
+    "companionAutoWith": "Automático ({slug})",
+    "companionAutoNone": "Automático (ninguno)",
+    "companionTooltip": "Modelo complementario automático de comprensión de imágenes: {slug}",
+    "companionTooltipNone": "Modelo complementario automático de comprensión de imágenes: ninguno configurado",
+    "companionUnavailable": "Estará disponible en cuanto comience el chat."
+  },
+  "conversations": {
+    "newChat": "Nuevo chat",
+    "allChats": "Todos los chats",
+    "rename": "Renombrar",
+    "archive": "Archivar",
+    "renameTitle": "Renombrar chat",
+    "newTitle": "Nuevo título",
+    "cancel": "Cancelar",
+    "save": "Guardar"
+  },
+  "chats": {
+    "title": "Chats",
+    "intro": "Todos los chats con IA en todos los espacios de trabajo. La búsqueda incluye el texto de los mensajes, no solo los títulos.",
+    "loading": "Cargando chats…",
+    "nothingFoundTitle": "No se ha encontrado nada",
+    "nothingFoundDescription": "Ningún historial contiene estas palabras. También se ha buscado en los chats archivados.",
+    "emptyTitle": "No hay chats",
+    "emptyDescription": "En cuanto preguntes algo en el panel, el chat aparecerá aquí.",
+    "loadMore": "Cargar más",
+    "search": "Buscar",
+    "searchPlaceholder": "Palabra del historial…",
+    "workspace": "Espacio de trabajo",
+    "all": "Todos",
+    "state": "Estado",
+    "archivedFilter": {
+      "open": "Abiertos",
+      "archived": "Archivados",
+      "all": "Todos"
+    },
+    "deleteTitle": "Eliminar definitivamente",
+    "deleteDescription": "«{title}» se eliminará junto con todos los mensajes. Esta acción no se puede deshacer. Al archivar se conserva el historial y solo se oculta.",
+    "deleteConfirm": "Eliminar definitivamente"
+  },
+  "chatList": {
+    "archived": "archivado",
+    "matches": "{count, plural, one {# coincidencia} many {# coincidencias} other {# coincidencias}}",
+    "notInContext": "(ya no está en el contexto)",
+    "rename": "Cambiar nombre",
+    "archive": "Archivar",
+    "restore": "Restaurar"
+  },
+  "reader": {
+    "noneTitle": "Ningún chat seleccionado",
+    "noneDescription": "Elige un chat a la izquierda para leer su historial.",
+    "unavailableTitle": "Historial no disponible",
+    "unavailableDescription": "No se ha podido cargar el chat.",
+    "archived": "archivado",
+    "messages": "{count, plural, one {# mensaje} many {# mensajes} other {# mensajes}}",
+    "continue": "Continuar en el panel",
+    "saveAsPage": "Guardar como página",
+    "delete": "Eliminar definitivamente",
+    "emptyTitle": "Vacío",
+    "emptyDescription": "Todavía no hay nada en este chat."
+  },
+  "saveDialog": {
+    "title": "Guardar chat como página",
+    "description": "El historial se creará como una página. El chat permanecerá tal cual.",
+    "titleLabel": "Título",
+    "where": "Dónde",
+    "rootLabel": "Nivel superior",
+    "rootHint": "Directamente en el espacio de trabajo",
+    "childCount": "{count, plural, one {# subpágina} many {# subpáginas} other {# subpáginas}}",
+    "pathHint": "{path} · {count, plural, one {# subpágina} many {# subpáginas} other {# subpáginas}}",
+    "savedAs": "Guardado como <link>{title}</link>.",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "save": "Guardar"
+  },
+  "sourcePicker": {
+    "groupViews": "Vistas de esta base de datos",
+    "groupPages": "Páginas",
+    "groupSavedQueries": "Búsquedas guardadas",
+    "untitled": "Página sin título",
+    "placeholder": "Buscar página, base de datos o búsqueda guardada…",
+    "empty": "No se ha encontrado nada. Escribe al menos dos caracteres.",
+    "footer": "Al fijar, primero solo se incluye el nombre. Si se incluye el contenido, lo decides después en el chip."
+  },
+  "rules": {
+    "loading": "Cargando reglas…",
+    "empty": "Ninguna página está marcada como regla. Puedes hacerlo en las propiedades de una página, en «Regla de IA».",
+    "trigger": "Activador: {trigger}",
+    "rank": "Rango {rank}"
+  }
+}

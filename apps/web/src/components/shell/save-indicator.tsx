@@ -1,5 +1,7 @@
 'use client';
 
+import { useFormatter, useTranslations } from 'next-intl';
+
 import { cn } from '@exocortex/ui';
 
 import { useDocumentSession } from './document-session';
@@ -23,6 +25,8 @@ import { useDocumentSession } from './document-session';
  */
 export function SaveIndicator() {
   const { state } = useDocumentSession();
+  const t = useTranslations('shell.saveIndicator');
+  const format = useFormatter();
 
   if (state.documentId === null) return null;
 
@@ -43,19 +47,14 @@ export function SaveIndicator() {
         aria-hidden
         className={cn('size-1.5 rounded-full bg-muted-foreground/50', settled && 'exocortex-beat')}
       />
-      {local ? (
-        'lokal gesichert'
-      ) : !settled ? (
-        'gesichert'
-      ) : (
-        <>
-          gesichert <span className="exocortex-numeric">{formatTime(savedAt)}</span>
-        </>
-      )}
+      {local
+        ? t('local')
+        : !settled
+          ? t('saved')
+          : t.rich('savedAt', {
+              clock: format.dateTime(savedAt, { hour: '2-digit', minute: '2-digit' }),
+              time: (chunks) => <span className="exocortex-numeric">{chunks}</span>,
+            })}
     </span>
   );
-}
-
-function formatTime(epochMs: number): string {
-  return new Date(epochMs).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 }

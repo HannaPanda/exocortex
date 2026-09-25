@@ -1,0 +1,226 @@
+{
+  "panel": {
+    "chooseWorkspace": "Scegli un’area di lavoro.",
+    "requestFailed": "Impossibile avviare la richiesta.",
+    "newChat": "Nuova chat"
+  },
+  "transcript": {
+    "unavailableTitle": "Chat non disponibile",
+    "unavailableDescription": "Impossibile caricare la chat.",
+    "introTitle": "Assistente IA",
+    "introHint": "Fai una domanda o usa /help per i comandi.",
+    "boundarySummarized": "Cronologia precedente riassunta",
+    "boundaryCleared": "Contesto svuotato"
+  },
+  "message": {
+    "superseded": "Non fa più parte del contesto.",
+    "summary": "Riepilogo",
+    "showHistory": "Mostra cronologia",
+    "toolFallback": "Strumento",
+    "showToolResult": "{tool}: mostra risultato dello strumento",
+    "wikiLink": "Collegamento a pagina (non cliccabile nella chat)",
+    "copyMarkdown": "Copia risposta come Markdown",
+    "copiedMarkdown": "Risposta copiata come Markdown",
+    "copyTooltip": "Copia Markdown",
+    "copiedTooltip": "Copiato"
+  },
+  "composer": {
+    "label": "Messaggio per l’IA",
+    "placeholder": "Fai una domanda o usa /help per i comandi…",
+    "send": "Invia domanda",
+    "commandsLabel": "Comandi"
+  },
+  "commands": {
+    "clear": "Svuota il contesto, la cronologia rimane leggibile",
+    "new": "Avvia una nuova conversazione",
+    "model": "Cambia modello per questa conversazione",
+    "think": "Scegli livello di riflessione",
+    "vision": "Sostituisci modello Vision associato",
+    "compact": "Sintetizza subito il contesto",
+    "context": "Mostra o attiva/disattiva contesto della pagina e fonti fissate",
+    "rules": "Mostra pagine delle regole attive",
+    "tools": "Mostra strumenti disponibili",
+    "help": "Mostra questo elenco",
+    "titleArgument": "titolo?"
+  },
+  "run": {
+    "toolLine": {
+      "started": "Esecuzione dello strumento {tool}{hasTarget, select, yes { ({target})} other {}} in corso…",
+      "succeeded": "Strumento {tool}{hasTarget, select, yes { ({target})} other {}} … completato",
+      "failed": "Strumento {tool}{hasTarget, select, yes { ({target})} other {}} … non riuscito",
+      "refused": "Strumento {tool}{hasTarget, select, yes { ({target})} other {}} … rifiutato perché questa esecuzione ha letto contenuti esterni"
+    },
+    "target": {
+      "document": "Pagina {id}",
+      "workspace": "Area di lavoro {id}"
+    },
+    "phase": {
+      "tool": "Esecuzione dello strumento {tool}{hasTarget, select, yes { ({target})} other {}}",
+      "reasoning": "L’IA sta riflettendo",
+      "compacting": "Sintesi della cronologia precedente",
+      "writing": "Scrittura della risposta",
+      "generating": "Generazione della risposta"
+    },
+    "elapsedSeconds": "{seconds} s",
+    "elapsedMinutes": "{minutes} min {seconds} s",
+    "since": "{phase} · da {elapsed}",
+    "cancel": "Annulla",
+    "cancelling": "Annullamento in corso…",
+    "quietHint": "Ancora nessun nuovo riscontro. Un passaggio di riflessione o una chiamata a uno strumento può richiedere diversi minuti; con «Annulla» interrompi l’esecuzione.",
+    "gapHint": "Una parte del testo è andata persa durante il trasferimento. L’anteprima è stata ricaricata dal server.",
+    "cancelled": "Esecuzione annullata.",
+    "compacted": "La cronologia precedente è stata sintetizzata.",
+    "cancelFailed": "Impossibile annullare l’esecuzione.",
+    "failed": "Impossibile generare la risposta dell’IA.",
+    "errors": {
+      "ai_response_truncated": "La risposta è stata troncata al limite di output. Chiedi un passaggio più piccolo o aumenta «Lunghezza massima della risposta (token)» nell’amministrazione.",
+      "ai_tool_limit_exceeded": "L’IA ha utilizzato troppe chiamate agli strumenti.",
+      "ai_tool_call_invalid": "Una chiamata a uno strumento è arrivata incompleta e non è stata eseguita.",
+      "ai_budget_exceeded": "La risposta avrebbe superato il limite di costo per questa esecuzione.",
+      "ai_timeout": "L’IA ha impiegato troppo tempo."
+    }
+  },
+  "context": {
+    "selection": "Selezione ({count, plural, one {# blocco} many {# blocchi} other {# blocchi}})",
+    "selectionRemove": "Non includere la selezione",
+    "doNotSend": "Non includere",
+    "pageChip": "{collection, select, yes {Questo database} other {Questa pagina}}: {title}",
+    "pageRemove": "Non includere {collection, select, yes {questo database} other {questa pagina}}",
+    "pageAdd": "Includi {collection, select, yes {questo database} other {questa pagina}}",
+    "kinds": {
+      "PAGE": "Pagina",
+      "DATABASE_VIEW": "Vista database",
+      "SAVED_QUERY": "Ricerca salvata"
+    },
+    "sourceLabel": "{kind}: {title}",
+    "sourceLabelWithSubtitle": "{kind}: {title} ({subtitle})",
+    "sourceActions": "Azioni per {label}",
+    "costReference": "solo menzione",
+    "costEmpty": "ancora vuoto",
+    "costChars": "circa {chars, number} car.",
+    "costCharsTruncated": "circa {chars, number} car., troncato",
+    "referenceOnly": "Menziona solo il nome",
+    "embed": "Includi il contenuto",
+    "unpin": "Non fissare più",
+    "pin": "Fissa fonte",
+    "pinHint": "Fissa in modo permanente una pagina, una vista database o una ricerca salvata",
+    "pinFull": "{count, plural, one {Non è consentita più di # fonte} many {Non sono consentite più di # fonti} other {Non sono consentite più di # fonti}} qui.",
+    "pinFailed": "Impossibile fissare la fonte."
+  },
+  "meter": {
+    "label": "Utilizzo del contesto",
+    "percent": "{percent, number} %",
+    "estimated": "Circa {used, number} token occupati.",
+    "estimatedOf": "Circa {used, number} di {total, number} token occupati.",
+    "compactionHint": "A partire da circa il 70 %, la cronologia precedente viene riassunta automaticamente."
+  },
+  "models": {
+    "choose": "Scegli modello",
+    "default": "Predefinito",
+    "reasoningLevels": {
+      "none": "nessuno",
+      "minimal": "minimo",
+      "low": "basso",
+      "medium": "medio",
+      "high": "alto",
+      "xhigh": "molto alto",
+      "max": "massimo"
+    },
+    "noReasoning": "Questo modello non offre un livello di ragionamento selezionabile.",
+    "tooltipContext": "Contesto: {tokens, number} token",
+    "tooltipVisionYes": "Comprensione delle immagini: sì",
+    "tooltipVisionNo": "Comprensione delle immagini: no",
+    "tooltipVisionCompanion": "Comprensione delle immagini: no (modello complementare: {slug})",
+    "tooltipPrice": "Prezzo: {input} / {output} per milione di token",
+    "companionOff": "Disattivato",
+    "companionAuto": "Automatico",
+    "companionAutoWith": "Automatico ({slug})",
+    "companionAutoNone": "Automatico (nessuno)",
+    "companionTooltip": "Modello complementare automatico per la comprensione delle immagini: {slug}",
+    "companionTooltipNone": "Modello complementare automatico per la comprensione delle immagini: nessuno configurato",
+    "companionUnavailable": "Sarà disponibile non appena la chat sarà iniziata."
+  },
+  "conversations": {
+    "newChat": "Nuova chat",
+    "allChats": "Tutte le chat",
+    "rename": "Rinomina",
+    "archive": "Archivia",
+    "renameTitle": "Rinomina chat",
+    "newTitle": "Nuovo titolo",
+    "cancel": "Annulla",
+    "save": "Salva"
+  },
+  "chats": {
+    "title": "Chat",
+    "intro": "Tutte le chat IA di tutte le aree di lavoro. La ricerca include il testo dei messaggi, non solo i titoli.",
+    "loading": "Caricamento chat in corso…",
+    "nothingFoundTitle": "Nessun risultato trovato",
+    "nothingFoundDescription": "Nessuna cronologia contiene queste parole. La ricerca include anche le chat archiviate.",
+    "emptyTitle": "Nessuna chat",
+    "emptyDescription": "Non appena chiedi qualcosa nel pannello, la chat comparirà qui.",
+    "loadMore": "Carica altro",
+    "search": "Cerca",
+    "searchPlaceholder": "Parola dalla cronologia…",
+    "workspace": "Area di lavoro",
+    "all": "Tutte",
+    "state": "Stato",
+    "archivedFilter": {
+      "open": "Aperte",
+      "archived": "Archiviate",
+      "all": "Tutte"
+    },
+    "deleteTitle": "Elimina definitivamente",
+    "deleteDescription": "“{title}” verrà eliminata con tutti i messaggi. L’azione non può essere annullata. L’archiviazione conserva la cronologia e la nasconde soltanto.",
+    "deleteConfirm": "Elimina definitivamente"
+  },
+  "chatList": {
+    "archived": "archiviata",
+    "matches": "{count, plural, one {# risultato} many {# risultati} other {# risultati}}",
+    "notInContext": "(non più nel contesto)",
+    "rename": "Rinomina",
+    "archive": "Archivia",
+    "restore": "Ripristina"
+  },
+  "reader": {
+    "noneTitle": "Nessuna chat selezionata",
+    "noneDescription": "Seleziona una chat a sinistra per leggerne la cronologia.",
+    "unavailableTitle": "Cronologia non disponibile",
+    "unavailableDescription": "Impossibile caricare la chat.",
+    "archived": "archiviata",
+    "messages": "{count, plural, one {# messaggio} many {# messaggi} other {# messaggi}}",
+    "continue": "Continua nel pannello",
+    "saveAsPage": "Salva come pagina",
+    "delete": "Elimina definitivamente",
+    "emptyTitle": "Vuota",
+    "emptyDescription": "Non c’è ancora nulla in questa chat."
+  },
+  "saveDialog": {
+    "title": "Salva chat come pagina",
+    "description": "La cronologia verrà creata come pagina. La chat rimarrà invariata.",
+    "titleLabel": "Titolo",
+    "where": "Destinazione",
+    "rootLabel": "Livello principale",
+    "rootHint": "Direttamente nell’area di lavoro",
+    "childCount": "{count, plural, one {# sottopagina} many {# sottopagine} other {# sottopagine}}",
+    "pathHint": "{path} · {count, plural, one {# sottopagina} many {# sottopagine} other {# sottopagine}}",
+    "savedAs": "Salvato come <link>{title}</link>.",
+    "cancel": "Annulla",
+    "close": "Chiudi",
+    "save": "Salva"
+  },
+  "sourcePicker": {
+    "groupViews": "Viste di questo database",
+    "groupPages": "Pagine",
+    "groupSavedQueries": "Ricerche salvate",
+    "untitled": "Pagina senza titolo",
+    "placeholder": "Cerca pagina, database o ricerca salvata …",
+    "empty": "Nessun risultato. Digita almeno due caratteri.",
+    "footer": "All’inizio viene fissato solo il nome. Decidi poi dal chip se includere il contenuto."
+  },
+  "rules": {
+    "loading": "Caricamento delle regole …",
+    "empty": "Nessuna pagina è contrassegnata come regola. Puoi farlo nelle proprietà di una pagina, sotto “Regola IA”.",
+    "trigger": "Attivatore: {trigger}",
+    "rank": "Rango {rank}"
+  }
+}

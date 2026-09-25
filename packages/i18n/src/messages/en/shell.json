@@ -187,5 +187,10 @@
   "adminLayout": {
     "title": "Administration",
     "intro": "Settings, AI models, and user management for this installation."
+  },
+  "saveIndicator": {
+    "local": "saved locally",
+    "saved": "saved",
+    "savedAt": "saved at <time>{clock}</time>"
   }
 }

@@ -17,7 +17,11 @@ import {
   TableRow,
 } from '@exocortex/ui';
 
-import { invalidMessage, SETTING_LIST_CLASS, SettingRow } from '@/components/settings/setting-row';
+import {
+  SETTING_LIST_CLASS,
+  SettingRow,
+  useSettingMessages,
+} from '@/components/settings/setting-row';
 import { SettingsActionBar } from '@/components/settings/unsaved-changes-guard';
 
 import { NARROW_PROBE_TITLES, type NarrowProbe } from './probes';
@@ -115,6 +119,7 @@ const INITIAL: Partial<Settings> = {
 const REFUSED: SettingKey = 'ai.timeoutMs';
 
 function SettingsNarrow() {
+  const { invalidMessage } = useSettingMessages();
   const [values, setValues] = React.useState<Partial<Settings>>(INITIAL);
   return (
     <div className="flex min-h-full flex-col px-6 pt-4">

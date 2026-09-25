@@ -187,5 +187,10 @@
   "adminLayout": {
     "title": "Verwaltung",
     "intro": "Einstellungen, KI-Modelle und Nutzerverwaltung dieser Installation."
+  },
+  "saveIndicator": {
+    "local": "lokal gesichert",
+    "saved": "gesichert",
+    "savedAt": "gesichert <time>{clock}</time>"
   }
 }

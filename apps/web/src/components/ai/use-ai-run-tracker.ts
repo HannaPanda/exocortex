@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -27,20 +28,24 @@ export interface ToolActivityEntry {
 }
 
 /**
- * Reasons a run can fail that the user can actually do something about. Codes
- * outside this map keep the generic message. `ai_cancelled` is deliberately
- * absent: a user-triggered cancellation is shown as a neutral notice, not an
- * error (see `applyTerminalRunState`).
+ * Reasons a run can fail that the user can actually do something about; each
+ * one's sentence is `ai.run.errors.<code>`. Codes outside this list keep the
+ * generic message. `ai_cancelled` is deliberately absent: a user-triggered
+ * cancellation is shown as a neutral notice, not an error (see
+ * `applyTerminalRunState`).
  */
-const RUN_ERROR_MESSAGES: Record<string, string> = {
-  ai_response_truncated:
-    'Die Antwort wurde am Ausgabelimit abgeschnitten. Frage nach einem kleineren Schritt, ' +
-    'oder erhöhe „Maximale Antwortlänge (Tokens)“ in der Verwaltung.',
-  ai_tool_limit_exceeded: 'Die KI hat zu viele Werkzeugaufrufe gebraucht.',
-  ai_tool_call_invalid: 'Ein Werkzeugaufruf kam unvollständig an und wurde nicht ausgeführt.',
-  ai_budget_exceeded: 'Die Antwort hätte das Kostenlimit dieses Laufs überschritten.',
-  ai_timeout: 'Die KI hat zu lange gebraucht.',
-};
+const EXPLAINED_RUN_ERRORS = [
+  'ai_response_truncated',
+  'ai_tool_limit_exceeded',
+  'ai_tool_call_invalid',
+  'ai_budget_exceeded',
+  'ai_timeout',
+] as const;
+type ExplainedRunError = (typeof EXPLAINED_RUN_ERRORS)[number];
+
+function isExplainedRunError(code: string | null): code is ExplainedRunError {
+  return EXPLAINED_RUN_ERRORS.some((known) => known === code);
+}
 
 /** What `AiPanel` reads back from the tracker. */
 export interface AiRunTracker {
@@ -71,6 +76,7 @@ export interface AiRunTracker {
  * delta sequence. The panel only needs to know what to show.
  */
 export function useAiRunTracker(activeConversationId: string | null): AiRunTracker {
+  const t = useTranslations('ai.run');
   const queryClient = useQueryClient();
 
   const [activeRunId, setActiveRunId] = React.useState<string | null>(null);
@@ -147,7 +153,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
       }
       setStreamText('');
       if (status === 'cancelled') {
-        setNotice('Lauf abgebrochen.');
+        setNotice(t('cancelled'));
         return;
       }
       // The run's own diagnosis wins over the canned sentence when it has one
@@ -155,12 +161,10 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
       // already had, and what the run did with those calls is the part that
       // says what to try instead.
       setError(
-        errorDetail ??
-          RUN_ERROR_MESSAGES[errorCode ?? ''] ??
-          'Die KI-Antwort konnte nicht erzeugt werden.',
+        errorDetail ?? (isExplainedRunError(errorCode) ? t(`errors.${errorCode}`) : t('failed')),
       );
     },
-    [activeConversationId, queryClient],
+    [activeConversationId, queryClient, t],
   );
 
   // Applies a terminal status the poll (or a focus/reconnect refetch)
@@ -249,7 +253,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
 
   useRealtimeEvent('ai.conversation.compacted', (event) => {
     if (event.payload.conversationId !== activeConversationId) return;
-    setNotice('Älterer Verlauf wurde zusammengefasst.');
+    setNotice(t('compacted'));
     void queryClient.invalidateQueries({
       queryKey: aiQueryKeys.conversation(event.payload.conversationId),
     });
@@ -315,9 +319,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
         void runQuery.refetch();
         return;
       }
-      setError(
-        caught instanceof ApiError ? caught.message : 'Der Lauf konnte nicht abgebrochen werden.',
-      );
+      setError(caught instanceof ApiError ? caught.message : t('cancelFailed'));
     }
   };
   /** Starts tracking a run the panel just created. */

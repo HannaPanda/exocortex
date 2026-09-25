@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AiConversationMessage } from '@exocortex/contracts';
@@ -22,6 +23,7 @@ export interface ChatMessageProps {
  * result stays monospace -- neither is prose the model formatted.
  */
 export function ChatMessage({ message, streaming = false }: ChatMessageProps) {
+  const t = useTranslations('ai.message');
   // An assistant turn that only calls a tool carries no text (issue #86). The
   // row is persisted because the next request has to repeat it together with
   // its `toolCalls` (`ai-run/preparation.ts`), but a bubble for it would say
@@ -39,7 +41,7 @@ export function ChatMessage({ message, streaming = false }: ChatMessageProps) {
   return (
     <Tooltip>
       <TooltipTrigger render={<div className="opacity-60">{body}</div>} />
-      <TooltipContent>Nicht mehr Teil des Kontexts.</TooltipContent>
+      <TooltipContent>{t('superseded')}</TooltipContent>
     </Tooltip>
   );
 }
@@ -92,6 +94,7 @@ function ChatMessageBody({ message, streaming }: ChatMessageProps) {
 }
 
 function SystemMessage({ message }: { message: AiConversationMessage }) {
+  const t = useTranslations('ai.message');
   const [expanded, setExpanded] = React.useState(!message.isSummary);
 
   if (!message.isSummary) {
@@ -105,7 +108,7 @@ function SystemMessage({ message }: { message: AiConversationMessage }) {
   return (
     <div className="border-l-2 border-border pl-2 text-xs text-muted-foreground">
       <div className="flex items-center gap-2">
-        <Badge variant="muted">Zusammenfassung</Badge>
+        <Badge variant="muted">{t('summary')}</Badge>
         <button
           type="button"
           className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"
@@ -116,7 +119,7 @@ function SystemMessage({ message }: { message: AiConversationMessage }) {
           ) : (
             <ChevronRightIcon className="size-3" />
           )}
-          Verlauf anzeigen
+          {t('showHistory')}
         </button>
         {expanded ? <CopyMarkdownButton markdown={message.content} /> : null}
       </div>
@@ -130,6 +133,7 @@ function SystemMessage({ message }: { message: AiConversationMessage }) {
 }
 
 function ToolMessage({ message }: { message: AiConversationMessage }) {
+  const t = useTranslations('ai.message');
   const [expanded, setExpanded] = React.useState(false);
 
   return (
@@ -144,7 +148,7 @@ function ToolMessage({ message }: { message: AiConversationMessage }) {
         ) : (
           <ChevronRightIcon className="size-3" />
         )}
-        {message.toolName ?? 'Werkzeug'}: Werkzeugergebnis anzeigen
+        {t('showToolResult', { tool: message.toolName ?? t('toolFallback') })}
       </button>
       {expanded ? (
         <p

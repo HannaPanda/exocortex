@@ -1,0 +1,226 @@
+{
+  "panel": {
+    "chooseWorkspace": "Choose a workspace.",
+    "requestFailed": "The request could not be started.",
+    "newChat": "New chat"
+  },
+  "transcript": {
+    "unavailableTitle": "Chat unavailable",
+    "unavailableDescription": "The chat could not be loaded.",
+    "introTitle": "AI assistant",
+    "introHint": "Ask a question or use /help for commands.",
+    "boundarySummarized": "Older history summarized",
+    "boundaryCleared": "Context cleared"
+  },
+  "message": {
+    "superseded": "No longer part of the context.",
+    "summary": "Summary",
+    "showHistory": "Show history",
+    "toolFallback": "Tool",
+    "showToolResult": "{tool}: Show tool result",
+    "wikiLink": "Page link (not clickable in chat)",
+    "copyMarkdown": "Copy response as Markdown",
+    "copiedMarkdown": "Response copied as Markdown",
+    "copyTooltip": "Copy Markdown",
+    "copiedTooltip": "Copied"
+  },
+  "composer": {
+    "label": "Message to AI",
+    "placeholder": "Ask a question or /help for commands …",
+    "send": "Send question",
+    "commandsLabel": "Commands"
+  },
+  "commands": {
+    "clear": "Clear context, history remains readable",
+    "new": "Start a new conversation",
+    "model": "Switch model for this conversation",
+    "think": "Choose thinking level",
+    "vision": "Override companion vision model",
+    "compact": "Summarize context now",
+    "context": "Show or toggle page context and pinned sources",
+    "rules": "Show active rule pages",
+    "tools": "Show available tools",
+    "help": "Show this list",
+    "titleArgument": "title?"
+  },
+  "run": {
+    "toolLine": {
+      "started": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} running …",
+      "succeeded": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} … done",
+      "failed": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} … failed",
+      "refused": "Tool {tool}{hasTarget, select, yes { ({target})} other {}} … refused because this run read external content"
+    },
+    "target": {
+      "document": "Page {id}",
+      "workspace": "Workspace {id}"
+    },
+    "phase": {
+      "tool": "Running tool {tool}{hasTarget, select, yes { ({target})} other {}}",
+      "reasoning": "AI is thinking",
+      "compacting": "Summarizing older history",
+      "writing": "Writing response",
+      "generating": "Generating response"
+    },
+    "elapsedSeconds": "{seconds} s",
+    "elapsedMinutes": "{minutes} min {seconds} s",
+    "since": "{phase} · for {elapsed}",
+    "cancel": "Cancel",
+    "cancelling": "Cancelling …",
+    "quietHint": "No updates yet. A thinking step or tool call can take several minutes; use “Cancel” to stop the run.",
+    "gapHint": "Part of the text was lost along the way. The preview was reloaded from the server.",
+    "cancelled": "Run cancelled.",
+    "compacted": "Older history was summarized.",
+    "cancelFailed": "The run could not be cancelled.",
+    "failed": "The AI response could not be generated.",
+    "errors": {
+      "ai_response_truncated": "The response was truncated at the output limit. Ask for a smaller step, or increase “Maximum response length (tokens)” in administration.",
+      "ai_tool_limit_exceeded": "The AI used too many tool calls.",
+      "ai_tool_call_invalid": "A tool call arrived incomplete and was not executed.",
+      "ai_budget_exceeded": "The response would have exceeded the cost limit for this run.",
+      "ai_timeout": "The AI took too long."
+    }
+  },
+  "context": {
+    "selection": "Selection ({count, plural, one {# block} other {# blocks}})",
+    "selectionRemove": "Don’t include selection",
+    "doNotSend": "Don’t include",
+    "pageChip": "{collection, select, yes {This database} other {This page}}: {title}",
+    "pageRemove": "Don’t include {collection, select, yes {this database} other {this page}}",
+    "pageAdd": "Include {collection, select, yes {this database} other {this page}}",
+    "kinds": {
+      "PAGE": "Page",
+      "DATABASE_VIEW": "Database view",
+      "SAVED_QUERY": "Saved search"
+    },
+    "sourceLabel": "{kind}: {title}",
+    "sourceLabelWithSubtitle": "{kind}: {title} ({subtitle})",
+    "sourceActions": "Actions for {label}",
+    "costReference": "mentioned only",
+    "costEmpty": "still empty",
+    "costChars": "approx. {chars, number} ch.",
+    "costCharsTruncated": "approx. {chars, number} ch., truncated",
+    "referenceOnly": "Mention name only",
+    "embed": "Include content",
+    "unpin": "Unpin",
+    "pin": "Pin source",
+    "pinHint": "Permanently pin a page, database view, or saved search",
+    "pinFull": "No more than {count, plural, one {# source is} other {# sources are}} allowed here.",
+    "pinFailed": "The source could not be pinned."
+  },
+  "meter": {
+    "label": "Context usage",
+    "percent": "{percent, number}%",
+    "estimated": "Estimated {used, number} tokens used.",
+    "estimatedOf": "Estimated {used, number} of {total, number} tokens used.",
+    "compactionHint": "Starting around 70%, older history is automatically summarized."
+  },
+  "models": {
+    "choose": "Choose model",
+    "default": "Default",
+    "reasoningLevels": {
+      "none": "none",
+      "minimal": "minimal",
+      "low": "low",
+      "medium": "medium",
+      "high": "high",
+      "xhigh": "very high",
+      "max": "maximum"
+    },
+    "noReasoning": "This model does not offer a selectable reasoning level.",
+    "tooltipContext": "Context: {tokens, number} tokens",
+    "tooltipVisionYes": "Vision: yes",
+    "tooltipVisionNo": "Vision: no",
+    "tooltipVisionCompanion": "Vision: no (companion model: {slug})",
+    "tooltipPrice": "Price: {input} / {output} per million tokens",
+    "companionOff": "Off",
+    "companionAuto": "Automatic",
+    "companionAutoWith": "Automatic ({slug})",
+    "companionAutoNone": "Automatic (none)",
+    "companionTooltip": "Automatic companion for vision: {slug}",
+    "companionTooltipNone": "Automatic companion for vision: none configured",
+    "companionUnavailable": "Becomes available once the chat has started."
+  },
+  "conversations": {
+    "newChat": "New chat",
+    "allChats": "All chats",
+    "rename": "Rename",
+    "archive": "Archive",
+    "renameTitle": "Rename chat",
+    "newTitle": "New title",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "chats": {
+    "title": "Chats",
+    "intro": "All AI chats across workspaces. Search includes message text, not just titles.",
+    "loading": "Loading chats…",
+    "nothingFoundTitle": "Nothing found",
+    "nothingFoundDescription": "No history contains these words. Archived chats were searched as well.",
+    "emptyTitle": "No chats",
+    "emptyDescription": "As soon as you ask something in the panel, the chat will appear here.",
+    "loadMore": "Load more",
+    "search": "Search",
+    "searchPlaceholder": "Word from history…",
+    "workspace": "Workspace",
+    "all": "All",
+    "state": "Status",
+    "archivedFilter": {
+      "open": "Open",
+      "archived": "Archived",
+      "all": "All"
+    },
+    "deleteTitle": "Delete permanently",
+    "deleteDescription": "“{title}” will be deleted along with all messages. This cannot be undone. Archiving keeps the history and just hides it.",
+    "deleteConfirm": "Delete permanently"
+  },
+  "chatList": {
+    "archived": "archived",
+    "matches": "{count, plural, one {# match} other {# matches}}",
+    "notInContext": "(no longer in context)",
+    "rename": "Rename",
+    "archive": "Archive",
+    "restore": "Restore"
+  },
+  "reader": {
+    "noneTitle": "No chat selected",
+    "noneDescription": "Select a chat on the left to read its history.",
+    "unavailableTitle": "History unavailable",
+    "unavailableDescription": "The chat could not be loaded.",
+    "archived": "archived",
+    "messages": "{count, plural, one {# message} other {# messages}}",
+    "continue": "Continue in panel",
+    "saveAsPage": "Save as page",
+    "delete": "Delete permanently",
+    "emptyTitle": "Empty",
+    "emptyDescription": "There is nothing in this chat yet."
+  },
+  "saveDialog": {
+    "title": "Save chat as page",
+    "description": "The history will be created as a page. The chat itself stays as it is.",
+    "titleLabel": "Title",
+    "where": "Where",
+    "rootLabel": "Top level",
+    "rootHint": "Directly in the workspace",
+    "childCount": "{count, plural, one {# subpage} other {# subpages}}",
+    "pathHint": "{path} · {count, plural, one {# subpage} other {# subpages}}",
+    "savedAs": "Saved as <link>{title}</link>.",
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save"
+  },
+  "sourcePicker": {
+    "groupViews": "Views of this database",
+    "groupPages": "Pages",
+    "groupSavedQueries": "Saved searches",
+    "untitled": "Untitled page",
+    "placeholder": "Search page, database, or saved search …",
+    "empty": "Nothing found. Type at least two characters.",
+    "footer": "At first, only the name is pinned. You can decide on the chip afterwards whether to include the content."
+  },
+  "rules": {
+    "loading": "Loading rules …",
+    "empty": "No page is marked as a rule. You can do this in a page’s properties under “AI rule”.",
+    "trigger": "Trigger: {trigger}",
+    "rank": "Rank {rank}"
+  }
+}

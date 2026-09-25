@@ -1,0 +1,226 @@
+{
+  "panel": {
+    "chooseWorkspace": "Wybierz obszar roboczy.",
+    "requestFailed": "Nie udało się rozpocząć zapytania.",
+    "newChat": "Nowy czat"
+  },
+  "transcript": {
+    "unavailableTitle": "Czat niedostępny",
+    "unavailableDescription": "Nie udało się załadować czatu.",
+    "introTitle": "Asystent AI",
+    "introHint": "Zadaj pytanie lub wpisz /help, aby wyświetlić polecenia.",
+    "boundarySummarized": "Starsza historia została podsumowana",
+    "boundaryCleared": "Kontekst wyczyszczony"
+  },
+  "message": {
+    "superseded": "Nie jest już częścią kontekstu.",
+    "summary": "Podsumowanie",
+    "showHistory": "Pokaż historię",
+    "toolFallback": "Narzędzie",
+    "showToolResult": "{tool}: Pokaż wynik narzędzia",
+    "wikiLink": "Odnośnik do strony (nieklikalny na czacie)",
+    "copyMarkdown": "Kopiuj odpowiedź jako Markdown",
+    "copiedMarkdown": "Skopiowano odpowiedź jako Markdown",
+    "copyTooltip": "Kopiuj Markdown",
+    "copiedTooltip": "Skopiowano"
+  },
+  "composer": {
+    "label": "Wiadomość do AI",
+    "placeholder": "Zadaj pytanie lub wpisz /help, aby wyświetlić polecenia…",
+    "send": "Wyślij pytanie",
+    "commandsLabel": "Polecenia"
+  },
+  "commands": {
+    "clear": "Wyczyść kontekst, historia pozostaje czytelna",
+    "new": "Rozpocznij nową rozmowę",
+    "model": "Zmień model dla tej rozmowy",
+    "think": "Wybierz poziom myślenia",
+    "vision": "Zastąp model pomocniczy wizji",
+    "compact": "Podsumuj kontekst teraz",
+    "context": "Pokaż lub przełącz kontekst strony i przypięte źródła",
+    "rules": "Pokaż aktywne strony reguł",
+    "tools": "Pokaż dostępne narzędzia",
+    "help": "Pokaż tę listę",
+    "titleArgument": "tytuł?"
+  },
+  "run": {
+    "toolLine": {
+      "started": "Narzędzie {tool}{hasTarget, select, yes { ({target})} other {}} jest wykonywane…",
+      "succeeded": "Narzędzie {tool}{hasTarget, select, yes { ({target})} other {}} … ukończono",
+      "failed": "Narzędzie {tool}{hasTarget, select, yes { ({target})} other {}} … nie powiodło się",
+      "refused": "Narzędzie {tool}{hasTarget, select, yes { ({target})} other {}} … odrzucono, ponieważ ten przebieg odczytał treści zewnętrzne"
+    },
+    "target": {
+      "document": "Strona {id}",
+      "workspace": "Obszar roboczy {id}"
+    },
+    "phase": {
+      "tool": "Uruchamianie narzędzia {tool}{hasTarget, select, yes { ({target})} other {}}",
+      "reasoning": "AI myśli",
+      "compacting": "Podsumowywanie starszej historii",
+      "writing": "Pisanie odpowiedzi",
+      "generating": "Generowanie odpowiedzi"
+    },
+    "elapsedSeconds": "{seconds} s",
+    "elapsedMinutes": "{minutes} min {seconds} s",
+    "since": "{phase} · od {elapsed}",
+    "cancel": "Anuluj",
+    "cancelling": "Anulowanie…",
+    "quietHint": "Brak nowych informacji. Krok myślenia lub wywołanie narzędzia może potrwać kilka minut; przyciskiem „Anuluj” przerwiesz działanie.",
+    "gapHint": "Część tekstu została utracona po drodze. Podgląd został ponownie załadowany z serwera.",
+    "cancelled": "Działanie anulowane.",
+    "compacted": "Starsza historia została podsumowana.",
+    "cancelFailed": "Nie udało się anulować działania.",
+    "failed": "Nie udało się wygenerować odpowiedzi AI.",
+    "errors": {
+      "ai_response_truncated": "Odpowiedź została obcięta z powodu limitu wyjściowego. Poproś o mniejszy krok lub zwiększ „Maksymalną długość odpowiedzi (tokeny)” w administracji.",
+      "ai_tool_limit_exceeded": "AI wykonała zbyt wiele wywołań narzędzi.",
+      "ai_tool_call_invalid": "Wywołanie narzędzia dotarło niekompletne i nie zostało wykonane.",
+      "ai_budget_exceeded": "Odpowiedź przekroczyłaby limit kosztów tego działania.",
+      "ai_timeout": "AI potrzebowała zbyt wiele czasu."
+    }
+  },
+  "context": {
+    "selection": "Zaznaczenie ({count, plural, one {# blok} few {# bloki} many {# bloków} other {# bloku}})",
+    "selectionRemove": "Nie dołączaj zaznaczenia",
+    "doNotSend": "Nie dołączaj",
+    "pageChip": "{collection, select, yes {Ta baza danych} other {Ta strona}}: {title}",
+    "pageRemove": "Nie dołączaj {collection, select, yes {tej bazy danych} other {tej strony}}",
+    "pageAdd": "Dołącz {collection, select, yes {tę bazę danych} other {tę stronę}}",
+    "kinds": {
+      "PAGE": "Strona",
+      "DATABASE_VIEW": "Widok bazy danych",
+      "SAVED_QUERY": "Zapisane wyszukiwanie"
+    },
+    "sourceLabel": "{kind}: {title}",
+    "sourceLabelWithSubtitle": "{kind}: {title} ({subtitle})",
+    "sourceActions": "Działania dla: {label}",
+    "costReference": "tylko wspomniane",
+    "costEmpty": "jeszcze puste",
+    "costChars": "ok. {chars, number} zn.",
+    "costCharsTruncated": "ok. {chars, number} zn., skrócone",
+    "referenceOnly": "Podaj tylko nazwę",
+    "embed": "Dołącz treść",
+    "unpin": "Odepnij",
+    "pin": "Przypnij źródło",
+    "pinHint": "Przypnij na stałe stronę, widok bazy danych lub zapisane wyszukiwanie",
+    "pinFull": "{count, plural, one {Więcej niż # źródło nie jest tutaj dozwolone.} few {Więcej niż # źródła nie są tutaj dozwolone.} many {Więcej niż # źródeł nie jest tutaj dozwolonych.} other {Więcej niż # źródła nie jest tutaj dozwolone.}}",
+    "pinFailed": "Nie udało się przypiąć źródła."
+  },
+  "meter": {
+    "label": "Użycie kontekstu",
+    "percent": "{percent, number} %",
+    "estimated": "Szacunkowo zajęto {used, number} tokenów.",
+    "estimatedOf": "Szacunkowo zajęto {used, number} z {total, number} tokenów.",
+    "compactionHint": "Od około 70 % wcześniejsza historia jest automatycznie podsumowywana."
+  },
+  "models": {
+    "choose": "Wybierz model",
+    "default": "Domyślny",
+    "reasoningLevels": {
+      "none": "brak",
+      "minimal": "minimalny",
+      "low": "niski",
+      "medium": "średni",
+      "high": "wysoki",
+      "xhigh": "bardzo wysoki",
+      "max": "maksymalny"
+    },
+    "noReasoning": "Ten model nie oferuje wyboru poziomu myślenia.",
+    "tooltipContext": "Kontekst: {tokens, number} tokenów",
+    "tooltipVisionYes": "Rozumienie obrazu: tak",
+    "tooltipVisionNo": "Rozumienie obrazu: nie",
+    "tooltipVisionCompanion": "Rozumienie obrazu: nie (model pomocniczy: {slug})",
+    "tooltipPrice": "Cena: {input} / {output} za mln tokenów",
+    "companionOff": "Wył.",
+    "companionAuto": "Automatycznie",
+    "companionAutoWith": "Automatycznie ({slug})",
+    "companionAutoNone": "Automatycznie (brak)",
+    "companionTooltip": "Automatyczny model pomocniczy do rozumienia obrazu: {slug}",
+    "companionTooltipNone": "Automatyczny model pomocniczy do rozumienia obrazu: żaden nie jest skonfigurowany",
+    "companionUnavailable": "Dostępne po rozpoczęciu czatu."
+  },
+  "conversations": {
+    "newChat": "Nowy czat",
+    "allChats": "Wszystkie czaty",
+    "rename": "Zmień nazwę",
+    "archive": "Zarchiwizuj",
+    "renameTitle": "Zmień nazwę czatu",
+    "newTitle": "Nowy tytuł",
+    "cancel": "Anuluj",
+    "save": "Zapisz"
+  },
+  "chats": {
+    "title": "Czaty",
+    "intro": "Wszystkie czaty AI ze wszystkich obszarów roboczych. Wyszukiwanie obejmuje treść wiadomości, a nie tylko tytuły.",
+    "loading": "Wczytywanie czatów…",
+    "nothingFoundTitle": "Nic nie znaleziono",
+    "nothingFoundDescription": "Żadna historia nie zawiera tych słów. Przeszukano również zarchiwizowane czaty.",
+    "emptyTitle": "Brak czatów",
+    "emptyDescription": "Gdy tylko o coś zapytasz w panelu, czat pojawi się tutaj.",
+    "loadMore": "Wczytaj więcej",
+    "search": "Szukaj",
+    "searchPlaceholder": "Słowo z historii…",
+    "workspace": "Obszar roboczy",
+    "all": "Wszystkie",
+    "state": "Stan",
+    "archivedFilter": {
+      "open": "Otwarte",
+      "archived": "Zarchiwizowane",
+      "all": "Wszystkie"
+    },
+    "deleteTitle": "Usuń trwale",
+    "deleteDescription": "„{title}” zostanie usunięty wraz ze wszystkimi wiadomościami. Tej operacji nie można cofnąć. Archiwizacja zachowuje historię i tylko ją ukrywa.",
+    "deleteConfirm": "Usuń trwale"
+  },
+  "chatList": {
+    "archived": "zarchiwizowane",
+    "matches": "{count, plural, one {# wynik} few {# wyniki} many {# wyników} other {# wyniku}}",
+    "notInContext": "(już poza kontekstem)",
+    "rename": "Zmień nazwę",
+    "archive": "Zarchiwizuj",
+    "restore": "Przywróć"
+  },
+  "reader": {
+    "noneTitle": "Nie wybrano czatu",
+    "noneDescription": "Wybierz czat po lewej stronie, aby przeczytać jego historię.",
+    "unavailableTitle": "Historia niedostępna",
+    "unavailableDescription": "Nie udało się wczytać czatu.",
+    "archived": "zarchiwizowane",
+    "messages": "{count, plural, one {# wiadomość} few {# wiadomości} many {# wiadomości} other {# wiadomości}}",
+    "continue": "Kontynuuj w panelu",
+    "saveAsPage": "Zapisz jako stronę",
+    "delete": "Usuń trwale",
+    "emptyTitle": "Pusty",
+    "emptyDescription": "W tym czacie jeszcze nic nie ma."
+  },
+  "saveDialog": {
+    "title": "Zapisz czat jako stronę",
+    "description": "Historia zostanie zapisana jako strona. Sam czat pozostanie bez zmian.",
+    "titleLabel": "Tytuł",
+    "where": "Gdzie",
+    "rootLabel": "Poziom główny",
+    "rootHint": "Bezpośrednio w obszarze roboczym",
+    "childCount": "{count, plural, one {# podstrona} few {# podstrony} many {# podstron} other {# podstrony}}",
+    "pathHint": "{path} · {count, plural, one {# podstrona} few {# podstrony} many {# podstron} other {# podstrony}}",
+    "savedAs": "Zapisano jako <link>{title}</link>.",
+    "cancel": "Anuluj",
+    "close": "Zamknij",
+    "save": "Zapisz"
+  },
+  "sourcePicker": {
+    "groupViews": "Widoki tej bazy danych",
+    "groupPages": "Strony",
+    "groupSavedQueries": "Zapisane wyszukiwania",
+    "untitled": "Strona bez tytułu",
+    "placeholder": "Szukaj strony, bazy danych lub zapisanego wyszukiwania …",
+    "empty": "Nic nie znaleziono. Wpisz co najmniej dwa znaki.",
+    "footer": "Początkowo przypinana jest tylko nazwa. To, czy dołączona zostanie treść, decydujesz potem na chipie."
+  },
+  "rules": {
+    "loading": "Ładowanie reguł …",
+    "empty": "Żadna strona nie jest oznaczona jako reguła. Możesz to zrobić we właściwościach strony, w sekcji „Reguła AI”.",
+    "trigger": "Wyzwalacz: {trigger}",
+    "rank": "Ranga {rank}"
+  }
+}

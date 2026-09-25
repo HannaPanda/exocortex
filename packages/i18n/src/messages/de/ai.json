@@ -1,0 +1,226 @@
+{
+  "panel": {
+    "chooseWorkspace": "Wähle einen Arbeitsbereich.",
+    "requestFailed": "Die Anfrage konnte nicht gestartet werden.",
+    "newChat": "Neuer Chat"
+  },
+  "transcript": {
+    "unavailableTitle": "Chat nicht verfügbar",
+    "unavailableDescription": "Der Chat konnte nicht geladen werden.",
+    "introTitle": "KI-Assistenz",
+    "introHint": "Stelle eine Frage oder nutze /help für Befehle.",
+    "boundarySummarized": "Älterer Verlauf zusammengefasst",
+    "boundaryCleared": "Kontext geleert"
+  },
+  "message": {
+    "superseded": "Nicht mehr Teil des Kontexts.",
+    "summary": "Zusammenfassung",
+    "showHistory": "Verlauf anzeigen",
+    "toolFallback": "Werkzeug",
+    "showToolResult": "{tool}: Werkzeugergebnis anzeigen",
+    "wikiLink": "Seitenverweis (im Chat nicht anklickbar)",
+    "copyMarkdown": "Antwort als Markdown kopieren",
+    "copiedMarkdown": "Antwort als Markdown kopiert",
+    "copyTooltip": "Markdown kopieren",
+    "copiedTooltip": "Kopiert"
+  },
+  "composer": {
+    "label": "Nachricht an die KI",
+    "placeholder": "Frage stellen oder /help für Befehle …",
+    "send": "Frage senden",
+    "commandsLabel": "Befehle"
+  },
+  "commands": {
+    "clear": "Kontext leeren, Verlauf bleibt lesbar",
+    "new": "Neue Unterhaltung starten",
+    "model": "Modell dieser Unterhaltung wechseln",
+    "think": "Denkstufe wählen",
+    "vision": "Vision-Begleitmodell überschreiben",
+    "compact": "Kontext jetzt zusammenfassen",
+    "context": "Seitenkontext und angeheftete Quellen anzeigen oder umschalten",
+    "rules": "Aktive Regelseiten anzeigen",
+    "tools": "Verfügbare Werkzeuge anzeigen",
+    "help": "Diese Liste anzeigen",
+    "titleArgument": "titel?"
+  },
+  "run": {
+    "toolLine": {
+      "started": "Werkzeug {tool}{hasTarget, select, yes { ({target})} other {}} wird ausgeführt …",
+      "succeeded": "Werkzeug {tool}{hasTarget, select, yes { ({target})} other {}} … fertig",
+      "failed": "Werkzeug {tool}{hasTarget, select, yes { ({target})} other {}} … fehlgeschlagen",
+      "refused": "Werkzeug {tool}{hasTarget, select, yes { ({target})} other {}} … abgelehnt, weil dieser Lauf Fremdinhalte gelesen hat"
+    },
+    "target": {
+      "document": "Seite {id}",
+      "workspace": "Arbeitsbereich {id}"
+    },
+    "phase": {
+      "tool": "Werkzeug {tool}{hasTarget, select, yes { ({target})} other {}} wird ausgeführt",
+      "reasoning": "KI denkt nach",
+      "compacting": "Älterer Verlauf wird zusammengefasst",
+      "writing": "Antwort wird geschrieben",
+      "generating": "Antwort wird erzeugt"
+    },
+    "elapsedSeconds": "{seconds} s",
+    "elapsedMinutes": "{minutes} min {seconds} s",
+    "since": "{phase} · seit {elapsed}",
+    "cancel": "Abbrechen",
+    "cancelling": "Wird abgebrochen …",
+    "quietHint": "Noch keine neue Rückmeldung. Ein Denkschritt oder ein Werkzeugaufruf darf mehrere Minuten dauern; mit „Abbrechen“ beendest du den Lauf.",
+    "gapHint": "Ein Teil des Textes ging unterwegs verloren. Die Vorschau wurde vom Server neu geladen.",
+    "cancelled": "Lauf abgebrochen.",
+    "compacted": "Älterer Verlauf wurde zusammengefasst.",
+    "cancelFailed": "Der Lauf konnte nicht abgebrochen werden.",
+    "failed": "Die KI-Antwort konnte nicht erzeugt werden.",
+    "errors": {
+      "ai_response_truncated": "Die Antwort wurde am Ausgabelimit abgeschnitten. Frage nach einem kleineren Schritt, oder erhöhe „Maximale Antwortlänge (Tokens)“ in der Verwaltung.",
+      "ai_tool_limit_exceeded": "Die KI hat zu viele Werkzeugaufrufe gebraucht.",
+      "ai_tool_call_invalid": "Ein Werkzeugaufruf kam unvollständig an und wurde nicht ausgeführt.",
+      "ai_budget_exceeded": "Die Antwort hätte das Kostenlimit dieses Laufs überschritten.",
+      "ai_timeout": "Die KI hat zu lange gebraucht."
+    }
+  },
+  "context": {
+    "selection": "Auswahl ({count, plural, one {# Block} other {# Blöcke}})",
+    "selectionRemove": "Auswahl nicht mitschicken",
+    "doNotSend": "Nicht mitschicken",
+    "pageChip": "{collection, select, yes {Diese Datenbank} other {Diese Seite}}: {title}",
+    "pageRemove": "{collection, select, yes {Diese Datenbank} other {Diese Seite}} nicht mitschicken",
+    "pageAdd": "{collection, select, yes {Diese Datenbank} other {Diese Seite}} mitschicken",
+    "kinds": {
+      "PAGE": "Seite",
+      "DATABASE_VIEW": "Datenbankansicht",
+      "SAVED_QUERY": "Gespeicherte Suche"
+    },
+    "sourceLabel": "{kind}: {title}",
+    "sourceLabelWithSubtitle": "{kind}: {title} ({subtitle})",
+    "sourceActions": "Aktionen für {label}",
+    "costReference": "nur genannt",
+    "costEmpty": "noch leer",
+    "costChars": "etwa {chars, number} Z.",
+    "costCharsTruncated": "etwa {chars, number} Z., gekürzt",
+    "referenceOnly": "Nur den Namen nennen",
+    "embed": "Inhalt mitschicken",
+    "unpin": "Nicht mehr anheften",
+    "pin": "Quelle anheften",
+    "pinHint": "Seite, Datenbankansicht oder gespeicherte Suche dauerhaft anheften",
+    "pinFull": "Mehr als {count, plural, one {# Quelle ist} other {# Quellen sind}} hier nicht erlaubt.",
+    "pinFailed": "Die Quelle ließ sich nicht anheften."
+  },
+  "meter": {
+    "label": "Kontextauslastung",
+    "percent": "{percent, number} %",
+    "estimated": "Geschätzt {used, number} Tokens belegt.",
+    "estimatedOf": "Geschätzt {used, number} von {total, number} Tokens belegt.",
+    "compactionHint": "Ab etwa 70 % wird älterer Verlauf automatisch zusammengefasst."
+  },
+  "models": {
+    "choose": "Modell wählen",
+    "default": "Standard",
+    "reasoningLevels": {
+      "none": "keine",
+      "minimal": "minimal",
+      "low": "niedrig",
+      "medium": "mittel",
+      "high": "hoch",
+      "xhigh": "sehr hoch",
+      "max": "maximal"
+    },
+    "noReasoning": "Dieses Modell bietet keine wählbare Denkstufe.",
+    "tooltipContext": "Kontext: {tokens, number} Tokens",
+    "tooltipVisionYes": "Bildverständnis: ja",
+    "tooltipVisionNo": "Bildverständnis: nein",
+    "tooltipVisionCompanion": "Bildverständnis: nein (Begleitmodell: {slug})",
+    "tooltipPrice": "Preis: {input} / {output} pro Mio. Tokens",
+    "companionOff": "Aus",
+    "companionAuto": "Automatisch",
+    "companionAutoWith": "Automatisch ({slug})",
+    "companionAutoNone": "Automatisch (keiner)",
+    "companionTooltip": "Automatischer Begleiter für Bildverständnis: {slug}",
+    "companionTooltipNone": "Automatischer Begleiter für Bildverständnis: keiner konfiguriert",
+    "companionUnavailable": "Wird verfügbar, sobald der Chat begonnen hat."
+  },
+  "conversations": {
+    "newChat": "Neuer Chat",
+    "allChats": "Alle Chats",
+    "rename": "Umbenennen",
+    "archive": "Archivieren",
+    "renameTitle": "Chat umbenennen",
+    "newTitle": "Neuer Titel",
+    "cancel": "Abbrechen",
+    "save": "Speichern"
+  },
+  "chats": {
+    "title": "Chats",
+    "intro": "Alle KI-Chats, über die Arbeitsbereiche hinweg. Die Suche geht über den Nachrichtentext, nicht nur über die Titel.",
+    "loading": "Chats werden geladen …",
+    "nothingFoundTitle": "Nichts gefunden",
+    "nothingFoundDescription": "Kein Verlauf enthält diese Wörter. Auch archivierte Chats wurden durchsucht.",
+    "emptyTitle": "Keine Chats",
+    "emptyDescription": "Sobald du im Panel etwas fragst, taucht der Chat hier auf.",
+    "loadMore": "Mehr laden",
+    "search": "Suchen",
+    "searchPlaceholder": "Wort aus dem Verlauf …",
+    "workspace": "Arbeitsbereich",
+    "all": "Alle",
+    "state": "Zustand",
+    "archivedFilter": {
+      "open": "Offene",
+      "archived": "Archivierte",
+      "all": "Alle"
+    },
+    "deleteTitle": "Endgültig löschen",
+    "deleteDescription": "„{title}“ wird mit allen Nachrichten gelöscht. Das lässt sich nicht rückgängig machen. Archivieren behält den Verlauf und blendet ihn nur aus.",
+    "deleteConfirm": "Endgültig löschen"
+  },
+  "chatList": {
+    "archived": "archiviert",
+    "matches": "{count, plural, one {# Treffer} other {# Treffer}}",
+    "notInContext": "(nicht mehr im Kontext)",
+    "rename": "Umbenennen",
+    "archive": "Archivieren",
+    "restore": "Wiederherstellen"
+  },
+  "reader": {
+    "noneTitle": "Kein Chat gewählt",
+    "noneDescription": "Wähle links einen Chat, um seinen Verlauf zu lesen.",
+    "unavailableTitle": "Verlauf nicht verfügbar",
+    "unavailableDescription": "Der Chat konnte nicht geladen werden.",
+    "archived": "archiviert",
+    "messages": "{count, plural, one {# Nachricht} other {# Nachrichten}}",
+    "continue": "Im Panel fortsetzen",
+    "saveAsPage": "Als Seite sichern",
+    "delete": "Endgültig löschen",
+    "emptyTitle": "Leer",
+    "emptyDescription": "In diesem Chat steht noch nichts."
+  },
+  "saveDialog": {
+    "title": "Chat als Seite speichern",
+    "description": "Der Verlauf wird als Seite angelegt. Der Chat selbst bleibt, wie er ist.",
+    "titleLabel": "Titel",
+    "where": "Wohin",
+    "rootLabel": "Oberste Ebene",
+    "rootHint": "Direkt im Arbeitsbereich",
+    "childCount": "{count, plural, one {# Unterseite} other {# Unterseiten}}",
+    "pathHint": "{path} · {count, plural, one {# Unterseite} other {# Unterseiten}}",
+    "savedAs": "Gesichert als <link>{title}</link>.",
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "save": "Speichern"
+  },
+  "sourcePicker": {
+    "groupViews": "Ansichten dieser Datenbank",
+    "groupPages": "Seiten",
+    "groupSavedQueries": "Gespeicherte Suchen",
+    "untitled": "Unbenannte Seite",
+    "placeholder": "Seite, Datenbank oder gespeicherte Suche suchen …",
+    "empty": "Nichts gefunden. Tippe mindestens zwei Zeichen.",
+    "footer": "Angeheftet wird zuerst nur der Name. Ob der Inhalt mitgeht, entscheidest du danach am Chip."
+  },
+  "rules": {
+    "loading": "Regeln werden geladen …",
+    "empty": "Keine Seite ist als Regel markiert. Das geht in den Eigenschaften einer Seite, unter „KI-Regel“.",
+    "trigger": "Auslöser: {trigger}",
+    "rank": "Rang {rank}"
+  }
+}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -63,15 +64,10 @@ import { activeConversationKey } from './panel-state';
  * The reasoning is written out in the issue.
  */
 
-const ARCHIVED_LABELS: Record<AiConversationArchivedFilter, string> = {
-  open: 'Offene',
-  archived: 'Archivierte',
-  all: 'Alle',
-};
-
 const SEARCH_DEBOUNCE_MS = 300;
 
 export function ChatsPage() {
+  const t = useTranslations('ai.chats');
   const router = useRouter();
   const params = useSearchParams();
 
@@ -211,11 +207,8 @@ export function ChatsPage() {
   return (
     <AppPage maxWidth="max-w-6xl">
       <div>
-        <h1 className="exocortex-page-title">Chats</h1>
-        <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-          Alle KI-Chats, über die Arbeitsbereiche hinweg. Die Suche geht über den Nachrichtentext,
-          nicht nur über die Titel.
-        </p>
+        <h1 className="exocortex-page-title">{t('title')}</h1>
+        <p className="mt-1 max-w-measure text-sm text-muted-foreground">{t('intro')}</p>
       </div>
 
       <ChatFilters
@@ -232,15 +225,11 @@ export function ChatsPage() {
       <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         <div className="min-w-0">
           {loading ? (
-            <LoadingState label="Chats werden geladen …" />
+            <LoadingState label={t('loading')} />
           ) : listed.length === 0 ? (
             <EmptyState
-              title={searching ? 'Nichts gefunden' : 'Keine Chats'}
-              description={
-                searching
-                  ? 'Kein Verlauf enthält diese Wörter. Auch archivierte Chats wurden durchsucht.'
-                  : 'Sobald du im Panel etwas fragst, taucht der Chat hier auf.'
-              }
+              title={searching ? t('nothingFoundTitle') : t('emptyTitle')}
+              description={searching ? t('nothingFoundDescription') : t('emptyDescription')}
             />
           ) : (
             <>
@@ -265,7 +254,7 @@ export function ChatsPage() {
                   disabled={chats.isFetchingNextPage}
                   onClick={() => void chats.fetchNextPage()}
                 >
-                  Mehr laden
+                  {t('loadMore')}
                 </Button>
               ) : null}
             </>
@@ -327,21 +316,22 @@ function ChatFilters({
   onWorkspaceChange: (value: string | null) => void;
   workspaces: readonly { id: string; name: string }[];
 }) {
+  const t = useTranslations('ai.chats');
   return (
     <div className="mt-6 flex flex-wrap items-end gap-3">
       <div className="flex min-w-56 flex-1 flex-col gap-1.5">
-        <Label htmlFor="chat-search">Suchen</Label>
+        <Label htmlFor="chat-search">{t('search')}</Label>
         <Input
           id="chat-search"
           value={query}
-          placeholder="Wort aus dem Verlauf …"
+          placeholder={t('searchPlaceholder')}
           data-testid="chat-search"
           onChange={(event) => onQueryChange(event.target.value)}
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="chat-workspace">Arbeitsbereich</Label>
+        <Label htmlFor="chat-workspace">{t('workspace')}</Label>
         <Select
           value={workspaceId ?? 'all'}
           onValueChange={(next) => onWorkspaceChange(next === 'all' ? null : next)}
@@ -350,13 +340,13 @@ function ChatFilters({
             <SelectValue>
               {() =>
                 workspaceId === null
-                  ? 'Alle'
-                  : (workspaces.find((workspace) => workspace.id === workspaceId)?.name ?? 'Alle')
+                  ? t('all')
+                  : (workspaces.find((workspace) => workspace.id === workspaceId)?.name ?? t('all'))
               }
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Alle</SelectItem>
+            <SelectItem value="all">{t('all')}</SelectItem>
             {workspaces.map((workspace) => (
               <SelectItem key={workspace.id} value={workspace.id}>
                 {workspace.name}
@@ -367,7 +357,7 @@ function ChatFilters({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="chat-archived">Zustand</Label>
+        <Label htmlFor="chat-archived">{t('state')}</Label>
         <Select
           value={archived}
           onValueChange={(next) => onArchivedChange(next as AiConversationArchivedFilter)}
@@ -378,12 +368,14 @@ function ChatFilters({
             disabled={searching}
             data-testid="chat-archived"
           >
-            <SelectValue>{() => (searching ? 'Alle' : ARCHIVED_LABELS[archived])}</SelectValue>
+            <SelectValue>
+              {() => (searching ? t('all') : t(`archivedFilter.${archived}`))}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {(['open', 'archived', 'all'] as const).map((value) => (
               <SelectItem key={value} value={value}>
-                {ARCHIVED_LABELS[value]}
+                {t(`archivedFilter.${value}`)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -406,14 +398,15 @@ function RenameDialog({
   onClose: () => void;
   onSubmit: () => void;
 }) {
+  const t = useTranslations('ai.conversations');
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Chat umbenennen</DialogTitle>
+          <DialogTitle>{t('renameTitle')}</DialogTitle>
         </DialogHeader>
         <label htmlFor="chat-rename-title" className="sr-only">
-          Neuer Titel
+          {t('newTitle')}
         </label>
         <Input
           id="chat-rename-title"
@@ -430,10 +423,10 @@ function RenameDialog({
         />
         <DialogFooter>
           <Button variant="ghost" onClick={onClose}>
-            Abbrechen
+            {t('cancel')}
           </Button>
           <Button onClick={onSubmit} disabled={value.trim().length === 0}>
-            Speichern
+            {t('save')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -453,19 +446,20 @@ function DeleteDialog({
   onClose: () => void;
   onConfirm: () => void;
 }) {
+  const t = useTranslations('ai.chats');
+  const common = useTranslations('ai.conversations');
   return (
     <Dialog open={conversation !== null} onOpenChange={(next) => !next && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Endgültig löschen</DialogTitle>
+          <DialogTitle>{t('deleteTitle')}</DialogTitle>
           <DialogDescription>
-            „{conversation?.title}“ wird mit allen Nachrichten gelöscht. Das lässt sich nicht
-            rückgängig machen. Archivieren behält den Verlauf und blendet ihn nur aus.
+            {t('deleteDescription', { title: conversation?.title ?? '' })}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button variant="ghost" onClick={onClose}>
-            Abbrechen
+            {common('cancel')}
           </Button>
           <Button
             variant="destructive"
@@ -473,7 +467,7 @@ function DeleteDialog({
             data-testid="chat-delete-confirm"
             onClick={onConfirm}
           >
-            Endgültig löschen
+            {t('deleteConfirm')}
           </Button>
         </DialogFooter>
       </DialogContent>

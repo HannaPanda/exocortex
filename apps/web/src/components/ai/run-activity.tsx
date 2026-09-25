@@ -1,6 +1,7 @@
 'use client';
 
 import { XIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Button, cn } from '@exocortex/ui';
 
@@ -16,12 +17,12 @@ export interface RunActivityProps {
   cancelling: boolean;
 }
 
-function formatElapsed(ms: number): string {
+/** Minutes and zero-padded seconds, or `null` minutes below one minute. */
+function splitElapsed(ms: number): { minutes: number | null; seconds: string } {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  if (totalSeconds < 60) return `${totalSeconds} s`;
-  const minutes = Math.floor(totalSeconds / 60);
+  if (totalSeconds < 60) return { minutes: null, seconds: String(totalSeconds) };
   const seconds = totalSeconds % 60;
-  return `${minutes} min ${seconds.toString().padStart(2, '0')} s`;
+  return { minutes: Math.floor(totalSeconds / 60), seconds: seconds.toString().padStart(2, '0') };
 }
 
 /**
@@ -38,6 +39,12 @@ export function RunActivity({
   onCancel,
   cancelling,
 }: RunActivityProps) {
+  const t = useTranslations('ai.run');
+  const { minutes, seconds } = splitElapsed(elapsedMs);
+  const elapsed =
+    minutes === null
+      ? t('elapsedSeconds', { seconds })
+      : t('elapsedMinutes', { minutes: String(minutes), seconds });
   return (
     <div
       data-testid="ai-run-activity"
@@ -60,7 +67,7 @@ export function RunActivity({
           className={cn('min-w-0 flex-1 truncate', quiet && 'font-medium')}
           data-testid="ai-run-phase"
         >
-          {phaseLabel} · seit {formatElapsed(elapsedMs)}
+          {t('since', { phase: phaseLabel, elapsed })}
         </span>
         <Button
           variant="outline"
@@ -70,24 +77,15 @@ export function RunActivity({
           data-testid="ai-cancel-run"
         >
           <XIcon aria-hidden />
-          {cancelling ? 'Wird abgebrochen …' : 'Abbrechen'}
+          {cancelling ? t('cancelling') : t('cancel')}
         </Button>
       </div>
       {/* Past the threshold the line stops being a decorative pulse and says
           what a long silence actually means: still allowed, still cancellable.
           Without this, a legitimate three-minute tool call and a dead run look
           exactly alike. */}
-      {quiet ? (
-        <p data-testid="ai-run-quiet-hint">
-          Noch keine neue Rückmeldung. Ein Denkschritt oder ein Werkzeugaufruf darf mehrere Minuten
-          dauern; mit „Abbrechen“ beendest du den Lauf.
-        </p>
-      ) : null}
-      {gapDetected ? (
-        <p data-testid="ai-run-gap-hint">
-          Ein Teil des Textes ging unterwegs verloren. Die Vorschau wurde vom Server neu geladen.
-        </p>
-      ) : null}
+      {quiet ? <p data-testid="ai-run-quiet-hint">{t('quietHint')}</p> : null}
+      {gapDetected ? <p data-testid="ai-run-gap-hint">{t('gapHint')}</p> : null}
     </div>
   );
 }

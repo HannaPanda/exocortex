@@ -1,13 +1,13 @@
 'use client';
 
 import { ArrowRightIcon, FileTextIcon, TrashIcon } from 'lucide-react';
-import * as React from 'react';
+import { useTranslations } from 'next-intl';
 
 import { type AiConversation } from '@exocortex/contracts';
 import { Badge, Button, EmptyState, ErrorState, LoadingState } from '@exocortex/ui';
 
 import { useAiConversation } from '@/lib/api/ai-queries';
-import { formatRelativeTime } from '@/lib/relative-time';
+import { useRelativeTime } from '@/lib/relative-time';
 
 import { Transcript } from './transcript';
 
@@ -32,22 +32,19 @@ export function ChatReader({
   onSaveAsPage,
   onDelete,
 }: ChatReaderProps) {
+  const t = useTranslations('ai.reader');
+  const formatRelativeTime = useRelativeTime();
   const detail = useAiConversation(conversationId);
 
   if (conversationId === null) {
-    return (
-      <EmptyState
-        title="Kein Chat gewählt"
-        description="Wähle links einen Chat, um seinen Verlauf zu lesen."
-      />
-    );
+    return <EmptyState title={t('noneTitle')} description={t('noneDescription')} />;
   }
   if (detail.isPending) return <LoadingState variant="skeleton" rows={6} />;
   if (detail.isError || detail.data === undefined) {
     return (
       <ErrorState
-        title="Verlauf nicht verfügbar"
-        description="Der Chat konnte nicht geladen werden."
+        title={t('unavailableTitle')}
+        description={t('unavailableDescription')}
         onRetry={() => void detail.refetch()}
       />
     );
@@ -59,19 +56,19 @@ export function ChatReader({
       <header className="flex flex-col gap-2 border-b border-border p-3">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="min-w-0 flex-1 text-sm font-semibold break-words">{conversation.title}</h2>
-          {conversation.archivedAt === null ? null : <Badge variant="secondary">archiviert</Badge>}
+          {conversation.archivedAt === null ? null : (
+            <Badge variant="secondary">{t('archived')}</Badge>
+          )}
         </div>
         <p className="text-xs text-muted-foreground">
-          {conversation.messageCount === 1
-            ? '1 Nachricht'
-            : `${String(conversation.messageCount)} Nachrichten`}
+          {t('messages', { count: conversation.messageCount })}
           {' · '}
           {formatRelativeTime(conversation.lastMessageAt)}
           {conversation.modelSlug === null ? null : ` · ${conversation.modelSlug}`}
         </p>
         <div className="flex flex-wrap gap-2">
           <Button size="sm" data-testid="chat-continue" onClick={() => onContinue(conversation)}>
-            <ArrowRightIcon /> Im Panel fortsetzen
+            <ArrowRightIcon /> {t('continue')}
           </Button>
           <Button
             size="sm"
@@ -79,7 +76,7 @@ export function ChatReader({
             data-testid="chat-to-page"
             onClick={() => onSaveAsPage(conversation)}
           >
-            <FileTextIcon /> Als Seite sichern
+            <FileTextIcon /> {t('saveAsPage')}
           </Button>
           <Button
             size="sm"
@@ -87,14 +84,14 @@ export function ChatReader({
             data-testid="chat-delete"
             onClick={() => onDelete(conversation)}
           >
-            <TrashIcon /> Endgültig löschen
+            <TrashIcon /> {t('delete')}
           </Button>
         </div>
       </header>
 
       <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3" data-testid="chat-transcript">
         {messages.length === 0 ? (
-          <EmptyState title="Leer" description="In diesem Chat steht noch nichts." />
+          <EmptyState title={t('emptyTitle')} description={t('emptyDescription')} />
         ) : (
           <Transcript messages={messages} />
         )}

@@ -1,5 +1,7 @@
 'use client';
 
+import { useFormatter, useTranslations } from 'next-intl';
+
 import {
   type AiModel,
   aiModelVendorLabel,
@@ -20,24 +22,10 @@ import {
   TooltipTrigger,
 } from '@exocortex/ui';
 
-const REASONING_LABELS: Record<AiReasoningLevel, string> = {
-  none: 'keine',
-  minimal: 'minimal',
-  low: 'niedrig',
-  medium: 'mittel',
-  high: 'hoch',
-  xhigh: 'sehr hoch',
-  max: 'maximal',
-};
-
 /** Sentinel for "no vision companion for this conversation" (request sends `'off'`). */
 const OFF_COMPANION = 'off';
 /** Sentinel for "use the admin-configured default companion" (request sends `null`). */
 const AUTO_COMPANION = 'auto';
-
-function formatPriceUsd(microUsdPerMillionTokens: number): string {
-  return (microUsdPerMillionTokens / 1_000_000).toFixed(2).replace('.', ',');
-}
 
 /**
  * The model's name without the vendor said twice (issue #116).
@@ -56,22 +44,32 @@ function modelLabel(model: AiModel): string {
     : model.displayName;
 }
 
-function modelTooltip(model: AiModel): string {
-  const vision = model.supportsVision
-    ? 'ja'
-    : `nein${model.visionCompanionSlug !== null ? ` (Begleitmodell: ${model.visionCompanionSlug})` : ''}`;
-  return [
-    model.slug,
-    `Kontext: ${model.contextWindowTokens.toLocaleString('de-DE')} Tokens`,
-    `Bildverständnis: ${vision}`,
-    `Preis: $${formatPriceUsd(model.inputMicroUsdPerMTok)} / $${formatPriceUsd(model.outputMicroUsdPerMTok)} pro Mio. Tokens`,
-  ].join('\n');
-}
-
-/** The trigger only ever shows "Automatisch"; the companion slug goes into the
- * tooltip and the dropdown list, where a whole model slug actually fits. */
-function visionCompanionTooltip(companionSlug: string | null): string {
-  return `Automatischer Begleiter für Bildverständnis: ${companionSlug ?? 'keiner konfiguriert'}`;
+/** The model's facts in the reader's language, one per line: slug, context, vision, price. */
+function useModelTooltip(): (model: AiModel) => string {
+  const t = useTranslations('ai.models');
+  const format = useFormatter();
+  // Prices are stored in micro-dollars per million tokens and shown in dollars.
+  const usd = (microUsdPerMillionTokens: number): string =>
+    format.number(microUsdPerMillionTokens / 1_000_000, {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  return (model) =>
+    [
+      model.slug,
+      t('tooltipContext', { tokens: model.contextWindowTokens }),
+      model.supportsVision
+        ? t('tooltipVisionYes')
+        : model.visionCompanionSlug === null
+          ? t('tooltipVisionNo')
+          : t('tooltipVisionCompanion', { slug: model.visionCompanionSlug }),
+      t('tooltipPrice', {
+        input: usd(model.inputMicroUsdPerMTok),
+        output: usd(model.outputMicroUsdPerMTok),
+      }),
+    ].join('\n');
 }
 
 export interface ModelPickerProps {
@@ -104,6 +102,8 @@ export function ModelPicker({
   onReasoningLevelChange,
   onVisionCompanionChange,
 }: ModelPickerProps) {
+  const t = useTranslations('ai.models');
+  const modelTooltip = useModelTooltip();
   const selectedModel = models.find((model) => model.slug === modelSlug) ?? models[0];
   const reasoningLevels = selectedModel?.reasoningLevels ?? [];
   const reasoningDisabled = reasoningLevels.length <= 1;
@@ -127,9 +127,7 @@ export function ModelPicker({
                 data-testid="ai-model-picker"
               >
                 <SelectValue>
-                  {() =>
-                    selectedModel === undefined ? 'Modell wählen' : modelLabel(selectedModel)
-                  }
+                  {() => (selectedModel === undefined ? t('choose') : modelLabel(selectedModel))}
                 </SelectValue>
               </SelectTrigger>
             }
@@ -149,7 +147,7 @@ export function ModelPicker({
                   <span className="flex min-w-0 items-center gap-1.5">
                     <span className="truncate">{modelLabel(model)}</span>
                     {model.slug === defaultModelSlug ? (
-                      <Badge variant="muted">Standard</Badge>
+                      <Badge variant="muted">{t('default')}</Badge>
                     ) : null}
                   </span>
                 </SelectItem>
@@ -172,18 +170,16 @@ export function ModelPicker({
                 className="min-w-0 max-w-[7rem]"
                 data-testid="ai-reasoning-picker"
               >
-                <SelectValue>{() => REASONING_LABELS[reasoningLevel]}</SelectValue>
+                <SelectValue>{() => t(`reasoningLevels.${reasoningLevel}`)}</SelectValue>
               </SelectTrigger>
             }
           />
-          {reasoningDisabled ? (
-            <TooltipContent>Dieses Modell bietet keine wählbare Denkstufe.</TooltipContent>
-          ) : null}
+          {reasoningDisabled ? <TooltipContent>{t('noReasoning')}</TooltipContent> : null}
         </Tooltip>
         <SelectContent>
           {reasoningLevels.map((level) => (
             <SelectItem key={level} value={level}>
-              {REASONING_LABELS[level]}
+              {t(`reasoningLevels.${level}`)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -207,22 +203,31 @@ export function ModelPicker({
                   data-testid="ai-vision-companion-picker"
                 >
                   <SelectValue>
-                    {(value: string) => (value === OFF_COMPANION ? 'Aus' : 'Automatisch')}
+                    {(value: string) =>
+                      value === OFF_COMPANION ? t('companionOff') : t('companionAuto')
+                    }
                   </SelectValue>
                 </SelectTrigger>
               }
             />
             <TooltipContent>
-              {visionCompanionEditable
-                ? visionCompanionTooltip(selectedModel.visionCompanionSlug)
-                : 'Wird verfügbar, sobald der Chat begonnen hat.'}
+              {/* The trigger only ever shows "Automatisch"; the companion slug goes
+                  into the tooltip and the dropdown list, where a whole model slug
+                  actually fits. */}
+              {!visionCompanionEditable
+                ? t('companionUnavailable')
+                : selectedModel.visionCompanionSlug === null
+                  ? t('companionTooltipNone')
+                  : t('companionTooltip', { slug: selectedModel.visionCompanionSlug })}
             </TooltipContent>
           </Tooltip>
           <SelectContent>
             <SelectItem value={AUTO_COMPANION}>
-              Automatisch ({selectedModel.visionCompanionSlug ?? '–'})
+              {selectedModel.visionCompanionSlug === null
+                ? t('companionAutoNone')
+                : t('companionAutoWith', { slug: selectedModel.visionCompanionSlug })}
             </SelectItem>
-            <SelectItem value={OFF_COMPANION}>Aus</SelectItem>
+            <SelectItem value={OFF_COMPANION}>{t('companionOff')}</SelectItem>
             {groupAiModelsByVendor(visionCompanions).map((group) => (
               <SelectGroup key={group.vendor}>
                 <SelectLabel>{group.label}</SelectLabel>

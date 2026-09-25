@@ -1,6 +1,7 @@
 'use client';
 
 import { Loader2Icon, SendIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { CHAT_COMMANDS } from '@exocortex/contracts';
@@ -17,6 +18,7 @@ export interface ChatComposerProps {
 const COMMAND_PREFIX_PATTERN = /^\/([a-z]*)$/i;
 
 export function ChatComposer({ disabled, onSubmit }: ChatComposerProps) {
+  const t = useTranslations('ai.composer');
   const [value, setValue] = React.useState('');
   const [sending, setSending] = React.useState(false);
   const [hintIndex, setHintIndex] = React.useState(0);
@@ -64,7 +66,7 @@ export function ChatComposer({ disabled, onSubmit }: ChatComposerProps) {
     // above sit inside the same bordered block instead of behind a second rule.
     <div className="relative p-2">
       <label htmlFor="ai-composer-input" className="sr-only">
-        Nachricht an die KI
+        {t('label')}
       </label>
 
       {matches.length > 0 ? (
@@ -76,7 +78,7 @@ export function ChatComposer({ disabled, onSubmit }: ChatComposerProps) {
           id="ai-composer-input"
           rows={2}
           value={value}
-          placeholder="Frage stellen oder /help für Befehle …"
+          placeholder={t('placeholder')}
           data-testid="ai-input"
           disabled={disabled || sending}
           onChange={(event) => setValue(event.target.value)}
@@ -115,7 +117,7 @@ export function ChatComposer({ disabled, onSubmit }: ChatComposerProps) {
         />
         <Button
           size="icon"
-          aria-label="Frage senden"
+          aria-label={t('send')}
           data-testid="ai-send"
           disabled={disabled || sending || value.trim().length === 0}
           onClick={() => void submit()}

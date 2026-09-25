@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { renderTitlePattern, TEMPLATE_TITLE_PLACEHOLDERS } from '@exocortex/contracts';
@@ -95,6 +96,7 @@ export function TemplateSettingsDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations('document.templateSettings');
   const templates = useTemplates(open ? workspaceId : undefined);
 
   const existing =
@@ -143,11 +145,8 @@ export function TemplateSettingsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent data-testid="template-settings">
         <DialogHeader>
-          <DialogTitle>{existing === null ? 'Als Vorlage markieren' : 'Vorlage'}</DialogTitle>
-          <DialogDescription>
-            Aus dieser Seite lassen sich dann neue Seiten anlegen. Die Seite selbst bleibt, wo sie
-            ist, und bleibt eine gewöhnliche Seite.
-          </DialogDescription>
+          <DialogTitle>{existing === null ? t('titleMark') : t('titleEdit')}</DialogTitle>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         {writer.error === undefined ? null : (
@@ -158,34 +157,38 @@ export function TemplateSettingsDialog({
 
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="template-description">Wofür ist die Vorlage? (optional)</Label>
+            <Label htmlFor="template-description">{t('purpose')}</Label>
             <Textarea
               id="template-description"
               rows={2}
               value={description}
-              placeholder="Steht in der Auswahl unter dem Titel"
+              placeholder={t('purposePlaceholder')}
               data-testid="template-description"
               onChange={(event) => setDescription(event.target.value)}
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="template-pattern">Titelmuster (optional)</Label>
+            <Label htmlFor="template-pattern">{t('pattern')}</Label>
             <Input
               id="template-pattern"
               value={titlePattern}
-              placeholder="Wochenreview KW{{kw}}"
+              placeholder={t('patternPlaceholder', { token: '{{kw}}' })}
               data-testid="template-pattern"
               onChange={(event) => setTitlePattern(event.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-              Ergibt gerade: <span className="text-foreground">{preview}</span>
+              {t.rich('preview', {
+                preview,
+                result: (chunks) => <span className="text-foreground">{chunks}</span>,
+              })}
             </p>
             <p className="text-xs text-muted-foreground">
-              Möglich:{' '}
-              {Object.keys(TEMPLATE_TITLE_PLACEHOLDERS)
-                .map((name) => `{{${name}}}`)
-                .join(', ')}
+              {t('placeholders', {
+                placeholders: Object.keys(TEMPLATE_TITLE_PLACEHOLDERS)
+                  .map((name) => `{{${name}}}`)
+                  .join(', '),
+              })}
             </p>
           </div>
         </div>
@@ -199,14 +202,14 @@ export function TemplateSettingsDialog({
               data-testid="template-unmark"
               onClick={writer.unmark}
             >
-              Keine Vorlage mehr
+              {t('unmark')}
             </Button>
           )}
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Abbrechen
+            {t('cancel')}
           </Button>
           <Button onClick={save} disabled={writer.pending} data-testid="template-save">
-            {existing === null ? 'Als Vorlage markieren' : 'Speichern'}
+            {existing === null ? t('mark') : t('save')}
           </Button>
         </DialogFooter>
       </DialogContent>

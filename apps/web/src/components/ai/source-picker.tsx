@@ -1,6 +1,7 @@
 'use client';
 
 import { FileTextIcon, ListFilterIcon, TableIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AddAiConversationSourceRequest } from '@exocortex/contracts';
@@ -41,6 +42,7 @@ export function SourcePicker({
   onOpenChange,
   onPick,
 }: SourcePickerProps) {
+  const t = useTranslations('ai.sourcePicker');
   const [query, setQuery] = React.useState('');
   const search = useSearch(open ? workspaceId : undefined, query);
   // Only while the menu is open: a workspace's stored questions are not worth a
@@ -65,7 +67,7 @@ export function SourcePicker({
     for (const view of views.data ?? []) {
       entries.push({
         id: `view-${view.id}`,
-        group: 'Ansichten dieser Datenbank',
+        group: t('groupViews'),
         label: view.name,
         icon: <TableIcon className="size-4 text-muted-foreground" />,
         onSelect: () =>
@@ -82,8 +84,8 @@ export function SourcePicker({
       const collection = result.type === 'COLLECTION';
       entries.push({
         id: `page-${result.documentId}`,
-        group: 'Seiten',
-        label: result.title.trim().length === 0 ? 'Unbenannte Seite' : result.title,
+        group: t('groupPages'),
+        label: result.title.trim().length === 0 ? t('untitled') : result.title,
         hint: result.path.map((entry) => entry.title).join(' / '),
         icon: collection ? (
           <TableIcon className="size-4 text-muted-foreground" />
@@ -102,7 +104,7 @@ export function SourcePicker({
     for (const savedQuery of savedQueries.data?.savedQueries ?? []) {
       entries.push({
         id: `query-${savedQuery.id}`,
-        group: 'Gespeicherte Suchen',
+        group: t('groupSavedQueries'),
         label: savedQuery.name,
         hint: savedQuery.description ?? undefined,
         icon: <ListFilterIcon className="size-4 text-muted-foreground" />,
@@ -112,7 +114,7 @@ export function SourcePicker({
     }
 
     return entries;
-  }, [openDocumentId, pick, savedQueries.data, search.data, views.data]);
+  }, [openDocumentId, pick, savedQueries.data, search.data, t, views.data]);
 
   return (
     <CommandPalette
@@ -121,14 +123,9 @@ export function SourcePicker({
       query={query}
       onQueryChange={setQuery}
       items={items}
-      placeholder="Seite, Datenbank oder gespeicherte Suche suchen …"
-      emptyLabel="Nichts gefunden. Tippe mindestens zwei Zeichen."
-      footer={
-        <span>
-          Angeheftet wird zuerst nur der Name. Ob der Inhalt mitgeht, entscheidest du danach am
-          Chip.
-        </span>
-      }
+      placeholder={t('placeholder')}
+      emptyLabel={t('empty')}
+      footer={<span>{t('footer')}</span>}
     />
   );
 }

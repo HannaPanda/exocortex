@@ -1,6 +1,7 @@
 'use client';
 
 import { CheckIcon, CopyIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -181,15 +182,7 @@ function renderText(node: ProseMirrorNode, key: string): React.ReactNode {
   if (link !== undefined) {
     const href = typeof link.attrs?.href === 'string' ? link.attrs.href : '';
     if (href.startsWith(WIKI_LINK_SCHEME)) {
-      return (
-        <span
-          key={key}
-          className="italic text-muted-foreground"
-          title="Seitenverweis (im Chat nicht anklickbar)"
-        >
-          {content}
-        </span>
-      );
+      return <WikiReference key={key}>{content}</WikiReference>;
     }
     return (
       <a
@@ -409,7 +402,18 @@ export function ReadingMarkdown({ content, className }: { content: string; class
  * unreachable -- and that source is exactly what one would want to paste
  * onward, so a copy button ships alongside the renderer rather than later.
  */
+/** A `[[page]]` reference: shown, not followed, because the chat has no page routes to resolve it against. */
+function WikiReference({ children }: { children: React.ReactNode }) {
+  const t = useTranslations('ai.message');
+  return (
+    <span className="italic text-muted-foreground" title={t('wikiLink')}>
+      {children}
+    </span>
+  );
+}
+
 export function CopyMarkdownButton({ markdown }: { markdown: string }) {
+  const t = useTranslations('ai.message');
   const [copied, setCopied] = React.useState(false);
 
   const copy = async (): Promise<void> => {
@@ -425,7 +429,7 @@ export function CopyMarkdownButton({ markdown }: { markdown: string }) {
           <Button
             variant="ghost"
             size="icon-sm"
-            aria-label={copied ? 'Antwort als Markdown kopiert' : 'Antwort als Markdown kopieren'}
+            aria-label={copied ? t('copiedMarkdown') : t('copyMarkdown')}
             data-testid="chat-copy-markdown"
             onClick={() => void copy()}
           >
@@ -433,7 +437,7 @@ export function CopyMarkdownButton({ markdown }: { markdown: string }) {
           </Button>
         }
       />
-      <TooltipContent>{copied ? 'Kopiert' : 'Markdown kopieren'}</TooltipContent>
+      <TooltipContent>{copied ? t('copiedTooltip') : t('copyTooltip')}</TooltipContent>
     </Tooltip>
   );
 }

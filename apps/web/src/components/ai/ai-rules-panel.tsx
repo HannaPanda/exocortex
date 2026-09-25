@@ -1,11 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import * as React from 'react';
+import { useTranslations } from 'next-intl';
 
 import { Badge, LoadingState } from '@exocortex/ui';
 
-import { AI_RULE_MODE_LABELS } from '@/components/document/page-properties-dialog';
 import { useAiRules } from '@/lib/api/ai-queries';
 
 /**
@@ -23,16 +22,13 @@ import { useAiRules } from '@/lib/api/ai-queries';
  */
 export function AiRulesPanel({ workspaceId }: { workspaceId: string }) {
   const rules = useAiRules(workspaceId);
+  const t = useTranslations('ai.rules');
+  const modeLabel = useTranslations('document.aiRuleModes');
 
-  if (rules.data === undefined) return <LoadingState label="Regeln werden geladen …" />;
+  if (rules.data === undefined) return <LoadingState label={t('loading')} />;
 
   if (rules.data.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground">
-        Keine Seite ist als Regel markiert. Das geht in den Eigenschaften einer Seite, unter
-        „KI-Regel“.
-      </p>
-    );
+    return <p className="text-sm text-muted-foreground">{t('empty')}</p>;
   }
 
   return (
@@ -50,13 +46,15 @@ export function AiRulesPanel({ workspaceId }: { workspaceId: string }) {
             {rule.title}
           </Link>
           <Badge variant={rule.mode === 'always' ? 'default' : 'secondary'}>
-            {AI_RULE_MODE_LABELS[rule.mode]}
+            {modeLabel(rule.mode)}
           </Badge>
           {rule.trigger === null ? null : (
-            <span className="text-xs text-muted-foreground">Auslöser: {rule.trigger}</span>
+            <span className="text-xs text-muted-foreground">
+              {t('trigger', { trigger: rule.trigger })}
+            </span>
           )}
           <span className="ms-auto text-xs text-muted-foreground">
-            Rang {String(rule.priority)}
+            {t('rank', { rank: String(rule.priority) })}
           </span>
         </li>
       ))}

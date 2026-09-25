@@ -2,6 +2,7 @@
 
 import { ArchiveIcon, ChevronDownIcon, ListIcon, PencilIcon, PlusIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AiConversation } from '@exocortex/contracts';
@@ -26,7 +27,7 @@ import {
   useArchiveAiConversation,
   useUpdateAiConversation,
 } from '@/lib/api/ai-queries';
-import { formatRelativeTime } from '@/lib/relative-time';
+import { useRelativeTime } from '@/lib/relative-time';
 
 export interface ConversationSwitcherProps {
   workspaceId: string;
@@ -50,6 +51,8 @@ export function ConversationSwitcher({
   onSelect,
   onCreateNew,
 }: ConversationSwitcherProps) {
+  const t = useTranslations('ai.conversations');
+  const formatRelativeTime = useRelativeTime();
   const conversations = useAiConversations(workspaceId);
   const updateConversation = useUpdateAiConversation();
   const archiveConversation = useArchiveAiConversation();
@@ -94,7 +97,7 @@ export function ConversationSwitcher({
               className="min-w-0 gap-1"
               data-testid="ai-conversation-switcher"
             >
-              <span className="max-w-[14rem] truncate">{active?.title ?? 'Neuer Chat'}</span>
+              <span className="max-w-[14rem] truncate">{active?.title ?? t('newChat')}</span>
               <ChevronDownIcon className="size-3.5 shrink-0 text-muted-foreground" />
             </Button>
           }
@@ -107,14 +110,14 @@ export function ConversationSwitcher({
               onCreateNew();
             }}
           >
-            <PlusIcon /> Neuer Chat
+            <PlusIcon /> {t('newChat')}
           </DropdownMenuItem>
           <DropdownMenuItem
             data-testid="ai-all-conversations"
             render={<Link href="/chats" />}
             onClick={() => setMenuOpen(false)}
           >
-            <ListIcon /> Alle Chats
+            <ListIcon /> {t('allChats')}
           </DropdownMenuItem>
           {visible.length > 0 ? <DropdownMenuSeparator /> : null}
           {visible.map((conversation) => (
@@ -133,7 +136,7 @@ export function ConversationSwitcher({
               </DropdownMenuItem>
               <button
                 type="button"
-                aria-label="Umbenennen"
+                aria-label={t('rename')}
                 className="shrink-0 rounded-sm p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 onClick={(event) => {
                   event.stopPropagation();
@@ -145,7 +148,7 @@ export function ConversationSwitcher({
               </button>
               <button
                 type="button"
-                aria-label="Archivieren"
+                aria-label={t('archive')}
                 className="shrink-0 rounded-sm p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 onClick={(event) => {
                   event.stopPropagation();
@@ -162,10 +165,10 @@ export function ConversationSwitcher({
       <Dialog open={renaming !== null} onOpenChange={(open) => !open && setRenaming(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Chat umbenennen</DialogTitle>
+            <DialogTitle>{t('renameTitle')}</DialogTitle>
           </DialogHeader>
           <label htmlFor="ai-conversation-rename" className="sr-only">
-            Neuer Titel
+            {t('newTitle')}
           </label>
           <Input
             id="ai-conversation-rename"
@@ -181,10 +184,10 @@ export function ConversationSwitcher({
           />
           <DialogFooter>
             <Button variant="ghost" onClick={() => setRenaming(null)}>
-              Abbrechen
+              {t('cancel')}
             </Button>
             <Button onClick={() => void submitRename()} disabled={renameValue.trim().length === 0}>
-              Speichern
+              {t('save')}
             </Button>
           </DialogFooter>
         </DialogContent>

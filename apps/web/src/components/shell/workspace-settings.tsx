@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type WorkspaceDetail, type WorkspaceRole } from '@exocortex/contracts';
@@ -52,13 +53,6 @@ import { useUpdateWorkspace, useWorkspaceDetail } from '@/lib/api/workspace-quer
 
 const WORKSPACE_ADMIN_ROLES = new Set(['OWNER', 'ADMIN']);
 
-const MEMBER_ROLE_LABELS: Record<WorkspaceRole, string> = {
-  OWNER: 'Besitzer',
-  ADMIN: 'Administrator',
-  MEMBER: 'Mitglied',
-  GUEST: 'Gast',
-};
-
 /**
  * Workspace settings, split into tabs.
  *
@@ -71,6 +65,7 @@ const MEMBER_ROLE_LABELS: Record<WorkspaceRole, string> = {
 export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
   const detail = useWorkspaceDetail(workspaceId);
   const updateWorkspace = useUpdateWorkspace();
+  const t = useTranslations('settings.workspace');
 
   const [name, setName] = React.useState<string | null>(null);
   const [nameSaved, setNameSaved] = React.useState(false);
@@ -81,7 +76,7 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
   if (name === null && detail.data !== undefined) setName(detail.data.name);
 
   if (detail.isPending || detail.data === undefined || name === null) {
-    return <LoadingState label="Arbeitsbereich wird geladen …" />;
+    return <LoadingState label={t('loading')} />;
   }
 
   const original = detail.data;
@@ -101,10 +96,9 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
 
   return (
     <AppPage maxWidth="max-w-4xl">
-      <h1 className="exocortex-page-title">Arbeitsbereich-Einstellungen</h1>
+      <h1 className="exocortex-page-title">{t('title')}</h1>
       <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-        {original.name} · {original.memberCount}{' '}
-        {original.memberCount === 1 ? 'Mitglied' : 'Mitglieder'}
+        {t('summary', { name: original.name, count: original.memberCount })}
       </p>
 
       <Tabs
@@ -116,28 +110,25 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
             wrapping on a phone, which is the whole point of the wrap. */}
         <TabsList className="min-h-10 gap-1 p-1" data-testid="workspace-settings-tabs">
           <TabsTrigger value="allgemein" className="py-1.5 text-sm">
-            Allgemein
+            {t('tabs.general')}
           </TabsTrigger>
           {canEdit ? (
             <TabsTrigger value="mitglieder" className="py-1.5 text-sm">
-              Mitglieder
+              {t('tabs.members')}
             </TabsTrigger>
           ) : null}
           <TabsTrigger value="ki" className="py-1.5 text-sm">
-            KI
+            {t('tabs.ai')}
           </TabsTrigger>
           <TabsTrigger value="einstellungen" className="py-1.5 text-sm">
-            Einstellungen
+            {t('tabs.settings')}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="allgemein" className="flex flex-col gap-8">
           {!canEdit ? (
             <Alert data-testid="workspace-settings-readonly">
-              <AlertDescription>
-                Nur Besitzer und Administratoren dieses Arbeitsbereichs können ihn umbenennen oder
-                den Slug ändern.
-              </AlertDescription>
+              <AlertDescription>{t('readOnly')}</AlertDescription>
             </Alert>
           ) : (
             <>
@@ -148,7 +139,7 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
               ) : null}
 
               <section className="flex flex-col gap-2">
-                <Label htmlFor="workspace-name">Name</Label>
+                <Label htmlFor="workspace-name">{t('nameLabel')}</Label>
                 <div className="flex max-w-md gap-2">
                   <Input
                     id="workspace-name"
@@ -164,12 +155,12 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
                     disabled={!nameDirty || updateWorkspace.isPending}
                     data-testid="save-workspace-name"
                   >
-                    Speichern
+                    {t('save')}
                   </Button>
                 </div>
                 {nameSaved ? (
                   <p className="text-xs text-success" data-testid="workspace-name-saved">
-                    Name gespeichert.
+                    {t('nameSaved')}
                   </p>
                 ) : null}
               </section>
@@ -196,10 +187,9 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
         <TabsContent value="ki" className="flex flex-col gap-10">
           <section className="flex flex-col gap-4">
             <div>
-              <h2 className="text-base font-semibold">Eigener Schlüssel für die KI</h2>
+              <h2 className="text-base font-semibold">{t('aiKey.title')}</h2>
               <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-                Ohne eigenen Schlüssel laufen die Anfragen dieses Arbeitsbereichs über den der
-                Installation.
+                {t('aiKey.description')}
               </p>
             </div>
             <WorkspaceCredentialsForm
@@ -213,10 +203,9 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
               steering the assistant right now (D5). */}
           <section className="flex flex-col gap-4 border-t border-border pt-8">
             <div>
-              <h2 className="text-base font-semibold">KI-Regeln</h2>
+              <h2 className="text-base font-semibold">{t('aiRules.title')}</h2>
               <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-                Seiten, die die KI als Anweisung behandelt. Gesetzt wird das in den Eigenschaften
-                der jeweiligen Seite.
+                {t('aiRules.description')}
               </p>
             </div>
             <AiRulesPanel workspaceId={workspaceId} />
@@ -229,9 +218,9 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
             explain. Editing stays behind the same bar as the rest. */}
         <TabsContent value="einstellungen" className="flex flex-col gap-4">
           <div>
-            <h2 className="text-base font-semibold">Konfiguration dieses Arbeitsbereichs</h2>
+            <h2 className="text-base font-semibold">{t('config.title')}</h2>
             <p className="mt-1 max-w-measure text-sm text-muted-foreground">
-              Diese Werte gelten nur hier. Alles andere kommt aus der Installation.
+              {t('config.description')}
             </p>
           </div>
           <WorkspaceSettingsForm workspaceId={workspaceId} canEdit={canEdit} />
@@ -251,23 +240,24 @@ export function WorkspaceSettings({ workspaceId }: { workspaceId: string }) {
  * the first tab rather than at the bottom of a long page.
  */
 function MoreSection({ workspaceId }: { workspaceId: string }) {
+  const t = useTranslations('settings.workspace.more');
   return (
     <section className="flex flex-col gap-3 border-t border-border pt-8">
-      <h2 className="text-base font-semibold">Weitere Bereiche</h2>
+      <h2 className="text-base font-semibold">{t('title')}</h2>
       <div className="flex flex-col gap-3 sm:flex-row">
         <Button
           render={<Link href={`/arbeitsbereich/${workspaceId}/automationen`} />}
           variant="outline"
           className="justify-start"
         >
-          Automationen öffnen
+          {t('automations')}
         </Button>
         <Button
           render={<Link href={`/arbeitsbereich/${workspaceId}/vorlagen`} />}
           variant="outline"
           className="justify-start"
         >
-          Vorlagen für PDF öffnen
+          {t('templates')}
         </Button>
         <Button
           render={<Link href={`/arbeitsbereich/${workspaceId}/freigaben`} />}
@@ -275,14 +265,10 @@ function MoreSection({ workspaceId }: { workspaceId: string }) {
           className="justify-start"
           data-testid="open-workspace-shares"
         >
-          Freigaben öffnen
+          {t('shares')}
         </Button>
       </div>
-      <p className="max-w-measure text-xs text-muted-foreground">
-        Regeln, die auf Änderungen an Seiten reagieren, mit dem Protokoll dessen, was sie getan
-        haben. Womit sich Seiten dieses Arbeitsbereichs als PDF veröffentlichen lassen. Und was aus
-        diesem Arbeitsbereich nach außen gegeben ist, an Konten und als öffentlicher Link.
-      </p>
+      <p className="max-w-measure text-xs text-muted-foreground">{t('description')}</p>
     </section>
   );
 }
@@ -297,6 +283,7 @@ function MoreSection({ workspaceId }: { workspaceId: string }) {
 function SlugSection({ workspace }: { workspace: WorkspaceDetail }) {
   const router = useRouter();
   const updateWorkspace = useUpdateWorkspace();
+  const t = useTranslations('settings.workspace');
   const [slug, setSlug] = React.useState(workspace.slug);
   const [confirming, setConfirming] = React.useState(false);
   const [saved, setSaved] = React.useState(false);
@@ -321,11 +308,8 @@ function SlugSection({ workspace }: { workspace: WorkspaceDetail }) {
 
   return (
     <section className="flex flex-col gap-2 border-t border-border pt-6">
-      <Label htmlFor="workspace-slug">Slug</Label>
-      <p className="max-w-measure text-xs text-muted-foreground">
-        Der Slug steckt in Links, die bereits verschickt oder gespeichert wurden. Anders als der
-        Name wandert er nicht automatisch mit, und eine Änderung bricht diese Links.
-      </p>
+      <Label htmlFor="workspace-slug">{t('slug.label')}</Label>
+      <p className="max-w-measure text-xs text-muted-foreground">{t('slug.description')}</p>
       <div className="flex max-w-md gap-2">
         <Input
           id="workspace-slug"
@@ -343,7 +327,7 @@ function SlugSection({ workspace }: { workspace: WorkspaceDetail }) {
             onClick={() => setConfirming(true)}
             data-testid="confirm-workspace-slug-change"
           >
-            Trotzdem ändern
+            {t('slug.confirm')}
           </Button>
         ) : (
           <Button
@@ -351,13 +335,13 @@ function SlugSection({ workspace }: { workspace: WorkspaceDetail }) {
             disabled={!dirty || !confirming || updateWorkspace.isPending}
             data-testid="save-workspace-slug"
           >
-            Speichern
+            {t('save')}
           </Button>
         )}
       </div>
       {saved ? (
         <p className="text-xs text-success" data-testid="workspace-slug-saved">
-          Slug gespeichert.
+          {t('slug.saved')}
         </p>
       ) : null}
     </section>
@@ -387,11 +371,12 @@ function SlugSection({ workspace }: { workspace: WorkspaceDetail }) {
  */
 function MemorySection({ workspace }: { workspace: WorkspaceDetail }) {
   const updateWorkspace = useUpdateWorkspace();
+  const t = useTranslations('settings.workspace');
   const [saved, setSaved] = React.useState(false);
 
   return (
     <section className="flex flex-col gap-2">
-      <Label htmlFor="workspace-is-memory">Gedächtnis der Agenten</Label>
+      <Label htmlFor="workspace-is-memory">{t('memory.label')}</Label>
       <div className="flex items-start gap-3">
         <Switch
           id="workspace-is-memory"
@@ -406,15 +391,11 @@ function MemorySection({ workspace }: { workspace: WorkspaceDetail }) {
             );
           }}
         />
-        <p className="max-w-measure text-xs text-muted-foreground">
-          Agenten legen ihre Sitzungsnotizen in diesem Arbeitsbereich ab und finden sie beim
-          nächsten Start wieder. Notizen verfallen hier nach der eingestellten Frist. Für einen
-          Bereich, den du selbst pflegst, ist das nichts.
-        </p>
+        <p className="max-w-measure text-xs text-muted-foreground">{t('memory.description')}</p>
       </div>
       {saved ? (
         <p className="text-xs text-success" data-testid="workspace-is-memory-saved">
-          Gespeichert.
+          {t('saved')}
         </p>
       ) : null}
     </section>
@@ -425,6 +406,8 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
   const sessionQuery = useSessionQuery();
   const updateMember = useUpdateWorkspaceMember(workspace.id);
   const removeMember = useRemoveWorkspaceMember(workspace.id);
+  const t = useTranslations('settings.workspace.members');
+  const tRole = useTranslations('settings.workspace.roles');
   const [inviteOpen, setInviteOpen] = React.useState(false);
   const [pendingRemoval, setPendingRemoval] = React.useState<
     WorkspaceDetail['members'][number] | null
@@ -448,14 +431,11 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
     <section className="flex flex-col gap-4 border-t border-border pt-6">
       <div className="flex items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-sm font-medium">Mitglieder</h2>
-          <p className="max-w-measure text-xs text-muted-foreground">
-            Mitgliedschaften gelten immer ausdrücklich: wer eingeladen wird, landet genau in diesem
-            Arbeitsbereich.
-          </p>
+          <h2 className="text-sm font-medium">{t('title')}</h2>
+          <p className="max-w-measure text-xs text-muted-foreground">{t('description')}</p>
         </div>
         <Button onClick={() => setInviteOpen(true)} data-testid="open-workspace-invite">
-          Einladen
+          {t('invite')}
         </Button>
       </div>
 
@@ -466,13 +446,13 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
       ) : null}
 
       <Table narrow="list">
-        <TableCaption className="sr-only">Mitglieder dieses Arbeitsbereichs</TableCaption>
+        <TableCaption className="sr-only">{t('caption')}</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>E-Mail</TableHead>
-            <TableHead>Rolle</TableHead>
-            <TableHead className="sr-only">Aktionen</TableHead>
+            <TableHead>{t('name')}</TableHead>
+            <TableHead>{t('email')}</TableHead>
+            <TableHead>{t('role')}</TableHead>
+            <TableHead className="sr-only">{t('actions')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -481,13 +461,15 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
               <TableCell cell="title">
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{member.name}</span>
-                  {member.userId === currentUserId ? <Badge variant="secondary">Du</Badge> : null}
+                  {member.userId === currentUserId ? (
+                    <Badge variant="secondary">{t('you')}</Badge>
+                  ) : null}
                 </div>
               </TableCell>
-              <TableCell label="E-Mail" className="text-muted-foreground">
+              <TableCell label={t('email')} className="text-muted-foreground">
                 {member.email}
               </TableCell>
-              <TableCell label="Rolle">
+              <TableCell label={t('role')}>
                 <Select
                   value={member.role}
                   disabled={updateMember.isPending || (member.role === 'OWNER' && !isOwner)}
@@ -495,13 +477,13 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
                     updateMember.mutate({ userId: member.userId, role: next as WorkspaceRole })
                   }
                 >
-                  <SelectTrigger aria-label={`Rolle von ${member.name}`} size="sm">
-                    <SelectValue>{() => MEMBER_ROLE_LABELS[member.role]}</SelectValue>
+                  <SelectTrigger aria-label={t('roleOf', { name: member.name })} size="sm">
+                    <SelectValue>{() => tRole(member.role)}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {assignableRoles.map((role) => (
                       <SelectItem key={role} value={role}>
-                        {MEMBER_ROLE_LABELS[role]}
+                        {tRole(role)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -522,7 +504,7 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
                     onClick={() => setPendingRemoval(member)}
                     data-testid={`remove-member-${member.userId}`}
                   >
-                    Entfernen
+                    {t('remove')}
                   </Button>
                 )}
               </TableCell>
@@ -532,7 +514,7 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
       </Table>
 
       <div className="flex flex-col gap-2 pt-2">
-        <h3 className="text-sm font-medium">Offene Einladungen</h3>
+        <h3 className="text-sm font-medium">{t('openInvitations')}</h3>
         <InvitationTable scope={{ kind: 'workspace', workspaceId: workspace.id }} />
       </div>
 
@@ -550,16 +532,14 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Mitglied entfernen</DialogTitle>
+            <DialogTitle>{t('removeTitle')}</DialogTitle>
             <DialogDescription>
-              {pendingRemoval?.name} verliert den Zugang zu diesem Arbeitsbereich, sofort und auch
-              in bereits geöffneten Tabs. Angelegte Seiten und Kommentare bleiben erhalten. Für
-              einen erneuten Zugang braucht es eine neue Einladung.
+              {t('removeDescription', { name: pendingRemoval?.name ?? '' })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setPendingRemoval(null)}>
-              Abbrechen
+              {t('cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -572,7 +552,7 @@ function MembersSection({ workspace }: { workspace: WorkspaceDetail }) {
               }}
               data-testid="confirm-remove-member"
             >
-              Entfernen
+              {t('remove')}
             </Button>
           </DialogFooter>
         </DialogContent>

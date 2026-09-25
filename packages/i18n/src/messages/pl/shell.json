@@ -187,5 +187,10 @@
   "adminLayout": {
     "title": "Administracja",
     "intro": "Ustawienia, modele AI i zarządzanie użytkownikami tej instalacji."
+  },
+  "saveIndicator": {
+    "local": "zapisano lokalnie",
+    "saved": "zapisano",
+    "savedAt": "zapisano <time>{clock}</time>"
   }
 }

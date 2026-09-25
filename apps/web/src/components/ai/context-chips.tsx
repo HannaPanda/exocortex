@@ -10,7 +10,7 @@ import {
   TextQuoteIcon,
   XIcon,
 } from 'lucide-react';
-import * as React from 'react';
+import { useTranslations } from 'next-intl';
 
 import {
   type AiConversationSource,
@@ -52,12 +52,6 @@ const KIND_ICON = {
   SAVED_QUERY: ListFilterIcon,
 } as const;
 
-const KIND_LABEL = {
-  PAGE: 'Seite',
-  DATABASE_VIEW: 'Datenbankansicht',
-  SAVED_QUERY: 'Gespeicherte Suche',
-} as const;
-
 /**
  * What a pinned chip says about its cost, in one short line.
  *
@@ -66,11 +60,15 @@ const KIND_LABEL = {
  * ("etwa"), since the number is measured on the derived text and the provider
  * counts something else.
  */
-function costLabel(source: AiConversationSource): string {
-  if (source.mode !== 'EMBED') return 'nur genannt';
-  if (source.empty) return 'noch leer';
-  const chars = new Intl.NumberFormat('de-DE').format(source.chars);
-  return source.truncated ? `etwa ${chars} Z., gekürzt` : `etwa ${chars} Z.`;
+function useCostLabel(): (source: AiConversationSource) => string {
+  const t = useTranslations('ai.context');
+  return (source) => {
+    if (source.mode !== 'EMBED') return t('costReference');
+    if (source.empty) return t('costEmpty');
+    return source.truncated
+      ? t('costCharsTruncated', { chars: source.chars })
+      : t('costChars', { chars: source.chars });
+  };
 }
 
 /**
@@ -99,6 +97,8 @@ export function ContextChips({
   onPinRemove,
   disabled,
 }: ContextChipsProps) {
+  const t = useTranslations('ai.context');
+  const costLabel = useCostLabel();
   const sources = pinned?.sources ?? [];
   // Before the first message there is no conversation and therefore no budget
   // to read, and the plus still has to be there: it is what starts the
@@ -112,7 +112,7 @@ export function ContextChips({
   }
 
   const Icon = isCollection ? TableIcon : FileTextIcon;
-  const kind = isCollection ? 'Diese Datenbank' : 'Diese Seite';
+  const collection = isCollection ? 'yes' : 'no';
 
   return (
     <div
@@ -122,9 +122,7 @@ export function ContextChips({
       {selectionBlockCount === null ? null : (
         <Badge variant="outline" className="max-w-full gap-1 py-1 pr-1 pl-1.5">
           <TextQuoteIcon aria-hidden />
-          <span className="min-w-0 truncate">
-            Auswahl ({selectionBlockCount} {selectionBlockCount === 1 ? 'Block' : 'Blöcke'})
-          </span>
+          <span className="min-w-0 truncate">{t('selection', { count: selectionBlockCount })}</span>
           <Tooltip>
             <TooltipTrigger
               render={
@@ -132,7 +130,7 @@ export function ContextChips({
                   variant="ghost"
                   size="icon-sm"
                   className="size-4 shrink-0 rounded-sm"
-                  aria-label="Auswahl nicht mitschicken"
+                  aria-label={t('selectionRemove')}
                   data-testid="ai-selection-remove"
                   disabled={disabled}
                   onClick={onSelectionRemove}
@@ -141,7 +139,7 @@ export function ContextChips({
                 </Button>
               }
             />
-            <TooltipContent>Nicht mitschicken</TooltipContent>
+            <TooltipContent>{t('doNotSend')}</TooltipContent>
           </Tooltip>
         </Badge>
       )}
@@ -150,7 +148,7 @@ export function ContextChips({
         <Badge variant="outline" className="max-w-full gap-1 py-1 pr-1 pl-1.5">
           <Icon aria-hidden />
           <span className="min-w-0 truncate" title={documentTitle}>
-            {kind}: {documentTitle}
+            {t('pageChip', { collection, title: documentTitle })}
           </span>
           <Tooltip>
             <TooltipTrigger
@@ -159,7 +157,7 @@ export function ContextChips({
                   variant="ghost"
                   size="icon-sm"
                   className="size-4 shrink-0 rounded-sm"
-                  aria-label={`${kind} nicht mitschicken`}
+                  aria-label={t('pageRemove', { collection })}
                   data-testid="ai-context-remove"
                   disabled={disabled}
                   onClick={() => onEnabledChange(false)}
@@ -168,7 +166,7 @@ export function ContextChips({
                 </Button>
               }
             />
-            <TooltipContent>Nicht mitschicken</TooltipContent>
+            <TooltipContent>{t('doNotSend')}</TooltipContent>
           </Tooltip>
         </Badge>
       ) : (
@@ -181,13 +179,14 @@ export function ContextChips({
           onClick={() => onEnabledChange(true)}
         >
           <PlusIcon />
-          {kind} mitschicken
+          {t('pageAdd', { collection })}
         </Button>
       )}
 
       {sources.map((source) => {
         const SourceIcon = KIND_ICON[source.kind];
-        const label = `${KIND_LABEL[source.kind]}: ${source.title}`;
+        const kind = t(`kinds.${source.kind}`);
+        const label = t('sourceLabel', { kind, title: source.title });
         return (
           <Badge
             key={source.id}
@@ -199,7 +198,15 @@ export function ContextChips({
             <SourceIcon aria-hidden className="shrink-0" />
             <span
               className="min-w-0 truncate"
-              title={source.subtitle === null ? label : `${label} (${source.subtitle})`}
+              title={
+                source.subtitle === null
+                  ? label
+                  : t('sourceLabelWithSubtitle', {
+                      kind,
+                      title: source.title,
+                      subtitle: source.subtitle,
+                    })
+              }
             >
               {source.title}
             </span>
@@ -211,7 +218,7 @@ export function ContextChips({
                     variant="ghost"
                     size="icon-sm"
                     className="size-4 shrink-0 rounded-sm"
-                    aria-label={`Aktionen für ${label}`}
+                    aria-label={t('sourceActions', { label })}
                     data-testid="ai-pinned-menu"
                     disabled={disabled}
                   >
@@ -226,13 +233,13 @@ export function ContextChips({
                     onPinModeChange(source, source.mode === 'EMBED' ? 'REFERENCE' : 'EMBED')
                   }
                 >
-                  {source.mode === 'EMBED' ? 'Nur den Namen nennen' : 'Inhalt mitschicken'}
+                  {source.mode === 'EMBED' ? t('referenceOnly') : t('embed')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   data-testid="ai-pinned-remove-item"
                   onClick={() => onPinRemove(source)}
                 >
-                  Nicht mehr anheften
+                  {t('unpin')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -253,14 +260,14 @@ export function ContextChips({
                 onClick={onPinRequest}
               >
                 <PlusIcon />
-                Quelle anheften
+                {t('pin')}
               </Button>
             }
           />
           <TooltipContent>
             {full && pinned !== null
-              ? `Mehr als ${String(pinned.budget.maxSources)} Quellen sind hier nicht erlaubt.`
-              : 'Seite, Datenbankansicht oder gespeicherte Suche dauerhaft anheften'}
+              ? t('pinFull', { count: pinned.budget.maxSources })
+              : t('pinHint')}
           </TooltipContent>
         </Tooltip>
       )}

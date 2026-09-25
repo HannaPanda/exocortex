@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -39,6 +40,7 @@ export function usePinnedSources(input: {
   onError: (message: string) => void;
 }): PinnedSources {
   const { conversationId, ensureConversation, onError } = input;
+  const t = useTranslations('ai.context');
   const sourcesQuery = useConversationSources(conversationId);
   const addSource = useAddConversationSource();
   const updateSource = useUpdateConversationSource();
@@ -50,12 +52,10 @@ export function usePinnedSources(input: {
         const id = conversationId ?? (await ensureConversation());
         await addSource.mutateAsync({ conversationId: id, request });
       })().catch((caught: unknown) => {
-        onError(
-          caught instanceof ApiError ? caught.message : 'Die Quelle ließ sich nicht anheften.',
-        );
+        onError(caught instanceof ApiError ? caught.message : t('pinFailed'));
       });
     },
-    [addSource, conversationId, ensureConversation, onError],
+    [addSource, conversationId, ensureConversation, onError, t],
   );
 
   const setMode = React.useCallback(

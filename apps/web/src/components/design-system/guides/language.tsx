@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { Badge, TruncatedText } from '@exocortex/ui';
 
-import { formatRelativeTime } from '@/lib/relative-time';
+import { useRelativeTime } from '@/lib/relative-time';
 
 import { DsExample, DsSection, DsSource, DsState, DsStates } from '../showcase';
 
@@ -131,6 +131,7 @@ const AGES: readonly { label: string; minutes: number }[] = [
 function RelativeTimes() {
   // Read once, so the six labels are measured from the same moment.
   const [now] = React.useState(() => Date.now());
+  const formatRelativeTime = useRelativeTime();
   return (
     <DsStates>
       {AGES.map((age) => (

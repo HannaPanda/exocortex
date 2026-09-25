@@ -1,12 +1,13 @@
 'use client';
 
 import { ArchiveIcon, ArchiveRestoreIcon, PencilIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AiConversation, type AiConversationSearchHit } from '@exocortex/contracts';
 import { Badge, Button, cn } from '@exocortex/ui';
 
-import { formatRelativeTime } from '@/lib/relative-time';
+import { useRelativeTime } from '@/lib/relative-time';
 
 export interface ChatListProps {
   conversations: readonly AiConversation[];
@@ -71,6 +72,8 @@ function ChatRow({
   onRename: (conversation: AiConversation) => void;
   onToggleArchived: (conversation: AiConversation) => void;
 }) {
+  const t = useTranslations('ai.chatList');
+  const formatRelativeTime = useRelativeTime();
   const archived = conversation.archivedAt !== null;
   const facts = [
     workspaceName,
@@ -96,10 +99,10 @@ function ChatRow({
         >
           <span className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-medium break-words">{conversation.title}</span>
-            {archived ? <Badge variant="secondary">archiviert</Badge> : null}
+            {archived ? <Badge variant="secondary">{t('archived')}</Badge> : null}
             {hit === null || hit.matchCount === 1 ? null : (
               <span className="text-xs text-muted-foreground">
-                {String(hit.matchCount)} Treffer
+                {t('matches', { count: hit.matchCount })}
               </span>
             )}
           </span>
@@ -119,7 +122,7 @@ function ChatRow({
           <Button
             variant="ghost"
             size="icon-sm"
-            aria-label="Umbenennen"
+            aria-label={t('rename')}
             data-testid="chat-rename"
             onClick={() => onRename(conversation)}
           >
@@ -128,7 +131,7 @@ function ChatRow({
           <Button
             variant="ghost"
             size="icon-sm"
-            aria-label={archived ? 'Wiederherstellen' : 'Archivieren'}
+            aria-label={archived ? t('restore') : t('archive')}
             data-testid="chat-archive"
             onClick={() => onToggleArchived(conversation)}
           >
@@ -149,6 +152,7 @@ function ChatRow({
  * containing `<script>` would otherwise be rendered as one.
  */
 function Snippet({ html, superseded }: { html: string; superseded: boolean }) {
+  const t = useTranslations('ai.chatList');
   const parts = html.split(/<mark>|<\/mark>/);
   return (
     <span
@@ -167,7 +171,7 @@ function Snippet({ html, superseded }: { html: string; superseded: boolean }) {
           <React.Fragment key={index}>{part}</React.Fragment>
         ),
       )}
-      {superseded ? ' (nicht mehr im Kontext)' : ''}
+      {superseded ? ` ${t('notInContext')}` : ''}
     </span>
   );
 }

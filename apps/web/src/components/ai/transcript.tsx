@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import { type AiConversationMessage } from '@exocortex/contracts';
@@ -46,13 +47,14 @@ export function Transcript({ messages }: TranscriptProps) {
 }
 
 function ContextBoundary({ summarized }: { summarized: boolean }) {
+  const t = useTranslations('ai.transcript');
   return (
     <div
       className="flex items-center gap-2 py-1 text-xs text-muted-foreground"
       data-testid="ai-context-boundary"
     >
       <span className="h-px flex-1 bg-border" aria-hidden />
-      <span>{summarized ? 'Älterer Verlauf zusammengefasst' : 'Kontext geleert'}</span>
+      <span>{summarized ? t('boundarySummarized') : t('boundaryCleared')}</span>
       <span className="h-px flex-1 bg-border" aria-hidden />
     </div>
   );
