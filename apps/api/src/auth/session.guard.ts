@@ -32,6 +32,11 @@ import { isHttpContext } from '../common/http-context';
 import { API_ENV, LOGGER } from '../common/logger.provider';
 import { PRISMA } from '../platform/platform.module';
 
+import {
+  API_TOKEN_CREDENTIAL_SELECT,
+  assertApiTokenUsable,
+  pageScopesOf,
+} from './api-token-credential';
 import { AuthService } from './auth.service';
 
 export const IS_PUBLIC_ROUTE = 'exocortex:isPublicRoute';
@@ -58,6 +63,12 @@ export interface AuthenticatedRequest extends FastifyRequest {
    * or an interceptor can read it without reaching into async storage.
    */
   exocortexPageScopes?: PageScopeRestriction;
+  /**
+   * The row of the `exo_` token behind this request, if one is. An upload
+   * ticket (ADR-064) records it so redeeming the ticket can re-check that
+   * token rather than trusting what it could do when the ticket was minted.
+   */
+  exocortexApiTokenId?: string;
 }
 
 /** A far-future expiry for tokens that never expire (`ApiToken.expiresAt === null`). */
@@ -66,6 +77,8 @@ const NEVER_EXPIRES = new Date('2999-01-01T00:00:00.000Z');
 interface VerifiedBearer {
   session: VerifiedSession;
   credential: ExocortexCredential;
+  /** Only set for `api_token`; see `AuthenticatedRequest.exocortexApiTokenId`. */
+  apiTokenId?: string;
   /** Only set for `api_token`; see `AuthenticatedRequest.exocortexTokenScopes`. */
   scopes?: readonly string[];
   /** Only set for `api_token`; see `AuthenticatedRequest.exocortexPageScopes`. */
@@ -124,9 +137,11 @@ export class SessionGuard implements CanActivate {
       throw AppError.unauthenticated('No valid session cookie was provided');
     }
 
-    const { session, credential, scopes, pageScopes } = await this.verifyBearerToken(bearer);
+    const { session, credential, scopes, pageScopes, apiTokenId } =
+      await this.verifyBearerToken(bearer);
     request.exocortexSession = session;
     request.exocortexCredential = credential;
+    request.exocortexApiTokenId = apiTokenId;
     request.exocortexTokenScopes = scopes;
     request.exocortexPageScopes = pageScopes;
     setRequestUser(session.userId);
@@ -200,33 +215,12 @@ export class SessionGuard implements CanActivate {
   private async verifyApiBearerToken(token: string): Promise<VerifiedBearer> {
     const apiToken = await this.prisma.apiToken.findUnique({
       where: { tokenHash: hashApiToken(token) },
-      select: {
-        id: true,
-        scopes: true,
-        pageScoped: true,
-        pageScopes: { select: { documentId: true, scope: true } },
-        expiresAt: true,
-        revokedAt: true,
-        user: {
-          select: { id: true, email: true, name: true, emailVerified: true, disabledAt: true },
-        },
-      },
+      select: API_TOKEN_CREDENTIAL_SELECT,
     });
     if (apiToken === null) {
       throw new AppError('api_token_invalid', 'Unknown API token');
     }
-    if (apiToken.revokedAt !== null) {
-      throw new AppError('api_token_invalid', 'The API token has been revoked');
-    }
-    // Belt and braces: disabling an account revokes its tokens in the same
-    // transaction, so this should be unreachable. It stays because "should be"
-    // is doing a lot of work in that sentence, and the column is already loaded.
-    if (apiToken.user.disabledAt !== null) {
-      throw new AppError('user_disabled', 'This account is disabled');
-    }
-    if (apiToken.expiresAt !== null && apiToken.expiresAt.getTime() <= Date.now()) {
-      throw new AppError('api_token_expired', 'The API token has expired');
-    }
+    assertApiTokenUsable(apiToken);
 
     // Token auth stays a single indexed read on the hot path: the timestamp
     // update happens in the background and a failure here never fails the request.
@@ -249,14 +243,9 @@ export class SessionGuard implements CanActivate {
         expiresAt: apiToken.expiresAt ?? NEVER_EXPIRES,
       },
       credential: 'api_token',
+      apiTokenId: apiToken.id,
       scopes: apiToken.scopes,
-      // `declared` is the flag, not the length of the list: the rows are
-      // deleted with the pages they name, so an empty list on a confined token
-      // means "everything it was given is gone", which must reach nothing
-      // rather than everything (issue #83, ADR-044).
-      pageScopes: apiToken.pageScoped
-        ? { tokenId: apiToken.id, declared: true, scopes: apiToken.pageScopes }
-        : undefined,
+      pageScopes: pageScopesOf(apiToken),
     };
   }
 }
