@@ -338,6 +338,10 @@ for (const [key, items] of byTarget) {
     }
   }
   writeNamespace(locale, ns, translated);
+  // After every namespace, not once at the end: a run stopped halfway would
+  // otherwise leave translations on disk with no state behind them, and the
+  // next run would take them for hand-written ones and never touch them.
+  writeFileSync(statePath, formatState(state), 'utf8');
 }
 
 // Namespaces nobody needed to translate still get written, which is what
