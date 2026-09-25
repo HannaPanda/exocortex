@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { aiRunDiagnosisArgsSchema } from './ai-diagnosis';
 import { aiReasoningLevelSchema } from './ai-models';
 import { idSchema, isoDateTimeSchema } from './primitives';
 
@@ -92,12 +93,22 @@ export const aiRunSchema = z.object({
    * What went wrong, said to the person rather than to the log (issue #118,
    * ADR-059).
    *
-   * German, several sentences, and written to stand on its own: for
+   * Several sentences, written to stand on its own: for
    * `ai_tool_limit_exceeded` it names the tools the run spent its calls on,
    * how many of those calls answered nothing new, and the way in that would
-   * have worked. `null` wherever the code alone is the whole story.
+   * have worked. Rendered in the requester's language when the run carries
+   * `errorDetailKey`, German otherwise (issue #98, ADR-062). `null` wherever
+   * the code alone is the whole story.
    */
   errorDetail: z.string().nullable(),
+  /**
+   * The same diagnosis as facts: a key of the `diagnostics` namespace and its
+   * arguments (`aiRunDiagnosisSchema`), so a client renders it in its own
+   * language. `null` on a run older than the columns, and wherever
+   * `errorDetail` is `null`.
+   */
+  errorDetailKey: z.string().nullable(),
+  errorDetailArgs: aiRunDiagnosisArgsSchema.nullable(),
   /**
    * The answer as the worker has it so far. Complete once the run reached a
    * terminal status, and the authoritative text *while* it is still running:

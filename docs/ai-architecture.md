@@ -408,11 +408,15 @@ same `exo_*` tool catalogue the external MCP server serves
   repeats.
 - **The abort says what the run did.** The ledger also tallies calls,
   characters and repeats per tool, and `ai_tool_limit_exceeded` reads that
-  tally out instead of restating the limit. The German diagnosis is stored in
-  `AiRun.errorDetail`, travels on `ai.run.failed` as `detail`, is what the
-  panel shows in place of its canned sentence, and is printed by
-  `exo_ai_run_get` as `Diagnose:`. `RunFailure.message` stays English for the
-  log; `RunFailure.detail` is the one written for a reader.
+  tally out instead of restating the limit. The diagnosis is stored as facts,
+  `AiRun.errorDetailKey` and `errorDetailArgs` (`aiRunDiagnosisSchema`, a key
+  of the `diagnostics` namespace), with its German rendering in
+  `AiRun.errorDetail`; it travels on `ai.run.failed` as `detailKey`,
+  `detailArgs` and `detail`, is what the panel shows in place of its canned
+  sentence, rendered in the viewer's language by `aiRunDiagnosisText` from
+  `@exocortex/i18n`, and is printed by `exo_ai_run_get` as `Diagnose:` in the
+  requester's language. `RunFailure.message` stays English for the log;
+  `RunFailure.diagnosis` is the one written for a reader.
 - **A truncated turn is never a finished turn.** The `done` event's
   `finishReason` reaches `TurnResult`, and `'length'` (the output cap ended the
   turn) is handled explicitly: a cut-off text answer is picked up with a

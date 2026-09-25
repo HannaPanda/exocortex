@@ -18,6 +18,8 @@ const baseRow: AiRunRow = {
   usage: null,
   errorCode: null,
   errorDetail: null,
+  errorDetailKey: null,
+  errorDetailArgs: null,
   resultText: null,
   conversationId: null,
   reasoningLevel: 'NONE',
@@ -61,5 +63,30 @@ describe('mapAiRunRow', () => {
       errorDetail: 'Die Grenze von 8 Werkzeugrunden ist erreicht',
     });
     expect(mapped.errorDetail).toBe('Die Grenze von 8 Werkzeugrunden ist erreicht');
+  });
+
+  it('renders a keyed diagnosis in the requester’s locale (issue #98)', () => {
+    const row: AiRunRow = {
+      ...baseRow,
+      status: 'FAILED',
+      errorCode: 'ai_tool_limit_exceeded',
+      errorDetail: 'Die Grenze von 8 Werkzeugrunden ist erreicht',
+      errorDetailKey: 'toolLoop',
+      errorDetailArgs: {
+        limit: 8,
+        tallies: [{ name: 'exo_search', calls: 14, repeats: 0, chars: 128_400 }],
+      },
+    };
+    const german = mapAiRunRow(row, 'de');
+    expect(german.errorDetail).toContain('exo_search: 14 Aufrufe, 128.400 Zeichen');
+    expect(german.errorDetailKey).toBe('toolLoop');
+    // The number follows the reader's locale even before a translation exists.
+    expect(mapAiRunRow(row, 'en').errorDetail).toContain('128,400');
+  });
+
+  it('keeps the stored text of a row written before the key existed', () => {
+    const mapped = mapAiRunRow({ ...baseRow, status: 'FAILED', errorDetail: 'Alter Text' }, 'en');
+    expect(mapped.errorDetail).toBe('Alter Text');
+    expect(mapped.errorDetailArgs).toBeNull();
   });
 });

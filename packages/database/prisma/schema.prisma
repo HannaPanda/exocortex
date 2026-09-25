@@ -515,6 +515,10 @@ model Invitation {
   /// When the mail last went out, or null when sending failed every time. That
   /// case is the reason "Link kopieren" exists in the UI.
   lastSentAt   DateTime?
+  /// The language the inviter chose for the mail and for the account it
+  /// creates (issue #98, ADR-062). Accepting copies it to `User.locale`. Null
+  /// when nobody chose: the mail then follows the inviter's own language.
+  locale       String?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
@@ -1839,44 +1843,52 @@ enum AiRunStatus {
 }
 
 model AiRun {
-  id             String        @id @default(cuid(2))
-  workspaceId    String
-  workspace      Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  documentId     String?
-  document       Document?     @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  id              String        @id @default(cuid(2))
+  workspaceId     String
+  workspace       Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  documentId      String?
+  document        Document?     @relation(fields: [documentId], references: [id], onDelete: SetNull)
   /// The view that was open when `documentId` points at a COLLECTION. A
   /// database's rows only mean something through a view's filters and sorts, so
   /// describing the page without it would describe a different table than the
   /// one on screen. Null for ordinary pages.
-  databaseViewId String?
-  databaseView   DatabaseView? @relation(fields: [databaseViewId], references: [id], onDelete: SetNull)
-  createdById    String
-  createdBy      User          @relation(fields: [createdById], references: [id], onDelete: Cascade)
-  status         AiRunStatus   @default(PENDING)
-  provider       String
-  model          String
+  databaseViewId  String?
+  databaseView    DatabaseView? @relation(fields: [databaseViewId], references: [id], onDelete: SetNull)
+  createdById     String
+  createdBy       User          @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  status          AiRunStatus   @default(PENDING)
+  provider        String
+  model           String
   /// Prompt messages as submitted by the user. Never includes document
   /// content: image descriptions generated for this run (ADR-012) are
   /// prepended in memory before the provider call and are not persisted here.
-  messages       Json
-  resultText     String?
-  usage          Json?
-  errorCode      String?
+  messages        Json
+  resultText      String?
+  usage           Json?
+  errorCode       String?
   /// What went wrong, in German and in enough detail to act on (issue #118,
   /// ADR-059). The code says which kind of failure it was; this says what this
   /// run did to get there -- for `ai_tool_limit_exceeded`, which tools it
   /// spent its calls on and how many of them answered nothing new. Null
-  /// wherever the code alone is the whole story.
-  errorDetail    String?
-  createdAt      DateTime      @default(now())
-  startedAt      DateTime?
-  finishedAt     DateTime?
-  cancelledAt    DateTime?
+  /// wherever the code alone is the whole story. Since issue #98 the German
+  /// rendering of `errorDetailKey` and `errorDetailArgs`, kept for rows and
+  /// readers older than those two.
+  errorDetail     String?
+  /// The same diagnosis as facts (issue #98, ADR-062): a key of the
+  /// `diagnostics` namespace (`aiRunDiagnosisSchema`) and its arguments, which
+  /// every reader renders in its own reader's language. Null together with
+  /// `errorDetail`, and on every row written before the columns existed.
+  errorDetailKey  String?
+  errorDetailArgs Json?
+  createdAt       DateTime      @default(now())
+  startedAt       DateTime?
+  finishedAt      DateTime?
+  cancelledAt     DateTime?
   /// Last sign of life from the worker processing this run, renewed every
   /// few seconds while it is RUNNING. A RUNNING run without a recent one has
   /// lost its worker (crash, deploy restart, stalled job) -- see
   /// reap-stale-ai-runs (apps/worker/src/processors/maintenance.ts).
-  heartbeatAt    DateTime?
+  heartbeatAt     DateTime?
 
   /// Conversation this run belongs to, when it was started from one (D7).
   /// No `@map`: every other column on this model keeps Prisma's default

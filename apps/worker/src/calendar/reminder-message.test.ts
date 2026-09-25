@@ -11,6 +11,7 @@ const context: ReminderContext = {
   location: null,
   url: null,
   timeZone: 'Europe/Berlin',
+  locale: 'de',
   now: new Date('2026-08-20T13:32:00.000Z'),
 };
 
@@ -156,5 +157,21 @@ describe('buildReminderNotification', () => {
     );
 
     expect(notification).toEqual({ title: 'Heute: Geburtstag', body: 'Ganztägig' });
+  });
+});
+
+describe('the reader’s language', () => {
+  it('formats the times the way the owner’s language writes them (issue #98)', () => {
+    const notification = buildReminderNotification(
+      {
+        start: new Date('2026-08-20T14:00:00.000Z'),
+        end: new Date('2026-08-20T15:00:00.000Z'),
+        allDay: false,
+      },
+      { ...context, locale: 'en' },
+    );
+
+    expect(notification.body).toContain('04:00 PM');
+    expect(notification.body).not.toContain('16:00');
   });
 });

@@ -12,6 +12,7 @@ import {
   reconcileAiRun,
   resolveAiRunElapsedMs,
 } from '@exocortex/contracts';
+import { aiRunDiagnosisText } from '@exocortex/i18n';
 
 import { aiQueryKeys, useAiRun, useCancelAiRun } from '@/lib/api/ai-queries';
 import { ApiError } from '@/lib/api/client';
@@ -47,6 +48,19 @@ function isExplainedRunError(code: string | null): code is ExplainedRunError {
   return EXPLAINED_RUN_ERRORS.some((known) => known === code);
 }
 
+/** A failed run's diagnosis, whether the poll or the socket reported it (issue #98). */
+interface RunDiagnosisFields {
+  errorDetail: string | null;
+  errorDetailKey: string | null;
+  errorDetailArgs: unknown;
+}
+
+const NO_DIAGNOSIS: RunDiagnosisFields = {
+  errorDetail: null,
+  errorDetailKey: null,
+  errorDetailArgs: null,
+};
+
 /** What `AiPanel` reads back from the tracker. */
 export interface AiRunTracker {
   activeRunId: string | null;
@@ -77,6 +91,7 @@ export interface AiRunTracker {
  */
 export function useAiRunTracker(activeConversationId: string | null): AiRunTracker {
   const t = useTranslations('ai.run');
+  const tDiagnostics = useTranslations('diagnostics');
   const queryClient = useQueryClient();
 
   const [activeRunId, setActiveRunId] = React.useState<string | null>(null);
@@ -131,7 +146,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
   const runQuery = useAiRun(activeRunId);
 
   const applyTerminalRunState = React.useCallback(
-    (status: AiRunStatus, errorCode: string | null, errorDetail: string | null): void => {
+    (status: AiRunStatus, errorCode: string | null, diagnosis: RunDiagnosisFields): void => {
       setActiveRunId(null);
       setToolActivity([]);
       setRunStartedAt(null);
@@ -159,12 +174,13 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
       // The run's own diagnosis wins over the canned sentence when it has one
       // (issue #118): "zu viele Werkzeugaufrufe" is the fact the reader
       // already had, and what the run did with those calls is the part that
-      // says what to try instead.
-      setError(
-        errorDetail ?? (isExplainedRunError(errorCode) ? t(`errors.${errorCode}`) : t('failed')),
-      );
+      // says what to try instead. Rendered from its key in the viewer's
+      // language, the stored German only for a key this build does not know
+      // (issue #98).
+      const detail = aiRunDiagnosisText(tDiagnostics, diagnosis);
+      setError(detail ?? (isExplainedRunError(errorCode) ? t(`errors.${errorCode}`) : t('failed')));
     },
-    [activeConversationId, queryClient, t],
+    [activeConversationId, queryClient, t, tDiagnostics],
   );
 
   // Applies a terminal status the poll (or a focus/reconnect refetch)
@@ -180,11 +196,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
   });
   if (reconciliation !== null) {
     setReconciledRunResultKey(reconciliation.key);
-    applyTerminalRunState(
-      reconciliation.status,
-      reconciliation.errorCode,
-      reconciliation.errorDetail,
-    );
+    applyTerminalRunState(reconciliation.status, reconciliation.errorCode, reconciliation);
   }
 
   // The other half of "abgleichen statt nur zuzuhören": a reconnect of the
@@ -243,12 +255,16 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
 
   useRealtimeEvent('ai.run.completed', (event) => {
     if (event.payload.runId !== activeRunId) return;
-    applyTerminalRunState('completed', null, null);
+    applyTerminalRunState('completed', null, NO_DIAGNOSIS);
   });
 
   useRealtimeEvent('ai.run.failed', (event) => {
     if (event.payload.runId !== activeRunId) return;
-    applyTerminalRunState(event.payload.status, event.payload.errorCode, event.payload.detail);
+    applyTerminalRunState(event.payload.status, event.payload.errorCode, {
+      errorDetail: event.payload.detail,
+      errorDetailKey: event.payload.detailKey,
+      errorDetailArgs: event.payload.detailArgs,
+    });
   });
 
   useRealtimeEvent('ai.conversation.compacted', (event) => {
@@ -310,7 +326,7 @@ export function useAiRunTracker(activeConversationId: string | null): AiRunTrack
     const runId = activeRunId;
     try {
       await cancelRun.mutateAsync(runId);
-      applyTerminalRunState('cancelled', null, null);
+      applyTerminalRunState('cancelled', null, NO_DIAGNOSIS);
     } catch (caught) {
       if (caught instanceof ApiError && caught.status === 409) {
         // The run finished by itself just before the cancellation reached the

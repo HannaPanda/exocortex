@@ -14,6 +14,7 @@ import { QueueRegistry } from '@exocortex/queue';
 
 import { AppError } from '../common/app-error';
 import { LOGGER } from '../common/logger.provider';
+import { readerLocale, type ReaderLocaleHeaders } from '../common/reader-locale';
 import { AI_PROVIDER, PRISMA, QUEUES } from '../platform/platform.module';
 
 import {
@@ -158,11 +159,11 @@ export class AiService {
     return mapAiRunRow(run);
   }
 
-  async getRun(runId: string, userId: string): Promise<AiRun> {
+  async getRun(runId: string, userId: string, headers: ReaderLocaleHeaders): Promise<AiRun> {
     const run = await this.prisma.aiRun.findUnique({ where: { id: runId } });
     if (run === null) throw AppError.notFound('AI run');
     await this.access.requireRole(run.workspaceId, userId);
-    return mapAiRunRow(run);
+    return mapAiRunRow(run, await readerLocale(this.prisma, userId, headers));
   }
 
   /** Cancels a pending or running AI run. */

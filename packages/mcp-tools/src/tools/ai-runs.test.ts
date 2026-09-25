@@ -44,6 +44,8 @@ const runningRun: AiRun = {
   usage: null,
   errorCode: null,
   errorDetail: null,
+  errorDetailKey: null,
+  errorDetailArgs: null,
   resultText: 'Ich schreibe jetzt den strukturierten Inhalt',
   conversationId: null,
   reasoningLevel: 'none',

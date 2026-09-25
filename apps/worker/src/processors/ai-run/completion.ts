@@ -3,6 +3,7 @@ import { type AiUsage, type QUEUE_NAMES } from '@exocortex/contracts';
 import { type AiRun, Prisma, type PrismaClient } from '@exocortex/database';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
+import { germanDiagnosis } from '../../diagnosis';
 import { type ToolContext } from '../../tool-runner';
 
 import { type ResolvedModelRow, type RunFailure } from './contract';
@@ -114,6 +115,11 @@ export async function writeFailure(input: {
   modelRow: ResolvedModelRow;
 }): Promise<void> {
   const { prisma, bus, run, payload, logger, failure, outcome } = input;
+  // Facts for every reader to render in its own language, plus the German
+  // rendering for a reader that predates the columns (issue #98, ADR-059).
+  const diagnosis = failure.diagnosis ?? null;
+  const detail = diagnosis === null ? null : germanDiagnosis(diagnosis);
+  const detailArgs: Record<string, unknown> | null = diagnosis?.args ?? null;
   const terminalStatus: 'CANCELLED' | 'TIMED_OUT' | 'FAILED' =
     failure.code === 'ai_cancelled'
       ? 'CANCELLED'
@@ -126,7 +132,9 @@ export async function writeFailure(input: {
     data: {
       status: terminalStatus,
       errorCode: failure.code,
-      errorDetail: failure.detail ?? null,
+      errorDetail: detail,
+      errorDetailKey: diagnosis?.key ?? null,
+      errorDetailArgs: detailArgs === null ? Prisma.DbNull : (detailArgs as Prisma.InputJsonObject),
       finishedAt: new Date(),
       resultText: outcome.text.length > 0 ? outcome.text : null,
       ...usageColumns(outcome.usage, input.modelRow),
@@ -152,7 +160,9 @@ export async function writeFailure(input: {
             : 'failed',
       errorCode: failure.code,
       reason: failure.message,
-      detail: failure.detail ?? null,
+      detail,
+      detailKey: diagnosis?.key ?? null,
+      detailArgs,
     },
   });
   logger.warn('AI run failed', { runId: run.id, code: failure.code });

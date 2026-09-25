@@ -88,6 +88,8 @@ context is its own to manage, and nothing here knows what it did with the last
 answer. The diagnosis that comes out of the same bookkeeping does reach the
 catalogue: `exo_ai_run_get` prints `AiRun.errorDetail` as `Diagnose:`, which
 is where a run that ran out of tool calls says which tools it spent them on.
+The API renders it from `errorDetailKey` in the caller's language
+(`readerLocale`), so an agent reads it in the account's language.
 
 ### Instructions at `initialize`
 

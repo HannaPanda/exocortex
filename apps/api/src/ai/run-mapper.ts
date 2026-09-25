@@ -1,5 +1,7 @@
-import { type AiRun } from '@exocortex/contracts';
+import { type AiRun, DEFAULT_LOCALE, type Locale } from '@exocortex/contracts';
 import { type AiReasoningLevel as AiReasoningLevelPrisma } from '@exocortex/database';
+import { aiRunDiagnosisText } from '@exocortex/i18n';
+import { serverTranslator } from '@exocortex/i18n/catalog';
 
 import { REASONING_LEVEL_TO_CONTRACT } from './ai-model-resolver.service';
 
@@ -30,6 +32,9 @@ export interface AiRunRow {
   errorCode: string | null;
   /** German diagnosis of the failure, when there is more to say than the code (issue #118). */
   errorDetail: string | null;
+  /** The same diagnosis as a `diagnostics` key and its arguments (issue #98). */
+  errorDetailKey: string | null;
+  errorDetailArgs: unknown;
   /** Partial while the run is still going; final once it has ended (issue #6). */
   resultText: string | null;
   conversationId: string | null;
@@ -48,8 +53,13 @@ export interface AiRunRow {
  * Shared between the legacy run endpoint (`ai.service.ts`) and the
  * conversation-backed message endpoint (`conversations.service.ts`) so both
  * paths report status, reasoning level and usage identically.
+ *
+ * `locale` is the requester's (`readerLocale`): the diagnosis is rendered in
+ * it when the row carries a key, so `exo_ai_run_get` answers in the caller's
+ * language; a row without one keeps its stored German (issue #98, ADR-062).
  */
-export function mapAiRunRow(run: AiRunRow): AiRun {
+export function mapAiRunRow(run: AiRunRow, locale: Locale = DEFAULT_LOCALE): AiRun {
+  const errorDetailArgs = isArgs(run.errorDetailArgs) ? run.errorDetailArgs : null;
   return {
     id: run.id,
     workspaceId: run.workspaceId,
@@ -64,7 +74,13 @@ export function mapAiRunRow(run: AiRunRow): AiRun {
     finishedAt: run.finishedAt === null ? null : run.finishedAt.toISOString(),
     usage: run.usage === null ? null : (run.usage as AiRun['usage']),
     errorCode: run.errorCode,
-    errorDetail: run.errorDetail,
+    errorDetail: aiRunDiagnosisText(serverTranslator(locale, 'diagnostics'), {
+      errorDetail: run.errorDetail,
+      errorDetailKey: run.errorDetailKey,
+      errorDetailArgs,
+    }),
+    errorDetailKey: run.errorDetailKey,
+    errorDetailArgs,
     resultText: run.resultText,
     conversationId: run.conversationId,
     reasoningLevel: REASONING_LEVEL_TO_CONTRACT[run.reasoningLevel],
@@ -74,4 +90,8 @@ export function mapAiRunRow(run: AiRunRow): AiRun {
     toolSchemaChars: run.toolSchemaChars,
     toolDomains: run.toolDomains,
   };
+}
+
+function isArgs(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }

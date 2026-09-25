@@ -177,7 +177,7 @@ describe('AiService.getRun', () => {
     // what exo_ai_run_get shows somebody looking from outside the browser.
     const runId = await createRun({ status: 'RUNNING', resultText: 'Ich schreibe jetzt' });
 
-    const run = await service.getRun(runId, ownerId);
+    const run = await service.getRun(runId, ownerId, {});
 
     expect(run.status).toBe('running');
     expect(run.resultText).toBe('Ich schreibe jetzt');
@@ -186,6 +186,6 @@ describe('AiService.getRun', () => {
 
   it('refuses somebody who is not in the workspace', async () => {
     const runId = await createRun({ status: 'RUNNING' });
-    await expect(service.getRun(runId, outsiderId)).rejects.toBeInstanceOf(AuthorizationError);
+    await expect(service.getRun(runId, outsiderId, {})).rejects.toBeInstanceOf(AuthorizationError);
   });
 });

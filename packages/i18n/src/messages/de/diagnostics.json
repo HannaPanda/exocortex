@@ -1,1 +1,35 @@
-{}
+{
+  "toolLoop": {
+    "limitReached": "Die Grenze von {limit, plural, one {# Werkzeugrunde} other {# Werkzeugrunden}} ist erreicht, der Lauf wurde ohne Antwort beendet.",
+    "noCalls": "Es lief kein einziger Werkzeugaufruf: die Grenze steht auf null.",
+    "summary": "Gemacht hat dieser Lauf {calls, plural, one {# Aufruf} other {# Aufrufe}} mit zusammen {chars, number} Zeichen Antwort:",
+    "tool": "{name}: {calls, plural, one {# Aufruf} other {# Aufrufe}}, {chars, number} Zeichen",
+    "toolWithRepeats": "{name}: {calls, plural, one {# Aufruf} other {# Aufrufe}}, {chars, number} Zeichen, davon {repeats, number} ohne neuen Inhalt",
+    "moreTools": "und {count, plural, one {# weiteres Werkzeug} other {# weitere Werkzeuge}}",
+    "repeats": "{repeats, plural, one {# Aufruf hat} other {# Aufrufe haben}} genau das geliefert, was ein früherer Aufruf schon geliefert hatte. Dasselbe noch einmal zu fragen, mit anderen Worten gefragt, findet keine Stelle, die der erste Aufruf nicht gefunden hat.",
+    "wayIn": "Der Weg zu einer Stelle in einer großen Seite: ein semantischer Treffer von exo_search nennt den Abschnitt samt Blockkennung, exo_page_block_read öffnet genau diesen Abschnitt, und exo_page_read antwortet bei einer großen Seite mit einer Karte statt mit Text. Eine höhere Grenze ersetzt das nicht."
+  },
+  "runTimeout": {
+    "turnLimit": "Eine einzelne Antwort des Modells hat die Grenze von {duration} gerissen (Einstellung ai.timeoutMs). Der Lauf wurde ohne Antwort beendet.",
+    "runLimit": "Der ganze Lauf hat seine Grenze von {duration} erreicht (Einstellung ai.maxRunMs). Er wurde ohne Antwort beendet.",
+    "seconds": "{count, plural, one {# Sekunde} other {# Sekunden}}",
+    "minutes": "{count, plural, one {# Minute} other {# Minuten}}",
+    "ran": "Gelaufen ist {model} mit Denkstufe „{effort}“.",
+    "ranAfterRounds": "Gelaufen ist {model} mit Denkstufe „{effort}“ {rounds, plural, one {nach einer Werkzeugrunde} other {nach # Werkzeugrunden}}.",
+    "received": "Von der Antwort {chars, plural, one {war ein Zeichen} other {waren # Zeichen}} angekommen, dann lief die Zeit ab.",
+    "thoughtOnly": "Von der Antwort kam kein einziges Zeichen an: die ganze Zeit ist ins Nachdenken gegangen.",
+    "nothing": "Von der Antwort kam kein einziges Zeichen an; das Modell hat nichts geliefert.",
+    "hintEffort": "Eine niedrigere Denkstufe kommt hier weiter als eine höhere Grenze: die Zeit ist vor dem ersten Zeichen vergangen, und genau die ist das Nachdenken. Die Stufe steht im KI-Bereich neben der Modellauswahl, die Grenzen in der Verwaltung unter „KI“.",
+    "hintRun": "Ein kleinerer Schritt kommt hier weiter als eine höhere Grenze: eine Aufgabe, die so viele Werkzeugrunden braucht, wird in zwei Fragen schneller fertig als in einer. Die Grenzen stehen in der Verwaltung unter „KI“.",
+    "hintSmaller": "Eine kleinere Frage oder ein schnelleres Modell kommt hier weiter als eine höhere Grenze. Die Grenzen stehen in der Verwaltung unter „KI“.",
+    "effort": {
+      "none": "keine",
+      "minimal": "minimal",
+      "low": "niedrig",
+      "medium": "mittel",
+      "high": "hoch",
+      "xhigh": "sehr hoch",
+      "max": "maximal"
+    }
+  }
+}

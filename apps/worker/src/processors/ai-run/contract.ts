@@ -1,5 +1,5 @@
 import { type AiGenerateResult, type AiToolCall, type RoutingEndpoint } from '@exocortex/ai';
-import { type AiUsage } from '@exocortex/contracts';
+import { type AiRunDiagnosis, type AiUsage } from '@exocortex/contracts';
 import { type AiReasoningLevel as AiReasoningLevelPrisma } from '@exocortex/database';
 
 /** Fields read directly from `ai_model` -- never imported from apps/api (rule 6/package boundaries). */
@@ -37,15 +37,16 @@ export interface RunFailure {
   code: string;
   message: string;
   /**
-   * The same thing said to the person, in German and in detail (issue #118,
-   * ADR-059).
+   * The same thing said to the person, in detail (issue #118, ADR-059): a key
+   * of the `diagnostics` namespace and its facts, rendered in each reader's
+   * language (issue #98, ADR-062).
    *
    * Separate from `message` because the two have different readers: `message`
    * is a log line and stays English by rule 8, while this one is shown in the
    * panel, stored on the run and read back by `exo_ai_run_get`. Absent
    * wherever the code alone says everything there is to say.
    */
-  detail?: string;
+  diagnosis?: AiRunDiagnosis;
 }
 
 /** What one exchange with the provider produced. */

@@ -1,5 +1,7 @@
-import { QUEUE_NAMES } from '@exocortex/contracts';
+import { DEFAULT_LOCALE, type Locale, QUEUE_NAMES } from '@exocortex/contracts';
 import { type PrismaClient, resolveNotificationMode } from '@exocortex/database';
+import { resolveLocale } from '@exocortex/i18n';
+import { serverTranslator } from '@exocortex/i18n/catalog';
 import { type QueueRegistry } from '@exocortex/queue';
 
 import { collectCommentRecipients, commentPreview } from './comment-recipients';
@@ -60,18 +62,21 @@ export async function scheduleCommentNotifications(
   const recipients = await collectCommentRecipients(dependencies.prisma, comment);
   if (recipients.size === 0) return;
 
-  const title = `${comment.createdBy.name} hat kommentiert`;
-  const body = `${comment.document.title}: ${commentPreview(comment.body)}`;
   const url = `${dependencies.appUrl.replace(/\/$/, '')}/arbeitsbereich/${comment.document.workspaceId}/seite/${comment.documentId}`;
+  const preview = commentPreview(comment.body);
+  // Each recipient reads the notification in their own language, not in the
+  // commenter's (issue #98, ADR-062).
+  const locales = await recipientLocales(dependencies.prisma, [...recipients]);
 
   for (const userId of recipients) {
+    const t = serverTranslator(locales.get(userId) ?? DEFAULT_LOCALE, 'push');
     await dependencies.queues.enqueue(QUEUE_NAMES.push, {
       correlationId: event.correlationId,
       userId,
       kind: 'COMMENT',
       notification: {
-        title,
-        body,
+        title: t('comment.title', { name: comment.createdBy.name }),
+        body: t('comment.body', { page: comment.document.title, preview }),
         url,
         // One notification per page rather than per comment: three replies
         // while a phone is in a pocket should be one line on the lock screen,
@@ -120,6 +125,18 @@ async function recordDigestEntries(
       workspaceId: comment.document.workspaceId,
     })),
   });
+}
+
+/** The language each recipient reads in: their own choice, German while they have none. */
+async function recipientLocales(
+  prisma: PrismaClient,
+  userIds: readonly string[],
+): Promise<Map<string, Locale>> {
+  const users = await prisma.user.findMany({
+    where: { id: { in: [...userIds] } },
+    select: { id: true, locale: true },
+  });
+  return new Map(users.map((user) => [user.id, resolveLocale({ preference: user.locale })]));
 }
 
 function readId(payload: unknown, key: string): string | null {

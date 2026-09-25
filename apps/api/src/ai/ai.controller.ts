@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Param, Post } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { type VerifiedSession } from '@exocortex/auth';
@@ -13,6 +13,7 @@ import {
 
 import { CurrentSession } from '../auth/session.guard';
 import { currentCorrelationId } from '../common/correlation';
+import { type ReaderLocaleHeaders } from '../common/reader-locale';
 import { openApiResponseSchema, openApiSchema, zodPipe } from '../common/zod';
 
 import { AiService } from './ai.service';
@@ -43,8 +44,9 @@ export class AiController {
   async get(
     @CurrentSession() session: VerifiedSession,
     @Param('runId') runId: string,
+    @Headers() headers: ReaderLocaleHeaders,
   ): Promise<AiRun> {
-    return this.ai.getRun(runId, session.userId);
+    return this.ai.getRun(runId, session.userId, headers);
   }
 
   @Post(':runId/cancel')

@@ -4,6 +4,12 @@
  * catalogue itself is the separate `@exocortex/i18n/catalog` entry point.
  */
 export type { Messages, Namespace } from './catalog.js';
+export {
+  aiRunDiagnosisText,
+  type DiagnosisMessageKey,
+  type DiagnosisTranslator,
+  renderAiRunDiagnosis,
+} from './diagnosis.js';
 export { type LocaleSources, matchLocale, negotiateLocale, resolveLocale } from './negotiate.js';
 export { DEFAULT_TIME_ZONE, TIME_ZONE_COOKIE, validTimeZone } from './time-zone.js';
 export {

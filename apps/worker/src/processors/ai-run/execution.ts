@@ -13,6 +13,7 @@ import {
 import {
   AI_RUN_PHASE_MIN_INTERVAL_MS,
   type AiMessage,
+  type AiRunDiagnosis,
   type AiRunPhase,
   type AiUsage,
   type deriveAiRunTimeouts,
@@ -22,8 +23,8 @@ import { type AiRun, type Prisma, type PrismaClient } from '@exocortex/database'
 import { withSpan } from '@exocortex/logger';
 import { type JobContext, type RedisEventBus } from '@exocortex/queue';
 
-import { describeRunTimeout } from '../../run-timeout';
-import { describeToolLoop } from '../../tool-ledger';
+import { runTimeoutDiagnosis } from '../../run-timeout';
+import { toolLoopDiagnosis } from '../../tool-ledger';
 import { type ToolContext, type ToolRunner } from '../../tool-runner';
 
 import { addUsage, type RunFailure, type TurnResult } from './contract';
@@ -558,7 +559,7 @@ class RunExecution {
         // The limit is the one fact the reader already had (issue #118). What
         // the run actually did with its calls is what decides whether the
         // answer is a higher limit or a different way in, so it is said here.
-        detail: describeToolLoop({
+        diagnosis: toolLoopDiagnosis({
           limit: maxToolIterations,
           tallies: this.input.runner?.tallies() ?? [],
         }),
@@ -747,14 +748,14 @@ class RunExecution {
       return {
         code: 'ai_timeout',
         message: `A single model answer exceeded ${timeouts.turnTimeoutMs}ms`,
-        detail: this.describeTimeout('turn', timeouts.turnTimeoutMs),
+        diagnosis: this.describeTimeout('turn', timeouts.turnTimeoutMs),
       };
     }
     if (this.abortReason === 'run_budget') {
       return {
         code: 'ai_timeout',
         message: `The run exceeded its budget of ${timeouts.runBudgetMs}ms`,
-        detail: this.describeTimeout('run', timeouts.runBudgetMs),
+        diagnosis: this.describeTimeout('run', timeouts.runBudgetMs),
       };
     }
     return {
@@ -767,7 +768,7 @@ class RunExecution {
     return {
       code: 'ai_timeout',
       message: `AI run exceeded its budget of ${this.input.timeouts.runBudgetMs}ms`,
-      detail: this.describeTimeout('run', this.input.timeouts.runBudgetMs),
+      diagnosis: this.describeTimeout('run', this.input.timeouts.runBudgetMs),
     };
   }
 
@@ -777,8 +778,8 @@ class RunExecution {
    * run and shown in the panel instead of the canned sentence, the way
    * `ai_tool_limit_exceeded` already reads out its tally (ADR-059).
    */
-  private describeTimeout(limit: 'turn' | 'run', limitMs: number): string {
-    return describeRunTimeout({
+  private describeTimeout(limit: 'turn' | 'run', limitMs: number): AiRunDiagnosis {
+    return runTimeoutDiagnosis({
       limit,
       limitMs,
       model: this.input.run.model,

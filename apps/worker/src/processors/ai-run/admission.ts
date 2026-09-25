@@ -93,6 +93,8 @@ async function handleRunningRun(input: {
         errorCode: 'ai_run_abandoned',
         reason: 'The previous execution of this run stopped without finishing',
         detail: null,
+        detailKey: null,
+        detailArgs: null,
       },
     });
   }
@@ -123,6 +125,8 @@ async function failDisabledRun(input: {
       errorCode: 'ai_provider_unavailable',
       reason: 'AI is disabled via the ai.enabled setting',
       detail: null,
+      detailKey: null,
+      detailArgs: null,
     },
   });
   logger.warn('AI run failed: AI is disabled', { runId: run.id });

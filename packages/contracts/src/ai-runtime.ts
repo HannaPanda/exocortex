@@ -148,6 +148,8 @@ export interface AiRunReconcileInput {
     status: AiRunStatus;
     errorCode: string | null;
     errorDetail: string | null;
+    errorDetailKey: string | null;
+    errorDetailArgs: Record<string, unknown> | null;
   } | null;
   /** `key` of the outcome this client has already reacted to. */
   appliedKey: string | null;
@@ -158,8 +160,11 @@ export interface AiRunReconcileResult {
   key: string;
   status: AiRunStatus;
   errorCode: string | null;
-  /** The German diagnosis the run row carries, when it has one (issue #118). */
+  /** The diagnosis the run row carries, when it has one (issue #118). */
   errorDetail: string | null;
+  /** The same diagnosis as key and arguments, rendered by the client (issue #98). */
+  errorDetailKey: string | null;
+  errorDetailArgs: Record<string, unknown> | null;
 }
 
 /**
@@ -178,7 +183,14 @@ export function reconcileAiRun(input: AiRunReconcileInput): AiRunReconcileResult
   if (!isAiRunTerminalStatus(run.status)) return null;
   const key = `${run.id}:${run.status}`;
   if (key === appliedKey) return null;
-  return { key, status: run.status, errorCode: run.errorCode, errorDetail: run.errorDetail };
+  return {
+    key,
+    status: run.status,
+    errorCode: run.errorCode,
+    errorDetail: run.errorDetail,
+    errorDetailKey: run.errorDetailKey,
+    errorDetailArgs: run.errorDetailArgs,
+  };
 }
 
 export interface AiRunTimeouts {

@@ -1,1 +1,24 @@
-{}
+{
+  "comment": {
+    "title": "{name} hat kommentiert",
+    "body": "{page}: {preview}"
+  },
+  "calendar": {
+    "title": "{lead}: {title}",
+    "emptyBody": "Termin",
+    "lead": {
+      "today": "Heute",
+      "now": "Jetzt",
+      "minutes": "{minutes, plural, one {In einer Minute} other {In # Minuten}}",
+      "hours": "{hours, plural, one {In einer Stunde} other {In # Stunden}}",
+      "hoursAndMinutes": "{hours, plural, one {In einer Stunde} other {In # Stunden}} {minutes, plural, one {# Minute} other {# Minuten}}"
+    },
+    "span": {
+      "allDay": "Ganztägig",
+      "allDayRange": "Ganztägig, {from} bis {to}",
+      "time": "{time} Uhr",
+      "timeRange": "{from} bis {to} Uhr",
+      "timeRangeAcrossDays": "{from} Uhr bis {toDate}, {to} Uhr"
+    }
+  }
+}

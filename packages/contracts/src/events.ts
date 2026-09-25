@@ -1,9 +1,11 @@
 import { z } from 'zod';
 
 import { aiRunPhaseSchema, aiRunStatusSchema, aiUsageSchema } from './ai';
+import { aiRunDiagnosisArgsSchema } from './ai-diagnosis';
 import { automationFailureReasonSchema } from './automations';
 import { commentSchema } from './comments';
 import { documentSummarySchema } from './documents';
+import { overviewErrorDetailSchema } from './overviews';
 import { idSchema, isoDateTimeSchema } from './primitives';
 import { projectBuildStatusSchema } from './projects';
 import { renderJobStatusSchema } from './render';
@@ -151,6 +153,13 @@ export const aiRunFailedPayloadSchema = z.object({
    * `null` wherever the code alone is the whole story.
    */
   detail: z.string().nullable(),
+  /**
+   * The diagnosis as key and arguments (`aiRunDiagnosisSchema`), which the
+   * panel renders in the viewer's language; `detail` is the fallback for a
+   * key it does not know (issue #98, ADR-062).
+   */
+  detailKey: z.string().nullable(),
+  detailArgs: aiRunDiagnosisArgsSchema.nullable(),
 });
 
 export const aiConversationCompactedPayloadSchema = z.object({
@@ -207,11 +216,27 @@ export const documentContentReplacedPayloadSchema = z.object({
  * exists for the other half: the page that has been showing "wird erzeugt …"
  * has to learn that it is over, and *why* when it failed.
  */
+/**
+ * Why a cover was not drawn, as a code the browser words in its reader's
+ * language (`document.cover.generationErrors`, issue #98).
+ *
+ * `unavailable`: no image model is set up. `no_picture`: the model answered
+ * without an image, so it most likely cannot draw. `failed`: anything else.
+ */
+export const documentCoverErrorDetailSchema = z.discriminatedUnion('code', [
+  z.object({ code: z.literal('unavailable') }),
+  z.object({ code: z.literal('no_picture'), model: z.string() }),
+  z.object({ code: z.literal('failed') }),
+]);
+export type DocumentCoverErrorDetail = z.infer<typeof documentCoverErrorDetailSchema>;
+
 export const documentCoverGeneratedPayloadSchema = z.object({
   documentId: idSchema,
   status: z.enum(['ready', 'failed']),
-  /** German, user-facing. Null on success. */
+  /** English, for logs and older clients. Null on success. */
   error: z.string().nullable().default(null),
+  /** The failure as a code. Null on success. */
+  errorDetail: documentCoverErrorDetailSchema.nullable().default(null),
 });
 
 /**
@@ -227,8 +252,10 @@ export const documentCoverGeneratedPayloadSchema = z.object({
 export const documentOverviewUpdatedPayloadSchema = z.object({
   documentId: idSchema,
   status: z.enum(['ready', 'unchanged', 'failed']),
-  /** German, user-facing. Null unless it failed. */
+  /** English, for logs and older clients. Null unless it failed. */
   error: z.string().nullable().default(null),
+  /** The failure as a code (`overviewErrorDetailSchema`). Null unless it failed. */
+  errorDetail: overviewErrorDetailSchema.nullable().default(null),
 });
 
 /**
@@ -272,8 +299,12 @@ export const renderJobUpdatedPayloadSchema = z.object({
   jobId: idSchema,
   documentId: idSchema.nullable(),
   status: renderJobStatusSchema,
-  /** German, user-facing. Null unless the build failed. */
-  error: z.string().nullable().default(null),
+  /**
+   * The code the worker stored, null unless the build failed. A code and not a
+   * sentence: a socket event has many readers and no single language
+   * (ADR-062), so whoever shows it looks the sentence up.
+   */
+  errorCode: z.string().nullable().default(null),
 });
 export type RenderJobUpdatedPayload = z.infer<typeof renderJobUpdatedPayloadSchema>;
 
@@ -300,8 +331,12 @@ export const projectBuildUpdatedPayloadSchema = z.object({
   buildId: idSchema,
   projectId: idSchema.nullable(),
   status: projectBuildStatusSchema,
-  /** German, user-facing. Null unless the build failed. */
-  error: z.string().nullable().default(null),
+  /**
+   * The code the worker stored, null unless the build failed. A code and not a
+   * sentence: a socket event has many readers and no single language
+   * (ADR-062), so whoever shows it looks the sentence up.
+   */
+  errorCode: z.string().nullable().default(null),
 });
 export type ProjectBuildUpdatedPayload = z.infer<typeof projectBuildUpdatedPayloadSchema>;
 

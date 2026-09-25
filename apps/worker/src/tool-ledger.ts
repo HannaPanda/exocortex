@@ -1,5 +1,9 @@
 import { createHash } from 'node:crypto';
 
+import { type AiRunDiagnosis, type AiRunToolTally } from '@exocortex/contracts';
+
+import { germanDiagnosis } from './diagnosis';
+
 /**
  * What one tool cost this run (issue #118, ADR-059).
  *
@@ -9,14 +13,7 @@ import { createHash } from 'node:crypto';
  * issue spent 1.36 million input tokens, and that came out of what the tools
  * returned, not out of what the model wrote.
  */
-export interface ToolCallTally {
-  name: string;
-  calls: number;
-  /** Calls that answered exactly what an earlier call in this run had already answered. */
-  repeats: number;
-  /** Characters this tool put into the run's context, the repeats not counted. */
-  chars: number;
-}
+export type ToolCallTally = AiRunToolTally;
 
 /** Where a call landed: its number in the run, and the earlier one it repeats. */
 export interface LedgerVerdict {
@@ -157,9 +154,6 @@ export function repeatHint(input: { name: string; repeatOf: number }): string {
   ].join('\n');
 }
 
-/** Tools named in the diagnosis; the rest are counted, not listed. */
-const MAX_LISTED_TOOLS = 5;
-
 /**
  * Why the run ran out of tool calls, in the words of what it actually did.
  *
@@ -167,68 +161,23 @@ const MAX_LISTED_TOOLS = 5;
  * nothing else, which is the one fact the person already had. What they could
  * not see is that fourteen of the twenty calls were the same search reworded,
  * and that is what decides whether the answer is a higher limit (it is not) or
- * a different way in.
+ * a different way in. Stored as facts; the words are the `diagnostics`
+ * namespace's, in each reader's language (issue #98).
  */
+export function toolLoopDiagnosis(input: {
+  limit: number;
+  tallies: readonly ToolCallTally[];
+}): AiRunDiagnosis {
+  return {
+    key: 'toolLoop',
+    args: { limit: input.limit, tallies: input.tallies.map((tally) => ({ ...tally })) },
+  };
+}
+
+/** The same diagnosis in German, as `AiRun.errorDetail` stores it. */
 export function describeToolLoop(input: {
   limit: number;
   tallies: readonly ToolCallTally[];
 }): string {
-  const calls = input.tallies.reduce((total, tally) => total + tally.calls, 0);
-  const repeats = input.tallies.reduce((total, tally) => total + tally.repeats, 0);
-  const chars = input.tallies.reduce((total, tally) => total + tally.chars, 0);
-
-  const lines = [
-    `Die Grenze von ${count(input.limit, 'Werkzeugrunde', 'Werkzeugrunden')} ist erreicht, ` +
-      'der Lauf wurde ohne Antwort beendet.',
-  ];
-
-  if (calls === 0) {
-    lines.push('Es lief kein einziger Werkzeugaufruf: die Grenze steht auf null.');
-    return lines.join('\n');
-  }
-
-  lines.push(
-    `Gemacht hat dieser Lauf ${count(calls, 'Aufruf', 'Aufrufe')} mit zusammen ` +
-      `${german(chars)} Zeichen Antwort:`,
-  );
-  for (const tally of input.tallies.slice(0, MAX_LISTED_TOOLS)) {
-    lines.push(`- ${tally.name}: ${describeTally(tally)}`);
-  }
-  const hidden = input.tallies.length - MAX_LISTED_TOOLS;
-  if (hidden > 0) lines.push(`- und ${count(hidden, 'weiteres Werkzeug', 'weitere Werkzeuge')}`);
-
-  if (repeats > 0) {
-    lines.push(
-      `${count(repeats, 'Aufruf hat', 'Aufrufe haben')} genau das geliefert, was ein früherer ` +
-        'Aufruf schon geliefert hatte. Dasselbe noch einmal zu fragen, mit anderen Worten ' +
-        'gefragt, findet keine Stelle, die der erste Aufruf nicht gefunden hat.',
-    );
-  }
-
-  lines.push(
-    'Der Weg zu einer Stelle in einer großen Seite: ein semantischer Treffer von exo_search ' +
-      'nennt den Abschnitt samt Blockkennung, exo_page_block_read öffnet genau diesen ' +
-      'Abschnitt, und exo_page_read antwortet bei einer großen Seite mit einer Karte statt ' +
-      'mit Text. Eine höhere Grenze ersetzt das nicht.',
-  );
-  return lines.join('\n');
-}
-
-function describeTally(tally: ToolCallTally): string {
-  const parts = [`${count(tally.calls, 'Aufruf', 'Aufrufe')}, ${german(tally.chars)} Zeichen`];
-  if (tally.repeats > 0) parts.push(`davon ${german(tally.repeats)} ohne neuen Inhalt`);
-  return parts.join(', ');
-}
-
-function count(value: number, singular: string, plural: string): string {
-  return `${german(value)} ${value === 1 ? singular : plural}`;
-}
-
-/**
- * Thousands separated the German way, without asking for a locale: the same
- * number has to come out of this on every host, and a diagnosis is compared
- * against in tests.
- */
-function german(value: number): string {
-  return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return germanDiagnosis(toolLoopDiagnosis(input));
 }

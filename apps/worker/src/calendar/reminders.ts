@@ -1,5 +1,6 @@
 import { type CalendarLinkPropertyMap, parseCalendarLinkPropertyMap } from '@exocortex/contracts';
 import { type PrismaClient } from '@exocortex/database';
+import { resolveLocale } from '@exocortex/i18n';
 import { type Logger } from '@exocortex/logger';
 import { type ExocortexApiClient } from '@exocortex/mcp-tools';
 
@@ -94,7 +95,15 @@ export async function sendDueReminders(input: SendRemindersInput): Promise<SendR
       // "in 30 minutes" would be a different feature wearing this one's clothes.
       link: { enabled: true, component: 'VEVENT', account: { enabled: true } },
     },
-    include: { link: { include: { account: { select: { userId: true, workspaceId: true } } } } },
+    include: {
+      link: {
+        include: {
+          account: {
+            select: { userId: true, workspaceId: true, user: { select: { locale: true } } },
+          },
+        },
+      },
+    },
   });
 
   const fresh = candidates.filter(
@@ -159,6 +168,9 @@ export async function sendDueReminders(input: SendRemindersInput): Promise<SendR
       location: readText(valueOf(row, map.location)),
       url,
       timeZone: schedule.timeZone,
+      // The owner's language, on both channels: the deployment-wide one names
+      // no account of its own, and the appointment is the owner's (issue #98).
+      locale: resolveLocale({ preference: state.link.account.user.locale }),
       now: input.now,
     };
 

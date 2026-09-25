@@ -73,6 +73,8 @@ describe('reconcileAiRun', () => {
     status: 'completed',
     errorCode: null,
     errorDetail: null,
+    errorDetailKey: null,
+    errorDetailArgs: null,
   } as const;
 
   it('catches a completion event the socket never delivered (issue #6)', () => {
@@ -85,6 +87,8 @@ describe('reconcileAiRun', () => {
       status: 'completed',
       errorCode: null,
       errorDetail: null,
+      errorDetailKey: null,
+      errorDetailArgs: null,
     });
   });
 

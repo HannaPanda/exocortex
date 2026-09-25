@@ -54,13 +54,30 @@ laziness but because it did not know there was another way in. It also says
 that a higher limit is not the answer, since that is the first thing anybody
 reaches for.
 
-**The diagnosis is stored, in German, beside the code.** `AiRun.errorDetail`
+**The diagnosis is stored beside the code.** `AiRun.errorDetail`
 is a new column, and `RunFailure` carries `detail` beside `message`: `message`
 stays English because it is a log line (rule 8), `detail` is written for the
 person and for the next agent. The panel shows it in place of the canned
 sentence, `exo_ai_run_get` prints it as `Diagnose:`, and the `ai.run.failed`
 event carries it so the panel does not have to wait for a poll. A diagnosis
 that exists only in a socket frame is a diagnosis nobody reads twice.
+
+**Amended 2026-09-25 (issue #98, ADR-062): the diagnosis is stored as facts.**
+A finished German sentence cannot be read in another language, so the worker
+now stores what it found rather than what it would say: `AiRun.errorDetailKey`
+names a diagnosis (`toolLoop`, `runTimeout`) and `AiRun.errorDetailArgs`
+holds its facts (the limit and the per-tool tally; the limit, level, streamed
+characters and tool rounds of a timeout), validated by `aiRunDiagnosisSchema`
+in `packages/contracts`. `RunFailure.diagnosis` replaces `RunFailure.detail`.
+One renderer, `renderAiRunDiagnosis` in `packages/i18n`, turns them into
+lines through the `diagnostics` namespace, and every reader calls it with its
+own translator: the panel in the viewer's language, the API in the
+requester's (`readerLocale`), so `exo_ai_run_get` answers in the caller's.
+Numbers are ICU arguments, grouped the reader's way rather than by a
+hand-written German separator. The worker still writes the German rendering
+into `errorDetail`, and `ai.run.failed` carries it as `detail` beside
+`detailKey` and `detailArgs`: a row older than the columns, and a reader that
+does not know a key yet, show that text instead of nothing.
 
 ## Consequences
 

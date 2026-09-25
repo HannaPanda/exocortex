@@ -22,6 +22,7 @@ import {
 import { loadWorkerEnv } from '@exocortex/config';
 import {
   AI_RUN_HEARTBEAT_STALE_MS,
+  type DocumentCoverErrorDetail,
   type DocumentTextMetadata,
   type JobPayloadMap,
   QUEUE_NAMES,
@@ -2635,7 +2636,12 @@ describe('maintenance', () => {
 describe('cover generation', () => {
   interface Published {
     type: string;
-    payload: { documentId: string; status: string; error: string | null };
+    payload: {
+      documentId: string;
+      status: string;
+      error: string | null;
+      errorDetail: DocumentCoverErrorDetail | null;
+    };
   }
 
   /** Records what the processor announced instead of reaching Redis. */
@@ -2703,7 +2709,7 @@ describe('cover generation', () => {
     expect(published).toEqual([
       expect.objectContaining({
         type: 'document.cover.generated',
-        payload: { documentId: 'doc123456', status: 'ready', error: null },
+        payload: { documentId: 'doc123456', status: 'ready', error: null, errorDetail: null },
       }),
     ]);
   });
@@ -2721,7 +2727,7 @@ describe('cover generation', () => {
 
     expect(uploads).toEqual([]);
     expect(published[0]?.payload.status).toBe('failed');
-    expect(published[0]?.payload.error).toContain('nicht eingerichtet');
+    expect(published[0]?.payload.errorDetail).toEqual({ code: 'unavailable' });
   });
 
   it('names the model when it answered without a picture', async () => {
@@ -2740,8 +2746,10 @@ describe('cover generation', () => {
     })(contextFor<'document-cover'>(payload).context);
 
     // "Try again" would be the wrong advice: the model has to change.
-    expect(published[0]?.payload.error).toContain('openai/text-only');
-    expect(published[0]?.payload.error).toContain('bildfähiges Modell');
+    expect(published[0]?.payload.errorDetail).toEqual({
+      code: 'no_picture',
+      model: 'openai/text-only',
+    });
   });
 
   it('never lets a failure escape, so a paid call is not retried', async () => {
@@ -3419,6 +3427,10 @@ describe('ai runs', () => {
     // was doing is what decides whether a higher limit is even the answer.
     expect(run.errorDetail).toContain('Grenze');
     expect(run.errorDetail).toContain('Denkstufe');
+    // The facts beside the German rendering, for every other reader (issue #98).
+    expect(run.errorDetailKey).toBe('runTimeout');
+    // Both budgets are 150 ms here, so either may be the one that ran out.
+    expect(['turn', 'run']).toContain((run.errorDetailArgs as { limit?: unknown }).limit);
     expect(
       published.some(
         (event) => event.type === 'ai.run.failed' && event.payload.status === 'timed_out',
@@ -3655,6 +3667,8 @@ describe('conversation-backed tool loop', () => {
     // beside it, which is what makes it readable after the tab was closed.
     expect(run.errorDetail).toContain('Werkzeugrunden');
     expect(run.errorDetail).toContain('kein einziger Werkzeugaufruf');
+    expect(run.errorDetailKey).toBe('toolLoop');
+    expect(run.errorDetailArgs).toMatchObject({ tallies: [] });
   }, 60_000);
 });
 
