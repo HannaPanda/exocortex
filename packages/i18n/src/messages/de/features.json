@@ -136,10 +136,19 @@
     "summary": "Seiten liegen in Arbeitsbereichen, die getrennte Mitgliedschaften und getrennte Rechte haben. Der Wechsel oben links zeigt alle, in denen du Mitglied bist.",
     "details": {
       "p1": "Ein Arbeitsbereich ist die Grenze, an der Rechte gelten: wer Mitglied ist, sieht alles darin, wer es nicht ist, sieht nichts davon. Deshalb trennst du hier nicht nach Thema, sondern nach Publikum. Ein Bereich für dich allein, einer für ein gemeinsames Projekt, einer für das Gedächtnis der Agenten.",
-      "p2": "Der Umschalter oben links listet alle Bereiche, in denen du Mitglied bist, und merkt sich den zuletzt benutzten. Suche, Navigation und Erfassen beziehen sich immer auf den Bereich, in dem du gerade bist.",
+      "p2": "Der Umschalter oben links listet alle Bereiche, in denen du Mitglied bist, in deiner eigenen Reihenfolge. Suche, Navigation und Erfassen beziehen sich immer auf den Bereich, in dem du gerade bist.",
       "p3": "Viele Einstellungen lassen sich pro Arbeitsbereich überschreiben, etwa welches Modell antwortet oder ob Automationen laufen dürfen. Eine Seite darf außerdem in einen anderen Bereich verschoben werden, samt allem, was unter ihr hängt, falls sich später herausstellt, dass sie beim falschen Publikum lag."
     },
     "where": "Der Umschalter oben links in der Navigation."
+  },
+  "arbeitsbereiche-sortieren": {
+    "title": "Arbeitsbereiche umsortieren",
+    "summary": "Du legst selbst fest, in welcher Reihenfolge deine Arbeitsbereiche im Umschalter stehen. Der erste öffnet sich, wenn du eXocortex aufrufst.",
+    "details": {
+      "p1": "Im Umschalter oben links findest du unter der Liste \"Reihenfolge ändern\". Dort schiebst du jeden Bereich mit den Pfeilen nach oben oder unten; jede Änderung gilt sofort. Ein Testfeld wandert so ans Ende, und der Bereich, mit dem du am meisten arbeitest, öffnet sich beim Start.",
+      "p2": "Die Reihenfolge gehört dir allein. Andere Mitglieder desselben Bereichs sehen ihre eigene Liste, und nichts, was du hier verschiebst, ändert etwas bei ihnen. Ein Bereich, dem du neu beitrittst, stellt sich hinten an."
+    },
+    "where": "Der Umschalter oben links, dann \"Reihenfolge ändern\"."
   },
   "seitenbaum": {
     "title": "Verschachtelte Seiten und Verschieben per Ziehen",

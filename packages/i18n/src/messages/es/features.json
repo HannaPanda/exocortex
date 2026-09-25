@@ -136,10 +136,19 @@
     "summary": "Las páginas se encuentran en espacios de trabajo que tienen miembros y permisos independientes. El selector arriba a la izquierda muestra todos aquellos de los que formas parte.",
     "details": {
       "p1": "Un espacio de trabajo es el límite donde se aplican los permisos: quien es miembro ve todo su contenido; quien no lo es, no ve nada. Por eso no separas aquí por tema, sino por audiencia. Un espacio solo para ti, uno para un proyecto conjunto, otro para la memoria de los agentes.",
-      "p2": "El selector arriba a la izquierda enumera todos los espacios en los que eres miembro y recuerda el último utilizado. La búsqueda, la navegación y la captura siempre se refieren al espacio en el que te encuentras en ese momento.",
+      "p2": "El selector arriba a la izquierda muestra todos los espacios de los que formas parte, en tu propio orden. La búsqueda, la navegación y la captura se refieren siempre al espacio en el que te encuentras en ese momento.",
       "p3": "Muchos ajustes se pueden anular por espacio de trabajo, como qué modelo responde o si se permite la ejecución de automatizaciones. Además, se puede mover una página a otro espacio junto con todo lo que cuelgue de ella, en caso de que más adelante se descubra que estaba en la audiencia equivocada."
     },
     "where": "El selector arriba a la izquierda en la navegación."
+  },
+  "arbeitsbereiche-sortieren": {
+    "title": "Reordenar espacios de trabajo",
+    "summary": "Tú decides el orden de tus espacios de trabajo en el selector. El primero se abrirá cada vez que accedas a eXocortex.",
+    "details": {
+      "p1": "En el selector arriba a la izquierda, debajo de la lista, encontrarás «Cambiar orden». Desde ahí puedes mover cada espacio hacia arriba o hacia abajo con las flechas; cualquier cambio se aplica de inmediato. Así puedes mandar un entorno de pruebas al final y abrir al iniciar el espacio con el que más trabajas.",
+      "p2": "El orden es solo para ti. El resto de miembros del mismo espacio ven su propia lista, y nada de lo que muevas aquí les afectará. Los espacios a los que te unas por primera vez se colocarán al final."
+    },
+    "where": "El selector arriba a la izquierda, luego «Cambiar orden»."
   },
   "seitenbaum": {
     "title": "Páginas anidadas y mover arrastrando",

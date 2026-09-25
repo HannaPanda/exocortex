@@ -136,10 +136,19 @@
     "summary": "Les pages se trouvent dans des espaces de travail dotés de membres et de droits d’accès distincts. Le sélecteur en haut à gauche affiche tous ceux dont tu es membre.",
     "details": {
       "p1": "Un espace de travail constitue la frontière où s’appliquent les droits d’accès : quiconque en est membre voit tout son contenu, et les personnes non membres n’en voient rien. C’est pourquoi la séparation ne se fait pas par thème, mais par public. Un espace pour toi seul, un pour un projet partagé, un pour la mémoire des agents.",
-      "p2": "Le sélecteur en haut à gauche liste tous les espaces dont tu es membre et mémorise le dernier utilisé. La recherche, la navigation et la saisie s’appliquent toujours à l’espace dans lequel tu te trouves.",
+      "p2": "Le sélecteur en haut à gauche liste tous les espaces dont tu es membre, dans l’ordre de ton choix. La recherche, la navigation et la saisie s’appliquent toujours à l’espace où tu te trouves actuellement.",
       "p3": "De nombreux paramètres peuvent être redéfinis par espace de travail, comme le modèle qui répond ou l’autorisation d’exécuter des automatisations. Une page peut en outre être déplacée vers un autre espace, avec tout ce qui en dépend, s’il s’avère plus tard qu’elle ne s’adressait pas au bon public."
     },
     "where": "Le sélecteur en haut à gauche dans la navigation."
+  },
+  "arbeitsbereiche-sortieren": {
+    "title": "Réorganiser les espaces de travail",
+    "summary": "Tu choisis toi-même l’ordre dans lequel tes espaces de travail apparaissent dans le sélecteur. Le premier s’ouvre dès que tu accèdes à eXocortex.",
+    "details": {
+      "p1": "Dans le sélecteur en haut à gauche, sous la liste, tu trouveras « Modifier l’ordre ». Là, tu peux déplacer chaque espace vers le haut ou vers le bas à l’aide des flèches ; chaque modification prend effet immédiatement. Un espace de test peut ainsi être relégué à la fin, et l’espace avec lequel tu travailles le plus s’ouvrira au démarrage.",
+      "p2": "Cet ordre n’appartient qu’à toi. Les autres membres d’un même espace voient leur propre liste, et rien de ce que tu déplaces ici ne change quoi que ce soit pour eux. Un espace que tu rejoins vient simplement se placer à la fin."
+    },
+    "where": "Le sélecteur en haut à gauche, puis « Modifier l’ordre »."
   },
   "seitenbaum": {
     "title": "Pages imbriquées et déplacement par glisser-déposer",

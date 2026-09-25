@@ -43,7 +43,13 @@
     "create": "Nowy obszar roboczy",
     "nameLabel": "Nazwa obszaru roboczego",
     "cancel": "Anuluj",
-    "submit": "Utwórz"
+    "submit": "Utwórz",
+    "reorder": "Zmień kolejność",
+    "reorderTitle": "Kolejność obszarów roboczych",
+    "reorderDescription": "Pierwszy obszar otwiera się przy starcie. Kolejność dotyczy tylko ciebie.",
+    "moveUp": "Przenieś {name} w górę",
+    "moveDown": "Przenieś {name} w dół",
+    "done": "Gotowe"
   },
   "workspaceLanding": {
     "loading": "Wczytywanie obszarów roboczych…",

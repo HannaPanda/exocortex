@@ -43,7 +43,13 @@
     "create": "Nieuwe werkruimte",
     "nameLabel": "Naam van de werkruimte",
     "cancel": "Annuleren",
-    "submit": "Aanmaken"
+    "submit": "Aanmaken",
+    "reorder": "Volgorde wijzigen",
+    "reorderTitle": "Volgorde van werkruimtes",
+    "reorderDescription": "De eerste werkruimte opent bij het starten. De volgorde geldt alleen voor jou.",
+    "moveUp": "{name} omhoog",
+    "moveDown": "{name} omlaag",
+    "done": "Klaar"
   },
   "workspaceLanding": {
     "loading": "Werkruimtes worden geladen …",

@@ -43,7 +43,13 @@
     "create": "Neuer Arbeitsbereich",
     "nameLabel": "Name des Arbeitsbereichs",
     "cancel": "Abbrechen",
-    "submit": "Anlegen"
+    "submit": "Anlegen",
+    "reorder": "Reihenfolge ändern",
+    "reorderTitle": "Reihenfolge der Arbeitsbereiche",
+    "reorderDescription": "Der erste Bereich öffnet sich beim Start. Die Reihenfolge gilt nur für dich.",
+    "moveUp": "{name} nach oben",
+    "moveDown": "{name} nach unten",
+    "done": "Fertig"
   },
   "workspaceLanding": {
     "loading": "Arbeitsbereiche werden geladen …",

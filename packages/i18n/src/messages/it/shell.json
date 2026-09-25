@@ -43,7 +43,13 @@
     "create": "Nuova area di lavoro",
     "nameLabel": "Nome dell’area di lavoro",
     "cancel": "Annulla",
-    "submit": "Crea"
+    "submit": "Crea",
+    "reorder": "Modifica l’ordine",
+    "reorderTitle": "Ordine delle aree di lavoro",
+    "reorderDescription": "La prima area si apre all’avvio. L’ordine è valido solo per te.",
+    "moveUp": "Sposta {name} in alto",
+    "moveDown": "Sposta {name} in basso",
+    "done": "Fine"
   },
   "workspaceLanding": {
     "loading": "Caricamento delle aree di lavoro …",

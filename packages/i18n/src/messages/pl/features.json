@@ -136,10 +136,19 @@
     "summary": "Strony znajdują się w obszarach roboczych z osobnymi członkostwami i osobnymi uprawnieniami. Przełącznik w lewym górnym rogu pokazuje wszystkie, do których należysz.",
     "details": {
       "p1": "Obszar roboczy wyznacza granicę obowiązywania uprawnień: kto jest członkiem, widzi w nim wszystko; kto nim nie jest, nie widzi nic. Dlatego podziału dokonuje się tutaj nie według tematu, lecz według odbiorców. Jeden obszar tylko dla ciebie, jeden dla wspólnego projektu, jeden na pamięć agentów.",
-      "p2": "Przełącznik w lewym górnym rogu zawiera listę wszystkich obszarów, do których należysz, i zapamiętuje ostatnio używany. Wyszukiwanie, nawigacja i rejestrowanie zawsze odnoszą się do obszaru, w którym aktualnie się znajdujesz.",
+      "p2": "Przełącznik w lewym górnym rogu wyświetla wszystkie obszary robocze, których jesteś członkiem, w ustalonej przez ciebie kolejności. Wyszukiwanie, nawigacja i tworzenie notatek odnoszą się zawsze do obszaru, w którym aktualnie się znajdujesz.",
       "p3": "Wiele ustawień można nadpisać dla każdego obszaru roboczego osobno, na przykład to, który model odpowiada lub czy automatyzacje mogą działać. Stronę można ponadto przenieść do innego obszaru wraz ze wszystkim, co pod nią podlega, jeśli później okaże się, że trafiła do niewłaściwego grona odbiorców."
     },
     "where": "Przełącznik w lewym górnym rogu nawigacji."
+  },
+  "arbeitsbereiche-sortieren": {
+    "title": "Zmienianie kolejności obszarów roboczych",
+    "summary": "Możesz samodzielnie zdecydować, w jakiej kolejności twoje obszary robocze pojawiają się w przełączniku. Pierwszy z nich otwiera się po uruchomieniu eXocortex.",
+    "details": {
+      "p1": "W przełączniku w lewym górnym rogu pod listą znajdziesz opcję „Zmień kolejność”. Za pomocą strzałek możesz przesunąć dowolny obszar w górę lub w dół – każda zmiana zaczyna obowiązywać od razu. W ten sposób przestrzeń testowa trafi na sam koniec, a obszar, w którym pracujesz najczęściej, otworzy się przy starcie.",
+      "p2": "Ta kolejność należy wyłącznie do ciebie. Inni członkowie tego samego obszaru widzą własną listę i żadne wprowadzone tutaj zmiany nie wpływają na ich widok. Nowo dodany obszar roboczy trafia na sam koniec."
+    },
+    "where": "Przełącznik w lewym górnym rogu, a następnie „Zmień kolejność”."
   },
   "seitenbaum": {
     "title": "Zagnieżdżone strony i przenoszenie przez przeciąganie",

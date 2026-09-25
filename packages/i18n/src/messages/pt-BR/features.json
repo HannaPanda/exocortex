@@ -136,10 +136,19 @@
     "summary": "As páginas ficam em espaços de trabalho que possuem membros e permissões separados. O alternador no canto superior esquerdo mostra todos os espaços dos quais você é membro.",
     "details": {
       "p1": "Um espaço de trabalho é a fronteira onde as permissões valem: quem é membro vê tudo o que está dentro, quem não é não vê nada. Por isso, a divisão aqui não é por tema, mas por público. Um espaço só para você, um para um projeto compartilhado, outro para a memória dos agentes.",
-      "p2": "O alternador no canto superior esquerdo lista todos os espaços dos quais você participa e lembra o último utilizado. Busca, navegação e captura sempre se referem ao espaço em que você está no momento.",
+      "p2": "O seletor no canto superior esquerdo lista todos os espaços de trabalho dos quais você faz parte, na sua própria ordem. Busca, navegação e captura referem-se sempre ao espaço em que você está no momento.",
       "p3": "Muitas configurações podem ser substituídas por espaço de trabalho, como qual modelo responde ou se automações podem ser executadas. Além disso, uma página pode ser movida para outro espaço, junto com tudo o que estiver sob ela, caso se descubra mais tarde que ela estava no público errado."
     },
     "where": "O alternador no canto superior esquerdo da navegação."
+  },
+  "arbeitsbereiche-sortieren": {
+    "title": "Reordenar espaços de trabalho",
+    "summary": "Você define a ordem em que seus espaços de trabalho aparecem no seletor. O primeiro é aberto quando você acessa o eXocortex.",
+    "details": {
+      "p1": "No seletor no canto superior esquerdo, você encontra \"Alterar ordem\" abaixo da lista. Lá, você move cada espaço para cima ou para baixo com as setas; cada alteração é aplicada imediatamente. Um espaço de testes vai para o final, e o espaço que você mais usa abre ao iniciar.",
+      "p2": "A ordem é só sua. Outras pessoas no mesmo espaço veem suas próprias listas, e nada do que você mover aqui afeta os outros. Um espaço de trabalho em que você entrar agora será adicionado ao final."
+    },
+    "where": "No seletor no canto superior esquerdo, depois \"Alterar ordem\"."
   },
   "seitenbaum": {
     "title": "Páginas aninhadas e movimentação por arrastar e soltar",

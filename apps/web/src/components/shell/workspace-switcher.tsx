@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckIcon, ChevronsUpDownIcon, PlusIcon } from 'lucide-react';
+import { ArrowUpDownIcon, CheckIcon, ChevronsUpDownIcon, PlusIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
@@ -24,6 +24,8 @@ import {
 
 import { useCreateWorkspace, useWorkspaces } from '@/lib/api/workspace-queries';
 
+import { WorkspaceOrderDialog } from './workspace-order-dialog';
+
 export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: string | null }) {
   const t = useTranslations('shell.workspaceSwitcher');
   const router = useRouter();
@@ -31,6 +33,7 @@ export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: st
   const createWorkspace = useCreateWorkspace();
   const [open, setOpen] = React.useState(false);
   const [creating, setCreating] = React.useState(false);
+  const [ordering, setOrdering] = React.useState(false);
   const [name, setName] = React.useState('');
 
   const active = workspaces.data?.find((workspace) => workspace.id === activeWorkspaceId);
@@ -102,11 +105,18 @@ export function WorkspaceSwitcher({ activeWorkspaceId }: { activeWorkspaceId: st
             ))}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
+          {(workspaces.data?.length ?? 0) > 1 ? (
+            <DropdownMenuItem onClick={() => setOrdering(true)} data-testid="workspace-reorder">
+              <ArrowUpDownIcon /> {t('reorder')}
+            </DropdownMenuItem>
+          ) : null}
           <DropdownMenuItem onClick={() => setCreating(true)} data-testid="workspace-create">
             <PlusIcon /> {t('create')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <WorkspaceOrderDialog open={ordering} onOpenChange={setOrdering} />
 
       {/*
       The name is typed in a dialog and not inside the menu: an open Base UI

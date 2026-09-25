@@ -43,7 +43,13 @@
     "create": "New workspace",
     "nameLabel": "Workspace name",
     "cancel": "Cancel",
-    "submit": "Create"
+    "submit": "Create",
+    "reorder": "Reorder",
+    "reorderTitle": "Workspace order",
+    "reorderDescription": "The first workspace opens on startup. The order applies only to you.",
+    "moveUp": "Move {name} up",
+    "moveDown": "Move {name} down",
+    "done": "Done"
   },
   "workspaceLanding": {
     "loading": "Loading workspaces …",

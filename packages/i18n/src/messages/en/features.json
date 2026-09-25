@@ -136,10 +136,19 @@
     "summary": "Pages live in workspaces that have separate memberships and separate permissions. The switcher at the top left shows all workspaces you belong to.",
     "details": {
       "p1": "A workspace is the boundary where permissions apply: anyone who is a member sees everything inside it; anyone who is not sees nothing. That is why you separate here by audience, not by topic. One workspace for yourself, one for a shared project, one for agent memory.",
-      "p2": "The switcher at the top left lists all workspaces you are a member of and remembers the one you used last. Search, navigation, and capture always refer to the workspace you are currently in.",
+      "p2": "The switcher at the top left lists all workspaces you are a member of, in your own order. Search, navigation, and capture always refer to the workspace you are currently in.",
       "p3": "Many settings can be overridden per workspace, such as which model responds or whether automations are allowed to run. A page can also be moved to another workspace, along with everything nested under it, in case it turns out later that it belonged to a different audience."
     },
     "where": "The switcher at the top left of the navigation."
+  },
+  "arbeitsbereiche-sortieren": {
+    "title": "Reorder workspaces",
+    "summary": "You decide the order in which your workspaces appear in the switcher. The first one opens when you launch eXocortex.",
+    "details": {
+      "p1": "In the switcher at the top left, under the list, you will find “Change order”. There, you can move each workspace up or down using the arrows; every change applies immediately. A testing area can thus move to the end, while the workspace you work with the most opens at startup.",
+      "p2": "The order belongs to you alone. Other members of the same workspace see their own list, and nothing you move here changes anything for them. A workspace you newly join is placed at the end."
+    },
+    "where": "The switcher at the top left, then “Change order”."
   },
   "seitenbaum": {
     "title": "Nested pages and drag-and-drop moving",

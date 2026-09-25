@@ -136,10 +136,19 @@
     "summary": "Le pagine risiedono in aree di lavoro che hanno membri separati e autorizzazioni distinte. Il selettore in alto a sinistra mostra tutte le aree di cui fai parte.",
     "details": {
       "p1": "Un’area di lavoro è il confine in cui si applicano le autorizzazioni: chi ne fa parte vede tutto ciò che contiene, chi non ne fa parte non vede nulla. Per questo motivo qui non separi per argomento, ma per destinatari. Un’area solo per te, una per un progetto comune, una per la memoria degli agenti.",
-      "p2": "Il selettore in alto a sinistra elenca tutte le aree di cui fai parte e ricorda l’ultima utilizzata. Ricerca, navigazione e acquisizione fanno sempre riferimento all’area in cui ti trovi al momento.",
+      "p2": "Il selettore in alto a sinistra elenca tutte le aree di cui fai parte, nel tuo ordine preferito. La ricerca, la navigazione e l’acquisizione fanno sempre riferimento all’area in cui ti trovi in quel momento.",
       "p3": "Molte impostazioni possono essere sovrascritte per ciascuna area di lavoro, ad esempio quale modello risponde o se le automazioni possono essere eseguite. Una pagina può anche essere spostata in un’altra area, insieme a tutto ciò che contiene sotto di sé, nel caso in cui si scopra in seguito che si trovava nell’area destinata al pubblico sbagliato."
     },
     "where": "Il selettore in alto a sinistra nella navigazione."
+  },
+  "arbeitsbereiche-sortieren": {
+    "title": "Riordinare le aree di lavoro",
+    "summary": "Decidi tu in quale ordine mostrare le tue aree di lavoro nel selettore. La prima si apre all’avvio di eXocortex.",
+    "details": {
+      "p1": "Nel selettore in alto a sinistra trovi \"Modifica ordine\" sotto l’elenco. Lì puoi spostare ciascuna area in alto o in basso con le frecce; ogni modifica si applica subito. Uno spazio di prova finisce così in fondo, mentre l’area con cui lavori di più si apre subito all’avvio.",
+      "p2": "L’ordine è solo tuo. Gli altri membri della stessa area vedono la propria lista e qualsiasi modifica tu faccia qui non influisce su di loro. Un’area a cui ti unisci di recente viene aggiunta in fondo."
+    },
+    "where": "Il selettore in alto a sinistra, poi \"Modifica ordine\"."
   },
   "seitenbaum": {
     "title": "Pagine nidificate e spostamento tramite trascinamento",

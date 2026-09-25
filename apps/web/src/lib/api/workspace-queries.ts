@@ -61,6 +61,43 @@ export function useCreateWorkspace() {
   });
 }
 
+/**
+ * The caller's own order of their workspaces. Optimistic, because every arrow
+ * click is one request and the row has to move under the pointer, not a round
+ * trip later; the server's answer then replaces the guess.
+ */
+export function useReorderWorkspaces() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (workspaceIds: string[]) =>
+      apiRequest<WorkspaceListResponse>('/api/workspaces/order', {
+        method: 'PUT',
+        body: { workspaceIds },
+      }),
+    onMutate: async (workspaceIds) => {
+      await client.cancelQueries({ queryKey: queryKeys.workspaces });
+      const previous = client.getQueryData<Workspace[]>(queryKeys.workspaces);
+      if (previous !== undefined) {
+        const byId = new Map(previous.map((workspace) => [workspace.id, workspace]));
+        const named = new Set(workspaceIds);
+        client.setQueryData<Workspace[]>(queryKeys.workspaces, [
+          ...workspaceIds.flatMap((id) => byId.get(id) ?? []),
+          ...previous.filter((workspace) => !named.has(workspace.id)),
+        ]);
+      }
+      return { previous };
+    },
+    onError: (_error, _ids, context) => {
+      if (context?.previous !== undefined) {
+        client.setQueryData(queryKeys.workspaces, context.previous);
+      }
+    },
+    onSuccess: (response) => {
+      client.setQueryData(queryKeys.workspaces, response.workspaces);
+    },
+  });
+}
+
 export function useUpdateWorkspace() {
   const client = useQueryClient();
   return useMutation({

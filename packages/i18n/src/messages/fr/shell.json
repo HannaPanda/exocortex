@@ -43,7 +43,13 @@
     "create": "Nouvel espace de travail",
     "nameLabel": "Nom de l’espace de travail",
     "cancel": "Annuler",
-    "submit": "Créer"
+    "submit": "Créer",
+    "reorder": "Réorganiser",
+    "reorderTitle": "Ordre des espaces de travail",
+    "reorderDescription": "Le premier espace s’ouvre au démarrage. Cet ordre n’est visible que par toi.",
+    "moveUp": "Monter {name}",
+    "moveDown": "Descendre {name}",
+    "done": "Terminé"
   },
   "workspaceLanding": {
     "loading": "Chargement des espaces de travail …",

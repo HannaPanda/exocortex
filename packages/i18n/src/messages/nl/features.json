@@ -136,10 +136,19 @@
     "summary": "Pagina’s horen bij werkruimten, die afzonderlijke lidmaatschappen en gescheiden rechten hebben. De schakelaar linksboven toont alle werkruimten waarvan je lid bent.",
     "details": {
       "p1": "Een werkruimte is de grens waar rechten gelden: wie lid is, ziet alles daarbinnen; wie dat niet is, ziet er niets van. Daarom scheid je hier niet op thema, maar op publiek. Een ruimte voor jou alleen, een voor een gezamenlijk project, een voor het geheugen van de agents.",
-      "p2": "De schakelaar linksboven geeft een overzicht van alle ruimten waarvan je lid bent en onthoudt de laatst gebruikte. Zoeken, navigatie en invoeren hebben altijd betrekking op de ruimte waarin je op dat moment bent.",
+      "p2": "De schakelaar linksboven toont alle werkruimtes waarvan je lid bent, in je eigen volgorde. Zoeken, navigatie en vastleggen hebben altijd betrekking op de werkruimte waarin je je op dat moment bevindt.",
       "p3": "Veel instellingen kunnen per werkruimte worden overschreven, zoals welk model antwoordt of dat automatiseringen mogen draaien. Een pagina mag bovendien naar een andere ruimte worden verplaatst, inclusief alles wat eronder hangt, mocht achteraf blijken dat deze bij het verkeerde publiek stond."
     },
     "where": "De schakelaar linksboven in de navigatie."
+  },
+  "arbeitsbereiche-sortieren": {
+    "title": "Werkruimtes herschikken",
+    "summary": "Je bepaalt zelf in welke volgorde je werkruimtes in de schakelaar staan. De eerste opent wanneer je eXocortex start.",
+    "details": {
+      "p1": "In de schakelaar linksboven vind je onder de lijst \"Volgorde wijzigen\". Daar verplaats je elke werkruimte met de pijlen omhoog of omlaag; elke wijziging is meteen van kracht. Zo verhuist een testruimte naar het einde, en opent de werkruimte waarin je het meest werkt direct bij het opstarten.",
+      "p2": "De volgorde is helemaal van jou. Andere leden van dezelfde werkruimte zien hun eigen lijst, en niets wat je hier verplaatst verandert iets voor hen. Een werkruimte waar je nieuw lid van wordt, sluit achteraan aan."
+    },
+    "where": "De schakelaar linksboven, daarna \"Volgorde wijzigen\"."
   },
   "seitenbaum": {
     "title": "Geneste pagina’s en verplaatsen via slepen",

@@ -63,6 +63,13 @@ export const PAGE_FEATURES: readonly RegisteredFeature[] = [
     claims: { screens: ['/arbeitsbereich', '/arbeitsbereich/:x'] },
   }),
   defineFeature({
+    id: 'arbeitsbereiche-sortieren',
+    area: 'struktur',
+    since: '2026-09-25',
+    ui: {},
+    tools: ['exo_workspace_reorder'],
+  }),
+  defineFeature({
     id: 'seitenbaum',
     area: 'struktur',
     since: '2026-08-05',
