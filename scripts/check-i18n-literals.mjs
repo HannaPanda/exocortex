@@ -13,10 +13,12 @@
  *   node scripts/check-i18n-literals.mjs            check
  *   node scripts/check-i18n-literals.mjs --update   rewrite the baseline
  *
- * What counts is a line of code (comments removed) that carries German: an
- * umlaut or ß, or one of the German words below as a whole word. That is a
- * measure, not a parser; the interface is German-only today, so German is
- * exactly what is still inline. `--update` may lower a count or drop a file,
+ * What counts is a line of code (comments and route paths removed) that
+ * carries German: an umlaut or ß, one of the German words below as a whole
+ * word, or a word with a German ending (-ung, -keit, -lich, -ieren and the
+ * like). That is a measure, not a parser. The endings were added in phase 7,
+ * when "Erneut versuchen" and "Hintergrundaufgabe fehlgeschlagen" turned out
+ * to be German the word list alone never saw. `--update` may lower a count or drop a file,
  * and refuses to raise one: that is the point of a ratchet.
  *
  * Out of scope, with the reason, in EXEMPT below.
@@ -32,7 +34,13 @@ import { repoRoot } from './lib/i18n-catalog.mjs';
 const baselinePath = join(repoRoot, 'scripts', 'i18n-literals-baseline.json');
 const update = process.argv.includes('--update');
 
-const SCOPE = [/^apps\/web\/src\/.*\.tsx?$/, /^packages\/ui\/src\/.*\.tsx?$/];
+const SCOPE = [
+  /^apps\/web\/src\/.*\.tsx?$/,
+  /^packages\/ui\/src\/.*\.tsx?$/,
+  // The editor's node views build their DOM by hand and run in the browser, so
+  // their words are interface text as much as a React component's are.
+  /^packages\/editor\/src\/.*\.tsx?$/,
+];
 
 const EXEMPT = [
   {
@@ -43,6 +51,16 @@ const EXEMPT = [
     pattern: /^apps\/web\/src\/(components|app)\/design-system\//,
     reason:
       'Demo text of the styleguide, a developer surface. The components it shows are translated; the sentences that exercise them stay German (decided in #98).',
+  },
+  {
+    pattern: /^packages\/editor\/src\/editor-words\.ts$/,
+    reason:
+      'The German default of the node views, for a server render and the tests. The browser always hands in the words of editor.nodeViews instead.',
+  },
+  {
+    pattern: /^packages\/editor\/src\/(entity-matching|fixtures)\.ts$/,
+    reason:
+      'Data, not interface: the German stop words entity matching skips, and the sample documents the editor tests are built from.',
   },
 ];
 
@@ -93,6 +111,26 @@ const SMALL_WORDS = [
   'alle',
   'neu',
   'neue',
+  'zum',
+  'zur',
+  'vom',
+  'beim',
+  'sich',
+  'uns',
+  'jetzt',
+  'dann',
+  'wenn',
+  'weil',
+  'dass',
+  'aber',
+  'auch',
+  'nur',
+  'wie',
+  'ihr',
+  'ihre',
+  'sein',
+  'seine',
+  'erneut',
 ];
 const NOUNS = [
   'Seite',
@@ -106,11 +144,61 @@ const NOUNS = [
   'Weiter',
   'Fehler',
   'Einstellungen',
+  'Datei',
+  'Dateien',
+  'Titel',
+  'Bild',
+  'Bilder',
+  'Suche',
+  'Suchen',
+  'Hilfe',
+  'Ansicht',
+  'Ansehen',
+  'Spalte',
+  'Zeile',
+  'Eintrag',
+  'Vorlage',
+  'Freigabe',
+  'Kommentar',
+  'Kommentare',
+  'Antwort',
+  'versuchen',
+  'auslesen',
+  'anzeigen',
+  'fehlgeschlagen',
+];
+/**
+ * German endings, after a stem of at least three letters. English has almost no
+ * word ending like this. The stem is lowercase after its first letter, so a
+ * camel-cased identifier like `TypeRung` is two words and not one.
+ */
+const ENDINGS = [
+  'ung',
+  'ungen',
+  'heit',
+  'heiten',
+  'keit',
+  'keiten',
+  'lich',
+  'liche',
+  'lichen',
+  'licher',
+  'ieren',
+  'iert',
+  'ierte',
 ];
 const capitalised = (word) => word[0].toUpperCase() + word.slice(1);
 const GERMAN = new RegExp(
-  `[äöüÄÖÜß]|\\b(?:${[...SMALL_WORDS, ...SMALL_WORDS.map(capitalised), ...NOUNS].join('|')})\\b`,
+  `[äöüÄÖÜß]|\\b(?:${[...SMALL_WORDS, ...SMALL_WORDS.map(capitalised), ...NOUNS].join('|')})\\b` +
+    `|\\b[A-Za-z][a-z]{2,}(?:${ENDINGS.join('|')})\\b`,
 );
+
+/**
+ * A route is an address, not a sentence: `/einstellungen/benachrichtigungen`
+ * stays German in every locale, because a language is a property of the
+ * person and never of the URL (ADR-062).
+ */
+const ROUTE_LITERAL = /(['"`])\/[\w\-/[\]${}.]*\1/g;
 
 /**
  * The source with every comment blanked out, newlines kept, so a German
@@ -166,14 +254,14 @@ function copyString(text, index) {
 export function germanLines(text) {
   return withoutComments(text)
     .split('\n')
-    .filter((line) => GERMAN.test(line)).length;
+    .filter((line) => GERMAN.test(line.replace(ROUTE_LITERAL, ''))).length;
 }
 
 function trackedFiles() {
   // Untracked files too: a screen written the old way should go red before
   // its first commit, not after.
   const args = ['ls-files', '-z', '--cached', '--others', '--exclude-standard'];
-  return execFileSync('git', [...args, 'apps/web/src', 'packages/ui/src'], {
+  return execFileSync('git', [...args, 'apps/web/src', 'packages/ui/src', 'packages/editor/src'], {
     cwd: repoRoot,
     encoding: 'utf8',
   })

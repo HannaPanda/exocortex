@@ -1082,13 +1082,39 @@ describe('inline text ratchet (check-i18n-literals.mjs)', () => {
     expect(result.output).toContain(screen);
   });
 
+  it('counts German that has neither an umlaut nor a listed small word (phase 7)', () => {
+    editFile(
+      screen,
+      (source) => `${source}\nexport const probe = 'Hintergrundaufgabe fehlgeschlagen';\n`,
+    );
+    const result = gate('check-i18n-literals.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain(screen);
+  });
+
+  it('does not count a route, which stays German in every language', () => {
+    editFile(
+      screen,
+      (source) => `${source}\nexport const probe = '/einstellungen/benachrichtigungen';\n`,
+    );
+    expect(gate('check-i18n-literals.mjs').status).toBe(0);
+  });
+
+  it('watches the node views packages/editor draws by hand', () => {
+    const view = 'packages/editor/src/table-of-contents.ts';
+    editFile(view, (source) => `${source}\nexport const probe = 'Erneut versuchen';\n`);
+    const result = gate('check-i18n-literals.mjs');
+    expect(result.status).not.toBe(0);
+    expect(result.output).toContain(view);
+  });
+
   it('does not count German in a comment', () => {
     editFile(screen, (source) => `${source}\n// Das ist ein deutscher Kommentar für dich.\n`);
     expect(gate('check-i18n-literals.mjs').status).toBe(0);
   });
 
   it('goes red when a file lost German and the baseline was not lowered', () => {
-    editFile('apps/web/src/app/(app)/error.tsx', () => 'export {};\n');
+    editFile('apps/web/src/app/not-found.tsx', () => 'export {};\n');
     const result = gate('check-i18n-literals.mjs');
     expect(result.status).not.toBe(0);
     expect(result.output).toContain('--update');
