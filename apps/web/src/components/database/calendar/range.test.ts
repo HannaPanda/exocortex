@@ -4,6 +4,7 @@ import {
   addDays,
   calendarLabel,
   calendarWindow,
+  firstDayOfWeek,
   fromDateInputValue,
   monthGridStart,
   queryWindow,
@@ -21,13 +22,28 @@ function parts(date: Date): [number, number, number, number, number] {
 describe('startOfWeek', () => {
   it('returns the Monday of the week, and a Monday itself', () => {
     // 2026-09-18 is a Friday.
-    expect(parts(startOfWeek(new Date(2026, 8, 18, 13, 30)))).toEqual([2026, 8, 14, 0, 0]);
-    expect(parts(startOfWeek(new Date(2026, 8, 14)))).toEqual([2026, 8, 14, 0, 0]);
+    expect(parts(startOfWeek(new Date(2026, 8, 18, 13, 30), 'de'))).toEqual([2026, 8, 14, 0, 0]);
+    expect(parts(startOfWeek(new Date(2026, 8, 14), 'de'))).toEqual([2026, 8, 14, 0, 0]);
   });
 
   it('reaches back into the previous month on a Sunday', () => {
     // 2026-11-01 is a Sunday: its week began in October.
-    expect(parts(startOfWeek(new Date(2026, 10, 1)))).toEqual([2026, 9, 26, 0, 0]);
+    expect(parts(startOfWeek(new Date(2026, 10, 1), 'de'))).toEqual([2026, 9, 26, 0, 0]);
+  });
+  it('starts on Sunday where the locale does (issue #98)', () => {
+    // English and Brazilian Portuguese start on Sunday, like their date pickers.
+    expect(parts(startOfWeek(new Date(2026, 8, 18), 'en'))).toEqual([2026, 8, 13, 0, 0]);
+    expect(parts(startOfWeek(new Date(2026, 8, 18), 'pt-BR'))).toEqual([2026, 8, 13, 0, 0]);
+    // A Sunday is the first day of its own week there, not the last.
+    expect(parts(startOfWeek(new Date(2026, 10, 1), 'en'))).toEqual([2026, 10, 1, 0, 0]);
+    expect(parts(startOfWeek(new Date(2026, 8, 18), 'fr'))).toEqual([2026, 8, 14, 0, 0]);
+  });
+});
+
+describe('firstDayOfWeek', () => {
+  it('reads the week start of each interface language', () => {
+    const starts = ['de', 'en', 'es', 'fr', 'it', 'nl', 'pl', 'pt-BR'].map(firstDayOfWeek);
+    expect(starts).toEqual([1, 0, 1, 1, 1, 1, 1, 0]);
   });
 });
 
@@ -35,32 +51,32 @@ describe('calendarWindow', () => {
   const anchor = new Date(2026, 8, 18, 16, 45);
 
   it('covers exactly one local day in DAY mode', () => {
-    const window = calendarWindow('DAY', anchor);
+    const window = calendarWindow('DAY', anchor, 'de');
     expect(parts(window.from)).toEqual([2026, 8, 18, 0, 0]);
     expect(parts(window.to)).toEqual([2026, 8, 19, 0, 0]);
   });
 
   it('covers Monday to Monday in WEEK mode', () => {
-    const window = calendarWindow('WEEK', anchor);
+    const window = calendarWindow('WEEK', anchor, 'de');
     expect(parts(window.from)).toEqual([2026, 8, 14, 0, 0]);
     expect(parts(window.to)).toEqual([2026, 8, 21, 0, 0]);
   });
 
   it('covers the whole six-week grid in MONTH mode, not just the month', () => {
-    const window = calendarWindow('MONTH', anchor);
+    const window = calendarWindow('MONTH', anchor, 'de');
     // September 2026 starts on a Tuesday, so the grid opens on 31 August.
     expect(parts(window.from)).toEqual([2026, 7, 31, 0, 0]);
     expect(parts(window.to)).toEqual([2026, 9, 12, 0, 0]);
   });
 
   it('covers the month itself in LIST mode', () => {
-    const window = calendarWindow('LIST', anchor);
+    const window = calendarWindow('LIST', anchor, 'de');
     expect(parts(window.from)).toEqual([2026, 8, 1, 0, 0]);
     expect(parts(window.to)).toEqual([2026, 9, 1, 0, 0]);
   });
 
   it('covers the calendar year in YEAR mode', () => {
-    const window = calendarWindow('YEAR', anchor);
+    const window = calendarWindow('YEAR', anchor, 'de');
     expect(parts(window.from)).toEqual([2026, 0, 1, 0, 0]);
     expect(parts(window.to)).toEqual([2027, 0, 1, 0, 0]);
   });
@@ -69,7 +85,7 @@ describe('calendarWindow', () => {
 describe('monthGridStart', () => {
   it('starts on the first of the month when that is a Monday', () => {
     // 2026-06-01 is a Monday.
-    expect(parts(monthGridStart(2026, 5))).toEqual([2026, 5, 1, 0, 0]);
+    expect(parts(monthGridStart(2026, 5, 'de'))).toEqual([2026, 5, 1, 0, 0]);
   });
 });
 
@@ -111,15 +127,15 @@ describe('calendarLabel', () => {
 });
 
 describe('weekdayNames', () => {
-  it('names the days Monday first in the requested locale', () => {
+  it('names the days from the first weekday of the locale, in that locale', () => {
     expect(weekdayNames('de', 'weekdayNarrow')).toEqual(['M', 'D', 'M', 'D', 'F', 'S', 'S']);
-    expect(weekdayNames('en', 'weekdayNarrow')).toEqual(['M', 'T', 'W', 'T', 'F', 'S', 'S']);
+    expect(weekdayNames('en', 'weekdayNarrow')).toEqual(['S', 'M', 'T', 'W', 'T', 'F', 'S']);
   });
 });
 
 describe('queryWindow', () => {
   it('pads a day on each side, so an all-day value stored at UTC midnight cannot fall out', () => {
-    const window = calendarWindow('DAY', new Date(2026, 8, 18));
+    const window = calendarWindow('DAY', new Date(2026, 8, 18), 'de');
     const padded = queryWindow(window);
     expect(new Date(padded.from).getTime()).toBe(addDays(window.from, -1).getTime());
     expect(new Date(padded.to).getTime()).toBe(addDays(window.to, 1).getTime());

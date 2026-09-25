@@ -60,7 +60,7 @@ function MiniMonth({
   const t = useTranslations('calendar.year');
   const locale = useLocale();
   const weekdays = React.useMemo(() => weekdayNames(locale, 'weekdayNarrow'), [locale]);
-  const start = monthGridStart(year, month);
+  const start = monthGridStart(year, month, locale);
   const days = React.useMemo(
     () => Array.from({ length: MONTH_GRID_DAYS }, (_, index) => addDays(start, index)),
     [start],

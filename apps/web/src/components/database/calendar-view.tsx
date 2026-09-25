@@ -136,7 +136,7 @@ function CalendarBody({
 
   // Named `period`, not `window`: the global of that name is what a browser
   // file reaches for by reflex, and shadowing it reads as a bug later.
-  const period = React.useMemo(() => calendarWindow(mode, anchor), [mode, anchor]);
+  const period = React.useMemo(() => calendarWindow(mode, anchor, locale), [mode, anchor, locale]);
   const range = React.useMemo(() => queryWindow(period), [period]);
   const rowsQuery = useDatabaseCalendarRows({
     documentId,
@@ -197,7 +197,7 @@ function CalendarBody({
       return (
         <TimeGridView
           workspaceId={workspaceId}
-          days={columnDays(mode, anchor)}
+          days={columnDays(mode, anchor, locale)}
           entriesByDay={entriesByDay}
         />
       );
@@ -236,9 +236,9 @@ function CalendarBody({
   }
 }
 
-/** The columns of a time grid: one day, or the Monday-to-Sunday week around it. */
-function columnDays(mode: 'DAY' | 'WEEK', anchor: Date): Date[] {
+/** The columns of a time grid: one day, or the week around it as `locale` starts it. */
+function columnDays(mode: 'DAY' | 'WEEK', anchor: Date, locale: string): Date[] {
   if (mode === 'DAY') return [new Date(anchor.getFullYear(), anchor.getMonth(), anchor.getDate())];
-  const monday = startOfWeek(anchor);
-  return Array.from({ length: 7 }, (_, index) => addDays(monday, index));
+  const first = startOfWeek(anchor, locale);
+  return Array.from({ length: 7 }, (_, index) => addDays(first, index));
 }

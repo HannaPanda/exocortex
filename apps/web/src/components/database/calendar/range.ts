@@ -59,19 +59,50 @@ export function addDays(date: Date, days: number): Date {
   return next;
 }
 
-/**
- * Monday of the week containing `date`. The week starts on Monday in every
- * locale for now, as it does in German calendars; a start per locale would
- * change the grids, the week window and the weekday header together.
- */
-export function startOfWeek(date: Date): Date {
-  const day = startOfDay(date);
-  return addDays(day, -((day.getDay() + 6) % 7));
+/** What `Intl.Locale` says about weeks; `getWeekInfo` is the newer spelling of `weekInfo`. */
+interface WeekInfoLocale {
+  getWeekInfo?: () => { firstDay: number };
+  weekInfo?: { firstDay: number };
 }
 
-/** The Monday on or before the first of the month: the first cell of the month grid. */
-export function monthGridStart(year: number, month: number): Date {
-  return startOfWeek(new Date(year, month, 1));
+const firstDayCache = new Map<string, number>();
+
+/**
+ * The day a week starts on in `locale`, counted like `Date.getDay()` (0 is
+ * Sunday). Read from the locale's own week data, which is the same answer the
+ * date picker's locale gives: Sunday for English and Brazilian Portuguese,
+ * Monday for the others (issue #98). Monday where a browser cannot tell.
+ */
+export function firstDayOfWeek(locale: string): number {
+  let first = firstDayCache.get(locale);
+  if (first === undefined) {
+    let isoDay = 1;
+    try {
+      const info = new Intl.Locale(locale) as Intl.Locale & WeekInfoLocale;
+      isoDay = (info.getWeekInfo?.() ?? info.weekInfo)?.firstDay ?? 1;
+    } catch {
+      // An unknown tag: keep Monday.
+    }
+    // Intl counts Monday as 1 and Sunday as 7.
+    first = isoDay % 7;
+    firstDayCache.set(locale, first);
+  }
+  return first;
+}
+
+/**
+ * The first day of the week containing `date`, where the week starts as it
+ * does in `locale`. The grids, the week window and the weekday header all ask
+ * this, so they cannot disagree.
+ */
+export function startOfWeek(date: Date, locale: string): Date {
+  const day = startOfDay(date);
+  return addDays(day, -((day.getDay() - firstDayOfWeek(locale) + 7) % 7));
+}
+
+/** The week's first day on or before the first of the month: the first cell of the month grid. */
+export function monthGridStart(year: number, month: number, locale: string): Date {
+  return startOfWeek(new Date(year, month, 1), locale);
 }
 
 /**
@@ -81,19 +112,23 @@ export function monthGridStart(year: number, month: number): Date {
  */
 export const MONTH_GRID_DAYS = 42;
 
-export function calendarWindow(mode: DatabaseCalendarMode, anchor: Date): CalendarWindow {
+export function calendarWindow(
+  mode: DatabaseCalendarMode,
+  anchor: Date,
+  locale: string,
+): CalendarWindow {
   const day = startOfDay(anchor);
   switch (mode) {
     case 'DAY':
       return { from: day, to: addDays(day, 1) };
     case 'WEEK': {
-      const from = startOfWeek(day);
+      const from = startOfWeek(day, locale);
       return { from, to: addDays(from, 7) };
     }
     case 'MONTH': {
       // The grid, not the month: the trailing cells of the neighbouring months
       // are drawn, so their entries have to be fetched too.
-      const from = monthGridStart(day.getFullYear(), day.getMonth());
+      const from = monthGridStart(day.getFullYear(), day.getMonth(), locale);
       return { from, to: addDays(from, MONTH_GRID_DAYS) };
     }
     case 'YEAR':
@@ -154,7 +189,7 @@ export function calendarLabel(
     case 'DAY':
       return calendarFormatter(locale, 'day').format(day);
     case 'WEEK': {
-      const from = startOfWeek(day);
+      const from = startOfWeek(day, locale);
       const to = addDays(from, 6);
       const full = calendarFormatter(locale, 'dayMonthYear');
       if (from.getFullYear() !== to.getFullYear()) {
@@ -207,11 +242,12 @@ export function monthName(month: number, locale: string): string {
 }
 
 /**
- * The seven weekday names of a grid header, Monday first, in `locale`. Read off
- * a known Monday rather than a list, so every language names its own days.
+ * The seven weekday names of a grid header in `locale`, starting on the day its
+ * week starts. Read off a known week rather than a list, so every language
+ * names its own days.
  */
 export function weekdayNames(locale: string, format: 'weekdayShort' | 'weekdayNarrow'): string[] {
-  const monday = new Date(2026, 8, 14);
+  const first = addDays(new Date(2026, 8, 13), firstDayOfWeek(locale)); // 13 September 2026 is a Sunday
   const formatter = calendarFormatter(locale, format);
-  return Array.from({ length: 7 }, (_, index) => formatter.format(addDays(monday, index)));
+  return Array.from({ length: 7 }, (_, index) => formatter.format(addDays(first, index)));
 }

@@ -22,7 +22,7 @@ export function MonthView({ workspaceId, anchor, entriesByDay, onOpenDay }: Mont
   const locale = useLocale();
   const weekdays = React.useMemo(() => weekdayNames(locale, 'weekdayShort'), [locale]);
   const month = anchor.getMonth();
-  const start = monthGridStart(anchor.getFullYear(), month);
+  const start = monthGridStart(anchor.getFullYear(), month, locale);
   const days = React.useMemo(
     () => Array.from({ length: MONTH_GRID_DAYS }, (_, index) => addDays(start, index)),
     [start],
