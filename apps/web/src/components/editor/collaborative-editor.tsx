@@ -9,7 +9,7 @@ import { Placeholder } from '@tiptap/extension-placeholder';
 import { type Mark as PmMark, type Node as PmNode } from '@tiptap/pm/model';
 import { type EditorView } from '@tiptap/pm/view';
 import { type Editor, EditorContent, ReactNodeViewRenderer, useEditor } from '@tiptap/react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useMessages, useTimeZone, useTranslations } from 'next-intl';
 import * as React from 'react';
 
 import {
@@ -79,7 +79,7 @@ import {
   type PresenceUser,
   useDocumentSession,
 } from '@/components/shell/document-session';
-import { attachmentMediaInfoResolver } from '@/lib/api/attachment-info';
+import { attachmentMediaInfoResolverFor } from '@/lib/api/attachment-info';
 import { uploadAttachment } from '@/lib/api/attachment-queries';
 import { useDocumentTree } from '@/lib/api/document-queries';
 
@@ -304,6 +304,15 @@ function EditorSurface({
   const tNodeViews = useTranslations('editor.nodeViews');
   // The words of the node views `packages/editor` draws itself.
   const words = useEditorWords();
+  // The PDF viewer runs in a React root of its own and needs the language
+  // handed over (see `attachmentMediaInfoResolverFor`).
+  const locale = useLocale();
+  const messages = useMessages();
+  const timeZone = useTimeZone();
+  const mediaInfo = React.useMemo(
+    () => attachmentMediaInfoResolverFor({ locale, messages, timeZone }),
+    [locale, messages, timeZone],
+  );
   // One catalog for the slash menu, the turn-into menu and the block menu, with
   // the block names in the reader's language.
   const catalog = useLocalizedBlockCatalog();
@@ -409,7 +418,7 @@ function EditorSurface({
       extensions: buildEditorExtensions({
         // Lets the file and PDF blocks show what is inside them. The editor
         // package knows no routes, so the API side is injected here.
-        mediaInfo: attachmentMediaInfoResolver,
+        mediaInfo,
         words,
         // Four nodes whose schema lives in `packages/editor` and whose drawing
         // cannot: a database, a saved query, a transcluded fragment (ADR-045,
@@ -509,6 +518,7 @@ function EditorSurface({
       placeholder,
       contentLabel,
       words,
+      mediaInfo,
     ],
   );
 

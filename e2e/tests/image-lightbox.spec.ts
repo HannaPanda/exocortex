@@ -65,6 +65,9 @@ test.describe('image lightbox', () => {
     const surface = page.getByTestId('editor-surface');
     await expect(surface).toBeVisible();
     await surface.click();
+    // A paragraph above the image, so the cursor has somewhere to go.
+    await page.keyboard.type('Oben');
+    await page.keyboard.press('Enter');
 
     await page.keyboard.type('/bild');
     await expect(page.getByTestId('slash-option-image')).toBeVisible();
@@ -77,6 +80,12 @@ test.describe('image lightbox', () => {
 
     const lightbox = page.getByTestId('image-lightbox');
     const shown = page.getByTestId('image-lightbox-image');
+
+    // Inserting leaves the new image selected; move the cursor off it first,
+    // so the next click is a first click on an unselected image.
+    await surface.focus();
+    await page.keyboard.press('ArrowUp');
+    await expect(embedded).not.toHaveClass(/ProseMirror-selectednode/);
 
     // The first click selects the image, as it always did; it opens nothing.
     await embedded.click();
